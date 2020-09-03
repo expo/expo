@@ -26,6 +26,7 @@ import expo.modules.notifications.notifications.triggers.ChannelAwareTrigger;
 import expo.modules.notifications.notifications.triggers.DailyTrigger;
 import expo.modules.notifications.notifications.triggers.DateTrigger;
 import expo.modules.notifications.notifications.triggers.TimeIntervalTrigger;
+import expo.modules.notifications.notifications.triggers.WeeklyTrigger;
 
 public class NotificationScheduler extends ExportedModule {
   private final static String EXPORTED_NAME = "ExpoNotificationScheduler";
@@ -149,6 +150,16 @@ public class NotificationScheduler extends ExportedModule {
           throw new InvalidArgumentException("Invalid value(s) provided for daily trigger.");
         }
         return new DailyTrigger(
+          ((Number) params.get("hour")).intValue(),
+          ((Number) params.get("minute")).intValue(),
+          channelId
+        );
+      case "weekly":
+        if (!(params.get("weekday") instanceof Number) || !(params.get("hour") instanceof Number) || !(params.get("minute") instanceof Number)) {
+          throw new InvalidArgumentException("Invalid value(s) provided for weekly trigger.");
+        }
+        return new WeeklyTrigger(
+          ((Number) params.get("weekday")).intValue(),
           ((Number) params.get("hour")).intValue(),
           ((Number) params.get("minute")).intValue(),
           channelId

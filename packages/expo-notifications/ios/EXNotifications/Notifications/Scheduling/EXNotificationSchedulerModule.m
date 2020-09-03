@@ -17,6 +17,11 @@ static NSString * const dailyNotificationTriggerType = @"daily";
 static NSString * const dailyNotificationTriggerHourKey = @"hour";
 static NSString * const dailyNotificationTriggerMinuteKey = @"minute";
 
+static NSString * const weeklyNotificationTriggerType = @"weekly";
+static NSString * const weeklyNotificationTriggerWeekdayKey = @"weekday";
+static NSString * const weeklyNotificationTriggerHourKey = @"hour";
+static NSString * const weeklyNotificationTriggerMinuteKey = @"minute";
+
 static NSString * const dateNotificationTriggerType = @"date";
 static NSString * const dateNotificationTriggerTimestampKey = @"timestamp";
 
@@ -124,6 +129,17 @@ UM_EXPORT_METHOD_AS(cancelAllScheduledNotificationsAsync,
     NSNumber *hour = [params objectForKey:dailyNotificationTriggerHourKey verifyingClass:[NSNumber class]];
     NSNumber *minute = [params objectForKey:dailyNotificationTriggerMinuteKey verifyingClass:[NSNumber class]];
     NSDateComponents *dateComponents = [NSDateComponents new];
+    dateComponents.hour = [hour integerValue];
+    dateComponents.minute = [minute integerValue];
+
+    return [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:dateComponents
+                                                                    repeats:YES];
+  } else if ([weeklyNotificationTriggerType isEqualToString:triggerType]) {
+    NSNumber *weekday = [params objectForKey:weeklyNotificationTriggerWeekdayKey verifyingClass:[NSNumber class]];
+    NSNumber *hour = [params objectForKey:weeklyNotificationTriggerHourKey verifyingClass:[NSNumber class]];
+    NSNumber *minute = [params objectForKey:weeklyNotificationTriggerMinuteKey verifyingClass:[NSNumber class]];
+    NSDateComponents *dateComponents = [NSDateComponents new];
+    dateComponents.weekday = [weekday integerValue];
     dateComponents.hour = [hour integerValue];
     dateComponents.minute = [minute integerValue];
 
