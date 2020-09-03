@@ -2,11 +2,10 @@ import * as React from 'react';
 import { css } from 'react-emotion';
 
 import * as Constants from '~/common/constants';
-import * as Utilities from '~/common/utilities';
 import DocumentationSidebarGroup from '~/components/DocumentationSidebarGroup';
 import DocumentationSidebarLink from '~/components/DocumentationSidebarLink';
 import DocumentationSidebarTitle from '~/components/DocumentationSidebarTitle';
-import withSlugger from '~/components/page-higher-order/withSlugger';
+import withHeadingManager from '~/components/page-higher-order/withHeadingManager';
 
 const STYLES_SIDEBAR = css`
   padding: 20px 24px 24px 24px;
@@ -42,9 +41,24 @@ function shouldSkipTitle(info, parentGroup) {
   return false;
 }
 
-export default class DocumentationSidebarRight extends React.Component {
+function Item({ heading, activeSlug }) {
+  const itemStyle = heading.slug === activeSlug ? { color: 'red' } : undefined;
+  return (
+    <li key={heading.slug} style={itemStyle}>
+      <a href={'#' + heading.slug} style={itemStyle}>
+        {new Array(heading.level).join('-') + ' ' + heading.title}
+      </a>
+    </li>
+  );
+}
+
+class DocumentationSidebarRight extends React.Component {
   static defaultProps = {
     routes: [],
+  };
+
+  state = {
+    activeSlug: null,
   };
 
   _renderPostElements = (info, category) => {
@@ -94,20 +108,22 @@ export default class DocumentationSidebarRight extends React.Component {
       </div>
     );
   };
-  linkSlugger = (string, maintainCase) => {
-    if (typeof string !== 'string') return '';
-    if (!maintainCase) string = string.toLowerCase();
 
-    return string
-      .trim()
-      .replace(SPECIALS, '')
-      .replace(WHITESPACE, '-');
-  };
+  handleContentScroll(contentScrollPosition) {
+    const { headingManager } = this.props;
+    const { headings } = headingManager;
 
-  _renderLink = withSlugger(props => {
-    const permalinkKey = this.linkSlugger(props.title);
-    return <a href={'#' + permalinkKey}>{props.children}</a>;
-  });
+    for (const heading of headings) {
+      //console.log(heading);
+      const { current } = heading.ref;
+      if (current && current.offsetTop >= contentScrollPosition) {
+        if (heading.slug !== this.state.activeSlug) {
+          this.setState({ activeSlug: heading.slug });
+        }
+        break;
+      }
+    }
+  }
 
   render() {
     const customDataAttributes = {
@@ -116,18 +132,28 @@ export default class DocumentationSidebarRight extends React.Component {
 
     console.log('render sidebar');
 
+    const { headings } = this.props.headingManager;
+
     return (
       <nav className={STYLES_SIDEBAR} {...customDataAttributes}>
         <h3>{this.props.title}</h3>
 
         <ul>
-          {this.props.headings.map((heading, idx) => (
-            <this._renderLink title={heading.title}>
-              <li key={idx}>{new Array(heading.level).join('-') + ' ' + heading.title}</li>
-            </this._renderLink>
+          {headings.map(heading => (
+            <Item heading={heading} activeSlug={this.state.activeSlug} />
           ))}
         </ul>
       </nav>
     );
   }
 }
+const SidebarWithHeadingManager = withHeadingManager(function SidebarWithHeadingManager({
+  reactRef,
+  ...props
+}) {
+  return <DocumentationSidebarRight {...props} ref={reactRef} />;
+});
+
+export default React.forwardRef((props, ref) => (
+  <SidebarWithHeadingManager {...props} reactRef={ref} />
+));

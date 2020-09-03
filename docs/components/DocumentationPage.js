@@ -1,7 +1,7 @@
+import some from 'lodash/some';
 import Router from 'next/router';
 import * as React from 'react';
 import { css } from 'react-emotion';
-import some from 'lodash/some';
 
 import * as Constants from '~/common/constants';
 import navigation from '~/common/navigation';
@@ -49,10 +49,13 @@ export default class DocumentationPage extends React.Component {
     isMenuActive: false,
   };
 
+  layoutRef = React.createRef();
+  sidebarRightRef = React.createRef();
+
   componentDidMount() {
     Router.onRouteChangeStart = () => {
-      if (this.refs.layout) {
-        window.__sidebarScroll = this.refs.layout.getSidebarScrollTop();
+      if (this.layoutRef.current) {
+        window.__sidebarScroll = this.layoutRef.current.getSidebarScrollTop();
       }
       window.NProgress.start();
     };
@@ -220,27 +223,26 @@ export default class DocumentationPage extends React.Component {
       />
     );
 
-    const sidebarRightElement = (
-      <DocumentationSidebarRight title={this.props.title} headings={this.props.headings} />
-    );
-
-    const scrollHandler = event => {
-      const layout = this.refs.layout;
+    const handleContentScroll = contentScrollPosition => {
       window.requestAnimationFrame(() => {
-        console.log(layout.getContentScrollTop());
-        console.log(this.refs);
+        if (this.sidebarRightRef.current)
+          this.sidebarRightRef.current.handleContentScroll(contentScrollPosition);
       });
     };
 
+    const sidebarRight = (
+      <DocumentationSidebarRight ref={this.sidebarRightRef} title={this.props.title} />
+    );
+
     return (
       <DocumentationNestedScrollLayout
-        ref="layout"
+        ref={this.layoutRef}
         header={headerElement}
         sidebar={sidebarElement}
-        sidebarRight={sidebarRightElement}
+        sidebarRight={sidebarRight}
         isMenuActive={this.state.isMenuActive}
         isMobileSearchActive={this.state.isMobileSearchActive}
-        contentScrollHandler={scrollHandler}
+        onContentScroll={handleContentScroll}
         sidebarScrollPosition={sidebarScrollPosition}>
         <Head title={`${this.props.title} - Expo Documentation`}>
           <meta name="docsearch:version" content={isReferencePath ? version : 'none'} />
@@ -288,7 +290,7 @@ export default class DocumentationPage extends React.Component {
                 onSetVersion={this._handleSetVersion}
                 isVersionSelectorHidden={!isReferencePath}
               />
-              {sidebarRightElement}
+              {sidebarRight}
             </div>
           </div>
         )}

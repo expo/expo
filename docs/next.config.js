@@ -3,7 +3,7 @@ const { copySync, removeSync } = require('fs-extra');
 const { join } = require('path');
 const semver = require('semver');
 
-const headings = require('./common/headings');
+const headings = require('./common/headingsMdPlugin');
 const { version } = require('./package.json');
 
 // copy versions/v(latest version) to versions/latest
