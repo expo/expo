@@ -207,15 +207,18 @@ export default class DocumentationNestedScrollLayout extends React.Component {
     sidebarScrollPosition: 0,
   };
 
+  sidebarRef = React.createRef();
+  contentRef = React.createRef();
+
   getSidebarScrollTop = () => {
-    if (this.refs.sidebar) {
-      return this.refs.sidebar.getScrollTop();
+    if (this.sidebarRef.current) {
+      return this.sidebarRef.current.getScrollTop();
     }
   };
 
   getContentScrollTop = () => {
-    if (this.refs.content) {
-      return this.refs.content.getScrollTop();
+    if (this.contentRef.current) {
+      return this.contentRef.current.getScrollTop();
     }
 
     return undefined;
@@ -239,7 +242,9 @@ export default class DocumentationNestedScrollLayout extends React.Component {
         </div>
         <div className={STYLES_CONTENT}>
           <div className={STYLES_LEFT}>
-            <ScrollContainer ref="sidebar" scrollPosition={this.props.sidebarScrollPosition}>
+            <ScrollContainer
+              ref={this.sidebarRef}
+              scrollPosition={this.props.sidebarScrollPosition}>
               {this.props.sidebar}
             </ScrollContainer>
           </div>
@@ -251,7 +256,7 @@ export default class DocumentationNestedScrollLayout extends React.Component {
           </div>
 
           <div className={STYLES_LEFT}>
-            <ScrollContainer ref="rightbar" scrollPosition={this.props.sidebarScrollPosition}>
+            <ScrollContainer scrollPosition={this.props.sidebarScrollPosition}>
               {this.props.sidebarRight}
             </ScrollContainer>
           </div>
