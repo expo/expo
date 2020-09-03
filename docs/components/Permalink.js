@@ -1,10 +1,8 @@
+import * as React from 'react';
 import { css } from 'react-emotion';
 
-import * as React from 'react';
-import * as Utilities from '~/common/utilities';
-
 import PermalinkIcon from '~/components/icons/Permalink';
-import withSlugger from '~/components/page-higher-order/withSlugger';
+import withHeadingManager from '~/components/page-higher-order/withHeadingManager';
 
 class Permalink extends React.Component {
   render() {
@@ -54,7 +52,7 @@ const STYLES_CONTAINER_TARGET = css`
   visibility: hidden;
 `;
 
-const PermalinkWithSlugger = withSlugger(props => {
+export default withHeadingManager(props => {
   // NOTE(jim): Not the greatest way to generate permalinks.
   // for now I've shortened the length of permalinks.
   const component = props.children;
@@ -63,12 +61,14 @@ const PermalinkWithSlugger = withSlugger(props => {
   let permalinkKey = props.id;
 
   if (!permalinkKey) {
-    permalinkKey = Utilities.generateSlug(props.slugger, children);
+    permalinkKey = props.headingManager.createSlugForTitle(children);
   }
+
+  const ref = props.headingManager.getRefForSlug(permalinkKey);
 
   return (
     <Permalink component={component} data-components-heading>
-      <div className={STYLES_CONTAINER}>
+      <div className={STYLES_CONTAINER} ref={ref}>
         <span id={permalinkKey} className={STYLES_CONTAINER_TARGET} />
         <a
           style={props.customIconStyle}
@@ -81,5 +81,3 @@ const PermalinkWithSlugger = withSlugger(props => {
     </Permalink>
   );
 });
-
-export default PermalinkWithSlugger;

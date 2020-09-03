@@ -181,8 +181,8 @@ class ScrollContainer extends React.Component {
   }
 
   componentDidMount() {
-    if (this.props.scrollPosition && this.refs.scroll) {
-      this.refs.scroll.scrollTop = this.props.scrollPosition;
+    if (this.props.scrollPosition && this.scrollRef.current) {
+      this.scrollRef.current.scrollTop = this.props.scrollPosition;
     }
   }
 
@@ -219,6 +219,10 @@ export default class DocumentationNestedScrollLayout extends React.Component {
     }
 
     return undefined;
+  };
+
+  _scrollHandler = () => {
+    this.props.onContentScroll && this.props.onContentScroll(this.getContentScrollTop());
   };
 
   render() {

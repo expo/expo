@@ -2,19 +2,30 @@ const visit = require('unist-util-visit');
 
 const EXPORT_CONST_META = 'export const meta = ';
 
+/**
+ * This MDX remark plugin extracts all `heading` node titles and levels from MDAST
+ * and injects it to `export` node exporting page metadata:
+ * It looks for `export const meta = {...}` and injects a `headings` property to that object
+ * 
+ * Usage (Webpack):
+```js
+use: [
+    babelMdxLoader,
+    {
+      loader: '@mdx-js/loader',
+      options: { mdPlugins: [headings] },
+    },
+    join(__dirname, './common/md-loader'),
+],
+```
+ * This plugin depends on `~/common/md-loader.js`
+ */
 module.exports = function() {
-  return (tree, file) => {
-    //console.log('tree', tree);
-    //console.log('file', file);
+  return tree => {
     const headings = [];
     visit(tree, 'heading', node => {
-      console.log(node.children[0].position);
       headings.push({ level: node.depth, title: node.children[0].value });
     });
-
-    /*headings.forEach(heading => {
-      console.log('|' + new Array(heading.level).join('-'), heading.title);
-    });*/
 
     visit(tree, 'export', node => {
       if (node.value.startsWith(EXPORT_CONST_META)) {

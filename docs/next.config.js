@@ -2,7 +2,7 @@ const { copySync, removeSync } = require('fs-extra');
 const { join, resolve } = require('path');
 const semver = require('semver');
 
-const headings = require('./common/headings');
+const headings = require('./common/headingsMdPlugin');
 const { version } = require('./package.json');
 
 // To generate a sitemap, we need context about the supported versions and navigational data
