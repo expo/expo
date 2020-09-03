@@ -37,7 +37,10 @@ export class HeadingManager {
   createSlugForTitle(title) {
     const slug = Utilities.generateSlug(this.slugger, title);
 
-    const entry = this.headings.find(heading => heading.title === title && heading.slug == null);
+    const realTitle = Utilities.toString(title);
+    const entry = this.headings.find(
+      heading => heading.title === realTitle && heading.slug == null
+    );
     if (entry != null) {
       entry.slug = slug;
     }
