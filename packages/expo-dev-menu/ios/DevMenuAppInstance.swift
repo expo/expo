@@ -4,13 +4,11 @@ class DevMenuAppInstance: NSObject, RCTBridgeDelegate {
   static private var CloseEventName = "closeDevMenu"
 
   private let manager: DevMenuManager
-  private let moduleRegistryAdapter: UMModuleRegistryAdapter
 
   var bridge: RCTBridge?
 
   init(manager: DevMenuManager) {
     self.manager = manager
-    self.moduleRegistryAdapter = UMModuleRegistryAdapter.init(moduleRegistryProvider: UMModuleRegistryProvider.init());
 
     super.init()
 
@@ -39,12 +37,7 @@ class DevMenuAppInstance: NSObject, RCTBridgeDelegate {
   }
 
   func extraModules(for bridge: RCTBridge!) -> [RCTBridgeModule]! {
-    let internalModule = DevMenuInternalModule(manager: manager)
-
-    var modules: [RCTBridgeModule] = [internalModule]
-    modules.append(contentsOf: moduleRegistryAdapter.extraModules(for: bridge))
-
-    return modules
+    return [DevMenuInternalModule(manager: manager)]
   }
 
   func bridge(_ bridge: RCTBridge!, didNotFindModule moduleName: String!) -> Bool {
