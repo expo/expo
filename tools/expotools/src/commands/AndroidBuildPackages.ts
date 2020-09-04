@@ -263,13 +263,6 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
     );
   }
 
-  // Copy JSC
-  await fs.remove(path.join(ANDROID_DIR, 'maven/org/webkit/'));
-  await fs.copy(
-    path.join(ANDROID_DIR, '../node_modules/jsc-android/dist/org/webkit'),
-    path.join(ANDROID_DIR, 'maven/org/webkit/')
-  );
-
   if (failedPackages.length) {
     console.log(' ❌  The following packages failed to build:');
     console.log(failedPackages);
