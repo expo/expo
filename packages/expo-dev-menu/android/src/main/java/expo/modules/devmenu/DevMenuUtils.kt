@@ -1,18 +1,9 @@
 package expo.modules.devmenu
 
-import android.app.Application
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
-import org.unimodules.core.interfaces.Package
 
 const val DEV_MENU_TAG = "ExpoDevMenu"
-
-internal fun Application.getExpoModules(): List<Package> {
-  val basePackageListClass = Class.forName("$packageName.generated.BasePackageList")
-  val getPackageList = basePackageListClass.getMethod("getPackageList")
-  @Suppress("UNCHECKED_CAST")
-  return getPackageList.invoke(basePackageListClass.newInstance()) as List<Package>
-}
 
 internal fun ReactNativeHost.getReactModules(): List<ReactPackage> {
   val packageListClass = Class.forName("com.facebook.react.PackageList")

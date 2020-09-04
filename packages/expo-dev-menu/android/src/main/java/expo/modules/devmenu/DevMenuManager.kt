@@ -20,8 +20,6 @@ import expo.interfaces.devmenu.items.DevMenuItem
 import expo.interfaces.devmenu.items.KeyCommand
 import expo.modules.devmenu.detectors.ShakeDetector
 import expo.modules.devmenu.modules.DevMenuSettings
-import org.unimodules.adapters.react.ModuleRegistryAdapter
-import org.unimodules.adapters.react.ReactModuleRegistryProvider
 import java.util.*
 
 object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
@@ -91,15 +89,8 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   fun maybeInitDevMenuHost(application: Application) {
     if (!this::devMenuHost.isInitialized) {
       devMenuHost = DevMenuHost(application)
-      val packages = devMenuHost
-        .getReactModules()
-        .toMutableList()
-        .apply {
-          val expoModules = application.getExpoModules()
-          add(ModuleRegistryAdapter(ReactModuleRegistryProvider(expoModules)))
-        }
+      val packages = devMenuHost.getReactModules()
       devMenuHost.setPackages(packages)
-
       UiThreadUtil.runOnUiThread {
         devMenuHost.reactInstanceManager.createReactContextInBackground()
       }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer, DarkTheme, DefaultTheme } from '@react-navigation/native';
-import { StyleSheet, View, useColorScheme, Platform } from 'react-native';
+import { StyleSheet, View, useColorScheme } from 'react-native';
 
 import { loadFontsAsync } from '../DevMenuInternal';
 import Colors from '../constants/Colors';
@@ -36,9 +36,7 @@ function DevMenuApp(props) {
 
   useEffect(() => {
     const f = async () => {
-      if (Platform.OS !== 'android') {
-        await loadFontsAsync();
-      }
+      await loadFontsAsync();
       didFontsLoad(true);
     };
 
