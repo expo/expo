@@ -285,7 +285,7 @@ async function action(options: ActionOptions) {
   ).filter((unimodule) => !UNBUILDABLE_PACKAGES_NAMES.includes(unimodule.name));
 
   // packages must stay in this order --
-  // expoview MUST be last
+  // ReactAndroid MUST be first and expoview MUST be last
   const packages: Package[] = [REACT_ANDROID_PKG, ...detachableUniversalModules, EXPOVIEW_PKG];
   let packagesToBuild: string[] = [];
 
@@ -362,7 +362,7 @@ async function action(options: ActionOptions) {
       packages.filter((pkg) => packagesToBuild.includes(pkg.name)),
       options.sdkVersion
     );
-    if (failedPackagesCount) {
+    if (failedPackagesCount > 0) {
       process.exitCode = 1;
     }
   } catch (e) {
