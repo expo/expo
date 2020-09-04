@@ -20,32 +20,100 @@ const STYLES_SECTION_CATEGORY = css`
   margin-bottom: 32px;
 `;
 
-function shouldSkipTitle(info, parentGroup) {
-  if (parentGroup && info.name === parentGroup.name) {
-    // If the title of the group is Expo SDK and the section within it has the same name
-    // then we shouldn't show the title twice. You might want to organize your group like
-    // so it is collapsable
-    return true;
-  } else if (
-    info.posts &&
-    ((info.posts[0] || {}).sidebarTitle || (info.posts[0] || {}).name) === info.name
-  ) {
-    // If the first child post in the group has the same name as the group, then hide the
-    // group title, lest we be very repetititve
-    return true;
+const STYLES_TITLE = css`
+  color: ${Constants.colors.expoLighter};
+  display: block;
+  position: relative;
+  margin-bottom: 16px;
+  line-height: 1.5rem;
+  text-decoration: none;
+  font-family: ${Constants.fontFamilies.demi};
+  user-select: none;
+`;
+
+const STYLES_SIDEBAR_INDENT = css`
+  display: block;
+  border-left-width: 1px;
+  border-left-color: #ccc;
+  border-left-style: dashed;
+  padding-left: 12px;
+`;
+
+const STYLES_LINK = css`
+  display: block;
+  margin-bottom: 5px;
+  line-height: 1.3rem;
+  text-decoration: none;
+`;
+
+const STYLES_LINK_NESTED = css`
+  display: block;
+  font-size: 15px;
+  margin-bottom: 2px;
+  line-height: 1.3rem;
+  text-decoration: none;
+`;
+
+const STYLES_LINK_ACTIVE = css`
+  font-family: ${Constants.fontFamilies.demi};
+  color: ${Constants.colors.expoLighter};
+
+  :visited {
+    color: ${Constants.colors.expo};
   }
 
-  return false;
-}
+  :hover {
+    color: ${Constants.colors.expo};
+  }
+`;
 
-function Item({ heading, activeSlug }) {
-  const itemStyle = heading.slug === activeSlug ? { color: 'red' } : undefined;
+const STYLES_LINK_DEFAULT = css`
+  font-family: ${Constants.fontFamilies.book};
+  color: ${Constants.colors.black80};
+  transition: 200ms ease color;
+
+  :visited {
+    color: ${Constants.colors.black60};
+  }
+
+  :hover {
+    color: ${Constants.colors.expo};
+  }
+`;
+
+const NESTING_OFFSET = 12;
+
+const removeDot = str => {
+  const dotIdx = str.indexOf('.');
+  if (dotIdx > 0) str = str.substring(dotIdx + 1);
+
+  const parIdx = str.indexOf('(');
+  if (parIdx > 0) str = str.substring(0, parIdx + 1) + ')';
+
+  return str;
+};
+
+function Item({ heading, activeSlug, shortForm }) {
+  const { slug, level, title, type } = heading;
+  const isActive = slug === activeSlug;
+
+  const isCode = type === 'inlineCode';
+  const displayTitle = shortForm && isCode ? removeDot(title) : title;
+  const paddingLeft = NESTING_OFFSET * (level - 2) + 'px';
+  const linkBaseStyle = level < 3 ? STYLES_LINK : STYLES_LINK_NESTED;
+  const linkFont = isCode ? Constants.fontFamilies.mono : undefined;
+  const fontSize = isCode ? 14 : undefined;
+  const textDecoration = isCode && isActive ? 'underline' : undefined;
+
   return (
-    <li style={itemStyle}>
-      <a href={'#' + heading.slug} style={itemStyle}>
-        {new Array(heading.level).join('-') + ' ' + heading.title}
+    <div>
+      <a
+        style={{ paddingLeft, fontFamily: linkFont, fontSize, textDecoration }}
+        href={'#' + slug}
+        className={`${linkBaseStyle} ${isActive ? STYLES_LINK_ACTIVE : STYLES_LINK_DEFAULT}`}>
+        {displayTitle}
       </a>
-    </li>
+    </div>
   );
 }
 
@@ -129,19 +197,22 @@ class DocumentationSidebarRight extends React.Component {
       'data-sidebar': true,
     };
 
-    console.log('render sidebar');
-
     const { headings } = this.props.headingManager;
 
     return (
       <nav className={STYLES_SIDEBAR} {...customDataAttributes}>
-        <h3>{this.props.title}</h3>
+        <span className={STYLES_TITLE}>{this.props.title}</span>
 
-        <ul>
+        <div className={STYLES_SIDEBAR_INDENT}>
           {headings.map(heading => (
-            <Item key={heading.slug} heading={heading} activeSlug={this.state.activeSlug} />
+            <Item
+              key={heading.slug}
+              heading={heading}
+              activeSlug={this.state.activeSlug}
+              shortForm
+            />
           ))}
-        </ul>
+        </div>
       </nav>
     );
   }
