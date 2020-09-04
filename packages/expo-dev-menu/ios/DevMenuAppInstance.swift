@@ -53,22 +53,13 @@ class DevMenuAppInstance: NSObject, RCTBridgeDelegate {
 
   // MARK: private
 
-  private func resourcesBundle() -> Bundle? {
-    let frameworkBundle = Bundle(for: DevMenuAppInstance.self)
-
-    guard let resourcesBundleUrl = frameworkBundle.url(forResource: "EXDevMenu", withExtension: "bundle") else {
-      return nil
-    }
-    return Bundle(url: resourcesBundleUrl)
-  }
-
   private func jsSourceUrl() -> URL? {
-    return resourcesBundle()?.url(forResource: "EXDevMenuApp.ios", withExtension: "js")
+    return DevMenuUtils.resourcesBundle()?.url(forResource: "EXDevMenuApp.ios", withExtension: "js")
   }
 
   private func jsPackagerHost() -> String? {
     // Return `nil` if resource doesn't exist in the bundle.
-    guard let packagerHostPath = resourcesBundle()?.path(forResource: "dev-menu-packager-host", ofType: nil) else {
+    guard let packagerHostPath = DevMenuUtils.resourcesBundle()?.path(forResource: "dev-menu-packager-host", ofType: nil) else {
       return nil
     }
     // Return `nil` if the content is not a valid URL.

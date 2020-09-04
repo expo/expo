@@ -1,8 +1,8 @@
-import React from 'react';
-import { useFonts } from 'expo-font';
-import { StyleSheet, View, useColorScheme, Platform } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import { NavigationContainer, DarkTheme, DefaultTheme } from '@react-navigation/native';
+import { StyleSheet, View, useColorScheme, Platform } from 'react-native';
 
+import { loadFontsAsync } from '../DevMenuInternal';
 import Colors from '../constants/Colors';
 import DevMenuContainer from './DevMenuContainer';
 
@@ -32,18 +32,23 @@ const CustomDarkTheme = {
 
 function DevMenuApp(props) {
   const colorScheme = useColorScheme();
+  const [fontsWereLoaded, didFontsLoad] = useState(false);
 
-  // @tsapeta: For production bundles probably the best way to use custom fonts is to just download them from web.
-  // But maybe we should have it as an asset?
-  if (Platform.OS !== 'android') {
-    const [fontsLoaded] = useFonts({
-      'material-community':
-        'https://github.com/Templarian/MaterialDesign-Font/raw/master/MaterialDesignIconsDesktop.ttf',
-    });
-    if (!fontsLoaded) {
-      return null;
-    }
+  useEffect(() => {
+    const f = async () => {
+      if (Platform.OS !== 'android') {
+        await loadFontsAsync();
+      }
+      didFontsLoad(true);
+    };
+
+    f();
+  }, []);
+
+  if (!fontsWereLoaded) {
+    return <></>;
   }
+
   return (
     <View style={styles.rootView}>
       <NavigationContainer theme={colorScheme === 'dark' ? CustomDarkTheme : CustomLightTheme}>

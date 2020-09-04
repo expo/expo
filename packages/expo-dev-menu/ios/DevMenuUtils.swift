@@ -19,4 +19,13 @@ class DevMenuUtils {
   static func stripRCT(_ str: String) -> String {
     return str.starts(with: "RCT") ? String(str.dropFirst(3)) : str
   }
+  
+  static func resourcesBundle() -> Bundle? {
+    let frameworkBundle = Bundle(for: DevMenuUtils.self)
+
+    guard let resourcesBundleUrl = frameworkBundle.url(forResource: "EXDevMenu", withExtension: "bundle") else {
+      return nil
+    }
+    return Bundle(url: resourcesBundleUrl)
+  }
 }

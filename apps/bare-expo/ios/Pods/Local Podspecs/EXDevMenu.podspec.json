@@ -19,7 +19,8 @@
   "resource_bundles": {
     "EXDevMenu": [
       "assets/*.ios.js",
-      "assets/dev-menu-packager-host"
+      "assets/dev-menu-packager-host",
+      "assets/*.ttf"
     ]
   },
   "pod_target_xcconfig": {

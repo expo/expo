@@ -19,7 +19,8 @@ Pod::Spec.new do |s|
 
   s.resource_bundles = { 'EXDevMenu' => [
     'assets/*.ios.js',
-    'assets/dev-menu-packager-host'
+    'assets/dev-menu-packager-host',
+    'assets/*.ttf'
   ]}
 
   # Swift/Objective-C compatibility
