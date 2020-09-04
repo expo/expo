@@ -324,7 +324,7 @@ def reactProperties = new Properties()
 def reactNative = new File("$projectDir/../../versioned-react-native")
 
 // WHEN_VERSIONING_REMOVE_FROM_HERE
-reactNative = new File("$projectDir/../../react-native-lab/react-native")
+reactNative = new File("$projectDir/..")
 // WHEN_VERSIONING_REMOVE_TO_HERE
 
 file("$reactNative/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
