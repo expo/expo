@@ -1,7 +1,7 @@
+import spawnAsync from '@expo/spawn-async';
+import { Versions, Config } from '@expo/xdl';
 import path from 'path';
 import uuid from 'uuid';
-import { Versions, Config } from '@expo/xdl';
-import JsonFile from '@expo/json-file';
 
 import * as S3 from './S3';
 
@@ -135,3 +135,4 @@ export async function updateExpoKitAndroidAsync(
   }
   versions.sdkVersions[sdkVersion].androidExpoViewUrl = `https://s3.amazonaws.com/${BUCKET}/${key}`;
   await Versions.setVersionsAsync(versions);
+}
