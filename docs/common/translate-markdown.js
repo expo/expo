@@ -8,12 +8,17 @@ import { ExternalLink } from '~/components/base/link';
 import { UL, OL, LI } from '~/components/base/list';
 import { PDIV, P, Quote } from '~/components/base/paragraph';
 
-const createPermalinkedComponent = (BaseComponent, customIconStyle) => {
-  return ({ children }) => (
-    <Permalink customIconStyle={customIconStyle}>
-      <BaseComponent>{children}</BaseComponent>
-    </Permalink>
-  );
+const createPermalinkedComponent = (BaseComponent, options) => {
+  const { customIconStyle, baseNestingLevel } = options || {};
+  return ({ children, level }) => {
+    const nestingLevel =
+      level != null && baseNestingLevel != null ? level + baseNestingLevel : undefined;
+    return (
+      <Permalink nestingLevel={nestingLevel} customIconStyle={customIconStyle}>
+        <BaseComponent>{children}</BaseComponent>
+      </Permalink>
+    );
+  };
 };
 
 export const p = PDIV;
@@ -30,5 +35,8 @@ export const a = ExternalLink;
 export const blockquote = Quote;
 export const expokitDetails = ExpoKitDetails;
 export const bareworkflowDetails = BareWorkflowDetails;
-export const subpropertyAnchor = createPermalinkedComponent(PDIV, { left: -44, top: -8 });
-export const propertyAnchor = createPermalinkedComponent(PDIV, { top: -8 });
+export const propertyAnchor = createPermalinkedComponent(H4, { baseNestingLevel: 3, customIconStyle: { top: -8 } });
+export const subpropertyAnchor = createPermalinkedComponent(PDIV, {
+  customIconStyle: { left: -44, top: -8 },
+  baseNestingLevel: 3,
+});

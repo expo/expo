@@ -61,7 +61,11 @@ export default withHeadingManager(props => {
   let permalinkKey = props.id;
 
   if (!permalinkKey) {
-    permalinkKey = props.headingManager.createSlugForTitle(children);
+    if (props.nestingLevel) {
+      permalinkKey = props.headingManager.forceCreateSlugAndTitle(children, props.nestingLevel);
+    } else {
+      permalinkKey = props.headingManager.createSlugForTitle(children);
+    }
   }
 
   const ref = props.headingManager.getRefForSlug(permalinkKey);

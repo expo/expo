@@ -18,14 +18,15 @@ use: [
     join(__dirname, './common/md-loader'),
 ],
 ```
- * This plugin depends on `~/common/md-loader.js`
+ * This plugin depends on `~/common/md-loader.js`, which adds `export const meta = ...` statement.
  */
 module.exports = function() {
   return tree => {
     const headings = [];
     visit(tree, 'heading', node => {
       if (node.children.length > 0) {
-        headings.push({ level: node.depth, title: node.children[0].value });
+        const child = node.children[0];
+        headings.push({ level: node.depth, title: child.value, type: child.type });
       }
     });
 
