@@ -77,6 +77,29 @@ allprojects {
     // Want this last so that we never end up with a stale cache
     mavenLocal()
   }
+
+  configurations.all {
+    // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
+    resolutionStrategy.dependencySubstitution {
+      substitute module("com.facebook.react:react-native:+") with project(":ReactAndroid")
+
+      // Gradle needs another hint (apart from plain dependency substitution)
+      // to know that it should first evaluate the replacing project before resolving
+      // classpaths etc. Without this block an error is thrown when running tests
+      // in a project that depends on react-native (eg. expo-updates):
+      //   > No matching configuration of project :ReactAndroid was found.
+      //   > The consumer was configured to find a runtime of a component,
+      //   > as well as attribute 'com.android.build.api.attributes.BuildTypeAttr'
+      //   > with value 'debug' but:
+      //   >   - None of the consumable configurations have attributes.
+      all {
+        if (requested.displayName == "com.facebook.react:react-native:+") {
+          evaluationDependsOn(":ReactAndroid")
+        }
+      }
+    }
+    // WHEN_DISTRIBUTING_REMOVE_TO_HERE
+  }
 }
 
 task clean(type: Delete) {
