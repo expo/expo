@@ -149,6 +149,7 @@ async function _uncommentWhenDistributing(filenames: string[]): Promise<void> {
 
 async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Promise<void> {
   let appBuildGradle = path.join(ANDROID_DIR, 'app', 'build.gradle');
+  let rootBuildGradle = path.join(ANDROID_DIR, 'build.gradle');
   let expoViewBuildGradle = path.join(ANDROID_DIR, 'expoview', 'build.gradle');
   const settingsGradle = path.join(ANDROID_DIR, 'settings.gradle');
   const constantsJava = path.join(
@@ -180,6 +181,7 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
 
   await _stashFilesAsync([
     appBuildGradle,
+    rootBuildGradle,
     expoViewBuildGradle,
     multipleVersionReactNativeActivity,
     constantsJava,
@@ -197,6 +199,7 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
   await _uncommentWhenDistributing([appBuildGradle, expoViewBuildGradle]);
   await _commentWhenDistributing([
     constantsJava,
+    rootBuildGradle,
     expoViewBuildGradle,
     multipleVersionReactNativeActivity,
   ]);
