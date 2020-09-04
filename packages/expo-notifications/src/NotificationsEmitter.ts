@@ -12,20 +12,20 @@ const didReceiveNotificationResponseEventName = 'onDidReceiveNotificationRespons
 
 export const DEFAULT_ACTION_IDENTIFIER = 'expo.modules.notifications.actions.DEFAULT';
 
-export function addNotificationReceivedListener(
-  listener: (event: Notification) => void
+export function addNotificationReceivedListener<T>(
+  listener: (event: Notification<T>) => void
 ): Subscription {
-  return emitter.addListener<Notification>(didReceiveNotificationEventName, listener);
+  return emitter.addListener<Notification<T>>(didReceiveNotificationEventName, listener);
 }
 
 export function addNotificationsDroppedListener(listener: () => void): Subscription {
   return emitter.addListener<void>(didDropNotificationsEventName, listener);
 }
 
-export function addNotificationResponseReceivedListener(
-  listener: (event: NotificationResponse) => void
+export function addNotificationResponseReceivedListener<T>(
+  listener: (event: NotificationResponse<T>) => void
 ): Subscription {
-  return emitter.addListener<NotificationResponse>(
+  return emitter.addListener<NotificationResponse<T>>(
     didReceiveNotificationResponseEventName,
     listener
   );

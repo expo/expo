@@ -156,12 +156,19 @@ export declare enum AndroidNotificationPriority {
     HIGH = "high",
     MAX = "max"
 }
-export declare type NotificationContent = {
+export declare type NotificationContent<T = {
+    [key: string]: unknown;
+}> = {
     title: string | null;
     subtitle: string | null;
     body: string | null;
-    data: {
-        [key: string]: unknown;
+    data: (T & {
+        aps: undefined;
+    }) | {
+        aps: {
+            [key: string]: unknown;
+        };
+        body: T;
     };
     sound: 'default' | 'defaultCritical' | 'custom' | null;
 } & ({
@@ -186,9 +193,9 @@ export declare type NotificationContent = {
     priority?: AndroidNotificationPriority;
     vibrationPattern?: number[];
 });
-export interface NotificationRequest {
+export interface NotificationRequest<T = unknown> {
     identifier: string;
-    content: NotificationContent;
+    content: NotificationContent<T>;
     trigger: NotificationTrigger;
 }
 export interface NotificationContentInput {
@@ -230,12 +237,12 @@ export interface NotificationRequestInput {
     content: NotificationContentInput;
     trigger: NotificationTriggerInput;
 }
-export interface Notification {
+export interface Notification<T = unknown> {
     date: number;
-    request: NotificationRequest;
+    request: NotificationRequest<T>;
 }
-export interface NotificationResponse {
-    notification: Notification;
+export interface NotificationResponse<T = unknown> {
+    notification: Notification<T>;
     actionIdentifier: string;
     userText?: string;
 }
