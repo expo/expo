@@ -295,6 +295,8 @@ CACHE_KEYS:
       - "../../../../packages/expo-dev-menu/ios/DevMenuAppInstance.swift"
       - "../../../../packages/expo-dev-menu/ios/DevMenuGestureRecognizer.swift"
       - "../../../../packages/expo-dev-menu/ios/DevMenuManager.swift"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuRootView.h"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuRootView.m"
       - "../../../../packages/expo-dev-menu/ios/DevMenuSession.swift"
       - "../../../../packages/expo-dev-menu/ios/DevMenuSettings.swift"
       - "../../../../packages/expo-dev-menu/ios/DevMenuUtils.swift"
