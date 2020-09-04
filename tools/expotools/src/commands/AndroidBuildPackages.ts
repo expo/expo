@@ -20,7 +20,12 @@ type Package = {
   buildDirRelative: string;
 };
 
-const UNBUILDABLE_PACKAGES_NAMES = ['expo-module-template'];
+const UNBUILDABLE_PACKAGES_NAMES = [
+  'expo-module-template',
+  'expo-dev-menu',
+  'expo-dev-menu-interface',
+];
+
 const EXPO_ROOT_DIR = Directories.getExpoRepositoryRootDir();
 const ANDROID_DIR = Directories.getAndroidDir();
 
