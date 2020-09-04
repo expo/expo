@@ -7,33 +7,35 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		14DE34B93B7E7829265737DA2AED43E0 /* DevMenuAppInstance.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1BE26B1251E2406AD288FD204E7DBAA /* DevMenuAppInstance.swift */; };
-		20330D0EEC252001C5D92C5796F132B8 /* DevMenuMotionInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD298E28901C234DBA378E7F09E7261B /* DevMenuMotionInterceptor.swift */; };
-		213FA837D5125F633755FC73D8CF4133 /* DevMenuTouchInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10351B8DF3CADC5990E0AE054F4E5BA5 /* DevMenuTouchInterceptor.swift */; };
-		29DDA0A84AC33C48C97FF6E9CC449EDA /* dev-menu-packager-host in Resources */ = {isa = PBXBuildFile; fileRef = F2A95174EE3D4FF55262D6294B13F9A4 /* dev-menu-packager-host */; };
-		2BFEB205E73E48CDDC6A04F88018ECCC /* DevMenuWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B285DB829B291C682184E7EEF1447C23 /* DevMenuWindow.swift */; };
-		2D0EE9FC97389EA7363DA1A052DC693A /* DevMenuUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0C271A84A26A072590F28C63FC0BA23 /* DevMenuUtils.swift */; };
-		3B43D46902F3719BFDE00B6909873C23 /* EXDevMenu.h in Headers */ = {isa = PBXBuildFile; fileRef = 9964F6123E9BE8F033DDE590042184C2 /* EXDevMenu.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		413180FC03559F548011B98F8320E2F9 /* DevMenuExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CCF66A786876D3A4FFF95F0E7393A4F /* DevMenuExtensions.swift */; };
-		437C2C59B3BB1A62F0678538ADD2503C /* DevMenuGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E01DCADB7CB002A811150053A536D99 /* DevMenuGestureRecognizer.swift */; };
-		4432DEFC4D7EC089C72294736C23BE26 /* EXDevMenu-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 04B9BB725E8ED12C5B110360FDD36EAA /* EXDevMenu-umbrella.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		470171C24956531E69C52EE096FCF757 /* EXDevMenu-Bridging-Header.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CFE88E99E0AF895240DC96352F6EF2 /* EXDevMenu-Bridging-Header.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		5BEBE6919162B8ECDCE69697749BF3C1 /* DevMenuSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7C1D90E8D5E9CE63D494AA396C1099A /* DevMenuSettings.swift */; };
-		65936FFB7E1D8E91670464E82E6BFE3D /* DevMenuModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 64D9AFE9B3BE3DECE83D3C555A083F31 /* DevMenuModule.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		6B16495EDF11AD1C3C8AC1A79477A21E /* DevMenuModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44D3C059A2D6FCDE7A94227E5CEABEF /* DevMenuModule.swift */; };
-		77352B9DC1856E87DE484E33014BE1C5 /* EXDevMenuApp.ios.js in Resources */ = {isa = PBXBuildFile; fileRef = 0E383E5A2ABD073F77D23084CF195FB8 /* EXDevMenuApp.ios.js */; };
-		7CCEA31D4F8BFD6554821CCAC9CBFC3D /* RCTRootView+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 11BE8DB8E241033641AC88790022BFD6 /* RCTRootView+Private.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		8DDD788BD28BAB9EDCAA8D4F3B7291FF /* DevMenuRootView.h in Headers */ = {isa = PBXBuildFile; fileRef = 44CB25BD95199C433540B6F9EC028E85 /* DevMenuRootView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		B3F04AD2A992ECD50874401F8D93BB4A /* DevMenuExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F8F0C28532F7ACCE60179C662404CA9 /* DevMenuExtensions.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		C6522A3E189F380917E5CE0E17945A89 /* DevMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28CBACB902CD92154023030936ED4C9D /* DevMenuViewController.swift */; };
-		E100AF74B48626A80DB46D4030838F11 /* DevMenuKeyCommandsInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C7C325CA54826A59849B356A3D71FF4 /* DevMenuKeyCommandsInterceptor.swift */; };
-		E745E180214EC49FFF3200CA9BF3F53D /* EXDevMenu-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = C2F377188E66FFA9C44BC47AACBC9AE5 /* EXDevMenu-dummy.m */; };
-		E9F0F817DA7D9531086119A341ECD308 /* DevMenuInternalModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 5A2DA56995452BC1A018CB198BE4DEC7 /* DevMenuInternalModule.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		EBF019C2FE0F5EEA719DDF3E2D14256E /* DevMenuRootView.m in Sources */ = {isa = PBXBuildFile; fileRef = A10FD9B366CCBF96B348DD23026865FB /* DevMenuRootView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		F133510917537FD5243D6E81E28B643E /* RCTPerfMonitor+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 847A8180D9B3D2E18343DF6F54E360E0 /* RCTPerfMonitor+Private.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		F49E3CAE0C0A8D893950689D21DE67D7 /* DevMenuInternalModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A6EDA04DD3B179D429BA70C9B5FB93 /* DevMenuInternalModule.swift */; };
-		F58E73158E5C56A39A3B521A1B858A73 /* DevMenuSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2E0602628F98ED6BAC303D82AF5B10D /* DevMenuSession.swift */; };
-		F674216C73F3AC580BBBD39C23F6AC2E /* DevMenuManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 896A60C56F644E63416F1B27F1D0D040 /* DevMenuManager.swift */; };
+		14DE34B93B7E7829265737DA2AED43E0 /* DevMenuAppInstance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54A5C234445B1A44A251E35C19161C76 /* DevMenuAppInstance.swift */; };
+		20330D0EEC252001C5D92C5796F132B8 /* DevMenuMotionInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1F60AE300E300DB5E01228679CE49A /* DevMenuMotionInterceptor.swift */; };
+		213FA837D5125F633755FC73D8CF4133 /* DevMenuTouchInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42867D5EFF64D1AB5F53CB5FF7E6719D /* DevMenuTouchInterceptor.swift */; };
+		2BFEB205E73E48CDDC6A04F88018ECCC /* DevMenuWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8767AFEC7A29A970CD82B627E43AFFA4 /* DevMenuWindow.swift */; };
+		2D0EE9FC97389EA7363DA1A052DC693A /* DevMenuUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D770F781F41916D4BFD7C9FA0010BFF2 /* DevMenuUtils.swift */; };
+		3B43D46902F3719BFDE00B6909873C23 /* EXDevMenu.h in Headers */ = {isa = PBXBuildFile; fileRef = E0C318D1F70E095DEC0269ECE016E313 /* EXDevMenu.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		413180FC03559F548011B98F8320E2F9 /* DevMenuExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662CE90572F922B0DFA4D172FCB6929A /* DevMenuExtensions.swift */; };
+		437C2C59B3BB1A62F0678538ADD2503C /* DevMenuGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F43FEBC95BB522EB635AA1BE4E5392B /* DevMenuGestureRecognizer.swift */; };
+		4432DEFC4D7EC089C72294736C23BE26 /* EXDevMenu-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = F22C89A12BB53B6295074E79F6499922 /* EXDevMenu-umbrella.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		470171C24956531E69C52EE096FCF757 /* EXDevMenu-Bridging-Header.h in Headers */ = {isa = PBXBuildFile; fileRef = 07184A2C10F34ACA445A2B256BFDE1A6 /* EXDevMenu-Bridging-Header.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		5BEBE6919162B8ECDCE69697749BF3C1 /* DevMenuSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6463592E95F212E54E7A8BD1B10769 /* DevMenuSettings.swift */; };
+		65936FFB7E1D8E91670464E82E6BFE3D /* DevMenuModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 483006FEDCDFFACC0622D0C5566E0E2C /* DevMenuModule.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		6B16495EDF11AD1C3C8AC1A79477A21E /* DevMenuModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 648DCCE4C3AFD5DC383C532C482B3840 /* DevMenuModule.swift */; };
+		79A9081D246FD165243959157EB228E2 /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 41DA1796503916B46A15CD4B2763FB92 /* Ionicons.ttf */; };
+		7CCEA31D4F8BFD6554821CCAC9CBFC3D /* RCTRootView+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = F22564EFE211B083F760CFB7AB75EEE1 /* RCTRootView+Private.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8DDD788BD28BAB9EDCAA8D4F3B7291FF /* DevMenuRootView.h in Headers */ = {isa = PBXBuildFile; fileRef = 83AB52DA0BDDE39F3AD4DBA57412EC59 /* DevMenuRootView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A133882D399BB3A86B66E6E77CB63369 /* dev-menu-packager-host in Resources */ = {isa = PBXBuildFile; fileRef = BAC2D7379AE0C05953B0B499DF7EB741 /* dev-menu-packager-host */; };
+		AAC3955BEA3DC8BE38CC35F7CA4F72F1 /* MaterialCommunityIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DED8766D9AD68DF64A6F40E7E61B308F /* MaterialCommunityIcons.ttf */; };
+		B3F04AD2A992ECD50874401F8D93BB4A /* DevMenuExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C2C7EBCC83000036A8CD355C297735A /* DevMenuExtensions.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		C6522A3E189F380917E5CE0E17945A89 /* DevMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 318AE1243D3F9F9EFB5D52FC842ABA63 /* DevMenuViewController.swift */; };
+		D96F12A054FBC46E1772B541859B956E /* EXDevMenuApp.ios.js in Resources */ = {isa = PBXBuildFile; fileRef = 581A21D0B3D11D508A4ABC755CE1EBBC /* EXDevMenuApp.ios.js */; };
+		E100AF74B48626A80DB46D4030838F11 /* DevMenuKeyCommandsInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 763036258B4E128D1C5275F052B2DDF2 /* DevMenuKeyCommandsInterceptor.swift */; };
+		E745E180214EC49FFF3200CA9BF3F53D /* EXDevMenu-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = D9E3C52EAA609FE2EBC9B13C31F90620 /* EXDevMenu-dummy.m */; };
+		E9F0F817DA7D9531086119A341ECD308 /* DevMenuInternalModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A1B5DCE0C065EFD7CC26D575146933 /* DevMenuInternalModule.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		EBF019C2FE0F5EEA719DDF3E2D14256E /* DevMenuRootView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C34D217584CA8FF7BF2475A5BCA4BDC /* DevMenuRootView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		F133510917537FD5243D6E81E28B643E /* RCTPerfMonitor+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 0FC17DB2BDB08FF2065034BD05B41975 /* RCTPerfMonitor+Private.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		F49E3CAE0C0A8D893950689D21DE67D7 /* DevMenuInternalModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945F5667F7AE12C3A854C9870A8CE374 /* DevMenuInternalModule.swift */; };
+		F58E73158E5C56A39A3B521A1B858A73 /* DevMenuSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9343EEA46D09710CA87A6F8957A4923A /* DevMenuSession.swift */; };
+		F674216C73F3AC580BBBD39C23F6AC2E /* DevMenuManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B344B7A978D13FD92A0F3CD6A31A6B04 /* DevMenuManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -61,44 +63,46 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		04B9BB725E8ED12C5B110360FDD36EAA /* EXDevMenu-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXDevMenu-umbrella.h"; sourceTree = "<group>"; };
-		057E5229A978105BE04C55E57696F773 /* EXDevMenu.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXDevMenu.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		0CCF66A786876D3A4FFF95F0E7393A4F /* DevMenuExtensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DevMenuExtensions.swift; sourceTree = "<group>"; };
+		07184A2C10F34ACA445A2B256BFDE1A6 /* EXDevMenu-Bridging-Header.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXDevMenu-Bridging-Header.h"; sourceTree = "<group>"; };
+		0AA378B4A955B992DA9A86702D99C9EC /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
 		0DF96A553BF1EB4EED152579BB0AA8FE /* libEXDevMenu.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXDevMenu.a; path = libEXDevMenu.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		0E383E5A2ABD073F77D23084CF195FB8 /* EXDevMenuApp.ios.js */ = {isa = PBXFileReference; includeInIndex = 1; name = EXDevMenuApp.ios.js; path = assets/EXDevMenuApp.ios.js; sourceTree = "<group>"; };
-		10351B8DF3CADC5990E0AE054F4E5BA5 /* DevMenuTouchInterceptor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DevMenuTouchInterceptor.swift; sourceTree = "<group>"; };
-		11BE8DB8E241033641AC88790022BFD6 /* RCTRootView+Private.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "RCTRootView+Private.h"; sourceTree = "<group>"; };
-		1B9B0654EF11DE72E1872F6E9268CF14 /* EXDevMenu.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXDevMenu.release.xcconfig; sourceTree = "<group>"; };
-		1C7C325CA54826A59849B356A3D71FF4 /* DevMenuKeyCommandsInterceptor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DevMenuKeyCommandsInterceptor.swift; sourceTree = "<group>"; };
-		1C9BDC5822261069249913BB87A28C79 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		0FC17DB2BDB08FF2065034BD05B41975 /* RCTPerfMonitor+Private.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "RCTPerfMonitor+Private.h"; sourceTree = "<group>"; };
+		1D6463592E95F212E54E7A8BD1B10769 /* DevMenuSettings.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DevMenuSettings.swift; path = ios/DevMenuSettings.swift; sourceTree = "<group>"; };
 		1E2CD0D4CDF5B230204076A8882319DE /* EXDevMenuInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXDevMenuInterface; path = EXDevMenuInterface.xcodeproj; sourceTree = "<group>"; };
-		1F8F0C28532F7ACCE60179C662404CA9 /* DevMenuExtensions.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = DevMenuExtensions.m; sourceTree = "<group>"; };
-		28CBACB902CD92154023030936ED4C9D /* DevMenuViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DevMenuViewController.swift; path = ios/DevMenuViewController.swift; sourceTree = "<group>"; };
-		44CB25BD95199C433540B6F9EC028E85 /* DevMenuRootView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DevMenuRootView.h; path = ios/DevMenuRootView.h; sourceTree = "<group>"; };
-		5A2DA56995452BC1A018CB198BE4DEC7 /* DevMenuInternalModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = DevMenuInternalModule.m; sourceTree = "<group>"; };
-		64D9AFE9B3BE3DECE83D3C555A083F31 /* DevMenuModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = DevMenuModule.m; sourceTree = "<group>"; };
-		6E01DCADB7CB002A811150053A536D99 /* DevMenuGestureRecognizer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DevMenuGestureRecognizer.swift; path = ios/DevMenuGestureRecognizer.swift; sourceTree = "<group>"; };
-		711939C3B2F5B686DB30D56BB24C6B54 /* EXDevMenu-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXDevMenu-prefix.pch"; sourceTree = "<group>"; };
+		1F43FEBC95BB522EB635AA1BE4E5392B /* DevMenuGestureRecognizer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DevMenuGestureRecognizer.swift; path = ios/DevMenuGestureRecognizer.swift; sourceTree = "<group>"; };
+		23DED8DDBC8B6C2FE788322DE57DB5CA /* EXDevMenu.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXDevMenu.debug.xcconfig; sourceTree = "<group>"; };
+		2C1F60AE300E300DB5E01228679CE49A /* DevMenuMotionInterceptor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DevMenuMotionInterceptor.swift; sourceTree = "<group>"; };
+		2C34D217584CA8FF7BF2475A5BCA4BDC /* DevMenuRootView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = DevMenuRootView.m; path = ios/DevMenuRootView.m; sourceTree = "<group>"; };
+		318AE1243D3F9F9EFB5D52FC842ABA63 /* DevMenuViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DevMenuViewController.swift; path = ios/DevMenuViewController.swift; sourceTree = "<group>"; };
+		41DA1796503916B46A15CD4B2763FB92 /* Ionicons.ttf */ = {isa = PBXFileReference; includeInIndex = 1; name = Ionicons.ttf; path = assets/Ionicons.ttf; sourceTree = "<group>"; };
+		42867D5EFF64D1AB5F53CB5FF7E6719D /* DevMenuTouchInterceptor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DevMenuTouchInterceptor.swift; sourceTree = "<group>"; };
+		483006FEDCDFFACC0622D0C5566E0E2C /* DevMenuModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = DevMenuModule.m; sourceTree = "<group>"; };
+		54A5C234445B1A44A251E35C19161C76 /* DevMenuAppInstance.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DevMenuAppInstance.swift; path = ios/DevMenuAppInstance.swift; sourceTree = "<group>"; };
+		581A21D0B3D11D508A4ABC755CE1EBBC /* EXDevMenuApp.ios.js */ = {isa = PBXFileReference; includeInIndex = 1; name = EXDevMenuApp.ios.js; path = assets/EXDevMenuApp.ios.js; sourceTree = "<group>"; };
+		60A1B5DCE0C065EFD7CC26D575146933 /* DevMenuInternalModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = DevMenuInternalModule.m; sourceTree = "<group>"; };
+		61C153056FB26CB7A901C95E1987EFFC /* ResourceBundle-EXDevMenu-EXDevMenu-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "ResourceBundle-EXDevMenu-EXDevMenu-Info.plist"; sourceTree = "<group>"; };
+		648DCCE4C3AFD5DC383C532C482B3840 /* DevMenuModule.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DevMenuModule.swift; sourceTree = "<group>"; };
+		662CE90572F922B0DFA4D172FCB6929A /* DevMenuExtensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DevMenuExtensions.swift; sourceTree = "<group>"; };
+		763036258B4E128D1C5275F052B2DDF2 /* DevMenuKeyCommandsInterceptor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DevMenuKeyCommandsInterceptor.swift; sourceTree = "<group>"; };
 		7B642D829596D1145EA3FA1E6D7B3DBB /* EXDevMenu.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = EXDevMenu.bundle; path = "EXDevMenu-EXDevMenu.bundle"; sourceTree = BUILT_PRODUCTS_DIR; };
-		847A8180D9B3D2E18343DF6F54E360E0 /* RCTPerfMonitor+Private.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "RCTPerfMonitor+Private.h"; sourceTree = "<group>"; };
-		896A60C56F644E63416F1B27F1D0D040 /* DevMenuManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DevMenuManager.swift; path = ios/DevMenuManager.swift; sourceTree = "<group>"; };
-		8D6A34FD6891BA0E8B31EE4A7EAB7BCA /* EXDevMenu.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXDevMenu.debug.xcconfig; sourceTree = "<group>"; };
-		9964F6123E9BE8F033DDE590042184C2 /* EXDevMenu.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXDevMenu.h; sourceTree = "<group>"; };
-		A10FD9B366CCBF96B348DD23026865FB /* DevMenuRootView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = DevMenuRootView.m; path = ios/DevMenuRootView.m; sourceTree = "<group>"; };
-		A1A6EDA04DD3B179D429BA70C9B5FB93 /* DevMenuInternalModule.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DevMenuInternalModule.swift; sourceTree = "<group>"; };
-		A2E0602628F98ED6BAC303D82AF5B10D /* DevMenuSession.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DevMenuSession.swift; path = ios/DevMenuSession.swift; sourceTree = "<group>"; };
-		B285DB829B291C682184E7EEF1447C23 /* DevMenuWindow.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DevMenuWindow.swift; path = ios/DevMenuWindow.swift; sourceTree = "<group>"; };
-		B44D3C059A2D6FCDE7A94227E5CEABEF /* DevMenuModule.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DevMenuModule.swift; sourceTree = "<group>"; };
-		B7C1D90E8D5E9CE63D494AA396C1099A /* DevMenuSettings.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DevMenuSettings.swift; path = ios/DevMenuSettings.swift; sourceTree = "<group>"; };
-		C2F377188E66FFA9C44BC47AACBC9AE5 /* EXDevMenu-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXDevMenu-dummy.m"; sourceTree = "<group>"; };
-		C7CFE88E99E0AF895240DC96352F6EF2 /* EXDevMenu-Bridging-Header.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXDevMenu-Bridging-Header.h"; sourceTree = "<group>"; };
+		83AB52DA0BDDE39F3AD4DBA57412EC59 /* DevMenuRootView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DevMenuRootView.h; path = ios/DevMenuRootView.h; sourceTree = "<group>"; };
+		8767AFEC7A29A970CD82B627E43AFFA4 /* DevMenuWindow.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DevMenuWindow.swift; path = ios/DevMenuWindow.swift; sourceTree = "<group>"; };
+		8C2C7EBCC83000036A8CD355C297735A /* DevMenuExtensions.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = DevMenuExtensions.m; sourceTree = "<group>"; };
+		924BD274EA68DEF4A878E48F30473EBF /* EXDevMenu.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = EXDevMenu.modulemap; sourceTree = "<group>"; };
+		9343EEA46D09710CA87A6F8957A4923A /* DevMenuSession.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DevMenuSession.swift; path = ios/DevMenuSession.swift; sourceTree = "<group>"; };
+		945F5667F7AE12C3A854C9870A8CE374 /* DevMenuInternalModule.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DevMenuInternalModule.swift; sourceTree = "<group>"; };
+		ADC3E389C155FE499066DFE5C8A5996E /* EXDevMenu-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXDevMenu-prefix.pch"; sourceTree = "<group>"; };
+		B344B7A978D13FD92A0F3CD6A31A6B04 /* DevMenuManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DevMenuManager.swift; path = ios/DevMenuManager.swift; sourceTree = "<group>"; };
+		BAC2D7379AE0C05953B0B499DF7EB741 /* dev-menu-packager-host */ = {isa = PBXFileReference; includeInIndex = 1; name = "dev-menu-packager-host"; path = "assets/dev-menu-packager-host"; sourceTree = "<group>"; };
+		D770F781F41916D4BFD7C9FA0010BFF2 /* DevMenuUtils.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DevMenuUtils.swift; path = ios/DevMenuUtils.swift; sourceTree = "<group>"; };
+		D9E3C52EAA609FE2EBC9B13C31F90620 /* EXDevMenu-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXDevMenu-dummy.m"; sourceTree = "<group>"; };
 		DB1EF2AC1A0457099E21473409564512 /* React */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React; path = React.xcodeproj; sourceTree = "<group>"; };
-		E0C271A84A26A072590F28C63FC0BA23 /* DevMenuUtils.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DevMenuUtils.swift; path = ios/DevMenuUtils.swift; sourceTree = "<group>"; };
-		E1BE26B1251E2406AD288FD204E7DBAA /* DevMenuAppInstance.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DevMenuAppInstance.swift; path = ios/DevMenuAppInstance.swift; sourceTree = "<group>"; };
-		E87FBAFCC903D0DF290AE119E31B4096 /* ResourceBundle-EXDevMenu-EXDevMenu-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "ResourceBundle-EXDevMenu-EXDevMenu-Info.plist"; sourceTree = "<group>"; };
-		F0969B31D8AD39D293B05240188240AA /* EXDevMenu.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = EXDevMenu.modulemap; sourceTree = "<group>"; };
-		F2A95174EE3D4FF55262D6294B13F9A4 /* dev-menu-packager-host */ = {isa = PBXFileReference; includeInIndex = 1; name = "dev-menu-packager-host"; path = "assets/dev-menu-packager-host"; sourceTree = "<group>"; };
-		FD298E28901C234DBA378E7F09E7261B /* DevMenuMotionInterceptor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DevMenuMotionInterceptor.swift; sourceTree = "<group>"; };
+		DED8766D9AD68DF64A6F40E7E61B308F /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; includeInIndex = 1; name = MaterialCommunityIcons.ttf; path = assets/MaterialCommunityIcons.ttf; sourceTree = "<group>"; };
+		E0C318D1F70E095DEC0269ECE016E313 /* EXDevMenu.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXDevMenu.h; sourceTree = "<group>"; };
+		E1E3D35727A38863E4C5AFC6E6E9D19D /* EXDevMenu.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXDevMenu.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		E31CC8A4246A060E5E28AB3EF4B187A6 /* EXDevMenu.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXDevMenu.release.xcconfig; sourceTree = "<group>"; };
+		F22564EFE211B083F760CFB7AB75EEE1 /* RCTRootView+Private.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "RCTRootView+Private.h"; sourceTree = "<group>"; };
+		F22C89A12BB53B6295074E79F6499922 /* EXDevMenu-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXDevMenu-umbrella.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -128,25 +132,16 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		126DA61A52943F9514041A13CE050535 /* Pod */ = {
+		259DAC4B4FF2BEE95D66902DF6DCAC08 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				057E5229A978105BE04C55E57696F773 /* EXDevMenu.podspec */,
-				1C9BDC5822261069249913BB87A28C79 /* README.md */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
-		242BECEBB0D1BA6FBAC22D86DD7F2BAF /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				F0969B31D8AD39D293B05240188240AA /* EXDevMenu.modulemap */,
-				C2F377188E66FFA9C44BC47AACBC9AE5 /* EXDevMenu-dummy.m */,
-				711939C3B2F5B686DB30D56BB24C6B54 /* EXDevMenu-prefix.pch */,
-				04B9BB725E8ED12C5B110360FDD36EAA /* EXDevMenu-umbrella.h */,
-				8D6A34FD6891BA0E8B31EE4A7EAB7BCA /* EXDevMenu.debug.xcconfig */,
-				1B9B0654EF11DE72E1872F6E9268CF14 /* EXDevMenu.release.xcconfig */,
-				E87FBAFCC903D0DF290AE119E31B4096 /* ResourceBundle-EXDevMenu-EXDevMenu-Info.plist */,
+				924BD274EA68DEF4A878E48F30473EBF /* EXDevMenu.modulemap */,
+				D9E3C52EAA609FE2EBC9B13C31F90620 /* EXDevMenu-dummy.m */,
+				ADC3E389C155FE499066DFE5C8A5996E /* EXDevMenu-prefix.pch */,
+				F22C89A12BB53B6295074E79F6499922 /* EXDevMenu-umbrella.h */,
+				23DED8DDBC8B6C2FE788322DE57DB5CA /* EXDevMenu.debug.xcconfig */,
+				E31CC8A4246A060E5E28AB3EF4B187A6 /* EXDevMenu.release.xcconfig */,
+				61C153056FB26CB7A901C95E1987EFFC /* ResourceBundle-EXDevMenu-EXDevMenu-Info.plist */,
 			);
 			name = "Support Files";
 			path = "../../apps/bare-expo/ios/Pods/Target Support Files/EXDevMenu";
@@ -156,54 +151,30 @@
 			isa = PBXGroup;
 			children = (
 				032AA755E68152E4AD22F4BF3BF01EAC /* Dependencies */,
-				4CA37AB55E3C976F8C7223AC93BEC5CE /* EXDevMenu */,
+				C1001708BD33F2C6942172B1E90D241D /* EXDevMenu */,
 				F4858A7770E5B73EED4327339A4C31FE /* Frameworks */,
 				8F5CBC12E96BD779F60A2D46F461235C /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		4CA37AB55E3C976F8C7223AC93BEC5CE /* EXDevMenu */ = {
+		37750EA855EDD17952D217DCA8EE6387 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				E1BE26B1251E2406AD288FD204E7DBAA /* DevMenuAppInstance.swift */,
-				6E01DCADB7CB002A811150053A536D99 /* DevMenuGestureRecognizer.swift */,
-				896A60C56F644E63416F1B27F1D0D040 /* DevMenuManager.swift */,
-				44CB25BD95199C433540B6F9EC028E85 /* DevMenuRootView.h */,
-				A10FD9B366CCBF96B348DD23026865FB /* DevMenuRootView.m */,
-				A2E0602628F98ED6BAC303D82AF5B10D /* DevMenuSession.swift */,
-				B7C1D90E8D5E9CE63D494AA396C1099A /* DevMenuSettings.swift */,
-				E0C271A84A26A072590F28C63FC0BA23 /* DevMenuUtils.swift */,
-				28CBACB902CD92154023030936ED4C9D /* DevMenuViewController.swift */,
-				B285DB829B291C682184E7EEF1447C23 /* DevMenuWindow.swift */,
-				E6C9D3F065FF4FD982C185261CFB1B57 /* Headers */,
-				5DA1C83BC3DC254C8AE470DA10E19D56 /* Interceptors */,
-				B936DCF9C969EF1DA2EE9574B4753254 /* Modules */,
-				126DA61A52943F9514041A13CE050535 /* Pod */,
-				6303A81B78EBC2D59CEADE362B033025 /* Resources */,
-				242BECEBB0D1BA6FBAC22D86DD7F2BAF /* Support Files */,
-			);
-			name = EXDevMenu;
-			path = "../../../../packages/expo-dev-menu";
-			sourceTree = "<group>";
-		};
-		5DA1C83BC3DC254C8AE470DA10E19D56 /* Interceptors */ = {
-			isa = PBXGroup;
-			children = (
-				1C7C325CA54826A59849B356A3D71FF4 /* DevMenuKeyCommandsInterceptor.swift */,
-				FD298E28901C234DBA378E7F09E7261B /* DevMenuMotionInterceptor.swift */,
-				10351B8DF3CADC5990E0AE054F4E5BA5 /* DevMenuTouchInterceptor.swift */,
-			);
-			name = Interceptors;
-			path = ios/Interceptors;
-			sourceTree = "<group>";
-		};
-		6303A81B78EBC2D59CEADE362B033025 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				F2A95174EE3D4FF55262D6294B13F9A4 /* dev-menu-packager-host */,
-				0E383E5A2ABD073F77D23084CF195FB8 /* EXDevMenuApp.ios.js */,
+				BAC2D7379AE0C05953B0B499DF7EB741 /* dev-menu-packager-host */,
+				581A21D0B3D11D508A4ABC755CE1EBBC /* EXDevMenuApp.ios.js */,
+				41DA1796503916B46A15CD4B2763FB92 /* Ionicons.ttf */,
+				DED8766D9AD68DF64A6F40E7E61B308F /* MaterialCommunityIcons.ttf */,
 			);
 			name = Resources;
+			sourceTree = "<group>";
+		};
+		5A19DC559DC5CD1D0165C75858955ADF /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				E1E3D35727A38863E4C5AFC6E6E9D19D /* EXDevMenu.podspec */,
+				0AA378B4A955B992DA9A86702D99C9EC /* README.md */,
+			);
+			name = Pod;
 			sourceTree = "<group>";
 		};
 		8F5CBC12E96BD779F60A2D46F461235C /* Products */ = {
@@ -215,30 +186,65 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		B936DCF9C969EF1DA2EE9574B4753254 /* Modules */ = {
+		ADFD1CE60A92FAF728A7FA172F8DC76F /* Interceptors */ = {
 			isa = PBXGroup;
 			children = (
-				1F8F0C28532F7ACCE60179C662404CA9 /* DevMenuExtensions.m */,
-				0CCF66A786876D3A4FFF95F0E7393A4F /* DevMenuExtensions.swift */,
-				5A2DA56995452BC1A018CB198BE4DEC7 /* DevMenuInternalModule.m */,
-				A1A6EDA04DD3B179D429BA70C9B5FB93 /* DevMenuInternalModule.swift */,
-				64D9AFE9B3BE3DECE83D3C555A083F31 /* DevMenuModule.m */,
-				B44D3C059A2D6FCDE7A94227E5CEABEF /* DevMenuModule.swift */,
+				763036258B4E128D1C5275F052B2DDF2 /* DevMenuKeyCommandsInterceptor.swift */,
+				2C1F60AE300E300DB5E01228679CE49A /* DevMenuMotionInterceptor.swift */,
+				42867D5EFF64D1AB5F53CB5FF7E6719D /* DevMenuTouchInterceptor.swift */,
 			);
-			name = Modules;
-			path = ios/Modules;
+			name = Interceptors;
+			path = ios/Interceptors;
 			sourceTree = "<group>";
 		};
-		E6C9D3F065FF4FD982C185261CFB1B57 /* Headers */ = {
+		C1001708BD33F2C6942172B1E90D241D /* EXDevMenu */ = {
 			isa = PBXGroup;
 			children = (
-				9964F6123E9BE8F033DDE590042184C2 /* EXDevMenu.h */,
-				C7CFE88E99E0AF895240DC96352F6EF2 /* EXDevMenu-Bridging-Header.h */,
-				847A8180D9B3D2E18343DF6F54E360E0 /* RCTPerfMonitor+Private.h */,
-				11BE8DB8E241033641AC88790022BFD6 /* RCTRootView+Private.h */,
+				54A5C234445B1A44A251E35C19161C76 /* DevMenuAppInstance.swift */,
+				1F43FEBC95BB522EB635AA1BE4E5392B /* DevMenuGestureRecognizer.swift */,
+				B344B7A978D13FD92A0F3CD6A31A6B04 /* DevMenuManager.swift */,
+				83AB52DA0BDDE39F3AD4DBA57412EC59 /* DevMenuRootView.h */,
+				2C34D217584CA8FF7BF2475A5BCA4BDC /* DevMenuRootView.m */,
+				9343EEA46D09710CA87A6F8957A4923A /* DevMenuSession.swift */,
+				1D6463592E95F212E54E7A8BD1B10769 /* DevMenuSettings.swift */,
+				D770F781F41916D4BFD7C9FA0010BFF2 /* DevMenuUtils.swift */,
+				318AE1243D3F9F9EFB5D52FC842ABA63 /* DevMenuViewController.swift */,
+				8767AFEC7A29A970CD82B627E43AFFA4 /* DevMenuWindow.swift */,
+				E873EDDA648B90BB734AD5FB4082A07F /* Headers */,
+				ADFD1CE60A92FAF728A7FA172F8DC76F /* Interceptors */,
+				EADC71EEA57F71EB187CCED3FE86E398 /* Modules */,
+				5A19DC559DC5CD1D0165C75858955ADF /* Pod */,
+				37750EA855EDD17952D217DCA8EE6387 /* Resources */,
+				259DAC4B4FF2BEE95D66902DF6DCAC08 /* Support Files */,
+			);
+			name = EXDevMenu;
+			path = "../../../../packages/expo-dev-menu";
+			sourceTree = "<group>";
+		};
+		E873EDDA648B90BB734AD5FB4082A07F /* Headers */ = {
+			isa = PBXGroup;
+			children = (
+				E0C318D1F70E095DEC0269ECE016E313 /* EXDevMenu.h */,
+				07184A2C10F34ACA445A2B256BFDE1A6 /* EXDevMenu-Bridging-Header.h */,
+				0FC17DB2BDB08FF2065034BD05B41975 /* RCTPerfMonitor+Private.h */,
+				F22564EFE211B083F760CFB7AB75EEE1 /* RCTRootView+Private.h */,
 			);
 			name = Headers;
 			path = ios/Headers;
+			sourceTree = "<group>";
+		};
+		EADC71EEA57F71EB187CCED3FE86E398 /* Modules */ = {
+			isa = PBXGroup;
+			children = (
+				8C2C7EBCC83000036A8CD355C297735A /* DevMenuExtensions.m */,
+				662CE90572F922B0DFA4D172FCB6929A /* DevMenuExtensions.swift */,
+				60A1B5DCE0C065EFD7CC26D575146933 /* DevMenuInternalModule.m */,
+				945F5667F7AE12C3A854C9870A8CE374 /* DevMenuInternalModule.swift */,
+				483006FEDCDFFACC0622D0C5566E0E2C /* DevMenuModule.m */,
+				648DCCE4C3AFD5DC383C532C482B3840 /* DevMenuModule.swift */,
+			);
+			name = Modules;
+			path = ios/Modules;
 			sourceTree = "<group>";
 		};
 		F4858A7770E5B73EED4327339A4C31FE /* Frameworks */ = {
@@ -294,7 +300,7 @@
 			buildPhases = (
 				6B110AF8ED9F1A4FA2C283A9EB4F1D74 /* Sources */,
 				93D98B979A9A333D7758D02C628955CC /* Frameworks */,
-				724F7D43B82B5B783B610EFA6BBF30AC /* Resources */,
+				0338D107301C817EF94087B70B78A9C7 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -342,12 +348,14 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		724F7D43B82B5B783B610EFA6BBF30AC /* Resources */ = {
+		0338D107301C817EF94087B70B78A9C7 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				29DDA0A84AC33C48C97FF6E9CC449EDA /* dev-menu-packager-host in Resources */,
-				77352B9DC1856E87DE484E33014BE1C5 /* EXDevMenuApp.ios.js in Resources */,
+				A133882D399BB3A86B66E6E77CB63369 /* dev-menu-packager-host in Resources */,
+				D96F12A054FBC46E1772B541859B956E /* EXDevMenuApp.ios.js in Resources */,
+				79A9081D246FD165243959157EB228E2 /* Ionicons.ttf in Resources */,
+				AAC3955BEA3DC8BE38CC35F7CA4F72F1 /* MaterialCommunityIcons.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -438,7 +446,7 @@
 /* Begin XCBuildConfiguration section */
 		0B2CDCBC9D2E212B3A6C82D0062AFB92 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1B9B0654EF11DE72E1872F6E9268CF14 /* EXDevMenu.release.xcconfig */;
+			baseConfigurationReference = E31CC8A4246A060E5E28AB3EF4B187A6 /* EXDevMenu.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/EXDevMenu";
@@ -455,7 +463,7 @@
 		};
 		26605FC634D883520AF6D8B55BF37AAD /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8D6A34FD6891BA0E8B31EE4A7EAB7BCA /* EXDevMenu.debug.xcconfig */;
+			baseConfigurationReference = 23DED8DDBC8B6C2FE788322DE57DB5CA /* EXDevMenu.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/EXDevMenu";
@@ -596,7 +604,7 @@
 		};
 		E6410668BDC4799C1BBD66435C89595F /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8D6A34FD6891BA0E8B31EE4A7EAB7BCA /* EXDevMenu.debug.xcconfig */;
+			baseConfigurationReference = 23DED8DDBC8B6C2FE788322DE57DB5CA /* EXDevMenu.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -622,7 +630,7 @@
 		};
 		E870D2EEDD9CDF3C24DCB3CDE4E4F21D /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1B9B0654EF11DE72E1872F6E9268CF14 /* EXDevMenu.release.xcconfig */;
+			baseConfigurationReference = E31CC8A4246A060E5E28AB3EF4B187A6 /* EXDevMenu.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";

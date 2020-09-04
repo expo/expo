@@ -89,3 +89,7 @@ export async function setSettingsAsync(settings: DevMenuSettingsType) {
 export function subscribeToCloseEvents(listener: () => void): EventSubscription {
   return DeviceEventEmitter.addListener('closeDevMenu', listener);
 }
+
+export async function loadFontsAsync(): Promise<void> {
+  return await DevMenu.loadFontsAsync();
+}
