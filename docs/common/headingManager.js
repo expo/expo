@@ -48,6 +48,22 @@ export class HeadingManager {
     return slug;
   }
 
+  forceCreateSlugAndTitle(title, level) {
+    const realTitle = Utilities.toString(title);
+    const slug = Utilities.generateSlug(this.slugger, title);
+    const newElem = {
+      title: realTitle,
+      level,
+      ref: null,
+      slug,
+      type: this._isCode(title) ? 'inlineCode' : 'text',
+    };
+
+    this.headings.push(newElem);
+
+    return slug;
+  }
+
   /**
    * Generates React ref for specified slug if it exists in heading entries
    * @param {string} slug slug to generate ref for
@@ -61,5 +77,11 @@ export class HeadingManager {
       return ref;
     }
     return undefined;
+  }
+
+  _isCode(title) {
+    if (!title.props) return false;
+    const { name, originalType, mdxType } = title.props;
+    return name === 'inlineCode' || originalType === 'inlineCode' || mdxType === 'inlineCode';
   }
 }
