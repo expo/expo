@@ -95,7 +95,7 @@ const removeDot = str => {
 
 function Item({ heading, activeSlug, shortForm }) {
   const { slug, level, title, type } = heading;
-  const isActive = slug === activeSlug;
+  const isActive = activeSlug != null && slug === activeSlug;
 
   const isCode = type === 'inlineCode';
   const displayTitle = shortForm && isCode ? removeDot(title) : title;
@@ -223,6 +223,8 @@ const SidebarWithHeadingManager = withHeadingManager(function SidebarWithHeading
 }) {
   return <DocumentationSidebarRight {...props} ref={reactRef} />;
 });
+
+SidebarWithHeadingManager.displayName = 'SidebarRightRefWrapper';
 
 export default React.forwardRef((props, ref) => (
   <SidebarWithHeadingManager {...props} reactRef={ref} />
