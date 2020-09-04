@@ -46,12 +46,12 @@ abstract class DevMenuAwareReactActivity : ReactActivity() {
     return super.dispatchTouchEvent(ev)
   }
 
-  override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+  override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
     if (keyCode == KeyEvent.KEYCODE_MENU) {
       DevMenuManager.openMenu(this)
       return true
     }
-    return DevMenuManager.onKeyEvent(keyCode, event) || super.onKeyDown(keyCode, event)
+    return DevMenuManager.onKeyEvent(keyCode, event) || super.onKeyUp(keyCode, event)
   }
 
   companion object {
