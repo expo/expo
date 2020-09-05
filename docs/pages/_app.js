@@ -1,6 +1,6 @@
 import React from 'react';
+import App from 'next/app';
 import * as Sentry from '@sentry/browser';
-import App, { Container } from 'next/app';
 
 import { preprocessSentryError } from '~/common/sentry-utilities';
 import 'react-diff-view/style/index.css';
@@ -13,11 +13,6 @@ Sentry.init({
 export default class MyApp extends App {
   render() {
     const { Component, pageProps } = this.props;
-
-    return (
-      <Container>
-        <Component {...pageProps} />
-      </Container>
-    );
+    return <Component {...pageProps} />;
   }
 }
