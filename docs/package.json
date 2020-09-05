@@ -3,7 +3,7 @@
   "version": "38.0.0",
   "private": true,
   "scripts": {
-    "dev": "rimraf node_modules/.cache && node server.js",
+    "dev": "rimraf node_modules/.cache && next dev",
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=8192 next build",
     "export": "yarn run build && next export",
     "export-server": "http-server out -p 8000",
