@@ -219,7 +219,12 @@ const REACT_NATIVE_PATH_PATTERN = `${VERSIONED_PATH_PATTERN}/react-native`;
 
 // Check if path is valid (matches /versions/some-valid-version-here/)
 function isVersionedPath(path) {
-  return !!path.match(new RegExp(VERSIONED_PATH_PATTERN));
+  const match = path.match(new RegExp(VERSIONED_PATH_PATTERN));
+  // Note, if the input is the base form (e.g. /versions/latest/), we need to return false
+  if (match && match[0] + '/' === path) {
+    return false;
+  }
+  return !!match;
 }
 
 // Replace an unsupported SDK version with latest
@@ -287,4 +292,7 @@ const RENAMED_PAGES = {
   // Additional redirects based on Sentry (04/28/2020)
   '/next-steps/installation/': '/get-started/installation/',
   '/guides/release-channels/': '/distribution/release-channels/',
+
+  // Replacement of the previous page-styled redirect
+  '/api/': '/versions/latest/',
 };
