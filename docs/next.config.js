@@ -33,11 +33,4 @@ module.exports = {
     };
     return config;
   },
-  async exportPathMap(pathMap, { dev, dir, outDir }) {
-    if (dev) {
-      return pathMap;
-    }
-    copySync(join(dir, 'robots.txt'), join(outDir, 'robots.txt'));
-    return pathMap;
-  },
 };
