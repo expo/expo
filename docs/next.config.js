@@ -33,28 +33,11 @@ module.exports = {
     };
     return config;
   },
-  async exportPathMap(defaultPathMap, { dev, dir, outDir }) {
+  async exportPathMap(pathMap, { dev, dir, outDir }) {
     if (dev) {
-      return defaultPathMap;
+      return pathMap;
     }
     copySync(join(dir, 'robots.txt'), join(outDir, 'robots.txt'));
-    return Object.assign(
-      ...Object.entries(defaultPathMap).map(([pathname, page]) => {
-        if (pathname.match(/\/v[1-9][^\/]*$/)) {
-          // ends in "/v<version>"
-          pathname += '/index.html'; // TODO: find out why we need to do this
-        }
-        if (pathname.match(/unversioned/)) {
-          return {};
-        } else {
-          // hide versions greater than the package.json version number
-          const versionMatch = pathname.match(/\/v(\d\d\.\d\.\d)\//);
-          if (versionMatch && versionMatch[1] && semver.gt(versionMatch[1], version)) {
-            return {};
-          }
-          return { [pathname]: page };
-        }
-      })
-    );
+    return pathMap;
   },
 };
