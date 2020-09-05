@@ -30,7 +30,7 @@ injectGlobal`
 
       /* Handle */
       ::-webkit-scrollbar-thumb {
-        background: ${Constants.colors.black60};
+        background: ${Constants.expoColors.gray[250]};
       }
 
       /* Handle on hover */
@@ -91,7 +91,7 @@ const SHOW_SEARCH_AND_MENU = css`
 const STYLES_CONTENT = css`
   display: flex;
   align-items: flex-start;
-  max-width: 1440px;
+  // max-width: 1440px;
   margin: 0 auto;
   justify-content: space-between;
   width: 100%;
@@ -156,7 +156,9 @@ const STYLES_SCROLL_CONTAINER = css`
 
   /* Handle */
   ::-webkit-scrollbar-thumb {
-    background: ${Constants.colors.black60};
+    background: ${Constants.expoColors.gray[250]};
+    border-radius: 10px;
+    display: none;
   }
 
   /* Handle on hover */

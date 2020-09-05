@@ -31,8 +31,9 @@ P.B = B;
 
 const STYLES_PARAGRAPH_DIV = css`
   font-size: 1rem;
-  line-height: 1.8rem;
   margin-bottom: 1.4rem;
+  line-height: 150%;
+  letterspacing: -0.011em;
 
   &.is-wider {
     max-width: 1200px;
@@ -57,10 +58,12 @@ export const PDIV = ({ children }) => {
 
 const STYLES_BLOCKQUOTE = css`
   font-family: ${Constants.fontFamilies.book};
-  padding: 12px 24px;
-  border-left: 5px solid ${Constants.colors.darkGrey};
-  margin: 0 0 1.5rem 0;
-  color: ${Constants.colors.black80};
+  padding: 20px;
+  padding-top: 16px;
+  margin-bottom: 1.5rem;
+  color: ${Constants.colors.black90};
+  border: 1px solid ${Constants.expoColors.gray[250]};
+  border-radius: 4px;
 
   div {
     margin: 0;

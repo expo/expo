@@ -164,8 +164,6 @@ const SECTION_LINK_ACTIVE = css`
 
 const SECTION_LINK_TEXT = css`
   color: #000 !important;
-  position: relative;
-  top: 2px;
   bottom: 0;
   left: 0;
   right: 0;

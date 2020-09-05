@@ -8,13 +8,14 @@ const attributes = {
 };
 
 const STYLES_H1 = css`
-  font-family: ${Constants.fonts.book};
+  font-family: ${Constants.fonts.bold};
   font-size: 2.4rem;
   line-height: 2.75rem;
   margin-bottom: 1.5rem;
   margin-top: 0.1rem;
-  padding-bottom: 0.25rem;
+  padding-bottom: 0.5rem;
   border-bottom: 1px solid ${Constants.colors.border};
+  letter-spacing: -0.022em;
 `;
 
 export const H1 = ({ children }) => (
@@ -24,13 +25,14 @@ export const H1 = ({ children }) => (
 );
 
 const STYLES_H2 = css`
-  font-family: ${Constants.fonts.book};
-  line-height: 1.75rem;
+  font-family: ${Constants.fonts.bold};
+  line-height: 150%;
   font-size: 1.5rem;
   margin-bottom: 1rem;
   margin-top: 2.2rem;
-  padding-bottom: 0.3rem;
+  padding-bottom: 0.25rem;
   border-bottom: 1px solid ${Constants.colors.border};
+  letter-spacing: -0.018em;
 `;
 
 export const H2 = ({ children }) => (
@@ -41,8 +43,8 @@ export const H2 = ({ children }) => (
 
 const STYLES_H3 = css`
   font-size: 1.1rem;
-  line-height: 1.75rem;
-  font-family: ${Constants.fonts.demi};
+  line-height: 150%;
+  font-family: ${Constants.fonts.bold};
   margin-bottom: 1rem;
   margin-top: 2rem;
 
@@ -50,7 +52,7 @@ const STYLES_H3 = css`
     padding: 2px 4px;
     top: 0;
     font-size: 1.1rem;
-    line-height: 1.75rem;
+    line-height: 150%;
   }
 `;
 
@@ -61,7 +63,7 @@ export const H3 = ({ children }) => (
 );
 
 const STYLES_H4 = css`
-  font-family: ${Constants.fonts.demi};
+  font-family: ${Constants.fonts.bold};
   font-weight: 400;
   line-height: 1.625rem;
   font-size: 1.1rem;

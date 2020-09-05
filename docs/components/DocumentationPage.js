@@ -18,10 +18,10 @@ import Head from '~/components/Head';
 import { H1 } from '~/components/base/headings';
 
 const STYLES_DOCUMENT = css`
-  max-width: 1440px;
+  // max-width: 1440px;
   background: #fff;
   margin: 0 auto;
-  padding: 24px 24px 24px 32px;
+  padding: 40px 56px;
 
   hr {
     border-top: 1px solid ${Constants.colors.border};
@@ -79,7 +79,7 @@ export default class DocumentationPage extends React.Component {
     }
   };
 
-  _handleSetVersion = (version) => {
+  _handleSetVersion = version => {
     this._version = version;
     let newPath = Utilities.replaceVersionInUrl(this.props.url.pathname, version);
 
@@ -106,7 +106,7 @@ export default class DocumentationPage extends React.Component {
   };
 
   _handleToggleSearch = () => {
-    this.setState((prevState) => ({
+    this.setState(prevState => ({
       isMobileSearchActive: !prevState.isMobileSearchActive,
     }));
   };
@@ -122,7 +122,7 @@ export default class DocumentationPage extends React.Component {
   };
 
   _isGeneralPath = () => {
-    return some(navigation.generalDirectories, (name) =>
+    return some(navigation.generalDirectories, name =>
       this.props.url.pathname.startsWith(`/${name}`)
     );
   };
@@ -130,12 +130,12 @@ export default class DocumentationPage extends React.Component {
   _isGettingStartedPath = () => {
     return (
       this.props.url.pathname === '/' ||
-      some(navigation.startingDirectories, (name) => this.props.url.pathname.startsWith(`/${name}`))
+      some(navigation.startingDirectories, name => this.props.url.pathname.startsWith(`/${name}`))
     );
   };
 
   _isPreviewPath = () => {
-    return some(navigation.previewDirectories, (name) =>
+    return some(navigation.previewDirectories, name =>
       this.props.url.pathname.startsWith(`/${name}`)
     );
   };
