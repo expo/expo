@@ -1,4 +1,4 @@
-import Document, { Head, Main, NextScript } from 'next/document';
+import Document, { Html, Head, Main, NextScript } from 'next/document';
 import { extractCritical } from 'emotion-server';
 import { hydrate } from 'react-emotion';
 
@@ -35,7 +35,7 @@ export default class MyDocument extends Document {
 
   render() {
     return (
-      <html lang="en">
+      <Html lang="en">
         <Head>
           <Analytics.GoogleScript id="UA-107832480-3" />
           <script src="/static/libs/tippy/tippy.all.min.js" />
@@ -62,7 +62,7 @@ export default class MyDocument extends Document {
           <Main />
           <NextScript />
         </body>
-      </html>
+      </Html>
     );
   }
 }
