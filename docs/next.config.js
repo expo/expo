@@ -13,6 +13,7 @@ removeSync(latest);
 copySync(vLatest, latest);
 
 module.exports = withCSS({
+  trailingSlash: true,
   // Rather than use `@zeit/next-mdx`, we replicate it
   pageExtensions: ['js', 'jsx', 'md', 'mdx'],
   webpack: (config, options) => {
