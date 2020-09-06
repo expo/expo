@@ -9,11 +9,7 @@ import * as Constants from '~/common/constants';
 // NOTE(jim): Global styles if and only if this component is used.
 injectGlobal`
   body {
-    background: #F6F6F6;
-
-    @media screen and (max-width: 1440px) {
-      background: ${Constants.colors.white}
-    }
+    background: ${Constants.colors.white};
   }
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
@@ -21,21 +17,23 @@ injectGlobal`
       /* width */
       ::-webkit-scrollbar {
         width: 6px;
+
       }
 
       /* Track */
       ::-webkit-scrollbar-track {
-        background: ${Constants.colors.white};
+        background: ${Constants.expoColors.gray[100]};
       }
 
       /* Handle */
       ::-webkit-scrollbar-thumb {
         background: ${Constants.expoColors.gray[250]};
+        border-radius: 10px;
       }
 
       /* Handle on hover */
       ::-webkit-scrollbar-thumb:hover {
-        background: ${Constants.colors.expo};
+        background: ${Constants.expoColors.gray[300]};
       }
     }
   }
@@ -91,7 +89,6 @@ const SHOW_SEARCH_AND_MENU = css`
 const STYLES_CONTENT = css`
   display: flex;
   align-items: flex-start;
-  // max-width: 1440px;
   margin: 0 auto;
   justify-content: space-between;
   width: 100%;
@@ -104,9 +101,7 @@ const STYLES_CONTENT = css`
 `;
 
 const STYLES_LEFT = css`
-  scrollbar-color: red white;
   flex-shrink: 0;
-  // border-right: 1px solid ${Constants.colors.border};
   max-width: 280px;
   height: 100%;
   overflow: hidden;
@@ -122,7 +117,7 @@ const STYLES_LEFT = css`
 `;
 
 const STYLES_RIGHT = css`
-  background: #fff;
+  background: ${Constants.expoColors.white};
   min-width: 5%;
   width: 100%;
   height: 100%;
@@ -151,24 +146,29 @@ const STYLES_SCROLL_CONTAINER = css`
 
   /* Track */
   ::-webkit-scrollbar-track {
-    background: ${Constants.colors.white};
+    background: ${Constants.expoColors.gray[100]};
+    cursor: pointer;
   }
 
   /* Handle */
   ::-webkit-scrollbar-thumb {
     background: ${Constants.expoColors.gray[250]};
     border-radius: 10px;
-    display: none;
   }
 
   /* Handle on hover */
   ::-webkit-scrollbar-thumb:hover {
-    background: ${Constants.colors.expo};
+    background: ${Constants.expoColors.gray[300]};
   }
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     overflow-y: auto;
   }
+`;
+
+const STYLES_RIGHT_WRAPPER = css`
+  max-width: 1200px;
+  margin: auto;
 `;
 
 class ScrollContainer extends React.Component {
@@ -222,7 +222,9 @@ export default class DocumentationNestedScrollLayout extends React.Component {
           </div>
 
           <div className={STYLES_RIGHT}>
-            <ScrollContainer>{this.props.children}</ScrollContainer>
+            <ScrollContainer>
+              <div className={STYLES_RIGHT_WRAPPER}>{this.props.children}</div>
+            </ScrollContainer>
           </div>
         </div>
       </div>

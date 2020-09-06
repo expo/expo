@@ -124,7 +124,7 @@ const STYLES_MENU_BUTTON = css`
   justify-content: center;
   height: 40px;
   width: 40px;
-  border-radius: 2px;
+  border-radius: 4px;
 
   :hover {
     background-color: ${Constants.expoColors.gray[100]};
