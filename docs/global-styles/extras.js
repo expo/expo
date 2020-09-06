@@ -56,20 +56,22 @@ export const globalExtras = `
   }
 
   .snack-inline-example-button {
-    display: inline-block;
+    display: grid;
+    grid-template-columns: 16px 1fr;
+    grid-gap: 8px;
+    align-items: center;
     border: none;
     border-radius: 4px;
-    padding: 0rem 1rem;
+    padding: 0 16px;
     height: 40px;
     margin: 0;
     margin-bottom: 0.5rem;
     text-decoration: none;
     background: ${Constants.expoColors.primary[500]};;
     color: ${Constants.expoColors.white};;
-    font-family: ${Constants.fontFamilies.demi};;
+    font-family: ${Constants.fontFamilies.book};;
     font-size: 1rem;
     cursor: pointer;
-    text-align: center;
     -webkit-appearance: none;
     -moz-appearance: none;
     transition: all 170ms linear;

@@ -9,7 +9,6 @@ const STYLES_TITLE = css`
   display: block;
   position: relative;
   margin-bottom: 16px;
-  line-height: 1.3rem;
   text-decoration: none;
   font-family: ${Constants.fontFamilies.demi};
   user-select: none;
@@ -20,34 +19,32 @@ const STYLES_TITLE = css`
 
 const STYLES_SIDEBAR_INDENT = css`
   display: block;
-  border-left-width: 1px;
-  border-left-color: #ccc;
-  border-left-style: dashed;
-  padding-left: 15px;
+  border-left: 1px solid ${Constants.expoColors.gray[250]};
+  padding-left: 16px;
 `;
 
 const STYLES_ACTIVE = css`
-  color: ${Constants.colors.expoLighter};
+  color: ${Constants.expoColors.black};
 
   :visited {
-    color: ${Constants.colors.expo};
+    color: ${Constants.expoColors.gray[600]};
   }
 
   :hover {
-    color: ${Constants.colors.expo};
+    color: ${Constants.expoColors.gray[600]};
   }
 `;
 
 const STYLES_DEFAULT = css`
-  color: ${Constants.colors.black40};
+  color: ${Constants.expoColors.gray[600]};
   transition: 200ms ease color;
 
   :visited {
-    color: ${Constants.colors.black40};
+    color: ${Constants.expoColors.gray[600]};
   }
 
   :hover {
-    color: ${Constants.colors.expo};
+    color: ${Constants.expoColors.gray[600]};
   }
 `;
 

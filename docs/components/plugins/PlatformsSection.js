@@ -2,6 +2,9 @@ import * as React from 'react';
 import { css } from 'react-emotion';
 
 import * as Constants from '~/common/constants';
+import { CheckCircle } from '~/components/icons/CheckCircle';
+import { XCircle } from '~/components/icons/XCircle';
+import { PendingCircle } from '~/components/icons/PendingCircle';
 
 const STYLES_TITLE = css`
   font-family: ${Constants.fonts.demi};
@@ -13,7 +16,7 @@ const STYLES_TITLE = css`
 
 const STYLES_CELL = css`
   transition-duration: 0.2s;
-  text-align: center;
+  // text-align: center;
   :hover {
     background-color: ${Constants.colors.grey};
   }
@@ -21,26 +24,31 @@ const STYLES_CELL = css`
 
 const STYLES_LINK = css`
   text-decoration: none;
+  display: grid;
+  grid-template-columns: 20px auto;
+  text-align: left;
+  grid-gap: 8px;
 `;
 
 function getInfo(isSupported, { title }) {
   if (isSupported === true) {
     return {
-      children: '✅',
+      children: <CheckCircle size={20} />,
       title: `${title} is supported`,
     };
   } else if (typeof isSupported === 'object') {
     return {
       children: (
         <a className={STYLES_LINK} target="_blank" href={isSupported.pending}>
-          ⏱ Pending
+          <PendingCircle size={20} /> Pending
         </a>
       ),
       title: `${title} support is pending`,
     };
   }
+
   return {
-    children: '❌',
+    children: <XCircle size={20} />,
     title: `${title} is not supported`,
   };
 }

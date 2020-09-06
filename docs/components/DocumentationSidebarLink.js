@@ -7,9 +7,8 @@ import stripVersionFromPath from '~/common/stripVersionFromPath';
 
 const STYLES_LINK = css`
   display: block;
-  margin-bottom: 10px;
-  line-height: 1.3rem;
   text-decoration: none;
+  margin-bottom: 12px;
 `;
 
 const STYLES_ACTIVE = css`

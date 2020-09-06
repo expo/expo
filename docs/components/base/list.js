@@ -3,7 +3,6 @@ import styled, { keyframes, css } from 'react-emotion';
 import * as React from 'react';
 import * as Utilities from '~/common/utilities';
 
-import BulletIcon from '~/components/icons/Bullet';
 import withSlugger from '~/components/page-higher-order/withSlugger';
 
 import * as Constants from '~/common/constants';

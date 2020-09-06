@@ -21,8 +21,7 @@ const STYLES_TITLE_TEXT = css`
   white-space: nowrap;
   padding-left: 8px;
   font-size: 1.2rem;
-  display: flex;
-  font-family: ${Constants.fonts.demi};
+  font-family: ${Constants.fonts.bold};
   cursor: pointer;
 `;
 
