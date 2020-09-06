@@ -8,7 +8,7 @@ import DocumentationSidebarTitle from '~/components/DocumentationSidebarTitle';
 import VersionSelector from '~/components/VersionSelector';
 
 const STYLES_SIDEBAR = css`
-  padding: 24px;
+  padding: 16px;
   width: 280px;
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {

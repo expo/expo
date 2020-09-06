@@ -4,48 +4,33 @@ import NextLink from 'next/link';
 import * as React from 'react';
 import * as Constants from '~/common/constants';
 import stripVersionFromPath from '~/common/stripVersionFromPath';
+import ChevronDown from '~/components/icons/ChevronDown';
 
 const STYLES_TITLE = css`
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   position: relative;
   margin-bottom: 16px;
   text-decoration: none;
   font-family: ${Constants.fontFamilies.demi};
   user-select: none;
+  background: ${Constants.expoColors.gray[200]};
+  padding: 8px 16px;
+  border-radius: 4px;
+  color: ${Constants.expoColors.black};
+
   :hover {
     cursor: pointer;
   }
 `;
 
 const STYLES_SIDEBAR_INDENT = css`
-  display: block;
-  border-left: 1px solid ${Constants.expoColors.gray[250]};
   padding-left: 16px;
 `;
 
-const STYLES_ACTIVE = css`
-  color: ${Constants.expoColors.black};
-
-  :visited {
-    color: ${Constants.expoColors.gray[600]};
-  }
-
-  :hover {
-    color: ${Constants.expoColors.gray[600]};
-  }
-`;
-
-const STYLES_DEFAULT = css`
-  color: ${Constants.expoColors.gray[600]};
-  transition: 200ms ease color;
-
-  :visited {
-    color: ${Constants.expoColors.gray[600]};
-  }
-
-  :hover {
-    color: ${Constants.expoColors.gray[600]};
-  }
+const STYLES_OPEN_CHEVRON_ICON = css`
+  transform: rotate(180deg);
 `;
 
 class Arrow extends React.Component {
@@ -53,7 +38,7 @@ class Arrow extends React.Component {
     return (
       <i
         className={`fas fa-chevron-${this.props.isOpen ? 'up' : 'down'}`}
-        style={{ position: 'absolute', right: 0 }}
+        style={{ position: 'absolute', right: 8, top: 5 }}
       />
     );
   }
@@ -143,11 +128,9 @@ export default class DocumentationSidebarGroup extends React.Component {
   render() {
     return (
       <div>
-        <a
-          className={`${STYLES_TITLE} ${this.state.isOpen ? STYLES_ACTIVE : STYLES_DEFAULT}`}
-          onClick={this._toggleIsOpen}>
+        <a className={STYLES_TITLE} onClick={this._toggleIsOpen}>
           {this.props.info.name}
-          <Arrow isOpen={this.state.isOpen} />
+          <ChevronDown size={16} className={this.state.isOpen && STYLES_OPEN_CHEVRON_ICON} />
         </a>
         {this.state.isOpen ? (
           <div className={STYLES_SIDEBAR_INDENT}>{this.props.children}</div>

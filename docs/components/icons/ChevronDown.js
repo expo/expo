@@ -3,8 +3,10 @@ import * as React from 'react';
 export default props => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    height="12px"
+    height={props.size}
+    width={props.size}
     style={props.style}
+    className={props.className}
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"

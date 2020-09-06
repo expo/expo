@@ -8,19 +8,20 @@ import stripVersionFromPath from '~/common/stripVersionFromPath';
 const STYLES_LINK = css`
   display: block;
   text-decoration: none;
-  margin-bottom: 12px;
 `;
 
 const STYLES_ACTIVE = css`
   font-family: ${Constants.fontFamilies.demi};
   color: ${Constants.colors.expoLighter};
+  position: relative;
+  left -7px;
 
   :visited {
-    color: ${Constants.colors.expo};
+    color: ${Constants.expoColors.primary[500]};
   }
 
   :hover {
-    color: ${Constants.colors.expo};
+    color: ${Constants.expoColors.primary[500]};
   }
 `;
 
@@ -34,8 +35,26 @@ const STYLES_DEFAULT = css`
   }
 
   :hover {
-    color: ${Constants.colors.expo};
+    color: ${Constants.expoColors.primary[500]};
   }
+`;
+
+const STYLES_ACTIVE_CONTAINER = css`
+  display: flex;
+  margin-bottom: 12px;
+  cursor: pointer;
+`;
+
+const STYLES_ACTIVE_BULLET = css`
+  min-height: 6px;
+  min-width: 6px;
+  height: 6px;
+  width: 6px;
+  background-color: ${Constants.expoColors.primary[500]};
+  border-radius: 4px;
+  position: relative;
+  left -12px;
+  top: 7px;
 `;
 
 export default class DocumentationSidebarLink extends React.Component {
@@ -78,11 +97,14 @@ export default class DocumentationSidebarLink extends React.Component {
 
     return (
       <NextLink href={this.props.info.href} as={this.props.info.as || this.props.info.href}>
-        <a
-          {...customDataAttributes}
-          className={`${STYLES_LINK} ${this.isSelected() ? STYLES_ACTIVE : STYLES_DEFAULT}`}>
-          {this.props.children}
-        </a>
+        <div className={STYLES_ACTIVE_CONTAINER}>
+          {this.isSelected() && <div className={STYLES_ACTIVE_BULLET} />}
+          <a
+            {...customDataAttributes}
+            className={`${STYLES_LINK} ${this.isSelected() ? STYLES_ACTIVE : STYLES_DEFAULT}`}>
+            {this.props.children}
+          </a>
+        </div>
       </NextLink>
     );
   }

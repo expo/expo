@@ -11,6 +11,9 @@ const STYLES_TITLE = css`
   text-decoration: none;
   border-bottom-color: #ccc;
   font-family: ${Constants.fontFamilies.demi};
+  border-bottom: 1px solid ${Constants.expoColors.gray[250]};
+  padding-bottom: 0.25rem;
+  margin-left: -8px;
 `;
 
 const STYLES_ACTIVE = css`
