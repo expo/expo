@@ -13,7 +13,7 @@ Let's imagine that our designer has provided us with a beautiful logo:
 
 Save this image to the `assets` directory inside of your project and call it `logo.png`.
 
-> 💡 An "asset" is any file that your project uses that is not code. Images, videos, sounds, and fonts are all considered to be assets.
+> 💡 An "asset" is any file that your project uses that is not code. Images, videos, sounds, and fonts are all considered to be assets. 
 
 ## Displaying the image in the app
 
@@ -21,20 +21,17 @@ We have displayed text using the `Text` component from React Native, and we can 
 
 ```js
 import React from 'react';
-import {
-  /* @info Add the Image component to your list of imports */ Image,
-  /* @end */ StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { /* @info Add the Image component to your list of imports */ Image, /* @end */ StyleSheet, Text, View } from 'react-native';
 /* @info Import the logo image */ import logo from './assets/logo.png'; /* @end */
+
 
 export default function App() {
   return (
     <View style={styles.container}>
-      /* @info Use the Image component */{' '}
-      <Image source={logo} style={{ width: 305, height: 159 }} /> /* @end */
-      <Text style={{ color: '#888', fontSize: 18 }}>
+      /* @info Use the Image component */ <Image source={logo} style={{ width: 305, height: 159 }} /> /* @end */
+
+
+      <Text style={{color: '#888', fontSize: 18}}> 
         To share a photo from your phone with a friend, just press the button below!
       </Text>
     </View>
@@ -67,12 +64,10 @@ export default function App() {
   return (
     <View style={styles.container}>
       /* @info We can use a URL instead of importing the image from your local assets */
-      <Image
-        source={{ uri: 'https://i.imgur.com/TkIrScD.png' }}
-        style={{ width: 305, height: 159 }}
-      />
-      /* @end */
-      <Text style={{ color: '#888', fontSize: 18 }}>
+      <Image source={{ uri: "https://i.imgur.com/TkIrScD.png" }} style={{ width: 305, height: 159 }} />
+    /* @end */
+
+      <Text style={{color: '#888', fontSize: 18}}> 
         To share a photo from your phone with a friend, just press the button below!
       </Text>
     </View>
@@ -108,10 +103,7 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 export default function App() {
   return (
     <View style={styles.container}>
-      <Image
-        source={{ uri: 'https://i.imgur.com/TkIrScD.png' }}
-        /* @info See below for the styles! */ style={styles.logo} /* @end */
-      />
+      <Image source={{ uri: "https://i.imgur.com/TkIrScD.png" }} /* @info See below for the styles! */ style={styles.logo} /* @end *//>
 
       <Text /* @info See below for the styles! */ style={styles.instructions} /* @end */>
         To share a photo from your phone with a friend, just press the button below!
@@ -137,7 +129,8 @@ const styles = StyleSheet.create({
     color: '#888',
     fontSize: 18,
     marginHorizontal: 15,
-  } /* @end */,
+  }, /* @end */
+
 });
 ```
 
