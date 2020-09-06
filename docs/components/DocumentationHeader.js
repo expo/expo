@@ -54,13 +54,11 @@ const STYLES_NAV = css`
   align-items: center;
   justify-content: space-between;
   position: relative;
-  background-color: white;
+  background-color: ${Constants.expoColors.white};
   z-index: 2;
   margin: 0 auto;
   padding: 0 16px;
   height: 60px;
-  width: auto;
-  max-width: 1440px;
   box-sizing: unset;
 
   @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
@@ -139,17 +137,17 @@ const STYLES_MENU_BUTTON = css`
 
 const SECTION_LINK = css`
   text-decoration: none;
-  font-weight: 900;
-  font-family: expo-brand-demi, sans-serif;
+  font-family: ${Constants.fontFamilies.demi};
 
   padding: 0 16px;
   height: 40px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-radius: 2px;
+  border-radius: 4px;
+
   :hover {
-    background-color: ${Constants.expoColors.gray[100]};
+    background-color: ${Constants.expoColors.gray[200]};
   }
 
   @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
@@ -163,7 +161,7 @@ const SECTION_LINK_ACTIVE = css`
 `;
 
 const SECTION_LINK_TEXT = css`
-  color: #000 !important;
+  color: ${Constants.colors.black90} !important;
   bottom: 0;
   left: 0;
   right: 0;
@@ -185,9 +183,6 @@ function SectionContainer({ spaceBetween = 0, spaceAround = 0, children, style, 
 
 export default class DocumentationHeader extends React.PureComponent {
   render() {
-    const HIDE_ON_MOBILE = true;
-    const SHOW_ON_MOBILE = false;
-
     return (
       <div>
         <header className={`${STYLES_NAV} ${STYLES_STICKY}`}>
@@ -205,7 +200,7 @@ export default class DocumentationHeader extends React.PureComponent {
                 </a>
               </Link>
 
-              {this._renderSectionLinks(HIDE_ON_MOBILE)}
+              {this._renderSectionLinks(true)}
             </div>
           </div>
           <div className={STYLES_RIGHT}>
@@ -213,7 +208,7 @@ export default class DocumentationHeader extends React.PureComponent {
               <AlgoliaSearch
                 router={this.props.router}
                 version={this.props.version}
-                hiddenOnMobile={HIDE_ON_MOBILE}
+                hiddenOnMobile={true}
               />
             )}
 
@@ -240,11 +235,11 @@ export default class DocumentationHeader extends React.PureComponent {
             <AlgoliaSearch
               router={this.props.router}
               version={this.props.version}
-              hiddenOnMobile={SHOW_ON_MOBILE}
+              hiddenOnMobile={false}
               onToggleSearch={this.props.onToggleSearch}
             />
           ) : (
-            this._renderSectionLinks(SHOW_ON_MOBILE)
+            this._renderSectionLinks(false)
           )}
         </header>
         <div className={`${this.props.isMobileSearchActive && STYLES_SEARCH_OVERLAY}`} />

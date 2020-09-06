@@ -12,7 +12,7 @@ const attributes = {
 };
 
 const STYLES_CODE_BLOCK = css`
-  color: ${Constants.colors.black80};
+  color: ${Constants.colors.black90};
   font-family: ${Constants.fontFamilies.mono};
   font-size: 13px;
   line-height: 20px;
@@ -44,7 +44,7 @@ const STYLES_INLINE_CODE = css`
   margin: 2px;
   position: relative;
   top: -1px;
-  line-height: 20px;
+  line-height: 100%;
   max-width: 100%;
 
   word-wrap: break-word;
@@ -63,14 +63,15 @@ const STYLES_INLINE_CODE = css`
 `;
 
 const STYLES_CODE_CONTAINER = css`
-  border: 1px solid ${Constants.colors.border};
-  padding: 24px;
-  margin: 16px 0 16px 0;
+  border: 1px solid ${Constants.expoColors.gray[250]};
+  padding: 16px;
+  margin: 16px 0;
   white-space: pre;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
-  background-color: rgba(0, 1, 31, 0.03);
-  line-height: 1.2rem;
+  background-color: ${Constants.expoColors.gray[100]};
+  line-height: 120%;
+  border-radius: 4px;
 `;
 
 export class Code extends React.Component {

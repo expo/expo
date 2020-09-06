@@ -3,13 +3,14 @@ import styled, { keyframes, css } from 'react-emotion';
 import * as React from 'react';
 import * as Constants from '~/common/constants';
 
+import { paragraph } from './typography';
+
 const attributes = {
   'data-text': true,
 };
 
 const STYLES_PARAGRAPH = css`
-  font-size: 1rem;
-  line-height: 1.725rem;
+  ${paragraph}
   margin-bottom: 1.5rem;
 `;
 
@@ -20,9 +21,10 @@ export const P = ({ children }) => (
 );
 
 const STYLES_BOLD_PARAGRAPH = css`
+  ${paragraph}
+  font-size: inherit;
   font-family: ${Constants.fontFamilies.bold};
-  font-weight: 400;
-  letter-spacing: 0.3px;
+  font-weight: 500;
 `;
 
 const B = ({ children }) => <strong className={STYLES_BOLD_PARAGRAPH}>{children}</strong>;
@@ -30,10 +32,9 @@ const B = ({ children }) => <strong className={STYLES_BOLD_PARAGRAPH}>{children}
 P.B = B;
 
 const STYLES_PARAGRAPH_DIV = css`
-  font-size: 1rem;
-  margin-bottom: 1.4rem;
-  line-height: 150%;
-  letterspacing: -0.011em;
+  ${paragraph}
+  display: block;
+  margin-bottom: 1.5rem;
 
   &.is-wider {
     max-width: 1200px;
@@ -50,22 +51,21 @@ const STYLES_PARAGRAPH_DIV = css`
 export const PDIV = ({ children }) => {
   const isWider = children.props && children.props.snackId;
   return (
-    <div {...attributes} className={`${STYLES_PARAGRAPH_DIV} ${isWider ? 'is-wider' : ''}`}>
+    <p {...attributes} className={`${STYLES_PARAGRAPH_DIV} ${isWider ? 'is-wider' : ''}`}>
       {children}
-    </div>
+    </p>
   );
 };
 
 const STYLES_BLOCKQUOTE = css`
-  font-family: ${Constants.fontFamilies.book};
-  padding: 20px;
-  padding-top: 16px;
+  ${paragraph}
+  padding: 16px;
   margin-bottom: 1.5rem;
-  color: ${Constants.colors.black90};
   border: 1px solid ${Constants.expoColors.gray[250]};
+  background: ${Constants.expoColors.gray[100]};
   border-radius: 4px;
 
-  div {
+  p {
     margin: 0;
   }
 `;

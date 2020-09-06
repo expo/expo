@@ -3,19 +3,18 @@ import styled, { keyframes, css } from 'react-emotion';
 import * as React from 'react';
 import * as Constants from '~/common/constants';
 
+import { h1, h2, h3 } from './typography';
+
 const attributes = {
   'data-heading': true,
 };
 
 const STYLES_H1 = css`
-  font-family: ${Constants.fonts.bold};
-  font-size: 2.4rem;
-  line-height: 2.75rem;
+  ${h1}
+  margin-top: 0.5rem;
   margin-bottom: 1.5rem;
-  margin-top: 0.1rem;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid ${Constants.colors.border};
-  letter-spacing: -0.022em;
+  border-bottom: 1px solid ${Constants.expoColors.gray[250]};
 `;
 
 export const H1 = ({ children }) => (
@@ -25,14 +24,11 @@ export const H1 = ({ children }) => (
 );
 
 const STYLES_H2 = css`
-  font-family: ${Constants.fonts.bold};
-  line-height: 150%;
-  font-size: 1.5rem;
+  ${h2}
   margin-bottom: 1rem;
   margin-top: 2.2rem;
   padding-bottom: 0.25rem;
-  border-bottom: 1px solid ${Constants.colors.border};
-  letter-spacing: -0.018em;
+  border-bottom: 1px solid ${Constants.expoColors.gray[250]};
 `;
 
 export const H2 = ({ children }) => (
@@ -42,9 +38,7 @@ export const H2 = ({ children }) => (
 );
 
 const STYLES_H3 = css`
-  font-size: 1.1rem;
-  line-height: 150%;
-  font-family: ${Constants.fonts.bold};
+  ${h3}
   margin-bottom: 1rem;
   margin-top: 2rem;
 

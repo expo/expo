@@ -85,7 +85,7 @@ export default class SnackInline extends React.Component {
             />
           )}
           <button className="snack-inline-example-button" disabled={!this.state.ready}>
-            Try this example on Snack <OpenIcon />
+            <OpenIcon /> Try this example on Snack
           </button>
         </form>
       </div>

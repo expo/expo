@@ -6,7 +6,7 @@ export const globalTables = `
     font-size: 0.8rem;
     line-height: 1.2rem;
     border-collapse: collapse;
-    border: 1px solid ${Constants.colors.border};
+    border: 1px solid ${Constants.expoColors.gray[250]};
     border-radius: 4px;
     width: 100%;
   }
@@ -18,8 +18,8 @@ export const globalTables = `
 
   td, th {
     padding: 16px;
-    border-bottom: 1px solid ${Constants.colors.border};
-    border-right: 1px solid ${Constants.colors.border};
+    border-bottom: 1px solid ${Constants.expoColors.gray[250]};
+    border-right: 1px solid ${Constants.expoColors.gray[250]};
 
     :last-child {
       border-right: 0px;

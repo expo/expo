@@ -5,6 +5,7 @@ import { css } from 'react-emotion';
 import * as Constants from '~/common/constants';
 import * as Utilities from '~/common/utilities';
 import { LATEST_VERSION } from '~/common/versions';
+import { paragraph } from '~/components/base/typography';
 
 const STYLES_INPUT = css`
   display: flex;
@@ -21,17 +22,16 @@ const STYLES_INPUT = css`
 
   .searchbox__input,
   input {
+    ${paragraph}
     -webkit-appearance: none;
-    color: ${Constants.colors.black80};
     box-sizing: border-box;
     width: 38vw;
     max-width: ${Constants.breakpoints.mobileStrictValue - 32}px;
-    font-size: 16px;
-    padding: 1px 36px 0 36px;
-    border-radius: 2px;
+    padding: 0 16px 0 40px;
+    border-radius: 4px;
     height: 40px;
     outline: 0;
-    border: 1px solid ${Constants.colors.border};
+    border: none;
     background-color: ${Constants.expoColors.gray[200]};
   }
 
@@ -49,7 +49,7 @@ const STYLES_INPUT = css`
     transform: translateY(-50%);
     height: 20px;
     width: 20px;
-    right: 8px;
+    right: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -63,7 +63,7 @@ const STYLES_INPUT = css`
     height: 20px;
     width: 20px;
     display: flex;
-    left: 8px;
+    left: 12px;
     align-items: center;
     justify-content: center;
     pointer-events: none;

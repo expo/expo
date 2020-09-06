@@ -15,7 +15,7 @@ export const globalExtras = `
   }
 
   blockquote {
-    background: #fbfbfb;
+    background: ${Constants.expoColors.gray[100]};
   }
 
   details {
@@ -45,7 +45,6 @@ export const globalExtras = `
     margin-top: 10px;
     margin-right: 15px;
     line-height: 1.725rem;
-    letter-spacing: 0.2px;
   }
 
   details summary:hover {
@@ -59,34 +58,36 @@ export const globalExtras = `
   .snack-inline-example-button {
     display: inline-block;
     border: none;
-    border-radius: 3px;
-    padding: 0.8rem 1rem;
+    border-radius: 4px;
+    padding: 0rem 1rem;
+    height: 40px;
     margin: 0;
     margin-bottom: 0.5rem;
     text-decoration: none;
-    background: #5844ed;
-    color: #ffffff;
-    font-family: sans-serif;
+    background: ${Constants.expoColors.primary[500]};;
+    color: ${Constants.expoColors.white};;
+    font-family: ${Constants.fontFamilies.demi};;
     font-size: 1rem;
     cursor: pointer;
     text-align: center;
-    transition: background 250ms ease-in-out, 
-                transform 150ms ease;
     -webkit-appearance: none;
     -moz-appearance: none;
+    transition: all 170ms linear;
   }
 
   .snack-inline-example-button:hover, .snack-inline-example-button:focus  {
-    background: #322596;
+    box-shadow: 0 2px 8px rgba(0, 1, 0, 0.2);
+    opacity: 0.85;
   }
 
   .snack-inline-example-button:focus {
-      outline: 1px solid #fff;
-      outline-offset: -4px;
+    outline: 0;
+    border: 0;
   }
 
   .snack-inline-example-button:active {
-      transform: scale(0.99);
+    outline: 0;
+    border: 0;
   }
 
   .diff-container {

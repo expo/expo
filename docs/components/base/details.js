@@ -11,7 +11,6 @@ const STYLES_SUMMARY = css`
   margin-bottom: 0px;
   font-family: ${Constants.fontFamilies.bold};
   font-weight: 400;
-  letter-spacing: 0.3px;
 `;
 
 export const ExpoKitDetails = ({ children }) => (

@@ -5,8 +5,8 @@ import * as Constants from '~/common/constants';
 
 const STYLES_PROMPT = css`
   background-color: ${Constants.colors.black};
-  border-radius: 6px;
-  padding: 1.25em 2em;
+  border-radius: 4px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
   overflow-x: scroll;
