@@ -29,6 +29,13 @@ const STYLES_H2 = css`
   margin-top: 2.2rem;
   padding-bottom: 0.25rem;
   border-bottom: 1px solid ${Constants.expoColors.gray[250]};
+
+  code {
+    ${h2}
+    font-family: ${Constants.fontFamilies.mono};
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
 `;
 
 export const H2 = ({ children }) => (
