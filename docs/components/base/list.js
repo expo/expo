@@ -56,11 +56,6 @@ const STYLES_LIST_ITEM = css`
   }
 `;
 
-const STYLES_LIST_ITEM_BODY = css`
-  // font-size: 1rem;
-  // line-height: 1.8rem;
-`;
-
 export const LI = ({ children }) => {
   return <li className={`${STYLES_LIST_ITEM} docs-list-item`}>{children}</li>;
 };

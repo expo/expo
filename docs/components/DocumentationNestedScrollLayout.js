@@ -44,8 +44,8 @@ const STYLES_CONTAINER = css`
   height: 100vh;
   overflow; hidden;
   margin: 0 auto 0 auto;
-  border-left: 1px solid ${Constants.colors.border};
-  border-right: 1px solid ${Constants.colors.border};
+  border-left: 1px solid ${Constants.expoColors.gray[250]};
+  border-right: 1px solid ${Constants.expoColors.gray[250]};
   background: #f9f9f9;
 
   display: flex;
