@@ -69,6 +69,7 @@ const STYLES_NAV = css`
 const STYLES_MOBILE_NAV = css`
   padding: 0px;
   height: 56px;
+  background: ${Constants.expoColors.white};
 
   @media screen and (min-width: ${Constants.breakpoints.mobileStrict}) {
     display: none;
@@ -119,7 +120,6 @@ const STYLES_MENU_BUTTON_CONTAINER = css`
 const STYLES_MENU_BUTTON = css`
   display: none;
   cursor: pointer;
-  height: 100%;
   align-items: center;
   justify-content: center;
   height: 40px;
