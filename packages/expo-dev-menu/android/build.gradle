@@ -68,7 +68,6 @@ task copyAssets(type: Copy) {
 
 project.afterEvaluate {
   packageDebugAssets.dependsOn copyAssets
-  packageReleaseAssets.dependsOn copyAssets
 }
 
 repositories {
