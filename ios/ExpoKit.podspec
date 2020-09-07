@@ -13,10 +13,20 @@ Pod::Spec.new do |s|
   s.platform = :ios, "10.0"
   s.default_subspec = "Core"
   s.source = { :git => "http://github.com/expo/expo.git" }
+  s.xcconfig = {
+    'CLANG_CXX_LANGUAGE_STANDARD' => 'gnu++14',
+    'SYSTEM_HEADER_SEARCH_PATHS' => "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Folly\" \"$(PODS_ROOT)/Headers/Private/React-Core\"",
+    'OTHER_CPLUSPLUSFLAGS' => [
+ 					"$(OTHER_CFLAGS)",
+ 					"-DFOLLY_NO_CONFIG",
+ 					"-DFOLLY_MOBILE=1",
+ 					"-DFOLLY_USE_LIBCPP=1"
+    ]
+  }
 
   s.subspec "Core" do |ss|
-    ss.source_files = "Exponent/**/*.{h,m}", "../template-files/keys.json"
-    ss.preserve_paths = "Exponent/**/*.{h,m}"
+    ss.source_files = "Exponent/**/*.{h,m,mm,cpp}", "../template-files/keys.json"
+    ss.preserve_paths = "Exponent/**/*.{h,m,mm,cpp}"
     ss.exclude_files = "Exponent/Supporting/**", "Exponent/Versioned/Optional/**/*.{h,m}"
 
     ss.dependency 'Amplitude', '~> 6.0.0'
