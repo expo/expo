@@ -1233,7 +1233,7 @@ CACHE_KEYS:
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
       Debug: 2376812207103a5cb27166faed1e7156
-      Release: 2376812207103a5cb27166faed1e7156
+      Release: 54cd016a132b8e3f39b979da82ecabf0
     FILES:
       - "${PODS_CONFIGURATION_BUILD_DIR}/EXDevMenu/EXDevMenu.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle"
@@ -1243,7 +1243,7 @@ CACHE_KEYS:
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
       Debug: 7b3d396c9e7e40fcd86b4c7f7061e278
-      Release: 7b3d396c9e7e40fcd86b4c7f7061e278
+      Release: 5ddbdc018e1ac68550b6ff2d7a766119
   PromisesObjC:
     BUILD_SETTINGS_CHECKSUM:
       PromisesObjC:

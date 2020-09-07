@@ -1,3 +1,11 @@
+Alamofire:
+  LABEL: Alamofire
+  PROJECT_PATH: Alamofire.xcodeproj
+  UUID: 81B7E9B7CD0CADA087A4BB042FBA92E7
+AlamofireRouter:
+  LABEL: AlamofireRouter
+  PROJECT_PATH: AlamofireRouter.xcodeproj
+  UUID: 99FAD2131028EB45782ACC35269F19EA
 Amplitude:
   LABEL: Amplitude
   PROJECT_PATH: Amplitude.xcodeproj
@@ -22,6 +30,10 @@ Branch:
   LABEL: Branch
   PROJECT_PATH: Branch.xcodeproj
   UUID: 32AB2597F26D238AAF12A9F8A95B992E
+Debug:
+  LABEL: Debug
+  PROJECT_PATH: Debug.xcodeproj
+  UUID: B45E9125D995ECFABBE857A099AB9E5B
 DoubleConversion:
   LABEL: DoubleConversion
   PROJECT_PATH: DoubleConversion.xcodeproj
