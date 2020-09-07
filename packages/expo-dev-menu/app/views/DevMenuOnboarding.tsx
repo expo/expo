@@ -1,6 +1,6 @@
-import Constants from 'expo-constants';
 import React from 'react';
 import { Dimensions, Platform, StyleSheet, Text, View } from 'react-native';
+import { isDevice } from '../DevMenuInternal';
 
 import * as DevMenuInternal from '../DevMenuInternal';
 import { StyledText } from '../components/Text';
@@ -24,7 +24,7 @@ const KEYBOARD_CODES = {
 const MENU_NARROW_SCREEN = Dimensions.get('window').width < 375;
 const ONBOARDING_MESSAGE = (() => {
   let fragment;
-  if (Constants.isDevice) {
+  if (isDevice) {
     if (Platform.OS === 'ios') {
       fragment =
         'you can shake your device or long press anywhere on the screen with three fingers';

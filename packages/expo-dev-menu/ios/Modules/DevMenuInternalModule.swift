@@ -15,6 +15,16 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
   }
 
   // MARK: JavaScript API
+
+  @objc
+  func constantsToExport() -> [String : Any] {
+#if TARGET_IPHONE_SIMULATOR
+    let isDevice = false
+#else
+    let isDevice = true
+#endif
+    return ["isDevice": isDevice]
+  }
   
   @objc
   func loadFontsAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
