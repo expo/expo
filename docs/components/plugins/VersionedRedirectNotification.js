@@ -11,7 +11,7 @@ const CONTAINER_STYLE = css`
   margin-bottom: 1.5rem;
   border-radius: 4px;
 
-  > p {
+  div {
     margin-bottom: 0;
   }
 `;

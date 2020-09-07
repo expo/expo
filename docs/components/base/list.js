@@ -59,7 +59,7 @@ const STYLES_LIST_ITEM = css`
     color: ${Constants.colors.black80};
   }
 
-  > p {
+  > div {
     display: inline;
   }
 `;

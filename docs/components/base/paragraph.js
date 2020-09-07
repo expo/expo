@@ -51,9 +51,9 @@ const STYLES_PARAGRAPH_DIV = css`
 export const PDIV = ({ children }) => {
   const isWider = children.props && children.props.snackId;
   return (
-    <p {...attributes} className={`${STYLES_PARAGRAPH_DIV} ${isWider ? 'is-wider' : ''}`}>
+    <div {...attributes} className={`${STYLES_PARAGRAPH_DIV} ${isWider ? 'is-wider' : ''}`}>
       {children}
-    </p>
+    </div>
   );
 };
 
@@ -65,7 +65,7 @@ const STYLES_BLOCKQUOTE = css`
   background: ${Constants.expoColors.gray[100]};
   border-radius: 4px;
 
-  p {
+  div {
     margin: 0;
   }
 `;
