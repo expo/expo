@@ -20,6 +20,12 @@ type Package = {
   buildDirRelative: string;
 };
 
+const UNBUILDABLE_PACKAGES_NAMES = [
+  'expo-module-template',
+  'expo-dev-menu',
+  'expo-dev-menu-interface',
+];
+
 const EXPO_ROOT_DIR = Directories.getExpoRepositoryRootDir();
 const ANDROID_DIR = Directories.getAndroidDir();
 
@@ -147,7 +153,7 @@ async function _uncommentWhenDistributing(filenames: string[]): Promise<void> {
   }
 }
 
-async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Promise<void> {
+async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Promise<number> {
   let appBuildGradle = path.join(ANDROID_DIR, 'app', 'build.gradle');
   let rootBuildGradle = path.join(ANDROID_DIR, 'build.gradle');
   let expoViewBuildGradle = path.join(ANDROID_DIR, 'expoview', 'build.gradle');
@@ -262,13 +268,6 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
     );
   }
 
-  // Copy JSC
-  await fs.remove(path.join(ANDROID_DIR, 'maven/org/webkit/'));
-  await fs.copy(
-    path.join(ANDROID_DIR, '../node_modules/jsc-android/dist/org/webkit'),
-    path.join(ANDROID_DIR, 'maven/org/webkit/')
-  );
-
   if (failedPackages.length) {
     console.log(' ❌  The following packages failed to build:');
     console.log(failedPackages);
@@ -278,16 +277,20 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
       )}\``
     );
   }
+
+  return failedPackages.length;
 }
 
 async function action(options: ActionOptions) {
   process.on('SIGINT', _exitHandler);
   process.on('SIGTERM', _exitHandler);
 
-  const detachableUniversalModules = await _findUnimodules(path.join(EXPO_ROOT_DIR, 'packages'));
+  const detachableUniversalModules = (
+    await _findUnimodules(path.join(EXPO_ROOT_DIR, 'packages'))
+  ).filter((unimodule) => !UNBUILDABLE_PACKAGES_NAMES.includes(unimodule.name));
 
   // packages must stay in this order --
-  // expoview MUST be last
+  // ReactAndroid MUST be first and expoview MUST be last
   const packages: Package[] = [REACT_ANDROID_PKG, ...detachableUniversalModules, EXPOVIEW_PKG];
   let packagesToBuild: string[] = [];
 
@@ -360,10 +363,13 @@ async function action(options: ActionOptions) {
   }
 
   try {
-    await _updateExpoViewAsync(
+    const failedPackagesCount = await _updateExpoViewAsync(
       packages.filter((pkg) => packagesToBuild.includes(pkg.name)),
       options.sdkVersion
     );
+    if (failedPackagesCount > 0) {
+      process.exitCode = 1;
+    }
   } catch (e) {
     await _exitHandler();
     throw e;
