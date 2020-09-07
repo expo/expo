@@ -11,7 +11,7 @@ const STYLES_TITLE = css`
   font-weight: 400;
   line-height: 1.625rem;
   font-size: 1.1rem;
-  margin-bottom: 0.25rem;
+  margin-bottom: 1 rem;
 `;
 
 const STYLES_CELL = css`

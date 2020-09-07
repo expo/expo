@@ -9,6 +9,7 @@ import VersionSelector from '~/components/VersionSelector';
 
 const STYLES_SIDEBAR = css`
   padding: 16px;
+  min-width: 280px;
   width: 280px;
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {

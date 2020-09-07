@@ -12,9 +12,9 @@ export const PendingCircle = ({ size = 24 }) => (
     <path
       d="M11.973 7.487v4.486l2.991 1.495m4.487-1.495a7.478 7.478 0 11-14.956 0 7.478 7.478 0 0114.956 0z"
       stroke="#fff"
-      stroke-width="1.496"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="1.496"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 );

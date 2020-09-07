@@ -59,8 +59,7 @@ const STYLES_NAV = css`
   padding: 0 16px;
   height: 60px;
   box-sizing: unset;
-
-  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     border-bottom: 1px solid ${Constants.expoColors.gray[250]};
   }
 `;
@@ -69,14 +68,16 @@ const STYLES_MOBILE_NAV = css`
   padding: 0px;
   height: 56px;
   background: ${Constants.expoColors.white};
+  display: none;
 
-  @media screen and (min-width: ${Constants.breakpoints.mobileStrict}) {
-    display: none;
+  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+    display: block;
+    border-bottom: 1px solid ${Constants.expoColors.gray[250]};
   }
 `;
 
 const STYLES_STICKY = css`
-  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     position: sticky;
     top: 0px;
     z-index: 3;
@@ -84,7 +85,7 @@ const STYLES_STICKY = css`
 `;
 
 const STYLES_SEARCH_OVERLAY = css`
-  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     z-index: 1;
     position: fixed;
     top: 0px;
@@ -97,7 +98,7 @@ const STYLES_SEARCH_OVERLAY = css`
 `;
 
 const STYLES_HIDDEN_ON_MOBILE = css`
-  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     display: none;
   }
 `;
@@ -105,7 +106,7 @@ const STYLES_HIDDEN_ON_MOBILE = css`
 const SECTION_LINKS_WRAPPER = css`
   margin-left: 16px;
 
-  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     margin-left: 0px;
   }
 `;
@@ -129,7 +130,7 @@ const STYLES_MENU_BUTTON = css`
     background-color: ${Constants.expoColors.gray[100]};
   }
 
-  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     display: grid;
   }
 `;
@@ -149,7 +150,7 @@ const SECTION_LINK = css`
     background-color: ${Constants.expoColors.gray[200]};
   }
 
-  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     height: 56px;
     border-radius: 0px;
   }

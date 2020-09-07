@@ -27,19 +27,19 @@ const STYLES_DOCUMENT = css`
     border-bottom: 0px;
   }
 
-  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     padding: 20px 16px 48px 16px;
   }
 `;
 
 const HIDDEN_ON_MOBILE = css`
-  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     display: none;
   }
 `;
 
 const HIDDEN_ON_DESKTOP = css`
-  @media screen and (min-width: ${Constants.breakpoints.mobileStrict}) {
+  @media screen and (min-width: ${Constants.breakpoints.mobile}) {
     display: none;
   }
 `;
@@ -73,7 +73,7 @@ export default class DocumentationPage extends React.Component {
   }
 
   _handleResize = () => {
-    if (WindowUtils.getViewportSize().width >= Constants.breakpoints.mobileStrictValue) {
+    if (WindowUtils.getViewportSize().width >= Constants.breakpoints.mobileValue) {
       window.scrollTo(0, 0);
     }
   };

@@ -69,11 +69,11 @@ const STYLES_HEADER = css`
   flex-shrink: 0;
   width: 100%;
 
-  @media screen and (min-width: ${Constants.breakpoints.mobileStrict}) {
+  @media screen and (min-width: ${Constants.breakpoints.mobile}) {
     border-bottom: 1px solid ${Constants.expoColors.gray[250]};
   }
 
-  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     position: sticky;
     top: -57px;
     z-index: 3;
@@ -81,7 +81,7 @@ const STYLES_HEADER = css`
 `;
 
 const SHOW_SEARCH_AND_MENU = css`
-  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     top: 0px;
   }
 `;
@@ -108,7 +108,7 @@ const STYLES_LEFT = css`
   transition: 200ms ease max-width;
 
   @media screen and (max-width: 1200px) {
-    max-width: 240px;
+    max-width: 280px;
   }
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {

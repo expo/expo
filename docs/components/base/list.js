@@ -18,6 +18,10 @@ const STYLES_UNORDERED_LIST = css`
   list-style: none;
   margin-left: 1.5rem;
   margin-bottom: 1.5rem;
+
+  .anchor-icon {
+    display: none;
+  }
 `;
 
 export const UL = ({ children }) => (
@@ -50,9 +54,13 @@ const STYLES_LIST_ITEM = css`
     content: '•';
     font-size: 130%;
     line-height: 0;
-    margin: 0 0.4rem 0 -1rem;
+    margin: 0 0.5rem 0 -1rem;
     position: relative;
     color: ${Constants.colors.black80};
+  }
+
+  > p {
+    display: inline;
   }
 `;
 

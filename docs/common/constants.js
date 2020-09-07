@@ -150,4 +150,5 @@ export const breakpoints = {
   mobile: '1024px',
   mobileStrict: '748px',
   mobileStrictValue: 748,
+  mobileValue: 1024,
 };

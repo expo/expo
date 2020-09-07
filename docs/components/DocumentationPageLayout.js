@@ -27,7 +27,7 @@ const STYLES_LEFT = css`
   transition: 200ms ease max-width;
 
   @media screen and (max-width: 1200px) {
-    max-width: 240px;
+    max-width: 280px;
   }
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {

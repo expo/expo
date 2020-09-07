@@ -12,9 +12,9 @@ export const XCircle = ({ size = 24 }) => (
     <path
       d="M16.5 7.5l-9 9M7.5 7.5l9 9"
       stroke="#fff"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 );

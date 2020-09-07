@@ -14,7 +14,7 @@ const STYLES_ACTIVE = css`
   font-family: ${Constants.fontFamilies.demi};
   color: ${Constants.colors.expoLighter};
   position: relative;
-  left -6px;
+  left -7px;
 
   :visited {
     color: ${Constants.expoColors.primary[500]};
