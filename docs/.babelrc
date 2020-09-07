@@ -3,11 +3,6 @@
     "next/babel"
   ],
   "plugins": [
-    ["module-resolver", {
-      "alias": {
-        "~": "."
-      }
-    }],
     "preval"
   ]
 }
