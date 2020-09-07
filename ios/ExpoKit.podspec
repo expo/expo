@@ -17,10 +17,10 @@ Pod::Spec.new do |s|
     'CLANG_CXX_LANGUAGE_STANDARD' => 'gnu++14',
     'SYSTEM_HEADER_SEARCH_PATHS' => "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Folly\" \"$(PODS_ROOT)/Headers/Private/React-Core\"",
     'OTHER_CPLUSPLUSFLAGS' => [
- 					"$(OTHER_CFLAGS)",
- 					"-DFOLLY_NO_CONFIG",
- 					"-DFOLLY_MOBILE=1",
- 					"-DFOLLY_USE_LIBCPP=1"
+      "$(OTHER_CFLAGS)",
+      "-DFOLLY_NO_CONFIG",
+      "-DFOLLY_MOBILE=1",
+      "-DFOLLY_USE_LIBCPP=1"
     ]
   }
 
