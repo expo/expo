@@ -21,7 +21,7 @@ import java.util.Map;
 import expo.modules.notifications.notifications.model.NotificationCategory;
 
 /**
- * A fairly straightforward {@link SharedPreferences} wrapper to be used by {@link ExpoNotificationSchedulerService}.
+ * A fairly straightforward {@link SharedPreferences} wrapper to be used by {@link NotificationSchedulingHelper}.
  * Saves and reads notification category information (identifiers, actions, and options) to and from persistent storage.
  * <p>
  * A notification category with identifier = 123abc will be persisted under key:

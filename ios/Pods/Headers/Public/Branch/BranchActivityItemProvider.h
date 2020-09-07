@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BranchActivityItemProvider.h
+../../../Branch/Branch-SDK/BranchActivityItemProvider.h

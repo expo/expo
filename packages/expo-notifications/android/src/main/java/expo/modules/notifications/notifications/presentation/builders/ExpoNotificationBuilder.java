@@ -211,6 +211,8 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
           ? requestPriority.getNativeValue()
           : NotificationPriority.DEFAULT.getNativeValue();
 
+      // TODO (barthap): This is going to be a dead code upon removing presentNotificationAsync()
+      // shouldShowAlert() will always be false here.
       if (getNotificationBehavior().shouldShowAlert()) {
         // Display as a heads-up notification, as per the behavior
         // while also allowing making the priority higher.

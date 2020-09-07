@@ -1,6 +1,6 @@
 ---
 title: Location
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-location'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-location'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
@@ -31,6 +31,8 @@ In order to use [Geofencing Methods](#geofencing-methods), the following require
 - `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [Permissions.LOCATION](../permissions/#permissionslocation) for more details.
 - Geofencing task must be defined in the top-level scope, using [TaskManager.defineTask](../task-manager/#taskmanagerdefinetasktaskname-task).
 - On iOS, there is a [limit of 20](https://developer.apple.com/documentation/corelocation/monitoring_the_user_s_proximity_to_geographic_regions) `regions` that can be simultaneously monitored.
+
+On Android, This module requires the permissions for approximate and exact device location. It also needs the foreground service permission to subscribe to location updates, while the app is in use. The `ACCESS_COARSE_LOCATION`, `ACCESS_FINE_LOCATION`, and `FOREGROUND_SERVICE` permissions are automatically added.
 
 ## Usage
 

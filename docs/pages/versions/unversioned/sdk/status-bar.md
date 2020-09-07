@@ -1,7 +1,7 @@
 ---
 id: statusbar
 title: StatusBar
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-status-bar'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-status-bar'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

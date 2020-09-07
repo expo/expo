@@ -58,6 +58,7 @@ export default class PermissionsScreen extends React.Component<object, State> {
   renderSinglePermissionsButtons() {
     const permissions: Array<[string, Permissions.PermissionType]> = [
       ['CAMERA', Permissions.CAMERA],
+      ['MOTION', Permissions.MOTION],
       ['AUDIO_RECORDING', Permissions.AUDIO_RECORDING],
       ['LOCATION', Permissions.LOCATION],
       ['USER_FACING_NOTIFICATIONS', Permissions.USER_FACING_NOTIFICATIONS],

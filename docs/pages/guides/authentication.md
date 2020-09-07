@@ -433,9 +433,6 @@ export default function App() {
 
 [c-facebook]: https://developers.facebook.com/
 
-> You can use the [`expo-facebook`](/versions/latest/sdk/facebook) to authenticate via the Facebook app, however this functionality is limited.
-
-- Learn more about [manually building a login flow](https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow/).
 - Native auth isn't available in the App/Play Store client because you need a custom URI scheme built into the bundle. The custom scheme provided by Facebook is `fb` followed by the **project ID** (ex: `fb145668956753819`):
   - **Standalone:**
     - Add `facebookScheme: 'fb<YOUR FBID>'` to your `app.config.js` or `app.json`
@@ -443,10 +440,10 @@ export default function App() {
   - **Bare:**
     - Run `npx uri-scheme add fb<YOUR FBID>`
     - Rebuild with `yarn ios` & `yarn android`
-- You can still test native auth in the client by using the Expo proxy `useProxy`
 - The `native` redirect URI **must** be formatted like `fbYOUR_NUMERIC_ID://authorize`
   - If the protocol/suffix is not your FBID then you will get an error like: `No redirect URI in the params: No redirect present in URI`.
   - If the path is not `://authorize` then you will get an error like: `Can't Load URL: The domain of this URL isn't included in the app's domains. To be able to load this URL, add all domains and subdomains of your app to the App Domains field in your app settings.`
+- Learn more about [manually building a login flow](https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow/).
 
 <AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow", "Firebase"]}>
 
@@ -457,42 +454,21 @@ export default function App() {
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
-import { Button, Platform } from 'react-native';
+import * as Facebook from 'expo-auth-session/providers/facebook';
+import { ResponseType } from 'expo-auth-session';
+import { Button } from 'react-native';
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
-// Endpoint
-const discovery = {
-  authorizationEndpoint: 'https://www.facebook.com/v6.0/dialog/oauth',
-  tokenEndpoint: 'https://graph.facebook.com/v6.0/oauth/access_token',
-};
-
-const useProxy = Platform.select({ web: false, default: true });
-
 export default function App() {
-  const [request, response, promptAsync] = useAuthRequest(
-    {
-      clientId: '<YOUR FBID>',
-      scopes: ['public_profile', 'email', 'user_likes'],
-      // For usage in managed apps using the proxy
-      redirectUri: makeRedirectUri({
-        useProxy,
-        // For usage in bare and standalone
-        // Use your FBID here. The path MUST be `authorize`.
-        native: 'fb111111111111://authorize',
-      }),
-      extraParams: {
-        // Use `popup` on web for a better experience
-        display: Platform.select({ web: 'popup' }),
-        // Optionally you can use this to rerequest declined permissions
-        auth_type: 'rerequest',
-      },
-    },
-    discovery
-  );
+  const [request, response, promptAsync] = Facebook.useAuthRequest({
+    clientId: '<YOUR FBID>',
+    /* @info Request that the server returns a <code>code</code> for server exchanges. */
+    responseType: ResponseType.Code,
+    /* @end */
+  });
 
   React.useEffect(() => {
     if (response?.type === 'success') {
@@ -510,11 +486,8 @@ export default function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({
-          /* @end */
-          useProxy,
-          windowFeatures: { width: 700, height: 600 },
-        });
+        promptAsync();
+        /* @end */
       }}
     />
   );
@@ -532,50 +505,23 @@ export default function App() {
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri, ResponseType, useAuthRequest } from 'expo-auth-session';
-import { Button, Platform } from 'react-native';
+import * as Facebook from 'expo-auth-session/providers/facebook';
+import { ResponseType } from 'expo-auth-session';
+import { Button } from 'react-native';
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
-// Endpoint
-const discovery = {
-  authorizationEndpoint: 'https://www.facebook.com/v6.0/dialog/oauth',
-  tokenEndpoint: 'https://graph.facebook.com/v6.0/oauth/access_token',
-};
-
-const useProxy = Platform.select({ web: false, default: true });
-
 export default function App() {
-  const [request, response, promptAsync] = useAuthRequest(
-    {
-      /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
-      responseType: ResponseType.Token,
-      /* @end */
-      clientId: '<YOUR FBID>',
-      scopes: ['public_profile', 'email', 'user_likes'],
-      // For usage in managed apps using the proxy
-      redirectUri: makeRedirectUri({
-        useProxy,
-        // For usage in bare and standalone
-        // Use your FBID here. The path MUST be `authorize`.
-        native: 'fb111111111111://authorize',
-      }),
-      extraParams: {
-        // Use `popup` on web for a better experience
-        display: Platform.select({ web: 'popup' }),
-        // Optionally you can use this to rerequest declined permissions
-        auth_type: 'rerequest',
-      },
-    },
-    discovery
-  );
+  const [request, response, promptAsync] = useAuthRequest({
+    clientId: '<YOUR FBID>',
+  });
 
   React.useEffect(() => {
     if (response?.type === 'success') {
-      /* @info Use this access token to interact with user data on the provider's server. */
-      const { access_token } = response.params;
+      /* @info A <code>TokenResponse</code> object with authentication data like accessToken. */
+      const { authentication } = response;
       /* @end */
     }
   }, [response]);
@@ -588,11 +534,8 @@ export default function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({
-          /* @end */
-          useProxy,
-          windowFeatures: { width: 700, height: 600 },
-        });
+        promptAsync();
+        /* @end */
       }}
     />
   );
@@ -605,7 +548,6 @@ export default function App() {
 
 <ImplicitTab>
 
-- It's important that you request at least the `['public_profile', 'email']` scopes, otherwise Firebase won't display the user info correctly in the auth panel.
 - Be sure to setup Facebook auth as described above, this is basically identical.
 - 🔥 Create a new Firebase project
 - Enable Facebook auth, save the project.
@@ -615,9 +557,10 @@ export default function App() {
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri, ResponseType, useAuthRequest } from 'expo-auth-session';
+import * as Facebook from 'expo-auth-session/providers/facebook';
+import { ResponseType } from 'expo-auth-session';
 import firebase from 'firebase';
-import { Button, Platform } from 'react-native';
+import { Button } from 'react-native';
 
 // Initialize Firebase
 if (!firebase.apps.length) {
@@ -630,38 +573,13 @@ if (!firebase.apps.length) {
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
-// Endpoint
-const discovery = {
-  authorizationEndpoint: 'https://www.facebook.com/v6.0/dialog/oauth',
-  tokenEndpoint: 'https://graph.facebook.com/v6.0/oauth/access_token',
-};
-
-const useProxy = Platform.select({ web: false, default: true });
-
 export default function App() {
-  const [request, response, promptAsync] = useAuthRequest(
-    {
-      /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
-      responseType: ResponseType.Token,
-      /* @end */
-      clientId: '<YOUR FBID>',
-      scopes: ['public_profile', 'email', 'user_likes'],
-      // For usage in managed apps using the proxy
-      redirectUri: makeRedirectUri({
-        useProxy,
-        // For usage in bare and standalone
-        // Use your FBID here. The path MUST be `authorize`.
-        native: 'fb111111111111://authorize',
-      }),
-      extraParams: {
-        // Use `popup` on web for a better experience
-        display: Platform.select({ web: 'popup' }),
-        // Optionally you can use this to rerequest declined permissions
-        auth_type: 'rerequest',
-      },
-    },
-    discovery
-  );
+  const [request, response, promptAsync] = useAuthRequest({
+    /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
+    responseType: ResponseType.Token,
+    /* @end */
+    clientId: '<YOUR FBID>',
+  });
 
   React.useEffect(() => {
     if (response?.type === 'success') {
@@ -685,11 +603,8 @@ export default function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({
-          /* @end */
-          useProxy,
-          windowFeatures: { width: 700, height: 600 },
-        });
+        promptAsync();
+        /* @end */
       }}
     />
   );
@@ -952,22 +867,92 @@ export default function App() {
 
 ### Google
 
-<CreateAppButton name="Google" href="https://developers.google.com/identity/protocols/OAuth2" />
+<CreateAppButton name="Google" href="https://console.developers.google.com/apis/credentials" />
 
 | Website                     | Provider | PKCE      | Auto Discovery |
 | --------------------------- | -------- | --------- | -------------- |
 | [Get Your Config][c-google] | OpenID   | Supported | Available      |
 
-[c-google]: https://developers.google.com/identity/protocols/OAuth2
+[c-google]: https://console.developers.google.com/apis/credentials
 
-- Google will provide you with a custom `redirectUri` which you **cannot** use in the Expo client.
-  - URI schemes must be built into the app, you can do this with **bare workflow, standalone, and custom clients**.
-  - You can still develop and test Google auth in the Expo client with the proxy service, just be sure to configure the project as a website in the Google developer console.
-- For a slightly more native experience in bare Android apps, you can use the [`expo-google-sign-in`](/versions/latest/sdk/google-sign-in) package.
-- You can change the UI language by setting `extraParams.hl` to an ISO language code (ex: `fr`, `en-US`). Defaults to the best estimation based on the users browser.
-- You can set which email address to use ahead of time by setting `extraParams.login_hint`.
+> Be sure to install the peerDependency `yarn add expo-application`
 
-<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow", "Firebase"]}>
+There are 4 different types of client IDs you can provide:
+
+- `expoClientId`: Proxy client ID for use in the **Expo client** on iOS and Android.
+- `iosClientId`: iOS native client ID for use in standalone, bare-workflow, and custom clients.
+- `androidClientId`: Android native client ID for use in standalone, bare-workflow, and custom clients.
+- `webClientId`: Expo web client ID for use in the browser.
+
+To create a client ID, go to the [Credentials Page][c-google]:
+
+- Create an app for your project if you haven't already.
+- Once that's done, click "Create Credentials" and then "OAuth client ID." You will be prompted to set the product name on the consent screen, go ahead and do that.
+
+#### Development in the Expo Client
+
+While developing in the Expo client, you cannot use proper native authentication. Instead you must use web login during development. Be sure to follow the **standalone** guide below for setting up production apps.
+
+First, be sure to login to your Expo account `expo login`. This will be part of the redirect URL.
+
+[Create a new Google Client ID][c-google] that will be used with `expoClientId`.
+
+- **Application Type**: Web Application
+- Give it a name (e.g. "Expo Client Proxy").
+- **URIs** (Authorized JavaScript origins): https://auth.expo.io
+- **Authorized redirect URIs**: https://auth.expo.io/@your-username/your-project-slug
+
+#### iOS Native
+
+This can only be used in Standalone, custom clients, and bare workflow apps. This method cannot be used in the Expo client.
+
+[Create a new Google Client ID][c-google] that will be used with `iosClientId`.
+
+- **Application Type**: iOS Application
+- Give it a name (e.g. "iOS App").
+- **Bundle ID**: Must match the value of `ios.bundleIdentifier` in your `app.json`.
+- Your app needs to conform to the URI scheme matching your bundle identifier.
+  - _Standalone_: Automatically added, do nothing.
+  - _Bare workflow_: Run `npx uri-scheme add <your bundle id> --ios`
+- To test this you can:
+  1. Eject to bare: `expo eject` and run `yarn ios`
+  2. Create a custom client: `expo client:ios`
+  3. Build a production IPA: `expo build:ios`
+- Whenever you change the values in `app.json` you'll need to rebuild the native app.
+
+#### Android Native
+
+This can only be used in Standalone, and bare workflow apps. This method cannot be used in the Expo client.
+
+[Create a new Google Client ID][c-google] that will be used with `androidClientId`.
+
+- **Application Type**: Android Application
+- Give it a name (e.g. "Android App").
+- **Package name**: Must match the value of `android.package` in your `app.json`.
+- Your app needs to conform to the URI scheme matching your `android.package` (ex. `com.myname.mycoolapp:/`).
+  - _Standalone_: Automatically added, do nothing.
+  - _Bare workflow_: Run `npx uri-scheme add <your android.package> --android`
+- **Signing-certificate fingerprint**:
+  - Run `expo credentials:manager -p android` then select "Update upload Keystore" -> "Generate new keystore" -> "Go back to experience overview"
+  - Copy your "Google Certificate Fingerprint", it will output a string that looks like `A1:B2:C3` but longer.
+- To test this you can:
+  1. Eject to bare: `expo eject` and run `yarn ios`
+  2. Build a production IPA: `expo build:android`
+- Whenever you change the values in `app.json` you'll need to rebuild the native app.
+
+#### Web Apps
+
+Expo web client ID for use in the browser.
+
+[Create a new Google Client ID][c-google] that will be used with `webClientId`.
+
+- **Application Type**: Web Application
+- Give it a name (e.g. "Web App").
+- **URIs** (Authorized JavaScript origins): https://localhost:19006 & https://yourwebsite.com
+- **Authorized redirect URIs**: https://localhost:19006 & https://yourwebsite.com
+- To test this be sure to start your app with `expo start:web --https`.
+
+<AuthMethodTabSwitcher tabs={["Standard", "Firebase"]}>
 <AuthCodeTab>
 
 <SnackInline label='Google Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
@@ -975,47 +960,25 @@ export default function App() {
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri, useAuthRequest, useAutoDiscovery, Prompt } from 'expo-auth-session';
-import { Button, Platform } from 'react-native';
+import * as Google from 'expo-auth-session/providers/google';
+import { Button } from 'react-native';
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
-const useProxy = Platform.select({ web: false, default: true });
-
 export default function App() {
-  // Endpoint
-  const discovery = useAutoDiscovery('https://accounts.google.com');
-  // Request
-  const [request, response, promptAsync] = useAuthRequest(
-    {
-      clientId: 'CLIENT_ID',
-      redirectUri: makeRedirectUri({
-        // For usage in bare and standalone
-        native: 'com.googleusercontent.apps.GOOGLE_GUID:/oauthredirect',
-        useProxy,
-      }),
-      scopes: ['openid', 'profile'],
-
-      // Optionally should the user be prompted to select or switch accounts
-      prompt: Prompt.SelectAccount,
-
-      // Optional
-      extraParams: {
-        /// Change language
-        // hl: 'fr',
-        /// Select the user
-        // login_hint: 'user@gmail.com',
-      },
-    },
-    discovery
-  );
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    expoClientId: 'GOOGLE_GUID.apps.googleusercontent.com',
+    iosClientId: 'GOOGLE_GUID.apps.googleusercontent.com',
+    androidClientId: 'GOOGLE_GUID.apps.googleusercontent.com',
+    webClientId: 'GOOGLE_GUID.apps.googleusercontent.com',
+  });
 
   React.useEffect(() => {
     if (response?.type === 'success') {
-      /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
-      const { code } = response.params;
+      /* @info A <code>TokenResponse</code> object with authentication data like accessToken. */
+      const { authentication } = response;
       /* @end */
     }
   }, [response]);
@@ -1028,7 +991,7 @@ export default function App() {
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({ useProxy });
+        promptAsync();
         /* @end */
       }}
     />
@@ -1039,91 +1002,6 @@ export default function App() {
 </SnackInline>
 
 </AuthCodeTab>
-
-<ImplicitTab>
-
-- PKCE must be disabled in implicit mode (`usePKCE: false`).
-
-<SnackInline label='Google Implicit' dependencies={['expo-auth-session', 'expo-web-browser']}>
-
-```tsx
-import * as React from 'react';
-import * as WebBrowser from 'expo-web-browser';
-import {
-  makeRedirectUri,
-  ResponseType,
-  useAuthRequest,
-  useAutoDiscovery,
-  Prompt,
-} from 'expo-auth-session';
-import { Button, Platform } from 'react-native';
-
-/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
-WebBrowser.maybeCompleteAuthSession();
-/* @end */
-
-const useProxy = Platform.select({ web: false, default: true });
-
-export default function App() {
-  // Endpoint
-  const discovery = useAutoDiscovery('https://accounts.google.com');
-  // Request
-  const [request, response, promptAsync] = useAuthRequest(
-    {
-      /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
-      responseType: ResponseType.Token,
-      /* @end */
-      // PKCE must be disabled in implicit mode
-      usePKCE: false,
-      clientId: 'CLIENT_ID',
-      redirectUri: makeRedirectUri({
-        // For usage in bare and standalone
-        native: 'com.googleusercontent.apps.GOOGLE_GUID:/oauthredirect',
-        useProxy,
-      }),
-      scopes: ['openid', 'profile'],
-
-      // Optionally should the user be prompted to select or switch accounts
-      prompt: Prompt.SelectAccount,
-
-      // Optional
-      extraParams: {
-        /// Change language
-        // hl: 'fr',
-        /// Select the user
-        // login_hint: 'user@gmail.com',
-      },
-    },
-    discovery
-  );
-
-  React.useEffect(() => {
-    if (response?.type === 'success') {
-      /* @info Use this access token to interact with user data on the provider's server. */
-      const { access_token } = response.params;
-      /* @end */
-    }
-  }, [response]);
-
-  return (
-    <Button
-      /* @info Disable the button until the request is loaded asynchronously. */
-      disabled={!request}
-      /* @end */
-      title="Login"
-      onPress={() => {
-        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({ useProxy });
-        /* @end */
-      }}
-    />
-  );
-}
-```
-
-</SnackInline>
-
-</ImplicitTab>
 
 <ImplicitTab>
 
@@ -1148,9 +1026,10 @@ export default function App() {
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri, ResponseType, useAuthRequest, useAutoDiscovery, generateHexStringAsync } from 'expo-auth-session';
+import { ResponseType } from 'expo-auth-session';
+import * as Google from 'expo-auth-session/providers/google';
 import firebase from 'firebase';
-import { Button, Platform } from 'react-native';
+import { Button } from 'react-native';
 
 // Initialize Firebase
 if (!firebase.apps.length) {
@@ -1163,45 +1042,14 @@ if (!firebase.apps.length) {
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
-const useProxy = Platform.select({ web: false, default: true });
-
-// Generate a random hex string for the nonce parameter
-function useNonce() {
-  const [nonce, setNonce] = React.useState(null);
-  React.useEffect(() => {
-    generateHexStringAsync(16).then(value => setNonce(value));
-  }, []);
-  return nonce;
-}
-
 export default function App() {
-  const nonce = useNonce();
-  // Endpoint
-  const discovery = useAutoDiscovery('https://accounts.google.com');
-  // Request
-  const [request, response, promptAsync] = useAuthRequest(
+
+  const [request, response, promptAsync] = Google.useIdTokenAuthRequest(
     {
-      /* @info Request that the server returns an <code>id_token</code>, which Firebase expects. */
-      responseType: ResponseType.IdToken,
-      /* @end */
       /* @info This comes from the Firebase Google authentication panel. */
       clientId: 'Your-Web-Client-ID.apps.googleusercontent.com',
       /* @end */
-      redirectUri: makeRedirectUri({
-        // For usage in bare and standalone
-        native: 'com.googleusercontent.apps.GOOGLE_GUID:/oauthredirect',
-        useProxy,
-      }),
-      scopes: [
-        'openid',
-        'profile',
-        'email',
-      ],
-      extraParams: {
-        nonce,
-      }
     },
-    discovery
   );
 
   React.useEffect(() => {
@@ -1220,12 +1068,12 @@ export default function App() {
   return (
     <Button
       /* @info Disable the button until the request is loaded asynchronously. */
-      disabled={!request || !nonce)}
+      disabled={!request)}
       /* @end */
       title="Login"
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
-        promptAsync({ useProxy });
+        promptAsync();
         /* @end */
       }}
     />
@@ -1234,11 +1082,6 @@ export default function App() {
 ```
 
 </SnackInline>
-
-- 💡 This auth is different because it requires the following to retrieve the `id_token` parameter:
-  - `openid` in the `scope`s
-  - `responseType` set to `ResponseType.IdToken` (`'id_token'`)
-  - `extraParams.nonce` must be defined.
 
 </ImplicitTab>
 

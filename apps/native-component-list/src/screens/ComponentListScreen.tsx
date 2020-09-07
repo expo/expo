@@ -12,6 +12,7 @@ import {
   View,
   Platform,
   Pressable,
+  useWindowDimensions,
 } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 
@@ -68,15 +69,18 @@ function LinkButton({
   );
 }
 
-function ComponentListScreen(props: Props) {
+export default function ComponentListScreen(props: Props) {
   React.useEffect(() => {
     StatusBar.setHidden(false);
   }, []);
 
+  const { width } = useWindowDimensions();
+  const isMobile = width <= 640;
+
   // adjust the right padding for safe area -- we don't need the left because that's where the drawer is.
   const { bottom, right } = useSafeArea();
 
-  const _renderExampleSection: ListRenderItem<ListElement> = ({ item }) => {
+  const renderExampleSection: ListRenderItem<ListElement> = ({ item }) => {
     const { route, name: exampleName, isAvailable } = item;
     return (
       <LinkButton disabled={!isAvailable} to={route ?? exampleName} style={[styles.rowTouchable]}>
@@ -93,7 +97,19 @@ function ComponentListScreen(props: Props) {
     );
   };
 
-  const _keyExtractor = React.useCallback((item: ListElement) => item.name, []);
+  const keyExtractor = React.useCallback((item: ListElement) => item.name, []);
+
+  const sortedApis = React.useMemo(() => {
+    return props.apis.sort((a, b) => {
+      if (a.isAvailable !== b.isAvailable) {
+        if (a.isAvailable) {
+          return -1;
+        }
+        return 1;
+      }
+      return 0;
+    });
+  }, [props.apis]);
 
   return (
     <FlatList<ListElement>
@@ -101,10 +117,10 @@ function ComponentListScreen(props: Props) {
       removeClippedSubviews={false}
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag"
-      contentContainerStyle={{ backgroundColor: '#fff', paddingBottom: bottom }}
-      data={props.apis}
-      keyExtractor={_keyExtractor}
-      renderItem={_renderExampleSection}
+      contentContainerStyle={{ backgroundColor: '#fff', paddingBottom: isMobile ? 0 : bottom }}
+      data={sortedApis}
+      keyExtractor={keyExtractor}
+      renderItem={renderExampleSection}
     />
   );
 }
@@ -141,5 +157,3 @@ const styles = StyleSheet.create({
     marginLeft: 6,
   },
 });
-
-export default ComponentListScreen;

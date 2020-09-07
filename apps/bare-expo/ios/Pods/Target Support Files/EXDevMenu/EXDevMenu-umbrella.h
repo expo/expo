@@ -10,6 +10,7 @@
 #endif
 #endif
 
+#import "DevMenuRootView.h"
 #import "EXDevMenu-Bridging-Header.h"
 #import "EXDevMenu.h"
 #import "RCTPerfMonitor+Private.h"

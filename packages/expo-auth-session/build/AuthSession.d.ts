@@ -7,7 +7,7 @@ export declare function startAsync(options: AuthSessionOptions): Promise<AuthSes
 export declare function dismiss(): void;
 export declare function getDefaultReturnUrl(): string;
 /**
- * Deprecated: Use `makeRedirectUri({ path, useProxy })` instead.
+ * @deprecated Use `makeRedirectUri({ path, useProxy })` instead.
  *
  * @param path
  */
@@ -29,7 +29,7 @@ export declare function makeRedirectUri({ native, path, preferLocalhost, useProx
  * @param issuerOrDiscovery
  */
 export declare function loadAsync(config: AuthRequestConfig, issuerOrDiscovery: IssuerOrDiscovery): Promise<AuthRequest>;
-export * from './AuthRequestHooks';
+export { useAutoDiscovery, useAuthRequest } from './AuthRequestHooks';
 export { AuthError, TokenError } from './Errors';
 export { AuthSessionOptions, AuthSessionRedirectUriOptions, AuthSessionResult, AuthRequest, AuthRequestConfig, AuthRequestPromptOptions, CodeChallengeMethod, DiscoveryDocument, Issuer, IssuerOrDiscovery, Prompt, ProviderMetadata, ResponseType, resolveDiscoveryAsync, fetchDiscoveryAsync, generateHexStringAsync, };
 export { TokenResponse, AccessTokenRequest, RefreshTokenRequest, RevokeTokenRequest, revokeAsync, refreshAsync, exchangeCodeAsync, fetchUserInfoAsync, } from './TokenRequest';

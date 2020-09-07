@@ -23,6 +23,7 @@
   self.updateContext.callID = _prevCallID;
   [(REAValueNode*)node setValue:value];
   self.updateContext.callID = callID;
+  [self forceUpdateMemoizedValue:value];
 }
 
 - (void)beginContext:(NSNumber*) ref

@@ -4,9 +4,15 @@
 
 ### 🛠 Breaking changes
 
+
 ### 🎉 New features
 
+- Upgraded `eslint` to 7.7.0. [See the changelog for `eslint`.](https://eslint.org/blog/)
+- Upgraded `@typescript-eslint/eslint-plugin` to 3.9.1 and `@typescript-eslint/parser` to 3.9.1. [See the changelog for `typescript-eslint`.](https://github.com/typescript-eslint/typescript-eslint/releases/tag/v3.9.1)
+
 ### 🐛 Bug fixes
+
+- Override `no-unused-expressions` and `semi` with `@babel/no-unused-expressions` and `@babel/semi` to fix a bug with optional chaining. Upgraded the minor version of various dependecies.
 
 ## 4.0.0 — 2020-07-08
 

@@ -1,28 +1,18 @@
-import { NativeModulesProxy, Platform, UnavailabilityError } from '@unimodules/core';
+import { Platform, UnavailabilityError } from '@unimodules/core';
 import * as TaskManager from 'expo-task-manager';
-const { ExpoBackgroundFetch } = NativeModulesProxy;
-var BackgroundFetchResult;
-(function (BackgroundFetchResult) {
-    BackgroundFetchResult[BackgroundFetchResult["NoData"] = 1] = "NoData";
-    BackgroundFetchResult[BackgroundFetchResult["NewData"] = 2] = "NewData";
-    BackgroundFetchResult[BackgroundFetchResult["Failed"] = 3] = "Failed";
-})(BackgroundFetchResult || (BackgroundFetchResult = {}));
-var BackgroundFetchStatus;
-(function (BackgroundFetchStatus) {
-    BackgroundFetchStatus[BackgroundFetchStatus["Denied"] = 1] = "Denied";
-    BackgroundFetchStatus[BackgroundFetchStatus["Restricted"] = 2] = "Restricted";
-    BackgroundFetchStatus[BackgroundFetchStatus["Available"] = 3] = "Available";
-})(BackgroundFetchStatus || (BackgroundFetchStatus = {}));
+import { BackgroundFetchResult, BackgroundFetchStatus, } from './BackgroundFetch.types';
+import ExpoBackgroundFetch from './ExpoBackgroundFetch';
 export async function getStatusAsync() {
-    if (Platform.OS !== 'ios') {
+    if (Platform.OS === 'android') {
         return BackgroundFetchStatus.Available;
     }
     return ExpoBackgroundFetch.getStatusAsync();
 }
 export async function setMinimumIntervalAsync(minimumInterval) {
-    if (Platform.OS !== 'ios') {
+    if (!ExpoBackgroundFetch.setMinimumIntervalAsync) {
         return;
     }
+    // iOS only
     await ExpoBackgroundFetch.setMinimumIntervalAsync(minimumInterval);
 }
 export async function registerTaskAsync(taskName, options = {}) {

@@ -1,6 +1,6 @@
 ---
 title: MediaLibrary
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-media-library'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-media-library'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
@@ -137,7 +137,7 @@ Queries for user-created albums in media gallery.
 
 #### Returns
 
-An array of [albums](#album).
+An array of [albums](#album). Depending on Android version, root directory of your storage may be listed as album titled _"0"_ or unlisted at all.
 
 ### `MediaLibrary.getAlbumAsync(albumName)`
 

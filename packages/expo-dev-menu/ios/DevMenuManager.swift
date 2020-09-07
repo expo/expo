@@ -1,5 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+import EXDevMenuInterface
+
 class Dispatch {
   static func mainSync<T>(_ closure: () -> T) -> T {
     if Thread.isMainThread {
@@ -35,7 +37,7 @@ private let extensionToDevMenuItemsMap = NSMapTable<DevMenuExtensionProtocol, De
  Manages the dev menu and provides most of the public API.
  */
 @objc
-open class DevMenuManager: NSObject {
+open class DevMenuManager: NSObject, DevMenuManagerProtocol {
   /**
    Shared singleton instance.
    */

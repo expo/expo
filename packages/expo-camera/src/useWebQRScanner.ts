@@ -1,5 +1,5 @@
 import { useWorker } from '@koale/useworker';
-import { useEffect, useRef } from 'react';
+import * as React from 'react';
 
 import { CameraPictureOptions } from './Camera';
 import { BarCodeScanningResult, MountErrorListener } from './Camera.types';
@@ -59,8 +59,8 @@ export function useWebQRScanner(
     onError?: MountErrorListener;
   }
 ) {
-  const isRunning = useRef<boolean>(false);
-  const timeout = useRef<number | undefined>(undefined);
+  const isRunning = React.useRef<boolean>(false);
+  const timeout = React.useRef<number | undefined>(undefined);
 
   const [decode, clearWorker] = useRemoteJsQR();
 
@@ -91,7 +91,7 @@ export function useWebQRScanner(
         stop();
         return;
       }
-      const intervalToUse = !interval || interval < 0 ? 5 : interval;
+      const intervalToUse = !interval || interval < 0 ? 16 : interval;
       // @ts-ignore: Type 'Timeout' is not assignable to type 'number'
       timeout.current = setTimeout(() => {
         scanAsync();
@@ -104,7 +104,7 @@ export function useWebQRScanner(
     clearTimeout(timeout.current);
   }
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (isEnabled) {
       isRunning.current = true;
       scanAsync();
@@ -113,7 +113,7 @@ export function useWebQRScanner(
     }
   }, [isEnabled]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     return () => {
       stop();
       clearWorker.kill();

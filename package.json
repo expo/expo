@@ -15,7 +15,6 @@
     "packages": [
       "apps/*",
       "apps/test-suite/puppeteer-test",
-      "expokit-npm-package",
       "home",
       "packages/*",
       "packages/@unimodules/*",
@@ -23,11 +22,12 @@
     ]
   },
   "dependencies": {
-    "react-native-unimodules": "~0.10.0"
+    "jsc-android": "^245459.0.0",
+    "react-native-unimodules": "~0.11.0"
   },
   "devDependencies": {
-    "eslint": "^7.2.0",
+    "eslint": "^7.7.0",
     "expo-yarn-workspaces": "*",
-    "prettier": "^1.19.0"
+    "prettier": "^1.19.1"
   }
 }

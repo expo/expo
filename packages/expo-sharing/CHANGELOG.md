@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+- Removed use of `org.unimodules.core.InvalidArgumentException` in favor of its coded version, `org.unimodules.core.errors.InvalidArgumentException`. ([#9961](https://github.com/expo/expo/pull/9961) by [@sjchmiela](https://github.com/sjchmiela))
+
+## 8.4.0 — 2020-08-18
+
+_This version does not introduce any user-facing changes._
+
 ## 8.3.0 — 2020-07-27
 
 ### 🐛 Bug fixes

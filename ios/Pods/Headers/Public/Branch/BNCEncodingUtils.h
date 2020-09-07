@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BNCEncodingUtils.h
+../../../Branch/Branch-SDK/BNCEncodingUtils.h

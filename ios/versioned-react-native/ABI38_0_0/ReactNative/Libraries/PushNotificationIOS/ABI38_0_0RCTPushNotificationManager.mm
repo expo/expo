@@ -43,7 +43,7 @@ ABI38_0_0RCT_ENUM_CONVERTER(NSCalendarUnit,
 
 @end
 
-@interface ABI38_0_0RCTPushNotificationManager () <NativePushNotificationManagerIOSSpec>
+@interface ABI38_0_0RCTPushNotificationManager () <ABI38_0_0NativePushNotificationManagerIOSSpec>
 @property (nonatomic, strong) NSMutableDictionary *remoteNotificationCallbacks;
 @end
 

@@ -1,6 +1,7 @@
 {
   "name": "expo-gl-cpp-legacy",
   "version": "8.4.0",
+  "private": true,
   "description": "Legacy C++ bindings for WebGL 2.0 used in Expo GL module",
   "main": "index.js",
   "keywords": [

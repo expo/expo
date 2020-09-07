@@ -62,7 +62,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
   }
   
   if (error) {
-    * error = [self _formatError:[NSError errorWithDomain:EXNetworkErrorDomain code:0 userInfo:@{
+    * error = [self formatError:[NSError errorWithDomain:EXNetworkErrorDomain code:0 userInfo:@{
                                                                                        @"errorCode": @"NO_COMPATIBLE_EXPERIENCE_FOUND",
                                                                                        NSLocalizedDescriptionKey: [NSString stringWithFormat:@"No compatible experience found at %@. Only %@ are supported.", self.originalUrl, [[EXVersions sharedInstance].versions[@"sdkVersions"] componentsJoinedByString:@","]]
                                                                                        }]];
@@ -353,7 +353,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
   }
   if (errorCode) {
     // will be handled by _validateErrorData:
-    return [self _formatError:[NSError errorWithDomain:EXNetworkErrorDomain code:0 userInfo:@{
+    return [self formatError:[NSError errorWithDomain:EXNetworkErrorDomain code:0 userInfo:@{
       @"errorCode": errorCode,
     }]];
   } else {
@@ -368,7 +368,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
     // we got back a response from the server, and we can use the info we got back to make a nice
     // error message for the user
     
-    formattedError = [self _formatError:error];
+    formattedError = [self formatError:error];
   } else {
     // was a network error
     NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithDictionary:error.userInfo];
@@ -391,7 +391,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
   return [clientSDKVersionsAvailable lastObject]; // TODO: this is bad, we can't guarantee this array will always be ordered properly.
 }
 
-- (NSError *)_formatError:(NSError *)error
+- (NSError *)formatError:(NSError *)error
 {
   NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithDictionary:error.userInfo];
   NSString *errorCode = userInfo[@"errorCode"];

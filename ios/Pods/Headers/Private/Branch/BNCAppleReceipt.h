@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BNCAppleReceipt.h
+../../../Branch/Branch-SDK/BNCAppleReceipt.h

@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-static NSString * const kEXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
+static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
 
 @implementation EXUpdatesAppLoader
 
@@ -79,6 +79,37 @@ static NSString * const kEXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
     if (_successBlock) {
       _successBlock(nil);
     }
+    return;
+  }
+
+  if (updateManifest.isDevelopmentMode) {
+    dispatch_async(_database.databaseQueue, ^{
+      NSError *updateError;
+      [self->_database addUpdate:updateManifest error:&updateError];
+
+      if (updateError) {
+        [self _finishWithError:updateError];
+        return;
+      }
+
+      NSError *updateReadyError;
+      [self->_database markUpdateFinished:updateManifest error:&updateReadyError];
+      if (updateReadyError) {
+        [self _finishWithError:updateReadyError];
+        return;
+      }
+
+      EXUpdatesAppLoaderSuccessBlock successBlock;
+      if (self->_successBlock) {
+        successBlock = self->_successBlock;
+      }
+      dispatch_async(self->_completionQueue, ^{
+        if (successBlock) {
+          successBlock(updateManifest);
+        }
+        [self _reset];
+      });
+    });
     return;
   }
 
@@ -263,7 +294,7 @@ static NSString * const kEXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
 
     dispatch_async(self->_completionQueue, ^{
       if (errorBlock) {
-        errorBlock([NSError errorWithDomain:kEXUpdatesAppLoaderErrorDomain
+        errorBlock([NSError errorWithDomain:EXUpdatesAppLoaderErrorDomain
                                        code:1012
                                    userInfo:@{NSLocalizedDescriptionKey: @"Failed to load all assets"}]);
       } else if (successBlock) {

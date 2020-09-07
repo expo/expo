@@ -1,50 +1,51 @@
 # Expo release workflow
 
-  - [Stage 0 - Infra &amp; Prerelease](#stage-0---infra--prerelease)
-    - [0.1. Dropping old SDKs](#01-dropping-old-sdks)
-    - [0.2. Update vendored modules](#02-update-vendored-modules)
-    - [0.3. Update schema on staging](#03-update-schema-on-staging)
-    - [0.4. Update versions on staging](#04-update-versions-on-staging)
-    - [0.5. Tag React Native fork](#05-tag-react-native-fork)
-    - [0.6. Generate new mocks](#06-generate-new-mocks)
-    - [0.7. Publishing next packages](#07-publishing-next-packages)
-    - [0.8. Generate new SDK docs](#08-generate-new-sdk-docs)
-  - [Stage 1 - Unversioned Quality Assurance and Versioning](#stage-1---unversioned-quality-assurance-and-versioning)
-    - [1.1. Cutting off release branch](#11-cutting-off-release-branch)
-    - [1.2. Update React Native](#12-update-react-native)
-    - [1.3. Unversioned Quality Assurance](#13-unversioned-quality-assurance)
-    - [1.4. Versioning code for the new SDK](#14-versioning-code-for-the-new-sdk)
-  - [Stage 2 - Quality Assurance](#stage-2---quality-assurance)
-    - [2.1. Versioned Quality Assurance - iOS/Android clients](#21-versioned-quality-assurance---iosandroid-clients)
-    - [2.2. Standalone App Quality Assurance](#22-standalone-app-quality-assurance)
-    - [2.3. Web Quality Assurance](#23-web-quality-assurance)
-    - [2.4. Cherry-pick Versioned Code to master](#24-cherry-pick-versioned-code-to-master)
-    - [2.5. Publish demo apps](#25-publish-demo-apps)
-  - [Stage 3 - Publish NPM packages](#stage-3---publish-npm-packages)
-    - [3.1. Publish any missing or changed packages](#31-publish-any-missing-or-changed-packages)
-    - [3.2. Publishing next project templates](#32-publishing-next-project-templates)
-  - [Stage 4 - Expo client](#stage-4---expo-client)
-    - [4.1. Releasing beta version](#41-releasing-beta-version)
-    - [4.2. Making a simulator build](#42-making-a-simulator-build)
-    - [4.3. Submit iOS client to App Store Review](#43-submit-ios-client-to-app-store-review)
-    - [4.4. Release clients to external beta testers](#44-release-clients-to-external-beta-testers)
-  - [Stage 5 - ExpoKit and standalone apps](#stage-5---expokit-and-standalone-apps)
-    - [5.1. Updating ExpoKit](#51-updating-expokit)
-    - [5.2. Make shell app build](#52-make-shell-app-build)
-    - [5.3. Make adhoc client shell app for iOS](#53-make-adhoc-client-shell-app-for-ios)
-    - [5.4. Deploy Turtle with new shell tarballs](#54-deploy-turtle-with-new-shell-tarballs)
-  - [Stage 6 - Final release](#stage-6---final-release)
-    - [6.1. Release iOS/Android clients](#61-release-iosandroid-clients)
-    - [6.2. Deploy Turtle/ExpoKit to production](#62-deploy-turtleexpokit-to-production)
-    - [6.3. Deploy new docs](#63-deploy-new-docs)
-    - [6.4. Add related packages to versions endpoint](#64-add-related-packages-to-versions-endpoint)
-    - [6.5. Promote versions to production](#65-promote-versions-to-production)
-    - [6.6. Promote packages to latest on NPM registry](#66-promote-packages-to-latest-on-npm-registry)
-    - [6.7. Publishing final project templates](#67-publishing-final-project-templates)
-    - [6.8. Press release](#68-press-release)
-    - [6.9. Follow-up](#69-follow-up)
-  - [Stage 7 - Snack](#stage-7---snack)
-    - [7.1. Add SDK support to Snack](#71-add-sdk-support-to-snack)
+- [Stage 0 - Infra &amp; Prerelease](#stage-0---infra--prerelease)
+  - [0.1. Dropping old SDKs](#01-dropping-old-sdks)
+  - [0.2. Update vendored modules](#02-update-vendored-modules)
+  - [0.3. Update schema on staging](#03-update-schema-on-staging)
+  - [0.4. Update versions on staging](#04-update-versions-on-staging)
+  - [0.5. Tag React Native fork](#05-tag-react-native-fork)
+  - [0.6. Generate new mocks](#06-generate-new-mocks)
+  - [0.7. Publishing next packages](#07-publishing-next-packages)
+  - [0.8. Merge and cutoff changelogs](#08-merge-and-cutoff-changelogs)
+  - [0.9. Generate new SDK docs](#09-generate-new-sdk-docs)
+- [Stage 1 - Unversioned Quality Assurance and Versioning](#stage-1---unversioned-quality-assurance-and-versioning)
+  - [1.1. Cutting off release branch](#11-cutting-off-release-branch)
+  - [1.2. Update React Native](#12-update-react-native)
+  - [1.3. Unversioned Quality Assurance](#13-unversioned-quality-assurance)
+  - [1.4. Versioning code for the new SDK](#14-versioning-code-for-the-new-sdk)
+- [Stage 2 - Quality Assurance](#stage-2---quality-assurance)
+  - [2.1. Versioned Quality Assurance - iOS/Android clients](#21-versioned-quality-assurance---iosandroid-clients)
+  - [2.2. Standalone App Quality Assurance](#22-standalone-app-quality-assurance)
+  - [2.3. Web Quality Assurance](#23-web-quality-assurance)
+  - [2.4. Cherry-pick Versioned Code to master](#24-cherry-pick-versioned-code-to-master)
+  - [2.5. Publish demo apps](#25-publish-demo-apps)
+- [Stage 3 - Publish NPM packages](#stage-3---publish-npm-packages)
+  - [3.1. Publish any missing or changed packages](#31-publish-any-missing-or-changed-packages)
+  - [3.2. Publishing next project templates](#32-publishing-next-project-templates)
+- [Stage 4 - Expo client](#stage-4---expo-client)
+  - [4.1. Releasing beta version](#41-releasing-beta-version)
+  - [4.2. Making a simulator build](#42-making-a-simulator-build)
+  - [4.3. Submit iOS client to App Store Review](#43-submit-ios-client-to-app-store-review)
+  - [4.4. Release clients to external beta testers](#44-release-clients-to-external-beta-testers)
+- [Stage 5 - ExpoKit and standalone apps](#stage-5---expokit-and-standalone-apps)
+  - [5.1. Updating ExpoKit](#51-updating-expokit)
+  - [5.2. Make shell app build](#52-make-shell-app-build)
+  - [5.3. Make adhoc client shell app for iOS](#53-make-adhoc-client-shell-app-for-ios)
+  - [5.4. Deploy Turtle with new shell tarballs](#54-deploy-turtle-with-new-shell-tarballs)
+- [Stage 6 - Final release](#stage-6---final-release)
+  - [6.1. Release iOS/Android clients](#61-release-iosandroid-clients)
+  - [6.2. Deploy Turtle/ExpoKit to production](#62-deploy-turtleexpokit-to-production)
+  - [6.3. Deploy new docs](#63-deploy-new-docs)
+  - [6.4. Add related packages to versions endpoint](#64-add-related-packages-to-versions-endpoint)
+  - [6.5. Promote versions to production](#65-promote-versions-to-production)
+  - [6.6. Promote packages to latest on NPM registry](#66-promote-packages-to-latest-on-npm-registry)
+  - [6.7. Publishing final project templates](#67-publishing-final-project-templates)
+  - [6.8. Press release](#68-press-release)
+  - [6.9. Follow-up](#69-follow-up)
+- [Stage 7 - Snack](#stage-7---snack)
+  - [7.1. Add SDK support to Snack](#71-add-sdk-support-to-snack)
 
 # Stage 0 - Infra & Prerelease
 
@@ -75,6 +76,7 @@
 - Run `et update-vendored-module --list-outdated`.
 - Update each listed module separately, and test examples in NCL/test-suite to make sure none of the changes are unexpectedly breaking.
   - If there are unexpected breaking changes/instabilities in any libraries, it's ok to revert. We want to ship the best and most stable/feature-full product to our users, and if that means staying a little behind on versions sometimes, that's ok - use your best judgment or ask someone else on the team.
+- Pay extra attention to messages and warnings printed along the way for each module. Sometimes these's need for some extra manual work to be done in the updated files.
 - Add a CHANGELOG entry for each updated library and open a PR. Check the docs to make sure nothing needs to be updated (we generally just link directly to the third-party documentation).
 - Make sure that each individual library update lands on `master` as a **separate commit** so that it's easy to revert later on if needed.
 
@@ -117,13 +119,13 @@
 
 **How:**
 
-- Please follow another guide: [Generating Jest Mocks](Generating%20Jest%20Mocks.md).
+- Please follow another guide: [Generating Jest Mocks](../Generating%20Jest%20Mocks.md).
 
 ## 0.7. Publishing `next` packages
 
-| Prerequisites                                                       |
-| ------------------------------------------------------------------- |
-| [0.6. Generate new mocks](#06-generate-new-mocks) |
+| Prerequisites                                                 |
+| ------------------------------------------------------------- |
+| [0.6. Generate new mocks](#06-generate-new-mocks)             |
 | [0.7. Publishing next packages](#07-publishing-next-packages) |
 
 **Why:** We need to publish the unimodule packages to NPM so that we're able to prepare and test new project templates and people using bare workflow can use and test these packages before the final release. We use the `next` tag so people using the modules in bare workflow projects right now do not get these prereleased versions! We do this from master before cutting the release branch so that the version number bumps land on master first.
@@ -132,7 +134,16 @@
 
 - Run `et publish-packages`. Talk to @tsapeta for more details/information.
 
-## 0.8. Generate new SDK docs
+## 0.8. Merge and cutoff changelogs
+
+**Why:** We need to concatenate all new entries from packages' CHANGELOGs and add them to our main CHANGELOG file.
+
+**How:**
+
+- Run `et merge-changelogs --cut-off`.
+- Review the entries, commit and push changes to master.
+
+## 0.9. Generate new SDK docs
 
 **Why:** We store separate versions of docs for each SDK version. We need to version the docs as soon as we cut the release branch so that docs changes that land on master between cutting the release branch and the release date get applied to the new SDK version or not, as appropriate.
 
@@ -140,7 +151,6 @@
 
 - Do this step immediately before cutting the release branch.
 - Run `et generate-sdk-docs --sdk XX.X.X` to generate versioned docs for the new SDK. If we've upgraded React Native version in this release, we should also use `--update-react-native-docs` flag which imports the current version of React Native docs that also show up on our docs page. (If there are issues with this, talk with @byCedric.)
-- Update the `sourceCodeUrl` frontmatter in the SDK docs to point to the new SDK version (find and replace in editor).
 - Ensure that the `version` in package.json has NOT been updated to the new SDK version. SDK versions greater than the `version` in package.json will be hidden in production docs, and we do not want the new version to show up until the SDK has been released.
 - Commit and push changes to master.
 
@@ -148,8 +158,8 @@
 
 ## 1.1. Cutting off release branch
 
-| Prerequisites                                                       |
-| ------------------------------------------------------------------- |
+| Prerequisites      |
+| ------------------ |
 | All previous tasks |
 
 **Why:** Since we are about to start QA, cutting a branch ensures that we aren't testing and versioning code that is changing under our feet.
@@ -220,8 +230,8 @@
 
 **Why:** There are often a few key differences between these two environments, and if they go undetected then users will end up finding out stuff is broken when they think their app is ready to release to the stores. This reduces trust in the whole Expo ecosystem, so it's really important we head this off by QA'ing everything we put out for people to use.
 
-| Prerequisites                                                       |
-| ------------------------------------------------------------------- |
+| Prerequisites                                                                                                  |
+| -------------------------------------------------------------------------------------------------------------- |
 | [2.1. Versioned Quality Assurance - iOS/Android clients](#21-versioned-quality-assurance---iosandroid-clients) |
 
 **How:**
@@ -254,11 +264,11 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 ## 2.4. Cherry-pick Versioned Code to `master`
 
-| Prerequisites                                                       |
-| ------------------------------------------------------------------- |
+| Prerequisites                                                                                                  |
+| -------------------------------------------------------------------------------------------------------------- |
 | [2.1. Versioned Quality Assurance - iOS/Android clients](#21-versioned-quality-assurance---iosandroid-clients) |
-| [2.2. Standalone App Quality Assurance](#22-standalone-app-quality-assurance) |
-| [2.3. Web Quality Assurance](#21-web-quality-assurance) |
+| [2.2. Standalone App Quality Assurance](#22-standalone-app-quality-assurance)                                  |
+| [2.3. Web Quality Assurance](#21-web-quality-assurance)                                                        |
 
 **Why:** Most commits should flow in the `master` -> `sdk-XX` branch direction. Versioning is an exception to this because we explicitly want to version the set of code on the `sdk-XX` branch, but we want that versioned code on master for later releases.
 
@@ -268,11 +278,11 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 ## 2.5. Publish demo apps
 
-| Prerequisites                                                       |
-| ------------------------------------------------------------------- |
+| Prerequisites                                                                                                  |
+| -------------------------------------------------------------------------------------------------------------- |
 | [2.1. Versioned Quality Assurance - iOS/Android clients](#21-versioned-quality-assurance---iosandroid-clients) |
-| [2.2. Standalone App Quality Assurance](#22-standalone-app-quality-assurance) |
-| [2.3. Web Quality Assurance](#21-web-quality-assurance) |
+| [2.2. Standalone App Quality Assurance](#22-standalone-app-quality-assurance)                                  |
+| [2.3. Web Quality Assurance](#21-web-quality-assurance)                                                        |
 
 **Why:** We need to publish `native-component-list` so other people can try it out (including app reviewers from Apple).
 
@@ -286,11 +296,11 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 ## 3.1. Publish any missing or changed packages
 
-| Prerequisites                                                       |
-| ------------------------------------------------------------------- |
+| Prerequisites                                                                                                  |
+| -------------------------------------------------------------------------------------------------------------- |
 | [2.1. Versioned Quality Assurance - iOS/Android clients](#21-versioned-quality-assurance---iosandroid-clients) |
-| [2.2. Standalone App Quality Assurance](#22-standalone-app-quality-assurance) |
-| [2.3. Web Quality Assurance](#21-web-quality-assurance) |
+| [2.2. Standalone App Quality Assurance](#22-standalone-app-quality-assurance)                                  |
+| [2.3. Web Quality Assurance](#21-web-quality-assurance)                                                        |
 
 **Why:** Any changes that have been made to packages during QA / since the initial publish (step 0.7) still need to be published for bare workflow users (and managed, for TS changes).
 
@@ -302,8 +312,8 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 ## 3.2. Publishing `next` project templates
 
-| Prerequisites                                                             |
-| ------------------------------------------------------------------------- |
+| Prerequisites                                                                               |
+| ------------------------------------------------------------------------------------------- |
 | [3.1. Publish any missing or changed packages](#31-publish-any-missing-or-changed-packages) |
 
 **Why:** We also need to prepare project templates that are used when people run `expo init` command and publish them to NPM registry as RC versions so we can test them.
@@ -319,8 +329,8 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 ## 4.1. Releasing beta version
 
-| Prerequisites                                                             |
-| ------------------------------------------------------------------------- |
+| Prerequisites                                                                               |
+| ------------------------------------------------------------------------------------------- |
 | [3.1. Publish any missing or changed packages](#31-publish-any-missing-or-changed-packages) |
 
 **Why:** As we already published prerelease versions of the packages, now we can publish prerelease version of the client.
@@ -344,17 +354,16 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 ## 4.2. Making a simulator build
 
-| Prerequisites                                                     |
-| ----------------------------------------------------------------- |
+| Prerequisites                                             |
+| --------------------------------------------------------- |
 | [4.1. Releasing beta version](#41-releasing-beta-version) |
 
 **Why:** To allow our users install Expo client on the simulator (which doesn't have an App Store) we need to make a build for it, upload it to S3 servers and save its url and version on the versions endpoint. These builds are then downloaded and installed by the users using `expo client:install:ios`.
 
 **How:**
 
-- Open CircleCI on the release branch and go to the `client` workflow. Once `client_ios` and `client_android` jobs are finished, approve `client_ios_simulator_release_approve` and `client_android_apk_release_approve` jobs and follow the next jobs (`client_ios_simulator_release` and `client_android_apk_release`) which take and upload the artifact archives to staging.
-- Test if these simulator builds work as expected. You can install and launch them using expotools command `et client-install -p <platform>`.
-- When you're ready to sync the versions change to production, run `et promote-versions`.
+- Run `et dispatch client-{ios,android}-simulator` to trigger building the client for simulator, uploading the archive to S3 and updating URL in versions endpoint.
+- Once the job is finished, test if this simulator build work as expected. You can install and launch it using expotools command `et client-install -p {ios,android}`.
 
 ## 4.3. Submit iOS client to App Store Review
 
@@ -373,10 +382,10 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 ## 4.4. Release clients to external beta testers
 
-| Prerequisites                                                             |
-| ------------------------------------------------------------------------- |
+| Prerequisites                                                                   |
+| ------------------------------------------------------------------------------- |
 | [3.2. Publishing next project templates](#32-publishing-next-project-templates) |
-| [4.1. Releasing beta version](#41-releasing-beta-version)                 |
+| [4.1. Releasing beta version](#41-releasing-beta-version)                       |
 
 **Why:**
 
@@ -388,8 +397,8 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 ## 5.1. Updating ExpoKit
 
-| Prerequisites                                                             |
-| ------------------------------------------------------------------------- |
+| Prerequisites                                                                               |
+| ------------------------------------------------------------------------------------------- |
 | [3.1. Publish any missing or changed packages](#31-publish-any-missing-or-changed-packages) |
 
 **Why:** Ejected apps use ExpoKit as a dependency containing the core of Expo and some modules that are not yet extracted to unimodules. Since this flow is still supported (we're going to deprecate it) we need to release its new version as well.
@@ -397,15 +406,12 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 **How:**
 
 - Run `et update-versions -k 'packagesToInstallWhenEjecting.react-native-unimodules' -v 'X.Y.Z'` where `X.Y.Z` is the version of `react-native-unimodules` that is going to be used in ejected and standalone apps using this new SDK version.
-**iOS:**
-  - From the release branch run `et ios-update-expokit`.
-    - It creates a `ios/X.Y.Z` tag on GitHub where `X.Y.Z` is the iOS app version (`CFBundleShortVersionString` from `Info.plist`).
-    - It automatically detects iOS app and SDK versions, but if you need, you can modify its defaults using `--appVersion` and `--sdkVersion` flags.
-    - Please don't forget to make a GitHub release on this tag and add release notes there, so people will see what changed in this version (just copy corresponding entries from `CHANGELOG.md`).
-**Android:**
+  **iOS:**
+  - From the release branch run `et ios-update-expokit`. - It creates a `ios/X.Y.Z` tag on GitHub where `X.Y.Z` is the iOS app version (`CFBundleShortVersionString` from `Info.plist`). - It automatically detects iOS app and SDK versions, but if you need, you can modify its defaults using `--appVersion` and `--sdkVersion` flags. - Please don't forget to make a GitHub release on this tag and add release notes there, so people will see what changed in this version (just copy corresponding entries from `CHANGELOG.md`).
+    **Android:**
   - Check out the release branch.
   - Run `et android-build-packages` and ensure that all the unimodule packages are up-to-date. Commit any changes.
-  - Run `et android-update-expokit --sdkVersion XX.X.X --appVersion <android client version> --expokitVersion XX.X.X --expokitTag next`. This will publish a new version of the `expokit` package to NPM, upload the ExpoKit template files to S3, and set values on the staging versions endpoint.
+  - Run `et android-update-expokit --sdkVersion XX.X.X --appVersion <android client version> --expokitVersion XX.X.X --expokitTag next`. This will upload the ExpoKit template files to S3, and set values on the staging versions endpoint.
 
 ## 5.2. Make shell app build
 
@@ -417,11 +423,10 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 **How:**
 
-- Run `et update-versions -k 'packagesToInstallWhenEjecting.react-native' -v 'https://github.com/expo/react-native/archive/sdk-XX.X.X.tar.gz'` using the corresponding tag created in step 3.1.
-- Once you have your pull request from the release branch to master open, go to `https://circleci.com/gh/expo/workflows/expo/tree/sdk-XX` (where `XX` is the SDK number) and then choose `sdk-XX/shell_app` workflow. There are two approval jobs in this workflow, `shell_app_ios_approve_build` for iOS and `shell_app_android_approve_build` for Android. Click on the one you'd like to build and approve it. Wait for the next job to finish.
-- Open the last step called `Build and upload release tarball` and copy the url to the tarball that was uploaded to `exp-artifacts` S3 bucket.
-- Now go to `expo/turtle` repo and put the copied link into `shellTarballs/<platform>/sdkXX` file, where `<platform>` is the shell app platform you're updating.
-- Put appropriate change information in the `CHANGELOG.md` file, commit and then push changes.
+- Run `et update-versions -k 'packagesToInstallWhenEjecting.react-native' -v 'https://github.com/expo/react-native/archive/sdk-XX.X.X.tar.gz'` using the corresponding tag created in step [0.5](#05-tag-react-native-fork).
+- On the release branch, run `et dispatch shell-app-{ios,android}-release` and wait for it to finish.
+- Copy the url to the tarball that has been uploaded to `exp-artifacts` S3 bucket (it's printed in `Upload shell app tarball to S3` step of the workflow).
+- Now go to `expo/turtle` repo and put the copied link into `shellTarballs/{ios,android}/sdkXX` file and put appropriate change information in the `CHANGELOG.md` file, commit and then push changes.
 
 ## 5.3. Make adhoc client shell app for iOS
 
@@ -467,8 +472,8 @@ Once everything above is completed and Apple has approved the iOS client, the fi
   - Log into [App Store Connect](https://appstoreconnect.apple.com) and release the approved version.
 - **Android**:
   - Add a new file under `/fastlane/android/metadata/en-US/changelogs/[versionCode].txt` (it should usually read “Add support for Expo SDK XX”).
-  - Open the `client` workflow on CircleCI and find the `client_android` job. When it completes, download the APK from Artifacts and do a smoke test -- install it on a fresh Android device, turn on airplane mode, and make sure Home loads.
-  - Open the `client` workflow on CircleCI and approve the `client_android_approve_google_play` job. About 45 minutes later the update should be downloadable via Play Store.
+  - Open `Android Client` workflow on GitHub Actions and when it completes, download the APK from Artifacts and do a smoke test -- install it on a fresh Android device, turn on airplane mode, and make sure Home loads.
+  - Run `et dispatch client-android-release` to trigger appropriate job on GitHub Actions. About 45 minutes later the update should be downloadable via Play Store.
 
 ## 6.2. Deploy Turtle/ExpoKit to production
 
@@ -476,7 +481,6 @@ Once everything above is completed and Apple has approved the iOS client, the fi
 
 - Publish a new version of `turtle-cli` [following this guide](https://github.com/expo/turtle/blob/master/CONTRIBUTING.md#publishing-a-release).
 - Follow the instructions in the [`turtle-deploy` README](https://github.com/expo/turtle-deploy/). (Note that it refers to CI jobs in the `turtle` repo, not its own repo.)
-- Promote the `expokit` package published in step 5.1 to `latest` on NPM.
 
 ## 6.3. Deploy new docs
 
@@ -505,16 +509,16 @@ Once everything above is completed and Apple has approved the iOS client, the fi
 
 ## 6.5. Promote versions to production
 
-| Prerequisites                                             |
-| --------------------------------------------------------- |
-| [6.1. Release iOS/Android clients](#61-release-iosandroid-clients) |
-| [6.2. Deploy Turtle/ExpoKit to production](#62-deploy-turtleexpokit-to-production) |
-| [6.3. Deploy new docs](#63-deploy-new-docs) |
+| Prerequisites                                                                                   |
+| ----------------------------------------------------------------------------------------------- |
+| [6.1. Release iOS/Android clients](#61-release-iosandroid-clients)                              |
+| [6.2. Deploy Turtle/ExpoKit to production](#62-deploy-turtleexpokit-to-production)              |
+| [6.3. Deploy new docs](#63-deploy-new-docs)                                                     |
 | [6.4. Add related packages to versions endpoint](#64-add-related-packages-to-versions-endpoint) |
 
 **Why:** It's time for everything that uses the production versions endpoint to know about this new SDK version!
 
-**How:** 
+**How:**
 
 - `et promote-versions-to-prod`
 - Double check every change before pressing `y`!
@@ -529,9 +533,9 @@ Once everything above is completed and Apple has approved the iOS client, the fi
 
 ## 6.7. Publishing final project templates
 
-| Prerequisites                                                                                   |
-| ----------------------------------------------------------------------------------------------- |
-| [6.5. Promote versions to production](#65-promote-versions-to-production) |
+| Prerequisites                                                                                     |
+| ------------------------------------------------------------------------------------------------- |
+| [6.5. Promote versions to production](#65-promote-versions-to-production)                         |
 | [6.6. Promote packages to latest on NPM registry](#66-promote-packages-to-latest-on-npm-registry) |
 
 **Why:** Once the final packages are out, we can now make a final version of project templates as well.
@@ -547,8 +551,8 @@ Make sure the release notes are ready to go at this point -- after this change, 
 
 ## 6.8. Press release
 
-| Prerequisites                                             |
-| --------------------------------------------------------- |
+| Prerequisites                                                                     |
+| --------------------------------------------------------------------------------- |
 | [6.7. Publishing final project templates](#67-publishing-final-project-templates) |
 
 This should be ready to publish immediately after the previous step is finished!
@@ -562,8 +566,8 @@ This should be ready to publish immediately after the previous step is finished!
 
 ## 6.9. Follow-up
 
-| Prerequisites                                             |
-| --------------------------------------------------------- |
+| Prerequisites                           |
+| --------------------------------------- |
 | [6.8. Press release](#68-press-release) |
 
 **Why:** A few places in our infrastructure need to know about the release notes once they're published.
@@ -578,9 +582,9 @@ This should be ready to publish immediately after the previous step is finished!
 
 ## 7.1. Add SDK support to Snack
 
-| Prerequisites                                             |
-| --------------------------------------------------------- |
-| [4.1. Releasing beta version](#41-releasing-beta-version) |
+| Prerequisites                                                 |
+| ------------------------------------------------------------- |
+| [4.1. Releasing beta version](#41-releasing-beta-version)     |
 | [4.2. Making a simulator build](#42-making-a-simulator-build) |
 
 **Why:** Once the new SDK is available publicly, we need to update Snack to support that SDK.

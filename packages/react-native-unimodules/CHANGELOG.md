@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
-- Easier to follow installation instructions by moving them to the Expo documentation ([#9145](https://github.com/expo/expo/pull/9145)).
-
 ### 🐛 Bug fixes
+
+- Fixed resolving Gradle module path when a symlink is provided. ([#10007](https://github.com/expo/expo/pull/10007) by [@barthap](https://github.com/barthap))
+
+## 0.11.0 — 2020-08-18
+
+### 🎉 New features
+
+- Easier to follow installation instructions by moving them to the Expo documentation ([#9145](https://github.com/expo/expo/pull/9145)).
 
 ## 0.10.1 — 2020-05-29
 

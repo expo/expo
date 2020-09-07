@@ -1,6 +1,6 @@
 {
   "name": "EXFont",
-  "version": "8.2.2",
+  "version": "8.3.0",
   "summary": "Load fonts at runtime and use them in React Native components.",
   "description": "Load fonts at runtime and use them in React Native components.",
   "license": "MIT",

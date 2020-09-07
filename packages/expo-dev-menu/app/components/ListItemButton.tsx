@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Platform } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcon } from '../components/Icon';
 
 import ListItem from './ListItem';
 import { StyledText } from './Text';
@@ -25,6 +26,13 @@ class ListItemButton extends React.PureComponent<ListItemButtonProps> {
   renderButtonIcon(icon?: string | null) {
     if (!icon) {
       return null;
+    }
+    if (Platform.OS === 'ios') {
+      return (
+        <View style={styles.buttonIcon}>
+          <MaterialCommunityIcon name={icon} size={22} color="menuItemText" />
+        </View>
+      );
     }
     return (
       <View style={styles.buttonIcon}>

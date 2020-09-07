@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1DB000B7007290B009A8F0A4ED3DE9F4 /* EXScreenCapture-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = B5B56FBDE232945ACBCA6F5D0131B78B /* EXScreenCapture-dummy.m */; };
-		241B6E7EEACE71E6598C1DFDC6F05BE6 /* EXScreenCaptureModule.h in Headers */ = {isa = PBXBuildFile; fileRef = ED35A9D6299D3054010E4E5D74BECE57 /* EXScreenCaptureModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		CCA64D5C37C13EAB56189136C952A5A0 /* EXScreenCaptureModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 61673E5B6ECA3A285E0844630767C1B3 /* EXScreenCaptureModule.m */; };
+		13B2EF16F23D5D318D4272A091A1DEEB /* EXScreenCaptureModule.h in Headers */ = {isa = PBXBuildFile; fileRef = ED35A9D6299D3054010E4E5D74BECE57 /* EXScreenCaptureModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		76CB3FB7EA0873905AF2977D7EC663C7 /* EXScreenCaptureModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 61673E5B6ECA3A285E0844630767C1B3 /* EXScreenCaptureModule.m */; };
+		9B4498649EBE37BDC286EACBB5FBD2B6 /* EXScreenCapture-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = B5B56FBDE232945ACBCA6F5D0131B78B /* EXScreenCapture-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		AEB087EBE3164A74134CAE2AB1EE5873 /* PBXContainerItemProxy */ = {
+		440C43D4700AAED026B7E5B3D4ADA776 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 366BC1FED57CB9DA5667253219D52344 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -35,7 +35,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		D6E7E826B51A5F90AD799414502990C3 /* Frameworks */ = {
+		847A45C7B0886CFF788D46CF030D8E93 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -113,11 +113,11 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		A25FEAB4C628F2D2448B4404A8FBEDC5 /* Headers */ = {
+		5772A878E64659452369D3E2E5104527 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				241B6E7EEACE71E6598C1DFDC6F05BE6 /* EXScreenCaptureModule.h in Headers */,
+				13B2EF16F23D5D318D4272A091A1DEEB /* EXScreenCaptureModule.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -126,16 +126,16 @@
 /* Begin PBXNativeTarget section */
 		41748256BF35CA80D3CE24FFC0C6012B /* EXScreenCapture */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = DCD3F4891766FF69F8079C33B03CF3E8 /* Build configuration list for PBXNativeTarget "EXScreenCapture" */;
+			buildConfigurationList = C83C739E6FCF22B84B8EF5C8179FE42B /* Build configuration list for PBXNativeTarget "EXScreenCapture" */;
 			buildPhases = (
-				A25FEAB4C628F2D2448B4404A8FBEDC5 /* Headers */,
-				14F1FCD424ADA34A0F2EB587AFF07176 /* Sources */,
-				D6E7E826B51A5F90AD799414502990C3 /* Frameworks */,
+				5772A878E64659452369D3E2E5104527 /* Headers */,
+				EFBE6C18E8A7693A6149F95B4E939AEC /* Sources */,
+				847A45C7B0886CFF788D46CF030D8E93 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				D9FC83B0CB914DB6272D280C4B1D5142 /* PBXTargetDependency */,
+				3E9284B9DAC32887CF8D1285C547AB81 /* PBXTargetDependency */,
 			);
 			name = EXScreenCapture;
 			productName = EXScreenCapture;
@@ -175,22 +175,22 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		14F1FCD424ADA34A0F2EB587AFF07176 /* Sources */ = {
+		EFBE6C18E8A7693A6149F95B4E939AEC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1DB000B7007290B009A8F0A4ED3DE9F4 /* EXScreenCapture-dummy.m in Sources */,
-				CCA64D5C37C13EAB56189136C952A5A0 /* EXScreenCaptureModule.m in Sources */,
+				9B4498649EBE37BDC286EACBB5FBD2B6 /* EXScreenCapture-dummy.m in Sources */,
+				76CB3FB7EA0873905AF2977D7EC663C7 /* EXScreenCaptureModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		D9FC83B0CB914DB6272D280C4B1D5142 /* PBXTargetDependency */ = {
+		3E9284B9DAC32887CF8D1285C547AB81 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = AEB087EBE3164A74134CAE2AB1EE5873 /* PBXContainerItemProxy */;
+			targetProxy = 440C43D4700AAED026B7E5B3D4ADA776 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -319,7 +319,7 @@
 			};
 			name = Release;
 		};
-		D1525BC2383E744E1A6E339F34B33ACF /* Debug */ = {
+		9CB3A72213B65D7641F5CF3C88CFB149 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3638A28E49D2268DC35FF8784403E105 /* EXScreenCapture.debug.xcconfig */;
 			buildSettings = {
@@ -344,7 +344,7 @@
 			};
 			name = Debug;
 		};
-		E5FFA3AA0944158898422978DAE5FBA7 /* Release */ = {
+		BA1B86DB718543F31BE4281AC840B0A2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7B214199DA1D7F0D6CB70C5CC280D3DD /* EXScreenCapture.release.xcconfig */;
 			buildSettings = {
@@ -382,11 +382,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		DCD3F4891766FF69F8079C33B03CF3E8 /* Build configuration list for PBXNativeTarget "EXScreenCapture" */ = {
+		C83C739E6FCF22B84B8EF5C8179FE42B /* Build configuration list for PBXNativeTarget "EXScreenCapture" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D1525BC2383E744E1A6E339F34B33ACF /* Debug */,
-				E5FFA3AA0944158898422978DAE5FBA7 /* Release */,
+				9CB3A72213B65D7641F5CF3C88CFB149 /* Debug */,
+				BA1B86DB718543F31BE4281AC840B0A2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

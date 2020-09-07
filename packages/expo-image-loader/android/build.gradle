@@ -18,7 +18,7 @@ buildscript {
 }
 
 group = 'host.exp.exponent'
-version = '1.1.1'
+version = '1.2.0'
 
 // Upload android library to maven with javadoc and android sources
 configurations {
@@ -51,8 +51,8 @@ android {
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 29)
-    versionCode 5
-    versionName "1.1.1"
+    versionCode 6
+    versionName "1.2.0"
   }
   lintOptions {
     abortOnError false
@@ -71,7 +71,7 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
   apply from: project(":unimodules-core").file("../unimodules-core.gradle")
 } else {
   throw new GradleException(
-      '\'unimodules-core.gradle\' was not found in the usual Flutter or React Native dependency locations. ' +
+      '\'unimodules-core.gradle\' was not found in the usual React Native dependency location. ' +
           'This package can only be used in such projects. Are you sure you\'ve installed the dependencies properly?')
 }
 

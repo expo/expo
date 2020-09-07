@@ -44,7 +44,7 @@ it(`verifies daily trigger handling`, async () => {
   const trigger = {
     hour: 12,
     minute: 30,
-    repeats: true,
+    repeats: true as boolean | undefined,
   };
   const input = {
     ...notificationTriggerInputTest,
@@ -57,6 +57,29 @@ it(`verifies daily trigger handling`, async () => {
     input.content,
     {
       type: 'daily',
+      ...input.trigger,
+    }
+  );
+});
+
+it(`verifies weekly trigger handling`, async () => {
+  const trigger = {
+    weekday: 1,
+    hour: 12,
+    minute: 30,
+    repeats: true as boolean | undefined,
+  };
+  const input = {
+    ...notificationTriggerInputTest,
+    trigger,
+  };
+  await scheduleNotificationAsync(input);
+  delete trigger.repeats;
+  expect(NotificationScheduler.scheduleNotificationAsync).toHaveBeenLastCalledWith(
+    input.identifier,
+    input.content,
+    {
+      type: 'weekly',
       ...input.trigger,
     }
   );

@@ -28,7 +28,7 @@ export function toHttp(expUrl: string): string {
     return expUrl;
   }
 
-  let components = url.parse(expUrl);
+  const components = url.parse(expUrl);
   if (components.host && HTTPS_HOSTS.includes(components.host)) {
     components.protocol = 'https:';
   } else {
@@ -38,7 +38,7 @@ export function toHttp(expUrl: string): string {
 }
 
 export function toExp(httpUrl: string): string {
-  let components = url.parse(httpUrl);
+  const components = url.parse(httpUrl);
   components.protocol = 'exp:';
   return url.format(components);
 }

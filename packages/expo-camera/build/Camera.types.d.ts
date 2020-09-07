@@ -106,6 +106,7 @@ export declare type CameraProps = ViewProps & {
     onBarCodeScanned?: (scanningResult: BarCodeScanningResult) => void;
     faceDetectorSettings?: object;
     onFacesDetected?: (faces: FaceDetectionResult) => void;
+    poster?: string;
 };
 export declare type CameraNativeProps = {
     pointerEvents?: any;
@@ -132,8 +133,11 @@ export declare type CameraNativeProps = {
     pictureSize?: string;
     barCodeScannerSettings?: BarCodeSettings;
     faceDetectorSettings?: object;
+    barCodeScannerEnabled?: boolean;
+    faceDetectorEnabled?: boolean;
     ratio?: string;
     useCamera2Api?: boolean;
+    poster?: string;
 };
 export declare type BarCodeSettings = {
     barCodeTypes: string[];

@@ -8,21 +8,21 @@
 
 /* Begin PBXBuildFile section */
 		26533965D7E28834E5C20408A5A97259 /* UEXGL.h in Headers */ = {isa = PBXBuildFile; fileRef = B03432D7B58B1A3A07697EC2C15D7B27 /* UEXGL.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		5352997D756C1A27431AC47D93712AF8 /* TypedArrayApi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E316D41AA2AF060525AA2CF40A4D1FBA /* TypedArrayApi.cpp */; settings = {COMPILER_FLAGS = "-x objective-c++ -std=c++1z"; }; };
-		5892333E5512D2A0CB125D2C14633175 /* EXGLImageUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B060E00E8F04F8B080BBBE74D63E1895 /* EXGLImageUtils.cpp */; settings = {COMPILER_FLAGS = "-x objective-c++ -std=c++1z"; }; };
 		665036C5BDCF7078D6379B419A12FB89 /* EXGLContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 4478BA004C4F24A6BEB7B0568F19295F /* EXGLContext.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		6CCD5EA4B81B69930313038C30BA9C09 /* EXGLImageUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B060E00E8F04F8B080BBBE74D63E1895 /* EXGLImageUtils.cpp */; settings = {COMPILER_FLAGS = "-x objective-c++ -std=c++1z -fno-aligned-allocation"; }; };
+		6E30150D99124303E4978749860A4F07 /* EXGLContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 847F5368B18D6EDCC64A1D277F7D7036 /* EXGLContext.cpp */; settings = {COMPILER_FLAGS = "-x objective-c++ -std=c++1z -fno-aligned-allocation"; }; };
 		70DEFF1EF1194A4780F7C651F247157D /* EXGLContext-inl.h in Headers */ = {isa = PBXBuildFile; fileRef = D3762565A10B5E5B4D2A1794EC731AB8 /* EXGLContext-inl.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		7C4588BECDF5F604B8824510FD213150 /* EXJSIUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A028164D03D3FAF86AB1531DDB08550 /* EXJSIUtils.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		898F8FCEAC798D46D8B933BB92255F16 /* stb_image.h in Headers */ = {isa = PBXBuildFile; fileRef = 6120EEC286C47FA818BB5520D1B6A8A2 /* stb_image.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		90291641A5905ADE80D3555EAB444D2E /* EXGLNativeMethods.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 250FB24ED18D292D52153A1595D77347 /* EXGLNativeMethods.cpp */; settings = {COMPILER_FLAGS = "-x objective-c++ -std=c++1z"; }; };
-		973E5FF7C482896202C48DA80335FD92 /* EXiOSUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = C57F320E07B80A093D122EB0A0E42A8E /* EXiOSUtils.mm */; settings = {COMPILER_FLAGS = "-x objective-c++ -std=c++1z"; }; };
-		ACBF8B5B41D87712E66F5C9104FAB91F /* UEXGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AEEC39C0EEF44F147E20527CAC6CC460 /* UEXGL.cpp */; settings = {COMPILER_FLAGS = "-x objective-c++ -std=c++1z"; }; };
+		B2ECE5D07EF2D4DFE1643739D8EC3054 /* TypedArrayApi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E316D41AA2AF060525AA2CF40A4D1FBA /* TypedArrayApi.cpp */; settings = {COMPILER_FLAGS = "-x objective-c++ -std=c++1z -fno-aligned-allocation"; }; };
 		B3E74445E35480B51BDB674BBA55E7EF /* TypedArrayApi.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2FE6355A7B03F4B3A6EC836B2D6830 /* TypedArrayApi.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		B732BF0CDB9443D60BB534BCE487A4E1 /* EXGLNativeMethodsUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 4944A307BC32330688D53A101751C032 /* EXGLNativeMethodsUtils.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B7C711D12D93B09908AA33EA018F0736 /* UEXGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AEEC39C0EEF44F147E20527CAC6CC460 /* UEXGL.cpp */; settings = {COMPILER_FLAGS = "-x objective-c++ -std=c++1z -fno-aligned-allocation"; }; };
 		BEEB1568E9867E6046532F21DD7D4A32 /* EXGL_CPP-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 0449BDD658D8CAAA0C4229598E3DF99B /* EXGL_CPP-dummy.m */; };
 		C483A979E8DA835CAEB044773E85F5B4 /* EXGLImageUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 242FD0AFB9F2770EFF29218C33189CC3 /* EXGLImageUtils.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		D2AECCA7EE149F6C41E42F199DA35610 /* EXPlatformUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 6258FD78D136055B6D9E9395F2C10411 /* EXPlatformUtils.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		F93D00CC3F2EE75FCFFE9D4A41851C94 /* EXGLContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 847F5368B18D6EDCC64A1D277F7D7036 /* EXGLContext.cpp */; settings = {COMPILER_FLAGS = "-x objective-c++ -std=c++1z"; }; };
+		D7AADA7AE1CF2FF6DA2D43997EE64F08 /* EXGLNativeMethods.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 250FB24ED18D292D52153A1595D77347 /* EXGLNativeMethods.cpp */; settings = {COMPILER_FLAGS = "-x objective-c++ -std=c++1z -fno-aligned-allocation"; }; };
+		DF758D18F65F749C05252A9A59587F53 /* EXiOSUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = C57F320E07B80A093D122EB0A0E42A8E /* EXiOSUtils.mm */; settings = {COMPILER_FLAGS = "-x objective-c++ -std=c++1z -fno-aligned-allocation"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -227,12 +227,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				BEEB1568E9867E6046532F21DD7D4A32 /* EXGL_CPP-dummy.m in Sources */,
-				F93D00CC3F2EE75FCFFE9D4A41851C94 /* EXGLContext.cpp in Sources */,
-				5892333E5512D2A0CB125D2C14633175 /* EXGLImageUtils.cpp in Sources */,
-				90291641A5905ADE80D3555EAB444D2E /* EXGLNativeMethods.cpp in Sources */,
-				973E5FF7C482896202C48DA80335FD92 /* EXiOSUtils.mm in Sources */,
-				5352997D756C1A27431AC47D93712AF8 /* TypedArrayApi.cpp in Sources */,
-				ACBF8B5B41D87712E66F5C9104FAB91F /* UEXGL.cpp in Sources */,
+				6E30150D99124303E4978749860A4F07 /* EXGLContext.cpp in Sources */,
+				6CCD5EA4B81B69930313038C30BA9C09 /* EXGLImageUtils.cpp in Sources */,
+				D7AADA7AE1CF2FF6DA2D43997EE64F08 /* EXGLNativeMethods.cpp in Sources */,
+				DF758D18F65F749C05252A9A59587F53 /* EXiOSUtils.mm in Sources */,
+				B2ECE5D07EF2D4DFE1643739D8EC3054 /* TypedArrayApi.cpp in Sources */,
+				B7C711D12D93B09908AA33EA018F0736 /* UEXGL.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

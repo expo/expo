@@ -1,6 +1,6 @@
 ---
 title: Notifications
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-38/packages/expo-notifications'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-notifications'
 ---
 
 import SnackInline from '~/components/plugins/SnackInline';
@@ -47,6 +47,8 @@ Open your `app.json` and add the following inside of the "expo" field:
   }
 }
 ```
+
+On Android, this module requires permission to subscribe to device boot. It's used to setup the scheduled notifications right after the device (re)starts. The `RECEIVE_BOOT_COMPLETED` permission is added automatically.
 
 ## API
 
@@ -234,7 +236,7 @@ export interface FirebaseData {
 
 ### `getExpoPushTokenAsync(options: ExpoTokenOptions): ExpoPushToken`
 
-Returns an Expo token that can be used to send a push notification to this device using Expo push notifications service. [Read more in the Push Notifications guide](../../push-notifications/overview/).
+Returns an Expo token that can be used to send a push notification to this device using Expo push notifications service. [Read more in the Push Notifications guide](/push-notifications/overview/).
 
 > **Note:** For Expo backend to be able to send notifications to your app, you will need to provide it with push notification keys. This can be done using `expo-cli` (`expo credentials:manager`). [Read more in the “Upload notifications credentials” guide](https://expo.fyi/upload-notifications-credentials). TODO
 
@@ -658,7 +660,7 @@ Notifications.scheduleNotificationAsync({
 
 Schedules a notification to be triggered in the future.
 
-> **Note:** Please note that this does not mean that the notification will be presented when it is triggereed. For the notification to be presented you have to set a notification handler with [`setNotificationHandler`](#setnotificationhandlerhandler-notificationhandler--null-void) that will return an appropriate notification behavior. For more information see the example below.
+> **Note:** Please note that this does not mean that the notification will be presented when it is triggered. For the notification to be presented you have to set a notification handler with [`setNotificationHandler`](#setnotificationhandlerhandler-notificationhandler--null-void) that will return an appropriate notification behavior. For more information see the example below.
 
 #### Arguments
 

@@ -19,23 +19,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-static NSString * const kEXUpdatesDefaultReleaseChannelName = @"default";
+static NSString * const EXUpdatesDefaultReleaseChannelName = @"default";
 
-static NSString * const kEXUpdatesConfigEnabledKey = @"EXUpdatesEnabled";
-static NSString * const kEXUpdatesConfigScopeKeyKey = @"EXUpdatesScopeKey";
-static NSString * const kEXUpdatesConfigUpdateUrlKey = @"EXUpdatesURL";
-static NSString * const kEXUpdatesConfigRequestHeadersKey = @"EXUpdatesRequestHeaders";
-static NSString * const kEXUpdatesConfigReleaseChannelKey = @"EXUpdatesReleaseChannel";
-static NSString * const kEXUpdatesConfigLaunchWaitMsKey = @"EXUpdatesLaunchWaitMs";
-static NSString * const kEXUpdatesConfigCheckOnLaunchKey = @"EXUpdatesCheckOnLaunch";
-static NSString * const kEXUpdatesConfigSDKVersionKey = @"EXUpdatesSDKVersion";
-static NSString * const kEXUpdatesConfigRuntimeVersionKey = @"EXUpdatesRuntimeVersion";
-static NSString * const kEXUpdatesConfigUsesLegacyManifestKey = @"EXUpdatesUsesLegacyManifest";
-static NSString * const kEXUpdatesConfigHasEmbeddedUpdateKey = @"EXUpdatesHasEmbeddedUpdate";
+static NSString * const EXUpdatesConfigEnabledKey = @"EXUpdatesEnabled";
+static NSString * const EXUpdatesConfigScopeKeyKey = @"EXUpdatesScopeKey";
+static NSString * const EXUpdatesConfigUpdateUrlKey = @"EXUpdatesURL";
+static NSString * const EXUpdatesConfigRequestHeadersKey = @"EXUpdatesRequestHeaders";
+static NSString * const EXUpdatesConfigReleaseChannelKey = @"EXUpdatesReleaseChannel";
+static NSString * const EXUpdatesConfigLaunchWaitMsKey = @"EXUpdatesLaunchWaitMs";
+static NSString * const EXUpdatesConfigCheckOnLaunchKey = @"EXUpdatesCheckOnLaunch";
+static NSString * const EXUpdatesConfigSDKVersionKey = @"EXUpdatesSDKVersion";
+static NSString * const EXUpdatesConfigRuntimeVersionKey = @"EXUpdatesRuntimeVersion";
+static NSString * const EXUpdatesConfigUsesLegacyManifestKey = @"EXUpdatesUsesLegacyManifest";
+static NSString * const EXUpdatesConfigHasEmbeddedUpdateKey = @"EXUpdatesHasEmbeddedUpdate";
 
-static NSString * const kEXUpdatesConfigAlwaysString = @"ALWAYS";
-static NSString * const kEXUpdatesConfigWifiOnlyString = @"WIFI_ONLY";
-static NSString * const kEXUpdatesConfigNeverString = @"NEVER";
+static NSString * const EXUpdatesConfigAlwaysString = @"ALWAYS";
+static NSString * const EXUpdatesConfigWifiOnlyString = @"WIFI_ONLY";
+static NSString * const EXUpdatesConfigNeverString = @"NEVER";
 
 @implementation EXUpdatesConfig
 
@@ -44,7 +44,7 @@ static NSString * const kEXUpdatesConfigNeverString = @"NEVER";
   if (self = [super init]) {
     _isEnabled = YES;
     _requestHeaders = @{};
-    _releaseChannel = kEXUpdatesDefaultReleaseChannelName;
+    _releaseChannel = EXUpdatesDefaultReleaseChannelName;
     _launchWaitMs = @(0);
     _checkOnLaunch = EXUpdatesCheckAutomaticallyConfigAlways;
     _usesLegacyManifest = YES;
@@ -62,18 +62,18 @@ static NSString * const kEXUpdatesConfigNeverString = @"NEVER";
 
 - (void)loadConfigFromDictionary:(NSDictionary *)config
 {
-  id isEnabled = config[kEXUpdatesConfigEnabledKey];
+  id isEnabled = config[EXUpdatesConfigEnabledKey];
   if (isEnabled && [isEnabled isKindOfClass:[NSNumber class]]) {
     _isEnabled = [(NSNumber *)isEnabled boolValue];
   }
 
-  id updateUrl = config[kEXUpdatesConfigUpdateUrlKey];
+  id updateUrl = config[EXUpdatesConfigUpdateUrlKey];
   if (updateUrl && [updateUrl isKindOfClass:[NSString class]]) {
     NSURL *url = [NSURL URLWithString:(NSString *)updateUrl];
     _updateUrl = url;
   }
 
-  id scopeKey = config[kEXUpdatesConfigScopeKeyKey];
+  id scopeKey = config[EXUpdatesConfigScopeKeyKey];
   if (scopeKey && [scopeKey isKindOfClass:[NSString class]]) {
     _scopeKey = (NSString *)scopeKey;
   }
@@ -89,17 +89,17 @@ static NSString * const kEXUpdatesConfigNeverString = @"NEVER";
     }
   }
 
-  id requestHeaders = config[kEXUpdatesConfigRequestHeadersKey];
+  id requestHeaders = config[EXUpdatesConfigRequestHeadersKey];
   if (requestHeaders && [requestHeaders isKindOfClass:[NSDictionary class]]) {
     _requestHeaders = (NSDictionary *)requestHeaders;
   }
 
-  id releaseChannel = config[kEXUpdatesConfigReleaseChannelKey];
+  id releaseChannel = config[EXUpdatesConfigReleaseChannelKey];
   if (releaseChannel && [releaseChannel isKindOfClass:[NSString class]]) {
     _releaseChannel = (NSString *)releaseChannel;
   }
 
-  id launchWaitMs = config[kEXUpdatesConfigLaunchWaitMsKey];
+  id launchWaitMs = config[EXUpdatesConfigLaunchWaitMsKey];
   if (launchWaitMs && [launchWaitMs isKindOfClass:[NSNumber class]]) {
     _launchWaitMs = (NSNumber *)launchWaitMs;
   } else if (launchWaitMs && [launchWaitMs isKindOfClass:[NSString class]]) {
@@ -108,35 +108,35 @@ static NSString * const kEXUpdatesConfigNeverString = @"NEVER";
     _launchWaitMs = [formatter numberFromString:(NSString *)launchWaitMs];
   }
 
-  id checkOnLaunch = config[kEXUpdatesConfigCheckOnLaunchKey];
+  id checkOnLaunch = config[EXUpdatesConfigCheckOnLaunchKey];
   if (checkOnLaunch && [checkOnLaunch isKindOfClass:[NSString class]]) {
-    if ([kEXUpdatesConfigNeverString isEqualToString:(NSString *)checkOnLaunch]) {
+    if ([EXUpdatesConfigNeverString isEqualToString:(NSString *)checkOnLaunch]) {
       _checkOnLaunch = EXUpdatesCheckAutomaticallyConfigNever;
-    } else if ([kEXUpdatesConfigWifiOnlyString isEqualToString:(NSString *)checkOnLaunch]) {
+    } else if ([EXUpdatesConfigWifiOnlyString isEqualToString:(NSString *)checkOnLaunch]) {
       _checkOnLaunch = EXUpdatesCheckAutomaticallyConfigWifiOnly;
-    } else if ([kEXUpdatesConfigAlwaysString isEqualToString:(NSString *)checkOnLaunch]) {
+    } else if ([EXUpdatesConfigAlwaysString isEqualToString:(NSString *)checkOnLaunch]) {
       _checkOnLaunch = EXUpdatesCheckAutomaticallyConfigAlways;
     }
   }
 
-  id sdkVersion = config[kEXUpdatesConfigSDKVersionKey];
+  id sdkVersion = config[EXUpdatesConfigSDKVersionKey];
   if (sdkVersion && [sdkVersion isKindOfClass:[NSString class]]) {
     _sdkVersion = (NSString *)sdkVersion;
   }
 
-  id runtimeVersion = config[kEXUpdatesConfigRuntimeVersionKey];
+  id runtimeVersion = config[EXUpdatesConfigRuntimeVersionKey];
   if (runtimeVersion && [runtimeVersion isKindOfClass:[NSString class]]) {
     _runtimeVersion = (NSString *)runtimeVersion;
   }
 
   NSAssert(_sdkVersion || _runtimeVersion, @"One of EXUpdatesSDKVersion or EXUpdatesRuntimeVersion must be configured in expo-updates");
   
-  id usesLegacyManifest = config[kEXUpdatesConfigUsesLegacyManifestKey];
+  id usesLegacyManifest = config[EXUpdatesConfigUsesLegacyManifestKey];
   if (usesLegacyManifest && [usesLegacyManifest isKindOfClass:[NSNumber class]]) {
     _usesLegacyManifest = [(NSNumber *)usesLegacyManifest boolValue];
   }
 
-  id hasEmbeddedUpdate = config[kEXUpdatesConfigHasEmbeddedUpdateKey];
+  id hasEmbeddedUpdate = config[EXUpdatesConfigHasEmbeddedUpdateKey];
   if (hasEmbeddedUpdate && [hasEmbeddedUpdate isKindOfClass:[NSNumber class]]) {
     _hasEmbeddedUpdate = [(NSNumber *)hasEmbeddedUpdate boolValue];
   }

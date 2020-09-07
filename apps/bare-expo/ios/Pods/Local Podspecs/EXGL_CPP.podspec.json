@@ -1,6 +1,6 @@
 {
   "name": "EXGL_CPP",
-  "version": "8.4.0",
+  "version": "9.1.2",
   "summary": "C++ bindings for WebGL 2.0 used in Expo GL module",
   "description": "C++ bindings for WebGL 2.0 used in Expo GL module",
   "license": "MIT",
@@ -14,7 +14,7 @@
   },
   "source_files": "**/*.{h,c,cpp,mm}",
   "preserve_paths": "**/*.{h,c,cpp,mm}",
-  "compiler_flags": "-x objective-c++ -std=c++1z",
+  "compiler_flags": "-x objective-c++ -std=c++1z -fno-aligned-allocation",
   "requires_arc": true,
   "pod_target_xcconfig": {
     "CLANG_WARN_COMMA": "NO",

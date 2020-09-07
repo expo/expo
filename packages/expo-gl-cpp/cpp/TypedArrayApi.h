@@ -60,6 +60,8 @@ struct typedArrayTypeMap<TypedArrayKind::Float64Array> {
   typedef double type;
 };
 
+void invalidateJsiPropNameIDCache();
+
 class TypedArrayBase : public jsi::Object {
  public:
   template <TypedArrayKind T>

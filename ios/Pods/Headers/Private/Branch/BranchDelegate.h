@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BranchDelegate.h
+../../../Branch/Branch-SDK/BranchDelegate.h

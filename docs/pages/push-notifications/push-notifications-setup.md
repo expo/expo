@@ -55,7 +55,7 @@ registerForPushNotificationsAsync = async () => {
 
 If you're using the bare workflow, or building a standalone app with `expo build:ios` or `expo build:android`, you'll also need to configure the necessary push credentials.
 
-For Android, both managed and bare workflow users should follow our [FCM setup guide](../using-fcm/), it should only take about 5 minutes.
+For Android, both managed and bare workflow users need to follow our [FCM setup guide](../using-fcm/), it should only take about 5 minutes.
 
 For iOS, the managed workflow takes care of push notification credentials automatically when you run `expo build:ios`. In the bare workflow, you'll need to use the `expo credentials:manager` command to upload your push notification credentials to Expo's servers. Follow these steps:
 

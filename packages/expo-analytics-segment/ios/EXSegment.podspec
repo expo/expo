@@ -2,6 +2,13 @@ require 'json'
 
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 
+segment_analytics_version = '~> 4.0'
+using_custom_segment_analytics_version = defined? $AnalyticsVersion
+if using_custom_segment_analytics_version
+  segment_analytics_version = $AnalyticsVersion
+  Pod::UI.puts "expo-analytics-segment: Using user specified Analytics version '#{$segment_analytics_version}'"
+end
+
 Pod::Spec.new do |s|
   s.name           = 'EXSegment'
   s.version        = package['version']
@@ -18,5 +25,5 @@ Pod::Spec.new do |s|
 
   s.dependency 'UMCore'
   s.dependency 'UMConstantsInterface'
-  s.dependency 'Analytics', '~> 3.7'
+  s.dependency 'Analytics', segment_analytics_version
 end

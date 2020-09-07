@@ -6,9 +6,30 @@
 
 ### 🎉 New features
 
-- Full rewrite of expo-gl-cpp, migration to JSI ([#7948](https://github.com/expo/expo/pull/7948) by [@wkozyra95](https://github.com/wkozyra95))
+### 🐛 Bug fixes
+
+## 9.1.1 — 2020-08-26
+
+### 🎉 New features
+
+- Enable stencil buffer on Android ([#9928](https://github.com/expo/expo/pull/9928) by [@wkozyra95](https://github.com/wkozyra95))
+
+## 9.1.0 — 2020-08-18
 
 ### 🐛 Bug fixes
+
+- Fix bug preventing GLView from rendering in SSR environments. ([#9691](https://github.com/expo/expo/pull/9691) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 9.0.0 — 2020-08-11
+
+### 🛠 Breaking changes
+
+- This version requires at least version 0.63.0 of React Native. It may crash when used with older versions. ([#7948](https://github.com/expo/expo/pull/7948) by [@wkozyra95](https://github.com/wkozyra95))
+
+### 🎉 New features
+
+- Full rewrite of expo-gl-cpp, migration to JSI. ([#7948](https://github.com/expo/expo/pull/7948) by [@wkozyra95](https://github.com/wkozyra95))
+- Introduced compatibility with Hermes, however you should treat this feature as unstable so use it with Hermes at your own risk. ([#7948](https://github.com/expo/expo/pull/7948) by [@wkozyra95](https://github.com/wkozyra95))
 
 ## 8.4.0 — 2020-07-17
 

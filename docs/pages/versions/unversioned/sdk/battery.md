@@ -1,6 +1,6 @@
 ---
 title: Battery
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-battery'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-battery'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

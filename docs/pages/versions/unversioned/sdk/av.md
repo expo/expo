@@ -1,6 +1,6 @@
 ---
 title: AV
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-av'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-av'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

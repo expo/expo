@@ -122,6 +122,7 @@ export type CameraProps = ViewProps & {
   onBarCodeScanned?: (scanningResult: BarCodeScanningResult) => void;
   faceDetectorSettings?: object;
   onFacesDetected?: (faces: FaceDetectionResult) => void;
+  poster?: string;
 };
 
 export type CameraNativeProps = {
@@ -143,9 +144,13 @@ export type CameraNativeProps = {
   pictureSize?: string;
   barCodeScannerSettings?: BarCodeSettings;
   faceDetectorSettings?: object;
+  barCodeScannerEnabled?: boolean;
+  faceDetectorEnabled?: boolean;
   // Android
   ratio?: string;
   useCamera2Api?: boolean;
+  // Web
+  poster?: string;
 };
 
 export type BarCodeSettings = {

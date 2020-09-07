@@ -10,7 +10,7 @@ interface State {
   recordingUri?: string;
 }
 
-export default class AuthSessionScreen extends React.Component<{}, State> {
+export default class RecordingScreen extends React.Component<{}, State> {
   static navigationOptions = {
     title: 'Audio',
   };

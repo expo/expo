@@ -9,8 +9,6 @@
 
 @property (nonatomic, weak) UIViewController *viewController;
 @property (nonatomic, strong) UIView *splashScreenView;
-@property (nonatomic, strong) Class rootViewClass;
-@property (nonatomic, weak) UIView *rootView;
 
 @property (nonatomic, assign) BOOL autoHideEnabled;
 @property (nonatomic, assign) BOOL splashScreenShown;

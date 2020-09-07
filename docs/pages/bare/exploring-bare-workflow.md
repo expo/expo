@@ -21,7 +21,7 @@ If you already have a React Native project that has been created with `react-nat
 
 <Video file="exploring-bare/setup.mp4" />
 
-> _Note: We moved superhumanly fast in this video. You're not meant to follow along, we just want to give you a rough sense of what's involved in this process. Full instructions to get set up are available in the [react-native-unimodules README](https://github.com/unimodules/react-native-unimodules)._
+> _Note: We moved superhumanly fast in this video. You're not meant to follow along, we just want to give you a rough sense of what's involved in this process. Full instructions to get set up are available in the [react-native-unimodules README](https://github.com/expo/expo/tree/master/packages/react-native-unimodules)._
 
 
 ### Existing Expo managed workflow apps

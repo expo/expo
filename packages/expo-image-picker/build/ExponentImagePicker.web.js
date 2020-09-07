@@ -66,44 +66,22 @@ function openFileBrowserAsync({ mediaTypes, capture = false, allowsMultipleSelec
     }
     document.body.appendChild(input);
     return new Promise((resolve, reject) => {
-        input.addEventListener('change', () => {
+        input.addEventListener('change', async () => {
             if (input.files) {
-                const targetFile = input.files[0];
-                const reader = new FileReader();
-                reader.onerror = () => {
-                    reject(new Error(`Failed to read the selected media because the operation failed.`));
-                };
-                reader.onload = ({ target }) => {
-                    const uri = target.result;
-                    const returnRaw = () => {
-                        resolve({
-                            cancelled: false,
-                            uri,
-                            width: 0,
-                            height: 0,
-                        });
-                    };
-                    if (typeof target?.result === 'string') {
-                        const image = new Image();
-                        image.src = target.result;
-                        image.onload = function () {
-                            resolve({
-                                cancelled: false,
-                                uri,
-                                width: image.naturalWidth ?? image.width,
-                                height: image.naturalHeight ?? image.height,
-                            });
-                        };
-                        image.onerror = () => {
-                            returnRaw();
-                        };
-                    }
-                    else {
-                        returnRaw();
-                    }
-                };
-                // Read in the image file as a binary string.
-                reader.readAsDataURL(targetFile);
+                if (!allowsMultipleSelection) {
+                    const img = await readFile(input.files[0]);
+                    resolve({
+                        cancelled: false,
+                        ...img,
+                    });
+                }
+                else {
+                    const imgs = await Promise.all(Array.from(input.files).map(readFile));
+                    resolve({
+                        cancelled: false,
+                        selected: imgs,
+                    });
+                }
             }
             else {
                 resolve({ cancelled: true });
@@ -112,6 +90,36 @@ function openFileBrowserAsync({ mediaTypes, capture = false, allowsMultipleSelec
         });
         const event = new MouseEvent('click');
         input.dispatchEvent(event);
+    });
+}
+function readFile(targetFile) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = () => {
+            reject(new Error(`Failed to read the selected media because the operation failed.`));
+        };
+        reader.onload = ({ target }) => {
+            const uri = target.result;
+            const returnRaw = () => resolve({
+                uri,
+                width: 0,
+                height: 0,
+            });
+            if (typeof target?.result === 'string') {
+                const image = new Image();
+                image.src = target.result;
+                image.onload = () => resolve({
+                    uri,
+                    width: image.naturalWidth ?? image.width,
+                    height: image.naturalHeight ?? image.height,
+                });
+                image.onerror = () => returnRaw();
+            }
+            else {
+                returnRaw();
+            }
+        };
+        reader.readAsDataURL(targetFile);
     });
 }
 //# sourceMappingURL=ExponentImagePicker.web.js.map

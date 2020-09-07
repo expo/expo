@@ -2,7 +2,7 @@
 
 #if __has_include(<ABI38_0_0EXAmplitude/ABI38_0_0EXAmplitude.h>)
 #import "ABI38_0_0EXScopedAmplitude.h"
-#import <Amplitude-iOS/Amplitude.h>
+#import <Amplitude/Amplitude.h>
 
 @interface ABI38_0_0EXAmplitude (Protected)
 

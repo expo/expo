@@ -86,11 +86,6 @@ configurations.all {
   resolutionStrategy {
     force 'org.webkit:android-jsc:r245459'
   }
-// WHEN_DISTRIBUTING_REMOVE_FROM_HERE
-  resolutionStrategy.dependencySubstitution {
-    substitute module("com.facebook.react:react-native:+") with project(":ReactAndroid")
-  }
-// WHEN_DISTRIBUTING_REMOVE_TO_HERE
 }
 
 // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
@@ -120,7 +115,6 @@ dependencies {
   implementation 'de.greenrobot:eventbus:2.4.0'
 
   implementation 'com.squareup.picasso:picasso:2.5.2'
-  implementation 'com.google.android.gms:play-services-gcm:15.0.1'
   implementation 'com.google.android.gms:play-services-analytics:16.0.1'
   implementation 'com.google.android.gms:play-services-maps:15.0.1'
   implementation 'com.google.android.gms:play-services-auth:15.0.1'
@@ -151,7 +145,6 @@ dependencies {
 
   // Testing
   androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
-  // We use a modified build of com.android.support.test:runner:1.0.1. Explanation in maven-test/README
   androidTestImplementation 'androidx.test:runner:1.1.0'
   androidTestImplementation "androidx.annotation:annotation:1.0.0"
   androidTestImplementation 'com.google.code.findbugs:jsr305:3.0.0'
@@ -190,6 +183,11 @@ dependencies {
   // ADD_NEW_SDKS_HERE
 
 
+  // BEGIN_SDK_39
+  implementation(project(':expoview-abi39_0_0'))
+  // END_SDK_39
+
+
   // BEGIN_SDK_38
   implementation(project(':expoview-abi38_0_0'))
   // END_SDK_38
@@ -224,10 +222,8 @@ dependencies {
       target       : 'react-native',
       exclude      : [
         'expo-module-template',
-        'expo-bluetooth',
         'expo-in-app-purchases',
         'expo-payments-stripe',
-        'expo-splash-screen',
         'expo-gl-cpp-legacy'
       ]
   ])

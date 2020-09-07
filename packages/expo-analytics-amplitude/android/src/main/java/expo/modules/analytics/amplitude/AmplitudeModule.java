@@ -34,7 +34,7 @@ public class AmplitudeModule extends ExportedModule {
   }
 
   @ExpoMethod
-  public void initialize(final String apiKey, Promise promise) {
+  public void initializeAsync(final String apiKey, Promise promise) {
     mClient = getClient(apiKey);
     if (mPendingTrackingOptions != null) {
       mClient.setTrackingOptions(mPendingTrackingOptions);
@@ -44,7 +44,7 @@ public class AmplitudeModule extends ExportedModule {
   }
 
   @ExpoMethod
-  public void setUserId(final String userId, Promise promise) {
+  public void setUserIdAsync(final String userId, Promise promise) {
     if (rejectUnlessInitialized(promise)) {
       return;
     }
@@ -54,7 +54,7 @@ public class AmplitudeModule extends ExportedModule {
   }
 
   @ExpoMethod
-  public void setUserProperties(final Map<String, Object> properties, Promise promise) {
+  public void setUserPropertiesAsync(final Map<String, Object> properties, Promise promise) {
     if (rejectUnlessInitialized(promise)) {
       return;
     }
@@ -63,7 +63,7 @@ public class AmplitudeModule extends ExportedModule {
   }
 
   @ExpoMethod
-  public void clearUserProperties(Promise promise) {
+  public void clearUserPropertiesAsync(Promise promise) {
     if (rejectUnlessInitialized(promise)) {
       return;
     }
@@ -73,7 +73,7 @@ public class AmplitudeModule extends ExportedModule {
   }
 
   @ExpoMethod
-  public void logEvent(final String eventName, Promise promise) {
+  public void logEventAsync(final String eventName, Promise promise) {
     if (rejectUnlessInitialized(promise)) {
       return;
     }
@@ -83,7 +83,7 @@ public class AmplitudeModule extends ExportedModule {
   }
 
   @ExpoMethod
-  public void logEventWithProperties(final String eventName, final Map<String, Object> properties, Promise promise) {
+  public void logEventWithPropertiesAsync(final String eventName, final Map<String, Object> properties, Promise promise) {
     if (rejectUnlessInitialized(promise)) {
       return;
     }
@@ -93,7 +93,7 @@ public class AmplitudeModule extends ExportedModule {
   }
 
   @ExpoMethod
-  public void setGroup(final String groupType, final List<Object> groupNames, Promise promise) {
+  public void setGroupAsync(final String groupType, final List<Object> groupNames, Promise promise) {
     if (rejectUnlessInitialized(promise)) {
       return;
     }
@@ -103,7 +103,7 @@ public class AmplitudeModule extends ExportedModule {
   }
 
   @ExpoMethod
-  public void setTrackingOptions(final ReadableArguments options, Promise promise) {
+  public void setTrackingOptionsAsync(final ReadableArguments options, Promise promise) {
     TrackingOptions trackingOptions = new TrackingOptions();
 
     if (options.getBoolean("disableAdid")) {

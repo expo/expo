@@ -155,10 +155,6 @@
         <action android:name="abi38_0_0.expo.modules.notifications.NOTIFICATION_EVENT" />
       </intent-filter>
     </service>
-    <service
-      android:name="abi38_0_0.expo.modules.notifications.notifications.service.ExpoNotificationSchedulerService"
-      android:exported="false"
-      android:permission="android.permission.BIND_JOB_SERVICE" />
 
     <receiver
       android:name="abi38_0_0.expo.modules.notifications.notifications.service.ScheduledAlarmReceiver"

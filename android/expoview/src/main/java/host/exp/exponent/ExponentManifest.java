@@ -13,6 +13,7 @@ import android.util.Log;
 import android.util.LruCache;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 import okhttp3.CacheControl;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
@@ -78,6 +79,7 @@ public class ExponentManifest {
   public static final String MANIFEST_PRIMARY_COLOR_KEY = "primaryColor";
   public static final String MANIFEST_ORIENTATION_KEY = "orientation";
   public static final String MANIFEST_DEVELOPER_KEY = "developer";
+  public static final String MANIFEST_DEVELOPER_TOOL_KEY = "tool";
   public static final String MANIFEST_PACKAGER_OPTS_KEY = "packagerOpts";
   public static final String MANIFEST_PACKAGER_OPTS_DEV_KEY = "dev";
   public static final String MANIFEST_BUNDLE_URL_KEY = "bundleUrl";
@@ -114,19 +116,11 @@ public class ExponentManifest {
   public static final String MANIFEST_DEBUGGER_HOST_KEY = "debuggerHost";
   public static final String MANIFEST_MAIN_MODULE_NAME_KEY = "mainModuleName";
 
-  // Loading
-  public static final String MANIFEST_LOADING_INFO_KEY = "loading";
-  public static final String MANIFEST_LOADING_ICON_URL = "iconUrl";
-  public static final String MANIFEST_LOADING_EXPONENT_ICON_COLOR = "exponentIconColor";
-  public static final String MANIFEST_LOADING_EXPONENT_ICON_GRAYSCALE = "exponentIconGrayscale";
-  public static final String MANIFEST_LOADING_BACKGROUND_IMAGE_URL = "backgroundImageUrl";
-  public static final String MANIFEST_LOADING_BACKGROUND_COLOR = "backgroundColor";
-
   // Splash
   public static final String MANIFEST_SPLASH_INFO_KEY = "splash";
-  public static final String MANIFEST_SPLASH_IMAGE_URL = "imageUrl";
-  public static final String MANIFEST_SPLASH_RESIZE_MODE = "resizeMode";
-  public static final String MANIFEST_SPLASH_BACKGROUND_COLOR = "backgroundColor";
+  public static final String MANIFEST_SPLASH_IMAGE_URL_KEY = "imageUrl";
+  public static final String MANIFEST_SPLASH_RESIZE_MODE_KEY = "resizeMode";
+  public static final String MANIFEST_SPLASH_BACKGROUND_COLOR_KEY = "backgroundColor";
 
   // Updates
   public static final String MANIFEST_UPDATES_INFO_KEY = "updates";
@@ -134,6 +128,10 @@ public class ExponentManifest {
   public static final String MANIFEST_UPDATES_CHECK_AUTOMATICALLY_KEY = "checkAutomatically";
   public static final String MANIFEST_UPDATES_CHECK_AUTOMATICALLY_ON_LOAD = "ON_LOAD";
   public static final String MANIFEST_UPDATES_CHECK_AUTOMATICALLY_ON_ERROR = "ON_ERROR_RECOVERY";
+
+  // Development client
+  public static final String MANIFEST_DEVELOPMENT_CLIENT_KEY = "developmentClient";
+  public static final String MANIFEST_DEVELOPMENT_CLIENT_SILENT_LAUNCH_KEY = "silentLaunch";
 
   public static final String DEEP_LINK_SEPARATOR = "--";
   public static final String DEEP_LINK_SEPARATOR_WITH_SLASH = "--/";
@@ -602,7 +600,7 @@ public class ExponentManifest {
     return manifest;
   }
 
-
+  @WorkerThread
   public Bitmap loadIconBitmapSync(final String iconUrl) {
     Bitmap icon = getIconFromCache(iconUrl);
     if (icon != null) {
@@ -683,7 +681,7 @@ public class ExponentManifest {
     }
   }
 
-  private boolean isAnonymousExperience(final JSONObject manifest) {
+  public boolean isAnonymousExperience(final JSONObject manifest) {
     if (manifest.has(MANIFEST_ID_KEY)) {
       final String id = manifest.optString(MANIFEST_ID_KEY);
       if (id != null && id.startsWith(ANONYMOUS_EXPERIENCE_PREFIX)) {

@@ -1,6 +1,12 @@
 name: SDK
 
 on:
+  workflow_dispatch:
+    inputs:
+      checkAll:
+        description: 'type "check-all" to force checking all packages'
+        required: false
+        default: ''
   push:
     branches: [master, 'sdk-*']
     paths:
@@ -27,8 +33,8 @@ jobs:
         with:
           fetch-depth: 100
       - name: Fetch commits from base branch
-        run: git fetch origin ${{ github.base_ref }}:${{ github.base_ref }} --depth 100
-        if: github.event_name == 'pull_request'
+        run: git fetch origin ${{ github.event.before || github.base_ref || 'master' }}:${{ github.event.before || github.base_ref || 'master' }} --depth 100
+        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
@@ -42,15 +48,13 @@ jobs:
       - name: Check packages
         run: |
           echo "Checking packages according to the event name: ${{ github.event_name }}"
-          if [[ ${{ github.event_name }} == "schedule" ]]; then
-            # Check all packages on scheduled events
+          if [[ "${{ github.event_name }}" == "schedule" || "${{ github.event.inputs.checkAll }}" == "check-all" ]]; then
+            # Check all packages on scheduled events or if requested by workflow_dispatch event.
             bin/expotools check-packages --all
-          elif [[ ${{ github.event_name }} == "push" ]]; then
-            # On push event check packages changed since previous remote head
-            bin/expotools check-packages --since ${{ github.event.before }}
           else
-            # In pull requests check all packages changed in the entire PR
-            bin/expotools check-packages --since ${{ github.base_ref }}
+            # On push event check packages changed since previous remote head.
+            # In pull requests and workflow_dispatch events check all packages changed in the entire PR.
+            bin/expotools check-packages --since ${{ github.event.before || github.base_ref || 'master' }}
           fi
       - uses: 8398a7/action-slack@v3
         if: failure() && (github.event.ref == 'refs/heads/master' || startsWith(github.event.ref, 'refs/heads/sdk-'))

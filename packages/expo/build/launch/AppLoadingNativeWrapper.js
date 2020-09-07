@@ -1,19 +1,19 @@
+import * as SplashScreen from 'expo-splash-screen';
 import React from 'react';
-import * as SplashScreen from './SplashScreen';
 export default class AppLoading extends React.Component {
     constructor(props) {
         super(props);
-        SplashScreen.preventAutoHide();
+        SplashScreen.preventAutoHideAsync();
     }
     componentWillUnmount() {
         if (this.props.autoHideSplash === undefined || this.props.autoHideSplash) {
             // Hide immediately in E2E tests
             if (global.__E2E__) {
-                SplashScreen.hide();
+                SplashScreen.hideAsync();
             }
             else {
                 setTimeout(() => {
-                    SplashScreen.hide();
+                    SplashScreen.hideAsync();
                 }, 200);
             }
         }

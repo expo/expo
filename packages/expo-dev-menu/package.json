@@ -1,6 +1,6 @@
 {
   "name": "expo-dev-menu",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "Expo/React Native module with the developer menu.",
   "main": "build/DevMenu.js",
   "types": "build/DevMenu.d.ts",
@@ -15,7 +15,9 @@
     "expo-module": "expo-module",
     "start": "./scripts/start.sh",
     "bundle:dev:ios": "react-native bundle --entry-file app/index.ts --platform ios --dev true --bundle-output assets/EXDevMenuApp.ios.js",
-    "bundle:prod:ios": "react-native bundle --entry-file app/index.ts --platform ios --dev false --bundle-output assets/EXDevMenuApp.ios.js"
+    "bundle:prod:ios": "react-native bundle --entry-file app/index.ts --platform ios --dev false --bundle-output assets/EXDevMenuApp.ios.js",
+    "bundle:dev:android": "react-native bundle --entry-file app/index.ts --platform android --dev true --bundle-output assets/EXDevMenuApp.android.js --assets-dest android/src/main/res",
+    "bundle:prod:android": "react-native bundle --entry-file app/index.ts --platform android --dev false --bundle-output assets/EXDevMenuApp.android.js --assets-dest android/src/main/res"
   },
   "keywords": [
     "expo",
@@ -46,7 +48,7 @@
     "@react-navigation/core": "^5.12.3",
     "@react-navigation/native": "^5.7.3",
     "@react-navigation/stack": "^5.9.0",
-    "expo-font": "~8.2.1",
+    "expo-font": "~8.3.0",
     "expo-module-scripts": "~1.2.0",
     "react": "16.13.1",
     "react-native": "0.63.2"

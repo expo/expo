@@ -30,7 +30,6 @@ function SubscriptionDemo(props: SubscriptionDemoProps) {
 
   React.useEffect(() => {
     return () => {
-      // eslint-disable-next-line no-unused-expressions
       subscription?.remove();
     };
   }, [subscription]);

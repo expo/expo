@@ -54,6 +54,14 @@ export interface DailyTriggerInput {
   minute: number;
 }
 
+export interface WeeklyTriggerInput {
+  type: 'weekly';
+  channelId?: string;
+  weekday: number;
+  hour: number;
+  minute: number;
+}
+
 export interface DateTriggerInput {
   type: 'date';
   channelId?: string;
@@ -66,4 +74,5 @@ export type NotificationTriggerInput =
   | DateTriggerInput
   | CalendarTriggerInput
   | TimeIntervalTriggerInput
-  | DailyTriggerInput;
+  | DailyTriggerInput
+  | WeeklyTriggerInput;

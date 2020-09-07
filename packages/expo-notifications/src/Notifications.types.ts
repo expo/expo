@@ -76,6 +76,13 @@ export interface DailyNotificationTrigger {
   minute: number;
 }
 
+export interface WeeklyNotificationTrigger {
+  type: 'weekly';
+  weekday: number;
+  hour: number;
+  minute: number;
+}
+
 export interface FirebaseRemoteMessage {
   collapseKey: string | null;
   data: { [key: string]: string };
@@ -127,6 +134,7 @@ export type NotificationTrigger =
   | LocationNotificationTrigger
   | TimeIntervalNotificationTrigger
   | DailyNotificationTrigger
+  | WeeklyNotificationTrigger
   | UnknownNotificationTrigger;
 
 export type ChannelAwareTriggerInput = {
@@ -148,6 +156,15 @@ export interface DailyTriggerInput {
   minute: number;
   repeats: true;
 }
+
+export interface WeeklyTriggerInput {
+  channelId?: string;
+  weekday: number;
+  hour: number;
+  minute: number;
+  repeats: true;
+}
+
 export type DateTriggerInput = Date | number | { channelId?: string; date: Date | number };
 
 export type NotificationTriggerInput =

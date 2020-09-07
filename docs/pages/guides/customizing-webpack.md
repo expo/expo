@@ -41,11 +41,11 @@ module.exports = async function(env, argv) {
 };
 ```
 
-# Polyfills
+## Polyfills
 
 React Native for web uses [some advanced browser features](https://github.com/necolas/react-native-web/blob/e4ed0fd3c863e6c61aa3ea8afeff79b7fa74b461/packages/docs/src/introduction.stories.mdx#install) that might not be available in every browser. Expo web tries to make including these features as simple and efficient as possible with `@expo/webpack-config`.
 
-## ResizeObserver
+### ResizeObserver
 
 👉 [Browser support](https://caniuse.com/#feat=resizeobserver)
 
@@ -75,7 +75,7 @@ The reason it automatically includes the polyfill is because `react-native-web` 
 - Open Safari on the computer in go to `Develop > [YOUR DEVICE] > [YOUR HOST]`
 - Ensure the logs don't have the `onLayout relies on ResizeObserver...` warning.
 
-# Editing static files
+## Editing static files
 
 You can also use `expo customize:web` to generate the static project files: `index.html`, `serve.json`, `favicon.ico`, etc...
 These can be used to customize your project in a more familiar way.
@@ -85,7 +85,7 @@ All of the files you select from the terminal prompt will be copied to a `web/` 
 Deleting any of these files will cause Expo CLI to fall back to their respective default copies.
 If at some point you want to reset these files to their initial values simply run `expo customize:web --force` or `-f` for short.
 
-## Why
+### Why
 
 - Customizing the favicon icon
 - Adding third-party API code to the `<head/>` in your `index.html`

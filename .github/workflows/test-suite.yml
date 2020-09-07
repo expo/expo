@@ -1,8 +1,9 @@
 name: Test Suite
 
 on:
+  workflow_dispatch: {}
   push:
-    branches: [ master, 'sdk-*' ]
+    branches: [master, 'sdk-*']
     paths:
       - .github/workflows/test-suite.yml
       - apps/bare-expo/**
@@ -10,7 +11,7 @@ on:
       - packages/**
       - yarn.lock
   pull_request:
-    branches: [ master ]
+    branches: [master]
     paths:
       - .github/workflows/test-suite.yml
       - apps/bare-expo/**

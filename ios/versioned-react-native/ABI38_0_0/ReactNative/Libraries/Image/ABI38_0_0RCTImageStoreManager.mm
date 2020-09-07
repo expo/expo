@@ -22,7 +22,7 @@
 
 static NSString *const ABI38_0_0RCTImageStoreURLScheme = @"rct-image-store";
 
-@interface ABI38_0_0RCTImageStoreManager() <NativeImageStoreSpec>
+@interface ABI38_0_0RCTImageStoreManager() <ABI38_0_0NativeImageStoreSpec>
 @end
 
 @implementation ABI38_0_0RCTImageStoreManager

@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 9.1.0 — 2020-08-11
+
+### 🐛 Bug fixes
+
 - Ensure browser globals `DeviceMotionEvent` and `DeviceOrientationEvent` exist before attempting to read from them. ([#9236](https://github.com/expo/expo/pull/9236) by [@evanbacon](https://github.com/evanbacon))
 - Fixed bug with low Barometer resolution on iOS. ([#9441](https://github.com/expo/expo/pull/9441) by [@barthap](https://github.com/barthap))
 

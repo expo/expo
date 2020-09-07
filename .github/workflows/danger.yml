@@ -1,8 +1,9 @@
 name: Danger
 
 on:
+  workflow_dispatch: {}
   pull_request:
-    branches: [ master ]
+    branches: [master]
     paths:
       - .github/workflows/danger.yml
       - packages/**

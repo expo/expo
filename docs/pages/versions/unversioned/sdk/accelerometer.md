@@ -1,6 +1,6 @@
 ---
 title: Accelerometer
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-sensors'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-sensors'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

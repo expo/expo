@@ -59,6 +59,16 @@ FOUNDATION_EXPORT NSString * const kEXEmbeddedManifestResourceName;
 @property (nonatomic, readonly) BOOL areRemoteUpdatesEnabled;
 
 /**
+*  Whether to check for updates to this app automatically on launch. Applies to standalone apps only.
+*/
+@property (nonatomic, readonly) BOOL updatesCheckAutomatically;
+
+/**
+*  Timeout when checking for updates on launch after which to fall back to cache. Applies to standalone apps only.
+*/
+@property (nonatomic, readonly) NSNumber *updatesFallbackToCacheTimeout;
+
+/**
  *  Whether the app is running in a test environment (local Xcode test target, CI, or not at all).
  */
 @property (nonatomic, assign) EXTestEnvironment testEnvironment;

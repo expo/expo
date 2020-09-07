@@ -1,4 +1,5 @@
 #import <UIKit/UIKit.h>
+#import "EXAppLoader.h"
 #import "EXResourceLoader.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -15,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)show;
 - (void)hide;
 - (void)updateStatusWithProgress:(EXLoadingProgress *)progress;
+- (void)updateStatus:(EXAppLoaderRemoteUpdateStatus)status;
 
 @end
 

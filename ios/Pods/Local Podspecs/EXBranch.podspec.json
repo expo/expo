@@ -1,6 +1,6 @@
 {
   "name": "EXBranch",
-  "version": "2.2.1",
+  "version": "2.3.0",
   "summary": "A unimodule wrapping react-native-branch, enabling its use in Expo managed workflow",
   "description": "A unimodule wrapping react-native-branch, enabling its use in Expo managed workflow",
   "license": "MIT",
@@ -15,6 +15,7 @@
   "source_files": "EXBranch/**/*.{h,m}",
   "preserve_paths": "EXBranch/**/*.{h,m}",
   "requires_arc": true,
+  "compiler_flags": "-DRNBRANCH_VERSION=@\\\"5.0.0-rc.1\\\"",
   "dependencies": {
     "UMCore": [
 
@@ -23,7 +24,7 @@
 
     ],
     "Branch": [
-      "0.29.0"
+      "0.34.0"
     ]
   }
 }
