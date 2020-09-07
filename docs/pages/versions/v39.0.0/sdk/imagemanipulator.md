@@ -35,8 +35,8 @@ export default function App() {
     (async () => {
       const image = Asset.fromModule(require("./assets/snack-embed.png"));
       await image.downloadAsync();
-      setReady(true);
       setImage(image);
+      setReady(true);
     })();
   }, []);
 
