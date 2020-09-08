@@ -12,7 +12,6 @@ import {
 import ListItemButton from '../components/ListItemButton';
 import Colors from '../constants/Colors';
 import { StyledText } from '../components/Text';
-import { Platform } from '@unimodules/core';
 
 type Props = {
   items: DevMenuItemAnyType[];
