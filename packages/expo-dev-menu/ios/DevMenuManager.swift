@@ -2,6 +2,18 @@
 
 import EXDevMenuInterface
 
+public class DefaultDevMenuDelegate : DevMenuDelegateProtocol {
+  private let bridge: RCTBridge
+  
+  init(_ bridge: RCTBridge) {
+    self.bridge = bridge
+  }
+  
+  public func appBridge(forDevMenuManager manager: DevMenuManagerProtocol) -> AnyObject? {
+    return self.bridge;
+  }
+}
+
 class Dispatch {
   static func mainSync<T>(_ closure: () -> T) -> T {
     if Thread.isMainThread {
@@ -73,6 +85,15 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
       } else {
         autoLaunch()
       }
+    }
+  }
+  
+  @objc
+  public static func initializeWithBridge(_ bridge: AnyObject) {
+    if let bridge = bridge as? RCTBridge {
+      shared.delegate = DefaultDevMenuDelegate(bridge)
+    } else {
+      fatalError("Cound't cast to RCTBrigde. Make sure that you passed `RCTBridge` to `DevMenuManager.initializeWithBridge`.")
     }
   }
 
