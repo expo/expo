@@ -1,14 +1,14 @@
 ---
-title: How to - configuration examples
+title: "How to: configuration examples"
 ---
 
-This is set of instructions on how to configure EAS Build for more specific cases than [Configuration with eas.json](../eas-json/) describes. Examples described here, do not provide step by step instructions, in most of the cases they are only referencing differences from the normal process, we are assuming here that user is familiar with the rest of the documentation.
+This document outlines how to configure EAS Build for some common scenarios, such as monorepos and private package repositories. The examples described here do not provide step by step instructions to set up EAS Build from scratch; instead, they explain the changes from the standard process that are necessary to acommodate the given scenario.
 
-## How to setup EAS build with monorepo
+## How to set up EAS Build with a monorepo
 
-- Run all `eas` commands from root of the react-native project.
-- All files like `eas.json`, `credentials.json` should be in root of the react-native project.
-- add `postinstall` step to `package.json` in your react-native project that builds all necessary dependecies in other workspaces e.g.
+- Run all `eas` commands from root of the app directory. For example: if your project exists inside of your git repository at `apps/my-app`, then run `expo eas:build` from there.
+- All files related to EAS Build, such as `eas.json` and `credentials.json`, should be in the root of the app directory. If you have multiple apps that use EAS Build in your monorepo, each app directory will have its own copy of these files.
+- If your project needs additional setup beyond what is provided Add a `postinstall` step to `package.json` in your project that builds all necessary dependecies in other workspaces. For example:
 
 ```json
 {
@@ -18,10 +18,9 @@ This is set of instructions on how to configure EAS Build for more specific case
 }
 ```
 
+## How to use private package repositories
 
-## How to use private repositories
-
-- Configure your project in a way that works with `yarn` and relies on `NPM_TOKEN` env to authenticate with private repositories
+- Configure your project in a way that works with `yarn` and relies on the `NPM_TOKEN` env to authenticate with private repositories
 - add `NPM_TOKEN` env to `secretEnvs` in `credentials.json`
 ```json
 {
@@ -31,4 +30,4 @@ This is set of instructions on how to configure EAS Build for more specific case
 }
 ```
 
-If you are not using `credentials.json` for Android/iOS credentials it can be only entry in that file. Remember to add that file to .gitignore.
+If you are not using `credentials.json` for Android/iOS credentials, it is fine for `secretEnvs` to be the only entry in the file. Add `credentials.json` to `.gitignore` if it's not there already.

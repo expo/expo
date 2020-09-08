@@ -38,7 +38,7 @@ const sections = [
       'Android build process',
       'iOS build process',
       'Advanced credentials configuration',
-      'How to - configuration examples',
+      'How to: configuration examples',
     ],
   },
   {
