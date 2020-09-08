@@ -4553,7 +4553,7 @@ SPEC CHECKSUMS:
   ABI39_0_0RCTTypeSafety: be4a7b0f51acda8b31f0c7b8c09cbb8d82485ef3
   ABI39_0_0React: af1006c52cc3012042731939ec0bf1feaaa871ea
   ABI39_0_0React-callinvoker: b530030951e17b0814235080ee9a8a719b7f2aad
-  ABI39_0_0React-Core: c73b154f5add989056ada9a08d059cc4536d087c
+  ABI39_0_0React-Core: c0d791bed5b05e833cc4e82ee1ddb835ac9f9946
   ABI39_0_0React-CoreModules: c38d4bec200642a8a5c80e1b5e0b6d0f1b9c4c1e
   ABI39_0_0React-cxxreact: b4047f55304ffac6ecc6488fdcfc47d62cbf5207
   ABI39_0_0React-jsi: a72ae2c32f77f105c37de92cbde34262255bb121

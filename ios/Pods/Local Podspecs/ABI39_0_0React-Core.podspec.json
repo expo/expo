@@ -13,7 +13,7 @@
     "path": "."
   },
   "resource_bundles": {
-    "AccessibilityResources": [
+    "ABI39_0_0AccessibilityResources": [
       "React/AccessibilityResources/*.lproj"
     ]
   },
