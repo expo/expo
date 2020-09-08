@@ -38,7 +38,7 @@ Pod::Spec.new do |s|
   s.author                 = "Facebook, Inc. and its affiliates"
   s.platforms              = { :ios => "10.0", :tvos => "10.0" }
   s.source                 = { :path => "." }
-  s.resource_bundle        = { "AccessibilityResources" => ["React/AccessibilityResources/*.lproj"]}
+  s.resource_bundle        = { "ABI39_0_0AccessibilityResources" => ["React/AccessibilityResources/*.lproj"]}
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.header_dir             = "ABI39_0_0React"
   s.framework              = "JavaScriptCore"
