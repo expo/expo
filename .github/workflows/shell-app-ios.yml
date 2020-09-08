@@ -71,9 +71,12 @@ jobs:
             shellAppBase-builds \
             shellAppWorkspaces \
             ios
-      - name: upload tarball
+      - name: Upload shell app tarball to S3
         if: ${{ github.event.inputs.releaseShellIOS == 'release-shell-ios' }}
         timeout-minutes: 40
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
           aws s3 cp --acl public-read "/tmp/${{ steps.tarball.outputs.filename }}" s3://exp-artifacts
           echo "Release tarball uploaded to s3://exp-artifacts/${{ steps.tarball.outputs.filename }}"
