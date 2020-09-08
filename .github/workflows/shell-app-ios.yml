@@ -63,6 +63,7 @@ jobs:
       - name: Package release tarball
         if: ${{ github.event.inputs.releaseShellIOS == 'release-shell-ios' }}
         run: |
+          mv ../shellAppBase-builds .
           tar \
             -zcf "/tmp/${{ steps.tarball.outputs.filename }}" \
             package.json \
