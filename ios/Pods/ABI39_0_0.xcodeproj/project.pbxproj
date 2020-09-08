@@ -266,7 +266,7 @@
 		11B18766D5A883CCEE00A5C989A67EC7 /* ABI39_0_0EXBaseSensorModule.m in Sources */ = {isa = PBXBuildFile; fileRef = C60F62BCD13BD613FA4A5B92053B2339 /* ABI39_0_0EXBaseSensorModule.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		11DDEC65B129179C0B217DB87C06507F /* ABI39_0_0YGNode.h in Headers */ = {isa = PBXBuildFile; fileRef = B2836959F5E630DB5939130B4A9BEBCF /* ABI39_0_0YGNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		11ED4B29C7A7BBDCB67FDA029EFCCCA5 /* ABI39_0_0WorkletsCache.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A514BFB429FF6A87ABA5730A9C1F67D0 /* ABI39_0_0WorkletsCache.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		1235BB25D589FFAF6ED3EC4194CE848B /* ABI39_0_0React-Core-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 33D8BB98E3AD2916CD16EFF95B01C4C7 /* ABI39_0_0React-Core-dummy.m */; };
+		1235BB25D589FFAF6ED3EC4194CE848B /* ABI39_0_0React-Core-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 6D6A364545698AEC2E3510F49F7BF102 /* ABI39_0_0React-Core-dummy.m */; };
 		127BDFCCE61550F02F3BBA9A5C96AECE /* ABI39_0_0EXCalendarConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BDEFA4C7EC88B7824D301319E046CA5 /* ABI39_0_0EXCalendarConverter.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		127BF5800472B334BBC285D9A3F56899 /* ABI39_0_0UIViewController+CreateExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 028431405EE35E1FA312B0FE77993991 /* ABI39_0_0UIViewController+CreateExtension.m */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		12A5B8FD97A246FDC8E7D720C3817CF2 /* ABI39_0_0EXWebBrowser.h in Headers */ = {isa = PBXBuildFile; fileRef = CE8AAF840D33951AAD0C385B4870A2AE /* ABI39_0_0EXWebBrowser.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -1018,6 +1018,7 @@
 		7C5AD156B5AFF87ADF2B251C31E1A0A2 /* ABI39_0_0EXScopedNotificationsEmitter.h in Headers */ = {isa = PBXBuildFile; fileRef = 9D3D12857A0B83814E614489296547E4 /* ABI39_0_0EXScopedNotificationsEmitter.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		7C9DA1EFFEE344B2142E465EF33BBEC2 /* ABI39_0_0EXFilePermissionModule.h in Headers */ = {isa = PBXBuildFile; fileRef = FB4C9202BE47C27AF8500D7C9ABEFBEA /* ABI39_0_0EXFilePermissionModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		7CC642D5C19C64D21FAF2AE435801449 /* ABI39_0_0EXHaptics-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = E6560A0E77A0DB56391E2CC34A68F8E3 /* ABI39_0_0EXHaptics-dummy.m */; };
+		7D53490ECB379B99E9EACD7095D53F2D /* en.lproj in Resources */ = {isa = PBXBuildFile; fileRef = F1A09ABF222C6BE779D770D032305090 /* en.lproj */; };
 		7D928717AAF75F1BD5DA8288DFA53916 /* ABI39_0_0EXBadgeModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 87F4963D01F649D6CB08202CF8421160 /* ABI39_0_0EXBadgeModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		7DA94BC7D511C91285E982CDDCE5A783 /* ABI39_0_0RCTInputAccessoryView.m in Sources */ = {isa = PBXBuildFile; fileRef = DB6B6AF7CF2341DF391C86E7F4E7592B /* ABI39_0_0RCTInputAccessoryView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		7DB4CF81470200AEDEC1D8A1B790D35F /* ABI39_0_0RNSVGTSpanManager.h in Headers */ = {isa = PBXBuildFile; fileRef = CC07AF12FD0AB6B4DA5AF3010D48B722 /* ABI39_0_0RNSVGTSpanManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -1441,7 +1442,6 @@
 		B8ED32DEB9E7CD9686F7F1806FEF4C53 /* ABI39_0_0RCTI18nUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = E29DC83C6D5A12D5991C977A3A4644F7 /* ABI39_0_0RCTI18nUtil.m */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		B8F1ABA62345F3FA3C38297ED72855B1 /* ABI39_0_0EXUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = DE483990BA1B0BED7F11FE01E05D84A4 /* ABI39_0_0EXUtil.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		B90255347FF693C3DA66E530FA0E686B /* ABI39_0_0RCTSegmentedControlManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 7626DED8EED641F44975868D43DE1627 /* ABI39_0_0RCTSegmentedControlManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		B9109C3F1A8E7440D33360AA3F7F763D /* en.lproj in Resources */ = {isa = PBXBuildFile; fileRef = F1A09ABF222C6BE779D770D032305090 /* en.lproj */; };
 		B92BD8C8CACCBC16BA3E1BE7749BA1C3 /* ABI39_0_0EXUpdatesUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 7425547C3C54AF86E364EFF522F62614 /* ABI39_0_0EXUpdatesUtils.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		B937154C6962CD7AC9649BE51D720E33 /* ABI39_0_0RCTHTTPRequestHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = BC878C8959C52FC173EB79146AB3A406 /* ABI39_0_0RCTHTTPRequestHandler.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		B9421C7F8C07D7269E4A1BBEE93A1C14 /* ABI39_0_0RNSVGLength.m in Sources */ = {isa = PBXBuildFile; fileRef = FF935D623225E6784D8EDA9A7C02553C /* ABI39_0_0RNSVGLength.m */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -2055,6 +2055,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 14BB2B7275726942E762F076FA966088;
 			remoteInfo = Folly;
+		};
+		16EB039BA0BA04C7A803B0B6F6183E8F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A57459B5C352B2319DF76E363682572B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B60DC0F9C08C8C58B8598180BD310B57;
+			remoteInfo = "ABI39_0_0React-Core-ABI39_0_0AccessibilityResources";
 		};
 		171E6DA4B22BB98792FBF7F6E0763CFB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -3084,13 +3091,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 1E4975855552D02429B2BBD2A12CDCBE;
 			remoteInfo = ABI39_0_0RCTTypeSafety;
-		};
-		9B3A3FEC6745389D17CB0291BF687E8F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A57459B5C352B2319DF76E363682572B /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = C921A238545FC3C34140E867552A4509;
-			remoteInfo = "ABI39_0_0React-Core-AccessibilityResources";
 		};
 		9BE2A63DDA7760A175A92FA0AB7CD9A2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -4308,6 +4308,7 @@
 		0CF883BE98F207CD1E0626DFFBF5F5A4 /* ABI39_0_0RNGestureHandlerEvents.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI39_0_0RNGestureHandlerEvents.m; sourceTree = "<group>"; };
 		0CFA5D75C0F9A23B7DFFAE4924A75577 /* ABI39_0_0RNCSafeAreaShadowView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI39_0_0RNCSafeAreaShadowView.m; sourceTree = "<group>"; };
 		0D3DA43218B2BDC68F7763E9D14EDF6D /* ABI39_0_0RCTCxxConvert.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI39_0_0RCTCxxConvert.m; sourceTree = "<group>"; };
+		0D45D47ACF92E529CB3556C25880C750 /* ABI39_0_0React-Core.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "ABI39_0_0React-Core.debug.xcconfig"; sourceTree = "<group>"; };
 		0D7D896B9CE34ED1060FE19A00DB87CA /* ABI39_0_0EXFaceDetector-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI39_0_0EXFaceDetector-dummy.m"; sourceTree = "<group>"; };
 		0D89375A1B9AD408D44D946EF470453B /* libABI39_0_0EXGoogleSignIn.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libABI39_0_0EXGoogleSignIn.a; path = libABI39_0_0EXGoogleSignIn.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		0DD53B699EFE69F506B31D1728CBE9AB /* ABI39_0_0EXResourceLoader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI39_0_0EXResourceLoader.h; sourceTree = "<group>"; };
@@ -4367,6 +4368,7 @@
 		14C4051A5B007795AA6F48C4ECE9C69B /* ABI39_0_0React-callinvoker.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "ABI39_0_0React-callinvoker.release.xcconfig"; sourceTree = "<group>"; };
 		14E88C973964ED4CB22F9D3AB2749F9E /* ABI39_0_0EXRandom.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI39_0_0EXRandom.release.xcconfig; sourceTree = "<group>"; };
 		151D48F8A1C122DB72EA4848C1D7273D /* ABI39_0_0EXTaskManager.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI39_0_0EXTaskManager.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		1534DC73B83DCE50B6BCB6AF3BF51ABF /* ABI39_0_0React-Core-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI39_0_0React-Core-prefix.pch"; sourceTree = "<group>"; };
 		1568C729185CD03791E9DC58FE781FDD /* ABI39_0_0RCTActionSheetManager.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = ABI39_0_0RCTActionSheetManager.mm; sourceTree = "<group>"; };
 		1568F15EE77FAEFD975BE645600A2C39 /* ABI39_0_0RCTConvert+RNSVG.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI39_0_0RCTConvert+RNSVG.m"; sourceTree = "<group>"; };
 		15B0CFCE85277C23DBD743F040E0E5C3 /* ABI39_0_0RCTSurfaceRootView.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = ABI39_0_0RCTSurfaceRootView.mm; sourceTree = "<group>"; };
@@ -4418,7 +4420,6 @@
 		1BC385ED3BD78C65A9489F93FCD5A446 /* ABI39_0_0AIRMapWMSTileManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI39_0_0AIRMapWMSTileManager.h; sourceTree = "<group>"; };
 		1BCAE42929694D2D5C276280230D416D /* ABI39_0_0EXAppleAuthenticationButton.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI39_0_0EXAppleAuthenticationButton.m; path = ABI39_0_0EXAppleAuthentication/ABI39_0_0EXAppleAuthenticationButton.m; sourceTree = "<group>"; };
 		1C07F486489D1ADDFF03A5C2B39BD440 /* ABI39_0_0EXAdsFacebook-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI39_0_0EXAdsFacebook-dummy.m"; sourceTree = "<group>"; };
-		1C23222C92A1D621924A1399BE639F2E /* ABI39_0_0React-Core.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "ABI39_0_0React-Core.release.xcconfig"; sourceTree = "<group>"; };
 		1C327E20C282A814B48FA86A7F08E1EA /* ABI39_0_0React-RCTLinking.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "ABI39_0_0React-RCTLinking.release.xcconfig"; sourceTree = "<group>"; };
 		1C35FCFDCBF845F06ADFFB997ADFF638 /* libABI39_0_0EXFirebaseAnalytics.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libABI39_0_0EXFirebaseAnalytics.a; path = libABI39_0_0EXFirebaseAnalytics.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C3D5A7E6B0EB18A631DC5182E5450DE /* ABI39_0_0EXConstants.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI39_0_0EXConstants.release.xcconfig; sourceTree = "<group>"; };
@@ -4590,6 +4591,7 @@
 		2F2D030E401DEE7700472E0EB38D43BC /* ABI39_0_0EXFilePermissionModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI39_0_0EXFilePermissionModule.m; path = ABI39_0_0EXFileSystem/ABI39_0_0EXFilePermissionModule.m; sourceTree = "<group>"; };
 		2F35EC548B57EAD89633DE1B5EC050EF /* ABI39_0_0REATransitionAnimation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI39_0_0REATransitionAnimation.h; sourceTree = "<group>"; };
 		2F4429239C611B21254776CCAE00FE73 /* ABI39_0_0EXCalendar.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI39_0_0EXCalendar.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		2F8CB84ABF0E05F5215F70F7BA82B7C9 /* ResourceBundle-ABI39_0_0AccessibilityResources-ABI39_0_0React-Core-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "ResourceBundle-ABI39_0_0AccessibilityResources-ABI39_0_0React-Core-Info.plist"; sourceTree = "<group>"; };
 		30302C64932B40AA8A5C3B6B9E30A1C6 /* libABI39_0_0React-RCTImage.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libABI39_0_0React-RCTImage.a"; path = "libABI39_0_0React-RCTImage.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		304AC945D0273DCFBC02AB83D5A13639 /* ABI39_0_0RNSVGMaskManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI39_0_0RNSVGMaskManager.m; sourceTree = "<group>"; };
 		3059F805B780ED8B864B52CC45825F52 /* ABI39_0_0RCTInputAccessoryView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI39_0_0RCTInputAccessoryView.h; sourceTree = "<group>"; };
@@ -4622,7 +4624,6 @@
 		33775B9B26A5375C2BBB67AEAAA1A3ED /* ABI39_0_0EXUpdatesAppLauncherNoDatabase.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI39_0_0EXUpdatesAppLauncherNoDatabase.m; sourceTree = "<group>"; };
 		339FBA62A352CD40BD4A6FA8C850C734 /* ABI39_0_0RCTClipboard.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = ABI39_0_0RCTClipboard.mm; sourceTree = "<group>"; };
 		33CDB0335EFBE928E1A083E36F94650A /* ABI39_0_0EXScopedErrorRecoveryModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI39_0_0EXScopedErrorRecoveryModule.m; sourceTree = "<group>"; };
-		33D8BB98E3AD2916CD16EFF95B01C4C7 /* ABI39_0_0React-Core-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI39_0_0React-Core-dummy.m"; sourceTree = "<group>"; };
 		33DFE5F7C6C8347BEA545194B6CFCD2F /* ABI39_0_0EXCrypto-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI39_0_0EXCrypto-dummy.m"; sourceTree = "<group>"; };
 		33E8EAC7FF0134D7F7F2B684C60A70EF /* ABI39_0_0Instance.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI39_0_0Instance.h; sourceTree = "<group>"; };
 		341A8F3BBA6F38063042BD03DBC2B167 /* ABI39_0_0EXFaceDetector.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI39_0_0EXFaceDetector.release.xcconfig; sourceTree = "<group>"; };
@@ -5140,6 +5141,7 @@
 		6CD465306EEF2BA39807EFC63159FDE4 /* ABI39_0_0RCTAssert.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI39_0_0RCTAssert.h; sourceTree = "<group>"; };
 		6CE04A7E99042804C0DDB5401A686670 /* ABI39_0_0EXAppAuthAppDelegate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI39_0_0EXAppAuthAppDelegate.m; path = ABI39_0_0EXAppAuth/ABI39_0_0EXAppAuthAppDelegate.m; sourceTree = "<group>"; };
 		6D47C74034703E516CAE592739DE486B /* ABI39_0_0UMCore-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI39_0_0UMCore-dummy.m"; sourceTree = "<group>"; };
+		6D6A364545698AEC2E3510F49F7BF102 /* ABI39_0_0React-Core-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI39_0_0React-Core-dummy.m"; sourceTree = "<group>"; };
 		6D6D682A32C610AC35FF8117519704AF /* ABI39_0_0UMAppLifecycleListener.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI39_0_0UMAppLifecycleListener.h; sourceTree = "<group>"; };
 		6D97148DDAA8C8648CB68D4BEF5CDD18 /* ABI39_0_0RemoteObject.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = ABI39_0_0RemoteObject.cpp; sourceTree = "<group>"; };
 		6DA2AB5046C7DA518726ABABF8096237 /* ABI39_0_0EXCalendar-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI39_0_0EXCalendar-dummy.m"; sourceTree = "<group>"; };
@@ -5438,7 +5440,6 @@
 		90A560978CAFB7A792A4ACD1C9750C22 /* ABI39_0_0EXCameraManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI39_0_0EXCameraManager.h; path = ABI39_0_0EXCamera/ABI39_0_0EXCameraManager.h; sourceTree = "<group>"; };
 		90CD6A72AB4EE055DF79603A4D295878 /* ABI39_0_0AIRMap.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI39_0_0AIRMap.h; sourceTree = "<group>"; };
 		90DF109DBED1F66D465797610EAF0C79 /* ABI39_0_0AIRMapLocalTileManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI39_0_0AIRMapLocalTileManager.h; sourceTree = "<group>"; };
-		90F1FA423543A6FB330FBB728D795BCE /* ABI39_0_0React-Core-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI39_0_0React-Core-prefix.pch"; sourceTree = "<group>"; };
 		91097AECAEFAB539FC6FC76B93F6D7DF /* ABI39_0_0RCTAnimationPlugins.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI39_0_0RCTAnimationPlugins.h; path = Libraries/NativeAnimation/ABI39_0_0RCTAnimationPlugins.h; sourceTree = "<group>"; };
 		910C0561668CD836A48C8402853724EB /* ABI39_0_0RCTRefreshControl.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI39_0_0RCTRefreshControl.m; sourceTree = "<group>"; };
 		9115391E47A45950957EE5AAC04394B2 /* ABI39_0_0AIRMapCallout.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI39_0_0AIRMapCallout.h; sourceTree = "<group>"; };
@@ -5484,7 +5485,6 @@
 		94DA8D801AEB771CF93E5ADB56DDBEC7 /* ABI39_0_0EXErrorRecovery-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI39_0_0EXErrorRecovery-dummy.m"; sourceTree = "<group>"; };
 		94EA6E4086B6FCB2722C1C3565B9C0BF /* ABI39_0_0EXSplashScreenViewNativeProvider.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI39_0_0EXSplashScreenViewNativeProvider.m; path = ABI39_0_0EXSplashScreen/ABI39_0_0EXSplashScreenViewNativeProvider.m; sourceTree = "<group>"; };
 		94F371ED9E035082452868EB9FD61922 /* ABI39_0_0NSTextStorage+FontScaling.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI39_0_0NSTextStorage+FontScaling.h"; sourceTree = "<group>"; };
-		95406307007F01E76108534776B6351D /* ResourceBundle-AccessibilityResources-ABI39_0_0React-Core-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "ResourceBundle-AccessibilityResources-ABI39_0_0React-Core-Info.plist"; sourceTree = "<group>"; };
 		956231726823E9738ACB6FE05DA80374 /* ABI39_0_0EXAdsAdMobDFPManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI39_0_0EXAdsAdMobDFPManager.m; path = ABI39_0_0EXAdsAdMob/ABI39_0_0EXAdsAdMobDFPManager.m; sourceTree = "<group>"; };
 		95BC7A47467F3C5AB2C4C194A333CF71 /* ABI39_0_0AIRMapLocalTileOverlay.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI39_0_0AIRMapLocalTileOverlay.m; sourceTree = "<group>"; };
 		95D5FC945B63E2F346490EAE131E34C6 /* ABI39_0_0RCTEventDispatcher.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI39_0_0RCTEventDispatcher.h; sourceTree = "<group>"; };
@@ -5694,6 +5694,7 @@
 		AB54B132D2D52968DFF716A4C13CB8A3 /* ABI39_0_0RCTVirtualTextShadowView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI39_0_0RCTVirtualTextShadowView.m; sourceTree = "<group>"; };
 		AB94D23F3B1C2D60A72BD8A5771C6BDA /* ABI39_0_0EXCamera.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI39_0_0EXCamera.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		AC0504C7DCAE15BB4090478BD53AA1A9 /* libABI39_0_0UMAppLoader.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libABI39_0_0UMAppLoader.a; path = libABI39_0_0UMAppLoader.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		AC06C7AF8F328D3282FCD08E9DA9E029 /* ABI39_0_0AccessibilityResources.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = ABI39_0_0AccessibilityResources.bundle; path = "ABI39_0_0React-Core-ABI39_0_0AccessibilityResources.bundle"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC1D7DCBEF7DD0845C3EE78606DC2E22 /* ABI39_0_0EXBarometer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI39_0_0EXBarometer.h; sourceTree = "<group>"; };
 		AC21133D625E9453BD85B1CC61948A49 /* ABI39_0_0EXCamera.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI39_0_0EXCamera.release.xcconfig; sourceTree = "<group>"; };
 		AC869941CC6A3A7F779B236EE0DF983B /* ABI39_0_0REAOperatorNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI39_0_0REAOperatorNode.h; sourceTree = "<group>"; };
@@ -5806,6 +5807,7 @@
 		B89EA57BB3766D051DEEFB66D38BB1DA /* ABI39_0_0YGNode.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = ABI39_0_0YGNode.cpp; path = yoga/ABI39_0_0YGNode.cpp; sourceTree = "<group>"; };
 		B8A06F9F5AA4114DC0F65072FA058E74 /* ABI39_0_0EXSaveToLibraryDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI39_0_0EXSaveToLibraryDelegate.h; path = ABI39_0_0EXMediaLibrary/ABI39_0_0EXSaveToLibraryDelegate.h; sourceTree = "<group>"; };
 		B8EEA00B00B395C04F8560220E31BAAF /* ABI39_0_0RCTPlatform.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = ABI39_0_0RCTPlatform.mm; sourceTree = "<group>"; };
+		B90BAFC90E0B51E2B5E938EA2FEC604D /* ABI39_0_0React-Core.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "ABI39_0_0React-Core.release.xcconfig"; sourceTree = "<group>"; };
 		B92A5C2C588D54C9C1B2F16D26C675C5 /* ABI39_0_0UMFontInterface.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI39_0_0UMFontInterface.debug.xcconfig; sourceTree = "<group>"; };
 		B941350DC3E42E74E63E9EE687E0AC14 /* ABI39_0_0EXBlur.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI39_0_0EXBlur.release.xcconfig; sourceTree = "<group>"; };
 		B95F8B5DCC188B1D34B1A78FFF0C102F /* ABI39_0_0RCTTurboModuleManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI39_0_0RCTTurboModuleManager.h; sourceTree = "<group>"; };
@@ -6175,7 +6177,6 @@
 		DF74F01024853ED9D91CB8D4CE70C6F9 /* ABI39_0_0RCTBackedTextInputDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI39_0_0RCTBackedTextInputDelegate.h; sourceTree = "<group>"; };
 		DFB2AFF14921E94B6CD3D1F6F9C62A9F /* ABI39_0_0RCTEventAnimation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI39_0_0RCTEventAnimation.h; sourceTree = "<group>"; };
 		DFEA7495F83580DB4E1EF8D0776B6490 /* libABI39_0_0EXNetwork.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libABI39_0_0EXNetwork.a; path = libABI39_0_0EXNetwork.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		E021A1ECCC09A6082DA47B5EB9191693 /* AccessibilityResources.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = AccessibilityResources.bundle; path = "ABI39_0_0React-Core-AccessibilityResources.bundle"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E02F87385E0D6FD62C1C5F418DF9E6E9 /* ABI39_0_0RCTRequired.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI39_0_0RCTRequired.debug.xcconfig; sourceTree = "<group>"; };
 		E04B594313D7B5CB059FAF95B973C2FE /* ABI39_0_0RNSVGGlyphContext.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI39_0_0RNSVGGlyphContext.h; sourceTree = "<group>"; };
 		E07449126F0650ABDF816E333B70D492 /* ABI39_0_0EXAmplitude.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI39_0_0EXAmplitude.h; path = ABI39_0_0EXAmplitude/ABI39_0_0EXAmplitude.h; sourceTree = "<group>"; };
@@ -6375,7 +6376,6 @@
 		F8D54C29AAD3AEC7C0B3A38AF880D6A5 /* ABI39_0_0EXScreenOrientation-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI39_0_0EXScreenOrientation-dummy.m"; sourceTree = "<group>"; };
 		F8E124F763FF5BD0A03DE797A7CDE170 /* ABI39_0_0RCTVersion.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI39_0_0RCTVersion.m; sourceTree = "<group>"; };
 		F8FAC1CABBC84CFD3D3B249FD44F59E1 /* ABI39_0_0JSCExecutorFactory.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI39_0_0JSCExecutorFactory.h; sourceTree = "<group>"; };
-		F978791EC402B9C0800A70FE1B409001 /* ABI39_0_0React-Core.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "ABI39_0_0React-Core.debug.xcconfig"; sourceTree = "<group>"; };
 		F986E017E21AF307A040E968D8283D10 /* ABI39_0_0EXFileSystem.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI39_0_0EXFileSystem.debug.xcconfig; sourceTree = "<group>"; };
 		F9AAFA49098986ED98A014D4944E0618 /* ABI39_0_0CxxNativeModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI39_0_0CxxNativeModule.h; sourceTree = "<group>"; };
 		F9C3D638A5FBBB893BA838E142185810 /* ABI39_0_0RNDateTimePickerManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI39_0_0RNDateTimePickerManager.h; sourceTree = "<group>"; };
@@ -6753,6 +6753,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		8536A9572A375259254A58A54B57A8F7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		8647DE6B9AE64D7C23CBC5DD02309353 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -6971,13 +6978,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		DA44DE174CA1C40F43A7E49C3C8C5E6B /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		DCFD6AA528495675152334163D0F9BBD /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -7619,19 +7619,6 @@
 				6B16A5CDF9ED1E220580016CF3AB7646 /* ABI39_0_0React-RCTVibration.podspec */,
 			);
 			name = Pod;
-			sourceTree = "<group>";
-		};
-		17D53E2C0E11F33CF6D0829BBC944355 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				33D8BB98E3AD2916CD16EFF95B01C4C7 /* ABI39_0_0React-Core-dummy.m */,
-				90F1FA423543A6FB330FBB728D795BCE /* ABI39_0_0React-Core-prefix.pch */,
-				F978791EC402B9C0800A70FE1B409001 /* ABI39_0_0React-Core.debug.xcconfig */,
-				1C23222C92A1D621924A1399BE639F2E /* ABI39_0_0React-Core.release.xcconfig */,
-				95406307007F01E76108534776B6351D /* ResourceBundle-AccessibilityResources-ABI39_0_0React-Core-Info.plist */,
-			);
-			name = "Support Files";
-			path = "../../../Pods/Target Support Files/ABI39_0_0React-Core";
 			sourceTree = "<group>";
 		};
 		17D8C66A16F52C28942EC484181C3587 /* Pod */ = {
@@ -8335,6 +8322,19 @@
 				8DBB08E5F33EAF9274CFAF8D96D47E99 /* ABI39_0_0EXAV.podspec */,
 			);
 			name = Pod;
+			sourceTree = "<group>";
+		};
+		2F981873F1F1A9E02FBB2ED476BA510B /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				6D6A364545698AEC2E3510F49F7BF102 /* ABI39_0_0React-Core-dummy.m */,
+				1534DC73B83DCE50B6BCB6AF3BF51ABF /* ABI39_0_0React-Core-prefix.pch */,
+				0D45D47ACF92E529CB3556C25880C750 /* ABI39_0_0React-Core.debug.xcconfig */,
+				B90BAFC90E0B51E2B5E938EA2FEC604D /* ABI39_0_0React-Core.release.xcconfig */,
+				2F8CB84ABF0E05F5215F70F7BA82B7C9 /* ResourceBundle-ABI39_0_0AccessibilityResources-ABI39_0_0React-Core-Info.plist */,
+			);
+			name = "Support Files";
+			path = "../../../Pods/Target Support Files/ABI39_0_0React-Core";
 			sourceTree = "<group>";
 		};
 		2F9861B069CBC062BD41A0B4C751E0AE /* Interfaces */ = {
@@ -10573,7 +10573,7 @@
 				A8ED6963F2757204EE7E110C4B0E83B1 /* RCTVibrationHeaders */,
 				114C6240E97E0665179BA7ED57677EE5 /* RCTWebSocket */,
 				2B1872CB1950538682C68FCB3B225F4B /* Resources */,
-				17D53E2C0E11F33CF6D0829BBC944355 /* Support Files */,
+				2F981873F1F1A9E02FBB2ED476BA510B /* Support Files */,
 			);
 			name = "ABI39_0_0React-Core";
 			path = "../versioned-react-native/ABI39_0_0/ReactNative";
@@ -10631,99 +10631,6 @@
 			);
 			name = Nodes;
 			path = Nodes;
-			sourceTree = "<group>";
-		};
-		97386DFEC71660E1F5A6EC601A559655 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				E021A1ECCC09A6082DA47B5EB9191693 /* AccessibilityResources.bundle */,
-				603A30DF041FC8E1386D41A33B250354 /* libABI39_0_0EXAdsAdMob.a */,
-				9A232823039A14B92EDFF1BBDD5D11A8 /* libABI39_0_0EXAdsFacebook.a */,
-				252EAFCCB2EB2E010987F140C60FB262 /* libABI39_0_0EXAmplitude.a */,
-				1423DE24335D6D4881C884D9E7C6093C /* libABI39_0_0EXAppAuth.a */,
-				6CD35EEE451B452FB57B3578C96A8716 /* libABI39_0_0EXAppleAuthentication.a */,
-				74CDE9C07C1E10390EA7B57751D8336F /* libABI39_0_0EXApplication.a */,
-				05EACDFFDD2D1D7C5DC986ECF4FB41F8 /* libABI39_0_0EXAV.a */,
-				104E69BE1FCF4A64A9DEAB4DC8113119 /* libABI39_0_0EXBackgroundFetch.a */,
-				9852923C4D2D2A1CD394F6605753FB67 /* libABI39_0_0EXBarCodeScanner.a */,
-				7E600108AEF3EBB5CAAA0EAE0F04619B /* libABI39_0_0EXBattery.a */,
-				E1E3B5D634943355BB67684BEAF5FF0D /* libABI39_0_0EXBlur.a */,
-				4728341544742A4F0550932B98C3C6F3 /* libABI39_0_0EXBrightness.a */,
-				C18D587165D7513DFC98F950B3099121 /* libABI39_0_0EXCalendar.a */,
-				B131BA7988B6671077C1DF940A1FD55A /* libABI39_0_0EXCamera.a */,
-				46019A931CF4D0A4D81CF755EDC5D625 /* libABI39_0_0EXCellular.a */,
-				2C93C5586473BDA3341D7A1C279872F5 /* libABI39_0_0EXConstants.a */,
-				935088FFED992BC4793EA191D3BAA21D /* libABI39_0_0EXContacts.a */,
-				557028C5C2D2062B8B44B952AC1D6AF2 /* libABI39_0_0EXCrypto.a */,
-				857FFF1207F5A13B26554178FAE58C3B /* libABI39_0_0EXDevice.a */,
-				FF70997DA3D6723BD5B6FA407718A656 /* libABI39_0_0EXDocumentPicker.a */,
-				349F9F36D3D424D6F85BB3CA8B0FA943 /* libABI39_0_0EXErrorRecovery.a */,
-				9072139314EAAA10DC1F7530EAC39FD9 /* libABI39_0_0EXFacebook.a */,
-				51176C754445D66BAD0EEE204D291770 /* libABI39_0_0EXFaceDetector.a */,
-				BA902234390D34669D50EFAA15B860B8 /* libABI39_0_0EXFileSystem.a */,
-				1C35FCFDCBF845F06ADFFB997ADFF638 /* libABI39_0_0EXFirebaseAnalytics.a */,
-				FFF5558DDE247A735F2F60CF34CE3797 /* libABI39_0_0EXFirebaseCore.a */,
-				47D2F3E13A0D3D239C96F9931FB95B8F /* libABI39_0_0EXFont.a */,
-				4D24342D305BEACBF5A5D65091E893FF /* libABI39_0_0EXGL.a */,
-				0D89375A1B9AD408D44D946EF470453B /* libABI39_0_0EXGoogleSignIn.a */,
-				4E19D6591937F29895710EAFDCAE819A /* libABI39_0_0EXHaptics.a */,
-				07D61A5CA088341DF0C2ACED3E06DB23 /* libABI39_0_0EXImageLoader.a */,
-				87CD150075A78C04B5C5C82ACF339B92 /* libABI39_0_0EXImageManipulator.a */,
-				1D546CF639E494B991A67EAE6CFDF3B4 /* libABI39_0_0EXImagePicker.a */,
-				B181350CF81BA8E8F45B3C883BDD31FF /* libABI39_0_0EXInAppPurchases.a */,
-				0C447EF5E88A74321F32B3C607C8EE02 /* libABI39_0_0EXKeepAwake.a */,
-				40E35D2FA7893A08100073FECDCDEFBA /* libABI39_0_0EXLinearGradient.a */,
-				4B0F66020485689E9EF0E96C26824614 /* libABI39_0_0EXLocalAuthentication.a */,
-				FC1C9630D3384F0E37BFDA116D310546 /* libABI39_0_0EXLocalization.a */,
-				08B7F94B530F72039D1363382A35F28F /* libABI39_0_0EXLocation.a */,
-				852122850C6008F1C9F1E3DD5A281503 /* libABI39_0_0EXMailComposer.a */,
-				EC831B0551107EDF33CC41FA4D0E0643 /* libABI39_0_0EXMediaLibrary.a */,
-				513C38FFFA2C019140AFB276049612D1 /* libABI39_0_0EXModuleTemplate.a */,
-				DFEA7495F83580DB4E1EF8D0776B6490 /* libABI39_0_0EXNetwork.a */,
-				CAEA6E56F76E8F85A1327D5119E5A696 /* libABI39_0_0EXNotifications.a */,
-				C2C95045854B021F91D96AECA5524C22 /* libABI39_0_0EXPermissions.a */,
-				1E2A8355502B9AF15813D0CE4EB6DB2F /* libABI39_0_0ExpoKit.a */,
-				17F85F184C429C4F98F2E23EDC5A783A /* libABI39_0_0EXPrint.a */,
-				7B447D5BB7D0463EF0B07C4476D4470C /* libABI39_0_0EXRandom.a */,
-				49AA128C9A7E92D2D5A8D8CF44D5C61B /* libABI39_0_0EXScreenCapture.a */,
-				5EC3F2458AD9E44949EC46D982F9997A /* libABI39_0_0EXScreenOrientation.a */,
-				A2D0A91418E15174A27915F95FA1F3D4 /* libABI39_0_0EXSecureStore.a */,
-				4CF38CB8E9517C01C04EB69FC3402D3D /* libABI39_0_0EXSegment.a */,
-				3C56FA527F1D1AAA33D5580116F5E6F9 /* libABI39_0_0EXSensors.a */,
-				FA6F76FEAFF29C8E23A40F118F8F1669 /* libABI39_0_0EXSharing.a */,
-				4B9BF1EDF5DF9C1B58D783A3208BAC57 /* libABI39_0_0EXSMS.a */,
-				B3420BD3FE5E2DC057C0373B90408876 /* libABI39_0_0EXSpeech.a */,
-				DF49D6BFF7B961D39C5CD08F16B2BB05 /* libABI39_0_0EXSplashScreen.a */,
-				266C32CB5EAC17D882AA43E36D832420 /* libABI39_0_0EXSQLite.a */,
-				A7315995ABA74206B1020262CD153CEB /* libABI39_0_0EXStoreReview.a */,
-				146ADC0AE767B1CA3CEDB47DFA8313CC /* libABI39_0_0EXTaskManager.a */,
-				84AB54119DAB98C9EB6F2976694AD896 /* libABI39_0_0EXUpdates.a */,
-				584623B179C3B64330FC404B7A2A824E /* libABI39_0_0EXVideoThumbnails.a */,
-				67EF977B0E011CE0DF8089CA3722961A /* libABI39_0_0EXWebBrowser.a */,
-				DEA54CDC6CD86B309CF293BC7F9A1C8A /* libABI39_0_0FBReactNativeSpec.a */,
-				10405EFEF64B274AB6420E833F3305F1 /* libABI39_0_0RCTTypeSafety.a */,
-				F3C5FF98DAA0DCF2E2D4CAAC7CA36977 /* libABI39_0_0React-Core.a */,
-				1A24488F868F4F97B68C21D9E4CB91DB /* libABI39_0_0React-CoreModules.a */,
-				2B25065549A477F84CF760736209BE1D /* libABI39_0_0React-cxxreact.a */,
-				4874795B908F62968F15B6E8A754EF74 /* libABI39_0_0React-jsi.a */,
-				57D176C10252F3C4BD63B93E8DDC6864 /* libABI39_0_0React-jsiexecutor.a */,
-				FDAFA2945A31032900F5F1C148E8EB24 /* libABI39_0_0React-jsinspector.a */,
-				FF647D59B2112A8FFCD3BCEFECCFF49C /* libABI39_0_0React-RCTAnimation.a */,
-				E7A3494DF0662E2E3D3CF374A8A05605 /* libABI39_0_0React-RCTBlob.a */,
-				30302C64932B40AA8A5C3B6B9E30A1C6 /* libABI39_0_0React-RCTImage.a */,
-				3C403669FBEE440AD096634418248C8F /* libABI39_0_0React-RCTLinking.a */,
-				8025CD414730DA1A187C5A99ECEA765D /* libABI39_0_0React-RCTNetwork.a */,
-				776F0C9206A93F709777508B7AE81663 /* libABI39_0_0React-RCTSettings.a */,
-				1CF83667EF1E9162575A88666D4EDAA8 /* libABI39_0_0React-RCTText.a */,
-				CECC765DB15596E855F6F8CD4587C6F1 /* libABI39_0_0React-RCTVibration.a */,
-				2E32E8D93FC48D3C0CF91888E42FDA02 /* libABI39_0_0ReactCommon.a */,
-				AC0504C7DCAE15BB4090478BD53AA1A9 /* libABI39_0_0UMAppLoader.a */,
-				453DDE7AA5377232D5DCAB3978B2E23C /* libABI39_0_0UMCore.a */,
-				4386B2BCD35D8BCCC4E20D5C8EAF5FCA /* libABI39_0_0UMPermissionsInterface.a */,
-				B5706D1C0ED228BF5178D79A6B8FCBF6 /* libABI39_0_0UMReactNativeAdapter.a */,
-				93E3E79D661794D428362A31F3895DA9 /* libABI39_0_0Yoga.a */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		97447253D43F25EF641A16ED8E12B1BB /* Pod */ = {
@@ -11931,7 +11838,7 @@
 				22E424AB45189606EF11F24FBC06D119 /* ABI39_0_0Yoga */,
 				22EDB96670EFD96A904706256BFF9E3F /* Dependencies */,
 				103CDBF87BF3BC1BF39328923DA08DD5 /* Frameworks */,
-				97386DFEC71660E1F5A6EC601A559655 /* Products */,
+				D2E1209F6E68EF8E9126AA6E71F36F6B /* Products */,
 			);
 			sourceTree = "<group>";
 		};
@@ -12136,6 +12043,99 @@
 			);
 			name = CxxUtils;
 			path = React/CxxUtils;
+			sourceTree = "<group>";
+		};
+		D2E1209F6E68EF8E9126AA6E71F36F6B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AC06C7AF8F328D3282FCD08E9DA9E029 /* ABI39_0_0AccessibilityResources.bundle */,
+				603A30DF041FC8E1386D41A33B250354 /* libABI39_0_0EXAdsAdMob.a */,
+				9A232823039A14B92EDFF1BBDD5D11A8 /* libABI39_0_0EXAdsFacebook.a */,
+				252EAFCCB2EB2E010987F140C60FB262 /* libABI39_0_0EXAmplitude.a */,
+				1423DE24335D6D4881C884D9E7C6093C /* libABI39_0_0EXAppAuth.a */,
+				6CD35EEE451B452FB57B3578C96A8716 /* libABI39_0_0EXAppleAuthentication.a */,
+				74CDE9C07C1E10390EA7B57751D8336F /* libABI39_0_0EXApplication.a */,
+				05EACDFFDD2D1D7C5DC986ECF4FB41F8 /* libABI39_0_0EXAV.a */,
+				104E69BE1FCF4A64A9DEAB4DC8113119 /* libABI39_0_0EXBackgroundFetch.a */,
+				9852923C4D2D2A1CD394F6605753FB67 /* libABI39_0_0EXBarCodeScanner.a */,
+				7E600108AEF3EBB5CAAA0EAE0F04619B /* libABI39_0_0EXBattery.a */,
+				E1E3B5D634943355BB67684BEAF5FF0D /* libABI39_0_0EXBlur.a */,
+				4728341544742A4F0550932B98C3C6F3 /* libABI39_0_0EXBrightness.a */,
+				C18D587165D7513DFC98F950B3099121 /* libABI39_0_0EXCalendar.a */,
+				B131BA7988B6671077C1DF940A1FD55A /* libABI39_0_0EXCamera.a */,
+				46019A931CF4D0A4D81CF755EDC5D625 /* libABI39_0_0EXCellular.a */,
+				2C93C5586473BDA3341D7A1C279872F5 /* libABI39_0_0EXConstants.a */,
+				935088FFED992BC4793EA191D3BAA21D /* libABI39_0_0EXContacts.a */,
+				557028C5C2D2062B8B44B952AC1D6AF2 /* libABI39_0_0EXCrypto.a */,
+				857FFF1207F5A13B26554178FAE58C3B /* libABI39_0_0EXDevice.a */,
+				FF70997DA3D6723BD5B6FA407718A656 /* libABI39_0_0EXDocumentPicker.a */,
+				349F9F36D3D424D6F85BB3CA8B0FA943 /* libABI39_0_0EXErrorRecovery.a */,
+				9072139314EAAA10DC1F7530EAC39FD9 /* libABI39_0_0EXFacebook.a */,
+				51176C754445D66BAD0EEE204D291770 /* libABI39_0_0EXFaceDetector.a */,
+				BA902234390D34669D50EFAA15B860B8 /* libABI39_0_0EXFileSystem.a */,
+				1C35FCFDCBF845F06ADFFB997ADFF638 /* libABI39_0_0EXFirebaseAnalytics.a */,
+				FFF5558DDE247A735F2F60CF34CE3797 /* libABI39_0_0EXFirebaseCore.a */,
+				47D2F3E13A0D3D239C96F9931FB95B8F /* libABI39_0_0EXFont.a */,
+				4D24342D305BEACBF5A5D65091E893FF /* libABI39_0_0EXGL.a */,
+				0D89375A1B9AD408D44D946EF470453B /* libABI39_0_0EXGoogleSignIn.a */,
+				4E19D6591937F29895710EAFDCAE819A /* libABI39_0_0EXHaptics.a */,
+				07D61A5CA088341DF0C2ACED3E06DB23 /* libABI39_0_0EXImageLoader.a */,
+				87CD150075A78C04B5C5C82ACF339B92 /* libABI39_0_0EXImageManipulator.a */,
+				1D546CF639E494B991A67EAE6CFDF3B4 /* libABI39_0_0EXImagePicker.a */,
+				B181350CF81BA8E8F45B3C883BDD31FF /* libABI39_0_0EXInAppPurchases.a */,
+				0C447EF5E88A74321F32B3C607C8EE02 /* libABI39_0_0EXKeepAwake.a */,
+				40E35D2FA7893A08100073FECDCDEFBA /* libABI39_0_0EXLinearGradient.a */,
+				4B0F66020485689E9EF0E96C26824614 /* libABI39_0_0EXLocalAuthentication.a */,
+				FC1C9630D3384F0E37BFDA116D310546 /* libABI39_0_0EXLocalization.a */,
+				08B7F94B530F72039D1363382A35F28F /* libABI39_0_0EXLocation.a */,
+				852122850C6008F1C9F1E3DD5A281503 /* libABI39_0_0EXMailComposer.a */,
+				EC831B0551107EDF33CC41FA4D0E0643 /* libABI39_0_0EXMediaLibrary.a */,
+				513C38FFFA2C019140AFB276049612D1 /* libABI39_0_0EXModuleTemplate.a */,
+				DFEA7495F83580DB4E1EF8D0776B6490 /* libABI39_0_0EXNetwork.a */,
+				CAEA6E56F76E8F85A1327D5119E5A696 /* libABI39_0_0EXNotifications.a */,
+				C2C95045854B021F91D96AECA5524C22 /* libABI39_0_0EXPermissions.a */,
+				1E2A8355502B9AF15813D0CE4EB6DB2F /* libABI39_0_0ExpoKit.a */,
+				17F85F184C429C4F98F2E23EDC5A783A /* libABI39_0_0EXPrint.a */,
+				7B447D5BB7D0463EF0B07C4476D4470C /* libABI39_0_0EXRandom.a */,
+				49AA128C9A7E92D2D5A8D8CF44D5C61B /* libABI39_0_0EXScreenCapture.a */,
+				5EC3F2458AD9E44949EC46D982F9997A /* libABI39_0_0EXScreenOrientation.a */,
+				A2D0A91418E15174A27915F95FA1F3D4 /* libABI39_0_0EXSecureStore.a */,
+				4CF38CB8E9517C01C04EB69FC3402D3D /* libABI39_0_0EXSegment.a */,
+				3C56FA527F1D1AAA33D5580116F5E6F9 /* libABI39_0_0EXSensors.a */,
+				FA6F76FEAFF29C8E23A40F118F8F1669 /* libABI39_0_0EXSharing.a */,
+				4B9BF1EDF5DF9C1B58D783A3208BAC57 /* libABI39_0_0EXSMS.a */,
+				B3420BD3FE5E2DC057C0373B90408876 /* libABI39_0_0EXSpeech.a */,
+				DF49D6BFF7B961D39C5CD08F16B2BB05 /* libABI39_0_0EXSplashScreen.a */,
+				266C32CB5EAC17D882AA43E36D832420 /* libABI39_0_0EXSQLite.a */,
+				A7315995ABA74206B1020262CD153CEB /* libABI39_0_0EXStoreReview.a */,
+				146ADC0AE767B1CA3CEDB47DFA8313CC /* libABI39_0_0EXTaskManager.a */,
+				84AB54119DAB98C9EB6F2976694AD896 /* libABI39_0_0EXUpdates.a */,
+				584623B179C3B64330FC404B7A2A824E /* libABI39_0_0EXVideoThumbnails.a */,
+				67EF977B0E011CE0DF8089CA3722961A /* libABI39_0_0EXWebBrowser.a */,
+				DEA54CDC6CD86B309CF293BC7F9A1C8A /* libABI39_0_0FBReactNativeSpec.a */,
+				10405EFEF64B274AB6420E833F3305F1 /* libABI39_0_0RCTTypeSafety.a */,
+				F3C5FF98DAA0DCF2E2D4CAAC7CA36977 /* libABI39_0_0React-Core.a */,
+				1A24488F868F4F97B68C21D9E4CB91DB /* libABI39_0_0React-CoreModules.a */,
+				2B25065549A477F84CF760736209BE1D /* libABI39_0_0React-cxxreact.a */,
+				4874795B908F62968F15B6E8A754EF74 /* libABI39_0_0React-jsi.a */,
+				57D176C10252F3C4BD63B93E8DDC6864 /* libABI39_0_0React-jsiexecutor.a */,
+				FDAFA2945A31032900F5F1C148E8EB24 /* libABI39_0_0React-jsinspector.a */,
+				FF647D59B2112A8FFCD3BCEFECCFF49C /* libABI39_0_0React-RCTAnimation.a */,
+				E7A3494DF0662E2E3D3CF374A8A05605 /* libABI39_0_0React-RCTBlob.a */,
+				30302C64932B40AA8A5C3B6B9E30A1C6 /* libABI39_0_0React-RCTImage.a */,
+				3C403669FBEE440AD096634418248C8F /* libABI39_0_0React-RCTLinking.a */,
+				8025CD414730DA1A187C5A99ECEA765D /* libABI39_0_0React-RCTNetwork.a */,
+				776F0C9206A93F709777508B7AE81663 /* libABI39_0_0React-RCTSettings.a */,
+				1CF83667EF1E9162575A88666D4EDAA8 /* libABI39_0_0React-RCTText.a */,
+				CECC765DB15596E855F6F8CD4587C6F1 /* libABI39_0_0React-RCTVibration.a */,
+				2E32E8D93FC48D3C0CF91888E42FDA02 /* libABI39_0_0ReactCommon.a */,
+				AC0504C7DCAE15BB4090478BD53AA1A9 /* libABI39_0_0UMAppLoader.a */,
+				453DDE7AA5377232D5DCAB3978B2E23C /* libABI39_0_0UMCore.a */,
+				4386B2BCD35D8BCCC4E20D5C8EAF5FCA /* libABI39_0_0UMPermissionsInterface.a */,
+				B5706D1C0ED228BF5178D79A6B8FCBF6 /* libABI39_0_0UMReactNativeAdapter.a */,
+				93E3E79D661794D428362A31F3895DA9 /* libABI39_0_0Yoga.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		D3DBEBE077850192B7556E37CA524547 /* SensorModules */ = {
@@ -14956,7 +14956,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				944C2E399A0856098250E29FF0932FC6 /* PBXTargetDependency */,
+				7614408A794FDAB86AFD34C9BB52C177 /* PBXTargetDependency */,
 				7271E1AF77265DEC003A388E94FFEB08 /* PBXTargetDependency */,
 				C5B33F5F0F384076EA1D6F25103BF6C2 /* PBXTargetDependency */,
 				871E1609E927ADA97999C378C161589B /* PBXTargetDependency */,
@@ -15834,6 +15834,23 @@
 			productReference = BA902234390D34669D50EFAA15B860B8 /* libABI39_0_0EXFileSystem.a */;
 			productType = "com.apple.product-type.library.static";
 		};
+		B60DC0F9C08C8C58B8598180BD310B57 /* ABI39_0_0React-Core-ABI39_0_0AccessibilityResources */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 72C608935F815B4D993F9E2D56A4BC21 /* Build configuration list for PBXNativeTarget "ABI39_0_0React-Core-ABI39_0_0AccessibilityResources" */;
+			buildPhases = (
+				D6FC60D3B805F19A1483FD94D2F26AE1 /* Sources */,
+				8536A9572A375259254A58A54B57A8F7 /* Frameworks */,
+				ED172B6A5BE1530244612679C0589A53 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "ABI39_0_0React-Core-ABI39_0_0AccessibilityResources";
+			productName = "ABI39_0_0React-Core-ABI39_0_0AccessibilityResources";
+			productReference = AC06C7AF8F328D3282FCD08E9DA9E029 /* ABI39_0_0AccessibilityResources.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
 		BF85E543F93A3E592F7ED5369F37C825 /* ABI39_0_0EXPermissions */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 8AB4618C8B7977487200A1AE82D16A63 /* Build configuration list for PBXNativeTarget "ABI39_0_0EXPermissions" */;
@@ -15929,23 +15946,6 @@
 			productName = ABI39_0_0EXAppAuth;
 			productReference = 1423DE24335D6D4881C884D9E7C6093C /* libABI39_0_0EXAppAuth.a */;
 			productType = "com.apple.product-type.library.static";
-		};
-		C921A238545FC3C34140E867552A4509 /* ABI39_0_0React-Core-AccessibilityResources */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 1DFFA2EA5E1DFA1488D2F331DDEAAAF0 /* Build configuration list for PBXNativeTarget "ABI39_0_0React-Core-AccessibilityResources" */;
-			buildPhases = (
-				BDF8351D1AC9C84BF307BE9D7E4487F5 /* Sources */,
-				DCFD6AA528495675152334163D0F9BBD /* Frameworks */,
-				D975E13D59A437C18E68DA8DF70FC21F /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = "ABI39_0_0React-Core-AccessibilityResources";
-			productName = "ABI39_0_0React-Core-AccessibilityResources";
-			productReference = E021A1ECCC09A6082DA47B5EB9191693 /* AccessibilityResources.bundle */;
-			productType = "com.apple.product-type.bundle";
 		};
 		C9781C956554DCF58D4B812C16504EAE /* ABI39_0_0EXAdsFacebook */ = {
 			isa = PBXNativeTarget;
@@ -16317,7 +16317,7 @@
 				Base,
 			);
 			mainGroup = C672622AD03DAFEA916F48E2AFBDE225;
-			productRefGroup = 97386DFEC71660E1F5A6EC601A559655 /* Products */;
+			productRefGroup = D2E1209F6E68EF8E9126AA6E71F36F6B /* Products */;
 			projectDirPath = "";
 			projectReferences = (
 				{
@@ -16459,7 +16459,7 @@
 				760067B0372300CA2F6AB6396276A756 /* ABI39_0_0React */,
 				0CA7956301DA4BEB3F1E235B03ADBAC2 /* ABI39_0_0React-callinvoker */,
 				35E1EFE4279CE060B9338D84874328E1 /* ABI39_0_0React-Core */,
-				C921A238545FC3C34140E867552A4509 /* ABI39_0_0React-Core-AccessibilityResources */,
+				B60DC0F9C08C8C58B8598180BD310B57 /* ABI39_0_0React-Core-ABI39_0_0AccessibilityResources */,
 				48D4F42255BCBF0A39B1BA7B2437B37F /* ABI39_0_0React-CoreModules */,
 				9D39D87C1C0910851D93EC52FB88172A /* ABI39_0_0React-cxxreact */,
 				289069CF6D2E846B1322ECB7A15BFB32 /* ABI39_0_0React-jsi */,
@@ -16494,11 +16494,11 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		D975E13D59A437C18E68DA8DF70FC21F /* Resources */ = {
+		ED172B6A5BE1530244612679C0589A53 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B9109C3F1A8E7440D33360AA3F7F763D /* en.lproj in Resources */,
+				7D53490ECB379B99E9EACD7095D53F2D /* en.lproj in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17669,13 +17669,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		BDF8351D1AC9C84BF307BE9D7E4487F5 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		C16CC7487AEF6177A7719F8BDC590BB6 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -17786,6 +17779,13 @@
 				97CFF118B0CE0AEC6DFD024CCB36FF0A /* ABI39_0_0EXSessionTaskDispatcher.m in Sources */,
 				358AF2F13F786D15F57A07CA773442E4 /* ABI39_0_0EXSessionUploadTaskDelegate.m in Sources */,
 				3900E2DFD62C8ECAAA8A4B57260A9947 /* ABI39_0_0NSData+EXFileSystem.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D6FC60D3B805F19A1483FD94D2F26AE1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18785,6 +18785,12 @@
 			target = 3EA9E1384C6A684D0183648AD85C758C /* ABI39_0_0React-jsinspector */;
 			targetProxy = CEA122E2230216114BE27BB60CF14CF3 /* PBXContainerItemProxy */;
 		};
+		7614408A794FDAB86AFD34C9BB52C177 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "ABI39_0_0React-Core-ABI39_0_0AccessibilityResources";
+			target = B60DC0F9C08C8C58B8598180BD310B57 /* ABI39_0_0React-Core-ABI39_0_0AccessibilityResources */;
+			targetProxy = 16EB039BA0BA04C7A803B0B6F6183E8F /* PBXContainerItemProxy */;
+		};
 		76D1D395327E2B1F2EE384C08BE11914 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = ABI39_0_0UMCore;
@@ -19023,12 +19029,6 @@
 			name = ABI39_0_0EXContacts;
 			target = 93476C8E1E7ABFD4CA61514BF05A2398 /* ABI39_0_0EXContacts */;
 			targetProxy = 6273A44119FD9319B80540E0C0AC7663 /* PBXContainerItemProxy */;
-		};
-		944C2E399A0856098250E29FF0932FC6 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "ABI39_0_0React-Core-AccessibilityResources";
-			target = C921A238545FC3C34140E867552A4509 /* ABI39_0_0React-Core-AccessibilityResources */;
-			targetProxy = 9B3A3FEC6745389D17CB0291BF687E8F /* PBXContainerItemProxy */;
 		};
 		947985E767A4EB06026CF7586441083B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -20819,23 +20819,6 @@
 			};
 			name = Debug;
 		};
-		2AD069336FE3269B977FC053F6F3352D /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = F978791EC402B9C0800A70FE1B409001 /* ABI39_0_0React-Core.debug.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/ABI39_0_0React-Core";
-				IBSC_MODULE = ABI39_0_0React;
-				INFOPLIST_FILE = "Target Support Files/ABI39_0_0React-Core/ResourceBundle-AccessibilityResources-ABI39_0_0React-Core-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				PRODUCT_NAME = AccessibilityResources;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				WRAPPER_EXTENSION = bundle;
-			};
-			name = Debug;
-		};
 		2C6D3BE79D20E9900E6B04CD51AFBF7E /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 8E85B634DCB1B4352F5FB1C04B70394D /* ABI39_0_0EXUpdates.release.xcconfig */;
@@ -21684,7 +21667,7 @@
 		};
 		4F7AFF04B232C57F6F6E5820A4BB9FCC /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1C23222C92A1D621924A1399BE639F2E /* ABI39_0_0React-Core.release.xcconfig */;
+			baseConfigurationReference = B90BAFC90E0B51E2B5E938EA2FEC604D /* ABI39_0_0React-Core.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -22230,6 +22213,23 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
+		};
+		6AC86AEE5C1A03AFB5AA2D271B250242 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B90BAFC90E0B51E2B5E938EA2FEC604D /* ABI39_0_0React-Core.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/ABI39_0_0React-Core";
+				IBSC_MODULE = ABI39_0_0React;
+				INFOPLIST_FILE = "Target Support Files/ABI39_0_0React-Core/ResourceBundle-ABI39_0_0AccessibilityResources-ABI39_0_0React-Core-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				PRODUCT_NAME = ABI39_0_0AccessibilityResources;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Release;
 		};
 		6D221F2BFB4438FE87CEB175B95210CE /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -23137,22 +23137,22 @@
 			};
 			name = Release;
 		};
-		989D6DE7123142C32B03A2CA9AF5ACAD /* Release */ = {
+		98C0C358A569FC1A96A53FF09E8CE0B5 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1C23222C92A1D621924A1399BE639F2E /* ABI39_0_0React-Core.release.xcconfig */;
+			baseConfigurationReference = 0D45D47ACF92E529CB3556C25880C750 /* ABI39_0_0React-Core.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/ABI39_0_0React-Core";
 				IBSC_MODULE = ABI39_0_0React;
-				INFOPLIST_FILE = "Target Support Files/ABI39_0_0React-Core/ResourceBundle-AccessibilityResources-ABI39_0_0React-Core-Info.plist";
+				INFOPLIST_FILE = "Target Support Files/ABI39_0_0React-Core/ResourceBundle-ABI39_0_0AccessibilityResources-ABI39_0_0React-Core-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				PRODUCT_NAME = AccessibilityResources;
+				PRODUCT_NAME = ABI39_0_0AccessibilityResources;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = bundle;
 			};
-			name = Release;
+			name = Debug;
 		};
 		993729B07399EED2A897F9379E377B25 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -24742,7 +24742,7 @@
 		};
 		D56880E4196209665BF33B1C575A9244 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F978791EC402B9C0800A70FE1B409001 /* ABI39_0_0React-Core.debug.xcconfig */;
+			baseConfigurationReference = 0D45D47ACF92E529CB3556C25880C750 /* ABI39_0_0React-Core.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -25842,15 +25842,6 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		1DFFA2EA5E1DFA1488D2F331DDEAAAF0 /* Build configuration list for PBXNativeTarget "ABI39_0_0React-Core-AccessibilityResources" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				2AD069336FE3269B977FC053F6F3352D /* Debug */,
-				989D6DE7123142C32B03A2CA9AF5ACAD /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		2768B2CB6E51242E3826D0AEA1B1C819 /* Build configuration list for PBXNativeTarget "ABI39_0_0React-RCTVibration" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -26135,6 +26126,15 @@
 			buildConfigurations = (
 				C7E4C02E12959395CCD056A4CCD3C9D9 /* Debug */,
 				40C1EBA6AF2DE0436A5D35CE465F6A33 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		72C608935F815B4D993F9E2D56A4BC21 /* Build configuration list for PBXNativeTarget "ABI39_0_0React-Core-ABI39_0_0AccessibilityResources" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				98C0C358A569FC1A96A53FF09E8CE0B5 /* Debug */,
+				6AC86AEE5C1A03AFB5AA2D271B250242 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
