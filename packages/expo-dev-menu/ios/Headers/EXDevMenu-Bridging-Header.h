@@ -10,9 +10,5 @@
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTBridge+Private.h>
 
-// Expo modules
-#import <UMCore/UMModuleRegistryProvider.h>
-#import <UMReactNativeAdapter/UMModuleRegistryAdapter.h>
-
 // Private
 #import "RCTPerfMonitor+Private.h"
