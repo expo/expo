@@ -71,11 +71,6 @@ jobs:
             shellAppBase-builds \
             shellAppWorkspaces \
             ios
-      - name: Make an artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: ios-shell-app
-          path: /tmp/${{ steps.tarball.outputs.filename }}
       - name: Upload shell app tarball to S3
         if: ${{ github.event.inputs.releaseShellIOS == 'release-shell-ios' }}
         timeout-minutes: 40
