@@ -14,22 +14,22 @@ type ActionOptions = {
 };
 
 async function downloadAndInstallOnIOSAsync(clientUrl: string): Promise<void> {
-  if (!(await Simulator._isSimulatorInstalledAsync())) {
+  if (!(await Simulator.isSimulatorInstalledAsync())) {
     console.error(chalk.red('iOS simulator is not installed!'));
     return;
   }
 
   console.log('Booting up iOS simulator...');
 
-  await Simulator._openAndBootSimulatorAsync();
+  const simulator = await Simulator.ensureSimulatorOpenAsync();
 
   console.log('Uninstalling previously installed Expo client...');
 
-  await Simulator._uninstallExpoAppFromSimulatorAsync();
+  await Simulator.uninstallExpoAppFromSimulatorAsync(simulator);
 
   console.log(`Installing Expo client from ${chalk.blue(clientUrl)} on iOS simulator...`);
 
-  const installResult = await Simulator._installExpoOnSimulatorAsync();
+  const installResult = await Simulator.installExpoOnSimulatorAsync({ url: clientUrl, simulator });
 
   if (installResult.status !== 0) {
     throw new Error('Installing Expo client simulator failed!');
@@ -46,19 +46,29 @@ async function downloadAndInstallOnAndroidAsync(clientUrl: string): Promise<void
   try {
     console.log('Checking if the are any Android devices or emulators connected...');
 
-    await Android.assertDeviceReadyAsync();
+    const devices = await Android.getAttachedDevicesAsync();
+    if (devices.length === 0) {
+      throw new Error('No connected devices or emulators found.');
+    }
+
+    const device = devices[0];
+    if (devices.length > 1) {
+      console.log(
+        `More than one Android device found. Installing on the first one found, ${device.name}.`
+      );
+    }
+
+    await Android.assertDeviceReadyAsync(device);
 
     console.log('Uninstalling previously installed Expo client...');
 
-    await Android.uninstallExpoAsync();
+    await Android.uninstallExpoAsync(device);
 
-    console.log(`Downloading an APK from ${chalk.blue(clientUrl)}...`);
+    console.log(
+      `Installing Expo client from ${chalk.blue(clientUrl)} on Android ${device.type}...`
+    );
 
-    const apkPath = await Android.downloadApkAsync(clientUrl);
-
-    console.log('Installing an APK on the connected device...');
-
-    await Android.getAdbOutputAsync(['install', apkPath]);
+    await Android.installExpoAsync({ url: clientUrl, device });
 
     console.log('Launching application...');
 

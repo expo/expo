@@ -1,7 +1,6 @@
 export * as Directories from './Directories';
 export * as ExpoKit from './ExpoKit';
 export * as FirebaseTestLab from './FirebaseTestLab';
-export * as Fixtures from './Fixtures';
 export * as HashDirectory from './HashDirectory';
 export * as IOSSimulator from './IOSSimulator';
 export * as IOSSimulatorTestSuite from './IOSSimulatorTestSuite';
@@ -9,6 +8,5 @@ export * as Log from './Log';
 export * as Packages from './Packages';
 export * as ProjectVersions from './ProjectVersions';
 export * as S3 from './S3';
-export * as TestServer from './TestServer';
 export * as TestSuite from './TestSuite';
 export * as XDL from './XDL';
