@@ -55,7 +55,7 @@ jobs:
         id: tarball
         run: echo "::set-output name=filename::ios-expo-client-${{ github.sha }}"
       - name: Package tarball
-        if: ${{ github.event_name != 'workflow_dispatch' }}
+        if: ${{ github.event_name == 'workflow_dispatch' }}
         run: |
           tar \
             -zcf "/tmp/${{ steps.tarball.outputs.filename }}" \
@@ -63,7 +63,7 @@ jobs:
             ios
       - run: brew install awscli
       - name: upload tarball
-        if: ${{ github.event_name != 'workflow_dispatch' }}
+        if: ${{ github.event_name == 'workflow_dispatch' }}
         timeout-minutes: 40
         run: |
           aws s3 cp --acl public-read "/tmp/${{ steps.tarball.outputs.filename }}" s3://exp-artifacts
