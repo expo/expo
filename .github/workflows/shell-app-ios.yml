@@ -1,6 +1,7 @@
 name: iOS Shell App
 
 on:
+  workflow_dispatch: {}
   schedule:
     - cron: '20 5 * * 2,4,6'
 
