@@ -7,7 +7,9 @@ import android.content.Intent
 import android.hardware.SensorManager
 import android.os.Bundle
 import android.view.KeyEvent
+import android.view.MotionEvent
 import com.facebook.react.ReactInstanceManager
+import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.UiThreadUtil
@@ -19,6 +21,7 @@ import expo.interfaces.devmenu.items.DevMenuAction
 import expo.interfaces.devmenu.items.DevMenuItem
 import expo.interfaces.devmenu.items.KeyCommand
 import expo.modules.devmenu.detectors.ShakeDetector
+import expo.modules.devmenu.detectors.ThreeFingerLongPressDetector
 import expo.modules.devmenu.modules.DevMenuSettings
 import org.unimodules.adapters.react.ModuleRegistryAdapter
 import org.unimodules.adapters.react.ReactModuleRegistryProvider
@@ -26,6 +29,7 @@ import java.util.*
 
 object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   private var shakeDetector: ShakeDetector? = null
+  private var threeFingerLongPressDetector: ThreeFingerLongPressDetector? = null
   private var session: DevMenuSession? = null
   private var settings: DevMenuSettings? = null
   private var delegate: DevMenuDelegateInterface? = null
@@ -71,7 +75,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
       val delegateBridge = delegate?.reactInstanceManager() ?: return emptyList()
 
       if (!cachedDevMenuItems.containsKey(delegateBridge)) {
-        cachedDevMenuItems[delegateBridge] =  delegateExtensions
+        cachedDevMenuItems[delegateBridge] = delegateExtensions
           .map { it.devMenuItems() ?: emptyList() }
           .flatten()
           .sortedByDescending { it.importance }
@@ -114,7 +118,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   private fun handleLoadedDelegate(reactContext: ReactContext) {
     maybeInitDevMenuHost(reactContext.currentActivity?.application
       ?: reactContext.applicationContext as Application)
-    maybeStartDetectingShakes(devMenuHost.getContext())
+    maybeStartDetectors(devMenuHost.getContext())
 
     settings = reactContext
       .getNativeModule(DevMenuSettings::class.java)
@@ -131,14 +135,17 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   //region shake detector
 
   /**
-   * Starts [ShakeDetector] if it's not running yet.
+   * Starts [ShakeDetector] and [ThreeFingerLongPressDetector] if they aren't running yet.
    */
-  private fun maybeStartDetectingShakes(context: Context) {
-    if (shakeDetector != null) {
-      return
+  private fun maybeStartDetectors(context: Context) {
+    if (shakeDetector == null) {
+      shakeDetector = ShakeDetector(this::onShakeGesture).apply {
+        start(context.getSystemService(Context.SENSOR_SERVICE) as SensorManager)
+      }
     }
-    shakeDetector = ShakeDetector { onShakeGesture() }.apply {
-      start(context.getSystemService(Context.SENSOR_SERVICE) as SensorManager)
+
+    if (threeFingerLongPressDetector == null) {
+      threeFingerLongPressDetector = ThreeFingerLongPressDetector(this::onThreeFingerLongPress)
     }
   }
 
@@ -147,6 +154,17 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
    */
   private fun onShakeGesture() {
     if (settings?.motionGestureEnabled == true) {
+      delegateActivity?.let {
+        toggleMenu(it)
+      }
+    }
+  }
+
+  /**
+   * Handles three finger long press which simply toggles the dev menu.
+   */
+  private fun onThreeFingerLongPress() {
+    if (settings?.touchGestureEnabled == true) {
       delegateActivity?.let {
         toggleMenu(it)
       }
@@ -202,7 +220,16 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     }
   }
 
+  override fun onTouchEvent(ev: MotionEvent?) {
+    threeFingerLongPressDetector?.onTouchEvent(ev)
+  }
+
   override fun onKeyEvent(keyCode: Int, event: KeyEvent): Boolean {
+    if (keyCode == KeyEvent.KEYCODE_MENU) {
+      delegateActivity?.let { openMenu(it) }
+      return true
+    }
+
     if (settings?.keyCommandsEnabled != true) {
       return false
     }
@@ -228,6 +255,10 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
       }
       this
     }
+  }
+
+  override fun initializeWithReactNativeHost(reactNativeHost: ReactNativeHost) {
+    setDelegate(DevMenuDefaultDelegate(reactNativeHost))
   }
 
   override fun dispatchAction(actionId: String) {
