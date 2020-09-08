@@ -3,7 +3,6 @@ import { StyleSheet, View } from 'react-native';
 import { Ionicon } from '../components/Icon';
 
 import ListItem from './ListItem';
-import { StyledIcon } from './Views';
 
 type Props = {
   title: string;
