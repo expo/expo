@@ -50,7 +50,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pods-
       - name: Build iOS Expo client shell app
-        timeout-minutes: 50
         run: fastlane ios create_expo_client_build
       - name: set tarball name
         id: tarball
