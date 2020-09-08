@@ -26,6 +26,9 @@ The `credentials.json` file should be located at the root of your project, next 
       "path": "ios/certs/dist-cert.p12",
       "password": "iex3shi9Lohl"
     }
+  },
+  "secretEnvs": {
+    "EXAMPLE_ENV": "VALUE"
   }
 }
 ```
@@ -197,6 +200,10 @@ Example:
   }
 }
 ```
+
+## User-definable Environment Variables (`secretEnvs`)
+
+Values specified in `credentials.json` under `secretEnvs` will be passed to worker and set during entire build process. Selecting `remote/local` mode for build credentials does not affect this behaviour.
 
 ## Running Builds on CI
 
