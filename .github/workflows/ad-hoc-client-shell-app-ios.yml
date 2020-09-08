@@ -63,7 +63,10 @@ jobs:
             expo-client-build/Exponent.xcarchive \
             ios
       - run: brew install awscli
-      - name: upload tarball
+      - name: Upload shell app tarball to S3
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         if: ${{ github.event_name != 'workflow_dispatch' }}
         timeout-minutes: 40
         run: |
