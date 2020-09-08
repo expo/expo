@@ -7,6 +7,6 @@ module.exports = {
   clearMocks: true,
   coverageDirectory: '<rootDir>/coverage',
   moduleNameMapper: {
-    '^~(.*)$': '<rootDir>/$1',
+    '^~/(.*)$': '<rootDir>/$1',
   },
 };
