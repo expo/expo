@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 
-import { DevMenuKeyCommandsEnum } from '../DevMenuInternal';
+import { DevMenuKeyCommandsEnum, isDeviceSupportsKeyCommands } from '../DevMenuInternal';
 import { StyledText } from './Text';
 
 type Props = {
@@ -29,6 +29,9 @@ function keyCommandToString(input: string, modifiers: DevMenuKeyCommandsEnum): s
 
 export default class DevMenuKeyCommandLabel extends React.PureComponent<Props> {
   render() {
+    if (!isDeviceSupportsKeyCommands) {
+      return <View />;
+    }
     const { input, modifiers } = this.props;
     const label = keyCommandToString(input, modifiers);
 

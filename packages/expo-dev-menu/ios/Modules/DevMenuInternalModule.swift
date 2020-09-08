@@ -5,7 +5,12 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
   public static func moduleName() -> String! {
     return "ExpoDevMenuInternal"
   }
-
+  
+  // Module DevMenuInternalModule requires main queue setup since it overrides `constantsToExport`.
+  public static func requiresMainQueueSetup() -> Bool {
+    return true;
+  }
+  
   private static var fontsWereLoaded = false;
 
   let manager: DevMenuManager
@@ -19,11 +24,11 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
   @objc
   func constantsToExport() -> [String : Any] {
 #if TARGET_IPHONE_SIMULATOR
-    let isDevice = false
+    let isDeviceSupportsKeyCommands = false
 #else
-    let isDevice = true
+    let isDeviceSupportsKeyCommands = true
 #endif
-    return ["isDevice": isDevice]
+    return ["isDeviceSupportsKeyCommands": isDeviceSupportsKeyCommands]
   }
   
   @objc
