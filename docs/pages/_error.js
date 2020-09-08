@@ -220,7 +220,9 @@ const REACT_NATIVE_PATH_PATTERN = `${VERSIONED_PATH_PATTERN}/react-native`;
 // Check if path is valid (matches /versions/some-valid-version-here/)
 function isVersionedPath(path) {
   const match = path.match(new RegExp(VERSIONED_PATH_PATTERN));
-  // Note, if the input is the base form (e.g. /versions/latest/), we need to return false
+  // Note, if the input is the base form (e.g. /versions/latest/), we need to return false.
+  // Without this if the redirectPath is set to the this base form, it tries to remove the versioned path.
+  // That breaks the redirect chain for `/api/` -> `/versions/latest/` -> `/`.
   if (match && match[0] + '/' === path) {
     return false;
   }
