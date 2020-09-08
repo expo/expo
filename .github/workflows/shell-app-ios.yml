@@ -53,7 +53,6 @@ jobs:
         run: |
           bundle config path vendor/bundle
           bundle install --jobs 4 --retry 3
-      - run: echo "--run.cwd project/tools-public" >> ~/.yarnrc
       - run: npm install gulp-cli -g
       - uses: actions/cache@v1
         with:
