@@ -8,7 +8,9 @@
 
 import Foundation
 import EXDevMenuInterface
+#if canImport(EXDevMenu)
 import EXDevMenu
+#endif
 
 @UIApplicationMain
 class AppDelegate: UMAppDelegateWrapper, DevMenuDelegateProtocol {
@@ -29,8 +31,10 @@ class AppDelegate: UMAppDelegateWrapper, DevMenuDelegateProtocol {
       window?.makeKeyAndVisible()
       self.bridge = bridge
     }
-
+    
+    #if canImport(EXDevMenu)
     DevMenuManager.shared.delegate = self
+    #endif
 
     super.application(application, didFinishLaunchingWithOptions: launchOptions)
     
