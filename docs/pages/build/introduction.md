@@ -14,3 +14,4 @@ title: Introduction
 - [Android build process](../android-builds/) - See how Android builds work under the hood.
 - [iOS build process](../ios-builds/) - See how iOS builds work under the hood.
 - [Advanced credentials configuration](../advanced-credentials-configuration/) - Use your existing app's credentials or streamline the CI build process with `credentials.json`.
+- [How to: configuration examples](../how-tos/) - Instructions on how to configure builds in less common cases.
