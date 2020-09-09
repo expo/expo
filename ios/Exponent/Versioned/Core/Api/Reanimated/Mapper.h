@@ -11,7 +11,7 @@ namespace reanimated {
 
 class MapperRegistry;
 
-class Mapper {
+class Mapper : public std::enable_shared_from_this<Mapper> {
   friend MapperRegistry;
 private:
   unsigned long id;
@@ -28,6 +28,7 @@ public:
          std::vector<std::shared_ptr<MutableValue>> inputs,
          std::vector<std::shared_ptr<MutableValue>> outputs);
   void execute(jsi::Runtime &rt);
+  virtual ~Mapper();
 };
 
 }

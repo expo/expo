@@ -24,8 +24,10 @@ using namespace react;
 NativeProxy::NativeProxy(
     jni::alias_ref<NativeProxy::javaobject> jThis,
     jsi::Runtime *rt,
+    std::shared_ptr<facebook::react::CallInvoker> jsCallInvoker,
     std::shared_ptr<Scheduler> scheduler) : javaPart_(jni::make_global(jThis)),
                                             runtime_(rt),
+                                            jsCallInvoker_(jsCallInvoker),
                                             scheduler_(scheduler)
 {
 }
@@ -33,10 +35,13 @@ NativeProxy::NativeProxy(
 jni::local_ref<NativeProxy::jhybriddata> NativeProxy::initHybrid(
     jni::alias_ref<jhybridobject> jThis,
     jlong jsContext,
+    jni::alias_ref<facebook::react::CallInvokerHolder::javaobject> jsCallInvokerHolder,
     jni::alias_ref<AndroidScheduler::javaobject> androidScheduler)
 {
+  auto jsCallInvoker = jsCallInvokerHolder->cthis()->getCallInvoker();
   auto scheduler = androidScheduler->cthis()->getScheduler();
-  return makeCxxInstance(jThis, (jsi::Runtime *)jsContext, scheduler);
+  scheduler->setJSCallInvoker(jsCallInvoker);
+  return makeCxxInstance(jThis, (jsi::Runtime *)jsContext, jsCallInvoker, scheduler);
 }
 
 void NativeProxy::installJSIBindings()
@@ -79,7 +84,7 @@ void NativeProxy::installJSIBindings()
     measuringFunction
   };
 
-  auto module = std::make_shared<NativeReanimatedModule>(nullptr,
+  auto module = std::make_shared<NativeReanimatedModule>(jsCallInvoker_,
                                                          scheduler_,
                                                          std::move(animatedRuntime),
                                                          errorHandler,

@@ -5,6 +5,7 @@
 #include <react/jni/CxxModuleWrapper.h>
 #include <react/jni/JMessageQueueThread.h>
 #include <react/jni/WritableNativeMap.h>
+#include <ReactCommon/CallInvokerHolder.h>
 #include <memory>
 #include <unordered_map>
 
@@ -78,6 +79,7 @@ class NativeProxy : public jni::HybridClass<NativeProxy> {
   static jni::local_ref<jhybriddata> initHybrid(
         jni::alias_ref<jhybridobject> jThis,
         jlong jsContext,
+        jni::alias_ref<facebook::react::CallInvokerHolder::javaobject> jsCallInvokerHolder,
         jni::alias_ref<AndroidScheduler::javaobject> scheduler);
   static void registerNatives();
 
@@ -86,6 +88,7 @@ class NativeProxy : public jni::HybridClass<NativeProxy> {
   friend HybridBase;
   jni::global_ref<NativeProxy::javaobject> javaPart_;
   jsi::Runtime *runtime_;
+  std::shared_ptr<facebook::react::CallInvoker> jsCallInvoker_;
   std::shared_ptr<Scheduler> scheduler_;
 
   void installJSIBindings();
@@ -98,6 +101,7 @@ class NativeProxy : public jni::HybridClass<NativeProxy> {
   explicit NativeProxy(
       jni::alias_ref<NativeProxy::jhybridobject> jThis,
       jsi::Runtime *rt,
+      std::shared_ptr<facebook::react::CallInvoker> jsCallInvoker,
       std::shared_ptr<Scheduler> scheduler);
 };
 
