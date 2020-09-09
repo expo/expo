@@ -141,7 +141,6 @@ ABI39_0_0RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *ABI39_0_0EXGetScop
 {
   ABI39_0_0RCTDevSettings *devSettings = (ABI39_0_0RCTDevSettings *)[self _moduleInstanceForBridge:bridge named:@"DevSettings"];
   BOOL isDevModeEnabled = [self _isDevModeEnabledForBridge:bridge];
-  BOOL turboModulesEnabled = [self.params[@"manifest"][@"experiments"][@"turboModules"] boolValue];
   NSMutableDictionary *items = [NSMutableDictionary new];
 
   if (isDevModeEnabled) {
@@ -156,7 +155,7 @@ ABI39_0_0RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *ABI39_0_0EXGetScop
     };
   }
   
-  if (devSettings.isRemoteDebuggingAvailable && isDevModeEnabled && !turboModulesEnabled) {
+  if (devSettings.isRemoteDebuggingAvailable && isDevModeEnabled) {
     items[@"dev-remote-debug"] = @{
       @"label": (devSettings.isDebuggingRemotely) ? @"Stop Remote Debugging" : @"Debug Remote JS",
       @"isEnabled": @YES
@@ -165,7 +164,7 @@ ABI39_0_0RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *ABI39_0_0EXGetScop
     items[@"dev-remote-debug"] =  @{
       @"label": @"Remote Debugger Unavailable",
       @"isEnabled": @NO,
-      @"detail": turboModulesEnabled ? @"Remote debugging is unavailable while Turbo Modules are enabled. To debug remotely, please set `turboModules` to false in app.json." : [NSNull null]
+      @"detail": ABI39_0_0RCTTurboModuleEnabled() ? @"Remote debugging is unavailable while Turbo Modules are enabled. To debug remotely, please set `turboModules` to false in app.json." : [NSNull null]
     };
   }
 
