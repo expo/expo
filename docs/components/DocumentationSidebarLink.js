@@ -60,7 +60,7 @@ const STYLES_ACTIVE_BULLET = css`
   border-radius: 4px;
   position: relative;
   left -12px;
-  top: 6px;
+  top: 7px;
 `;
 
 export default class DocumentationSidebarLink extends React.Component {
