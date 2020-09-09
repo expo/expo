@@ -8,6 +8,7 @@ import abi39_0_0.com.facebook.react.bridge.JSIModule;
 import abi39_0_0.com.facebook.react.bridge.ReactApplicationContext;
 import abi39_0_0.com.facebook.react.bridge.WritableArray;
 import abi39_0_0.com.facebook.react.bridge.WritableMap;
+import abi39_0_0.com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
 import abi39_0_0.com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import abi39_0_0.com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
 import abi39_0_0.com.facebook.react.uimanager.UIManagerModule;
@@ -73,12 +74,13 @@ public class NativeProxy {
   private final WeakReference<ReactApplicationContext> mContext;
 
   public NativeProxy(ReactApplicationContext context) {
-    mHybridData = initHybrid(context.getJavaScriptContextHolder().get(), new Scheduler(context));
+    CallInvokerHolderImpl holder = (CallInvokerHolderImpl)context.getCatalystInstance().getJSCallInvokerHolder();
+    mHybridData = initHybrid(context.getJavaScriptContextHolder().get(), holder, new Scheduler(context));
     mContext = new WeakReference<>(context);
     prepare();
   }
 
-  private native HybridData initHybrid(long jsContext, Scheduler scheduler);
+  private native HybridData initHybrid(long jsContext, CallInvokerHolderImpl jsCallInvokerHolder, Scheduler scheduler);
   private native void installJSIBindings();
 
   @DoNotStrip

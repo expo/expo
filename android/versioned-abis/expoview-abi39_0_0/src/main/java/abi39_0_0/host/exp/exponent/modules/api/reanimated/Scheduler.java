@@ -11,13 +11,6 @@ public class Scheduler {
   private final HybridData mHybridData;
   private final ReactApplicationContext mContext;
 
-  private final Runnable mJSThreadRunnable = new Runnable() {
-    @Override
-    public void run() {
-      triggerJS();
-    }
-  };
-
   private final Runnable mUIThreadRunnable = new Runnable() {
     @Override
     public void run() {
@@ -34,16 +27,9 @@ public class Scheduler {
 
   private native void triggerUI();
 
-  private native void triggerJS();
-
   @DoNotStrip
   private void scheduleOnUI() {
     mContext.runOnUiQueueThread(mUIThreadRunnable);
-  }
-
-  @DoNotStrip
-  private void scheduleOnJS() {
-    mContext.runOnJSQueueThread(mJSThreadRunnable);
   }
 
 }

@@ -19,6 +19,16 @@ Pod::Spec.new do |s|
   s.platform = :ios, "10.0"
   s.default_subspec = "Core"
   s.source = { :git => "http://github.com/expo/expo.git" }
+  s.xcconfig = {
+    'CLANG_CXX_LANGUAGE_STANDARD' => 'gnu++14',
+    'SYSTEM_HEADER_SEARCH_PATHS' => "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Folly\" \"$(PODS_ROOT)/Headers/Private/React-Core\"",
+    'OTHER_CPLUSPLUSFLAGS' => [
+      "$(OTHER_CFLAGS)",
+      "-DFOLLY_NO_CONFIG",
+      "-DFOLLY_MOBILE=1",
+      "-DFOLLY_USE_LIBCPP=1"
+    ]
+  }
 
 
   s.pod_target_xcconfig    = {
