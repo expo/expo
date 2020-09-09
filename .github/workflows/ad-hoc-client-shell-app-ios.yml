@@ -1,4 +1,4 @@
-name: Ad-hoc Client iOS Shell App
+name: Ad-hoc iOS Client Shell App
 
 on:
   workflow_dispatch:
@@ -77,7 +77,7 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          if: ${{ github.event.inputs.upload == 'upload' }}
+        if: ${{ github.event.inputs.upload == 'upload' }}
         timeout-minutes: 40
         run: |
           aws s3 cp --acl public-read ${{ steps.tarball.outputs.filename }} s3://exp-artifacts
