@@ -84,7 +84,7 @@ std::shared_ptr<NativeReanimatedModule> createReanimatedModule(std::shared_ptr<C
 
   auto propUpdater = [reanimatedModule](jsi::Runtime &rt, int viewTag, const jsi::Object &props) -> void {
     NSDictionary *propsDict = convertJSIObjectToNSDictionary(rt, props);
-    [reanimatedModule.nodesManager updateProps:propsDict ofViewWithTag:[NSNumber numberWithInt:viewTag] viewName:@"ABI39_0_0RCTView"];
+    [reanimatedModule.nodesManager updateProps:propsDict ofViewWithTag:[NSNumber numberWithInt:viewTag] viewName:@"RCTView"];
   };
 
   auto requestRender = [reanimatedModule](std::function<void(double)> onRender) {
