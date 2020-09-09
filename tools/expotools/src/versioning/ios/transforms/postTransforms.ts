@@ -182,6 +182,11 @@ export function postTransforms(versionName: string): TransformPipeline {
         replace: /(_bridge_reanimated)/g,
         with: `${versionName}$1`,
       },
+      {
+        paths: 'NativeProxy.mm',
+        replace: /@"ABI\d+_\d+_\d+RCTView"/g,
+        with: `@"RCTView"`,
+      },
 
       // react-native-shared-element
       {
