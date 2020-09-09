@@ -5,7 +5,7 @@ import * as React from 'react';
 import * as Constants from '~/common/constants';
 import stripVersionFromPath from '~/common/stripVersionFromPath';
 import ChevronDown from '~/components/icons/ChevronDown';
-import { paragraph } from '~/components/base/paragraph';
+import { paragraph } from '~/components/base/typography';
 
 const STYLES_TITLE = css`
   ${paragraph}
@@ -133,7 +133,7 @@ export default class DocumentationSidebarGroup extends React.Component {
       <div>
         <a className={STYLES_TITLE} onClick={this._toggleIsOpen}>
           {this.props.info.name}
-          <ChevronDown size={16} className={this.state.isOpen && STYLES_OPEN_CHEVRON_ICON} />
+          <ChevronDown size={16} className={this.state.isOpen ? STYLES_OPEN_CHEVRON_ICON : null} />
         </a>
         {this.state.isOpen ? (
           <div className={STYLES_SIDEBAR_INDENT}>{this.props.children}</div>

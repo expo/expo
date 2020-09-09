@@ -4,7 +4,7 @@ import NextLink from 'next/link';
 import * as React from 'react';
 import * as Constants from '~/common/constants';
 import stripVersionFromPath from '~/common/stripVersionFromPath';
-import { paragraph } from '~/components/base/paragraph';
+import { paragraph } from '~/components/base/typography';
 
 const STYLES_LINK = css`
   display: block;
@@ -14,6 +14,7 @@ const STYLES_LINK = css`
 const STYLES_ACTIVE = css`
   ${paragraph}
   font-size: 15px;
+  line-height: 140%;
   font-family: ${Constants.fontFamilies.demi};
   color: ${Constants.colors.expoLighter};
   position: relative;
@@ -31,6 +32,7 @@ const STYLES_ACTIVE = css`
 const STYLES_DEFAULT = css`
   ${paragraph}
   color: ${Constants.colors.black80};
+  line-height: 140%;
   transition: 200ms ease color;
   font-size: 15px;
 

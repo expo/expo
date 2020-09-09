@@ -3,7 +3,7 @@ import NextLink from 'next/link';
 
 import * as React from 'react';
 import * as Constants from '~/common/constants';
-import { paragraph } from '~/components/base/paragraph';
+import { paragraph } from '~/components/base/typography';
 
 const STYLES_TITLE = css`
   ${paragraph}
