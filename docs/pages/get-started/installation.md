@@ -2,52 +2,51 @@
 title: Installation
 ---
 
-There are two tools that you need to develop apps with Expo: a local development tool and a mobile client to open your app.
+import TerminalBlock from '~/components/plugins/TerminalBlock';
 
-## 1. Local development tool: Expo CLI
+There are two tools that you need to develop apps with Expo: a command line app called Expo CLI to initialize and serve your project and a mobile client app called Expo client to open it on iOS and Android. Any web browser will work for opening the project on the web.
 
-Expo CLI is a tool for developing apps with Expo. In addition to the command-line interface (CLI) it also has a web-based graphical user interface (GUI) that pops up in your web browser when you start your project &mdash; you can use this if you're not yet comfortable with the using terminal or just prefer GUIs, both have similar capabilities.
+## 1. Expo CLI
 
-### Pre-requisities
+Expo CLI is a command line app that is the main interface between a developer and Expo tools. Expo CLI also has a web-based GUI that pops up in your web browser when you start your project &mdash; you can use the GUI instead of the command line interface if you're not yet comfortable using a terminal or prefer GUIs, both have similar capabilities.
 
-- **Node.js**: In order to install Expo CLI you will need to have Node.js (**we recommend the latest stable version**- but the maintenance and active LTS releases will also work) installed on your computer. [Download the recommended version of Node.js](https://nodejs.org/en/).
-- **Git**: Additionally, you'll need Git to create new projects. [You can download Git from here](https://git-scm.com).
+### Requirements
+
+- [Node.js LTS release](https://nodejs.org/en/) or greater
+- [Git](https://git-scm.com)
+- [Watchman](https://facebook.github.io/watchman/docs/install#buildinstall) for macOS users
 
 ### Installing Expo CLI
 
-We recommend installing Expo CLI globally, you can do this by running the following command:
-
-```
-npm install -g expo-cli
-```
+<TerminalBlock cmd={['# Install the command line tools', 'npm install --global expo-cli','', '# Create a new project', 'expo init my-project', 'cd my-project']} />
 
 Verify that the installation was successful by running `expo whoami`. You're not logged in yet, so you will see "Not logged in". You can create an account by running `expo register` if you like, or if you have one already run `expo login`, but you also don't need an account to get started.
 
-> 😳 **Running into problems?** Try searching for your error message on the [forums](https://forums.expo.io) &mdash; you're probably not the first person to encounter your issue, and the forums are a great resource for these types of problems.
+> 😳 **Need help?** Try searching the [forums](https://forums.expo.io) &mdash; which are a great resource for troubleshooting.
 
-### Optional: Installing Watchman
+<TerminalBlock cmd={['# Start the development server', 'expo start']} />
 
-Some macOS users encounter issues if they do not have Watchman installed on their machine, so if you are using a Mac we recommend that you install it. [Download and install Watchman](https://facebook.github.io/watchman/docs/install#buildinstall).
+- Pressing `i` will open in the [iOS Simulator](../../workflow/ios-simulator/).
+- Pressing `a` will open in the [Android Emulator](../../workflow/android-studio-emulator/).
+- Pressing `w` will open in your Browser. Expo supports all major browsers.
 
-> 💡Watchman watches files and records when they change, then triggers actions in response to this, and it's used internally by React Native. 
+## 2. Expo client app for iOS and Android
 
-## 2. Mobile app: Expo client for iOS and Android
+The fastest way to get up and running is to use the Expo client app on your iOS or Android device. Expo client allows you to open up apps that are being served through Expo CLI.
 
-Expo client is the tool you will use to run your projects while you're developing them. When you serve your project with Expo CLI, it generates a development URL that you can open in Expo client to preview your app.
-
-- 🤖 [Download Expo client for Android from the Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent)
-- 🍎 [Download Expo client for iOS from the App Store](https://itunes.com/apps/exponent)
-
-> ⚠️ **Required operating system versions:** The minimum Android version is Lollipop (5) and the minimum iOS version is iOS 10.0.
+- 🤖 [Android Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent) - Android Lollipop (5) and greater.
+- 🍎 [iOS App Store](https://itunes.com/apps/exponent) - iOS 10 and greater.
 
 When the Expo client is finished installing, open it up. If you created an account with `expo-cli` then you can sign in here on the "Profile" tab. This will make it easier for you to open projects in the client when you have them open in development &mdash; they will appear automatically in the "Projects" tab of the client app.
 
 ### Running the Expo client on your computer
 
-The quickest way to get started is to run the Expo client on your physical iOS or Android device. If at some point you want to install a simulator or emulator to run the app directly on your computer you can find the [iOS simulator instructions here](../../workflow/ios-simulator/) and the [Android emulator instructions here](../../workflow/android-studio-emulator/). The iOS simulator only runs on macOS, Android emulators run on any major operating system.
+It's often useful to be able to run your app directly on your computer instead of on a separate physical device. If you would like to do set this up, you can learn more about the [installing the iOS Simulator (macOS only)](../../workflow/ios-simulator/) and [installing an Android emulator](../../workflow/android-studio-emulator/).
 
-> 🧐 Apple uses the word "simulator" for their iOS emulator and Google uses the word "emulator". This is one of your first glimpses at how each native platform expresses the same concept in its own unique way, even if the result is the same. Expo does our best to handle these differences for you and present you with a clean cross-platform API. Unfortunately we can't rename "simulator" to "emulator" or we would.
+<TerminalBlock cmd={['# Start and open the project on all devices', 'expo start --ios --android --web']} />
+
+> 🧐 Apple uses the word "simulator" for their iOS emulator and Google uses the word "emulator" &mdash; [learn more about why these names are different](https://stackoverflow.com/a/4544605/659988), if you are curious.
 
 ## Up next
 
-Now that you have installed `expo-cli` and Expo client, [let's create a new app and write some code](../../get-started/create-a-new-app/).
+Now that `expo-cli` and the Expo client are installed, [let's create a new app and write some code](../../get-started/create-a-new-app/).
