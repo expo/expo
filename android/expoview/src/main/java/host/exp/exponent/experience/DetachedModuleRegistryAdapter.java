@@ -50,7 +50,7 @@ public class DetachedModuleRegistryAdapter extends ExpoModuleRegistryAdapter {
     // Overriding expo-file-system FileSystemModule
     moduleRegistry.registerExportedModule(new ScopedFileSystemModule(scopedContext));
 
-    // `NotificationScheduler` needs to share `SharePreferences` object with a service. So we don't want to use scoped context.
+    // `NotificationScheduler` needs to share `SharedPreferences` object with the notifications services, we don't want to use scoped context.
     moduleRegistry.registerExportedModule(new NotificationScheduler(scopedContext.getBaseContext()));
 
     // Adding other modules (not universal) to module registry as consumers.
