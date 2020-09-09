@@ -1,6 +1,6 @@
 import { connectActionSheet } from '@expo/react-native-action-sheet';
 import React from 'react';
-import { Alert, TouchableOpacity, ActionSheetIOSOptions } from 'react-native';
+import { TouchableOpacity, ActionSheetIOSOptions } from 'react-native';
 
 import PrimaryButton from '../components/PrimaryButton';
 
