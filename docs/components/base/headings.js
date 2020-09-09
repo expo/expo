@@ -71,8 +71,8 @@ const STYLES_H4 = css`
   margin-bottom: 0.25rem;
 `;
 
-export const H4 = ({ children }) => (
-  <h4 {...attributes} className={STYLES_H4}>
+export const H4 = ({ children, className, ...rest }) => (
+  <h4 {...attributes} className={css([STYLES_H4, className])} {...rest}>
     {children}
   </h4>
 );

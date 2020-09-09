@@ -5,13 +5,10 @@ import * as Constants from '~/common/constants';
 import { CheckCircle } from '~/components/icons/CheckCircle';
 import { XCircle } from '~/components/icons/XCircle';
 import { PendingCircle } from '~/components/icons/PendingCircle';
+import { H4 } from '~/components/base/headings';
 
 const STYLES_TITLE = css`
-  font-family: ${Constants.fonts.demi};
-  font-weight: 400;
-  line-height: 1.625rem;
-  font-size: 1.1rem;
-  margin-bottom: 1 rem;
+  margin-bottom: 1rem;
 `;
 
 const STYLES_CELL = css`
@@ -66,9 +63,7 @@ export default class PlatformsSection extends React.Component {
   render() {
     return (
       <div>
-        <h4 data-heading="true" className={STYLES_TITLE}>
-          {this.props.title || 'Platform Compatibility'}
-        </h4>
+        <H4 className={STYLES_TITLE}>{this.props.title || 'Platform Compatibility'}</H4>
         <table>
           <thead>
             <tr>
