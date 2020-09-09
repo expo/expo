@@ -1,7 +1,5 @@
-const withCSS = require('@zeit/next-css');
 const { copySync, removeSync } = require('fs-extra');
 const { join } = require('path');
-const semver = require('semver');
 
 const { version } = require('./package.json');
 
@@ -12,7 +10,8 @@ const latest = join('pages', 'versions', 'latest/');
 removeSync(latest);
 copySync(vLatest, latest);
 
-module.exports = withCSS({
+module.exports = {
+  trailingSlash: true,
   // Rather than use `@zeit/next-mdx`, we replicate it
   pageExtensions: ['js', 'jsx', 'md', 'mdx'],
   webpack: (config, options) => {
@@ -27,8 +26,8 @@ module.exports = withCSS({
     config.module.rules.push({
       test: /.mdx?$/, // load both .md and .mdx files
       use: [
-        'thread-loader',
         babelMdxLoader,
+        'thread-loader',
         '@mdx-js/loader',
         join(__dirname, './common/md-loader'),
       ],
@@ -38,28 +37,4 @@ module.exports = withCSS({
     };
     return config;
   },
-  async exportPathMap(defaultPathMap, { dev, dir, outDir }) {
-    if (dev) {
-      return defaultPathMap;
-    }
-    copySync(join(dir, 'robots.txt'), join(outDir, 'robots.txt'));
-    return Object.assign(
-      ...Object.entries(defaultPathMap).map(([pathname, page]) => {
-        if (pathname.match(/\/v[1-9][^\/]*$/)) {
-          // ends in "/v<version>"
-          pathname += '/index.html'; // TODO: find out why we need to do this
-        }
-        if (pathname.match(/unversioned/)) {
-          return {};
-        } else {
-          // hide versions greater than the package.json version number
-          const versionMatch = pathname.match(/\/v(\d\d\.\d\.\d)\//);
-          if (versionMatch && versionMatch[1] && semver.gt(versionMatch[1], version)) {
-            return {};
-          }
-          return { [pathname]: page };
-        }
-      })
-    );
-  },
-});
+};

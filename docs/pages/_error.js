@@ -6,11 +6,6 @@ import { VERSIONS } from '~/common/versions';
 const REDIRECT_SUFFIX = '?redirected';
 
 export default class Error extends React.Component {
-  static getInitialProps({ res, err }) {
-    const statusCode = res ? res.statusCode : err ? err.statusCode : null;
-    return { statusCode };
-  }
-
   state = {
     notFound: false,
     redirectPath: null,
@@ -224,7 +219,14 @@ const REACT_NATIVE_PATH_PATTERN = `${VERSIONED_PATH_PATTERN}/react-native`;
 
 // Check if path is valid (matches /versions/some-valid-version-here/)
 function isVersionedPath(path) {
-  return !!path.match(new RegExp(VERSIONED_PATH_PATTERN));
+  const match = path.match(new RegExp(VERSIONED_PATH_PATTERN));
+  // Note, if the input is the base form (e.g. /versions/latest/), we need to return false.
+  // Without this if the redirectPath is set to the this base form, it tries to remove the versioned path.
+  // That breaks the redirect chain for `/api/` -> `/versions/latest/` -> `/`.
+  if (match && match[0] + '/' === path) {
+    return false;
+  }
+  return !!match;
 }
 
 // Replace an unsupported SDK version with latest
@@ -292,4 +294,7 @@ const RENAMED_PAGES = {
   // Additional redirects based on Sentry (04/28/2020)
   '/next-steps/installation/': '/get-started/installation/',
   '/guides/release-channels/': '/distribution/release-channels/',
+
+  // Replacement of the previous page-styled redirect
+  '/api/': '/versions/latest/',
 };

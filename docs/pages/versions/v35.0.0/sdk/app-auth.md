@@ -243,7 +243,7 @@ await AppAuth.revokeAsync(config, options);
 
 ### `AppAuth.OAuthRedirect`
 
-Redirect scheme used to assemble the `redirectUrl` prop. In standalone apps, this is either the `android.package` (for Android) or `ios.bundleIdentifier` (for iOS) value from your `app.json`. However, for apps running in the Expo Client, `AppAuth.OAuthRedirect` is `host.exp.exponent`. 
+Redirect scheme used to assemble the `redirectUrl` prop. In standalone apps, this is either the `android.package` (for Android) or `ios.bundleIdentifier` (for iOS) value from your `app.json`. However, for apps running in the Expo Client, `AppAuth.OAuthRedirect` is `host.exp.exponent`.
 
 ### `AppAuth.URLSchemes`
 
@@ -287,7 +287,7 @@ extends `OAuthBaseProps`, is used to create OAuth flows.
 | [issuer](http://openid.github.io/AppAuth-iOS/docs/latest/interface_o_i_d_service_discovery.html#a7bd40452bb3a0094f251934fd85a8fd6) | `string`                    | URL using the https scheme with no query or fragment component that the OP asserts as its Issuer Identifier |
 | serviceConfiguration                                                                                                               | `OAuthServiceConfiguration` | specifies how to connect to a particular OAuth provider                                                     |
 | clientSecret                                                                                                                       | `string | undefined`        | used to prove that identity of the client when exchaning an authorization code for an access token          |
-| [scopes](https://tools.ietf.org/html/rfc6749#section-3.3)                                                                          | `Array<string> | undefined` | a list of space-delimited, case-sensitive strings define the scope of the access requested                  |
+| [scopes](https://tools.ietf.org/html/rfc6749#section-3.3)                                                                          | `Array\<string\> | undefined` | a list of space-delimited, case-sensitive strings define the scope of the access requested                  |
 | redirectUrl                                                                                                                        | `string | undefined`        | The client's redirect URI. Default: `AppAuth.OAuthRedirect + ':/oauthredirect'`                             |
 | [additionalParameters](https://tools.ietf.org/html/rfc6749#section-3.1)                                                            | `OAuthParameters`           | Extra props passed to the OAuth server request                                                              |
 | canMakeInsecureRequests                                                                                                            | `boolean | undefined`       | **Android: Only** enables the use of HTTP requests                                                          |
