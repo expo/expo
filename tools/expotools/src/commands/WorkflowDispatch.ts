@@ -22,6 +22,13 @@ type CommandOptions = {
 // Object containing configs for custom workflows.
 // Custom workflows extends common workflows by providing specific inputs.
 const CUSTOM_WORKFLOWS = {
+  'ad-hoc-client-shell-app-ios-upload': {
+    name: 'Ad-hoc iOS Client Shell App (with Upload to S3)',
+    baseWorkflowSlug: 'ad-hoc-client-shell-app-ios',
+    inputs: {
+      upload: 'upload',
+    },
+  },
   'client-android-release': {
     name: 'Android Client Release',
     baseWorkflowSlug: 'client-android',
