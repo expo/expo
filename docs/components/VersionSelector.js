@@ -5,6 +5,7 @@ import * as Constants from '~/common/constants';
 import * as Utilities from '~/common/utilities';
 import { VERSIONS, LATEST_VERSION } from '~/common/versions';
 import ChevronDownIcon from '~/components/icons/ChevronDown';
+import { paragraph } from '~/components/base/paragraph';
 
 const STYLES_SELECT = css`
   position: relative;
@@ -24,6 +25,7 @@ const STYLES_SELECT = css`
 `;
 
 const STYLES_SELECT_TEXT = css`
+  ${paragraph}
   display: flex;
   align-items: center;
   flex: 1;

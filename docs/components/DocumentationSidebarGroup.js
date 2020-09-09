@@ -5,8 +5,11 @@ import * as React from 'react';
 import * as Constants from '~/common/constants';
 import stripVersionFromPath from '~/common/stripVersionFromPath';
 import ChevronDown from '~/components/icons/ChevronDown';
+import { paragraph } from '~/components/base/paragraph';
 
 const STYLES_TITLE = css`
+  ${paragraph}
+  font-size: 15px;
   display: flex;
   align-items: center;
   justify-content: space-between;

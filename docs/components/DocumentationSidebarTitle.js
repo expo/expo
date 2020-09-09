@@ -3,11 +3,14 @@ import NextLink from 'next/link';
 
 import * as React from 'react';
 import * as Constants from '~/common/constants';
+import { paragraph } from '~/components/base/paragraph';
 
 const STYLES_TITLE = css`
+  ${paragraph}
+  font-size: 15px;
   display: block;
   position: relative;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   text-decoration: none;
   border-bottom-color: #ccc;
   font-family: ${Constants.fontFamilies.demi};

@@ -4,6 +4,7 @@ import NextLink from 'next/link';
 import * as React from 'react';
 import * as Constants from '~/common/constants';
 import stripVersionFromPath from '~/common/stripVersionFromPath';
+import { paragraph } from '~/components/base/paragraph';
 
 const STYLES_LINK = css`
   display: block;
@@ -11,6 +12,8 @@ const STYLES_LINK = css`
 `;
 
 const STYLES_ACTIVE = css`
+  ${paragraph}
+  font-size: 15px;
   font-family: ${Constants.fontFamilies.demi};
   color: ${Constants.colors.expoLighter};
   position: relative;
@@ -26,9 +29,10 @@ const STYLES_ACTIVE = css`
 `;
 
 const STYLES_DEFAULT = css`
-  font-family: ${Constants.fontFamilies.book};
+  ${paragraph}
   color: ${Constants.colors.black80};
   transition: 200ms ease color;
+  font-size: 15px;
 
   :visited {
     color: ${Constants.colors.black60};
@@ -41,7 +45,7 @@ const STYLES_DEFAULT = css`
 
 const STYLES_ACTIVE_CONTAINER = css`
   display: flex;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   cursor: pointer;
 `;
 
@@ -54,7 +58,7 @@ const STYLES_ACTIVE_BULLET = css`
   border-radius: 4px;
   position: relative;
   left -12px;
-  top: 7px;
+  top: 6px;
 `;
 
 export default class DocumentationSidebarLink extends React.Component {
