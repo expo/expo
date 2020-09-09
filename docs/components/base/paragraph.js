@@ -61,7 +61,7 @@ const STYLES_BLOCKQUOTE = css`
   ${paragraph}
   padding: 16px;
   margin-bottom: 1.5rem;
-  border: 1px solid ${Constants.expoColors.gray[250]};
+  border-left: 4px solid ${Constants.expoColors.gray[250]};
   background: ${Constants.expoColors.gray[100]};
   border-radius: 4px;
 
