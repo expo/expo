@@ -53,12 +53,12 @@ jobs:
         run: fastlane ios create_expo_client_build
       - name: set tarball name
         id: tarball
-        run: echo "::set-output name=filename::ios-expo-client-${{ github.sha }}"
+        run: echo "::set-output name=filename::ios-expo-client-${{ github.sha }}.tar.gz"
       - name: Package tarball
         if: ${{ github.event_name == 'workflow_dispatch' }}
         run: |
           tar \
-            -zcf "/tmp/${{ steps.tarball.outputs.filename }}" \
+            -zcf ${{ steps.tarball.outputs.filename }} \
             expo-client-build/Exponent.xcarchive \
             ios
       - run: brew install awscli
@@ -69,7 +69,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          aws s3 cp --acl public-read "/tmp/${{ steps.tarball.outputs.filename }}" s3://exp-artifacts
+          aws s3 cp --acl public-read ${{ steps.tarball.outputs.filename }} s3://exp-artifacts
           echo "Release tarball uploaded to s3://exp-artifacts/${{ steps.tarball.outputs.filename }}"
           echo "You can deploy this by updating https://github.com/expo/turtle/tree/master/shellTarballs/ios/client"
           echo "Then follow the deployment instructions: https://github.com/expo/turtle-deploy"

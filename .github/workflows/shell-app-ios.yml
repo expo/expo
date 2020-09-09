@@ -59,13 +59,13 @@ jobs:
       - run: brew install awscli
       - name: set tarball name
         id: tarball
-        run: echo "::set-output name=filename::ios-shell-builder-sdk-latest-${{ github.sha }}"
+        run: echo "::set-output name=filename::ios-shell-builder-sdk-latest-${{ github.sha }}.tar.gz"
       - name: Package release tarball
         if: ${{ github.event.inputs.releaseShellIOS == 'release-shell-ios' }}
         run: |
           mv ../shellAppBase-builds .
           tar \
-            -zcf "/tmp/${{ steps.tarball.outputs.filename }}" \
+            -zcf ${{ steps.tarball.outputs.filename }} \
             package.json \
             exponent-view-template \
             shellAppBase-builds \
@@ -78,7 +78,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          aws s3 cp --acl public-read "/tmp/${{ steps.tarball.outputs.filename }}" s3://exp-artifacts
+          aws s3 cp --acl public-read ${{ steps.tarball.outputs.filename }} s3://exp-artifacts
           echo "Release tarball uploaded to s3://exp-artifacts/${{ steps.tarball.outputs.filename }}"
           echo "You can deploy this by updating or creating a new file in https://github.com/expo/turtle/tree/master/shellTarballs/ios"
           echo "Then follow the deployment instructions: https://github.com/expo/turtle-deploy"
