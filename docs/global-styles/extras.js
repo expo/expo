@@ -14,10 +14,6 @@ export const globalExtras = `
     outline: none;
   }
 
-  blockquote {
-    background: ${Constants.expoColors.gray[100]};
-  }
-
   details {
     margin-bottom: 20px;
     padding-top: 20px;

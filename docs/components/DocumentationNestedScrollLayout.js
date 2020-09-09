@@ -22,12 +22,12 @@ injectGlobal`
 
       /* Track */
       ::-webkit-scrollbar-track {
-        background: ${Constants.expoColors.gray[100]};
+        background: ${Constants.expoColors.background};
       }
 
       /* Handle */
       ::-webkit-scrollbar-thumb {
-        background: ${Constants.expoColors.gray[250]};
+        background: ${Constants.expoColors.gray[200]};
         border-radius: 10px;
       }
 
@@ -106,6 +106,8 @@ const STYLES_LEFT = css`
   height: 100%;
   overflow: hidden;
   transition: 200ms ease max-width;
+  background: ${Constants.expoColors.background};
+  border-right: 1px solid ${Constants.expoColors.gray[250]};
 
   @media screen and (max-width: 1200px) {
     max-width: 280px;
@@ -146,13 +148,13 @@ const STYLES_SCROLL_CONTAINER = css`
 
   /* Track */
   ::-webkit-scrollbar-track {
-    background: ${Constants.expoColors.gray[100]};
+    background: ${Constants.expoColors.background};
     cursor: pointer;
   }
 
   /* Handle */
   ::-webkit-scrollbar-thumb {
-    background: ${Constants.expoColors.gray[250]};
+    background: ${Constants.expoColors.gray[200]};
     border-radius: 10px;
   }
 

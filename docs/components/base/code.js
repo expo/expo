@@ -37,19 +37,17 @@ const STYLES_CODE_BLOCK = css`
 const STYLES_INLINE_CODE = css`
   color: ${Constants.expoColors.gray[900]};
   font-family: ${Constants.fontFamilies.mono};
-  font-size: 0.9rem;
+  font-size: 13px;
   white-space: pre-wrap;
   display: inline;
-  padding: 1px 4px;
-  margin: 2px;
-  position: relative;
-  top: -1px;
+  padding: 2px 4px;
   line-height: 100%;
   max-width: 100%;
 
   word-wrap: break-word;
-  background-color: ${Constants.expoColors.gray[200]};
-  border-radius: 2px;
+  background-color: ${Constants.expoColors.gray[100]};
+  border: 1px solid ${Constants.expoColors.gray[250]};
+  border-radius: 4px;
   vertical-align: middle;
   overflow-x: scroll;
 

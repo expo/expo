@@ -71,7 +71,7 @@ const STYLES_MOBILE_NAV = css`
   display: none;
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-    display: block;
+    display: flex;
     border-bottom: 1px solid ${Constants.expoColors.gray[250]};
   }
 `;
