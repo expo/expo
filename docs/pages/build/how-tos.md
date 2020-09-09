@@ -30,4 +30,4 @@ This document outlines how to configure EAS Build for some common scenarios, suc
 }
 ```
 
-If you are not using `credentials.json` for Android/iOS credentials, it is fine for `secretEnvs` to be the only entry in the file. Add `credentials.json` to `.gitignore` if it's not there already.
+If you are not using `credentials.json` for Android/iOS credentials, it is fine for `experimental.npmToken` to be the only entry in the file. Add `credentials.json` to `.gitignore` if it's not there already.
