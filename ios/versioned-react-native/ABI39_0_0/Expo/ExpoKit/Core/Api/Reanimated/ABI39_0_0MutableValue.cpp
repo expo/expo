@@ -8,8 +8,10 @@ namespace ABI39_0_0reanimated {
 void MutableValue::setValue(jsi::Runtime &rt, const jsi::Value &newValue) {
   std::lock_guard<std::mutex> lock(readWriteMutex);
   value = ShareableValue::adapt(rt, newValue, module);
-  auto notifyListeners = [this] () {
-    for (auto listener : listeners) {
+  
+  std::shared_ptr<MutableValue> thiz = shared_from_this();
+  auto notifyListeners = [thiz] () {
+    for (auto listener : thiz->listeners) {
       listener.second();
     }
   };
@@ -87,18 +89,18 @@ std::vector<jsi::PropNameID> MutableValue::getPropertyNames(jsi::Runtime &rt) {
 }
 
 MutableValue::MutableValue(jsi::Runtime &rt, const jsi::Value &initial, NativeReanimatedModule *module):
-module(module), value(ShareableValue::adapt(rt, initial, module)) {}
+module(module), value(ShareableValue::adapt(rt, initial, module)) {
+}
 
-unsigned long int MutableValue::addListener(std::function<void ()> listener) {
-  unsigned long id = listeners.size() + 1;
-  listeners.push_back(std::make_pair(id, listener));
+unsigned long int MutableValue::addListener(unsigned long id, std::function<void ()> listener) {
+  listeners[id] = listener;
   return id;
 }
 
 void MutableValue::removeListener(unsigned long listenerId) {
-  listeners.erase(std::remove_if(listeners.begin(), listeners.end(), [=](const std::pair<unsigned long, std::function<void()>>& pair) {
-    return pair.first == listenerId;
-  }), listeners.end());
+  if (listeners.count(listenerId) > 0) {
+    listeners.erase(listenerId);
+  }
 }
 
 

@@ -5,6 +5,7 @@
 #include <mutex>
 #include <condition_variable>
 #include <functional>
+#include <ReactCommon/CallInvoker.h>
 
 namespace reanimated
 {
@@ -72,17 +73,16 @@ class Queue
   std::condition_variable cond_;
 };
 
-
 class Scheduler {
   public:
+    void scheduleOnJS(std::function<void()> job);
+    void setJSCallInvoker(std::shared_ptr<facebook::react::CallInvoker> jsCallInvoker);
     virtual void scheduleOnUI(std::function<void()> job);
-    virtual void scheduleOnJS(std::function<void()> job);
     virtual void triggerUI();
-    virtual void triggerJS();
     virtual ~Scheduler();
-  //protected:
+  protected:
     Queue<std::function<void()>> uiJobs;
-    Queue<std::function<void()>> jsJobs;
+    std::shared_ptr<facebook::react::CallInvoker> jsCallInvoker_;
 };
 
 }

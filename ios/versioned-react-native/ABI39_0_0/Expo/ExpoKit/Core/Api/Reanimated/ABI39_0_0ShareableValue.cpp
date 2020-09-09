@@ -75,6 +75,9 @@ void ShareableValue::adapt(jsi::Runtime &rt, const jsi::Value &value, ValueType 
       type = ValueType::ObjectType;
       frozenObject = std::make_shared<FrozenObject>(rt, object, module);
     }
+  } else if (value.isSymbol()) {
+    type = ValueType::StringType;
+    stringValue = value.asSymbol(rt).toString(rt);
   } else {
     throw "Invalid value type";
   }

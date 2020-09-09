@@ -20,13 +20,11 @@ class AndroidScheduler : public jni::HybridClass<AndroidScheduler> {
    std::shared_ptr<Scheduler> getScheduler() { return scheduler_; }
 
    void scheduleOnUI();
-   void scheduleOnJS();
 
   private:
    friend HybridBase;
 
    void triggerUI();
-   void triggerJS();
 
    jni::global_ref<AndroidScheduler::javaobject> javaPart_;
    std::shared_ptr<Scheduler> scheduler_;

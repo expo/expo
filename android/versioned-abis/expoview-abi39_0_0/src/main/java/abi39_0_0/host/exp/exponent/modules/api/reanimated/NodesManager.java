@@ -120,7 +120,6 @@ public class NodesManager implements EventDispatcherListener {
 
   public void initWithContext(ReactApplicationContext reactApplicationContext) {
     mNativeProxy = new NativeProxy(reactApplicationContext);
-    mNativeProxy.prepare();
   }
 
   private final class NativeUpdateOperation {

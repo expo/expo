@@ -16,6 +16,7 @@ public class NativeMethodsHelper {
     if (rootView == null || view == null) {
       float result[] = new float [6];
       result[0] = -1234567;
+      return result;
     }
 
     int buffer[] = new int [4];
