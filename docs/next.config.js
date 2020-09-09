@@ -27,8 +27,8 @@ module.exports = withCSS({
     config.module.rules.push({
       test: /.mdx?$/, // load both .md and .mdx files
       use: [
-        babelMdxLoader,
         'thread-loader',
+        babelMdxLoader,
         '@mdx-js/loader',
         join(__dirname, './common/md-loader'),
       ],
