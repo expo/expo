@@ -25,7 +25,8 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 12px; display: block; list-style-type: circle; overflow-x: visible;"
           >
             <h4
-              class="css-1ax30u0"
+              class="css-1lekshe"
+              data-components-heading="true"
               data-heading="true"
             >
               <div
@@ -110,7 +111,8 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 12px; display: block; list-style-type: circle; overflow-x: visible;"
           >
             <h4
-              class="css-1ax30u0"
+              class="css-1lekshe"
+              data-components-heading="true"
               data-heading="true"
             >
               <div
@@ -454,7 +456,8 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 12px; display: block; list-style-type: circle; overflow-x: visible;"
           >
             <h4
-              class="css-1ax30u0"
+              class="css-1lekshe"
+              data-components-heading="true"
               data-heading="true"
             >
               <div
