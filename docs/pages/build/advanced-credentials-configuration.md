@@ -27,8 +27,8 @@ The `credentials.json` file should be located at the root of your project, next 
       "password": "iex3shi9Lohl"
     }
   },
-  "secretEnvs": {
-    "EXAMPLE_ENV": "VALUE"
+  "experimental": {
+    "npmToken": "VALUE"
   }
 }
 ```
