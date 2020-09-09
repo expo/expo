@@ -1,7 +1,9 @@
 import styled, { keyframes, css } from 'react-emotion';
+import emojiRegex from 'emoji-regex';
 
 import * as React from 'react';
 import * as Constants from '~/common/constants';
+import { Info } from '~/components/icons/Info';
 
 import { paragraph } from './typography';
 
@@ -59,7 +61,10 @@ export const PDIV = ({ children }) => {
 
 const STYLES_BLOCKQUOTE = css`
   ${paragraph}
-  padding: 16px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-gap: 12px;
+  padding: 12px;
   margin-bottom: 1.5rem;
   border-left: 4px solid ${Constants.expoColors.gray[250]};
   background: ${Constants.expoColors.gray[100]};
@@ -72,14 +77,69 @@ const STYLES_BLOCKQUOTE = css`
   code {
     background-color: ${Constants.expoColors.gray[200]};
   }
-
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-    margin-left: 0px;
-  }
 `;
 
-export const Quote = ({ children }) => (
-  <blockquote {...attributes} className={STYLES_BLOCKQUOTE}>
-    {children}
-  </blockquote>
-);
+function firstChild(children) {
+  if (Array.isArray(children)) {
+    return children[0];
+  }
+
+  return children;
+}
+
+function captureEmoji(children) {
+  let child = firstChild(children);
+
+  if (typeof child === 'string') {
+    const emojiCapture = child.match(emojiRegex);
+
+    if (emojiCapture && emojiCapture.length) {
+      return emojiCapture[0];
+    }
+  }
+}
+
+function removeEmoji(emoji, children) {
+  const child = firstChild(children) || '';
+
+  const modifiedChild = child.replace(emoji, '');
+
+  if (Array.isArray(children)) {
+    return [modifiedChild, ...children.slice(1)];
+  } else {
+    return modifiedChild;
+  }
+}
+
+export const Quote = ({ children }) => {
+  let icon = (
+    <div style={{ marginTop: 2 }}>
+      <Info size={16} />
+    </div>
+  );
+
+  const _children = React.Children.map(children, children => {
+    const emoji = captureEmoji(children.props.children);
+
+    if (emoji) {
+      icon = emoji;
+
+      return {
+        ...children,
+        props: {
+          ...children.props,
+          children: removeEmoji(emoji, children.props.children),
+        },
+      };
+    }
+
+    return children;
+  });
+
+  return (
+    <blockquote {...attributes} className={STYLES_BLOCKQUOTE}>
+      <div>{icon}</div>
+      <div>{_children}</div>
+    </blockquote>
+  );
+};

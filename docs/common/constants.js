@@ -141,9 +141,9 @@ export const fonts = {
 const fontStack = `system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji'`;
 
 export const fontFamilies = {
-  bold: `${fonts.bold}, ${fontStack}`,
-  book: `${fonts.book}, ${fontStack}`,
-  demi: `${fonts.demi}, ${fontStack}`,
+  bold: `${fonts.bold}`,
+  book: `${fonts.book}`,
+  demi: `${fonts.demi}`,
   mono: `${fonts.mono}, Monaco,Consolas,'Liberation Mono','Courier New',monospace, 'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji'`,
 };
 
