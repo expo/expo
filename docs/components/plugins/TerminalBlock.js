@@ -26,8 +26,9 @@ const STYLES_LINE = css`
 const STYLES_COMMENT = css`
   user-select: none;
   white-space: nowrap;
-  opacity: 0.4;
+  opacity: 0.6;
   color: ${Constants.colors.codeWhite};
+  line-height: 150%;
 `;
 
 export function ShellComment({ children }) {

@@ -18,7 +18,7 @@ const STYLES_SIDEBAR = css`
 `;
 
 const STYLES_SECTION_CATEGORY = css`
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 `;
 
 function shouldSkipTitle(info, parentGroup) {
