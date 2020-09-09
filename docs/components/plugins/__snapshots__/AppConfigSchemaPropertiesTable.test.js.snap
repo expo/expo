@@ -68,7 +68,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   class="permalink-child"
                 >
                   <code
-                    class="css-19u328w inline"
+                    class="css-16fp3b3 inline"
                   >
                     name
                   </code>
@@ -81,11 +81,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1arns64"
         >
           <div
-            class="css-y9omyq "
+            class="css-wwcozn "
             data-text="true"
           >
             <strong
-              class="css-107msjx"
+              class="css-ynl9kf"
             >
               (string)
             </strong>
@@ -94,7 +94,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-1njguyv"
             >
               <summary
-                class="css-1rogyjf"
+                class="css-t3ygxe"
               >
                 Bare Workflow
               </summary>
@@ -153,7 +153,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   class="permalink-child"
                 >
                   <code
-                    class="css-19u328w inline"
+                    class="css-16fp3b3 inline"
                   >
                     androidNavigationBar
                   </code>
@@ -166,11 +166,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1arns64"
         >
           <div
-            class="css-y9omyq "
+            class="css-wwcozn "
             data-text="true"
           >
             <strong
-              class="css-107msjx"
+              class="css-ynl9kf"
             >
               (object)
             </strong>
@@ -179,7 +179,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-1njguyv"
             >
               <summary
-                class="css-1rogyjf"
+                class="css-t3ygxe"
               >
                 ExpoKit
               </summary>
@@ -189,7 +189,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-1njguyv"
             >
               <summary
-                class="css-1rogyjf"
+                class="css-t3ygxe"
               >
                 Bare Workflow
               </summary>
@@ -205,7 +205,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 44px; display: list-item; list-style-type: default; overflow-x: visible;"
           >
             <div
-              class="css-y9omyq "
+              class="css-wwcozn "
               data-text="true"
             >
               <div
@@ -249,7 +249,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   class="permalink-child"
                 >
                   <code
-                    class="css-19u328w inline"
+                    class="css-16fp3b3 inline"
                   >
                     visible
                   </code>
@@ -262,11 +262,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1arns64"
         >
           <div
-            class="css-y9omyq "
+            class="css-wwcozn "
             data-text="true"
           >
             <strong
-              class="css-107msjx"
+              class="css-ynl9kf"
             >
               (enum)
             </strong>
@@ -275,7 +275,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-1njguyv"
             >
               <summary
-                class="css-1rogyjf"
+                class="css-t3ygxe"
               >
                 ExpoKit
               </summary>
@@ -291,7 +291,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 76px; display: list-item; list-style-type: circle; overflow-x: visible;"
           >
             <div
-              class="css-y9omyq "
+              class="css-wwcozn "
               data-text="true"
             >
               <div
@@ -335,7 +335,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   class="permalink-child"
                 >
                   <code
-                    class="css-19u328w inline"
+                    class="css-16fp3b3 inline"
                   >
                     always
                   </code>
@@ -348,11 +348,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1arns64"
         >
           <div
-            class="css-y9omyq "
+            class="css-wwcozn "
             data-text="true"
           >
             <strong
-              class="css-107msjx"
+              class="css-ynl9kf"
             >
               (boolean)
             </strong>
@@ -367,7 +367,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 44px; display: list-item; list-style-type: default; overflow-x: visible;"
           >
             <div
-              class="css-y9omyq "
+              class="css-wwcozn "
               data-text="true"
             >
               <div
@@ -411,7 +411,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   class="permalink-child"
                 >
                   <code
-                    class="css-19u328w inline"
+                    class="css-16fp3b3 inline"
                   >
                     backgroundColor
                   </code>
@@ -424,23 +424,23 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1arns64"
         >
           <div
-            class="css-y9omyq "
+            class="css-wwcozn "
             data-text="true"
           >
             <strong
-              class="css-107msjx"
+              class="css-ynl9kf"
             >
               (string)
             </strong>
              - Specifies the background color of the navigation bar. 
           </div>
           <div
-            class="css-y9omyq "
+            class="css-wwcozn "
             data-text="true"
           >
             6 character long hex color string, eg: 
             <code
-              class="css-19u328w inline"
+              class="css-16fp3b3 inline"
             >
               '#000000'
             </code>
@@ -497,7 +497,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   class="permalink-child"
                 >
                   <code
-                    class="css-19u328w inline"
+                    class="css-16fp3b3 inline"
                   >
                     intentFilters
                   </code>
@@ -510,11 +510,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1arns64"
         >
           <div
-            class="css-y9omyq "
+            class="css-wwcozn "
             data-text="true"
           >
             <strong
-              class="css-107msjx"
+              class="css-ynl9kf"
             >
               (array)
             </strong>
@@ -523,7 +523,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-1njguyv"
             >
               <summary
-                class="css-1rogyjf"
+                class="css-t3ygxe"
               >
                 Bare Workflow
               </summary>
@@ -531,11 +531,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </details>
           </div>
           <blockquote
-            class="css-k0atcn"
+            class="css-10x6hiz"
             data-text="true"
           >
             <div
-              class="css-y9omyq "
+              class="css-wwcozn "
               data-text="true"
             >
                
@@ -555,7 +555,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 44px; display: list-item; list-style-type: default; overflow-x: visible;"
           >
             <div
-              class="css-y9omyq "
+              class="css-wwcozn "
               data-text="true"
             >
               <div
@@ -599,7 +599,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   class="permalink-child"
                 >
                   <code
-                    class="css-19u328w inline"
+                    class="css-16fp3b3 inline"
                   >
                     autoVerify
                   </code>
@@ -612,11 +612,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1arns64"
         >
           <div
-            class="css-y9omyq "
+            class="css-wwcozn "
             data-text="true"
           >
             <strong
-              class="css-107msjx"
+              class="css-ynl9kf"
             >
               (boolean)
             </strong>
@@ -631,7 +631,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 44px; display: list-item; list-style-type: default; overflow-x: visible;"
           >
             <div
-              class="css-y9omyq "
+              class="css-wwcozn "
               data-text="true"
             >
               <div
@@ -675,7 +675,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   class="permalink-child"
                 >
                   <code
-                    class="css-19u328w inline"
+                    class="css-16fp3b3 inline"
                   >
                     data
                   </code>
@@ -688,11 +688,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1arns64"
         >
           <div
-            class="css-y9omyq "
+            class="css-wwcozn "
             data-text="true"
           >
             <strong
-              class="css-107msjx"
+              class="css-ynl9kf"
             >
               (array || object)
             </strong>
@@ -706,7 +706,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 76px; display: list-item; list-style-type: circle; overflow-x: visible;"
           >
             <div
-              class="css-y9omyq "
+              class="css-wwcozn "
               data-text="true"
             >
               <div
@@ -750,7 +750,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   class="permalink-child"
                 >
                   <code
-                    class="css-19u328w inline"
+                    class="css-16fp3b3 inline"
                   >
                     host
                   </code>
@@ -763,11 +763,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1arns64"
         >
           <div
-            class="css-y9omyq "
+            class="css-wwcozn "
             data-text="true"
           >
             <strong
-              class="css-107msjx"
+              class="css-ynl9kf"
             >
               (string)
             </strong>
