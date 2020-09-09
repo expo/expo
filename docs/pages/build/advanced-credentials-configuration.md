@@ -26,6 +26,9 @@ The `credentials.json` file should be located at the root of your project, next 
       "path": "ios/certs/dist-cert.p12",
       "password": "iex3shi9Lohl"
     }
+  },
+  "secretEnvs": {
+    "EXAMPLE_ENV": "VALUE"
   }
 }
 ```
