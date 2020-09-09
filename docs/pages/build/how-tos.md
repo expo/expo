@@ -21,11 +21,11 @@ This document outlines how to configure EAS Build for some common scenarios, suc
 ## How to use private package repositories
 
 - Configure your project in a way that works with `yarn` and relies on the `NPM_TOKEN` env to authenticate with private repositories
-- add `NPM_TOKEN` env to `secretEnvs` in `credentials.json`
+- add `experimental.npmToken` in `credentials.json`
 ```json
 {
-  "secretEnvs": {
-    "NPM_TOKEN": "example npm token"
+  "experimental": {
+    "npmToken": "example npm token"
   }
 }
 ```

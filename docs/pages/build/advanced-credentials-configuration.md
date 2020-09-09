@@ -201,10 +201,6 @@ Example:
 }
 ```
 
-## User-definable Environment Variables (`secretEnvs`)
-
-Values specified in `credentials.json` under `secretEnvs` will be passed to worker and set during entire build process. Selecting `remote/local` mode for build credentials does not affect this behaviour.
-
 ## Running Builds on CI
 
 The concept of the `credentials.json` file facilitates the process of building your React Native project on CI. The example below shows one of the many ways of automating the release process.
