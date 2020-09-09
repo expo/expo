@@ -52,6 +52,7 @@
     "prettier": "^1.18.2",
     "puppeteer": "^3.3.0",
     "rimraf": "^3.0.2",
-    "semver": "^7.3.2"
+    "semver": "^7.3.2",
+    "thread-loader": "^2.1.3"
   }
 }
