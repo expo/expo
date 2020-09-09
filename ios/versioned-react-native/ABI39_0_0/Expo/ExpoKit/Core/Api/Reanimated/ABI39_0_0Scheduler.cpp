@@ -8,7 +8,7 @@ void Scheduler::scheduleOnUI(std::function<void()> job) {
 }
 
 void Scheduler::scheduleOnJS(std::function<void()> job) {
-  jsJobs.push(std::move(job));
+  jsCallInvoker_->invokeAsync(std::move(job));
 }
 
 void Scheduler::triggerUI() {
@@ -16,9 +16,8 @@ void Scheduler::triggerUI() {
   job();
 }
 
-void Scheduler::triggerJS() {
-  auto job = jsJobs.pop();
-  job();
+void Scheduler::setJSCallInvoker(std::shared_ptr<ABI39_0_0facebook::ABI39_0_0React::CallInvoker> jsCallInvoker) {
+  jsCallInvoker_ = jsCallInvoker;
 }
 
 Scheduler::~Scheduler() {}
