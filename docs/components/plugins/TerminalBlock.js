@@ -26,7 +26,9 @@ const STYLES_LINE = css`
 const STYLES_COMMENT = css`
   user-select: none;
   white-space: nowrap;
+  font-family: ${Constants.fontFamilies.mono};
   opacity: 0.6;
+  font-size: 13px;
   color: ${Constants.colors.codeWhite};
   line-height: 150%;
 `;
