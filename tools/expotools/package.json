@@ -58,7 +58,7 @@
     "globby": "^7.1.1",
     "hash-files": "^1.1.1",
     "hotel": "^0.8.7",
-    "http-proxy": "^1.16.2",
+    "http-proxy": "^1.18.1",
     "indent-string": "^3.2.0",
     "inquirer": "^7.1.0",
     "ip": "^1.1.5",
