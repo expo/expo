@@ -12,6 +12,7 @@ import org.unimodules.core.interfaces.RegistryLifecycleListener;
 import java.util.List;
 import java.util.Map;
 
+import expo.modules.notifications.notifications.scheduling.NotificationScheduler;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.utils.ScopedContext;
 import versioned.host.exp.exponent.modules.universal.ConstantsBinding;
@@ -48,6 +49,9 @@ public class DetachedModuleRegistryAdapter extends ExpoModuleRegistryAdapter {
 
     // Overriding expo-file-system FileSystemModule
     moduleRegistry.registerExportedModule(new ScopedFileSystemModule(scopedContext));
+
+    // `NotificationScheduler` needs to share `SharePreferences` object with a service. So we don't want to use scoped context.
+    moduleRegistry.registerExportedModule(new NotificationScheduler(scopedContext.getBaseContext()));
 
     // Adding other modules (not universal) to module registry as consumers.
     // It allows these modules to refer to universal modules.
