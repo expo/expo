@@ -25,7 +25,12 @@ module.exports = {
     };
     config.module.rules.push({
       test: /.mdx?$/, // load both .md and .mdx files
-      use: [babelMdxLoader, '@mdx-js/loader', join(__dirname, './common/md-loader')],
+      use: [
+        babelMdxLoader,
+        'thread-loader',
+        '@mdx-js/loader',
+        join(__dirname, './common/md-loader'),
+      ],
     });
     config.node = {
       fs: 'empty',
