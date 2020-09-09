@@ -163,7 +163,8 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
   } else {
     items[@"dev-remote-debug"] =  @{
       @"label": @"Remote Debugger Unavailable",
-      @"isEnabled": @NO
+      @"isEnabled": @NO,
+      @"detail": RCTTurboModuleEnabled() ? @"Remote debugging is unavailable while Turbo Modules are enabled. To debug remotely, please set `turboModules` to false in app.json." : [NSNull null]
     };
   }
 
