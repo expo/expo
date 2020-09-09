@@ -14,6 +14,8 @@ const STYLES_PROMPT = css`
 
 const STYLES_LINE = css`
   white-space: nowrap;
+  font-family: ${Constants.fontFamilies.mono};
+  font-size: 13px;
   color: ${Constants.colors.codeWhite};
   ::before {
     content: '$ ';

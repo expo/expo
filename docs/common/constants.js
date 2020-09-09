@@ -134,16 +134,17 @@ export const fonts = {
   bold: 'expo-brand-bold',
   book: 'expo-brand-book',
   demi: 'expo-brand-demi',
-  light: 'expo-brand-light',
   mono: 'expo-brand-mono',
 };
 
+const fontStack =
+  'system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji';
+
 export const fontFamilies = {
-  bold: `${fonts.bold}, sans-serif`,
-  book: `${fonts.book}, sans-serif`,
-  demi: `${fonts.demi}, sans-serif`,
-  light: `${fonts.light}, sans-serif`,
-  mono: `${fonts.mono}, monospace`,
+  bold: `${fonts.bold}, ${fontStack}`,
+  book: `${fonts.book}, ${fontStack}`,
+  demi: `${fonts.demi}, ${fontStack}`,
+  mono: `${fonts.mono}, Monaco,Consolas,Liberation Mono,Courier New,monospace`,
 };
 
 export const breakpoints = {
