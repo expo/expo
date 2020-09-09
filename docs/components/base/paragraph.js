@@ -64,7 +64,6 @@ const STYLES_BLOCKQUOTE = css`
   border-left: 4px solid ${Constants.expoColors.gray[250]};
   background: ${Constants.expoColors.gray[100]};
   border-radius: 4px;
-  margin-left: -16px;
 
   div {
     margin: 0;

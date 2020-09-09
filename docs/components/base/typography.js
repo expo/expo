@@ -4,7 +4,7 @@ import * as Constants from '~/common/constants';
 export const h1 = css`
   font-family: ${Constants.fonts.bold};
   color: ${Constants.colors.black90};
-  font-size: 52px;
+  font-size: 48px;
   line-height: 120%;
   letter-spacing: -0.022em;
   font-weight: 500;
@@ -13,7 +13,7 @@ export const h1 = css`
 export const h2 = css`
   font-family: ${Constants.fonts.demi};
   color: ${Constants.colors.black90};
-  font-size: 32px;
+  font-size: 30px;
   line-height: 130%;
   letter-spacing: -0.021em;
   font-weight: 500;
