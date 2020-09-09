@@ -163,7 +163,8 @@ ABI39_0_0RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *ABI39_0_0EXGetScop
   } else {
     items[@"dev-remote-debug"] =  @{
       @"label": @"Remote Debugger Unavailable",
-      @"isEnabled": @NO
+      @"isEnabled": @NO,
+      @"detail": ABI39_0_0RCTTurboModuleEnabled() ? @"Remote debugging is unavailable while Turbo Modules are enabled. To debug remotely, please set `turboModules` to false in app.json." : [NSNull null]
     };
   }
 
