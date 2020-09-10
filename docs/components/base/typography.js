@@ -29,11 +29,11 @@ export const h3 = css`
 `;
 
 export const h4 = css`
-  font-family: ${Constants.fonts.demi};
+  font-family: ${Constants.fonts.bold};
   color: ${Constants.colors.black90};
-  font-size: 22px;
+  font-size: 18px;
   line-height: 140%;
-  letter-spacing: -0.018em;
+  letter-spacing: -0.01em;
   font-weight: 500;
 `;
 
