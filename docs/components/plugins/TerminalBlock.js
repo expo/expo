@@ -18,6 +18,7 @@ const STYLES_LINE = css`
   font-family: ${Constants.fontFamilies.mono};
   font-size: 13px;
   color: ${Constants.colors.codeWhite};
+  line-height: 160%;
   ::before {
     content: '$ ';
     color: ${Constants.colors.lila};
