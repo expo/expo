@@ -22,7 +22,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <td>
           <div
             data-testid="\`name\`"
-            style="margin-left: 12px; display: block; list-style-type: circle; overflow-x: visible;"
+            style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
           >
             <div
               class="css-12onb79 "
@@ -70,7 +70,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <td>
           <div
             data-testid="\`androidNavigationBar\`"
-            style="margin-left: 12px; display: block; list-style-type: circle; overflow-x: visible;"
+            style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
           >
             <div
               class="css-12onb79 "
@@ -132,7 +132,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <td>
           <div
             data-testid="<subpropertyAnchor><inlineCode>visible</inlineCode></subpropertyAnchor>"
-            style="margin-left: 44px; display: list-item; list-style-type: default; overflow-x: visible;"
+            style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
           >
             <div
               class="css-12onb79 "
@@ -222,7 +222,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <td>
           <div
             data-testid="<subpropertyAnchor><inlineCode>always</inlineCode></subpropertyAnchor>"
-            style="margin-left: 76px; display: list-item; list-style-type: circle; overflow-x: visible;"
+            style="margin-left: 64px; display: list-item; list-style-type: circle; overflow-x: visible;"
           >
             <div
               class="css-12onb79 "
@@ -298,7 +298,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <td>
           <div
             data-testid="<subpropertyAnchor><inlineCode>backgroundColor</inlineCode></subpropertyAnchor>"
-            style="margin-left: 44px; display: list-item; list-style-type: default; overflow-x: visible;"
+            style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
           >
             <div
               class="css-12onb79 "
@@ -385,7 +385,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <td>
           <div
             data-testid="\`intentFilters\`"
-            style="margin-left: 12px; display: block; list-style-type: circle; overflow-x: visible;"
+            style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
           >
             <div
               class="css-12onb79 "
@@ -470,7 +470,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <td>
           <div
             data-testid="<subpropertyAnchor><inlineCode>autoVerify</inlineCode></subpropertyAnchor>"
-            style="margin-left: 44px; display: list-item; list-style-type: default; overflow-x: visible;"
+            style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
           >
             <div
               class="css-12onb79 "
@@ -546,7 +546,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <td>
           <div
             data-testid="<subpropertyAnchor><inlineCode>data</inlineCode></subpropertyAnchor>"
-            style="margin-left: 44px; display: list-item; list-style-type: default; overflow-x: visible;"
+            style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
           >
             <div
               class="css-12onb79 "
@@ -621,7 +621,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <td>
           <div
             data-testid="<subpropertyAnchor><inlineCode>host</inlineCode></subpropertyAnchor>"
-            style="margin-left: 76px; display: list-item; list-style-type: circle; overflow-x: visible;"
+            style="margin-left: 64px; display: list-item; list-style-type: circle; overflow-x: visible;"
           >
             <div
               class="css-12onb79 "
