@@ -13,7 +13,7 @@ import EXDevMenu
 #endif
 
 @UIApplicationMain
-class AppDelegate: UMAppDelegateWrapper, DevMenuDelegateProtocol {
+class AppDelegate: UMAppDelegateWrapper {
   var moduleRegistryAdapter: UMModuleRegistryAdapter!
   var bridge: RCTBridge?
   
@@ -30,12 +30,12 @@ class AppDelegate: UMAppDelegateWrapper, DevMenuDelegateProtocol {
       window?.rootViewController = rootViewController
       window?.makeKeyAndVisible()
       self.bridge = bridge
+      
+      #if canImport(EXDevMenu)
+      DevMenuManager.configure(withBridge: bridge)
+      #endif
     }
     
-    #if canImport(EXDevMenu)
-    DevMenuManager.shared.delegate = self
-    #endif
-
     super.application(application, didFinishLaunchingWithOptions: launchOptions)
     
     return true
@@ -49,12 +49,6 @@ class AppDelegate: UMAppDelegateWrapper, DevMenuDelegateProtocol {
   
   override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
     return RCTLinkingManager.application(app, open: url, options: options)
-  }
-
-  // MARK: DevMenuDelegateProtocol
-
-  func appBridge(forDevMenuManager manager: DevMenuManagerProtocol) -> AnyObject? {
-    return self.bridge
   }
 }
 
