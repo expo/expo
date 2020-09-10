@@ -12,7 +12,7 @@ const attributes = {
 const STYLES_H1 = css`
   ${h1}
   margin-top: 0.5rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid ${Constants.expoColors.gray[250]};
 `;
@@ -26,7 +26,7 @@ export const H1 = ({ children }) => (
 const STYLES_H2 = css`
   ${h2}
   margin-bottom: 1rem;
-  margin-top: 2.2rem;
+  margin-top: 2rem;
   padding-bottom: 0.25rem;
   border-bottom: 1px solid ${Constants.expoColors.gray[250]};
 

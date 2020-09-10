@@ -13,7 +13,7 @@ const attributes = {
 
 const STYLES_PARAGRAPH = css`
   ${paragraph}
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 `;
 
 export const P = ({ children }) => (
@@ -36,7 +36,7 @@ P.B = B;
 const STYLES_PARAGRAPH_DIV = css`
   ${paragraph}
   display: block;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 
   &.is-wider {
     max-width: 1200px;
@@ -65,7 +65,7 @@ const STYLES_BLOCKQUOTE = css`
   grid-template-columns: auto 1fr;
   grid-gap: 12px;
   padding: 12px;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   border-left: 4px solid ${Constants.expoColors.gray[250]};
   background: ${Constants.expoColors.gray[100]};
   border-radius: 4px;

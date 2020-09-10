@@ -16,8 +16,8 @@ const attributes = {
 const STYLES_UNORDERED_LIST = css`
   ${paragraph}
   list-style: none;
-  margin-left: 1.5rem;
-  margin-bottom: 1.5rem;
+  margin-left: 1rem;
+  margin-bottom: 1rem;
 
   .anchor-icon {
     display: none;
@@ -34,8 +34,8 @@ export const UL = ({ children }) => (
 const STYLES_ORDERED_LIST = css`
   ${paragraph}
   list-style: none;
-  margin-left: 1.5rem;
-  margin-bottom: 1.5rem;
+  margin-left: 1rem;
+  margin-bottom: 1rem;
 
   .anchor-icon {
     display: none;

@@ -10,7 +10,7 @@ const STYLES_PROMPT = css`
   display: flex;
   flex-direction: column;
   overflow-x: scroll;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 `;
 
 const STYLES_LINE = css`

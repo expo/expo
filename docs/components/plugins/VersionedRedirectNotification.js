@@ -8,7 +8,7 @@ const CONTAINER_STYLE = css`
   background-color: ${Constants.expoColors.yellow[100]};
   border: 1px solid ${Constants.expoColors.yellow[200]};
   padding: 16px;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   border-radius: 4px;
 
   div {
