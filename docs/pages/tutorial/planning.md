@@ -13,5 +13,5 @@ In this tutorial we are going to build an app for iOS, Android, and web that all
 
 Inside your preferred directory for storing your software projects, run `expo init ImageShare` to create a new project for our app that we will call "Image Share". Navigate to the directory and run `expo start` in it, open the project on your device, and open the code in your code editor of choice.
 
-- ⬅ If you have any trouble with this, please refer back to the ["Create a new app" page](../../get-started/create-a-new-app/).
+- ⬅️ If you have any trouble with this, please refer back to the ["Create a new app" page](../../get-started/create-a-new-app/).
 - ➡️ If your app is up and running, it is time to [continue to the next step](../../tutorial/text/).
