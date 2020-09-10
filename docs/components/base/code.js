@@ -37,11 +37,11 @@ const STYLES_CODE_BLOCK = css`
 const STYLES_INLINE_CODE = css`
   color: ${Constants.expoColors.gray[900]};
   font-family: ${Constants.fontFamilies.mono};
-  font-size: 13px;
+  font-size: 0.825em;
   white-space: pre-wrap;
   display: inline;
   padding: 2px 4px;
-  line-height: 100%;
+  line-height: 170%;
   max-width: 100%;
 
   word-wrap: break-word;

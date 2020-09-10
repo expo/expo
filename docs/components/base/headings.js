@@ -33,7 +33,7 @@ const STYLES_H2 = css`
   code {
     ${h2}
     font-family: ${Constants.fontFamilies.mono};
-    padding: 4px 8px;
+    padding: 1px 8px;
     border-radius: 4px;
   }
 `;
