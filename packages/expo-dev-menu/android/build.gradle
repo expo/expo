@@ -57,6 +57,19 @@ android {
   lintOptions {
     abortOnError false
   }
+
+  buildTypes {
+    releaseWithDevMenu {
+      initWith release
+      matchingFallbacks = ['release', 'debug']
+    }
+  }
+
+  sourceSets {
+    releaseWithDevMenu {
+      setRoot 'src/debug'
+    }
+  }
 }
 
 task copyAssets(type: Copy) {
@@ -68,7 +81,7 @@ task copyAssets(type: Copy) {
 
 project.afterEvaluate {
   packageDebugAssets.dependsOn copyAssets
-  packageReleaseAssets.dependsOn copyAssets
+  packageReleaseWithDevMenuAssets.dependsOn copyAssets
 }
 
 repositories {

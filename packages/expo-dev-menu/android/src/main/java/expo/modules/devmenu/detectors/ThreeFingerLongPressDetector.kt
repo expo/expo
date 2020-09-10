@@ -23,18 +23,9 @@ class ThreeFingerLongPressDetector(val longPressListener: () -> Unit) {
   private var startPosition = Array(3) { MotionEvent.PointerCoords() }
 
   /**
-   * Whether to enable detector.
-   */
-  var isEnabled: Boolean = true
-
-  /**
    * Handles touch event. If it detects long press then [longPressListener] is called.
    */
   fun onTouchEvent(event: MotionEvent?) {
-    if (!isEnabled) {
-      return
-    }
-
     if (!startedDetecting && event?.action == MotionEvent.ACTION_MOVE && event.pointerCount == 3) {
       startedDetecting = true
       startTime = SystemClock.uptimeMillis()
