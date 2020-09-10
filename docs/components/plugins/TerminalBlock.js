@@ -9,7 +9,8 @@ const STYLES_PROMPT = css`
   padding: 1.25em 2em;
   display: flex;
   flex-direction: column;
-  overflow-x: scroll;
+  margin-bottom: 1.4rem;
+  overflow-x: auto;
 `;
 
 const STYLES_LINE = css`
