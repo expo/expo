@@ -139,7 +139,8 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     NSArray *views = [mainBundle loadNibNamed:launchScreen owner:self options:nil];
     rootViewController.view = views.firstObject;
     rootViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-  } else if ([mainBundle pathForResource:launchScreen ofType:@"storyboard"] != nil) {
+  } else if ([mainBundle pathForResource:launchScreen ofType:@"storyboard"] != nil ||
+             [mainBundle pathForResource:launchScreen ofType:@"storyboardc"] != nil) {
     UIStoryboard *launchScreenStoryboard = [UIStoryboard storyboardWithName:launchScreen bundle:nil];
     rootViewController = [launchScreenStoryboard instantiateInitialViewController];
   } else {
