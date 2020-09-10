@@ -12,6 +12,7 @@ import org.unimodules.core.interfaces.ExpoMethod;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -66,7 +67,7 @@ public class ExpoNotificationCategoriesModule extends ExportedModule {
     List<NotificationAction> actions = new ArrayList();
     for (HashMap<String, Object> actionMap : actionArguments) {
       MapArguments actionParams = new MapArguments(actionMap);
-      MapArguments actionOptions = new MapArguments(actionParams.getMap(OPTIONS_KEY));
+      MapArguments actionOptions = new MapArguments(actionParams.getMap(OPTIONS_KEY, Collections.emptyMap()));
       MapArguments textInputOptions = actionParams.containsKey(TEXT_INPUT_OPTIONS_KEY) ? new MapArguments(actionParams.getMap(TEXT_INPUT_OPTIONS_KEY)) : null;
       if (textInputOptions != null) {
         actions.add(new TextInputNotificationAction(actionParams.getString(IDENTIFIER_KEY, null), actionParams.getString(BUTTON_TITLE_KEY, null),
