@@ -32,7 +32,7 @@ class AppDelegate: UMAppDelegateWrapper {
       self.bridge = bridge
       
       #if canImport(EXDevMenu)
-      DevMenuManager.initializeWithBridge(bridge)
+      DevMenuManager.configure(withBridge: bridge)
       #endif
     }
     

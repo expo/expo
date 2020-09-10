@@ -2,7 +2,7 @@
 
 import EXDevMenuInterface
 
-public class DefaultDevMenuDelegate : DevMenuDelegateProtocol {
+class DevMenuBridgeProxyDelegate : DevMenuDelegateProtocol {
   private let bridge: RCTBridge
   
   init(_ bridge: RCTBridge) {
@@ -89,9 +89,9 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
   }
   
   @objc
-  public static func initializeWithBridge(_ bridge: AnyObject) {
+  public static func configure(withBridge bridge: AnyObject) {
     if let bridge = bridge as? RCTBridge {
-      shared.delegate = DefaultDevMenuDelegate(bridge)
+      shared.delegate = DevMenuBridgeProxyDelegate(bridge)
     } else {
       fatalError("Cound't cast to RCTBrigde. Make sure that you passed `RCTBridge` to `DevMenuManager.initializeWithBridge`.")
     }
