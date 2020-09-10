@@ -53,11 +53,15 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-1njguyv"
             >
               <summary
-                class="css-lfk3im"
+                class="css-sc2dxa"
               >
                 Bare Workflow
               </summary>
-              Edit the 'Display Name' field in Xcode
+              <div
+                class="css-1875xqs"
+              >
+                Edit the 'Display Name' field in Xcode
+              </div>
             </details>
           </div>
         </td>
@@ -97,21 +101,29 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-1njguyv"
             >
               <summary
-                class="css-lfk3im"
+                class="css-sc2dxa"
               >
                 ExpoKit
               </summary>
-              Set this property using AppConstants.java.
+              <div
+                class="css-1875xqs"
+              >
+                Set this property using AppConstants.java.
+              </div>
             </details>
             <details
               class="css-1njguyv"
             >
               <summary
-                class="css-lfk3im"
+                class="css-sc2dxa"
               >
                 Bare Workflow
               </summary>
-              Set this property using just Xcode
+              <div
+                class="css-1875xqs"
+              >
+                Set this property using just Xcode
+              </div>
             </details>
           </div>
         </td>
@@ -193,11 +205,15 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-1njguyv"
             >
               <summary
-                class="css-lfk3im"
+                class="css-sc2dxa"
               >
                 ExpoKit
               </summary>
-              Set this property using Xcode.
+              <div
+                class="css-1875xqs"
+              >
+                Set this property using Xcode.
+              </div>
             </details>
           </div>
         </td>
@@ -400,11 +416,15 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-1njguyv"
             >
               <summary
-                class="css-lfk3im"
+                class="css-sc2dxa"
               >
                 Bare Workflow
               </summary>
-              This is set in AndroidManifest.xml directly.
+              <div
+                class="css-1875xqs"
+              >
+                This is set in AndroidManifest.xml directly.
+              </div>
             </details>
           </div>
           <blockquote
