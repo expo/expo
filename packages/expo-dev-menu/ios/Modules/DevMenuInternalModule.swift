@@ -5,7 +5,12 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
   public static func moduleName() -> String! {
     return "ExpoDevMenuInternal"
   }
-
+  
+  // Module DevMenuInternalModule requires main queue setup since it overrides `constantsToExport`.
+  public static func requiresMainQueueSetup() -> Bool {
+    return true;
+  }
+  
   private static var fontsWereLoaded = false;
 
   let manager: DevMenuManager
@@ -15,6 +20,16 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
   }
 
   // MARK: JavaScript API
+
+  @objc
+  func constantsToExport() -> [String : Any] {
+#if TARGET_IPHONE_SIMULATOR
+    let doesDeviceSupportKeyCommands = false
+#else
+    let doesDeviceSupportKeyCommands = true
+#endif
+    return ["doesDeviceSupportKeyCommands": doesDeviceSupportKeyCommands]
+  }
   
   @objc
   func loadFontsAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
