@@ -3,13 +3,14 @@ package expo.modules.devmenu
 import android.app.Activity
 import android.os.Bundle
 import android.view.KeyEvent
+import android.view.MotionEvent
 import com.facebook.react.ReactNativeHost
 import expo.interfaces.devmenu.DevMenuDelegateInterface
 import expo.interfaces.devmenu.DevMenuManagerInterface
 import expo.interfaces.devmenu.DevMenuSessionInterface
 import expo.interfaces.devmenu.DevMenuSettingsInterface
 
-private const val DEV_MENU_IS_NOT_AVAILABLE = "DevMenu isn't available in release builds";
+private const val DEV_MENU_IS_NOT_AVAILABLE = "DevMenu isn't available in release builds"
 
 object DevMenuManager : DevMenuManagerInterface {
   override fun openMenu(activity: Activity) {
@@ -28,13 +29,13 @@ object DevMenuManager : DevMenuManagerInterface {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
-  override fun onKeyEvent(keyCode: Int, event: KeyEvent): Boolean {
-    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
-  }
+  override fun onKeyEvent(keyCode: Int, event: KeyEvent) = false
 
-  override fun setDelegate(newDelegate: DevMenuDelegateInterface) {
-    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
-  }
+  override fun onTouchEvent(ev: MotionEvent?) = Unit
+
+  override fun setDelegate(newDelegate: DevMenuDelegateInterface) = Unit
+
+  override fun initializeWithReactNativeHost(reactNativeHost: ReactNativeHost) = Unit
 
   override fun dispatchAction(actionId: String) {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)

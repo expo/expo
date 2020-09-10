@@ -3,6 +3,7 @@ package expo.interfaces.devmenu
 import android.app.Activity
 import android.os.Bundle
 import android.view.KeyEvent
+import android.view.MotionEvent
 import com.facebook.react.ReactNativeHost
 
 interface DevMenuManagerInterface {
@@ -29,14 +30,24 @@ interface DevMenuManagerInterface {
   fun toggleMenu(activity: Activity)
 
   /**
-   * Handles `onKeyEvent`. It's active only if  [DevMenuSettingsInterface.keyCommandsEnabled] is true.
+   * Handles `onKeyEvent`. It's active only if [DevMenuSettingsInterface.keyCommandsEnabled] is true.
    */
   fun onKeyEvent(keyCode: Int, event: KeyEvent): Boolean
+
+  /**
+   * Handles `onTouchEvent`. It's active only if [DevMenuSettingsInterface.touchGestureEnabled] is true.
+   */
+  fun onTouchEvent(ev: MotionEvent?)
 
   /**
    * Initializes the dev menu manager to work with provided delegate.
    */
   fun setDelegate(newDelegate: DevMenuDelegateInterface)
+
+  /**
+   * Initializes the dev menu manager to work with react native host.
+   */
+  fun initializeWithReactNativeHost(reactNativeHost: ReactNativeHost)
 
   /**
    * Finds and dispatches action with provided [actionId].
