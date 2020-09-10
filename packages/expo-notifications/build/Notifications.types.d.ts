@@ -162,13 +162,8 @@ export declare type NotificationContent<T = {
     title: string | null;
     subtitle: string | null;
     body: string | null;
-    data: (T & {
-        aps: undefined;
-    }) | {
-        aps: {
-            [key: string]: unknown;
-        };
-        body: T;
+    data: T & {
+        [key: string]: unknown;
     };
     sound: 'default' | 'defaultCritical' | 'custom' | null;
 } & ({
