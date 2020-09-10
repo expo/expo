@@ -3,7 +3,7 @@ import styled, { keyframes, css } from 'react-emotion';
 import * as React from 'react';
 import * as Constants from '~/common/constants';
 
-import { h1, h2, h3 } from './typography';
+import { h1, h2, h3, h4 } from './typography';
 
 const attributes = {
   'data-heading': true,
@@ -50,10 +50,10 @@ const STYLES_H3 = css`
   margin-top: 2rem;
 
   code.inline {
-    padding: 2px 4px;
-    top: 0;
-    font-size: 1.1rem;
-    line-height: 150%;
+    ${h3}
+    font-family: ${Constants.fontFamilies.mono};
+    padding: 1px 6px;
+    border-radius: 4px;
   }
 `;
 
@@ -64,10 +64,7 @@ export const H3 = ({ children }) => (
 );
 
 const STYLES_H4 = css`
-  font-family: ${Constants.fonts.bold};
-  font-weight: 400;
-  line-height: 1.625rem;
-  font-size: 1.1rem;
+  ${h4}
   margin-bottom: 0.25rem;
 `;
 

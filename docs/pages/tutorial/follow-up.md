@@ -2,11 +2,7 @@
 title: Learning more
 ---
 
-We tried to set expectations early on that this tutorial is more focused towards *doing* than *explaining*. Now that the doing is done, explanations are in order.
-
-<br />
-
-# Filling in the gaps on concepts that we applied
+We tried to set expectations early on that this tutorial is more focused towards _doing_ rather than _explaining_. Now that the doing is done, let's fill in gaps on concepts that we applied.
 
 ## React
 
@@ -16,7 +12,7 @@ We used React components and APIs here with little explanation. Having a solid u
 
 ### How to verify your learning
 
-- You understand how to use `React.useState`, that it is a *hook*, and what the equivalent for React *class* components is.
+- You understand how to use `React.useState`, that it is a _hook_, and what the equivalent for React _class_ components is.
 - Add a new button to clear the selected image state.
 - You can create a reusable `Button` component to clean up duplication of `TouchableOpacity` / `Text`.
 
@@ -66,7 +62,7 @@ Most apps have multiple screens, we just have one here! Learn more about how to 
 
 ## Debugging
 
-Sometimes things go wrong, and when they do you need to use debugging tools to figure out where your code is having trouble. [Read more about debugging](../../workflow/debugging/). 
+Sometimes things go wrong, and when they do you need to use debugging tools to figure out where your code is having trouble. [Read more about debugging](../../workflow/debugging/).
 
 ## Using the documentation
 
