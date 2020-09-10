@@ -47,7 +47,7 @@ const STYLES_DEFAULT = css`
 
 const STYLES_ACTIVE_CONTAINER = css`
   display: flex;
-  margin-bottom: 8px;
+  margin-bottom: 16px;
   cursor: pointer;
 `;
 
