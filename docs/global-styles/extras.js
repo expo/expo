@@ -1,4 +1,5 @@
 import * as Constants from '~/common/constants';
+import { h3, h4, p } from '~/components/base/typography';
 
 export const globalExtras = `
   img.wide-image {
@@ -26,21 +27,27 @@ export const globalExtras = `
   }
 
   details summary h3 {
-    font-size: 1.2rem;
-    font-family: expo-brand-bold,sans-serif;
+    font-size: 24px;
+    line-height: 130%;
+    letter-spacing: -0.019em;
+    font-weight: 500;
+    font-family: ${Constants.fonts.demi};
+    color: ${Constants.colors.black90};
     display: inline;
   }
 
   details summary h4 {
-    font-size: 1.1rem;
-    font-family: expo-brand-bold,sans-serif;
+    font-family: ${Constants.fonts.demi};
+    color: ${Constants.colors.black90};
+    font-size: 18px;
+    font-weight: 500;
     display: inline;
   }
 
   details summary p {
-    margin-top: 10px;
-    margin-right: 15px;
-    line-height: 1.725rem;
+    margin-top: 0.5rem;
+    margin-right: 1rem;
+    line-height: 160%;
   }
 
   details summary:hover {
@@ -48,7 +55,7 @@ export const globalExtras = `
   }
 
   details p {
-    margin-left: 15px;
+    margin-left: 1rem;
   }
 
   .snack-inline-example-button {
