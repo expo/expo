@@ -50,14 +50,6 @@ const STYLES_INLINE_CODE = css`
   border-radius: 4px;
   vertical-align: middle;
   overflow-x: scroll;
-
-  ::before {
-    content: '';
-  }
-
-  ::after {
-    content: '';
-  }
 `;
 
 const STYLES_CODE_CONTAINER = css`
