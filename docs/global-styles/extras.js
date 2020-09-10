@@ -27,9 +27,7 @@ export const globalExtras = `
   }
 
   details summary h3 {
-    font-size: 24px;
-    line-height: 130%;
-    letter-spacing: -0.019em;
+    font-size: 1.2rem;
     font-weight: 500;
     font-family: ${Constants.fonts.demi};
     color: ${Constants.colors.black90};
@@ -39,7 +37,7 @@ export const globalExtras = `
   details summary h4 {
     font-family: ${Constants.fonts.demi};
     color: ${Constants.colors.black90};
-    font-size: 18px;
+    font-size: 1.1rem;
     font-weight: 500;
     display: inline;
   }
