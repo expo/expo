@@ -25,7 +25,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 12px; display: block; list-style-type: circle; overflow-x: visible;"
           >
             <h4
-              class="css-1lekshe"
+              class="css-1w6wwkz"
               data-components-heading="true"
               data-heading="true"
             >
@@ -69,7 +69,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   class="permalink-child"
                 >
                   <code
-                    class="css-16fp3b3 inline"
+                    class="css-1aurupk inline"
                   >
                     name
                   </code>
@@ -82,7 +82,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1arns64"
         >
           <div
-            class="css-1osf78u "
+            class="css-12onb79 "
             data-text="true"
           >
             <strong
@@ -111,7 +111,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 12px; display: block; list-style-type: circle; overflow-x: visible;"
           >
             <h4
-              class="css-1lekshe"
+              class="css-1w6wwkz"
               data-components-heading="true"
               data-heading="true"
             >
@@ -155,7 +155,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   class="permalink-child"
                 >
                   <code
-                    class="css-16fp3b3 inline"
+                    class="css-1aurupk inline"
                   >
                     androidNavigationBar
                   </code>
@@ -168,7 +168,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1arns64"
         >
           <div
-            class="css-1osf78u "
+            class="css-12onb79 "
             data-text="true"
           >
             <strong
@@ -207,7 +207,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 44px; display: list-item; list-style-type: default; overflow-x: visible;"
           >
             <div
-              class="css-1osf78u "
+              class="css-12onb79 "
               data-text="true"
             >
               <div
@@ -251,7 +251,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   class="permalink-child"
                 >
                   <code
-                    class="css-16fp3b3 inline"
+                    class="css-1aurupk inline"
                   >
                     visible
                   </code>
@@ -264,7 +264,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1arns64"
         >
           <div
-            class="css-1osf78u "
+            class="css-12onb79 "
             data-text="true"
           >
             <strong
@@ -293,7 +293,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 76px; display: list-item; list-style-type: circle; overflow-x: visible;"
           >
             <div
-              class="css-1osf78u "
+              class="css-12onb79 "
               data-text="true"
             >
               <div
@@ -337,7 +337,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   class="permalink-child"
                 >
                   <code
-                    class="css-16fp3b3 inline"
+                    class="css-1aurupk inline"
                   >
                     always
                   </code>
@@ -350,7 +350,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1arns64"
         >
           <div
-            class="css-1osf78u "
+            class="css-12onb79 "
             data-text="true"
           >
             <strong
@@ -369,7 +369,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 44px; display: list-item; list-style-type: default; overflow-x: visible;"
           >
             <div
-              class="css-1osf78u "
+              class="css-12onb79 "
               data-text="true"
             >
               <div
@@ -413,7 +413,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   class="permalink-child"
                 >
                   <code
-                    class="css-16fp3b3 inline"
+                    class="css-1aurupk inline"
                   >
                     backgroundColor
                   </code>
@@ -426,7 +426,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1arns64"
         >
           <div
-            class="css-1osf78u "
+            class="css-12onb79 "
             data-text="true"
           >
             <strong
@@ -437,12 +437,12 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
              - Specifies the background color of the navigation bar. 
           </div>
           <div
-            class="css-1osf78u "
+            class="css-12onb79 "
             data-text="true"
           >
             6 character long hex color string, eg: 
             <code
-              class="css-16fp3b3 inline"
+              class="css-1aurupk inline"
             >
               '#000000'
             </code>
@@ -456,7 +456,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 12px; display: block; list-style-type: circle; overflow-x: visible;"
           >
             <h4
-              class="css-1lekshe"
+              class="css-1w6wwkz"
               data-components-heading="true"
               data-heading="true"
             >
@@ -500,7 +500,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   class="permalink-child"
                 >
                   <code
-                    class="css-16fp3b3 inline"
+                    class="css-1aurupk inline"
                   >
                     intentFilters
                   </code>
@@ -513,7 +513,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1arns64"
         >
           <div
-            class="css-1osf78u "
+            class="css-12onb79 "
             data-text="true"
           >
             <strong
@@ -534,7 +534,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </details>
           </div>
           <blockquote
-            class="css-vjqbin"
+            class="css-1qybt24"
             data-text="true"
           >
             <div>
@@ -558,7 +558,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </div>
             <div>
               <div
-                class="css-1osf78u "
+                class="css-12onb79 "
                 data-text="true"
               >
                  
@@ -579,7 +579,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 44px; display: list-item; list-style-type: default; overflow-x: visible;"
           >
             <div
-              class="css-1osf78u "
+              class="css-12onb79 "
               data-text="true"
             >
               <div
@@ -623,7 +623,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   class="permalink-child"
                 >
                   <code
-                    class="css-16fp3b3 inline"
+                    class="css-1aurupk inline"
                   >
                     autoVerify
                   </code>
@@ -636,7 +636,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1arns64"
         >
           <div
-            class="css-1osf78u "
+            class="css-12onb79 "
             data-text="true"
           >
             <strong
@@ -655,7 +655,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 44px; display: list-item; list-style-type: default; overflow-x: visible;"
           >
             <div
-              class="css-1osf78u "
+              class="css-12onb79 "
               data-text="true"
             >
               <div
@@ -699,7 +699,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   class="permalink-child"
                 >
                   <code
-                    class="css-16fp3b3 inline"
+                    class="css-1aurupk inline"
                   >
                     data
                   </code>
@@ -712,7 +712,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1arns64"
         >
           <div
-            class="css-1osf78u "
+            class="css-12onb79 "
             data-text="true"
           >
             <strong
@@ -730,7 +730,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 76px; display: list-item; list-style-type: circle; overflow-x: visible;"
           >
             <div
-              class="css-1osf78u "
+              class="css-12onb79 "
               data-text="true"
             >
               <div
@@ -774,7 +774,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   class="permalink-child"
                 >
                   <code
-                    class="css-16fp3b3 inline"
+                    class="css-1aurupk inline"
                   >
                     host
                   </code>
@@ -787,7 +787,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1arns64"
         >
           <div
-            class="css-1osf78u "
+            class="css-12onb79 "
             data-text="true"
           >
             <strong
