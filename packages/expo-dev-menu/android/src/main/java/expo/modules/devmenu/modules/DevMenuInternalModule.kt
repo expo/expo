@@ -26,12 +26,12 @@ class DevMenuInternalModule(reactContext: ReactApplicationContext)
       .getNativeModule(DevMenuSettings::class.java)
   }
 
-  private val isDeviceSupportsKeyCommands
+  private val doesDeviceSupportKeyCommands
     get() = Build.FINGERPRINT.contains("vbox") || Build.FINGERPRINT.contains("generic")
 
   override fun getConstants(): Map<String, Any> {
     return mapOf(
-      "isDeviceSupportsKeyCommands" to isDeviceSupportsKeyCommands
+      "doesDeviceSupportKeyCommands" to doesDeviceSupportKeyCommands
     )
   }
 

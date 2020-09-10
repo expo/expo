@@ -1,6 +1,6 @@
 import React from 'react';
 import { Dimensions, Platform, StyleSheet, Text, View } from 'react-native';
-import { isDeviceSupportsKeyCommands } from '../DevMenuInternal';
+import { doesDeviceSupportKeyCommands } from '../DevMenuInternal';
 
 import * as DevMenuInternal from '../DevMenuInternal';
 import { StyledText } from '../components/Text';
@@ -24,7 +24,7 @@ const KEYBOARD_CODES = {
 const MENU_NARROW_SCREEN = Dimensions.get('window').width < 375;
 const ONBOARDING_MESSAGE = (() => {
   let fragment;
-  if (isDeviceSupportsKeyCommands) {
+  if (doesDeviceSupportKeyCommands) {
     fragment = `in a simulator you can press ${KEYBOARD_CODES[Platform.OS]}`;
   } else {
     if (Platform.OS === 'ios') {
