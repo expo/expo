@@ -29,7 +29,6 @@ import expo.modules.updates.launcher.SelectionPolicy;
 import expo.modules.updates.launcher.SelectionPolicyNewest;
 import expo.modules.updates.loader.LoaderTask;
 import expo.modules.updates.manifest.Manifest;
-import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.exceptions.ManifestException;
 import host.exp.exponent.kernel.ExpoViewKernel;
@@ -331,8 +330,6 @@ public class ExpoUpdatesAppLoader {
     }
 
     String bundleUrl = ExponentUrls.toHttp(manifest.getString(ExponentManifest.MANIFEST_BUNDLE_URL_KEY));
-
-    Analytics.markEvent(Analytics.TimedEvent.FINISHED_FETCHING_MANIFEST);
 
     mExponentSharedPreferences.updateManifest(mManifestUrl, manifest, bundleUrl);
     ExponentDB.saveExperience(mManifestUrl, manifest, bundleUrl);
