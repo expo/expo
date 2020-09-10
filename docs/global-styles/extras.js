@@ -15,14 +15,14 @@ export const globalExtras = `
   }
 
   details {
-    margin-bottom: 20px;
-    padding-top: 20px;
+    margin-bottom: 1rem;
+    padding-top: 1rem;
   }
 
   details summary {
     outline: none;
     cursor: pointer;
-    margin-bottom: 15px;
+    margin-bottom: 0.5rem;
   }
 
   details summary h3 {

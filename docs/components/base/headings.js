@@ -49,7 +49,7 @@ const STYLES_H3 = css`
   margin-bottom: 1rem;
   margin-top: 2rem;
 
-  code.inline {
+  code {
     ${h3}
     font-family: ${Constants.fontFamilies.mono};
     padding: 1px 6px;
@@ -66,6 +66,13 @@ export const H3 = ({ children }) => (
 const STYLES_H4 = css`
   ${h4}
   margin-bottom: 0.25rem;
+
+  code {
+    ${h4}
+    font-family: ${Constants.fontFamilies.mono};
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
 `;
 
 export const H4 = ({ children, className, ...rest }) => (

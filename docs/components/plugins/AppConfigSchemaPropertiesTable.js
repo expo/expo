@@ -44,7 +44,7 @@ function appendProperty(formattedSchema, property, _nestingLevel) {
   formattedSchema.push({
     name: nestingLevel
       ? `<subpropertyAnchor><inlineCode>${propertyKey}</inlineCode></subpropertyAnchor>`
-      : `#### \`${propertyKey}\``,
+      : `\`${propertyKey}\``,
     description: createDescription(property),
     nestingLevel,
   });

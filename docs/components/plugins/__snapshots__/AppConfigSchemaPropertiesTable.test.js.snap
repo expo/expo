@@ -21,61 +21,19 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       <tr>
         <td>
           <div
-            data-testid="#### \`name\`"
+            data-testid="\`name\`"
             style="margin-left: 12px; display: block; list-style-type: circle; overflow-x: visible;"
           >
-            <h4
-              class="css-1w6wwkz"
-              data-components-heading="true"
-              data-heading="true"
+            <div
+              class="css-12onb79 "
+              data-text="true"
             >
-              <div
-                class="css-3t0ask"
+              <code
+                class="css-1aurupk inline"
               >
-                <span
-                  class="css-1fj428k"
-                  id="name"
-                />
-                <a
-                  class="permalink css-1lc60ja"
-                  href="#name"
-                >
-                  <svg
-                    aria-label="permalink"
-                    class="anchor-icon"
-                    fill="none"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                      stroke="#9B9B9B"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                    />
-                    <path
-                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                      stroke="#9B9B9B"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                    />
-                  </svg>
-                </a>
-                <div
-                  class="permalink-child"
-                >
-                  <code
-                    class="css-1aurupk inline"
-                  >
-                    name
-                  </code>
-                </div>
-              </div>
-            </h4>
+                name
+              </code>
+            </div>
           </div>
         </td>
         <td
@@ -107,61 +65,19 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       <tr>
         <td>
           <div
-            data-testid="#### \`androidNavigationBar\`"
+            data-testid="\`androidNavigationBar\`"
             style="margin-left: 12px; display: block; list-style-type: circle; overflow-x: visible;"
           >
-            <h4
-              class="css-1w6wwkz"
-              data-components-heading="true"
-              data-heading="true"
+            <div
+              class="css-12onb79 "
+              data-text="true"
             >
-              <div
-                class="css-3t0ask"
+              <code
+                class="css-1aurupk inline"
               >
-                <span
-                  class="css-1fj428k"
-                  id="androidnavigationbar"
-                />
-                <a
-                  class="permalink css-1lc60ja"
-                  href="#androidnavigationbar"
-                >
-                  <svg
-                    aria-label="permalink"
-                    class="anchor-icon"
-                    fill="none"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                      stroke="#9B9B9B"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                    />
-                    <path
-                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                      stroke="#9B9B9B"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                    />
-                  </svg>
-                </a>
-                <div
-                  class="permalink-child"
-                >
-                  <code
-                    class="css-1aurupk inline"
-                  >
-                    androidNavigationBar
-                  </code>
-                </div>
-              </div>
-            </h4>
+                androidNavigationBar
+              </code>
+            </div>
           </div>
         </td>
         <td
@@ -452,61 +368,19 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       <tr>
         <td>
           <div
-            data-testid="#### \`intentFilters\`"
+            data-testid="\`intentFilters\`"
             style="margin-left: 12px; display: block; list-style-type: circle; overflow-x: visible;"
           >
-            <h4
-              class="css-1w6wwkz"
-              data-components-heading="true"
-              data-heading="true"
+            <div
+              class="css-12onb79 "
+              data-text="true"
             >
-              <div
-                class="css-3t0ask"
+              <code
+                class="css-1aurupk inline"
               >
-                <span
-                  class="css-1fj428k"
-                  id="intentfilters"
-                />
-                <a
-                  class="permalink css-1lc60ja"
-                  href="#intentfilters"
-                >
-                  <svg
-                    aria-label="permalink"
-                    class="anchor-icon"
-                    fill="none"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                      stroke="#9B9B9B"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                    />
-                    <path
-                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                      stroke="#9B9B9B"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                    />
-                  </svg>
-                </a>
-                <div
-                  class="permalink-child"
-                >
-                  <code
-                    class="css-1aurupk inline"
-                  >
-                    intentFilters
-                  </code>
-                </div>
-              </div>
-            </h4>
+                intentFilters
+              </code>
+            </div>
           </div>
         </td>
         <td
