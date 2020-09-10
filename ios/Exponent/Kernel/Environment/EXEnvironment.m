@@ -207,10 +207,10 @@ NSString * const kEXEmbeddedManifestResourceName = @"shell-app-manifest";
   _updatesCheckAutomatically = (shellConfig[@"updatesCheckAutomatically"] == nil)
     ? YES
     : [shellConfig[@"updatesCheckAutomatically"] boolValue];
-  _updatesFallbackToCacheTimeout = (shellConfig[@"updatesFallbackToCacheTimeout"] == nil &&
+  _updatesFallbackToCacheTimeout = (shellConfig[@"updatesFallbackToCacheTimeout"] &&
                                     [shellConfig[@"updatesFallbackToCacheTimeout"] isKindOfClass:[NSNumber class]])
-    ? @(0)
-    : shellConfig[@"updatesFallbackToCacheTimeout"];
+    ? shellConfig[@"updatesFallbackToCacheTimeout"]
+    : @(0);
   if (infoPlist[@"ExpoReleaseChannel"]) {
     _releaseChannel = infoPlist[@"ExpoReleaseChannel"];
   } else {
