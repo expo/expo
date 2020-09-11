@@ -132,12 +132,9 @@ NS_ASSUME_NONNULL_BEGIN
   EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
   if (self.isHomeApp) {
     EXHomeAppSplashScreenViewProvider *homeAppSplashScreenViewProvider = [EXHomeAppSplashScreenViewProvider new];
-    [splashScreenService showSplashScreenFor:self
-                    splashScreenViewProvider:homeAppSplashScreenViewProvider
-                             successCallback:^{}
-                             failureCallback:^(NSString *message){ UMLogWarn(@"%@", message); }];
+    [self _showSplashScreenWithProvider:homeAppSplashScreenViewProvider];
   } else if (self.isStandalone) {
-    [splashScreenService showSplashScreenFor:self];
+    [self _showSplashScreenWithProvider:[EXSplashScreenViewNativeProvider new]];
   }
 
   self.view.backgroundColor = [UIColor whiteColor];
@@ -329,15 +326,7 @@ NS_ASSUME_NONNULL_BEGIN
   if (!_managedAppSplashScreenViewProvider) {
     _managedAppSplashScreenViewProvider = [[EXManagedAppSplashScreenViewProvider alloc] initWithManifest:manifest];
 
-    EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
-    UM_WEAKIFY(self);
-    dispatch_async(dispatch_get_main_queue(), ^{
-      UM_ENSURE_STRONGIFY(self);
-      [splashScreenService showSplashScreenFor:self
-                      splashScreenViewProvider:self.managedAppSplashScreenViewProvider
-                               successCallback:^{}
-                               failureCallback:^(NSString *message){ UMLogWarn(@"%@", message); }];
-    });
+    [self _showSplashScreenWithProvider:_managedAppSplashScreenViewProvider];
   } else {
     [_managedAppSplashScreenViewProvider updateSplashScreenViewWithManifest:manifest];
   }
