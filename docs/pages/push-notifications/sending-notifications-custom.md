@@ -51,7 +51,9 @@ await fetch('https://fcm.googleapis.com/fcm/send', {
 });
 ```
 
-**The `experienceId` field is required**, otherwise your notifications will not go through to your app. FCM has their full list of supported fields in the notification payload [here](https://firebase.google.com/docs/cloud-messaging/http-server-ref#notification-payload-support), and you can see which ones are supported by `expo-notifications` on Android by looking at [the documentation](../../versions/latest/sdk/notifications/#firebaseremotemessage).
+**The `experienceId` field is required**, otherwise your notifications will not go through to your app. If you don't have an expo username (such as if you are building your app on your own with Turtle CLI), use `@anonymous/yourProjectSlug` as the `experienceId`. You can also get the `experienceId` by looking at `Constants.manifest.id` from the `expo-constants` module.
+
+FCM has their full list of supported fields in the notification payload [here](https://firebase.google.com/docs/cloud-messaging/http-server-ref#notification-payload-support), and you can see which ones are supported by `expo-notifications` on Android by looking at [the documentation](../../versions/latest/sdk/notifications/#firebaseremotemessage).
 
 > FCM also provides some server-side libraries in a few languages you can use instead of raw `fetch` requests. [See here for more info](https://firebase.google.com/docs/cloud-messaging/send-message#node.js).
 
