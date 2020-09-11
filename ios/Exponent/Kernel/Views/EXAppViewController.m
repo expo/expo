@@ -129,7 +129,6 @@ NS_ASSUME_NONNULL_BEGIN
 
   // show SplashScreen in standalone apps and home app only
   // SplashScreen for managed is shown once the manifest is available
-  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
   if (self.isHomeApp) {
     EXHomeAppSplashScreenViewProvider *homeAppSplashScreenViewProvider = [EXHomeAppSplashScreenViewProvider new];
     [self _showSplashScreenWithProvider:homeAppSplashScreenViewProvider];
