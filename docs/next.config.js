@@ -38,7 +38,6 @@ module.exports = withCSS({
     if (dev) {
       return defaultPathMap;
     }
-    copySync(join(dir, 'robots.txt'), join(outDir, 'robots.txt'));
     return Object.assign(
       ...Object.entries(defaultPathMap).map(([pathname, page]) => {
         if (pathname.match(/\/v[1-9][^\/]*$/)) {
