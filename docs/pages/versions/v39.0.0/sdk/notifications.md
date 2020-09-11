@@ -1070,7 +1070,7 @@ export type NotificationContent = {
       // Format: '#AARRGGBB'
       color?: string;
     }
-);
+  );
 ```
 
 ### `NotificationContentInput`
