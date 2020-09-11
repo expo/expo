@@ -129,15 +129,11 @@ NS_ASSUME_NONNULL_BEGIN
 
   // show SplashScreen in standalone apps and home app only
   // SplashScreen for managed is shown once the manifest is available
-  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
   if (self.isHomeApp) {
     EXHomeAppSplashScreenViewProvider *homeAppSplashScreenViewProvider = [EXHomeAppSplashScreenViewProvider new];
-    [splashScreenService showSplashScreenFor:self
-                    splashScreenViewProvider:homeAppSplashScreenViewProvider
-                             successCallback:^{}
-                             failureCallback:^(NSString *message){ UMLogWarn(@"%@", message); }];
+    [self _showSplashScreenWithProvider:homeAppSplashScreenViewProvider];
   } else if (self.isStandalone) {
-    [splashScreenService showSplashScreenFor:self];
+    [self _showSplashScreenWithProvider:[EXSplashScreenViewNativeProvider new]];
   }
 
   self.view.backgroundColor = [UIColor whiteColor];
@@ -329,15 +325,7 @@ NS_ASSUME_NONNULL_BEGIN
   if (!_managedAppSplashScreenViewProvider) {
     _managedAppSplashScreenViewProvider = [[EXManagedAppSplashScreenViewProvider alloc] initWithManifest:manifest];
 
-    EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
-    UM_WEAKIFY(self);
-    dispatch_async(dispatch_get_main_queue(), ^{
-      UM_ENSURE_STRONGIFY(self);
-      [splashScreenService showSplashScreenFor:self
-                      splashScreenViewProvider:self.managedAppSplashScreenViewProvider
-                               successCallback:^{}
-                               failureCallback:^(NSString *message){ UMLogWarn(@"%@", message); }];
-    });
+    [self _showSplashScreenWithProvider:_managedAppSplashScreenViewProvider];
   } else {
     [_managedAppSplashScreenViewProvider updateSplashScreenViewWithManifest:manifest];
   }
@@ -369,6 +357,34 @@ NS_ASSUME_NONNULL_BEGIN
   } else {
     [self.appLoadingProgressWindowController hide];
   }
+}
+
+- (void)_showSplashScreenWithProvider:(id<EXSplashScreenViewProvider>)provider
+{
+  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
+
+  // EXSplashScreenService presents a splash screen on a root view controller
+  // at the start of the app. Since we want the EXAppViewController to manage
+  // the lifecycle of the splash screen we need to:
+  // 1. present the splash screen on EXAppViewController
+  // 2. hide the splash screen of root view controller
+  void (^hideRootViewControllerSplashScreen)(void) = ^void() {
+    UIViewController *rootViewController = [UIApplication sharedApplication].keyWindow.rootViewController;
+    [splashScreenService hideSplashScreenFor:rootViewController
+                             successCallback:^(BOOL hasEffect){}
+                             failureCallback:^(NSString * _Nonnull message) {
+      UMLogWarn(@"Hiding splash screen from root view controller did not succeed: %@", message);
+    }];
+  };
+
+  UM_WEAKIFY(self);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    UM_ENSURE_STRONGIFY(self);
+    [splashScreenService showSplashScreenFor:self
+                    splashScreenViewProvider:provider
+                             successCallback:hideRootViewControllerSplashScreen
+                             failureCallback:^(NSString *message){ UMLogWarn(@"%@", message); }];
+  });
 }
 
 #pragma mark - EXAppLoaderDelegate
