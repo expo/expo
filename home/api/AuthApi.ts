@@ -5,11 +5,29 @@ type SignInResult = {
   sessionSecret: boolean;
 };
 
-export async function signInAsync(username: string, password: string): Promise<SignInResult> {
+export async function signInAsync(
+  username: string,
+  password: string,
+  otp: string | undefined
+): Promise<SignInResult> {
   const api = new ApiV2HttpClient();
   return await api.postAsync('auth/loginAsync', {
     username,
     password,
+    otp,
+  });
+}
+
+export async function sendSMSOTPAsync(
+  username: string,
+  password: string,
+  secondFactorDeviceID: string
+): Promise<void> {
+  const api = new ApiV2HttpClient();
+  await api.postAsync('auth/send-sms-otp', {
+    username,
+    password,
+    secondFactorDeviceID,
   });
 }
 
@@ -55,6 +73,7 @@ export async function signUpAsync(data: SignUpData): Promise<SignUpResult> {
 
 export default {
   signInAsync,
+  sendSMSOTPAsync,
   signOutAsync,
   signUpAsync,
 };
