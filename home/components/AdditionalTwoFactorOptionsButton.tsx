@@ -34,7 +34,7 @@ function AdditionalTwoFactorOptionsButton({
   ) => void;
 }) {
   const handlePress = () => {
-    const hasAuthenticatorSecondFactorDevices = secondFactorDevices.find(
+    const hasAuthenticatorSecondFactorDevices = secondFactorDevices.some(
       device => device.method === UserSecondFactorDeviceMethod.AUTHENTICATOR
     );
 
@@ -48,7 +48,7 @@ function AdditionalTwoFactorOptionsButton({
       ...(hasAuthenticatorSecondFactorDevices ? ['Authenticator'] : []),
       'Cancel',
     ];
-    const cancelButtonIndex = options.indexOf('Cancel');
+    const cancelButtonIndex = options.lastIndexOf('Cancel');
     showActionSheetWithOptions(
       {
         title: 'Choose a Second-factor Device',

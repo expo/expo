@@ -43,7 +43,7 @@ type State = {
   email: string;
   password: string;
   otp: string | undefined;
-  otpFieldVisible: boolean;
+  isOTPFieldVisible: boolean;
   secondFactorDevices: SecondFactorDevice[];
   isLoading: boolean;
 };
@@ -54,7 +54,7 @@ class SignInView extends React.Component<Props, State> {
         email: 'testing@getexponent.com',
         password: 'pass123',
         otp: undefined,
-        otpFieldVisible: false,
+        isOTPFieldVisible: false,
         secondFactorDevices: [],
         isLoading: false,
       }
@@ -62,7 +62,7 @@ class SignInView extends React.Component<Props, State> {
         email: '',
         password: '',
         otp: undefined,
-        otpFieldVisible: false,
+        isOTPFieldVisible: false,
         secondFactorDevices: [],
         isLoading: false,
       };
@@ -86,7 +86,7 @@ class SignInView extends React.Component<Props, State> {
   }
 
   render() {
-    const otpField = this.state.otpFieldVisible ? (
+    const otpField = this.state.isOTPFieldVisible ? (
       <Form.Input
         autoCapitalize="none"
         autoCorrect={false}
@@ -103,7 +103,7 @@ class SignInView extends React.Component<Props, State> {
       />
     ) : null;
 
-    const moreOTPOptionsButtom = this.state.otpFieldVisible ? (
+    const moreOTPOptionsButtom = this.state.isOTPFieldVisible ? (
       <AdditionalTwoFactorOptionsButton
         secondFactorDevices={this.state.secondFactorDevices}
         onSelectSMSSecondFactorDevice={this._handleSelectSMSSecondFactorDevice}
@@ -132,7 +132,7 @@ class SignInView extends React.Component<Props, State> {
             value={this.state.email}
           />
           <Form.Input
-            hideBottomBorder={!this.state.otpFieldVisible}
+            hideBottomBorder={!this.state.isOTPFieldVisible}
             label="Password"
             textContentType="password"
             ref={view => {
@@ -140,7 +140,7 @@ class SignInView extends React.Component<Props, State> {
             }}
             onChangeText={this._handleChangePassword}
             onSubmitEditing={this._handleSubmitPassword}
-            returnKeyType={this.state.otpFieldVisible ? 'next' : 'done'}
+            returnKeyType={this.state.isOTPFieldVisible ? 'next' : 'done'}
             secureTextEntry
             value={this.state.password}
           />
@@ -185,7 +185,7 @@ class SignInView extends React.Component<Props, State> {
   };
 
   _handleSelectSMSSecondFactorDevice = async (device: SecondFactorDevice) => {
-    this.setState({ isLoading: true });
+    this.setState({ isLoading: true, otp: undefined });
 
     try {
       await AuthApi.sendSMSOTPAsync(this.state.email, this.state.password, device.id);
@@ -236,7 +236,7 @@ class SignInView extends React.Component<Props, State> {
         secondFactorDevices: SecondFactorDevice[];
         smsAutomaticallySent: boolean;
       } = error.metadata as any;
-      this.setState({ otpFieldVisible: true, secondFactorDevices: metadata.secondFactorDevices });
+      this.setState({ isOTPFieldVisible: true, secondFactorDevices: metadata.secondFactorDevices });
       this._otpInput?.focus();
       return;
     }
