@@ -122,6 +122,7 @@ export const expoColors = {
     800: '#21213D',
     900: '#060625',
   },
+  background: '#FDFDFD',
   black: '#000020',
   white: '#ffffff',
   beige: '#F7F6F3',
@@ -134,20 +135,21 @@ export const fonts = {
   bold: 'expo-brand-bold',
   book: 'expo-brand-book',
   demi: 'expo-brand-demi',
-  light: 'expo-brand-light',
   mono: 'expo-brand-mono',
 };
 
+const fontStack = `system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji'`;
+
 export const fontFamilies = {
-  bold: `${fonts.bold}, sans-serif`,
-  book: `${fonts.book}, sans-serif`,
-  demi: `${fonts.demi}, sans-serif`,
-  light: `${fonts.light}, sans-serif`,
-  mono: `${fonts.mono}, monospace`,
+  bold: `${fonts.bold}`,
+  book: `${fonts.book}`,
+  demi: `${fonts.demi}`,
+  mono: `${fonts.mono}, Monaco,Consolas,'Liberation Mono','Courier New',monospace, 'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji'`,
 };
 
 export const breakpoints = {
   mobile: '1024px',
   mobileStrict: '748px',
   mobileStrictValue: 748,
+  mobileValue: 1024,
 };

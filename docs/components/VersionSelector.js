@@ -5,28 +5,34 @@ import * as Constants from '~/common/constants';
 import * as Utilities from '~/common/utilities';
 import { VERSIONS, LATEST_VERSION } from '~/common/versions';
 import ChevronDownIcon from '~/components/icons/ChevronDown';
+import { paragraph } from '~/components/base/typography';
 
 const STYLES_SELECT = css`
-  display: inline-flex;
   position: relative;
   margin: 0;
-  padding: 10px;
-  padding-left: 15px;
-  margin-top: -5px;
+  padding: 8px 16px;
   background-color: rgba(0, 0, 0, 0.05);
   border-radius: 5px;
   margin-bottom: 15px;
   width: 100%;
+  background-color: ${Constants.expoColors.white};
+  border: 1px solid ${Constants.expoColors.gray[250]};
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 20, 0.015), 0 0 0 1px rgba(0, 0, 20, 0.0075);
+
+  :hover {
+    background-color: ${Constants.expoColors.gray[100]};
+  }
 `;
 
 const STYLES_SELECT_TEXT = css`
+  ${paragraph}
+  display: flex;
+  align-items: center;
+  flex: 1;
+  justify-content: space-between;
   font-family: ${Constants.fontFamilies.demi};
   color: ${Constants.colors.black};
   font-size: 14px;
-  padding-bottom: 1px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 `;
 
 const STYLES_SELECT_ELEMENT = css`
@@ -39,6 +45,7 @@ const STYLES_SELECT_ELEMENT = css`
   opacity: 0;
   width: 100%;
   border-radius: 0px;
+  cursor: pointer;
 `;
 
 const versionNumber = vString => {
@@ -73,7 +80,7 @@ const orderVersions = versions => {
 
 export default class VersionSelector extends React.Component {
   render() {
-    const latestLabel = 'latest (' + Utilities.getUserFacingVersionString(LATEST_VERSION) + ')';
+    const latestLabel = 'Latest (' + Utilities.getUserFacingVersionString(LATEST_VERSION) + ')';
     const labelText =
       this.props.version === 'latest'
         ? latestLabel
@@ -82,7 +89,8 @@ export default class VersionSelector extends React.Component {
     return (
       <div className={STYLES_SELECT} style={this.props.style}>
         <label className={STYLES_SELECT_TEXT} htmlFor="version-menu">
-          {labelText} <ChevronDownIcon style={{ marginLeft: 8 }} />
+          <div>{labelText}</div>
+          <ChevronDownIcon style={{ height: '16px', width: '16px' }} />
         </label>
         {// hidden links to help test-links spidering
         orderVersions(VERSIONS).map(v => (

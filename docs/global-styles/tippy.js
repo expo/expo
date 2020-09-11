@@ -1,25 +1,22 @@
 import * as Constants from '~/common/constants';
+import { paragraph } from '~/components/base/typography';
 
 export const globalTippy = `
   div.tippy-tooltip {
-    font-size: 0.9rem;
-    line-height: 1.625rem;
-    padding: 16px;
-    color: ${Constants.colors.white};
-    background-color: ${Constants.colors.black};
-    color: black;
     text-align: left;
+    background: ${Constants.expoColors.black};
   }
 
   .tippy-popper[x-placement^='top'] .tippy-tooltip .tippy-roundarrow {
-    fill: ${Constants.colors.black};
+    fill: ${Constants.expoColors.black};
   }
 
   .tippy-tooltip.expo-theme .tippy-content {
-    font-size: 1rem;
-    line-height: 1.725rem;
+    ${paragraph},
     color: ${Constants.colors.white};
     font-family: ${Constants.fonts.book};
+    background: ${Constants.expoColors.black};
+    padding: 8px;
   }
 
   .tippy-content a {

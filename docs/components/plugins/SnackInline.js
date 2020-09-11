@@ -3,6 +3,7 @@ import * as React from 'react';
 import { SNACK_URL, getSnackFiles } from '../../common/snack';
 
 import DocumentationPageContext from '~/components/DocumentationPageContext';
+import { ExternalLink } from '~/components/icons/ExternalLink';
 
 const DEFAULT_PLATFORM = 'android';
 const LATEST_VERSION = `v${require('../../package.json').version}`;
@@ -85,26 +86,10 @@ export default class SnackInline extends React.Component {
             />
           )}
           <button className="snack-inline-example-button" disabled={!this.state.ready}>
-            Try this example on Snack <OpenIcon />
+            <ExternalLink size={16} /> Try this example on Snack
           </button>
         </form>
       </div>
     );
   }
 }
-
-const OpenIcon = props => (
-  <svg
-    width={14}
-    height={14}
-    viewBox="0 0 16 16"
-    style={{
-      marginLeft: '5px',
-      verticalAlign: '-1px',
-    }}
-    {...props}>
-    <g fill="none" stroke="currentColor">
-      <path d="M8.5.5h7v7M8 8L15.071.929M9.07 3.5H1.5v11h11V6.93" />
-    </g>
-  </svg>
-);

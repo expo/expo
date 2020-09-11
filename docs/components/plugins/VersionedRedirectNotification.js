@@ -1,12 +1,19 @@
 import { useRouter } from 'next/router';
 import * as React from 'react';
 import { css } from 'react-emotion';
+import * as Constants from '~/common/constants';
+import { P } from '~/components/base/paragraph';
 
 const CONTAINER_STYLE = css`
-  background-color: rgba(225, 228, 23, 0.1);
-  padding: 20px;
-  margin-bottom: 20px;
-  line-height: 1.5rem;
+  background-color: ${Constants.expoColors.yellow[100]};
+  border: 1px solid ${Constants.expoColors.yellow[200]};
+  padding: 16px;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+
+  div {
+    margin-bottom: 0;
+  }
 `;
 
 export default function VersionedRedirectNotification({ showForQuery = 'redirected' }) {
@@ -22,8 +29,10 @@ export default function VersionedRedirectNotification({ showForQuery = 'redirect
   if (visible) {
     return (
       <div className={CONTAINER_STYLE}>
-        ⚠️ The page you are looking for does not exist in this SDK version. It may have been
-        deprecated or added in a newer SDK version.
+        <P>
+          ⚠️ The page you are looking for does not exist in this SDK version. It may have been
+          deprecated or added in a newer SDK version.
+        </P>
       </div>
     );
   }

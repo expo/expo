@@ -8,7 +8,8 @@ import DocumentationSidebarTitle from '~/components/DocumentationSidebarTitle';
 import VersionSelector from '~/components/VersionSelector';
 
 const STYLES_SIDEBAR = css`
-  padding: 20px 24px 24px 24px;
+  padding: 16px;
+  min-width: 280px;
   width: 280px;
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
@@ -17,7 +18,7 @@ const STYLES_SIDEBAR = css`
 `;
 
 const STYLES_SECTION_CATEGORY = css`
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 `;
 
 function shouldSkipTitle(info, parentGroup) {

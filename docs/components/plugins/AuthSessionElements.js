@@ -25,9 +25,13 @@ const STYLES_LINK = css`
   }
 `;
 
+const STYLES_BUTTON = css`
+  display: inline-flex;
+`;
+
 export function CreateAppButton({ href, name }) {
   return (
-    <a className="snack-inline-example-button" href={href}>
+    <a className={`snack-inline-example-button ${STYLES_BUTTON}`} href={href}>
       Create {name} App
     </a>
   );

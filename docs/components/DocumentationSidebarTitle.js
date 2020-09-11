@@ -3,15 +3,19 @@ import NextLink from 'next/link';
 
 import * as React from 'react';
 import * as Constants from '~/common/constants';
+import { paragraph } from '~/components/base/typography';
 
 const STYLES_TITLE = css`
+  ${paragraph}
+  font-size: 15px;
   display: block;
   position: relative;
-  margin-bottom: 14px;
-  line-height: 1.3rem;
+  margin-bottom: 12px;
   text-decoration: none;
   border-bottom-color: #ccc;
   font-family: ${Constants.fontFamilies.demi};
+  border-bottom: 1px solid ${Constants.expoColors.gray[250]};
+  padding-bottom: 0.25rem;
 `;
 
 const STYLES_ACTIVE = css`

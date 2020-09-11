@@ -2,18 +2,17 @@ import * as React from 'react';
 import { css } from 'react-emotion';
 
 import * as Constants from '~/common/constants';
+import { CheckCircle } from '~/components/icons/CheckCircle';
+import { XCircle } from '~/components/icons/XCircle';
+import { PendingCircle } from '~/components/icons/PendingCircle';
+import { H4 } from '~/components/base/headings';
 
 const STYLES_TITLE = css`
-  font-family: ${Constants.fonts.demi};
-  font-weight: 400;
-  line-height: 1.625rem;
-  font-size: 1.1rem;
-  margin-bottom: 0.25rem;
+  margin-bottom: 1rem;
 `;
 
 const STYLES_CELL = css`
   transition-duration: 0.2s;
-  text-align: center;
   :hover {
     background-color: ${Constants.colors.grey};
   }
@@ -21,26 +20,31 @@ const STYLES_CELL = css`
 
 const STYLES_LINK = css`
   text-decoration: none;
+  display: grid;
+  grid-template-columns: 20px auto;
+  text-align: left;
+  grid-gap: 8px;
 `;
 
 function getInfo(isSupported, { title }) {
   if (isSupported === true) {
     return {
-      children: '✅',
+      children: <CheckCircle size={20} />,
       title: `${title} is supported`,
     };
   } else if (typeof isSupported === 'object') {
     return {
       children: (
         <a className={STYLES_LINK} target="_blank" href={isSupported.pending}>
-          ⏱ Pending
+          <PendingCircle size={20} /> Pending
         </a>
       ),
       title: `${title} support is pending`,
     };
   }
+
   return {
-    children: '❌',
+    children: <XCircle size={20} />,
     title: `${title} is not supported`,
   };
 }
@@ -59,9 +63,7 @@ export default class PlatformsSection extends React.Component {
   render() {
     return (
       <div>
-        <h4 data-heading="true" className={STYLES_TITLE}>
-          {this.props.title || 'Platform Compatibility'}
-        </h4>
+        <H4 className={STYLES_TITLE}>{this.props.title || 'Platform Compatibility'}</H4>
         <table>
           <thead>
             <tr>

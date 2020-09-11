@@ -8,7 +8,7 @@ const STYLES_CONTAINER = css`
 `;
 
 const STYLES_HEADER = css`
-  border-bottom: 1px solid ${Constants.colors.border};
+  border-bottom: 1px solid ${Constants.expoColors.gray[250]};
 `;
 
 const STYLES_CONTENT = css`
@@ -22,12 +22,12 @@ const STYLES_CONTENT = css`
 
 const STYLES_LEFT = css`
   flex-shrink: 0;
-  border-right: 1px solid ${Constants.colors.border};
+  border-right: 1px solid ${Constants.expoColors.gray[250]};
   max-width: 280px;
   transition: 200ms ease max-width;
 
   @media screen and (max-width: 1200px) {
-    max-width: 240px;
+    max-width: 280px;
   }
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
