@@ -18,9 +18,11 @@ class AppDelegate: UMAppDelegateWrapper {
     // and we want it to register for EXViewController (that is found in rootViewContrller view hierarchy),
     // so we need to hide it for window.rootViewController
     let splashScreenService: EXSplashScreenService = UMModuleRegistryProvider.getSingletonModule(for: EXSplashScreenService.self) as! EXSplashScreenService
-    splashScreenService.hideSplashScreen(for: (window?.rootViewController)!,
-                                         successCallback: { (success) in /* empty */ },
-                                         failureCallback: { (message) in /* empty */ })
+    if let rootViewController = window?.rootViewController {
+      splashScreenService.hideSplashScreen(for: rootViewController,
+                                           successCallback: { (success) in /* empty */ },
+                                           failureCallback: { (message) in /* empty */ })
+    }
     return true
   }
 
