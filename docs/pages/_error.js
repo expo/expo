@@ -227,10 +227,22 @@ function replaceVersionWithLatest(path) {
   return path.replace(new RegExp(VERSION_PART_PATTERN), 'latest');
 }
 
+/**
+ * Determine if the path requires versioning, if not we can remove the versioned prefix from the path.
+ * The following paths require versioning:
+ *   - `/versions/<version>/sdk/**`, pages within the Expo SDK docs.
+ *   - `/versions/<version>/react-native/**`, pages within the React Native API docs.
+ *   - `/versions/<version>/`, the index of a specific Expo SDK version.
+ * All other paths shouldn't require versioning, some of them are:
+ *   - `/versions/<version>/workflow/expo-cli/, moved outside versioned folders.
+ *   - `/versions/<version>/guides/assets/, moved outside versioned folders.
+ */
 function pathRequiresVersioning(path) {
-  return (
-    path.match(new RegExp(SDK_PATH_PATTERN)) || path.match(new RegExp(REACT_NATIVE_PATH_PATTERN))
-  );
+  const isExpoSdkPage = path.match(new RegExp(SDK_PATH_PATTERN));
+  const isExpoSdkIndexPage = path.match(new RegExp(VERSIONED_PATH_PATTERN + '/$'));
+  const isReactNativeApiPage = path.match(new RegExp(REACT_NATIVE_PATH_PATTERN));
+
+  return isExpoSdkIndexPage || isExpoSdkPage || isReactNativeApiPage;
 }
 
 function removeVersionFromPath(path) {
@@ -287,4 +299,7 @@ const RENAMED_PAGES = {
   // Additional redirects based on Sentry (04/28/2020)
   '/next-steps/installation/': '/get-started/installation/',
   '/guides/release-channels/': '/distribution/release-channels/',
+
+  // Redirects based on Next 9 upgrade (09/11/2020)
+  '/api/': '/versions/latest/',
 };
