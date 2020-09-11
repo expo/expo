@@ -40,14 +40,13 @@
       self.window = [[UIWindow alloc] initWithFrame:CGRectMake(0,
                                                                screenSize.height - 36 - bottomInsets,
                                                                screenSize.width,
-                                                               36)];
+                                                               36 + bottomInsets)];
       self.window.windowLevel = UIWindowLevelStatusBar + 1;
       // set a root VC so rotation is supported
       self.window.rootViewController = [UIViewController new];
-      
+      self.window.backgroundColor = [EXUtil colorWithRGB:0xfafafa];
+
       UIView *containerView = [UIView new];
-      containerView.backgroundColor = [EXUtil colorWithRGB:0xfafafa];
-      
       [self.window addSubview:containerView];
       
       CALayer *topBorderLayer = [CALayer layer];
