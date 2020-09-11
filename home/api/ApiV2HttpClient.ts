@@ -71,6 +71,7 @@ export default class ApiV2HttpClient {
       const responseError = result.errors[0];
       const error = new ApiV2Error(responseError.message, responseError.code);
       error.serverStack = responseError.stack;
+      error.metadata = responseError.metadata;
       throw error;
     }
 
