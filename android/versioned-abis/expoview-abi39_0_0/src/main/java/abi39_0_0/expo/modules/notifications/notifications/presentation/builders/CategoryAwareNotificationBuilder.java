@@ -69,6 +69,6 @@ public class CategoryAwareNotificationBuilder extends ExpoNotificationBuilder {
       .setLabel(action.getPlaceholder())
       .build();
 
-    return new NotificationCompat.Action.Builder(super.getIcon(), action.getSubmitButtonTitle(), intent).addRemoteInput(remoteInput).build();
+    return new NotificationCompat.Action.Builder(super.getIcon(), action.getTitle(), intent).addRemoteInput(remoteInput).build();
   }
 }
