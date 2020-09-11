@@ -371,6 +371,34 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
+- (void)_showSplashScreenWithProvider:(id<EXSplashScreenViewProvider>)provider
+{
+  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
+
+  // EXSplashScreenService presents a splash screen on a root view controller
+  // at the start of the app. Since we want the EXAppViewController to manage
+  // the lifecycle of the splash screen we need to:
+  // 1. present the splash screen on EXAppViewController
+  // 2. hide the splash screen of root view controller
+  void (^hideRootViewControllerSplashScreen)(void) = ^void() {
+    UIViewController *rootViewController = [UIApplication sharedApplication].keyWindow.rootViewController;
+    [splashScreenService hideSplashScreenFor:rootViewController
+                             successCallback:^(BOOL hasEffect){}
+                             failureCallback:^(NSString * _Nonnull message) {
+      UMLogWarn(@"Hiding splash screen from root view controller did not succeed: %@", message);
+    }];
+  };
+
+  UM_WEAKIFY(self);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    UM_ENSURE_STRONGIFY(self);
+    [splashScreenService showSplashScreenFor:self
+                    splashScreenViewProvider:provider
+                             successCallback:hideRootViewControllerSplashScreen
+                             failureCallback:^(NSString *message){ UMLogWarn(@"%@", message); }];
+  });
+}
+
 #pragma mark - EXAppLoaderDelegate
 
 - (void)appLoader:(EXAppLoader *)appLoader didLoadOptimisticManifest:(NSDictionary *)manifest
