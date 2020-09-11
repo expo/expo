@@ -21,8 +21,7 @@ const STYLES_TITLE_TEXT = css`
   white-space: nowrap;
   padding-left: 8px;
   font-size: 1.2rem;
-  display: flex;
-  font-family: ${Constants.fonts.demi};
+  font-family: ${Constants.fonts.bold};
   cursor: pointer;
 `;
 
@@ -54,16 +53,13 @@ const STYLES_NAV = css`
   align-items: center;
   justify-content: space-between;
   position: relative;
-  background-color: white;
+  background-color: ${Constants.expoColors.white};
   z-index: 2;
   margin: 0 auto;
   padding: 0 16px;
   height: 60px;
-  width: auto;
-  max-width: 1440px;
   box-sizing: unset;
-
-  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     border-bottom: 1px solid ${Constants.expoColors.gray[250]};
   }
 `;
@@ -71,14 +67,17 @@ const STYLES_NAV = css`
 const STYLES_MOBILE_NAV = css`
   padding: 0px;
   height: 56px;
+  background: ${Constants.expoColors.white};
+  display: none;
 
-  @media screen and (min-width: ${Constants.breakpoints.mobileStrict}) {
-    display: none;
+  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+    display: flex;
+    border-bottom: 1px solid ${Constants.expoColors.gray[250]};
   }
 `;
 
 const STYLES_STICKY = css`
-  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     position: sticky;
     top: 0px;
     z-index: 3;
@@ -86,7 +85,7 @@ const STYLES_STICKY = css`
 `;
 
 const STYLES_SEARCH_OVERLAY = css`
-  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     z-index: 1;
     position: fixed;
     top: 0px;
@@ -99,7 +98,7 @@ const STYLES_SEARCH_OVERLAY = css`
 `;
 
 const STYLES_HIDDEN_ON_MOBILE = css`
-  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     display: none;
   }
 `;
@@ -107,7 +106,7 @@ const STYLES_HIDDEN_ON_MOBILE = css`
 const SECTION_LINKS_WRAPPER = css`
   margin-left: 16px;
 
-  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     margin-left: 0px;
   }
 `;
@@ -121,38 +120,37 @@ const STYLES_MENU_BUTTON_CONTAINER = css`
 const STYLES_MENU_BUTTON = css`
   display: none;
   cursor: pointer;
-  height: 100%;
   align-items: center;
   justify-content: center;
   height: 40px;
   width: 40px;
-  border-radius: 2px;
+  border-radius: 4px;
 
   :hover {
     background-color: ${Constants.expoColors.gray[100]};
   }
 
-  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     display: grid;
   }
 `;
 
 const SECTION_LINK = css`
   text-decoration: none;
-  font-weight: 900;
-  font-family: expo-brand-demi, sans-serif;
+  font-family: ${Constants.fontFamilies.demi};
 
   padding: 0 16px;
   height: 40px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-radius: 2px;
+  border-radius: 4px;
+
   :hover {
-    background-color: ${Constants.expoColors.gray[100]};
+    background-color: ${Constants.expoColors.gray[200]};
   }
 
-  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     height: 56px;
     border-radius: 0px;
   }
@@ -163,9 +161,7 @@ const SECTION_LINK_ACTIVE = css`
 `;
 
 const SECTION_LINK_TEXT = css`
-  color: #000 !important;
-  position: relative;
-  top: 2px;
+  color: ${Constants.colors.black90} !important;
   bottom: 0;
   left: 0;
   right: 0;
@@ -187,9 +183,6 @@ function SectionContainer({ spaceBetween = 0, spaceAround = 0, children, style, 
 
 export default class DocumentationHeader extends React.PureComponent {
   render() {
-    const HIDE_ON_MOBILE = true;
-    const SHOW_ON_MOBILE = false;
-
     return (
       <div>
         <header className={`${STYLES_NAV} ${STYLES_STICKY}`}>
@@ -207,7 +200,7 @@ export default class DocumentationHeader extends React.PureComponent {
                 </a>
               </Link>
 
-              {this._renderSectionLinks(HIDE_ON_MOBILE)}
+              {this._renderSectionLinks(true)}
             </div>
           </div>
           <div className={STYLES_RIGHT}>
@@ -215,7 +208,7 @@ export default class DocumentationHeader extends React.PureComponent {
               <AlgoliaSearch
                 router={this.props.router}
                 version={this.props.version}
-                hiddenOnMobile={HIDE_ON_MOBILE}
+                hiddenOnMobile={true}
               />
             )}
 
@@ -242,11 +235,11 @@ export default class DocumentationHeader extends React.PureComponent {
             <AlgoliaSearch
               router={this.props.router}
               version={this.props.version}
-              hiddenOnMobile={SHOW_ON_MOBILE}
+              hiddenOnMobile={false}
               onToggleSearch={this.props.onToggleSearch}
             />
           ) : (
-            this._renderSectionLinks(SHOW_ON_MOBILE)
+            this._renderSectionLinks(false)
           )}
         </header>
         <div className={`${this.props.isMobileSearchActive && STYLES_SEARCH_OVERLAY}`} />

@@ -44,7 +44,7 @@ function appendProperty(formattedSchema, property, _nestingLevel) {
   formattedSchema.push({
     name: nestingLevel
       ? `<subpropertyAnchor><inlineCode>${propertyKey}</inlineCode></subpropertyAnchor>`
-      : `#### \`${propertyKey}\``,
+      : `\`${propertyKey}\``,
     description: createDescription(property),
     nestingLevel,
   });
@@ -115,7 +115,7 @@ export default class AppConfigSchemaPropertiesTable extends React.Component {
                   <div
                     data-testid={property.name}
                     style={{
-                      marginLeft: `${12 + property.nestingLevel * 32}px`,
+                      marginLeft: `${property.nestingLevel * 32}px`,
                       display: property.nestingLevel ? 'list-item' : 'block',
                       listStyleType: property.nestingLevel % 2 ? 'default' : 'circle',
                       width: 'fit-content',

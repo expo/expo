@@ -2,13 +2,10 @@ import styled, { keyframes, css } from 'react-emotion';
 import * as React from 'react';
 import BulletIcon from '~/components/icons/Bullet';
 import * as Constants from '~/common/constants';
+import { InlineCode } from '~/components/base/code';
+import { H4 } from '~/components/base/headings';
 
 const STYLES_TITLE = css`
-  font-family: ${Constants.fonts.demi};
-  font-weight: 400;
-  line-height: 1.625rem;
-  font-size: 1.1rem;
-  margin-bottom: 1rem;
   margin-top: 2rem;
 `;
 
@@ -54,35 +51,6 @@ const STYLES_EXTERNAL_LINK = css`
   }
 `;
 
-const STYLES_INLINE_CODE = css`
-  color: ${Constants.expoColors.gray[900]};
-  :hover {
-    color: ${Constants.colors.expoLighter};
-  }
-  font-family: ${Constants.fontFamilies.mono};
-  font-size: 0.9rem;
-  white-space: pre-wrap;
-  display: inline;
-  padding: 4px;
-  margin: 2px;
-  line-height: 20px;
-  max-width: 100%;
-
-  word-wrap: break-word;
-  background-color: ${Constants.expoColors.gray[200]};
-  border-radius: 2px;
-  vertical-align: middle;
-  overflow-x: scroll;
-
-  ::before {
-    content: '';
-  }
-
-  ::after {
-    content: '';
-  }
-`;
-
 export default class TableOfContentSection extends React.Component {
   render() {
     const { title, contents, horizontal } = this.props;
@@ -92,7 +60,7 @@ export default class TableOfContentSection extends React.Component {
           href={`#${createAnchorLink(title)}`}
           className={STYLES_EXTERNAL_LINK}
           rel="noopener noreferrer">
-          <p className={STYLES_TITLE}>{title}</p>
+          <H4 className={STYLES_TITLE}>{title}</H4>
         </a>
         <ul
           className={css`
@@ -116,7 +84,7 @@ export default class TableOfContentSection extends React.Component {
                   <div className={horizontal ? STYLES_HORIZONTAL_BULLET : STYLES_VERTICAL_BULLET}>
                     <BulletIcon />
                   </div>
-                  <code className={STYLES_INLINE_CODE}>{data}</code>
+                  <InlineCode>{data}</InlineCode>
                 </li>
               </a>
             );

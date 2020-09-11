@@ -9,21 +9,24 @@ const STYLES_DETAILS = css`
 
 const STYLES_SUMMARY = css`
   margin-bottom: 0px;
-  font-family: ${Constants.fontFamilies.bold};
+  font-family: ${Constants.fontFamilies.demi};
   font-weight: 400;
-  letter-spacing: 0.3px;
+`;
+
+const STYLES_CONTENTS = css`
+  margin-left: 1rem;
 `;
 
 export const ExpoKitDetails = ({ children }) => (
   <details className={STYLES_DETAILS}>
     <summary className={STYLES_SUMMARY}>ExpoKit</summary>
-    {children}
+    <div className={STYLES_CONTENTS}>{children}</div>
   </details>
 );
 
 export const BareWorkflowDetails = ({ children }) => (
   <details className={STYLES_DETAILS}>
     <summary className={STYLES_SUMMARY}>Bare Workflow</summary>
-    {children}
+    <div className={STYLES_CONTENTS}>{children}</div>
   </details>
 );

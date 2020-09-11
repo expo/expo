@@ -1,4 +1,5 @@
 import * as Constants from '~/common/constants';
+import { h3, h4, p } from '~/components/base/typography';
 
 export const globalExtras = `
   img.wide-image {
@@ -14,38 +15,37 @@ export const globalExtras = `
     outline: none;
   }
 
-  blockquote {
-    background: #fbfbfb;
-  }
-
   details {
-    margin-bottom: 20px;
-    padding-top: 20px;
+    margin-bottom: 1rem;
+    padding-top: 1rem;
   }
 
   details summary {
     outline: none;
     cursor: pointer;
-    margin-bottom: 15px;
+    margin-bottom: 0.5rem;
   }
 
   details summary h3 {
     font-size: 1.2rem;
-    font-family: expo-brand-bold,sans-serif;
+    font-weight: 500;
+    font-family: ${Constants.fonts.demi};
+    color: ${Constants.colors.black90};
     display: inline;
   }
 
   details summary h4 {
+    font-family: ${Constants.fonts.demi};
+    color: ${Constants.colors.black90};
     font-size: 1.1rem;
-    font-family: expo-brand-bold,sans-serif;
+    font-weight: 500;
     display: inline;
   }
 
   details summary p {
-    margin-top: 10px;
-    margin-right: 15px;
-    line-height: 1.725rem;
-    letter-spacing: 0.2px;
+    margin-top: 0.5rem;
+    margin-right: 1rem;
+    line-height: 160%;
   }
 
   details summary:hover {
@@ -53,40 +53,44 @@ export const globalExtras = `
   }
 
   details p {
-    margin-left: 15px;
+    margin-left: 1rem;
   }
 
   .snack-inline-example-button {
-    display: inline-block;
+    display: grid;
+    grid-template-columns: 16px 1fr;
+    grid-gap: 8px;
+    align-items: center;
     border: none;
-    border-radius: 3px;
-    padding: 0.8rem 1rem;
+    border-radius: 4px;
+    padding: 0 16px;
+    height: 40px;
     margin: 0;
     margin-bottom: 0.5rem;
     text-decoration: none;
-    background: #5844ed;
-    color: #ffffff;
-    font-family: sans-serif;
+    background: ${Constants.expoColors.primary[500]};;
+    color: ${Constants.expoColors.white};;
+    font-family: ${Constants.fontFamilies.book};;
     font-size: 1rem;
     cursor: pointer;
-    text-align: center;
-    transition: background 250ms ease-in-out, 
-                transform 150ms ease;
     -webkit-appearance: none;
     -moz-appearance: none;
+    transition: all 170ms linear;
   }
 
   .snack-inline-example-button:hover, .snack-inline-example-button:focus  {
-    background: #322596;
+    box-shadow: 0 2px 8px rgba(0, 1, 0, 0.2);
+    opacity: 0.85;
   }
 
   .snack-inline-example-button:focus {
-      outline: 1px solid #fff;
-      outline-offset: -4px;
+    outline: 0;
+    border: 0;
   }
 
   .snack-inline-example-button:active {
-      transform: scale(0.99);
+    outline: 0;
+    border: 0;
   }
 
   .diff-container {

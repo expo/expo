@@ -7,7 +7,7 @@ import { H2, H3, H4 } from '~/components/base/headings';
 import { PDIV, P, Quote } from '~/components/base/paragraph';
 
 const STYLES_FOOTER = css`
-  border-top: 1px solid ${Constants.colors.border};
+  border-top: 1px solid ${Constants.expoColors.gray[250]};
   padding: 24px 0 24px 0;
 `;
 

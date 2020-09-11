@@ -3,19 +3,25 @@ import styled, { keyframes, css } from 'react-emotion';
 import * as React from 'react';
 import * as Utilities from '~/common/utilities';
 
-import BulletIcon from '~/components/icons/Bullet';
 import withSlugger from '~/components/page-higher-order/withSlugger';
+
+import * as Constants from '~/common/constants';
+
+import { paragraph } from './typography';
 
 const attributes = {
   'data-text': true,
 };
 
 const STYLES_UNORDERED_LIST = css`
-  padding: 0;
-  margin-top: 24px;
-  padding-left: 24px;
-  list-style-image: none;
-  list-style-type: none;
+  ${paragraph}
+  list-style: none;
+  margin-left: 1rem;
+  margin-bottom: 1rem;
+
+  .anchor-icon {
+    display: none;
+  }
 `;
 
 export const UL = ({ children }) => (
@@ -26,15 +32,10 @@ export const UL = ({ children }) => (
 
 // TODO(jim): Get anchors working properly for ordered lists.
 const STYLES_ORDERED_LIST = css`
-  padding: 0;
-  margin-top: 24px;
-  padding-left: 16px;
-  list-style-position: outside;
-  list-style-image: none;
-
-  .bullet-icon {
-    display: none;
-  }
+  ${paragraph}
+  list-style: none;
+  margin-left: 1rem;
+  margin-bottom: 1rem;
 
   .anchor-icon {
     display: none;
@@ -48,30 +49,21 @@ export const OL = ({ children }) => (
 );
 
 const STYLES_LIST_ITEM = css`
-  position: relative;
-  margin-bottom: 16px;
-`;
+  padding: 0.25rem 0;
+  :before {
+    content: '•';
+    font-size: 130%;
+    line-height: 0;
+    margin: 0 0.5rem 0 -1rem;
+    position: relative;
+    color: ${Constants.colors.black80};
+  }
 
-const STYLES_LIST_ITEM_BULLET = css`
-  position: absolute;
-  top: 4px;
-  left: -20px;
-  width: 20px;
-  height: 20px;
-`;
-
-const STYLES_LIST_ITEM_BODY = css`
-  font-size: 1rem;
-  line-height: 1.8rem;
+  > div {
+    display: inline;
+  }
 `;
 
 export const LI = ({ children }) => {
-  return (
-    <li className={`${STYLES_LIST_ITEM} docs-list-item`}>
-      <div className={STYLES_LIST_ITEM_BULLET}>
-        <BulletIcon />
-      </div>
-      <div className={STYLES_LIST_ITEM_BODY}>{children}</div>
-    </li>
-  );
+  return <li className={`${STYLES_LIST_ITEM} docs-list-item`}>{children}</li>;
 };

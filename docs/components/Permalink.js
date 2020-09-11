@@ -26,7 +26,7 @@ const STYLES_CONTAINER = css`
   .anchor-icon {
     cursor: pointer;
     position: absolute;
-    top: 2px;
+    top: 8px;
     width: 20px;
     height: 20px;
     visibility: hidden;

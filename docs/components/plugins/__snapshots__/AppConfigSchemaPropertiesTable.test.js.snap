@@ -21,70 +21,30 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       <tr>
         <td>
           <div
-            data-testid="#### \`name\`"
-            style="margin-left: 12px; display: block; list-style-type: circle; overflow-x: visible;"
+            data-testid="\`name\`"
+            style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
           >
-            <h4
-              class="css-1l3zmkw"
-              data-heading="true"
+            <div
+              class="css-12onb79 "
+              data-text="true"
             >
-              <div
-                class="css-i07u6a"
+              <code
+                class="css-1aurupk inline"
               >
-                <span
-                  class="css-1fj428k"
-                  id="name"
-                />
-                <a
-                  class="permalink css-1lc60ja"
-                  href="#name"
-                >
-                  <svg
-                    aria-label="permalink"
-                    class="anchor-icon"
-                    version="1.1"
-                    viewBox="0 0 11 11"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <g
-                      fill="none"
-                      fill-rule="evenodd"
-                      stroke="none"
-                      stroke-width="1"
-                    >
-                      <g
-                        fill="#9B9B9B"
-                        transform="translate(-432.000000, -181.000000)"
-                      >
-                        <path
-                          d="M442.36949,184.673746 L440.543368,186.500079 C440.047223,186.996013 439.369736,187.191548 438.72445,187.101937 L439.934732,185.891655 L441.760854,184.065321 C442.26505,183.561549 442.26505,182.743395 441.760854,182.238988 C441.256658,181.735003 440.438928,181.735003 439.934732,182.238988 L438.10861,184.065321 L436.897904,185.275815 C436.808293,184.630529 437.003616,183.95283 437.499762,183.456684 L439.325883,181.630775 C440.166281,180.789742 441.528881,180.789742 442.369278,181.630775 C443.209887,182.470748 443.209887,183.833772 442.36949,184.673746 L442.36949,184.673746 Z M438.717247,185.891655 L436.891125,187.717565 L436.282277,187.108928 L438.10861,185.282594 L438.717247,185.891655 L438.717247,185.891655 Z M433.238882,188.934838 C432.734686,189.439246 432.734686,190.256552 433.238882,190.760959 C433.743078,191.265579 434.560807,191.265579 435.065003,190.760959 L436.891125,188.934838 L438.101619,187.724344 C438.191442,188.369842 437.996119,189.047329 437.499974,189.543474 L435.673852,191.369384 C434.833455,192.210205 433.470854,192.210205 432.630457,191.369384 C431.789848,190.529411 431.789848,189.166387 432.630457,188.326413 L434.456579,186.500079 C434.952724,186.003722 435.630423,185.808399 436.275709,185.898222 L435.065215,187.108928 L433.238882,188.934838 L433.238882,188.934838 Z"
-                        />
-                      </g>
-                    </g>
-                  </svg>
-                </a>
-                <div
-                  class="permalink-child"
-                >
-                  <code
-                    class="css-7zpg9q inline"
-                  >
-                    name
-                  </code>
-                </div>
-              </div>
-            </h4>
+                name
+              </code>
+            </div>
           </div>
         </td>
         <td
           class="css-1arns64"
         >
           <div
-            class="css-100y9e2 "
+            class="css-12onb79 "
             data-text="true"
           >
             <strong
-              class="css-utowyr"
+              class="css-ee2aqm"
             >
               (string)
             </strong>
@@ -93,11 +53,15 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-1njguyv"
             >
               <summary
-                class="css-7wjyuo"
+                class="css-sc2dxa"
               >
                 Bare Workflow
               </summary>
-              Edit the 'Display Name' field in Xcode
+              <div
+                class="css-1875xqs"
+              >
+                Edit the 'Display Name' field in Xcode
+              </div>
             </details>
           </div>
         </td>
@@ -105,70 +69,30 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       <tr>
         <td>
           <div
-            data-testid="#### \`androidNavigationBar\`"
-            style="margin-left: 12px; display: block; list-style-type: circle; overflow-x: visible;"
+            data-testid="\`androidNavigationBar\`"
+            style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
           >
-            <h4
-              class="css-1l3zmkw"
-              data-heading="true"
+            <div
+              class="css-12onb79 "
+              data-text="true"
             >
-              <div
-                class="css-i07u6a"
+              <code
+                class="css-1aurupk inline"
               >
-                <span
-                  class="css-1fj428k"
-                  id="androidnavigationbar"
-                />
-                <a
-                  class="permalink css-1lc60ja"
-                  href="#androidnavigationbar"
-                >
-                  <svg
-                    aria-label="permalink"
-                    class="anchor-icon"
-                    version="1.1"
-                    viewBox="0 0 11 11"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <g
-                      fill="none"
-                      fill-rule="evenodd"
-                      stroke="none"
-                      stroke-width="1"
-                    >
-                      <g
-                        fill="#9B9B9B"
-                        transform="translate(-432.000000, -181.000000)"
-                      >
-                        <path
-                          d="M442.36949,184.673746 L440.543368,186.500079 C440.047223,186.996013 439.369736,187.191548 438.72445,187.101937 L439.934732,185.891655 L441.760854,184.065321 C442.26505,183.561549 442.26505,182.743395 441.760854,182.238988 C441.256658,181.735003 440.438928,181.735003 439.934732,182.238988 L438.10861,184.065321 L436.897904,185.275815 C436.808293,184.630529 437.003616,183.95283 437.499762,183.456684 L439.325883,181.630775 C440.166281,180.789742 441.528881,180.789742 442.369278,181.630775 C443.209887,182.470748 443.209887,183.833772 442.36949,184.673746 L442.36949,184.673746 Z M438.717247,185.891655 L436.891125,187.717565 L436.282277,187.108928 L438.10861,185.282594 L438.717247,185.891655 L438.717247,185.891655 Z M433.238882,188.934838 C432.734686,189.439246 432.734686,190.256552 433.238882,190.760959 C433.743078,191.265579 434.560807,191.265579 435.065003,190.760959 L436.891125,188.934838 L438.101619,187.724344 C438.191442,188.369842 437.996119,189.047329 437.499974,189.543474 L435.673852,191.369384 C434.833455,192.210205 433.470854,192.210205 432.630457,191.369384 C431.789848,190.529411 431.789848,189.166387 432.630457,188.326413 L434.456579,186.500079 C434.952724,186.003722 435.630423,185.808399 436.275709,185.898222 L435.065215,187.108928 L433.238882,188.934838 L433.238882,188.934838 Z"
-                        />
-                      </g>
-                    </g>
-                  </svg>
-                </a>
-                <div
-                  class="permalink-child"
-                >
-                  <code
-                    class="css-7zpg9q inline"
-                  >
-                    androidNavigationBar
-                  </code>
-                </div>
-              </div>
-            </h4>
+                androidNavigationBar
+              </code>
+            </div>
           </div>
         </td>
         <td
           class="css-1arns64"
         >
           <div
-            class="css-100y9e2 "
+            class="css-12onb79 "
             data-text="true"
           >
             <strong
-              class="css-utowyr"
+              class="css-ee2aqm"
             >
               (object)
             </strong>
@@ -177,21 +101,29 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-1njguyv"
             >
               <summary
-                class="css-7wjyuo"
+                class="css-sc2dxa"
               >
                 ExpoKit
               </summary>
-              Set this property using AppConstants.java.
+              <div
+                class="css-1875xqs"
+              >
+                Set this property using AppConstants.java.
+              </div>
             </details>
             <details
               class="css-1njguyv"
             >
               <summary
-                class="css-7wjyuo"
+                class="css-sc2dxa"
               >
                 Bare Workflow
               </summary>
-              Set this property using just Xcode
+              <div
+                class="css-1875xqs"
+              >
+                Set this property using just Xcode
+              </div>
             </details>
           </div>
         </td>
@@ -200,14 +132,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <td>
           <div
             data-testid="<subpropertyAnchor><inlineCode>visible</inlineCode></subpropertyAnchor>"
-            style="margin-left: 44px; display: list-item; list-style-type: default; overflow-x: visible;"
+            style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
           >
             <div
-              class="css-100y9e2 "
+              class="css-12onb79 "
               data-text="true"
             >
               <div
-                class="css-i07u6a"
+                class="css-3t0ask"
               >
                 <span
                   class="css-1fj428k"
@@ -221,32 +153,33 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   <svg
                     aria-label="permalink"
                     class="anchor-icon"
-                    version="1.1"
-                    viewBox="0 0 11 11"
+                    fill="none"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
                     xmlns="http://www.w3.org/2000/svg"
                   >
-                    <g
-                      fill="none"
-                      fill-rule="evenodd"
-                      stroke="none"
-                      stroke-width="1"
-                    >
-                      <g
-                        fill="#9B9B9B"
-                        transform="translate(-432.000000, -181.000000)"
-                      >
-                        <path
-                          d="M442.36949,184.673746 L440.543368,186.500079 C440.047223,186.996013 439.369736,187.191548 438.72445,187.101937 L439.934732,185.891655 L441.760854,184.065321 C442.26505,183.561549 442.26505,182.743395 441.760854,182.238988 C441.256658,181.735003 440.438928,181.735003 439.934732,182.238988 L438.10861,184.065321 L436.897904,185.275815 C436.808293,184.630529 437.003616,183.95283 437.499762,183.456684 L439.325883,181.630775 C440.166281,180.789742 441.528881,180.789742 442.369278,181.630775 C443.209887,182.470748 443.209887,183.833772 442.36949,184.673746 L442.36949,184.673746 Z M438.717247,185.891655 L436.891125,187.717565 L436.282277,187.108928 L438.10861,185.282594 L438.717247,185.891655 L438.717247,185.891655 Z M433.238882,188.934838 C432.734686,189.439246 432.734686,190.256552 433.238882,190.760959 C433.743078,191.265579 434.560807,191.265579 435.065003,190.760959 L436.891125,188.934838 L438.101619,187.724344 C438.191442,188.369842 437.996119,189.047329 437.499974,189.543474 L435.673852,191.369384 C434.833455,192.210205 433.470854,192.210205 432.630457,191.369384 C431.789848,190.529411 431.789848,189.166387 432.630457,188.326413 L434.456579,186.500079 C434.952724,186.003722 435.630423,185.808399 436.275709,185.898222 L435.065215,187.108928 L433.238882,188.934838 L433.238882,188.934838 Z"
-                        />
-                      </g>
-                    </g>
+                    <path
+                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
                   </svg>
                 </a>
                 <div
                   class="permalink-child"
                 >
                   <code
-                    class="css-7zpg9q inline"
+                    class="css-1aurupk inline"
                   >
                     visible
                   </code>
@@ -259,11 +192,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1arns64"
         >
           <div
-            class="css-100y9e2 "
+            class="css-12onb79 "
             data-text="true"
           >
             <strong
-              class="css-utowyr"
+              class="css-ee2aqm"
             >
               (enum)
             </strong>
@@ -272,11 +205,15 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-1njguyv"
             >
               <summary
-                class="css-7wjyuo"
+                class="css-sc2dxa"
               >
                 ExpoKit
               </summary>
-              Set this property using Xcode.
+              <div
+                class="css-1875xqs"
+              >
+                Set this property using Xcode.
+              </div>
             </details>
           </div>
         </td>
@@ -285,14 +222,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <td>
           <div
             data-testid="<subpropertyAnchor><inlineCode>always</inlineCode></subpropertyAnchor>"
-            style="margin-left: 76px; display: list-item; list-style-type: circle; overflow-x: visible;"
+            style="margin-left: 64px; display: list-item; list-style-type: circle; overflow-x: visible;"
           >
             <div
-              class="css-100y9e2 "
+              class="css-12onb79 "
               data-text="true"
             >
               <div
-                class="css-i07u6a"
+                class="css-3t0ask"
               >
                 <span
                   class="css-1fj428k"
@@ -306,32 +243,33 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   <svg
                     aria-label="permalink"
                     class="anchor-icon"
-                    version="1.1"
-                    viewBox="0 0 11 11"
+                    fill="none"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
                     xmlns="http://www.w3.org/2000/svg"
                   >
-                    <g
-                      fill="none"
-                      fill-rule="evenodd"
-                      stroke="none"
-                      stroke-width="1"
-                    >
-                      <g
-                        fill="#9B9B9B"
-                        transform="translate(-432.000000, -181.000000)"
-                      >
-                        <path
-                          d="M442.36949,184.673746 L440.543368,186.500079 C440.047223,186.996013 439.369736,187.191548 438.72445,187.101937 L439.934732,185.891655 L441.760854,184.065321 C442.26505,183.561549 442.26505,182.743395 441.760854,182.238988 C441.256658,181.735003 440.438928,181.735003 439.934732,182.238988 L438.10861,184.065321 L436.897904,185.275815 C436.808293,184.630529 437.003616,183.95283 437.499762,183.456684 L439.325883,181.630775 C440.166281,180.789742 441.528881,180.789742 442.369278,181.630775 C443.209887,182.470748 443.209887,183.833772 442.36949,184.673746 L442.36949,184.673746 Z M438.717247,185.891655 L436.891125,187.717565 L436.282277,187.108928 L438.10861,185.282594 L438.717247,185.891655 L438.717247,185.891655 Z M433.238882,188.934838 C432.734686,189.439246 432.734686,190.256552 433.238882,190.760959 C433.743078,191.265579 434.560807,191.265579 435.065003,190.760959 L436.891125,188.934838 L438.101619,187.724344 C438.191442,188.369842 437.996119,189.047329 437.499974,189.543474 L435.673852,191.369384 C434.833455,192.210205 433.470854,192.210205 432.630457,191.369384 C431.789848,190.529411 431.789848,189.166387 432.630457,188.326413 L434.456579,186.500079 C434.952724,186.003722 435.630423,185.808399 436.275709,185.898222 L435.065215,187.108928 L433.238882,188.934838 L433.238882,188.934838 Z"
-                        />
-                      </g>
-                    </g>
+                    <path
+                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
                   </svg>
                 </a>
                 <div
                   class="permalink-child"
                 >
                   <code
-                    class="css-7zpg9q inline"
+                    class="css-1aurupk inline"
                   >
                     always
                   </code>
@@ -344,11 +282,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1arns64"
         >
           <div
-            class="css-100y9e2 "
+            class="css-12onb79 "
             data-text="true"
           >
             <strong
-              class="css-utowyr"
+              class="css-ee2aqm"
             >
               (boolean)
             </strong>
@@ -360,14 +298,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <td>
           <div
             data-testid="<subpropertyAnchor><inlineCode>backgroundColor</inlineCode></subpropertyAnchor>"
-            style="margin-left: 44px; display: list-item; list-style-type: default; overflow-x: visible;"
+            style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
           >
             <div
-              class="css-100y9e2 "
+              class="css-12onb79 "
               data-text="true"
             >
               <div
-                class="css-i07u6a"
+                class="css-3t0ask"
               >
                 <span
                   class="css-1fj428k"
@@ -381,32 +319,33 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   <svg
                     aria-label="permalink"
                     class="anchor-icon"
-                    version="1.1"
-                    viewBox="0 0 11 11"
+                    fill="none"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
                     xmlns="http://www.w3.org/2000/svg"
                   >
-                    <g
-                      fill="none"
-                      fill-rule="evenodd"
-                      stroke="none"
-                      stroke-width="1"
-                    >
-                      <g
-                        fill="#9B9B9B"
-                        transform="translate(-432.000000, -181.000000)"
-                      >
-                        <path
-                          d="M442.36949,184.673746 L440.543368,186.500079 C440.047223,186.996013 439.369736,187.191548 438.72445,187.101937 L439.934732,185.891655 L441.760854,184.065321 C442.26505,183.561549 442.26505,182.743395 441.760854,182.238988 C441.256658,181.735003 440.438928,181.735003 439.934732,182.238988 L438.10861,184.065321 L436.897904,185.275815 C436.808293,184.630529 437.003616,183.95283 437.499762,183.456684 L439.325883,181.630775 C440.166281,180.789742 441.528881,180.789742 442.369278,181.630775 C443.209887,182.470748 443.209887,183.833772 442.36949,184.673746 L442.36949,184.673746 Z M438.717247,185.891655 L436.891125,187.717565 L436.282277,187.108928 L438.10861,185.282594 L438.717247,185.891655 L438.717247,185.891655 Z M433.238882,188.934838 C432.734686,189.439246 432.734686,190.256552 433.238882,190.760959 C433.743078,191.265579 434.560807,191.265579 435.065003,190.760959 L436.891125,188.934838 L438.101619,187.724344 C438.191442,188.369842 437.996119,189.047329 437.499974,189.543474 L435.673852,191.369384 C434.833455,192.210205 433.470854,192.210205 432.630457,191.369384 C431.789848,190.529411 431.789848,189.166387 432.630457,188.326413 L434.456579,186.500079 C434.952724,186.003722 435.630423,185.808399 436.275709,185.898222 L435.065215,187.108928 L433.238882,188.934838 L433.238882,188.934838 Z"
-                        />
-                      </g>
-                    </g>
+                    <path
+                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
                   </svg>
                 </a>
                 <div
                   class="permalink-child"
                 >
                   <code
-                    class="css-7zpg9q inline"
+                    class="css-1aurupk inline"
                   >
                     backgroundColor
                   </code>
@@ -419,23 +358,23 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1arns64"
         >
           <div
-            class="css-100y9e2 "
+            class="css-12onb79 "
             data-text="true"
           >
             <strong
-              class="css-utowyr"
+              class="css-ee2aqm"
             >
               (string)
             </strong>
              - Specifies the background color of the navigation bar. 
           </div>
           <div
-            class="css-100y9e2 "
+            class="css-12onb79 "
             data-text="true"
           >
             6 character long hex color string, eg: 
             <code
-              class="css-7zpg9q inline"
+              class="css-1aurupk inline"
             >
               '#000000'
             </code>
@@ -445,70 +384,30 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       <tr>
         <td>
           <div
-            data-testid="#### \`intentFilters\`"
-            style="margin-left: 12px; display: block; list-style-type: circle; overflow-x: visible;"
+            data-testid="\`intentFilters\`"
+            style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
           >
-            <h4
-              class="css-1l3zmkw"
-              data-heading="true"
+            <div
+              class="css-12onb79 "
+              data-text="true"
             >
-              <div
-                class="css-i07u6a"
+              <code
+                class="css-1aurupk inline"
               >
-                <span
-                  class="css-1fj428k"
-                  id="intentfilters"
-                />
-                <a
-                  class="permalink css-1lc60ja"
-                  href="#intentfilters"
-                >
-                  <svg
-                    aria-label="permalink"
-                    class="anchor-icon"
-                    version="1.1"
-                    viewBox="0 0 11 11"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <g
-                      fill="none"
-                      fill-rule="evenodd"
-                      stroke="none"
-                      stroke-width="1"
-                    >
-                      <g
-                        fill="#9B9B9B"
-                        transform="translate(-432.000000, -181.000000)"
-                      >
-                        <path
-                          d="M442.36949,184.673746 L440.543368,186.500079 C440.047223,186.996013 439.369736,187.191548 438.72445,187.101937 L439.934732,185.891655 L441.760854,184.065321 C442.26505,183.561549 442.26505,182.743395 441.760854,182.238988 C441.256658,181.735003 440.438928,181.735003 439.934732,182.238988 L438.10861,184.065321 L436.897904,185.275815 C436.808293,184.630529 437.003616,183.95283 437.499762,183.456684 L439.325883,181.630775 C440.166281,180.789742 441.528881,180.789742 442.369278,181.630775 C443.209887,182.470748 443.209887,183.833772 442.36949,184.673746 L442.36949,184.673746 Z M438.717247,185.891655 L436.891125,187.717565 L436.282277,187.108928 L438.10861,185.282594 L438.717247,185.891655 L438.717247,185.891655 Z M433.238882,188.934838 C432.734686,189.439246 432.734686,190.256552 433.238882,190.760959 C433.743078,191.265579 434.560807,191.265579 435.065003,190.760959 L436.891125,188.934838 L438.101619,187.724344 C438.191442,188.369842 437.996119,189.047329 437.499974,189.543474 L435.673852,191.369384 C434.833455,192.210205 433.470854,192.210205 432.630457,191.369384 C431.789848,190.529411 431.789848,189.166387 432.630457,188.326413 L434.456579,186.500079 C434.952724,186.003722 435.630423,185.808399 436.275709,185.898222 L435.065215,187.108928 L433.238882,188.934838 L433.238882,188.934838 Z"
-                        />
-                      </g>
-                    </g>
-                  </svg>
-                </a>
-                <div
-                  class="permalink-child"
-                >
-                  <code
-                    class="css-7zpg9q inline"
-                  >
-                    intentFilters
-                  </code>
-                </div>
-              </div>
-            </h4>
+                intentFilters
+              </code>
+            </div>
           </div>
         </td>
         <td
           class="css-1arns64"
         >
           <div
-            class="css-100y9e2 "
+            class="css-12onb79 "
             data-text="true"
           >
             <strong
-              class="css-utowyr"
+              class="css-ee2aqm"
             >
               (array)
             </strong>
@@ -517,27 +416,52 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-1njguyv"
             >
               <summary
-                class="css-7wjyuo"
+                class="css-sc2dxa"
               >
                 Bare Workflow
               </summary>
-              This is set in AndroidManifest.xml directly.
+              <div
+                class="css-1875xqs"
+              >
+                This is set in AndroidManifest.xml directly.
+              </div>
             </details>
           </div>
           <blockquote
-            class="css-80nrkz"
+            class="css-1qybt24"
             data-text="true"
           >
-            <div
-              class="css-100y9e2 "
-              data-text="true"
-            >
-               
-              [{
+            <div>
+              <div
+                style="margin-top: 2px;"
+              >
+                <svg
+                  aria-label="check"
+                  fill="none"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  width="16"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12c6.628 0 12-5.373 12-12S18.628 0 12 0zm-.015 5.419c.269-.292.596-.44.973-.44.306 0 .575.11.776.317.203.207.306.472.306.786 0 .394-.137.745-.409 1.042-.279.306-.605.462-.968.462-.3 0-.566-.113-.768-.326-.201-.208-.304-.48-.304-.809 0-.401.133-.749.394-1.032zm1.999 11.305c-.995.936-1.705 1.52-2.17 1.784-.496.284-.905.423-1.25.423-.342 0-.621-.114-.83-.338-.202-.218-.305-.51-.305-.87 0-.92.521-3.058 1.595-6.534a1.47 1.47 0 00.042-.166c-.04.017-.087.041-.14.075-.088.055-.356.265-1.14 1.03a.334.334 0 01-.438.025l-.463-.358a.334.334 0 01-.043-.49c.722-.794 1.395-1.371 2.002-1.714.636-.358 1.173-.533 1.643-.533.303 0 .548.076.729.225.196.164.3.391.3.658 0 .175-.084.63-.697 2.686-.875 2.937-1.084 4.003-1.099 4.372.166-.098.558-.376 1.395-1.162a.334.334 0 01.462.003l.411.4a.334.334 0 01-.004.484z"
+                    fill="#5C5C71"
+                  />
+                </svg>
+              </div>
+            </div>
+            <div>
+              <div
+                class="css-12onb79 "
+                data-text="true"
+              >
+                 
+                [{
 "autoVerify": true,
 "data": {"host": "*.expo.io"
 }
 }]
+              </div>
             </div>
           </blockquote>
         </td>
@@ -546,14 +470,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <td>
           <div
             data-testid="<subpropertyAnchor><inlineCode>autoVerify</inlineCode></subpropertyAnchor>"
-            style="margin-left: 44px; display: list-item; list-style-type: default; overflow-x: visible;"
+            style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
           >
             <div
-              class="css-100y9e2 "
+              class="css-12onb79 "
               data-text="true"
             >
               <div
-                class="css-i07u6a"
+                class="css-3t0ask"
               >
                 <span
                   class="css-1fj428k"
@@ -567,32 +491,33 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   <svg
                     aria-label="permalink"
                     class="anchor-icon"
-                    version="1.1"
-                    viewBox="0 0 11 11"
+                    fill="none"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
                     xmlns="http://www.w3.org/2000/svg"
                   >
-                    <g
-                      fill="none"
-                      fill-rule="evenodd"
-                      stroke="none"
-                      stroke-width="1"
-                    >
-                      <g
-                        fill="#9B9B9B"
-                        transform="translate(-432.000000, -181.000000)"
-                      >
-                        <path
-                          d="M442.36949,184.673746 L440.543368,186.500079 C440.047223,186.996013 439.369736,187.191548 438.72445,187.101937 L439.934732,185.891655 L441.760854,184.065321 C442.26505,183.561549 442.26505,182.743395 441.760854,182.238988 C441.256658,181.735003 440.438928,181.735003 439.934732,182.238988 L438.10861,184.065321 L436.897904,185.275815 C436.808293,184.630529 437.003616,183.95283 437.499762,183.456684 L439.325883,181.630775 C440.166281,180.789742 441.528881,180.789742 442.369278,181.630775 C443.209887,182.470748 443.209887,183.833772 442.36949,184.673746 L442.36949,184.673746 Z M438.717247,185.891655 L436.891125,187.717565 L436.282277,187.108928 L438.10861,185.282594 L438.717247,185.891655 L438.717247,185.891655 Z M433.238882,188.934838 C432.734686,189.439246 432.734686,190.256552 433.238882,190.760959 C433.743078,191.265579 434.560807,191.265579 435.065003,190.760959 L436.891125,188.934838 L438.101619,187.724344 C438.191442,188.369842 437.996119,189.047329 437.499974,189.543474 L435.673852,191.369384 C434.833455,192.210205 433.470854,192.210205 432.630457,191.369384 C431.789848,190.529411 431.789848,189.166387 432.630457,188.326413 L434.456579,186.500079 C434.952724,186.003722 435.630423,185.808399 436.275709,185.898222 L435.065215,187.108928 L433.238882,188.934838 L433.238882,188.934838 Z"
-                        />
-                      </g>
-                    </g>
+                    <path
+                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
                   </svg>
                 </a>
                 <div
                   class="permalink-child"
                 >
                   <code
-                    class="css-7zpg9q inline"
+                    class="css-1aurupk inline"
                   >
                     autoVerify
                   </code>
@@ -605,11 +530,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1arns64"
         >
           <div
-            class="css-100y9e2 "
+            class="css-12onb79 "
             data-text="true"
           >
             <strong
-              class="css-utowyr"
+              class="css-ee2aqm"
             >
               (boolean)
             </strong>
@@ -621,14 +546,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <td>
           <div
             data-testid="<subpropertyAnchor><inlineCode>data</inlineCode></subpropertyAnchor>"
-            style="margin-left: 44px; display: list-item; list-style-type: default; overflow-x: visible;"
+            style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
           >
             <div
-              class="css-100y9e2 "
+              class="css-12onb79 "
               data-text="true"
             >
               <div
-                class="css-i07u6a"
+                class="css-3t0ask"
               >
                 <span
                   class="css-1fj428k"
@@ -642,32 +567,33 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   <svg
                     aria-label="permalink"
                     class="anchor-icon"
-                    version="1.1"
-                    viewBox="0 0 11 11"
+                    fill="none"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
                     xmlns="http://www.w3.org/2000/svg"
                   >
-                    <g
-                      fill="none"
-                      fill-rule="evenodd"
-                      stroke="none"
-                      stroke-width="1"
-                    >
-                      <g
-                        fill="#9B9B9B"
-                        transform="translate(-432.000000, -181.000000)"
-                      >
-                        <path
-                          d="M442.36949,184.673746 L440.543368,186.500079 C440.047223,186.996013 439.369736,187.191548 438.72445,187.101937 L439.934732,185.891655 L441.760854,184.065321 C442.26505,183.561549 442.26505,182.743395 441.760854,182.238988 C441.256658,181.735003 440.438928,181.735003 439.934732,182.238988 L438.10861,184.065321 L436.897904,185.275815 C436.808293,184.630529 437.003616,183.95283 437.499762,183.456684 L439.325883,181.630775 C440.166281,180.789742 441.528881,180.789742 442.369278,181.630775 C443.209887,182.470748 443.209887,183.833772 442.36949,184.673746 L442.36949,184.673746 Z M438.717247,185.891655 L436.891125,187.717565 L436.282277,187.108928 L438.10861,185.282594 L438.717247,185.891655 L438.717247,185.891655 Z M433.238882,188.934838 C432.734686,189.439246 432.734686,190.256552 433.238882,190.760959 C433.743078,191.265579 434.560807,191.265579 435.065003,190.760959 L436.891125,188.934838 L438.101619,187.724344 C438.191442,188.369842 437.996119,189.047329 437.499974,189.543474 L435.673852,191.369384 C434.833455,192.210205 433.470854,192.210205 432.630457,191.369384 C431.789848,190.529411 431.789848,189.166387 432.630457,188.326413 L434.456579,186.500079 C434.952724,186.003722 435.630423,185.808399 436.275709,185.898222 L435.065215,187.108928 L433.238882,188.934838 L433.238882,188.934838 Z"
-                        />
-                      </g>
-                    </g>
+                    <path
+                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
                   </svg>
                 </a>
                 <div
                   class="permalink-child"
                 >
                   <code
-                    class="css-7zpg9q inline"
+                    class="css-1aurupk inline"
                   >
                     data
                   </code>
@@ -680,11 +606,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1arns64"
         >
           <div
-            class="css-100y9e2 "
+            class="css-12onb79 "
             data-text="true"
           >
             <strong
-              class="css-utowyr"
+              class="css-ee2aqm"
             >
               (array || object)
             </strong>
@@ -695,14 +621,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <td>
           <div
             data-testid="<subpropertyAnchor><inlineCode>host</inlineCode></subpropertyAnchor>"
-            style="margin-left: 76px; display: list-item; list-style-type: circle; overflow-x: visible;"
+            style="margin-left: 64px; display: list-item; list-style-type: circle; overflow-x: visible;"
           >
             <div
-              class="css-100y9e2 "
+              class="css-12onb79 "
               data-text="true"
             >
               <div
-                class="css-i07u6a"
+                class="css-3t0ask"
               >
                 <span
                   class="css-1fj428k"
@@ -716,32 +642,33 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   <svg
                     aria-label="permalink"
                     class="anchor-icon"
-                    version="1.1"
-                    viewBox="0 0 11 11"
+                    fill="none"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
                     xmlns="http://www.w3.org/2000/svg"
                   >
-                    <g
-                      fill="none"
-                      fill-rule="evenodd"
-                      stroke="none"
-                      stroke-width="1"
-                    >
-                      <g
-                        fill="#9B9B9B"
-                        transform="translate(-432.000000, -181.000000)"
-                      >
-                        <path
-                          d="M442.36949,184.673746 L440.543368,186.500079 C440.047223,186.996013 439.369736,187.191548 438.72445,187.101937 L439.934732,185.891655 L441.760854,184.065321 C442.26505,183.561549 442.26505,182.743395 441.760854,182.238988 C441.256658,181.735003 440.438928,181.735003 439.934732,182.238988 L438.10861,184.065321 L436.897904,185.275815 C436.808293,184.630529 437.003616,183.95283 437.499762,183.456684 L439.325883,181.630775 C440.166281,180.789742 441.528881,180.789742 442.369278,181.630775 C443.209887,182.470748 443.209887,183.833772 442.36949,184.673746 L442.36949,184.673746 Z M438.717247,185.891655 L436.891125,187.717565 L436.282277,187.108928 L438.10861,185.282594 L438.717247,185.891655 L438.717247,185.891655 Z M433.238882,188.934838 C432.734686,189.439246 432.734686,190.256552 433.238882,190.760959 C433.743078,191.265579 434.560807,191.265579 435.065003,190.760959 L436.891125,188.934838 L438.101619,187.724344 C438.191442,188.369842 437.996119,189.047329 437.499974,189.543474 L435.673852,191.369384 C434.833455,192.210205 433.470854,192.210205 432.630457,191.369384 C431.789848,190.529411 431.789848,189.166387 432.630457,188.326413 L434.456579,186.500079 C434.952724,186.003722 435.630423,185.808399 436.275709,185.898222 L435.065215,187.108928 L433.238882,188.934838 L433.238882,188.934838 Z"
-                        />
-                      </g>
-                    </g>
+                    <path
+                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
                   </svg>
                 </a>
                 <div
                   class="permalink-child"
                 >
                   <code
-                    class="css-7zpg9q inline"
+                    class="css-1aurupk inline"
                   >
                     host
                   </code>
@@ -754,11 +681,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1arns64"
         >
           <div
-            class="css-100y9e2 "
+            class="css-12onb79 "
             data-text="true"
           >
             <strong
-              class="css-utowyr"
+              class="css-ee2aqm"
             >
               (string)
             </strong>
