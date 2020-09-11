@@ -6,25 +6,21 @@ import android.os.Parcel;
  * A class representing a single direct reply notification action.
  */
 public class TextInputNotificationAction extends NotificationAction {
-  private final String mSubmitButtonTitle;
   private final String mPlaceholder;
 
-  public TextInputNotificationAction(String identifier, String title, boolean opensAppToForeground, String submitButtonTitle, String placeholder) {
+  public TextInputNotificationAction(String identifier, String title, boolean opensAppToForeground, String placeholder) {
     super(identifier, title, opensAppToForeground);
-    mSubmitButtonTitle = submitButtonTitle;
     mPlaceholder = placeholder;
   }
 
   private TextInputNotificationAction(Parcel in) {
     super(in);
-    mSubmitButtonTitle = in.readString();
     mPlaceholder = in.readString();
   }
 
   @Override
   public void writeToParcel(Parcel dest, int flags) {
     super.writeToParcel(dest, flags);
-    dest.writeString(mSubmitButtonTitle);
     dest.writeString(mPlaceholder);
   }
 
@@ -39,13 +35,6 @@ public class TextInputNotificationAction extends NotificationAction {
       return new TextInputNotificationAction[size];
     }
   };
-
-  public String getSubmitButtonTitle() {
-    if (mSubmitButtonTitle != null) {
-      return mSubmitButtonTitle;
-    }
-    return super.getTitle();
-  }
 
   public String getPlaceholder() {
     return mPlaceholder;

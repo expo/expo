@@ -10,6 +10,9 @@
 
 ### 🐛 Bug fixes
 
+- Fixed case where Android apps could crash if you set a new category with a text input action **without** providing any `options`. ([#10141](https://github.com/expo/expo/pull/10141) by [@cruzach](https://github.com/cruzach))
+- Android apps no longer rely on the `submitButtonTitle` property as the action button title (they rely on `buttonTitle`, which matches iOS behavior). ([#10141](https://github.com/expo/expo/pull/10141) by [@cruzach](https://github.com/cruzach))
+
 ## 0.7.1 — 2020-08-26
 
 _This version does not introduce any user-facing changes._

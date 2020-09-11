@@ -872,7 +872,7 @@ Calling one of the following methods is a no-op on Web.
   - `identifier`: A unique string that identifies this action. If a user takes this action (i.e. selects this button in the system's Notification UI), your app will receive this `actionIdentifier` via the [`NotificationResponseReceivedListener`](#addnotificationresponsereceivedlistenerlistener-event-notificationresponse--void-void).
   - `buttonTitle`: The title of the button triggering this action.
   - `textInput`: **Optional** object which, if provided, will result in a button that prompts the user for a text response.
-    - `submitButtonTitle`: A string which will be used as the title for the button used for submitting the text response.
+    - `submitButtonTitle`: (**iOS only**) A string which will be used as the title for the button used for submitting the text response.
     - `placeholder`: A string that serves as a placeholder until the user begins typing. Defaults to no placeholder string.
   - `options`: **Optional** object of additional configuration options.
     - `opensAppToForeground`: Boolean indicating whether triggering this action foregrounds the app.
