@@ -21,18 +21,60 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       <tr>
         <td>
           <div
-            data-testid="\`name\`"
+            data-testid="<propertyAnchor><inlineCode>name</inlineCode></propertyAnchor>"
             style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
           >
             <div
               class="css-12onb79 "
               data-text="true"
             >
-              <code
-                class="css-1aurupk inline"
+              <div
+                class="css-3t0ask"
               >
-                name
-              </code>
+                <span
+                  class="css-1fj428k"
+                  id="name"
+                />
+                <a
+                  class="permalink css-1lc60ja"
+                  href="#name"
+                  style="top: -8px;"
+                >
+                  <svg
+                    aria-label="permalink"
+                    class="anchor-icon"
+                    fill="none"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </a>
+                <div
+                  class="permalink-child"
+                >
+                  <code
+                    class="css-1aurupk inline"
+                  >
+                    name
+                  </code>
+                </div>
+              </div>
             </div>
           </div>
         </td>
@@ -69,18 +111,60 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       <tr>
         <td>
           <div
-            data-testid="\`androidNavigationBar\`"
+            data-testid="<propertyAnchor><inlineCode>androidNavigationBar</inlineCode></propertyAnchor>"
             style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
           >
             <div
               class="css-12onb79 "
               data-text="true"
             >
-              <code
-                class="css-1aurupk inline"
+              <div
+                class="css-3t0ask"
               >
-                androidNavigationBar
-              </code>
+                <span
+                  class="css-1fj428k"
+                  id="androidnavigationbar"
+                />
+                <a
+                  class="permalink css-1lc60ja"
+                  href="#androidnavigationbar"
+                  style="top: -8px;"
+                >
+                  <svg
+                    aria-label="permalink"
+                    class="anchor-icon"
+                    fill="none"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </a>
+                <div
+                  class="permalink-child"
+                >
+                  <code
+                    class="css-1aurupk inline"
+                  >
+                    androidNavigationBar
+                  </code>
+                </div>
+              </div>
             </div>
           </div>
         </td>
@@ -148,7 +232,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 <a
                   class="permalink css-1lc60ja"
                   href="#visible"
-                  style="left: -38px;"
+                  style="left: -44px; top: -8px;"
                 >
                   <svg
                     aria-label="permalink"
@@ -238,7 +322,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 <a
                   class="permalink css-1lc60ja"
                   href="#always"
-                  style="left: -38px;"
+                  style="left: -44px; top: -8px;"
                 >
                   <svg
                     aria-label="permalink"
@@ -314,7 +398,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 <a
                   class="permalink css-1lc60ja"
                   href="#backgroundcolor"
-                  style="left: -38px;"
+                  style="left: -44px; top: -8px;"
                 >
                   <svg
                     aria-label="permalink"
@@ -384,18 +468,60 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       <tr>
         <td>
           <div
-            data-testid="\`intentFilters\`"
+            data-testid="<propertyAnchor><inlineCode>intentFilters</inlineCode></propertyAnchor>"
             style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
           >
             <div
               class="css-12onb79 "
               data-text="true"
             >
-              <code
-                class="css-1aurupk inline"
+              <div
+                class="css-3t0ask"
               >
-                intentFilters
-              </code>
+                <span
+                  class="css-1fj428k"
+                  id="intentfilters"
+                />
+                <a
+                  class="permalink css-1lc60ja"
+                  href="#intentfilters"
+                  style="top: -8px;"
+                >
+                  <svg
+                    aria-label="permalink"
+                    class="anchor-icon"
+                    fill="none"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </a>
+                <div
+                  class="permalink-child"
+                >
+                  <code
+                    class="css-1aurupk inline"
+                  >
+                    intentFilters
+                  </code>
+                </div>
+              </div>
             </div>
           </div>
         </td>
@@ -486,7 +612,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 <a
                   class="permalink css-1lc60ja"
                   href="#autoverify"
-                  style="left: -38px;"
+                  style="left: -44px; top: -8px;"
                 >
                   <svg
                     aria-label="permalink"
@@ -562,7 +688,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 <a
                   class="permalink css-1lc60ja"
                   href="#data"
-                  style="left: -38px;"
+                  style="left: -44px; top: -8px;"
                 >
                   <svg
                     aria-label="permalink"
@@ -637,7 +763,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 <a
                   class="permalink css-1lc60ja"
                   href="#host"
-                  style="left: -38px;"
+                  style="left: -44px; top: -8px;"
                 >
                   <svg
                     aria-label="permalink"
