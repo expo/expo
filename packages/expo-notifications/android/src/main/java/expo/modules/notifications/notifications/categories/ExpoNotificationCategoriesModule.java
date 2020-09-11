@@ -31,7 +31,6 @@ public class ExpoNotificationCategoriesModule extends ExportedModule {
   private static final String OPTIONS_KEY = "options";
   private static final String OPENS_APP_TO_FOREGROUND_KEY = "opensAppToForeground";
   private static final String TEXT_INPUT_OPTIONS_KEY = "textInput";
-  private static final String SUBMIT_BUTTON_TITLE_KEY = "submitButtonTitle";
   private static final String PLACEHOLDER_KEY = "placeholder";
 
   private final NotificationsHelper mNotificationsHelper;
@@ -71,7 +70,7 @@ public class ExpoNotificationCategoriesModule extends ExportedModule {
       MapArguments textInputOptions = actionParams.containsKey(TEXT_INPUT_OPTIONS_KEY) ? new MapArguments(actionParams.getMap(TEXT_INPUT_OPTIONS_KEY)) : null;
       if (textInputOptions != null) {
         actions.add(new TextInputNotificationAction(actionParams.getString(IDENTIFIER_KEY, null), actionParams.getString(BUTTON_TITLE_KEY, null),
-          actionOptions.getBoolean(OPENS_APP_TO_FOREGROUND_KEY, true), textInputOptions.getString(SUBMIT_BUTTON_TITLE_KEY, null), textInputOptions.getString(PLACEHOLDER_KEY, null)));
+          actionOptions.getBoolean(OPENS_APP_TO_FOREGROUND_KEY, true), textInputOptions.getString(PLACEHOLDER_KEY, null)));
       } else {
         actions.add(new NotificationAction(actionParams.getString(IDENTIFIER_KEY, null), actionParams.getString(BUTTON_TITLE_KEY, null), actionOptions.getBoolean(OPENS_APP_TO_FOREGROUND_KEY, true)));
       }

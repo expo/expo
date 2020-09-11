@@ -8,7 +8,7 @@ import android.os.Parcel;
 public class TextInputNotificationAction extends NotificationAction {
   private final String mPlaceholder;
 
-  public TextInputNotificationAction(String identifier, String title, boolean opensAppToForeground, String submitButtonTitle, String placeholder) {
+  public TextInputNotificationAction(String identifier, String title, boolean opensAppToForeground, String placeholder) {
     super(identifier, title, opensAppToForeground);
     mPlaceholder = placeholder;
   }
