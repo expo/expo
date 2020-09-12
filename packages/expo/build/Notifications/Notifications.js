@@ -27,6 +27,9 @@ export function emitNotification(notification) {
             // It's actually just a string, that's fine
         }
     }
+    if (!_emitter) {
+        _maybeInitEmitter();
+    }
     _emitter.emit('notification', notification);
 }
 function _processNotification(notification) {
