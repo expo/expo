@@ -41,7 +41,7 @@ export function emitNotification(notification) {
   }
 
   if(!_emitter){
-    _maybeInitEmitter()
+    _maybeInitEmitter();
   }
 
   _emitter.emit('notification', notification);
