@@ -40,7 +40,7 @@ export function emitNotification(notification) {
     }
   }
 
-  if(!_emitter){
+  if (!_emitter) {
     _maybeInitEmitter();
   }
 
