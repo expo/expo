@@ -22,7 +22,8 @@ function _getEventEmitter() {
     _emitter = new EventEmitter();
     RCTDeviceEventEmitter.addListener('Exponent.notification', emitNotification);
   }
-  return _emitter
+
+  return _emitter;
 }
 
 export function emitNotification(notification) {
