@@ -22,6 +22,10 @@ jobs:
   docs:
     runs-on: ubuntu-18.04
     steps:
+      - name: Install Node 14
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
       - name: Check out repository
         uses: actions/checkout@v2
         with:
