@@ -37,8 +37,6 @@ Returns whether the Local Authentication API is enabled on the current device.
 
 Async `boolean`, indicating whether the Local Authentication API is avaliable on the current device. Currently this resolves `true` on iOS and Android only.
 
-## Methods
-
 ### `LocalAuthentication.hasHardwareAsync()`
 
 Determine whether a face or fingerprint scanner is available on the device.
