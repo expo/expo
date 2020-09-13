@@ -13,6 +13,7 @@ removeSync(latest);
 copySync(vLatest, latest);
 
 module.exports = withCSS({
+  trailingSlash: true,
   // Rather than use `@zeit/next-mdx`, we replicate it
   pageExtensions: ['js', 'jsx', 'md', 'mdx'],
   webpack: (config, options) => {
@@ -37,7 +38,6 @@ module.exports = withCSS({
     if (dev) {
       return defaultPathMap;
     }
-    copySync(join(dir, 'robots.txt'), join(outDir, 'robots.txt'));
     return Object.assign(
       ...Object.entries(defaultPathMap).map(([pathname, page]) => {
         if (pathname.match(/\/v[1-9][^\/]*$/)) {
