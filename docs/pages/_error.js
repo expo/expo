@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/browser';
 import React from 'react';
 
-import { VERSIONS } from '~/common/versions';
+import { VERSIONS } from '~/constants/versions';
 
 const REDIRECT_SUFFIX = '?redirected';
 

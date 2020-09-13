@@ -1,4 +1,4 @@
-import * as Constants from '~/common/constants';
+import * as Constants from '~/constants/theme';
 
 export const globalNProgress = `
 #nprogress{pointer-events:none;}#nprogress .bar{background:${

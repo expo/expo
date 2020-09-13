@@ -4,7 +4,7 @@ import { InlineCode } from '~/components/base/code';
 import MDX from '@mdx-js/runtime';
 import * as components from '~/common/translate-markdown';
 
-import { expoColors } from '~/common/constants';
+import { expoColors } from '~/constants/theme';
 
 const STYLES_TABLE = css`
   font-size: 1rem;

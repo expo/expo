@@ -1,4 +1,4 @@
-import * as Constants from '~/common/constants';
+import * as Constants from '~/constants/theme';
 import { paragraph } from '~/components/base/typography';
 
 export const globalTippy = `
