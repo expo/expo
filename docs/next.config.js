@@ -26,9 +26,7 @@ module.exports = {
     // See: https://github.com/kentcdodds/babel-plugin-preval/issues/19
     config.module.rules.push({
       test: /.jsx?$/,
-      include: [
-        resolve(__dirname, 'constants'),
-      ],
+      include: [resolve(__dirname, 'constants')],
       use: {
         ...options.defaultLoaders.babel,
         options: {
@@ -39,21 +37,15 @@ module.exports = {
       },
     })
 
-    // Create a copy of the babel loader, to separate MDX and Next/Preval caches
-    const babelMdxLoader = {
-      ...options.defaultLoaders.babel,
-      options: {
-        ...options.defaultLoaders.babel.options,
-        cacheDirectory: 'node_modules/.cache/babel-mdx-loader',
-      },
-    };
+    // Add support for MDX with our custom loader
     config.module.rules.push({
       test: /.mdx?$/, // load both .md and .mdx files
-      use: [babelMdxLoader, '@mdx-js/loader', join(__dirname, './common/md-loader')],
+      use: [options.defaultLoaders.babel, '@mdx-js/loader', join(__dirname, './common/md-loader')],
     });
-    config.node = {
-      fs: 'empty',
-    };
+
+    // Fix inline or browser MDX usage: https://mdxjs.com/getting-started/webpack#running-mdx-in-the-browser
+    config.node = { fs: 'empty' };
+
     return config;
   },
   // Create a map of all pages to export
