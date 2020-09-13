@@ -355,6 +355,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_setShouldShowRemoteUpdateStatus:(NSDictionary *)manifest
 {
+  // we don't want to show the cached experience alert when Updates.reloadAsync() is called
+  if (_shouldUseCacheOnly) {
+    _shouldShowRemoteUpdateStatus = NO;
+    return;
+  }
+
   if (manifest) {
     NSDictionary *developmentClientSettings = manifest[@"developmentClient"];
     if (developmentClientSettings && [developmentClientSettings isKindOfClass:[NSDictionary class]]) {

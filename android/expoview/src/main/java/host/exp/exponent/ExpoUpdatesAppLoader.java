@@ -353,6 +353,12 @@ public class ExpoUpdatesAppLoader {
   }
 
   private void setShouldShowAppLoaderStatus(JSONObject manifest) {
+    // we don't want to show the cached experience alert when Updates.reloadAsync() is called
+    if (mUseCacheOnly) {
+      mShouldShowAppLoaderStatus = false;
+      return;
+    }
+
     try {
       mShouldShowAppLoaderStatus = !(manifest.has(ExponentManifest.MANIFEST_DEVELOPMENT_CLIENT_KEY) &&
         manifest.getJSONObject(ExponentManifest.MANIFEST_DEVELOPMENT_CLIENT_KEY)
