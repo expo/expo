@@ -41,7 +41,7 @@ const STYLES_RIGHT = css`
   width: 100%;
 `;
 
-export default props => {
+const DocumentationPageLayout = props => {
   return (
     <div className={STYLES_CONTAINER}>
       <div className={STYLES_HEADER}>{props.header}</div>
@@ -52,3 +52,5 @@ export default props => {
     </div>
   );
 };
+
+export default DocumentationPageLayout;
