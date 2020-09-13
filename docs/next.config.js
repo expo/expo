@@ -1,5 +1,5 @@
 const { copySync, removeSync } = require('fs-extra');
-const { join } = require('path');
+const { join, resolve } = require('path');
 const semver = require('semver');
 
 const { version } = require('./package.json');
@@ -21,6 +21,24 @@ module.exports = {
   // Rather than use `@zeit/next-mdx`, we replicate it
   pageExtensions: ['js', 'jsx', 'md', 'mdx'],
   webpack: (config, options) => {
+    // Add preval support for `constants/*` only and move it to the `.next/preval` cache.
+    // It's to prevent over-usage and separate the cache to allow manually invalidation.
+    // See: https://github.com/kentcdodds/babel-plugin-preval/issues/19
+    config.module.rules.push({
+      test: /.jsx?$/,
+      include: [
+        resolve(__dirname, 'constants'),
+      ],
+      use: {
+        ...options.defaultLoaders.babel,
+        options: {
+          ...options.defaultLoaders.babel.options,
+          cacheDirectory: '.next/preval',
+          plugins: ['preval'],
+        },
+      },
+    })
+
     // Create a copy of the babel loader, to separate MDX and Next/Preval caches
     const babelMdxLoader = {
       ...options.defaultLoaders.babel,
