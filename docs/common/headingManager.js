@@ -3,6 +3,14 @@ import * as React from 'react';
 import * as Utilities from '~/common/utilities';
 
 /**
+ * These types directly correspond to MDAST node types
+ */
+export const HeadingType = {
+  Text: 'text',
+  Code: 'inlineCode',
+};
+
+/**
  * Manages heading entries. Each entry corresponds to one markdown heading with specified level (#, ##, ### etc)
  *
  * Each entry consists of:
@@ -16,7 +24,7 @@ import * as Utilities from '~/common/utilities';
 export class HeadingManager {
   /**
    * @param {Object} slugger A _GithubSlugger_ instance
-   * @param {{headings: []}} meta Document metadata gathered by `headingsMdPlugin`.
+   * @param {{headings: Object[]}} meta Document metadata gathered by `headingsMdPlugin`.
    */
   constructor(slugger, meta) {
     this.slugger = slugger;
@@ -41,7 +49,7 @@ export class HeadingManager {
       slug,
       level,
       ref: React.createRef(),
-      type: this._isCode(title) ? 'inlineCode' : 'text',
+      type: this._isCode(title) ? HeadingType.Code : HeadingType.Text,
       metadata: meta,
     };
     this.headings.push(heading);
@@ -72,6 +80,6 @@ export class HeadingManager {
   _isCode(title) {
     if (!title.props) return false;
     const { name, originalType, mdxType } = title.props;
-    return [name, originalType, mdxType].some(it => it === 'inlineCode');
+    return [name, originalType, mdxType].some(it => it === HeadingType.Code);
   }
 }

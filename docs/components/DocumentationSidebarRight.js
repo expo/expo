@@ -2,6 +2,8 @@ import * as React from 'react';
 import { css } from 'react-emotion';
 
 import * as Constants from '~/common/constants';
+import { HeadingType } from '~/common/headingManager';
+import { paragraph } from '~/components/base/typography';
 import withHeadingManager from '~/components/page-higher-order/withHeadingManager';
 
 const STYLES_SIDEBAR = css`
@@ -14,27 +16,32 @@ const STYLES_SIDEBAR = css`
 `;
 
 const STYLES_TITLE = css`
-  color: ${Constants.colors.expoLighter};
-  display: block;
+  ${paragraph}
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   position: relative;
   margin-bottom: 16px;
-  line-height: 1.5rem;
   text-decoration: none;
   font-family: ${Constants.fontFamilies.demi};
   user-select: none;
+  background: ${Constants.expoColors.gray[200]};
+  padding: 8px 16px;
+  border-radius: 4px;
+  color: ${Constants.expoColors.black};
+
+  :hover {
+    cursor: pointer;
+  }
 `;
 
 const STYLES_SIDEBAR_INDENT = css`
-  display: block;
-  border-left-width: 1px;
-  border-left-color: #ccc;
-  border-left-style: dashed;
-  padding-left: 12px;
+  padding-left: 16px;
 `;
 
 const STYLES_LINK = css`
   display: block;
-  margin-bottom: 5px;
   line-height: 1.3rem;
   text-decoration: none;
 `;
@@ -47,33 +54,59 @@ const STYLES_LINK_NESTED = css`
   text-decoration: none;
 `;
 
+const STYLES_ACTIVE_CONTAINER = css`
+  display: flex;
+  margin-bottom: 6px;
+  cursor: pointer;
+`;
+
+const STYLES_ACTIVE_BULLET = css`
+  min-height: 6px;
+  min-width: 6px;
+  height: 6px;
+  width: 6px;
+  background-color: ${Constants.expoColors.primary[500]};
+  border-radius: 4px;
+  position: relative;
+  left -12px;
+  top: 7px;
+`;
+
 const STYLES_LINK_ACTIVE = css`
+  ${paragraph}
+  font-size: 15px;
+  line-height: 140%;
   font-family: ${Constants.fontFamilies.demi};
   color: ${Constants.colors.expoLighter};
+  position: relative;
+  left -7px;
 
   :visited {
-    color: ${Constants.colors.expo};
+    color: ${Constants.expoColors.primary[500]};
   }
 
   :hover {
-    color: ${Constants.colors.expo};
+    color: ${Constants.expoColors.primary[500]};
   }
 `;
 
 const STYLES_LINK_DEFAULT = css`
-  font-family: ${Constants.fontFamilies.book};
+  ${paragraph}
   color: ${Constants.colors.black80};
+  line-height: 140%;
   transition: 200ms ease color;
+  font-size: 15px;
 
   :visited {
     color: ${Constants.colors.black60};
   }
 
   :hover {
-    color: ${Constants.colors.expo};
+    color: ${Constants.expoColors.primary[500]};
   }
 `;
 
+const NESTING_BASE_LEVEL = 2;
 const NESTING_OFFSET = 12;
 
 const removeDot = str => {
@@ -90,18 +123,18 @@ function Item({ heading, activeSlug, shortForm }) {
   const { slug, level, title, type } = heading;
   const isActive = activeSlug != null && slug === activeSlug;
 
-  const isCode = type === 'inlineCode';
+  const isCode = type === HeadingType.Code;
   const displayTitle = shortForm && isCode ? removeDot(title) : title;
-  const paddingLeft = NESTING_OFFSET * (level - 2) + 'px';
+  const paddingLeft = NESTING_OFFSET * (level - NESTING_BASE_LEVEL) + 'px';
   const linkBaseStyle = level < 3 ? STYLES_LINK : STYLES_LINK_NESTED;
   const linkFont = isCode ? Constants.fontFamilies.mono : undefined;
   const fontSize = isCode ? 14 : undefined;
-  const textDecoration = isCode && isActive ? 'underline' : undefined;
 
   return (
-    <div>
+    <div className={STYLES_ACTIVE_CONTAINER}>
+      {isActive && <div className={STYLES_ACTIVE_BULLET} />}
       <a
-        style={{ paddingLeft, fontFamily: linkFont, fontSize, textDecoration }}
+        style={{ paddingLeft, fontFamily: linkFont, fontSize }}
         href={'#' + slug}
         className={`${linkBaseStyle} ${isActive ? STYLES_LINK_ACTIVE : STYLES_LINK_DEFAULT}`}>
         {displayTitle}
@@ -111,10 +144,6 @@ function Item({ heading, activeSlug, shortForm }) {
 }
 
 class DocumentationSidebarRight extends React.Component {
-  static defaultProps = {
-    routes: [],
-  };
-
   state = {
     activeSlug: null,
   };
@@ -151,7 +180,7 @@ class DocumentationSidebarRight extends React.Component {
         <div className={STYLES_SIDEBAR_INDENT}>
           {headings.map(heading => (
             <Item
-              key={heading.slug || heading.title}
+              key={heading.slug}
               heading={heading}
               activeSlug={this.state.activeSlug}
               shortForm
@@ -162,6 +191,7 @@ class DocumentationSidebarRight extends React.Component {
     );
   }
 }
+
 const SidebarWithHeadingManager = withHeadingManager(function SidebarWithHeadingManager({
   reactRef,
   ...props
