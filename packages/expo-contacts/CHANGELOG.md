@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- `getContactsAsync` no longer requires an exact match when providing the `name` query on Android. ([#10127](https://github.com/expo/expo/pull/10127) by [@cruzach](https://github.com/cruzach))
+
 ## 8.5.0 — 2020-08-18
 
 ### 🎉 New features

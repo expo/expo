@@ -735,7 +735,7 @@ Used to query contacts from the user's device.
 | pageOffset  | `number`      | The number of contacts to skip before gathering contacts.                                    | ✅  | ✅      |
 | id          | `string`      | Get contacts with a matching ID .                                                            | ✅  | ✅      |
 | sort        | `SortType`    | Sort method used when gathering contacts.                                                    | ❌  | ✅      |
-| name        | `string`      | Query contacts matching this name.                                                           | ✅  | ❌      |
+| name        | `string`      | Get all contacts whose name contains the provided string (not case-sensitive).               | ✅  | ✅      |
 | groupId     | `string`      | Get all contacts that belong to the group matching this ID.                                  | ✅  | ❌      |
 | containerId | `string`      | Get all contacts that belong to the container matching this ID.                              | ✅  | ❌      |
 | rawContacts | `boolean`     | Prevent unification of contacts when gathering. Default: `false`.                            | ✅  | ❌      |
