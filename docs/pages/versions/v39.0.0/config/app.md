@@ -2,6 +2,10 @@
 title: app.json / app.config.js
 ---
 
+<!--
+Hi! If you found an issue within the description of the manifest properties, please create a GitHub issue.
+-->
+
 import AppConfigSchemaPropertiesTable from '~/components/plugins/AppConfigSchemaPropertiesTable';
 import schema from '~/scripts/schemas/unversioned/app-config-schema.js';
 
