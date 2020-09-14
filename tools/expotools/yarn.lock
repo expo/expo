@@ -2448,10 +2448,10 @@
     workbox-webpack-plugin "^3.6.3"
     worker-loader "^2.0.0"
 
-"@expo/xdl@^58.0.0":
-  version "58.0.0"
-  resolved "https://registry.yarnpkg.com/@expo/xdl/-/xdl-58.0.0.tgz#8d60d3d13ac70f521c72197d4f5fc41e160a3f57"
-  integrity sha512-LS4WKfUFvoMiqz60jg0Yud2k3i4w27j5vX6mpLrwfOpeYxeWspoYXTISnDa2Q2Xtjv9P9qwSwgoEPW3PVgnCeg==
+"@expo/xdl@58.0.4-alpha.1409":
+  version "58.0.4-alpha.1409"
+  resolved "https://registry.yarnpkg.com/@expo/xdl/-/xdl-58.0.4-alpha.1409.tgz#d8a14a77295c65b376f7e4c0b8dd14ca3cd6e020"
+  integrity sha512-T/gz9Uc3CSsJfewv08pnokLmq0BfitsfSaQ0xewa8Xf8I2V5VSp3ZqV0NARi3f9lxXH2tb/WPWwr9Yafdpxqzw==
   dependencies:
     "@expo/bunyan" "3.0.2"
     "@expo/config" "3.3.0"
