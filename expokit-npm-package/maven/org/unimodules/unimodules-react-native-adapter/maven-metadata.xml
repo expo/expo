@@ -3,10 +3,10 @@
   <groupId>org.unimodules</groupId>
   <artifactId>unimodules-react-native-adapter</artifactId>
   <versioning>
-    <release>5.4.0</release>
+    <release>5.6.0</release>
     <versions>
-      <version>5.4.0</version>
+      <version>5.6.0</version>
     </versions>
-    <lastUpdated>20200605220725</lastUpdated>
+    <lastUpdated>20200914191737</lastUpdated>
   </versioning>
 </metadata>
