@@ -100,14 +100,13 @@ const STYLES_CONTENT = css`
   }
 `;
 
-const STYLES_LEFT = css`
+const STYLES_SIDEBAR = css`
   flex-shrink: 0;
   max-width: 280px;
   height: 100%;
   overflow: hidden;
   transition: 200ms ease max-width;
   background: ${Constants.expoColors.background};
-  border-right: 1px solid ${Constants.expoColors.gray[250]};
 
   @media screen and (max-width: 1200px) {
     max-width: 280px;
@@ -118,7 +117,15 @@ const STYLES_LEFT = css`
   }
 `;
 
+const STYLES_LEFT = css`
+  border-right: 1px solid ${Constants.expoColors.gray[250]};
+`;
+
 const STYLES_RIGHT = css`
+  border-left: 1px solid ${Constants.expoColors.gray[250]};
+`;
+
+const STYLES_CENTER = css`
   background: ${Constants.expoColors.white};
   min-width: 5%;
   width: 100%;
@@ -168,7 +175,7 @@ const STYLES_SCROLL_CONTAINER = css`
   }
 `;
 
-const STYLES_RIGHT_WRAPPER = css`
+const STYLES_CENTER_WRAPPER = css`
   max-width: 1200px;
   margin: auto;
 `;
@@ -241,7 +248,7 @@ export default class DocumentationNestedScrollLayout extends React.Component {
           {this.props.header}
         </div>
         <div className={STYLES_CONTENT}>
-          <div className={STYLES_LEFT}>
+          <div className={`${STYLES_SIDEBAR} ${STYLES_LEFT}`}>
             <ScrollContainer
               ref={this.sidebarRef}
               scrollPosition={this.props.sidebarScrollPosition}>
@@ -249,13 +256,13 @@ export default class DocumentationNestedScrollLayout extends React.Component {
             </ScrollContainer>
           </div>
 
-          <div className={STYLES_RIGHT}>
+          <div className={STYLES_CENTER}>
             <ScrollContainer ref={this.contentRef} scrollHandler={this._scrollHandler}>
-              <div className={STYLES_RIGHT_WRAPPER}>{this.props.children}</div>
+              <div className={STYLES_CENTER_WRAPPER}>{this.props.children}</div>
             </ScrollContainer>
           </div>
 
-          <div className={STYLES_LEFT}>
+          <div className={`${STYLES_SIDEBAR} ${STYLES_RIGHT}`}>
             <ScrollContainer>{this.props.sidebarRight}</ScrollContainer>
           </div>
         </div>

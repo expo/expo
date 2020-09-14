@@ -99,7 +99,7 @@ var testSchema = {
 describe('AppConfigSchemaPropertiesTable', () => {
   test('correctly matches snapshot', () => {
     const { container } = render(
-      <HeadingsContext.Provider value={new HeadingManager(new GithubSlugger(), [])}>
+      <HeadingsContext.Provider value={new HeadingManager(new GithubSlugger(), {})}>
         <AppConfigSchemaPropertiesTable schema={testSchema} />
       </HeadingsContext.Provider>
     );
