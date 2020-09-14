@@ -20,7 +20,9 @@ Here you will find a list of errors that are commonly encountered by developers 
 
 - An error in your code is preventing the JavaScript bundle from being executed on startup.
 
-- Try running `expo start --no-dev --minify` to reproduce the production JS bundle locally. If possible, connect your device and access the device logs via Android Studio or Xcode. Device logs contain much more detailed stacktraces and information. Check to see if you have any changes or errors in your Babel configuration.
+- Try running `expo start --no-dev --minify` to reproduce the production JS bundle locally. If possible, connect your device and access the device logs via Android Studio or Xcode. Device logs contain much more detailed stacktraces and information. Check to see if you have any changes or errors in your Babel configuration.  
+
+- If problems persist while running `expo start --minify` and runs without problems running `expo start --no-dev` it could be a metro bundler minification issue. Check this [blog post](https://forums.expo.io/t/change-minifierconfig-for-minify-uglify/36460/2) for a possible solution.
 
 ### npm ERR! No git binary found in $PATH
 
