@@ -13,7 +13,7 @@ const withDocumentationElements = (meta) => {
     const { router } = props;
 
     return (
-        <HeadingsContext.Provider value={new HeadingManager(new GithubSlugger(), meta.headings)}>
+          <HeadingsContext.Provider value={new HeadingManager(new GithubSlugger(), meta)}>
             <DocumentationPage
               title={meta.title}
               url={router}
