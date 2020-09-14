@@ -79,9 +79,14 @@ export class HeadingManager {
     return undefined;
   }
 
+  /**
+   * Checks if header title is an inline code block.
+   * @param {any} title Heading object to check
+   * @returns {boolean} true if header is a code block
+   */
   _isCode(title) {
     if (!title.props) return false;
     const { name, originalType, mdxType } = title.props;
-    return name === 'inlineCode' || originalType === 'inlineCode' || mdxType === 'inlineCode';
+    return [name, originalType, mdxType].some(it => it === 'inlineCode');
   }
 }

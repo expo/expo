@@ -35,7 +35,10 @@ export const a = ExternalLink;
 export const blockquote = Quote;
 export const expokitDetails = ExpoKitDetails;
 export const bareworkflowDetails = BareWorkflowDetails;
-export const propertyAnchor = createPermalinkedComponent(H4, { baseNestingLevel: 3, customIconStyle: { top: -8 } });
+export const propertyAnchor = createPermalinkedComponent(H4, {
+  baseNestingLevel: 3,
+  customIconStyle: { top: -8 },
+});
 export const subpropertyAnchor = createPermalinkedComponent(PDIV, {
   customIconStyle: { left: -44, top: -8 },
   baseNestingLevel: 3,

@@ -250,15 +250,13 @@ export default class DocumentationNestedScrollLayout extends React.Component {
           </div>
 
           <div className={STYLES_RIGHT}>
-            <ScrollContainer ref="content" scrollHandler={this.props.contentScrollHandler}>
+            <ScrollContainer ref={this.contentRef} scrollHandler={this._scrollHandler}>
               <div className={STYLES_RIGHT_WRAPPER}>{this.props.children}</div>
             </ScrollContainer>
           </div>
 
           <div className={STYLES_LEFT}>
-            <ScrollContainer scrollPosition={this.props.sidebarScrollPosition}>
-              {this.props.sidebarRight}
-            </ScrollContainer>
+            <ScrollContainer>{this.props.sidebarRight}</ScrollContainer>
           </div>
         </div>
       </div>

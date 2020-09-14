@@ -22,11 +22,12 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <td>
           <div
             data-testid="<propertyAnchor level={0}><inlineCode>name</inlineCode></propertyAnchor>"
-            style="margin-left: 12px; display: block; list-style-type: circle; overflow-x: visible;"
+            style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
           >
-            <div
-              class="css-12onb79 "
-              data-text="true"
+            <h4
+              class="css-5pkr0o"
+              data-components-heading="true"
+              data-heading="true"
             >
               <div
                 class="css-3t0ask"
@@ -75,7 +76,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   </code>
                 </div>
               </div>
-            </div>
+            </h4>
           </div>
         </td>
         <td
@@ -112,11 +113,12 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <td>
           <div
             data-testid="<propertyAnchor level={0}><inlineCode>androidNavigationBar</inlineCode></propertyAnchor>"
-            style="margin-left: 12px; display: block; list-style-type: circle; overflow-x: visible;"
+            style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
           >
-            <div
-              class="css-12onb79 "
-              data-text="true"
+            <h4
+              class="css-5pkr0o"
+              data-components-heading="true"
+              data-heading="true"
             >
               <div
                 class="css-3t0ask"
@@ -165,7 +167,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   </code>
                 </div>
               </div>
-            </div>
+            </h4>
           </div>
         </td>
         <td
@@ -216,7 +218,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <td>
           <div
             data-testid="<subpropertyAnchor level={1}><inlineCode>visible</inlineCode></subpropertyAnchor>"
-            style="margin-left: 44px; display: list-item; list-style-type: default; overflow-x: visible;"
+            style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
           >
             <div
               class="css-12onb79 "
@@ -306,7 +308,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <td>
           <div
             data-testid="<subpropertyAnchor level={2}><inlineCode>always</inlineCode></subpropertyAnchor>"
-            style="margin-left: 76px; display: list-item; list-style-type: circle; overflow-x: visible;"
+            style="margin-left: 64px; display: list-item; list-style-type: circle; overflow-x: visible;"
           >
             <div
               class="css-12onb79 "
@@ -382,7 +384,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <td>
           <div
             data-testid="<subpropertyAnchor level={1}><inlineCode>backgroundColor</inlineCode></subpropertyAnchor>"
-            style="margin-left: 44px; display: list-item; list-style-type: default; overflow-x: visible;"
+            style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
           >
             <div
               class="css-12onb79 "
@@ -469,11 +471,12 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <td>
           <div
             data-testid="<propertyAnchor level={0}><inlineCode>intentFilters</inlineCode></propertyAnchor>"
-            style="margin-left: 12px; display: block; list-style-type: circle; overflow-x: visible;"
+            style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
           >
-            <div
-              class="css-12onb79 "
-              data-text="true"
+            <h4
+              class="css-5pkr0o"
+              data-components-heading="true"
+              data-heading="true"
             >
               <div
                 class="css-3t0ask"
@@ -522,7 +525,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   </code>
                 </div>
               </div>
-            </div>
+            </h4>
           </div>
         </td>
         <td
@@ -596,7 +599,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <td>
           <div
             data-testid="<subpropertyAnchor level={1}><inlineCode>autoVerify</inlineCode></subpropertyAnchor>"
-            style="margin-left: 44px; display: list-item; list-style-type: default; overflow-x: visible;"
+            style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
           >
             <div
               class="css-12onb79 "
@@ -672,7 +675,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <td>
           <div
             data-testid="<subpropertyAnchor level={1}><inlineCode>data</inlineCode></subpropertyAnchor>"
-            style="margin-left: 44px; display: list-item; list-style-type: default; overflow-x: visible;"
+            style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
           >
             <div
               class="css-12onb79 "
@@ -747,7 +750,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <td>
           <div
             data-testid="<subpropertyAnchor level={2}><inlineCode>host</inlineCode></subpropertyAnchor>"
-            style="margin-left: 76px; display: list-item; list-style-type: circle; overflow-x: visible;"
+            style="margin-left: 64px; display: list-item; list-style-type: circle; overflow-x: visible;"
           >
             <div
               class="css-12onb79 "
