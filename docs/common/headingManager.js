@@ -53,13 +53,17 @@ export class HeadingManager {
    */
   addHeading(title, nestingLevel, additionalProps) {
     if (Array.isArray(title)) title = title[0];
+
+    const { hideInSidebar, sidebarTitle, sidebarDepth } = additionalProps;
+    const levelOverride = sidebarDepth != null ? BASE_HEADING_LEVEL + sidebarDepth : undefined;
+
     const slug = Utilities.generateSlug(this.slugger, title);
     const realTitle = Utilities.toString(title);
     const meta = this._findMetaForTitle(realTitle);
-    const level = nestingLevel ?? meta?.level ?? 0;
+    const level = levelOverride ?? nestingLevel ?? meta?.level ?? 0;
 
     const heading = {
-      title: realTitle,
+      title: sidebarTitle ?? realTitle,
       slug,
       level,
       ref: React.createRef(),
@@ -68,7 +72,7 @@ export class HeadingManager {
     };
 
     // levels out of range are unlisted
-    if (level >= BASE_HEADING_LEVEL && level <= this.maxNestingLevel) {
+    if (!hideInSidebar && level >= BASE_HEADING_LEVEL && level <= this.maxNestingLevel) {
       this.headings.push(heading);
     }
 
