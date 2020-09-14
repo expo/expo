@@ -1,4 +1,4 @@
-const withCSS = require('@zeit/next-css');
+
 const { copySync, removeSync } = require('fs-extra');
 const { join } = require('path');
 const semver = require('semver');
@@ -17,7 +17,7 @@ const latest = join('pages', 'versions', 'latest/');
 removeSync(latest);
 copySync(vLatest, latest);
 
-module.exports = withCSS({
+module.exports = {
   trailingSlash: true,
   // Rather than use `@zeit/next-mdx`, we replicate it
   pageExtensions: ['js', 'jsx', 'md', 'mdx'],
@@ -80,4 +80,4 @@ module.exports = withCSS({
 
     return pathMap;
   },
-});
+};
