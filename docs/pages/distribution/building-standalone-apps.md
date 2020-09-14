@@ -57,8 +57,9 @@ for App Store metadata.
 
 ## 3. Start the build
 
-Run `expo build:android` or `expo build:ios`. If you don't already have a packager running for this
-project, `expo` will start one for you.
+Run `expo build:android` or `expo build:ios`. If you don't already have a packager running for this project, `expo` will start one for you.
+
+**Please note:** When you run `expo build`, Expo automatically publishes your app (with `expo publish`). In order to avoid accidentally publishing changes to your production app, you may want to use [release channels](../release-channels/). 
 
 ### If you choose to build for Android
 
