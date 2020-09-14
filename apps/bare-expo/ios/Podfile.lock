@@ -45,7 +45,7 @@ PODS:
   - EXConstants (9.2.0):
     - UMConstantsInterface
     - UMCore
-  - EXContacts (8.5.0):
+  - EXContacts (8.6.0):
     - UMCore
     - UMFileSystemInterface
     - UMPermissionsInterface
@@ -967,7 +967,7 @@ SPEC CHECKSUMS:
   EXCalendar: 673fdb742ddfaf34dfa23931170f57b46249f03d
   EXCellular: c9d92b1d94a246dcb55965a4e9bc159b7a0e73be
   EXConstants: f486f6b4a36b86e47ab258d4d2b7b2699786fdce
-  EXContacts: 28ea8e112bbfeb8fe04987b06f5bf58f71e262f6
+  EXContacts: dbc32dd1e2798cce1beeced230da989931b47890
   EXCrypto: 80ee65669a5466a7ce9426a8ae985a50be7f3a5d
   EXDevice: e6ede72e08f6adc4b224d0628a9963d394ab9226
   EXDevMenu: 66bb2b59b4d10de1ce4a3920a2be9c3f222147db

@@ -10572,7 +10572,7 @@ CACHE_KEYS:
       EXContacts:
         :debug: a9a049ac532f2a1fea1dfcd556b9d905
         :release: a9a049ac532f2a1fea1dfcd556b9d905
-    CHECKSUM: 28ea8e112bbfeb8fe04987b06f5bf58f71e262f6
+    CHECKSUM: dbc32dd1e2798cce1beeced230da989931b47890
     FILES:
       - "../../packages/expo-contacts/ios/EXContacts/EXContacts+Serialization.h"
       - "../../packages/expo-contacts/ios/EXContacts/EXContacts+Serialization.m"
@@ -10584,7 +10584,7 @@ CACHE_KEYS:
       - "../../packages/expo-contacts/ios/EXContacts/EXContactsViewController.m"
     PROJECT_NAME: EXContacts
     SPECS:
-      - EXContacts (8.5.0)
+      - EXContacts (8.6.0)
   EXCrypto:
     BUILD_SETTINGS_CHECKSUM:
       EXCrypto:
