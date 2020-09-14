@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 // TODO(jim): Some of these styles are affected globally when under an li.
-export default () => (
+const Bullet = () => (
   <svg
     className="bullet-icon"
     aria-hidden="true"
@@ -12,3 +12,5 @@ export default () => (
     <circle cx="8" cy="8" r="3" />
   </svg>
 );
+
+export default Bullet;

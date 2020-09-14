@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-export default props => (
+const Menu = props => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="24"
@@ -16,3 +16,5 @@ export default props => (
     <line x1="3" y1="18" x2="21" y2="18" />
   </svg>
 );
+
+export default Menu;
