@@ -395,6 +395,10 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
    * - seconds time for real manifest
    */
   protected void showOrReconfigureManagedAppSplashScreen(final JSONObject manifest) {
+    if (!this.shouldCreateLoadingView()) {
+      return;
+    }
+
     this.hideLoadingView();
     ManagedAppSplashScreenConfiguration config = ManagedAppSplashScreenConfiguration.parseManifest(manifest);
     if (mManagedAppSplashScreenViewProvider == null) {
