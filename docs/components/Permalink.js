@@ -52,6 +52,12 @@ const STYLES_CONTAINER_TARGET = css`
   visibility: hidden;
 `;
 
+/**
+ * Props:
+ * - children: Title or component containing title text
+ * - nestingLevel: Sidebar heading level override
+ * - additionalProps: Additional properties passed to component
+ */
 export default withHeadingManager(props => {
   // NOTE(jim): Not the greatest way to generate permalinks.
   // for now I've shortened the length of permalinks.
@@ -63,7 +69,7 @@ export default withHeadingManager(props => {
   // Use memo for safety - re-render should never happen when using MDX,
   // but this avoids heading duplication
   const heading = React.useMemo(
-    () => props.headingManager.addHeading(children, props.nestingLevel),
+    () => props.headingManager.addHeading(children, props.nestingLevel, props.additionalProps),
     [children]
   );
 

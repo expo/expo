@@ -10,11 +10,14 @@ import { PDIV, P, Quote } from '~/components/base/paragraph';
 
 const createPermalinkedComponent = (BaseComponent, options) => {
   const { customIconStyle, baseNestingLevel } = options || {};
-  return ({ children, level }) => {
+  return ({ children, level, ...props }) => {
     const nestingLevel =
       level != null && baseNestingLevel != null ? level + baseNestingLevel : undefined;
     return (
-      <Permalink nestingLevel={nestingLevel} customIconStyle={customIconStyle}>
+      <Permalink
+        nestingLevel={nestingLevel}
+        customIconStyle={customIconStyle}
+        additionalProps={props}>
         <BaseComponent>{children}</BaseComponent>
       </Permalink>
     );
