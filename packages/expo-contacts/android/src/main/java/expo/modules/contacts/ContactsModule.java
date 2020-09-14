@@ -155,7 +155,7 @@ public class ContactsModule extends ExportedModule {
           }
           promise.resolve(output);
         } else if (options.containsKey("name") && options.get("name") instanceof String) {
-          String predicateMatchingName = (String) options.get("name");
+          String predicateMatchingName = "%" + (String) options.get("name") + "%";
           HashMap<String, Object> contactData = getContactByName(predicateMatchingName, keysToFetch, sortOrder,
             promise);
           Collection<Contact> contacts = (Collection<Contact>) contactData.get("data");
@@ -704,7 +704,7 @@ public class ContactsModule extends ExportedModule {
 
     if (queryStrings != null && queryStrings.length > 0) {
       String[] cursorProjection = projection.toArray(new String[projection.size()]);
-      String cursorSelection = queryField + " = ?";
+      String cursorSelection = queryField + " LIKE ?";
 
       cursor = cr.query(
         ContactsContract.Data.CONTENT_URI,
