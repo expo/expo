@@ -144,7 +144,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
   private Handler mHandler = new Handler();
 
   protected boolean shouldCreateLoadingView() {
-    return true;
+    return !Constants.isStandaloneApp() || Constants.SHOW_LOADING_VIEW_IN_SHELL_APP;
   }
 
   public boolean isLoading() {
@@ -168,14 +168,13 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
     super.onCreate(null);
 
     mContainerView = new FrameLayout(this);
-    mContainerView.setBackgroundColor(ContextCompat.getColor(this, R.color.splashscreen_background));
     setContentView(mContainerView);
 
     mReactContainerView = new FrameLayout(this);
     mContainerView.addView(mReactContainerView);
 
-    // TODO (@bbarthec) if (!Constants.isStandaloneApp()) {
     if (this.shouldCreateLoadingView()) {
+      mContainerView.setBackgroundColor(ContextCompat.getColor(this, R.color.splashscreen_background));
       mLoadingView = new LoadingView(this);
       mLoadingView.show();
       mContainerView.addView(mLoadingView);
@@ -259,13 +258,15 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
       layoutParams.height = FrameLayout.LayoutParams.MATCH_PARENT;
       mContainerView.setLayoutParams(layoutParams);
     }
-    try {
-      ExperienceActivityUtils.setRootViewBackgroundColor(mManifest, getRootView());
-    } catch (Exception e) {
-      EXL.e(TAG, e);
-    }
     this.waitForReactRootViewToHaveChildrenAndRunCallback(() -> {
       onDoneLoading();
+
+      try {
+        ExperienceActivityUtils.setRootViewBackgroundColor(mManifest, getRootView());
+      } catch (Exception e) {
+        EXL.e(TAG, e);
+      }
+
       ErrorRecoveryManager.getInstance(mExperienceId).markExperienceLoaded();
       pollForEventsToSendToRN();
       EventBus.getDefault().post(new ExperienceDoneLoadingEvent(this));
