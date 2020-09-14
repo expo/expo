@@ -2,9 +2,6 @@ import * as React from 'react';
 import { css } from 'react-emotion';
 
 import * as Constants from '~/common/constants';
-import DocumentationSidebarGroup from '~/components/DocumentationSidebarGroup';
-import DocumentationSidebarLink from '~/components/DocumentationSidebarLink';
-import DocumentationSidebarTitle from '~/components/DocumentationSidebarTitle';
 import withHeadingManager from '~/components/page-higher-order/withHeadingManager';
 
 const STYLES_SIDEBAR = css`
@@ -14,10 +11,6 @@ const STYLES_SIDEBAR = css`
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     width: 100%;
   }
-`;
-
-const STYLES_SECTION_CATEGORY = css`
-  margin-bottom: 32px;
 `;
 
 const STYLES_TITLE = css`
@@ -126,54 +119,6 @@ class DocumentationSidebarRight extends React.Component {
     activeSlug: null,
   };
 
-  _renderPostElements = (info, category) => {
-    return (
-      <DocumentationSidebarLink
-        key={`${category}-${info.name}`}
-        info={info}
-        url={this.props.url}
-        asPath={this.props.asPath}>
-        {info.sidebarTitle || info.name}
-      </DocumentationSidebarLink>
-    );
-  };
-
-  _renderCategoryElements = (info, parentGroup) => {
-    if (info.children) {
-      return (
-        <DocumentationSidebarGroup
-          key={`group-${info.name}`}
-          url={this.props.url}
-          info={info}
-          asPath={this.props.asPath}>
-          {info.children.map(categoryInfo => this._renderCategoryElements(categoryInfo, info))}
-        </DocumentationSidebarGroup>
-      );
-    }
-
-    const titleElement = shouldSkipTitle(info, parentGroup) ? null : (
-      <DocumentationSidebarTitle
-        key={info.sidebarTitle ? info.sidebarTitle : info.name}
-        info={info}
-        url={this.props.url}
-        asPath={this.props.asPath}>
-        {info.sidebarTitle ? info.sidebarTitle : info.name}
-      </DocumentationSidebarTitle>
-    );
-
-    let postElements;
-    if (info.posts) {
-      postElements = info.posts.map(postInfo => this._renderPostElements(postInfo, info.name));
-    }
-
-    return (
-      <div className={STYLES_SECTION_CATEGORY} key={`category-${info.name}`}>
-        {titleElement}
-        {postElements}
-      </div>
-    );
-  };
-
   handleContentScroll(contentScrollPosition) {
     const { headingManager } = this.props;
     const { headings } = headingManager;
@@ -206,7 +151,7 @@ class DocumentationSidebarRight extends React.Component {
         <div className={STYLES_SIDEBAR_INDENT}>
           {headings.map(heading => (
             <Item
-              key={heading.slug}
+              key={heading.slug || heading.title}
               heading={heading}
               activeSlug={this.state.activeSlug}
               shortForm
