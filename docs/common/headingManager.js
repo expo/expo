@@ -15,68 +15,53 @@ import * as Utilities from '~/common/utilities';
  */
 export class HeadingManager {
   /**
-   *
-   * @param {GithubSlugger} slugger a _GithubSlugger_ instance
-   * @param {Array<{ level: number, title: string}>} metaHeadings heading metadata gathered by `headingsMdPlugin`.
+   * @param {Object} slugger A _GithubSlugger_ instance
+   * @param {{headings: []}} meta Document metadata gathered by `headingsMdPlugin`.
    */
-  constructor(slugger, metaHeadings) {
+  constructor(slugger, meta) {
     this.slugger = slugger;
+    this.meta = { headings: meta.headings || [], ...meta };
     this.headings = [];
-
-    if (metaHeadings) {
-      this.headings.push(...metaHeadings.map(item => ({ ...item, slug: null, ref: null })));
-    }
   }
 
   /**
-   * Creates a slug for title
-   * If title exists in heading entries, adds the slug for that entry.
-   * @param {string} title Title to generate slug from
-   * @returns generated unique slug
+   * Creates heading object instance and stores it
+   * @param {string | Object} title Heading display title or `<code/>` element
+   * @param {number|undefined} nestingLevel Override metadata heading nesting level.
+   * @returns {Object} Newly created heading instance
    */
-  createSlugForTitle(title) {
+  addHeading(title, nestingLevel) {
     const slug = Utilities.generateSlug(this.slugger, title);
-
     const realTitle = Utilities.toString(title);
-    const entry = this.headings.find(
-      heading => heading.title === realTitle && heading.slug == null
-    );
-    if (entry != null) {
-      entry.slug = slug;
-    }
+    const meta = this._findMetaForTitle(realTitle);
+    const level = nestingLevel ?? meta?.level ?? 0;
 
-    return slug;
-  }
-
-  forceCreateSlugAndTitle(title, level) {
-    const realTitle = Utilities.toString(title);
-    const slug = Utilities.generateSlug(this.slugger, title);
-    const newElem = {
+    const heading = {
       title: realTitle,
-      level,
-      ref: null,
       slug,
+      level,
+      ref: React.createRef(),
       type: this._isCode(title) ? 'inlineCode' : 'text',
+      metadata: meta,
     };
-
-    this.headings.push(newElem);
-
-    return slug;
+    this.headings.push(heading);
+    return heading;
   }
 
   /**
-   * Generates React ref for specified slug if it exists in heading entries
-   * @param {string} slug slug to generate ref for
-   * @returns reference object if exists in heading entries, undefined otherwise
+   * Finds MDX-plugin metadata for specified title. Once found, it's marked as processed
+   * and will not be returned again.
+   * @param {string} realTitle Title to find metadata for
    */
-  getRefForSlug(slug) {
-    const entry = this.headings.find(heading => heading.slug === slug);
-    if (entry != null) {
-      const ref = React.createRef();
-      entry.ref = ref;
-      return ref;
+  _findMetaForTitle(realTitle) {
+    const entry = this.meta.headings.find(
+      heading => heading.title === realTitle && !heading.processed
+    );
+    if (!entry) {
+      return undefined;
     }
-    return undefined;
+    entry.processed = true;
+    return entry;
   }
 
   /**

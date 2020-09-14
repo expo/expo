@@ -60,19 +60,20 @@ export default withHeadingManager(props => {
 
   let permalinkKey = props.id;
 
-  if (!permalinkKey) {
-    if (props.nestingLevel) {
-      permalinkKey = props.headingManager.forceCreateSlugAndTitle(children, props.nestingLevel);
-    } else {
-      permalinkKey = props.headingManager.createSlugForTitle(children);
-    }
-  }
+  // Use memo for safety - re-render should never happen when using MDX,
+  // but this avoids heading duplication
+  const heading = React.useMemo(
+    () => props.headingManager.addHeading(children, props.nestingLevel),
+    [children]
+  );
 
-  const ref = props.headingManager.getRefForSlug(permalinkKey);
+  if (!permalinkKey) {
+    permalinkKey = heading.slug;
+  }
 
   return (
     <Permalink component={component} data-components-heading>
-      <div className={STYLES_CONTAINER} ref={ref}>
+      <div className={STYLES_CONTAINER} ref={heading.ref}>
         <span id={permalinkKey} className={STYLES_CONTAINER_TARGET} />
         <a
           style={props.customIconStyle}
