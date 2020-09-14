@@ -8,7 +8,6 @@ import navigation from '~/common/navigation';
 import * as Utilities from '~/common/utilities';
 import { VERSIONS } from '~/common/versions';
 import * as WindowUtils from '~/common/window';
-import AlgoliaDocsearchMeta from '~/components/AlgoliaDocsearchMeta';
 import DocumentationFooter from '~/components/DocumentationFooter';
 import DocumentationHeader from '~/components/DocumentationHeader';
 import DocumentationNestedScrollLayout from '~/components/DocumentationNestedScrollLayout';
@@ -192,6 +191,8 @@ export default class DocumentationPage extends React.Component {
     const version = this._getVersion();
     const routes = this._getRoutes();
 
+    const isReferencePath = this._isReferencePath();
+
     const headerElement = (
       <DocumentationHeader
         activeSection={this._getActiveTopLevelSection()}
@@ -214,7 +215,7 @@ export default class DocumentationPage extends React.Component {
         routes={routes}
         version={this._version}
         onSetVersion={this._handleSetVersion}
-        isVersionSelectorHidden={!this._isReferencePath()}
+        isVersionSelectorHidden={!isReferencePath}
       />
     );
 
@@ -227,10 +228,7 @@ export default class DocumentationPage extends React.Component {
         isMobileSearchActive={this.state.isMobileSearchActive}
         sidebarScrollPosition={sidebarScrollPosition}>
         <Head title={`${this.props.title} - Expo Documentation`}>
-          <AlgoliaDocsearchMeta
-            referenceVersion={this._version}
-            isReferencePage={this._isReferencePath()}
-          />
+          <meta name="docsearch:version" content={isReferencePath ? version : 'none'} />
 
           {(this._version === 'unversioned' || this._isPreviewPath()) && (
             <meta name="robots" content="noindex" />
@@ -273,7 +271,7 @@ export default class DocumentationPage extends React.Component {
                 routes={routes}
                 version={this._version}
                 onSetVersion={this._handleSetVersion}
-                isVersionSelectorHidden={!this._isReferencePath()}
+                isVersionSelectorHidden={!isReferencePath}
               />
             </div>
           </div>
