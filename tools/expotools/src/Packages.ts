@@ -141,7 +141,7 @@ export class Package {
     if (this.unimoduleJson) {
       return this.unimoduleJson.platforms?.includes(platform) ?? false;
     } else if (platform === 'android') {
-      return fs.existsSync(path.join(this.path, this.androidSubdirectory));
+      return fs.existsSync(path.join(this.path, this.androidSubdirectory, 'build.gradle'));
     } else if (platform === 'ios') {
       return fs.existsSync(path.join(this.path, this.iosSubdirectory));
     }
