@@ -759,13 +759,13 @@ CACHE_KEYS:
       EXRandom:
         :debug: ff6c0d51873fcc617a9b0822d664f413
         :release: ff6c0d51873fcc617a9b0822d664f413
-    CHECKSUM: a375fb6bed8a0919a795766b8d5218b1200538b7
+    CHECKSUM: cc34daf7658062eafde51b8f34f610bf63426058
     FILES:
       - "../../../../packages/expo-random/ios/EXRandom/EXRandom.h"
       - "../../../../packages/expo-random/ios/EXRandom/EXRandom.m"
     PROJECT_NAME: EXRandom
     SPECS:
-      - EXRandom (8.2.1)
+      - EXRandom (8.3.1)
   EXScreenCapture:
     BUILD_SETTINGS_CHECKSUM:
       EXScreenCapture:
@@ -1743,7 +1743,7 @@ CACHE_KEYS:
       react-native-safe-area-context:
         :debug: 71dcb769da78260074adb01e3fcad0bb
         :release: 71dcb769da78260074adb01e3fcad0bb
-    CHECKSUM: eb91fe1fb3f7b87d9c30a7f0808407d8569d539d
+    CHECKSUM: b11a34881faac509cad5578726c98161ad4d275c
     FILES:
       - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RCTView+SafeAreaCompat.h"
       - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RCTView+SafeAreaCompat.m"
@@ -1767,13 +1767,13 @@ CACHE_KEYS:
       - "../../../../node_modules/react-native-safe-area-context/README.md"
     PROJECT_NAME: react-native-safe-area-context
     SPECS:
-      - react-native-safe-area-context (3.1.4)
+      - react-native-safe-area-context (3.0.2)
   react-native-segmented-control:
     BUILD_SETTINGS_CHECKSUM:
       react-native-segmented-control:
         :debug: 20fafd243e368fe6c0831976de96de6a
         :release: 20fafd243e368fe6c0831976de96de6a
-    CHECKSUM: 05d93c1c7576b53189720012a3e8a3c23608d849
+    CHECKSUM: d7c444e5cc5f526da766f8ff24346898b7ac7be5
     FILES:
       - "../../../../node_modules/@react-native-community/segmented-control/ios/RNCSegmentedControl.h"
       - "../../../../node_modules/@react-native-community/segmented-control/ios/RNCSegmentedControl.m"
@@ -1783,7 +1783,7 @@ CACHE_KEYS:
       - "../../../../node_modules/@react-native-community/segmented-control/README.md"
     PROJECT_NAME: react-native-segmented-control
     SPECS:
-      - react-native-segmented-control (2.1.1)
+      - react-native-segmented-control (1.6.1)
   React-RCTActionSheet:
     BUILD_SETTINGS_CHECKSUM:
       React-RCTActionSheet:
@@ -2019,7 +2019,7 @@ CACHE_KEYS:
       RNGestureHandler:
         :debug: 9f3ad592b5e12c633653050d34cb6e0a
         :release: 9f3ad592b5e12c633653050d34cb6e0a
-    CHECKSUM: b6b359bb800ae399a9c8b27032bdbf7c18f08a08
+    CHECKSUM: 8f09cd560f8d533eb36da5a6c5a843af9f056b38
     FILES:
       - "../../../../node_modules/react-native-gesture-handler/ios/Handlers/RNFlingHandler.h"
       - "../../../../node_modules/react-native-gesture-handler/ios/Handlers/RNFlingHandler.m"
@@ -2057,13 +2057,13 @@ CACHE_KEYS:
       - "../../../../node_modules/react-native-gesture-handler/README.md"
     PROJECT_NAME: RNGestureHandler
     SPECS:
-      - RNGestureHandler (1.7.0)
+      - RNGestureHandler (1.6.1)
   RNReanimated:
     BUILD_SETTINGS_CHECKSUM:
       RNReanimated:
         :debug: 68e7eafcf32ad30177482012aa6f3b0a
         :release: 68e7eafcf32ad30177482012aa6f3b0a
-    CHECKSUM: 89f5e0a04d1dd52fbf27e7e7030d8f80a646a3fc
+    CHECKSUM: b5ccb50650ba06f6e749c7c329a1bc3ae0c88b43
     FILES:
       - "../../../../node_modules/react-native-reanimated/ios/Nodes/REAAlwaysNode.h"
       - "../../../../node_modules/react-native-reanimated/ios/Nodes/REAAlwaysNode.m"
@@ -2124,13 +2124,13 @@ CACHE_KEYS:
       - "../../../../node_modules/react-native-reanimated/README.md"
     PROJECT_NAME: RNReanimated
     SPECS:
-      - RNReanimated (1.13.0)
+      - RNReanimated (1.9.0)
   RNScreens:
     BUILD_SETTINGS_CHECKSUM:
       RNScreens:
         :debug: 1efbeb0b8a12684d4f38f31496c6e780
         :release: 1efbeb0b8a12684d4f38f31496c6e780
-    CHECKSUM: b748efec66e095134c7166ca333b628cd7e6f3e2
+    CHECKSUM: 62211832af51e0aebcf6e8c36bcf7dd65592f244
     FILES:
       - "../../../../node_modules/react-native-screens/ios/RNSScreen.h"
       - "../../../../node_modules/react-native-screens/ios/RNSScreen.m"
@@ -2144,7 +2144,7 @@ CACHE_KEYS:
       - "../../../../node_modules/react-native-screens/README.md"
     PROJECT_NAME: RNScreens
     SPECS:
-      - RNScreens (2.10.1)
+      - RNScreens (2.8.0)
   SDWebImage:
     BUILD_SETTINGS_CHECKSUM:
       SDWebImage:

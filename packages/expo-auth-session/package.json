@@ -37,7 +37,7 @@
     "expo-constants": "^9.1.1",
     "expo-crypto": "^8.2.1",
     "expo-linking": "~1.0.3",
-    "expo-random": "^8.2.1",
+    "expo-random": "^8.3.1",
     "expo-web-browser": "^8.3.1",
     "qs": "6.9.1"
   },
