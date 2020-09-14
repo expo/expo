@@ -11,6 +11,15 @@ export const HeadingType = {
 };
 
 /**
+ * Minimum heading level to display in sidebar.
+ * Example: When set to 2, the `H1` headers are unlisted,
+ * `H2`s are root level, and `H3`, `H4`... are nested.
+ *
+ * NOTE: Changing this needs additional adjustments in `translate-markdown.js`!
+ */
+export const BASE_HEADING_LEVEL = 2;
+
+/**
  * Manages heading entries. Each entry corresponds to one markdown heading with specified level (#, ##, ### etc)
  *
  * Each entry consists of:
@@ -30,15 +39,20 @@ export class HeadingManager {
     this.slugger = slugger;
     this.meta = { headings: meta.headings || [], ...meta };
     this.headings = [];
+
+    const maxHeadingDepth = meta.maxHeadingDepth ?? Number.MAX_SAFE_INTEGER - 100;
+    this.maxNestingLevel = maxHeadingDepth + BASE_HEADING_LEVEL;
   }
 
   /**
    * Creates heading object instance and stores it
    * @param {string | Object} title Heading display title or `<code/>` element
    * @param {number|undefined} nestingLevel Override metadata heading nesting level.
+   * @param {*} additionalProps Additional properties passed to heading component
    * @returns {Object} Newly created heading instance
    */
-  addHeading(title, nestingLevel) {
+  addHeading(title, nestingLevel, additionalProps) {
+    if (Array.isArray(title)) title = title[0];
     const slug = Utilities.generateSlug(this.slugger, title);
     const realTitle = Utilities.toString(title);
     const meta = this._findMetaForTitle(realTitle);
@@ -52,7 +66,12 @@ export class HeadingManager {
       type: this._isCode(title) ? HeadingType.Code : HeadingType.Text,
       metadata: meta,
     };
-    this.headings.push(heading);
+
+    // levels out of range are unlisted
+    if (level >= BASE_HEADING_LEVEL && level <= this.maxNestingLevel) {
+      this.headings.push(heading);
+    }
+
     return heading;
   }
 

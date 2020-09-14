@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { css } from 'react-emotion';
 
+import { BASE_HEADING_LEVEL, HeadingType } from '../common/headingManager';
+
 import * as Constants from '~/common/constants';
-import { HeadingType } from '~/common/headingManager';
 import { paragraph } from '~/components/base/typography';
 import withHeadingManager from '~/components/page-higher-order/withHeadingManager';
 
@@ -106,7 +107,6 @@ const STYLES_LINK_DEFAULT = css`
   }
 `;
 
-const NESTING_BASE_LEVEL = 2;
 const NESTING_OFFSET = 12;
 
 const removeDot = str => {
@@ -125,7 +125,7 @@ function Item({ heading, activeSlug, shortForm }) {
 
   const isCode = type === HeadingType.Code;
   const displayTitle = shortForm && isCode ? removeDot(title) : title;
-  const paddingLeft = NESTING_OFFSET * (level - NESTING_BASE_LEVEL) + 'px';
+  const paddingLeft = NESTING_OFFSET * (level - BASE_HEADING_LEVEL) + 'px';
   const linkBaseStyle = level < 3 ? STYLES_LINK : STYLES_LINK_NESTED;
   const linkFont = isCode ? Constants.fontFamilies.mono : undefined;
   const fontSize = isCode ? 14 : undefined;
@@ -144,6 +144,10 @@ function Item({ heading, activeSlug, shortForm }) {
 }
 
 class DocumentationSidebarRight extends React.Component {
+  static defaultProps = {
+    maxNestingDepth: 4,
+  };
+
   state = {
     activeSlug: null,
   };
@@ -173,12 +177,17 @@ class DocumentationSidebarRight extends React.Component {
 
     const { headings } = this.props.headingManager;
 
+    //filter out headings nested too much
+    const displayedHeadings = headings.filter(
+      head => head.level <= BASE_HEADING_LEVEL + this.props.maxNestingDepth
+    );
+
     return (
       <nav className={STYLES_SIDEBAR} {...customDataAttributes}>
         <span className={STYLES_TITLE}>{this.props.title}</span>
 
         <div className={STYLES_SIDEBAR_INDENT}>
-          {headings.map(heading => (
+          {displayedHeadings.map(heading => (
             <Item
               key={heading.slug}
               heading={heading}
