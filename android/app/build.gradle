@@ -227,6 +227,7 @@ dependencies {
         'expo-gl-cpp-legacy'
       ]
   ])
+  implementation 'host.exp.exponent:expo-random:+'
   END UNCOMMENT WHEN DISTRIBUTING */
   // WHEN_DETACHING_REMOVE_TO_HERE
 
