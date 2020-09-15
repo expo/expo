@@ -20,24 +20,30 @@ const LATEST_VERSION = `v${version}`;
  *   - `latest`
  *   - versions from new to old (e.g. 39, 38, 37)
  */
-const VERSIONS = versionDirectories.filter(dir => {
-  // show all versions in dev mode
-  if (process.env.NODE_ENV !== 'production') {
+const VERSIONS = versionDirectories
+  .filter(dir => {
+    // show all versions in dev mode
+    if (process.env.NODE_ENV !== 'production') {
+      return true;
+    }
+    // hide unversioned in production
+    if (dir === 'unversioned') {
+      return false;
+    }
+    // show all other versions in production except
+    // those greater than the package.json version number
+    const dirVersion = semver.clean(dir);
+    if (dirVersion) {
+      return semver.lte(dirVersion, version);
+    }
     return true;
-  }
-  // hide unversioned in production
-  if (dir === 'unversioned') {
-    return false;
-  }
-  // show all other versions in production except
-  // those greater than the package.json version number
-  const dirVersion = semver.clean(dir);
-  if (dirVersion) {
-    return semver.lte(dirVersion, version);
-  }
-  return true;
-});
+  })
+  .sort((a, b) => {
+    if (a === 'unversioned' || a === 'latest') return -1;
+    if (b === 'unversioned' || b === 'latest') return 1;
 
+    return semver.major(b) - semver.major(a);
+  });
 
 module.exports = {
   VERSIONS,
