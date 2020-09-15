@@ -145,7 +145,7 @@ PODS:
   - EXPrint (9.1.0):
     - UMCore
     - UMFileSystemInterface
-  - EXRandom (8.3.0):
+  - EXRandom (9.0.0):
     - React
   - EXScreenCapture (1.1.1):
     - UMCore
@@ -1000,7 +1000,7 @@ SPEC CHECKSUMS:
   EXPermissions: 30cbe5b72bd209b65c00884180ad058a60bb413d
   expo-image: 36f53fe2845e4bb74021f69192a752db29766897
   EXPrint: 969e4d8514319a74405b015cd0bf6023dcdf4b00
-  EXRandom: 124ef1bb780179fbc07fd8bf0f183c713d7fa251
+  EXRandom: e4fbca1d3a5d6bd22ef22db9d404102b82987600
   EXScreenCapture: cb33de21768c77375ec37ab744a0f4ba4c9caec2
   EXScreenOrientation: 9110f49798fae74322f6fa959eab1da5d4805cf0
   EXSecureStore: 579cbccd9cd093e6f4336aba073b059008bd78e0

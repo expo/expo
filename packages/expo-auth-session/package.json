@@ -41,7 +41,7 @@
     "expo-constants": "^9.2.0",
     "expo-crypto": "^8.3.0",
     "expo-linking": "~1.0.4",
-    "expo-random": "^8.3.0",
+    "expo-random": "^9.0.0",
     "expo-web-browser": "^8.5.0",
     "invariant": "^2.2.4",
     "qs": "6.9.1"

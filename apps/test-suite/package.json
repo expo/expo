@@ -39,7 +39,7 @@
     "expo-network": "~2.3.0",
     "expo-notifications": "~0.7.1",
     "expo-permissions": "~9.3.0",
-    "expo-random": "~8.3.0",
+    "expo-random": "~9.0.0",
     "expo-secure-store": "~9.2.0",
     "expo-speech": "~8.4.0",
     "expo-sqlite": "~8.4.0",
