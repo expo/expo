@@ -1,12 +1,12 @@
 import { UnavailabilityError } from '@unimodules/core';
 import Constants from 'expo-constants';
+import * as Updates from 'expo-updates';
 import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import invariant from 'fbjs/lib/invariant';
 import qs from 'qs';
 import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import URL from 'url-parse';
-import * as Updates from 'expo-updates';
 import NativeLinking from './ExpoLinking';
 const manifest = Constants.manifest ?? Updates.manifest;
 function validateURL(url) {
