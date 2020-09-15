@@ -151,6 +151,7 @@ If you'd like to build your iOS project with a custom `Gymfile` ([learn more on 
 {
   "workflow": "generic",
   "artifactPath": /* @info determined by output_directory and output_name in Gymfile */ "ios/my/build/directory/RNApp.ipa" /* @end */
+
 }
 ```
 
