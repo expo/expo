@@ -272,11 +272,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_startLoaderTask
 {
-  if (![EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled) {
-    [self _launchWithNoDatabaseAndError:nil];
-    return;
-  }
-
   BOOL shouldCheckOnLaunch;
   NSNumber *launchWaitMs;
   if (_shouldUseCacheOnly) {
@@ -302,6 +297,11 @@ NS_ASSUME_NONNULL_BEGIN
     @"EXUpdatesCheckOnLaunch": shouldCheckOnLaunch ? @"ALWAYS" : @"NEVER",
     @"EXUpdatesRequestHeaders": [self _requestHeaders]
   }];
+
+  if (![EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled) {
+    [self _launchWithNoDatabaseAndError:nil];
+    return;
+  }
 
   EXUpdatesDatabaseManager *updatesDatabaseManager = [EXKernel sharedInstance].serviceRegistry.updatesDatabaseManager;
 

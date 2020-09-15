@@ -27,6 +27,7 @@ import expo.modules.updates.launcher.Launcher;
 import expo.modules.updates.launcher.NoDatabaseLauncher;
 import expo.modules.updates.launcher.SelectionPolicy;
 import expo.modules.updates.launcher.SelectionPolicyNewest;
+import expo.modules.updates.loader.EmbeddedLoader;
 import expo.modules.updates.loader.LoaderTask;
 import expo.modules.updates.manifest.Manifest;
 import host.exp.exponent.di.NativeModuleDepsProvider;
@@ -299,8 +300,14 @@ public class ExpoUpdatesAppLoader {
 
   private void launchWithNoDatabase(Context context, Exception e) {
     mLauncher = new NoDatabaseLauncher(context, mUpdatesConfiguration, e);
-    mCallback.onManifestCompleted(mLauncher.getLaunchedUpdate().metadata);
-    mCallback.onBundleCompleted(mLauncher.getLaunchAssetFile());
+    mCallback.onManifestCompleted(EmbeddedLoader.readEmbeddedManifest(context, mUpdatesConfiguration).getRawManifestJson());
+
+    String launchAssetFile = mLauncher.getLaunchAssetFile();
+    if (launchAssetFile == null) {
+      // ReactInstanceManagerBuilder accepts embedded assets as strings with "assets://" prefixed
+      launchAssetFile = "assets://" + mLauncher.getBundleAssetName();
+    }
+    mCallback.onBundleCompleted(launchAssetFile);
   }
 
   private JSONObject processAndSaveManifest(JSONObject manifest) throws JSONException {
