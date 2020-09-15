@@ -15,7 +15,7 @@ export { PermissionResponse, PermissionStatus };
 export interface BarCodeScannerProps extends ViewProps {
     type?: 'front' | 'back' | number;
     barCodeTypes?: string[];
-    onBarCodeScanned: BarCodeScannedCallback | undefined;
+    onBarCodeScanned: BarCodeScannedCallback;
 }
 export declare class BarCodeScanner extends React.Component<BarCodeScannerProps> {
     lastEvents: {
@@ -45,7 +45,6 @@ export declare class BarCodeScanner extends React.Component<BarCodeScannerProps>
         collapsable?: PropTypes.Validator<boolean | undefined> | undefined;
         needsOffscreenAlphaCompositing?: PropTypes.Validator<boolean | undefined> | undefined;
         renderToHardwareTextureAndroid?: PropTypes.Validator<boolean | undefined> | undefined;
-        focusable?: PropTypes.Validator<boolean | undefined> | undefined;
         shouldRasterizeIOS?: PropTypes.Validator<boolean | undefined> | undefined;
         isTVSelectable?: PropTypes.Validator<boolean | undefined> | undefined;
         hasTVPreferredFocus?: PropTypes.Validator<boolean | undefined> | undefined;
@@ -73,7 +72,7 @@ export declare class BarCodeScanner extends React.Component<BarCodeScannerProps>
         onTouchEndCapture?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined> | undefined;
         accessible?: PropTypes.Validator<boolean | undefined> | undefined;
         accessibilityActions?: PropTypes.Validator<readonly Readonly<{
-            name: string;
+            name: import("react-native").AccessibilityActionName;
             label?: string | undefined;
         }>[] | undefined> | undefined;
         accessibilityLabel?: PropTypes.Validator<string | undefined> | undefined;
@@ -119,7 +118,6 @@ export declare class BarCodeScanner extends React.Component<BarCodeScannerProps>
         collapsable?: any;
         needsOffscreenAlphaCompositing?: any;
         renderToHardwareTextureAndroid?: any;
-        focusable?: any;
         shouldRasterizeIOS?: any;
         isTVSelectable?: any;
         hasTVPreferredFocus?: any;
