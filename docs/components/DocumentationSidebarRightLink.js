@@ -14,8 +14,7 @@ const STYLES_LINK = css`
 
 const STYLES_LINK_NESTED = css`
   display: block;
-  font-size: 15px;
-  margin-bottom: 2px;
+  font-size: 14px;
   line-height: 1.3rem;
   text-decoration: none;
 `;
