@@ -5,6 +5,11 @@ const semver = require('semver');
 
 const { version } = require('./package.json');
 
+// To generate a sitemap, we need context about the supported versions and navigational data
+const createSitemap = require('./scripts/create-sitemap');
+const navigation = require('./common/navigation-data');
+const versions = require('./common/versions');
+
 // copy versions/v(latest version) to versions/latest
 // (Next.js only half-handles symlinks)
 const vLatest = join('pages', 'versions', `v${version}/`);
@@ -34,11 +39,12 @@ module.exports = withCSS({
     };
     return config;
   },
-  async exportPathMap(defaultPathMap, { dev, dir, outDir }) {
+  // Create a map of all pages to export
+  async exportPathMap(defaultPathMap, { dev, outDir }) {
     if (dev) {
       return defaultPathMap;
     }
-    return Object.assign(
+    const pathMap = Object.assign(
       ...Object.entries(defaultPathMap).map(([pathname, page]) => {
         if (pathname.match(/\/v[1-9][^\/]*$/)) {
           // ends in "/v<version>"
@@ -56,5 +62,22 @@ module.exports = withCSS({
         }
       })
     );
+    // Create a sitemap for crawlers like Google and Algolia
+    createSitemap({
+      pathMap,
+      domain: 'https://docs.expo.io',
+      output: join(outDir, 'sitemap.xml'),
+      // Some of the search engines only track the first N items from the sitemap,
+      // this makes sure our starting and general guides are first, and API index last (in order from new to old)
+      pathsPriority: [
+        ...navigation.startingDirectories,
+        ...navigation.generalDirectories,
+        ...versions.VERSIONS.map(version => `versions/${version}`),
+      ],
+      // Some of our pages are "hidden" and should not be added to the sitemap
+      pathsHidden: navigation.previewDirectories,
+    });
+
+    return pathMap;
   },
 });

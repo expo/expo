@@ -55,6 +55,7 @@
     "prettier": "^1.18.2",
     "puppeteer": "^3.3.0",
     "rimraf": "^3.0.2",
-    "semver": "^7.3.2"
+    "semver": "^7.3.2",
+    "sitemap": "^6.3.0"
   }
 }
