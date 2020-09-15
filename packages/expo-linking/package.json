@@ -29,9 +29,6 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/linking",
-  "unimodulePeerDependencies": {
-    "expo-updates": "*"
-  },
   "dependencies": {
     "expo-constants": "~9.2.0",
     "qs": "^6.5.0",

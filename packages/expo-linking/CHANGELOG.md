@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Prevent crash in bare workflow by falling back to `Updates.manifest` if `Constants.manifest` isn't defined.
+- Prevent crash in bare workflow if `Constants.manifest` isn't defined.
 
 ## 1.0.4 — 2020-08-18
 

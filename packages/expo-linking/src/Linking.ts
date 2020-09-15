@@ -1,6 +1,5 @@
 import { UnavailabilityError } from '@unimodules/core';
 import Constants from 'expo-constants';
-import * as Updates from 'expo-updates';
 import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import invariant from 'fbjs/lib/invariant';
 import qs from 'qs';
@@ -11,7 +10,7 @@ import URL from 'url-parse';
 import NativeLinking from './ExpoLinking';
 import { ParsedURL, QueryParams, URLListener } from './Linking.types';
 
-const manifest = Constants.manifest ?? Updates.manifest;
+const manifest = Constants.manifest ?? {};
 
 function validateURL(url: string): void {
   invariant(typeof url === 'string', 'Invalid URL: should be a string. Was: ' + url);
@@ -24,6 +23,10 @@ function usesCustomScheme(): boolean {
 
 function getHostUri(): string {
   if (!manifest.hostUri && !usesCustomScheme()) {
+    if (!Constants.linkingUri) {
+      // this is a bare workflow app
+      return '';
+    }
     // we're probably not using up-to-date xdl, so just fake it for now
     // we have to remove the /--/ on the end since this will be inserted again later
     return removeScheme(Constants.linkingUri).replace(/\/--($|\/.*$)/, '');

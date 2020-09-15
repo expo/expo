@@ -1,6 +1,5 @@
 import { UnavailabilityError } from '@unimodules/core';
 import Constants from 'expo-constants';
-import * as Updates from 'expo-updates';
 import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import invariant from 'fbjs/lib/invariant';
 import qs from 'qs';
@@ -8,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import URL from 'url-parse';
 import NativeLinking from './ExpoLinking';
-const manifest = Constants.manifest ?? Updates.manifest;
+const manifest = Constants.manifest ?? {};
 function validateURL(url) {
     invariant(typeof url === 'string', 'Invalid URL: should be a string. Was: ' + url);
     invariant(url, 'Invalid URL: cannot be empty');
@@ -18,6 +17,10 @@ function usesCustomScheme() {
 }
 function getHostUri() {
     if (!manifest.hostUri && !usesCustomScheme()) {
+        if (!Constants.linkingUri) {
+            // this is a bare workflow app
+            return '';
+        }
         // we're probably not using up-to-date xdl, so just fake it for now
         // we have to remove the /--/ on the end since this will be inserted again later
         return removeScheme(Constants.linkingUri).replace(/\/--($|\/.*$)/, '');
