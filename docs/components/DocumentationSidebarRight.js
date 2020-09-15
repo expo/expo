@@ -59,7 +59,9 @@ class DocumentationSidebarRight extends React.Component {
         continue;
       }
       if (ref.current.offsetTop >= contentScrollPosition) {
-        this.setState({ activeSlug: slug });
+        if (slug !== this.state.activeSlug) {
+          this.setState({ activeSlug: slug });
+        }
         return;
       }
     }
