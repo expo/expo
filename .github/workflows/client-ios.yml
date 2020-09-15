@@ -62,7 +62,7 @@ jobs:
           bundle config path vendor/bundle
           bundle install --jobs 4 --retry 3
       - run: expotools client-build --platform ios
-        timeout-minutes: 60
+        timeout-minutes: 120
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
