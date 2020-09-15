@@ -290,7 +290,6 @@ export default class DocumentationPage extends React.Component {
                 onSetVersion={this._handleSetVersion}
                 isVersionSelectorHidden={!isReferencePath}
               />
-              {sidebarRight}
             </div>
           </div>
         )}
