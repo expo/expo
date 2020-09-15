@@ -39,7 +39,7 @@ module.exports = withCSS({
     };
     return config;
   },
-  // Create a map of all pages to export, this will also generate a sitemap.xml (mostly for Algolia)
+  // Create a map of all pages to export
   async exportPathMap(defaultPathMap, { dev, outDir }) {
     if (dev) {
       return defaultPathMap;
