@@ -27,6 +27,7 @@ export const BASE_HEADING_LEVEL = 2;
  * - slug
  * - level (number of hashes in markdown)
  * - ref - React reference to heading component
+ * - type - Is heading a normal text or inline code
  *
  * This class uses Slugger instance to generate and manage unique slugs
  */
@@ -52,22 +53,25 @@ export class HeadingManager {
    * @returns {Object} Newly created heading instance
    */
   addHeading(title, nestingLevel, additionalProps) {
+    // NOTE (barthap): workaround for complex titles containing both normal text and inline code
+    // changing this needs also change in `headingsMdPlugin.js` to make metadata loading correctly
     if (Array.isArray(title)) title = title[0];
 
-    const { hideInSidebar, sidebarTitle, sidebarDepth } = additionalProps;
+    const { hideInSidebar, sidebarTitle, sidebarDepth, sidebarType } = additionalProps;
     const levelOverride = sidebarDepth != null ? BASE_HEADING_LEVEL + sidebarDepth : undefined;
 
     const slug = Utilities.generateSlug(this.slugger, title);
     const realTitle = Utilities.toString(title);
     const meta = this._findMetaForTitle(realTitle);
-    const level = levelOverride ?? nestingLevel ?? meta?.level ?? 0;
+    const level = levelOverride ?? nestingLevel ?? meta?.level ?? BASE_HEADING_LEVEL;
+    const type = sidebarType || (this._isCode(title) ? HeadingType.Code : HeadingType.Text);
 
     const heading = {
       title: sidebarTitle ?? realTitle,
       slug,
       level,
+      type,
       ref: React.createRef(),
-      type: this._isCode(title) ? HeadingType.Code : HeadingType.Text,
       metadata: meta,
     };
 

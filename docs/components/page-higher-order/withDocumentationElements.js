@@ -8,22 +8,22 @@ import * as components from '~/common/translate-markdown';
 import DocumentationPage from '~/components/DocumentationPage';
 import { HeadingsContext } from '~/components/page-higher-order/withHeadingManager';
 
-const withDocumentationElements = (meta) => {
-  const DocumentationElementsHOC = withRouter((props) => {
+const withDocumentationElements = meta => {
+  const DocumentationElementsHOC = withRouter(props => {
     const { router } = props;
 
     return (
-          <HeadingsContext.Provider value={new HeadingManager(new GithubSlugger(), meta)}>
-            <DocumentationPage
-              title={meta.title}
-              url={router}
-              asPath={router.asPath}
-              sourceCodeUrl={meta.sourceCodeUrl}>
-              <MDXProvider components={components}>{this.props.children}</MDXProvider>
-            </DocumentationPage>
-          </HeadingsContext.Provider>
-    )
-  })
+      <HeadingsContext.Provider value={new HeadingManager(new GithubSlugger(), meta)}>
+        <DocumentationPage
+          title={meta.title}
+          url={router}
+          asPath={router.asPath}
+          sourceCodeUrl={meta.sourceCodeUrl}>
+          <MDXProvider components={components}>{props.children}</MDXProvider>
+        </DocumentationPage>
+      </HeadingsContext.Provider>
+    );
+  });
 
   return DocumentationElementsHOC;
 };
