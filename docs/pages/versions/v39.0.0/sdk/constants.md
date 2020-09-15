@@ -21,21 +21,13 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 import Constants from 'expo-constants';
 ```
 
-<TableOfContentSection title='Properties' contents={['Constants.appOwnership', 'Constants.expoVersion', 'Constants.installationId', 'Constants.deviceName', 'Constants.deviceYearClass', 'Constants.getWebViewUserAgentAsync()', 'Constants.isDevice', 'Constants.nativeAppVersion', 'Constants.nativeBuildVersion', 'Constants.platform', 'Constants.sessionId', 'Constants.statusBarHeight', 'Constants.systemFonts', 'Constants.manifest']} />
+<TableOfContentSection title='Properties' contents={['Constants.appOwnership', 'Constants.deviceName', 'Constants.deviceYearClass', 'Constants.expoVersion', 'Constants.getWebViewUserAgentAsync()', 'Constants.installationId', 'Constants.isDevice', 'Constants.manifest', 'Constants.nativeAppVersion', 'Constants.nativeBuildVersion', 'Constants.platform', 'Constants.sessionId', 'Constants.statusBarHeight', 'Constants.systemFonts']} />
 
 ## Properties
 
 ### `Constants.appOwnership`
 
 Returns `expo`, `standalone`, or `guest`. If `expo`, the experience is running inside of the Expo client. If `standalone`, it is a [standalone app](../../distribution/building-standalone-apps/#building-standalone-apps). If `guest`, it has been opened through a link from a standalone app.
-
-### `Constants.expoVersion`
-
-The version string of the Expo client currently running.
-
-### `Constants.installationId`
-
-An identifier that is unique to this particular device and installation of the Expo client.
 
 ### `Constants.deviceName`
 
@@ -45,13 +37,25 @@ A human-readable name for the device type.
 
 The [device year class](https://github.com/facebook/device-year-class) of this device.
 
+### `Constants.expoVersion`
+
+The version string of the Expo client currently running.
+
 ### `Constants.getWebViewUserAgentAsync()`
 
 Gets the user agent string which would be included in requests sent by a web view running on this device. This is probably not the same user agent you might be providing in your JS `fetch` requests.
 
+### `Constants.installationId`
+
+An identifier that is unique to this particular device and installation of the Expo client.
+
 ### `Constants.isDevice`
 
 `true` if the app is running on a device, `false` if running in a simulator or emulator.
+
+### `Constants.manifest`
+
+The [manifest](../../workflow/how-expo-works/#expo-manifest) object for the app.
 
 ### `Constants.nativeAppVersion`
 
@@ -107,7 +111,3 @@ The default status bar height for the device. Does not factor in changes when lo
 ### `Constants.systemFonts`
 
 A list of the system font names available on the current device.
-
-### `Constants.manifest`
-
-The [manifest](../../workflow/how-expo-works/#expo-manifest) object for the app.
