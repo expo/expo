@@ -7,7 +7,7 @@ import * as Utilities from '~/common/utilities';
  */
 export const HeadingType = {
   Text: 'text',
-  Code: 'inlineCode',
+  InlineCode: 'inlineCode',
 };
 
 /**
@@ -64,7 +64,7 @@ export class HeadingManager {
     const realTitle = Utilities.toString(title);
     const meta = this._findMetaForTitle(realTitle);
     const level = levelOverride ?? nestingLevel ?? meta?.level ?? BASE_HEADING_LEVEL;
-    const type = sidebarType || (this._isCode(title) ? HeadingType.Code : HeadingType.Text);
+    const type = sidebarType || (this._isCode(title) ? HeadingType.InlineCode : HeadingType.Text);
 
     const heading = {
       title: sidebarTitle ?? realTitle,
@@ -109,6 +109,6 @@ export class HeadingManager {
       return false;
     }
     const { name, originalType, mdxType } = title.props;
-    return [name, originalType, mdxType].some(it => it === HeadingType.Code);
+    return [name, originalType, mdxType].some(it => it === HeadingType.InlineCode);
   }
 }

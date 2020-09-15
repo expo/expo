@@ -93,7 +93,7 @@ const DocumentationSidebarRightLink = ({ heading, isActive, shortenCode }) => {
   const paddingLeft = NESTING_OFFSET * (level - BASE_HEADING_LEVEL) + 'px';
   const linkBaseStyle = level <= BASE_HEADING_LEVEL ? STYLES_LINK : STYLES_LINK_NESTED;
 
-  const isCode = type === HeadingType.Code;
+  const isCode = type === HeadingType.InlineCode;
   const displayTitle = shortenCode && isCode ? trimCodedTitle(title) : title;
   const linkFont = isCode ? Constants.fontFamilies.mono : undefined;
   const fontSize = isCode ? 14 : undefined;
