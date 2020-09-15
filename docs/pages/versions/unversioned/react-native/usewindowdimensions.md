@@ -3,6 +3,8 @@ id: usewindowdimensions
 title: useWindowDimensions
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 ```js
 import { useWindowDimensions } from 'react-native';
 ```
@@ -13,6 +15,8 @@ import { useWindowDimensions } from 'react-native';
 const windowWidth = useWindowDimensions().width;
 const windowHeight = useWindowDimensions().height;
 ```
+
+<PlatformsSection title="useWindowDimensions Compatibility" android emulator ios simulator />
 
 ## Example
 
