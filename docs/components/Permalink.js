@@ -66,11 +66,10 @@ export default withHeadingManager(props => {
 
   let permalinkKey = props.id;
 
-  // Use memo for safety - re-render should never happen when using MDX,
-  // but this avoids heading duplication
-  const heading = React.useMemo(
-    () => props.headingManager.addHeading(children, props.nestingLevel, props.additionalProps),
-    [children]
+  const heading = props.headingManager.addHeading(
+    children,
+    props.nestingLevel,
+    props.additionalProps
   );
 
   if (!permalinkKey) {
