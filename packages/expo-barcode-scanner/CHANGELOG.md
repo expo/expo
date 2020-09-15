@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Allow `onBarCodeScanned` prop to be `undefined`
+- Allow `onBarCodeScanned` prop to be `undefined`. ([#10068](https://github.com/expo/expo/pull/10068) by [@josmithua](https://github.com/josmithua))
 
 ## 8.2.1 — 2020-05-29
 
