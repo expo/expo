@@ -272,7 +272,7 @@ function ContactDetailView({
             style={styles.image}
             onPress={onPressImage}
             name={contact?.name ?? ''}
-            image={contact?.image as any}
+            image={contact?.image?.uri}
           />
           <Text style={styles.name}>{contact?.name}</Text>
 
