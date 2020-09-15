@@ -6,11 +6,12 @@ import qs from 'qs';
 import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import URL from 'url-parse';
+import * as Updates from 'expo-updates';
 
 import NativeLinking from './ExpoLinking';
 import { ParsedURL, QueryParams, URLListener } from './Linking.types';
 
-const { manifest } = Constants;
+const manifest = Constants.manifest ?? Updates.manifest;
 
 function validateURL(url: string): void {
   invariant(typeof url === 'string', 'Invalid URL: should be a string. Was: ' + url);
