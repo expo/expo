@@ -48,7 +48,7 @@ module.exports = {
         options.defaultLoaders.babel,
         {
           loader: '@mdx-js/loader',
-          options: { mdPlugins: [headings] },
+          options: { remarkPlugins: [headings] },
         },
         join(__dirname, './common/md-loader'),
       ],
