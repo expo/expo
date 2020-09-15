@@ -55,7 +55,7 @@ export class HeadingManager {
   addHeading(title, nestingLevel, additionalProps) {
     // NOTE (barthap): workaround for complex titles containing both normal text and inline code
     // changing this needs also change in `headingsMdPlugin.js` to make metadata loading correctly
-    if (Array.isArray(title)) title = title[0];
+    title = Array.isArray(title) ? title[0] : title;
 
     const { hideInSidebar, sidebarTitle, sidebarDepth, sidebarType } = additionalProps;
     const levelOverride = sidebarDepth != null ? BASE_HEADING_LEVEL + sidebarDepth : undefined;
@@ -93,7 +93,7 @@ export class HeadingManager {
       heading => heading.title === realTitle && !heading.processed
     );
     if (!entry) {
-      return undefined;
+      return;
     }
     entry.processed = true;
     return entry;
@@ -105,7 +105,9 @@ export class HeadingManager {
    * @returns {boolean} true if header is a code block
    */
   _isCode(title) {
-    if (!title.props) return false;
+    if (!title.props) {
+      return false;
+    }
     const { name, originalType, mdxType } = title.props;
     return [name, originalType, mdxType].some(it => it === HeadingType.Code);
   }
