@@ -24,10 +24,9 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             data-testid="<propertyAnchor level={0}><inlineCode>name</inlineCode></propertyAnchor>"
             style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
           >
-            <h4
-              class="css-5pkr0o"
-              data-components-heading="true"
-              data-heading="true"
+            <div
+              class="css-12onb79 "
+              data-text="true"
             >
               <div
                 class="css-3t0ask"
@@ -76,7 +75,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   </code>
                 </div>
               </div>
-            </h4>
+            </div>
           </div>
         </td>
         <td
@@ -115,10 +114,9 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             data-testid="<propertyAnchor level={0}><inlineCode>androidNavigationBar</inlineCode></propertyAnchor>"
             style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
           >
-            <h4
-              class="css-5pkr0o"
-              data-components-heading="true"
-              data-heading="true"
+            <div
+              class="css-12onb79 "
+              data-text="true"
             >
               <div
                 class="css-3t0ask"
@@ -167,7 +165,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   </code>
                 </div>
               </div>
-            </h4>
+            </div>
           </div>
         </td>
         <td
@@ -473,10 +471,9 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             data-testid="<propertyAnchor level={0}><inlineCode>intentFilters</inlineCode></propertyAnchor>"
             style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
           >
-            <h4
-              class="css-5pkr0o"
-              data-components-heading="true"
-              data-heading="true"
+            <div
+              class="css-12onb79 "
+              data-text="true"
             >
               <div
                 class="css-3t0ask"
@@ -525,7 +522,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   </code>
                 </div>
               </div>
-            </h4>
+            </div>
           </div>
         </td>
         <td
