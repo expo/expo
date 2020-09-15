@@ -49,7 +49,7 @@ module.exports = function createSitemap({
   urls.forEach(url => sitemap.write({ url }));
   sitemap.end();
 
-  console.log(`📝 Generated sitemap with ${urls.length + 1} entries`);
+  console.log(`📝 Generated sitemap with ${urls.length} entries`);
 };
 
 function pathWithTrailingSlash(url) {
