@@ -181,11 +181,7 @@ const STYLES_CENTER_WRAPPER = css`
 `;
 
 class ScrollContainer extends React.Component {
-  constructor(...args) {
-    super(...args);
-
-    this.scrollRef = React.createRef();
-  }
+  scrollRef = React.createRef();
 
   componentDidMount() {
     if (this.props.scrollPosition && this.scrollRef.current) {
@@ -224,11 +220,10 @@ export default class DocumentationNestedScrollLayout extends React.Component {
   };
 
   getContentScrollTop = () => {
-    if (this.contentRef.current) {
-      return this.contentRef.current.getScrollTop();
+    if (!this.contentRef.current) {
+      return;
     }
-
-    return undefined;
+    return this.contentRef.current.getScrollTop();
   };
 
   _scrollHandler = () => {

@@ -52,19 +52,15 @@ class DocumentationSidebarRight extends React.Component {
   };
 
   handleContentScroll(contentScrollPosition) {
-    const { headingManager } = this.props;
-    const { headings } = headingManager;
+    const { headings } = this.props.headingManager;
 
-    for (const heading of headings) {
-      if (!heading.ref) {
+    for (const { ref, slug } of headings) {
+      if (!ref || !ref.current) {
         continue;
       }
-      const { current } = heading.ref;
-      if (current && current.offsetTop >= contentScrollPosition) {
-        if (heading.slug !== this.state.activeSlug) {
-          this.setState({ activeSlug: heading.slug });
-        }
-        break;
+      if (ref.current.offsetTop >= contentScrollPosition) {
+        this.setState({ activeSlug: slug });
+        return;
       }
     }
   }
