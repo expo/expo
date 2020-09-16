@@ -196,7 +196,7 @@ export default props => {
 
 ### Using `Font.loadAsync` instead of the `useFonts` hook
 
-If you don't want to use the `useFonts` hook (for example, maybe you prefer class components), you can use `Font.loadAsync` directly. What is happening under the hood is that your fonts are being loaded using `Font.loadAysnc` from the [`expo-font` library](/versions/latest/sdk/font). You can use that directly if you prefer, or if you want to have more fine-grained control over when your fonts are loaded before rendering.
+If you don't want to use the `useFonts` hook (for example, maybe you prefer class components), you can use `Font.loadAsync` directly. What is happening under the hood is that your fonts are being loaded using `Font.loadAsync` from the [`expo-font` library](/versions/latest/sdk/font). You can use that directly if you prefer, or if you want to have more fine-grained control over when your fonts are loaded before rendering.
 
 <SnackInline
   label="Font loadAsync"
