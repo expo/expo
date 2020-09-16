@@ -21,17 +21,16 @@ function usesCustomScheme(): boolean {
   return Constants.appOwnership === 'standalone' && manifest.scheme;
 }
 
-function getHostUri(): string {
-  if (!manifest.hostUri && !usesCustomScheme()) {
-    if (!Constants.linkingUri) {
-      // this is a bare workflow app
-      return '';
-    }
+function getHostUri(): string | null {
+  if (manifest.hostUri) {
+    return manifest.hostUri;
+  } else if (!manifest.hostUri && !usesCustomScheme()) {
     // we're probably not using up-to-date xdl, so just fake it for now
     // we have to remove the /--/ on the end since this will be inserted again later
     return removeScheme(Constants.linkingUri).replace(/\/--($|\/.*$)/, '');
+  } else {
+    return null;
   }
-  return manifest.hostUri;
 }
 
 function isExpoHosted(): boolean {
