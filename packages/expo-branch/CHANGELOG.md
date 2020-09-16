@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Updated `react-native-branch` vendored code to 5.0.0, upgraded underlying Branch SDKs, see [`react-native-branch`'s changelog](https://github.com/BranchMetrics/react-native-branch-deep-linking-attribution/blob/master/ChangeLog.md) for full list of changes. ([#10204](https://github.com/expo/expo/pull/10204) by [@sjchmiela](https://github.com/sjchmiela))
+
 ### 🐛 Bug fixes
 
 ## 2.3.0 — 2020-08-18
