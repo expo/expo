@@ -6,6 +6,7 @@ import DocumentationSidebarRightLink from './DocumentationSidebarRightLink';
 
 import * as Constants from '~/common/constants';
 import { paragraph } from '~/components/base/typography';
+import ChevronDown from '~/components/icons/ChevronDown';
 import withHeadingManager from '~/components/page-higher-order/withHeadingManager';
 
 const STYLES_SIDEBAR = css`
@@ -22,7 +23,7 @@ const STYLES_TITLE = css`
   font-size: 15px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   position: relative;
   margin-bottom: 16px;
   text-decoration: none;
@@ -42,12 +43,43 @@ const STYLES_SIDEBAR_INDENT = css`
   padding-left: 16px;
 `;
 
+const STYLES_ICON_SHOW_CONTAINER = css`
+  top: 83px;
+  right: 15px;
+  position: fixed;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  user-select: none;
+  background: ${Constants.expoColors.gray[200]};
+  padding: 8px 16px;
+  border-radius: 4px;
+  color: ${Constants.expoColors.black};
+
+  :hover {
+    cursor: pointer;
+  }
+`;
+
+const STYLES_ICON_SHOW = css`
+  transform: rotate(90deg);
+`;
+
+const STYLES_ICON_HIDE = css`
+  min-width: 16px;
+  padding-bottom: 5px;
+  transform: rotate(270deg);
+`;
+
 class DocumentationSidebarRight extends React.Component {
   static defaultProps = {
     maxNestingDepth: 4,
   };
 
   state = {
+    hidden: false,
     activeSlug: null,
   };
 
@@ -67,7 +99,22 @@ class DocumentationSidebarRight extends React.Component {
     }
   }
 
+  _show = () => {
+    this.setState({ hidden: false });
+  };
+  _hide = () => {
+    this.setState({ hidden: true });
+  };
+
   render() {
+    if (this.state.hidden) {
+      return (
+        <div className={STYLES_ICON_SHOW_CONTAINER} onClick={this._show}>
+          <ChevronDown size={18} className={STYLES_ICON_SHOW} />
+        </div>
+      );
+    }
+
     const customDataAttributes = {
       'data-sidebar': true,
     };
@@ -81,7 +128,10 @@ class DocumentationSidebarRight extends React.Component {
 
     return (
       <nav className={STYLES_SIDEBAR} {...customDataAttributes}>
-        <span className={STYLES_TITLE}>{this.props.title}</span>
+        <span className={STYLES_TITLE} onClick={this._hide}>
+          <ChevronDown size={16} className={STYLES_ICON_HIDE} />
+          {this.props.title}
+        </span>
 
         <div className={STYLES_SIDEBAR_INDENT}>
           {displayedHeadings.map(heading => (
