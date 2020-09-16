@@ -71,11 +71,11 @@
 
 - (nullable NSString *)languageOS9 {
     NSString *language = nil;
-    if (@available(iOS 9, tvOS 9, *)) {
-        NSString *rawLanguage = [[NSLocale preferredLanguages] firstObject];
-        NSDictionary *languageDictionary = [NSLocale componentsFromLocaleIdentifier:rawLanguage];
-        language = [languageDictionary objectForKey:@"kCFLocaleLanguageCodeKey"];
-    }
+
+    NSString *rawLanguage = [[NSLocale preferredLanguages] firstObject];
+    NSDictionary *languageDictionary = [NSLocale componentsFromLocaleIdentifier:rawLanguage];
+    language = [languageDictionary objectForKey:@"kCFLocaleLanguageCodeKey"];
+
     return language;
 }
 

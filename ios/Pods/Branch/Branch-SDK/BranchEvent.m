@@ -10,6 +10,7 @@
 #import "BNCLog.h"
 #import "BNCCallbackMap.h"
 #import "BNCReachability.h"
+#import "BNCSKAdNetwork.h"
 
 #pragma mark BranchStandardEvents
 
@@ -69,15 +70,20 @@ BranchStandardEvent BranchStandardEventReserve                = @"RESERVE";
 						callback:callback];
 }
 
-- (void)processResponse:(BNCServerResponse*)response
-				  error:(NSError*)error {
-	NSDictionary *dictionary =
-		([response.data isKindOfClass:[NSDictionary class]])
-		? (NSDictionary*) response.data
-		: nil;
-		
-	if (self.completion)
+- (void)processResponse:(BNCServerResponse*)response error:(NSError*)error {
+	NSDictionary *dictionary = ([response.data isKindOfClass:[NSDictionary class]])
+		? (NSDictionary*) response.data : nil;
+	
+    if (dictionary) {
+        NSNumber *conversionValue = (NSNumber *)dictionary[BRANCH_RESPONSE_KEY_UPDATE_CONVERSION_VALUE];
+        if (conversionValue) {
+            [[BNCSKAdNetwork sharedInstance] updateConversionValue:conversionValue.integerValue];
+        }
+    }
+    
+    if (self.completion) {
 		self.completion(dictionary, error);
+    }
 }
 
 #pragma mark BranchEventRequest NSSecureCoding

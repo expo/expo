@@ -47,8 +47,14 @@
 }
 
 + (NSString*) getAdId {
+    
+    // This macro is unnecessary since this code only runs if AdSupport.framework is included
+    // However, some clients feel more comfortable with no IDFA code at all.
+    #ifdef BRANCH_EXCLUDE_IDFA_CODE
+    return nil;
+    
+    #else
     NSString *uid = nil;
-
     Class ASIdentifierManagerClass = NSClassFromString(@"ASIdentifierManager");
     if (ASIdentifierManagerClass) {
         SEL sharedManagerSelector = NSSelectorFromString(@"sharedManager");
@@ -65,8 +71,8 @@
             uid = nil;
         }
     }
-
     return uid;
+    #endif
 }
 
 + (NSString *)getVendorId {
@@ -75,6 +81,13 @@
 }
 
 + (BOOL)adTrackingSafe {
+    
+    // This macro is unnecessary since this code only runs if AdSupport.framework is included
+    // However, some clients feel more comfortable with no IDFA code at all.
+    #ifdef BRANCH_EXCLUDE_IDFA_CODE
+    return NO;
+    
+    #else
     Class ASIdentifierManagerClass = NSClassFromString(@"ASIdentifierManager");
     if (ASIdentifierManagerClass) {
         SEL sharedManagerSelector = NSSelectorFromString(@"sharedManager");
@@ -83,7 +96,8 @@
         BOOL enabled = ((BOOL (*)(id, SEL))[sharedManager methodForSelector:advertisingEnabledSelector])(sharedManager, advertisingEnabledSelector);
         return enabled;
     }
-    return YES;
+    return NO;
+    #endif
 }
 
 + (NSString *)getDefaultUriScheme {
