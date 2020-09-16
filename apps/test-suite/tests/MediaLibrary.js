@@ -56,8 +56,7 @@ const WRONG_NAME = 'wertyuiopdfghjklvbnhjnftyujn';
 const WRONG_ID = '1234567890';
 
 async function getFiles() {
-  await Promise.all(FILES.map(req => Asset.loadAsync(req)));
-  return FILES.map(file => Asset.fromModule(file));
+  return await Asset.loadAsync(FILES);
 }
 
 async function getAssets(files) {
