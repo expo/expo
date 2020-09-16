@@ -2088,7 +2088,7 @@ PODS:
     - UMCore
   - EXBlur (8.2.0):
     - UMCore
-  - EXBranch (2.3.0):
+  - EXBranch (2.3.1):
     - Branch (= 0.35.0)
     - React
     - UMCore
@@ -2243,7 +2243,7 @@ PODS:
     - UMConstantsInterface
     - UMCore
     - UMTaskManagerInterface
-  - EXUpdates (0.3.1):
+  - EXUpdates (0.3.2):
     - React
     - UMCore
   - EXVideoThumbnails (4.3.0):
@@ -4601,7 +4601,7 @@ SPEC CHECKSUMS:
   EXBarCodeScanner: 1a76d3dc0dae2799af6012e3e4966100e4221a94
   EXBattery: e86c400b6de4067f48a34b832fec7c9a0cedfd97
   EXBlur: 84c07f6396daf07125fd1202da48cdf2137c29c5
-  EXBranch: afdfb1d5f781b4ab94736a34dd2ab22a1aa5ecdc
+  EXBranch: 747872636704a35a4903e197f01100b76fd2e8f0
   EXBrightness: 3f20f3102668ee8afd47c620710f9815fc62f496
   EXCalendar: 673fdb742ddfaf34dfa23931170f57b46249f03d
   EXCamera: 05687ee8f0618820d3b45e54b129a1a535537e8c
@@ -4650,7 +4650,7 @@ SPEC CHECKSUMS:
   EXSQLite: d0d8677c13e60d5db2812387f059c697be27d3fb
   EXStoreReview: e847ad9367e8d9ab0d856e6aa21e16c1d30f118e
   EXTaskManager: 85c9d0ad555af2a393a5c4cb34c767f0e2162357
-  EXUpdates: 3a678b646888effbf7d144f5edfcbe233af3c061
+  EXUpdates: a8bd937b22d0cd30c656c9614cb89120d4da6df4
   EXVideoThumbnails: 14e86a99ba80dff030a77a0a720f494ac6c1cf84
   EXWebBrowser: 1a3ff931f6e64592c70f5faa226e4802a344d664
   FBAudienceNetwork: 33fc8c8c07c1cdbf5279784b73729c6410809daa
