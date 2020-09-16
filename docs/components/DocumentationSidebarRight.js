@@ -73,6 +73,9 @@ const STYLES_ICON_HIDE = css`
   transform: rotate(270deg);
 `;
 
+const UPPER_SCROLL_LIMIT_FACTOR = 1 / 4;
+const LOWER_SCROLL_LIMIT_FACTOR = 3 / 4;
+
 class DocumentationSidebarRight extends React.Component {
   static defaultProps = {
     maxNestingDepth: 4,
@@ -81,6 +84,30 @@ class DocumentationSidebarRight extends React.Component {
   state = {
     hidden: false,
     activeSlug: null,
+  };
+
+  activeItemRef = React.createRef();
+
+  /**
+   * Scrolls sidebar to keep active element always visible
+   */
+  _updateSelfScroll = () => {
+    const selfScroll = this.props.selfRef?.current?.getScrollRef().current;
+    const activeItemPos = this.activeItemRef.current?.offsetTop;
+
+    if (!selfScroll || !activeItemPos) {
+      return;
+    }
+
+    const { scrollTop } = selfScroll;
+    const upperThreshold = window.innerHeight * UPPER_SCROLL_LIMIT_FACTOR;
+    const lowerThreshold = window.innerHeight * LOWER_SCROLL_LIMIT_FACTOR;
+
+    if (activeItemPos < scrollTop + upperThreshold) {
+      selfScroll.scrollTo(0, Math.max(0, activeItemPos - upperThreshold));
+    } else if (activeItemPos > scrollTop + lowerThreshold) {
+      selfScroll.scrollTo(0, activeItemPos - lowerThreshold);
+    }
   };
 
   handleContentScroll(contentScrollPosition) {
@@ -92,7 +119,7 @@ class DocumentationSidebarRight extends React.Component {
       }
       if (ref.current.offsetTop >= contentScrollPosition) {
         if (slug !== this.state.activeSlug) {
-          this.setState({ activeSlug: slug });
+          this.setState({ activeSlug: slug }, this._updateSelfScroll);
         }
         return;
       }
@@ -139,6 +166,7 @@ class DocumentationSidebarRight extends React.Component {
               key={heading.slug}
               heading={heading}
               isActive={heading.slug === this.state.activeSlug}
+              ref={heading.slug === this.state.activeSlug ? this.activeItemRef : undefined}
               shortenCode
             />
           ))}

@@ -193,6 +193,10 @@ class ScrollContainer extends React.Component {
     return this.scrollRef.current.scrollTop;
   };
 
+  getScrollRef = () => {
+    return this.scrollRef;
+  };
+
   render() {
     return (
       <div
@@ -212,6 +216,7 @@ export default class DocumentationNestedScrollLayout extends React.Component {
 
   sidebarRef = React.createRef();
   contentRef = React.createRef();
+  sidebarRightRef = React.createRef();
 
   getSidebarScrollTop = () => {
     if (this.sidebarRef.current) {
@@ -258,7 +263,11 @@ export default class DocumentationNestedScrollLayout extends React.Component {
           </div>
 
           <div className={`${STYLES_SIDEBAR} ${STYLES_RIGHT}`}>
-            <ScrollContainer>{this.props.sidebarRight}</ScrollContainer>
+            <ScrollContainer ref={this.sidebarRightRef}>
+              {React.cloneElement(this.props.sidebarRight, {
+                selfRef: this.sidebarRightRef,
+              })}
+            </ScrollContainer>
           </div>
         </div>
       </div>
