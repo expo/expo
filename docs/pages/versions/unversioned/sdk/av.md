@@ -33,6 +33,20 @@ In this page, we reference operations on `playbackObject`s. Here is an example o
 #### Example: `Audio.Sound`
 
 ```javascript
+// First of all, add this async configuration:
+
+  Audio.setAudioModeAsync({
+   allowsRecordingIOS: false,
+   interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
+   playsInSilentModeIOS: true,
+   interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
+   shouldDuckAndroid: true,
+   staysActiveInBackground: true,
+   playThroughEarpieceAndroid: true
+  });
+  
+// And then continue with the function of playing audio
+  
 const playbackObject = new Audio.Sound();
 // OR
 const playbackObject = await Audio.Sound.createAsync(
