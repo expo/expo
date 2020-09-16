@@ -56,7 +56,7 @@ const WRONG_NAME = 'wertyuiopdfghjklvbnhjnftyujn';
 const WRONG_ID = '1234567890';
 
 async function getFiles() {
-  return await await Asset.loadAsync(FILES);
+  return await Asset.loadAsync(FILES);
 }
 
 async function getAssets(files) {
