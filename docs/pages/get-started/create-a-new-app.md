@@ -17,12 +17,6 @@ At this point we should have Expo CLI installed on our development machine and t
 
 When you run `expo start` (or `npm start`), Expo CLI starts Metro Bundler, which is an HTTP server that compiles the JavaScript code of our app using [Babel](https://babeljs.io/) and serves it to the Expo app. It also pops up Expo Dev Tools, a graphical interface for Expo CLI.
 
-Within the terminal, you will find these shortcuts to be useful:
-
-- Pressing `i` will open in an [iOS simulator](../../workflow/ios-simulator/).
-- Pressing `a` will open in an [Android emulator or connected device](../../workflow/android-studio-emulator/).
-- Pressing `w` will open in your browser. Expo supports all major browsers.
-
 > 👋 You can close the Expo Dev Tools window and disable it from starting in the future by pressing `shift+d` in your terminal running Expo CLI. Start it again at any time by pressing `d` in the terminal running Expo CLI.
 
 ## Opening the app on your phone/tablet
@@ -43,6 +37,19 @@ If it still doesn't work, it may be due to the router configuration &mdash; this
 
 </p>
 </details>
+
+<details><summary><h4>Using a simulator or emulator?</h4></summary>
+<p>
+
+If you are using a simulator or emulator, you may find the following Expo CLI keyboard shortcuts to be useful:
+
+- Pressing `i` will open in an [iOS simulator](../../workflow/ios-simulator/).
+- Pressing `a` will open in an [Android emulator or connected device](../../workflow/android-studio-emulator/).
+- Pressing `w` will open in your browser. Expo supports all major browsers.
+
+</p>
+</details>
+
 
 ## Making your first change
 
