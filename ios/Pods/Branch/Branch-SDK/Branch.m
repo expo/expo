@@ -40,6 +40,7 @@
 #import "BNCFacebookAppLinks.h"
 #import "BNCDeviceInfo.h"
 #import "BNCCallbackMap.h"
+#import "BNCSKAdNetwork.h"
 
 #if !TARGET_OS_TV
 #import "BNCUserAgentCollector.h"
@@ -994,6 +995,10 @@ static BOOL bnc_enableFingerprintIDInCrashlyticsReports = YES;
         dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
     });
     #endif
+}
+
+- (void)setSKAdNetworkCalloutMaxTimeSinceInstall:(NSTimeInterval)maxTimeInterval {
+    [BNCSKAdNetwork sharedInstance].maxTimeSinceInstall = maxTimeInterval;
 }
 
 #pragma mark - Pre-initialization support

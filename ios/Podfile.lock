@@ -2049,7 +2049,7 @@ PODS:
   - AppAuth/Core (1.2.0)
   - AppAuth/ExternalUserAgent (1.2.0)
   - boost-for-react-native (1.63.0)
-  - Branch (0.34.0)
+  - Branch (0.35.0)
   - CocoaLumberjack (3.5.3):
     - CocoaLumberjack/Core (= 3.5.3)
   - CocoaLumberjack/Core (3.5.3)
@@ -2089,7 +2089,7 @@ PODS:
   - EXBlur (8.2.0):
     - UMCore
   - EXBranch (2.3.0):
-    - Branch (= 0.34.0)
+    - Branch (= 0.35.0)
     - React
     - UMCore
   - EXBrightness (8.3.0):
@@ -4587,7 +4587,7 @@ SPEC CHECKSUMS:
   Analytics: 231b01fdaa9704105881dc82def7b7b1d6571edb
   AppAuth: bce82c76043657c99d91e7882e8a9e1a93650cd4
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
-  Branch: 446aeb832102f56f04edf5fa7cb0a752dc392ca7
+  Branch: 9a37f707974a128c37829033c49018b79c7e7a2d
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: cde416483dac037923206447da6e1454df403714
   EXAdsAdMob: d2c317db3c1879bf2c0e36d76468a426917598f3
@@ -4601,7 +4601,7 @@ SPEC CHECKSUMS:
   EXBarCodeScanner: 1a76d3dc0dae2799af6012e3e4966100e4221a94
   EXBattery: e86c400b6de4067f48a34b832fec7c9a0cedfd97
   EXBlur: 84c07f6396daf07125fd1202da48cdf2137c29c5
-  EXBranch: 143d95922c70b1ab74c2c67ea962f3ee905a6850
+  EXBranch: afdfb1d5f781b4ab94736a34dd2ab22a1aa5ecdc
   EXBrightness: 3f20f3102668ee8afd47c620710f9815fc62f496
   EXCalendar: 673fdb742ddfaf34dfa23931170f57b46249f03d
   EXCamera: 05687ee8f0618820d3b45e54b129a1a535537e8c
