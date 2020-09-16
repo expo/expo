@@ -57,6 +57,13 @@ target 'Exponent' do
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '10.0'
       end
 
+      if pod_name == 'Branch'
+        target_installation_result.native_target.build_configurations.each do |config|
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'BRANCH_EXCLUDE_IDFA_CODE=1'
+        end
+      end
+
       # Build React Native with RCT_DEV enabled and RCT_ENABLE_INSPECTOR and
       # RCT_ENABLE_PACKAGER_CONNECTION disabled
       next unless pod_name.start_with?('React')
