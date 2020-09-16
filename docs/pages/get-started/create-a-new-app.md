@@ -3,23 +3,25 @@ title: Create a new app
 sidebar_title: Create a new app
 ---
 
+import TerminalBlock from '~/components/plugins/TerminalBlock';
+
 At this point we should have Expo CLI installed on our development machine and the Expo client on an iOS or Android physical device or emulator. If not, go back to the [Installation](../../get-started/installation/) guide before proceeding.
 
 ## Initializing the project
 
-Run `expo init` to create a project. The `blank` project template option will be selected by default, you can change the template with the up and down arrow keys, but let's just use the `blank` template for now.
-
-Expo CLI now asks you to name your project. I'll call it "First Project" and then press the down arrow key to move to the slug, then type "first-project". Hit enter to proceed to installing the project dependencies.
-
-When the project is initialized and ready to go, the command will exit.
-
-> 🤔 A slug is a string that can be used in a URL. Published Expo apps all have a URL that includes their project slug, for example in https://expo.io/@react-navigation/NavigationPlayground `react-navigation` is the username and `NavigationPlayground` is the slug.
+<TerminalBlock cmd={['# Create a project named my-app. Select the "blank" template when prompted', 'expo init my-app', '', '# Navigate to the project directory', 'cd my-app']} />
 
 ## Starting the development server
 
-Navigate to the project folder in your terminal and type `npm start` to start the local development server of Expo CLI.
+<TerminalBlock cmd={['expo start']} />
 
-Expo CLI starts Metro Bundler, which is an HTTP server that compiles the JavaScript code of our app using [Babel](https://babeljs.io/) and serves it to the Expo app. It also pops up Expo Dev Tools, a graphical interface for Expo CLI.
+When you run `expo start` (or `npm start`), Expo CLI starts Metro Bundler, which is an HTTP server that compiles the JavaScript code of our app using [Babel](https://babeljs.io/) and serves it to the Expo app. It also pops up Expo Dev Tools, a graphical interface for Expo CLI.
+
+Within the terminal, you will find these shortcuts to be useful:
+
+- Pressing `i` will open in an [iOS simulator](../../workflow/ios-simulator/).
+- Pressing `a` will open in an [Android emulator or connected device](../../workflow/android-studio-emulator/).
+- Pressing `w` will open in your browser. Expo supports all major browsers.
 
 > 👋 You can close the Expo Dev Tools window and disable it from starting in the future by pressing `shift+d` in your terminal running Expo CLI. Start it again at any time by pressing `d` in the terminal running Expo CLI.
 
