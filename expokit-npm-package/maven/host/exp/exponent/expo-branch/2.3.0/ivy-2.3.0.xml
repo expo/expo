@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expo-branch" revision="2.3.0" status="integration" publication="20200914121823"/>
+  <info organisation="host.exp.exponent" module="expo-branch" revision="2.3.0" status="integration" publication="20200916202637"/>
   <configurations>
     <conf name="_internal_aapt2_binary" visibility="private" transitive="false"/>
     <conf name="androidApis" visibility="public"/>
@@ -124,14 +124,14 @@
     <dependency org="com.android.tools.build" name="aapt2" rev="4.0.0-6051327" conf="_internal_aapt2_binary-&gt;default">
       <artifact name="aapt2" type="jar" ext="jar" m:classifier="osx" conf="_internal_aapt2_binary"/>
     </dependency>
-    <dependency org="io.branch.sdk.android" name="library" rev="5.0.1" conf="api-&gt;default"/>
+    <dependency org="io.branch.sdk.android" name="library" rev="5.0.3" conf="api-&gt;default"/>
     <dependency org="org.unimodules" name="unimodules-core" rev="5.5.0" conf="implementation-&gt;default"/>
     <dependency org="com.facebook.react" name="react-native" rev="+" conf="implementation-&gt;default"/>
     <dependency org="androidx.localbroadcastmanager" name="localbroadcastmanager" rev="1.0.0" conf="implementation-&gt;default"/>
     <dependency org="com.android.tools.lint" name="lint-gradle" rev="27.0.0" conf="lintClassPath-&gt;default"/>
-    <dependency org="io.branch.sdk.android" name="library" rev="5.0.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="io.branch.sdk.android" name="library" rev="5.0.3" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="androidx.annotation" name="annotation" rev="1.1.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.installreferrer" name="installreferrer" rev="1.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="com.android.installreferrer" name="installreferrer" rev="2.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.facebook.react" name="react-native" rev="39.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.facebook.infer.annotation" name="infer-annotation" rev="0.11.2" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.google.code.findbugs" name="jsr305" rev="3.0.2" transitive="false" conf="releaseCompileClasspath-&gt;default"/>

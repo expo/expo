@@ -10,7 +10,7 @@
     <dependency>
       <groupId>io.branch.sdk.android</groupId>
       <artifactId>library</artifactId>
-      <version>5.0.1</version>
+      <version>5.0.3</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
