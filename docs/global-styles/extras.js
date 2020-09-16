@@ -31,7 +31,7 @@ export const globalExtras = `
     font-weight: 500;
     font-family: ${Constants.fonts.demi};
     color: ${Constants.colors.black90};
-    display: inline;
+    display: inline-block;
   }
 
   details summary h4 {
@@ -39,7 +39,7 @@ export const globalExtras = `
     color: ${Constants.colors.black90};
     font-size: 1.1rem;
     font-weight: 500;
-    display: inline;
+    display: inline-block;
   }
 
   details summary p {
@@ -54,6 +54,10 @@ export const globalExtras = `
 
   details p {
     margin-left: 1rem;
+  }
+
+  details summary .anchor-icon {
+    display: none;
   }
 
   .snack-inline-example-button {
