@@ -12,10 +12,6 @@
 #import <Foundation/Foundation.h>
 #endif
 
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 90000
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wpartial-availability"
-
 #if __has_feature(modules)
 @import CoreSpotlight;
 @import MobileCoreServices;
@@ -24,19 +20,24 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #endif
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface BranchCSSearchableItemAttributeSet : CSSearchableItemAttributeSet
 
-- (id)init;
-- (id)initWithContentType:(NSString *)type;
-- (void)indexWithCallback:(void (^) (NSString * url,
-                                     NSString * spotlightIdentifier,
-                                     NSError * error))callback;
+- (instancetype)init;
 
-@property (nonatomic, strong) NSDictionary *params;
-@property (nonatomic, strong) NSSet *keywords;
-@property (nonatomic) BOOL publiclyIndexable;           //!< Defaults to YES
+#ifdef __IPHONE_14_0
+- (instancetype)initWithContentType:(UTType *)contentType NS_AVAILABLE(10_16, 14_0);
+#endif
+
+- (instancetype)initWithItemContentType:(NSString *)type;
+
+- (void)indexWithCallback:(void (^) (NSString * _Nullable url, NSString * _Nullable spotlightIdentifier, NSError * _Nullable error))callback;
+
+@property (nonatomic, strong, nullable) NSDictionary *params;
+@property (nonatomic, strong, nullable) NSSet *keywords;
+@property (nonatomic) BOOL publiclyIndexable; //!< Defaults to YES
 
 @end
 
-#pragma clang diagnostic pop
-#endif
+NS_ASSUME_NONNULL_END

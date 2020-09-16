@@ -10229,10 +10229,10 @@ CACHE_KEYS:
       Branch:
         :debug: 9d186888e388d0c6920574cb9733ddc3
         :release: 9d186888e388d0c6920574cb9733ddc3
-    CHECKSUM: 446aeb832102f56f04edf5fa7cb0a752dc392ca7
+    CHECKSUM: 9a37f707974a128c37829033c49018b79c7e7a2d
     PROJECT_NAME: Branch
     SPECS:
-      - Branch (0.34.0)
+      - Branch (0.35.0)
   CocoaLumberjack:
     BUILD_SETTINGS_CHECKSUM:
       CocoaLumberjack:
@@ -10462,7 +10462,7 @@ CACHE_KEYS:
       EXBranch:
         :debug: a2a7a793c27f88a63feac1a8a5851249
         :release: a2a7a793c27f88a63feac1a8a5851249
-    CHECKSUM: 143d95922c70b1ab74c2c67ea962f3ee905a6850
+    CHECKSUM: afdfb1d5f781b4ab94736a34dd2ab22a1aa5ecdc
     FILES:
       - "../../packages/expo-branch/ios/EXBranch/EXBranchManager.h"
       - "../../packages/expo-branch/ios/EXBranch/EXBranchManager.m"
@@ -11682,8 +11682,8 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-Exponent:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 4ade20efdcd71db750eb365d272337b4
-      Release: 4ade20efdcd71db750eb365d272337b4
+      Debug: ad8c65b220f8614aa7dd207ee63bc6e7
+      Release: ad8c65b220f8614aa7dd207ee63bc6e7
     FILES:
       - "${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0React-Core/ABI39_0_0AccessibilityResources.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/FirebaseMLVisionFaceModel/GoogleMVFaceDetectorResources.bundle"
@@ -11694,12 +11694,12 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-ExponentIntegrationTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 3c3f5f6db3d172ef626d70ccf3716015
-      Release: 3c3f5f6db3d172ef626d70ccf3716015
+      Debug: a9f8863b18da446384410a099528a3cd
+      Release: a9f8863b18da446384410a099528a3cd
   Pods-Tests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 3c3f5f6db3d172ef626d70ccf3716015
-      Release: 3c3f5f6db3d172ef626d70ccf3716015
+      Debug: a9f8863b18da446384410a099528a3cd
+      Release: a9f8863b18da446384410a099528a3cd
   Protobuf:
     BUILD_SETTINGS_CHECKSUM:
       Protobuf:

@@ -30,6 +30,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import javax.annotation.Nonnull;
+
 public class RNBranchModule extends ReactContextBaseJavaModule {
     public static final String REACT_CLASS = "RNBranch";
     public static final String REACT_MODULE_NAME = "RNBranch";
@@ -88,6 +90,7 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
     private static Activity mActivity = null;
     private static boolean mUseDebug = false;
     private static boolean mInitialized = false;
+    private static volatile boolean mNewIntent = true;
     private static JSONObject mRequestMetadata = new JSONObject();
 
     private AgingHash<String, BranchUniversalObject> mUniversalObjectMap = new AgingHash<>(AGING_HASH_TTL);
@@ -138,6 +141,7 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
         Branch branch = setupBranch(reactActivity.getApplicationContext());
 
         mActivity = reactActivity;
+        final boolean isNewIntent = mNewIntent;
         referralInitListener = new Branch.BranchReferralInitListener(){
 
             private Activity mmActivity = null;
@@ -155,7 +159,7 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
                 try {
                     result.put(NATIVE_INIT_SESSION_FINISHED_EVENT_PARAMS, referringParams);
                     result.put(NATIVE_INIT_SESSION_FINISHED_EVENT_ERROR, error != null ? error.getMessage() : JSONObject.NULL);
-                    result.put(NATIVE_INIT_SESSION_FINISHED_EVENT_URI, uri != null ? uri.toString() : JSONObject.NULL);
+                    result.put(NATIVE_INIT_SESSION_FINISHED_EVENT_URI, isNewIntent && uri != null ? uri.toString() : JSONObject.NULL);
                 }
                 catch (JSONException e) {
 
@@ -195,7 +199,11 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
                     broadcastIntent.putExtra(NATIVE_INIT_SESSION_FINISHED_EVENT_LINK_PROPERTIES, linkProperties);
                 }
 
-                if (uri != null) {
+                /*
+                 * isNewIntent is a capture of the value of mNewIntent above, so does not change when
+                 * mNewIntent changes in onNewIntent.
+                 */
+                if (isNewIntent && uri != null) {
                     broadcastIntent.putExtra(NATIVE_INIT_SESSION_FINISHED_EVENT_URI, uri.toString());
                 }
 
@@ -212,12 +220,34 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
     }
 
     /**
+     * Call from Activity.onNewIntent:
+     *   @Override
+     *   public void onNewIntent(Intent intent) {
+     *     super.onNewIntent(intent);
+     *     RNBranchModule.onNewIntent(intent);
+     *   }
+     * @param intent the new Intent received via Activity.onNewIntent
+     */
+    public static void onNewIntent(@Nonnull Intent intent) {
+        mActivity.setIntent(intent);
+        mNewIntent = true;
+        reInitSession(mActivity);
+    }
+
+    /**
      * Notify JavaScript of init session start. This generates an RNBranch.initSessionStart
      * event to JS via the RN native event emitter.
      * @param context a Context for the LocalBroadcastManager
      * @param uri the URI to include in the notification or null
      */
     private static void notifyJSOfInitSessionStart(Context context, Uri uri) {
+        /*
+         * This check just ensures that we only generate one RNBranch.initSessionStart
+         * event per call to onNewIntent().
+         */
+        if (!mNewIntent) return;
+        mNewIntent = false;
+
         Intent broadcastIntent = new Intent(NATIVE_INIT_SESSION_STARTED_EVENT);
         if (uri != null) {
             broadcastIntent.putExtra(NATIVE_INIT_SESSION_STARTED_EVENT_URI, uri);
@@ -612,11 +642,15 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
             return;
         }
 
+        /*
+         * Using Intent.ACTION_VIEW here will open a browser for non-Branch links unless the
+         * domain is registered in an intent-filter in the manifest. Instead specify the host
+         * Activity.
+         */
         Intent intent = new Intent(mActivity, mActivity.getClass());
-        intent.putExtra("branch", url);
+        intent.setData(Uri.parse(url));
         intent.putExtra("branch_force_new_session", true);
 
-        if (options.hasKey("newActivity") && options.getBoolean("newActivity")) mActivity.finish();
         mActivity.startActivity(intent);
     }
 

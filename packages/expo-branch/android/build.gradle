@@ -72,6 +72,6 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 dependencies {
   unimodule 'unimodules-core'
   implementation 'com.facebook.react:react-native:+'
-  api 'io.branch.sdk.android:library:5.0.1'
+  api 'io.branch.sdk.android:library:5.0.3'
   implementation "androidx.localbroadcastmanager:localbroadcastmanager:1.0.0"
 }

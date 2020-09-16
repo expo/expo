@@ -88,7 +88,7 @@
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-native": "0.63.2",
-    "react-native-branch": "5.0.0-rc.1",
+    "react-native-branch": "5.0.0",
     "react-native-is-iphonex": "^1.0.1",
     "react-native-maps": "0.27.1",
     "react-native-paper": "^4.0.1",
