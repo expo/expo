@@ -1,6 +1,6 @@
 ---
 title: Facebook
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-facebook'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-facebook'
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';

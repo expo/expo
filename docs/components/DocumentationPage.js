@@ -8,7 +8,6 @@ import navigation from '~/common/navigation';
 import * as Utilities from '~/common/utilities';
 import { VERSIONS } from '~/common/versions';
 import * as WindowUtils from '~/common/window';
-import AlgoliaDocsearchMeta from '~/components/AlgoliaDocsearchMeta';
 import DocumentationFooter from '~/components/DocumentationFooter';
 import DocumentationHeader from '~/components/DocumentationHeader';
 import DocumentationNestedScrollLayout from '~/components/DocumentationNestedScrollLayout';
@@ -18,29 +17,28 @@ import Head from '~/components/Head';
 import { H1 } from '~/components/base/headings';
 
 const STYLES_DOCUMENT = css`
-  max-width: 1440px;
   background: #fff;
   margin: 0 auto;
-  padding: 24px 24px 24px 32px;
+  padding: 40px 56px;
 
   hr {
-    border-top: 1px solid ${Constants.colors.border};
+    border-top: 1px solid ${Constants.expoColors.gray[250]};
     border-bottom: 0px;
   }
 
-  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     padding: 20px 16px 48px 16px;
   }
 `;
 
 const HIDDEN_ON_MOBILE = css`
-  @media screen and (max-width: ${Constants.breakpoints.mobileStrict}) {
+  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     display: none;
   }
 `;
 
 const HIDDEN_ON_DESKTOP = css`
-  @media screen and (min-width: ${Constants.breakpoints.mobileStrict}) {
+  @media screen and (min-width: ${Constants.breakpoints.mobile}) {
     display: none;
   }
 `;
@@ -74,12 +72,12 @@ export default class DocumentationPage extends React.Component {
   }
 
   _handleResize = () => {
-    if (WindowUtils.getViewportSize().width >= Constants.breakpoints.mobileStrictValue) {
+    if (WindowUtils.getViewportSize().width >= Constants.breakpoints.mobileValue) {
       window.scrollTo(0, 0);
     }
   };
 
-  _handleSetVersion = (version) => {
+  _handleSetVersion = version => {
     this._version = version;
     let newPath = Utilities.replaceVersionInUrl(this.props.url.pathname, version);
 
@@ -106,7 +104,7 @@ export default class DocumentationPage extends React.Component {
   };
 
   _handleToggleSearch = () => {
-    this.setState((prevState) => ({
+    this.setState(prevState => ({
       isMobileSearchActive: !prevState.isMobileSearchActive,
     }));
   };
@@ -122,7 +120,7 @@ export default class DocumentationPage extends React.Component {
   };
 
   _isGeneralPath = () => {
-    return some(navigation.generalDirectories, (name) =>
+    return some(navigation.generalDirectories, name =>
       this.props.url.pathname.startsWith(`/${name}`)
     );
   };
@@ -130,12 +128,12 @@ export default class DocumentationPage extends React.Component {
   _isGettingStartedPath = () => {
     return (
       this.props.url.pathname === '/' ||
-      some(navigation.startingDirectories, (name) => this.props.url.pathname.startsWith(`/${name}`))
+      some(navigation.startingDirectories, name => this.props.url.pathname.startsWith(`/${name}`))
     );
   };
 
   _isPreviewPath = () => {
-    return some(navigation.previewDirectories, (name) =>
+    return some(navigation.previewDirectories, name =>
       this.props.url.pathname.startsWith(`/${name}`)
     );
   };
@@ -193,6 +191,8 @@ export default class DocumentationPage extends React.Component {
     const version = this._getVersion();
     const routes = this._getRoutes();
 
+    const isReferencePath = this._isReferencePath();
+
     const headerElement = (
       <DocumentationHeader
         activeSection={this._getActiveTopLevelSection()}
@@ -215,7 +215,7 @@ export default class DocumentationPage extends React.Component {
         routes={routes}
         version={this._version}
         onSetVersion={this._handleSetVersion}
-        isVersionSelectorHidden={!this._isReferencePath()}
+        isVersionSelectorHidden={!isReferencePath}
       />
     );
 
@@ -228,10 +228,7 @@ export default class DocumentationPage extends React.Component {
         isMobileSearchActive={this.state.isMobileSearchActive}
         sidebarScrollPosition={sidebarScrollPosition}>
         <Head title={`${this.props.title} - Expo Documentation`}>
-          <AlgoliaDocsearchMeta
-            referenceVersion={this._version}
-            isReferencePage={this._isReferencePath()}
-          />
+          <meta name="docsearch:version" content={isReferencePath ? version : 'none'} />
 
           {(this._version === 'unversioned' || this._isPreviewPath()) && (
             <meta name="robots" content="noindex" />
@@ -249,6 +246,7 @@ export default class DocumentationPage extends React.Component {
             </DocumentationPageContext.Provider>
             <DocumentationFooter
               title={this.props.title}
+              url={this.props.url}
               asPath={this.props.asPath}
               sourceCodeUrl={this.props.sourceCodeUrl}
             />
@@ -273,7 +271,7 @@ export default class DocumentationPage extends React.Component {
                 routes={routes}
                 version={this._version}
                 onSetVersion={this._handleSetVersion}
-                isVersionSelectorHidden={!this._isReferencePath()}
+                isVersionSelectorHidden={!isReferencePath}
               />
             </div>
           </div>

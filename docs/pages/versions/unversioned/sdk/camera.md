@@ -1,6 +1,6 @@
 ---
 title: Camera
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-camera'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-camera'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
@@ -206,6 +206,10 @@ Camera white balance. Use one of `Camera.Constants.WhiteBalance`: `auto`, `sunny
 **iOS only**. **(_Camera.Constants.VideoStabilization_)** The video stabilization mode used for a video recording. Use one of `Camera.Constants.VideoStabilization.{off, standard, cinematic, auto}`.
 
 You can read more about each stabilization type [here](https://developer.apple.com/documentation/avfoundation/avcapturevideostabilizationmode).
+
+### `poster`
+
+**Web only** **(_string_)** A URL for an image to be shown while the camera is loading.
 
 ## Methods
 

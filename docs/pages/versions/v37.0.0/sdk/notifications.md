@@ -148,7 +148,7 @@ The `origin` will vary based on the app's state at the time the notification was
 
 #### Returns
 
-Returns a Promise that resolves to a token string. This token can be provided to the Expo notifications backend to send a push notification to this device. [Read more in the Push Notifications guide](../../push-notifications/overview/).
+Returns a Promise that resolves to a token string. This token can be provided to the Expo notifications backend to send a push notification to this device. [Read more in the Push Notifications guide](/push-notifications/overview/).
 
 The Promise will be rejected if the app does not have permission to send notifications. Be sure to check the result of `Permissions.askAsync(Permissions.NOTIFICATIONS)` before attempting to get an Expo push token.
 

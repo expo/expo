@@ -1,57 +1,31 @@
 package host.exp.exponent.kernel.services;
 
+import android.app.Activity;
 import android.content.Context;
 
-import de.greenrobot.event.EventBus;
-import host.exp.exponent.experience.BaseExperienceActivity;
+import expo.modules.splashscreen.SplashScreen;
 import host.exp.exponent.kernel.ExperienceId;
 
+/**
+ * Remove once SDK38 is phased out.
+ */
 public class SplashScreenKernelService extends BaseKernelService {
-
-  private boolean mAutoHide = true;
-  private boolean mAppLoadingStarted = false;
-  private boolean mAppLoadingFinished = false;
 
   public SplashScreenKernelService(Context context) {
     super(context);
   }
 
-  public void onExperienceContentsLoaded(ExperienceId experienceId) {
-    mAppLoadingFinished = true;
-    mAppLoadingStarted = false;
-    EventBus.getDefault().post(new BaseExperienceActivity.ExperienceContentLoaded(experienceId));
+  public void hide(Activity activity) {
+    SplashScreen.hide(activity);
+  }
+
+  public void preventAutoHide(Activity activity) {
+    SplashScreen.preventAutoHide(activity);
   }
 
   @Override
-  public void onExperienceForegrounded(ExperienceId experienceId) {
-
-  }
+  public void onExperienceForegrounded(ExperienceId experienceId) {}
 
   @Override
-  public void onExperienceBackgrounded(ExperienceId experienceId) {
-
-  }
-
-  public boolean shouldAutoHide() {
-    return mAutoHide;
-  }
-
-  public boolean isAppLoadingStarted() {
-    return mAppLoadingStarted;
-  }
-
-  public boolean isAppLoadingFinished() {
-    return mAppLoadingFinished;
-  }
-
-  public void preventAutoHide() {
-    mAppLoadingStarted = true;
-    mAutoHide = false;
-  }
-
-  public void reset() {
-    mAutoHide = true;
-    mAppLoadingStarted = false;
-    mAppLoadingFinished = false;
-  }
+  public void onExperienceBackgrounded(ExperienceId experienceId) {}
 }

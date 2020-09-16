@@ -28,6 +28,14 @@ export var MonthOfTheYear;
     MonthOfTheYear[MonthOfTheYear["December"] = 12] = "December";
 })(MonthOfTheYear || (MonthOfTheYear = {}));
 export { PermissionStatus };
+/**
+ * Returns whether the Calendar API is enabled on the current device. This does not check the app permissions.
+ *
+ * @returns Async `boolean`, indicating whether the Calendar API is available on the current device. Currently this resolves `true` on iOS and Android only.
+ */
+export async function isAvailableAsync() {
+    return !!ExpoCalendar.getCalendarsAsync;
+}
 export async function getCalendarsAsync(entityType) {
     if (!ExpoCalendar.getCalendarsAsync) {
         throw new UnavailabilityError('Calendar', 'getCalendarsAsync');
@@ -307,7 +315,7 @@ export function openEventInCalendar(id) {
     return ExpoCalendar.openEventInCalendar(parseInt(id, 10));
 } // Android
 /**
- * @deprecated Use requestCalendarPermissionsAsync()
+ * @deprecated Use `requestCalendarPermissionsAsync()` instead
  */
 export async function requestPermissionsAsync() {
     console.warn('requestPermissionsAsync is deprecated. Use requestCalendarPermissionsAsync instead.');

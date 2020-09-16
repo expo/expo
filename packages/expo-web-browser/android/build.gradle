@@ -3,7 +3,7 @@ apply plugin: 'maven'
 apply plugin: 'kotlin-android'
 
 group = 'host.exp.exponent'
-version = '8.4.0'
+version = '8.5.0'
 
 
 buildscript {
@@ -52,8 +52,8 @@ android {
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 29)
-    versionCode 15
-    versionName '8.4.0'
+    versionCode 16
+    versionName '8.5.0'
   }
   lintOptions {
     abortOnError false
@@ -68,7 +68,7 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
   apply from: project(':unimodules-core').file('../unimodules-core.gradle')
 } else {
   throw new GradleException(
-      '\'unimodules-core.gradle\' was not found in the usual Flutter or React Native dependency locations. ' +
+      '\'unimodules-core.gradle\' was not found in the usual React Native dependency location. ' +
           'This package can only be used in such projects. Are you sure you\'ve installed the dependencies properly?')
 }
 

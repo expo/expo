@@ -29,4 +29,5 @@ export const a = ExternalLink;
 export const blockquote = Quote;
 export const expokitDetails = ExpoKitDetails;
 export const bareworkflowDetails = BareWorkflowDetails;
-export const subpropertyAnchor = createPermalinkedComponent(PDIV, { left: -38 });
+export const subpropertyAnchor = createPermalinkedComponent(PDIV, { left: -44, top: -8 });
+export const propertyAnchor = createPermalinkedComponent(PDIV, { top: -8 });

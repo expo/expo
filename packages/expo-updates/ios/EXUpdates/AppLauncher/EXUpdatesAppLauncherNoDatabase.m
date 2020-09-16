@@ -6,7 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSString * const kEXUpdatesErrorLogFile = @"expo-error.log";
+static NSString * const EXUpdatesErrorLogFile = @"expo-error.log";
 
 @interface EXUpdatesAppLauncherNoDatabase ()
 
@@ -24,9 +24,9 @@ static NSString * const kEXUpdatesErrorLogFile = @"expo-error.log";
   if (_launchedUpdate) {
     if (_launchedUpdate.status == EXUpdatesUpdateStatusEmbedded) {
       NSAssert(_assetFilesMap == nil, @"assetFilesMap should be null for embedded updates");
-      _launchAssetUrl = [[NSBundle mainBundle] URLForResource:kEXUpdatesBareEmbeddedBundleFilename withExtension:kEXUpdatesBareEmbeddedBundleFileType];
+      _launchAssetUrl = [[NSBundle mainBundle] URLForResource:EXUpdatesBareEmbeddedBundleFilename withExtension:EXUpdatesBareEmbeddedBundleFileType];
     } else {
-      _launchAssetUrl = [[NSBundle mainBundle] URLForResource:kEXUpdatesEmbeddedBundleFilename withExtension:kEXUpdatesEmbeddedBundleFileType];
+      _launchAssetUrl = [[NSBundle mainBundle] URLForResource:EXUpdatesEmbeddedBundleFilename withExtension:EXUpdatesEmbeddedBundleFileType];
 
       NSMutableDictionary *assetFilesMap = [NSMutableDictionary new];
       for (EXUpdatesAsset *asset in _launchedUpdate.assets) {
@@ -101,7 +101,7 @@ static NSString * const kEXUpdatesErrorLogFile = @"expo-error.log";
 + (NSString *)_errorLogFilePath
 {
   NSURL *applicationDocumentsDirectory = [[NSFileManager.defaultManager URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask] lastObject];
-  return [[applicationDocumentsDirectory URLByAppendingPathComponent:kEXUpdatesErrorLogFile] path];
+  return [[applicationDocumentsDirectory URLByAppendingPathComponent:EXUpdatesErrorLogFile] path];
 }
 
 @end

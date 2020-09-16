@@ -75,7 +75,7 @@ public class UpdatesModule extends ExportedModule {
         constants.put("releaseChannel", updatesService.getConfiguration().getReleaseChannel());
         constants.put("isUsingEmbeddedAssets", updatesService.isUsingEmbeddedAssets());
       }
-    } catch (IllegalStateException e) {
+    } catch (Exception e) {
       // do nothing; this is expected in a development client
       constants.put("isEnabled", false);
     }

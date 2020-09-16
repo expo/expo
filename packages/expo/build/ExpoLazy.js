@@ -27,12 +27,6 @@ Object.defineProperty(exports, "DangerZone", {
     return _DangerZone.default;
   }
 });
-Object.defineProperty(exports, "Updates", {
-  enumerable: true,
-  get: function () {
-    return _deprecated.Updates;
-  }
-});
 Object.defineProperty(exports, "Linking", {
   enumerable: true,
   get: function () {
@@ -417,6 +411,12 @@ Object.defineProperty(exports, "Speech", {
     return _removed.Speech;
   }
 });
+Object.defineProperty(exports, "SplashScreen", {
+  enumerable: true,
+  get: function () {
+    return _removed.SplashScreen;
+  }
+});
 Object.defineProperty(exports, "SQLite", {
   enumerable: true,
   get: function () {
@@ -453,6 +453,12 @@ Object.defineProperty(exports, "Transitioning", {
     return _removed.Transitioning;
   }
 });
+Object.defineProperty(exports, "Updates", {
+  enumerable: true,
+  get: function () {
+    return _removed.Updates;
+  }
+});
 Object.defineProperty(exports, "Video", {
   enumerable: true,
   get: function () {
@@ -471,13 +477,9 @@ Object.defineProperty(exports, "WebView", {
     return _removed.WebView;
   }
 });
-exports.Logs = exports.SplashScreen = void 0;
+exports.Logs = void 0;
 
 require("./Expo.fx");
-
-var SplashScreen = _interopRequireWildcard(require("./launch/SplashScreen"));
-
-exports.SplashScreen = SplashScreen;
 
 var Logs = _interopRequireWildcard(require("./logs/Logs"));
 

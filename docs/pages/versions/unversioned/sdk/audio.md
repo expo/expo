@@ -1,6 +1,6 @@
 ---
 title: Audio
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-av'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-av'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
@@ -139,6 +139,10 @@ try {
   await soundObject.loadAsync(require('./assets/sounds/hello.mp3'));
   await soundObject.playAsync();
   // Your sound is playing!
+
+  // Don't forget to unload the sound from memory
+  // when you are done using the Sound object
+  await soundObject.unloadAsync();
 } catch (error) {
   // An error occurred!
 }

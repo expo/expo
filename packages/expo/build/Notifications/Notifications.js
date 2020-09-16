@@ -7,11 +7,12 @@ import ExponentNotifications from './ExponentNotifications';
 import Storage from './Storage';
 let _emitter;
 let _initialNotification;
-function _maybeInitEmitter() {
+function _getEventEmitter() {
     if (!_emitter) {
         _emitter = new EventEmitter();
         RCTDeviceEventEmitter.addListener('Exponent.notification', emitNotification);
     }
+    return _emitter;
 }
 export function emitNotification(notification) {
     if (typeof notification === 'string') {
@@ -27,7 +28,8 @@ export function emitNotification(notification) {
             // It's actually just a string, that's fine
         }
     }
-    _emitter.emit('notification', notification);
+    const emitter = _getEventEmitter();
+    emitter.emit('notification', notification);
 }
 function _processNotification(notification) {
     notification = Object.assign({}, notification);
@@ -298,7 +300,7 @@ export default {
     },
     /* Primary public api */
     addListener(listener) {
-        _maybeInitEmitter();
+        const emitter = _getEventEmitter();
         if (_initialNotification) {
             const initialNotification = _initialNotification;
             _initialNotification = null;
@@ -306,7 +308,7 @@ export default {
                 emitNotification(initialNotification);
             }, 0);
         }
-        return _emitter.addListener('notification', listener);
+        return emitter.addListener('notification', listener);
     },
     async getBadgeNumberAsync() {
         if (!ExponentNotifications.getBadgeNumberAsync) {

@@ -178,9 +178,7 @@ function _captureConsoleStackTrace() {
     }
 }
 function _getProjectRoot() {
-    return Constants.manifest && Constants.manifest.developer
-        ? Constants.manifest.developer.projectRoot
-        : null;
+    return Constants.manifest?.developer?.projectRoot ?? null;
 }
 export default {
     serializeLogDataAsync,

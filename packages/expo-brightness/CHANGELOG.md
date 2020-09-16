@@ -8,9 +8,18 @@
 
 ### 🐛 Bug fixes
 
+- Removed use of `org.unimodules.core.InvalidArgumentException` in favor of its coded version, `org.unimodules.core.errors.InvalidArgumentException`. ([#9961](https://github.com/expo/expo/pull/9961) by [@sjchmiela](https://github.com/sjchmiela))
+
+## 8.3.0 — 2020-08-18
+
+### 🎉 New features
+
+- Add permissions for web. ([#9671](https://github.com/expo/expo/pull/9671) by [@EvanBacon](https://github.com/EvanBacon))
+- Create `isAvailableAsync` method. ([#9668](https://github.com/expo/expo/pull/9668) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 8.2.1 — 2020-05-29
 
-*This version does not introduce any user-facing changes.*
+_This version does not introduce any user-facing changes._
 
 ## 8.2.0 — 2020-05-27
 

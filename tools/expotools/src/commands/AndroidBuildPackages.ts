@@ -7,6 +7,7 @@ import readline from 'readline';
 
 import * as Directories from '../Directories';
 import * as Packages from '../Packages';
+import * as ProjectVersions from '../ProjectVersions';
 
 type ActionOptions = {
   sdkVersion: string;
@@ -18,6 +19,12 @@ type Package = {
   sourceDir: string;
   buildDirRelative: string;
 };
+
+const UNBUILDABLE_PACKAGES_NAMES = [
+  'expo-module-template',
+  'expo-dev-menu',
+  'expo-dev-menu-interface',
+];
 
 const EXPO_ROOT_DIR = Directories.getExpoRepositoryRootDir();
 const ANDROID_DIR = Directories.getAndroidDir();
@@ -90,7 +97,7 @@ async function _getSuggestedPackagesToBuild(packages: Package[]): Promise<string
   for (const pkg of packages) {
     const isUpToDate = await _isPackageUpToDate(
       pkg.sourceDir,
-      path.join(EXPO_ROOT_DIR, 'expokit-npm-package', 'maven', pkg.buildDirRelative)
+      path.join(EXPO_ROOT_DIR, 'android', 'maven', pkg.buildDirRelative)
     );
     if (!isUpToDate) {
       packagesToBuild.push(pkg.name);
@@ -146,8 +153,9 @@ async function _uncommentWhenDistributing(filenames: string[]): Promise<void> {
   }
 }
 
-async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Promise<void> {
+async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Promise<number> {
   let appBuildGradle = path.join(ANDROID_DIR, 'app', 'build.gradle');
+  let rootBuildGradle = path.join(ANDROID_DIR, 'build.gradle');
   let expoViewBuildGradle = path.join(ANDROID_DIR, 'expoview', 'build.gradle');
   const settingsGradle = path.join(ANDROID_DIR, 'settings.gradle');
   const constantsJava = path.join(
@@ -179,6 +187,7 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
 
   await _stashFilesAsync([
     appBuildGradle,
+    rootBuildGradle,
     expoViewBuildGradle,
     multipleVersionReactNativeActivity,
     constantsJava,
@@ -196,6 +205,7 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
   await _uncommentWhenDistributing([appBuildGradle, expoViewBuildGradle]);
   await _commentWhenDistributing([
     constantsJava,
+    rootBuildGradle,
     expoViewBuildGradle,
     multipleVersionReactNativeActivity,
   ]);
@@ -207,6 +217,17 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
     await fs.remove(path.join(process.env.HOME!, '.m2', 'repository', pkg.buildDirRelative));
     await fs.remove(path.join(ANDROID_DIR, 'maven', pkg.buildDirRelative));
     await fs.remove(path.join(pkg.sourceDir, 'build'));
+  }
+
+  // hacky workaround for weird issue where some packages need to be built twice after cleaning
+  // in order to have .so libs included in the aar
+  const reactAndroidIndex = packages.findIndex(pkg => pkg.name === REACT_ANDROID_PKG.name);
+  if (reactAndroidIndex > -1) {
+    packages.splice(reactAndroidIndex, 0, REACT_ANDROID_PKG);
+  }
+  const expoviewIndex = packages.findIndex(pkg => pkg.name === EXPOVIEW_PKG.name);
+  if (expoviewIndex > -1) {
+    packages.splice(expoviewIndex, 0, EXPOVIEW_PKG);
   }
 
   let failedPackages: string[] = [];
@@ -258,13 +279,6 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
     );
   }
 
-  // Copy JSC
-  await fs.remove(path.join(ANDROID_DIR, 'maven/org/webkit/'));
-  await fs.copy(
-    path.join(ANDROID_DIR, '../node_modules/jsc-android/dist/org/webkit'),
-    path.join(ANDROID_DIR, 'maven/org/webkit/')
-  );
-
   if (failedPackages.length) {
     console.log(' ❌  The following packages failed to build:');
     console.log(failedPackages);
@@ -274,20 +288,20 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
       )}\``
     );
   }
+
+  return failedPackages.length;
 }
 
 async function action(options: ActionOptions) {
   process.on('SIGINT', _exitHandler);
   process.on('SIGTERM', _exitHandler);
 
-  if (!options.sdkVersion) {
-    throw new Error('Must run with `--sdkVersion SDK_VERSION`');
-  }
-
-  const detachableUniversalModules = await _findUnimodules(path.join(EXPO_ROOT_DIR, 'packages'));
+  const detachableUniversalModules = (
+    await _findUnimodules(path.join(EXPO_ROOT_DIR, 'packages'))
+  ).filter((unimodule) => !UNBUILDABLE_PACKAGES_NAMES.includes(unimodule.name));
 
   // packages must stay in this order --
-  // expoview MUST be last
+  // ReactAndroid MUST be first and expoview MUST be last
   const packages: Package[] = [REACT_ANDROID_PKG, ...detachableUniversalModules, EXPOVIEW_PKG];
   let packagesToBuild: string[] = [];
 
@@ -360,10 +374,13 @@ async function action(options: ActionOptions) {
   }
 
   try {
-    await _updateExpoViewAsync(
+    const failedPackagesCount = await _updateExpoViewAsync(
       packages.filter((pkg) => packagesToBuild.includes(pkg.name)),
       options.sdkVersion
     );
+    if (failedPackagesCount > 0) {
+      process.exitCode = 1;
+    }
   } catch (e) {
     await _exitHandler();
     throw e;
@@ -380,12 +397,21 @@ async function _exitHandler(): Promise<void> {
 export default (program: any) => {
   program
     .command('android-build-packages')
-    .alias('abp', 'update-exponent-view')
-    .description('Builds all Android AAR packages for ExpoKit')
-    .option('-s, --sdkVersion [string]', 'SDK version')
+    .alias('abp')
+    .description('Builds all Android AAR packages for Turtle')
+    .option('-s, --sdkVersion [string]', '[optional] SDK version')
     .option(
       '-p, --packages [string]',
       '[optional] packages to build. May be `all`, `suggested`, or a comma-separate list of package names.'
     )
-    .asyncAction(action);
+    .asyncAction(async (options: Partial<ActionOptions>) => {
+      const sdkVersion =
+        options.sdkVersion ?? (await ProjectVersions.getNewestSDKVersionAsync('android'));
+
+      if (!sdkVersion) {
+        throw new Error('Could not infer SDK version, please run with `--sdkVersion SDK_VERSION`');
+      }
+
+      await action({ sdkVersion, ...options });
+    });
 };

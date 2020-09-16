@@ -245,7 +245,7 @@ function ProfileProjectsSection({
 }: Pick<Props, 'data' | 'isOwnProfile' | 'navigation' | 'username'>) {
   const onPressProjectList = () => {
     navigation.navigate('ProjectsForUser', {
-      username: username,
+      username,
       belongsToCurrentUser: isOwnProfile,
     });
   };
@@ -302,7 +302,7 @@ function ProfileSnacksSection({
 }: Pick<Props, 'data' | 'isOwnProfile' | 'navigation' | 'username'>) {
   const onPressSnackList = () => {
     navigation.navigate('SnacksForUser', {
-      username: username,
+      username,
       belongsToCurrentUser: isOwnProfile,
     });
   };

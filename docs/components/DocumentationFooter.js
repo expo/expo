@@ -7,7 +7,7 @@ import { H2, H3, H4 } from '~/components/base/headings';
 import { PDIV, P, Quote } from '~/components/base/paragraph';
 
 const STYLES_FOOTER = css`
-  border-top: 1px solid ${Constants.colors.border};
+  border-top: 1px solid ${Constants.expoColors.gray[250]};
   padding: 24px 0 24px 0;
 `;
 
@@ -57,15 +57,23 @@ export default class DocumentationFooter extends React.PureComponent {
         </a>
         {this.maybeRenderIssuesLink()}
         {this.maybeRenderSourceCodeLink()}
+        {this.maybeRenderGithubUrl()}
+      </footer>
+    );
+  }
+
+  maybeRenderGithubUrl() {
+    if (this.props.url) {
+      return (
         <a
           className={STYLES_FOOTER_LINK}
           target="_blank"
           rel="noopener"
-          href={githubUrl(this.props.asPath)}>
+          href={githubUrl(this.props.url.pathname)}>
           Edit this page
         </a>
-      </footer>
-    );
+      );
+    }
   }
 
   maybeRenderIssuesLink = () => {

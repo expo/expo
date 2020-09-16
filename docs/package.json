@@ -3,9 +3,10 @@
   "version": "38.0.0",
   "private": true,
   "scripts": {
-    "dev": "node server.js",
+    "dev": "rimraf node_modules/.cache && node server.js",
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=8192 next build",
-    "export": "yarn run build && next export",
+    "export": "yarn run build && next export && yarn run export-issue-404",
+    "export-issue-404": "echo \"🛠  Patching https://github.com/vercel/next.js/issues/16528\"; cp out/404/index.html out/404.html",
     "export-server": "http-server out -p 8000",
     "import-react-native-docs": "node ./scripts/import-react-native-docs.js",
     "test-links": "node --async-stack-traces --unhandled-rejections=strict ./scripts/test-links.js",
@@ -15,9 +16,10 @@
   },
   "dependencies": {
     "@expo/spawn-async": "^1.5.0",
-    "@mdx-js/loader": "^0.16.8",
-    "@mdx-js/mdx": "^0.16.8",
-    "@mdx-js/runtime": "^1.6.6",
+    "@mdx-js/loader": "^1.6.16",
+    "@mdx-js/mdx": "^1.6.16",
+    "@mdx-js/react": "^1.6.16",
+    "@mdx-js/runtime": "^1.6.16",
     "@reach/tabs": "^0.10.3",
     "@sentry/browser": "^5.6.1",
     "@zeit/next-css": "^1.0.1",
@@ -25,13 +27,14 @@
     "babel-plugin-preval": "^3.0.1",
     "cross-env": "^5.2.0",
     "docsearch.js": "^2.5.2",
+    "emoji-regex": "9.0.0",
     "emotion": "^9.2.9",
     "emotion-server": "^9.2.9",
     "front-matter": "^2.3.0",
     "fs-extra": "^6.0.1",
     "github-slugger": "^1.2.0",
     "hotshot": "^1.0.5",
-    "next": "^8.0.0",
+    "next": "^9.5.3",
     "nprogress": "0.2.0",
     "prism-react-renderer": "1.0.2",
     "prop-types": "15.6.2",
@@ -51,6 +54,8 @@
     "jest": "26.1.0",
     "prettier": "^1.18.2",
     "puppeteer": "^3.3.0",
-    "semver": "^7.3.2"
+    "rimraf": "^3.0.2",
+    "semver": "^7.3.2",
+    "sitemap": "^6.3.0"
   }
 }

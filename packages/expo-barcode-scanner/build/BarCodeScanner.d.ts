@@ -69,6 +69,7 @@ export declare class BarCodeScanner extends React.Component<BarCodeScannerProps>
         collapsable?: any;
         needsOffscreenAlphaCompositing?: any;
         renderToHardwareTextureAndroid?: any;
+        focusable?: any;
         shouldRasterizeIOS?: any;
         isTVSelectable?: any;
         hasTVPreferredFocus?: any;

@@ -62,14 +62,29 @@ public class ScreenViewManager extends ViewGroupManager<Screen> {
     view.setGestureEnabled(gestureEnabled);
   }
 
+  @ReactProp(name = "replaceAnimation")
+  public void setReplaceAnimation(Screen view, String animation) {
+    if (animation == null || "pop".equals(animation)) {
+      view.setReplaceAnimation(Screen.ReplaceAnimation.POP);
+    } else if ("push".equals(animation)) {
+      view.setReplaceAnimation(Screen.ReplaceAnimation.PUSH);
+    }
+  }
+
   @Nullable
   @Override
   public Map getExportedCustomDirectEventTypeConstants() {
     return MapBuilder.of(
             ScreenDismissedEvent.EVENT_NAME,
             MapBuilder.of("registrationName", "onDismissed"),
+            ScreenWillAppearEvent.EVENT_NAME,
+            MapBuilder.of("registrationName", "onWillAppear"),
             ScreenAppearEvent.EVENT_NAME,
             MapBuilder.of("registrationName", "onAppear"),
+            ScreenWillDisappearEvent.EVENT_NAME,
+            MapBuilder.of("registrationName", "onWillDisappear"),
+            ScreenDisappearEvent.EVENT_NAME,
+            MapBuilder.of("registrationName", "onDisappear"),
             StackFinishTransitioningEvent.EVENT_NAME,
             MapBuilder.of("registrationName", "onFinishTransitioning"));
   }

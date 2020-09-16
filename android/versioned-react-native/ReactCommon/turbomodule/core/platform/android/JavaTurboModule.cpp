@@ -32,70 +32,59 @@ JavaTurboModule::JavaTurboModule(
       instance_(jni::make_global(instance)),
       nativeInvoker_(nativeInvoker) {}
 
-jni::local_ref<JCxxCallbackImpl::JavaPart>
-JavaTurboModule::createJavaCallbackFromJSIFunction(
-    jsi::Function &function,
+namespace {
+
+jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
+    jsi::Function &&function,
     jsi::Runtime &rt,
     std::shared_ptr<CallInvoker> jsInvoker) {
-  auto wrapper = std::make_shared<react::CallbackWrapper>(
-      std::move(function), rt, jsInvoker);
-  callbackWrappers_.insert(wrapper);
+  auto weakWrapper =
+      react::CallbackWrapper::createWeak(std::move(function), rt, jsInvoker);
 
-  std::function<void(folly::dynamic)> fn = [this,
-                                            wrapper](folly::dynamic responses) {
-    if (wrapper->isDestroyed()) {
-      throw std::runtime_error("callback arg cannot be called more than once");
-    }
+  std::function<void(folly::dynamic)> fn =
+      [weakWrapper,
+       wrapperWasCalled = false](folly::dynamic responses) mutable {
+        if (wrapperWasCalled) {
+          throw std::runtime_error(
+              "callback 2 arg cannot be called more than once");
+        }
 
-    wrapper->jsInvoker().invokeAsync([this, wrapper, responses]() {
-      if (wrapper->isDestroyed()) {
-        return;
-      }
+        auto strongWrapper = weakWrapper.lock();
+        if (!strongWrapper) {
+          return;
+        }
 
-      // TODO (T43155926) valueFromDynamic already returns a Value array. Don't
-      // iterate again
-      jsi::Value args = jsi::valueFromDynamic(wrapper->runtime(), responses);
-      auto argsArray =
-          args.getObject(wrapper->runtime()).asArray(wrapper->runtime());
-      std::vector<jsi::Value> result;
-      for (size_t i = 0; i < argsArray.size(wrapper->runtime()); i++) {
-        result.emplace_back(
-            wrapper->runtime(),
-            argsArray.getValueAtIndex(wrapper->runtime(), i));
-      }
-      wrapper->callback().call(
-          wrapper->runtime(), (const jsi::Value *)result.data(), result.size());
+        strongWrapper->jsInvoker().invokeAsync([weakWrapper, responses]() {
+          auto strongWrapper2 = weakWrapper.lock();
+          if (!strongWrapper2) {
+            return;
+          }
 
-      /**
-       * Eagerly destroy the jsi::Function since it's already been invoked.
-       * TODO(T48128233) Do we want callbacks to be invoked only once?
-       *
-       * NOTE: ~JavaTurboModule and this function run on the same thread.
-       * If you reach this point, you know that the destructor wasn't run
-       * because the current wrapper wasn't destroyed. Therefore, it's
-       * safe to access callbackWrappers_.
-       */
-      wrapper->destroy();
-      callbackWrappers_.erase(wrapper);
-    });
-  };
+          // TODO (T43155926) valueFromDynamic already returns a Value array.
+          // Don't iterate again
+          jsi::Value args =
+              jsi::valueFromDynamic(strongWrapper2->runtime(), responses);
+          auto argsArray = args.getObject(strongWrapper2->runtime())
+                               .asArray(strongWrapper2->runtime());
+          std::vector<jsi::Value> result;
+          for (size_t i = 0; i < argsArray.size(strongWrapper2->runtime());
+               i++) {
+            result.emplace_back(
+                strongWrapper2->runtime(),
+                argsArray.getValueAtIndex(strongWrapper2->runtime(), i));
+          }
+          strongWrapper2->callback().call(
+              strongWrapper2->runtime(),
+              (const jsi::Value *)result.data(),
+              result.size());
+
+          strongWrapper2->destroy();
+        });
+
+        wrapperWasCalled = true;
+      };
   return JCxxCallbackImpl::newObjectCxxArgs(fn);
 }
-
-JavaTurboModule::~JavaTurboModule() {
-  /**
-   * Delete all jsi::Functions that haven't yet been invoked by Java.
-   * So long as nothing else aside from the JS heap is holding on to this
-   * JavaTurboModule, this destructor is guaranteed to execute before the
-   * jsi::Runtime is deleted.
-   */
-  for (auto it = callbackWrappers_.begin(); it != callbackWrappers_.end();
-       it++) {
-    (*it)->destroy();
-  }
-}
-
-namespace {
 
 template <typename T>
 std::string to_string(T v) {
@@ -284,9 +273,9 @@ JNIArgs JavaTurboModule::convertJSIArgsToJNIArgs(
 
     if (!(type == "Ljava/lang/Double;" || type == "Ljava/lang/Boolean;" ||
           type == "Ljava/lang/String;" ||
-          type == "Labi38_0_0/com/facebook/react/bridge/ReadableArray;" ||
-          type == "Labi38_0_0/com/facebook/react/bridge/Callback;" ||
-          type == "Labi38_0_0/com/facebook/react/bridge/ReadableMap;")) {
+          type == "Labi39_0_0/com/facebook/react/bridge/ReadableArray;" ||
+          type == "Labi39_0_0/com/facebook/react/bridge/Callback;" ||
+          type == "Labi39_0_0/com/facebook/react/bridge/ReadableMap;")) {
       throw JavaTurboModuleInvalidArgumentTypeException(
           type, argIndex, methodName);
     }
@@ -341,7 +330,7 @@ JNIArgs JavaTurboModule::convertJSIArgsToJNIArgs(
       continue;
     }
 
-    if (type == "Labi38_0_0/com/facebook/react/bridge/ReadableArray;") {
+    if (type == "Labi39_0_0/com/facebook/react/bridge/ReadableArray;") {
       if (!(arg->isObject() && arg->getObject(rt).isArray(rt))) {
         throw JavaTurboModuleArgumentConversionException(
             "Array", argIndex, methodName, arg, &rt);
@@ -354,7 +343,7 @@ JNIArgs JavaTurboModule::convertJSIArgsToJNIArgs(
       continue;
     }
 
-    if (type == "Labi38_0_0/com/facebook/react/bridge/Callback;") {
+    if (type == "Labi39_0_0/com/facebook/react/bridge/Callback;") {
       if (!(arg->isObject() && arg->getObject(rt).isFunction(rt))) {
         throw JavaTurboModuleArgumentConversionException(
             "Function", argIndex, methodName, arg, &rt);
@@ -362,11 +351,12 @@ JNIArgs JavaTurboModule::convertJSIArgsToJNIArgs(
 
       jsi::Function fn = arg->getObject(rt).getFunction(rt);
       jarg->l = makeGlobalIfNecessary(
-          createJavaCallbackFromJSIFunction(fn, rt, jsInvoker).release());
+          createJavaCallbackFromJSIFunction(std::move(fn), rt, jsInvoker)
+              .release());
       continue;
     }
 
-    if (type == "Labi38_0_0/com/facebook/react/bridge/ReadableMap;") {
+    if (type == "Labi39_0_0/com/facebook/react/bridge/ReadableMap;") {
       if (!(arg->isObject())) {
         throw JavaTurboModuleArgumentConversionException(
             "Object", argIndex, methodName, arg, &rt);
@@ -388,11 +378,11 @@ jsi::Value convertFromJMapToValue(JNIEnv *env, jsi::Runtime &rt, jobject arg) {
   // This could also be done purely in C++, but iterative over map methods
   // but those may end up calling reflection methods anyway
   // TODO (axe) Investigate the best way to convert Java Map to Value
-  jclass jArguments = env->FindClass("abi38_0_0/com/facebook/react/bridge/Arguments");
+  jclass jArguments = env->FindClass("abi39_0_0/com/facebook/react/bridge/Arguments");
   static jmethodID jMakeNativeMap = env->GetStaticMethodID(
       jArguments,
       "makeNativeMap",
-      "(Ljava/util/Map;)Labi38_0_0/com/facebook/react/bridge/WritableNativeMap;");
+      "(Ljava/util/Map;)Labi39_0_0/com/facebook/react/bridge/WritableNativeMap;");
   auto constants =
       (jobject)env->CallStaticObjectMethod(jArguments, jMakeNativeMap, arg);
   auto jResult = jni::adopt_local(constants);
@@ -618,18 +608,18 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
                     runtime);
 
             auto resolve = createJavaCallbackFromJSIFunction(
-                               resolveJSIFn, runtime, jsInvoker_)
+                               std::move(resolveJSIFn), runtime, jsInvoker_)
                                .release();
             auto reject = createJavaCallbackFromJSIFunction(
-                              rejectJSIFn, runtime, jsInvoker_)
+                              std::move(rejectJSIFn), runtime, jsInvoker_)
                               .release();
 
             jclass jPromiseImpl =
-                env->FindClass("abi38_0_0/com/facebook/react/bridge/PromiseImpl");
+                env->FindClass("abi39_0_0/com/facebook/react/bridge/PromiseImpl");
             jmethodID jPromiseImplConstructor = env->GetMethodID(
                 jPromiseImpl,
                 "<init>",
-                "(Labi38_0_0/com/facebook/react/bridge/Callback;Labi38_0_0/com/facebook/react/bridge/Callback;)V");
+                "(Labi39_0_0/com/facebook/react/bridge/Callback;Labi39_0_0/com/facebook/react/bridge/Callback;)V");
 
             jobject promise = env->NewObject(
                 jPromiseImpl, jPromiseImplConstructor, resolve, reject);

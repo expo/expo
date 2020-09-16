@@ -20,7 +20,7 @@ interface StyledScrollViewProps extends ScrollViewProps {
 
 type ThemedColors = keyof typeof Colors.light & keyof typeof Colors.dark;
 
-function useThemeName(): string {
+export function useThemeName(): string {
   const theme = useTheme();
   return theme.dark ? 'dark' : 'light';
 }

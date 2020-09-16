@@ -62,12 +62,22 @@ Say you have a workflow of releasing builds like this:
 - `expo publish --release-channel staging-v1`
 - `expo publish --release-channel staging-v2`
 
-You can create a function that looks for the specific release and sets the correct variable.
+You can create a function that looks for the specific release and adjust your app's behaviour accordingly:
 
 ```javascript
-function getApiUrl(releaseChannel) {
-  if (releaseChannel === undefined) return App.apiUrl.dev; // since releaseChannels are undefined in dev, return your default.
-  if (releaseChannel.indexOf('prod') !== -1) return App.apiUrl.prod; // this would pick up prod-v1, prod-v2, prod-v3
-  if (releaseChannel.indexOf('staging') !== -1) return App.apiUrl.staging; // return staging environment variables
+import Constants from 'expo-constants';
+
+function getEnvironment() {
+  let releaseChannel = Constants.manifest.releaseChannel;
+
+  if (releaseChannel === undefined) {  // no releaseChannel (is undefined) in dev
+    return {envName: "DEVELOPMENT", dbUrl: 'aaa', apiKey: 'bbb'};  // dev env settings
+  }
+  if (releaseChannel.indexOf('prod') !== -1) { // matches prod-v1, prod-v2, prod-v3
+    return {envName: "PRODUCTION", dbUrl: 'ccc', apiKey: 'ddd'};  // prod env settings
+  }
+  if (releaseChannel.indexOf('staging') !== -1) {  // matches staging-v1, staging-v2
+    return {envName: "STAGING", dbUrl: 'eee', apiKey: 'fff'}; // stage env settings
+  }
 }
 ```

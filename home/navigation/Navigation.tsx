@@ -9,7 +9,6 @@ import { Platform, StyleSheet } from 'react-native';
 import CloseButton from '../components/CloseButton';
 import OpenProjectByURLButton from '../components/OpenProjectByURLButton.ios';
 import OptionsButton from '../components/OptionsButton';
-import ShareProjectButton from '../components/ShareProjectButton';
 import UserSettingsButton from '../components/UserSettingsButton';
 import * as Themes from '../constants/Themes';
 import AudioDiagnosticsScreen from '../screens/AudioDiagnosticsScreen';

@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
 
 ## 🖥 Installation in bare React Native projects
 
-For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
+For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/expo/expo/tree/master/packages/react-native-unimodules) before continuing.
 
 ## Add the package to your dependencies
 
@@ -466,7 +466,7 @@ To achieve fully-native splash screen behavior, `expo-splash-screen` needs to be
 
 ### Automatic configuration
 
-The easiest way to configure the splash screen in bare React Native projects is with the expo-splash-screen command. See the [README](https://github.com/expo/expo/tree/master/packages/expo-splash-screen-command) for more information, or run `yarn expo-splash-screen --help` in your project.
+The easiest way to configure the splash screen in bare React Native projects is with the expo-splash-screen command. See the [README](https://github.com/expo/expo-cli/tree/master/packages/configure-splash-screen) for more information, or run `yarn expo-splash-screen --help` in your project.
 
 ### Manual Configuration
 

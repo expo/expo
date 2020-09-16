@@ -41,7 +41,7 @@
   UMModuleRegistry *moduleRegistry = [self.moduleRegistryProvider moduleRegistry];
 
 #if __has_include(<EXUpdates/EXUpdatesService.h>)
-  EXUpdatesBinding *updatesBinding = [[EXUpdatesBinding alloc] init];
+  EXUpdatesBinding *updatesBinding = [[EXUpdatesBinding alloc] initWithExperienceId:experienceId updatesKernelService:kernelServices[EX_UNVERSIONED(@"EXUpdatesManager")] databaseKernelService:kernelServices[EX_UNVERSIONED(@"EXUpdatesDatabaseManager")]];
   [moduleRegistry registerInternalModule:updatesBinding];
 #endif
 
@@ -59,7 +59,16 @@
 #endif
 
 #if __has_include(<EXFileSystem/EXFileSystem.h>)
-  EXScopedFileSystemModule *fileSystemModule = [[EXScopedFileSystemModule alloc] initWithExperienceId:experienceId andConstantsBinding:constantsBinding];
+  EXScopedFileSystemModule *fileSystemModule;
+  if (params[@"fileSystemDirectories"]) {
+    NSString *documentDirectory = params[@"fileSystemDirectories"][@"documentDirectory"];
+    NSString *cachesDirectory = params[@"fileSystemDirectories"][@"cachesDirectory"];
+    fileSystemModule = [[EXScopedFileSystemModule alloc] initWithDocumentDirectory:documentDirectory
+                                                                   cachesDirectory:cachesDirectory
+                                                                   bundleDirectory:nil];
+  } else {
+    fileSystemModule = [EXScopedFileSystemModule new];
+  }
   [moduleRegistry registerExportedModule:fileSystemModule];
   [moduleRegistry registerInternalModule:fileSystemModule];
 #endif

@@ -114,7 +114,7 @@ internal class MediaLibraryUtilsTests {
     every {exifInterface.getAttribute(any())} returns null
 
     //act
-    val result = MediaLibraryUtils.getExifFullInfo(exifInterface, response)
+    MediaLibraryUtils.getExifFullInfo(exifInterface, response)
 
     //assert
     assertTrue("Response has no exif value", response.containsKey("exif"))
@@ -156,7 +156,7 @@ internal class MediaLibraryUtilsTests {
     every { MediaLibraryUtils.safeCopyFile(src, dir) } returns src;
 
     //act
-    val result = MediaLibraryUtils.safeMoveFile(src, dir)
+    MediaLibraryUtils.safeMoveFile(src, dir)
 
     //assert
     verifyOrder {
@@ -227,7 +227,7 @@ internal class MediaLibraryUtilsTests {
     val items = listOf<Any>(1, true, 3.14)
 
     //act
-    val result = MediaLibraryUtils.mapOrderDescriptor(items)
+    MediaLibraryUtils.mapOrderDescriptor(items)
 
     //assert throw
   }
@@ -241,7 +241,7 @@ internal class MediaLibraryUtilsTests {
     )
 
     //act
-    val result = MediaLibraryUtils.mapOrderDescriptor(keys)
+    MediaLibraryUtils.mapOrderDescriptor(keys)
 
     //assert throw
   }

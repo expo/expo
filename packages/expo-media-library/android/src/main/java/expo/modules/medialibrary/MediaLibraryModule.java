@@ -324,15 +324,13 @@ public class MediaLibraryModule extends ExportedModule {
     private int getAssetsTotalCount(int mediaType) {
       Cursor countCursor = mContext.getContentResolver().query(
           EXTERNAL_CONTENT,
-          new String[]{"count(*) AS count"},
+          null,
           Files.FileColumns.MEDIA_TYPE + " == " + mediaType,
           null,
           null
       );
 
-      countCursor.moveToFirst();
-
-      return countCursor.getInt(0);
+      return countCursor != null ? countCursor.getCount() : 0;
     }
   }
 }

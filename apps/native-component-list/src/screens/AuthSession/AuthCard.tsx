@@ -33,6 +33,12 @@ const providers: Record<string, any> = {
       'https://github.com/expo/expo/blob/master/docs/static/images/sdk/auth-session/google.png?raw=true',
     color: '#4285F4',
   },
+  google_firebase: {
+    name: 'Google Firebase',
+    image:
+      'https://github.com/expo/expo/blob/master/docs/static/images/sdk/auth-session/google.png?raw=true',
+    color: '#4285F4',
+  },
   azure: {
     name: 'Azure',
     image:
@@ -158,13 +164,14 @@ export default function AuthCard({
   name,
   disabled,
   status = '',
+  url,
   onPress,
 }: {
   name: string;
-  url?: string;
+  url?: string | null;
   disabled?: boolean;
   status?: string;
-  onPress: any;
+  onPress: (color: string) => void;
 }) {
   const provider = providers[name] || {
     name,
@@ -177,7 +184,7 @@ export default function AuthCard({
     <Card
       disabled={disabled}
       style={{ backgroundColor: provider.color, opacity: disabled ? 0.6 : 1 }}
-      onPress={onPress}>
+      onPress={() => onPress(provider.color)}>
       <SocialImage image={{ uri: provider.image }} />
       <View style={{ marginLeft: 8 }}>
         <Text style={{ fontWeight: 'bold', color: 'white' }}>
@@ -192,6 +199,17 @@ export default function AuthCard({
               color: 'white',
             }}>
             {subtitle}
+          </Text>
+        )}
+        {url && (
+          <Text
+            style={{
+              opacity: 0.9,
+              marginTop: 2,
+              fontSize: 14,
+              color: 'white',
+            }}>
+            {url}
           </Text>
         )}
       </View>

@@ -1,6 +1,6 @@
 ---
 title: LocalAuthentication
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-local-authentication'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-local-authentication'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
@@ -14,6 +14,10 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 ## Installation
 
 <InstallSection packageName="expo-local-authentication" />
+
+## Configuration
+
+On Android, this module requires permissions to access the biometric data for authentication purposes. The `USE_BIOMETRIC` and `USE_FINGERPRINT` permissions are automatically added.
 
 ## API
 

@@ -8,6 +8,34 @@
 #import <UIKit/UIKit.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 140000
+  #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+#endif
+
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 140000
+  API_AVAILABLE(ios(14.0))
+  static UTType* EXConvertMimeTypeToUTType(NSString *mimeType)
+  {
+    // UTType#typeWithMIMEType doesn't work with wildcard mimetypes
+    // so support common top level types with wildcards here.
+    if ([mimeType isEqualToString:@"*/*"]) {
+      return UTTypeData;
+    } else if ([mimeType isEqualToString:@"image/*"]) {
+      return UTTypeImage;
+    } else if ([mimeType isEqualToString:@"video/*"]) {
+      return UTTypeMovie;
+    } else if ([mimeType isEqualToString:@"audio/*"]) {
+      return UTTypeAudio;
+    } else if ([mimeType isEqualToString:@"text/*"]) {
+      return UTTypeText;
+    } else {
+      return [UTType typeWithMIMEType:mimeType];
+    }
+  }
+#endif
+
+// Deprecated in iOS 14
 static NSString * EXConvertMimeTypeToUTI(NSString *mimeType)
 {
   CFStringRef uti;
@@ -19,7 +47,7 @@ static NSString * EXConvertMimeTypeToUTI(NSString *mimeType)
   } else if ([mimeType isEqualToString:@"image/*"]) {
     uti = kUTTypeImage;
   } else if ([mimeType isEqualToString:@"video/*"]) {
-    uti = kUTTypeVideo;
+    uti = kUTTypeMovie;
   } else if ([mimeType isEqualToString:@"audio/*"]) {
     uti = kUTTypeAudio;
   } else if ([mimeType isEqualToString:@"text/*"]) {
@@ -32,7 +60,7 @@ static NSString * EXConvertMimeTypeToUTI(NSString *mimeType)
   return (__bridge_transfer NSString *)uti;
 }
 
-@interface EXDocumentPickerModule () <UIDocumentMenuDelegate, UIDocumentPickerDelegate>
+@interface EXDocumentPickerModule () <UIDocumentPickerDelegate>
 
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 @property (nonatomic, weak) id<UMFileSystemInterface> fileSystem;
@@ -70,7 +98,7 @@ UM_EXPORT_METHOD_AS(getDocumentAsync,
   _resolve = resolve;
   _reject = reject;
   
-  NSString *type = EXConvertMimeTypeToUTI(options[@"type"] ?: @"*/*");
+  NSString *mimeType = options[@"type"] ?: @"*/*";
   
   _shouldCopyToCacheDirectory = options[@"copyToCacheDirectory"] && [options[@"copyToCacheDirectory"] boolValue] == YES;
 
@@ -78,11 +106,19 @@ UM_EXPORT_METHOD_AS(getDocumentAsync,
 
   dispatch_async(dispatch_get_main_queue(), ^{
     UM_ENSURE_STRONGIFY(self);
-    UIDocumentMenuViewController *documentMenuVC;
+    UIDocumentPickerViewController *documentPickerVC;
 
     @try {
-      documentMenuVC = [[UIDocumentMenuViewController alloc] initWithDocumentTypes:@[type]
-                                                                            inMode:UIDocumentPickerModeImport];
+      if (@available(iOS 14, *)) {
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 140000
+        UTType* utType = EXConvertMimeTypeToUTType(mimeType);
+        documentPickerVC = [[UIDocumentPickerViewController alloc] initForOpeningContentTypes:@[utType] asCopy:YES];
+#endif
+      } else {
+        NSString* type = EXConvertMimeTypeToUTI(mimeType);
+        documentPickerVC = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[type]
+                                                                                  inMode:UIDocumentPickerModeImport];
+      }
     }
     @catch (NSException *exception) {
       reject(@"E_PICKER_ICLOUD", @"DocumentPicker requires the iCloud entitlement. If you are using ExpoKit, you need to add this capability to your App Id. See `https://docs.expo.io/versions/latest/expokit/advanced-expokit-topics#using-documentpicker` for more info.", nil);
@@ -90,30 +126,17 @@ UM_EXPORT_METHOD_AS(getDocumentAsync,
       self->_reject = nil;
       return;
     }
-    documentMenuVC.delegate = self;
+    documentPickerVC.delegate = self;
 
     // Because of the way IPad works with Actionsheets such as this one, we need to provide a source view and set it's position.
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-      documentMenuVC.popoverPresentationController.sourceRect = CGRectMake(CGRectGetMidX([self->_utilities.currentViewController.view frame]), CGRectGetMaxY([self->_utilities.currentViewController.view frame]), 0, 0);
-      documentMenuVC.popoverPresentationController.sourceView = self->_utilities.currentViewController.view;
-      documentMenuVC.modalPresentationStyle = UIModalPresentationPageSheet;
+      documentPickerVC.popoverPresentationController.sourceRect = CGRectMake(CGRectGetMidX([self->_utilities.currentViewController.view frame]), CGRectGetMaxY([self->_utilities.currentViewController.view frame]), 0, 0);
+      documentPickerVC.popoverPresentationController.sourceView = self->_utilities.currentViewController.view;
+      documentPickerVC.modalPresentationStyle = UIModalPresentationPageSheet;
     }
 
-    [self->_utilities.currentViewController presentViewController:documentMenuVC animated:YES completion:nil];
+    [self->_utilities.currentViewController presentViewController:documentPickerVC animated:YES completion:nil];
   });
-}
-
-- (void)documentMenu:(UIDocumentMenuViewController *)documentMenu didPickDocumentPicker:(UIDocumentPickerViewController *)documentPicker
-{
-  documentPicker.delegate = self;
-  [_utilities.currentViewController presentViewController:documentPicker animated:YES completion:nil];
-}
-
-- (void)documentMenuWasCancelled:(UIDocumentMenuViewController *)documentMenu
-{
-  _resolve(@{@"type": @"cancel"});
-  _resolve = nil;
-  _reject = nil;
 }
 
 - (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentAtURL:(NSURL *)url

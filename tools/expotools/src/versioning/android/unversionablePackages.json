@@ -1,1 +1,11 @@
-["expo-branch", "expo-gl-cpp", "unimodules-task-manager-interface"]
+[
+  "expo-branch",
+  "expo-dev-menu",
+  "expo-gl-cpp",
+  "expo-gl-cpp-legacy",
+  "expo-image",
+  "expo-module-scripts",
+  "jest-expo",
+  "unimodules-task-manager-interface",
+  "unimodules-test-core"
+]

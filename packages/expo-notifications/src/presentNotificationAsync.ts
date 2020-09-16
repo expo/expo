@@ -6,6 +6,10 @@ import { NotificationContentInput } from './Notifications.types';
 
 let warningMessageShown = false;
 
+/**
+ * @deprecated Use `scheduleNotificationAsync` with an explicit notification handler.
+ * [Read more](https://expo.fyi/presenting-notifications-deprecated).
+ */
 export default async function presentNotificationAsync(
   content: NotificationContentInput,
   identifier: string = uuidv4()

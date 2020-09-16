@@ -1,3 +1,4 @@
+import * as BarCodeScanner from 'expo-barcode-scanner';
 import { BlurView } from 'expo-blur';
 import { Camera } from 'expo-camera';
 import { throttle } from 'lodash';
@@ -81,6 +82,9 @@ export default function BarCodeScreen(props) {
     <View style={styles.container}>
       {state.isVisible ? (
         <Camera
+          barCodeScannerSettings={{
+            barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
+          }}
           onBarCodeScanned={_handleBarCodeScanned}
           style={StyleSheet.absoluteFill}
           flashMode={isLit ? 'torch' : 'off'}

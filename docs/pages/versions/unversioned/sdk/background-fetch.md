@@ -1,6 +1,6 @@
 ---
 title: BackgroundFetch
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-background-fetch'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-background-fetch'
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
@@ -21,6 +21,8 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 ## Configuration
 
 In order to use `BackgroundFetch` API in standalone, detached and bare apps on iOS, your app has to include background mode in the `Info.plist` file. See [background tasks configuration guide](../task-manager#configuration-for-standalone-apps) for more details.
+
+On Android, this module might listen when the device is starting up. It's necessary to continue working on tasks started with `startOnBoot`. It also keeps devices "awake" that are going idle and asleep fast, to improve reliability of the tasks. Because of this both the `RECEIVE_BOOT_COMPLETED` and `WAKE_LOCK` permissions are added automatically.
 
 ## API
 

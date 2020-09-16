@@ -6,9 +6,11 @@ import {
   CameraPermissionResponse,
   CameraRollPermissionResponse,
   ImagePickerResult,
+  ImagePickerErrorResult,
   MediaTypeOptions,
   ImagePickerOptions,
   VideoExportPreset,
+  ExpandImagePickerResult,
 } from './ImagePicker.types';
 
 function validateOptions(options: ImagePickerOptions) {
@@ -58,13 +60,13 @@ export async function requestCameraRollPermissionsAsync(): Promise<CameraRollPer
   return ExponentImagePicker.requestCameraRollPermissionsAsync();
 }
 
-export async function launchImageLibraryAsync(
-  options: ImagePickerOptions = {}
-): Promise<ImagePickerResult> {
-  if (!ExponentImagePicker.launchImageLibraryAsync) {
-    throw new UnavailabilityError('ImagePicker', 'launchImageLibraryAsync');
+export async function getPendingResultAsync(): Promise<
+  (ImagePickerResult | ImagePickerErrorResult)[]
+> {
+  if (ExponentImagePicker.getPendingResultAsync) {
+    return ExponentImagePicker.getPendingResultAsync();
   }
-  return await ExponentImagePicker.launchImageLibraryAsync(validateOptions(options));
+  return [];
 }
 
 export async function launchCameraAsync(
@@ -76,10 +78,20 @@ export async function launchCameraAsync(
   return await ExponentImagePicker.launchCameraAsync(validateOptions(options));
 }
 
+export async function launchImageLibraryAsync<T extends ImagePickerOptions>(
+  options: T
+): Promise<ExpandImagePickerResult<T>> {
+  if (!ExponentImagePicker.launchImageLibraryAsync) {
+    throw new UnavailabilityError('ImagePicker', 'launchImageLibraryAsync');
+  }
+  return await ExponentImagePicker.launchImageLibraryAsync(options);
+}
+
 export {
   MediaTypeOptions,
   ImagePickerOptions,
   ImagePickerResult,
+  ImagePickerErrorResult,
   VideoExportPreset,
   CameraPermissionResponse,
   CameraRollPermissionResponse,

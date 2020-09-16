@@ -84,6 +84,9 @@ public class DatabaseLauncher implements Launcher {
       }
       mCallback.onSuccess();
       return;
+    } else if (mLaunchedUpdate.status == UpdateStatus.DEVELOPMENT) {
+      mCallback.onSuccess();
+      return;
     }
 
     // verify that we have all assets on disk

@@ -1,1 +1,10 @@
-["expo-branch", "expo-gl-cpp", "expo-updates"]
+[
+  "expo-branch",
+  "expo-dev-menu",
+  "expo-gl-cpp",
+  "expo-gl-cpp-legacy",
+  "expo-image",
+  "expo-module-scripts",
+  "jest-expo",
+  "unimodules-test-core"
+]

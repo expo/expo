@@ -69,7 +69,7 @@ ABI38_0_0RCT_ENUM_CONVERTER(PHAssetCollectionSubtype, (@{
 
 @end
 
-@interface ABI38_0_0RCTCameraRollManager() <NativeCameraRollManagerSpec>
+@interface ABI38_0_0RCTCameraRollManager() <ABI38_0_0NativeCameraRollManagerSpec>
 @end
 
 @implementation ABI38_0_0RCTCameraRollManager

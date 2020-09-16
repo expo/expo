@@ -27,7 +27,7 @@ ABI38_0_0RCT_ENUM_CONVERTER(ABI38_0_0RCTAlertViewStyle, (@{
 
 @end
 
-@interface ABI38_0_0RCTAlertManager() <NativeAlertManagerSpec>
+@interface ABI38_0_0RCTAlertManager() <ABI38_0_0NativeAlertManagerSpec>
 
 @end
 

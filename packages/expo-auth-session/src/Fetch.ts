@@ -16,14 +16,19 @@ export type FetchRequest = {
 
 // TODO(Bacon): pending react-native-adapter publish after sdk 38
 const isDOMAvailable =
-  Platform.OS === 'web' && typeof window !== 'undefined' && !!window.document?.createElement;
+  Platform.OS === 'web' &&
+  typeof window !== 'undefined' &&
+  !!window.document?.createElement &&
+  // eslint-disable-next-line no-undef
+  typeof URL !== 'undefined';
 
 export async function requestAsync<T>(requestUrl: string, fetchRequest: FetchRequest): Promise<T> {
   if (Platform.OS === 'web' && !isDOMAvailable) {
     // @ts-ignore
     return;
   }
-  const url = new window.URL(requestUrl);
+  // eslint-disable-next-line no-undef
+  const url = new URL(requestUrl);
 
   const request: Omit<RequestInit, 'headers'> & { headers: HeadersInit } = {
     method: fetchRequest.method,

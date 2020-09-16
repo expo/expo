@@ -1,5 +1,19 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+import EXDevMenuInterface
+
+class DevMenuBridgeProxyDelegate : DevMenuDelegateProtocol {
+  private let bridge: RCTBridge
+  
+  init(_ bridge: RCTBridge) {
+    self.bridge = bridge
+  }
+  
+  public func appBridge(forDevMenuManager manager: DevMenuManagerProtocol) -> AnyObject? {
+    return self.bridge;
+  }
+}
+
 class Dispatch {
   static func mainSync<T>(_ closure: () -> T) -> T {
     if Thread.isMainThread {
@@ -35,7 +49,7 @@ private let extensionToDevMenuItemsMap = NSMapTable<DevMenuExtensionProtocol, De
  Manages the dev menu and provides most of the public API.
  */
 @objc
-open class DevMenuManager: NSObject {
+open class DevMenuManager: NSObject, DevMenuManagerProtocol {
   /**
    Shared singleton instance.
    */
@@ -71,6 +85,15 @@ open class DevMenuManager: NSObject {
       } else {
         autoLaunch()
       }
+    }
+  }
+  
+  @objc
+  public static func configure(withBridge bridge: AnyObject) {
+    if let bridge = bridge as? RCTBridge {
+      shared.delegate = DevMenuBridgeProxyDelegate(bridge)
+    } else {
+      fatalError("Cound't cast to RCTBrigde. Make sure that you passed `RCTBridge` to `DevMenuManager.initializeWithBridge`.")
     }
   }
 

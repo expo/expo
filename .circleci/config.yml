@@ -384,23 +384,18 @@ jobs:
       - update_submodules
       - git_lfs_pull
       - fetch_cocoapods_specs
-      - yarn_install:
-          working_directory: ~/project/tools-public
       - run:
           name: Generate dynamic macros
           command: expotools ios-generate-dynamic-macros
-      - run: echo "--run.cwd project/tools-public" >> ~/.yarnrc
       - run: npm install gulp-cli -g
       - run:
           name: Build iOS shell app for real devices
-          working_directory: ~/project/tools-public
           no_output_timeout: 30m
-          command: gulp ios-shell-app --action build --type archive --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
+          command: expotools ios-shell-app --action build --type archive --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
       - run:
           name: Build iOS shell app for simulators
-          working_directory: ~/project/tools-public
           no_output_timeout: 30m
-          command: gulp ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
+          command: expotools ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
       - when:
           condition: << parameters.upload >>
           steps:
@@ -476,13 +471,11 @@ jobs:
       - setup
       - skip_unless_changed:
           workflow_name: client
-          paths: secrets android fastlane tools-public Gemfile .ruby-version package.json yarn.lock
+          paths: secrets android fastlane Gemfile .ruby-version package.json yarn.lock
       - update_submodules
       - install_yarn
       - yarn_install:
           working_directory: ~/project # need jsc-android dependency in expokit-npm-package
-      - yarn_install:
-          working_directory: ~/project/tools-public
       - restore_gradle_cache
       - decrypt_secrets_if_possible
       - bundle_install

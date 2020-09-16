@@ -38,6 +38,10 @@ export function postTransforms(versionName: string): TransformPipeline {
         with: 'FBReactNativeSpec',
       },
       {
+        replace: new RegExp('\\b(Native\\w+Spec)\\b', 'g'),
+        with: `${versionName}$1`,
+      },
+      {
         paths: 'RCTInspectorPackagerConnection.m',
         replace: /\b(RECONNECT_DELAY_MS)\b/g,
         with: `${versionName}$1`,
@@ -167,6 +171,21 @@ export function postTransforms(versionName: string): TransformPipeline {
         paths: 'REATransitionAnimation.m',
         replace: /(SimAnimationDragCoefficient)\(/g,
         with: `${versionName}$1(`,
+      },
+      {
+        paths: 'Reanimated',
+        replace: /(_bridge_reanimated)/g,
+        with: `${versionName}$1`,
+      },
+      {
+        paths: 'EXVersionManager.mm',
+        replace: /(_bridge_reanimated)/g,
+        with: `${versionName}$1`,
+      },
+      {
+        paths: 'NativeProxy.mm',
+        replace: /@"ABI\d+_\d+_\d+RCTView"/g,
+        with: `@"RCTView"`,
       },
 
       // react-native-shared-element

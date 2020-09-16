@@ -431,7 +431,7 @@ ABI38_0_0RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 @end
 
-@interface ABI38_0_0RCTRedBox () <ABI38_0_0RCTInvalidating, ABI38_0_0RCTRedBoxWindowActionDelegate, ABI38_0_0RCTRedBoxExtraDataActionDelegate, NativeRedBoxSpec>
+@interface ABI38_0_0RCTRedBox () <ABI38_0_0RCTInvalidating, ABI38_0_0RCTRedBoxWindowActionDelegate, ABI38_0_0RCTRedBoxExtraDataActionDelegate, ABI38_0_0NativeRedBoxSpec>
 @end
 
 @implementation ABI38_0_0RCTRedBox
@@ -670,7 +670,7 @@ ABI38_0_0RCT_EXPORT_METHOD(dismiss)
 
 #else // Disabled
 
-@interface ABI38_0_0RCTRedBox() <NativeRedBoxSpec>
+@interface ABI38_0_0RCTRedBox() <ABI38_0_0NativeRedBoxSpec>
 @end
 
 @implementation ABI38_0_0RCTRedBox

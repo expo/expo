@@ -85,6 +85,7 @@ export async function startAsync(options: AuthSessionOptions): Promise<AuthSessi
     type: errorCode ? 'error' : 'success',
     params,
     errorCode,
+    authentication: null,
     url: result.url,
   };
 }
@@ -98,7 +99,7 @@ export function getDefaultReturnUrl(): string {
 }
 
 /**
- * Deprecated: Use `makeRedirectUri({ path, useProxy })` instead.
+ * @deprecated Use `makeRedirectUri({ path, useProxy })` instead.
  *
  * @param path
  */
@@ -185,7 +186,7 @@ async function _openWebBrowserAsync(startUrl: string, returnUrl: string, showInR
   return result;
 }
 
-export * from './AuthRequestHooks';
+export { useAutoDiscovery, useAuthRequest } from './AuthRequestHooks';
 export { AuthError, TokenError } from './Errors';
 
 export {

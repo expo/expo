@@ -4,14 +4,32 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+## 9.1.0 — 2020-08-18
+
+### 🎉 New features
+
+- Added a way to handle results when activity was killed by the android. ([#9697](https://github.com/expo/expo/pull/9697) by [@lukmccall](https://github.com/lukmccall))
+
+### 🐛 Bug fixes
+
+- Return array of `ImagePickerResult` when `allowsMultipleSelection` is set to `true` on Web. ([#9402](https://github.com/expo/expo/pull/9402) by [@isthaison](https://github.com/isthaison))
+
+- video recorded on iOS recorded was producing [low resolution](https://github.com/expo/expo/issues/6224) videos, not it's fixed, and can be configured via the `videoQuality` option. ([#9808](https://github.com/expo/expo/pull/9808) by [@vujevits](https://github.com/vujevits))
+
+## 9.0.0 — 2020-08-11
+
+### 🛠 Breaking changes
+
 - Added camera and external storage permissions declarations to `AndroidManifest.xml` on Android. ([#9230](https://github.com/expo/expo/pull/9230) by [@bycedric](https://github.com/bycedric))
 
 ### 🎉 New features
 
 - Added support for the limited `CAMERA_ROLL` permission on iOS 14. ([#9423](https://github.com/expo/expo/pull/9423) by [@lukmccall](https://github.com/lukmccall))
 - Added `videoMaxDuration` option to `launchCameraAsync()` to configure video recording duration limit. ([#9486](https://github.com/expo/expo/pull/9486) by [@barthap](https://github.com/barthap))
-
-### 🐛 Bug fixes
 
 ## 8.4.0 — 2020-07-27
 
@@ -21,7 +39,7 @@
 
 ## 8.3.0 — 2020-05-29
 
-*This version does not introduce any user-facing changes.*
+_This version does not introduce any user-facing changes._
 
 ## 8.2.0 — 2020-05-27
 

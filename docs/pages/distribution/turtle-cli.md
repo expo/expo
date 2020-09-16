@@ -142,5 +142,5 @@ please run `turtle build:ios --help`.
 ## CI configuration file examples
 
 See the [expo/turtle-cli-example](https://github.com/expo/turtle-cli-example) repository
-for examples of how to use Turtle CLI with popular CI services (i.e. [CircleCI](#circleci)
-and [Travis CI](#travis-ci)).
+for examples of how to use Turtle CLI with popular CI services (i.e. [CircleCI](https://github.com/expo/turtle-cli-example#circleci)
+and [Travis CI](https://github.com/expo/turtle-cli-example#travis-ci)).

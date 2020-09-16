@@ -271,6 +271,7 @@ export class Recording {
     getURI() {
         return this._uri;
     }
+    /** @deprecated Use `createNewLoadedSoundAsync()` instead */
     async createNewLoadedSound(initialStatus = {}, onPlaybackStatusUpdate = null) {
         console.warn(`createNewLoadedSound is deprecated in favor of createNewLoadedSoundAsync, which has the same API aside from the method name`);
         return this.createNewLoadedSoundAsync(initialStatus, onPlaybackStatusUpdate);

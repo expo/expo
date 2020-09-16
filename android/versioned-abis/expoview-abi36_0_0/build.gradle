@@ -91,7 +91,6 @@ dependencies {
   api 'de.greenrobot:eventbus:2.4.0'
 
   api 'com.squareup.picasso:picasso:2.5.2'
-  api 'com.google.android.gms:play-services-gcm:16.1.0'
   api 'com.google.android.gms:play-services-analytics:16.0.8'
   api 'com.google.android.gms:play-services-maps:16.1.0'
   api 'com.google.android.gms:play-services-auth:16.0.1'

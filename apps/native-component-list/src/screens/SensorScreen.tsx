@@ -132,7 +132,7 @@ class MagnetometerUncalibratedSensor extends ThreeAxisSensorBlock {
 }
 
 class DeviceMotionSensor extends SensorBlock<Sensors.DeviceMotionMeasurement> {
-  getName = () => 'DangerZone.DeviceMotion';
+  getName = () => 'DeviceMotion';
   getSensor = () => Sensors.DeviceMotion;
   renderXYZBlock = (name: string, event: null | { x?: number; y?: number; z?: number } = {}) => {
     if (!event) return null;

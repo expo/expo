@@ -1,6 +1,6 @@
 ---
 title: Haptics
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-haptics'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-haptics'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
@@ -26,6 +26,10 @@ On iOS, _the Taptic engine will do nothing if any of the following conditions ar
 ## Installation
 
 <InstallSection packageName="expo-haptics" />
+
+## Configuration
+
+On Android, this module requires permission to control vibration on the device. The `VIBRATE` permission is added automatically.
 
 ## API
 

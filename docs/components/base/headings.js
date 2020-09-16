@@ -3,18 +3,18 @@ import styled, { keyframes, css } from 'react-emotion';
 import * as React from 'react';
 import * as Constants from '~/common/constants';
 
+import { h1, h2, h3, h4 } from './typography';
+
 const attributes = {
   'data-heading': true,
 };
 
 const STYLES_H1 = css`
-  font-family: ${Constants.fonts.book};
-  font-size: 2.4rem;
-  line-height: 2.75rem;
-  margin-bottom: 1.5rem;
-  margin-top: 0.1rem;
-  padding-bottom: 0.25rem;
-  border-bottom: 1px solid ${Constants.colors.border};
+  ${h1}
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid ${Constants.expoColors.gray[250]};
 `;
 
 export const H1 = ({ children }) => (
@@ -24,13 +24,18 @@ export const H1 = ({ children }) => (
 );
 
 const STYLES_H2 = css`
-  font-family: ${Constants.fonts.book};
-  line-height: 1.75rem;
-  font-size: 1.5rem;
+  ${h2}
   margin-bottom: 1rem;
-  margin-top: 2.2rem;
-  padding-bottom: 0.3rem;
-  border-bottom: 1px solid ${Constants.colors.border};
+  margin-top: 2rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid ${Constants.expoColors.gray[250]};
+
+  code {
+    ${h2}
+    font-family: ${Constants.fontFamilies.mono};
+    padding: 1px 8px;
+    border-radius: 4px;
+  }
 `;
 
 export const H2 = ({ children }) => (
@@ -40,17 +45,15 @@ export const H2 = ({ children }) => (
 );
 
 const STYLES_H3 = css`
-  font-size: 1.1rem;
-  line-height: 1.75rem;
-  font-family: ${Constants.fonts.demi};
+  ${h3}
   margin-bottom: 1rem;
   margin-top: 2rem;
 
-  code.inline {
-    padding: 2px 4px;
-    top: 0;
-    font-size: 1.1rem;
-    line-height: 1.75rem;
+  code {
+    ${h3}
+    font-family: ${Constants.fontFamilies.mono};
+    padding: 1px 6px;
+    border-radius: 4px;
   }
 `;
 
@@ -61,15 +64,19 @@ export const H3 = ({ children }) => (
 );
 
 const STYLES_H4 = css`
-  font-family: ${Constants.fonts.demi};
-  font-weight: 400;
-  line-height: 1.625rem;
-  font-size: 1.1rem;
+  ${h4}
   margin-bottom: 0.25rem;
+
+  code {
+    ${h4}
+    font-family: ${Constants.fontFamilies.mono};
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
 `;
 
-export const H4 = ({ children }) => (
-  <h4 {...attributes} className={STYLES_H4}>
+export const H4 = ({ children, className, ...rest }) => (
+  <h4 {...attributes} className={css([STYLES_H4, className])} {...rest}>
     {children}
   </h4>
 );

@@ -29,22 +29,25 @@ if (Platform.OS !== 'web')
 const screens = [
   'Accelerometer',
   'ActionSheet',
+  'Alert',
   'AppAuth',
   'Appearance',
   'AppleAuthentication',
   'Audio',
   'AuthSession',
-  'Battery',
   'BackgroundFetch',
+  'Battery',
   'Branch',
   'Brightness',
   'Calendars',
+  'Cellular',
+  'Clipboard',
   'Constants',
   'Contacts',
   'Device',
   'DocumentPicker',
-  'FacebookLogin',
   'FaceDetector',
+  'FacebookLogin',
   'FileSystem',
   'FirebaseRecaptcha',
   'Font',
@@ -52,8 +55,8 @@ const screens = [
   'Google',
   'GoogleSignIn',
   'Haptics',
-  'ImagePicker',
   'ImageManipulator',
+  'ImagePicker',
   'InAppPurchases',
   'IntentLauncher',
   'KeepAwake',
@@ -63,44 +66,40 @@ const screens = [
   'Location',
   'MailComposer',
   'MediaLibrary',
+  'Network',
   'NetInfo',
   'Notification',
   'Pedometer',
   'Permissions',
   'Print',
+  'Random',
   'Recording',
+  'SMS',
   'SafeAreaContext',
   'ScreenOrientation',
-  'Sensor',
   'SecureStore',
+  'ScreenCapture',
+  'Sensor',
   'Sharing',
-  'SMS',
+  'StatusBar',
   'StoreReview',
   'TaskManager',
   'TextToSpeech',
-  'WebBrowser',
   'ViewShot',
+  'WebBrowser',
 ];
 
-export default function ExpoApisScreen() {
-  const apis = React.useMemo(() => {
-    return screens
-      .map(name => ({ name, route: `/apis/${name.toLowerCase()}`, isAvailable: !!Screens[name] }))
-      .sort((a, b) => {
-        if (a.isAvailable !== b.isAvailable) {
-          if (a.isAvailable) {
-            return -1;
-          }
-          return 1;
-        }
-        return 0;
-      });
-  }, []);
+export const ScreenItems = screens.map(name => ({
+  name,
+  route: `/apis/${name.toLowerCase()}`,
+  isAvailable: !!Screens[name],
+}));
 
+export default function ExpoApisScreen() {
   const renderItemRight = React.useCallback(
     ({ name }) => <ExpoAPIIcon name={name} style={{ marginRight: 10, marginLeft: 6 }} />,
     []
   );
 
-  return <ComponentListScreen renderItemRight={renderItemRight} apis={apis} />;
+  return <ComponentListScreen renderItemRight={renderItemRight} apis={ScreenItems} />;
 }

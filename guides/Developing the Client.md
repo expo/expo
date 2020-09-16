@@ -40,7 +40,7 @@ Note: We support building the clients only on macOS.
 
 - Install [direnv](http://direnv.net/) (to do this with nix, run `nix-env -iA nixpkgs.direnv`)
 - Clone this repo; we recommend cloning it to a directory whose full path does not include any spaces (you should clone all the submodules with `git clone --recurse-submodules`)
-- Run `yarn` in the root and `tools-public` directories.
+- Run `yarn` in the root directory.
 - Run `npm run setup:native` in the root directory.
 - Run `yarn build` in the `packages/expo` directory.
 
@@ -101,10 +101,9 @@ The iOS standalone app script has two actions, `build` and `configure`. `build` 
 Here are the steps to build a standalone iOS app:
 
 - Publish your experience with Expo CLI. Note the published URL.
-- `cd tools-public`.
-- `gulp ios-shell-app --action build --type [simulator or archive] --configuration [Debug or Release]`
+- `et ios-shell-app --action build --type [simulator or archive] --configuration [Debug or Release]`
 - The resulting archive will be created at `../shellAppBase-[type]`.
-- `gulp ios-shell-app --url [the published experience url] --action configure --type [simulator or archive] --archivePath [path to ExpoKitApp.app] --sdkVersion [sdk version of your experience] --output your-app.tar.gz`
+- `et ios-shell-app --url [the published experience url] --action configure --type [simulator or archive] --archivePath [path to ExpoKitApp.app] --sdkVersion [sdk version of your experience] --output your-app.tar.gz`
 - This bundle is not signed and cannot be submitted to iTunes Connect as-is; you'll need to manually sign it if you'd like to submit it to Apple. [Fastlane](https://fastlane.tools/) is a good option for this. Also, [Expo will do this for you](https://docs.expo.io/versions/latest/distribution/building-standalone-apps/) if you don't need to build this project from source.
 - If you created a simulator build in the first step, unpack the tar.gz using `tar -xvzf your-app.tar.gz`. Then you can run this on iPhone Simulator using `xcrun simctl install booted <app path>` and `xcrun simctl launch booted <app identifier>`. Another alternative which some people prefer is to install the [ios-sim](https://github.com/phonegap/ios-sim) tool and then use `ios-sim launch <app path>`.
 - There are a few more optional flags you can pass to this script. They are all documented in the block comments inside `xdl/src/detach/IosShellApp.js`.

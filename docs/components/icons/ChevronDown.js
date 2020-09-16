@@ -1,10 +1,12 @@
 import * as React from 'react';
 
-export default props => (
+const ChevronDown = props => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    height="12px"
+    height={props.size}
+    width={props.size}
     style={props.style}
+    className={props.className}
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -14,3 +16,5 @@ export default props => (
     <polyline points="6 9 12 15 18 9" />
   </svg>
 );
+
+export default ChevronDown;

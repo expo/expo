@@ -6,13 +6,14 @@ defaults:
     working-directory: docs
 
 on:
+  workflow_dispatch: {}
   push:
-    branches: [ master ]
+    branches: [master]
     paths:
       - 'docs/**'
       - '.github/workflows/docs.yml'
   pull_request:
-    branches: [ master ]
+    branches: [master]
     paths:
       - 'docs/**'
       - '.github/workflows/docs.yml'
@@ -21,6 +22,10 @@ jobs:
   docs:
     runs-on: ubuntu-18.04
     steps:
+      - name: Install Node 14
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
       - name: Check out repository
         uses: actions/checkout@v2
         with:
@@ -47,13 +52,14 @@ jobs:
           restore-keys: |
             docs-next-${{ hashFiles('docs/yarn.lock') }}-
             docs-next-
-      - name: Cache Babel folder
+      - name: Cache Babel MDX folder
         uses: actions/cache@v2
         with:
-          path: docs/node_modules/.cache/babel-loader
-          key: docs-babel-${{ hashFiles('docs/yarn.lock') }}-${{ hashFiles('docs/common/**') }}
+          path: docs/node_modules/.cache/babel-mdx-loader
+          key: docs-babel-mdx-${{ hashFiles('docs/yarn.lock') }}
           restore-keys: |
-            docs-babel-${{ hashFiles('docs/yarn.lock') }}-${{ hashFiles('docs/common/**') }}
+            docs-babel-mdx-${{ hashFiles('docs/yarn.lock') }}
+            docs-babel-mdx-
       - run: yarn export
         timeout-minutes: 15
       - name: test links

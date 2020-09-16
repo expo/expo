@@ -250,7 +250,8 @@ export async function hasStartedGeofencingAsync(taskName: string): Promise<boole
 }
 
 /**
- * Deprecated as of SDK39
+ * @deprecated
+ * Deprecated as of SDK39 in favour of `setGoogleApiKey`.
  */
 export function setApiKey(apiKey: string): void {
   console.warn("Location's method `setApiKey` is deprecated in favor of `setGoogleApiKey`.");

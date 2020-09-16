@@ -4,13 +4,19 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+## 3.0.0 — 2020-08-18
+
+### 🛠 Breaking changes
+
 - Added support for FULL state on web. ([#8937](https://github.com/expo/expo/pull/8937) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 
 - Remove `fbjs` dependency. ([#8822](https://github.com/expo/expo/pull/8822) by [@EvanBacon](https://github.com/EvanBacon))
-
-### 🐛 Bug fixes
 
 ## 2.2.1 — 2020-05-29
 

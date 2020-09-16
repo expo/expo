@@ -3,14 +3,11 @@
 #import <EXSplashScreen/EXSplashScreenController.h>
 #import <UMCore/UMDefines.h>
 #import <UMCore/UMUtilities.h>
-#import <React/RCTRootView.h>
 
 @interface EXSplashScreenController ()
 
 @property (nonatomic, weak) UIViewController *viewController;
 @property (nonatomic, strong) UIView *splashScreenView;
-@property (nonatomic, strong) Class rootViewClass;
-@property (nonatomic, weak) UIView *rootView;
 
 @property (nonatomic, assign) BOOL autoHideEnabled;
 @property (nonatomic, assign) BOOL splashScreenShown;
@@ -46,13 +43,6 @@
     UIView *rootView = self.viewController.view;
     self.splashScreenView.frame = rootView.bounds;
     [rootView addSubview:self.splashScreenView];
-    if ([rootView isKindOfClass:RCTRootView.class]) {
-      RCTRootView *rctRootView = (RCTRootView *) rootView;
-      rctRootView.loadingView = self.splashScreenView;
-      // defaults for these properties below are 0.25
-      rctRootView.loadingViewFadeDelay = 0.05;
-      rctRootView.loadingViewFadeDuration = 0.05;
-    }
     self.splashScreenShown = YES;
     if (successCallback) {
       successCallback();

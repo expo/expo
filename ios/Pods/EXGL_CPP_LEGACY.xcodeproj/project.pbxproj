@@ -1,0 +1,419 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		104B43705A61C6491493848AEE2EFF61 /* EXiOSUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = CF8151D9D335419060DFCA2198B42FA1 /* EXiOSUtils.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		1A4324F52E233C0ED1B20E2545AA313D /* UEXGL.h in Headers */ = {isa = PBXBuildFile; fileRef = F5F95EB3F810D5E78F2E83A39204F981 /* UEXGL.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		314FB4EF8BB1BCFE194E8702ACC6045B /* EXGLInstallMethods.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1CB63D8B7E67722451AEA09A0C4D34F /* EXGLInstallMethods.cpp */; settings = {COMPILER_FLAGS = "-x objective-c++"; }; };
+		35B943FBAD15CEFE1466B5FA6518C483 /* EXGLNativeMethods.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44C316CE3DC0E912B338EB30EC06DFDA /* EXGLNativeMethods.cpp */; settings = {COMPILER_FLAGS = "-x objective-c++"; }; };
+		3E1E2E9A3BEE14CC95D2495CAB760F61 /* EXJSConvertTypedArray.c in Sources */ = {isa = PBXBuildFile; fileRef = 2DF28EF205697449EAF2F66A33F00340 /* EXJSConvertTypedArray.c */; };
+		416ECEC99E5492870FCFF5C2D163636B /* EXJSUtils.c in Sources */ = {isa = PBXBuildFile; fileRef = CCFC13AE0103807A3A371B48A5E052DF /* EXJSUtils.c */; };
+		72F8A822125106720A9F5D0AEB85717B /* EXGLInstallConstants.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA630B823411DAAD54C189A39361236B /* EXGLInstallConstants.cpp */; settings = {COMPILER_FLAGS = "-x objective-c++"; }; };
+		7749AC217CD2BDE2DEB48E36A7256529 /* UEXGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 30044584BDAF2C956A6CCAF8BF32A1B4 /* UEXGL.cpp */; settings = {COMPILER_FLAGS = "-x objective-c++"; }; };
+		89ED10EAF0BE4E0ADACEEA8B9369855B /* EXiOSUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = 36A0EC5888BA26B5DAB6BE71CC0138A1 /* EXiOSUtils.mm */; };
+		A24333B72497ED14BAB297B9A598AEBC /* EXGLContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D190D82C84722E7C7A43D0957F4933EC /* EXGLContext.cpp */; settings = {COMPILER_FLAGS = "-x objective-c++"; }; };
+		B93832A503F3306E4FABFEEF98903B7B /* EXGL_CPP_LEGACY-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 3EF13FA39B70ABC12FB1974C5121D5C2 /* EXGL_CPP_LEGACY-dummy.m */; };
+		C4626665B2880F6FC52A775C044693DA /* EXJSUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 60228D6F0894A4328B3C9940ADC46978 /* EXJSUtils.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		DB863F707214DCDF855231D3F716C26A /* EXGLContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 9223319DE6C7C4277BBF224A00EFA1AA /* EXGLContext.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		E46CF0B9BD473A1C7FAD9679B92A9FB3 /* stb_image.h in Headers */ = {isa = PBXBuildFile; fileRef = 18B73FA5DFF15A98F81C4220ED4DE5B3 /* stb_image.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		E89E3C22566D252A1A64433C890978FD /* EXJSConvertTypedArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 19F1E94F5ECD94FCD5B41FED00F9DFCA /* EXJSConvertTypedArray.h */; settings = {ATTRIBUTES = (Project, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0665B2918E7422C4D4B40FB1B6C0EBD6 /* libEXGL_CPP_LEGACY.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXGL_CPP_LEGACY.a; path = libEXGL_CPP_LEGACY.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		1710242BA90A6386B780C6E17CF95545 /* EXGL_CPP_LEGACY.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXGL_CPP_LEGACY.debug.xcconfig; sourceTree = "<group>"; };
+		18B73FA5DFF15A98F81C4220ED4DE5B3 /* stb_image.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = stb_image.h; sourceTree = "<group>"; };
+		19F1E94F5ECD94FCD5B41FED00F9DFCA /* EXJSConvertTypedArray.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXJSConvertTypedArray.h; sourceTree = "<group>"; };
+		2DF28EF205697449EAF2F66A33F00340 /* EXJSConvertTypedArray.c */ = {isa = PBXFileReference; includeInIndex = 1; path = EXJSConvertTypedArray.c; sourceTree = "<group>"; };
+		30044584BDAF2C956A6CCAF8BF32A1B4 /* UEXGL.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = UEXGL.cpp; sourceTree = "<group>"; };
+		36A0EC5888BA26B5DAB6BE71CC0138A1 /* EXiOSUtils.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = EXiOSUtils.mm; sourceTree = "<group>"; };
+		3A4E9D857DED82EAB031FFB6EC9AE10C /* EXGL_CPP_LEGACY.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXGL_CPP_LEGACY.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		3EF13FA39B70ABC12FB1974C5121D5C2 /* EXGL_CPP_LEGACY-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXGL_CPP_LEGACY-dummy.m"; sourceTree = "<group>"; };
+		44C316CE3DC0E912B338EB30EC06DFDA /* EXGLNativeMethods.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = EXGLNativeMethods.cpp; sourceTree = "<group>"; };
+		5B5F385A6F233923B2E9013B8D41209F /* EXGL_CPP_LEGACY.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXGL_CPP_LEGACY.release.xcconfig; sourceTree = "<group>"; };
+		60228D6F0894A4328B3C9940ADC46978 /* EXJSUtils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXJSUtils.h; sourceTree = "<group>"; };
+		9223319DE6C7C4277BBF224A00EFA1AA /* EXGLContext.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXGLContext.h; sourceTree = "<group>"; };
+		A1CB63D8B7E67722451AEA09A0C4D34F /* EXGLInstallMethods.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = EXGLInstallMethods.cpp; sourceTree = "<group>"; };
+		BA630B823411DAAD54C189A39361236B /* EXGLInstallConstants.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = EXGLInstallConstants.cpp; sourceTree = "<group>"; };
+		CCFC13AE0103807A3A371B48A5E052DF /* EXJSUtils.c */ = {isa = PBXFileReference; includeInIndex = 1; path = EXJSUtils.c; sourceTree = "<group>"; };
+		CF8151D9D335419060DFCA2198B42FA1 /* EXiOSUtils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXiOSUtils.h; sourceTree = "<group>"; };
+		D190D82C84722E7C7A43D0957F4933EC /* EXGLContext.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = EXGLContext.cpp; sourceTree = "<group>"; };
+		D255AE661A8AD8B9008E0AA918E560A6 /* EXGL_CPP_LEGACY-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXGL_CPP_LEGACY-prefix.pch"; sourceTree = "<group>"; };
+		F5F95EB3F810D5E78F2E83A39204F981 /* UEXGL.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = UEXGL.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		69EC6673C2A49D4797B6578CAFB759E0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2365295000701B1202224A35FB8A18FE /* EXGL_CPP_LEGACY */ = {
+			isa = PBXGroup;
+			children = (
+				CF8151D9D335419060DFCA2198B42FA1 /* EXiOSUtils.h */,
+				36A0EC5888BA26B5DAB6BE71CC0138A1 /* EXiOSUtils.mm */,
+				2DF28EF205697449EAF2F66A33F00340 /* EXJSConvertTypedArray.c */,
+				19F1E94F5ECD94FCD5B41FED00F9DFCA /* EXJSConvertTypedArray.h */,
+				CCFC13AE0103807A3A371B48A5E052DF /* EXJSUtils.c */,
+				60228D6F0894A4328B3C9940ADC46978 /* EXJSUtils.h */,
+				18B73FA5DFF15A98F81C4220ED4DE5B3 /* stb_image.h */,
+				8A59C57CEC1983FB6A39950A4A7A34B6 /* EXGLContext */,
+				7ACABFD90104D2AAC534273D2893B17F /* Pod */,
+				DC617C43CF317858EF7FEC23D03C8336 /* Support Files */,
+			);
+			name = EXGL_CPP_LEGACY;
+			path = "../../packages/expo-gl-cpp-legacy/cpp";
+			sourceTree = "<group>";
+		};
+		793E67587DC3629C713B974117E1B262 = {
+			isa = PBXGroup;
+			children = (
+				2365295000701B1202224A35FB8A18FE /* EXGL_CPP_LEGACY */,
+				D5BAEEAEC138D40CA684E8608F7C86C4 /* Frameworks */,
+				BED3E038D58708867CA9AB545C9A2E28 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		7ACABFD90104D2AAC534273D2893B17F /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				3A4E9D857DED82EAB031FFB6EC9AE10C /* EXGL_CPP_LEGACY.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		8A59C57CEC1983FB6A39950A4A7A34B6 /* EXGLContext */ = {
+			isa = PBXGroup;
+			children = (
+				D190D82C84722E7C7A43D0957F4933EC /* EXGLContext.cpp */,
+				9223319DE6C7C4277BBF224A00EFA1AA /* EXGLContext.h */,
+				BA630B823411DAAD54C189A39361236B /* EXGLInstallConstants.cpp */,
+				A1CB63D8B7E67722451AEA09A0C4D34F /* EXGLInstallMethods.cpp */,
+				44C316CE3DC0E912B338EB30EC06DFDA /* EXGLNativeMethods.cpp */,
+				30044584BDAF2C956A6CCAF8BF32A1B4 /* UEXGL.cpp */,
+				F5F95EB3F810D5E78F2E83A39204F981 /* UEXGL.h */,
+			);
+			name = EXGLContext;
+			sourceTree = "<group>";
+		};
+		BED3E038D58708867CA9AB545C9A2E28 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0665B2918E7422C4D4B40FB1B6C0EBD6 /* libEXGL_CPP_LEGACY.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D5BAEEAEC138D40CA684E8608F7C86C4 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		DC617C43CF317858EF7FEC23D03C8336 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				3EF13FA39B70ABC12FB1974C5121D5C2 /* EXGL_CPP_LEGACY-dummy.m */,
+				D255AE661A8AD8B9008E0AA918E560A6 /* EXGL_CPP_LEGACY-prefix.pch */,
+				1710242BA90A6386B780C6E17CF95545 /* EXGL_CPP_LEGACY.debug.xcconfig */,
+				5B5F385A6F233923B2E9013B8D41209F /* EXGL_CPP_LEGACY.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../../../ios/Pods/Target Support Files/EXGL_CPP_LEGACY";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		4A33D4740F3E751AACD2D7FD7C559587 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DB863F707214DCDF855231D3F716C26A /* EXGLContext.h in Headers */,
+				104B43705A61C6491493848AEE2EFF61 /* EXiOSUtils.h in Headers */,
+				E89E3C22566D252A1A64433C890978FD /* EXJSConvertTypedArray.h in Headers */,
+				C4626665B2880F6FC52A775C044693DA /* EXJSUtils.h in Headers */,
+				E46CF0B9BD473A1C7FAD9679B92A9FB3 /* stb_image.h in Headers */,
+				1A4324F52E233C0ED1B20E2545AA313D /* UEXGL.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		5EEBA13DB7CDD47A8E500D0B04E4FF1A /* EXGL_CPP_LEGACY */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0FB398BB341FEC4AF3E50A16D094D4C6 /* Build configuration list for PBXNativeTarget "EXGL_CPP_LEGACY" */;
+			buildPhases = (
+				4A33D4740F3E751AACD2D7FD7C559587 /* Headers */,
+				D96F0DF59E61896BE830083E9B78F680 /* Sources */,
+				69EC6673C2A49D4797B6578CAFB759E0 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = EXGL_CPP_LEGACY;
+			productName = EXGL_CPP_LEGACY;
+			productReference = 0665B2918E7422C4D4B40FB1B6C0EBD6 /* libEXGL_CPP_LEGACY.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		CD85B29EB349261AA3D2D58636754573 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
+			};
+			buildConfigurationList = 79BE8AF10C3289E5F22F6A02E2E77F62 /* Build configuration list for PBXProject "EXGL_CPP_LEGACY" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 793E67587DC3629C713B974117E1B262;
+			productRefGroup = BED3E038D58708867CA9AB545C9A2E28 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				5EEBA13DB7CDD47A8E500D0B04E4FF1A /* EXGL_CPP_LEGACY */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D96F0DF59E61896BE830083E9B78F680 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B93832A503F3306E4FABFEEF98903B7B /* EXGL_CPP_LEGACY-dummy.m in Sources */,
+				A24333B72497ED14BAB297B9A598AEBC /* EXGLContext.cpp in Sources */,
+				72F8A822125106720A9F5D0AEB85717B /* EXGLInstallConstants.cpp in Sources */,
+				314FB4EF8BB1BCFE194E8702ACC6045B /* EXGLInstallMethods.cpp in Sources */,
+				35B943FBAD15CEFE1466B5FA6518C483 /* EXGLNativeMethods.cpp in Sources */,
+				89ED10EAF0BE4E0ADACEEA8B9369855B /* EXiOSUtils.mm in Sources */,
+				3E1E2E9A3BEE14CC95D2495CAB760F61 /* EXJSConvertTypedArray.c in Sources */,
+				416ECEC99E5492870FCFF5C2D163636B /* EXJSUtils.c in Sources */,
+				7749AC217CD2BDE2DEB48E36A7256529 /* UEXGL.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A1C251A34A0E0B4AFE9CF6F4EAE7A175 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		B35547CC1D2DF1E62153D89EA4C4857F /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5B5F385A6F233923B2E9013B8D41209F /* EXGL_CPP_LEGACY.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXGL_CPP_LEGACY/EXGL_CPP_LEGACY-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXGL_CPP_LEGACY;
+				PRODUCT_NAME = EXGL_CPP_LEGACY;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		F8EF754C8FD24CA2C32266FF5F73FA23 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		FB9A3F0AFC0197E5E3CF4195F23BB853 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1710242BA90A6386B780C6E17CF95545 /* EXGL_CPP_LEGACY.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXGL_CPP_LEGACY/EXGL_CPP_LEGACY-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXGL_CPP_LEGACY;
+				PRODUCT_NAME = EXGL_CPP_LEGACY;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0FB398BB341FEC4AF3E50A16D094D4C6 /* Build configuration list for PBXNativeTarget "EXGL_CPP_LEGACY" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FB9A3F0AFC0197E5E3CF4195F23BB853 /* Debug */,
+				B35547CC1D2DF1E62153D89EA4C4857F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		79BE8AF10C3289E5F22F6A02E2E77F62 /* Build configuration list for PBXProject "EXGL_CPP_LEGACY" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F8EF754C8FD24CA2C32266FF5F73FA23 /* Debug */,
+				A1C251A34A0E0B4AFE9CF6F4EAE7A175 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = CD85B29EB349261AA3D2D58636754573 /* Project object */;
+}

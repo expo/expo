@@ -1,3 +1,15 @@
+Alamofire:
+  LABEL: Alamofire
+  PROJECT_PATH: Alamofire.xcodeproj
+  UUID: 81B7E9B7CD0CADA087A4BB042FBA92E7
+AlamofireRouter:
+  LABEL: AlamofireRouter
+  PROJECT_PATH: AlamofireRouter.xcodeproj
+  UUID: 99FAD2131028EB45782ACC35269F19EA
+Amplitude:
+  LABEL: Amplitude
+  PROJECT_PATH: Amplitude.xcodeproj
+  UUID: A8506691BCF493596D6E68176F7E0129
 Amplitude-iOS:
   LABEL: Amplitude-iOS
   PROJECT_PATH: Amplitude-iOS.xcodeproj
@@ -18,6 +30,10 @@ Branch:
   LABEL: Branch
   PROJECT_PATH: Branch.xcodeproj
   UUID: 32AB2597F26D238AAF12A9F8A95B992E
+Debug:
+  LABEL: Debug
+  PROJECT_PATH: Debug.xcodeproj
+  UUID: B45E9125D995ECFABBE857A099AB9E5B
 DoubleConversion:
   LABEL: DoubleConversion
   PROJECT_PATH: DoubleConversion.xcodeproj
@@ -94,6 +110,18 @@ EXDevMenu:
   LABEL: EXDevMenu
   PROJECT_PATH: EXDevMenu.xcodeproj
   UUID: 27DF359C8E918B12F36C792D67038350
+EXDevMenuInterface:
+  LABEL: EXDevMenuInterface
+  PROJECT_PATH: EXDevMenuInterface.xcodeproj
+  UUID: 4D3A2802599AB5CFD5DCC16429ABBF2C
+EXDevMenuProtocole:
+  LABEL: EXDevMenuProtocole
+  PROJECT_PATH: EXDevMenuProtocole.xcodeproj
+  UUID: C962ABE329C4939C48A45EBA6661D1B0
+EXDevMenuProtocoles:
+  LABEL: EXDevMenuProtocoles
+  PROJECT_PATH: EXDevMenuProtocoles.xcodeproj
+  UUID: EB3EC63A63BB9D45CDBBFDAEFE5F561A
 EXDocumentPicker:
   LABEL: EXDocumentPicker
   PROJECT_PATH: EXDocumentPicker.xcodeproj
@@ -134,6 +162,10 @@ EXGL_CPP:
   LABEL: EXGL_CPP
   PROJECT_PATH: EXGL_CPP.xcodeproj
   UUID: 4C66693C554B15E2593FB1F665F8BA01
+EXGL_CPP_LEGACY:
+  LABEL: EXGL_CPP_LEGACY
+  PROJECT_PATH: EXGL_CPP_LEGACY.xcodeproj
+  UUID: 5EEBA13DB7CDD47A8E500D0B04E4FF1A
 EXGoogleSignIn:
   LABEL: EXGoogleSignIn
   PROJECT_PATH: EXGoogleSignIn.xcodeproj

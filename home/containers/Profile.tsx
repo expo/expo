@@ -1,9 +1,9 @@
 import { useQuery } from '@apollo/client';
 import gql from 'graphql-tag';
 import * as React from 'react';
-import { useDispatch } from '../redux/Hooks';
 
 import ProfileView, { Profile, ProfileViewProps } from '../components/Profile';
+import { useDispatch } from '../redux/Hooks';
 import SessionActions from '../redux/SessionActions';
 
 const APP_LIMIT = 7;

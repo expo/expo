@@ -89,6 +89,10 @@ function ensureNativeProps(options?: CameraProps): CameraNativeProps {
     delete newProps.useCamera2Api;
   }
 
+  if (Platform.OS !== 'web') {
+    delete newProps.poster;
+  }
+
   return newProps;
 }
 
@@ -274,7 +278,9 @@ export default class Camera extends React.Component<CameraProps> {
   render() {
     const nativeProps = ensureNativeProps(this.props);
 
-    const onBarCodeScanned = this._onObjectDetected(this.props.onBarCodeScanned);
+    const onBarCodeScanned = this.props.onBarCodeScanned
+      ? this._onObjectDetected(this.props.onBarCodeScanned)
+      : undefined;
     const onFacesDetected = this._onObjectDetected(this.props.onFacesDetected);
 
     return (

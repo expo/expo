@@ -1,5 +1,6 @@
+import { diff } from 'deep-object-diff';
 import { Asset } from 'expo-asset';
-import { Audio } from 'expo-av';
+import { Audio, AVPlaybackStatus } from 'expo-av';
 import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 
@@ -44,6 +45,7 @@ export default class AudioPlayer extends React.Component<Props, State> {
   };
 
   _sound?: Audio.Sound;
+  private prevStatus?: AVPlaybackStatus;
 
   componentDidMount() {
     this._loadSoundAsync(this.props.source);
@@ -74,7 +76,11 @@ export default class AudioPlayer extends React.Component<Props, State> {
     }
   };
 
-  _updateStateToStatus = (status: any) => this.setState(status);
+  _updateStateToStatus = (status: any) => {
+    console.log('onPlaybackStatusUpdate: ', diff(this.prevStatus || {}, status));
+    this.prevStatus = status;
+    this.setState(status);
+  };
 
   _playAsync = async () => this._sound!.playAsync();
 

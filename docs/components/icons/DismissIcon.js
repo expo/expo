@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-export default () => (
+const DismissIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="24"
@@ -15,3 +15,5 @@ export default () => (
     <line x1="6" y1="6" x2="18" y2="18" />
   </svg>
 );
+
+export default DismissIcon;

@@ -1,11 +1,11 @@
 #import <objc/runtime.h>
-#import <UIKit/UIKit.h>
 #import "SEGAnalyticsUtils.h"
 #import "SEGAnalytics.h"
 #import "SEGIntegrationFactory.h"
 #import "SEGIntegration.h"
 #import "SEGSegmentIntegrationFactory.h"
 #import "UIViewController+SEGScreen.h"
+#import "NSViewController+SEGScreen.h"
 #import "SEGStoreKitTracker.h"
 #import "SEGHTTPClient.h"
 #import "SEGStorage.h"
@@ -14,7 +14,8 @@
 #import "SEGMiddleware.h"
 #import "SEGContext.h"
 #import "SEGIntegrationsManager.h"
-#import "Internal/SEGUtils.h"
+#import "SEGState.h"
+#import "SEGUtils.h"
 
 static SEGAnalytics *__sharedInstance = nil;
 
@@ -52,15 +53,15 @@ static SEGAnalytics *__sharedInstance = nil;
         // TODO: Figure out if this is really the best way to do things here.
         self.integrationsManager = [[SEGIntegrationsManager alloc] initWithAnalytics:self];
 
-        self.runner = [[SEGMiddlewareRunner alloc] initWithMiddlewares:
-                                                       [configuration.middlewares ?: @[] arrayByAddingObject:self.integrationsManager]];
-
-        // Attach to application state change hooks
-        NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+        self.runner = [[SEGMiddlewareRunner alloc] initWithMiddleware:
+                                                       [configuration.sourceMiddleware ?: @[] arrayByAddingObject:self.integrationsManager]];
 
         // Pass through for application state change events
         id<SEGApplicationProtocol> application = configuration.application;
         if (application) {
+#if TARGET_OS_IPHONE
+            // Attach to application state change hooks
+            NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
             for (NSString *name in @[ UIApplicationDidEnterBackgroundNotification,
                                       UIApplicationDidFinishLaunchingNotification,
                                       UIApplicationWillEnterForegroundNotification,
@@ -69,23 +70,48 @@ static SEGAnalytics *__sharedInstance = nil;
                                       UIApplicationDidBecomeActiveNotification ]) {
                 [nc addObserver:self selector:@selector(handleAppStateNotification:) name:name object:application];
             }
+#elif TARGET_OS_OSX
+            // Attach to application state change hooks
+            NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+            for (NSString *name in @[ NSApplicationWillUnhideNotification,
+                                      NSApplicationDidFinishLaunchingNotification,
+                                      NSApplicationWillResignActiveNotification,
+                                      NSApplicationDidHideNotification,
+                                      NSApplicationDidBecomeActiveNotification,
+                                      NSApplicationWillTerminateNotification]) {
+                [nc addObserver:self selector:@selector(handleAppStateNotification:) name:name object:application];
+            }
+#endif
         }
 
+#if TARGET_OS_IPHONE
         if (configuration.recordScreenViews) {
             [UIViewController seg_swizzleViewDidAppear];
         }
+#elif TARGET_OS_OSX
+        if (configuration.recordScreenViews) {
+            [NSViewController seg_swizzleViewDidAppear];
+        }
+#endif
         if (configuration.trackInAppPurchases) {
             _storeKitTracker = [SEGStoreKitTracker trackTransactionsForAnalytics:self];
         }
 
 #if !TARGET_OS_TV
         if (configuration.trackPushNotifications && configuration.launchOptions) {
+#if TARGET_OS_IOS
             NSDictionary *remoteNotification = configuration.launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
+#else
+            NSDictionary *remoteNotification = configuration.launchOptions[NSApplicationLaunchUserNotificationKey];
+#endif
             if (remoteNotification) {
                 [self trackPushNotification:remoteNotification fromLaunch:YES];
             }
         }
 #endif
+        
+        [SEGState sharedInstance].configuration = configuration;
+        [[SEGState sharedInstance].context updateStaticContext];
     }
     return self;
 }
@@ -101,6 +127,7 @@ NSString *const SEGVersionKey = @"SEGVersionKey";
 NSString *const SEGBuildKeyV1 = @"SEGBuildKey";
 NSString *const SEGBuildKeyV2 = @"SEGBuildKeyV2";
 
+#if TARGET_OS_IPHONE
 - (void)handleAppStateNotification:(NSNotification *)note
 {
     SEGApplicationLifecyclePayload *payload = [[SEGApplicationLifecyclePayload alloc] init];
@@ -115,6 +142,22 @@ NSString *const SEGBuildKeyV2 = @"SEGBuildKeyV2";
       [self _applicationDidEnterBackground];
     }
 }
+#elif TARGET_OS_OSX
+- (void)handleAppStateNotification:(NSNotification *)note
+{
+    SEGApplicationLifecyclePayload *payload = [[SEGApplicationLifecyclePayload alloc] init];
+    payload.notificationName = note.name;
+    [self run:SEGEventTypeApplicationLifecycle payload:payload];
+
+    if ([note.name isEqualToString:NSApplicationDidFinishLaunchingNotification]) {
+        [self _applicationDidFinishLaunchingWithOptions:note.userInfo];
+    } else if ([note.name isEqualToString:NSApplicationWillUnhideNotification]) {
+        [self _applicationWillEnterForeground];
+    } else if ([note.name isEqualToString: NSApplicationDidHideNotification]) {
+      [self _applicationDidEnterBackground];
+    }
+}
+#endif
 
 - (void)_applicationDidFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
@@ -149,6 +192,7 @@ NSString *const SEGBuildKeyV2 = @"SEGBuildKeyV2";
         }];
     }
 
+#if TARGET_OS_IPHONE
     [self track:@"Application Opened" properties:@{
         @"from_background" : @NO,
         @"version" : currentVersion ?: @"",
@@ -156,6 +200,14 @@ NSString *const SEGBuildKeyV2 = @"SEGBuildKeyV2";
         @"referring_application" : launchOptions[UIApplicationLaunchOptionsSourceApplicationKey] ?: @"",
         @"url" : launchOptions[UIApplicationLaunchOptionsURLKey] ?: @"",
     }];
+#elif TARGET_OS_OSX
+    [self track:@"Application Opened" properties:@{
+        @"from_background" : @NO,
+        @"version" : currentVersion ?: @"",
+        @"build" : currentBuild ?: @"",
+        @"default_launch" : launchOptions[NSApplicationLaunchIsDefaultLaunchKey] ?: @(YES),
+    }];
+#endif
 
 
     [[NSUserDefaults standardUserDefaults] setObject:currentVersion forKey:SEGVersionKey];
@@ -176,6 +228,8 @@ NSString *const SEGBuildKeyV2 = @"SEGBuildKeyV2";
         @"version" : currentVersion ?: @"",
         @"build" : currentBuild ?: @"",
     }];
+    
+    [[SEGState sharedInstance].context updateStaticContext];
 }
 
 - (void)_applicationDidEnterBackground
@@ -217,16 +271,28 @@ NSString *const SEGBuildKeyV2 = @"SEGBuildKeyV2";
         anonId = [self getAnonymousId];
     }
     // configure traits to match what is seen on android.
-    NSMutableDictionary *newTraits = [traits mutableCopy];
-    newTraits[@"anonymousId"] = anonId;
-    if (userId != nil) {
-        newTraits[@"userId"] = userId;
+    NSMutableDictionary *existingTraitsCopy = [[SEGState sharedInstance].userInfo.traits mutableCopy];
+    NSMutableDictionary *traitsCopy = [traits mutableCopy];
+    // if no traits were passed in, need to create.
+    if (existingTraitsCopy == nil) {
+        existingTraitsCopy = [[NSMutableDictionary alloc] init];
     }
+    if (traitsCopy == nil) {
+        traitsCopy = [[NSMutableDictionary alloc] init];
+    }
+    traitsCopy[@"anonymousId"] = anonId;
+    if (userId != nil) {
+        traitsCopy[@"userId"] = userId;
+        [SEGState sharedInstance].userInfo.userId = userId;
+    }
+    // merge w/ existing traits and set them.
+    [existingTraitsCopy addEntriesFromDictionary:traits];
+    [SEGState sharedInstance].userInfo.traits = existingTraitsCopy;
     
     [self run:SEGEventTypeIdentify payload:
                                        [[SEGIdentifyPayload alloc] initWithUserId:userId
                                                                       anonymousId:anonId
-                                                                           traits:SEGCoerceDictionary(newTraits)
+                                                                           traits:SEGCoerceDictionary(existingTraitsCopy)
                                                                           context:SEGCoerceDictionary([options objectForKey:@"context"])
                                                                      integrations:[options objectForKey:@"integrations"]]];
 }
@@ -343,6 +409,7 @@ NSString *const SEGBuildKeyV2 = @"SEGBuildKeyV2";
     NSParameterAssert(deviceToken != nil);
     SEGRemoteNotificationPayload *payload = [[SEGRemoteNotificationPayload alloc] init];
     payload.deviceToken = deviceToken;
+    [SEGState sharedInstance].context.deviceToken = deviceTokenToString(deviceToken);
     [self run:SEGEventTypeRegisteredForRemoteNotifications payload:payload];
 }
 
@@ -365,9 +432,14 @@ NSString *const SEGBuildKeyV2 = @"SEGBuildKeyV2";
     }
 
     if ([activity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+        NSString *urlString = activity.webpageURL.absoluteString;
+        [SEGState sharedInstance].context.referrer = @{
+            @"url" : urlString,
+        };
+
         NSMutableDictionary *properties = [NSMutableDictionary dictionaryWithCapacity:activity.userInfo.count + 2];
         [properties addEntriesFromDictionary:activity.userInfo];
-        properties[@"url"] = activity.webpageURL.absoluteString;
+        properties[@"url"] = urlString;
         properties[@"title"] = activity.title ?: @"";
         properties = [SEGUtils traverseJSON:properties
                       andReplaceWithFilters:self.configuration.payloadFilters];
@@ -386,10 +458,15 @@ NSString *const SEGBuildKeyV2 = @"SEGBuildKeyV2";
     if (!self.configuration.trackDeepLinks) {
         return;
     }
+    
+    NSString *urlString = url.absoluteString;
+    [SEGState sharedInstance].context.referrer = @{
+        @"url" : urlString,
+    };
 
     NSMutableDictionary *properties = [NSMutableDictionary dictionaryWithCapacity:options.count + 2];
     [properties addEntriesFromDictionary:options];
-    properties[@"url"] = url.absoluteString;
+    properties[@"url"] = urlString;
     properties = [SEGUtils traverseJSON:properties
                   andReplaceWithFilters:self.configuration.payloadFilters];
     [self track:@"Deep Link Opened" properties:[properties copy]];
@@ -417,7 +494,12 @@ NSString *const SEGBuildKeyV2 = @"SEGBuildKeyV2";
 
 - (NSString *)getAnonymousId
 {
-    return [self.integrationsManager getAnonymousId];
+    return [SEGState sharedInstance].userInfo.anonymousId;
+}
+
+- (NSString *)getDeviceToken
+{
+    return [SEGState sharedInstance].context.deviceToken;
 }
 
 - (NSDictionary *)bundledIntegrations
@@ -442,7 +524,7 @@ NSString *const SEGBuildKeyV2 = @"SEGBuildKeyV2";
 {
     // this has to match the actual version, NOT what's in info.plist
     // because Apple only accepts X.X.X as versions in the review process.
-    return @"3.9.0";
+    return @"4.0.4";
 }
 
 #pragma mark - Helpers
@@ -458,10 +540,19 @@ NSString *const SEGBuildKeyV2 = @"SEGBuildKeyV2";
     } else {
         payload.timestamp = iso8601FormattedString([NSDate date]);
     }
+    
     SEGContext *context = [[[SEGContext alloc] initWithAnalytics:self] modify:^(id<SEGMutableContext> _Nonnull ctx) {
         ctx.eventType = eventType;
         ctx.payload = payload;
+        ctx.payload.messageId = GenerateUUIDString();
+        if (ctx.payload.userId == nil) {
+            ctx.payload.userId = [SEGState sharedInstance].userInfo.userId;
+        }
+        if (ctx.payload.anonymousId == nil) {
+            ctx.payload.anonymousId = [SEGState sharedInstance].userInfo.anonymousId;
+        }
     }];
+    
     // Could probably do more things with callback later, but we don't use it yet.
     [self.runner run:context callback:nil];
 }

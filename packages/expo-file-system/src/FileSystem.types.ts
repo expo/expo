@@ -39,7 +39,7 @@ export type FileSystemDownloadResult = FileSystemHttpResult & {
 };
 
 /**
- * @deprecated Use FileSystemDownloadResult instead.
+ * @deprecated Use `FileSystemDownloadResult` instead.
  */
 export type DownloadResult = FileSystemDownloadResult;
 

@@ -1,10 +1,9 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcon } from '../components/Icon';
 
 import ListItem from './ListItem';
 import { StyledText } from './Text';
-import { StyledIcon } from './Views';
 import { DevMenuKeyCommand } from '../DevMenuInternal';
 import DevMenuKeyCommandLabel from './DevMenuKeyCommandLabel';
 import Colors from '../constants/Colors';
@@ -28,7 +27,7 @@ class ListItemButton extends React.PureComponent<ListItemButtonProps> {
     }
     return (
       <View style={styles.buttonIcon}>
-        <StyledIcon component={MaterialCommunityIcons} name={icon} size={22} color="menuItemText" />
+        <MaterialCommunityIcon name={icon} size={22} color="menuItemText" />
       </View>
     );
   }

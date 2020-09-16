@@ -6,9 +6,17 @@
 
 ### 🎉 New features
 
-- Easier to follow installation instructions by moving them to the Expo documentation ([#9145](https://github.com/expo/expo/pull/9145)).
-
 ### 🐛 Bug fixes
+
+## 0.3.1 — 2020-08-26
+
+_This version does not introduce any user-facing changes._
+
+## 0.3.0 — 2020-08-18
+
+### 🎉 New features
+
+- Easier to follow installation instructions by moving them to the Expo documentation ([#9145](https://github.com/expo/expo/pull/9145)).
 
 ## 0.2.12 — 2020-07-24
 

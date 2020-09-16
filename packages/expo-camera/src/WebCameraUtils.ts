@@ -80,13 +80,28 @@ function ensureCameraPictureOptions(config: CameraPictureOptions): CameraPicture
 
 const DEFAULT_QUALITY = 0.92;
 
-export function captureImage(
-  video: HTMLVideoElement,
-  pictureOptions: CameraPictureOptions
-): string {
-  const config = ensureCameraPictureOptions(pictureOptions);
-  const { scale, imageType, quality = DEFAULT_QUALITY, isImageMirror } = config;
+export function captureImageData(
+  video: HTMLVideoElement | null,
+  pictureOptions: Pick<CameraPictureOptions, 'scale' | 'isImageMirror'> = {}
+): ImageData | null {
+  if (!video || video.readyState !== video.HAVE_ENOUGH_DATA) {
+    return null;
+  }
+  const canvas = captureImageContext(video, pictureOptions);
 
+  const context = canvas.getContext('2d', { alpha: false });
+  if (!context || !canvas.width || !canvas.height) {
+    return null;
+  }
+
+  const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+  return imageData;
+}
+
+export function captureImageContext(
+  video: HTMLVideoElement,
+  { scale = 1, isImageMirror = false }: Pick<CameraPictureOptions, 'scale' | 'isImageMirror'>
+): HTMLCanvasElement {
   const { videoWidth, videoHeight } = video;
   const { width, height } = getImageSize(videoWidth, videoHeight, scale!);
 
@@ -94,12 +109,15 @@ export function captureImage(
   const canvas = document.createElement('canvas');
   canvas.width = width;
   canvas.height = height;
-  const context = canvas.getContext('2d');
+  const context = canvas.getContext('2d', { alpha: false });
 
   if (!context) {
     // Should never be called
     throw new Error('Context is not defined');
   }
+  // sharp image details
+  // context.imageSmoothingEnabled = false;
+
   // Flip horizontally (as css transform: rotateY(180deg))
   if (isImageMirror) {
     context.setTransform(-1, 0, 0, 1, canvas.width, 0);
@@ -107,8 +125,17 @@ export function captureImage(
 
   context.drawImage(video, 0, 0, width, height);
 
-  const base64 = toDataURL(canvas, imageType!, quality);
-  return base64;
+  return canvas;
+}
+
+export function captureImage(
+  video: HTMLVideoElement,
+  pictureOptions: CameraPictureOptions
+): string {
+  const config = ensureCameraPictureOptions(pictureOptions);
+  const canvas = captureImageContext(video, config);
+  const { imageType, quality = DEFAULT_QUALITY } = config;
+  return toDataURL(canvas, imageType!, quality);
 }
 
 function getSupportedConstraints(): MediaTrackSupportedConstraints | null {
@@ -162,6 +189,32 @@ export function getIdealConstraints(
 
 function isMediaTrackConstraints(input: any): input is MediaTrackConstraints {
   return input && typeof input.video !== 'boolean';
+}
+
+/**
+ * Invoke getStreamDevice a second time with the opposing camera type if the preferred type cannot be retrieved.
+ *
+ * @param preferredCameraType
+ * @param preferredWidth
+ * @param preferredHeight
+ */
+export async function getPreferredStreamDevice(
+  preferredCameraType: CameraType,
+  preferredWidth?: number | ConstrainLongRange,
+  preferredHeight?: number | ConstrainLongRange
+): Promise<MediaStream> {
+  try {
+    return await getStreamDevice(preferredCameraType, preferredWidth, preferredHeight);
+  } catch (error) {
+    // A hack on desktop browsers to ensure any camera is used.
+    // eslint-disable-next-line no-undef
+    if (error instanceof OverconstrainedError && error.constraint === 'facingMode') {
+      const nextCameraType =
+        preferredCameraType === CameraType.back ? CameraType.front : CameraType.back;
+      return await getStreamDevice(nextCameraType, preferredWidth, preferredHeight);
+    }
+    throw error;
+  }
 }
 
 export async function getStreamDevice(
@@ -320,13 +373,21 @@ export function setVideoSource(
   video: HTMLVideoElement,
   stream: MediaStream | MediaSource | Blob | null
 ): void {
-  try {
+  const createObjectURL = window.URL.createObjectURL ?? window.webkitURL.createObjectURL;
+
+  if (typeof video.srcObject !== 'undefined') {
     video.srcObject = stream;
-  } catch {
-    if (stream) {
-      video.src = window.URL.createObjectURL(stream);
-    } else if (typeof video.src === 'string') {
-      window.URL.revokeObjectURL(video.src);
+  } else if (typeof (video as any).mozSrcObject !== 'undefined') {
+    (video as any).mozSrcObject = stream;
+  } else if (stream && createObjectURL) {
+    video.src = createObjectURL(stream);
+  }
+
+  if (!stream) {
+    const revokeObjectURL = window.URL.revokeObjectURL ?? window.webkitURL.revokeObjectURL;
+    const source = video.src ?? video.srcObject ?? (video as any).mozSrcObject;
+    if (revokeObjectURL && typeof source === 'string') {
+      revokeObjectURL(source);
     }
   }
 }
@@ -336,7 +397,7 @@ export function isCapabilityAvailable(video: HTMLVideoElement, keyName: string):
 
   if (stream instanceof MediaStream) {
     const videoTrack = stream.getVideoTracks()[0];
-    return Boolean(videoTrack.getCapabilities?.()?.[keyName]);
+    return videoTrack.getCapabilities?.()?.[keyName];
   }
 
   return false;

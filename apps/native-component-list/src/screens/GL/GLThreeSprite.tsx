@@ -37,36 +37,6 @@ export default function GLThreeSprite() {
     }
   }, [animate]);
 
-  React.useEffect(() => {
-    if (!gl.current || scene.current) {
-      return;
-    }
-    scene.current = new Scene();
-    camera.current = new PerspectiveCamera(
-      75,
-      gl.current.drawingBufferWidth / gl.current.drawingBufferHeight,
-      0.1,
-      1000
-    );
-
-    renderer.current = new Renderer({ gl: gl.current });
-    renderer.current.setSize(gl.current.drawingBufferWidth, gl.current.drawingBufferHeight);
-    renderer.current.setClearColor(0xffffff);
-
-    const spriteMaterial = new SpriteMaterial({
-      map: new TextureLoader().load(require('../../../assets/images/nikki.png')),
-      color: 0xffffff,
-    });
-    const sprite = new Sprite(spriteMaterial);
-    scene.current.add(sprite);
-
-    camera.current.position.z = 3;
-
-    animate();
-    renderer.current.render(scene.current, camera.current);
-    gl.current.endFrameEXP();
-  }, [gl.current, animate]);
-
   const onLayout = React.useCallback(({ nativeEvent: { layout } }: LayoutChangeEvent) => {
     if (camera.current) {
       camera.current.aspect = layout.width / layout.height;
@@ -81,6 +51,30 @@ export default function GLThreeSprite() {
   const onContextCreate = React.useCallback(
     async (context: ExpoWebGLRenderingContext) => {
       gl.current = context;
+      scene.current = new Scene();
+      camera.current = new PerspectiveCamera(
+        75,
+        gl.current.drawingBufferWidth / gl.current.drawingBufferHeight,
+        0.1,
+        1000
+      );
+
+      renderer.current = new Renderer({ gl: gl.current });
+      renderer.current.setSize(gl.current.drawingBufferWidth, gl.current.drawingBufferHeight);
+      renderer.current.setClearColor(0xffffff);
+
+      const spriteMaterial = new SpriteMaterial({
+        map: new TextureLoader().load(require('../../../assets/images/nikki.png')),
+        color: 0xffffff,
+      });
+      const sprite = new Sprite(spriteMaterial);
+      scene.current.add(sprite);
+
+      camera.current.position.z = 3;
+
+      animate();
+      renderer.current.render(scene.current, camera.current);
+      gl.current.endFrameEXP();
     },
     [animate]
   );

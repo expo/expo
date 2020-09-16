@@ -8,6 +8,26 @@
 
 ### 🐛 Bug fixes
 
+## 8.6.0 — 2020-09-14
+
+### 🐛 Bug fixes
+
+- `getContactsAsync` no longer requires an exact match when providing the `name` query on Android. ([#10127](https://github.com/expo/expo/pull/10127) by [@cruzach](https://github.com/cruzach))
+
+## 8.5.0 — 2020-08-18
+
+### 🎉 New features
+
+- Add permissions for web. ([#9671](https://github.com/expo/expo/pull/9671) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 8.4.0 — 2020-08-11
+
+### 🎉 New features
+
+- Added `isAvailableAsync()` method for guarding against web usage. ([#9640](https://github.com/expo/expo/pull/9640) by [@EvanBacon](https://github.com/evanbacon))
+
+### 🐛 Bug fixes
+
 - Fixed bug, where sorting contacts by `firstName` or `lastName` could cause crash on Android. ([#9582](https://github.com/expo/expo/pull/9582) by [@barthap](https://github.com/barthap))
 
 ## 8.3.0 — 2020-07-27
@@ -21,7 +41,7 @@
 
 ## 8.2.1 — 2020-05-29
 
-*This version does not introduce any user-facing changes.*
+_This version does not introduce any user-facing changes._
 
 ## 8.2.0 — 2020-05-27
 

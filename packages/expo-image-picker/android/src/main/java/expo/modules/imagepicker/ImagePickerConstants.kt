@@ -8,6 +8,7 @@ object ImagePickerConstants {
   const val REQUEST_LAUNCH_IMAGE_LIBRARY = 2
   const val DEFAULT_QUALITY = 100
   const val CACHE_DIR_NAME = "ImagePicker"
+  const val PENDING_RESULT_EVENT = "ExpoImagePicker.onPendingResult"
 
   const val ERR_MISSING_ACTIVITY = "ERR_MISSING_ACTIVITY"
   const val MISSING_ACTIVITY_MESSAGE = "Activity which was provided during module initialization is no longer available"

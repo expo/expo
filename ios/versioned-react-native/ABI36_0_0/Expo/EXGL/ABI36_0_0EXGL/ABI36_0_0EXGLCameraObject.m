@@ -60,7 +60,7 @@
   CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
   GLsizei bufferWidth = (GLsizei)CVPixelBufferGetWidth(pixelBuffer);
   GLsizei bufferHeight = (GLsizei)CVPixelBufferGetHeight(pixelBuffer);
-  
+
   CVPixelBufferRetain(pixelBuffer);
   CVPixelBufferLockBaseAddress(pixelBuffer, 0);
 
@@ -69,9 +69,9 @@
   if (!_cameraTextureCache) {
     CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, _eaglCtx, NULL, &_cameraTextureCache);
   }
-  
+
   CVOpenGLESTextureRef textureRef = NULL;
-  
+
   CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
                                                _cameraTextureCache,
                                                pixelBuffer,
@@ -84,10 +84,10 @@
                                                GL_UNSIGNED_BYTE,
                                                0,
                                                &textureRef);
-  
+
   if (textureRef) {
     GLuint textureName = CVOpenGLESTextureGetName(textureRef);
-    UEXGLContextMapObject([self exglCtxId], [self exglObjId], textureName);
+    UEXGLContextMapObject__Legacy([self exglCtxId], [self exglObjId], textureName);
   }
 
   CVOpenGLESTextureCacheFlush(_cameraTextureCache, 0);

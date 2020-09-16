@@ -76,6 +76,7 @@ public class ScreenStackHeaderConfig extends ViewGroup {
     if (context.getTheme().resolveAttribute(android.R.attr.colorPrimary, tv, true)) {
       mToolbar.setBackgroundColor(tv.data);
     }
+    mToolbar.setClipChildren(false);
   }
 
   @Override
@@ -206,7 +207,7 @@ public class ScreenStackHeaderConfig extends ViewGroup {
     if (titleTextView != null) {
       if (mTitleFontFamily != null) {
         titleTextView.setTypeface(ReactFontManager.getInstance().getTypeface(
-          mTitleFontFamily, 0, getContext().getAssets()));
+                mTitleFontFamily, 0, getContext().getAssets()));
       }
       if (mTitleFontSize > 0) {
         titleTextView.setTextSize(mTitleFontSize);
@@ -248,7 +249,7 @@ public class ScreenStackHeaderConfig extends ViewGroup {
       }
 
       Toolbar.LayoutParams params =
-        new Toolbar.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
+              new Toolbar.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
 
       switch (type) {
         case LEFT:

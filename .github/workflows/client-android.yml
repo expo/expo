@@ -16,7 +16,6 @@ on:
       - secrets/**
       - android/**
       - fastlane/**
-      - tools-public/**
       - Gemfile.lock
       - .ruby-version
       - yarn.lock
@@ -27,7 +26,6 @@ on:
       - secrets/**
       - android/**
       - fastlane/**
-      - tools-public/**
       - Gemfile.lock
       - .ruby-version
       - yarn.lock
@@ -45,12 +43,10 @@ jobs:
       - uses: actions/cache@v1
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}-${{ hashFiles('tools-public/yarn.lock') }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: yarn install --frozen-lockfile
-      - run: yarn install --frozen-lockfile
-        working-directory: tools-public
       - uses: ruby/setup-ruby@v1
       - name: bundler cache
         uses: actions/cache@v1
@@ -84,7 +80,7 @@ jobs:
       - uses: actions/cache@v2
         id: cache-android-ndk
         with:
-          path: $ANDROID_HOME/ndk/19.2.5345600/
+          path: /usr/local/lib/android/sdk/ndk/19.2.5345600/
           key: ${{ runner.os }}-ndk-19.2.5345600
           restore-keys: |
             ${{ runner.os }}-ndk-
@@ -98,7 +94,7 @@ jobs:
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ExponentKey
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-          ANDROID_NDK_HOME: $ANDROID_HOME/ndk/19.2.5345600/
+          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/19.2.5345600/
         run: |
           if [ -z "$ANDROID_KEYSTORE_B64" ]; then
             echo "External build detected, APK will not be signed"

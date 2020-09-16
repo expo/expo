@@ -10,9 +10,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppController";
+static NSString * const EXUpdatesAppControllerErrorDomain = @"EXUpdatesAppController";
 
-static NSString * const kEXUpdatesConfigPlistName = @"Expo";
+static NSString * const EXUpdatesConfigPlistName = @"Expo";
+
+static NSString * const EXUpdatesUpdateAvailableEventName = @"updateAvailable";
+static NSString * const EXUpdatesNoUpdateAvailableEventName = @"noUpdateAvailable";
+static NSString * const EXUpdatesErrorEventName = @"error";
 
 @interface EXUpdatesAppController ()
 
@@ -135,7 +139,8 @@ static NSString * const kEXUpdatesConfigPlistName = @"Expo";
     NSArray *views = [mainBundle loadNibNamed:launchScreen owner:self options:nil];
     rootViewController.view = views.firstObject;
     rootViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-  } else if ([mainBundle pathForResource:launchScreen ofType:@"storyboard"] != nil) {
+  } else if ([mainBundle pathForResource:launchScreen ofType:@"storyboard"] != nil ||
+             [mainBundle pathForResource:launchScreen ofType:@"storyboardc"] != nil) {
     UIStoryboard *launchScreenStoryboard = [UIStoryboard storyboardWithName:launchScreen bundle:nil];
     rootViewController = [launchScreenStoryboard instantiateInitialViewController];
   } else {
@@ -208,7 +213,7 @@ static NSString * const kEXUpdatesConfigPlistName = @"Expo";
   // do nothing here for now
 }
 
-- (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithLauncher:(id<EXUpdatesAppLauncher>)launcher
+- (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithLauncher:(id<EXUpdatesAppLauncher>)launcher isUpToDate:(BOOL)isUpToDate
 {
   _launcher = launcher;
   if (self->_delegate) {
@@ -216,8 +221,6 @@ static NSString * const kEXUpdatesConfigPlistName = @"Expo";
       [self->_delegate appController:self didStartWithSuccess:YES];
     }];
   }
-
-  [self _runReaper];
 }
 
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithError:(NSError *)error
@@ -225,16 +228,24 @@ static NSString * const kEXUpdatesConfigPlistName = @"Expo";
   [self _emergencyLaunchWithFatalError:error];
 }
 
-- (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFireEventWithType:(NSString *)type body:(NSDictionary *)body
+- (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didCompleteBackgroundUpdateWithStatus:(EXUpdatesBackgroundUpdateStatus)status update:(nullable EXUpdatesUpdate *)update error:(nullable NSError *)error
 {
-  [EXUpdatesUtils sendEventToBridge:_bridge withType:type body:body];
+  if (status == EXUpdatesBackgroundUpdateStatusError) {
+    NSAssert(error != nil, @"Background update with error status must have a nonnull error object");
+    [EXUpdatesUtils sendEventToBridge:_bridge withType:EXUpdatesErrorEventName body:@{@"message": error.localizedDescription}];
+  } else if (status == EXUpdatesBackgroundUpdateStatusUpdateAvailable) {
+    NSAssert(update != nil, @"Background update with error status must have a nonnull update object");
+    [EXUpdatesUtils sendEventToBridge:_bridge withType:EXUpdatesUpdateAvailableEventName body:@{@"manifest": update.rawManifest}];
+  } else if (status == EXUpdatesBackgroundUpdateStatusNoUpdateAvailable) {
+    [EXUpdatesUtils sendEventToBridge:_bridge withType:EXUpdatesNoUpdateAvailableEventName body:@{}];
+  }
 }
 
 # pragma mark - internal
 
 - (EXUpdatesConfig *)_loadConfigFromExpoPlist
 {
-  NSString *configPath = [[NSBundle mainBundle] pathForResource:kEXUpdatesConfigPlistName ofType:@"plist"];
+  NSString *configPath = [[NSBundle mainBundle] pathForResource:EXUpdatesConfigPlistName ofType:@"plist"];
   if (!configPath) {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                    reason:@"Cannot load configuration from Expo.plist. Please ensure you've followed the setup and installation instructions for expo-updates to create Expo.plist and add it to your Xcode project."

@@ -1,24 +1,42 @@
 import * as SecureStore from 'expo-secure-store';
-import React from 'react';
-import { Alert, Platform, ScrollView, TextInput } from 'react-native';
+import * as React from 'react';
+import { Alert, Platform, ScrollView, Text, TextInput, View } from 'react-native';
 
 import ListButton from '../components/ListButton';
+import { useResolvedValue } from '../utilities/useResolvedValue';
 
-interface State {
-  key?: string;
-  value?: string;
+export default function SecureStoreScreen() {
+  const [isAvailable, error] = useResolvedValue(SecureStore.isAvailableAsync);
+
+  const warning = React.useMemo(() => {
+    if (error) {
+      return `An unknown error occurred while checking the API availability: ${error.message}`;
+    } else if (isAvailable === null) {
+      return 'Checking availability...';
+    } else if (isAvailable === false) {
+      return 'SecureStore API is not available on this platform.';
+    }
+    return null;
+  }, [error, isAvailable]);
+
+  if (warning) {
+    return (
+      <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+        <Text>{warning}</Text>
+      </View>
+    );
+  }
+
+  return <SecureStoreView />;
 }
 
-export default class SecureStoreScreen extends React.Component<object, State> {
-  static navigationOptions = {
-    title: 'SecureStore',
-  };
+function SecureStoreView() {
+  const [key, setKey] = React.useState<string | undefined>();
+  const [value, setValue] = React.useState<string | undefined>();
 
-  readonly state: State = {};
-
-  _setValue = async (value: string, key: string) => {
+  const _setValue = async (value: string, key: string) => {
     try {
-      console.log('securestore: ' + SecureStore);
+      console.log('SecureStore: ' + SecureStore);
       await SecureStore.setItemAsync(key, value, {});
       Alert.alert('Success!', 'Value: ' + value + ', stored successfully for key: ' + key, [
         { text: 'OK', onPress: () => {} },
@@ -28,7 +46,7 @@ export default class SecureStoreScreen extends React.Component<object, State> {
     }
   };
 
-  _getValue = async (key: string) => {
+  const _getValue = async (key: string) => {
     try {
       const fetchedValue = await SecureStore.getItemAsync(key, {});
       Alert.alert('Success!', 'Fetched value: ' + fetchedValue, [
@@ -39,7 +57,7 @@ export default class SecureStoreScreen extends React.Component<object, State> {
     }
   };
 
-  _deleteValue = async (key: string) => {
+  const _deleteValue = async (key: string) => {
     try {
       await SecureStore.deleteItemAsync(key, {});
       Alert.alert('Success!', 'Value deleted', [{ text: 'OK', onPress: () => {} }]);
@@ -48,63 +66,55 @@ export default class SecureStoreScreen extends React.Component<object, State> {
     }
   };
 
-  render() {
-    return (
-      <ScrollView
+  return (
+    <ScrollView
+      style={{
+        flex: 1,
+        padding: 10,
+      }}>
+      <TextInput
         style={{
-          flex: 1,
+          marginBottom: 10,
           padding: 10,
-        }}>
-        <TextInput
-          style={{
-            marginBottom: 10,
-            padding: 10,
-            height: 40,
-            ...Platform.select({
-              ios: {
-                borderColor: '#ccc',
-                borderWidth: 1,
-                borderRadius: 3,
-              },
-            }),
-          }}
-          placeholder="Enter a value to store (ex. pw123!)"
-          value={this.state.value}
-          onChangeText={value => this.setState({ value })}
-        />
-        <TextInput
-          style={{
-            marginBottom: 10,
-            padding: 10,
-            height: 40,
-            ...Platform.select({
-              ios: {
-                borderColor: '#ccc',
-                borderWidth: 1,
-                borderRadius: 3,
-              },
-            }),
-          }}
-          placeholder="Enter a key for the value (ex. password)"
-          value={this.state.key}
-          onChangeText={key => this.setState({ key })}
-        />
-        {this.state.value && this.state.key && (
-          <ListButton
-            onPress={() => this._setValue(this.state.value!, this.state.key!)}
-            title="Store value with key"
-          />
-        )}
-        {this.state.key && (
-          <ListButton onPress={() => this._getValue(this.state.key!)} title="Get value with key" />
-        )}
-        {this.state.key && (
-          <ListButton
-            onPress={() => this._deleteValue(this.state.key!)}
-            title="Delete value with key"
-          />
-        )}
-      </ScrollView>
-    );
-  }
+          height: 40,
+          ...Platform.select({
+            ios: {
+              borderColor: '#ccc',
+              borderWidth: 1,
+              borderRadius: 3,
+            },
+          }),
+        }}
+        placeholder="Enter a value to store (ex. pw123!)"
+        value={value}
+        onChangeText={setValue}
+      />
+      <TextInput
+        style={{
+          marginBottom: 10,
+          padding: 10,
+          height: 40,
+          ...Platform.select({
+            ios: {
+              borderColor: '#ccc',
+              borderWidth: 1,
+              borderRadius: 3,
+            },
+          }),
+        }}
+        placeholder="Enter a key for the value (ex. password)"
+        value={key}
+        onChangeText={setKey}
+      />
+      {value && key && (
+        <ListButton onPress={() => _setValue(value, key)} title="Store value with key" />
+      )}
+      {key && <ListButton onPress={() => _getValue(key)} title="Get value with key" />}
+      {key && <ListButton onPress={() => _deleteValue(key)} title="Delete value with key" />}
+    </ScrollView>
+  );
 }
+
+SecureStoreScreen.navigationOptions = {
+  title: 'SecureStore',
+};

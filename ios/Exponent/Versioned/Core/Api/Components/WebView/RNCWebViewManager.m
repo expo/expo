@@ -16,6 +16,16 @@
 @interface RNCWebViewManager () <RNCWebViewDelegate>
 @end
 
+@implementation RCTConvert (WKWebView)
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 /* iOS 13 */
+RCT_ENUM_CONVERTER(WKContentMode, (@{
+    @"recommended": @(WKContentModeRecommended),
+    @"mobile": @(WKContentModeMobile),
+    @"desktop": @(WKContentModeDesktop),
+}), WKContentModeRecommended, integerValue)
+#endif
+@end
+
 @implementation RNCWebViewManager
 {
   NSConditionLock *_shouldStartLoadLock;
@@ -84,6 +94,10 @@ RCT_EXPORT_VIEW_PROPERTY(allowingReadAccessToURL, NSString)
 RCT_EXPORT_VIEW_PROPERTY(contentInsetAdjustmentBehavior, UIScrollViewContentInsetAdjustmentBehavior)
 #endif
 
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 /* iOS 13 */
+RCT_EXPORT_VIEW_PROPERTY(contentMode, WKContentMode)
+#endif
+
 /**
  * Expose methods to enable messaging the webview.
  */
@@ -101,6 +115,10 @@ RCT_EXPORT_METHOD(postMessage:(nonnull NSNumber *)reactTag message:(NSString *)m
       [view postMessage:message];
     }
   }];
+}
+
+RCT_CUSTOM_VIEW_PROPERTY(pullToRefreshEnabled, BOOL, RNCWebView) {
+    view.pullToRefreshEnabled = json == nil ? false : [RCTConvert BOOL: json];
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(bounces, BOOL, RNCWebView) {

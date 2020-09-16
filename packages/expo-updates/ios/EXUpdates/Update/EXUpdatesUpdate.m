@@ -25,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
     _config = config;
     _database = database;
     _scopeKey = config.scopeKey;
+    _isDevelopmentMode = NO;
   }
   return self;
 }

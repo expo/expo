@@ -6,6 +6,7 @@ import { Image, Platform, ScrollView, View, Text, Switch, StyleSheet } from 'rea
 
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
+import TitleSwitch from '../components/TitledSwitch';
 
 async function requestPermissionAsync(permission: Permissions.PermissionType) {
   // Image Picker doesn't need permissions in the web
@@ -64,31 +65,18 @@ export default class ImagePickerScreen extends React.Component<object, State> {
   render() {
     return (
       <ScrollView style={styles.mainContainer}>
-        <View style={styles.switchContainer}>
-          <Switch
-            style={styles.switch}
-            onValueChange={() =>
-              this.setState(({ base64Enabled: base64 }) => ({
-                base64Enabled: !base64,
-              }))
-            }
-            value={this.state.base64Enabled}
-          />
-          <Text style={styles.text}>With base64</Text>
-        </View>
-
-        <View style={styles.switchContainer}>
-          <Switch
-            style={styles.switch}
-            onValueChange={() =>
-              this.setState(({ compressionEnabled: compression }) => ({
-                compressionEnabled: !compression,
-              }))
-            }
-            value={this.state.compressionEnabled}
-          />
-          <Text style={styles.text}>Compression</Text>
-        </View>
+        <TitleSwitch
+          style={{ marginVertical: 8 }}
+          title="With base64"
+          setValue={value => this.setState({ base64Enabled: value })}
+          value={this.state.base64Enabled}
+        />
+        <TitleSwitch
+          style={{ marginVertical: 8 }}
+          title="Compression"
+          setValue={value => this.setState({ compressionEnabled: value })}
+          value={this.state.compressionEnabled}
+        />
 
         <ListButton
           onPress={() => this.showCamera(ImagePicker.MediaTypeOptions.All)}

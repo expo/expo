@@ -26,7 +26,7 @@ const STYLES_CONTAINER = css`
   .anchor-icon {
     cursor: pointer;
     position: absolute;
-    top: 2px;
+    top: 8px;
     width: 20px;
     height: 20px;
     visibility: hidden;
@@ -54,7 +54,7 @@ const STYLES_CONTAINER_TARGET = css`
   visibility: hidden;
 `;
 
-export default withSlugger(props => {
+const PermalinkWithSlugger = withSlugger(props => {
   // NOTE(jim): Not the greatest way to generate permalinks.
   // for now I've shortened the length of permalinks.
   const component = props.children;
@@ -81,3 +81,5 @@ export default withSlugger(props => {
     </Permalink>
   );
 });
+
+export default PermalinkWithSlugger;

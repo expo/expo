@@ -18,11 +18,11 @@ Provides an API to fetch push notification tokens and to present, schedule, rece
 
 # Installation in managed Expo projects
 
-This library is not yet usable within managed projects &mdash; it is likely to be included in an upcoming Expo SDK release.
+Please refer to the [installation instructions in the Expo documentation](https://docs.expo.io/versions/latest/sdk/notifications/#installation).
 
 # Installation in bare React Native projects
 
-For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
+For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/expo/expo/tree/master/packages/react-native-unimodules) before continuing.
 
 ### Add the package to your npm dependencies
 
@@ -44,6 +44,8 @@ In order to be able to receive push notifications on the device:
 ### Configure for Android
 
 In order to be able to receive push notifications on the device ensure that your project is set up for Firebase. For more information on how to do it, see [this guide](https://docs.expo.io/guides/setup-native-firebase/#bare-workflow-setup).
+
+This module requires permission to subscribe to device boot. It's used to setup the scheduled notifications right after the device (re)starts. The `RECEIVE_BOOT_COMPLETED` permission is added automatically.
 
 The notification icon and the default color can be customized.
 
@@ -200,7 +202,7 @@ export interface FirebaseData {
 
 Returns an Expo token that can be used to send a push notification to this device using Expo push notifications service. [Read more in the Push Notifications guide](https://docs.expo.io/guides/push-notifications/).
 
-> **Note:** For Expo backend to be able to send notifications to your app, you will need to provide it with push notification keys. This can be done using `expo-cli` (`expo credentials:manager`). [Read more in the “Upload notifications credentials” guide](https://expo.fyi/upload-notifications-credentials). TODO
+> **Note:** For Expo backend to be able to send notifications to your app, you will need to provide it with push notification keys. This can be done using `expo-cli` (`expo credentials:manager`). [Read more in the “Upload notifications credentials” guide](https://docs.expo.io/push-notifications/push-notifications-setup/#credentials).
 
 #### Arguments
 
@@ -622,7 +624,7 @@ Notifications.scheduleNotificationAsync({
 
 Schedules a notification to be triggered in the future.
 
-> **Note:** Please note that this does not mean that the notification will be presented when it is triggereed. For the notification to be presented you have to set a notification handler with [`setNotificationHandler`](#setnotificationhandlerhandler-notificationhandler--null-void) that will return an appropriate notification behavior. For more information see the example below.
+> **Note:** Please note that this does not mean that the notification will be presented when it is triggered. For the notification to be presented you have to set a notification handler with [`setNotificationHandler`](#setnotificationhandlerhandler-notificationhandler--null-void) that will return an appropriate notification behavior. For more information see the example below.
 
 #### Arguments
 
@@ -870,7 +872,7 @@ Calling one of the following methods is a no-op on Web.
   - `identifier`: A unique string that identifies this action. If a user takes this action (i.e. selects this button in the system's Notification UI), your app will receive this `actionIdentifier` via the [`NotificationResponseReceivedListener`](#addnotificationresponsereceivedlistenerlistener-event-notificationresponse--void-void).
   - `buttonTitle`: The title of the button triggering this action.
   - `textInput`: **Optional** object which, if provided, will result in a button that prompts the user for a text response.
-    - `submitButtonTitle`: A string which will be used as the title for the button used for submitting the text response.
+    - `submitButtonTitle`: (**iOS only**) A string which will be used as the title for the button used for submitting the text response.
     - `placeholder`: A string that serves as a placeholder until the user begins typing. Defaults to no placeholder string.
   - `options`: **Optional** object of additional configuration options.
     - `opensAppToForeground`: Boolean indicating whether triggering this action foregrounds the app.
@@ -1115,6 +1117,7 @@ export type NotificationTrigger =
   | LocationNotificationTrigger
   | TimeIntervalNotificationTrigger
   | DailyNotificationTrigger
+  | WeeklyNotificationTrigger
   | UnknownNotificationTrigger;
 ```
 
@@ -1197,6 +1200,19 @@ A trigger related to a daily notification. This is an Android-only type, the sam
 ```ts
 export interface DailyNotificationTrigger {
   type: 'daily';
+  hour: number;
+  minute: number;
+}
+```
+
+### `WeeklyNotificationTrigger`
+
+A trigger related to a weekly notification. This is an Android-only type, the same functionality will be achieved on iOS with a `CalendarNotificationTrigger`.
+
+```ts
+export interface WeeklyNotificationTrigger {
+  type: 'weekly';
+  weekday: number;
   hour: number;
   minute: number;
 }
@@ -1294,6 +1310,7 @@ export type NotificationTriggerInput =
   | DateTriggerInput
   | TimeIntervalTriggerInput
   | DailyTriggerInput
+  | WeeklyTriggerInput
   | CalendarTriggerInput;
 ```
 
@@ -1334,6 +1351,22 @@ A trigger that will cause the notification to be delivered once per day.
 ```ts
 export interface DailyTriggerInput {
   channelId?: string;
+  hour: number;
+  minute: number;
+  repeats: true;
+}
+```
+
+### `WeeklyTriggerInput`
+
+A trigger that will cause the notification to be delivered once every week.
+
+> **Note:** Weekdays are specified with a number from 1 through 7, with 1 indicating Sunday.
+
+```ts
+export interface WeeklyTriggerInput {
+  channelId?: string;
+  weekday: number;
   hour: number;
   minute: number;
   repeats: true;
