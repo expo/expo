@@ -22,7 +22,6 @@
     "@mdx-js/runtime": "^1.6.16",
     "@reach/tabs": "^0.10.3",
     "@sentry/browser": "^5.6.1",
-    "@zeit/next-css": "^1.0.1",
     "babel-plugin-module-resolver": "3.1.1",
     "babel-plugin-preval": "^3.0.1",
     "cross-env": "^5.2.0",
