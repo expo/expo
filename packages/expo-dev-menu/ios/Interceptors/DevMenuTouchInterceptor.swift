@@ -30,9 +30,7 @@ class DevMenuTouchInterceptor {
   }
 }
 
-// We swizzle the method for `UIWindow`, but we have to extend entire `UIView` (superclass of `UIWindow`).
-// Otherwise we would get "unrecognized selector" runtime crash as internal `UITransitionView` calls this property on `UIView` pointer.
-extension UIView {
+extension UIWindow {
   @objc open var EXDevMenu_gestureRecognizers: [UIGestureRecognizer]? {
     // Just for thread safety, someone may uninstall the interceptor in the meantime and we would fall into recursive loop.
     if !DevMenuTouchInterceptor.isInstalled {
