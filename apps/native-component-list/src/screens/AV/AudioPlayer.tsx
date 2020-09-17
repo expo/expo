@@ -30,6 +30,7 @@ interface State {
   positionMillis: number;
   durationMillis: number;
   rate: number;
+  volume: number;
   shouldCorrectPitch: boolean;
 }
 
@@ -41,6 +42,7 @@ export default class AudioPlayer extends React.Component<Props, State> {
     positionMillis: 0,
     durationMillis: 0,
     rate: 1,
+    volume: 1,
     shouldCorrectPitch: false,
   };
 
@@ -94,6 +96,8 @@ export default class AudioPlayer extends React.Component<Props, State> {
 
   _setIsMutedAsync = async (isMuted: boolean) => this._sound!.setIsMutedAsync(isMuted);
 
+  _setVolumeAsync = async (volume: number) => this._sound!.setVolumeAsync(volume);
+
   _setRateAsync = async (
     rate: number,
     shouldCorrectPitch: boolean,
@@ -114,6 +118,7 @@ export default class AudioPlayer extends React.Component<Props, State> {
         setIsLoopingAsync={this._setIsLoopingAsync}
         setRateAsync={this._setRateAsync}
         setIsMutedAsync={this._setIsMutedAsync}
+        setVolume={this._setVolumeAsync}
       />
     );
   }

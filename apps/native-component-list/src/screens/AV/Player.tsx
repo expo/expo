@@ -347,7 +347,9 @@ function VolumeSlider({
   }, [isMutedActive, value]);
 
   React.useEffect(() => {
-    if (value !== volume) setValue(volume);
+    if (value !== volume) {
+      onValueChanged({ volume, isMuted });
+    }
   }, [volume]);
 
   const height = 36;
@@ -365,7 +367,7 @@ function VolumeSlider({
       <Slider
         value={isMutedActive ? 0 : value}
         maximumValue={1}
-        style={{ height: height }}
+        style={{ height, width: 100 - height }}
         thumbTintColor={color}
         minimumTrackTintColor={color}
         onSlidingComplete={value => {
