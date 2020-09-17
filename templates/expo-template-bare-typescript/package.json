@@ -13,9 +13,9 @@
   "dependencies": {
     "expo": "~39.0.1",
     "expo-updates": "~0.3.2",
-    "react": "~16.11.0",
-    "react-dom": "~16.11.0",
-    "react-native": "~0.62.2",
+    "react": "~16.13.1",
+    "react-dom": "~16.13.1",
+    "react-native": "~0.63.2",
     "react-native-gesture-handler": "~1.7.0",
     "react-native-reanimated": "~1.13.0",
     "react-native-screens": "~2.10.1",
@@ -28,7 +28,7 @@
     "@types/react-dom": "~16.9.8",
     "@types/react-native": "~0.61.23",
     "babel-preset-expo": "~8.2.0",
-    "jest-expo": "~38.0.0",
+    "jest-expo": "~39.0.0",
     "typescript": "~3.9.5"
   },
   "jest": {
