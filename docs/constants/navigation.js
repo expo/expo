@@ -10,6 +10,7 @@ const GROUPS = {
     'Fundamentals',
     'Push Notifications',
     'Distributing Your App',
+    'Expo Accounts',
     'Assorted Guides',
     'Regulatory Compliance',
   ],
@@ -72,6 +73,13 @@ const sections = [
   {
     name: 'Next Steps',
     reference: ['Using the documentation', 'Join the community', 'Additional resources'],
+  },
+  {
+    name: 'Expo Accounts',
+    reference: [
+      'Personal Account',
+      'Working Together',
+    ],
   },
   {
     name: 'Regulatory Compliance',
@@ -311,6 +319,7 @@ const ROOT = [
   'Fundamentals',
   'Push Notifications',
   'Distributing Your App',
+  'Expo Accounts',
   'Regulatory Compliance',
   'Assorted Guides',
   'Essentials',

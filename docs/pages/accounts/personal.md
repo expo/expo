@@ -4,7 +4,7 @@ title: Personal Account
 
 To fully use Expo, you have to create a Personal Account. With this account, we can safely identify you as the developer or owner of an app. You can use Personal Accounts for all features Expo has to offer.
 
-This account is just for you, **never share access to this account for any reason.** If you are working with multiple developers on a single app, you should [set up an Organization](../organization/).
+This account is just for you, **never share access to this account for any reason.**
 
 ## Programmatic Access
 
@@ -14,7 +14,7 @@ Instead of providing credentials, you can generate Personal Access Tokens that w
 
 ### Personal Access Tokens
 
-To create Personal Access Tokens, you have to go to the Expo Dashboard Settings. You can find this page at [https://expo.io/dashboard/ACCOUNT/settings/access-tokens](https://expo.io/dashboard/ACCOUNT/settings/access-tokens). Anyone with this token can perform actions on behalf of your account. That applies to all content within your Personal Account or any _[Organization](../organization/)_ you are a member of.
+To create Personal Access Tokens, you have to go to the Expo Dashboard Settings. You can find this page at [https://expo.io/dashboard/ACCOUNT/settings/access-tokens](https://expo.io/dashboard/ACCOUNT/settings/access-tokens). Anyone with this token can perform actions on behalf of your account. That applies to all content within your Personal Account.
 
 ### Using Access Tokens
 
