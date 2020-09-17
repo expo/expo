@@ -3,10 +3,10 @@
   <groupId>host.exp.exponent</groupId>
   <artifactId>expo-notifications</artifactId>
   <versioning>
-    <release>0.7.1</release>
+    <release>0.7.2</release>
     <versions>
-      <version>0.7.1</version>
+      <version>0.7.2</version>
     </versions>
-    <lastUpdated>20200914192101</lastUpdated>
+    <lastUpdated>20200917220628</lastUpdated>
   </versioning>
 </metadata>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expoview" revision="39.0.0" status="integration" publication="20200915140934"/>
+  <info organisation="host.exp.exponent" module="expoview" revision="39.0.0" status="integration" publication="20200917151116"/>
   <configurations>
     <conf name="_internal_aapt2_binary" visibility="private" transitive="false"/>
     <conf name="androidApis" visibility="public"/>
@@ -260,7 +260,7 @@
     <dependency org="host.exp.exponent" name="expo-background-fetch" rev="8.5.0" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-barcode-scanner" rev="9.0.0" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-battery" rev="3.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-branch" rev="2.3.0" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-branch" rev="2.3.1" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-brightness" rev="8.3.0" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-calendar" rev="8.5.0" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-camera" rev="9.0.0" conf="compileOnly-&gt;default"/>
@@ -293,7 +293,7 @@
     <dependency org="host.exp.exponent" name="expo-mail-composer" rev="8.4.0" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-media-library" rev="9.2.1" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-network" rev="2.3.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-notifications" rev="0.7.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-notifications" rev="0.7.2" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-payments-stripe" rev="8.3.0" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-permissions" rev="9.3.0" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-print" rev="9.1.0" conf="compileOnly-&gt;default"/>
@@ -301,14 +301,14 @@
     <dependency org="host.exp.exponent" name="expo-screen-orientation" rev="2.0.0" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-secure-store" rev="9.2.0" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-sensors" rev="9.1.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-sharing" rev="8.4.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-sms" rev="8.3.0" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-sharing" rev="8.4.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-sms" rev="8.3.1" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-speech" rev="8.4.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-splash-screen" rev="0.6.0" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-splash-screen" rev="0.6.1" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-sqlite" rev="8.4.0" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-store-review" rev="2.2.0" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-task-manager" rev="8.5.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-updates" rev="0.3.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-updates" rev="0.3.2" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-video-thumbnails" rev="4.3.0" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-web-browser" rev="8.5.0" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="unimodules-app-loader" rev="1.3.0" conf="compileOnly-&gt;default"/>
