@@ -95,7 +95,7 @@ const trimCodedTitle = str => {
 };
 
 const DocumentationSidebarRightLink = React.forwardRef(
-  ({ heading, isActive, shortenCode }, ref) => {
+  ({ heading, isActive, shortenCode, onClick }, ref) => {
     const { slug, level, title, type } = heading;
 
     const isNested = level <= BASE_HEADING_LEVEL;
@@ -118,6 +118,7 @@ const DocumentationSidebarRightLink = React.forwardRef(
         <a
           style={{ paddingLeft }}
           href={'#' + slug}
+          onClick={onClick}
           className={linkClassNames.join(' ')}>
           {displayTitle}
         </a>

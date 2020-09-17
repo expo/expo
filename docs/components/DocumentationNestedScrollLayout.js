@@ -266,6 +266,7 @@ export default class DocumentationNestedScrollLayout extends React.Component {
             <ScrollContainer ref={this.sidebarRightRef}>
               {React.cloneElement(this.props.sidebarRight, {
                 selfRef: this.sidebarRightRef,
+                contentRef: this.contentRef,
               })}
             </ScrollContainer>
           </div>
