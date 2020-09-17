@@ -9,7 +9,6 @@ export type FileContentTransformStepSettings = {
   filePattern: string;
   find: string;
   replace: string;
-  name?: string;
 };
 
 /**
@@ -23,8 +22,8 @@ export class TransformFilesContent extends Task {
   protected readonly find: RegExp;
   protected readonly replace: string;
 
-  constructor({ source, filePattern, find, replace, name }: FileContentTransformStepSettings) {
-    super(name || `transform files content`);
+  constructor({ source, filePattern, find, replace }: FileContentTransformStepSettings) {
+    super();
     this.source = source;
     this.filePattern = filePattern;
     this.find = new RegExp(find, 'gm');
@@ -33,6 +32,12 @@ export class TransformFilesContent extends Task {
 
   protected overrideWorkingDirectory(): string | undefined {
     return this.source;
+  }
+
+  description(): string {
+    return `find ${chalk.yellow(this.find.toString())} in ${chalk.green(
+      this.source || '<workingDirectory>'
+    )}/${chalk.yellow(this.filePattern)} and replace with ${chalk.magenta(this.replace)}`;
   }
 
   async execute() {
@@ -45,9 +50,6 @@ export class TransformFilesContent extends Task {
     );
 
     const files = await findFiles(workDirectory, this.filePattern);
-    this.logDebugInfo('file affected: ');
-    this.logDebugInfo(files.map((file) => `- ${file}`));
-
     await Promise.all(
       files.map(async (file) => {
         const content = await fs.readFile(file, 'utf8');
@@ -67,7 +69,6 @@ export const prefixPackage = ({
   prefix: string;
 }): TransformFilesContent => {
   return new TransformFilesContent({
-    name: `prefix ${packageName} with ${prefix}`,
     filePattern: path.join('android', '**', '*.@(java|kt)'),
     find: packageName,
     replace: `${prefix}.${packageName}`,
@@ -80,7 +81,6 @@ export const renameIOSSymbols = (settings: {
 }): TransformFilesContent => {
   return new TransformFilesContent({
     ...settings,
-    name: `rename iOS symbols`,
     filePattern: path.join('ios', '**', '*.@(h|m)'),
   });
 };

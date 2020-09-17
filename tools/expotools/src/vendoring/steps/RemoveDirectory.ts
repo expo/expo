@@ -13,9 +13,13 @@ export type RemoveDirectorySettings = {
 export class RemoveDirectory extends Task {
   private target?: string;
 
-  constructor({ target, name }: RemoveDirectorySettings) {
-    super(name || 'remove');
+  constructor({ target }: RemoveDirectorySettings) {
+    super();
     this.target = target;
+  }
+
+  description(): string {
+    return `remove ${chalk.yellow(this.overrideWorkingDirectory() || '<workingDirectory>')}`;
   }
 
   protected overrideWorkingDirectory(): string | undefined {

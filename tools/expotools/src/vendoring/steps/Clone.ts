@@ -18,7 +18,6 @@ type CloneSettings =
 export type CloneRepoSettings = {
   url: string;
   destination?: string;
-  name?: string;
 } & CloneSettings;
 
 /**
@@ -29,11 +28,17 @@ export class Clone extends Task {
   private readonly options: CloneSettings;
   private destination?: string;
 
-  constructor({ url, destination, name, ...options }: CloneRepoSettings) {
-    super(name || `clone ${url}`);
+  constructor({ url, destination, ...options }: CloneRepoSettings) {
+    super();
     this.url = url;
     this.destination = destination;
     this.options = options;
+  }
+
+  description(): string {
+    return `clone repo ${chalk.green(this.url)} into ${chalk.yellow(
+      this.overrideWorkingDirectory() || '<workingDirectory>'
+    )}`;
   }
 
   protected overrideWorkingDirectory(): string | undefined {

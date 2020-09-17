@@ -1,7 +1,5 @@
 import { Command } from '@expo/commander';
 import os from 'os';
-import chalk from 'chalk';
-import fs from 'fs-extra';
 import inquirer from 'inquirer';
 import path from 'path';
 import {
@@ -15,6 +13,7 @@ import {
   renameIOSSymbols,
   renameIOSFiles,
   Platform,
+  renameClass,
 } from '../vendoring';
 
 const CONFIGURATIONS = {
@@ -29,17 +28,15 @@ function getReanimatedPipe() {
   return new Pipe().addSteps(
     'all',
       new Clone({
-        name: 'clone react-native-reanimated v1',
         url: 'git@github.com:software-mansion/react-native-reanimated.git',
         tag: '1.13.0',
       }),
       new RemoveDirectory({
-        name: 'clean react-native-reanimated folder',
+        name: 'clean vendored folder',
         target: destination,
       }),
       new CopyFiles({
-        name: 'copy js files',
-        filePatterns: [path.join('src', '**', '*.*'), '*.d.ts'],
+        filePattern: ['src/**/*.*', '*.d.ts'],
         to: destination,
       }),
 
@@ -48,35 +45,25 @@ function getReanimatedPipe() {
         packageName: 'com.swmansion.reanimated',
         prefix: 'devmenu',
       }),
-      new TransformFilesName({
-        name: "rename 'UIManagerReanimatedHelper.java'",
-        filePattern: path.join('android', '**', 'UIManagerReanimatedHelper.java'),
-        find: 'UIManagerReanimatedHelper',
-        replace: 'DevMenuUIManagerReanimatedHelper',
-      }),
-      new TransformFilesContent({
-        name: 'replace UIManagerReanimatedHelper class name',
-        filePattern: path.join('android', '**', '*.@(java|kt)'),
-        find: 'UIManagerReanimatedHelper',
-        replace: 'DevMenuUIManagerReanimatedHelper',
+      renameClass({
+        filePattern: 'android/**/*.@(java|kt)',
+        className: 'UIManagerReanimatedHelper',
+        newClassName: 'DevMenuUIManagerReanimatedHelper'
       }),
       new CopyFiles({
-        name: 'copy reanimated package',
-        subDirectory: path.join('android', 'src', 'main', 'java', 'com', 'swmansion'),
-        filePatterns: [path.join('**', '*.@(java|kt|xml)')],
-        to: path.join(destination, 'android', 'devmenu', 'com', 'swmansion'),
+        subDirectory: 'android/src/main/java/com/swmansion',
+        filePattern: '**/*.@(java|kt|xml)',
+        to: path.join(destination, 'android/devmenu/com/swmansion'),
       }),
       new CopyFiles({
-        name: 'copy facebook package',
-        subDirectory: path.join('android', 'src', 'main', 'java', 'com', 'facebook'),
-        filePatterns: [path.join('**', '*.@(java|kt|xml)')],
-        to: path.join(destination, 'android', 'com', 'facebook'),
+        subDirectory: 'android/src/main/java/com/facebook',
+        filePattern: '**/*.@(java|kt|xml)',
+        to: path.join(destination, 'android/com/facebook'),
       }),
 
     'ios',
       new TransformFilesName({
-        name: 'rename ios source files',
-        filePattern: path.join('ios', '**', '*REA*.@(m|h)'),
+        filePattern: 'ios/**/*REA*.@(m|h)',
         find: 'REA',
         replace: 'DevMenuREA',
       }),
@@ -85,20 +72,17 @@ function getReanimatedPipe() {
         replace: 'DevMenuREA',
       }),
       new TransformFilesContent({
-        name: 'rename SimAnimationDragCoefficient function',
-        filePattern: path.join('ios', '**', '*.@(m|h)'),
+        filePattern: 'ios/**/*.@(m|h)',
         find: 'SimAnimationDragCoefficient',
         replace: 'DevMenuSimAnimationDragCoefficient',
       }),
       new TransformFilesContent({
-        name: 'remove RCT_EXPORT_MODULE macro',
-        filePattern: path.join('ios', '**', '*.@(m|h)'),
+        filePattern: 'ios/**/*.@(m|h)',
         find: '^RCT_EXPORT_MODULE\\((.*)\\)',
         replace: '+ (NSString *)moduleName { return @"$1"; }',
       }),
       new CopyFiles({
-        name: 'copy source files',
-        filePatterns: [path.join('ios', '**', '*.@(m|h)')],
+        filePattern: 'ios/**/*.@(m|h)',
         to: destination,
       })
   );
@@ -111,17 +95,15 @@ function getGestureHandlerPipe() {
   return new Pipe().addSteps(
     'all',
       new Clone({
-        name: 'clone react-gesture-handler v1',
         url: 'git@github.com:software-mansion/react-native-gesture-handler.git',
         tag: '1.7.0',
       }),
       new RemoveDirectory({
-        name: 'clean react-gesture-handler folder',
+        name: 'clean vendored folder',
         target: destination,
       }),
       new CopyFiles({
-        name: 'copy main js files',
-        filePatterns: ['*.js', path.join('touchables', '*.js'), '*.d.ts'],
+        filePattern: ['*.js', 'touchables/*.js', '*.d.ts'],
         to: path.join(destination, 'src'),
       }),
 
@@ -130,35 +112,25 @@ function getGestureHandlerPipe() {
         packageName: 'com.swmansion.gesturehandler',
         prefix: 'devmenu',
       }),
-      new TransformFilesName({
-        name: "rename 'RNGHModalUtils.java'",
-        filePattern: path.join('android', '**', 'RNGHModalUtils.java'),
-        find: 'RNGHModalUtils',
-        replace: 'DevMenuRNGHModalUtils',
-      }),
-      new TransformFilesContent({
-        name: 'replace RNGHModalUtils class name',
-        filePattern: path.join('android', '**', '*.@(java|kt)'),
-        find: 'RNGHModalUtils',
-        replace: 'DevMenuRNGHModalUtils',
+      renameClass({
+        filePattern: 'android/**/*.@(java|kt)',
+        className: 'RNGHModalUtils',
+        newClassName: 'DevMenuRNGHModalUtils'
       }),
       new CopyFiles({
-        name: 'copy gesture main package',
-        subDirectory: path.join('android', 'src', 'main', 'java', 'com', 'swmansion'),
-        filePatterns: [path.join('**', '*.@(java|kt|xml)')],
-        to: path.join(destination, 'android', 'devmenu', 'com', 'swmansion'),
+        subDirectory: 'android/src/main/java/com/swmansion',
+        filePattern: '***.@(java|kt|xml)',
+        to: path.join(destination, 'android/devmenu/com/swmansion'),
       }),
       new CopyFiles({
-        name: 'copy gesture lib package',
-        subDirectory: path.join('android', 'lib', 'src', 'main', 'java'),
-        filePatterns: [path.join('**', '*.@(java|kt|xml)')],
-        to: path.join(destination, 'android', 'devmenu'),
+        subDirectory: 'android/lib/src/main/java',
+        filePattern: '**/*.@(java|kt|xml)',
+        to: path.join(destination, 'android/devmenu'),
       }),
       new CopyFiles({
-        name: 'copy facebook package',
-        subDirectory: path.join('android', 'src', 'main', 'java', 'com', 'facebook'),
-        filePatterns: [path.join('**', '*.@(java|kt|xml)')],
-        to: path.join(destination, 'android', 'com', 'facebook'),
+        subDirectory: 'android/src/main/java/com/facebook',
+        filePattern: '**/*.@(java|kt|xml)',
+        to: path.join(destination, 'android/com/facebook'),
       }),
 
     'ios',
@@ -171,20 +143,17 @@ function getGestureHandlerPipe() {
         replace: 'DevMenuRN',
       }),
       new TransformFilesContent({
-        name: 'remove RCT_EXPORT_MODULE macro',
         filePattern: path.join('ios', '**', '*.@(m|h)'),
         find: '^RCT_EXPORT_MODULE\\(DevMenu(.*)\\)',
         replace: '+ (NSString *)moduleName { return @"$1"; }',
       }),
       new TransformFilesContent({
-        name: 'remove RCT_EXPORT_MODULE macro',
-        filePattern: path.join('ios', '**', '*.@(m|h)'),
+        filePattern: 'ios/**/*.@(m|h)',
         find: '^RCT_EXPORT_MODULE\\(\\)',
         replace: '+ (NSString *)moduleName { return @"RNGestureHandlerModule"; }',
       }),
       new CopyFiles({
-        name: 'copy ios source files',
-        filePatterns: [path.join('ios', '**', '*.@(m|h)')],
+        filePattern: 'ios/**/*.@(m|h)',
         to: destination,
       })
   );
@@ -218,6 +187,7 @@ async function action({ configuration, platform }: ActionOptions) {
   for (const { name, pipe } of pipes) {
     pipe.setWorkingDirectory(path.join(tmpdir, name));
     await pipe.start(platform);
+    console.log();
   }
 }
 

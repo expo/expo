@@ -1,4 +1,3 @@
-import chalk from 'chalk';
 import logger from '../../Logger';
 import { toRepoPath } from '../utils';
 
@@ -9,14 +8,16 @@ import { toRepoPath } from '../utils';
 export abstract class Task {
   private workingDirectory?: string;
 
-  constructor(protected stepName: string) {}
+  public description(): string {
+    return 'Task';
+  }
 
   /**
    * Tasks can contain multiple steps. This function provides a consistent way to log information about each step.
    * @param message
    */
   protected logSubStep(message: string) {
-    logger.info(`  > ${message}`);
+    logger.info(`> ${message}`);
   }
 
   /**
@@ -25,9 +26,9 @@ export abstract class Task {
    */
   protected logDebugInfo(message: string | string[]) {
     if (typeof message === 'string') {
-      logger.debug(`    ${message}`);
+      logger.debug(`  ${message}`);
     } else {
-      logger.debug(`    ${message.join('\n    ')}`);
+      logger.debug(`  ${message.join('\n    ')}`);
     }
   }
 
@@ -62,29 +63,19 @@ export abstract class Task {
   }
 
   /**
-   * @returns a task name.
-   */
-  public getName() {
-    return this.stepName;
-  }
-
-  /**
    * A function which will be call in start method. The body of the task.
    */
   protected abstract async execute();
 
   /**
-   * A method that starts the task. It provides error handling and logs that the task starts.
+   * A method that starts the task. It provides error handling.
    */
   public async start() {
-    logger.info(`🚀 Staring ${chalk.green(this.stepName)}...`);
     try {
       await this.execute();
     } catch (e) {
       logger.error(e);
-      logger.error(chalk.red(`❌ ${this.stepName} failed.`));
       return;
     }
-    logger.info(`✅ ${chalk.green(this.stepName)} finished.\n`);
   }
 }

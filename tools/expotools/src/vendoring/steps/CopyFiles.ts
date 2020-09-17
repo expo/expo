@@ -7,9 +7,8 @@ import { toRepoPath, findFiles } from '../utils';
 export type CopyFilesSettings = {
   from?: string;
   subDirectory?: string;
-  filePatterns: string[];
+  filePattern: string | string[];
   to: string;
-  name?: string;
 };
 
 /**
@@ -52,19 +51,29 @@ export type CopyFilesSettings = {
 export class CopyFiles extends Task {
   private from?: string;
   private subDirectory?: string;
-  private readonly filePatterns: string[];
+  private readonly filePattern: string[];
   private readonly to: string;
 
   /**
    * Using `from` key, you can override the work directory.
    * @param settings
    */
-  constructor({ from, subDirectory, filePatterns, to, name }: CopyFilesSettings) {
-    super(name || 'copy files');
+  constructor({ from, subDirectory, filePattern, to }: CopyFilesSettings) {
+    super();
     this.from = from;
     this.subDirectory = subDirectory;
     this.to = toRepoPath(to);
-    this.filePatterns = filePatterns;
+    if (typeof filePattern === 'string') {
+      this.filePattern = [filePattern];
+    } else {
+      this.filePattern = filePattern;
+    }
+  }
+
+  description(): string {
+    return `copy ${chalk.green(this.from || '<workingDirectory>')}/[${chalk.yellow(
+      this.filePattern.join(', ')
+    )}] into ${chalk.magenta(this.to)}`;
   }
 
   protected overrideWorkingDirectory(): string | undefined {
@@ -74,7 +83,7 @@ export class CopyFiles extends Task {
   async execute() {
     const workDirectory = this.getWorkingDirectory();
 
-    for (const pattern of this.filePatterns) {
+    for (const pattern of this.filePattern) {
       const subPath = this.subDirectory
         ? path.join(workDirectory, this.subDirectory)
         : workDirectory;
@@ -84,9 +93,6 @@ export class CopyFiles extends Task {
       );
 
       const files = await findFiles(subPath, pattern);
-      this.logDebugInfo('file affected: ');
-      this.logDebugInfo(files.map((file) => `- ${file}`));
-
       await Promise.all(
         files.map(async (file) => {
           const relativeFilePath = path.relative(subPath, file);

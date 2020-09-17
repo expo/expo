@@ -5,8 +5,14 @@ import fs from 'fs-extra';
 import { findFiles } from '../utils';
 
 export class TransformFilesName extends TransformFilesContent {
-  constructor({ name, ...settings }: FileContentTransformStepSettings) {
-    super({ ...settings, name: name || 'rename files' });
+  constructor(settings: FileContentTransformStepSettings) {
+    super(settings);
+  }
+
+  description(): string {
+    return `find ${chalk.yellow(this.find.toString())} in files names in path ${chalk.green(
+      this.source || '<workingDirectory>'
+    )}/${chalk.yellow(this.filePattern)} and replace with ${chalk.magenta(this.replace)}`;
   }
 
   async execute() {
@@ -19,9 +25,6 @@ export class TransformFilesName extends TransformFilesContent {
     );
 
     const files = await findFiles(workDirectory, this.filePattern);
-    this.logDebugInfo('file affected: ');
-    this.logDebugInfo(files.map((file) => `- ${file}`));
-
     await Promise.all(
       files.map((file) => {
         const fileName = path.basename(file).replace(this.find, this.replace);
@@ -41,7 +44,6 @@ export function renameIOSFiles({
   replace: string;
 }): TransformFilesName {
   return new TransformFilesName({
-    name: 'rename ios source files',
     filePattern: path.join('ios', '**', `*${find}*.@(m|h)`),
     find,
     replace,

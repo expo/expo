@@ -12,7 +12,7 @@
 
 @implementation DevMenuVendoredModulesUtils
 
-+ (NSArray<id<RCTBridgeModule>>*) vendoredModules
++ (NSArray<id<RCTBridgeModule>>*)vendoredModules
 {
   NSMutableArray<id<RCTBridgeModule>> *modules = [NSMutableArray new];
 #if __has_include("DevMenuREAModule.h")

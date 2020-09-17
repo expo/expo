@@ -50,11 +50,18 @@ export class Pipe {
    * - if platform = 'android' -> [T1, T2, T3A, T4]
    * ```
    */
-  public addSteps(...tasks: (Task | string)[]): this {
+  public addSteps(...tasks: (Task | string | Task[])[]): this {
     let currentPlatform: Platform = 'all';
     tasks.forEach((task) => {
       if (typeof task === 'string') {
         currentPlatform = task as Platform;
+        return;
+      }
+
+      if (Array.isArray(task)) {
+        this.platformSpecificTasks.push(
+          ...task.map((t) => ({ platform: currentPlatform, task: t }))
+        );
         return;
       }
 
@@ -66,12 +73,11 @@ export class Pipe {
 
   public async start(platform: Platform) {
     logger.debug(`Staring pipe for platform = ${chalk.green(platform)}`);
+    logger.debug(`<workingDirectory> = ${chalk.green(this.workingDirectory || '')}`);
+
     logger.debug(
       this.platformSpecificTasks
-        .map(
-          ({ platform, task }) =>
-            `  - [${chalk.blueBright(platform)}] ${chalk.yellow(task.getName())}`
-        )
+        .map(({ platform, task }) => `  - [${chalk.blueBright(platform)}] ${task.description()}`)
         .join('\n')
     );
     logger.debug();
