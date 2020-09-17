@@ -51,7 +51,7 @@ interface Props {
   durationMillis: number;
   shouldCorrectPitch: boolean;
   isPlaying: boolean;
-  isMuted?: boolean;
+  isMuted: boolean;
 
   // Error
   errorMessage?: string;

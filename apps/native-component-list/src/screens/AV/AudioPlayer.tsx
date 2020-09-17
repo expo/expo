@@ -31,11 +31,13 @@ interface State {
   durationMillis: number;
   rate: number;
   volume: number;
+  isMuted: boolean;
   shouldCorrectPitch: boolean;
 }
 
 export default class AudioPlayer extends React.Component<Props, State> {
   readonly state: State = {
+    isMuted: false,
     isLoaded: false,
     isLooping: false,
     isPlaying: false,
