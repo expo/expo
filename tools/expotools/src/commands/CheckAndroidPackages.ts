@@ -1,6 +1,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 
+import { EXCLUDED_PACKAGE_SLUGS } from './AndroidBuildPackages';
 import * as Directories from '../Directories';
 import * as Packages from '../Packages';
 
@@ -13,7 +14,7 @@ async function _getOutdatedUnimodules(packages: Packages.Package[]): Promise<str
     if (
       !pkg.isSupportedOnPlatform('android') ||
       !pkg.androidPackageName ||
-      pkg.packageSlug === 'expo-module-template'
+      EXCLUDED_PACKAGE_SLUGS.includes(pkg.packageSlug)
     )
       continue;
     const buildDir = `${pkg.androidPackageName.replace(/\./g, '/')}/${pkg.packageSlug}`;
@@ -75,7 +76,7 @@ async function action() {
   if (outdatedPackages.length > 0) {
     console.log('Outdated packages:', outdatedPackages);
     throw new Error(
-      `Packages are out of date. Rerun \`et check-android-packages --sdkVersion ${match[1]} --packages suggested\` and commit the changes.`
+      `Packages are out of date. Rerun \`et android-build-packages --sdkVersion ${match[1]} --packages suggested\` and commit the changes.`
     );
   } else {
     console.log('All packages are up-to-date!');

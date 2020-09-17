@@ -19,6 +19,14 @@ type Package = {
   buildDirRelative: string;
 };
 
+// There are a few packages that we want to exclude from shell app builds; they don't follow any
+// easy pattern so we just keep track of them manually here.
+export const EXCLUDED_PACKAGE_SLUGS = [
+  'expo-dev-menu',
+  'expo-module-template',
+  'unimodules-test-core',
+];
+
 const EXPO_ROOT_DIR = Directories.getExpoRepositoryRootDir();
 const ANDROID_DIR = Directories.getAndroidDir();
 
@@ -38,7 +46,12 @@ async function _findUnimodules(pkgDir: string): Promise<Package[]> {
 
   const packages = await Packages.getListOfPackagesAsync();
   for (const pkg of packages) {
-    if (!pkg.isSupportedOnPlatform('android') || !pkg.androidPackageName) continue;
+    if (
+      !pkg.isSupportedOnPlatform('android') ||
+      !pkg.androidPackageName ||
+      EXCLUDED_PACKAGE_SLUGS.includes(pkg.packageSlug)
+    )
+      continue;
     unimodules.push({
       name: pkg.packageSlug,
       sourceDir: path.join(pkg.path, pkg.androidSubdirectory),
