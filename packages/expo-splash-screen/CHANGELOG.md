@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 0.6.1 — 2020-09-17
+
+### 🐛 Bug fixes
+
 - On iOS fixed non-working `SplashScreen.preventAutoHide` introduced in version `0.4.0`. ([#10192](https://github.com/expo/expo/pull/10192) by [@bbarthec](https://github.com/bbarthec))
 - Fixed crash when the app was opened in the background on iOS. ([#10157](https://github.com/expo/expo/pull/10157) by [@sjchmiela](https://github.com/sjchmiela))
 

@@ -11017,7 +11017,7 @@ CACHE_KEYS:
       EXNotifications:
         :debug: 0602110faf064575b2e4aa90ac145f65
         :release: 0602110faf064575b2e4aa90ac145f65
-    CHECKSUM: 55301e7284ef5427662a2191eb986acb2035a1d5
+    CHECKSUM: 0a1152ef2bd0f1cdd72a46bb256523a6ce5fa6e5
     FILES:
       - "../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.h"
       - "../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.m"
@@ -11059,7 +11059,7 @@ CACHE_KEYS:
       - "../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenModule.m"
     PROJECT_NAME: EXNotifications
     SPECS:
-      - EXNotifications (0.7.1)
+      - EXNotifications (0.7.2)
   EXPermissions:
     BUILD_SETTINGS_CHECKSUM:
       EXPermissions:
@@ -11191,25 +11191,25 @@ CACHE_KEYS:
       EXSharing:
         :debug: 60039f4f807edc048b623e6870c00674
         :release: 60039f4f807edc048b623e6870c00674
-    CHECKSUM: 8423c727d474bfc416efc920c985f5fa6ba0cf17
+    CHECKSUM: 02ac909b58904235ab9405b9e69deb24613f8b40
     FILES:
       - "../../packages/expo-sharing/ios/EXSharing/EXSharingModule.h"
       - "../../packages/expo-sharing/ios/EXSharing/EXSharingModule.m"
     PROJECT_NAME: EXSharing
     SPECS:
-      - EXSharing (8.4.0)
+      - EXSharing (8.4.1)
   EXSMS:
     BUILD_SETTINGS_CHECKSUM:
       EXSMS:
         :debug: 00190a19476fe3b3aaa722ada00da177
         :release: 00190a19476fe3b3aaa722ada00da177
-    CHECKSUM: 62b990a7d9e6132904062b2438002f09418b4f0b
+    CHECKSUM: e838ef64f6cd1369137d76c4ec3fc51e3dff98dc
     FILES:
       - "../../packages/expo-sms/ios/EXSMS/EXSMSModule.h"
       - "../../packages/expo-sms/ios/EXSMS/EXSMSModule.m"
     PROJECT_NAME: EXSMS
     SPECS:
-      - EXSMS (8.3.0)
+      - EXSMS (8.3.1)
   EXSpeech:
     BUILD_SETTINGS_CHECKSUM:
       EXSpeech:
@@ -11227,7 +11227,7 @@ CACHE_KEYS:
       EXSplashScreen:
         :debug: 438696b27ec330435c6762015b94a5f9
         :release: 438696b27ec330435c6762015b94a5f9
-    CHECKSUM: dc01ba860281c07c2ab3cf17dbba65b0792fac80
+    CHECKSUM: c496093747ee7f4e933c6312c0f52681612592e3
     FILES:
       - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenController.h"
       - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenController.m"
@@ -11240,7 +11240,7 @@ CACHE_KEYS:
       - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenViewProvider.h"
     PROJECT_NAME: EXSplashScreen
     SPECS:
-      - EXSplashScreen (0.6.0)
+      - EXSplashScreen (0.6.1)
   EXSQLite:
     BUILD_SETTINGS_CHECKSUM:
       EXSQLite:
