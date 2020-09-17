@@ -52,6 +52,9 @@ android {
     buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
   }
 
+  sourceSets.main {
+    jniLibs.srcDirs = ["src/main/JNILibs"]
+  }
 
   buildTypes {
     release {

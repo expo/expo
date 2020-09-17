@@ -91,6 +91,10 @@ android {
     buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
   }
 
+  sourceSets.main {
+    jniLibs.srcDirs = ["src/main/JNILibs"]
+  }
+
   // WHEN_PREPARING_REANIMATED_REMOVE_FROM_HERE
   tasks.withType(JavaCompile) {
     compileTask ->
