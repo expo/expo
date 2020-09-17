@@ -11,16 +11,16 @@
     "test": "jest"
   },
   "dependencies": {
-    "expo": "~38.0.0",
-    "expo-splash-screen": "~0.3.1",
-    "expo-status-bar": "^1.0.0",
-    "expo-updates": "~0.2.10",
+    "expo": "~39.0.1",
+    "expo-splash-screen": "~0.6.0",
+    "expo-status-bar": "~1.0.2",
+    "expo-updates": "~0.3.2",
     "react": "~16.11.0",
     "react-dom": "~16.11.0",
     "react-native": "~0.62.2",
-    "react-native-gesture-handler": "~1.6.1",
-    "react-native-reanimated": "~1.9.0",
-    "react-native-screens": "~2.9.0",
+    "react-native-gesture-handler": "~1.7.0",
+    "react-native-reanimated": "~1.13.0",
+    "react-native-screens": "~2.10.1",
     "react-native-unimodules": "~0.10.1",
     "react-native-web": "~0.12.0"
   },
