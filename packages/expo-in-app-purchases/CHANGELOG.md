@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Extended IAPErrorCode enum for compatibility with iOS 14 (`SKErrorIneligibleForOffer`, `SKErrorOverlayInvalidConfiguration`, `SKErrorOverlayTimeout`, `SKErrorOverlayCancelled`).
+
 ### 🐛 Bug fixes
 
 ## 9.0.0 — 2020-08-18

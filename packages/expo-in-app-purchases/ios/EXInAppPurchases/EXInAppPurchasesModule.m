@@ -438,6 +438,16 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
       return 13;
     case SKErrorMissingOfferParams:
       return 14;
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 140000
+    case SKErrorIneligibleForOffer:
+      return 15;
+    case SKErrorOverlayInvalidConfiguration:
+      return 16;
+    case SKErrorOverlayTimeout:
+      return 17;
+    case SKErrorOverlayCancelled:
+      return 18;
+#endif
   }
 }
 

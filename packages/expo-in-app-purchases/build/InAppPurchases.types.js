@@ -30,6 +30,10 @@ export var IAPErrorCode;
     IAPErrorCode[IAPErrorCode["UNAUTHORIZED_REQUEST"] = 12] = "UNAUTHORIZED_REQUEST";
     IAPErrorCode[IAPErrorCode["INVALID_IDENTIFIER"] = 13] = "INVALID_IDENTIFIER";
     IAPErrorCode[IAPErrorCode["MISSING_PARAMS"] = 14] = "MISSING_PARAMS";
+    IAPErrorCode[IAPErrorCode["INELIGIBLE_FOR_OFFER"] = 15] = "INELIGIBLE_FOR_OFFER";
+    IAPErrorCode[IAPErrorCode["OVERLAY_INVALID_CONFIG"] = 16] = "OVERLAY_INVALID_CONFIG";
+    IAPErrorCode[IAPErrorCode["OVERLAY_TIMEOUT"] = 17] = "OVERLAY_TIMEOUT";
+    IAPErrorCode[IAPErrorCode["OVERLAY_CANCELLED"] = 18] = "OVERLAY_CANCELLED";
 })(IAPErrorCode || (IAPErrorCode = {}));
 export var IAPItemType;
 (function (IAPItemType) {
