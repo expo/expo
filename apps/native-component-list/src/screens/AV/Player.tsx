@@ -367,7 +367,7 @@ function VolumeSlider({
       <Slider
         value={isMutedActive ? 0 : value}
         maximumValue={1}
-        style={{ height, width: 100 - height }}
+        style={{ height, flex: 1 }}
         thumbTintColor={color}
         minimumTrackTintColor={color}
         onSlidingComplete={value => {
