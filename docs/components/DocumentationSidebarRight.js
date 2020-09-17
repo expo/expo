@@ -76,6 +76,20 @@ const STYLES_ICON_HIDE = css`
 const UPPER_SCROLL_LIMIT_FACTOR = 1 / 4;
 const LOWER_SCROLL_LIMIT_FACTOR = 3 / 4;
 
+const ACTIVE_ITEM_OFFSET_FACTOR = 1 / 6;
+
+const isDynamicScrollAvailable = () => {
+  if (!history?.replaceState) {
+    return false;
+  }
+
+  if (window.matchMedia('(prefers-reduced-motion)').matches) {
+    return false;
+  }
+
+  return true;
+};
+
 class DocumentationSidebarRight extends React.Component {
   static defaultProps = {
     maxNestingDepth: 4,
@@ -104,9 +118,9 @@ class DocumentationSidebarRight extends React.Component {
     const lowerThreshold = window.innerHeight * LOWER_SCROLL_LIMIT_FACTOR;
 
     if (activeItemPos < scrollTop + upperThreshold) {
-      selfScroll.scrollTo(0, Math.max(0, activeItemPos - upperThreshold));
+      selfScroll.scrollTo({ behavior: 'auto', top: Math.max(0, activeItemPos - upperThreshold) });
     } else if (activeItemPos > scrollTop + lowerThreshold) {
-      selfScroll.scrollTo(0, activeItemPos - lowerThreshold);
+      selfScroll.scrollTo({ behavior: 'auto', top: activeItemPos - lowerThreshold });
     }
   };
 
@@ -117,7 +131,11 @@ class DocumentationSidebarRight extends React.Component {
       if (!ref || !ref.current) {
         continue;
       }
-      if (ref.current.offsetTop >= contentScrollPosition) {
+      if (
+        ref.current.offsetTop >=
+          contentScrollPosition + window.innerHeight * ACTIVE_ITEM_OFFSET_FACTOR &&
+        ref.current.offsetTop <= contentScrollPosition + window.innerHeight / 2
+      ) {
         if (slug !== this.state.activeSlug) {
           this.setState({ activeSlug: slug }, this._updateSelfScroll);
         }
@@ -131,6 +149,20 @@ class DocumentationSidebarRight extends React.Component {
   };
   _hide = () => {
     this.setState({ hidden: true });
+  };
+
+  _handleLinkClick = (event, heading) => {
+    if (!isDynamicScrollAvailable()) {
+      return;
+    }
+
+    event.preventDefault();
+    const { title, slug, ref } = heading;
+    this.props.contentRef.current?.getScrollRef().current?.scrollTo({
+      behavior: 'smooth',
+      top: ref.current?.offsetTop - window.innerHeight * ACTIVE_ITEM_OFFSET_FACTOR,
+    });
+    history.replaceState(history.state, title, '#' + slug);
   };
 
   render() {
@@ -161,15 +193,19 @@ class DocumentationSidebarRight extends React.Component {
         </span>
 
         <div className={STYLES_SIDEBAR_INDENT}>
-          {displayedHeadings.map(heading => (
-            <DocumentationSidebarRightLink
-              key={heading.slug}
-              heading={heading}
-              isActive={heading.slug === this.state.activeSlug}
-              ref={heading.slug === this.state.activeSlug ? this.activeItemRef : undefined}
-              shortenCode
-            />
-          ))}
+          {displayedHeadings.map(heading => {
+            const isActive = heading.slug === this.state.activeSlug;
+            return (
+              <DocumentationSidebarRightLink
+                key={heading.slug}
+                heading={heading}
+                onClick={e => this._handleLinkClick(e, heading)}
+                isActive={isActive}
+                ref={isActive ? this.activeItemRef : undefined}
+                shortenCode
+              />
+            );
+          })}
         </div>
       </nav>
     );
