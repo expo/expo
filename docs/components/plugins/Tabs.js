@@ -61,7 +61,6 @@ export const Tab = ({ children }) => children;
  *   <Tab label="Tab2">Tab 2 content...</Tab>
  * </Tabs>
  */
-
 export const Tabs = ({ children }) => {
   const [activeTab, setActiveTab] = React.useState(children[0].props.label);
 
@@ -77,7 +76,9 @@ export const Tabs = ({ children }) => {
       </ol>
       <div className={STYLES_TAB_CONTENT}>
         {children.map(child => {
-          if (child.props.label !== activeTab) return;
+          if (child.props.label !== activeTab) {
+            return;
+          }
           return child.props.children;
         })}
       </div>
