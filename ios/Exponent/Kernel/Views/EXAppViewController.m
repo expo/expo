@@ -368,10 +368,10 @@ NS_ASSUME_NONNULL_BEGIN
   // the lifecycle of the splash screen we need to:
   // 1. present the splash screen on EXAppViewController
   // 2. hide the splash screen of root view controller
-  // Dislaimer:
+  // Disclaimer:
   //  there's only one root view controller, but possibly many EXAppViewControllers
-  //  (in Expo Client: one Experience -> EXAppViewController)
-  //  and we want to hide SplashScreen only once for the root view controller
+  //  (in Expo Client: one Experience -> one EXAppViewController)
+  //  and we want to hide SplashScreen only once for the root view controller, hence the "once"
   static dispatch_once_t once;
   void (^hideRootViewControllerSplashScreen)(void) = ^void() {
     dispatch_once(&once, ^{
