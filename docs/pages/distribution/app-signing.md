@@ -108,4 +108,4 @@ keytool -export -rfc
 
 ### Option 2- Signing APKs with an **app signing key** (deprecated)
 
-The first time you run `expo build:android`, you can choose for Expo to generate a keystore or manually specify all of the required credentials. These credentials are used to sign APKs created by Expo services. **We highly reccommend you backup your keystore to a safe location**.
+The first time you run `expo build:android`, you can choose for Expo to generate a keystore or manually specify all of the required credentials. These credentials are used to sign APKs created by Expo services. **We highly recommend you backup your keystore to a safe location**.
