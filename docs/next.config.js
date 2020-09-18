@@ -38,16 +38,6 @@ module.exports = {
     };
     return config;
   },
-  // Enable CORS headers in development to allow interacting with Snack
-  async headers() {
-    return [{
-      source: '/(.*)',
-      headers: [
-        { key: 'Access-Control-Allow-Origin', value: '*' },
-        { key: 'Access-Control-Allow-Headers', value: '*' },
-      ],
-    }];
-  },
   // Create a map of all pages to export
   async exportPathMap(defaultPathMap, { dev, outDir }) {
     if (dev) {
