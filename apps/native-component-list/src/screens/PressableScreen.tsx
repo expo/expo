@@ -1,3 +1,4 @@
+// @ts-nocheck
 /*
  * From the RNW docs:
  * https://necolas.github.io/react-native-web/docs/?path=/docs/components-pressable--disabled#pressable
