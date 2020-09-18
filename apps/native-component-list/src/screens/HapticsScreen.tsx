@@ -7,7 +7,9 @@ import MonoText from '../components/MonoText';
 import Colors from '../constants/Colors';
 
 type SectionData =
-  | object
+  // See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  | {}
   | {
       accessor: string;
       value: any;
