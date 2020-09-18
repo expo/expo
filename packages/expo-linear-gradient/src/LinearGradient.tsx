@@ -53,7 +53,7 @@ export function LinearGradient({
   start,
   end,
   ...props
-}: LinearGradientProps): React.ReactElement {
+}: React.PropsWithChildren<LinearGradientProps>): React.ReactElement {
   if (locations && colors.length !== locations.length) {
     console.warn('LinearGradient colors and locations props should be arrays of the same length');
     locations = locations.slice(0, colors.length);
