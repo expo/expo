@@ -57,7 +57,7 @@ export class HeadingManager {
     // changing this needs also change in `headingsMdPlugin.js` to make metadata loading correctly
     title = Array.isArray(title) ? title[0] : title;
 
-    const { hideInSidebar, sidebarTitle, sidebarDepth, sidebarType } = additionalProps;
+    const { hideInSidebar, sidebarTitle, sidebarDepth, sidebarType } = additionalProps ?? {};
     const levelOverride = sidebarDepth != null ? BASE_HEADING_LEVEL + sidebarDepth : undefined;
 
     const slug = Utilities.generateSlug(this.slugger, title);
