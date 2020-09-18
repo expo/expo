@@ -25,6 +25,7 @@ const DIR_MAPPING = {
   'push-notifications': 'Push Notifications',
   preview: 'Preview',
   build: 'EAS Build',
+  accounts: 'Expo Accounts',
 };
 
 const processUrl = path => {
