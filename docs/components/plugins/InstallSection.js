@@ -3,7 +3,7 @@ import { css } from 'react-emotion';
 
 import TerminalBlock from './TerminalBlock';
 
-import * as Constants from '~/common/constants';
+import * as Constants from '~/constants/theme';
 
 const STYLES_P = css`
   line-height: 1.8rem;

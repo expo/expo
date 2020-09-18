@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { css } from 'react-emotion';
 
-import * as Constants from '~/common/constants';
+import * as Constants from '~/constants/theme';
 import { CheckCircle } from '~/components/icons/CheckCircle';
 import { XCircle } from '~/components/icons/XCircle';
 import { PendingCircle } from '~/components/icons/PendingCircle';

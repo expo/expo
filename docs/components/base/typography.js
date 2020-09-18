@@ -1,5 +1,5 @@
 import { css } from 'react-emotion';
-import * as Constants from '~/common/constants';
+import * as Constants from '~/constants/theme';
 
 export const h1 = css`
   font-family: ${Constants.fonts.bold};

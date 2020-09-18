@@ -2,9 +2,9 @@ import Router from 'next/router';
 import * as React from 'react';
 import { css } from 'react-emotion';
 
-import * as Constants from '~/common/constants';
+import * as Constants from '~/constants/theme';
 import * as Utilities from '~/common/utilities';
-import { LATEST_VERSION } from '~/common/versions';
+import { LATEST_VERSION } from '~/constants/versions';
 import { paragraph } from '~/components/base/typography';
 
 const STYLES_INPUT = css`

@@ -5,7 +5,7 @@ import * as Utilities from '~/common/utilities';
 
 import withSlugger from '~/components/page-higher-order/withSlugger';
 
-import * as Constants from '~/common/constants';
+import * as Constants from '~/constants/theme';
 
 import { paragraph } from './typography';
 

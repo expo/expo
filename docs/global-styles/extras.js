@@ -1,4 +1,4 @@
-import * as Constants from '~/common/constants';
+import * as Constants from '~/constants/theme';
 import { h3, h4, p } from '~/components/base/typography';
 
 export const globalExtras = `

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { parseDiff, Diff, Hunk } from 'react-diff-view';
 import { css } from 'react-emotion';
 
-import * as Constants from '~/common/constants';
+import * as Constants from '~/constants/theme';
 
 const STYLES_BOLD = css`
   font-family: ${Constants.fonts.demi};

@@ -1,4 +1,4 @@
-import * as Constants from '~/common/constants';
+import * as Constants from '~/constants/theme';
 
 export const PendingCircle = ({ size = 24 }) => (
   <svg
