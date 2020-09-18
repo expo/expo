@@ -1,4 +1,4 @@
-import * as Constants from '~/common/constants';
+import * as Constants from '~/constants/theme';
 
 export const ExternalLink = ({ size = 24, stroke = Constants.expoColors.white }) => (
   <svg

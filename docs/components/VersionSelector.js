@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { css } from 'react-emotion';
 
-import * as Constants from '~/common/constants';
+import * as Constants from '~/constants/theme';
 import * as Utilities from '~/common/utilities';
-import { VERSIONS, LATEST_VERSION } from '~/common/versions';
+import { VERSIONS, LATEST_VERSION } from '~/constants/versions';
 import ChevronDownIcon from '~/components/icons/ChevronDown';
 import { paragraph } from '~/components/base/typography';
 

@@ -1,6 +1,6 @@
 import { css } from 'react-emotion';
 
-import * as Constants from '~/common/constants';
+import * as Constants from '~/constants/theme';
 
 const STYLES_INTERNAL_LINK = css`
   color: ${Constants.expoColors.primary[500]};

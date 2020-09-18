@@ -4,7 +4,7 @@
 import styled, { keyframes, css, injectGlobal } from 'react-emotion';
 
 import * as React from 'react';
-import * as Constants from '~/common/constants';
+import * as Constants from '~/constants/theme';
 
 // NOTE(jim): Global styles if and only if this component is used.
 injectGlobal`

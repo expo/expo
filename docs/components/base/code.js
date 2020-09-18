@@ -1,7 +1,7 @@
 import Prism from 'prism-react-renderer/prism';
 import * as React from 'react';
 import { css } from 'react-emotion';
-import * as Constants from '~/common/constants';
+import * as Constants from '~/constants/theme';
 
 import { installLanguages } from './languages';
 

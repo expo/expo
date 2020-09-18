@@ -1,13 +1,13 @@
 const { copySync, removeSync } = require('fs-extra');
-const { join } = require('path');
+const { join, resolve } = require('path');
 const semver = require('semver');
 
 const { version } = require('./package.json');
 
 // To generate a sitemap, we need context about the supported versions and navigational data
 const createSitemap = require('./scripts/create-sitemap');
-const navigation = require('./common/navigation-data');
-const versions = require('./common/versions');
+const navigation = require('./constants/navigation-data');
+const versions = require('./constants/versions');
 
 // copy versions/v(latest version) to versions/latest
 // (Next.js only half-handles symlinks)
@@ -21,21 +21,32 @@ module.exports = {
   // Rather than use `@zeit/next-mdx`, we replicate it
   pageExtensions: ['js', 'jsx', 'md', 'mdx'],
   webpack: (config, options) => {
-    // Create a copy of the babel loader, to separate MDX and Next/Preval caches
-    const babelMdxLoader = {
-      ...options.defaultLoaders.babel,
-      options: {
-        ...options.defaultLoaders.babel.options,
-        cacheDirectory: 'node_modules/.cache/babel-mdx-loader',
+    // Add preval support for `constants/*` only and move it to the `.next/preval` cache.
+    // It's to prevent over-usage and separate the cache to allow manually invalidation.
+    // See: https://github.com/kentcdodds/babel-plugin-preval/issues/19
+    config.module.rules.push({
+      test: /.jsx?$/,
+      include: [join(__dirname, 'constants')],
+      use: {
+        ...options.defaultLoaders.babel,
+        options: {
+          ...options.defaultLoaders.babel.options,
+          // Keep this path in sync with package.json and other scripts that clear the cache
+          cacheDirectory: '.next/preval',
+          plugins: [
+            ...(options.defaultLoaders.babel.options?.plugins ?? []),
+            'preval',
+          ],
+        },
       },
-    };
+    });
+    // Add support for MDX with our custom loader
     config.module.rules.push({
       test: /.mdx?$/, // load both .md and .mdx files
-      use: [babelMdxLoader, '@mdx-js/loader', join(__dirname, './common/md-loader')],
+      use: [options.defaultLoaders.babel, '@mdx-js/loader', join(__dirname, './common/md-loader')],
     });
-    config.node = {
-      fs: 'empty',
-    };
+    // Fix inline or browser MDX usage: https://mdxjs.com/getting-started/webpack#running-mdx-in-the-browser
+    config.node = { fs: 'empty' };
     return config;
   },
   // Create a map of all pages to export
@@ -76,7 +87,6 @@ module.exports = {
       // Some of our pages are "hidden" and should not be added to the sitemap
       pathsHidden: navigation.previewDirectories,
     });
-
     return pathMap;
   },
 };

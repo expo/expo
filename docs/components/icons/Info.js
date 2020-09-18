@@ -1,4 +1,4 @@
-import * as Constants from '~/common/constants';
+import * as Constants from '~/constants/theme';
 
 export const Info = ({ size = 24, fill = Constants.expoColors.gray[600] }) => (
   <svg

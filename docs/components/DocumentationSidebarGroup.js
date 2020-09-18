@@ -2,7 +2,7 @@ import styled, { keyframes, css } from 'react-emotion';
 import NextLink from 'next/link';
 
 import * as React from 'react';
-import * as Constants from '~/common/constants';
+import * as Constants from '~/constants/theme';
 import stripVersionFromPath from '~/common/stripVersionFromPath';
 import ChevronDown from '~/components/icons/ChevronDown';
 import { paragraph } from '~/components/base/typography';
