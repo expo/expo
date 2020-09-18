@@ -19,7 +19,7 @@ import {
   ViewStyle,
   Pressable,
 } from 'react-native';
-import { Path, Svg } from 'react-native-svg';
+import { Path, Svg, SvgProps } from 'react-native-svg';
 import Slider from '@react-native-community/slider';
 
 import Colors from '../constants/Colors';
@@ -297,7 +297,7 @@ function QRIndicator() {
   );
 }
 
-class SvgComponent extends React.Component<React.SVGProps<SVGSVGElement>> {
+class SvgComponent extends React.Component<SvgProps> {
   render() {
     const props = { ...this.props };
     if (Platform.OS === 'web') {
