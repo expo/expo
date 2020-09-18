@@ -1,5 +1,6 @@
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { DrawerNavigationOptions } from '@react-navigation/drawer';
+import { PathConfig } from '@react-navigation/native';
 import { StackNavigationOptions } from '@react-navigation/stack';
 
 import { Routes as ExpoApiRoutes } from './ExpoApis';
@@ -10,7 +11,16 @@ import ExpoComponentsStackNavigator from './ExpoComponentsStackNavigator';
 // @tsapeta: These navigators are being used by `bare-expo` app,
 // so make sure they still work there once you change something here.
 
-export default {
+const MainNavigators: Record<
+  string,
+  | undefined
+  | {
+      linking: PathConfig;
+      navigator: ((props: { navigation: BottomTabNavigationProp<any> }) => JSX.Element) & {
+        navigationOptions: StackNavigationOptions & DrawerNavigationOptions;
+      };
+    }
+> = {
   apis: {
     linking: {
       path: '/apis',
@@ -33,13 +43,6 @@ export default {
     },
     navigator: ExpoComponentsStackNavigator,
   },
-} as Record<
-  string,
-  | undefined
-  | {
-      linking: any;
-      navigator: ((props: { navigation: BottomTabNavigationProp<any> }) => JSX.Element) & {
-        navigationOptions: StackNavigationOptions & DrawerNavigationOptions;
-      };
-    }
->;
+};
+
+export default MainNavigators;
