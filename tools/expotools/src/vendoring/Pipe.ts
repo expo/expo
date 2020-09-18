@@ -73,12 +73,8 @@ export class Pipe {
 
   public async start(platform: Platform) {
     logger.debug(`Staring pipe for platform = ${chalk.green(platform)}`);
-    logger.debug(`<workingDirectory> = ${chalk.green(this.workingDirectory || '')}`);
-
     logger.debug(
-      this.platformSpecificTasks
-        .map(({ platform, task }) => `  - [${chalk.blueBright(platform)}] ${task.description()}`)
-        .join('\n')
+      `${chalk.green('<workingDirectory>')} = ${chalk.yellow(this.workingDirectory || '')}`
     );
     logger.debug();
 

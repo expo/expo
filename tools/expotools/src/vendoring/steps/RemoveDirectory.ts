@@ -18,10 +18,6 @@ export class RemoveDirectory extends Task {
     this.target = target;
   }
 
-  description(): string {
-    return `remove ${chalk.yellow(this.overrideWorkingDirectory() || '<workingDirectory>')}`;
-  }
-
   protected overrideWorkingDirectory(): string | undefined {
     return this.target;
   }
@@ -29,7 +25,9 @@ export class RemoveDirectory extends Task {
   async execute() {
     const workDirectory = this.getWorkingDirectory();
 
-    this.logSubStep(`remove ${chalk.green(workDirectory)}`);
+    this.logSubStep(
+      `🧹 remove ${chalk.yellow(this.overrideWorkingDirectory() || '<workingDirectory>')}`
+    );
     return await fs.remove(workDirectory);
   }
 }

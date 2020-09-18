@@ -1,5 +1,6 @@
 import { Command } from '@expo/commander';
 import os from 'os';
+import chalk from 'chalk';
 import inquirer from 'inquirer';
 import path from 'path';
 import {
@@ -185,6 +186,7 @@ async function action({ configuration, platform }: ActionOptions) {
   const pipes = configuration.map((name) => ({ name, pipe: CONFIGURATIONS[name] as Pipe }));
   const tmpdir = os.tmpdir();
   for (const { name, pipe } of pipes) {
+    console.log(`Run configuration: ${chalk.green(name)}`);
     pipe.setWorkingDirectory(path.join(tmpdir, name));
     await pipe.start(platform);
     console.log();

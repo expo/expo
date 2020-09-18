@@ -70,12 +70,6 @@ export class CopyFiles extends Task {
     }
   }
 
-  description(): string {
-    return `copy ${chalk.green(this.from || '<workingDirectory>')}/[${chalk.yellow(
-      this.filePattern.join(', ')
-    )}] into ${chalk.magenta(this.to)}`;
-  }
-
   protected overrideWorkingDirectory(): string | undefined {
     return this.from;
   }
@@ -89,7 +83,9 @@ export class CopyFiles extends Task {
         : workDirectory;
 
       this.logSubStep(
-        `copy ${chalk.green(subPath)}/${chalk.yellow(pattern)} into ${chalk.magenta(this.to)}`
+        `📝 copy ${chalk.green(this.from || '<workingDirectory>')}/${chalk.green(
+          this.subDirectory ? this.subDirectory + '/' : ''
+        )}${chalk.yellow(pattern)} into ${chalk.magenta(this.to)}`
       );
 
       const files = await findFiles(subPath, pattern);

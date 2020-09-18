@@ -35,12 +35,6 @@ export class Clone extends Task {
     this.options = options;
   }
 
-  description(): string {
-    return `clone repo ${chalk.green(this.url)} into ${chalk.yellow(
-      this.overrideWorkingDirectory() || '<workingDirectory>'
-    )}`;
-  }
-
   protected overrideWorkingDirectory(): string | undefined {
     return this.destination;
   }
@@ -48,10 +42,16 @@ export class Clone extends Task {
   async execute() {
     const workDirectory = this.getWorkingDirectory();
 
-    this.logSubStep(`remove ${workDirectory}`);
+    this.logSubStep(
+      `🧹 remove ${chalk.yellow(this.overrideWorkingDirectory() || '<workingDirectory>')}`
+    );
     await fs.remove(workDirectory);
 
-    this.logSubStep(`clone ${chalk.green(this.url)} into ${chalk.magenta(workDirectory)}`);
+    this.logSubStep(
+      `📩 clone repo ${chalk.green(this.url)} into ${chalk.yellow(
+        this.overrideWorkingDirectory() || '<workingDirectory>'
+      )}`
+    );
 
     const cloneArguments = this.cloneArguments();
     this.logDebugInfo(`run git clone ${cloneArguments.join(' ')}`);

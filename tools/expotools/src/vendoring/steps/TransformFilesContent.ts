@@ -34,19 +34,13 @@ export class TransformFilesContent extends Task {
     return this.source;
   }
 
-  description(): string {
-    return `find ${chalk.yellow(this.find.toString())} in ${chalk.green(
-      this.source || '<workingDirectory>'
-    )}/${chalk.yellow(this.filePattern)} and replace with ${chalk.magenta(this.replace)}`;
-  }
-
   async execute() {
     const workDirectory = this.getWorkingDirectory();
 
     this.logSubStep(
-      `find ${chalk.yellow(this.find.toString())} in ${chalk.green(workDirectory)}/${chalk.yellow(
-        this.filePattern
-      )} and replace with ${chalk.magenta(this.replace)}`
+      `🔄 find ${chalk.yellow(this.find.toString())} in ${chalk.green(
+        this.overrideWorkingDirectory() || '<workingDirectory>'
+      )}/${chalk.yellow(this.filePattern)} and replace with ${chalk.magenta(this.replace)}`
     );
 
     const files = await findFiles(workDirectory, this.filePattern);

@@ -8,10 +8,6 @@ import { toRepoPath } from '../utils';
 export abstract class Task {
   private workingDirectory?: string;
 
-  public description(): string {
-    return 'Task';
-  }
-
   /**
    * Tasks can contain multiple steps. This function provides a consistent way to log information about each step.
    * @param message
