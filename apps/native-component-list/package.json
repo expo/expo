@@ -10,7 +10,7 @@
     "build:web": "expo build:web --no-pwa",
     "web": "expo start:web --https",
     "lint": "eslint .",
-    "tsc": "tsc --noEmit --watch -p ./tsconfig.json"
+    "tsc": "tsc --noEmit -p ./tsconfig.json"
   },
   "dependencies": {
     "@expo/react-native-action-sheet": "^3.8.0",
