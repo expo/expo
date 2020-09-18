@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { Button, StyleSheet, TextInput, View } from 'react-native';
 import { Screen, ScreenContainer } from 'react-native-screens';

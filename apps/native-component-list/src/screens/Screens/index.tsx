@@ -1,3 +1,4 @@
+// @ts-nocheck
 // tslint:disable max-classes-per-file
 import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
 import React from 'react';
