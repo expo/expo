@@ -7,78 +7,37 @@ import { paragraph } from '~/components/base/typography';
 import * as Constants from '~/constants/theme';
 
 const STYLES_LINK = css`
-  display: block;
-  line-height: 1.3rem;
-  text-decoration: none;
-`;
-
-const STYLES_LINK_NESTED = css`
-  display: block;
+  ${paragraph}
+  color: ${Constants.expoColors.gray[600]};
+  transition: 200ms ease color;
   font-size: 14px;
-  line-height: 1.3rem;
+  display: block;
   text-decoration: none;
-`;
-
-const STYLES_ACTIVE_CONTAINER = css`
-  display: flex;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   margin-bottom: 6px;
   cursor: pointer;
+
+  :hover {
+    color: ${Constants.expoColors.primary[500]};
+  }
 `;
 
-const STYLES_ACTIVE_BULLET = css`
-  min-height: 6px;
-  min-width: 6px;
-  height: 6px;
-  width: 6px;
-  background-color: ${Constants.expoColors.primary[500]};
-  border-radius: 4px;
-  position: relative;
-  left -12px;
-  top: 7px;
+const STYLES_LINK_HEADER = css`
+  font-family: ${Constants.fontFamilies.demi};
 `;
 
 const STYLES_LINK_CODE = css`
   font-family: ${Constants.fontFamilies.mono};
-  font-size: 14;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: 13px;
 `;
 
 const STYLES_LINK_ACTIVE = css`
-  ${paragraph}
-  font-size: 15px;
-  line-height: 140%;
-  font-family: ${Constants.fontFamilies.demi};
-  color: ${Constants.colors.expoLighter};
-  position: relative;
-  left -7px;
-
-  :visited {
-    color: ${Constants.expoColors.primary[500]};
-  }
-
-  :hover {
-    color: ${Constants.expoColors.primary[500]};
-  }
+  color: ${Constants.expoColors.primary[500]};
 `;
 
-const STYLES_LINK_DEFAULT = css`
-  ${paragraph}
-  color: ${Constants.colors.black80};
-  line-height: 140%;
-  transition: 200ms ease color;
-  font-size: 15px;
-
-  :visited {
-    color: ${Constants.colors.black60};
-  }
-
-  :hover {
-    color: ${Constants.expoColors.primary[500]};
-  }
-`;
-
-const NESTING_OFFSET = 12;
+const NESTING_OFFSET = 16;
 
 /**
  * Replaces `Module.someFunction(arguments: argType)`
@@ -103,23 +62,19 @@ const DocumentationSidebarRightLink = React.forwardRef(
 
     const paddingLeft = NESTING_OFFSET * (level - BASE_HEADING_LEVEL) + 'px';
     const displayTitle = shortenCode && isCode ? trimCodedTitle(title) : title;
-
-    const linkClassNames = [
-      isNested ? STYLES_LINK : STYLES_LINK_NESTED,
-      isActive ? STYLES_LINK_ACTIVE : STYLES_LINK_DEFAULT,
-    ];
-    if (isCode) {
-      linkClassNames.push(STYLES_LINK_CODE);
-    }
-
+    
     return (
-      <div className={STYLES_ACTIVE_CONTAINER} ref={ref}>
-        {isActive && <div className={STYLES_ACTIVE_BULLET} />}
+      <div ref={ref}>
         <a
           style={{ paddingLeft }}
           href={'#' + slug}
           onClick={onClick}
-          className={linkClassNames.join(' ')}>
+          className={`
+            ${STYLES_LINK}
+            ${isNested && STYLES_LINK_HEADER}
+            ${isCode && STYLES_LINK_CODE}
+            ${isActive && STYLES_LINK_ACTIVE}
+          `}>
           {displayTitle}
         </a>
       </div>

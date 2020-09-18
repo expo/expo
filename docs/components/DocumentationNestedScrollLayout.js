@@ -1,10 +1,10 @@
 // NOTE(jim):
 // GETTING NESTED SCROLL RIGHT IS DELICATE BUSINESS. THEREFORE THIS COMPONENT
 // IS THE ONLY PLACE WHERE SCROLL CODE SHOULD BE HANDLED. THANKS.
+import * as React from 'react';
 import styled, { keyframes, css, injectGlobal } from 'react-emotion';
 
 import * as Constants from '~/constants/theme';
-import * as React from 'react';
 
 // NOTE(jim): Global styles if and only if this component is used.
 injectGlobal`
@@ -123,6 +123,7 @@ const STYLES_LEFT = css`
 
 const STYLES_RIGHT = css`
   border-left: 1px solid ${Constants.expoColors.gray[250]};
+  background-color: ${Constants.expoColors.white};
 `;
 
 const STYLES_CENTER = css`
@@ -131,6 +132,7 @@ const STYLES_CENTER = css`
   width: 100%;
   height: 100%;
   overflow: hidden;
+  display: flex;
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     height: auto;

@@ -1,7 +1,7 @@
-import * as React from 'react';
+import { MDXProvider } from '@mdx-js/react';
 import GithubSlugger from 'github-slugger';
 import { withRouter } from 'next/router';
-import { MDXProvider } from '@mdx-js/react';
+import * as React from 'react';
 
 import { HeadingManager } from '~/common/headingManager';
 import * as components from '~/common/translate-markdown';

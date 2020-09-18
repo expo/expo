@@ -3,6 +3,7 @@ import * as React from 'react';
 import { css } from 'react-emotion';
 
 import { expoColors } from '~/constants/theme';
+
 import * as components from '~/common/translate-markdown';
 import { InlineCode } from '~/components/base/code';
 
