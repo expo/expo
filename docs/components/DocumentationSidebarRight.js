@@ -100,6 +100,8 @@ class DocumentationSidebarRight extends React.Component {
     activeSlug: null,
   };
 
+  slugScrollingTo = null;
+
   activeItemRef = React.createRef();
 
   /**
@@ -109,7 +111,7 @@ class DocumentationSidebarRight extends React.Component {
     const selfScroll = this.props.selfRef?.current?.getScrollRef().current;
     const activeItemPos = this.activeItemRef.current?.offsetTop;
 
-    if (!selfScroll || !activeItemPos) {
+    if (!selfScroll || !activeItemPos || this.slugScrollingTo) {
       return;
     }
 
@@ -137,6 +139,10 @@ class DocumentationSidebarRight extends React.Component {
         ref.current.offsetTop <= contentScrollPosition + window.innerHeight / 2
       ) {
         if (slug !== this.state.activeSlug) {
+          // we can enable scrolling again
+          if (slug === this.slugScrollingTo) {
+            this.slugScrollingTo = null;
+          }
           this.setState({ activeSlug: slug }, this._updateSelfScroll);
         }
         return;
@@ -158,6 +164,10 @@ class DocumentationSidebarRight extends React.Component {
 
     event.preventDefault();
     const { title, slug, ref } = heading;
+
+    // disable sidebar scrolling until we reach that slug
+    this.slugScrollingTo = slug;
+
     this.props.contentRef.current?.getScrollRef().current?.scrollTo({
       behavior: 'smooth',
       top: ref.current?.offsetTop - window.innerHeight * ACTIVE_ITEM_OFFSET_FACTOR,
