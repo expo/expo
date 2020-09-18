@@ -438,6 +438,8 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
       return 13;
     case SKErrorMissingOfferParams:
       return 14;
+    default:
+      return 0;
   }
 }
 
