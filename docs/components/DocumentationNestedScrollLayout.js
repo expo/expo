@@ -123,6 +123,7 @@ const STYLES_LEFT = css`
 
 const STYLES_RIGHT = css`
   border-left: 1px solid ${Constants.expoColors.gray[250]};
+  background-color: ${Constants.expoColors.white};
 `;
 
 const STYLES_CENTER = css`
@@ -131,6 +132,7 @@ const STYLES_CENTER = css`
   width: 100%;
   height: 100%;
   overflow: hidden;
+  display: flex;
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     height: auto;

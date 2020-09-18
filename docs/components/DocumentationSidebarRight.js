@@ -39,10 +39,6 @@ const STYLES_TITLE = css`
   }
 `;
 
-const STYLES_SIDEBAR_INDENT = css`
-  padding-left: 16px;
-`;
-
 const STYLES_ICON_SHOW_CONTAINER = css`
   top: 83px;
   right: 15px;
@@ -96,7 +92,6 @@ class DocumentationSidebarRight extends React.Component {
   };
 
   state = {
-    hidden: false,
     activeSlug: null,
   };
 
@@ -150,13 +145,6 @@ class DocumentationSidebarRight extends React.Component {
     }
   }
 
-  _show = () => {
-    this.setState({ hidden: false });
-  };
-  _hide = () => {
-    this.setState({ hidden: true });
-  };
-
   _handleLinkClick = (event, heading) => {
     if (!isDynamicScrollAvailable()) {
       return;
@@ -176,18 +164,6 @@ class DocumentationSidebarRight extends React.Component {
   };
 
   render() {
-    if (this.state.hidden) {
-      return (
-        <div className={STYLES_ICON_SHOW_CONTAINER} onClick={this._show}>
-          <ChevronDown size={18} className={STYLES_ICON_SHOW} />
-        </div>
-      );
-    }
-
-    const customDataAttributes = {
-      'data-sidebar': true,
-    };
-
     const { headings } = this.props.headingManager;
 
     //filter out headings nested too much
@@ -196,27 +172,20 @@ class DocumentationSidebarRight extends React.Component {
     );
 
     return (
-      <nav className={STYLES_SIDEBAR} {...customDataAttributes}>
-        <span className={STYLES_TITLE} onClick={this._hide}>
-          <ChevronDown size={16} className={STYLES_ICON_HIDE} />
-          {this.props.title}
-        </span>
-
-        <div className={STYLES_SIDEBAR_INDENT}>
-          {displayedHeadings.map(heading => {
-            const isActive = heading.slug === this.state.activeSlug;
-            return (
-              <DocumentationSidebarRightLink
-                key={heading.slug}
-                heading={heading}
-                onClick={e => this._handleLinkClick(e, heading)}
-                isActive={isActive}
-                ref={isActive ? this.activeItemRef : undefined}
-                shortenCode
-              />
-            );
-          })}
-        </div>
+      <nav className={STYLES_SIDEBAR} data-sidebar>
+        {displayedHeadings.map(heading => {
+          const isActive = heading.slug === this.state.activeSlug;
+          return (
+            <DocumentationSidebarRightLink
+              key={heading.slug}
+              heading={heading}
+              onClick={e => this._handleLinkClick(e, heading)}
+              isActive={isActive}
+              ref={isActive ? this.activeItemRef : undefined}
+              shortenCode
+            />
+          );
+        })}
       </nav>
     );
   }
