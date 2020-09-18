@@ -37,6 +37,13 @@ const STYLES_ACTIVE_BULLET = css`
   top: 7px;
 `;
 
+const STYLES_LINK_CODE = css`
+  font-family: ${Constants.fontFamilies.mono};
+  font-size: 14;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
 const STYLES_LINK_ACTIVE = css`
   ${paragraph}
   font-size: 15px;
@@ -90,21 +97,24 @@ const trimCodedTitle = str => {
 const DocumentationSidebarRightLink = ({ heading, isActive, shortenCode }) => {
   const { slug, level, title, type } = heading;
 
-  const paddingLeft = NESTING_OFFSET * (level - BASE_HEADING_LEVEL) + 'px';
-  const linkBaseStyle = level <= BASE_HEADING_LEVEL ? STYLES_LINK : STYLES_LINK_NESTED;
-
+  const isNested = level <= BASE_HEADING_LEVEL;
   const isCode = type === HeadingType.InlineCode;
+
+  const paddingLeft = NESTING_OFFSET * (level - BASE_HEADING_LEVEL) + 'px';
   const displayTitle = shortenCode && isCode ? trimCodedTitle(title) : title;
-  const linkFont = isCode ? Constants.fontFamilies.mono : undefined;
-  const fontSize = isCode ? 14 : undefined;
+
+  const linkClassNames = [
+    isNested ? STYLES_LINK : STYLES_LINK_NESTED,
+    isActive ? STYLES_LINK_ACTIVE : STYLES_LINK_DEFAULT,
+  ];
+  if (isCode) {
+    linkClassNames.push(STYLES_LINK_CODE);
+  }
 
   return (
     <div className={STYLES_ACTIVE_CONTAINER}>
       {isActive && <div className={STYLES_ACTIVE_BULLET} />}
-      <a
-        style={{ paddingLeft, fontFamily: linkFont, fontSize }}
-        href={'#' + slug}
-        className={`${linkBaseStyle} ${isActive ? STYLES_LINK_ACTIVE : STYLES_LINK_DEFAULT}`}>
+      <a style={{ paddingLeft }} href={'#' + slug} className={linkClassNames.join(' ')}>
         {displayTitle}
       </a>
     </div>
