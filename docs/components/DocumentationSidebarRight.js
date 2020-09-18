@@ -4,10 +4,10 @@ import { css } from 'react-emotion';
 import { BASE_HEADING_LEVEL } from '../common/headingManager';
 import DocumentationSidebarRightLink from './DocumentationSidebarRightLink';
 
-import * as Constants from '~/common/constants';
 import { paragraph } from '~/components/base/typography';
 import ChevronDown from '~/components/icons/ChevronDown';
 import withHeadingManager from '~/components/page-higher-order/withHeadingManager';
+import * as Constants from '~/constants/theme';
 
 const STYLES_SIDEBAR = css`
   padding: 20px 24px 24px 24px;

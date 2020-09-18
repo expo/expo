@@ -3,8 +3,8 @@ import { css } from 'react-emotion';
 
 import { BASE_HEADING_LEVEL, HeadingType } from '../common/headingManager';
 
-import * as Constants from '~/common/constants';
 import { paragraph } from '~/components/base/typography';
+import * as Constants from '~/constants/theme';
 
 const STYLES_LINK = css`
   display: block;

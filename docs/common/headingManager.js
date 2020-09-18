@@ -20,6 +20,15 @@ export const HeadingType = {
 export const BASE_HEADING_LEVEL = 2;
 
 /**
+ * How deeply nested headings to display
+ * 0 - means only root headings
+ *
+ * Can be overriden in `.md` pages by setting
+ * `maxHeadingDepth` attribute
+ */
+const DEFAULT_NESTING_LIMIT = 1;
+
+/**
  * Manages heading entries. Each entry corresponds to one markdown heading with specified level (#, ##, ### etc)
  *
  * Each entry consists of:
@@ -41,7 +50,7 @@ export class HeadingManager {
     this.meta = { headings: meta.headings || [], ...meta };
     this.headings = [];
 
-    const maxHeadingDepth = meta.maxHeadingDepth ?? Number.MAX_SAFE_INTEGER - 100;
+    const maxHeadingDepth = meta.maxHeadingDepth ?? DEFAULT_NESTING_LIMIT;
     this.maxNestingLevel = maxHeadingDepth + BASE_HEADING_LEVEL;
   }
 
