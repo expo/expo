@@ -302,4 +302,7 @@ const RENAMED_PAGES = {
 
   // Redirects based on Next 9 upgrade (09/11/2020)
   '/api/': '/versions/latest/',
+
+  // Redirect to expand Expo Accounts and permissions
+  '/guides/account-permissions/': '/accounts/personal/',
 };
