@@ -1,4 +1,3 @@
-
 const { copySync, removeSync } = require('fs-extra');
 const { join } = require('path');
 const semver = require('semver');
