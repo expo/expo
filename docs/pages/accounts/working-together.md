@@ -2,7 +2,7 @@
 title: Working Together
 ---
 
-You can add other Expo users or members to your Personal Account. Members have access to all of the projects belonging to the account. The type of access depends on the given role.
+You can grant other users access to the projects belonging to your Personal Account with Expo Teams. The type of access depends on the granted role. You can sign up for Teams on any of your accounts at [https://expo.io/dashboard/ACCOUNT/settings/services](https://expo.io/dashboard/ACCOUNT/settings/services).
 
 ## Adding Members
 
