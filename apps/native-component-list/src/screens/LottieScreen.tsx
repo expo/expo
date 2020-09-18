@@ -110,7 +110,7 @@ interface State {
   config: Config;
 }
 
-export default class LottieScreen extends React.Component<{}, State> {
+export default class LottieScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: '<Lottie />',
   };

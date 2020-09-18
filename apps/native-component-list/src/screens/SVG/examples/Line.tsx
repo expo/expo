@@ -1,5 +1,6 @@
-import * as Svg from 'react-native-svg';
 import React from 'react';
+import * as Svg from 'react-native-svg';
+
 import Example from './Example';
 
 class LineExample extends React.Component {
@@ -29,7 +30,15 @@ class LineWithStrokeLinecap extends React.Component {
           strokeWidth="10"
           strokeLinecap="round"
         />
-        <Svg.Line x1="40" y1="40" x2="160" y2="40" stroke="red" strokeWidth="10" strokeLinecap="butt" />
+        <Svg.Line
+          x1="40"
+          y1="40"
+          x2="160"
+          y2="40"
+          stroke="red"
+          strokeWidth="10"
+          strokeLinecap="butt"
+        />
         <Svg.Line
           x1="40"
           y1="80"

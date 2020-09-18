@@ -10,7 +10,7 @@ interface State {
   recordingUri?: string;
 }
 
-export default class RecordingScreen extends React.Component<{}, State> {
+export default class RecordingScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'Audio',
   };
@@ -21,10 +21,10 @@ export default class RecordingScreen extends React.Component<{}, State> {
 
   _maybeRenderLastRecording = () =>
     this.state.recordingUri ? (
-      <React.Fragment>
+      <>
         <HeadingText>Last recording</HeadingText>
         <Player source={{ uri: this.state.recordingUri }} />
-      </React.Fragment>
+      </>
     ) : null;
 
   render() {

@@ -52,7 +52,7 @@ function SetStringExample() {
         title="Copy to clipboard"
       />
       <TextInput
-        multiline={true}
+        multiline
         onChangeText={setValue}
         value={value}
         style={{ padding: 8, height: 48, margin: 8, borderBottomWidth: 1 }}

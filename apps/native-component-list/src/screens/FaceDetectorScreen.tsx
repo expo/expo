@@ -112,7 +112,7 @@ export default class FeceDetectorScreen extends React.Component<object, State> {
       <View style={styles.sectionContainer}>
         {!selection || selection.type === 'video' ? null : (
           <View style={styles.imageContainer}>
-            <Image source={{ uri: selection.uri }} resizeMode={'contain'} style={styles.image} />
+            <Image source={{ uri: selection.uri }} resizeMode="contain" style={styles.image} />
             {this._maybeRenderDetectedFacesAndLandmarks()}
           </View>
         )}

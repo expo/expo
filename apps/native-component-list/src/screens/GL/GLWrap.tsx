@@ -1,15 +1,19 @@
-import React from 'react';
 import * as GL from 'expo-gl';
+import React from 'react';
 import { View, LayoutChangeEvent, StyleProp, ViewStyle } from 'react-native';
 
 import { Colors } from '../../constants';
 
-export default <P extends { style?: StyleProp<ViewStyle> } = {}>(
+export default <P extends { style?: StyleProp<ViewStyle> } = object>(
   title: string,
-  onContextCreate:
-    (gl: GL.ExpoWebGLRenderingContext) => Promise<{ onLayout?: (event: LayoutChangeEvent) => void; onTick?: (gl: GL.ExpoWebGLRenderingContext) => void } | void>
+  onContextCreate: (
+    gl: GL.ExpoWebGLRenderingContext
+  ) => Promise<{
+    onLayout?: (event: LayoutChangeEvent) => void;
+    onTick?: (gl: GL.ExpoWebGLRenderingContext) => void;
+  } | void>
 ): React.ComponentType<P> & { title: string } =>
-  (class extends React.Component<P> {
+  class extends React.Component<P> {
     static title = title;
 
     _gl?: GL.ExpoWebGLRenderingContext;
@@ -22,20 +26,19 @@ export default <P extends { style?: StyleProp<ViewStyle> } = {}>(
       }
     }
 
-    onLayout = (event: LayoutChangeEvent) => {}
+    onLayout = (event: LayoutChangeEvent) => {};
 
     render() {
       return (
         <View
-          onLayout={(event) => this.onLayout(event)}
+          onLayout={event => this.onLayout(event)}
           style={[
             {
               flex: 1,
               backgroundColor: Colors.tintColor,
             },
             this.props.style,
-          ]}
-        >
+          ]}>
           <GL.GLView style={{ flex: 1 }} onContextCreate={this._onContextCreate} />
         </View>
       );
@@ -43,7 +46,7 @@ export default <P extends { style?: StyleProp<ViewStyle> } = {}>(
 
     _onContextCreate = async (gl: GL.ExpoWebGLRenderingContext) => {
       this._gl = gl;
-      const { onTick = () => {}, onLayout } = await onContextCreate(this._gl) || {};
+      const { onTick = () => {}, onLayout } = (await onContextCreate(this._gl)) || {};
 
       if (onLayout) this.onLayout = onLayout;
 
@@ -54,5 +57,5 @@ export default <P extends { style?: StyleProp<ViewStyle> } = {}>(
         }
       };
       animate();
-    }
-  });
+    };
+  };

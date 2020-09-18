@@ -2,7 +2,7 @@ import { Video } from 'expo-av';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
 import React from 'react';
-import { Image, Platform, ScrollView, View, Text, Switch, StyleSheet } from 'react-native';
+import { Image, Platform, ScrollView, View, StyleSheet } from 'react-native';
 
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';

@@ -1,3 +1,3 @@
 declare module 'victory-native' {
-  export * from 'victory'
+  export * from 'victory';
 }

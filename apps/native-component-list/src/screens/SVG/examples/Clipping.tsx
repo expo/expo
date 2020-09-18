@@ -1,6 +1,7 @@
 // tslint:disable max-classes-per-file
 import React from 'react';
 import * as Svg from 'react-native-svg';
+
 import Example from './Example';
 
 const {
@@ -109,8 +110,7 @@ class TextClipping extends React.Component {
           stroke="blue"
           strokeWidth="1"
           textAnchor="middle"
-          clipPath="url(#clip)"
-        >
+          clipPath="url(#clip)">
           NOT THE FACE
         </Text>
       </Svg.Svg>

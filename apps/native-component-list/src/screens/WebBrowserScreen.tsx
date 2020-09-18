@@ -279,7 +279,9 @@ export default class WebBrowserScreen extends React.Component<object, State> {
           <Button
             style={styles.button}
             onPress={async () => {
-              this.setState({ authResult: await this.startAuthAsync(this.state.shouldPrompt) });
+              // eslint-disable-next-line react/no-access-state-in-setstate
+              const authResult = await this.startAuthAsync(this.state.shouldPrompt);
+              this.setState({ authResult });
             }}
             title="Open web auth session"
           />

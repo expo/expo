@@ -1,10 +1,10 @@
 import './BeforePIXI';
 
-import * as React from 'react';
 import { Platform } from '@unimodules/core';
-import { Asset } from 'expo-asset';
 import Expo2DContext from 'expo-2d-context';
+import { Asset } from 'expo-asset';
 import * as PIXI from 'pixi.js';
+import * as React from 'react';
 import { Dimensions } from 'react-native';
 
 import GLHeadlessRenderingScreen from './GLHeadlessRenderingScreen';

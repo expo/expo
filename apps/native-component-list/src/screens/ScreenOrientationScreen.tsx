@@ -101,10 +101,10 @@ export default class ScreenOrientationScreen extends React.Component<object, Sta
     alert(`Orientation.PORTRAIT_DOWN supported: ${JSON.stringify(result)}`);
   };
 
-  getScreenOrientationLockOptions(): Array<{
+  getScreenOrientationLockOptions(): {
     key: string;
     value: ScreenOrientation.OrientationLock;
-  }> {
+  }[] {
     const orientationOptions = [
       ScreenOrientation.OrientationLock.DEFAULT,
       ScreenOrientation.OrientationLock.ALL,

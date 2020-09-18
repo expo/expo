@@ -17,7 +17,7 @@ interface State {
   setMode: Mode;
 }
 
-export default class AudioModeSelector extends React.Component<{}, State> {
+export default class AudioModeSelector extends React.Component<object, State> {
   readonly state: State = {
     modeToSet: {
       interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
@@ -42,7 +42,8 @@ export default class AudioModeSelector extends React.Component<{}, State> {
         playsInSilentModeIOS: false,
         interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
       });
-      this.setState({ setMode: this.state.modeToSet });
+      const { modeToSet } = this.state;
+      this.setState({ setMode: modeToSet });
     } catch (error) {
       alert(error.message);
     }
@@ -55,7 +56,7 @@ export default class AudioModeSelector extends React.Component<{}, State> {
     modeA.staysActiveInBackground === modeB.staysActiveInBackground;
 
   _setMode = (interruptionModeAndroid: number) => () =>
-    this.setState({ modeToSet: { ...this.state.modeToSet, interruptionModeAndroid } });
+    this.setState(state => ({ modeToSet: { ...state.modeToSet, interruptionModeAndroid } }));
 
   _renderToggle = ({
     title,
@@ -86,9 +87,9 @@ export default class AudioModeSelector extends React.Component<{}, State> {
         disabled={disabled}
         value={value !== undefined ? value : Boolean(this.state.modeToSet[valueName])}
         onValueChange={() =>
-          this.setState({
-            modeToSet: { ...this.state.modeToSet, [valueName]: !this.state.modeToSet[valueName] },
-          })
+          this.setState(state => ({
+            modeToSet: { ...state.modeToSet, [valueName]: !state.modeToSet[valueName] },
+          }))
         }
       />
     </View>

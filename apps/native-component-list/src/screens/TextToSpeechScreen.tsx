@@ -46,7 +46,7 @@ interface State {
   paused: boolean;
   pitch: number;
   rate: number;
-  voiceList?: Array<{ name: string; identifier: string }>;
+  voiceList?: { name: string; identifier: string }[];
   voice?: string;
 }
 

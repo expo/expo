@@ -20,7 +20,9 @@ export function parseAddress({
   region: string;
   street: string;
 }) {
-  const address = [street, city, region, postalCode, country].filter(item => item !== '').join(', ');
+  const address = [street, city, region, postalCode, country]
+    .filter(item => item !== '')
+    .join(', ');
   return address;
 }
 
@@ -77,7 +79,6 @@ export async function getGroupWithNameAsync(
   if (groups && groups.length > 0) {
     return groups[0];
   }
-  return;
 }
 
 export async function cloneAsync(contactId: string) {

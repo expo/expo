@@ -10,8 +10,8 @@ import { Platform, ScrollViewProps, StyleSheet, useWindowDimensions } from 'reac
 import { useSafeArea } from 'react-native-safe-area-context';
 
 import { Colors } from '../constants';
-import createTabNavigator from './createTabNavigator';
 import Screens from './MainNavigators';
+import createTabNavigator from './createTabNavigator';
 
 const Tab = createTabNavigator();
 

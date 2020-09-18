@@ -8,8 +8,8 @@ import {
   View,
 } from 'react-native';
 
-import MonoText from './MonoText';
 import Colors from '../constants/Colors';
+import MonoText from './MonoText';
 
 type SimpleActionDemo = {
   title: string;

@@ -6,6 +6,7 @@ import {
   GestureResponderEvent,
 } from 'react-native';
 import * as Svg from 'react-native-svg';
+
 import Example from './Example';
 
 const { Path, Text, G, Line, Polyline } = Svg;
@@ -44,13 +45,13 @@ class PanExample extends React.Component {
       x: this._previousLeft + gestureState.dx,
       y: this._previousTop + gestureState.dy,
     });
-  }
+  };
 
   _handlePanResponderGrant = () => {
     this.setState({
       hover: true,
     });
-  }
+  };
 
   _handlePanResponderEnd = (_: GestureResponderEvent, gestureState: PanResponderGestureState) => {
     this.setState({
@@ -58,20 +59,16 @@ class PanExample extends React.Component {
     });
     this._previousLeft += gestureState.dx;
     this._previousTop += gestureState.dy;
-  }
+  };
 
   render() {
     return (
       <Svg.Svg height="200" width="200">
-        <G
-          opacity={this.state.hover ? 0.5 : 1}
-          x={this.state.x}
-          y={this.state.y}
-        >
+        <G opacity={this.state.hover ? 0.5 : 1} x={this.state.x} y={this.state.y}>
           <Path
             d="M50,5L20,99L95,39L5,39L80,99z"
-            stroke={'black'}
-            fill={'red'}
+            stroke="black"
+            fill="red"
             strokeWidth="6"
             scale="0.8"
             {...this._panResponder!.panHandlers}

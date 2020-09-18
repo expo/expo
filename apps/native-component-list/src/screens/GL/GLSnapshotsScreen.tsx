@@ -1,13 +1,13 @@
 import * as GL from 'expo-gl';
+import { Renderer, TextureLoader, THREE } from 'expo-three';
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Renderer, TextureLoader, THREE } from 'expo-three';
 
 interface State {
   snapshot?: GL.GLSnapshot;
 }
 
-export default class GLSnapshotsScreen extends React.PureComponent<{}, State> {
+export default class GLSnapshotsScreen extends React.PureComponent<object, State> {
   static title = 'Taking snapshots';
 
   readonly state: State = {};

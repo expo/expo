@@ -31,13 +31,14 @@ export default class ImageManipulatorScreen extends React.Component<object, Stat
     ready: false,
   };
 
-  async componentDidMount() {
+  componentDidMount() {
     const image = Asset.fromModule(require('../../assets/images/example2.jpg'));
-    await image.downloadAsync();
-    this.setState({
-      ready: true,
-      image,
-      original: image,
+    image.downloadAsync().then(() => {
+      this.setState({
+        ready: true,
+        image,
+        original: image,
+      });
     });
   }
 
@@ -170,15 +171,16 @@ export default class ImageManipulatorScreen extends React.Component<object, Stat
   };
 
   _reset = () => {
-    this.setState({ image: this.state.original });
+    this.setState(state => ({ image: state.original }));
   };
 
   _manipulate = async (
     actions: ImageManipulator.Action[],
     saveOptions?: ImageManipulator.SaveOptions
   ) => {
+    const { image } = this.state;
     const manipResult = await ImageManipulator.manipulateAsync(
-      (this.state.image! as Asset).localUri || this.state.image!.uri,
+      (image! as Asset).localUri || image!.uri,
       actions,
       saveOptions
     );

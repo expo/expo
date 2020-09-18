@@ -1,6 +1,6 @@
+import { ProcessingView } from 'expo-processing';
 import React from 'react';
 import { View, StyleProp, ViewStyle } from 'react-native';
-import { ProcessingView } from 'expo-processing';
 
 import { Colors } from '../../constants';
 
@@ -9,7 +9,10 @@ import { Colors } from '../../constants';
  * @param title string
  * @param sketch processing.js `sketch` function
  */
-export default <P extends { style?: StyleProp<ViewStyle> } = {}>(title: string, sketch: (p: any) => void) => {
+export default <P extends { style?: StyleProp<ViewStyle> } = object>(
+  title: string,
+  sketch: (p: any) => void
+) => {
   const wrapped = (props: P) => (
     <View
       style={[
@@ -18,8 +21,7 @@ export default <P extends { style?: StyleProp<ViewStyle> } = {}>(title: string, 
           backgroundColor: Colors.tintColor,
         },
         props.style,
-      ]}
-    >
+      ]}>
       <ProcessingView style={{ flex: 1 }} sketch={sketch} />
     </View>
   );

@@ -79,7 +79,7 @@ export default function Player(props: Props) {
     return (
       <TouchableOpacity onPress={_toggleLooping} disabled={!props.isLoaded}>
         <Ionicons
-          name={'ios-repeat'}
+          name="ios-repeat"
           size={34}
           style={[styles.icon, !props.isLooping && { color: '#C1C1C1' }]}
         />
@@ -249,19 +249,19 @@ function PitchControl({
         alignItems: 'center',
         flexDirection: 'row',
         paddingHorizontal: 4,
-        height: height,
+        height,
         justifyContent: 'center',
       }}
       onPress={() => {
         onPress(!value);
       }}>
-      <Ionicons name={`ios-stats`} size={24} color={color} style={{}} />
+      <Ionicons name="ios-stats" size={24} color={color} style={{}} />
       <Text
         style={{
           textDecorationLine: disabled ? 'line-through' : 'none',
           textAlign: 'center',
           fontWeight: 'bold',
-          color: color,
+          color,
           marginLeft: 8,
           fontSize: 12,
         }}>
@@ -299,7 +299,7 @@ function SpeedSegmentedControl({ onValueChange }: { onValueChange: (value: numbe
         values={data.map(i => i + 'x')}
         fontStyle={{ color: Colors.tintColor }}
         selectedIndex={index}
-        tintColor={'white'}
+        tintColor="white"
         onChange={event => {
           setIndex(event.nativeEvent.selectedSegmentIndex);
         }}
@@ -357,7 +357,7 @@ function VolumeSlider({
       style={[{ flexDirection: 'row', width: 100 }, disabled && { opacity: 0.7 }]}
       pointerEvents={disabled ? 'none' : 'auto'}>
       <TouchableOpacity
-        style={{ alignItems: 'center', width: height, height: height, justifyContent: 'center' }}
+        style={{ alignItems: 'center', width: height, height, justifyContent: 'center' }}
         onPress={() => {
           onValueChanged({ isMuted: !isMuted, volume });
         }}>

@@ -131,7 +131,7 @@ interface State {
   snapshot?: GL.GLSnapshot;
 }
 
-export default class GLHeadlessRenderingScreen extends React.PureComponent<{}, State> {
+export default class GLHeadlessRenderingScreen extends React.PureComponent<object, State> {
   static title = 'Headless rendering';
 
   isDrawing = false;

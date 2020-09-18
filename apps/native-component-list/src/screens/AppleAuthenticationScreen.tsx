@@ -102,7 +102,7 @@ export default class AppleAuthenticationScreen extends React.Component<object, S
 
   signOut = async () => {
     try {
-      const credentials = await AppleAuthentication.signOutAsync({
+      await AppleAuthentication.signOutAsync({
         user: (await this.getUserIdentifier())!,
         state: 'this-is-a-test',
       });
