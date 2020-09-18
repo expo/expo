@@ -1,3 +1,4 @@
+// @ts-nocheck
 import SegmentedControl, {
   NativeSegmentedControlIOSChangeEvent,
 } from '@react-native-community/segmented-control';

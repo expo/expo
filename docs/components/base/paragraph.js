@@ -2,7 +2,7 @@ import styled, { keyframes, css } from 'react-emotion';
 import emojiRegex from 'emoji-regex';
 
 import * as React from 'react';
-import * as Constants from '~/common/constants';
+import * as Constants from '~/constants/theme';
 import { Info } from '~/components/icons/Info';
 
 import { paragraph } from './typography';

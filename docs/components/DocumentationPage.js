@@ -3,10 +3,10 @@ import Router from 'next/router';
 import * as React from 'react';
 import { css } from 'react-emotion';
 
-import * as Constants from '~/common/constants';
-import navigation from '~/common/navigation';
+import * as Constants from '~/constants/theme';
+import navigation from '~/constants/navigation';
 import * as Utilities from '~/common/utilities';
-import { VERSIONS } from '~/common/versions';
+import { VERSIONS } from '~/constants/versions';
 import * as WindowUtils from '~/common/window';
 import DocumentationFooter from '~/components/DocumentationFooter';
 import DocumentationHeader from '~/components/DocumentationHeader';

@@ -1,4 +1,4 @@
-import * as Constants from '~/common/constants';
+import * as Constants from '~/constants/theme';
 
 /**
  * prism.js Coy theme for JavaScript, CoffeeScript, CSS and HTML

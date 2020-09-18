@@ -18,6 +18,7 @@
 #import "BNCApplication.h"
 #import "BNCAppleReceipt.h"
 #import "BNCTuneUtility.h"
+#import "BNCSKAdNetwork.h"
 
 @interface BranchOpenRequest ()
 @property (assign, nonatomic) BOOL isInstall;
@@ -151,6 +152,10 @@ typedef NS_ENUM(NSInteger, BNCUpdateState) {
     preferenceHelper.sessionID = data[BRANCH_RESPONSE_KEY_SESSION_ID];
     preferenceHelper.previousAppBuildDate = [BNCApplication currentApplication].currentBuildDate;
 
+    if (data[BRANCH_RESPONSE_KEY_INVOKE_REGISTER_APP]) {
+        [[BNCSKAdNetwork sharedInstance] registerAppForAdNetworkAttribution];
+    }
+    
     if (Branch.enableFingerprintIDInCrashlyticsReports) {
         BNCCrashlyticsWrapper *crashlytics = [BNCCrashlyticsWrapper wrapper];
         [crashlytics setObjectValue:preferenceHelper.deviceFingerprintID

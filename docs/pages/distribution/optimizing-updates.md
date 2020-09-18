@@ -5,14 +5,14 @@ title: Optimizing Updates
 ## Table of contents
 
 - [What's in an update?](#whats-in-an-update)
-  - [Estimating the Size of an Update](#estimating-the-size-of-an-update)
-- [Limits on Expo's Updates Service](#limits-on-expos-updates-service)
-  - [Optimize Images](#optimize-images)
-  - [Reduce Large Dependencies](#reduce-large-dependencies)
-  - [Download Files when Needed](#download-files-when-needed)
-  - [Building Your App on Your Own Computer](#building-your-app-on-your-own-computer)
-  - [Self-hosting Your Updates](#self-hosting-your-updates)
-- [A Glimpse at the Future](#a-glimpse-at-the-future)
+  - [Estimating the size of an update](#estimating-the-size-of-an-update)
+- [Limits on the updates service](#limits-on-the-updates-service)
+  - [Optimize images](#optimize-images)
+  - [Reduce large dependencies](#reduce-large-dependencies)
+  - [Download Files when needed](#download-files-when-needed)
+  - [Building your app on your own computer](#building-your-app-on-your-own-computer)
+  - [Self-hosting your updates](#self-hosting-your-updates)
+- [A glimpse at the future](#a-glimpse-at-the-future)
 
 ## What's in an update?
 
@@ -30,7 +30,7 @@ Exported updates contain uncompressed files, unless those file formats are intri
 
 When updates are served through the updates service, they are compressed with gzip. To estimate the size of a manifest or JavaScript bundle when served through the updates service, run `gzip <file>`. Other files like JPEG images and MP3 audio files are already compressed by virtue of their file formats, and the CDN does not need to compress them further.
 
-## Limits on the Updates Service
+## Limits on the updates service
 
 The way to think about publishing an update to your Expo app is like publishing a new version of your website. In fact, when you publish an update to your Expo web app, you're publishing a new version of your site. Regardless of the underlying platform, Expo updates are downloaded by users running your app on Android, iOS, and the web and the smaller your update, the faster and more reliably your users will be able to download them and use up less of their data plans on cell connections.
 
@@ -38,7 +38,7 @@ Expo's current updates service is designed to accomodate updates, which comprise
 
 Below are a couple of general techniques that help reduce the size of updates. Many of them are also techniques to optimize websites since both Expo updates and websites are served over the web.
 
-### Optimize Images
+### Optimize images
 
 Many images can be reduced by more than 30% in size if they haven't been previously optimized. One simple way to optimize images is to resize them to the dimensions your app actually uses; if your image dimensions are 4032x3024 but your app only needs to display a 400x300 image, downsizing your image with a good interpolation algorithm like bicubic sharpening will greatly reduce your image's size.
 
@@ -74,4 +74,4 @@ In addition to building your app on your own computer, you can host your updates
 
 ## A glimpse at the future
 
-The next generation of services for Expo apps, Expo Application Services (EAS), will support higher limits and a scalable pricing model for startups and ohter businesses with those needs. This is a long-term engineering project and we hope to have more to share sometime in 2021.
+The next generation of services for Expo apps, Expo Application Services (EAS), will support higher limits and a scalable pricing model for startups and other businesses with those needs. This is a long-term engineering project and we hope to have more to share sometime in 2021.

@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import * as React from 'react';
 import { css } from 'react-emotion';
-import * as Constants from '~/common/constants';
+import * as Constants from '~/constants/theme';
 import { P } from '~/components/base/paragraph';
 
 const CONTAINER_STYLE = css`

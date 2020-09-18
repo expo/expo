@@ -2,7 +2,8 @@ import MDX from '@mdx-js/runtime';
 import * as React from 'react';
 import { css } from 'react-emotion';
 
-import { expoColors } from '~/common/constants';
+import { expoColors } from '~/constants/theme';
+
 import * as components from '~/common/translate-markdown';
 import { InlineCode } from '~/components/base/code';
 

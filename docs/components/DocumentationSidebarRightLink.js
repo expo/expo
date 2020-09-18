@@ -3,8 +3,8 @@ import { css } from 'react-emotion';
 
 import { BASE_HEADING_LEVEL, HeadingType } from '../common/headingManager';
 
-import * as Constants from '~/common/constants';
 import { paragraph } from '~/components/base/typography';
+import * as Constants from '~/constants/theme';
 
 const STYLES_LINK = css`
   ${paragraph}
@@ -62,7 +62,7 @@ const DocumentationSidebarRightLink = React.forwardRef(
 
     const paddingLeft = NESTING_OFFSET * (level - BASE_HEADING_LEVEL) + 'px';
     const displayTitle = shortenCode && isCode ? trimCodedTitle(title) : title;
-
+    
     return (
       <div ref={ref}>
         <a

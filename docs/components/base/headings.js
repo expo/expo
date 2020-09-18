@@ -1,7 +1,7 @@
 import styled, { keyframes, css } from 'react-emotion';
 
 import * as React from 'react';
-import * as Constants from '~/common/constants';
+import * as Constants from '~/constants/theme';
 
 import { h1, h2, h3, h4 } from './typography';
 

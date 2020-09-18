@@ -2049,7 +2049,7 @@ PODS:
   - AppAuth/Core (1.2.0)
   - AppAuth/ExternalUserAgent (1.2.0)
   - boost-for-react-native (1.63.0)
-  - Branch (0.34.0)
+  - Branch (0.35.0)
   - CocoaLumberjack (3.5.3):
     - CocoaLumberjack/Core (= 3.5.3)
   - CocoaLumberjack/Core (3.5.3)
@@ -2088,8 +2088,8 @@ PODS:
     - UMCore
   - EXBlur (8.2.0):
     - UMCore
-  - EXBranch (2.3.0):
-    - Branch (= 0.34.0)
+  - EXBranch (2.3.1):
+    - Branch (= 0.35.0)
     - React
     - UMCore
   - EXBrightness (8.3.0):
@@ -2243,7 +2243,7 @@ PODS:
     - UMConstantsInterface
     - UMCore
     - UMTaskManagerInterface
-  - EXUpdates (0.3.1):
+  - EXUpdates (0.3.2):
     - React
     - UMCore
   - EXVideoThumbnails (4.3.0):
@@ -4587,7 +4587,7 @@ SPEC CHECKSUMS:
   Analytics: 231b01fdaa9704105881dc82def7b7b1d6571edb
   AppAuth: bce82c76043657c99d91e7882e8a9e1a93650cd4
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
-  Branch: 446aeb832102f56f04edf5fa7cb0a752dc392ca7
+  Branch: 9a37f707974a128c37829033c49018b79c7e7a2d
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: cde416483dac037923206447da6e1454df403714
   EXAdsAdMob: d2c317db3c1879bf2c0e36d76468a426917598f3
@@ -4601,7 +4601,7 @@ SPEC CHECKSUMS:
   EXBarCodeScanner: 1a76d3dc0dae2799af6012e3e4966100e4221a94
   EXBattery: e86c400b6de4067f48a34b832fec7c9a0cedfd97
   EXBlur: 84c07f6396daf07125fd1202da48cdf2137c29c5
-  EXBranch: 143d95922c70b1ab74c2c67ea962f3ee905a6850
+  EXBranch: 747872636704a35a4903e197f01100b76fd2e8f0
   EXBrightness: 3f20f3102668ee8afd47c620710f9815fc62f496
   EXCalendar: 673fdb742ddfaf34dfa23931170f57b46249f03d
   EXCamera: 05687ee8f0618820d3b45e54b129a1a535537e8c
@@ -4650,7 +4650,7 @@ SPEC CHECKSUMS:
   EXSQLite: d0d8677c13e60d5db2812387f059c697be27d3fb
   EXStoreReview: e847ad9367e8d9ab0d856e6aa21e16c1d30f118e
   EXTaskManager: 85c9d0ad555af2a393a5c4cb34c767f0e2162357
-  EXUpdates: 3a678b646888effbf7d144f5edfcbe233af3c061
+  EXUpdates: a8bd937b22d0cd30c656c9614cb89120d4da6df4
   EXVideoThumbnails: 14e86a99ba80dff030a77a0a720f494ac6c1cf84
   EXWebBrowser: 1a3ff931f6e64592c70f5faa226e4802a344d664
   FBAudienceNetwork: 33fc8c8c07c1cdbf5279784b73729c6410809daa
@@ -4721,6 +4721,6 @@ SPEC CHECKSUMS:
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: e415b83d662c383e28ff1cedd723551cf46aa025
+PODFILE CHECKSUM: 43b291c30373b1843656e6e178ce3556eeabac22
 
 COCOAPODS: 1.9.3

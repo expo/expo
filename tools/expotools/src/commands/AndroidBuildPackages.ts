@@ -20,10 +20,13 @@ type Package = {
   buildDirRelative: string;
 };
 
-const UNBUILDABLE_PACKAGES_NAMES = [
-  'expo-module-template',
+// There are a few packages that we want to exclude from shell app builds; they don't follow any
+// easy pattern so we just keep track of them manually here.
+export const EXCLUDED_PACKAGE_SLUGS = [
   'expo-dev-menu',
   'expo-dev-menu-interface',
+  'expo-module-template',
+  'unimodules-test-core',
 ];
 
 const EXPO_ROOT_DIR = Directories.getExpoRepositoryRootDir();
@@ -45,7 +48,12 @@ async function _findUnimodules(pkgDir: string): Promise<Package[]> {
 
   const packages = await Packages.getListOfPackagesAsync();
   for (const pkg of packages) {
-    if (!pkg.isSupportedOnPlatform('android') || !pkg.androidPackageName) continue;
+    if (
+      !pkg.isSupportedOnPlatform('android') ||
+      !pkg.androidPackageName ||
+      EXCLUDED_PACKAGE_SLUGS.includes(pkg.packageSlug)
+    )
+      continue;
     unimodules.push({
       name: pkg.packageSlug,
       sourceDir: path.join(pkg.path, pkg.androidSubdirectory),
@@ -296,9 +304,7 @@ async function action(options: ActionOptions) {
   process.on('SIGINT', _exitHandler);
   process.on('SIGTERM', _exitHandler);
 
-  const detachableUniversalModules = (
-    await _findUnimodules(path.join(EXPO_ROOT_DIR, 'packages'))
-  ).filter((unimodule) => !UNBUILDABLE_PACKAGES_NAMES.includes(unimodule.name));
+  const detachableUniversalModules = await _findUnimodules(path.join(EXPO_ROOT_DIR, 'packages'));
 
   // packages must stay in this order --
   // ReactAndroid MUST be first and expoview MUST be last

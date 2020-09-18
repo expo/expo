@@ -1,11 +1,12 @@
 import * as React from 'react';
 import styled, { keyframes, css } from 'react-emotion';
 
-import { paragraph } from './typography';
-
-import * as Constants from '~/common/constants';
 import * as Utilities from '~/common/utilities';
 import BulletIcon from '~/components/icons/Bullet';
+
+import * as Constants from '~/constants/theme';
+
+import { paragraph } from './typography';
 
 const attributes = {
   'data-text': true,
