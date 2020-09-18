@@ -1,3 +1,7 @@
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { DrawerNavigationOptions } from '@react-navigation/drawer';
+import { StackNavigationOptions } from '@react-navigation/stack';
+
 import { Routes as ExpoApiRoutes } from './ExpoApis';
 import ExpoApisStackNavigator from './ExpoApisStackNavigator';
 import { Routes as ExpoComponentRoutes } from './ExpoComponents';
@@ -29,4 +33,13 @@ export default {
     },
     navigator: ExpoComponentsStackNavigator,
   },
-};
+} as Record<
+  string,
+  | undefined
+  | {
+      linking: any;
+      navigator: ((props: { navigation: BottomTabNavigationProp<any> }) => JSX.Element) & {
+        navigationOptions: StackNavigationOptions & DrawerNavigationOptions;
+      };
+    }
+>;

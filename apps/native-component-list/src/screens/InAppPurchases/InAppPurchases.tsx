@@ -48,6 +48,7 @@ export default class InAppPurchases extends React.Component<any, any> {
         'dev.expo.payments.gold',
       ],
       android: ['gas', 'premium', 'gold_yearly', 'gold_monthly'],
+      default: [],
     });
 
     // Get product details

@@ -18,8 +18,8 @@ export const linking = {
       main: {
         initialRouteName: 'apis',
         screens: {
-          apis: MainNavigators.apis.linking,
-          components: MainNavigators.components.linking,
+          apis: MainNavigators.apis?.linking,
+          components: MainNavigators.components?.linking,
         },
       },
       search: {

@@ -127,7 +127,7 @@ function ResizeModeSegmentedControl({
 }: {
   onValueChange: (value: ResizeMode) => void;
 }) {
-  const resizeMap = {
+  const resizeMap: Record<string, ResizeMode | undefined> = {
     stretch: ResizeMode.STRETCH,
     contain: ResizeMode.CONTAIN,
     cover: ResizeMode.COVER,
@@ -151,7 +151,12 @@ function ResizeModeSegmentedControl({
         onChange={event => {
           setIndex(event.nativeEvent.selectedSegmentIndex);
         }}
-        onValueChange={value => onValueChange(resizeMap[value])}
+        onValueChange={value => {
+          const mappedValue = resizeMap[value];
+          if (mappedValue) {
+            onValueChange(mappedValue);
+          }
+        }}
       />
       <Text
         style={{

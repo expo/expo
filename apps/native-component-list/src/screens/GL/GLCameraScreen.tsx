@@ -32,7 +32,7 @@ interface State {
   type: any;
 }
 
-class GLCameraScreen extends React.Component<{}, State> {
+class GLCameraScreen extends React.Component<object, State> {
   static title = 'Expo.Camera integration';
 
   readonly state: State = {

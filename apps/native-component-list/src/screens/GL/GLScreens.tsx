@@ -28,7 +28,7 @@ const GLCameraScreen = optionalRequire(() => require('./GLCameraScreen'));
 
 interface Screens {
   [key: string]: {
-    screen: React.ComponentType & { title: string };
+    screen: React.ComponentType & { title?: string };
   };
 }
 
@@ -150,7 +150,7 @@ const GLScreens: Screens = {
   },
 
   ProcessingInAndOut: {
-    screen: ProcessingWrap<{}>(`'In and out' from openprocessing.org`, p => {
+    screen: ProcessingWrap<object>(`'In and out' from openprocessing.org`, p => {
       p.setup = () => {
         p.strokeWeight(7);
       };
@@ -202,7 +202,7 @@ const GLScreens: Screens = {
   },
 
   ProcessingNoClear: {
-    screen: ProcessingWrap<{}>('Draw without clearing screen with processing.js', p => {
+    screen: ProcessingWrap<object>('Draw without clearing screen with processing.js', p => {
       let t = 0;
 
       p.setup = () => {

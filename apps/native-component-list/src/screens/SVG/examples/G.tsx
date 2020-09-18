@@ -1,6 +1,7 @@
 // tslint:disable max-classes-per-file
 import React from 'react';
 import * as Svg from 'react-native-svg';
+
 import Example from './Example';
 
 const { Circle, Line, Rect, Text, Use } = Svg;
@@ -9,7 +10,7 @@ interface State {
   fill: string;
 }
 
-class GExample extends React.Component<{}, State> {
+class GExample extends React.Component<object, State> {
   static title = 'G children props inherit';
 
   readonly state: State = {
@@ -54,7 +55,7 @@ class GTransform extends React.Component {
   render() {
     return (
       <Svg.Svg height="100" width="200">
-        <Svg.G rotate="50" origin="40, 30" id="group">
+        <Svg.G rotation="50" origin="40, 30" id="group">
           <Line x1="60" y1="10" x2="140" y2="10" stroke="#060" strokeWidth="1" />
 
           <Rect x="60" y="20" height="50" width="80" stroke="#060" strokeWidth="1" fill="#060" />
