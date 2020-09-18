@@ -11,8 +11,7 @@ import { PDIV, P, Quote } from '~/components/base/paragraph';
 const createPermalinkedComponent = (BaseComponent, options) => {
   const { customIconStyle, baseNestingLevel } = options || {};
   return ({ children, level, ...props }) => {
-    const nestingLevel =
-      level != null && baseNestingLevel != null ? level + baseNestingLevel : undefined;
+    const nestingLevel = baseNestingLevel != null ? (level ?? 0) + baseNestingLevel : undefined;
     return (
       <Permalink
         nestingLevel={nestingLevel}
@@ -29,9 +28,9 @@ export const strong = P.B;
 export const ul = UL;
 export const li = LI;
 export const ol = OL;
-export const h2 = createPermalinkedComponent(H2);
-export const h3 = createPermalinkedComponent(H3);
-export const h4 = createPermalinkedComponent(H4);
+export const h2 = createPermalinkedComponent(H2, { baseNestingLevel: 2 });
+export const h3 = createPermalinkedComponent(H3, { baseNestingLevel: 3 });
+export const h4 = createPermalinkedComponent(H4, { baseNestingLevel: 4 });
 export const code = Code;
 export const inlineCode = InlineCode;
 export const a = ExternalLink;
