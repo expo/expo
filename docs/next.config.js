@@ -26,26 +26,27 @@ module.exports = {
     // See: https://github.com/kentcdodds/babel-plugin-preval/issues/19
     config.module.rules.push({
       test: /.jsx?$/,
-      include: [resolve(__dirname, 'constants')],
+      include: [join(__dirname, 'constants')],
       use: {
         ...options.defaultLoaders.babel,
         options: {
           ...options.defaultLoaders.babel.options,
+          // Keep this path in sync with package.json and other scripts that clear the cache
           cacheDirectory: '.next/preval',
-          plugins: ['preval'],
+          plugins: [
+            ...(options.defaultLoaders.babel.options?.plugins ?? []),
+            'preval',
+          ],
         },
       },
-    })
-
+    });
     // Add support for MDX with our custom loader
     config.module.rules.push({
       test: /.mdx?$/, // load both .md and .mdx files
       use: [options.defaultLoaders.babel, '@mdx-js/loader', join(__dirname, './common/md-loader')],
     });
-
     // Fix inline or browser MDX usage: https://mdxjs.com/getting-started/webpack#running-mdx-in-the-browser
     config.node = { fs: 'empty' };
-
     return config;
   },
   // Create a map of all pages to export
@@ -86,7 +87,6 @@ module.exports = {
       // Some of our pages are "hidden" and should not be added to the sitemap
       pathsHidden: navigation.previewDirectories,
     });
-
     return pathMap;
   },
 };
