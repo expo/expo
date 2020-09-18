@@ -6,8 +6,8 @@ const { version } = require('./package.json');
 
 // To generate a sitemap, we need context about the supported versions and navigational data
 const createSitemap = require('./scripts/create-sitemap');
-const navigation = require('./common/navigation-data');
-const versions = require('./common/versions');
+const navigation = require('./constants/navigation-data');
+const versions = require('./constants/versions');
 
 // copy versions/v(latest version) to versions/latest
 // (Next.js only half-handles symlinks)
