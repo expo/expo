@@ -65,20 +65,14 @@ export default function MainTabbedNavigator(props: any) {
           activeTintColor: Colors.tabIconSelected,
           inactiveTintColor: Colors.tabIconDefault,
         }}>
-        {Object.keys(Screens).map(name => {
-          const screen = Screens[name];
-          if (screen) {
-            return (
-              <Tab.Screen
-                name={name}
-                key={name}
-                component={screen.navigator}
-                options={screen.navigator.navigationOptions}
-              />
-            );
-          }
-          return null;
-        })}
+        {(Object.keys(Screens) as (keyof typeof Screens)[]).map(name => (
+          <Tab.Screen
+            name={name}
+            key={name}
+            component={Screens[name].navigator}
+            options={Screens[name].navigator.navigationOptions}
+          />
+        ))}
       </Tab.Navigator>
     );
   }
@@ -89,20 +83,14 @@ export default function MainTabbedNavigator(props: any) {
       drawerContent={props => <CustomDrawerContent {...props} hideLabels={isTablet} />}
       drawerStyle={{ width: isLargeScreen ? undefined : 64 + left }}
       drawerType="permanent">
-      {Object.keys(Screens).map(name => {
-        const screen = Screens[name];
-        if (screen) {
-          return (
-            <Drawer.Screen
-              name={name}
-              key={name}
-              component={screen.navigator}
-              options={screen.navigator.navigationOptions}
-            />
-          );
-        }
-        return null;
-      })}
+      {(Object.keys(Screens) as (keyof typeof Screens)[]).map(name => (
+        <Tab.Screen
+          name={name}
+          key={name}
+          component={Screens[name].navigator}
+          options={Screens[name].navigator.navigationOptions}
+        />
+      ))}
     </Drawer.Navigator>
   );
 }

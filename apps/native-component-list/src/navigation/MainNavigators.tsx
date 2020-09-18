@@ -11,38 +11,35 @@ import ExpoComponentsStackNavigator from './ExpoComponentsStackNavigator';
 // @tsapeta: These navigators are being used by `bare-expo` app,
 // so make sure they still work there once you change something here.
 
-const MainNavigators: Record<
-  string,
-  | undefined
-  | {
-      linking: PathConfig;
-      navigator: ((props: { navigation: BottomTabNavigationProp<any> }) => JSX.Element) & {
-        navigationOptions: StackNavigationOptions & DrawerNavigationOptions;
-      };
-    }
-> = {
-  apis: {
-    linking: {
-      path: '/apis',
-      initialRouteName: 'ExpoApis',
-      screens: {
-        ExpoApis: '',
-        ...ExpoApiRoutes,
-      },
-    },
-    navigator: ExpoApisStackNavigator,
-  },
-  components: {
-    linking: {
-      path: '/components',
-      initialRouteName: 'ExpoComponents',
-      screens: {
-        ExpoComponents: '',
-        ...ExpoComponentRoutes,
-      },
-    },
-    navigator: ExpoComponentsStackNavigator,
-  },
+type ScreenConfig = {
+  linking: PathConfig;
+  navigator: ((props: { navigation: BottomTabNavigationProp<any> }) => JSX.Element) & {
+    navigationOptions: StackNavigationOptions & DrawerNavigationOptions;
+  };
 };
 
-export default MainNavigators;
+const apis: ScreenConfig = {
+  linking: {
+    path: '/apis',
+    initialRouteName: 'ExpoApis',
+    screens: {
+      ExpoApis: '',
+      ...ExpoApiRoutes,
+    },
+  },
+  navigator: ExpoApisStackNavigator,
+};
+
+const components = {
+  linking: {
+    path: '/components',
+    initialRouteName: 'ExpoComponents',
+    screens: {
+      ExpoComponents: '',
+      ...ExpoComponentRoutes,
+    },
+  },
+  navigator: ExpoComponentsStackNavigator,
+};
+
+export default { apis, components };
