@@ -7,6 +7,7 @@ import InstallSection from '~/components/plugins/InstallSection';
 import SnackInline from '~/components/plugins/SnackInline';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import { H3 } from '~/components/plugins/Headings';
 
 > ⚠️ For web support and more authentication methods, use the new [**AuthSession**](../auth-session) API
 
@@ -384,7 +385,11 @@ To save time I've copied over some of the relevant information, which you can fi
 
 Other parameters MAY be sent. See Sections [3.2.2](https://openid.net/specs/openid-connect-core-1_0.html#ImplicitAuthorizationEndpoint), [3.3.2](https://openid.net/specs/openid-connect-core-1_0.html#HybridAuthorizationEndpoint), [5.2](https://openid.net/specs/openid-connect-core-1_0.html#ClaimsLanguagesAndScripts), [5.5](https://openid.net/specs/openid-connect-core-1_0.html#ClaimsParameter), [6](https://openid.net/specs/openid-connect-core-1_0.html#JWTRequests), and [7.2.1](https://openid.net/specs/openid-connect-core-1_0.html#RegistrationParameter) for additional Authorization Request parameters and parameter values defined by this specification.
 
-### [`OAuthDisplayParameter`](https://openid.net/specs/openid-connect-core-1_0.html)
+<H3 sidebarType="inlineCode">
+
+[`OAuthDisplayParameter`](https://openid.net/specs/openid-connect-core-1_0.html)
+
+</H3>
 
 ```js
 type OAuthDisplayParameter = 'page' | 'popup' | 'touch' | 'wap';
@@ -401,7 +406,11 @@ ASCII string value that specifies how the Authorization Server displays the auth
 
 The Authorization Server MAY also attempt to detect the capabilities of the User Agent and present an appropriate display.
 
-### [`OAuthPromptParameter`](https://openid.net/specs/openid-connect-core-1_0.html)
+<H3 sidebarType="inlineCode">
+
+[`OAuthPromptParameter`](https://openid.net/specs/openid-connect-core-1_0.html)
+
+</H3>
 
 ```js
 type OAuthPromptParameter = 'none' | 'login' | 'consent' | 'select_account';
@@ -418,7 +427,11 @@ Space delimited, case sensitive list of ASCII string values that specifies wheth
 
 The `prompt` parameter can be used by the Client to make sure that the End-User is still present for the current session or to bring attention to the request. If this parameter contains `none` with any other value, an error is returned.
 
-### [`OAuthNonceParameter`](https://openid.net/specs/openid-connect-core-1_0.html)
+<H3 sidebarType="inlineCode">
+
+[`OAuthNonceParameter`](https://openid.net/specs/openid-connect-core-1_0.html)
+
+</H3>
 
 ```js
 type OAuthNonceParameter = string;
@@ -426,7 +439,11 @@ type OAuthNonceParameter = string;
 
 String value used to associate a Client session with an ID Token, and to mitigate replay attacks. The value is passed through unmodified from the Authentication Request to the ID Token. Sufficient entropy MUST be present in the `nonce` values used to prevent attackers from guessing values. For implementation notes, see [Section 15.5.2](https://openid.net/specs/openid-connect-core-1_0.html#NonceNotes).
 
-### [`OAuthUILocalesParameter`](https://openid.net/specs/openid-connect-core-1_0.html)
+<H3 sidebarType="inlineCode">
+
+[`OAuthUILocalesParameter`](https://openid.net/specs/openid-connect-core-1_0.html)
+
+</H3>
 
 ```js
 type OAuthUILocalesParameter = string;
@@ -434,7 +451,11 @@ type OAuthUILocalesParameter = string;
 
 End-User's preferred languages and scripts for the user interface, represented as a space-separated list of [BCP47](https://openid.net/specs/openid-connect-core-1_0.html#RFC5646) [RFC5646] language tag values, ordered by preference. For instance, the value "fr-CA fr en" represents a preference for French as spoken in Canada, then French (without a region designation), followed by English (without a region designation). An error SHOULD NOT result if some or all of the requested locales are not supported by the OpenID Provider.
 
-### [`OAuthIDTokenHintParameter`](https://openid.net/specs/openid-connect-core-1_0.html)
+<H3 sidebarType="inlineCode">
+
+[`OAuthIDTokenHintParameter`](https://openid.net/specs/openid-connect-core-1_0.html)
+
+</H3>
 
 ```js
 type OAuthIDTokenHintParameter = string;
@@ -443,7 +464,11 @@ type OAuthIDTokenHintParameter = string;
 ID Token previously issued by the Authorization Server being passed as a hint about the End-User's current or past authenticated session with the Client. If the End-User identified by the ID Token is logged in or is logged in by the request, then the Authorization Server returns a positive response; otherwise, it SHOULD return an error, such as login_required. When possible, an `id_token_hint` SHOULD be present when `prompt=none` is used and an `invalid_request` error MAY be returned if it is not; however, the server SHOULD respond successfully when possible, even if it is not present. The Authorization Server need not be listed as an audience of the ID Token when it is used as an `id_token_hint` value.
 If the ID Token received by the RP from the OP is encrypted, to use it as an `id_token_hint`, the Client MUST decrypt the signed ID Token contained within the encrypted ID Token. The Client MAY re-encrypt the signed ID token to the Authentication Server using a key that enables the server to decrypt the ID Token, and use the re-encrypted ID token as the `id_token_hint` value.
 
-### [`OAuthMaxAgeParameter`](https://openid.net/specs/openid-connect-core-1_0.html)
+<H3 sidebarType="inlineCode">
+
+[`OAuthMaxAgeParameter`](https://openid.net/specs/openid-connect-core-1_0.html)
+
+</H3>
 
 ```js
 type OAuthMaxAgeParameter = string;
@@ -451,7 +476,11 @@ type OAuthMaxAgeParameter = string;
 
 Maximum Authentication Age. Specifies the allowable elapsed time in seconds since the last time the End-User was actively authenticated by the OP. If the elapsed time is greater than this value, the OP MUST attempt to actively re-authenticate the End-User. (The `max_age` request parameter corresponds to the OpenID 2.0 [PAPE](https://openid.net/specs/openid-connect-core-1_0.html#OpenID.PAPE) [OpenID.PAPE] `max_auth_age` request parameter.) When `max_age` is used, the ID Token returned MUST include an `auth_time` Claim Value.
 
-### [`OAuthLoginHintParameter`](https://openid.net/specs/openid-connect-core-1_0.html)
+<H3 sidebarType="inlineCode">
+
+[`OAuthLoginHintParameter`](https://openid.net/specs/openid-connect-core-1_0.html)
+
+</H3>
 
 ```js
 type OAuthLoginHintParameter = string;
@@ -459,7 +488,11 @@ type OAuthLoginHintParameter = string;
 
 OPTIONAL. Hint to the Authorization Server about the login identifier the End-User might use to log in (if necessary). This hint can be used by an RP if it first asks the End-User for their e-mail address (or other identifier) and then wants to pass that value as a hint to the discovered authorization service. It is RECOMMENDED that the hint value match the value used for discovery. This value MAY also be a phone number in the format specified for the `phone_number` Claim. The use of this parameter is left to the OP's discretion.
 
-### [`OAuthACRValuesParameter`](https://openid.net/specs/openid-connect-core-1_0.html)
+<H3 sidebarType="inlineCode">
+
+[`OAuthACRValuesParameter`](https://openid.net/specs/openid-connect-core-1_0.html)
+
+</H3>
 
 ```js
 type OAuthACRValuesParameter = string;
