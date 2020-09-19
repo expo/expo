@@ -14,7 +14,7 @@ Instead of providing credentials, you can generate Personal Access Tokens that w
 
 ### Personal Access Tokens
 
-To create Personal Access Tokens, you have to go to the Expo Dashboard Settings. You can find this page at [https://expo.io/dashboard/ACCOUNT/settings/access-tokens](https://expo.io/dashboard/ACCOUNT/settings/access-tokens). Anyone with this token can perform actions on behalf of your account. That applies to all content within your Personal Account.
+To create Personal Access Tokens, you have to go to the [Expo Dashboard Settings access token page](https://expo.io/dashboard/[account]/settings/access-tokens). Anyone with this token can perform actions on behalf of your account. That applies to all content within your Personal Account.
 
 ### Using Access Tokens
 
@@ -30,4 +30,4 @@ Common situations where access tokens are useful:
 
 ### Revoking Access Tokens
 
-In case a token was accidentally leaked, you can revoke them without changing your username and password. When you revoke the access token, you block all access to your account using this token. To do this, go to the Expo Dashboard Settings, at [https://expo.io/dashboard/ACCOUNT/settings/access-tokens](https://expo.io/dashboard/ACCOUNT/settings/access-tokens), and delete the token you want to revoke.
+In case a token was accidentally leaked, you can revoke them without changing your username and password. When you revoke the access token, you block all access to your account using this token. To do this, go to the [Expo Dashboard Settings access token page](https://expo.io/dashboard/[account]/settings/access-tokens), and delete the token you want to revoke.
