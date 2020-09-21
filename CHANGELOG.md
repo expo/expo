@@ -31,6 +31,8 @@ Package-specific changes not released in any SDK will be added here just before 
 ### 🛠 Breaking changes
 
 - Removed GCM entirely from the Android client and standalone apps since the server APIs have been shut down. ([#6071](https://github.com/expo/expo/pull/6071), [#9735](https://github.com/expo/expo/pull/9735) by [@esamelson](https://github.com/esamelson))
+- **`expo`**
+  - The `SplashScreen` and `Updates` module exports have been removed in favor of the `expo-splash-screen` and `expo-updates` packages. You'll need to install and import from the individual packages if you use either module.
 - **`@unimodules/react-native-adapter`**
   - Deprecate `RCTDeviceEventEmitter` in favor of the renamed `DeviceEventEmitter`. ([#8826](https://github.com/expo/expo/pull/8826) by [@EvanBacon](https://github.com/EvanBacon))
 - **`expo-analytics-amplitude`**
