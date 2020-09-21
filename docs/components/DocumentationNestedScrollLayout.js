@@ -1,9 +1,9 @@
 // NOTE(jim):
 // GETTING NESTED SCROLL RIGHT IS DELICATE BUSINESS. THEREFORE THIS COMPONENT
 // IS THE ONLY PLACE WHERE SCROLL CODE SHOULD BE HANDLED. THANKS.
+import * as React from 'react';
 import styled, { keyframes, css, injectGlobal } from 'react-emotion';
 
-import * as React from 'react';
 import * as Constants from '~/constants/theme';
 
 // NOTE(jim): Global styles if and only if this component is used.
@@ -100,14 +100,13 @@ const STYLES_CONTENT = css`
   }
 `;
 
-const STYLES_LEFT = css`
+const STYLES_SIDEBAR = css`
   flex-shrink: 0;
   max-width: 280px;
   height: 100%;
   overflow: hidden;
   transition: 200ms ease max-width;
   background: ${Constants.expoColors.background};
-  border-right: 1px solid ${Constants.expoColors.gray[250]};
 
   @media screen and (max-width: 1200px) {
     max-width: 280px;
@@ -118,12 +117,22 @@ const STYLES_LEFT = css`
   }
 `;
 
+const STYLES_LEFT = css`
+  border-right: 1px solid ${Constants.expoColors.gray[250]};
+`;
+
 const STYLES_RIGHT = css`
+  border-left: 1px solid ${Constants.expoColors.gray[250]};
+  background-color: ${Constants.expoColors.white};
+`;
+
+const STYLES_CENTER = css`
   background: ${Constants.expoColors.white};
   min-width: 5%;
   width: 100%;
   height: 100%;
   overflow: hidden;
+  display: flex;
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     height: auto;
@@ -168,25 +177,34 @@ const STYLES_SCROLL_CONTAINER = css`
   }
 `;
 
-const STYLES_RIGHT_WRAPPER = css`
+const STYLES_CENTER_WRAPPER = css`
   max-width: 1200px;
   margin: auto;
 `;
 
 class ScrollContainer extends React.Component {
+  scrollRef = React.createRef();
+
   componentDidMount() {
-    if (this.props.scrollPosition && this.refs.scroll) {
-      this.refs.scroll.scrollTop = this.props.scrollPosition;
+    if (this.props.scrollPosition && this.scrollRef.current) {
+      this.scrollRef.current.scrollTop = this.props.scrollPosition;
     }
   }
 
   getScrollTop = () => {
-    return this.refs.scroll.scrollTop;
+    return this.scrollRef.current.scrollTop;
+  };
+
+  getScrollRef = () => {
+    return this.scrollRef;
   };
 
   render() {
     return (
-      <div className={STYLES_SCROLL_CONTAINER} ref="scroll">
+      <div
+        className={STYLES_SCROLL_CONTAINER}
+        ref={this.scrollRef}
+        onScroll={this.props.scrollHandler}>
         {this.props.children}
       </div>
     );
@@ -198,10 +216,25 @@ export default class DocumentationNestedScrollLayout extends React.Component {
     sidebarScrollPosition: 0,
   };
 
+  sidebarRef = React.createRef();
+  contentRef = React.createRef();
+  sidebarRightRef = React.createRef();
+
   getSidebarScrollTop = () => {
-    if (this.refs.sidebar) {
-      return this.refs.sidebar.getScrollTop();
+    if (this.sidebarRef.current) {
+      return this.sidebarRef.current.getScrollTop();
     }
+  };
+
+  getContentScrollTop = () => {
+    if (!this.contentRef.current) {
+      return;
+    }
+    return this.contentRef.current.getScrollTop();
+  };
+
+  _scrollHandler = () => {
+    this.props.onContentScroll && this.props.onContentScroll(this.getContentScrollTop());
   };
 
   render() {
@@ -217,17 +250,30 @@ export default class DocumentationNestedScrollLayout extends React.Component {
           {this.props.header}
         </div>
         <div className={STYLES_CONTENT}>
-          <div className={STYLES_LEFT}>
-            <ScrollContainer ref="sidebar" scrollPosition={this.props.sidebarScrollPosition}>
+          <div className={`${STYLES_SIDEBAR} ${STYLES_LEFT}`}>
+            <ScrollContainer
+              ref={this.sidebarRef}
+              scrollPosition={this.props.sidebarScrollPosition}>
               {this.props.sidebar}
             </ScrollContainer>
           </div>
 
-          <div className={STYLES_RIGHT}>
-            <ScrollContainer>
-              <div className={STYLES_RIGHT_WRAPPER}>{this.props.children}</div>
+          <div className={STYLES_CENTER}>
+            <ScrollContainer ref={this.contentRef} scrollHandler={this._scrollHandler}>
+              <div className={STYLES_CENTER_WRAPPER}>{this.props.children}</div>
             </ScrollContainer>
           </div>
+
+          {this.props.tocVisible && (
+            <div className={`${STYLES_SIDEBAR} ${STYLES_RIGHT}`}>
+              <ScrollContainer ref={this.sidebarRightRef}>
+                {React.cloneElement(this.props.sidebarRight, {
+                  selfRef: this.sidebarRightRef,
+                  contentRef: this.contentRef,
+                })}
+              </ScrollContainer>
+            </div>
+          )}
         </div>
       </div>
     );

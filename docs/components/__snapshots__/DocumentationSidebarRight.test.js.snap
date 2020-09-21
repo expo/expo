@@ -1,0 +1,47 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
+<div>
+  <nav
+    class="css-f6rn8e"
+    data-sidebar="true"
+  >
+    <a
+      class="
+            css-1vd0rdr
+            css-1acx65k
+            false
+            false
+          "
+      href="#base-level-heading"
+      style="padding-left: 0px;"
+    >
+      Base level heading
+    </a>
+    <a
+      class="
+            css-1vd0rdr
+            false
+            false
+            false
+          "
+      href="#level-3-subheading"
+      style="padding-left: 16px;"
+    >
+      Level 3 subheading
+    </a>
+    <a
+      class="
+            css-1vd0rdr
+            false
+            css-1o4q23w
+            false
+          "
+      href="#code-heading-depth-1"
+      style="padding-left: 16px;"
+    >
+      Code heading depth 1
+    </a>
+  </nav>
+</div>
+`;

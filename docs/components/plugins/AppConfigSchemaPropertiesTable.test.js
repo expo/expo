@@ -1,11 +1,15 @@
 import { render } from '@testing-library/react';
+import GithubSlugger from 'github-slugger';
+import * as React from 'react';
+
 import AppConfigSchemaPropertiesTable, {
   formatSchema,
   createDescription,
   _getType,
 } from './AppConfigSchemaPropertiesTable';
-import { SluggerContext } from '~/components/page-higher-order/withSlugger';
-import GithubSlugger from 'github-slugger';
+
+import { HeadingManager } from '~/common/headingManager';
+import { HeadingsContext } from '~/components/page-higher-order/withHeadingManager';
 
 var testSchema = {
   name: {
@@ -95,9 +99,9 @@ var testSchema = {
 describe('AppConfigSchemaPropertiesTable', () => {
   test('correctly matches snapshot', () => {
     const { container } = render(
-      <SluggerContext.Provider value={new GithubSlugger()}>
+      <HeadingsContext.Provider value={new HeadingManager(new GithubSlugger(), {})}>
         <AppConfigSchemaPropertiesTable schema={testSchema} />
-      </SluggerContext.Provider>
+      </HeadingsContext.Provider>
     );
     expect(container).toMatchSnapshot();
   });

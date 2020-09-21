@@ -1,5 +1,6 @@
 ---
 title: app.json / app.config.js
+maxHeadingDepth: 5
 ---
 
 <!--

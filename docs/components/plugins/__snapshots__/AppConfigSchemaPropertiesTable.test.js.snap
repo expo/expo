@@ -21,7 +21,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       <tr>
         <td>
           <div
-            data-testid="<propertyAnchor><inlineCode>name</inlineCode></propertyAnchor>"
+            data-testid="<propertyAnchor level={0}><inlineCode>name</inlineCode></propertyAnchor>"
             style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
           >
             <div
@@ -111,7 +111,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       <tr>
         <td>
           <div
-            data-testid="<propertyAnchor><inlineCode>androidNavigationBar</inlineCode></propertyAnchor>"
+            data-testid="<propertyAnchor level={0}><inlineCode>androidNavigationBar</inlineCode></propertyAnchor>"
             style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
           >
             <div
@@ -215,7 +215,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       <tr>
         <td>
           <div
-            data-testid="<subpropertyAnchor><inlineCode>visible</inlineCode></subpropertyAnchor>"
+            data-testid="<subpropertyAnchor level={1}><inlineCode>visible</inlineCode></subpropertyAnchor>"
             style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
           >
             <div
@@ -305,7 +305,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       <tr>
         <td>
           <div
-            data-testid="<subpropertyAnchor><inlineCode>always</inlineCode></subpropertyAnchor>"
+            data-testid="<subpropertyAnchor level={2}><inlineCode>always</inlineCode></subpropertyAnchor>"
             style="margin-left: 64px; display: list-item; list-style-type: circle; overflow-x: visible;"
           >
             <div
@@ -381,7 +381,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       <tr>
         <td>
           <div
-            data-testid="<subpropertyAnchor><inlineCode>backgroundColor</inlineCode></subpropertyAnchor>"
+            data-testid="<subpropertyAnchor level={1}><inlineCode>backgroundColor</inlineCode></subpropertyAnchor>"
             style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
           >
             <div
@@ -468,7 +468,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       <tr>
         <td>
           <div
-            data-testid="<propertyAnchor><inlineCode>intentFilters</inlineCode></propertyAnchor>"
+            data-testid="<propertyAnchor level={0}><inlineCode>intentFilters</inlineCode></propertyAnchor>"
             style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
           >
             <div
@@ -595,7 +595,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       <tr>
         <td>
           <div
-            data-testid="<subpropertyAnchor><inlineCode>autoVerify</inlineCode></subpropertyAnchor>"
+            data-testid="<subpropertyAnchor level={1}><inlineCode>autoVerify</inlineCode></subpropertyAnchor>"
             style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
           >
             <div
@@ -671,7 +671,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       <tr>
         <td>
           <div
-            data-testid="<subpropertyAnchor><inlineCode>data</inlineCode></subpropertyAnchor>"
+            data-testid="<subpropertyAnchor level={1}><inlineCode>data</inlineCode></subpropertyAnchor>"
             style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
           >
             <div
@@ -746,7 +746,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       <tr>
         <td>
           <div
-            data-testid="<subpropertyAnchor><inlineCode>host</inlineCode></subpropertyAnchor>"
+            data-testid="<subpropertyAnchor level={2}><inlineCode>host</inlineCode></subpropertyAnchor>"
             style="margin-left: 64px; display: list-item; list-style-type: circle; overflow-x: visible;"
           >
             <div
