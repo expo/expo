@@ -3,7 +3,7 @@
 
   <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
-  <application>
+  <application android:fullBackupContent="@xml/backup_descriptor">
     <service
       android:name=".FirebaseListenerService"
       android:exported="false">
