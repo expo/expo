@@ -73,6 +73,12 @@ UM_EXPORT_METHOD_AS(getInstallationIdAsync, getInstallationIdAsyncWithResolver:(
 {
   NSString *documentDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
   NSURL *installationIdUrl = [NSURL fileURLWithPath:kEXInstallationIdFileName relativeToURL:[NSURL fileURLWithPath:documentDirectory]];
+  // YES, exclude the file from backup
+  NSError *error;
+  [installationIdUrl setResourceValue:@(YES) forKey:NSURLIsExcludedFromBackupKey error:&error];
+  if (error) {
+    NSLog(@"[expo-notifications] Error encountered while trying to exclude installation ID file from backup: %@", error.debugDescription);
+  }
   return installationIdUrl;
 }
 
