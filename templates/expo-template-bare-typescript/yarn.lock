@@ -1425,17 +1425,6 @@
     "@types/yargs" "^15.0.0"
     chalk "^3.0.0"
 
-"@jest/types@^26.3.0":
-  version "26.3.0"
-  resolved "https://registry.yarnpkg.com/@jest/types/-/types-26.3.0.tgz#97627bf4bdb72c55346eef98e3b3f7ddc4941f71"
-  integrity sha512-BDPG23U0qDeAvU4f99haztXwdAg3hz4El95LkAM+tHAqqhiVzRpEGHHU8EDxT/AnxOrA65YjLBwDahdJ9pTLJQ==
-  dependencies:
-    "@types/istanbul-lib-coverage" "^2.0.0"
-    "@types/istanbul-reports" "^3.0.0"
-    "@types/node" "*"
-    "@types/yargs" "^15.0.0"
-    chalk "^4.0.0"
-
 "@jimp/bmp@^0.9.8":
   version "0.9.8"
   resolved "https://registry.yarnpkg.com/@jimp/bmp/-/bmp-0.9.8.tgz#5933ab8fb359889bec380b0f7802163374933624"
@@ -1949,13 +1938,6 @@
   integrity sha512-P/W9yOX/3oPZSpaYOCQzGqgCQRXn0FFO/V8bWrCQs+wLmvVVxk6CRBXALEvNs9OHIatlnlFokfhuDo2ug01ciw==
   dependencies:
     "@types/istanbul-lib-coverage" "*"
-    "@types/istanbul-lib-report" "*"
-
-"@types/istanbul-reports@^3.0.0":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/@types/istanbul-reports/-/istanbul-reports-3.0.0.tgz#508b13aa344fa4976234e75dddcc34925737d821"
-  integrity sha512-nwKNbvnwJ2/mndE9ItP/zc2TCzw6uuodnF4EHYWD+gCQDVBuRQL5UzbZD0/ezy1iKsFU2ZQiDqg4M9dN4+wZgA==
-  dependencies:
     "@types/istanbul-lib-report" "*"
 
 "@types/node@*":
@@ -3567,7 +3549,7 @@ expo-permissions@~9.3.0:
   resolved "https://registry.yarnpkg.com/expo-permissions/-/expo-permissions-9.3.0.tgz#b90c7e9e411d306c1c7ba2bae18d5c53c201affd"
   integrity sha512-ylSJZVvEGJVFTKsFrUL2S6gCvFt+/o8TJ3xT4WaMjHe2/2Z7R8ng6NR47Kt54t7XBIV/SZ7DIY9uRiR7TPuNYA==
 
-expo-splash-screen@^0.6.0:
+expo-splash-screen@^0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/expo-splash-screen/-/expo-splash-screen-0.6.1.tgz#c333340169e2a855d18e2e52d5f5738cc2e0b9ad"
   integrity sha512-m4cEGN/9TJr9G1xr7H5QJqvvAwKMrZPxSuWqp9ht/XfPsy3RD37Ao+384lohAHt6BKjIcYiDgxDDDJ1QDExdjg==
@@ -3582,19 +3564,19 @@ expo-sqlite@~8.4.0:
     "@expo/websql" "^1.0.1"
     lodash "^4.17.15"
 
-expo-updates@~0.3.2:
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/expo-updates/-/expo-updates-0.3.2.tgz#66dbbc519245a46bde658829512f46ac1433a49f"
-  integrity sha512-+OevMP8rh50AtWWqJnJaMuxmFggYejNvT3zO7QlcsNi5S2AuxQKeeTn5eki9HuoYeOoCQ89Fc2Sj6iTSBaUNkA==
+expo-updates@~0.3.3:
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/expo-updates/-/expo-updates-0.3.3.tgz#0855ac8ccdc66e94b5fdbc09e04192570968f20b"
+  integrity sha512-8GIuxhS40Lj5J0fd7Kv8uhbAg6L4AzVVVKz0sdnaO7gO1Db9vSxgYfswb4NS5sXF9NEn/ReTJJJG09PnMdtZJw==
   dependencies:
     "@expo/metro-config" "^0.1.16"
     fbemitter "^2.1.1"
     uuid "^3.4.0"
 
-expo@~39.0.1:
-  version "39.0.1"
-  resolved "https://registry.yarnpkg.com/expo/-/expo-39.0.1.tgz#09b9c89f2cc3e14a606a50b6b3b8d14c94c5fbe3"
-  integrity sha512-JRAPVw46foYRVzIFFhAcalRmxvQzIw+WrtOiDxEELkGo5nmBryh9ZlwA38oB+zXDYOV4gxq3bXNNiSdC390ErQ==
+expo@~39.0.2:
+  version "39.0.2"
+  resolved "https://registry.yarnpkg.com/expo/-/expo-39.0.2.tgz#81bbfe10ea3446c313e6b742689765fc213fe34d"
+  integrity sha512-WKSsyyv818wRLMxB8jOpuGzXtsh3ZMl/c3SfAb5hgVkaD/8NDqCOLJ/yGe0W64FLzOsTHh0QEM1cdyQirlbCYw==
   dependencies:
     "@babel/runtime" "^7.1.2"
     "@expo/vector-icons" "^10.0.2"
@@ -3613,14 +3595,14 @@ expo@~39.0.1:
     expo-linking "~1.0.4"
     expo-location "~9.0.0"
     expo-permissions "~9.3.0"
-    expo-splash-screen "^0.6.0"
+    expo-splash-screen "^0.6.1"
     expo-sqlite "~8.4.0"
     fbemitter "^2.1.1"
     invariant "^2.2.2"
     lodash "^4.6.0"
     md5-file "^3.2.3"
     nullthrows "^1.1.0"
-    pretty-format "^26.4.0"
+    pretty-format "^23.6.0"
     react-native-safe-area-context "3.1.4"
     serialize-error "^2.1.0"
     unimodules-app-loader "~1.3.0"
@@ -6500,6 +6482,14 @@ prelude-ls@~1.1.2:
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.1.2.tgz#21932a549f5e52ffd9a827f570e04be62a97da54"
   integrity sha1-IZMqVJ9eUv/ZqCf1cOBL5iqX2lQ=
 
+pretty-format@^23.6.0:
+  version "23.6.0"
+  resolved "https://registry.yarnpkg.com/pretty-format/-/pretty-format-23.6.0.tgz#5eaac8eeb6b33b987b7fe6097ea6a8a146ab5760"
+  integrity sha512-zf9NV1NSlDLDjycnwm6hpFATCGl/K1lt0R/GdkAK2O5LN/rwJoB+Mh93gGJjut4YbmecbfgLWVGSTCr0Ewvvbw==
+  dependencies:
+    ansi-regex "^3.0.0"
+    ansi-styles "^3.2.0"
+
 pretty-format@^24.7.0, pretty-format@^24.9.0:
   version "24.9.0"
   resolved "https://registry.yarnpkg.com/pretty-format/-/pretty-format-24.9.0.tgz#12fac31b37019a4eea3c11aa9a959eb7628aa7c9"
@@ -6516,16 +6506,6 @@ pretty-format@^25.1.0, pretty-format@^25.2.0, pretty-format@^25.5.0:
   integrity sha512-kbo/kq2LQ/A/is0PQwsEHM7Ca6//bGPPvU6UnsdDRSKTWxT/ru/xb88v4BJf6a69H+uTytOEsTusT9ksd/1iWQ==
   dependencies:
     "@jest/types" "^25.5.0"
-    ansi-regex "^5.0.0"
-    ansi-styles "^4.0.0"
-    react-is "^16.12.0"
-
-pretty-format@^26.4.0:
-  version "26.4.2"
-  resolved "https://registry.yarnpkg.com/pretty-format/-/pretty-format-26.4.2.tgz#d081d032b398e801e2012af2df1214ef75a81237"
-  integrity sha512-zK6Gd8zDsEiVydOCGLkoBoZuqv8VTiHyAbKznXe/gaph/DAeZOmit9yMfgIz5adIgAMMs5XfoYSwAX3jcCO1tA==
-  dependencies:
-    "@jest/types" "^26.3.0"
     ansi-regex "^5.0.0"
     ansi-styles "^4.0.0"
     react-is "^16.12.0"
@@ -6622,7 +6602,7 @@ react-devtools-core@^4.6.0:
     shell-quote "^1.6.1"
     ws "^7"
 
-react-dom@~16.13.1:
+react-dom@16.13.1:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.13.1.tgz#c1bd37331a0486c078ee54c4740720993b2e0e7f"
   integrity sha512-81PIMmVLnCNLO/fFOQxdQkvEq/+Hfpv24XNJfpyZhTRfO0QcmQIF/PgCa1zCOj2w1hrn12MFLyaJ/G0+Mxtfag==
@@ -6689,7 +6669,7 @@ react-native-unimodules@~0.11.0:
     unimodules-sensors-interface "~5.3.0"
     unimodules-task-manager-interface "~5.3.0"
 
-react-native-web@~0.13.7:
+react-native-web@~0.13.12:
   version "0.13.12"
   resolved "https://registry.yarnpkg.com/react-native-web/-/react-native-web-0.13.12.tgz#3a2bb7ce0e21d5ac22f7761743a971ac3435fc3c"
   integrity sha512-o0HZqb9iVAdO0wr1QyyBgdHTEknwKAqPXtWTFq1SqAe2lYcMhA2a3SFscWReD2ONgu+cbDVC3O6kOmQ4pI/h+g==
@@ -6757,7 +6737,7 @@ react-timer-mixin@^0.13.4:
   resolved "https://registry.yarnpkg.com/react-timer-mixin/-/react-timer-mixin-0.13.4.tgz#75a00c3c94c13abe29b43d63b4c65a88fc8264d3"
   integrity sha512-4+ow23tp/Tv7hBM5Az5/Be/eKKF7DIvJ09voz5LyHGQaqqz9WV8YMs31eFvcYQs7d451LSg7kDJV70XYN/Ug/Q==
 
-react@~16.13.1:
+react@16.13.1:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react/-/react-16.13.1.tgz#2e818822f1a9743122c063d6410d85c1e3afe48e"
   integrity sha512-YMZQQq32xHLX0bz5Mnibv1/LHb3Sqzngu7xstSM+vrkE5Kzr9xE0yMByK5kMoTK30YVJE61WfbxIFFvfeDKT1w==
