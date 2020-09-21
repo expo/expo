@@ -20,6 +20,7 @@
 #endif
 #if __has_include("DevMenuRNGestureHandlerModule.h")
   [modules addObject:[DevMenuRNGestureHandlerModule new]];
+  [modules addObject:[DevMenuRNGestureHandlerButtonManager new]];
 #endif
   return modules;
 }

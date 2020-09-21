@@ -15,6 +15,7 @@ import {
   renameIOSFiles,
   Platform,
   renameClass,
+  Append,
 } from '../vendoring';
 
 const CONFIGURATIONS = {
@@ -152,6 +153,17 @@ function getGestureHandlerPipe() {
         filePattern: 'ios/**/*.@(m|h)',
         find: '^RCT_EXPORT_MODULE\\(\\)',
         replace: '+ (NSString *)moduleName { return @"RNGestureHandlerModule"; }',
+      }),
+      new TransformFilesContent({
+        filePattern: 'ios/**/DevMenuRNGestureHandlerModule.m',
+        find: '@interface DevMenuRNGestureHandlerButtonManager([\\s\\S]*?)@end',
+        replace: ''
+      }),
+      new Append({
+        filePattern: 'ios/**/DevMenuRNGestureHandlerModule.h',
+        append: `@interface DevMenuRNGestureHandlerButtonManager : RCTViewManager
+@end
+`
       }),
       new CopyFiles({
         filePattern: 'ios/**/*.@(m|h)',
