@@ -121,7 +121,7 @@ function getGestureHandlerPipe() {
       }),
       new CopyFiles({
         subDirectory: 'android/src/main/java/com/swmansion',
-        filePattern: '***.@(java|kt|xml)',
+        filePattern: '**/*.@(java|kt|xml)',
         to: path.join(destination, 'android/devmenu/com/swmansion'),
       }),
       new CopyFiles({
