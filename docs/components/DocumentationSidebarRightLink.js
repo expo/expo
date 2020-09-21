@@ -37,6 +37,28 @@ const STYLES_LINK_ACTIVE = css`
   color: ${Constants.expoColors.primary[500]};
 `;
 
+const STYLES_TOOLTIP = css`
+  border-radius: 3px;
+  position: absolute;
+  background-color: ${Constants.expoColors.white};
+  font-family: ${Constants.fontFamilies.demi};
+  max-width: 400px;
+  border: 1px solid black;
+  padding: 3px 6px;
+  letter-spacing: normal;
+  line-height: 1.4;
+  word-break: break-word;
+  word-wrap: normal;
+  font-size: 12px;
+
+  display: inline-block;
+`;
+
+const STYLES_CODE_TOOLTIP = css`
+  font-family: ${Constants.fontFamilies.mono};
+  font-size: 11px;
+`;
+
 const NESTING_OFFSET = 16;
 
 /**
@@ -53,6 +75,27 @@ const trimCodedTitle = str => {
   return str;
 };
 
+/**
+ * Determines if element is overflowing
+ * (its width exceeds container width)
+ * @param {HTMLElement} el element to check
+ */
+const isOverflowing = el => {
+  if (!el) {
+    return false;
+  }
+
+  return el.clientWidth < el.scrollWidth;
+};
+
+const Tooltip = ({ children, isCode, topOffset }) => (
+  <div
+    className={`${STYLES_TOOLTIP} ${isCode && STYLES_CODE_TOOLTIP}`}
+    style={{ right: 20, top: topOffset }}>
+    {children}
+  </div>
+);
+
 const DocumentationSidebarRightLink = React.forwardRef(
   ({ heading, isActive, shortenCode, onClick }, ref) => {
     const { slug, level, title, type } = heading;
@@ -63,9 +106,27 @@ const DocumentationSidebarRightLink = React.forwardRef(
     const paddingLeft = NESTING_OFFSET * (level - BASE_HEADING_LEVEL) + 'px';
     const displayTitle = shortenCode && isCode ? trimCodedTitle(title) : title;
 
+    const [tooltipVisible, setTooltipVisible] = React.useState(false);
+    const [tooltipOffset, setTooltipOffset] = React.useState(-20);
+    const onMouseOver = event => {
+      setTooltipVisible(isOverflowing(event.target));
+      setTooltipOffset(event.target.getBoundingClientRect().top + 25);
+    };
+    const onMouseOut = () => {
+      setTooltipVisible(false);
+    };
+
     return (
-      <div ref={ref}>
+      <>
+        {tooltipVisible && (
+          <Tooltip topOffset={tooltipOffset} isCode={isCode}>
+            {displayTitle}
+          </Tooltip>
+        )}
         <a
+          ref={ref}
+          onMouseOver={onMouseOver}
+          onMouseOut={onMouseOut}
           style={{ paddingLeft }}
           href={'#' + slug}
           onClick={onClick}
@@ -77,7 +138,7 @@ const DocumentationSidebarRightLink = React.forwardRef(
           `}>
           {displayTitle}
         </a>
-      </div>
+      </>
     );
   }
 );
