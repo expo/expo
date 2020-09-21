@@ -11290,7 +11290,7 @@ CACHE_KEYS:
       EXUpdates:
         :debug: 30bb1eebef7c91abc546b50f14e62479
         :release: 30bb1eebef7c91abc546b50f14e62479
-    CHECKSUM: a8bd937b22d0cd30c656c9614cb89120d4da6df4
+    CHECKSUM: 8f04b8b093e4eff4c893591cc170be898e6357b4
     FILES:
       - "../../packages/expo-updates/ios/EXUpdates/AppLauncher/EXUpdatesAppLauncher.h"
       - "../../packages/expo-updates/ios/EXUpdates/AppLauncher/EXUpdatesAppLauncherNoDatabase.h"
@@ -11340,7 +11340,7 @@ CACHE_KEYS:
       - "../../packages/expo-updates/ios/EXUpdates/Update/EXUpdatesUpdate.m"
     PROJECT_NAME: EXUpdates
     SPECS:
-      - EXUpdates (0.3.2)
+      - EXUpdates (0.3.3)
   EXVideoThumbnails:
     BUILD_SETTINGS_CHECKSUM:
       EXVideoThumbnails:

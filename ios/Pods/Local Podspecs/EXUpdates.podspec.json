@@ -1,6 +1,6 @@
 {
   "name": "EXUpdates",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "summary": "Fetches and manages remotely-hosted assets and updates to your app's JS bundle.",
   "description": "Fetches and manages remotely-hosted assets and updates to your app's JS bundle.",
   "license": "MIT",
