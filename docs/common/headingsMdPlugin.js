@@ -25,8 +25,8 @@ module.exports = function() {
     const headings = [];
     visit(tree, 'heading', node => {
       if (node.children.length > 0) {
-        const child = node.children[0];
-        headings.push({ level: node.depth, title: child.value, type: child.type });
+        const title = node.children.map(it => it.value).join(' ');
+        headings.push({ level: node.depth, title, type: node.children[0].type });
       }
     });
 

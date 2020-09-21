@@ -64,7 +64,7 @@ export class HeadingManager {
   addHeading(title, nestingLevel, additionalProps) {
     // NOTE (barthap): workaround for complex titles containing both normal text and inline code
     // changing this needs also change in `headingsMdPlugin.js` to make metadata loading correctly
-    title = Array.isArray(title) ? title[0] : title;
+    title = Array.isArray(title) ? title.map(Utilities.toString).join(' ') : title;
 
     const { hideInSidebar, sidebarTitle, sidebarDepth, sidebarType } = additionalProps ?? {};
     const levelOverride = sidebarDepth != null ? BASE_HEADING_LEVEL + sidebarDepth : undefined;

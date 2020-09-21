@@ -62,7 +62,7 @@ const DocumentationSidebarRightLink = React.forwardRef(
 
     const paddingLeft = NESTING_OFFSET * (level - BASE_HEADING_LEVEL) + 'px';
     const displayTitle = shortenCode && isCode ? trimCodedTitle(title) : title;
-    
+
     return (
       <div ref={ref}>
         <a
