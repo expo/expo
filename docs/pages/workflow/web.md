@@ -3,6 +3,8 @@ title: Developing for Web
 sidebar_title: Developing for Web
 ---
 
+import { H2 } from '~/components/plugins/Headings';
+
 If you build your native mobile app with Expo then you can also run it directly in the browser with the CLI and universal Expo SDK. The web part of your app runs with [React Native for web](https://github.com/necolas/react-native-web) which powers massive websites and progressive web apps like [Twitter](https://mobile.twitter.com/), and [Major League Soccer](https://matchcenter.mlssoccer.com/). The Expo SDK also utilizes native browser functionality like Video, Camera, and Gestures without the need for a custom native browser.
 
 > 🚨 Web support has been available in beta since SDK 33, if you find a bug please [report it here](https://github.com/expo/expo/issues) with the `[web]` tag in the title.
@@ -11,7 +13,12 @@ If you build your native mobile app with Expo then you can also run it directly 
 
 You get a highly performant React website with progressive web app features enabled from the start. Because there is no "magical" canvas work going on in the background, you get a fully accessible website with a great lighthouse score right from the start.
 
-## 📱 [Progressive Web Apps](https://developers.google.com/web/progressive-web-apps/)
+<H2 sidebarTitle="📱 Progressive Web Apps">
+📱 
+<a href="https://developers.google.com/web/progressive-web-apps/">
+Progressive Web Apps
+</a>
+</H2>
 
 Expo makes it easy to create PWAs by generating web app data from your app config. You can customize your offline support to fully enable PWA features in your website. Run your app on a variety of different devices and reach a much wider user-base with a feature-filled PWA.
 

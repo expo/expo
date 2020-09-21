@@ -2,6 +2,7 @@ const { copySync, removeSync } = require('fs-extra');
 const { join, resolve } = require('path');
 const semver = require('semver');
 
+const headings = require('./common/headingsMdPlugin');
 const { version } = require('./package.json');
 
 // To generate a sitemap, we need context about the supported versions and navigational data
@@ -43,7 +44,14 @@ module.exports = {
     // Add support for MDX with our custom loader
     config.module.rules.push({
       test: /.mdx?$/, // load both .md and .mdx files
-      use: [options.defaultLoaders.babel, '@mdx-js/loader', join(__dirname, './common/md-loader')],
+      use: [
+        options.defaultLoaders.babel,
+        {
+          loader: '@mdx-js/loader',
+          options: { remarkPlugins: [headings] },
+        },
+        join(__dirname, './common/md-loader'),
+      ],
     });
     // Fix inline or browser MDX usage: https://mdxjs.com/getting-started/webpack#running-mdx-in-the-browser
     config.node = { fs: 'empty' };

@@ -1,20 +1,21 @@
+import some from 'lodash/some';
 import Router from 'next/router';
 import * as React from 'react';
 import { css } from 'react-emotion';
-import some from 'lodash/some';
 
-import * as Constants from '~/constants/theme';
-import navigation from '~/constants/navigation';
 import * as Utilities from '~/common/utilities';
-import { VERSIONS } from '~/constants/versions';
 import * as WindowUtils from '~/common/window';
 import DocumentationFooter from '~/components/DocumentationFooter';
 import DocumentationHeader from '~/components/DocumentationHeader';
 import DocumentationNestedScrollLayout from '~/components/DocumentationNestedScrollLayout';
 import DocumentationPageContext from '~/components/DocumentationPageContext';
 import DocumentationSidebar from '~/components/DocumentationSidebar';
+import DocumentationSidebarRight from '~/components/DocumentationSidebarRight';
 import Head from '~/components/Head';
 import { H1 } from '~/components/base/headings';
+import navigation from '~/constants/navigation';
+import * as Constants from '~/constants/theme';
+import { VERSIONS } from '~/constants/versions';
 
 const STYLES_DOCUMENT = css`
   background: #fff;
@@ -48,10 +49,13 @@ export default class DocumentationPage extends React.Component {
     isMenuActive: false,
   };
 
+  layoutRef = React.createRef();
+  sidebarRightRef = React.createRef();
+
   componentDidMount() {
     Router.onRouteChangeStart = () => {
-      if (this.refs.layout) {
-        window.__sidebarScroll = this.refs.layout.getSidebarScrollTop();
+      if (this.layoutRef.current) {
+        window.__sidebarScroll = this.layoutRef.current.getSidebarScrollTop();
       }
       window.NProgress.start();
     };
@@ -219,13 +223,28 @@ export default class DocumentationPage extends React.Component {
       />
     );
 
+    const handleContentScroll = contentScrollPosition => {
+      window.requestAnimationFrame(() => {
+        if (this.sidebarRightRef && this.sidebarRightRef.current) {
+          this.sidebarRightRef.current.handleContentScroll(contentScrollPosition);
+        }
+      });
+    };
+
+    const sidebarRight = (
+      <DocumentationSidebarRight ref={this.sidebarRightRef} title={this.props.title} />
+    );
+
     return (
       <DocumentationNestedScrollLayout
-        ref="layout"
+        ref={this.layoutRef}
         header={headerElement}
         sidebar={sidebarElement}
+        sidebarRight={sidebarRight}
+        tocVisible={this.props.tocVisible}
         isMenuActive={this.state.isMenuActive}
         isMobileSearchActive={this.state.isMobileSearchActive}
+        onContentScroll={handleContentScroll}
         sidebarScrollPosition={sidebarScrollPosition}>
         <Head title={`${this.props.title} - Expo Documentation`}>
           <meta name="docsearch:version" content={isReferencePath ? version : 'none'} />
