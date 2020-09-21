@@ -4,9 +4,15 @@
 
 ### 🛠 Breaking changes
 
-- `yarn run expo-splash-screen` changed its parameters layout. Run `yarn run expo-splash-screen --help` to see the new options layout.
-
 ### 🎉 New features
+
+### 🐛 Bug fixes
+
+## 0.7.0 — 2020-09-21
+
+### 🛠 Breaking changes
+
+- `yarn run expo-splash-screen` changed its parameters layout. Run `yarn run expo-splash-screen --help` to see the new options layout.
 
 ### 🐛 Bug fixes
 
