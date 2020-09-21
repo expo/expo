@@ -16,7 +16,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 <InstallSection packageName="react-native-reanimated" href="https://github.com/kmagiera/react-native-reanimated#getting-started" />
 
-### Support for v2 alpha
+### Experimental support for v2-alpha
 
 The second major version of this library offers a much easier API, along with significantly improved performance characteristics. It also requires that [TurboModules](https://github.com/react-native-community/discussions-and-proposals/issues/40) are enabled in your app, and [TurboModules are not compatible with JavaScript debugging in Chrome](https://docs.swmansion.com/react-native-reanimated/docs/next/#known-problems-and-limitations). Because of this limitation, you need to opt in to using the alpha version of this library. To opt in, add the `experiments.turboModules` key to your `app.json`:
 
