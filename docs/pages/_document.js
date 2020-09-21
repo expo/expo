@@ -39,13 +39,18 @@ export default class MyDocument extends Document {
           <script src="/static/libs/tippy/tippy.all.min.js" />
           <script src="/static/libs/nprogress/nprogress.js" />
 
-          <style dangerouslySetInnerHTML={{ __html: globalFonts }} />
-          <style dangerouslySetInnerHTML={{ __html: globalReset }} />
-          <style dangerouslySetInnerHTML={{ __html: globalNProgress }} />
-          <style dangerouslySetInnerHTML={{ __html: globalTables }} />
-          <style dangerouslySetInnerHTML={{ __html: globalPrism }} />
-          <style dangerouslySetInnerHTML={{ __html: globalTippy }} />
-          <style dangerouslySetInnerHTML={{ __html: globalExtras }} />
+          <Global
+            styles={[
+              globalFonts,
+              globalReset,
+              globalNProgress,
+              globalTables,
+              globalPrism,
+              globalTippy,
+              globalExtras,
+            ]}
+          />
+
           <link rel="stylesheet" href="/static/libs/algolia/algolia.min.css" />
           <link rel="stylesheet" href="/static/libs/algolia/algolia-mobile.css" />
           <link
