@@ -64,7 +64,7 @@ export default class TableOfContentSection extends React.Component {
           <H4 css={STYLES_TITLE}>{title}</H4>
         </a>
         <ul
-          className={css`
+          css={css`
             padding: 0;
             margin-top: 24px;
             padding-left: ${horizontal ? '4px' : '24px'};

@@ -4,7 +4,6 @@ import * as React from 'react';
 
 import * as components from '~/common/translate-markdown';
 import { expoColors } from '~/constants/theme';
-import { InlineCode } from '~/components/base/code';
 
 const STYLES_TABLE = css`
   font-size: 1rem;
