@@ -19,15 +19,15 @@
     "react-native-gesture-handler": "~1.7.0",
     "react-native-reanimated": "~1.13.0",
     "react-native-screens": "~2.10.1",
-    "react-native-unimodules": "~0.10.0",
-    "react-native-web": "~0.12.0"
+    "react-native-unimodules": "~0.11.0",
+    "react-native-web": "~0.13.7"
   },
   "devDependencies": {
     "@babel/core": "~7.9.0",
-    "@types/react": "~16.9.23",
+    "@types/react": "~16.9.35",
     "@types/react-dom": "~16.9.8",
-    "@types/react-native": "~0.61.23",
-    "babel-preset-expo": "~8.2.0",
+    "@types/react-native": "~0.63.2",
+    "babel-preset-expo": "~8.3.0",
     "jest-expo": "~39.0.0",
     "typescript": "~3.9.5"
   },
