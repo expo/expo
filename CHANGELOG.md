@@ -329,6 +329,7 @@ Package-specific changes not released in any SDK will be added here just before 
   - Fix native Android dependencies used in tests - Kotlin and testing libraries. ([#8881](https://github.com/expo/expo/pull/8881) by [@mczernek](https://github.com/mczernek))
   - Removed unncecessary Android dependencies. ([#9538](https://github.com/expo/expo/pull/9538) by [@barthap](https://github.com/barthap))
   - Fixed `openAuthSessionAsync` crashing when cancelled on iOS. ([#9722](https://github.com/expo/expo/pull/9722) by [@barthap](https://github.com/barthap))
+  - Improve error message when something goes very wrong while loading an app in Expo client ([#10239](https://github.com/expo/expo/pull/10239) by [@brentvatne](https://github.com/brentvatne))
 
 ## 38.0.0
 
