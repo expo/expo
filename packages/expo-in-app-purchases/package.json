@@ -1,6 +1,6 @@
 {
   "name": "expo-in-app-purchases",
-  "version": "9.1.0",
+  "version": "9.0.0",
   "description": "Expo unimodule for accepting in-app purchases",
   "main": "build/InAppPurchases.js",
   "types": "build/InAppPurchases.d.ts",

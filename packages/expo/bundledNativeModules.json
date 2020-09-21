@@ -76,7 +76,7 @@
   "unimodules-sensors-interface": "~5.3.0",
   "unimodules-task-manager-interface": "~5.3.0",
   "expo-video-thumbnails": "~4.3.0",
-  "expo-in-app-purchases": "~9.1.0",
+  "expo-in-app-purchases": "~9.0.0",
   "expo-branch": "~2.3.1",
   "react-native-appearance": "~0.3.3",
   "react-native-safe-area-context": "3.1.4",
