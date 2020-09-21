@@ -608,13 +608,13 @@ CACHE_KEYS:
       EXInAppPurchases:
         :debug: 9de76cf78759ab4168540e85ecee8b86
         :release: 9de76cf78759ab4168540e85ecee8b86
-    CHECKSUM: efef0c19273abc1027a3c8bfe97741263459f888
+    CHECKSUM: c647953e5e1dad71bbda2e3bb92966dac440ede4
     FILES:
       - "../../../../packages/expo-in-app-purchases/ios/EXInAppPurchases/EXInAppPurchasesModule.h"
       - "../../../../packages/expo-in-app-purchases/ios/EXInAppPurchases/EXInAppPurchasesModule.m"
     PROJECT_NAME: EXInAppPurchases
     SPECS:
-      - EXInAppPurchases (9.0.0)
+      - EXInAppPurchases (9.1.0)
   EXKeepAwake:
     BUILD_SETTINGS_CHECKSUM:
       EXKeepAwake:

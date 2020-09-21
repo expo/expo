@@ -1,11 +1,11 @@
 {
   "name": "EXInAppPurchases",
-  "version": "9.0.0",
+  "version": "9.1.0",
   "summary": "Expo unimodule for accepting in-app purchases",
   "description": "Expo unimodule for accepting in-app purchases",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-in-app-purchases",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/in-app-purchases/",
   "platforms": {
     "ios": "10.0"
   },
