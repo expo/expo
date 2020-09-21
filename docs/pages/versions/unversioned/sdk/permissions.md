@@ -306,6 +306,8 @@ _ **iOS:** it requires the `expo-notifications` module and doesn't require a mes
 
 ### `Permissions.LOCATION`
 
+> **Note (Android):** On Android 10 or newer the [`PermissionInfo`](#permissioninfo) return object contains a special field `foregroundGranted`. In Android 10 and higher, the user can choose from several possibilities for enabling location permission ("Always", "While App is in Use", "Only Once", etc.). Only a choice of "Always" results in the `granted` attribute in [`PermissionInfo`](#permissioninfo) being set to `true`. For choices other than "Never", the `foregroundGranted` attribute is always set to `true` even if `granted` is set to `false`.
+
 The permission type for location access. It contains additional field when returning:
 
 ### `scope`
