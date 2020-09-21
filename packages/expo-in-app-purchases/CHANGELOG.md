@@ -8,10 +8,6 @@
 
 ### 🐛 Bug fixes
 
-## 9.1.0 — 2020-09-21
-
-### 🐛 Bug fixes
-
 - `errorCodeNativeToJS` now returns 0 by default. This fixes a build error that would occur on Xcode 12. ([#10224](https://github.com/expo/expo/pull/10224) by [@nabettu](https://github.com/nabettu))
 
 ## 9.0.0 — 2020-08-18

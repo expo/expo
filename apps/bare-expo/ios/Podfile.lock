@@ -108,7 +108,7 @@ PODS:
     - UMCore
     - UMFileSystemInterface
     - UMPermissionsInterface
-  - EXInAppPurchases (9.1.0):
+  - EXInAppPurchases (9.0.0):
     - UMCore
   - EXKeepAwake (8.3.0):
     - UMCore
@@ -987,7 +987,7 @@ SPEC CHECKSUMS:
   EXImageLoader: 7153fb1307ac643299a9072b71da0d276f4c7789
   EXImageManipulator: 8bb065265ddaa9d526b70a6825123b85d34d32a4
   EXImagePicker: 214b34ea9336e2c649ce98315de68fce2349983a
-  EXInAppPurchases: 7add48ca379de26a09a068f0b0aacba3215e1f4b
+  EXInAppPurchases: efef0c19273abc1027a3c8bfe97741263459f888
   EXKeepAwake: 76eed36786534f6a476748e600fa6faf07ac3d09
   EXLinearGradient: 2f0230aa5d79c956aba618df3988eb0a9d283399
   EXLocalAuthentication: 692a1fdd27389b483b44919388e2a814d43af104
