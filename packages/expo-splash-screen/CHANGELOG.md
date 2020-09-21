@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- `yarn run expo-splash-screen` changed its parameters layout. Run `yarn run expo-splash-screen --help` to see the new options layout.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
