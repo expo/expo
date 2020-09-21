@@ -12,6 +12,7 @@
 
 - Fixed case where Android apps could crash if you set a new category with a text input action **without** providing any `options`. ([#10141](https://github.com/expo/expo/pull/10141) by [@cruzach](https://github.com/cruzach))
 - Android apps no longer rely on the `submitButtonTitle` property as the action button title (they rely on `buttonTitle`, which matches iOS behavior). ([#10141](https://github.com/expo/expo/pull/10141) by [@cruzach](https://github.com/cruzach))
+- Changed location of installation ID used for fetching Expo push token – it should no longer be persisted in device backups causing different devices to have the same installation ID. ([#10261](https://github.com/expo/expo/pull/10261) by [@sjchmiela](https://github.com/sjchmiela))
 
 ## 0.7.1 — 2020-08-26
 
