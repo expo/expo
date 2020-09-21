@@ -264,14 +264,16 @@ export default class DocumentationNestedScrollLayout extends React.Component {
             </ScrollContainer>
           </div>
 
-          <div className={`${STYLES_SIDEBAR} ${STYLES_RIGHT}`}>
-            <ScrollContainer ref={this.sidebarRightRef}>
-              {React.cloneElement(this.props.sidebarRight, {
-                selfRef: this.sidebarRightRef,
-                contentRef: this.contentRef,
-              })}
-            </ScrollContainer>
-          </div>
+          {this.props.tocVisible && (
+            <div className={`${STYLES_SIDEBAR} ${STYLES_RIGHT}`}>
+              <ScrollContainer ref={this.sidebarRightRef}>
+                {React.cloneElement(this.props.sidebarRight, {
+                  selfRef: this.sidebarRightRef,
+                  contentRef: this.contentRef,
+                })}
+              </ScrollContainer>
+            </div>
+          )}
         </div>
       </div>
     );

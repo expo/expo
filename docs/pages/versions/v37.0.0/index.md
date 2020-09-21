@@ -1,5 +1,6 @@
 ---
 title: API Reference
+hideTOC: true
 ---
 
 import VersionedRedirectNotification from '~/components/plugins/VersionedRedirectNotification';

@@ -3,10 +3,7 @@ import Router from 'next/router';
 import * as React from 'react';
 import { css } from 'react-emotion';
 
-import * as Constants from '~/constants/theme';
-import navigation from '~/constants/navigation';
 import * as Utilities from '~/common/utilities';
-import { VERSIONS } from '~/constants/versions';
 import * as WindowUtils from '~/common/window';
 import DocumentationFooter from '~/components/DocumentationFooter';
 import DocumentationHeader from '~/components/DocumentationHeader';
@@ -16,6 +13,9 @@ import DocumentationSidebar from '~/components/DocumentationSidebar';
 import DocumentationSidebarRight from '~/components/DocumentationSidebarRight';
 import Head from '~/components/Head';
 import { H1 } from '~/components/base/headings';
+import navigation from '~/constants/navigation';
+import * as Constants from '~/constants/theme';
+import { VERSIONS } from '~/constants/versions';
 
 const STYLES_DOCUMENT = css`
   background: #fff;
@@ -241,6 +241,7 @@ export default class DocumentationPage extends React.Component {
         header={headerElement}
         sidebar={sidebarElement}
         sidebarRight={sidebarRight}
+        tocVisible={this.props.tocVisible}
         isMenuActive={this.state.isMenuActive}
         isMobileSearchActive={this.state.isMobileSearchActive}
         onContentScroll={handleContentScroll}

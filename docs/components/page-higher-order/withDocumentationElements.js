@@ -18,7 +18,8 @@ const withDocumentationElements = meta => {
           title={meta.title}
           url={router}
           asPath={router.asPath}
-          sourceCodeUrl={meta.sourceCodeUrl}>
+          sourceCodeUrl={meta.sourceCodeUrl}
+          tocVisible={!meta.hideTOC}>
           <MDXProvider components={components}>{props.children}</MDXProvider>
         </DocumentationPage>
       </HeadingsContext.Provider>
