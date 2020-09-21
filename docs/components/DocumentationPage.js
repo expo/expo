@@ -1,7 +1,7 @@
+import { css } from '@emotion/core';
+import some from 'lodash/some';
 import Router from 'next/router';
 import * as React from 'react';
-import { css } from 'react-emotion';
-import some from 'lodash/some';
 
 import * as Constants from '~/constants/theme';
 import navigation from '~/constants/navigation';
@@ -239,7 +239,7 @@ export default class DocumentationPage extends React.Component {
         </Head>
 
         {!this.state.isMenuActive ? (
-          <div className={STYLES_DOCUMENT}>
+          <div css={STYLES_DOCUMENT}>
             <H1>{this.props.title}</H1>
             <DocumentationPageContext.Provider value={{ version: this._version }}>
               {this.props.children}
@@ -253,7 +253,7 @@ export default class DocumentationPage extends React.Component {
           </div>
         ) : (
           <div>
-            <div className={`${STYLES_DOCUMENT} ${HIDDEN_ON_MOBILE}`}>
+            <div css={[STYLES_DOCUMENT, HIDDEN_ON_MOBILE]}>
               <H1>{this.props.title}</H1>
               <DocumentationPageContext.Provider value={{ version: this._version }}>
                 {this.props.children}
@@ -264,7 +264,7 @@ export default class DocumentationPage extends React.Component {
                 sourceCodeUrl={this.props.sourceCodeUrl}
               />
             </div>
-            <div className={HIDDEN_ON_DESKTOP}>
+            <div css={HIDDEN_ON_DESKTOP}>
               <DocumentationSidebar
                 url={this.props.url}
                 asPath={this.props.asPath}

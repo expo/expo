@@ -1,9 +1,8 @@
+import { css } from '@emotion/core';
 import * as React from 'react';
-import { css } from 'react-emotion';
-
-import TerminalBlock from './TerminalBlock';
 
 import * as Constants from '~/constants/theme';
+import TerminalBlock from './TerminalBlock';
 
 const STYLES_P = css`
   line-height: 1.8rem;
@@ -36,13 +35,13 @@ export default function InstallSection({
     <div>
       <TerminalBlock cmd={cmd} />
       {hideBareInstructions ? null : (
-        <p className={STYLES_P}>
+        <p css={STYLES_P}>
           If you're installing this in a{' '}
-          <a className={STYLES_LINK} href="../../introduction/managed-vs-bare/#bare-workflow">
+          <a css={STYLES_LINK} href="../../introduction/managed-vs-bare/#bare-workflow">
             bare React Native app
           </a>
           , you should also follow{' '}
-          <a className={STYLES_BOLD} href={href}>
+          <a css={STYLES_BOLD} href={href}>
             these additional installation instructions
           </a>
           .

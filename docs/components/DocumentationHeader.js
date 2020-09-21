@@ -1,6 +1,6 @@
+import { css } from '@emotion/core';
 import Link from 'next/link';
 import * as React from 'react';
-import { css } from 'react-emotion';
 
 import * as Constants from '~/constants/theme';
 import AlgoliaSearch from '~/components/plugins/AlgoliaSearch';
@@ -138,6 +138,7 @@ const STYLES_MENU_BUTTON = css`
 const SECTION_LINK = css`
   text-decoration: none;
   font-family: ${Constants.fontFamilies.demi};
+  cursor: pointer;
 
   padding: 0 16px;
   height: 40px;
@@ -185,25 +186,25 @@ export default class DocumentationHeader extends React.PureComponent {
   render() {
     return (
       <div>
-        <header className={`${STYLES_NAV} ${STYLES_STICKY}`}>
-          <div className={STYLES_LEFT}>
-            <div className={STYLES_LOGO_CONTAINER}>
+        <header css={[STYLES_NAV, STYLES_STICKY]}>
+          <div css={STYLES_LEFT}>
+            <div css={STYLES_LOGO_CONTAINER}>
               <Link href="/">
-                <span className={STYLES_LOGO}>
+                <span css={STYLES_LOGO}>
                   <img src="/static/images/header/sdk.svg" />
                 </span>
               </Link>
 
               <Link href="/">
-                <a className={STYLES_UNSTYLED_ANCHOR}>
-                  <h1 className={STYLES_TITLE_TEXT}>Expo</h1>
+                <a css={STYLES_UNSTYLED_ANCHOR}>
+                  <h1 css={STYLES_TITLE_TEXT}>Expo</h1>
                 </a>
               </Link>
 
               {this._renderSectionLinks(true)}
             </div>
           </div>
-          <div className={STYLES_RIGHT}>
+          <div css={STYLES_RIGHT}>
             {!this.props.isAlogliaSearchHidden && (
               <AlgoliaSearch
                 router={this.props.router}
@@ -213,24 +214,24 @@ export default class DocumentationHeader extends React.PureComponent {
             )}
 
             {!this.props.isMenuActive && (
-              <div className={STYLES_MENU_BUTTON_CONTAINER}>
-                <span className={STYLES_MENU_BUTTON} onClick={this.props.onToggleSearch}>
+              <div css={STYLES_MENU_BUTTON_CONTAINER}>
+                <span css={STYLES_MENU_BUTTON} onClick={this.props.onToggleSearch}>
                   <img src={'/static/images/header/search.svg'} />
                 </span>
-                <span className={STYLES_MENU_BUTTON} onClick={this.props.onShowMenu}>
+                <span css={STYLES_MENU_BUTTON} onClick={this.props.onShowMenu}>
                   <img src={'/static/images/header/more-horizontal.svg'} />
                 </span>
               </div>
             )}
 
             {this.props.isMenuActive && (
-              <span className={STYLES_MENU_BUTTON} onClick={this.props.onHideMenu}>
+              <span css={STYLES_MENU_BUTTON} onClick={this.props.onHideMenu}>
                 <img src={'/static/images/header/x.svg'} />
               </span>
             )}
           </div>
         </header>
-        <header className={`${STYLES_NAV} ${STYLES_MOBILE_NAV}`}>
+        <header css={[STYLES_NAV, STYLES_MOBILE_NAV]}>
           {this.props.isMobileSearchActive ? (
             <AlgoliaSearch
               router={this.props.router}
@@ -242,36 +243,28 @@ export default class DocumentationHeader extends React.PureComponent {
             this._renderSectionLinks(false)
           )}
         </header>
-        <div className={`${this.props.isMobileSearchActive && STYLES_SEARCH_OVERLAY}`} />
+        <div css={this.props.isMobileSearchActive && STYLES_SEARCH_OVERLAY} />
       </div>
     );
   }
 
   _renderSectionLinks = hiddenOnMobile => {
     return (
-      <div className={`${SECTION_LINKS_WRAPPER} ${hiddenOnMobile && STYLES_HIDDEN_ON_MOBILE}`}>
+      <div css={[SECTION_LINKS_WRAPPER, hiddenOnMobile && STYLES_HIDDEN_ON_MOBILE]}>
         <SectionContainer spaceBetween={hiddenOnMobile ? 8 : 0}>
           <Link href="/">
-            <a
-              className={`${SECTION_LINK} ${this.props.activeSection === 'starting' &&
-                SECTION_LINK_ACTIVE} `}>
-              <span className={SECTION_LINK_TEXT}>Get Started</span>
+            <a css={[SECTION_LINK, this.props.activeSection === 'starting' && SECTION_LINK_ACTIVE]}>
+              <span css={SECTION_LINK_TEXT}>Get Started</span>
             </a>
           </Link>
           <Link href="/guides">
-            <a
-              className={`${SECTION_LINK}
-                    ${this.props.activeSection === 'general' && SECTION_LINK_ACTIVE}
-                  `}>
-              <span className={SECTION_LINK_TEXT}>Guides</span>
+            <a css={[SECTION_LINK, this.props.activeSection === 'general' && SECTION_LINK_ACTIVE]}>
+              <span css={SECTION_LINK_TEXT}>Guides</span>
             </a>
           </Link>
           <Link href="/versions/latest/">
-            <a
-              className={`${SECTION_LINK}
-                    ${this.props.activeSection === 'reference' && SECTION_LINK_ACTIVE}
-                  `}>
-              <span className={SECTION_LINK_TEXT}>API Reference</span>
+            <a css={[SECTION_LINK, this.props.activeSection === 'reference' && SECTION_LINK_ACTIVE]}>
+              <span css={SECTION_LINK_TEXT}>API Reference</span>
             </a>
           </Link>
         </SectionContainer>

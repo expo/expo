@@ -1,12 +1,7 @@
-import styled, { keyframes, css } from 'react-emotion';
-
+import { css } from '@emotion/core';
 import * as React from 'react';
-import * as Utilities from '~/common/utilities';
-
-import withSlugger from '~/components/page-higher-order/withSlugger';
 
 import * as Constants from '~/constants/theme';
-
 import { paragraph } from './typography';
 
 const attributes = {
@@ -25,7 +20,7 @@ const STYLES_UNORDERED_LIST = css`
 `;
 
 export const UL = ({ children }) => (
-  <ul {...attributes} className={STYLES_UNORDERED_LIST}>
+  <ul {...attributes} css={STYLES_UNORDERED_LIST}>
     {children}
   </ul>
 );
@@ -43,7 +38,7 @@ const STYLES_ORDERED_LIST = css`
 `;
 
 export const OL = ({ children }) => (
-  <ol {...attributes} className={STYLES_ORDERED_LIST}>
+  <ol {...attributes} css={STYLES_ORDERED_LIST}>
     {children}
   </ol>
 );
@@ -65,5 +60,5 @@ const STYLES_LIST_ITEM = css`
 `;
 
 export const LI = ({ children }) => {
-  return <li className={`${STYLES_LIST_ITEM} docs-list-item`}>{children}</li>;
+  return <li className='docs-list-item' css={STYLES_LIST_ITEM}>{children}</li>;
 };

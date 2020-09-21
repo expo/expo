@@ -1,9 +1,8 @@
-import * as React from 'react';
-import { css } from 'react-emotion';
-import { InlineCode } from '~/components/base/code';
+import { css } from '@emotion/core';
 import MDX from '@mdx-js/runtime';
-import * as components from '~/common/translate-markdown';
+import * as React from 'react';
 
+import * as components from '~/common/translate-markdown';
 import { expoColors } from '~/constants/theme';
 
 const STYLES_TABLE = css`
@@ -100,8 +99,8 @@ export default class AppConfigSchemaPropertiesTable extends React.Component {
     var formattedSchema = formatSchema(rawSchema);
 
     return (
-      <table className={STYLES_TABLE}>
-        <thead className={STYLES_HEAD}>
+      <table css={STYLES_TABLE}>
+        <thead css={STYLES_HEAD}>
           <tr>
             <td>Property</td>
             <td>Description</td>
@@ -124,7 +123,7 @@ export default class AppConfigSchemaPropertiesTable extends React.Component {
                     <MDX components={components}>{property.name}</MDX>
                   </div>
                 </td>
-                <td className={STYLES_DESCRIPTION_CELL}>
+                <td css={STYLES_DESCRIPTION_CELL}>
                   <MDX components={components}>{property.description}</MDX>
                 </td>
               </tr>

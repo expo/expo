@@ -1,5 +1,5 @@
+import { css } from '@emotion/core';
 import * as React from 'react';
-import { css } from 'react-emotion';
 
 const CONTAINER_STYLE = css`
   background-color: rgba(225, 228, 23, 0.1);
@@ -22,7 +22,7 @@ export default function PossibleRedirectNotification({ newUrl }) {
 
   if (targetId) {
     return (
-      <div className={CONTAINER_STYLE}>
+      <div css={CONTAINER_STYLE}>
         ⚠️ The information you are looking for (addressed by <em>"{targetId}"</em>) has moved.{' '}
         <a href={`${newUrl}#${targetId}`}>Continue to the new location.</a>
       </div>

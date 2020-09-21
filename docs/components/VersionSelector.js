@@ -1,5 +1,5 @@
+import { css } from '@emotion/core';
 import * as React from 'react';
-import { css } from 'react-emotion';
 
 import * as Constants from '~/constants/theme';
 import * as Utilities from '~/common/utilities';
@@ -87,8 +87,8 @@ export default class VersionSelector extends React.Component {
         : Utilities.getUserFacingVersionString(this.props.version);
 
     return (
-      <div className={STYLES_SELECT} style={this.props.style}>
-        <label className={STYLES_SELECT_TEXT} htmlFor="version-menu">
+      <div css={STYLES_SELECT} style={this.props.style}>
+        <label css={STYLES_SELECT_TEXT} htmlFor="version-menu">
           <div>{labelText}</div>
           <ChevronDownIcon style={{ height: '16px', width: '16px' }} />
         </label>
@@ -97,7 +97,7 @@ export default class VersionSelector extends React.Component {
           <a key={v} style={{ display: 'none' }} href={`/versions/${v}/`} />
         ))}
         <select
-          className={STYLES_SELECT_ELEMENT}
+          css={STYLES_SELECT_ELEMENT}
           id="version-menu"
           value={this.props.version}
           onChange={e => this.props.onSetVersion(e.target.value)}>

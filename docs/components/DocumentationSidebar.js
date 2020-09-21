@@ -1,5 +1,5 @@
+import { css } from '@emotion/core';
 import * as React from 'react';
-import { css } from 'react-emotion';
 
 import * as Constants from '~/constants/theme';
 import DocumentationSidebarGroup from '~/components/DocumentationSidebarGroup';
@@ -85,7 +85,7 @@ export default class DocumentationSidebar extends React.Component {
     }
 
     return (
-      <div className={STYLES_SECTION_CATEGORY} key={`category-${info.name}`}>
+      <div css={STYLES_SECTION_CATEGORY} key={`category-${info.name}`}>
         {titleElement}
         {postElements}
       </div>
@@ -98,7 +98,7 @@ export default class DocumentationSidebar extends React.Component {
     };
 
     return (
-      <nav className={STYLES_SIDEBAR} {...customDataAttributes}>
+      <nav css={STYLES_SIDEBAR} {...customDataAttributes}>
         {!this.props.isVersionSelectorHidden && (
           <VersionSelector version={this.props.version} onSetVersion={this.props.onSetVersion} />
         )}

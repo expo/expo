@@ -1,4 +1,5 @@
-import { css } from 'react-emotion';
+import { css } from '@emotion/core';
+
 import * as Constants from '~/constants/theme';
 
 export const h1 = css`
@@ -40,7 +41,7 @@ export const h4 = css`
 export const paragraph = css`
   font-family: ${Constants.fontFamilies.book};
   color: ${Constants.colors.black90};
-  fontweight: 400;
+  font-weight: 400;
   font-size: 16px;
   line-height: 160%;
   letter-spacing: -0.011em;
