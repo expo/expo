@@ -65,12 +65,12 @@ export default function MainTabbedNavigator(props: any) {
           activeTintColor: Colors.tabIconSelected,
           inactiveTintColor: Colors.tabIconDefault,
         }}>
-        {(Object.keys(Screens) as (keyof typeof Screens)[]).map(name => (
+        {Object.entries(Screens).map(([name, Screen]) => (
           <Tab.Screen
             name={name}
             key={name}
-            component={Screens[name].navigator}
-            options={Screens[name].navigator.navigationOptions}
+            component={Screen.navigator}
+            options={Screen.navigator.navigationOptions}
           />
         ))}
       </Tab.Navigator>
@@ -83,12 +83,12 @@ export default function MainTabbedNavigator(props: any) {
       drawerContent={props => <CustomDrawerContent {...props} hideLabels={isTablet} />}
       drawerStyle={{ width: isLargeScreen ? undefined : 64 + left }}
       drawerType="permanent">
-      {(Object.keys(Screens) as (keyof typeof Screens)[]).map(name => (
+      {Object.entries(Screens).map(([name, Screen]) => (
         <Tab.Screen
           name={name}
           key={name}
-          component={Screens[name].navigator}
-          options={Screens[name].navigator.navigationOptions}
+          component={Screen.navigator}
+          options={Screen.navigator.navigationOptions}
         />
       ))}
     </Drawer.Navigator>
