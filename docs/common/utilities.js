@@ -1,4 +1,10 @@
-// TODO(jim): Not sure what is the point of this.
+/**
+ * Converts any object to string accepted by _Slugger_.
+ * This is needed, because sometimes we receive pure string node,
+ * but sometimes (e.g. when using styled text), we receive whole object (React.Element)
+ *
+ * @param {any} node React Node object to stringify
+ */
 export const toString = node => {
   if (typeof node === 'string') {
     return node;

@@ -1,5 +1,6 @@
 ---
 title: Guides to get things done
+hideTOC: true
 ---
 
 In the ['Get Started'](/) section we walk through how you can [install Expo tools](../../get-started/installation/), [create your first app](../../get-started/create-a-new-app/), [guide you through a tutorial](../../tutorial/planning/), and give you a [conceptual overview](../../introduction/managed-vs-bare/) of what working with Expo tools looks like, the limitations, and common questions folks have.

@@ -1,28 +1,30 @@
-import * as React from 'react';
+import { MDXProvider } from '@mdx-js/react';
 import GithubSlugger from 'github-slugger';
 import { withRouter } from 'next/router';
-import { MDXProvider } from '@mdx-js/react';
+import * as React from 'react';
 
-import DocumentationPage from '~/components/DocumentationPage';
-import { SluggerContext } from '~/components/page-higher-order/withSlugger';
+import { HeadingManager } from '~/common/headingManager';
 import * as components from '~/common/translate-markdown';
+import DocumentationPage from '~/components/DocumentationPage';
+import { HeadingsContext } from '~/components/page-higher-order/withHeadingManager';
 
-const withDocumentationElements = (meta) => {
-  const DocumentationElementsHOC = withRouter((props) => {
+const withDocumentationElements = meta => {
+  const DocumentationElementsHOC = withRouter(props => {
     const { router } = props;
 
     return (
-      <DocumentationPage
-        title={meta.title}
-        url={router}
-        asPath={router.asPath}
-        sourceCodeUrl={meta.sourceCodeUrl}>
-        <SluggerContext.Provider value={new GithubSlugger()}>
+      <HeadingsContext.Provider value={new HeadingManager(new GithubSlugger(), meta)}>
+        <DocumentationPage
+          title={meta.title}
+          url={router}
+          asPath={router.asPath}
+          sourceCodeUrl={meta.sourceCodeUrl}
+          tocVisible={!meta.hideTOC}>
           <MDXProvider components={components}>{props.children}</MDXProvider>
-        </SluggerContext.Provider>
-      </DocumentationPage>
-    )
-  })
+        </DocumentationPage>
+      </HeadingsContext.Provider>
+    );
+  });
 
   return DocumentationElementsHOC;
 };

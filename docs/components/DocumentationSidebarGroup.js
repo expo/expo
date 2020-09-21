@@ -3,8 +3,8 @@ import * as React from 'react';
 
 import * as Constants from '~/constants/theme';
 import stripVersionFromPath from '~/common/stripVersionFromPath';
-import ChevronDown from '~/components/icons/ChevronDown';
 import { paragraph } from '~/components/base/typography';
+import ChevronDown from '~/components/icons/ChevronDown';
 
 const STYLES_TITLE = css`
   ${paragraph}
@@ -75,7 +75,7 @@ export default class DocumentationSidebarGroup extends React.Component {
 
   componentDidMount() {
     if (typeof window !== 'undefined') {
-      let persistedState = window.sidebarState[this.props.info.name];
+      const persistedState = window.sidebarState[this.props.info.name];
       if (typeof persistedState === 'boolean' && this.state.isOpen !== persistedState) {
         this.setState({ isOpen: persistedState });
       } else {
@@ -96,7 +96,7 @@ export default class DocumentationSidebarGroup extends React.Component {
 
     let result = false;
 
-    let sections = this.props.info.children;
+    const sections = this.props.info.children;
 
     const isSectionActive = section => {
       const linkUrl = stripVersionFromPath(section.as || section.href);
@@ -122,7 +122,7 @@ export default class DocumentationSidebarGroup extends React.Component {
   }
 
   _toggleIsOpen = () => {
-    let isOpen = this.state.isOpen;
+    const isOpen = this.state.isOpen;
     this.setState({ isOpen: !isOpen });
     window.sidebarState[this.props.info.name] = !isOpen;
   };

@@ -8,6 +8,14 @@
 
 ### 🐛 Bug fixes
 
+## 0.7.0 — 2020-09-21
+
+### 🛠 Breaking changes
+
+- `yarn run expo-splash-screen` changed its parameters layout. Run `yarn run expo-splash-screen --help` to see the new options layout.
+
+### 🐛 Bug fixes
+
 - On iOS fixed non-working `SplashScreen.preventAutoHide` introduced in version `0.4.0`. ([#10192](https://github.com/expo/expo/pull/10192) by [@bbarthec](https://github.com/bbarthec))
 - Fixed crash when the app was opened in the background on iOS. ([#10157](https://github.com/expo/expo/pull/10157) by [@sjchmiela](https://github.com/sjchmiela))
 

@@ -4,6 +4,7 @@ import * as React from 'react';
 
 import * as components from '~/common/translate-markdown';
 import { expoColors } from '~/constants/theme';
+import { InlineCode } from '~/components/base/code';
 
 const STYLES_TABLE = css`
   font-size: 1rem;
@@ -42,8 +43,8 @@ function appendProperty(formattedSchema, property, _nestingLevel) {
 
   formattedSchema.push({
     name: nestingLevel
-      ? `<subpropertyAnchor><inlineCode>${propertyKey}</inlineCode></subpropertyAnchor>`
-      : `<propertyAnchor><inlineCode>${propertyKey}</inlineCode></propertyAnchor>`,
+      ? `<subpropertyAnchor level={${nestingLevel}}><inlineCode>${propertyKey}</inlineCode></subpropertyAnchor>`
+      : `<propertyAnchor level={0}><inlineCode>${propertyKey}</inlineCode></propertyAnchor>`,
     description: createDescription(property),
     nestingLevel,
   });
