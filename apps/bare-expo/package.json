@@ -88,6 +88,7 @@
     "@react-native-community/viewpager": "4.1.6",
     "expo": "~39.0.1",
     "expo-dev-menu": "0.0.2",
+    "expo-development-client": "0.0.1",
     "expo-image": "~1.0.0-alpha.0",
     "expo-notifications": "~0.7.1",
     "expo-yarn-workspaces": "^1.2.1",

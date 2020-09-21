@@ -139,6 +139,9 @@ PODS:
   - EXPermissions (9.3.0):
     - UMCore
     - UMPermissionsInterface
+  - expo-development-client (0.0.1):
+    - EXDevMenuInterface
+    - React
   - expo-image (1.0.0-alpha.0):
     - React
     - SDWebImage (~> 5.0)
@@ -620,6 +623,7 @@ DEPENDENCIES:
   - EXNetwork (from `../../../packages/expo-network/ios`)
   - EXNotifications (from `../../../packages/expo-notifications/ios`)
   - EXPermissions (from `../../../packages/expo-permissions/ios`)
+  - expo-development-client (from `../../../packages/expo-development-client`)
   - expo-image (from `../../../packages/expo-image`)
   - EXPrint (from `../../../packages/expo-print/ios`)
   - EXRandom (from `../../../packages/expo-random/ios`)
@@ -808,6 +812,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-notifications/ios"
   EXPermissions:
     :path: "../../../packages/expo-permissions/ios"
+  expo-development-client:
+    :path: "../../../packages/expo-development-client"
   expo-image:
     :path: "../../../packages/expo-image"
   EXPrint:
@@ -998,6 +1004,7 @@ SPEC CHECKSUMS:
   EXNetwork: 05c1b87ba7077cb3eea7a3968640e5007e32eb6b
   EXNotifications: 55301e7284ef5427662a2191eb986acb2035a1d5
   EXPermissions: 30cbe5b72bd209b65c00884180ad058a60bb413d
+  expo-development-client: 157880e411e083db6868cccf5c1822d952bc464d
   expo-image: 36f53fe2845e4bb74021f69192a752db29766897
   EXPrint: 969e4d8514319a74405b015cd0bf6023dcdf4b00
   EXRandom: e4fbca1d3a5d6bd22ef22db9d404102b82987600
@@ -1088,6 +1095,6 @@ SPEC CHECKSUMS:
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: de6de903d09b4103a0aec12013cd6e5a28148a22
+PODFILE CHECKSUM: 9de28b3775fa7f2df753824b68e8e11037eb1f9c
 
 COCOAPODS: 1.9.3

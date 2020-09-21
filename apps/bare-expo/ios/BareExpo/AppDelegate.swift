@@ -13,32 +13,47 @@ import EXDevMenu
 #endif
 
 @UIApplicationMain
-class AppDelegate: UMAppDelegateWrapper {
+class AppDelegate: UMAppDelegateWrapper{
   var moduleRegistryAdapter: UMModuleRegistryAdapter!
   var bridge: RCTBridge?
+  var launchOptions: [UIApplication.LaunchOptionsKey: Any]?;
+
+  let useDevClient: Bool = false
   
   override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
     moduleRegistryAdapter = UMModuleRegistryAdapter(moduleRegistryProvider: UMModuleRegistryProvider())
     window = UIWindow(frame: UIScreen.main.bounds)
+    self.launchOptions = launchOptions;
 
-    if let bridge = RCTBridge(delegate: self, launchOptions: launchOptions) {
+    if (useDevClient) {
+      let controller = EXDevelopmentClientController.sharedInstance()
+      controller?.start(with: window, delegate: self, launchOptions: launchOptions);
+    } else {
+      initializeReactNativeBridge();
+    }
+
+    super.application(application, didFinishLaunchingWithOptions: launchOptions)
+    
+    return true
+  }
+
+  @discardableResult
+  func initializeReactNativeBridge() -> RCTBridge? {
+    if let bridge = RCTBridge(delegate: self, launchOptions: self.launchOptions) {
       let rootView = RCTRootView(bridge: bridge, moduleName: "BareExpo", initialProperties: nil)
       let rootViewController = UIViewController()
       rootView.backgroundColor = UIColor.white
       rootViewController.view = rootView
-      
+
       window?.rootViewController = rootViewController
       window?.makeKeyAndVisible()
       self.bridge = bridge
-      
+
       #if canImport(EXDevMenu)
       DevMenuManager.configure(withBridge: bridge)
       #endif
     }
-    
-    super.application(application, didFinishLaunchingWithOptions: launchOptions)
-    
-    return true
+    return nil;
   }
   
   #if RCT_DEV
@@ -58,7 +73,11 @@ extension AppDelegate: RCTBridgeDelegate {
   func sourceURL(for bridge: RCTBridge!) -> URL! {
     // DEBUG must be setup in Swift projects: https://stackoverflow.com/a/24112024/4047926
     #if DEBUG
-    return RCTBundleURLProvider.sharedSettings()?.jsBundleURL(forBundleRoot: "index", fallbackResource: nil)
+    if (useDevClient) {
+      return EXDevelopmentClientController.sharedInstance()?.sourceUrl()
+    } else {
+      return RCTBundleURLProvider.sharedSettings()?.jsBundleURL(forBundleRoot: "index", fallbackResource: nil)
+    }
     #else
     return Bundle.main.url(forResource: "main", withExtension: "jsbundle")
     #endif
@@ -80,5 +99,13 @@ extension AppDelegate: RCTBridgeDelegate {
     let storageDirectory = documentDirectory.appendingPathComponent("RCTAsyncLocalStorage_V1")
     extraModules?.append(RCTAsyncLocalStorage(storageDirectory: storageDirectory))
     return extraModules
+  }
+}
+
+// MARK: -
+
+extension AppDelegate:  EXDevelopmentClientControllerDelegate {
+  func developmentClientController(_ developmentClientController: EXDevelopmentClientController!, didStartWithSuccess success: Bool) {
+    developmentClientController.appBridge = initializeReactNativeBridge()
   }
 }
