@@ -47,6 +47,44 @@ In order to be able to receive push notifications on the device ensure that your
 
 This module requires permission to subscribe to device boot. It's used to setup the scheduled notifications right after the device (re)starts. The `RECEIVE_BOOT_COMPLETED` permission is added automatically.
 
+`expo-notifications` automatically configures your Android app to omit internal installation ID data storage (required for Expo push token to work properly) from device backups. However, if you or any other library customize [`android:fullBackupContent` property of `<application>`](https://developer.android.com/guide/topics/manifest/application-element#fullBackupContent) you will need to consolidate all the rules manually:
+- create an XML file in (usually) `android/app/src/main/res/xml/` directory, name it eg. `backup_descriptor.xml`
+- go to `AndroidManifest.xml` of your app, find `<application>` tag and add the `android:fullBackupContent` attribute of value `@xml/name_of_file_you_just_created_without_extension`. If you named your file `backup_descriptor.xml`, your `<application>` tag should look like this:
+  ```xml
+  <application
+    android:allowBackup="true"
+    android:fullBackupContent="@xml/backup_descriptor"
+    ...>
+  ```
+- go back to the XML file you just referenced and inside it write:
+  ```xml
+  <?xml version="1.0" encoding="utf-8"?>
+  <full-backup-content>
+  </full-backup-content>
+  ```
+  this makes a good starting point for more configurations.
+- a section required by `expo-notifications` is:
+  ```xml
+  <exclude
+    domain="sharedpref"
+    path="expo.modules.notifications.InstallationId.xml" />
+  ```
+  add it in between `<full-backup-content>` and `</full-backup-content>`.
+- go through other libraries and add their configurations as described in their instructions.
+- in the end the file should look more or less like this
+  ```xml
+  <?xml version="1.0" encoding="utf-8"?>
+  <full-backup-content>
+    <!-- expo-notifications -->
+    <exclude
+      domain="sharedpref"
+      path="expo.modules.notifications.InstallationId.xml" />
+    
+    <!-- ... other configurations -->
+  </full-backup-content>
+  ```
+- the process has also been described in Android documentation, so if you want to read more head over to [_Include and exclude files_ section of _Back up user data with Auto Backup_ doc](https://developer.android.com/guide/topics/data/autobackup#IncludingFiles).
+
 The notification icon and the default color can be customized.
 
 - **To customize the icon**:
