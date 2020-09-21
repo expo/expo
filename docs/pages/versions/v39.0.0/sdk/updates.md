@@ -19,6 +19,17 @@ Since extra setup is required to use this module in bare React Native apps, for 
 
 > Most of the methods and constants in this module can only be used or tested in release mode; they do not make sense in debug builds where you always load the latest JS from your computer while developing. To test manual updates in the Expo client, run `expo publish` and then open the published version of your app with the Expo client. To test manual updates in Bare workflow apps, make a release build with `npm run ios --configuration Release` or `npm run android --variant Release` (you don't need to submit this build to the App/Play Store to test).
 
+### Legacy API
+
+In previous Expo SDK versions, the Updates module was imported from the `expo` package. It has now moved to its own separate package, `expo-updates`. The new module has a similar but slightly different JS API from the Updates module included with the `expo` package. The Updates module export was removed from the `expo` package in SDK 39, so you need to switch to the new module and API.
+
+The changes in the new API are as follows:
+
+- `Updates.fetchUpdateAsync` no longer accepts any arguments. (It still resolves when an update is finished downloading.)
+- The listener in `Updates.addListener` will only receive events about automatically downloaded updates, not downloads triggered manually by `Updates.fetchUpdateAsync`.
+- Event names have changed: `DOWNLOAD_FINISHED` has become `UPDATE_AVAILABLE`, and `DOWNLOAD_START` events are no longer emitted.
+- `Updates.reloadFromCache` has been renamed to `Updates.reloadAsync`, and `Updates.reload` has been removed.
+
 ## API
 
 ```js
