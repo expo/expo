@@ -11,6 +11,6 @@ findNodeHandle; // eslint-disable-line @babel/no-unused-expressions
 
 if (shouldThrowAnErrorOutsideOfExpo() && (!Constants || !Constants.expoVersion)) {
   throw new Error(
-    `The Expo SDK requires Expo to run. It appears the native Expo modules are unavailable and this code is not running on Expo. Visit https://docs.expo.io to learn more about developing an Expo project.`
+    `Expo native runtime is not available: something went wrong and we aren't sure what it was. Please post more information and get support at https://forums.expo.io.`
   );
 }
