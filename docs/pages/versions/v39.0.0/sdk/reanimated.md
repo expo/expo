@@ -16,6 +16,39 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 <InstallSection packageName="react-native-reanimated" href="https://github.com/kmagiera/react-native-reanimated#getting-started" />
 
+### Experimental support for v2-alpha
+
+The second major version of this library offers a much easier API, along with significantly improved performance characteristics. It also requires that [TurboModules](https://github.com/react-native-community/discussions-and-proposals/issues/40) are enabled in your app, and [TurboModules are not compatible with JavaScript debugging in Chrome](https://docs.swmansion.com/react-native-reanimated/docs/next/#known-problems-and-limitations). Because of this limitation, you need to opt in to using the alpha version of this library. To opt in, add the `experiments.turboModules` key to your `app.json`:
+
+```json
+{
+  "expo": {
+    "experiments": {
+      "turboModules": true
+    }
+  }
+}
+```
+
+You also need to install the library directly with npm or yarn rather than using `expo install` because we still default to installing the stable react-native-reanimated v1.
+
+```
+# This exact version is supported:
+npm install react-native-reanimated@2.0.0-alpha.6 
+```
+
+Finally, you'll need to add the babel plugin to `babel.config.js`:
+
+```jsx
+module.exports = function(api) {
+  api.cache(true);
+  return {
+    presets: ['babel-preset-expo'],
+    plugins: ['react-native-reanimated/plugin']
+  };
+};
+```
+
 ## API Usage
 
 You should refer to the [react-native-reanimated docs](https://github.com/kmagiera/react-native-reanimated#reanimated-overview) for more information on the API and its usage. But the following example (courtesy of that repo) is a quick way to get started.
