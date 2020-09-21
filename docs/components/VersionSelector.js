@@ -48,72 +48,28 @@ const STYLES_SELECT_ELEMENT = css`
   cursor: pointer;
 `;
 
-const versionNumber = vString => {
-  const pattern = /v([0-9]+)\./,
-    match = vString.match(pattern),
-    number = parseInt(match[1], 10);
-  return number;
-};
+const VersionSelector = ({ version, style, onSetVersion }) => (
+  <div className={STYLES_SELECT} style={style}>
+    <label className={STYLES_SELECT_TEXT} htmlFor="version-menu">
+      <div>{Utilities.getUserFacingVersionString(version, LATEST_VERSION)}</div>
+      <ChevronDownIcon style={{ height: '16px', width: '16px' }} />
+    </label>
+    {// hidden links to help test-links spidering
+    VERSIONS.map(v => (
+      <a key={v} style={{ display: 'none' }} href={`/versions/${v}/`} />
+    ))}
+    <select
+      id="version-menu"
+      className={STYLES_SELECT_ELEMENT}
+      value={version}
+      onChange={e => onSetVersion(e.target.value)}>
+      {VERSIONS.map(v => (
+        <option key={v} value={v}>
+          {Utilities.getUserFacingVersionString(v, LATEST_VERSION)}
+        </option>
+      ))}
+    </select>
+  </div>
+);
 
-const orderVersions = versions => {
-  return versions.sort((a, b) => {
-    switch (a) {
-      case 'unversioned':
-        return 1;
-      case 'latest':
-        if (b == 'unversioned') {
-          return -1;
-        } else {
-          return 1;
-        }
-      default:
-        switch (b) {
-          case 'unversioned':
-          case 'latest':
-            return 1;
-          default:
-            return versionNumber(a) - versionNumber(b);
-        }
-    }
-  });
-};
-
-export default class VersionSelector extends React.Component {
-  render() {
-    const latestLabel = 'Latest (' + Utilities.getUserFacingVersionString(LATEST_VERSION) + ')';
-    const labelText =
-      this.props.version === 'latest'
-        ? latestLabel
-        : Utilities.getUserFacingVersionString(this.props.version);
-
-    return (
-      <div className={STYLES_SELECT} style={this.props.style}>
-        <label className={STYLES_SELECT_TEXT} htmlFor="version-menu">
-          <div>{labelText}</div>
-          <ChevronDownIcon style={{ height: '16px', width: '16px' }} />
-        </label>
-        {// hidden links to help test-links spidering
-        orderVersions(VERSIONS).map(v => (
-          <a key={v} style={{ display: 'none' }} href={`/versions/${v}/`} />
-        ))}
-        <select
-          className={STYLES_SELECT_ELEMENT}
-          id="version-menu"
-          value={this.props.version}
-          onChange={e => this.props.onSetVersion(e.target.value)}>
-          {orderVersions(VERSIONS)
-            .map(version => {
-              return (
-                <option key={version} value={version}>
-                  {version === 'latest'
-                    ? latestLabel
-                    : Utilities.getUserFacingVersionString(version)}
-                </option>
-              );
-            })
-            .reverse()}
-        </select>
-      </div>
-    );
-  }
-}
+export default VersionSelector;
