@@ -28,7 +28,7 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-in-app-purchases",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/in-app-purchases/",
   "unimodulePeerDependencies": {
     "@unimodules/core": "*"
   },
