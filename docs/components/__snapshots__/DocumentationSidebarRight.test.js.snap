@@ -6,62 +6,47 @@ exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
     class="css-f6rn8e"
     data-sidebar="true"
   >
-    <span
-      class="css-1ynknjt"
-    >
-      <svg
-        class="css-lvyyym"
-        fill="none"
-        height="16"
-        stroke="currentColor"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        viewBox="0 0 24 24"
-        width="16"
-        xmlns="http://www.w3.org/2000/svg"
+    <div>
+      <a
+        class="
+            css-1vd0rdr
+            css-1acx65k
+            false
+            false
+          "
+        href="#base-level-heading"
+        style="padding-left: 0px;"
       >
-        <polyline
-          points="6 9 12 15 18 9"
-        />
-      </svg>
-    </span>
-    <div
-      class="css-1ex2t5a"
-    >
-      <div
-        class="css-eh4sdg"
+        Base level heading
+      </a>
+    </div>
+    <div>
+      <a
+        class="
+            css-1vd0rdr
+            false
+            false
+            false
+          "
+        href="#level-3-subheading"
+        style="padding-left: 16px;"
       >
-        <a
-          class="css-126xm9p css-okw798"
-          href="#base-level-heading"
-          style="padding-left: 0px;"
-        >
-          Base level heading
-        </a>
-      </div>
-      <div
-        class="css-eh4sdg"
+        Level 3 subheading
+      </a>
+    </div>
+    <div>
+      <a
+        class="
+            css-1vd0rdr
+            false
+            css-1o4q23w
+            false
+          "
+        href="#code-heading-depth-1"
+        style="padding-left: 16px;"
       >
-        <a
-          class="css-1lwv00p css-okw798"
-          href="#level-3-subheading"
-          style="padding-left: 12px;"
-        >
-          Level 3 subheading
-        </a>
-      </div>
-      <div
-        class="css-eh4sdg"
-      >
-        <a
-          class="css-1lwv00p css-okw798 css-1troacw"
-          href="#code-heading-depth-1"
-          style="padding-left: 12px;"
-        >
-          Code heading depth 1
-        </a>
-      </div>
+        Code heading depth 1
+      </a>
     </div>
   </nav>
 </div>
