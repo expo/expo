@@ -1,7 +1,9 @@
 import * as React from 'react';
 import { css } from '@emotion/core';
 
-import { paragraph } from '~/components/base/typography';
+import { BASE_HEADING_LEVEL, HeadingManager } from '../common/headingManager';
+import DocumentationSidebarRightLink from './DocumentationSidebarRightLink';
+
 import withHeadingManager from '~/components/page-higher-order/withHeadingManager';
 import * as Constants from '~/constants/theme';
 import { BASE_HEADING_LEVEL } from '~/common/headingManager';
@@ -14,57 +16,6 @@ const STYLES_SIDEBAR = css`
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     width: 100%;
   }
-`;
-
-const STYLES_TITLE = css`
-  ${paragraph}
-  font-size: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  position: relative;
-  margin-bottom: 16px;
-  text-decoration: none;
-  font-family: ${Constants.fontFamilies.demi};
-  user-select: none;
-  background: ${Constants.expoColors.gray[200]};
-  padding: 8px 16px;
-  border-radius: 4px;
-  color: ${Constants.expoColors.black};
-
-  :hover {
-    cursor: pointer;
-  }
-`;
-
-const STYLES_ICON_SHOW_CONTAINER = css`
-  top: 83px;
-  right: 15px;
-  position: fixed;
-  font-size: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-  user-select: none;
-  background: ${Constants.expoColors.gray[200]};
-  padding: 8px 16px;
-  border-radius: 4px;
-  color: ${Constants.expoColors.black};
-
-  :hover {
-    cursor: pointer;
-  }
-`;
-
-const STYLES_ICON_SHOW = css`
-  transform: rotate(90deg);
-`;
-
-const STYLES_ICON_HIDE = css`
-  min-width: 16px;
-  padding-bottom: 5px;
-  transform: rotate(270deg);
 `;
 
 const UPPER_SCROLL_LIMIT_FACTOR = 1 / 4;
@@ -84,7 +35,14 @@ const isDynamicScrollAvailable = () => {
   return true;
 };
 
-class DocumentationSidebarRight extends React.Component {
+type Props = {
+  headingManager: HeadingManager;
+  maxNestingDepth: number;
+  selfRef: React.RefObject<any>;
+  contentRef: React.RefObject<any>;
+};
+
+class DocumentationSidebarRight extends React.Component<Props> {
   static defaultProps = {
     maxNestingDepth: 4,
   };
@@ -95,7 +53,7 @@ class DocumentationSidebarRight extends React.Component {
 
   slugScrollingTo = null;
 
-  activeItemRef = React.createRef();
+  activeItemRef = React.createRef<HTMLAnchorElement>();
 
   /**
    * Scrolls sidebar to keep active element always visible
@@ -194,12 +152,14 @@ const SidebarWithHeadingManager = withHeadingManager(function SidebarWithHeading
   ...props
 }) {
   return <DocumentationSidebarRight {...props} ref={reactRef} />;
-});
+}) as React.FC<Props & { reactRef: React.Ref<DocumentationSidebarRight> }>;
 
 SidebarWithHeadingManager.displayName = 'SidebarRightRefWrapper';
 
-const SidebarForwardRef = React.forwardRef((props, ref) => (
-  <SidebarWithHeadingManager {...props} reactRef={ref} />
-));
+const SidebarForwardRef = React.forwardRef(
+  (props: Props, ref: React.Ref<DocumentationSidebarRight>) => (
+    <SidebarWithHeadingManager {...props} reactRef={ref} />
+  )
+);
 
 export default SidebarForwardRef;

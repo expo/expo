@@ -1,7 +1,7 @@
-import React from 'react';
 import NextHead from 'next/head';
+import React from 'react';
 
-export default class Head extends React.PureComponent {
+export default class Head extends React.PureComponent<{ title: string }> {
   render() {
     return (
       <div>

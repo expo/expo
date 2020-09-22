@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import { PageMetadata, Slugger } from './types';
 import * as Utilities from './utilities';
 
 /**
@@ -35,10 +36,11 @@ type AdditionalProps = {
   sidebarType?: HeadingType;
 };
 
-type Heading = {
+export type Heading = {
   title: string;
   slug: string;
   level: number;
+  type: HeadingType;
   ref: React.RefObject<any>;
   metadata?: any;
 };
@@ -57,8 +59,8 @@ type Heading = {
  * This class uses Slugger instance to generate and manage unique slugs
  */
 export class HeadingManager {
-  private slugger;
-  private meta;
+  private slugger: Slugger;
+  private meta: Partial<PageMetadata>;
   private _headings: Heading[];
   private maxNestingLevel: number;
 
@@ -70,7 +72,7 @@ export class HeadingManager {
    * @param {Object} slugger A _GithubSlugger_ instance
    * @param {{headings: Object[]}} meta Document metadata gathered by `headingsMdPlugin`.
    */
-  constructor(slugger, meta) {
+  constructor(slugger: Slugger, meta?: PageMetadata) {
     this.slugger = slugger;
     this.meta = { headings: meta.headings || [], ...meta };
     this._headings = [];
@@ -86,7 +88,11 @@ export class HeadingManager {
    * @param {*} additionalProps Additional properties passed to heading component
    * @returns {Object} Newly created heading instance
    */
-  addHeading(title: string | object, nestingLevel?: number, additionalProps?: AdditionalProps) {
+  addHeading(
+    title: string | object,
+    nestingLevel?: number,
+    additionalProps?: AdditionalProps
+  ): Heading {
     // NOTE (barthap): workaround for complex titles containing both normal text and inline code
     // changing this needs also change in `headingsMdPlugin.js` to make metadata loading correctly
     title = Array.isArray(title) ? title.map(Utilities.toString).join(' ') : title;
@@ -124,12 +130,12 @@ export class HeadingManager {
    */
   private findMetaForTitle(realTitle: string) {
     const entry = this.meta.headings.find(
-      heading => heading.title === realTitle && !heading.processed
+      heading => heading.title === realTitle && !heading._processed
     );
     if (!entry) {
       return;
     }
-    entry.processed = true;
+    entry._processed = true;
     return entry;
   }
 
