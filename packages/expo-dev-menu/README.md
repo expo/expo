@@ -28,9 +28,6 @@ Then you can start to configure the native projects using steps below.
 
 ## 🤖 Android
 
-On Android, you can install this package in two ways. We
-recommend using the basic installation. However, if you have the custom activity in your application then the advance one will be more suitable for you.
-
 1.  Add the `dev-menu` to the android project.
 
     I. Open `settings.gradle` and add the following lines:
