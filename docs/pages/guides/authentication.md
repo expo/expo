@@ -5,7 +5,7 @@ title: Authentication
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import InstallSection from '~/components/plugins/InstallSection';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
-import { SocialGrid, SocialGridItem, CreateAppButton, AuthMethodTabSwitcher, ImplicitTab, AuthMethodTab, AuthCodeTab } from '~/components/plugins/AuthSessionElements';
+import { SocialGrid, SocialGridItem, CreateAppButton, AuthMethodTabSwitcher, AuthMethodTab } from '~/components/plugins/AuthSessionElements';
 import TerminalBlock from '~/components/plugins/TerminalBlock';
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -190,7 +190,7 @@ export default function App() {
 
 <AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
 
-<AuthCodeTab>
+<AuthMethodTab>
 
 <SnackInline label='Coinbase Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -251,13 +251,13 @@ export default function App() {
 
 </SnackInline>
 
-</AuthCodeTab>
+</AuthMethodTab>
 
-<ImplicitTab>
+<AuthMethodTab>
 
 - Coinbase does not support implicit grant.
 
-</ImplicitTab>
+</AuthMethodTab>
 </AuthMethodTabSwitcher>
 
 <!-- End Coinbase -->
@@ -279,7 +279,7 @@ export default function App() {
 
 <AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
 
-<AuthCodeTab>
+<AuthMethodTab>
 
 Auth code responses (`ResponseType.Code`) will only work in native with `useProxy: true`.
 
@@ -349,9 +349,9 @@ export default function App() {
 
 </SnackInline>
 
-</AuthCodeTab>
+</AuthMethodTab>
 
-<ImplicitTab>
+<AuthMethodTab>
 
 <SnackInline label='Dropbox Implicit' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -417,7 +417,7 @@ export default function App() {
 
 </SnackInline>
 
-</ImplicitTab>
+</AuthMethodTab>
 
 </AuthMethodTabSwitcher>
 
@@ -447,7 +447,7 @@ export default function App() {
 
 <AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow", "Firebase"]}>
 
-<AuthCodeTab>
+<AuthMethodTab>
 
 <SnackInline label='Facebook Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -496,9 +496,9 @@ export default function App() {
 
 </SnackInline>
 
-</AuthCodeTab>
+</AuthMethodTab>
 
-<ImplicitTab>
+<AuthMethodTab>
 
 <SnackInline label='Facebook Implicit' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -544,9 +544,9 @@ export default function App() {
 
 </SnackInline>
 
-</ImplicitTab>
+</AuthMethodTab>
 
-<ImplicitTab>
+<AuthMethodTab>
 
 - Be sure to setup Facebook auth as described above, this is basically identical.
 - 🔥 Create a new Firebase project
@@ -613,7 +613,7 @@ export default function App() {
 
 </SnackInline>
 
-</ImplicitTab>
+</AuthMethodTab>
 
 </AuthMethodTabSwitcher>
 
@@ -637,7 +637,7 @@ export default function App() {
 - The `redirectUri` requires 2 slashes (`://`).
 
 <AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
-<AuthCodeTab>
+<AuthMethodTab>
 
 <SnackInline label='FitBit Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -698,9 +698,9 @@ export default function App() {
 
 </SnackInline>
 
-</AuthCodeTab>
+</AuthMethodTab>
 
-<ImplicitTab>
+<AuthMethodTab>
 
 <SnackInline label='FitBit Implicit' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -767,7 +767,7 @@ export default function App() {
 
 </SnackInline>
 
-</ImplicitTab>
+</AuthMethodTab>
 
 </AuthMethodTabSwitcher>
 
@@ -792,7 +792,7 @@ export default function App() {
 - `revocationEndpoint` is dynamic and requires your `config.clientId`.
 
 <AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
-<AuthCodeTab>
+<AuthMethodTab>
 
 <SnackInline label='GitHub Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -853,13 +853,13 @@ export default function App() {
 
 </SnackInline>
 
-</AuthCodeTab>
+</AuthMethodTab>
 
-<ImplicitTab>
+<AuthMethodTab>
 
 - Implicit grant is [not supported for Github](https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/).
 
-</ImplicitTab>
+</AuthMethodTab>
 
 </AuthMethodTabSwitcher>
 
@@ -953,7 +953,7 @@ Expo web client ID for use in the browser.
 - To test this be sure to start your app with `expo start:web --https`.
 
 <AuthMethodTabSwitcher tabs={["Standard", "Firebase"]}>
-<AuthCodeTab>
+<AuthMethodTab>
 
 <SnackInline label='Google Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -1001,9 +1001,9 @@ export default function App() {
 
 </SnackInline>
 
-</AuthCodeTab>
+</AuthMethodTab>
 
-<ImplicitTab>
+<AuthMethodTab>
 
 - 🔥 Create a new Firebase project
 - Enable Google auth
@@ -1083,7 +1083,7 @@ export default function App() {
 
 </SnackInline>
 
-</ImplicitTab>
+</AuthMethodTab>
 
 </AuthMethodTabSwitcher>
 
@@ -1103,7 +1103,7 @@ export default function App() {
 - You can use the Expo proxy to test this without a native rebuild, just be sure to configure the project as a website.
 
 <AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
-<AuthCodeTab>
+<AuthMethodTab>
 
 <SnackInline label='Okta Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -1163,13 +1163,13 @@ export default function App() {
 
 </SnackInline>
 
-</AuthCodeTab>
+</AuthMethodTab>
 
-<ImplicitTab>
+<AuthMethodTab>
 
 - This flow is not documented yet, learn more [from the Okta website](https://developer.okta.com/docs/guides/implement-implicit/use-flow/).
 
-</ImplicitTab>
+</AuthMethodTab>
 
 </AuthMethodTabSwitcher>
 
@@ -1194,7 +1194,7 @@ export default function App() {
 
 <AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
 
-<AuthCodeTab>
+<AuthMethodTab>
 
 <SnackInline label='Reddit Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -1254,9 +1254,9 @@ export default function App() {
 
 </SnackInline>
 
-</AuthCodeTab>
+</AuthMethodTab>
 
-<ImplicitTab>
+<AuthMethodTab>
 
 - You must select the `installed` option for your app on Reddit to use implicit grant.
 
@@ -1321,7 +1321,7 @@ export default function App() {
 
 </SnackInline>
 
-</ImplicitTab>
+</AuthMethodTab>
 </AuthMethodTabSwitcher>
 
 <!-- End Reddit -->
@@ -1345,7 +1345,7 @@ export default function App() {
 
 <AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
 
-<AuthCodeTab>
+<AuthMethodTab>
 
 <SnackInline label='Slack Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -1405,13 +1405,13 @@ export default function App() {
 
 </SnackInline>
 
-</AuthCodeTab>
+</AuthMethodTab>
 
-<ImplicitTab>
+<AuthMethodTab>
 
 - Slack does not support implicit grant.
 
-</ImplicitTab>
+</AuthMethodTab>
 
 </AuthMethodTabSwitcher>
 
@@ -1430,7 +1430,7 @@ export default function App() {
 - Learn more about the [Spotify API](https://developer.spotify.com/documentation/web-api/).
 
 <AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
-<AuthCodeTab>
+<AuthMethodTab>
 
 <SnackInline label='Spotify Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -1493,9 +1493,9 @@ export default function App() {
 
 </SnackInline>
 
-</AuthCodeTab>
+</AuthMethodTab>
 
-<ImplicitTab>
+<AuthMethodTab>
 
 <SnackInline label='Spotify Implicit' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -1561,7 +1561,7 @@ export default function App() {
 
 </SnackInline>
 
-</ImplicitTab>
+</AuthMethodTab>
 </AuthMethodTabSwitcher>
 
 <!-- End Spotify -->
@@ -1581,7 +1581,7 @@ export default function App() {
 - No Implicit auth flow is provided by Strava.
 
 <AuthMethodTabSwitcher tabs={["Auth Code"]}>
-<AuthCodeTab>
+<AuthMethodTab>
 
 <SnackInline label='Strava Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -1662,7 +1662,7 @@ const { accessToken } = await AuthSession.exchangeCodeAsync(
 
 </SnackInline>
 
-</AuthCodeTab>
+</AuthMethodTab>
 
 </AuthMethodTabSwitcher>
 
@@ -1683,7 +1683,7 @@ const { accessToken } = await AuthSession.exchangeCodeAsync(
 
 <AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
 
-<AuthCodeTab>
+<AuthMethodTab>
 
 <SnackInline label='Twitch Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -1744,9 +1744,9 @@ export default function App() {
 
 </SnackInline>
 
-</AuthCodeTab>
+</AuthMethodTab>
 
-<ImplicitTab>
+<AuthMethodTab>
 
 <SnackInline label='Twitch Implicit' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -1810,7 +1810,7 @@ export default function App() {
 
 </SnackInline>
 
-</ImplicitTab>
+</AuthMethodTab>
 
 </AuthMethodTabSwitcher>
 
@@ -1831,7 +1831,7 @@ export default function App() {
 
 <AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
 
-<AuthCodeTab>
+<AuthMethodTab>
 
 <SnackInline label='Uber Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -1892,9 +1892,9 @@ export default function App() {
 
 </SnackInline>
 
-</AuthCodeTab>
+</AuthMethodTab>
 
-<ImplicitTab>
+<AuthMethodTab>
 
 <SnackInline label='Uber Implicit' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -1958,7 +1958,7 @@ export default function App() {
 
 </SnackInline>
 
-</ImplicitTab>
+</AuthMethodTab>
 
 </AuthMethodTabSwitcher>
 
