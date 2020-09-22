@@ -45,7 +45,7 @@ export async function reloadAsync(): Promise<void> {
   if (!ExpoUpdates.reload) {
     throw new UnavailabilityError('Updates', 'reloadAsync');
   }
-  if (__DEV__ || isUsingDeveloperTool) {
+  if (__DEV__ && !isUsingExpoDevelopmentClient) {
     throw new CodedError(
       'ERR_UPDATES_DISABLED',
       `You cannot use the Updates module in development mode. ${manualUpdatesInstructions}`
