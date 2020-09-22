@@ -12,7 +12,7 @@
   "expo-app-loader-provider": "~8.0.0",
   "expo-apple-authentication": "~2.2.1",
   "expo-asset": "~8.2.0",
-  "expo-auth-session": "~1.5.0",
+  "expo-auth-session": "~2.0.0",
   "expo-av": "~8.6.0",
   "expo-background-fetch": "~8.5.0",
   "expo-barcode-scanner": "~9.0.0",
