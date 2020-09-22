@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `NSInvalidArgumentException` being thrown in bare applications on iOS (unrecognized selector `appLoaderTask:didFinishBackgroundUpdateWithStatus:update:error:` sent to instance of `EXUpdatesAppController`). ([#10289](https://github.com/expo/expo/issues/10289) by [@sjchmiela](https://github.com/sjchmiela))
+
 ## 0.3.3 — 2020-09-21
 
 _This version does not introduce any user-facing changes._
