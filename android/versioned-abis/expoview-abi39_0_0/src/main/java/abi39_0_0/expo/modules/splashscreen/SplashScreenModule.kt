@@ -12,7 +12,7 @@ import abi39_0_0.org.unimodules.core.interfaces.ExpoMethod
 // Below import is added explicitly to provide a redirection from versioned code realm to unversioned code realm.
 // Without this import any `SplashScreen.methodName(...)` invocation on JS side ends up in versioned SplashScreen kotlin object that stores no state about the ExperienceActivity.
 // Other solution would be:
-// - create package with the SplashScreeSingletonModule interface and publish as a separate package (that would add complexity into `expo-splash-screen` package itself)
+// - create package with the SplashScreenSingletonModule interface and publish as a separate package (that would add complexity into `expo-splash-screen` package itself)
 // - register unversioned SplashScreen object as a singleton module in ModuleRegistry
 // - use ModuleRegistry.getSingletonModule("SplashScreenSingletonModuleName", SplashScreenInterface.class); (that would add complexity into `expo-splash-screen` package itself)
 // TODO (@bbarthec): add this import while performing Android versioning
