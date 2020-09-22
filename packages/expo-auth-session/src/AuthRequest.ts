@@ -32,7 +32,7 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
   /**
    * Used for protection against [Cross-Site Request Forgery](https://tools.ietf.org/html/rfc6749#section-10.12).
    */
-  public state: Promise<string> | string;
+  public state: string;
   public url: string | null = null;
   public codeVerifier?: string;
   public codeChallenge?: string;
@@ -54,7 +54,7 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
     this.scopes = request.scopes;
     this.clientSecret = request.clientSecret;
     this.prompt = request.prompt;
-    this.state = request.state ?? PKCE.generateRandomAsync(10);
+    this.state = request.state ?? PKCE.generateRandom(10);
     this.extraParams = request.extraParams ?? {};
     this.codeChallengeMethod = request.codeChallengeMethod ?? CodeChallengeMethod.S256;
     // PKCE defaults to true
@@ -107,7 +107,7 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
       codeChallenge: this.codeChallenge,
       codeChallengeMethod: this.codeChallengeMethod,
       prompt: this.prompt,
-      state: await this.getStateAsync(),
+      state: this.state,
       extraParams: this.extraParams,
       usePKCE: this.usePKCE,
     };
@@ -262,12 +262,6 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
     // Store the URL for later
     this.url = `${discovery.authorizationEndpoint}?${query}`;
     return this.url;
-  }
-
-  private async getStateAsync(): Promise<string> {
-    // Resolve any pending state.
-    if (this.state instanceof Promise) this.state = await this.state;
-    return this.state;
   }
 
   private async ensureCodeIsSetupAsync(): Promise<void> {
