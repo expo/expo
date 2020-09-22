@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { css } from 'react-emotion';
 
-import { Tab, Tabs } from './Tabs';
-
 const STYLES_LINK = css`
   text-decoration: none;
   transition: box-shadow 0.15s ease 0s, transform 0.15s ease 0s, -webkit-box-shadow 0.15s ease 0s,
@@ -101,6 +99,3 @@ export function SocialGridItem({ title, protocol = [], image, href }) {
     </a>
   );
 }
-
-export const AuthMethodTab = Tab;
-export const AuthMethodTabSwitcher = Tabs;
