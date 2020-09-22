@@ -8,6 +8,8 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
 
+import androidx.annotation.Nullable;
+import expo.modules.developmentclient.DevelopmentClientController;
 import expo.modules.random.RandomPackage;
 
 import org.unimodules.adapters.react.ModuleRegistryAdapter;
@@ -18,6 +20,8 @@ import java.util.List;
 import dev.expo.payments.generated.BasePackageList;
 
 public class MainApplication extends Application implements ReactApplication {
+  static final boolean USE_DEV_CLIENT = false;
+
   private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(
     new BasePackageList().getPackageList()
   );
@@ -40,6 +44,16 @@ public class MainApplication extends Application implements ReactApplication {
     protected String getJSMainModuleName() {
       return "index";
     }
+
+    @Nullable
+    @Override
+    protected String getJSBundleFile() {
+      if (USE_DEV_CLIENT) {
+        return DevelopmentClientController.getInstance().getJSBundleFile();
+      } else {
+        return null; // Uses default bundle file
+      }
+    }
   };
 
   @Override
@@ -51,5 +65,9 @@ public class MainApplication extends Application implements ReactApplication {
   public void onCreate() {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
+
+    if (USE_DEV_CLIENT) {
+      DevelopmentClientController.initialize(this);
+    }
   }
 }
