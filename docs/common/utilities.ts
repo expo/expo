@@ -5,7 +5,7 @@
  *
  * @param {any} node React Node object to stringify
  */
-export const toString = node => {
+export const toString = (node: any): string => {
   if (typeof node === 'string') {
     return node;
   } else if (Array.isArray(node)) {
@@ -17,7 +17,7 @@ export const toString = node => {
   }
 };
 
-export const generateSlug = (slugger, node, length = 7) => {
+export const generateSlug = (slugger: any, node: any, length = 7): string => {
   const stringToSlug = toString(node)
     .split(' ')
     .splice(0, length)
@@ -29,17 +29,17 @@ export const generateSlug = (slugger, node, length = 7) => {
   return slug;
 };
 
-export const isVersionedUrl = url => {
+export const isVersionedUrl = (url: string) => {
   return /https?:\/\/(.*)(\/versions\/.*)/.test(url);
 };
 
-export const replaceVersionInUrl = (url, replaceWith) => {
+export const replaceVersionInUrl = (url: string, replaceWith: string) => {
   const urlArr = url.split('/');
   urlArr[2] = replaceWith;
   return urlArr.join('/');
 };
 
-export const getVersionFromUrl = url => {
+export const getVersionFromUrl = (url: string) => {
   return url.split('/')[2];
 };
 
@@ -47,11 +47,9 @@ export const getVersionFromUrl = url => {
  * Get the user facing or human-readable version from the SDK verion.
  * If you provide a `latestVersion`, `latest` will include the sdk version in parentheses.
  */
-export const getUserFacingVersionString = (version, latestVersion = undefined) => {
+export const getUserFacingVersionString = (version: string, latestVersion?: string): string => {
   if (version === 'latest') {
-    return latestVersion
-      ? `Latest (${getUserFacingVersionString(latestVersion)})`
-      : 'Latest';
+    return latestVersion ? `Latest (${getUserFacingVersionString(latestVersion)})` : 'Latest';
   } else if (version === 'unversioned') {
     return 'Unversioned';
   } else {

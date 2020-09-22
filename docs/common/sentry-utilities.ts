@@ -15,7 +15,7 @@ const TIMESTAMP_KEY = 'sentry:errorReportingInit';
 const ONE_DAY_MS = 60 * 60 * 24 * 1000;
 
 export function preprocessSentryError(event) {
-  let message = getMessage(event);
+  const message = getMessage(event);
 
   // If we don't know about this particular type of event then just pass it along
   if (!message) {
@@ -65,7 +65,7 @@ function getMessage(event) {
   }
 
   if (event.exception && event.exception.values) {
-    let value = event.exception.values[0].value;
+    const value = event.exception.values[0].value;
     if (value) {
       return value;
     }
@@ -75,11 +75,11 @@ function getMessage(event) {
 }
 
 function maybeResetReportedErrorsCache() {
-  let timestamp = localStorage.getItem(TIMESTAMP_KEY);
-  let now = new Date().getTime();
+  const timestamp = parseInt(localStorage.getItem(TIMESTAMP_KEY), 10);
+  const now = new Date().getTime();
 
   if (!timestamp) {
-    localStorage.setItem(TIMESTAMP_KEY, new Date().getTime());
+    localStorage.setItem(TIMESTAMP_KEY, new Date().getTime().toString());
   } else if (now - timestamp >= ONE_DAY_MS) {
     localStorage.removeItem(REPORTED_ERRORS_KEY);
     localStorage.removeItem(TIMESTAMP_KEY);
@@ -87,7 +87,7 @@ function maybeResetReportedErrorsCache() {
 }
 
 function userHasReportedErrorMessage(message) {
-  let messages = getReportedErrorMessages();
+  const messages = getReportedErrorMessages();
   if (messages.includes(message)) {
     return true;
   } else {
@@ -96,12 +96,12 @@ function userHasReportedErrorMessage(message) {
 }
 
 function saveReportedErrorMessage(message) {
-  let messages = getReportedErrorMessages();
+  const messages = getReportedErrorMessages();
   localStorage.setItem(REPORTED_ERRORS_KEY, JSON.stringify([...messages, message]));
 }
 
 function getReportedErrorMessages() {
-  let messages = localStorage.getItem(REPORTED_ERRORS_KEY);
+  const messages = localStorage.getItem(REPORTED_ERRORS_KEY);
   if (!messages) {
     return [];
   }
