@@ -16,3 +16,5 @@ build/
 web-build/
 HelloWorld.xcworkspace
 Podfile.lock
+ios/Pods
+android/.build
