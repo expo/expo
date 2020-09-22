@@ -6,6 +6,11 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import androidx.annotation.Nullable;
+
 public class DevelopmentClientModule extends ReactContextBaseJavaModule {
 
     private final ReactApplicationContext reactContext;
@@ -25,4 +30,17 @@ public class DevelopmentClientModule extends ReactContextBaseJavaModule {
         DevelopmentClientController.getInstance().loadApp(reactContext, url, options);
         promise.resolve(null);
     }
+
+  @Override
+  public boolean hasConstants() {
+    return true;
+  }
+
+  @Nullable
+  @Override
+  public Map<String, Object> getConstants() {
+    final Map<String, Object> constants = new HashMap<>();
+    constants.put("mainComponentName", DevelopmentClientController.getInstance().getMainComponentName());
+    return constants;
+  }
 }

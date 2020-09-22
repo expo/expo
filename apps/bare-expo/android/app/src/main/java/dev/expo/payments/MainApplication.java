@@ -67,7 +67,7 @@ public class MainApplication extends Application implements ReactApplication {
     SoLoader.init(this, /* native exopackage */ false);
 
     if (USE_DEV_CLIENT) {
-      DevelopmentClientController.initialize(this);
+      DevelopmentClientController.initialize(this, "BareExpo");
     }
   }
 }

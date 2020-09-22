@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 
 public class DevelopmentClientController {
   // Use this to load from a development server for the development client launcher UI
-//  private final String DEV_LAUNCHER_HOST = "10.0.0.176:8090";
+//  private final String DEV_LAUNCHER_HOST = "10.0.0.175:8090";
   private final String DEV_LAUNCHER_HOST = null;
 
   // Host to which network requests always fails, forcing React Native to use our embedded bundle
@@ -36,9 +36,11 @@ public class DevelopmentClientController {
   private static DevelopmentClientController sInstance;
 
   private Context mContext;
+  private String mMainComponentName;
 
-  private DevelopmentClientController(Context context) {
+  private DevelopmentClientController(Context context, String mainComponentName) {
     mContext = context;
+    mMainComponentName = mainComponentName;
 
     // Delete React Native's cached development JS bundle so that it always loads the latest one.
     File jsBundleTempFile = new File(context.getFilesDir(), JS_BUNDLE_FILE_NAME);
@@ -56,10 +58,18 @@ public class DevelopmentClientController {
     return sInstance;
   }
 
-  public static void initialize(Context context) {
+  public static void initialize(Context context, String mainComponentName) {
     if (sInstance == null) {
-      sInstance = new DevelopmentClientController(context);
+      sInstance = new DevelopmentClientController(context, mainComponentName);
     }
+  }
+
+  public static void initialize(Context context) {
+    initialize(context, "main");
+  }
+
+  String getMainComponentName() {
+    return mMainComponentName;
   }
 
   public @Nullable String getJSBundleFile() {
