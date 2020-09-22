@@ -42,7 +42,7 @@ UM_EXPORT_METHOD_AS(getInstallationIdAsync, getInstallationIdAsyncWithResolver:(
   
   // There's no installation ID available, neither legacy nor current one.
   installationId = [self generateNewInstallationId];
-  NSError *error = [self persistInstallationId:legacyInstallationId];
+  NSError *error = [self persistInstallationId:installationId];
   if (error) {
     NSLog(@"[expo-notifications] Error encountered while trying to persist an installation ID (%@): %@", installationId, error.debugDescription);
     NSLog(@"[expo-notifications] Installation ID may change.");
