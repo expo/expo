@@ -12,6 +12,6 @@ ga('send', 'pageview');
 };
 
 export const GoogleScript = props => {
-  let markup = { __html: getAnalyticsScript(props.id) };
+  const markup = { __html: getAnalyticsScript(props.id) };
   return <script dangerouslySetInnerHTML={markup} />;
 };

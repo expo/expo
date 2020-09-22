@@ -1,14 +1,14 @@
 import * as React from 'react';
 
-import * as Utilities from '~/common/utilities';
+import * as Utilities from './utilities';
 
 /**
  * These types directly correspond to MDAST node types
  */
-export const HeadingType = {
-  Text: 'text',
-  InlineCode: 'inlineCode',
-};
+export enum HeadingType {
+  Text = 'text',
+  InlineCode = 'inlineCode',
+}
 
 /**
  * Minimum heading level to display in sidebar.
@@ -28,19 +28,44 @@ export const BASE_HEADING_LEVEL = 2;
  */
 const DEFAULT_NESTING_LIMIT = 1;
 
+type AdditionalProps = {
+  hideInSidebar?: boolean;
+  sidebarTitle?: string;
+  sidebarDepth?: number;
+  sidebarType?: HeadingType;
+};
+
+type Heading = {
+  title: string;
+  slug: string;
+  level: number;
+  ref: React.RefObject<any>;
+  metadata?: any;
+};
+
 /**
  * Manages heading entries. Each entry corresponds to one markdown heading with specified level (#, ##, ### etc)
  *
  * Each entry consists of:
  * - title
  * - slug
- * - level (number of hashes in markdown)
+ * - level
  * - ref - React reference to heading component
  * - type - Is heading a normal text or inline code
+ * - metad
  *
  * This class uses Slugger instance to generate and manage unique slugs
  */
 export class HeadingManager {
+  private slugger;
+  private meta;
+  private _headings: Heading[];
+  private maxNestingLevel: number;
+
+  public get headings() {
+    return this._headings;
+  }
+
   /**
    * @param {Object} slugger A _GithubSlugger_ instance
    * @param {{headings: Object[]}} meta Document metadata gathered by `headingsMdPlugin`.
@@ -48,7 +73,7 @@ export class HeadingManager {
   constructor(slugger, meta) {
     this.slugger = slugger;
     this.meta = { headings: meta.headings || [], ...meta };
-    this.headings = [];
+    this._headings = [];
 
     const maxHeadingDepth = meta.maxHeadingDepth ?? DEFAULT_NESTING_LIMIT;
     this.maxNestingLevel = maxHeadingDepth + BASE_HEADING_LEVEL;
@@ -61,7 +86,7 @@ export class HeadingManager {
    * @param {*} additionalProps Additional properties passed to heading component
    * @returns {Object} Newly created heading instance
    */
-  addHeading(title, nestingLevel, additionalProps) {
+  addHeading(title: string | object, nestingLevel?: number, additionalProps?: AdditionalProps) {
     // NOTE (barthap): workaround for complex titles containing both normal text and inline code
     // changing this needs also change in `headingsMdPlugin.js` to make metadata loading correctly
     title = Array.isArray(title) ? title.map(Utilities.toString).join(' ') : title;
@@ -71,9 +96,9 @@ export class HeadingManager {
 
     const slug = Utilities.generateSlug(this.slugger, title);
     const realTitle = Utilities.toString(title);
-    const meta = this._findMetaForTitle(realTitle);
+    const meta = this.findMetaForTitle(realTitle);
     const level = levelOverride ?? nestingLevel ?? meta?.level ?? BASE_HEADING_LEVEL;
-    const type = sidebarType || (this._isCode(title) ? HeadingType.InlineCode : HeadingType.Text);
+    const type = sidebarType || (this.isCode(title) ? HeadingType.InlineCode : HeadingType.Text);
 
     const heading = {
       title: sidebarTitle ?? realTitle,
@@ -86,7 +111,7 @@ export class HeadingManager {
 
     // levels out of range are unlisted
     if (!hideInSidebar && level >= BASE_HEADING_LEVEL && level <= this.maxNestingLevel) {
-      this.headings.push(heading);
+      this._headings.push(heading);
     }
 
     return heading;
@@ -97,7 +122,7 @@ export class HeadingManager {
    * and will not be returned again.
    * @param {string} realTitle Title to find metadata for
    */
-  _findMetaForTitle(realTitle) {
+  private findMetaForTitle(realTitle: string) {
     const entry = this.meta.headings.find(
       heading => heading.title === realTitle && !heading.processed
     );
@@ -113,7 +138,7 @@ export class HeadingManager {
    * @param {any} title Heading object to check
    * @returns {boolean} true if header is a code block
    */
-  _isCode(title) {
+  private isCode(title: any): boolean {
     if (!title.props) {
       return false;
     }

@@ -1,4 +1,5 @@
 const getNavigatorAgent = userAgent => {
+  // @ts-ignore
   return userAgent ? userAgent : navigator.userAgent || navigator.vendor || window.opera;
 };
 
