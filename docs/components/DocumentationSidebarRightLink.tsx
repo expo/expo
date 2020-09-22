@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { css } from '@emotion/core';
 
-import { BASE_HEADING_LEVEL, HeadingType } from '~/common/headingManager';
+import { BASE_HEADING_LEVEL, Heading, HeadingType } from '../common/headingManager';
+
 import { paragraph } from '~/components/base/typography';
 import * as Constants from '~/constants/theme';
 
@@ -64,7 +65,7 @@ const NESTING_OFFSET = 16;
  * Replaces `Module.someFunction(arguments: argType)`
  * with `someFunction()`
  */
-const trimCodedTitle = str => {
+const trimCodedTitle = (str: string) => {
   const dotIdx = str.indexOf('.');
   if (dotIdx > 0) str = str.substring(dotIdx + 1);
 
@@ -79,7 +80,7 @@ const trimCodedTitle = str => {
  * (its width exceeds container width)
  * @param {HTMLElement} el element to check
  */
-const isOverflowing = el => {
+const isOverflowing = (el: HTMLElement) => {
   if (!el) {
     return false;
   }
@@ -87,7 +88,13 @@ const isOverflowing = el => {
   return el.clientWidth < el.scrollWidth;
 };
 
-const Tooltip = ({ children, isCode, topOffset }) => (
+type TooltipProps = {
+  children: string | JSX.Element | JSX.Element[];
+  isCode?: boolean;
+  topOffset: number;
+};
+
+const Tooltip: React.FC<TooltipProps> = ({ children, isCode, topOffset }) => (
   <div
     css={[STYLES_TOOLTIP, isCode && STYLES_CODE_TOOLTIP]}
     style={{ right: 20, top: topOffset }}>
@@ -95,7 +102,14 @@ const Tooltip = ({ children, isCode, topOffset }) => (
   </div>
 );
 
-const DocumentationSidebarRightLink = React.forwardRef(
+type SidebarLinkProps = {
+  heading: Heading;
+  isActive: boolean;
+  shortenCode: boolean;
+  onClick: (event: React.MouseEvent<HTMLAnchorElement>) => void;
+};
+
+const DocumentationSidebarRightLink = React.forwardRef<HTMLAnchorElement, SidebarLinkProps>(
   ({ heading, isActive, shortenCode, onClick }, ref) => {
     const { slug, level, title, type } = heading;
 

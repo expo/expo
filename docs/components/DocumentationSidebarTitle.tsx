@@ -1,9 +1,9 @@
 import { css } from '@emotion/core';
 import NextLink from 'next/link';
-
 import * as React from 'react';
-import * as Constants from '~/constants/theme';
+
 import { paragraph } from '~/components/base/typography';
+import * as Constants from '~/constants/theme';
 
 const STYLES_TITLE = css`
   ${paragraph}
@@ -43,18 +43,20 @@ const STYLES_DEFAULT = css`
   }
 `;
 
-class Arrow extends React.Component {
-  render() {
-    return (
-      <i
-        className={`fas fa-chevron-${this.props.isOpen ? 'up' : 'down'}`}
-        style={{ position: 'absolute', right: 0, top: 0 }}
-      />
-    );
-  }
-}
+type Post = {
+  url?: { pathname: string };
+  as?: string;
+  href: string;
+};
 
-export default class DocumentationSidebarTitle extends React.Component {
+type Props = {
+  url?: { pathname: string };
+  posts: Post[];
+  info: Post & { posts: Post[] };
+  asPath: string;
+};
+
+export default class DocumentationSidebarTitle extends React.Component<Props, { isOpen: boolean }> {
   constructor(props) {
     super(props);
 
@@ -79,7 +81,6 @@ export default class DocumentationSidebarTitle extends React.Component {
 
   isChildRouteActive() {
     let result = false;
-    let posts = this.props.posts;
 
     this.props.info.posts.forEach(post => {
       const linkUrl = post.as || post.href;

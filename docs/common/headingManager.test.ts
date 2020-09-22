@@ -1,13 +1,14 @@
 import { BASE_HEADING_LEVEL, HeadingManager, HeadingType } from './headingManager';
+import { PageMetadata, Slugger } from './types';
 
-const SluggerStub = {
-  slug: () => {},
+const SluggerStub: Slugger = {
+  slug: str => str,
 };
 
 describe('HeadingManager tests', () => {
   test('instantiates properly', () => {
     const meta = { maxHeadingDepth: 2 };
-    const headingManager = new HeadingManager(SluggerStub, meta) as any;
+    const headingManager = new HeadingManager(SluggerStub, meta as PageMetadata) as any;
 
     expect(headingManager.headings).toEqual([]);
     expect(headingManager.meta.headings).toEqual([]);
@@ -17,7 +18,10 @@ describe('HeadingManager tests', () => {
   test('_findMetaForTitle not returning same title twice', () => {
     const TITLE = 'Some Title';
     const meta = { headings: [{ title: TITLE, processed: true }] };
-    const headingManager = new HeadingManager(SluggerStub, meta) as any;
+    const headingManager = new HeadingManager(
+      SluggerStub,
+      (meta as unknown) as PageMetadata
+    ) as any;
 
     const result = headingManager.findMetaForTitle(TITLE);
     expect(result).toBeUndefined();
@@ -28,7 +32,7 @@ describe('HeadingManager.addHeading()', () => {
   const META_TITLE = 'Meta heading 1';
   const META_LEVEL = 3;
   const meta = { maxHeadingDepth: 3, headings: [{ title: META_TITLE, level: META_LEVEL }] };
-  const headingManager = new HeadingManager(SluggerStub, meta) as any;
+  const headingManager = new HeadingManager(SluggerStub, meta as PageMetadata) as any;
 
   test('finds info from meta', () => {
     const result = headingManager.addHeading(META_TITLE);
