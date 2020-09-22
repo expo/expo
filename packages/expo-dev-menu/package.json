@@ -40,6 +40,9 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
+  "dependencies": {
+    "expo-dev-menu-interface": "0.0.1"
+  },
   "peerDependencies": {
     "react-native": ">=0.62.0"
   },
