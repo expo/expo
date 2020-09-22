@@ -32,6 +32,7 @@ export default class SnackInline extends React.Component {
   // there, but we do have `unversioned`.
   _getSelectedDocsVersion = () => {
     const { version } = this.context;
+
     return version === 'latest' ? LATEST_VERSION : version;
   };
 
@@ -41,6 +42,11 @@ export default class SnackInline extends React.Component {
     let version = this._getSelectedDocsVersion();
     if (version === 'unversioned') {
       version = LATEST_VERSION;
+    }
+
+    // NOTE(brentvatne): temporary override until we release SDK 39 support in Snack!
+    if (version === 'v39.0.0') {
+      version = 'v38.0.0';
     }
 
     return version.replace('v', '');
