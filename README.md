@@ -17,10 +17,6 @@
 <a aria-label="expo downloads" href="http://www.npmtrends.com/expo" target="_blank">
     <img alt="Downloads" src="https://img.shields.io/npm/dm/expo.svg?style=flat-square&labelColor=gray&color=33CC12&label=Downloads" />
 </a>
-    <br>
-    <a aria-label="Circle CI" href="https://circleci.com/gh/expo/expo/tree/master">
-    <img alt="Circle CI" src="https://flat.badgen.net/circleci/github/expo/expo?label=Circle%20CI&labelColor=555555&icon=circleci">
-  </a>
   
 </p>
 

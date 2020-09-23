@@ -2,17 +2,17 @@
 title: Working Together
 ---
 
-You can grant other users access to the projects belonging to your Personal Account with Expo Teams. The type of access depends on the granted role. You can sign up for Teams on any of your accounts at [https://expo.io/dashboard/ACCOUNT/settings/services](https://expo.io/dashboard/ACCOUNT/settings/services).
+You can grant other users access to the projects belonging to your Personal Account with Expo Teams. The type of access depends on the granted role. You can [sign up for Teams](https://expo.io/dashboard/[account]/settings/services) on any of your accounts.
 
 ## Adding Members
 
-You can invite new members to your Personal Account, or any account you administrate, from the members page under Settings at [https://expo.io/dashboard/ACCOUNT/settings/members](https://expo.io/dashboard/ACCOUNT/settings/members). You can only add existing Expo users as a member, you can direct them to [https://expo.io/signup](https://expo.io/signup) if they don't have an account yet.
+You can invite new members to your Personal Account, or any account you administrate, from the [Members page](https://expo.io/dashboard/[account]/settings/members) in your dashboard. You can only add users with Expo accounts as members; you can direct them to [https://expo.io/signup](https://expo.io/signup) if they don't have an account yet.
 
 > When adding new developers to your projects, who are publishing updates or create new builds, make sure to add the [`owner`](../../versions/latest/config/app/#owner) property to your project app manifest.
 
 ## Managing Access
 
-Access for members is managed through a role-based system. Users can have the _owner_, _admin_, _developer_, or _viewer_ role within Personal Accounts.
+Access for members is managed through a role-based system. Users can have the _admin_, _developer_, or _viewer_ role within Personal Accounts.
 
 | Role          | Description                                                                                                                                           |
 | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -22,4 +22,4 @@ Access for members is managed through a role-based system. Users can have the _o
 
 ## Removing members
 
-To remove members, go to the Expo Dashboard Settings page at [https://expo.io/dashboard/ACCOUNT/settings/members](https://expo.io/dashboard/ACCOUNT/settings/members) and revoke access.
+To remove members, go to the [Members](https://expo.io/dashboard/[account]/settings/members) page and revoke access.

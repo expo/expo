@@ -1,6 +1,6 @@
 {
   "name": "expo-in-app-purchases",
-  "version": "9.0.0",
+  "version": "9.1.0",
   "description": "Expo unimodule for accepting in-app purchases",
   "main": "build/InAppPurchases.js",
   "types": "build/InAppPurchases.d.ts",
@@ -28,7 +28,7 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-in-app-purchases",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/in-app-purchases/",
   "unimodulePeerDependencies": {
     "@unimodules/core": "*"
   },

@@ -31,12 +31,12 @@ class DevMenuActivity : ReactActivity() {
     }
   }
 
-  override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+  override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
     return if (keyCode == KeyEvent.KEYCODE_MENU || DevMenuManager.onKeyEvent(keyCode, event)) {
       DevMenuManager.closeMenu()
       true
     } else {
-      super.onKeyDown(keyCode, event)
+      super.onKeyUp(keyCode, event)
     }
   }
 

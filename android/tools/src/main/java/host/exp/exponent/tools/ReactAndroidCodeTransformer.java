@@ -172,7 +172,7 @@ public class ReactAndroidCodeTransformer {
         return n;
       }
     });
-    FILES_TO_MODIFY.put("devsupport/DevSupportManagerImpl.java", new MethodVisitor() {
+    FILES_TO_MODIFY.put("devsupport/DevSupportManagerBase.java", new MethodVisitor() {
 
       @Override
       public Node visit(String methodName, MethodDeclaration n) {
