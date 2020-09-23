@@ -1,3 +1,5 @@
+import * as React from 'react';
+
 import * as Constants from '~/constants/theme';
 
 export const PendingCircle = ({ size = 24 }) => (
