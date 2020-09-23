@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `Promise` not being fulfilled if the document picker view controller was being dimissed by gesture on iOS. ([#10325](https://github.com/expo/expo/pull/10325) by [@sjchmiela](https://github.com/sjchmiela))
+- Fixed `Promise` not being fulfilled if the document picker view controller was being dismissed by gesture on iOS. ([#10325](https://github.com/expo/expo/pull/10325) by [@sjchmiela](https://github.com/sjchmiela))
 
 ## 8.4.0 — 2020-08-18
 
