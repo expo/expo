@@ -9,6 +9,8 @@ import org.unimodules.core.errors.CurrentActivityNotFoundException
 import org.unimodules.core.interfaces.ActivityProvider
 import org.unimodules.core.interfaces.ExpoMethod
 
+import expo.modules.splashscreen.singletons.SplashScreen
+
 class SplashScreenModule(context: Context) : ExportedModule(context) {
   companion object {
     private const val NAME = "ExpoSplashScreen"

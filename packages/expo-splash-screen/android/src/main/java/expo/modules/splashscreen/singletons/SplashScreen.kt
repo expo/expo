@@ -1,8 +1,12 @@
-package expo.modules.splashscreen
+package expo.modules.splashscreen.singletons
 
 import android.app.Activity
 import android.util.Log
 import android.view.ViewGroup
+import expo.modules.splashscreen.NativeResourcesBasedSplashScreenViewProvider
+import expo.modules.splashscreen.SplashScreenController
+import expo.modules.splashscreen.SplashScreenImageResizeMode
+import expo.modules.splashscreen.SplashScreenViewProvider
 import org.unimodules.core.interfaces.SingletonModule
 import java.util.*
 

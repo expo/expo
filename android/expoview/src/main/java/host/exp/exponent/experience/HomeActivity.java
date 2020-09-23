@@ -35,7 +35,7 @@ import expo.modules.keepawake.KeepAwakePackage;
 import expo.modules.medialibrary.MediaLibraryPackage;
 import expo.modules.notifications.NotificationsPackage;
 import expo.modules.permissions.PermissionsPackage;
-import expo.modules.splashscreen.SplashScreen;
+import expo.modules.splashscreen.singletons.SplashScreen;
 import expo.modules.splashscreen.SplashScreenImageResizeMode;
 import expo.modules.splashscreen.SplashScreenPackage;
 import expo.modules.taskManager.TaskManagerPackage;
