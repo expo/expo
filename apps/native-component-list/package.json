@@ -54,7 +54,7 @@
     "expo-image-picker": "~9.1.1",
     "expo-intent-launcher": "~8.3.0",
     "expo-keep-awake": "~8.3.0",
-    "expo-linear-gradient": "~8.3.0",
+    "expo-linear-gradient": "~8.3.1",
     "expo-linking": "~1.0.4",
     "expo-local-authentication": "~9.3.0",
     "expo-localization": "~9.0.0",
