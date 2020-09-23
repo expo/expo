@@ -1,11 +1,25 @@
 import { css } from '@emotion/core';
 import * as React from 'react';
 
-import * as Utilities from '~/common/utilities';
+import { AdditionalProps } from '~/common/headingManager';
 import PermalinkIcon from '~/components/icons/Permalink';
 import withHeadingManager from '~/components/page-higher-order/withHeadingManager';
 
-class Permalink extends React.Component {
+type BaseProps = {
+  component: any;
+  className?: string;
+  children: React.ReactNode;
+};
+
+type EnhancedProps = {
+  children: React.ReactNode;
+  nestingLevel?: number;
+  additionalProps?: AdditionalProps;
+  customIconStyle?: React.CSSProperties;
+  id?: string;
+};
+
+class Permalink extends React.Component<BaseProps> {
   render() {
     const { component, className, children, ...rest } = this.props;
     return React.cloneElement(
@@ -59,10 +73,10 @@ const STYLES_CONTAINER_TARGET = css`
  * - nestingLevel: Sidebar heading level override
  * - additionalProps: Additional properties passed to component
  */
-export default withHeadingManager(props => {
+export default withHeadingManager<EnhancedProps>(props => {
   // NOTE(jim): Not the greatest way to generate permalinks.
   // for now I've shortened the length of permalinks.
-  const component = props.children;
+  const component = props.children as JSX.Element;
   const children = component.props.children || '';
 
   let permalinkKey = props.id;

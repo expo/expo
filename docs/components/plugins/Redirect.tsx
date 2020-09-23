@@ -7,7 +7,7 @@ const CONTAINER_STYLE = css`
   margin-bottom: 20px;
 `;
 
-export default function Redirect({ path }) {
+export default function Redirect({ path }: { path: string }) {
   React.useEffect(() => {
     setTimeout(() => {
       window.location.href = path;

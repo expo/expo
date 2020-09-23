@@ -2,8 +2,8 @@ import { css } from '@emotion/core';
 import { useRouter } from 'next/router';
 import * as React from 'react';
 
-import * as Constants from '~/constants/theme';
 import { P } from '~/components/base/paragraph';
+import * as Constants from '~/constants/theme';
 
 const CONTAINER_STYLE = css`
   background-color: ${Constants.expoColors.yellow[100]};

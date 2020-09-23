@@ -214,8 +214,6 @@ export default class DocumentationPage extends React.Component<Props, State> {
     const version = this._getVersion();
     const routes = this._getRoutes();
 
-    console.log(routes);
-
     const isReferencePath = this._isReferencePath();
 
     const headerElement = (

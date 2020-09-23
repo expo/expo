@@ -4,11 +4,21 @@ import { SNACK_URL } from '../../common/snack';
 
 import DocumentationPageContext from '~/components/DocumentationPageContext';
 
-export default class SnackEmbed extends React.Component {
+type Props = {
+  snackId?: string;
+  name?: string;
+  description?: string;
+  platform?: string;
+  preview?: boolean;
+  theme?: string;
+  style?: React.CSSProperties;
+};
+
+export default class SnackEmbed extends React.Component<Props> {
   static contextType = DocumentationPageContext;
 
   componentDidMount() {
-    var script = document.getElementById('snack');
+    let script = document.getElementById('snack') as HTMLScriptElement;
     // inject script if it hasn't been loaded by a previous page
     if (!script) {
       script = document.createElement('script');
@@ -36,7 +46,7 @@ export default class SnackEmbed extends React.Component {
     if (this.props.snackId) {
       embedProps = { 'data-snack-id': this.props.snackId };
     } else {
-      let code = React.Children.toArray(this.props.children)
+      const code = React.Children.toArray(this.props.children)
         .join('')
         .trim();
       embedProps = {

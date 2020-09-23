@@ -44,6 +44,8 @@ type Props = {
   asPath: string;
   isVersionSelectorHidden: boolean;
   routes: NavigationRoute[];
+  version: string;
+  onSetVersion: (value: string) => void;
 };
 
 export default class DocumentationSidebar extends React.Component<Props> {

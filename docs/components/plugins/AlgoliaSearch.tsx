@@ -2,10 +2,10 @@ import { css } from '@emotion/core';
 import Router from 'next/router';
 import * as React from 'react';
 
-import * as Constants from '~/constants/theme';
 import * as Utilities from '~/common/utilities';
-import { LATEST_VERSION } from '~/constants/versions';
 import { paragraph } from '~/components/base/typography';
+import * as Constants from '~/constants/theme';
+import { LATEST_VERSION } from '~/constants/versions';
 
 const STYLES_INPUT = css`
   display: flex;
@@ -99,12 +99,19 @@ const STYLES_INPUT_MOBILE = css`
   }
 `;
 
+type Props = {
+  version: string;
+  hiddenOnMobile?: boolean;
+  style?: React.CSSProperties;
+  closeSidebar?: () => void;
+  onToggleSearch?: () => void;
+};
+
 // TODO(jim): Not particularly happy with how this component chunks in while loading.
-class AlgoliaSearch extends React.Component {
-  constructor(props) {
-    super(props);
-    this.searchRef = React.createRef();
-  }
+class AlgoliaSearch extends React.Component<Props> {
+  private searchRef = React.createRef<HTMLInputElement>();
+  private docsearch: any;
+  private hotshot: any;
 
   state = {
     isFocused: false,
@@ -164,7 +171,7 @@ class AlgoliaSearch extends React.Component {
           docSearchEl.blur();
         }
 
-        const searchbox = document.querySelector('input#docsearch');
+        const searchbox = document.querySelector('input#docsearch') as HTMLInputElement;
         const reset = document.querySelector('.searchbox [type="reset"]');
 
         if (reset) {

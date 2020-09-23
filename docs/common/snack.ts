@@ -1,7 +1,14 @@
 export const SNACK_URL = 'https://snack.expo.io';
 // export const SNACK_URL = 'http://snack.expo.test';
 
-export function getSnackFiles(config) {
+type Config = {
+  baseURL: string;
+  templateId?: string;
+  code?: string;
+  files?: Record<string, string>;
+};
+
+export function getSnackFiles(config: Config): Record<string, string> {
   const { templateId, code, files, baseURL } = config;
 
   const result = {};

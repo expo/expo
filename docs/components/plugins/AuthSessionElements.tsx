@@ -75,7 +75,7 @@ export function SocialGridItem({ title, protocol = [], image, href }) {
         style={{
           color: '#020814',
           fontSize: '1.2em',
-          fontWeight: '900',
+          fontWeight: 900,
           textAlign: 'center',
         }}>
         {title}
@@ -90,7 +90,7 @@ export function SocialGridItem({ title, protocol = [], image, href }) {
             marginTop: '0.4em',
             color: '#020814',
             fontSize: '0.9em',
-            fontWeight: '400',
+            fontWeight: 400,
             textAlign: 'center',
           }}>
           {protocol.join(' | ')}

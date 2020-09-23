@@ -1,10 +1,10 @@
 import { css } from '@emotion/core';
 import * as React from 'react';
 
-import BulletIcon from '~/components/icons/Bullet';
-import * as Constants from '~/constants/theme';
 import { InlineCode } from '~/components/base/code';
 import { H4 } from '~/components/base/headings';
+import BulletIcon from '~/components/icons/Bullet';
+import * as Constants from '~/constants/theme';
 
 const STYLES_TITLE = css`
   margin-top: 2rem;
@@ -52,7 +52,13 @@ const STYLES_EXTERNAL_LINK = css`
   }
 `;
 
-export default class TableOfContentSection extends React.Component {
+type Props = {
+  title: string;
+  contents: string[];
+  horizontal?: boolean;
+};
+
+export default class TableOfContentSection extends React.Component<Props> {
   render() {
     const { title, contents, horizontal } = this.props;
     return (
@@ -95,19 +101,11 @@ export default class TableOfContentSection extends React.Component {
   }
 }
 
-function createAnchorLink(data) {
+function createAnchorLink(data: string) {
   return data
     .trim()
     .toLowerCase()
     .replace(/[^\w\- ]+/g, '')
     .replace(/\s/g, '-')
-    .replace(/\-+$/, '');
-}
-
-function stripModuleNamespace(data) {
-  let index = data.indexOf('.');
-  if (index === -1) {
-    return data;
-  }
-  return data.substring(index + 1, data.length);
+    .replace(/-+$/, '');
 }

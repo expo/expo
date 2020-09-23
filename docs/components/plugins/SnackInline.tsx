@@ -8,9 +8,17 @@ import { ExternalLink } from '~/components/icons/ExternalLink';
 const DEFAULT_PLATFORM = 'android';
 const LATEST_VERSION = `v${require('../../package.json').version}`;
 
-export default class SnackInline extends React.Component {
+type Props = {
+  dependencies: string[];
+  label?: string;
+  defaultPlatform?: string;
+  templateId?: string;
+  files?: Record<string, string>;
+};
+
+export default class SnackInline extends React.Component<Props> {
   static contextType = DocumentationPageContext;
-  contentRef = React.createRef();
+  contentRef = React.createRef<HTMLDivElement>();
 
   static defaultProps = {
     dependencies: [],
@@ -30,14 +38,14 @@ export default class SnackInline extends React.Component {
   // keep `unversioned` in for the selected docs version though. This is used to
   // find the examples in the static dir, and we don't have a `latest` version
   // there, but we do have `unversioned`.
-  _getSelectedDocsVersion = () => {
+  private _getSelectedDocsVersion = () => {
     const { version } = this.context;
     return version === 'latest' ? LATEST_VERSION : version;
   };
 
   // Get a SDK version that Snack will understand. `latest` and `unversioned`
   // are meaningless to Snack so we filter those out and use `LATEST_VERSION` instead
-  _getSnackSdkVersion = () => {
+  private _getSnackSdkVersion = () => {
     let version = this._getSelectedDocsVersion();
     if (version === 'unversioned') {
       version = LATEST_VERSION;
@@ -46,15 +54,15 @@ export default class SnackInline extends React.Component {
     return version.replace('v', '');
   };
 
-  _getExamplesPath = () => {
+  private _getExamplesPath = () => {
     return `${document.location.origin}/static/examples/${this._getSelectedDocsVersion()}`;
   };
 
-  _getDependencies = () => {
+  private _getDependencies = () => {
     return [...this.props.dependencies].join(',');
   };
 
-  _getCode = () => {
+  private _getCode = () => {
     return this.contentRef.current ? this.contentRef.current.textContent : '';
   };
 
