@@ -108,7 +108,7 @@ export default class Error extends React.Component {
       // Let people actually read the carefully crafted message and absorb the
       // cool emoji selection, they can just click through if they want speed
       setTimeout(() => {
-        window.location = `${this.state.redirectPath}?redirected`;
+        window.location.href = `${this.state.redirectPath}?redirected`;
       }, 1200);
     }
   }
@@ -132,13 +132,13 @@ export default class Error extends React.Component {
   _renderContents = () => {
     const styles = {
       description: {
-        textAlign: 'center',
+        textAlign: 'center' as const,
         maxWidth: 450,
         marginHorizontal: 30,
         lineHeight: '1.7em',
       },
       link: {
-        textAlign: 'center',
+        textAlign: 'center' as const,
         marginTop: 20,
       },
     };

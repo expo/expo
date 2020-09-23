@@ -2,18 +2,16 @@ import { Global } from '@emotion/core';
 import Document, { Html, Head, Main, NextScript } from 'next/document';
 import { extractCritical } from 'emotion-server';
 
-import * as React from 'react';
 import * as Analytics from '~/common/analytics';
-
-import { globalReset } from '~/global-styles/reset';
-import { globalNProgress } from '~/global-styles/nprogress';
-import { globalTables } from '~/global-styles/tables';
-import { globalFonts } from '~/global-styles/fonts';
-import { globalPrism } from '~/global-styles/prism';
-import { globalTippy } from '~/global-styles/tippy';
 import { globalExtras } from '~/global-styles/extras';
+import { globalFonts } from '~/global-styles/fonts';
+import { globalNProgress } from '~/global-styles/nprogress';
+import { globalPrism } from '~/global-styles/prism';
+import { globalReset } from '~/global-styles/reset';
+import { globalTables } from '~/global-styles/tables';
+import { globalTippy } from '~/global-styles/tippy';
 
-export default class MyDocument extends Document {
+export default class MyDocument extends Document<{ css?: string }> {
   static async getInitialProps(ctx) {
     const initialProps = await Document.getInitialProps(ctx);
     const styles = extractCritical(initialProps.html);
