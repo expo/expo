@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { PageMetadata, Slugger } from './types';
+import { Single, PageMetadata, Slugger } from './types';
 import * as Utilities from './utilities';
 
 /**
@@ -29,6 +29,11 @@ export const BASE_HEADING_LEVEL = 2;
  */
 const DEFAULT_NESTING_LIMIT = 1;
 
+/**
+ * Those properties can be customized
+ * from markdown pages usign heading components
+ * from `plugins/Headings.tsx`
+ */
 type AdditionalProps = {
   hideInSidebar?: boolean;
   sidebarTitle?: string;
@@ -36,25 +41,20 @@ type AdditionalProps = {
   sidebarType?: HeadingType;
 };
 
+/**
+ * Single heading entry
+ */
 export type Heading = {
   title: string;
   slug: string;
   level: number;
   type: HeadingType;
   ref: React.RefObject<any>;
-  metadata?: any;
+  metadata?: Single<PageMetadata['headings']>;
 };
 
 /**
  * Manages heading entries. Each entry corresponds to one markdown heading with specified level (#, ##, ### etc)
- *
- * Each entry consists of:
- * - title
- * - slug
- * - level
- * - ref - React reference to heading component
- * - type - Is heading a normal text or inline code
- * - metad
  *
  * This class uses Slugger instance to generate and manage unique slugs
  */
@@ -72,7 +72,7 @@ export class HeadingManager {
    * @param {Object} slugger A _GithubSlugger_ instance
    * @param {{headings: Object[]}} meta Document metadata gathered by `headingsMdPlugin`.
    */
-  constructor(slugger: Slugger, meta?: PageMetadata) {
+  constructor(slugger: Slugger, meta: Partial<PageMetadata>) {
     this.slugger = slugger;
     this.meta = { headings: meta.headings || [], ...meta };
     this._headings = [];

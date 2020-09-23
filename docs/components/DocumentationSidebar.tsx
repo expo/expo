@@ -1,11 +1,12 @@
 import { css } from '@emotion/core';
 import * as React from 'react';
 
-import * as Constants from '~/constants/theme';
+import { NavigationRoute, Url } from '~/common/types';
 import DocumentationSidebarGroup from '~/components/DocumentationSidebarGroup';
 import DocumentationSidebarLink from '~/components/DocumentationSidebarLink';
 import DocumentationSidebarTitle from '~/components/DocumentationSidebarTitle';
 import VersionSelector from '~/components/VersionSelector';
+import * as Constants from '~/constants/theme';
 
 const STYLES_SIDEBAR = css`
   padding: 20px 24px 24px 24px;
@@ -20,7 +21,7 @@ const STYLES_SECTION_CATEGORY = css`
   margin-bottom: 24px;
 `;
 
-function shouldSkipTitle(info, parentGroup) {
+function shouldSkipTitle(info: NavigationRoute, parentGroup: NavigationRoute) {
   if (parentGroup && info.name === parentGroup.name) {
     // If the title of the group is Expo SDK and the section within it has the same name
     // then we shouldn't show the title twice. You might want to organize your group like
@@ -38,12 +39,19 @@ function shouldSkipTitle(info, parentGroup) {
   return false;
 }
 
-export default class DocumentationSidebar extends React.Component {
+type Props = {
+  url?: Url;
+  asPath: string;
+  isVersionSelectorHidden: boolean;
+  routes: NavigationRoute[];
+};
+
+export default class DocumentationSidebar extends React.Component<Props> {
   static defaultProps = {
     routes: [],
   };
 
-  _renderPostElements = (info, category) => {
+  private _renderPostElements = (info, category) => {
     return (
       <DocumentationSidebarLink
         key={`${category}-${info.name}`}
@@ -55,7 +63,7 @@ export default class DocumentationSidebar extends React.Component {
     );
   };
 
-  _renderCategoryElements = (info, parentGroup) => {
+  private _renderCategoryElements = (info: NavigationRoute, parentGroup?: NavigationRoute) => {
     if (info.children) {
       return (
         <DocumentationSidebarGroup

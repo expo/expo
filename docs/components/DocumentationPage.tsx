@@ -3,6 +3,7 @@ import some from 'lodash/some';
 import Router from 'next/router';
 import * as React from 'react';
 
+import { NavigationRoute, Url } from '~/common/types';
 import * as Utilities from '~/common/utilities';
 import * as WindowUtils from '~/common/window';
 import DocumentationFooter from '~/components/DocumentationFooter';
@@ -10,7 +11,9 @@ import DocumentationHeader from '~/components/DocumentationHeader';
 import DocumentationNestedScrollLayout from '~/components/DocumentationNestedScrollLayout';
 import DocumentationPageContext from '~/components/DocumentationPageContext';
 import DocumentationSidebar from '~/components/DocumentationSidebar';
-import DocumentationSidebarRight from '~/components/DocumentationSidebarRight';
+import DocumentationSidebarRight, {
+  SidebarRightComponentType,
+} from '~/components/DocumentationSidebarRight';
 import Head from '~/components/Head';
 import { H1 } from '~/components/base/headings';
 import navigation from '~/constants/navigation';
@@ -44,29 +47,45 @@ const HIDDEN_ON_DESKTOP = css`
   }
 `;
 
-export default class DocumentationPage extends React.Component {
+type Props = {
+  url: Url;
+  title: string;
+  asPath: string;
+  sourceCodeUrl?: string;
+  tocVisible: boolean;
+};
+
+type State = {
+  isMenuActive: boolean;
+  isMobileSearchActive: boolean;
+};
+
+export default class DocumentationPage extends React.Component<Props, State> {
   state = {
     isMenuActive: false,
+    isMobileSearchActive: false,
   };
 
-  layoutRef = React.createRef();
-  sidebarRightRef = React.createRef();
+  private _version?: string;
+
+  private layoutRef = React.createRef<DocumentationNestedScrollLayout>();
+  private sidebarRightRef = React.createRef<SidebarRightComponentType>();
 
   componentDidMount() {
-    Router.onRouteChangeStart = () => {
+    Router.events.on('routeChangeStart', () => {
       if (this.layoutRef.current) {
         window.__sidebarScroll = this.layoutRef.current.getSidebarScrollTop();
       }
       window.NProgress.start();
-    };
+    });
 
-    Router.onRouteChangeComplete = () => {
+    Router.events.on('routeChangeComplete', () => {
       window.NProgress.done();
-    };
+    });
 
-    Router.onRouteChangeError = () => {
+    Router.events.on('routeChangeError', () => {
       window.NProgress.done();
-    };
+    });
 
     window.addEventListener('resize', this._handleResize);
   }
@@ -75,13 +94,13 @@ export default class DocumentationPage extends React.Component {
     window.removeEventListener('resize', this._handleResize);
   }
 
-  _handleResize = () => {
+  private _handleResize = () => {
     if (WindowUtils.getViewportSize().width >= Constants.breakpoints.mobileValue) {
       window.scrollTo(0, 0);
     }
   };
 
-  _handleSetVersion = version => {
+  private _handleSetVersion = (version: string) => {
     this._version = version;
     let newPath = Utilities.replaceVersionInUrl(this.props.url.pathname, version);
 
@@ -94,55 +113,55 @@ export default class DocumentationPage extends React.Component {
     Router.push(newPath);
   };
 
-  _handleShowMenu = () => {
+  private _handleShowMenu = () => {
     this.setState({
       isMenuActive: true,
     });
     this._handleHideSearch();
   };
 
-  _handleHideMenu = () => {
+  private _handleHideMenu = () => {
     this.setState({
       isMenuActive: false,
     });
   };
 
-  _handleToggleSearch = () => {
+  private _handleToggleSearch = () => {
     this.setState(prevState => ({
       isMobileSearchActive: !prevState.isMobileSearchActive,
     }));
   };
 
-  _handleHideSearch = () => {
+  private _handleHideSearch = () => {
     this.setState({
       isMobileSearchActive: false,
     });
   };
 
-  _isReferencePath = () => {
+  private _isReferencePath = () => {
     return this.props.url.pathname.startsWith('/versions');
   };
 
-  _isGeneralPath = () => {
+  private _isGeneralPath = () => {
     return some(navigation.generalDirectories, name =>
       this.props.url.pathname.startsWith(`/${name}`)
     );
   };
 
-  _isGettingStartedPath = () => {
+  private _isGettingStartedPath = () => {
     return (
       this.props.url.pathname === '/' ||
       some(navigation.startingDirectories, name => this.props.url.pathname.startsWith(`/${name}`))
     );
   };
 
-  _isPreviewPath = () => {
+  private _isPreviewPath = () => {
     return some(navigation.previewDirectories, name =>
       this.props.url.pathname.startsWith(`/${name}`)
     );
   };
 
-  _getCanonicalUrl = () => {
+  private _getCanonicalUrl = () => {
     if (this._isReferencePath()) {
       return `https://docs.expo.io${Utilities.replaceVersionInUrl(
         this.props.url.pathname,
@@ -153,7 +172,7 @@ export default class DocumentationPage extends React.Component {
     }
   };
 
-  _getVersion = () => {
+  private _getVersion = () => {
     let version = (this.props.asPath || this.props.url.pathname).split(`/`)[2];
     if (!version || VERSIONS.indexOf(version) === -1) {
       version = VERSIONS[0];
@@ -166,7 +185,7 @@ export default class DocumentationPage extends React.Component {
     return version;
   };
 
-  _getRoutes = () => {
+  private _getRoutes = (): NavigationRoute[] => {
     if (this._isReferencePath()) {
       const version = this._getVersion();
       return navigation.reference[version];
@@ -175,7 +194,7 @@ export default class DocumentationPage extends React.Component {
     }
   };
 
-  _getActiveTopLevelSection = () => {
+  private _getActiveTopLevelSection = () => {
     if (this._isReferencePath()) {
       return 'reference';
     } else if (this._isGeneralPath()) {
@@ -195,17 +214,17 @@ export default class DocumentationPage extends React.Component {
     const version = this._getVersion();
     const routes = this._getRoutes();
 
+    console.log(routes);
+
     const isReferencePath = this._isReferencePath();
 
     const headerElement = (
       <DocumentationHeader
         activeSection={this._getActiveTopLevelSection()}
-        pathname={this.props.url.pathname}
         version={this._version}
         isMenuActive={this.state.isMenuActive}
         isMobileSearchActive={this.state.isMobileSearchActive}
-        isAlogiaSearchHidden={this.state.isMenuActive}
-        onSetVersion={this._handleSetVersion}
+        isAlgoliaSearchHidden={this.state.isMenuActive}
         onShowMenu={this._handleShowMenu}
         onHideMenu={this._handleHideMenu}
         onToggleSearch={this._handleToggleSearch}
@@ -231,9 +250,7 @@ export default class DocumentationPage extends React.Component {
       });
     };
 
-    const sidebarRight = (
-      <DocumentationSidebarRight ref={this.sidebarRightRef} title={this.props.title} />
-    );
+    const sidebarRight = <DocumentationSidebarRight ref={this.sidebarRightRef} />;
 
     return (
       <DocumentationNestedScrollLayout

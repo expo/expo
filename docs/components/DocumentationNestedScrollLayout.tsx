@@ -182,8 +182,13 @@ const STYLES_CENTER_WRAPPER = css`
   margin: auto;
 `;
 
-class ScrollContainer extends React.Component {
-  scrollRef = React.createRef();
+type ScrollContainerProps = {
+  scrollPosition?: number;
+  scrollHandler?: () => void;
+};
+
+class ScrollContainer extends React.Component<ScrollContainerProps> {
+  scrollRef = React.createRef<HTMLDivElement>();
 
   componentDidMount() {
     if (this.props.scrollPosition && this.scrollRef.current) {
@@ -191,11 +196,11 @@ class ScrollContainer extends React.Component {
     }
   }
 
-  getScrollTop = () => {
+  public getScrollTop = () => {
     return this.scrollRef.current.scrollTop;
   };
 
-  getScrollRef = () => {
+  public getScrollRef = () => {
     return this.scrollRef;
   };
 
@@ -211,30 +216,37 @@ class ScrollContainer extends React.Component {
   }
 }
 
-export default class DocumentationNestedScrollLayout extends React.Component {
+type Props = {
+  onContentScroll?: (scrollTop: number) => void;
+  isMenuActive: boolean;
+  tocVisible: boolean;
+  isMobileSearchActive: boolean;
+  header: JSX.Element;
+  sidebarScrollPosition: number;
+  sidebar: React.ReactElement;
+  sidebarRight: React.ReactElement;
+};
+
+export default class DocumentationNestedScrollLayout extends React.Component<Props> {
   static defaultProps = {
     sidebarScrollPosition: 0,
   };
 
-  sidebarRef = React.createRef();
-  contentRef = React.createRef();
-  sidebarRightRef = React.createRef();
+  sidebarRef = React.createRef<ScrollContainer>();
+  contentRef = React.createRef<ScrollContainer>();
+  sidebarRightRef = React.createRef<ScrollContainer>();
 
-  getSidebarScrollTop = () => {
+  public getSidebarScrollTop = () => {
     if (this.sidebarRef.current) {
       return this.sidebarRef.current.getScrollTop();
     }
   };
 
-  getContentScrollTop = () => {
+  public getContentScrollTop = () => {
     if (!this.contentRef.current) {
       return;
     }
     return this.contentRef.current.getScrollTop();
-  };
-
-  _scrollHandler = () => {
-    this.props.onContentScroll && this.props.onContentScroll(this.getContentScrollTop());
   };
 
   render() {
@@ -279,4 +291,8 @@ export default class DocumentationNestedScrollLayout extends React.Component {
       </div>
     );
   }
+
+  private _scrollHandler = () => {
+    this.props.onContentScroll && this.props.onContentScroll(this.getContentScrollTop());
+  };
 }

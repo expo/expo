@@ -1,10 +1,11 @@
 import { css } from '@emotion/core';
 import * as React from 'react';
 
-import * as Constants from '~/constants/theme';
 import stripVersionFromPath from '~/common/stripVersionFromPath';
+import { NavigationRoute, Url } from '~/common/types';
 import { paragraph } from '~/components/base/typography';
 import ChevronDown from '~/components/icons/ChevronDown';
+import * as Constants from '~/constants/theme';
 
 const STYLES_TITLE = css`
   ${paragraph}
@@ -35,22 +36,17 @@ const STYLES_OPEN_CHEVRON_ICON = css`
   transform: rotate(180deg);
 `;
 
-class Arrow extends React.Component {
-  render() {
-    return (
-      <i
-        className={`fas fa-chevron-${this.props.isOpen ? 'up' : 'down'}`}
-        style={{ position: 'absolute', right: 8, top: 5 }}
-      />
-    );
-  }
-}
-
 if (typeof window !== 'undefined' && !window.hasOwnProperty('sidebarState')) {
   window.sidebarState = {};
 }
 
-export default class DocumentationSidebarGroup extends React.Component {
+type Props = {
+  asPath: string;
+  info: NavigationRoute;
+  url: Url;
+};
+
+export default class DocumentationSidebarGroup extends React.Component<Props, { isOpen: boolean }> {
   constructor(props) {
     super(props);
 
@@ -65,7 +61,7 @@ export default class DocumentationSidebarGroup extends React.Component {
     };
   }
 
-  persistGlobalSidebarState() {
+  private persistGlobalSidebarState() {
     window.sidebarState[this.props.info.name] = this.state.isOpen;
   }
 
@@ -84,11 +80,9 @@ export default class DocumentationSidebarGroup extends React.Component {
     }
   }
 
-  isChildRouteActive() {
+  private isChildRouteActive() {
     // Special case for "Get Started"
     if (this.props.info.name === 'Getting to know Expo') {
-      const pathname = this.props.url.pathname;
-      const asPath = this.props.asPath;
       if (this.props.asPath.match(/\/versions\/[\w\.]+\/$/)) {
         return true;
       }
@@ -121,7 +115,7 @@ export default class DocumentationSidebarGroup extends React.Component {
     return result;
   }
 
-  _toggleIsOpen = () => {
+  private _toggleIsOpen = () => {
     const isOpen = this.state.isOpen;
     this.setState({ isOpen: !isOpen });
     window.sidebarState[this.props.info.name] = !isOpen;

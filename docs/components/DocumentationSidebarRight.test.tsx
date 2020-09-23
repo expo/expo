@@ -4,7 +4,7 @@ import React from 'react';
 
 import DocumentationSidebarRight from './DocumentationSidebarRight';
 
-import { HeadingManager } from '~/common/headingManager';
+import { HeadingManager, HeadingType } from '~/common/headingManager';
 import { HeadingsContext } from '~/components/page-higher-order/withHeadingManager';
 
 const prepareHeadingManager = () => {
@@ -13,7 +13,7 @@ const prepareHeadingManager = () => {
   headingManager.addHeading('Level 3 subheading', 3, {});
   headingManager.addHeading('Code heading depth 1', 0, {
     sidebarDepth: 1,
-    sidebarType: 'inlineCode',
+    sidebarType: HeadingType.InlineCode,
   });
 
   return headingManager;

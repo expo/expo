@@ -1,10 +1,11 @@
 import { css } from '@emotion/core';
 import NextLink from 'next/link';
-
 import * as React from 'react';
-import * as Constants from '~/constants/theme';
+
 import stripVersionFromPath from '~/common/stripVersionFromPath';
+import { Url } from '~/common/types';
 import { paragraph } from '~/components/base/typography';
+import * as Constants from '~/constants/theme';
 
 const STYLES_LINK = css`
   display: block;
@@ -63,9 +64,21 @@ const STYLES_ACTIVE_BULLET = css`
   top: 7px;
 `;
 
-export default class DocumentationSidebarLink extends React.Component {
+type Props = {
+  url?: Url;
+  info: {
+    name: string;
+    as?: string;
+    href: string;
+  };
+  asPath: string;
+};
+
+export default class DocumentationSidebarLink extends React.Component<Props> {
   componentDidMount() {
     // Consistent link behavior across dev server and static export
+    // TODO: Fix this TS somehow
+    // @ts-ignore
     global.__NEXT_DATA__.nextExport = true;
   }
 
