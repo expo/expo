@@ -26,7 +26,6 @@
     "facebookScheme": "fb1201211719949057",
     "facebookAppId": "1201211719949057",
     "facebookDisplayName": "Expo APIs",
-    "androidShowExponentNotificationInShellApp": true,
     "androidStatusBar": {
       "backgroundColor": "#4630eb"
     },
