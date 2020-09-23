@@ -128,6 +128,8 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
         [self _finishWithError:setScopeKeyError];
         return;
       }
+
+      NSLog(@"EXUpdatesAppLoader: Loaded an update with the same ID but a different scopeKey than one we already have on disk. This is a server error. Overwriting the scopeKey and loading the existing update.");
     }
 
     if (existingUpdate && existingUpdate.status == EXUpdatesUpdateStatusReady) {
