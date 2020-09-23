@@ -25,10 +25,6 @@ public class Analytics {
   public static final String EXPERIENCE_APPEARED = "EXPERIENCE_APPEARED";
   public static final String LOAD_EXPERIENCE = "LOAD_EXPERIENCE";
   public static final String RELOAD_EXPERIENCE = "RELOAD_EXPERIENCE";
-  public static final String SAVE_EXPERIENCE = "SAVE_EXPERIENCE";
-  public static final String SAVE_EXPERIENCE_ALERT = "SAVE_EXPERIENCE_ALERT";
-  public static final String SAVE_EXPERIENCE_OPTION_YES = "SAVE_EXPERIENCE_OPTION_YES";
-  public static final String SAVE_EXPERIENCE_OPTION_NO = "SAVE_EXPERIENCE_OPTION_NO";
   public static final String ERROR_SCREEN = "ERROR_SCREEN";
   public static final String ERROR_RELOADED = "ERROR_RELOADED";
   public static final String HTTP_USED_CACHE_RESPONSE = "HTTP_USED_CACHE_RESPONSE";

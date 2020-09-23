@@ -30,7 +30,6 @@ import static host.exp.exponent.kernel.KernelConstants.MANIFEST_URL_KEY;
 public class ExponentIntentService extends IntentService {
 
   private static final String ACTION_RELOAD_EXPERIENCE = "host.exp.exponent.action.RELOAD_EXPERIENCE";
-  private static final String ACTION_SAVE_EXPERIENCE = "host.exp.exponent.action.SAVE_EXPERIENCE";
   private static final String ACTION_STAY_AWAKE = "host.exp.exponent.action.STAY_AWAKE";
 
   private static final long STAY_AWAKE_MS = 1000 * 60;
@@ -38,24 +37,11 @@ public class ExponentIntentService extends IntentService {
   @Inject
   Kernel mKernel;
 
-  @Inject
-  ExponentSharedPreferences mExponentSharedPreferences;
-
-  @Inject
-  ExponentManifest mExponentManifest;
-
   private Handler mHandler = new Handler();
 
   public static Intent getActionReloadExperience(Context context, String manifestUrl) {
     Intent intent = new Intent(context, ExponentIntentService.class);
     intent.setAction(ACTION_RELOAD_EXPERIENCE);
-    intent.putExtra(MANIFEST_URL_KEY, manifestUrl);
-    return intent;
-  }
-
-  public static Intent getActionSaveExperience(Context context, String manifestUrl) {
-    Intent intent = new Intent(context, ExponentIntentService.class);
-    intent.setAction(ACTION_SAVE_EXPERIENCE);
     intent.putExtra(MANIFEST_URL_KEY, manifestUrl);
     return intent;
   }
@@ -86,10 +72,6 @@ public class ExponentIntentService extends IntentService {
           isUserAction = true;
           handleActionReloadExperience(intent.getStringExtra(MANIFEST_URL_KEY));
           break;
-        case ACTION_SAVE_EXPERIENCE:
-          isUserAction = true;
-          handleActionSaveExperience(intent.getStringExtra(MANIFEST_URL_KEY));
-          break;
         case ACTION_STAY_AWAKE:
           handleActionStayAwake();
           break;
@@ -113,60 +95,6 @@ public class ExponentIntentService extends IntentService {
     Analytics.logEventWithManifestUrl(Analytics.RELOAD_EXPERIENCE, manifestUrl);
 
     stopSelf();
-  }
-
-  private void handleActionSaveExperience(final String manifestUrl) {
-    Intent intent = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-    sendBroadcast(intent);
-
-    if (mExponentSharedPreferences.hasSavedShortcut()) {
-      mKernel.installShortcut(manifestUrl);
-      Analytics.logEventWithManifestUrl(Analytics.SAVE_EXPERIENCE, manifestUrl);
-      stopSelf();
-    } else {
-      Analytics.logEventWithManifestUrl(Analytics.SAVE_EXPERIENCE_ALERT, manifestUrl);
-      mKernel.getActivityContext().runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          showAlertDialog(manifestUrl);
-        }
-      });
-    }
-  }
-
-  private void showAlertDialog(final String manifestUrl) {
-    ExponentSharedPreferences.ManifestAndBundleUrl manifestAndBundleUrl = mExponentSharedPreferences.getManifest(manifestUrl);
-    JSONObject manifestJson = manifestAndBundleUrl.manifest;
-    final String name = manifestJson.optString(ExponentManifest.MANIFEST_NAME_KEY);
-    final String iconUrl = manifestJson.optString(ExponentManifest.MANIFEST_ICON_URL_KEY);
-
-    mExponentManifest.loadIconBitmap(iconUrl, new ExponentManifest.BitmapListener() {
-      @Override
-      public void onLoadBitmap(Bitmap bitmap) {
-        Drawable drawable = new BitmapDrawable(getResources(), bitmap);
-        AlertDialog dialog = new AlertDialog.Builder(mKernel.getActivityContext())
-            .setTitle("Save Shortcut")
-            .setMessage("This will save a shortcut to " + name + " on your home screen. Continue?")
-            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-              public void onClick(DialogInterface dialog, int which) {
-                mExponentSharedPreferences.setBoolean(ExponentSharedPreferences.HAS_SAVED_SHORTCUT_KEY, true);
-                mKernel.installShortcut(manifestUrl);
-                Analytics.logEventWithManifestUrl(Analytics.SAVE_EXPERIENCE_OPTION_YES, manifestUrl);
-                stopSelf();
-              }
-            })
-            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-              public void onClick(DialogInterface dialog, int which) {
-                Analytics.logEventWithManifestUrl(Analytics.SAVE_EXPERIENCE_OPTION_NO, manifestUrl);
-                stopSelf();
-              }
-            })
-            .setIcon(drawable)
-            .show();
-        dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(ExponentIntentService.this, R.color.colorPrimary));
-        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(ExponentIntentService.this, R.color.colorPrimary));
-      }
-    });
   }
 
   private void handleActionStayAwake() {
