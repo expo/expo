@@ -592,7 +592,7 @@ CACHE_KEYS:
       EXImagePicker:
         :debug: d527769f4e804c5ea2f09deb41a716e1
         :release: d527769f4e804c5ea2f09deb41a716e1
-    CHECKSUM: 214b34ea9336e2c649ce98315de68fce2349983a
+    CHECKSUM: f2fe9ee19a97b225658e80733896275a198c60f2
     FILES:
       - "../../../../packages/expo-image-picker/ios/EXImagePicker/EXImagePicker.h"
       - "../../../../packages/expo-image-picker/ios/EXImagePicker/EXImagePicker.m"
@@ -602,7 +602,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-image-picker/ios/EXImagePicker/EXImagePickerCameraRollPermissionRequester.m"
     PROJECT_NAME: EXImagePicker
     SPECS:
-      - EXImagePicker (9.1.0)
+      - EXImagePicker (9.1.1)
   EXInAppPurchases:
     BUILD_SETTINGS_CHECKSUM:
       EXInAppPurchases:
