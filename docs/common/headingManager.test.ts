@@ -26,6 +26,18 @@ describe('HeadingManager tests', () => {
     const result = headingManager.findMetaForTitle(TITLE);
     expect(result).toBeUndefined();
   });
+
+  test('_findMetaForTitle marks meta as processed', () => {
+    const TITLE = 'Some Title';
+    const meta = { headings: [{ title: TITLE }] };
+    const headingManager = new HeadingManager(
+      SluggerStub,
+      (meta as unknown) as PageMetadata
+    ) as any;
+
+    const result = headingManager.findMetaForTitle(TITLE);
+    expect(result._processed).toBeTruthy();
+  });
 });
 
 describe('HeadingManager.addHeading()', () => {

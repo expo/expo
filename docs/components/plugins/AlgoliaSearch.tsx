@@ -117,14 +117,14 @@ class AlgoliaSearch extends React.Component<Props> {
     isFocused: false,
   };
 
-  processUrl(url) {
+  private processUrl(url) {
     // Update URLs for new doc URLs
     var routes = url.split('/');
     routes[routes.length - 1] = routes[routes.length - 1].replace('.html', '');
     return routes.join('/');
   }
 
-  focusSearchInput() {
+  private focusSearchInput() {
     if (this.searchRef.current) {
       this.searchRef.current.focus();
     }

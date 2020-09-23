@@ -48,17 +48,17 @@ export default class Video extends React.Component<Props, State> {
     hover: false,
   };
 
-  _handleClick = () => {
+  private _handleClick = () => {
     if (typeof this.props.controls === 'undefined' && !this.state.forceShowControls) {
       this.setState({ forceShowControls: true });
     }
   };
 
-  _handleMouseEnter = () => {
+  private _handleMouseEnter = () => {
     this.setState({ hover: true });
   };
 
-  _handleMouseLeave = () => {
+  private _handleMouseLeave = () => {
     this.setState({ hover: false });
   };
 

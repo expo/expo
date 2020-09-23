@@ -93,7 +93,7 @@ export function createDescription(property) {
   return propertyDescription;
 }
 
-export default class AppConfigSchemaPropertiesTable extends React.Component {
+export default class AppConfigSchemaPropertiesTable extends React.Component<{ schema: object }> {
   render() {
     var rawSchema = Object.entries(this.props.schema);
     var formattedSchema = formatSchema(rawSchema);
