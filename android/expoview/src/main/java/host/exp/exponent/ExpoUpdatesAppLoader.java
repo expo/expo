@@ -158,11 +158,11 @@ public class ExpoUpdatesAppLoader {
 
     mKernel.addAppLoaderForManifestUrl(mManifestUrl, this);
 
-    Uri manifestUrl = mExponentManifest.httpManifestUrl(mManifestUrl);
+    Uri httpManifestUrl = mExponentManifest.httpManifestUrl(mManifestUrl);
 
     HashMap<String, Object> configMap = new HashMap<>();
-    configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY, manifestUrl);
-    configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_SCOPE_KEY_KEY, mManifestUrl);
+    configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY, httpManifestUrl);
+    configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_SCOPE_KEY_KEY, httpManifestUrl);
     configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_SDK_VERSION_KEY, Constants.SDK_VERSIONS);
     configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE, Constants.isStandaloneApp());
     configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_ENABLED_KEY, Constants.ARE_REMOTE_UPDATES_ENABLED);
