@@ -2,8 +2,8 @@ import { css } from '@emotion/core';
 import Link from 'next/link';
 import * as React from 'react';
 
-import * as Constants from '~/constants/theme';
 import AlgoliaSearch from '~/components/plugins/AlgoliaSearch';
+import * as Constants from '~/constants/theme';
 
 const STYLES_LOGO = css`
   display: flex;
@@ -168,7 +168,21 @@ const SECTION_LINK_TEXT = css`
   right: 0;
 `;
 
-function SectionContainer({ spaceBetween = 0, spaceAround = 0, children, style, className }) {
+type SectionContainerProps = {
+  children: JSX.Element[];
+  spaceBetween?: number;
+  spaceAround?: number;
+  style?: React.StyleHTMLAttributes<HTMLDivElement>;
+  className?: string;
+};
+
+function SectionContainer({
+  spaceBetween = 0,
+  spaceAround = 0,
+  children,
+  style,
+  className,
+}: SectionContainerProps) {
   return (
     <div
       className={className}
@@ -182,7 +196,18 @@ function SectionContainer({ spaceBetween = 0, spaceAround = 0, children, style, 
   );
 }
 
-export default class DocumentationHeader extends React.PureComponent {
+type Props = {
+  isAlgoliaSearchHidden: boolean;
+  isMenuActive: boolean;
+  isMobileSearchActive: boolean;
+  activeSection: string;
+  version: string;
+  onToggleSearch: () => void;
+  onShowMenu: () => void;
+  onHideMenu: () => void;
+};
+
+export default class DocumentationHeader extends React.PureComponent<Props> {
   render() {
     return (
       <div>
@@ -201,15 +226,15 @@ export default class DocumentationHeader extends React.PureComponent {
                 </a>
               </Link>
 
-              {this._renderSectionLinks(true)}
+              {this.renderSectionLinks(true)}
             </div>
           </div>
           <div css={STYLES_RIGHT}>
-            {!this.props.isAlogliaSearchHidden && (
+            {!this.props.isAlgoliaSearchHidden && (
               <AlgoliaSearch
                 router={this.props.router}
                 version={this.props.version}
-                hiddenOnMobile={true}
+                hiddenOnMobile
               />
             )}
 
@@ -240,7 +265,7 @@ export default class DocumentationHeader extends React.PureComponent {
               onToggleSearch={this.props.onToggleSearch}
             />
           ) : (
-            this._renderSectionLinks(false)
+            this.renderSectionLinks(false)
           )}
         </header>
         <div css={this.props.isMobileSearchActive && STYLES_SEARCH_OVERLAY} />
@@ -248,7 +273,7 @@ export default class DocumentationHeader extends React.PureComponent {
     );
   }
 
-  _renderSectionLinks = hiddenOnMobile => {
+  private renderSectionLinks = hiddenOnMobile => {
     return (
       <div css={[SECTION_LINKS_WRAPPER, hiddenOnMobile && STYLES_HIDDEN_ON_MOBILE]}>
         <SectionContainer spaceBetween={hiddenOnMobile ? 8 : 0}>

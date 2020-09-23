@@ -1,6 +1,7 @@
 import { css } from '@emotion/core';
 import * as React from 'react';
 
+import { Url } from '~/common/types';
 import * as Constants from '~/constants/theme';
 
 const STYLES_FOOTER = css`
@@ -15,7 +16,7 @@ const STYLES_FOOTER_LINK = css`
 `;
 
 // Remove trailing slash and append .md
-function githubUrl(path) {
+function githubUrl(path: string) {
   if (path.includes('/versions/latest/')) {
     if (path === '/versions/latest') {
       path = '/versions/unversioned/index';
@@ -32,7 +33,7 @@ function githubUrl(path) {
 
   let pathAsMarkdown = path.replace(/\/$/, '') + '.md';
   if (pathAsMarkdown.startsWith('/versions/latest')) {
-    pathAsMarkdown = pathAsMarkdown.replace('/versions/unversioned');
+    pathAsMarkdown = pathAsMarkdown.replace('/versions/latest', '/versions/unversioned');
   }
 
   return `https://github.com/expo/expo/edit/master/docs/pages${pathAsMarkdown}`;
@@ -41,7 +42,14 @@ function githubUrl(path) {
 // Add any page in the /sdk/ section that should not have an issues link to this
 const ISSUES_BLACKLIST = ['Overview'];
 
-export default class DocumentationFooter extends React.PureComponent {
+type Props = {
+  asPath: string;
+  url?: Url;
+  title?: string;
+  sourceCodeUrl?: string;
+};
+
+export default class DocumentationFooter extends React.PureComponent<Props> {
   render() {
     return (
       <footer css={STYLES_FOOTER}>
@@ -59,7 +67,7 @@ export default class DocumentationFooter extends React.PureComponent {
     );
   }
 
-  maybeRenderGithubUrl() {
+  private maybeRenderGithubUrl() {
     if (this.props.url) {
       return (
         <a
@@ -73,7 +81,7 @@ export default class DocumentationFooter extends React.PureComponent {
     }
   }
 
-  maybeRenderIssuesLink = () => {
+  private maybeRenderIssuesLink = () => {
     if (!this.props.asPath.includes('/sdk/') || ISSUES_BLACKLIST.includes(this.props.title)) {
       return;
     }
@@ -88,7 +96,7 @@ export default class DocumentationFooter extends React.PureComponent {
     );
   };
 
-  maybeRenderSourceCodeLink = () => {
+  private maybeRenderSourceCodeLink = () => {
     if (!this.props.asPath.includes('/sdk/') || !this.props.sourceCodeUrl) {
       return;
     }

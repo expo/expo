@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { css } from '@emotion/core';
 
-import { BASE_HEADING_LEVEL, HeadingManager } from '../common/headingManager';
+import { BASE_HEADING_LEVEL, Heading, HeadingManager } from '../common/headingManager';
 import DocumentationSidebarRightLink from './DocumentationSidebarRightLink';
 
 import withHeadingManager from '~/components/page-higher-order/withHeadingManager';
@@ -36,13 +36,18 @@ const isDynamicScrollAvailable = () => {
 };
 
 type Props = {
-  headingManager: HeadingManager;
-  maxNestingDepth: number;
-  selfRef: React.RefObject<any>;
-  contentRef: React.RefObject<any>;
+  maxNestingDepth?: number;
+  selfRef?: React.RefObject<any>;
+  contentRef?: React.RefObject<any>;
 };
 
-class DocumentationSidebarRight extends React.Component<Props> {
+type PropsWithHM = Props & { headingManager: HeadingManager };
+
+type State = {
+  activeSlug: string | null;
+};
+
+class DocumentationSidebarRight extends React.Component<PropsWithHM, State> {
   static defaultProps = {
     maxNestingDepth: 4,
   };
@@ -51,14 +56,64 @@ class DocumentationSidebarRight extends React.Component<Props> {
     activeSlug: null,
   };
 
-  slugScrollingTo = null;
+  private slugScrollingTo: string | null = null;
+  private activeItemRef = React.createRef<HTMLAnchorElement>();
 
-  activeItemRef = React.createRef<HTMLAnchorElement>();
+  public handleContentScroll(contentScrollPosition: number) {
+    const { headings } = this.props.headingManager;
+
+    for (const { ref, slug } of headings) {
+      if (!ref || !ref.current) {
+        continue;
+      }
+      if (
+        ref.current.offsetTop >=
+          contentScrollPosition + window.innerHeight * ACTIVE_ITEM_OFFSET_FACTOR &&
+        ref.current.offsetTop <= contentScrollPosition + window.innerHeight / 2
+      ) {
+        if (slug !== this.state.activeSlug) {
+          // we can enable scrolling again
+          if (slug === this.slugScrollingTo) {
+            this.slugScrollingTo = null;
+          }
+          this.setState({ activeSlug: slug }, this.updateSelfScroll);
+        }
+        return;
+      }
+    }
+  }
+
+  render() {
+    const { headings } = this.props.headingManager;
+
+    //filter out headings nested too much
+    const displayedHeadings = headings.filter(
+      head => head.level <= BASE_HEADING_LEVEL + this.props.maxNestingDepth
+    );
+
+    return (
+      <nav css={STYLES_SIDEBAR} data-sidebar>
+        {displayedHeadings.map(heading => {
+          const isActive = heading.slug === this.state.activeSlug;
+          return (
+            <DocumentationSidebarRightLink
+              key={heading.slug}
+              heading={heading}
+              onClick={e => this.handleLinkClick(e, heading)}
+              isActive={isActive}
+              ref={isActive ? this.activeItemRef : undefined}
+              shortenCode
+            />
+          );
+        })}
+      </nav>
+    );
+  }
 
   /**
    * Scrolls sidebar to keep active element always visible
    */
-  _updateSelfScroll = () => {
+  private updateSelfScroll = () => {
     const selfScroll = this.props.selfRef?.current?.getScrollRef().current;
     const activeItemPos = this.activeItemRef.current?.offsetTop;
 
@@ -77,31 +132,7 @@ class DocumentationSidebarRight extends React.Component<Props> {
     }
   };
 
-  handleContentScroll(contentScrollPosition) {
-    const { headings } = this.props.headingManager;
-
-    for (const { ref, slug } of headings) {
-      if (!ref || !ref.current) {
-        continue;
-      }
-      if (
-        ref.current.offsetTop >=
-          contentScrollPosition + window.innerHeight * ACTIVE_ITEM_OFFSET_FACTOR &&
-        ref.current.offsetTop <= contentScrollPosition + window.innerHeight / 2
-      ) {
-        if (slug !== this.state.activeSlug) {
-          // we can enable scrolling again
-          if (slug === this.slugScrollingTo) {
-            this.slugScrollingTo = null;
-          }
-          this.setState({ activeSlug: slug }, this._updateSelfScroll);
-        }
-        return;
-      }
-    }
-  }
-
-  _handleLinkClick = (event, heading) => {
+  private handleLinkClick = (event: React.MouseEvent<HTMLAnchorElement>, heading: Heading) => {
     if (!isDynamicScrollAvailable()) {
       return;
     }
@@ -112,39 +143,12 @@ class DocumentationSidebarRight extends React.Component<Props> {
     // disable sidebar scrolling until we reach that slug
     this.slugScrollingTo = slug;
 
-    this.props.contentRef.current?.getScrollRef().current?.scrollTo({
+    this.props.contentRef?.current?.getScrollRef().current?.scrollTo({
       behavior: 'smooth',
       top: ref.current?.offsetTop - window.innerHeight * ACTIVE_ITEM_OFFSET_FACTOR,
     });
     history.replaceState(history.state, title, '#' + slug);
   };
-
-  render() {
-    const { headings } = this.props.headingManager;
-
-    //filter out headings nested too much
-    const displayedHeadings = headings.filter(
-      head => head.level <= BASE_HEADING_LEVEL + this.props.maxNestingDepth
-    );
-
-    return (
-      <nav css={STYLES_SIDEBAR} data-sidebar>
-        {displayedHeadings.map(heading => {
-          const isActive = heading.slug === this.state.activeSlug;
-          return (
-            <DocumentationSidebarRightLink
-              key={heading.slug}
-              heading={heading}
-              onClick={e => this._handleLinkClick(e, heading)}
-              isActive={isActive}
-              ref={isActive ? this.activeItemRef : undefined}
-              shortenCode
-            />
-          );
-        })}
-      </nav>
-    );
-  }
 }
 
 const SidebarWithHeadingManager = withHeadingManager(function SidebarWithHeadingManager({
@@ -156,10 +160,10 @@ const SidebarWithHeadingManager = withHeadingManager(function SidebarWithHeading
 
 SidebarWithHeadingManager.displayName = 'SidebarRightRefWrapper';
 
-const SidebarForwardRef = React.forwardRef(
-  (props: Props, ref: React.Ref<DocumentationSidebarRight>) => (
-    <SidebarWithHeadingManager {...props} reactRef={ref} />
-  )
-);
+const SidebarForwardRef = React.forwardRef<DocumentationSidebarRight, Props>((props, ref) => (
+  <SidebarWithHeadingManager {...props} reactRef={ref} />
+));
+
+export type SidebarRightComponentType = DocumentationSidebarRight;
 
 export default SidebarForwardRef;

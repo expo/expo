@@ -2,6 +2,7 @@ import { css } from '@emotion/core';
 import NextLink from 'next/link';
 import * as React from 'react';
 
+import { NavigationRoute, Url } from '~/common/types';
 import { paragraph } from '~/components/base/typography';
 import * as Constants from '~/constants/theme';
 
@@ -43,16 +44,9 @@ const STYLES_DEFAULT = css`
   }
 `;
 
-type Post = {
-  url?: { pathname: string };
-  as?: string;
-  href: string;
-};
-
 type Props = {
-  url?: { pathname: string };
-  posts: Post[];
-  info: Post & { posts: Post[] };
+  url?: Url;
+  info: NavigationRoute;
   asPath: string;
 };
 

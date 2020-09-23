@@ -4,7 +4,9 @@ import { HeadingManager } from '~/common/headingManager';
 
 export const HeadingsContext = React.createContext<HeadingManager>(null);
 
-const withHeadingManager = <P extends object>(Component: React.ComponentType<P>) => (props: P) => (
+const withHeadingManager = <P extends object>(
+  Component: React.ComponentType<P & { headingManager: HeadingManager }>
+) => (props: P) => (
   <HeadingsContext.Consumer>
     {headingManager => <Component headingManager={headingManager} {...props} />}
   </HeadingsContext.Consumer>

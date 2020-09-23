@@ -17,7 +17,7 @@ describe('HeadingManager tests', () => {
 
   test('_findMetaForTitle not returning same title twice', () => {
     const TITLE = 'Some Title';
-    const meta = { headings: [{ title: TITLE, processed: true }] };
+    const meta = { headings: [{ title: TITLE, _processed: true }] };
     const headingManager = new HeadingManager(
       SluggerStub,
       (meta as unknown) as PageMetadata
@@ -49,7 +49,7 @@ describe('HeadingManager.addHeading()', () => {
   });
 
   test('uses argument level over meta level', () => {
-    headingManager.meta.headings.forEach(it => (it.processed = false));
+    headingManager.meta.headings.forEach(it => (it._processed = false));
 
     const result = headingManager.addHeading(META_TITLE, 4);
 
