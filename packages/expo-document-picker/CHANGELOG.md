@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `UIDocumentPickerViewController` being `nil` on iOS 14 and thus causing the hard-crash of the application. ([#10327](https://github.com/expo/expo/pull/10327) by [@bbarthec](https://github.com/bbarthec))
+
 ## 8.4.0 — 2020-08-18
 
 ### 🐛 Bug fixes
