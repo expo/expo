@@ -133,6 +133,9 @@ static NSString * const EXUpdatesExpoTestDomain = @"expo.test";
     if (maybeAssetsUrl && maybeAssetsUrl.scheme) {
       return maybeAssetsUrl;
     } else {
+      if ([assetsPathOrUrl hasPrefix:@"./"]) {
+        assetsPathOrUrl = [assetsPathOrUrl substringFromIndex:2];
+      }
       return [manifestUrl.URLByDeletingLastPathComponent URLByAppendingPathComponent:assetsPathOrUrl];
     }
   }

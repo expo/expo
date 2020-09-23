@@ -177,6 +177,9 @@ public class LegacyManifest implements Manifest {
           if (maybeAssetsUrl != null && maybeAssetsUrl.isAbsolute()) {
             mAssetsUrlBase = maybeAssetsUrl;
           } else {
+            if (assetsPathOrUrl.startsWith("./")) {
+              assetsPathOrUrl = assetsPathOrUrl.substring(2);
+            }
             // use manifest URL as the base
             Uri.Builder assetsBaseUrlBuilder = mManifestUrl.buildUpon();
             List<String> segments = mManifestUrl.getPathSegments();
