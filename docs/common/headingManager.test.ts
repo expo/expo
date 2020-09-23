@@ -11,34 +11,28 @@ const SluggerStub: GithubSlugger = {
 describe('HeadingManager tests', () => {
   test('instantiates properly', () => {
     const meta = { maxHeadingDepth: 2 };
-    const headingManager = new HeadingManager(SluggerStub, meta as PageMetadata) as any;
+    const headingManager = new HeadingManager(SluggerStub, meta as PageMetadata);
 
     expect(headingManager.headings).toEqual([]);
-    expect(headingManager.meta.headings).toEqual([]);
+    expect(headingManager.metadata.headings).toEqual([]);
     expect(headingManager.maxNestingLevel).toBe(BASE_HEADING_LEVEL + 2);
   });
 
   test('_findMetaForTitle not returning same title twice', () => {
     const TITLE = 'Some Title';
     const meta = { headings: [{ title: TITLE, _processed: true }] };
-    const headingManager = new HeadingManager(
-      SluggerStub,
-      (meta as unknown) as PageMetadata
-    ) as any;
+    const headingManager = new HeadingManager(SluggerStub, (meta as unknown) as PageMetadata);
 
-    const result = headingManager.findMetaForTitle(TITLE);
+    const result = headingManager['findMetaForTitle'](TITLE);
     expect(result).toBeUndefined();
   });
 
   test('_findMetaForTitle marks meta as processed', () => {
     const TITLE = 'Some Title';
     const meta = { headings: [{ title: TITLE }] };
-    const headingManager = new HeadingManager(
-      SluggerStub,
-      (meta as unknown) as PageMetadata
-    ) as any;
+    const headingManager = new HeadingManager(SluggerStub, (meta as unknown) as PageMetadata);
 
-    const result = headingManager.findMetaForTitle(TITLE);
+    const result = headingManager['findMetaForTitle'](TITLE);
     expect(result._processed).toBeTruthy();
   });
 });
@@ -47,7 +41,7 @@ describe('HeadingManager.addHeading()', () => {
   const META_TITLE = 'Meta heading 1';
   const META_LEVEL = 3;
   const meta = { maxHeadingDepth: 3, headings: [{ title: META_TITLE, level: META_LEVEL }] };
-  const headingManager = new HeadingManager(SluggerStub, meta as PageMetadata) as any;
+  const headingManager = new HeadingManager(SluggerStub, meta as PageMetadata);
 
   test('finds info from meta', () => {
     const result = headingManager.addHeading(META_TITLE);
@@ -64,7 +58,7 @@ describe('HeadingManager.addHeading()', () => {
   });
 
   test('uses argument level over meta level', () => {
-    headingManager.meta.headings.forEach(it => (it._processed = false));
+    headingManager.metadata.headings.forEach(it => (it._processed = false));
 
     const result = headingManager.addHeading(META_TITLE, 4);
 
@@ -73,7 +67,7 @@ describe('HeadingManager.addHeading()', () => {
 
   test('additional params override anything', () => {
     const result = headingManager.addHeading('unused', 5, {
-      sidebarType: 'inlineCode',
+      sidebarType: HeadingType.InlineCode,
       sidebarTitle: 'The Override',
       sidebarDepth: 2, // level = 4
     });

@@ -61,12 +61,20 @@ export type Heading = {
  */
 export class HeadingManager {
   private slugger: GithubSlugger;
-  private meta: Partial<PageMetadata>;
   private _headings: Heading[];
-  private maxNestingLevel: number;
+  private readonly _meta: Partial<PageMetadata>;
+  private readonly _maxNestingLevel: number;
 
   public get headings() {
     return this._headings;
+  }
+
+  public get maxNestingLevel() {
+    return this._maxNestingLevel;
+  }
+
+  public get metadata() {
+    return this._meta;
   }
 
   /**
@@ -75,11 +83,11 @@ export class HeadingManager {
    */
   constructor(slugger: GithubSlugger, meta: Partial<PageMetadata>) {
     this.slugger = slugger;
-    this.meta = { headings: meta.headings || [], ...meta };
+    this._meta = { headings: meta.headings || [], ...meta };
     this._headings = [];
 
     const maxHeadingDepth = meta.maxHeadingDepth ?? DEFAULT_NESTING_LIMIT;
-    this.maxNestingLevel = maxHeadingDepth + BASE_HEADING_LEVEL;
+    this._maxNestingLevel = maxHeadingDepth + BASE_HEADING_LEVEL;
   }
 
   /**
@@ -130,7 +138,7 @@ export class HeadingManager {
    * @param {string} realTitle Title to find metadata for
    */
   private findMetaForTitle(realTitle: string) {
-    const entry = this.meta.headings.find(
+    const entry = this._meta.headings.find(
       heading => heading.title === realTitle && !heading._processed
     );
     if (!entry) {
