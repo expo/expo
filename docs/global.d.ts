@@ -11,5 +11,6 @@ interface Window {
 declare module NodeJS {
   interface Global {
     tippy: any;
+    __NEXT_DATA__: any;
   }
 }

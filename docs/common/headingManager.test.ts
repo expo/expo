@@ -1,8 +1,11 @@
-import { BASE_HEADING_LEVEL, HeadingManager, HeadingType } from './headingManager';
-import { PageMetadata, Slugger } from './types';
+import GithubSlugger from 'github-slugger';
 
-const SluggerStub: Slugger = {
+import { BASE_HEADING_LEVEL, HeadingManager, HeadingType } from './headingManager';
+import { PageMetadata } from './types';
+
+const SluggerStub: GithubSlugger = {
   slug: str => str,
+  reset: () => {},
 };
 
 describe('HeadingManager tests', () => {
