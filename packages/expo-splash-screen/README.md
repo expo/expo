@@ -480,7 +480,7 @@ The easiest way to configure the splash screen in bare React Native projects is 
 8. [(<em>optional</em>) Enable dark mode](#-optional-enable-dark-mode-1)
 9. [(<em>optional</em>) Customize StatusBar](#-customize-statusbar-1)
 
-#### 🛠 `SplashScreen.show(Activity activity, SplashScreenImageResizeMode mode, Boolean statusBarTranslucent)`
+#### 🛠 `SplashScreen.show(Activity activity, SplashScreenImageResizeMode resizeMode, Class<out ViewGroup> rootViewClass, Boolean statusBarTranslucent)`
 
 This native method is used to hook `SplashScreen` into the native view hierarchy that is attached to the provided activity.
 
@@ -504,7 +504,7 @@ public class MainActivity extends ReactActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 +   // SplashScreen.show(...) has to be called after super.onCreate(...)
-+   SplashScreen.show(this, SplashScreenImageResizeMode.CONTAIN, ReactRootView.class);
++   SplashScreen.show(this, SplashScreenImageResizeMode.CONTAIN, ReactRootView.class, false);
     ...
   }
 
@@ -525,7 +525,7 @@ public class MainActivity extends ReactActivity {
 +  protected void onCreate(Bundle savedInstanceState) {
 +    super.onCreate(savedInstanceState);
 +   // SplashScreen.show(...) has to be called after super.onCreate(...)
-+   SplashScreen.show(this, SplashScreenImageResizeMode.CONTAIN, ReactRootView.class);
++   SplashScreen.show(this, SplashScreenImageResizeMode.CONTAIN, ReactRootView.class, false);
     ...
   }
 
@@ -732,8 +732,9 @@ public class MainActivity extends ReactActivity {
     super.onCreate(savedInstanceState);
     // SplashScreen.show(...) has to be called after super.onCreate(...)
     // Below line is handled by '@expo/configure-splash-screen' command and it's discouraged to modify it manually
--   SplashScreen.show(this, SplashScreenImageResizeMode.{CONTAIN, COVER, NATIVE}, false);
-+   SplashScreen.show(this, SplashScreenImageResizeMode.{CONTAIN, COVER, NATIVE}, true);
+-   SplashScreen.show(this, SplashScreenImageResizeMode.{CONTAIN, COVER, NATIVE}, ReactRootView.class, false);
++   SplashScreen.show(this, SplashScreenImageResizeMode.{CONTAIN, COVER, NATIVE}, ReactRootView.class, true);
+
   }
 
   ...
