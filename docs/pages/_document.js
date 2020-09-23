@@ -1,6 +1,6 @@
+import { Global } from '@emotion/core';
 import Document, { Html, Head, Main, NextScript } from 'next/document';
 import { extractCritical } from 'emotion-server';
-import { hydrate } from 'react-emotion';
 
 import * as React from 'react';
 import * as Analytics from '~/common/analytics';
@@ -13,24 +13,22 @@ import { globalPrism } from '~/global-styles/prism';
 import { globalTippy } from '~/global-styles/tippy';
 import { globalExtras } from '~/global-styles/extras';
 
-if (typeof window !== 'undefined') {
-  hydrate(window.__NEXT_DATA__.ids);
-}
-
 export default class MyDocument extends Document {
-  static getInitialProps(opts) {
-    const { renderPage } = opts;
-    const page = renderPage();
-    const styles = extractCritical(page.html);
-    return { ...page, ...styles };
-  }
-
-  constructor(props) {
-    super(props);
-    const { __NEXT_DATA__, ids } = props;
-    if (ids) {
-      __NEXT_DATA__.ids = ids;
-    }
+  static async getInitialProps(ctx) {
+    const initialProps = await Document.getInitialProps(ctx);
+    const styles = extractCritical(initialProps.html);
+    return {
+      ...initialProps,
+      styles: (
+        <>
+          {initialProps.styles}
+          <style
+            data-emotion-css={styles.ids.join(' ')}
+            dangerouslySetInnerHTML={{ __html: styles.css }}
+          />
+        </>
+      ),
+    };
   }
 
   render() {
@@ -41,14 +39,18 @@ export default class MyDocument extends Document {
           <script src="/static/libs/tippy/tippy.all.min.js" />
           <script src="/static/libs/nprogress/nprogress.js" />
 
-          <style dangerouslySetInnerHTML={{ __html: this.props.css }} />
-          <style dangerouslySetInnerHTML={{ __html: globalFonts }} />
-          <style dangerouslySetInnerHTML={{ __html: globalReset }} />
-          <style dangerouslySetInnerHTML={{ __html: globalNProgress }} />
-          <style dangerouslySetInnerHTML={{ __html: globalTables }} />
-          <style dangerouslySetInnerHTML={{ __html: globalPrism }} />
-          <style dangerouslySetInnerHTML={{ __html: globalTippy }} />
-          <style dangerouslySetInnerHTML={{ __html: globalExtras }} />
+          <Global
+            styles={[
+              globalFonts,
+              globalReset,
+              globalNProgress,
+              globalTables,
+              globalPrism,
+              globalTippy,
+              globalExtras,
+            ]}
+          />
+
           <link rel="stylesheet" href="/static/libs/algolia/algolia.min.css" />
           <link rel="stylesheet" href="/static/libs/algolia/algolia-mobile.css" />
           <link

@@ -1,6 +1,6 @@
-import styled, { keyframes, css } from 'react-emotion';
-
+import { css } from '@emotion/core';
 import * as React from 'react';
+
 import * as Constants from '~/constants/theme';
 
 const STYLES_DETAILS = css`
@@ -18,15 +18,15 @@ const STYLES_CONTENTS = css`
 `;
 
 export const ExpoKitDetails = ({ children }) => (
-  <details className={STYLES_DETAILS}>
-    <summary className={STYLES_SUMMARY}>ExpoKit</summary>
-    <div className={STYLES_CONTENTS}>{children}</div>
+  <details css={STYLES_DETAILS}>
+    <summary css={STYLES_SUMMARY}>ExpoKit</summary>
+    <div css={STYLES_CONTENTS}>{children}</div>
   </details>
 );
 
 export const BareWorkflowDetails = ({ children }) => (
-  <details className={STYLES_DETAILS}>
-    <summary className={STYLES_SUMMARY}>Bare Workflow</summary>
-    <div className={STYLES_CONTENTS}>{children}</div>
+  <details css={STYLES_DETAILS}>
+    <summary css={STYLES_SUMMARY}>Bare Workflow</summary>
+    <div css={STYLES_CONTENTS}>{children}</div>
   </details>
 );

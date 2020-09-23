@@ -1,10 +1,9 @@
-import styled, { keyframes, css } from 'react-emotion';
+import { css } from '@emotion/core';
 import emojiRegex from 'emoji-regex';
-
 import * as React from 'react';
+
 import * as Constants from '~/constants/theme';
 import { Info } from '~/components/icons/Info';
-
 import { paragraph } from './typography';
 
 const attributes = {
@@ -17,7 +16,7 @@ const STYLES_PARAGRAPH = css`
 `;
 
 export const P = ({ children }) => (
-  <p {...attributes} className={STYLES_PARAGRAPH}>
+  <p {...attributes} css={STYLES_PARAGRAPH}>
     {children}
   </p>
 );
@@ -29,7 +28,7 @@ const STYLES_BOLD_PARAGRAPH = css`
   font-weight: 500;
 `;
 
-const B = ({ children }) => <strong className={STYLES_BOLD_PARAGRAPH}>{children}</strong>;
+const B = ({ children }) => <strong css={STYLES_BOLD_PARAGRAPH}>{children}</strong>;
 
 P.B = B;
 
@@ -53,7 +52,7 @@ const STYLES_PARAGRAPH_DIV = css`
 export const PDIV = ({ children }) => {
   const isWider = children.props && children.props.snackId;
   return (
-    <div {...attributes} className={`${STYLES_PARAGRAPH_DIV} ${isWider ? 'is-wider' : ''}`}>
+    <div {...attributes} css={STYLES_PARAGRAPH_DIV} className={isWider ? 'is-wider' : ''}>
       {children}
     </div>
   );
@@ -137,7 +136,7 @@ export const Quote = ({ children }) => {
   });
 
   return (
-    <blockquote {...attributes} className={STYLES_BLOCKQUOTE}>
+    <blockquote {...attributes} css={STYLES_BLOCKQUOTE}>
       <div>{icon}</div>
       <div>{_children}</div>
     </blockquote>
