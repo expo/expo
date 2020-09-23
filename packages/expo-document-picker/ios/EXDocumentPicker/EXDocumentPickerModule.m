@@ -118,7 +118,7 @@ UM_EXPORT_METHOD_AS(getDocumentAsync,
 #endif
         NSString* type = EXConvertMimeTypeToUTI(mimeType);
         documentPickerVC = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[type]
-                                                                                inMode:UIDocumentPickerModeImport];
+                                                                                  inMode:UIDocumentPickerModeImport];
         // TODO: drop #if macro once XCode is updated to 12
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 140000
       }
