@@ -31,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (instancetype)updateWithId:(NSUUID *)updateId
+                    scopeKey:(NSString *)scopeKey
                   commitTime:(NSDate *)commitTime
               runtimeVersion:(NSString *)runtimeVersion
                     metadata:(nullable NSDictionary *)metadata
@@ -44,6 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                        config:config
                                                      database:database];
   update.updateId = updateId;
+  update.scopeKey = scopeKey;
   update.commitTime = commitTime;
   update.runtimeVersion = runtimeVersion;
   update.metadata = metadata;

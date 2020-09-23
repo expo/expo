@@ -117,6 +117,19 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
     NSError *existingUpdateError;
     EXUpdatesUpdate *existingUpdate = [self->_database updateWithId:updateManifest.updateId config:self->_config error:&existingUpdateError];
 
+    // if something has gone wrong on the server and we have two updates with the same id
+    // but different scope keys, we should try to launch something rather than show a cryptic
+    // error to the user.
+    if (existingUpdate && ![existingUpdate.scopeKey isEqualToString:updateManifest.scopeKey]) {
+      NSError *setScopeKeyError;
+      [self->_database setScopeKey:updateManifest.scopeKey onUpdate:existingUpdate error:&setScopeKeyError];
+
+      if (setScopeKeyError) {
+        [self _finishWithError:setScopeKeyError];
+        return;
+      }
+    }
+
     if (existingUpdate && existingUpdate.status == EXUpdatesUpdateStatusReady) {
       if (self->_successBlock) {
         dispatch_async(self->_completionQueue, ^{
