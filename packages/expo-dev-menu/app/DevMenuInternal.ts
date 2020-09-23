@@ -56,7 +56,7 @@ export enum DevMenuKeyCommandsEnum {
   SHIFT = 131072,
 }
 
-export const doesDeviceSupportKeyCommands = DevMenu.isDeviceSupportsKeyCommands;
+export const doesDeviceSupportKeyCommands = DevMenu.doesDeviceSupportKeyCommands;
 
 export async function dispatchActionAsync(actionId: string): Promise<void> {
   return await DevMenu.dispatchActionAsync(actionId);
