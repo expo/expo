@@ -1,5 +1,6 @@
-import styled, { keyframes, css } from 'react-emotion';
+import { css } from '@emotion/core';
 import * as React from 'react';
+
 import BulletIcon from '~/components/icons/Bullet';
 import * as Constants from '~/constants/theme';
 import { InlineCode } from '~/components/base/code';
@@ -58,12 +59,12 @@ export default class TableOfContentSection extends React.Component {
       <div>
         <a
           href={`#${createAnchorLink(title)}`}
-          className={STYLES_EXTERNAL_LINK}
+          css={STYLES_EXTERNAL_LINK}
           rel="noopener noreferrer">
-          <H4 className={STYLES_TITLE}>{title}</H4>
+          <H4 css={STYLES_TITLE}>{title}</H4>
         </a>
         <ul
-          className={css`
+          css={css`
             padding: 0;
             margin-top: 24px;
             padding-left: ${horizontal ? '4px' : '24px'};
@@ -75,13 +76,12 @@ export default class TableOfContentSection extends React.Component {
               <a
                 key={data}
                 href={`#${createAnchorLink(data)}`}
-                className={STYLES_EXTERNAL_LINK}
+                css={STYLES_EXTERNAL_LINK}
                 rel="noopener noreferrer">
                 <li
-                  className={`${
-                    horizontal ? STYLES_HORIZONTAL_ITEM : STYLES_VERTICAL_ITEM
-                  } docs-list-item`}>
-                  <div className={horizontal ? STYLES_HORIZONTAL_BULLET : STYLES_VERTICAL_BULLET}>
+                  css={horizontal ? STYLES_HORIZONTAL_ITEM : STYLES_VERTICAL_ITEM}
+                  className='docs-list-item'>
+                  <div css={horizontal ? STYLES_HORIZONTAL_BULLET : STYLES_VERTICAL_BULLET}>
                     <BulletIcon />
                   </div>
                   <InlineCode>{data}</InlineCode>

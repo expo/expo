@@ -1,13 +1,13 @@
 // NOTE(jim):
 // GETTING NESTED SCROLL RIGHT IS DELICATE BUSINESS. THEREFORE THIS COMPONENT
 // IS THE ONLY PLACE WHERE SCROLL CODE SHOULD BE HANDLED. THANKS.
+import { Global, css } from '@emotion/core';
 import * as React from 'react';
-import styled, { keyframes, css, injectGlobal } from 'react-emotion';
 
 import * as Constants from '~/constants/theme';
 
 // NOTE(jim): Global styles if and only if this component is used.
-injectGlobal`
+const STYLES_GLOBAL = css`
   body {
     background: ${Constants.colors.white};
   }
@@ -42,7 +42,7 @@ injectGlobal`
 const STYLES_CONTAINER = css`
   width: 100%;
   height: 100vh;
-  overflow; hidden;
+  overflow: hidden;
   margin: 0 auto 0 auto;
   border-left: 1px solid ${Constants.expoColors.gray[250]};
   border-right: 1px solid ${Constants.expoColors.gray[250]};
@@ -202,7 +202,7 @@ class ScrollContainer extends React.Component {
   render() {
     return (
       <div
-        className={STYLES_SCROLL_CONTAINER}
+        css={STYLES_SCROLL_CONTAINER}
         ref={this.scrollRef}
         onScroll={this.props.scrollHandler}>
         {this.props.children}
@@ -238,19 +238,20 @@ export default class DocumentationNestedScrollLayout extends React.Component {
   };
 
   render() {
-    if (this.props.isMenuActive) {
+    const { isMobileSearchActive, isMenuActive, sidebarScrollPosition } = this.props;
+
+    if (isMenuActive) {
       window.scrollTo(0, 0);
     }
+
     return (
-      <div className={STYLES_CONTAINER}>
-        <div
-          className={`${STYLES_HEADER} ${(this.props.isMobileSearchActive ||
-            this.props.isMenuActive) &&
-            SHOW_SEARCH_AND_MENU}`}>
+      <div css={STYLES_CONTAINER}>
+        <Global styles={STYLES_GLOBAL} />
+        <div css={[STYLES_HEADER, (isMobileSearchActive || isMenuActive) && SHOW_SEARCH_AND_MENU]}>
           {this.props.header}
         </div>
-        <div className={STYLES_CONTENT}>
-          <div className={`${STYLES_SIDEBAR} ${STYLES_LEFT}`}>
+        <div css={STYLES_CONTENT}>
+          <div css={[STYLES_SIDEBAR, STYLES_LEFT]}>
             <ScrollContainer
               ref={this.sidebarRef}
               scrollPosition={this.props.sidebarScrollPosition}>
@@ -258,14 +259,14 @@ export default class DocumentationNestedScrollLayout extends React.Component {
             </ScrollContainer>
           </div>
 
-          <div className={STYLES_CENTER}>
+          <div css={STYLES_CENTER}>
             <ScrollContainer ref={this.contentRef} scrollHandler={this._scrollHandler}>
-              <div className={STYLES_CENTER_WRAPPER}>{this.props.children}</div>
+              <div css={STYLES_CENTER_WRAPPER}>{this.props.children}</div>
             </ScrollContainer>
           </div>
 
           {this.props.tocVisible && (
-            <div className={`${STYLES_SIDEBAR} ${STYLES_RIGHT}`}>
+            <div css={[STYLES_SIDEBAR, STYLES_RIGHT]}>
               <ScrollContainer ref={this.sidebarRightRef}>
                 {React.cloneElement(this.props.sidebarRight, {
                   selfRef: this.sidebarRightRef,

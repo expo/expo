@@ -1,6 +1,8 @@
+import { css } from '@emotion/core';
+
 import * as Constants from '~/constants/theme';
 
-export const globalTables = `
+export const globalTables = css`
   table {
     margin-bottom: 1rem;
     font-size: 0.8rem;

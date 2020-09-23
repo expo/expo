@@ -1,10 +1,7 @@
-import styled, { keyframes, css } from 'react-emotion';
-
+import { css } from '@emotion/core';
 import * as React from 'react';
-import * as Constants from '~/constants/theme';
 
-import { H2, H3, H4 } from '~/components/base/headings';
-import { PDIV, P, Quote } from '~/components/base/paragraph';
+import * as Constants from '~/constants/theme';
 
 const STYLES_FOOTER = css`
   border-top: 1px solid ${Constants.expoColors.gray[250]};
@@ -47,9 +44,9 @@ const ISSUES_BLACKLIST = ['Overview'];
 export default class DocumentationFooter extends React.PureComponent {
   render() {
     return (
-      <footer className={STYLES_FOOTER}>
+      <footer css={STYLES_FOOTER}>
         <a
-          className={STYLES_FOOTER_LINK}
+          css={STYLES_FOOTER_LINK}
           target="_blank"
           rel="noopener"
           href="https://forums.expo.io/">
@@ -66,7 +63,7 @@ export default class DocumentationFooter extends React.PureComponent {
     if (this.props.url) {
       return (
         <a
-          className={STYLES_FOOTER_LINK}
+          css={STYLES_FOOTER_LINK}
           target="_blank"
           rel="noopener"
           href={githubUrl(this.props.url.pathname)}>
@@ -83,7 +80,7 @@ export default class DocumentationFooter extends React.PureComponent {
 
     return (
       <a
-        className={STYLES_FOOTER_LINK}
+        css={STYLES_FOOTER_LINK}
         target="_blank"
         href={`https://github.com/expo/expo/labels/${this.props.title}`}>
         View open issues for {this.props.title}
@@ -97,7 +94,7 @@ export default class DocumentationFooter extends React.PureComponent {
     }
 
     return (
-      <a className={STYLES_FOOTER_LINK} target="_blank" href={`${this.props.sourceCodeUrl}`}>
+      <a css={STYLES_FOOTER_LINK} target="_blank" href={`${this.props.sourceCodeUrl}`}>
         View source code for {this.props.title}
       </a>
     );

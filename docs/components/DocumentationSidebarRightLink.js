@@ -1,8 +1,7 @@
 import * as React from 'react';
-import { css } from 'react-emotion';
+import { css } from '@emotion/core';
 
-import { BASE_HEADING_LEVEL, HeadingType } from '../common/headingManager';
-
+import { BASE_HEADING_LEVEL, HeadingType } from '~/common/headingManager';
 import { paragraph } from '~/components/base/typography';
 import * as Constants from '~/constants/theme';
 
@@ -90,7 +89,7 @@ const isOverflowing = el => {
 
 const Tooltip = ({ children, isCode, topOffset }) => (
   <div
-    className={`${STYLES_TOOLTIP} ${isCode && STYLES_CODE_TOOLTIP}`}
+    css={[STYLES_TOOLTIP, isCode && STYLES_CODE_TOOLTIP]}
     style={{ right: 20, top: topOffset }}>
     {children}
   </div>
@@ -130,12 +129,12 @@ const DocumentationSidebarRightLink = React.forwardRef(
           style={{ paddingLeft }}
           href={'#' + slug}
           onClick={onClick}
-          className={`
-            ${STYLES_LINK}
-            ${isNested && STYLES_LINK_HEADER}
-            ${isCode && STYLES_LINK_CODE}
-            ${isActive && STYLES_LINK_ACTIVE}
-          `}>
+          css={[
+            STYLES_LINK,
+            isNested && STYLES_LINK_HEADER,
+            isCode && STYLES_LINK_CODE,
+            isActive && STYLES_LINK_ACTIVE,
+          ]}>
           {displayTitle}
         </a>
       </>

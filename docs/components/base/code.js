@@ -1,8 +1,8 @@
+import { css } from '@emotion/core';
 import Prism from 'prism-react-renderer/prism';
 import * as React from 'react';
-import { css } from 'react-emotion';
-import * as Constants from '~/constants/theme';
 
+import * as Constants from '~/constants/theme';
 import { installLanguages } from './languages';
 
 installLanguages(Prism);
@@ -121,8 +121,8 @@ export class Code extends React.Component {
     }
 
     return (
-      <pre className={STYLES_CODE_CONTAINER} {...attributes}>
-        <code className={STYLES_CODE_BLOCK} dangerouslySetInnerHTML={{ __html: html }} />
+      <pre css={STYLES_CODE_CONTAINER} {...attributes}>
+        <code css={STYLES_CODE_BLOCK} dangerouslySetInnerHTML={{ __html: html }} />
       </pre>
     );
   }
@@ -135,5 +135,5 @@ const remapLanguages = {
 };
 
 export const InlineCode = ({ children }) => (
-  <code className={`${STYLES_INLINE_CODE} inline`}>{children}</code>
+  <code css={STYLES_INLINE_CODE} className='inline'>{children}</code>
 );

@@ -1,5 +1,5 @@
+import { css } from '@emotion/core';
 import * as React from 'react';
-import { css } from 'react-emotion';
 
 import * as Constants from '~/constants/theme';
 
@@ -37,7 +37,7 @@ const STYLES_COMMENT = css`
 
 export function ShellComment({ children }) {
   return (
-    <code unselectable="on" className={STYLES_COMMENT}>
+    <code unselectable="on" css={STYLES_COMMENT}>
       {children}
     </code>
   );
@@ -45,7 +45,7 @@ export function ShellComment({ children }) {
 
 export default function TerminalBlock({ cmd }) {
   return (
-    <div className={STYLES_PROMPT}>
+    <div css={STYLES_PROMPT}>
       {cmd.map((line, index) => {
         const key = `line-${index}`;
         if (line.startsWith('#')) {
@@ -54,7 +54,7 @@ export default function TerminalBlock({ cmd }) {
           return <br key={key} />;
         }
         return (
-          <code key={key} className={STYLES_LINE}>
+          <code key={key} css={STYLES_LINE}>
             {line}
           </code>
         );
