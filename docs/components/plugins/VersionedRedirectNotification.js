@@ -1,6 +1,7 @@
+import { css } from '@emotion/core';
 import { useRouter } from 'next/router';
 import * as React from 'react';
-import { css } from 'react-emotion';
+
 import * as Constants from '~/constants/theme';
 import { P } from '~/components/base/paragraph';
 
@@ -28,7 +29,7 @@ export default function VersionedRedirectNotification({ showForQuery = 'redirect
 
   if (visible) {
     return (
-      <div className={CONTAINER_STYLE}>
+      <div css={CONTAINER_STYLE}>
         <P>
           ⚠️ The page you are looking for does not exist in this SDK version. It may have been
           deprecated or added in a newer SDK version.

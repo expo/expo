@@ -1,5 +1,5 @@
+import { css } from '@emotion/core';
 import * as React from 'react';
-import { css } from 'react-emotion';
 
 const CONTAINER_STYLE = css`
   background-color: rgba(225, 228, 23, 0.1);
@@ -15,7 +15,7 @@ export default function Redirect({ path }) {
   });
 
   return (
-    <div className={CONTAINER_STYLE}>
+    <div css={CONTAINER_STYLE}>
       Redirecting to <a href={path}>{path}</a>
     </div>
   );

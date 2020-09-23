@@ -1,6 +1,6 @@
+import { css } from '@emotion/core';
 import Router from 'next/router';
 import * as React from 'react';
-import { css } from 'react-emotion';
 
 import * as Constants from '~/constants/theme';
 import * as Utilities from '~/common/utilities';
@@ -199,7 +199,7 @@ class AlgoliaSearch extends React.Component {
   render() {
     return (
       <div
-        className={`${STYLES_INPUT} ${!this.props.hiddenOnMobile && STYLES_INPUT_MOBILE}`}
+        css={[STYLES_INPUT, !this.props.hiddenOnMobile && STYLES_INPUT_MOBILE]}
         style={this.props.style}>
         <div className="search">
           <img src="/static/images/header/search.svg" />

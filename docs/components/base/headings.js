@@ -1,8 +1,7 @@
-import styled, { keyframes, css } from 'react-emotion';
-
+import { css } from '@emotion/core';
 import * as React from 'react';
-import * as Constants from '~/constants/theme';
 
+import * as Constants from '~/constants/theme';
 import { h1, h2, h3, h4 } from './typography';
 
 const attributes = {
@@ -18,7 +17,7 @@ const STYLES_H1 = css`
 `;
 
 export const H1 = ({ children }) => (
-  <h1 {...attributes} className={STYLES_H1}>
+  <h1 {...attributes} css={STYLES_H1}>
     {children}
   </h1>
 );
@@ -39,7 +38,7 @@ const STYLES_H2 = css`
 `;
 
 export const H2 = ({ children }) => (
-  <h2 {...attributes} className={STYLES_H2}>
+  <h2 {...attributes} css={STYLES_H2}>
     {children}
   </h2>
 );
@@ -58,7 +57,7 @@ const STYLES_H3 = css`
 `;
 
 export const H3 = ({ children }) => (
-  <h3 {...attributes} className={STYLES_H3}>
+  <h3 {...attributes} css={STYLES_H3}>
     {children}
   </h3>
 );
@@ -75,8 +74,8 @@ const STYLES_H4 = css`
   }
 `;
 
-export const H4 = ({ children, className, ...rest }) => (
-  <h4 {...attributes} className={css([STYLES_H4, className])} {...rest}>
+export const H4 = ({ children, ...rest }) => (
+  <h4 {...attributes} css={STYLES_H4} {...rest}>
     {children}
   </h4>
 );

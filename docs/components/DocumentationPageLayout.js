@@ -1,6 +1,6 @@
-import styled, { keyframes, css } from 'react-emotion';
-
+import { css } from '@emotion/core';
 import * as React from 'react';
+
 import * as Constants from '~/constants/theme';
 
 const STYLES_CONTAINER = css`
@@ -43,11 +43,11 @@ const STYLES_RIGHT = css`
 
 const DocumentationPageLayout = props => {
   return (
-    <div className={STYLES_CONTAINER}>
-      <div className={STYLES_HEADER}>{props.header}</div>
-      <div className={STYLES_CONTENT}>
-        <div className={STYLES_LEFT}>{props.sidebar}</div>
-        <div className={STYLES_RIGHT}>{props.children}</div>
+    <div css={STYLES_CONTAINER}>
+      <div css={STYLES_HEADER}>{props.header}</div>
+      <div css={STYLES_CONTENT}>
+        <div css={STYLES_LEFT}>{props.sidebar}</div>
+        <div css={STYLES_RIGHT}>{props.children}</div>
       </div>
     </div>
   );

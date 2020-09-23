@@ -1,13 +1,11 @@
 import * as React from 'react';
-import { css } from 'react-emotion';
-
-import { BASE_HEADING_LEVEL } from '../common/headingManager';
-import DocumentationSidebarRightLink from './DocumentationSidebarRightLink';
+import { css } from '@emotion/core';
 
 import { paragraph } from '~/components/base/typography';
-import ChevronDown from '~/components/icons/ChevronDown';
 import withHeadingManager from '~/components/page-higher-order/withHeadingManager';
 import * as Constants from '~/constants/theme';
+import { BASE_HEADING_LEVEL } from '~/common/headingManager';
+import DocumentationSidebarRightLink from './DocumentationSidebarRightLink';
 
 const STYLES_SIDEBAR = css`
   padding: 20px 24px 24px 24px;
@@ -172,7 +170,7 @@ class DocumentationSidebarRight extends React.Component {
     );
 
     return (
-      <nav className={STYLES_SIDEBAR} data-sidebar>
+      <nav css={STYLES_SIDEBAR} data-sidebar>
         {displayedHeadings.map(heading => {
           const isActive = heading.slug === this.state.activeSlug;
           return (

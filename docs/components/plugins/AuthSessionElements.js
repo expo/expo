@@ -1,6 +1,7 @@
+import { css } from '@emotion/core';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from '@reach/tabs';
 import * as React from 'react';
-import { css } from 'react-emotion';
+
 import * as Constants from '~/constants/theme';
 
 const STYLES_LINK = css`
@@ -31,7 +32,7 @@ const STYLES_BUTTON = css`
 
 export function CreateAppButton({ href, name }) {
   return (
-    <a className={`snack-inline-example-button ${STYLES_BUTTON}`} href={href}>
+    <a css={STYLES_BUTTON} className='snack-inline-example-button' href={href}>
       Create {name} App
     </a>
   );
@@ -55,7 +56,7 @@ export function SocialGridItem({ title, protocol = [], image, href }) {
   return (
     <a
       href={href}
-      className={STYLES_LINK}
+      css={STYLES_LINK}
       style={{
         display: 'flex',
         flexDirection: 'column',
@@ -123,7 +124,7 @@ function AuthMethodTabButton({ selected, ...props }) {
   return (
     <Tab
       {...props}
-      className={TAB_BUTTON}
+      css={TAB_BUTTON}
       style={{
         borderColor: selected ? Constants.colors.expo : 'transparent',
         color: selected ? Constants.colors.expo : Constants.colors.darkGrey,

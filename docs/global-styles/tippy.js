@@ -1,7 +1,9 @@
+import { css } from '@emotion/core';
+
 import * as Constants from '~/constants/theme';
 import { paragraph } from '~/components/base/typography';
 
-export const globalTippy = `
+export const globalTippy = css`
   div.tippy-tooltip {
     text-align: left;
     background: ${Constants.expoColors.black};

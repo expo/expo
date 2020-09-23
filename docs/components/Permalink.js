@@ -1,6 +1,7 @@
+import { css } from '@emotion/core';
 import * as React from 'react';
-import { css } from 'react-emotion';
 
+import * as Utilities from '~/common/utilities';
 import PermalinkIcon from '~/components/icons/Permalink';
 import withHeadingManager from '~/components/page-higher-order/withHeadingManager';
 
@@ -47,7 +48,7 @@ const STYLES_CONTAINER_ANCHOR = css`
 
 const STYLES_CONTAINER_TARGET = css`
   display: block;
-  position: absolute
+  position: absolute;
   top: -100px;
   visibility: hidden;
 `;
@@ -78,12 +79,13 @@ export default withHeadingManager(props => {
 
   return (
     <Permalink component={component} data-components-heading>
-      <div className={STYLES_CONTAINER} ref={heading.ref}>
-        <span id={permalinkKey} className={STYLES_CONTAINER_TARGET} />
+      <div css={STYLES_CONTAINER} ref={heading.ref}>
+        <span id={permalinkKey} css={STYLES_CONTAINER_TARGET} />
         <a
           style={props.customIconStyle}
           href={'#' + permalinkKey}
-          className={`permalink ${STYLES_CONTAINER_ANCHOR}`}>
+          className='permalink'
+          css={STYLES_CONTAINER_ANCHOR}>
           <PermalinkIcon />
         </a>
         <div className="permalink-child">{children}</div>

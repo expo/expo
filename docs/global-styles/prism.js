@@ -1,11 +1,11 @@
-import * as Constants from '~/constants/theme';
+import { css } from '@emotion/core';
 
 /**
  * prism.js Coy theme for JavaScript, CoffeeScript, CSS and HTML
  * Based on https://github.com/tshedor/workshop-wp-theme (Example: http://workshop.kansan.com/category/sessions/basics or http://workshop.timshedor.com/category/sessions/basics);
  * @author Tim  Shedor
  */
-export const globalPrism = `
+export const globalPrism = css`
   :not(pre) > code[class*='language-'],
   pre[class*='language-'] {
     -webkit-box-sizing: border-box;
