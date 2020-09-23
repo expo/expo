@@ -13,7 +13,7 @@ import EXDevMenu
 #endif
 
 @UIApplicationMain
-class AppDelegate: UMAppDelegateWrapper{
+class AppDelegate: UMAppDelegateWrapper {
   var moduleRegistryAdapter: UMModuleRegistryAdapter!
   var bridge: RCTBridge?
   var launchOptions: [UIApplication.LaunchOptionsKey: Any]?;
