@@ -1,6 +1,6 @@
-import React from 'react';
 import * as Sentry from '@sentry/browser';
 import App from 'next/app';
+import React from 'react';
 
 import { preprocessSentryError } from '~/common/sentry-utilities';
 import 'react-diff-view/style/index.css';
