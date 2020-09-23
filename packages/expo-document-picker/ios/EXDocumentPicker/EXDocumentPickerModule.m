@@ -60,7 +60,7 @@ static NSString * EXConvertMimeTypeToUTI(NSString *mimeType)
   return (__bridge_transfer NSString *)uti;
 }
 
-@interface EXDocumentPickerModule () <UIDocumentPickerDelegate>
+@interface EXDocumentPickerModule () <UIDocumentPickerDelegate, UIAdaptivePresentationControllerDelegate>
 
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 @property (nonatomic, weak) id<UMFileSystemInterface> fileSystem;
@@ -127,6 +127,7 @@ UM_EXPORT_METHOD_AS(getDocumentAsync,
       return;
     }
     documentPickerVC.delegate = self;
+    documentPickerVC.presentationController.delegate = self;
 
     // Because of the way IPad works with Actionsheets such as this one, we need to provide a source view and set it's position.
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -178,11 +179,18 @@ UM_EXPORT_METHOD_AS(getDocumentAsync,
   _reject = nil;
 }
 
+// Document picker view controller has been cancelled with a button
 - (void)documentPickerWasCancelled:(UIDocumentPickerViewController *)controller
 {
   _resolve(@{@"type": @"cancel"});
   _resolve = nil;
   _reject = nil;
+}
+
+// Document picker view controller has been dismissed by gesture
+- (void)presentationControllerDidDismiss:(UIPresentationController *)presentationController
+{
+  [self documentPickerWasCancelled:presentationController.presentedViewController];
 }
 
 + (unsigned long long)getFileSize:(NSString *)path error:(NSError **)error
