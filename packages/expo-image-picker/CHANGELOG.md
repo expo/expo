@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- `launchImageLibraryAsync()` should be callable with no options argument ([#10306](https://github.com/expo/expo/pull/10306))
+
 ## 9.1.0 — 2020-08-18
 
 ### 🎉 New features
