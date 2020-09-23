@@ -1,4 +1,4 @@
-import { Slugger } from './types';
+import GithubSlugger from 'github-slugger';
 
 /**
  * Converts any object to string accepted by _Slugger_.
@@ -19,7 +19,7 @@ export const toString = (node: any): string => {
   }
 };
 
-export const generateSlug = (slugger: Slugger, node: any, length = 7): string => {
+export const generateSlug = (slugger: GithubSlugger, node: any, length = 7): string => {
   const stringToSlug = toString(node)
     .split(' ')
     .splice(0, length)

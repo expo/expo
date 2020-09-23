@@ -1,7 +1,3 @@
-export interface Slugger {
-  slug: (text: string) => string;
-}
-
 export type PageMetadata = {
   title: string;
   sourceCodeUrl?: string;

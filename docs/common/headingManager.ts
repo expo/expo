@@ -1,6 +1,7 @@
+import GithubSlugger from 'github-slugger';
 import * as React from 'react';
 
-import { Single, PageMetadata, Slugger } from './types';
+import { Single, PageMetadata } from './types';
 import * as Utilities from './utilities';
 
 /**
@@ -59,7 +60,7 @@ export type Heading = {
  * This class uses Slugger instance to generate and manage unique slugs
  */
 export class HeadingManager {
-  private slugger: Slugger;
+  private slugger: GithubSlugger;
   private meta: Partial<PageMetadata>;
   private _headings: Heading[];
   private maxNestingLevel: number;
@@ -72,7 +73,7 @@ export class HeadingManager {
    * @param {Object} slugger A _GithubSlugger_ instance
    * @param {{headings: Object[]}} meta Document metadata gathered by `headingsMdPlugin`.
    */
-  constructor(slugger: Slugger, meta: Partial<PageMetadata>) {
+  constructor(slugger: GithubSlugger, meta: Partial<PageMetadata>) {
     this.slugger = slugger;
     this.meta = { headings: meta.headings || [], ...meta };
     this._headings = [];

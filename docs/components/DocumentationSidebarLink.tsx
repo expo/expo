@@ -77,8 +77,6 @@ type Props = {
 export default class DocumentationSidebarLink extends React.Component<Props> {
   componentDidMount() {
     // Consistent link behavior across dev server and static export
-    // TODO: Fix this TS somehow
-    // @ts-ignore
     global.__NEXT_DATA__.nextExport = true;
   }
 
