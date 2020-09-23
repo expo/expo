@@ -285,6 +285,12 @@ static NSString * const EXUpdatesDatabaseFilename = @"expo-v3.db";
               error:error];
 }
 
+- (void)setScopeKey:(NSString *)scopeKey onUpdate:(EXUpdatesUpdate *)update error:(NSError ** _Nullable)error
+{
+  NSString * const updateSql = @"UPDATE updates SET scope_key = ?1 WHERE id = ?2;";
+  [self _executeSql:updateSql withArgs:@[scopeKey, update.updateId] error:error];
+}
+
 # pragma mark - delete
 
 - (void)deleteUpdates:(NSArray<EXUpdatesUpdate *> *)updates error:(NSError ** _Nullable)error
@@ -585,6 +591,7 @@ static NSString * const EXUpdatesDatabaseFilename = @"expo-v3.db";
     NSAssert(!error && metadata && [metadata isKindOfClass:[NSDictionary class]], @"Update metadata should be a valid JSON object");
   }
   EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithId:row[@"id"]
+                                                 scopeKey:row[@"scope_key"]
                                                commitTime:[NSDate dateWithTimeIntervalSince1970:[(NSNumber *)row[@"commit_time"] doubleValue] / 1000]
                                            runtimeVersion:row[@"runtime_version"]
                                                  metadata:metadata

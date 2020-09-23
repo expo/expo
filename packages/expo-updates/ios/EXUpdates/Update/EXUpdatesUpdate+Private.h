@@ -8,6 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EXUpdatesUpdate ()
 
 @property (nonatomic, strong, readwrite) NSUUID *updateId;
+@property (nonatomic, strong, readwrite) NSString *scopeKey;
 @property (nonatomic, strong, readwrite) NSDate *commitTime;
 @property (nonatomic, strong, readwrite) NSString *runtimeVersion;
 @property (nonatomic, strong, readwrite, nullable) NSDictionary *metadata;
