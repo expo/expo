@@ -1,3 +1,5 @@
+import { Slugger } from './types';
+
 /**
  * Converts any object to string accepted by _Slugger_.
  * This is needed, because sometimes we receive pure string node,
@@ -17,7 +19,7 @@ export const toString = (node: any): string => {
   }
 };
 
-export const generateSlug = (slugger: any, node: any, length = 7): string => {
+export const generateSlug = (slugger: Slugger, node: any, length = 7): string => {
   const stringToSlug = toString(node)
     .split(' ')
     .splice(0, length)

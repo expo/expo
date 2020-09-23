@@ -1,11 +1,11 @@
 import { css } from '@emotion/core';
 import * as React from 'react';
 
-import * as Constants from '~/constants/theme';
-import { CheckCircle } from '~/components/icons/CheckCircle';
-import { XCircle } from '~/components/icons/XCircle';
-import { PendingCircle } from '~/components/icons/PendingCircle';
 import { H4 } from '~/components/base/headings';
+import { CheckCircle } from '~/components/icons/CheckCircle';
+import { PendingCircle } from '~/components/icons/PendingCircle';
+import { XCircle } from '~/components/icons/XCircle';
+import * as Constants from '~/constants/theme';
 
 const STYLES_TITLE = css`
   margin-bottom: 1rem;
@@ -26,7 +26,9 @@ const STYLES_LINK = css`
   grid-gap: 8px;
 `;
 
-function getInfo(isSupported, { title }) {
+type IsSupported = boolean | undefined | { pending: string };
+
+function getInfo(isSupported: IsSupported, { title }) {
   if (isSupported === true) {
     return {
       children: <CheckCircle size={20} />,
@@ -57,9 +59,16 @@ const platforms = [
   { title: 'Web', propName: 'web' },
 ];
 
-// type Props = { title?: string; ios: boolean; android: boolean; web: boolean; simulator: boolean; emulator: boolean; };
+type Props = {
+  title?: string;
+  ios?: boolean;
+  android?: boolean;
+  web?: boolean;
+  simulator?: boolean;
+  emulator?: boolean;
+};
 
-export default class PlatformsSection extends React.Component {
+export default class PlatformsSection extends React.Component<Props> {
   render() {
     return (
       <div>

@@ -221,9 +221,9 @@ type Props = {
   isMenuActive: boolean;
   tocVisible: boolean;
   isMobileSearchActive: boolean;
-  header: JSX.Element;
+  header: React.ReactNode;
   sidebarScrollPosition: number;
-  sidebar: React.ReactElement;
+  sidebar: React.ReactNode;
   sidebarRight: React.ReactElement;
 };
 

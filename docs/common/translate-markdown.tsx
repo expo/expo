@@ -8,7 +8,12 @@ import { ExternalLink } from '~/components/base/link';
 import { UL, OL, LI } from '~/components/base/list';
 import { PDIV, P, Quote } from '~/components/base/paragraph';
 
-const createPermalinkedComponent = (BaseComponent, options) => {
+type Options = {
+  customIconStyle?: React.CSSProperties;
+  baseNestingLevel?: number;
+};
+
+const createPermalinkedComponent = (BaseComponent: React.ComponentType, options?: Options) => {
   const { customIconStyle, baseNestingLevel } = options || {};
   return ({ children, level, ...props }) => {
     const nestingLevel = baseNestingLevel != null ? (level ?? 0) + baseNestingLevel : undefined;

@@ -34,7 +34,7 @@ export default function ConfigurationDiff({ source }) {
     return null;
   }
 
-  const renderFile = ({ oldRevision, newRevision, type, hunks, oldPath, newPath }) => (
+  const renderFile = ({ oldRevision, newRevision, type, hunks, newPath }) => (
     <div className="diff-container">
       <Title>{newPath}</Title>
       <Diff key={oldRevision + '-' + newRevision} viewType="unified" diffType={type} hunks={hunks}>

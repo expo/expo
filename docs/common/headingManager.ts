@@ -34,7 +34,7 @@ const DEFAULT_NESTING_LIMIT = 1;
  * from markdown pages usign heading components
  * from `plugins/Headings.tsx`
  */
-type AdditionalProps = {
+export type AdditionalProps = {
   hideInSidebar?: boolean;
   sidebarTitle?: string;
   sidebarDepth?: number;

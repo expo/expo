@@ -1,11 +1,11 @@
 import { css } from '@emotion/core';
 import * as React from 'react';
 
-import * as Constants from '~/constants/theme';
 import * as Utilities from '~/common/utilities';
-import { VERSIONS, LATEST_VERSION } from '~/constants/versions';
-import ChevronDownIcon from '~/components/icons/ChevronDown';
 import { paragraph } from '~/components/base/typography';
+import ChevronDownIcon from '~/components/icons/ChevronDown';
+import * as Constants from '~/constants/theme';
+import { VERSIONS, LATEST_VERSION } from '~/constants/versions';
 
 const STYLES_SELECT = css`
   position: relative;
@@ -48,7 +48,13 @@ const STYLES_SELECT_ELEMENT = css`
   cursor: pointer;
 `;
 
-const VersionSelector = ({ version, style, onSetVersion }) => (
+type Props = {
+  version: string;
+  onSetVersion: (value: string) => void;
+  style?: React.CSSProperties;
+};
+
+const VersionSelector = ({ version, style, onSetVersion }: Props) => (
   <div css={STYLES_SELECT} style={style}>
     <label css={STYLES_SELECT_TEXT} htmlFor="version-menu">
       <div>{Utilities.getUserFacingVersionString(version, LATEST_VERSION)}</div>

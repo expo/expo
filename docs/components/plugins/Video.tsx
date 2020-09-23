@@ -25,17 +25,31 @@ function mobileAndTabletCheck() {
 
 const isMobileOrTablet = mobileAndTabletCheck();
 
-export default class Video extends React.Component {
+type Props = {
+  controls?: any;
+  spaceAfter?: boolean | number;
+  url?: string;
+  file?: string;
+  loop?: boolean;
+};
+
+type State = {
+  forceShowControls: boolean;
+  hover: boolean;
+};
+
+export default class Video extends React.Component<Props, State> {
   static defaultProps = {
     loop: true,
   };
 
   state = {
     forceShowControls: false,
+    hover: false,
   };
 
   _handleClick = () => {
-    if (typeof this.props.controls === 'undefined' && !this.state.forceShowControlsj) {
+    if (typeof this.props.controls === 'undefined' && !this.state.forceShowControls) {
       this.setState({ forceShowControls: true });
     }
   };
@@ -49,7 +63,7 @@ export default class Video extends React.Component {
   };
 
   render() {
-    let { spaceAfter } = this.props;
+    const { spaceAfter } = this.props;
     let marginBottom = 0;
 
     if (typeof spaceAfter === 'undefined') {
