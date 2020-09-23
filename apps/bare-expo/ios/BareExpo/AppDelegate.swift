@@ -102,7 +102,7 @@ extension AppDelegate: RCTBridgeDelegate {
   }
 }
 
-// MARK: -
+// MARK: - EXDevelopmentClientControllerDelegate
 
 extension AppDelegate:  EXDevelopmentClientControllerDelegate {
   func developmentClientController(_ developmentClientController: EXDevelopmentClientController!, didStartWithSuccess success: Bool) {
