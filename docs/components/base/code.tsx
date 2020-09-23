@@ -77,7 +77,7 @@ export class Code extends React.Component<Props> {
     this._runTippy();
   }
 
-  _runTippy() {
+  private _runTippy() {
     if (process.browser) {
       global.tippy('.code-annotation', {
         theme: 'expo',
@@ -90,11 +90,11 @@ export class Code extends React.Component<Props> {
     }
   }
 
-  _escapeHtml(text: string) {
+  private _escapeHtml(text: string) {
     return text.replace(/"/g, '&quot;');
   }
 
-  _replaceCommentsWithAnnotations(value: string) {
+  private _replaceCommentsWithAnnotations(value: string) {
     return value
       .replace(/<span class="token comment">\/\* @info (.*?)\*\/<\/span>\s*/g, (match, content) => {
         return `<span class="code-annotation" title="${this._escapeHtml(content)}">`;
