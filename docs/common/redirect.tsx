@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import * as React from 'react';
 
-export default destination =>
+const redirect = destination =>
   class RedirectRoute extends React.Component {
     render() {
       return (
@@ -11,3 +11,5 @@ export default destination =>
       );
     }
   };
+
+export default redirect;
