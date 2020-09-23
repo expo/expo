@@ -287,10 +287,12 @@ NS_ASSUME_NONNULL_BEGIN
     }
   }
 
+  NSURL *httpManifestUrl = [[self class] _httpUrlFromManifestUrl:_manifestUrl];
+
   _config = [EXUpdatesConfig configWithDictionary:@{
-    @"EXUpdatesURL": [[self class] _httpUrlFromManifestUrl:_manifestUrl].absoluteString,
+    @"EXUpdatesURL": httpManifestUrl.absoluteString,
     @"EXUpdatesSDKVersion": [self _sdkVersions],
-    @"EXUpdatesScopeKey": _manifestUrl.absoluteString,
+    @"EXUpdatesScopeKey": httpManifestUrl.absoluteString,
     @"EXUpdatesHasEmbeddedUpdate": @([EXEnvironment sharedEnvironment].isDetached),
     @"EXUpdatesEnabled": @([EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled),
     @"EXUpdatesLaunchWaitMs": launchWaitMs,
