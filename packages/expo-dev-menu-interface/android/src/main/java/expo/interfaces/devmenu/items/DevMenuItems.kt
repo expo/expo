@@ -5,12 +5,13 @@ import android.view.KeyCharacterMap
 
 val keyCharacterMap: KeyCharacterMap = KeyCharacterMap.load(KeyCharacterMap.VIRTUAL_KEYBOARD)
 
-data class KeyCommand(val code: Int, val modifiers: Int = 0)
+// Android virtual keyboard only supports `SHIFT` as a modifier.
+data class KeyCommand(val code: Int, val withShift: Boolean = false)
 
 /**
  * An abstract representation of the single dev menu item.
  */
-sealed class DevMenuItem  {
+sealed class DevMenuItem {
   var isAvailable = { true }
   var isEnabled = { false }
   var label = { "" }
@@ -46,9 +47,16 @@ class DevMenuAction(val actionId: String, val action: () -> Unit) : DevMenuItem(
     putBundle("keyCommand", keyCommand?.let { keyCommand ->
       Bundle().apply {
         putString("input", keyCharacterMap.getDisplayLabel(keyCommand.code).toString())
-        putInt("modifiers", keyCommand.modifiers)
+        putInt("modifiers", exportKeyCommandModifiers())
       }
     })
+  }
+
+  private fun exportKeyCommandModifiers(): Int {
+    if (keyCommand?.withShift == true) {
+      return 1 shl 3
+    }
+    return 0
   }
 }
 

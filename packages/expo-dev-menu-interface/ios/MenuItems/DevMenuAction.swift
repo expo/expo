@@ -29,7 +29,7 @@ open class DevMenuAction: DevMenuItem {
     dict["actionId"] = actionId
     dict["keyCommand"] = keyCommand == nil ? nil : [
       "input": keyCommand!.input,
-      "modifiers": keyCommand!.modifierFlags.rawValue
+      "modifiers": exportKeyCommandModifiers()
     ]
     return dict
   }
@@ -37,5 +37,26 @@ open class DevMenuAction: DevMenuItem {
   @objc
   open func registerKeyCommand(input: String, modifiers: UIKeyModifierFlags) {
     keyCommand = UIKeyCommand(input: input, modifierFlags: modifiers, action: #selector(DevMenuUIResponderExtensionProtocol.EXDevMenu_handleKeyCommand(_:)))
+  }
+  
+  private func exportKeyCommandModifiers() -> Int {
+    var exportedValue = 0;
+    if keyCommand!.modifierFlags.contains(.control) {
+      exportedValue += 1 << 0;
+    }
+    
+    if keyCommand!.modifierFlags.contains(.alternate) {
+      exportedValue += 1 << 1;
+    }
+    
+    if keyCommand!.modifierFlags.contains(.command) {
+      exportedValue += 1 << 2;
+    }
+    
+    if keyCommand!.modifierFlags.contains(.shift) {
+      exportedValue += 1 << 3;
+    }
+  
+    return exportedValue
   }
 }
