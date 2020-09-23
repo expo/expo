@@ -1,5 +1,5 @@
 import { css } from '@emotion/core';
-import Prism from 'prism-react-renderer/prism';
+import { Language, Prism } from 'prism-react-renderer';
 import * as React from 'react';
 
 import * as Constants from '~/constants/theme';
@@ -64,7 +64,11 @@ const STYLES_CODE_CONTAINER = css`
   border-radius: 4px;
 `;
 
-export class Code extends React.Component {
+type Props = {
+  className?: string;
+};
+
+export class Code extends React.Component<Props> {
   componentDidMount() {
     this._runTippy();
   }
@@ -86,11 +90,11 @@ export class Code extends React.Component {
     }
   }
 
-  _escapeHtml(text) {
+  _escapeHtml(text: string) {
     return text.replace(/"/g, '&quot;');
   }
 
-  _replaceCommentsWithAnnotations(value) {
+  _replaceCommentsWithAnnotations(value: string) {
     return value
       .replace(/<span class="token comment">\/\* @info (.*?)\*\/<\/span>\s*/g, (match, content) => {
         return `<span class="code-annotation" title="${this._escapeHtml(content)}">`;
@@ -110,7 +114,7 @@ export class Code extends React.Component {
       if (lang in remapLanguages) lang = remapLanguages[lang];
       const grammar = Prism.languages[lang];
       if (!grammar) throw new Error(`docs currently do not support language: ${lang}`);
-      html = Prism.highlight(html, grammar);
+      html = Prism.highlight(html, grammar, lang as Language);
       html = this._replaceCommentsWithAnnotations(html);
     }
 
