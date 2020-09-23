@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 9.1.1 — 2020-09-23
+
+### 🐛 Bug fixes
+
 - `launchImageLibraryAsync()` should be callable with no options argument ([#10306](https://github.com/expo/expo/pull/10306))
 
 ## 9.1.0 — 2020-08-18
@@ -19,7 +23,6 @@
 ### 🐛 Bug fixes
 
 - Return array of `ImagePickerResult` when `allowsMultipleSelection` is set to `true` on Web. ([#9402](https://github.com/expo/expo/pull/9402) by [@isthaison](https://github.com/isthaison))
-
 ## 9.0.0 — 2020-08-11
 
 ### 🛠 Breaking changes
