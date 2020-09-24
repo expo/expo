@@ -32,7 +32,9 @@ interface State {
   type: any;
 }
 
-class GLCameraScreen extends React.Component<object, State> {
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
+class GLCameraScreen extends React.Component<{}, State> {
   static title = 'Expo.Camera integration';
 
   readonly state: State = {

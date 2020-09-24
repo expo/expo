@@ -10,7 +10,9 @@ interface State {
   fill: string;
 }
 
-class GExample extends React.Component<object, State> {
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
+class GExample extends React.Component<{}, State> {
   static title = 'G children props inherit';
 
   readonly state: State = {
