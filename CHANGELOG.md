@@ -9,6 +9,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🛠 Breaking changes
 
+- Removed “save” and “pin” functionalities from persistent notification shown in notification tray while developing an experience via Expo client on Android. ([#10333](https://github.com/expo/expo/pull/10333) by [@sjchmiela](https://github.com/sjchmiela))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
