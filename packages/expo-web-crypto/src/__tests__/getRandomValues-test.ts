@@ -72,4 +72,4 @@ describe(getRandomValuesInsecure, () => {
     const zeros = new TypedArray(valueCount);
     expect(array).not.toEqual(zeros);
   });
-})
+});

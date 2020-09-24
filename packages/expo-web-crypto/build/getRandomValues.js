@@ -33,7 +33,7 @@ export default function getRandomValues(values) {
         console.warn(`Random.getRandomBytes is not supported; falling back to insecure Math.random`);
         return getRandomValuesInsecure(values);
     }
-    // Create a new TypedArray that is the same type of the given TypedArray but is backed with the
+    // Create a new TypedArray that is of the same type as the given TypedArray but is backed with the
     // array buffer containing random bytes. This is cheap and copies no data.
     const TypedArrayConstructor = values.constructor;
     const randomValues = new TypedArrayConstructor(randomBytes.buffer, randomBytes.byteOffset, values.length);
