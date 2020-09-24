@@ -62,7 +62,7 @@ export default function getRandomValues<TArray extends ArrayBufferView>(values: 
     return getRandomValuesInsecure(values);
   }
 
-  // Create a new TypedArray that is the same type of the given TypedArray but is backed with the
+  // Create a new TypedArray that is of the same type as the given TypedArray but is backed with the
   // array buffer containing random bytes. This is cheap and copies no data.
   const TypedArrayConstructor = values.constructor as IntegerArrayConstructor;
   const randomValues = new TypedArrayConstructor(
