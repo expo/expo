@@ -67,11 +67,12 @@ public class LocalizationModule extends ExportedModule {
         ArrayList<Locale> locales = getLocales();
         ArrayList<String> localeNames = getLocaleNames(locales);
         Boolean isRTL = TextUtils.getLayoutDirectionFromLocale(Locale.getDefault()) == View.LAYOUT_DIRECTION_RTL;
-        
+
         String locale = localeNames.get(0);
         constants.putBoolean("isRTL", isRTL);
         constants.putString("locale", locale);
         constants.putStringArrayList("locales", localeNames);
+        constants.putString("region", getLocaleRegion(locales.get(0)));
         constants.putString("timezone", getTimezone());
         constants.putStringArrayList("isoCurrencyCodes", getISOCurrencyCodes());
 
@@ -118,5 +119,13 @@ public class LocalizationModule extends ExportedModule {
             languages.add(locale.toLanguageTag());
         }
         return languages;
+    }
+
+    private String getLocaleRegion(Locale locale) {
+        if (locale == null) {
+            return null;
+        }
+        // https://stackoverflow.com/a/25484694/2277025
+        return locale.getCountry();
     }
 }
