@@ -58,6 +58,9 @@ module.exports = {
     ],
     'no-useless-constructor': 'off',
     '@typescript-eslint/no-useless-constructor': 'warn',
+    // The typescript-eslint FAQ recommends turning off "no-undef" in favor of letting tsc check for
+    // undefined variables, including types
+    'no-undef': 'off',
   },
   settings: {
     'import/extensions': allExtensions,
