@@ -24,7 +24,6 @@ public class Analytics {
   public static final String ERROR_APPEARED = "ERROR_APPEARED";
   public static final String EXPERIENCE_APPEARED = "EXPERIENCE_APPEARED";
   public static final String LOAD_EXPERIENCE = "LOAD_EXPERIENCE";
-  public static final String INFO_SCREEN = "INFO_SCREEN";
   public static final String RELOAD_EXPERIENCE = "RELOAD_EXPERIENCE";
   public static final String SAVE_EXPERIENCE = "SAVE_EXPERIENCE";
   public static final String SAVE_EXPERIENCE_ALERT = "SAVE_EXPERIENCE_ALERT";
