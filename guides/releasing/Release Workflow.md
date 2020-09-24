@@ -29,14 +29,14 @@
   - [4.2. Making a simulator build](#42-making-a-simulator-build)
   - [4.3. Submit iOS client to App Store Review](#43-submit-ios-client-to-app-store-review)
   - [4.4. Release clients to external beta testers](#44-release-clients-to-external-beta-testers)
-- [Stage 5 - ExpoKit and standalone apps](#stage-5---expokit-and-standalone-apps)
-  - [5.1. Updating ExpoKit](#51-updating-expokit)
+- [Stage 5 - Standalone apps](#stage-5---standalone-apps)
+  - [5.1. Updating JS dependencies required for build](#51-updating-js-dependencies-required-for-build)
   - [5.2. Make shell app build](#52-make-shell-app-build)
   - [5.3. Make adhoc client shell app for iOS](#53-make-adhoc-client-shell-app-for-ios)
   - [5.4. Deploy Turtle with new shell tarballs](#54-deploy-turtle-with-new-shell-tarballs)
 - [Stage 6 - Final release](#stage-6---final-release)
   - [6.1. Release iOS/Android clients](#61-release-iosandroid-clients)
-  - [6.2. Deploy Turtle/ExpoKit to production](#62-deploy-turtleexpokit-to-production)
+  - [6.2. Deploy Turtle to production](#62-deploy-turtle-to-production)
   - [6.3. Deploy new docs](#63-deploy-new-docs)
   - [6.4. Add related packages to versions endpoint](#64-add-related-packages-to-versions-endpoint)
   - [6.5. Promote versions to production](#65-promote-versions-to-production)
@@ -239,13 +239,8 @@
 - **Android**:
   - The process for building a standalone app locally is to publish the app you want to build and then run `et android-shell-app --url <url> --sdkVersion XX.X.X`.
 - **iOS**:
-  - The easiest way for now is to eject to ExpoKit and then build the resulting project. ExpoKit is not yet published (there is no new tag on GitHub) so use the current commit hash instead in `Podfile` under ExpoKit dependency.
-    > This is not currently possible to test `standalone`/`ejected to ExpoKit` app in `expo` repository scope.
-    > One way is to:
-    >
-    > - copy `apps/native-components-list`/`test-suite` app outside repository scope and perform `eject to ExpoKit`,
-    > - use ExpoKit commit hash in Podfile,
-    > - install each unimodule specified in `package.json` from specific commit hash.
+  - In theory it should be possible to run `et ios-shell-app --url <url> --sdkVersion XX.X.X` + some more options to create a workspace that should be buildable in Xcode. Good luck!
+    > Note from @sjchmiela — I used `et ios-shell-app --action create-workspace -u "https://staging.exp.host/@sjchmiela/native-component-list/index.exp?sdkVersion=39.0.0" -s 39.0.0 --skipRepoUpdate` when I was testing SDK39 shell apps and it created a buildable Xcode workspace. I hope it does that for you too!
 
 ## 2.3. Web Quality Assurance
 
@@ -392,31 +387,25 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 - Coordinate with @cruzach and @byCedric on this. Most beta testers will use the simulator builds on staging, but we can also send TestFlight invitations if needed.
 
-# Stage 5 - ExpoKit and standalone apps
+# Stage 5 - Standalone apps
 
-## 5.1. Updating ExpoKit
+## 5.1. Updating JS dependencies required for build
 
 | Prerequisites                                                                               |
 | ------------------------------------------------------------------------------------------- |
 | [3.1. Publish any missing or changed packages](#31-publish-any-missing-or-changed-packages) |
 
-**Why:** Ejected apps use ExpoKit as a dependency containing the core of Expo and some modules that are not yet extracted to unimodules. Since this flow is still supported (we're going to deprecate it) we need to release its new version as well.
+**Why:** When building an iOS shell app XDL installs some extra packages needed for the build process.
 
 **How:**
 
 - Run `et update-versions -k 'packagesToInstallWhenEjecting.react-native-unimodules' -v 'X.Y.Z'` where `X.Y.Z` is the version of `react-native-unimodules` that is going to be used in ejected and standalone apps using this new SDK version.
-  **iOS:**
-  - From the release branch run `et ios-update-expokit`. - It creates a `ios/X.Y.Z` tag on GitHub where `X.Y.Z` is the iOS app version (`CFBundleShortVersionString` from `Info.plist`). - It automatically detects iOS app and SDK versions, but if you need, you can modify its defaults using `--appVersion` and `--sdkVersion` flags. - Please don't forget to make a GitHub release on this tag and add release notes there, so people will see what changed in this version (just copy corresponding entries from `CHANGELOG.md`).
-    **Android:**
-  - Check out the release branch.
-  - Run `et android-build-packages` and ensure that all the unimodule packages are up-to-date. Commit any changes.
-  - Run `et android-update-expokit --sdkVersion XX.X.X --appVersion <android client version> --expokitVersion XX.X.X --expokitTag next`. This will upload the ExpoKit template files to S3, and set values on the staging versions endpoint.
 
 ## 5.2. Make shell app build
 
-| Prerequisites                                 |
-| --------------------------------------------- |
-| [5.1. Updating ExpoKit](#51-updating-expokit) |
+| Prerequisites                                                                                                |
+| ------------------------------------------------------------------------------------------------------------ |
+| [5.1. Updating Updating JS dependencies required for build](#51-updating-js-dependencies-required-for-build) |
 
 **Why:** Shell app is a simple app on which Expo's Turtle work on to generate a standalone app. On iOS, shell app is compiled before it is uploaded to Turtle, so the process of building a standalone app is reduced to the minimum. We need to prepare such app for the new SDK, compile it, then put it into a tarball and put its url to Turtle's shellTarballs configs.
 
@@ -474,7 +463,7 @@ Once everything above is completed and Apple has approved the iOS client, the fi
   - Open `Android Client` workflow on GitHub Actions and when it completes, download the APK from Artifacts and do a smoke test -- install it on a fresh Android device, turn on airplane mode, and make sure Home loads.
   - Run `et dispatch client-android-release` to trigger appropriate job on GitHub Actions. About 45 minutes later the update should be downloadable via Play Store.
 
-## 6.2. Deploy Turtle/ExpoKit to production
+## 6.2. Deploy Turtle to production
 
 **How:**
 
@@ -511,7 +500,7 @@ Once everything above is completed and Apple has approved the iOS client, the fi
 | Prerequisites                                                                                   |
 | ----------------------------------------------------------------------------------------------- |
 | [6.1. Release iOS/Android clients](#61-release-iosandroid-clients)                              |
-| [6.2. Deploy Turtle/ExpoKit to production](#62-deploy-turtleexpokit-to-production)              |
+| [6.2. Deploy Turtle to production](#62-deploy-turtle-to-production)                             |
 | [6.3. Deploy new docs](#63-deploy-new-docs)                                                     |
 | [6.4. Add related packages to versions endpoint](#64-add-related-packages-to-versions-endpoint) |
 
