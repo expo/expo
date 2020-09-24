@@ -242,7 +242,7 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
   for (const pkg of packages) {
     process.stdout.write(` 🛠   Building ${pkg.name}...`);
     try {
-      await spawnAsync('./gradlew', [`:${pkg.name}:uploadArchives`], {
+      await spawnAsync('./gradlew', [`:${pkg.name}:uploadArchives`, `:${pkg.name}:clean`], {
         cwd: ANDROID_DIR,
       });
       readline.clearLine(process.stdout, 0);
