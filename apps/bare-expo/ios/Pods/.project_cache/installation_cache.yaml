@@ -288,7 +288,7 @@ CACHE_KEYS:
       EXDevMenu:
         :debug: b1eba0b1d6e2b892cedf4546f1284ac1
         :release: b1eba0b1d6e2b892cedf4546f1284ac1
-    CHECKSUM: 66bb2b59b4d10de1ce4a3920a2be9c3f222147db
+    CHECKSUM: ef42d21bf1bcc2c505250247f1cbfaeba5f4b85d
     FILES:
       - "../../../../packages/expo-dev-menu/assets/dev-menu-packager-host"
       - "../../../../packages/expo-dev-menu/assets/EXDevMenuApp.ios.js"
@@ -302,6 +302,8 @@ CACHE_KEYS:
       - "../../../../packages/expo-dev-menu/ios/DevMenuSession.swift"
       - "../../../../packages/expo-dev-menu/ios/DevMenuSettings.swift"
       - "../../../../packages/expo-dev-menu/ios/DevMenuUtils.swift"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuVendoredModulesUtils.h"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuVendoredModulesUtils.m"
       - "../../../../packages/expo-dev-menu/ios/DevMenuViewController.swift"
       - "../../../../packages/expo-dev-menu/ios/DevMenuWindow.swift"
       - "../../../../packages/expo-dev-menu/ios/Headers/EXDevMenu-Bridging-Header.h"
@@ -317,6 +319,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuInternalModule.swift"
       - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuModule.m"
       - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuModule.swift"
+      - "../../../../packages/expo-dev-menu/ios/Modules/MockedSafeAreaViewProvider.swift"
       - "../../../../packages/expo-dev-menu/README.md"
     PROJECT_NAME: EXDevMenu
     SPECS:

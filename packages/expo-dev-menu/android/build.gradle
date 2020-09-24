@@ -66,6 +66,12 @@ android {
   }
 
   sourceSets {
+    main {
+      java {
+        srcDirs += ['../vendored/react-native-reanimated/android/', '../vendored/react-native-gesture-handler/android/']
+      }
+    }
+
     releaseWithDevMenu {
       setRoot 'src/debug'
     }
@@ -102,8 +108,8 @@ dependencies {
 
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'
-  implementation project(':react-native-gesture-handler')
-  implementation project(':react-native-reanimated')
+  implementation "androidx.transition:transition:1.1.0" // use by react-native-reanimated
+
   // Fixes
   // Cannot access 'androidx....' which is a supertype of 'expo.modules.devmenu.DevMenuActivity'.
   // Check your module classpath for missing or conflicting dependencies
