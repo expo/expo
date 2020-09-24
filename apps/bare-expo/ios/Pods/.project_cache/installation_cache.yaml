@@ -319,6 +319,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuInternalModule.swift"
       - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuModule.m"
       - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuModule.swift"
+      - "../../../../packages/expo-dev-menu/ios/Modules/MockedSafeAreaViewProvider.swift"
       - "../../../../packages/expo-dev-menu/README.md"
     PROJECT_NAME: EXDevMenu
     SPECS:
