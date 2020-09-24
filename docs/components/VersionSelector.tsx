@@ -54,7 +54,7 @@ type Props = {
   style?: React.CSSProperties;
 };
 
-const VersionSelector = ({ version, style, onSetVersion }: Props) => (
+const VersionSelector: React.FC<Props> = ({ version, style, onSetVersion }) => (
   <div css={STYLES_SELECT} style={style}>
     <label css={STYLES_SELECT_TEXT} htmlFor="version-menu">
       <div>{Utilities.getUserFacingVersionString(version, LATEST_VERSION)}</div>

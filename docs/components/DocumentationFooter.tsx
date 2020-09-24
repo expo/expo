@@ -53,11 +53,7 @@ export default class DocumentationFooter extends React.PureComponent<Props> {
   render() {
     return (
       <footer css={STYLES_FOOTER}>
-        <a
-          css={STYLES_FOOTER_LINK}
-          target="_blank"
-          rel="noopener"
-          href="https://forums.expo.io/">
+        <a css={STYLES_FOOTER_LINK} target="_blank" rel="noopener" href="https://forums.expo.io/">
           Ask a question on the forums
         </a>
         {this.maybeRenderIssuesLink()}

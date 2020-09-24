@@ -2,8 +2,9 @@ import { css } from '@emotion/core';
 import { Language, Prism } from 'prism-react-renderer';
 import * as React from 'react';
 
-import * as Constants from '~/constants/theme';
 import { installLanguages } from './languages';
+
+import * as Constants from '~/constants/theme';
 
 installLanguages(Prism);
 
@@ -139,5 +140,7 @@ const remapLanguages = {
 };
 
 export const InlineCode = ({ children }) => (
-  <code css={STYLES_INLINE_CODE} className='inline'>{children}</code>
+  <code css={STYLES_INLINE_CODE} className="inline">
+    {children}
+  </code>
 );

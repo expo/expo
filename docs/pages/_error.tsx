@@ -192,7 +192,7 @@ export default class Error extends React.Component {
 
 function getVersionFromPath(path) {
   const pathParts = path.split(/\//);
-  //  eg: ["", "versions", "v32.0.0", ""]
+  // eg: ["", "versions", "v32.0.0", ""]
   return pathParts[2];
 }
 

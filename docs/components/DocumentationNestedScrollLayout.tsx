@@ -17,7 +17,6 @@ const STYLES_GLOBAL = css`
       /* width */
       ::-webkit-scrollbar {
         width: 6px;
-
       }
 
       /* Track */
@@ -206,10 +205,7 @@ class ScrollContainer extends React.Component<ScrollContainerProps> {
 
   render() {
     return (
-      <div
-        css={STYLES_SCROLL_CONTAINER}
-        ref={this.scrollRef}
-        onScroll={this.props.scrollHandler}>
+      <div css={STYLES_SCROLL_CONTAINER} ref={this.scrollRef} onScroll={this.props.scrollHandler}>
         {this.props.children}
       </div>
     );
@@ -264,9 +260,7 @@ export default class DocumentationNestedScrollLayout extends React.Component<Pro
         </div>
         <div css={STYLES_CONTENT}>
           <div css={[STYLES_SIDEBAR, STYLES_LEFT]}>
-            <ScrollContainer
-              ref={this.sidebarRef}
-              scrollPosition={this.props.sidebarScrollPosition}>
+            <ScrollContainer ref={this.sidebarRef} scrollPosition={sidebarScrollPosition}>
               {this.props.sidebar}
             </ScrollContainer>
           </div>

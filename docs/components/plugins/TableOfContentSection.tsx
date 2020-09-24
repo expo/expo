@@ -86,7 +86,7 @@ export default class TableOfContentSection extends React.Component<Props> {
                 rel="noopener noreferrer">
                 <li
                   css={horizontal ? STYLES_HORIZONTAL_ITEM : STYLES_VERTICAL_ITEM}
-                  className='docs-list-item'>
+                  className="docs-list-item">
                   <div css={horizontal ? STYLES_HORIZONTAL_BULLET : STYLES_VERTICAL_BULLET}>
                     <BulletIcon />
                   </div>

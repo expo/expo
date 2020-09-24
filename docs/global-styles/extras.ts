@@ -73,9 +73,9 @@ export const globalExtras = css`
     margin: 0;
     margin-bottom: 0.5rem;
     text-decoration: none;
-    background: ${Constants.expoColors.primary[500]};;
-    color: ${Constants.expoColors.white};;
-    font-family: ${Constants.fontFamilies.book};;
+    background: ${Constants.expoColors.primary[500]};
+    color: ${Constants.expoColors.white};
+    font-family: ${Constants.fontFamilies.book};
     font-size: 1rem;
     cursor: pointer;
     -webkit-appearance: none;
@@ -83,7 +83,8 @@ export const globalExtras = css`
     transition: all 170ms linear;
   }
 
-  .snack-inline-example-button:hover, .snack-inline-example-button:focus  {
+  .snack-inline-example-button:hover,
+  .snack-inline-example-button:focus {
     box-shadow: 0 2px 8px rgba(0, 1, 0, 0.2);
     opacity: 0.85;
   }
@@ -110,7 +111,8 @@ export const globalExtras = css`
     border: none;
   }
 
-  .diff-container td, .diff-container th {
+  .diff-container td,
+  .diff-container th {
     border-bottom: none;
     border-right: none;
   }

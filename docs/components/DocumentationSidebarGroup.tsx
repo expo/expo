@@ -128,9 +128,7 @@ export default class DocumentationSidebarGroup extends React.Component<Props, { 
           {this.props.info.name}
           <ChevronDown size={16} css={this.state.isOpen && STYLES_OPEN_CHEVRON_ICON} />
         </a>
-        {this.state.isOpen && (
-          <div css={STYLES_SIDEBAR_INDENT}>{this.props.children}</div>
-        )}
+        {this.state.isOpen && <div css={STYLES_SIDEBAR_INDENT}>{this.props.children}</div>}
       </div>
     );
   }

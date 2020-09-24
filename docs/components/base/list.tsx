@@ -1,11 +1,9 @@
-
 import { css } from '@emotion/core';
 import * as React from 'react';
 
-import * as Utilities from '~/common/utilities';
-import BulletIcon from '~/components/icons/Bullet';
-import * as Constants from '~/constants/theme';
 import { paragraph } from './typography';
+
+import * as Constants from '~/constants/theme';
 
 const attributes = {
   'data-text': true,
@@ -63,5 +61,9 @@ const STYLES_LIST_ITEM = css`
 `;
 
 export const LI = ({ children }) => {
-  return <li css={STYLES_LIST_ITEM} className='docs-list-item'>{children}</li>;
+  return (
+    <li css={STYLES_LIST_ITEM} className="docs-list-item">
+      {children}
+    </li>
+  );
 };

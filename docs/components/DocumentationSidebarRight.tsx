@@ -1,13 +1,11 @@
-import * as React from 'react';
 import { css } from '@emotion/core';
+import * as React from 'react';
 
 import { BASE_HEADING_LEVEL, Heading, HeadingManager } from '../common/headingManager';
 import DocumentationSidebarRightLink from './DocumentationSidebarRightLink';
 
 import withHeadingManager from '~/components/page-higher-order/withHeadingManager';
 import * as Constants from '~/constants/theme';
-import { BASE_HEADING_LEVEL } from '~/common/headingManager';
-import DocumentationSidebarRightLink from './DocumentationSidebarRightLink';
 
 const STYLES_SIDEBAR = css`
   padding: 20px 24px 24px 24px;

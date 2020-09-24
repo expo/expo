@@ -8,7 +8,6 @@ import withHeadingManager from '~/components/page-higher-order/withHeadingManage
 type BaseProps = {
   component: any;
   className?: string;
-  children: React.ReactNode;
 };
 
 type EnhancedProps = {
@@ -98,7 +97,7 @@ export default withHeadingManager<EnhancedProps>(props => {
         <a
           style={props.customIconStyle}
           href={'#' + permalinkKey}
-          className='permalink'
+          className="permalink"
           css={STYLES_CONTAINER_ANCHOR}>
           <PermalinkIcon />
         </a>
