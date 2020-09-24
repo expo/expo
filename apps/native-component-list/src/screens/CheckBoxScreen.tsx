@@ -2,7 +2,6 @@ import * as React from 'react';
 import { CheckBox, Platform } from 'react-native';
 
 import { Page, Section } from '../components/Page';
-import Colors from '../constants/Colors';
 
 // TODO: Upgrade to @react-native-community/checkbox
 export default function CheckBoxScreen() {
@@ -11,7 +10,7 @@ export default function CheckBoxScreen() {
   return (
     <Page>
       <Section title="Custom Color">
-        <CheckBox value={value} onValueChange={setValue} color={Colors.tintColor} />
+        <CheckBox value={value} onValueChange={setValue} />
       </Section>
       <Section title="Disabled">
         <CheckBox disabled value={value} />

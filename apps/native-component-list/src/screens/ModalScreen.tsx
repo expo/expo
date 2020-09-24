@@ -10,6 +10,10 @@ interface State {
 }
 
 export default class ModalScreen extends React.Component<object, State> {
+  static navigationOptions = {
+    title: 'Modal',
+  };
+
   readonly state: State = {
     modalVisible: false,
     animationType: 'none',
@@ -91,7 +95,3 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
 });
-
-ModalScreen.navigationOptions = {
-  title: 'Modal',
-};

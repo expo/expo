@@ -57,14 +57,12 @@ export default class FacebookLoginScreen extends React.Component {
         permissions: perms,
       });
 
-      const { type, token } = result;
-
-      if (type === 'success') {
+      if (result.type === 'success') {
         Alert.alert('Logged in!', JSON.stringify(result), [
           {
             text: 'OK!',
             onPress: () => {
-              console.log({ type, token });
+              console.log({ type: result.type, token: result.token });
             },
           },
         ]);

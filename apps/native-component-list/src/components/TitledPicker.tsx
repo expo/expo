@@ -1,7 +1,7 @@
 import { B } from '@expo/html-elements';
+import { Picker } from '@react-native-community/picker';
 import * as React from 'react';
 import { StyleSheet, View, TextStyle, ViewStyle } from 'react-native';
-import { Picker } from '@react-native-community/picker';
 
 export default function TitledPicker({
   style,
@@ -15,17 +15,20 @@ export default function TitledPicker({
   style?: ViewStyle;
   titleStyle?: TextStyle;
   title?: string;
-  value: boolean;
+  value: string;
   items: { key: string; value: string }[];
   disabled?: boolean;
-  setValue: (value: boolean) => void;
+  setValue: (value: string) => void;
 }) {
   const outputTitle = disabled ? `${title} (Disabled)` : title;
 
   return (
     <View style={[styles.container, style]}>
       <B style={[styles.title, titleStyle]}>{outputTitle}</B>
-      <Picker selectedValue={value} enabled={!disabled} onValueChange={value => setValue(value)}>
+      <Picker
+        selectedValue={value}
+        enabled={!disabled}
+        onValueChange={value => setValue(`${value}`)}>
         {items.map(({ key, value }) => (
           <Picker.Item label={value} value={key} key={key} />
         ))}

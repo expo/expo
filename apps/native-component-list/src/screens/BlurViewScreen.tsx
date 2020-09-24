@@ -1,8 +1,8 @@
-import { BlurView } from 'expo-blur';
+import { BlurView, BlurProps } from 'expo-blur';
 import React from 'react';
 import { Animated, Image, StyleSheet, View } from 'react-native';
 
-const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
+const AnimatedBlurView = Animated.createAnimatedComponent<React.FC<BlurProps>>(BlurView);
 
 export default function BlurViewScreen() {
   const intensity = React.useMemo(() => new Animated.Value(0), []);

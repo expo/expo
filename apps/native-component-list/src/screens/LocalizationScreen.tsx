@@ -103,7 +103,7 @@ export default class LocalizationScreen extends React.Component<object, State> {
           <Picker
             style={styles.picker}
             selectedValue={this.state.locale}
-            onValueChange={this.changeLocale}>
+            onValueChange={value => this.changeLocale(`${value}`)}>
             <Picker.Item label="🇺🇸 English" value="en" />
             <Picker.Item label="🇷🇺 Russian" value="ru" />
           </Picker>
