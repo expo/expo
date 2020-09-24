@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- On Android scoped `SplashScreen` objects into separate `singletons` sub-package. ([#10294](https://github.com/expo/expo/pull/10294) by [@bbarthec](https://github.com/bbarthec))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
