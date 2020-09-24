@@ -13,6 +13,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🐛 Bug fixes
 
+- Fixed `expo-splash-screen` methods in SDK-39 on iOS. ([#10294](https://github.com/expo/expo/pull/10294) by [@bbarthec](https://github.com/bbarthec))
+
 ## 39.0.0 — 2020-08-18
 
 ### 📚 3rd party library updates
