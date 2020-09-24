@@ -18,11 +18,11 @@ export const globalTables = css`
     background: ${Constants.expoColors.gray[100]};
   }
 
-  td, th {
+  td,
+  th {
     padding: 16px;
     border-bottom: 1px solid ${Constants.expoColors.gray[250]};
     border-right: 1px solid ${Constants.expoColors.gray[250]};
-
 
     :last-child {
       border-right: 0px;

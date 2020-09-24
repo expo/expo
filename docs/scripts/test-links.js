@@ -29,8 +29,8 @@ const externalLinks = [
     const page = await browser.newPage();
 
     for (const link of externalLinks) {
-      let response = await page.goto(`${url}${link}`);
-      if (response.status() == 404) {
+      const response = await page.goto(`${url}${link}`);
+      if (response.status() === 404) {
         await page.waitFor(
           () => {
             return (
