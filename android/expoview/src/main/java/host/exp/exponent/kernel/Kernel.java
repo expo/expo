@@ -8,15 +8,10 @@ import android.app.Application;
 import android.app.RemoteInput;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-
-import androidx.core.content.pm.ShortcutInfoCompat;
-import androidx.core.content.pm.ShortcutManagerCompat;
-import androidx.core.graphics.drawable.IconCompat;
 
 import android.util.Log;
 import android.widget.Toast;
@@ -79,7 +74,6 @@ import okhttp3.OkHttpClient;
 import versioned.host.exp.exponent.ExpoTurboPackage;
 import versioned.host.exp.exponent.ExponentPackage;
 import versioned.host.exp.exponent.ReactUnthemedRootView;
-import versioned.host.exp.exponent.ReadableObjectUtils;
 import versioned.host.exp.exponent.modules.api.reanimated.ReanimatedJSIModulePackage;
 
 
@@ -496,6 +490,7 @@ public class Kernel extends KernelInterface {
       }
 
       // Shortcut
+      // TODO: Remove once we decide to stop supporting shortcuts to experiences.
       String shortcutManifestUrl = bundle.getString(KernelConstants.SHORTCUT_MANIFEST_URL_KEY);
       if (shortcutManifestUrl != null) {
         openExperience(new KernelConstants.ExperienceOptions(shortcutManifestUrl, intentUri, null));
@@ -1109,43 +1104,5 @@ public class Kernel extends KernelInterface {
   // TODO: probably need to call this from other places.
   public void setHasError() {
     mHasError = true;
-  }
-
-  /*
-   *
-   * Shortcuts
-   *
-   */
-
-  public void installShortcut(final String manifestUrl, final ReadableMap manifest, final String bundleUrl) {
-    JSONObject manifestJson = ReadableObjectUtils.readableToJson(manifest);
-    mExponentSharedPreferences.updateManifest(manifestUrl, manifestJson, bundleUrl);
-    installShortcut(manifestUrl);
-  }
-
-  public void installShortcut(final String manifestUrl) {
-    ExponentSharedPreferences.ManifestAndBundleUrl manifestAndBundleUrl = mExponentSharedPreferences.getManifest(manifestUrl);
-    final JSONObject manifestJson = manifestAndBundleUrl.manifest;
-
-    // TODO: show loading indicator while fetching bitmap
-    final String iconUrl = manifestJson.optString(ExponentManifest.MANIFEST_ICON_URL_KEY);
-    mExponentManifest.loadIconBitmap(iconUrl, new ExponentManifest.BitmapListener() {
-      @Override
-      public void onLoadBitmap(Bitmap bitmap) {
-        Intent shortcutIntent = new Intent(mContext, LauncherActivity.class);
-        shortcutIntent.setAction(Intent.ACTION_MAIN);
-        shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        shortcutIntent.putExtra(KernelConstants.SHORTCUT_MANIFEST_URL_KEY, manifestUrl);
-
-        ShortcutInfoCompat pinShortcutInfo =
-          new ShortcutInfoCompat.Builder(mContext, manifestUrl)
-                 .setIcon(IconCompat.createWithBitmap(bitmap))
-              .setShortLabel(manifestJson.optString(ExponentManifest.MANIFEST_NAME_KEY))
-              .setIntent(shortcutIntent)
-              .build();
-
-        ShortcutManagerCompat.requestPinShortcut(mContext, pinShortcutInfo, null);
-      }
-    });
   }
 }
