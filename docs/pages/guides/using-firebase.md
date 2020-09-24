@@ -201,7 +201,7 @@ function storeHighScore(user, score) {
 
 ## Using Expo with Firestore
 
-[Firestore](https://firebase.google.com/docs/firestore/) is a another database offered by within Firebase's suite of services.  Realtime Database can be thought of as a "JSON tree in the cloud" where your app can listen to and modify different portions of the tree. On the other hand, Firestore is a "document store" database.  Your application will store and retrieve entire "documents" at a time, where a "document" is essentially a JavaScript object.
+[Firestore](https://firebase.google.com/docs/firestore/) is a another database offered in Firebase's suite of services.  Realtime Database can be thought of as a "JSON tree in the cloud" where your app can listen to and modify different portions of the tree. On the other hand, Firestore is a "document store" database.  Your application will store and retrieve entire "documents" at a time, where a "document" is essentially a JavaScript object.
 
 Here's is an example of storing a document named "mario" inside of a collection named "characters" in Firestore:
 
