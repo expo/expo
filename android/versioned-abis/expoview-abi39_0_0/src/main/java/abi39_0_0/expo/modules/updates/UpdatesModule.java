@@ -87,7 +87,7 @@ public class UpdatesModule extends ExportedModule {
   public void reload(final Promise promise) {
     try {
       UpdatesInterface updatesService = getUpdatesService();
-      if (!updatesService.getConfiguration().isEnabled()) {
+      if (!updatesService.canRelaunch()) {
         promise.reject("ERR_UPDATES_DISABLED", "You cannot reload when expo-updates is not enabled.");
         return;
       }

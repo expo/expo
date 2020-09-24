@@ -53,7 +53,7 @@ UM_EXPORT_METHOD_AS(reload,
                     reloadAsync:(UMPromiseResolveBlock)resolve
                          reject:(UMPromiseRejectBlock)reject)
 {
-  if (!_updatesService.isStarted) {
+  if (!_updatesService.canRelaunch) {
     reject(@"ERR_UPDATES_DISABLED", @"The updates module controller has not been properly initialized. If you're in development mode, you cannot use this method. Otherwise, make sure you have called [[EXUpdatesAppController sharedInstance] start].", nil);
     return;
   }
