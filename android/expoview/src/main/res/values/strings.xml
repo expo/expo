@@ -1,14 +1,5 @@
 <resources>
   <string name="app_name">Exponent</string>
-  <string name="info_activity_name">Info</string>
-  <string name="info_app_name_placeholder">App Name</string>
-  <string name="info_sdk_version">SDK Version: %s</string>
-  <string name="info_id">ID: %s</string>
-  <string name="info_published_time">Published Time: %s</string>
-  <string name="info_is_verified">Is Verified: %s</string>
-  <string name="info_clear_data">Clear Data</string>
-  <string name="info_show_manifest">Show Manifest</string>
-  <string name="info_hide_manifest">Hide Manifest</string>
   <string name="preference_file_key">host.exp.exponent.SharedPreferences</string>
   <string name="error_header">Something went wrong.</string>
   <string name="error_default_client">Sorry about that. You can go back to Expo home or try to reload the Experience.</string>

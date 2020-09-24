@@ -20,19 +20,15 @@ import javax.inject.Inject;
 
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.experience.BaseExperienceActivity;
 import host.exp.exponent.experience.ExperienceActivity;
-import host.exp.exponent.experience.InfoActivity;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.kernel.Kernel;
-import host.exp.expoview.Exponent;
 import host.exp.expoview.R;
 
 import static host.exp.exponent.kernel.KernelConstants.MANIFEST_URL_KEY;
 
 public class ExponentIntentService extends IntentService {
 
-  private static final String ACTION_INFO_SCREEN = "host.exp.exponent.action.INFO_SCREEN";
   private static final String ACTION_RELOAD_EXPERIENCE = "host.exp.exponent.action.RELOAD_EXPERIENCE";
   private static final String ACTION_SAVE_EXPERIENCE = "host.exp.exponent.action.SAVE_EXPERIENCE";
   private static final String ACTION_STAY_AWAKE = "host.exp.exponent.action.STAY_AWAKE";
@@ -49,13 +45,6 @@ public class ExponentIntentService extends IntentService {
   ExponentManifest mExponentManifest;
 
   private Handler mHandler = new Handler();
-
-  public static Intent getActionInfoScreen(Context context, String manifestUrl) {
-    Intent intent = new Intent(context, ExponentIntentService.class);
-    intent.setAction(ACTION_INFO_SCREEN);
-    intent.putExtra(MANIFEST_URL_KEY, manifestUrl);
-    return intent;
-  }
 
   public static Intent getActionReloadExperience(Context context, String manifestUrl) {
     Intent intent = new Intent(context, ExponentIntentService.class);
@@ -93,10 +82,6 @@ public class ExponentIntentService extends IntentService {
       String action = intent.getAction();
       boolean isUserAction = false;
       switch (action) {
-        case ACTION_INFO_SCREEN:
-          isUserAction = true;
-          handleActionInfoScreen(intent.getStringExtra(MANIFEST_URL_KEY));
-          break;
         case ACTION_RELOAD_EXPERIENCE:
           isUserAction = true;
           handleActionReloadExperience(intent.getStringExtra(MANIFEST_URL_KEY));
@@ -118,23 +103,6 @@ public class ExponentIntentService extends IntentService {
         }
       }
     }
-  }
-
-  private void handleActionInfoScreen(String manifestUrl) {
-    BaseExperienceActivity activity = BaseExperienceActivity.getVisibleActivity();
-
-    if (activity != null) {
-      Intent infoIntent = new Intent(activity, InfoActivity.class);
-      infoIntent.putExtra(InfoActivity.MANIFEST_URL_KEY, manifestUrl);
-      infoIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-      activity.startActivity(infoIntent);
-
-      Intent intent = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-      sendBroadcast(intent);
-      Analytics.logEventWithManifestUrl(Analytics.INFO_SCREEN, manifestUrl);
-    }
-
-    stopSelf();
   }
 
   private void handleActionReloadExperience(String manifestUrl) {

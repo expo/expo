@@ -744,12 +744,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     remoteViews.setOnClickPendingIntent(R.id.home_image_button, PendingIntent.getActivity(this, 0,
       homeIntent, 0));
 
-    // Info
-    // Doing PendingIntent.getActivity doesn't work here - it opens the activity in the main
-    // stack and not in the experience's stack
-    remoteViews.setOnClickPendingIntent(R.id.home_text_button, PendingIntent.getService(this, 0,
-      ExponentIntentService.getActionInfoScreen(this, mManifestUrl), PendingIntent.FLAG_UPDATE_CURRENT));
-
     if (!mIsShellApp) {
       // Share
       // TODO: add analytics
