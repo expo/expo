@@ -44,145 +44,142 @@ Then you can start to configure the native projects using steps below.
 
     ```gradle
     dependencies {
-        ...
-        implementation project(":expo-dev-menu-interface")
-        implementation project(":expo-dev-menu")
-        ...
+      ...
+      implementation project(":expo-dev-menu-interface")
+      implementation project(":expo-dev-menu")
+      ...
     }
     ```
 
     > _Note_: You don't have to use `implementationDebug` to add `expo-dev-menu` only to the debug builds. This package will be removed from the release build automatically.
 
-2.  Set up the `DevMenuManger` in the native code.
+2.  Set up the `DevMenuManager` in the native code.
 
-    You can do it in two ways. We recommend using the basic initialization. However, if you have the custom activity in your application, then the advance one will be more suitable for you.
+    You can do it in two ways. We recommend using the basic initialization. However, if you have the custom activity in your application, then the advanced one will be more suitable for you.
 
-    <details>
-    <summary>basic</summary>
+    - **Basic**
 
-    Open the `MainActivity.java` or `MainActivity.kt` and make sure that your main activity class extends the `DevMenuAwareReactActivity`.
+      Open the `MainActivity.java` or `MainActivity.kt` and make sure that your main activity class extends the `DevMenuAwareReactActivity`.
+
+        <details>
+        <summary>Java</summary>
+
+      ```java
+      ...
+      // You need to import the `DevMenuAwareReactActivity` class
+      import expo.modules.devmenu.react.DevMenuAwareReactActivity;
+      ...
+
+      // Make sure that the `MainActivity` extends the `DevMenuAwareReactActivity` class not the `ReactActivity`
+      public class MainActivity extends DevMenuAwareReactActivity {
+        ...
+      }
+      ```
+
+        </details>
+        <details>
+        <summary>Kotlin</summary>
+
+      ```kotlin
+      ...
+      // You need to import the `DevMenuAwareReactActivity` class
+      import expo.modules.devmenu.react.DevMenuAwareReactActivity;
+      ...
+
+      // Make sure that the `MainActivity` extends the `DevMenuAwareReactActivity` class not the `ReactActivity`
+      class MainActivity : DevMenuAwareReactActivity() {
+        ...
+      }
+      ```
+
+      </details>
+
+      <br/>
+
+    - **Advanced**
+
+
+      I. Open the file with the main activity of your application (`MainActivity.java` or `MainActivity.kt`) and add methods that will communicate with the `DevMenuManager`.
 
       <details>
       <summary>Java</summary>
 
-    ```java
-    ...
-    // You need to import the `DevMenuAwareReactActivity` class
-    import expo.modules.devmenu.react.DevMenuAwareReactActivity;
-    ...
+      ```java
+      ...
+      // Add those imports.
+      import android.view.KeyEvent;
+      import android.view.MotionEvent;
 
-    // Make sure that the `MainActivity` extends the `DevMenuAwareReactActivity` class not the `ReactActivity`
-    public class MainActivity extends DevMenuAwareReactActivity {
-        ...
-    }
-    ```
+      import expo.modules.devmenu.DevMenuManager;
+      ...
 
-      </details>
-
-      <details>
-      <summary>Kotlin</summary>
-
-    ```kotlin
-    ...
-    // You need to import the `DevMenuAwareReactActivity` class
-    import expo.modules.devmenu.react.DevMenuAwareReactActivity;
-    ...
-
-    // Make sure that the `MainActivity` extends the `DevMenuAwareReactActivity` class not the `ReactActivity`
-    class MainActivity : DevMenuAwareReactActivity() {
-        ...
-    }
-    ```
-
-      </details>
-
-    </details>
-
-    <br/>
-
-    <details>
-    <summary>advance</summary>
-
-    I. Open the file with the main activity of your application (`MainActivity.java` or `MainActivity.kt`) and add methods that will communicate with the `DevMenuManager`.
-
-      <details>
-      <summary>Java</summary>
-
-    ```java
-    ...
-    // Add those imports.
-    import android.view.KeyEvent;
-    import android.view.MotionEvent;
-
-    import expo.modules.devmenu.DevMenuManager;
-    ...
-
-    public class MainActivity extends ReactActivity {
+      public class MainActivity extends ReactActivity {
         ...
         // A function which sends the touch events to the dev menu.
         @Override
         public boolean dispatchTouchEvent(MotionEvent ev) {
-            DevMenuManager.INSTANCE.onTouchEvent(ev);
-            return super.dispatchTouchEvent(ev);
+          DevMenuManager.INSTANCE.onTouchEvent(ev);
+          return super.dispatchTouchEvent(ev);
         }
 
-        // A function which handles the key commends.
+        // A function which handles the key commands.
         @Override
         public boolean onKeyUp(int keyCode, KeyEvent event) {
-            return DevMenuManager.INSTANCE.onKeyEvent(keyCode, event) || super.onKeyUp(keyCode, event);
+          return DevMenuManager.INSTANCE.onKeyEvent(keyCode, event) || super.onKeyUp(keyCode, event);
         }
-    }
-    ```
+      }
+      ```
 
       </details>
 
       <details>
       <summary>Kotlin</summary>
 
-    ```kotlin
-    ...
-    // Add those imports.
-    import android.view.KeyEvent;
-    import android.view.MotionEvent;
+      ```kotlin
+      ...
+      // Add those imports.
+      import android.view.KeyEvent;
+      import android.view.MotionEvent;
 
-    import expo.modules.devmenu.DevMenuManager;
-    ...
+      import expo.modules.devmenu.DevMenuManager;
+      ...
 
-    class MainActivity : ReactActivity() {
+      class MainActivity : ReactActivity() {
         ...
         // A function which sends the touch events to the dev menu.
         override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
-            DevMenuManager.onTouchEvent(ev)
-            return super.dispatchTouchEvent(ev)
+          DevMenuManager.onTouchEvent(ev)
+          return super.dispatchTouchEvent(ev)
         }
 
-        // A function which handles the key commends.
+        // A function which handles the key commands.
         override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
-            return DevMenuManager.onKeyEvent(keyCode, event) || super.onKeyUp(keyCode, event)
+          return DevMenuManager.onKeyEvent(keyCode, event) || super.onKeyUp(keyCode, event)
         }
-    }
-    ```
+      }
+      ```
 
       </details>
 
-    <br/>
 
-    II. Open the `MainApplication` class (`MainApplication.java` or `MainApplication.kt`) and in `onCreate` method initialize `DevMenuManager`.
+      <br/>
+
+      II. Open the `MainApplication` class (`MainApplication.java` or `MainApplication.kt`) and in `onCreate` method initialize `DevMenuManager`.
 
       <details>
       <summary>Java</summary>
 
-    ```java
-    ...
-    public class MainApplication extends Application implements ReactApplication {
+      ```java
+      ...
+      public class MainApplication extends Application implements ReactApplication {
         ...
         @Override
         public void onCreate() {
-            ...
-            DevMenuManager.INSTANCE.initializeWithReactNativeHost(getReactNativeHost());
+          ...
+          DevMenuManager.INSTANCE.initializeWithReactNativeHost(getReactNativeHost());
         }
-    }
-    ```
+      }
+      ```
 
       </details>
 
@@ -190,21 +187,19 @@ Then you can start to configure the native projects using steps below.
       <details>
       <summary>Kotlin</summary>
 
-    ```kotlin
-    ...
-    public class MainApplication : Application(), ReactApplication {
+      ```kotlin
+      ...
+      public class MainApplication : Application(), ReactApplication {
         ...
         // A function which sends the touch events to the dev menu.
         override fun onCreate() {
-            ...
-            DevMenuManager.initializeWithReactNativeHost(reactNativeHost);
+          ...
+          DevMenuManager.initializeWithReactNativeHost(reactNativeHost);
         }
-    }
-    ```
+      }
+      ```
 
       </details>
-
-    </details>
 
 ## 🍏 iOS
 
@@ -222,10 +217,10 @@ Then you can start to configure the native projects using steps below.
       ```
 
 2. Run `pod install` in `ios` directory.
-3. Open file with your `AppDelegate` (`AppDelegate.m` or `AppDelegate.swift`) and pass bridge to the `DevMenuManger`.
+3. Open file with your `AppDelegate` (`AppDelegate.m` or `AppDelegate.swift`) and pass bridge to the `DevMenuManager`.
 
-     <details>
-     <summary>Objective-C</summary>
+      <details>
+      <summary>Objective-C</summary>
 
    ```objc
    ...
@@ -246,16 +241,16 @@ Then you can start to configure the native projects using steps below.
                                                initialProperties:nil];
      // Add those lines.
      #if __has_include(<EXDevMenu/EXDevMenu-umbrella.h>)
-     [[DevMenuManager class] configureWithBridge:bridge];
+     [DevMenuManager configureWithBridge:bridge];
      #endif
    }
    @end
    ```
 
-     </details>
+      </details>
 
-     <details>
-     <summary>Swift</summary>
+      <details>
+      <summary>Swift</summary>
 
    ```swift
    ...
@@ -267,24 +262,23 @@ Then you can start to configure the native projects using steps below.
 
    @UIApplicationMain
    class AppDelegate: UMAppDelegateWrapper {
-        override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-            ...
+     override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+       ...
 
-            if let bridge = RCTBridge(delegate: self, launchOptions: launchOptions) {
-                ...
+       if let bridge = RCTBridge(delegate: self, launchOptions: launchOptions) {
+         ...
+         // Add those lines.
+         #if canImport(EXDevMenu)
+         DevMenuManager.configure(withBridge: bridge)
+         #endif
+       }
 
-                // Add those lines.
-                #if canImport(EXDevMenu)
-                DevMenuManager.configure(withBridge: bridge)
-                #endif
-            }
-
-            ...
-        }
+       ...
+     }
    }
    ```
 
-     </details>
+      </details>
 
 # 👏 Contributing
 
