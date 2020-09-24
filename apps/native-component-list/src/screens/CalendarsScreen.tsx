@@ -17,7 +17,7 @@ type StackNavigation = StackNavigationProp<{
 
 const CalendarRow = (props: {
   navigation: StackNavigation;
-  calendar: any;
+  calendar: Calendar.Calendar;
   updateCalendar: (calendarId: string) => void;
   deleteCalendar: (calendar: any) => void;
 }) => {
@@ -52,11 +52,11 @@ CalendarRow.navigationOptions = {
 interface State {
   haveCalendarPermissions: boolean;
   haveReminderPermissions: boolean;
-  calendars: any[];
+  calendars: Calendar.Calendar[];
   activeCalendarId?: string;
-  activeCalendarEvents: any[];
+  activeCalendarEvents: Calendar.Event[];
   showAddNewEventForm: boolean;
-  editingEvent?: any;
+  editingEvent?: Calendar.Event;
 }
 
 export default class CalendarsScreen extends React.Component<
