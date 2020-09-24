@@ -42,14 +42,14 @@ export function installRuby(Prism) {
         pattern: /%r([^a-zA-Z0-9\s{(\[<])(?:(?!\1)[^\\]|\\[\s\S])*\1[gim]{0,3}/,
         greedy: true,
         inside: {
-          interpolation: interpolation,
+          interpolation,
         },
       },
       {
         pattern: /%r\((?:[^()\\]|\\[\s\S])*\)[gim]{0,3}/,
         greedy: true,
         inside: {
-          interpolation: interpolation,
+          interpolation,
         },
       },
       {
@@ -57,21 +57,21 @@ export function installRuby(Prism) {
         pattern: /%r\{(?:[^#{}\\]|#(?:\{[^}]+\})?|\\[\s\S])*\}[gim]{0,3}/,
         greedy: true,
         inside: {
-          interpolation: interpolation,
+          interpolation,
         },
       },
       {
         pattern: /%r\[(?:[^\[\]\\]|\\[\s\S])*\][gim]{0,3}/,
         greedy: true,
         inside: {
-          interpolation: interpolation,
+          interpolation,
         },
       },
       {
         pattern: /%r<(?:[^<>\\]|\\[\s\S])*>[gim]{0,3}/,
         greedy: true,
         inside: {
-          interpolation: interpolation,
+          interpolation,
         },
       },
       {
@@ -105,14 +105,14 @@ export function installRuby(Prism) {
       pattern: /%[qQiIwWxs]?([^a-zA-Z0-9\s{(\[<])(?:(?!\1)[^\\]|\\[\s\S])*\1/,
       greedy: true,
       inside: {
-        interpolation: interpolation,
+        interpolation,
       },
     },
     {
       pattern: /%[qQiIwWxs]?\((?:[^()\\]|\\[\s\S])*\)/,
       greedy: true,
       inside: {
-        interpolation: interpolation,
+        interpolation,
       },
     },
     {
@@ -120,28 +120,28 @@ export function installRuby(Prism) {
       pattern: /%[qQiIwWxs]?\{(?:[^#{}\\]|#(?:\{[^}]+\})?|\\[\s\S])*\}/,
       greedy: true,
       inside: {
-        interpolation: interpolation,
+        interpolation,
       },
     },
     {
       pattern: /%[qQiIwWxs]?\[(?:[^\[\]\\]|\\[\s\S])*\]/,
       greedy: true,
       inside: {
-        interpolation: interpolation,
+        interpolation,
       },
     },
     {
       pattern: /%[qQiIwWxs]?<(?:[^<>\\]|\\[\s\S])*>/,
       greedy: true,
       inside: {
-        interpolation: interpolation,
+        interpolation,
       },
     },
     {
       pattern: /("|')(?:#\{[^}]+\}|\\(?:\r\n|[\s\S])|(?!\1)[^\\\r\n])*\1/,
       greedy: true,
       inside: {
-        interpolation: interpolation,
+        interpolation,
       },
     },
   ];

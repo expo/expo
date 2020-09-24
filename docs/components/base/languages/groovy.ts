@@ -45,7 +45,7 @@ export function installGroovy(Prism) {
     if (env.language === 'groovy' && env.type === 'string') {
       var delimiter = env.content[0];
 
-      if (delimiter != "'") {
+      if (delimiter !== "'") {
         var pattern = /([^\\])(?:\$(?:\{.*?\}|[\w.]+))/;
         if (delimiter === '$') {
           pattern = /([^\$])(?:\$(?:\{.*?\}|[\w.]+))/;
@@ -56,7 +56,7 @@ export function installGroovy(Prism) {
 
         env.content = Prism.highlight(env.content, {
           expression: {
-            pattern: pattern,
+            pattern,
             lookbehind: true,
             inside: Prism.languages.groovy,
           },

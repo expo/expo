@@ -1,5 +1,5 @@
 const { copySync, removeSync } = require('fs-extra');
-const { join, resolve } = require('path');
+const { join } = require('path');
 const semver = require('semver');
 
 const headings = require('./common/headingsMdPlugin');
