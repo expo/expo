@@ -17,13 +17,13 @@ class DevMenuInternalModule(reactContext: ReactApplicationContext)
 
   private val devMenuManger by lazy {
     reactContext
-      .getNativeModule(DevMenuManagerProvider::class.java)
-      .getDevMenuManager()
+        .getNativeModule(DevMenuManagerProvider::class.java)
+        .getDevMenuManager()
   }
 
   private val devMenuSettings by lazy {
     reactContext
-      .getNativeModule(DevMenuSettings::class.java)
+        .getNativeModule(DevMenuSettings::class.java)
   }
 
   private val doesDeviceSupportKeyCommands
@@ -31,7 +31,7 @@ class DevMenuInternalModule(reactContext: ReactApplicationContext)
 
   override fun getConstants(): Map<String, Any> {
     return mapOf(
-      "doesDeviceSupportKeyCommands" to doesDeviceSupportKeyCommands
+        "doesDeviceSupportKeyCommands" to doesDeviceSupportKeyCommands
     )
   }
 
@@ -43,8 +43,8 @@ class DevMenuInternalModule(reactContext: ReactApplicationContext)
     }
 
     val fonts = mapOf(
-      "Material Design Icons" to "MaterialCommunityIcons.ttf",
-      "Ionicons" to "Ionicons.ttf"
+        "Material Design Icons" to "MaterialCommunityIcons.ttf",
+        "Ionicons" to "Ionicons.ttf"
     )
     val assets = reactApplicationContext.applicationContext.assets
     fonts.map { (familyName, fontFile) ->
@@ -102,5 +102,14 @@ class DevMenuInternalModule(reactContext: ReactApplicationContext)
     }
 
     promise.resolve(null)
+  }
+
+  @ReactMethod
+  fun openDevMenuFromReactNative() {
+    devMenuManger.getSession()?.reactInstanceManager?.devSupportManager?.let {
+      devMenuManger.closeMenu()
+      it.devSupportEnabled = true
+      it.showDevOptionsDialog()
+    }
   }
 }
