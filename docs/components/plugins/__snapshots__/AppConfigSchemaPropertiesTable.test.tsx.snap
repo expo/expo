@@ -25,7 +25,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
           >
             <div
-              class=" css-16u1zwb-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
+              class=" css-ugew7a-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
               data-text="true"
             >
               <div
@@ -82,11 +82,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-16k5saj-STYLES_DESCRIPTION_CELL"
         >
           <div
-            class=" css-16u1zwb-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
+            class=" css-ugew7a-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
             data-text="true"
           >
             <strong
-              class="css-fyz9gq-paragraph-paragraph-STYLES_BOLD_PARAGRAPH-STYLES_BOLD_PARAGRAPH"
+              class="css-1roiaaq-paragraph-paragraph-STYLES_BOLD_PARAGRAPH-STYLES_BOLD_PARAGRAPH"
             >
               (string)
             </strong>
@@ -115,7 +115,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
           >
             <div
-              class=" css-16u1zwb-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
+              class=" css-ugew7a-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
               data-text="true"
             >
               <div
@@ -172,11 +172,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-16k5saj-STYLES_DESCRIPTION_CELL"
         >
           <div
-            class=" css-16u1zwb-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
+            class=" css-ugew7a-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
             data-text="true"
           >
             <strong
-              class="css-fyz9gq-paragraph-paragraph-STYLES_BOLD_PARAGRAPH-STYLES_BOLD_PARAGRAPH"
+              class="css-1roiaaq-paragraph-paragraph-STYLES_BOLD_PARAGRAPH-STYLES_BOLD_PARAGRAPH"
             >
               (object)
             </strong>
@@ -219,7 +219,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
           >
             <div
-              class=" css-16u1zwb-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
+              class=" css-ugew7a-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
               data-text="true"
             >
               <div
@@ -276,11 +276,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-16k5saj-STYLES_DESCRIPTION_CELL"
         >
           <div
-            class=" css-16u1zwb-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
+            class=" css-ugew7a-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
             data-text="true"
           >
             <strong
-              class="css-fyz9gq-paragraph-paragraph-STYLES_BOLD_PARAGRAPH-STYLES_BOLD_PARAGRAPH"
+              class="css-1roiaaq-paragraph-paragraph-STYLES_BOLD_PARAGRAPH-STYLES_BOLD_PARAGRAPH"
             >
               (enum)
             </strong>
@@ -309,7 +309,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 64px; display: list-item; list-style-type: circle; overflow-x: visible;"
           >
             <div
-              class=" css-16u1zwb-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
+              class=" css-ugew7a-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
               data-text="true"
             >
               <div
@@ -366,11 +366,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-16k5saj-STYLES_DESCRIPTION_CELL"
         >
           <div
-            class=" css-16u1zwb-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
+            class=" css-ugew7a-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
             data-text="true"
           >
             <strong
-              class="css-fyz9gq-paragraph-paragraph-STYLES_BOLD_PARAGRAPH-STYLES_BOLD_PARAGRAPH"
+              class="css-1roiaaq-paragraph-paragraph-STYLES_BOLD_PARAGRAPH-STYLES_BOLD_PARAGRAPH"
             >
               (boolean)
             </strong>
@@ -385,7 +385,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
           >
             <div
-              class=" css-16u1zwb-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
+              class=" css-ugew7a-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
               data-text="true"
             >
               <div
@@ -442,18 +442,18 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-16k5saj-STYLES_DESCRIPTION_CELL"
         >
           <div
-            class=" css-16u1zwb-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
+            class=" css-ugew7a-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
             data-text="true"
           >
             <strong
-              class="css-fyz9gq-paragraph-paragraph-STYLES_BOLD_PARAGRAPH-STYLES_BOLD_PARAGRAPH"
+              class="css-1roiaaq-paragraph-paragraph-STYLES_BOLD_PARAGRAPH-STYLES_BOLD_PARAGRAPH"
             >
               (string)
             </strong>
              - Specifies the background color of the navigation bar. 
           </div>
           <div
-            class=" css-16u1zwb-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
+            class=" css-ugew7a-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
             data-text="true"
           >
             6 character long hex color string, eg: 
@@ -472,7 +472,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
           >
             <div
-              class=" css-16u1zwb-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
+              class=" css-ugew7a-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
               data-text="true"
             >
               <div
@@ -529,11 +529,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-16k5saj-STYLES_DESCRIPTION_CELL"
         >
           <div
-            class=" css-16u1zwb-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
+            class=" css-ugew7a-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
             data-text="true"
           >
             <strong
-              class="css-fyz9gq-paragraph-paragraph-STYLES_BOLD_PARAGRAPH-STYLES_BOLD_PARAGRAPH"
+              class="css-1roiaaq-paragraph-paragraph-STYLES_BOLD_PARAGRAPH-STYLES_BOLD_PARAGRAPH"
             >
               (array)
             </strong>
@@ -554,7 +554,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </details>
           </div>
           <blockquote
-            class="css-yfmbtj-paragraph-paragraph-STYLES_BLOCKQUOTE-STYLES_BLOCKQUOTE"
+            class="css-64cl29-paragraph-paragraph-STYLES_BLOCKQUOTE-STYLES_BLOCKQUOTE"
             data-text="true"
           >
             <div>
@@ -578,7 +578,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </div>
             <div>
               <div
-                class=" css-16u1zwb-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
+                class=" css-ugew7a-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
                 data-text="true"
               >
                  
@@ -599,7 +599,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
           >
             <div
-              class=" css-16u1zwb-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
+              class=" css-ugew7a-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
               data-text="true"
             >
               <div
@@ -656,11 +656,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-16k5saj-STYLES_DESCRIPTION_CELL"
         >
           <div
-            class=" css-16u1zwb-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
+            class=" css-ugew7a-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
             data-text="true"
           >
             <strong
-              class="css-fyz9gq-paragraph-paragraph-STYLES_BOLD_PARAGRAPH-STYLES_BOLD_PARAGRAPH"
+              class="css-1roiaaq-paragraph-paragraph-STYLES_BOLD_PARAGRAPH-STYLES_BOLD_PARAGRAPH"
             >
               (boolean)
             </strong>
@@ -675,7 +675,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
           >
             <div
-              class=" css-16u1zwb-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
+              class=" css-ugew7a-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
               data-text="true"
             >
               <div
@@ -732,11 +732,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-16k5saj-STYLES_DESCRIPTION_CELL"
         >
           <div
-            class=" css-16u1zwb-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
+            class=" css-ugew7a-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
             data-text="true"
           >
             <strong
-              class="css-fyz9gq-paragraph-paragraph-STYLES_BOLD_PARAGRAPH-STYLES_BOLD_PARAGRAPH"
+              class="css-1roiaaq-paragraph-paragraph-STYLES_BOLD_PARAGRAPH-STYLES_BOLD_PARAGRAPH"
             >
               (array || object)
             </strong>
@@ -750,7 +750,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 64px; display: list-item; list-style-type: circle; overflow-x: visible;"
           >
             <div
-              class=" css-16u1zwb-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
+              class=" css-ugew7a-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
               data-text="true"
             >
               <div
@@ -807,11 +807,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-16k5saj-STYLES_DESCRIPTION_CELL"
         >
           <div
-            class=" css-16u1zwb-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
+            class=" css-ugew7a-paragraph-paragraph-STYLES_PARAGRAPH_DIV-STYLES_PARAGRAPH_DIV"
             data-text="true"
           >
             <strong
-              class="css-fyz9gq-paragraph-paragraph-STYLES_BOLD_PARAGRAPH-STYLES_BOLD_PARAGRAPH"
+              class="css-1roiaaq-paragraph-paragraph-STYLES_BOLD_PARAGRAPH-STYLES_BOLD_PARAGRAPH"
             >
               (string)
             </strong>
