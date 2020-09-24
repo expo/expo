@@ -27,4 +27,5 @@ expo.modules.updates.db
 expo.modules.updates.launcher
 expo.modules.updates.loader
 expo.modules.updates.manifest
+expo.modules.splashscreen.singletons.SplashScreen
 com.facebook.proguard.annotations.DoNotStrip

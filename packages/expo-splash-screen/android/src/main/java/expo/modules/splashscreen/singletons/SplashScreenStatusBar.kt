@@ -1,13 +1,8 @@
-package expo.modules.splashscreen
+package expo.modules.splashscreen.singletons
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.res.Configuration
 import android.os.Build
-import android.view.View
-import android.view.WindowManager
-import androidx.annotation.ColorInt
-import androidx.annotation.UiThread
 import androidx.core.view.ViewCompat
 
 object SplashScreenStatusBar {
