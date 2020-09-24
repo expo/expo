@@ -48,12 +48,7 @@ async function _findUnimodules(pkgDir: string): Promise<Package[]> {
 
   const packages = await Packages.getListOfPackagesAsync();
   for (const pkg of packages) {
-    if (
-      !pkg.isSupportedOnPlatform('android') ||
-      !pkg.androidPackageName ||
-      EXCLUDED_PACKAGE_SLUGS.includes(pkg.packageSlug)
-    )
-      continue;
+    if (!pkg.isSupportedOnPlatform('android') || !pkg.androidPackageName) continue;
     unimodules.push({
       name: pkg.packageSlug,
       sourceDir: path.join(pkg.path, pkg.androidSubdirectory),
@@ -208,8 +203,6 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
     /TEMPORARY_ABI_VERSION\s*=\s*null/,
     `TEMPORARY_ABI_VERSION = "${sdkVersion}"`
   );
-  await _regexFileAsync(settingsGradle, `// FLAG_BEGIN_REMOVE__UPDATE_EXPOKIT`, `/*`);
-  await _regexFileAsync(settingsGradle, `// FLAG_END_REMOVE__UPDATE_EXPOKIT`, `*/ //`);
   await _uncommentWhenDistributing([appBuildGradle, expoViewBuildGradle]);
   await _commentWhenDistributing([
     constantsJava,
@@ -304,7 +297,9 @@ async function action(options: ActionOptions) {
   process.on('SIGINT', _exitHandler);
   process.on('SIGTERM', _exitHandler);
 
-  const detachableUniversalModules = await _findUnimodules(path.join(EXPO_ROOT_DIR, 'packages'));
+  const detachableUniversalModules = (
+    await _findUnimodules(path.join(EXPO_ROOT_DIR, 'packages'))
+  ).filter((unimodule) => !EXCLUDED_PACKAGE_SLUGS.includes(unimodule.name));
 
   // packages must stay in this order --
   // ReactAndroid MUST be first and expoview MUST be last
@@ -418,6 +413,6 @@ export default (program: any) => {
         throw new Error('Could not infer SDK version, please run with `--sdkVersion SDK_VERSION`');
       }
 
-      await action({ sdkVersion, ...options });
+      await action({ ...options, sdkVersion });
     });
 };
