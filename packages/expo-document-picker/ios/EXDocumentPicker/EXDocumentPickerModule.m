@@ -109,16 +109,20 @@ UM_EXPORT_METHOD_AS(getDocumentAsync,
     UIDocumentPickerViewController *documentPickerVC;
 
     @try {
-      if (@available(iOS 14, *)) {
+      // TODO: drop #if macro once Xcode is updated to 12
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 140000
+      if (@available(iOS 14, *)) {
         UTType* utType = EXConvertMimeTypeToUTType(mimeType);
         documentPickerVC = [[UIDocumentPickerViewController alloc] initForOpeningContentTypes:@[utType] asCopy:YES];
-#endif
       } else {
+#endif
         NSString* type = EXConvertMimeTypeToUTI(mimeType);
         documentPickerVC = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[type]
                                                                                   inMode:UIDocumentPickerModeImport];
+        // TODO: drop #if macro once Xcode is updated to 12
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 140000
       }
+#endif
     }
     @catch (NSException *exception) {
       reject(@"E_PICKER_ICLOUD", @"DocumentPicker requires the iCloud entitlement. If you are using ExpoKit, you need to add this capability to your App Id. See `https://docs.expo.io/versions/latest/expokit/advanced-expokit-topics#using-documentpicker` for more info.", nil);
