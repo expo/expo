@@ -78,6 +78,11 @@ public class UpdatesBinding extends UpdatesService implements UpdatesInterface {
   }
 
   @Override
+  public boolean canRelaunch() {
+    return true;
+  }
+
+  @Override
   public UpdateEntity getLaunchedUpdate() {
     return mAppLoader.getLauncher().getLaunchedUpdate();
   }

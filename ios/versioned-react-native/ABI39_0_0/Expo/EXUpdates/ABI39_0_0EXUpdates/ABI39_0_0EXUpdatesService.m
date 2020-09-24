@@ -60,6 +60,11 @@ ABI39_0_0UM_REGISTER_MODULE();
   return ABI39_0_0EXUpdatesAppController.sharedInstance.isEmergencyLaunch;
 }
 
+- (BOOL)canRelaunch
+{
+  return ABI39_0_0EXUpdatesAppController.sharedInstance.isStarted;
+}
+
 - (void)requestRelaunchWithCompletion:(ABI39_0_0EXUpdatesAppRelaunchCompletionBlock)completion
 {
   return [ABI39_0_0EXUpdatesAppController.sharedInstance requestRelaunchWithCompletion:completion];
