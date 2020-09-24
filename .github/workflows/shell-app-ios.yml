@@ -3,8 +3,8 @@ name: iOS Shell App
 on:
   workflow_dispatch:
     inputs:
-      releaseShellIOS:
-        description: 'type "release-shell-ios" to confirm upload'
+      upload:
+        description: 'type "upload" to confirm upload to S3'
         required: false
   schedule:
     - cron: '20 5 * * 2,4,6'
@@ -24,15 +24,11 @@ jobs:
           path: .git/lfs
           key: ${{ steps.git-lfs.outputs.sha256 }}
       - run: git lfs pull
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
       - run: echo "::add-path::$(pwd)/bin"
       - run: echo "::set-env name=EXPO_ROOT_DIR::$(pwd)"
       - run: expotools ios-generate-dynamic-macros
       - uses: ruby/setup-ruby@v1
       - run: echo "::set-env name=BUNDLE_BIN::$(pwd)/.direnv/bin"
-      - run: echo "::add-path::$BUNDLE_BIN"
       - name: bundler cache
         uses: actions/cache@v1
         with:
@@ -44,6 +40,7 @@ jobs:
         run: |
           bundle config path vendor/bundle
           bundle install --jobs 4 --retry 3
+      - run: echo "::add-path::$BUNDLE_BIN"
       - uses: actions/cache@v1
         with:
           path: ios/Pods
@@ -57,34 +54,38 @@ jobs:
         timeout-minutes: 30
         run: expotools ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
       - run: brew install awscli
-      - name: set tarball name
+      - name: Set tarball name
         id: tarball
-        run: echo "::set-output name=filename::ios-shell-builder-sdk-latest-${{ github.sha }}"
+        run: echo "::set-output name=filename::ios-shell-builder-sdk-latest-${{ github.sha }}.tar.gz"
       - name: Package release tarball
-        if: ${{ github.event.inputs.releaseShellIOS == 'release-shell-ios' }}
         run: |
+          # Hotfix for until https://github.com/expo/expo-cli/pull/2608 lands
+          mv ../shellAppBase-builds .
           tar \
-            -zcf "/tmp/${{ steps.tarball.outputs.filename }}" \
+            -zcf ${{ steps.tarball.outputs.filename }} \
             package.json \
             exponent-view-template \
             shellAppBase-builds \
             shellAppWorkspaces \
             ios
-      - name: upload tarball
-        if: ${{ github.event.inputs.releaseShellIOS == 'release-shell-ios' }}
+      - name: Upload shell app tarball to S3
+        if: ${{ github.event.inputs.upload == 'upload' }}
         timeout-minutes: 40
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          aws s3 cp --acl public-read "/tmp/${{ steps.tarball.outputs.filename }}" s3://exp-artifacts
+          aws s3 cp --acl public-read ${{ steps.tarball.outputs.filename }} s3://exp-artifacts
           echo "Release tarball uploaded to s3://exp-artifacts/${{ steps.tarball.outputs.filename }}"
           echo "You can deploy this by updating or creating a new file in https://github.com/expo/turtle/tree/master/shellTarballs/ios"
           echo "Then follow the deployment instructions: https://github.com/expo/turtle-deploy"
       - uses: 8398a7/action-slack@v3
-        if: always()
+        if: failure() && (github.event.ref == 'refs/heads/master' || startsWith(github.event.ref, 'refs/heads/sdk-'))
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_ios }}
         with:
           channel: '#platform-ios'
           status: ${{ job.status }}
-          fields: job,eventName
-          author_name: iOS Shell App (triggered by ${{ github.actor }})
+          fields: author,job,message,eventName,ref
+          author_name: iOS Shell App build
