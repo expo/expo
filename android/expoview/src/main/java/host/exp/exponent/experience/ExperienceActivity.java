@@ -727,16 +727,12 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
    */
 
   private void addNotification(final JSONObject options) {
-    if (mManifestUrl == null || mManifest == null) {
+    if (mIsShellApp || mManifestUrl == null || mManifest == null) {
       return;
     }
 
     String name = mManifest.optString(ExponentManifest.MANIFEST_NAME_KEY, null);
     if (name == null) {
-      return;
-    }
-
-    if (!mManifest.optBoolean(ExponentManifest.MANIFEST_SHOW_EXPONENT_NOTIFICATION_KEY) && mIsShellApp) {
       return;
     }
 
