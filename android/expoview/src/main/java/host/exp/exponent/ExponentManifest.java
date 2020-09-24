@@ -83,7 +83,6 @@ public class ExponentManifest {
   public static final String MANIFEST_PACKAGER_OPTS_KEY = "packagerOpts";
   public static final String MANIFEST_PACKAGER_OPTS_DEV_KEY = "dev";
   public static final String MANIFEST_BUNDLE_URL_KEY = "bundleUrl";
-  public static final String MANIFEST_SHOW_EXPONENT_NOTIFICATION_KEY = "androidShowExponentNotificationInShellApp";
   public static final String MANIFEST_REVISION_ID_KEY = "revisionId";
   public static final String MANIFEST_PUBLISHED_TIME_KEY = "publishedTime";
   public static final String MANIFEST_COMMIT_TIME_KEY = "commitTime";
