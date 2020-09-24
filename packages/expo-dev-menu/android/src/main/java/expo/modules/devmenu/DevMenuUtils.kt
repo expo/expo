@@ -1,17 +1,32 @@
 package expo.modules.devmenu
 
-import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 
 const val DEV_MENU_TAG = "ExpoDevMenu"
 
-internal fun ReactNativeHost.getReactModules(): List<ReactPackage> {
-  val packageListClass = Class.forName("com.facebook.react.PackageList")
-  val constructor = packageListClass.getConstructor(ReactNativeHost::class.java)
-  val packageList = constructor.newInstance(this)
-  val getPackageList = packageListClass.getMethod("getPackages")
-  @Suppress("UNCHECKED_CAST")
-  return getPackageList.invoke(packageList) as List<ReactPackage>
+fun getVendoredPackage(className: String): ReactPackage {
+  return getVendoredClass(className, emptyArray(), emptyArray())
+}
+
+fun <T> getVendoredClass(className: String, argsType: Array<Class<*>>, args: Array<Any>): T {
+  val clazz = try {
+    Class.forName("devmenu.$className")
+  } catch (e: ClassNotFoundException) {
+    Class.forName(className)
+  }
+
+  return constructFromClass(clazz, argsType, args)
+}
+
+fun getSafeArea(): ReactPackage {
+  val clazz = Class.forName("com.th3rdwave.safeareacontext.SafeAreaContextPackage")
+  return constructFromClass(clazz, emptyArray(), emptyArray())
+}
+
+@Suppress("UNCHECKED_CAST")
+fun <T> constructFromClass(clazz: Class<*>, argsType: Array<Class<*>>, args: Array<Any>): T {
+  val constructor = clazz.getConstructor(*argsType)
+  return constructor.newInstance(*args) as T
 }
 
 fun setPrivateField(obj: Any, objClass: Class<*>, field: String, newValue: Any) =

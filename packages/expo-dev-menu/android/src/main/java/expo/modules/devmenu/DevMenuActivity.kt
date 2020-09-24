@@ -1,10 +1,11 @@
 package expo.modules.devmenu
 
+import android.content.Context
 import android.os.Bundle
 import android.view.KeyEvent
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
-import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView
+import com.facebook.react.ReactRootView
 import java.util.*
 
 /**
@@ -27,7 +28,7 @@ class DevMenuActivity : ReactActivity() {
         putBundle("appInfo", DevMenuManager.getSession()?.appInfo ?: Bundle.EMPTY)
       }
 
-      override fun createRootView() = RNGestureHandlerEnabledRootView(this@DevMenuActivity)
+      override fun createRootView() = getVendoredClass<ReactRootView>("com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView", arrayOf(Context::class.java), arrayOf(this@DevMenuActivity))
     }
   }
 
