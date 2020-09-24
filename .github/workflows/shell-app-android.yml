@@ -1,11 +1,7 @@
 name: Android Shell App
 
 on:
-  workflow_dispatch:
-    inputs:
-      releaseShellAndroid:
-        description: 'type "release-shell-android" to confirm upload'
-        required: false
+  workflow_dispatch: {}
   schedule:
     - cron: '20 5 * * 2,4,6' # 5:20 AM UTC time on every Tuesday, Thursday and Saturday
   push:
