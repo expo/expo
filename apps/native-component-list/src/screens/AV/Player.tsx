@@ -18,17 +18,16 @@ import Colors from '../../constants/Colors';
 
 interface Props {
   header?: JSX.Element;
-  extraButtons?: Array<
-    () =>
-      | React.ReactNode
-      | {
-          iconName: string;
-          title: string;
-          onPress: (event: GestureResponderEvent) => void;
-          active: boolean;
-          disable?: boolean;
-        }
-  >;
+  extraButtons?: (
+    | {
+        iconName: string;
+        title: string;
+        onPress: (event: GestureResponderEvent) => void;
+        active: boolean;
+        disable?: boolean;
+      }
+    | (() => React.ReactNode)
+  )[];
   style?: StyleProp<ViewStyle>;
 
   // Functions

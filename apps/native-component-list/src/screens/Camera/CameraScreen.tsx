@@ -373,7 +373,7 @@ const styles = StyleSheet.create({
     paddingTop: Constants.statusBarHeight / 2,
   },
   bottomBar: {
-    paddingBottom: isIPhoneX ? 25 : 5,
+    paddingBottom: isIPhoneX() ? 25 : 5,
     backgroundColor: 'transparent',
     justifyContent: 'space-between',
     flexDirection: 'row',

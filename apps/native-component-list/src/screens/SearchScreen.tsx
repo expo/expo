@@ -1,8 +1,8 @@
-import { createStackNavigator, HeaderBackButton } from '@react-navigation/stack';
+import { createStackNavigator, HeaderBackButton, StackScreenProps } from '@react-navigation/stack';
 import Fuse from 'fuse.js';
 import React from 'react';
 import { Animated, Platform, StyleSheet, View } from 'react-native';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import ExpoAPIIcon from '../components/ExpoAPIIcon';
 import SearchBar from '../components/SearchBar';
@@ -27,7 +27,7 @@ function Header({
   tintColor?: string;
   navigation: any;
 }) {
-  const { top } = useSafeArea();
+  const { top } = useSafeAreaInsets();
   // @todo: this is static and we don't know if it's visible or not on iOS.
   // need to use a more reliable and cross-platform API when one exists, like
   // LayoutContext. We also don't know if it's translucent or not on Android
@@ -56,7 +56,7 @@ function Header({
   );
 }
 
-function SearchScreen({ route }) {
+function SearchScreen({ route }: StackScreenProps<SearchStack, 'search'>) {
   const query = route?.params?.q ?? '';
 
   const apis = React.useMemo(() => fuse.search(query).map(({ item }) => item), [query]);
@@ -69,7 +69,11 @@ function SearchScreen({ route }) {
   return <ComponentListScreen renderItemRight={renderItemRight} apis={apis} />;
 }
 
-const Stack = createStackNavigator();
+type SearchStack = {
+  search: { q?: string };
+};
+
+const Stack = createStackNavigator<SearchStack>();
 
 export default () => (
   <Stack.Navigator>
@@ -85,7 +89,7 @@ export default () => (
             <SearchBar
               initialValue={route?.params?.q ?? ''}
               onChangeQuery={q => navigation.setParams({ q })}
-              underlineColorAndroid={'#fff'}
+              underlineColorAndroid="#fff"
               tintColor={Colors.tintColor}
             />
           </Header>

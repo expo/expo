@@ -18,7 +18,7 @@ type SimpleActionDemo = {
 
 export default function SimpleActionDemo(props: SimpleActionDemo) {
   const [loading, setLoading] = React.useState(false);
-  const [value, setValue] = React.useState(undefined);
+  const [value, setValue] = React.useState<any>(undefined);
 
   const runAction = React.useCallback(async () => {
     setLoading(true);
