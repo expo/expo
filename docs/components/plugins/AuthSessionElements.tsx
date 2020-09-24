@@ -29,7 +29,7 @@ const STYLES_BUTTON = css`
 
 export function CreateAppButton({ href, name }) {
   return (
-    <a css={STYLES_BUTTON} className='snack-inline-example-button' href={href}>
+    <a css={STYLES_BUTTON} className="snack-inline-example-button" href={href}>
       Create {name} App
     </a>
   );

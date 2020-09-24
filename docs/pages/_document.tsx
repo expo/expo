@@ -1,6 +1,7 @@
 import { Global } from '@emotion/core';
-import Document, { Html, Head, Main, NextScript } from 'next/document';
 import { extractCritical } from 'emotion-server';
+import Document, { Html, Head, Main, NextScript } from 'next/document';
+import * as React from 'react';
 
 import * as Analytics from '~/common/analytics';
 import { globalExtras } from '~/global-styles/extras';

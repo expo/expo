@@ -3,7 +3,7 @@ import NextLink from 'next/link';
 import * as React from 'react';
 
 import stripVersionFromPath from '~/common/stripVersionFromPath';
-import { Url } from '~/common/types';
+import { NavigationRoute, Url } from '~/common/types';
 import { paragraph } from '~/components/base/typography';
 import * as Constants from '~/constants/theme';
 
@@ -65,12 +65,8 @@ const STYLES_ACTIVE_BULLET = css`
 `;
 
 type Props = {
-  url?: Url;
-  info: {
-    name: string;
-    as?: string;
-    href: string;
-  };
+  url: Url;
+  info: NavigationRoute;
   asPath: string;
 };
 

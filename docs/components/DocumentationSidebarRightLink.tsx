@@ -1,5 +1,5 @@
-import * as React from 'react';
 import { css } from '@emotion/core';
+import * as React from 'react';
 
 import { BASE_HEADING_LEVEL, Heading, HeadingType } from '../common/headingManager';
 
@@ -89,15 +89,12 @@ const isOverflowing = (el: HTMLElement) => {
 };
 
 type TooltipProps = {
-  children: string | JSX.Element | JSX.Element[];
   isCode?: boolean;
   topOffset: number;
 };
 
 const Tooltip: React.FC<TooltipProps> = ({ children, isCode, topOffset }) => (
-  <div
-    css={[STYLES_TOOLTIP, isCode && STYLES_CODE_TOOLTIP]}
-    style={{ right: 20, top: topOffset }}>
+  <div css={[STYLES_TOOLTIP, isCode && STYLES_CODE_TOOLTIP]} style={{ right: 20, top: topOffset }}>
     {children}
   </div>
 );

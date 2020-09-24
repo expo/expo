@@ -176,13 +176,13 @@ type SectionContainerProps = {
   className?: string;
 };
 
-function SectionContainer({
+const SectionContainer: React.FC<SectionContainerProps> = ({
   spaceBetween = 0,
   spaceAround = 0,
   children,
   style,
   className,
-}: SectionContainerProps) {
+}) => {
   return (
     <div
       className={className}
@@ -194,7 +194,7 @@ function SectionContainer({
       ))}
     </div>
   );
-}
+};
 
 type Props = {
   isAlgoliaSearchHidden: boolean;
@@ -237,17 +237,17 @@ export default class DocumentationHeader extends React.PureComponent<Props> {
             {!this.props.isMenuActive && (
               <div css={STYLES_MENU_BUTTON_CONTAINER}>
                 <span css={STYLES_MENU_BUTTON} onClick={this.props.onToggleSearch}>
-                  <img src={'/static/images/header/search.svg'} />
+                  <img src="/static/images/header/search.svg" />
                 </span>
                 <span css={STYLES_MENU_BUTTON} onClick={this.props.onShowMenu}>
-                  <img src={'/static/images/header/more-horizontal.svg'} />
+                  <img src="/static/images/header/more-horizontal.svg" />
                 </span>
               </div>
             )}
 
             {this.props.isMenuActive && (
               <span css={STYLES_MENU_BUTTON} onClick={this.props.onHideMenu}>
-                <img src={'/static/images/header/x.svg'} />
+                <img src="/static/images/header/x.svg" />
               </span>
             )}
           </div>
@@ -283,7 +283,8 @@ export default class DocumentationHeader extends React.PureComponent<Props> {
             </a>
           </Link>
           <Link href="/versions/latest/">
-            <a css={[SECTION_LINK, this.props.activeSection === 'reference' && SECTION_LINK_ACTIVE]}>
+            <a
+              css={[SECTION_LINK, this.props.activeSection === 'reference' && SECTION_LINK_ACTIVE]}>
               <span css={SECTION_LINK_TEXT}>API Reference</span>
             </a>
           </Link>

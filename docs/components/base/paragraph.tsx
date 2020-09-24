@@ -2,8 +2,6 @@ import { css } from '@emotion/core';
 import emojiRegex from 'emoji-regex';
 import * as React from 'react';
 
-import * as Constants from '~/constants/theme';
-import { Info } from '~/components/icons/Info';
 import { paragraph } from './typography';
 
 import { Info } from '~/components/icons/Info';
