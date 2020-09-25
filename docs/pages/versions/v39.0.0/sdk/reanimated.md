@@ -38,7 +38,7 @@ You also need to install the library directly with npm or yarn rather than using
 
 ```
 # This exact version is supported:
-npm install react-native-reanimated@2.0.0-alpha.6 
+npm install react-native-reanimated@2.0.0-alpha.6.1
 ```
 
 Finally, you'll need to add the babel plugin to `babel.config.js`:
@@ -57,7 +57,7 @@ Note that when you run the project you will get a warning about an incompatible 
 
 ```
 Some of your project's dependencies are not compatible with currently installed expo package version:
- - react-native-reanimated - expected version range: ~1.13.0 - actual version installed: 2.0.0-alpha.6
+ - react-native-reanimated - expected version range: ~1.13.0 - actual version installed: 2.0.0-alpha.6.1
  ```
 
  You can ignore this, as you are intentionally opting in to an experimental feature.
