@@ -11,7 +11,7 @@
     "import-react-native-docs": "node ./scripts/import-react-native-docs.js",
     "test-links": "node --async-stack-traces --unhandled-rejections=strict ./scripts/test-links.js",
     "prettier": "prettier --write '**/*.{js,ts,tsx}'",
-    "lint": "eslint .",
+    "lint": "tsc --noEmit && eslint .",
     "watch": "tsc --noEmit -w",
     "test": "jest",
     "schema-sync": "node --async-stack-traces --unhandled-rejections=strict ./scripts/schema-sync.js"

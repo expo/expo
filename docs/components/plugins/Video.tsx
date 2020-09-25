@@ -48,17 +48,17 @@ export default class Video extends React.Component<Props, State> {
     hover: false,
   };
 
-  private _handleClick = () => {
+  private handleClick = () => {
     if (typeof this.props.controls === 'undefined' && !this.state.forceShowControls) {
       this.setState({ forceShowControls: true });
     }
   };
 
-  private _handleMouseEnter = () => {
+  private handleMouseEnter = () => {
     this.setState({ hover: true });
   };
 
-  private _handleMouseLeave = () => {
+  private handleMouseLeave = () => {
     this.setState({ hover: false });
   };
 
@@ -76,10 +76,10 @@ export default class Video extends React.Component<Props, State> {
 
     return (
       <div
-        onClick={this._handleClick}
+        onClick={this.handleClick}
         style={this.state.hover ? { cursor: 'pointer' } : null}
-        onMouseEnter={this._handleMouseEnter}
-        onMouseLeave={this._handleMouseLeave}>
+        onMouseEnter={this.handleMouseEnter}
+        onMouseLeave={this.handleMouseLeave}>
         <VisibilitySensor partialVisibility={isMobileOrTablet}>
           {({ isVisible }) => (
             <div

@@ -53,7 +53,7 @@ export default class DocumentationSidebar extends React.Component<Props> {
     routes: [],
   };
 
-  private _renderPostElements = (info, category) => {
+  private renderPostElements = (info, category) => {
     return (
       <DocumentationSidebarLink
         key={`${category}-${info.name}`}
@@ -65,7 +65,7 @@ export default class DocumentationSidebar extends React.Component<Props> {
     );
   };
 
-  private _renderCategoryElements = (info: NavigationRoute, parentGroup?: NavigationRoute) => {
+  private renderCategoryElements = (info: NavigationRoute, parentGroup?: NavigationRoute) => {
     if (info.children) {
       return (
         <DocumentationSidebarGroup
@@ -73,7 +73,7 @@ export default class DocumentationSidebar extends React.Component<Props> {
           url={this.props.url}
           info={info}
           asPath={this.props.asPath}>
-          {info.children.map(categoryInfo => this._renderCategoryElements(categoryInfo, info))}
+          {info.children.map(categoryInfo => this.renderCategoryElements(categoryInfo, info))}
         </DocumentationSidebarGroup>
       );
     }
@@ -90,7 +90,7 @@ export default class DocumentationSidebar extends React.Component<Props> {
 
     let postElements;
     if (info.posts) {
-      postElements = info.posts.map(postInfo => this._renderPostElements(postInfo, info.name));
+      postElements = info.posts.map(postInfo => this.renderPostElements(postInfo, info.name));
     }
 
     return (
@@ -112,7 +112,7 @@ export default class DocumentationSidebar extends React.Component<Props> {
           <VersionSelector version={this.props.version} onSetVersion={this.props.onSetVersion} />
         )}
 
-        {this.props.routes.map(categoryInfo => this._renderCategoryElements(categoryInfo))}
+        {this.props.routes.map(categoryInfo => this.renderCategoryElements(categoryInfo))}
       </nav>
     );
   }

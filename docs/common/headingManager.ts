@@ -62,7 +62,7 @@ export type Heading = {
 export class HeadingManager {
   private slugger: GithubSlugger;
   private _headings: Heading[];
-  private readonly _meta: Partial<PageMetadata>;
+  private readonly _meta: PageMetadata;
   private readonly _maxNestingLevel: number;
 
   public get headings() {
@@ -78,10 +78,10 @@ export class HeadingManager {
   }
 
   /**
-   * @param {Object} slugger A _GithubSlugger_ instance
-   * @param {{headings: Object[]}} meta Document metadata gathered by `headingsMdPlugin`.
+   * @param slugger A _GithubSlugger_ instance
+   * @param meta Document metadata gathered by `headingsMdPlugin`.
    */
-  constructor(slugger: GithubSlugger, meta: Partial<PageMetadata>) {
+  constructor(slugger: GithubSlugger, meta: PageMetadata) {
     this.slugger = slugger;
     this._meta = { headings: meta.headings || [], ...meta };
     this._headings = [];

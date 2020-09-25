@@ -141,7 +141,7 @@ describe('formatSchema', () => {
 describe('createDescription', () => {
   test('bareWorkflow, exampleString are both added correctly to intentFilters', () => {
     const intentFiltersObject = Object.entries(testSchema)[2];
-    const intentFiltersObjectValue = intentFiltersObject[1];
+    const intentFiltersObjectValue = intentFiltersObject[1] as any;
     const result = createDescription(intentFiltersObject);
 
     expect(result).toBe(
@@ -155,8 +155,8 @@ describe('createDescription', () => {
 
   test('regexHuman is added correctly to backgroundColor', () => {
     //Note: to access this subproperty is tedious without a call to formatSchema
-    const backgroundColorObject = Object.entries(Object.values(testSchema)[1].properties)[1];
-    const backgroundColorObjectValue = backgroundColorObject[1];
+    const backgroundColorObject = Object.entries(Object.values<any>(testSchema)[1].properties)[1];
+    const backgroundColorObjectValue = backgroundColorObject[1] as any;
     const result = createDescription(backgroundColorObject);
 
     expect(result).toBe(
@@ -168,7 +168,7 @@ describe('createDescription', () => {
 
   test('expoKit is added correctly to visible', () => {
     //Note: to access this subproperty is tedious without a call to formatSchema
-    const visibleObject = Object.entries(Object.values(testSchema)[1].properties)[0];
+    const visibleObject: any[] = Object.entries(Object.values<any>(testSchema)[1].properties)[0];
     const visibleObjectValue = visibleObject[1];
     const result = createDescription(visibleObject);
 
@@ -193,7 +193,7 @@ describe('createDescription', () => {
 
   test('expoKit, bareWorkflow both added correctly to androidNavigationBar', () => {
     const androidNavigationBarObject = Object.entries(testSchema)[1];
-    const androidNavigationBarObjectValue = androidNavigationBarObject[1];
+    const androidNavigationBarObjectValue = androidNavigationBarObject[1] as any;
     const result = createDescription(androidNavigationBarObject);
 
     expect(result).toBe(

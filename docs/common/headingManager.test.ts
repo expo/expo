@@ -10,8 +10,8 @@ const SluggerStub: GithubSlugger = {
 
 describe('HeadingManager tests', () => {
   test('instantiates properly', () => {
-    const meta = { maxHeadingDepth: 2 };
-    const headingManager = new HeadingManager(SluggerStub, meta as PageMetadata);
+    const meta: PageMetadata = { maxHeadingDepth: 2 };
+    const headingManager = new HeadingManager(SluggerStub, meta);
 
     expect(headingManager.headings).toEqual([]);
     expect(headingManager.metadata.headings).toEqual([]);
@@ -21,7 +21,7 @@ describe('HeadingManager tests', () => {
   test('_findMetaForTitle not returning same title twice', () => {
     const TITLE = 'Some Title';
     const meta = { headings: [{ title: TITLE, _processed: true }] };
-    const headingManager = new HeadingManager(SluggerStub, (meta as unknown) as PageMetadata);
+    const headingManager = new HeadingManager(SluggerStub, meta);
 
     const result = headingManager['findMetaForTitle'](TITLE);
     expect(result).toBeUndefined();
@@ -30,7 +30,7 @@ describe('HeadingManager tests', () => {
   test('_findMetaForTitle marks meta as processed', () => {
     const TITLE = 'Some Title';
     const meta = { headings: [{ title: TITLE }] };
-    const headingManager = new HeadingManager(SluggerStub, (meta as unknown) as PageMetadata);
+    const headingManager = new HeadingManager(SluggerStub, meta);
 
     const result = headingManager['findMetaForTitle'](TITLE);
     expect(result._processed).toBeTruthy();
@@ -41,7 +41,7 @@ describe('HeadingManager.addHeading()', () => {
   const META_TITLE = 'Meta heading 1';
   const META_LEVEL = 3;
   const meta = { maxHeadingDepth: 3, headings: [{ title: META_TITLE, level: META_LEVEL }] };
-  const headingManager = new HeadingManager(SluggerStub, meta as PageMetadata);
+  const headingManager = new HeadingManager(SluggerStub, meta);
 
   test('finds info from meta', () => {
     const result = headingManager.addHeading(META_TITLE);
