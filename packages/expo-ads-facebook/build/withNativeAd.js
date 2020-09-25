@@ -146,6 +146,7 @@ export default function withNativeAd(Component) {
         }
     };
 }
+// eslint-disable-next-line @typescript-eslint/no-redeclare -- the type and variable share a name
 const NativeAdView = requireNativeViewManager('CTKNativeAd');
 export const AdIconViewContext = React.createContext(null);
 export const AdMediaViewContext = React.createContext(null);

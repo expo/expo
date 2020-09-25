@@ -41,7 +41,7 @@ async function getAddedManifestPermissions(filePath) {
     }
     return result.diff
         .split('\n')
-        .map(line => { var _a, _b; return ((_b = (_a = line.match(TOUCHED_PERMISSION_REGEX)) === null || _a === void 0 ? void 0 : _a[1]) === null || _b === void 0 ? void 0 : _b.trim()) || ''; })
+        .map(line => line.match(TOUCHED_PERMISSION_REGEX)?.[1]?.trim() || '')
         .filter(Boolean);
 }
 /**

@@ -50,9 +50,8 @@ function isChangelogModified(packageName, modifiedFiles) {
 function getSuggestedChangelogEntries(packageNames) {
     const { [PullRequestManager_1.DEFAULT_CHANGELOG_ENTRY_KEY]: defaultEntry, ...suggestedEntries } = pullRequestManager.parseChangelogSuggestionFromDescription();
     return packageNames.map(packageName => {
-        var _a, _b, _c, _d;
-        const message = (_b = (_a = suggestedEntries[packageName]) === null || _a === void 0 ? void 0 : _a.message) !== null && _b !== void 0 ? _b : defaultEntry.message;
-        const type = (_d = (_c = suggestedEntries[packageName]) === null || _c === void 0 ? void 0 : _c.type) !== null && _d !== void 0 ? _d : defaultEntry.type;
+        const message = suggestedEntries[packageName]?.message ?? defaultEntry.message;
+        const type = suggestedEntries[packageName]?.type ?? defaultEntry.type;
         return {
             packageName,
             message,

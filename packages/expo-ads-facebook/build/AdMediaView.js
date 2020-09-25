@@ -10,5 +10,6 @@ export default class AdMediaView extends React.Component {
         }));
     }
 }
+// eslint-disable-next-line @typescript-eslint/no-redeclare -- the type and variable share a name
 export const NativeAdMediaView = requireNativeViewManager('MediaView');
 //# sourceMappingURL=AdMediaView.js.map

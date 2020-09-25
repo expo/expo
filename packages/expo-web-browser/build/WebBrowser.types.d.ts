@@ -47,22 +47,21 @@ export declare type WebBrowserCustomTabsResults = {
     browserPackages: string[];
     servicePackages: string[];
 };
-export declare const WebBrowserResultType: {
+export declare enum WebBrowserResultType {
     /**
      * iOS only
      */
-    readonly CANCEL: "cancel";
+    CANCEL = "cancel",
     /**
      * iOS only
      */
-    readonly DISMISS: "dismiss";
+    DISMISS = "dismiss",
     /**
      * Android only
      */
-    readonly OPENED: "opened";
-    readonly LOCKED: "locked";
-};
-export declare type WebBrowserResultType = typeof WebBrowserResultType[keyof typeof WebBrowserResultType];
+    OPENED = "opened",
+    LOCKED = "locked"
+}
 export declare type WebBrowserResult = {
     type: WebBrowserResultType;
 };

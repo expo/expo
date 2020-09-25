@@ -10,5 +10,6 @@ export default class AdIconView extends React.Component {
         }));
     }
 }
+// eslint-disable-next-line @typescript-eslint/no-redeclare -- the type and variable share a name
 export const NativeAdIconView = requireNativeViewManager('AdIconView');
 //# sourceMappingURL=AdIconView.js.map

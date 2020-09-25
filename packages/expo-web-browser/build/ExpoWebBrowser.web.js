@@ -2,6 +2,7 @@ import { CodedError } from '@unimodules/core';
 import compareUrls from 'compare-urls';
 import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import { AppState, Dimensions } from 'react-native';
+import { WebBrowserResultType, } from './WebBrowser.types';
 const POPUP_WIDTH = 500;
 const POPUP_HEIGHT = 650;
 let popupWindow = null;
@@ -35,11 +36,11 @@ export default {
     },
     async openBrowserAsync(url, browserParams = {}) {
         if (!canUseDOM)
-            return { type: 'cancel' };
+            return { type: WebBrowserResultType.CANCEL };
         const { windowName = '_blank', windowFeatures } = browserParams;
         const features = getPopupFeaturesString(windowFeatures);
         window.open(url, windowName, features);
-        return { type: 'opened' };
+        return { type: WebBrowserResultType.OPENED };
     },
     dismissAuthSession() {
         if (!canUseDOM)
@@ -84,7 +85,7 @@ export default {
     // This method should be invoked from user input.
     async openAuthSessionAsync(url, redirectUrl, openOptions) {
         if (!canUseDOM)
-            return { type: 'cancel' };
+            return { type: WebBrowserResultType.CANCEL };
         redirectUrl = redirectUrl ?? getRedirectUrlFromUrlOrGenerate(url);
         const state = await getStateFromUrlOrGenerateAsync(url);
         // Save handle for session
@@ -143,7 +144,7 @@ export default {
             const interval = setInterval(() => {
                 if (popupWindow?.closed) {
                     if (resolve)
-                        resolve({ type: 'dismiss' });
+                        resolve({ type: WebBrowserResultType.DISMISS });
                     clearInterval(interval);
                     dismissPopup();
                 }
