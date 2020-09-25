@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-const DismissIcon = () => (
+const DismissIcon: React.FC = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="24"

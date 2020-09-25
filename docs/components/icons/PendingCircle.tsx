@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import * as Constants from '~/constants/theme';
 
-export const PendingCircle = ({ size = 24 }) => (
+export const PendingCircle: React.FC<{ size?: number }> = ({ size = 24 }) => (
   <svg
     aria-label="pending"
     width={size}

@@ -15,7 +15,7 @@ type Options = {
   baseNestingLevel?: number;
 };
 
-type PermalinkedComponent = React.FC<{ level: number } & AdditionalProps>;
+type PermalinkedComponent = React.FC<{ level?: number } & AdditionalProps>;
 
 const createPermalinkedComponent = (
   BaseComponent: React.ComponentType,

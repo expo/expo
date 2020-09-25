@@ -2,7 +2,10 @@ import * as React from 'react';
 
 import * as Constants from '~/constants/theme';
 
-export const ExternalLink = ({ size = 24, stroke = Constants.expoColors.white }) => (
+export const ExternalLink: React.FC<{ size?: number; stroke?: string }> = ({
+  size = 24,
+  stroke = Constants.expoColors.white,
+}) => (
   <svg
     aria-label="check"
     width={size}
