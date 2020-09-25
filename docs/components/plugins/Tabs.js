@@ -27,7 +27,7 @@ function TabButton({ selected, ...props }) {
   return (
     <ReachTab
       {...props}
-      css={STYLES_TAB_BUTTON]
+      css={STYLES_TAB_BUTTON}
       style={{
         borderColor: selected ? Constants.colors.expo : 'transparent',
         color: selected ? Constants.colors.expo : Constants.colors.darkGrey,
