@@ -1,7 +1,7 @@
 import GithubSlugger from 'github-slugger';
 import * as React from 'react';
 
-import { Single, PageMetadata } from './types';
+import { ElementType, PageMetadata } from './types';
 import * as Utilities from './utilities';
 
 /**
@@ -51,7 +51,7 @@ export type Heading = {
   level: number;
   type: HeadingType;
   ref: React.RefObject<any>;
-  metadata?: Single<PageMetadata['headings']>;
+  metadata?: ElementType<PageMetadata['headings']>;
 };
 
 /**

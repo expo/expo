@@ -14,7 +14,7 @@ export type PageMetadata = {
 /**
  * Utility type. Extracts `T` type from `T[]` array.
  */
-export type Single<T> = T extends (infer U)[] ? U : never;
+export type ElementType<T extends any[]> = T extends (infer U)[] ? U : never;
 
 export type Url = {
   pathname: string;

@@ -23,7 +23,7 @@ export const toString = (node: React.ReactNode): string => {
   }
 };
 
-export const generateSlug = (slugger: GithubSlugger, node: any, length = 7): string => {
+export const generateSlug = (slugger: GithubSlugger, node: React.ReactNode, length = 7): string => {
   const stringToSlug = toString(node)
     .split(' ')
     .splice(0, length)
