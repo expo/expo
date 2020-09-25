@@ -43,7 +43,7 @@ import * as Sentry from 'sentry-expo';
 Sentry.init({
   dsn: 'YOUR DSN HERE',
   enableInExpoDevelopment: true,
-  debug: true,
+  debug: true, // Sentry will try to print out useful debugging information if something goes wrong with sending an event. Set this to `false` in production.
 });
 ```
 
