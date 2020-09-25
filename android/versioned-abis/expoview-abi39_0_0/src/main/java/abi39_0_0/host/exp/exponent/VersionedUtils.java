@@ -2,20 +2,39 @@
 
 package abi39_0_0.host.exp.exponent;
 
+import android.app.Activity;
+
+import java.util.Collections;
+
 import abi39_0_0.com.facebook.react.ReactInstanceManager;
 import abi39_0_0.com.facebook.react.ReactInstanceManagerBuilder;
 import abi39_0_0.com.facebook.react.common.LifecycleState;
 import abi39_0_0.com.facebook.react.shell.MainReactPackage;
 
-import host.exp.expoview.Exponent;
 import abi39_0_0.host.exp.exponent.modules.api.reanimated.ReanimatedJSIModulePackage;
+import host.exp.exponent.RNObject;
+import host.exp.exponent.experience.ReactNativeActivity;
+import host.exp.expoview.Exponent;
 
 public class VersionedUtils {
 
   public static ReactInstanceManagerBuilder getReactInstanceManagerBuilder(Exponent.InstanceManagerBuilderProperties instanceManagerBuilderProperties) {
     ReactInstanceManagerBuilder builder = ReactInstanceManager.builder()
         .setApplication(instanceManagerBuilderProperties.application)
-        .setJSIModulesPackage(new ReanimatedJSIModulePackage())
+        .setJSIModulesPackage((reactApplicationContext, jsContext) -> {
+          Activity currentActivity = Exponent.getInstance().getCurrentActivity();
+          if (currentActivity instanceof ReactNativeActivity) {
+            ReactNativeActivity reactNativeActivity = (ReactNativeActivity) currentActivity;
+            RNObject devSettings = reactNativeActivity.getDevSupportManager().callRecursive("getDevSettings");
+            if (devSettings != null) {
+              boolean isRemoteJSDebugEnabled = (boolean) devSettings.call("isRemoteJSDebugEnabled");
+              if (!isRemoteJSDebugEnabled) {
+                return new ReanimatedJSIModulePackage().getJSIModules(reactApplicationContext, jsContext);
+              }
+            }
+          }
+          return Collections.emptyList();
+        })
         .addPackage(new MainReactPackage())
         .addPackage(new ExponentPackage(
                 instanceManagerBuilderProperties.experienceProperties,
