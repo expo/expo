@@ -1,7 +1,6 @@
 import GithubSlugger from 'github-slugger';
 
 import { BASE_HEADING_LEVEL, HeadingManager, HeadingType } from './headingManager';
-import { PageMetadata } from './types';
 
 const SluggerStub: GithubSlugger = {
   slug: str => str,
@@ -10,7 +9,7 @@ const SluggerStub: GithubSlugger = {
 
 describe('HeadingManager tests', () => {
   test('instantiates properly', () => {
-    const meta: PageMetadata = { maxHeadingDepth: 2 };
+    const meta = { maxHeadingDepth: 2 };
     const headingManager = new HeadingManager(SluggerStub, meta);
 
     expect(headingManager.headings).toEqual([]);
