@@ -1,17 +1,12 @@
 # expo-development-client
 
+This is a pre-release version of the Expo development client pacakge for testing.
+
 ## Getting started
 
-`$ npm install expo-development-client --save`
+`$ npm i -S expo-development-client`
 
-### Mostly automatic installation
+React Native auto-linking should work with this package.
 
-`$ react-native link expo-development-client`
+Some changes in 'AppDelegate.{h,m}' or 'AppDelegate.swift' and 'MainActivity.java' are required. See the diffs in those files in https://github.com/expo/expo/commit/fe1cc398b79528719c88ef4b82b74289117520a4. Real documentation coming soon! 😅
 
-## Usage
-```javascript
-import EXDevelopmentClient from 'expo-development-client';
-
-// TODO: What to do with the module?
-EXDevelopmentClient;
-```
