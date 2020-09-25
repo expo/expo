@@ -5,6 +5,9 @@ apply from: '../../../node_modules/react-native-unimodules/gradle.groovy'
 apply from: file("../../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle");
 applyNativeModulesSettingsGradle(settings)
 
+include(":expo-development-client")
+project(":expo-development-client").projectDir = new File("../../../packages/expo-development-client/android")
+
 include(":expo-dev-menu")
 project(":expo-dev-menu").projectDir = new File("../../../packages/expo-dev-menu/android")
 

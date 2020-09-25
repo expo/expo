@@ -881,6 +881,27 @@ CACHE_KEYS:
     PROJECT_NAME: EXPermissions
     SPECS:
       - EXPermissions (9.3.0)
+  expo-development-client:
+    BUILD_SETTINGS_CHECKSUM:
+      expo-development-client:
+        :debug: 6dbf43455a3b1eff5701df462d5c646f
+        :release: 6dbf43455a3b1eff5701df462d5c646f
+    CHECKSUM: 157880e411e083db6868cccf5c1822d952bc464d
+    FILES:
+      - "../../../../packages/expo-development-client/ios/EXDevelopmentClient.h"
+      - "../../../../packages/expo-development-client/ios/EXDevelopmentClient.m"
+      - "../../../../packages/expo-development-client/ios/EXDevelopmentClientBundle.cpp"
+      - "../../../../packages/expo-development-client/ios/EXDevelopmentClientBundle.h"
+      - "../../../../packages/expo-development-client/ios/EXDevelopmentClientBundleSource.h"
+      - "../../../../packages/expo-development-client/ios/EXDevelopmentClientBundleSource.m"
+      - "../../../../packages/expo-development-client/ios/EXDevelopmentClientController+Private.h"
+      - "../../../../packages/expo-development-client/ios/EXDevelopmentClientController.h"
+      - "../../../../packages/expo-development-client/ios/EXDevelopmentClientController.m"
+      - "../../../../packages/expo-development-client/ios/EXDevelopmentClientDevMenuExtensions.m"
+      - "../../../../packages/expo-development-client/README.md"
+    PROJECT_NAME: expo-development-client
+    SPECS:
+      - expo-development-client (0.0.1)
   expo-image:
     BUILD_SETTINGS_CHECKSUM:
       expo-image:
@@ -1322,8 +1343,8 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 2376812207103a5cb27166faed1e7156
-      Release: 54cd016a132b8e3f39b979da82ecabf0
+      Debug: 6293e5b419bcac1fb43f225854425c36
+      Release: 08bd2eeda7d2ce3b5eb591291ec47304
     FILES:
       - "${PODS_CONFIGURATION_BUILD_DIR}/EXDevMenu/EXDevMenu.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle"
@@ -1332,8 +1353,8 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 7b3d396c9e7e40fcd86b4c7f7061e278
-      Release: 5ddbdc018e1ac68550b6ff2d7a766119
+      Debug: e4847df561d72aa9a2eec2ae3e35b597
+      Release: f3586b12868a06b0ac63a50864a3b275
   PromisesObjC:
     BUILD_SETTINGS_CHECKSUM:
       PromisesObjC:

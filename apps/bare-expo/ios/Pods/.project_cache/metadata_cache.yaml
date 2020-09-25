@@ -230,6 +230,10 @@ EXPermissions:
   LABEL: EXPermissions
   PROJECT_PATH: EXPermissions.xcodeproj
   UUID: 488F0C19AB92FC4B503EB55CC688FCF5
+expo-development-client:
+  LABEL: expo-development-client
+  PROJECT_PATH: expo-development-client.xcodeproj
+  UUID: C91A385B985767C3C358660DF606378B
 expo-image:
   LABEL: expo-image
   PROJECT_PATH: expo-image.xcodeproj
