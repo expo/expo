@@ -1,4 +1,4 @@
-import { css } from '@emotion/core';
+import { css, jsx } from '@emotion/core';
 import React, { useEffect, useState } from 'react';
 import { parseDiff, Diff, Hunk } from 'react-diff-view';
 
@@ -18,6 +18,16 @@ function Title({ children }) {
   );
 }
 
+// These types come from `react-diff-view` library
+type RenderFile = (_arg0: {
+  oldRevision: string;
+  newRevision: string;
+  type: 'unified' | 'split';
+  hunks: object[];
+  newPath: string;
+  oldPath: string;
+}) => JSX.Element;
+
 export default function ConfigurationDiff({ source }) {
   const [diff, setDiff] = useState(null);
   useEffect(() => {
@@ -34,7 +44,7 @@ export default function ConfigurationDiff({ source }) {
     return null;
   }
 
-  const renderFile = ({ oldRevision, newRevision, type, hunks, newPath }) => (
+  const renderFile: RenderFile = ({ oldRevision, newRevision, type, hunks, newPath }) => (
     <div className="diff-container">
       <Title>{newPath}</Title>
       <Diff key={oldRevision + '-' + newRevision} viewType="unified" diffType={type} hunks={hunks}>

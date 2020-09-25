@@ -87,20 +87,20 @@ export default class DocumentationPage extends React.Component<Props, State> {
       window.NProgress.done();
     });
 
-    window.addEventListener('resize', this._handleResize);
+    window.addEventListener('resize', this.handleResize);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('resize', this._handleResize);
+    window.removeEventListener('resize', this.handleResize);
   }
 
-  private _handleResize = () => {
+  private handleResize = () => {
     if (WindowUtils.getViewportSize().width >= Constants.breakpoints.mobileValue) {
       window.scrollTo(0, 0);
     }
   };
 
-  private _handleSetVersion = (version: string) => {
+  private handleSetVersion = (version: string) => {
     this._version = version;
     let newPath = Utilities.replaceVersionInUrl(this.props.url.pathname, version);
 
@@ -113,56 +113,56 @@ export default class DocumentationPage extends React.Component<Props, State> {
     Router.push(newPath);
   };
 
-  private _handleShowMenu = () => {
+  private handleShowMenu = () => {
     this.setState({
       isMenuActive: true,
     });
-    this._handleHideSearch();
+    this.handleHideSearch();
   };
 
-  private _handleHideMenu = () => {
+  private handleHideMenu = () => {
     this.setState({
       isMenuActive: false,
     });
   };
 
-  private _handleToggleSearch = () => {
+  private handleToggleSearch = () => {
     this.setState(prevState => ({
       isMobileSearchActive: !prevState.isMobileSearchActive,
     }));
   };
 
-  private _handleHideSearch = () => {
+  private handleHideSearch = () => {
     this.setState({
       isMobileSearchActive: false,
     });
   };
 
-  private _isReferencePath = () => {
+  private isReferencePath = () => {
     return this.props.url.pathname.startsWith('/versions');
   };
 
-  private _isGeneralPath = () => {
+  private isGeneralPath = () => {
     return some(navigation.generalDirectories, name =>
       this.props.url.pathname.startsWith(`/${name}`)
     );
   };
 
-  private _isGettingStartedPath = () => {
+  private isGettingStartedPath = () => {
     return (
       this.props.url.pathname === '/' ||
       some(navigation.startingDirectories, name => this.props.url.pathname.startsWith(`/${name}`))
     );
   };
 
-  private _isPreviewPath = () => {
+  private isPreviewPath = () => {
     return some(navigation.previewDirectories, name =>
       this.props.url.pathname.startsWith(`/${name}`)
     );
   };
 
-  private _getCanonicalUrl = () => {
-    if (this._isReferencePath()) {
+  private getCanonicalUrl = () => {
+    if (this.isReferencePath()) {
       return `https://docs.expo.io${Utilities.replaceVersionInUrl(
         this.props.url.pathname,
         'latest'
@@ -172,7 +172,7 @@ export default class DocumentationPage extends React.Component<Props, State> {
     }
   };
 
-  private _getVersion = () => {
+  private getVersion = () => {
     let version = (this.props.asPath || this.props.url.pathname).split(`/`)[2];
     if (!version || VERSIONS.indexOf(version) === -1) {
       version = VERSIONS[0];
@@ -185,23 +185,23 @@ export default class DocumentationPage extends React.Component<Props, State> {
     return version;
   };
 
-  private _getRoutes = (): NavigationRoute[] => {
-    if (this._isReferencePath()) {
-      const version = this._getVersion();
+  private getRoutes = (): NavigationRoute[] => {
+    if (this.isReferencePath()) {
+      const version = this.getVersion();
       return navigation.reference[version];
     } else {
-      return navigation[this._getActiveTopLevelSection()];
+      return navigation[this.getActiveTopLevelSection()];
     }
   };
 
-  private _getActiveTopLevelSection = () => {
-    if (this._isReferencePath()) {
+  private getActiveTopLevelSection = () => {
+    if (this.isReferencePath()) {
       return 'reference';
-    } else if (this._isGeneralPath()) {
+    } else if (this.isGeneralPath()) {
       return 'general';
-    } else if (this._isGettingStartedPath()) {
+    } else if (this.isGettingStartedPath()) {
       return 'starting';
-    } else if (this._isPreviewPath()) {
+    } else if (this.isPreviewPath()) {
       return 'preview';
     }
   };
@@ -211,21 +211,23 @@ export default class DocumentationPage extends React.Component<Props, State> {
 
     // note: we should probably not keep this version property outside of react.
     // right now, it's used in non-deterministic ways and depending on variable states.
-    const version = this._getVersion();
-    const routes = this._getRoutes();
+    const version = this.getVersion();
+    const routes = this.getRoutes();
 
-    const isReferencePath = this._isReferencePath();
+    console.log('routes', routes);
+
+    const isReferencePath = this.isReferencePath();
 
     const headerElement = (
       <DocumentationHeader
-        activeSection={this._getActiveTopLevelSection()}
-        version={this._version}
+        activeSection={this.getActiveTopLevelSection()}
+        version={version}
         isMenuActive={this.state.isMenuActive}
         isMobileSearchActive={this.state.isMobileSearchActive}
         isAlgoliaSearchHidden={this.state.isMenuActive}
-        onShowMenu={this._handleShowMenu}
-        onHideMenu={this._handleHideMenu}
-        onToggleSearch={this._handleToggleSearch}
+        onShowMenu={this.handleShowMenu}
+        onHideMenu={this.handleHideMenu}
+        onToggleSearch={this.handleToggleSearch}
       />
     );
 
@@ -234,8 +236,8 @@ export default class DocumentationPage extends React.Component<Props, State> {
         url={this.props.url}
         asPath={this.props.asPath}
         routes={routes}
-        version={this._version}
-        onSetVersion={this._handleSetVersion}
+        version={version}
+        onSetVersion={this.handleSetVersion}
         isVersionSelectorHidden={!isReferencePath}
       />
     );
@@ -264,11 +266,11 @@ export default class DocumentationPage extends React.Component<Props, State> {
         <Head title={`${this.props.title} - Expo Documentation`}>
           <meta name="docsearch:version" content={isReferencePath ? version : 'none'} />
 
-          {(this._version === 'unversioned' || this._isPreviewPath()) && (
+          {(this._version === 'unversioned' || this.isPreviewPath()) && (
             <meta name="robots" content="noindex" />
           )}
           {this._version !== 'unversioned' && (
-            <link rel="canonical" href={this._getCanonicalUrl()} />
+            <link rel="canonical" href={this.getCanonicalUrl()} />
           )}
         </Head>
 
@@ -303,8 +305,8 @@ export default class DocumentationPage extends React.Component<Props, State> {
                 url={this.props.url}
                 asPath={this.props.asPath}
                 routes={routes}
-                version={this._version}
-                onSetVersion={this._handleSetVersion}
+                version={version}
+                onSetVersion={this.handleSetVersion}
                 isVersionSelectorHidden={!isReferencePath}
               />
             </div>

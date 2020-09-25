@@ -71,14 +71,14 @@ type Props = {
 
 export class Code extends React.Component<Props> {
   componentDidMount() {
-    this._runTippy();
+    this.runTippy();
   }
 
   componentDidUpdate() {
-    this._runTippy();
+    this.runTippy();
   }
 
-  private _runTippy() {
+  private runTippy() {
     if (process.browser) {
       global.tippy('.code-annotation', {
         theme: 'expo',
@@ -91,14 +91,14 @@ export class Code extends React.Component<Props> {
     }
   }
 
-  private _escapeHtml(text: string) {
+  private escapeHtml(text: string) {
     return text.replace(/"/g, '&quot;');
   }
 
-  private _replaceCommentsWithAnnotations(value: string) {
+  private replaceCommentsWithAnnotations(value: string) {
     return value
       .replace(/<span class="token comment">\/\* @info (.*?)\*\/<\/span>\s*/g, (match, content) => {
-        return `<span class="code-annotation" title="${this._escapeHtml(content)}">`;
+        return `<span class="code-annotation" title="${this.escapeHtml(content)}">`;
       })
       .replace(/<span class="token comment">\/\* @end \*\/<\/span>(\n *)?/g, '</span>');
   }
@@ -116,7 +116,7 @@ export class Code extends React.Component<Props> {
       const grammar = Prism.languages[lang];
       if (!grammar) throw new Error(`docs currently do not support language: ${lang}`);
       html = Prism.highlight(html, grammar, lang as Language);
-      html = this._replaceCommentsWithAnnotations(html);
+      html = this.replaceCommentsWithAnnotations(html);
     }
 
     // Remove leading newline if it exists (because inside <pre> all whitespace is dislayed as is by the browser, and

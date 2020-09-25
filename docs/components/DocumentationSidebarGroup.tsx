@@ -115,7 +115,7 @@ export default class DocumentationSidebarGroup extends React.Component<Props, { 
     return result;
   }
 
-  private _toggleIsOpen = () => {
+  private toggleIsOpen = () => {
     const isOpen = this.state.isOpen;
     this.setState({ isOpen: !isOpen });
     window.sidebarState[this.props.info.name] = !isOpen;
@@ -124,7 +124,7 @@ export default class DocumentationSidebarGroup extends React.Component<Props, { 
   render() {
     return (
       <div>
-        <a css={STYLES_TITLE} onClick={this._toggleIsOpen}>
+        <a css={STYLES_TITLE} onClick={this.toggleIsOpen}>
           {this.props.info.name}
           <ChevronDown size={16} css={this.state.isOpen && STYLES_OPEN_CHEVRON_ICON} />
         </a>

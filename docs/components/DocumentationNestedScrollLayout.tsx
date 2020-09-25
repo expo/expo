@@ -266,7 +266,7 @@ export default class DocumentationNestedScrollLayout extends React.Component<Pro
           </div>
 
           <div css={STYLES_CENTER}>
-            <ScrollContainer ref={this.contentRef} scrollHandler={this._scrollHandler}>
+            <ScrollContainer ref={this.contentRef} scrollHandler={this.scrollHandler}>
               <div css={STYLES_CENTER_WRAPPER}>{this.props.children}</div>
             </ScrollContainer>
           </div>
@@ -286,7 +286,7 @@ export default class DocumentationNestedScrollLayout extends React.Component<Pro
     );
   }
 
-  private _scrollHandler = () => {
+  private scrollHandler = () => {
     this.props.onContentScroll && this.props.onContentScroll(this.getContentScrollTop());
   };
 }

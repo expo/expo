@@ -1,25 +1,29 @@
 import GithubSlugger from 'github-slugger';
 
+function hasChildren(node: React.ReactNode): node is React.ReactElement {
+  return (node as React.ReactElement).props?.children !== undefined;
+}
+
 /**
  * Converts any object to string accepted by _Slugger_.
  * This is needed, because sometimes we receive pure string node,
  * but sometimes (e.g. when using styled text), we receive whole object (React.Element)
  *
- * @param {any} node React Node object to stringify
+ * @param {React.ReactNode} node React Node object to stringify
  */
-export const toString = (node: any): string => {
+export const toString = (node: React.ReactNode): string => {
   if (typeof node === 'string') {
     return node;
   } else if (Array.isArray(node)) {
     return node.map(toString).join('');
-  } else if (node.props.children) {
+  } else if (hasChildren(node)) {
     return toString(node.props.children);
   } else {
     return '';
   }
 };
 
-export const generateSlug = (slugger: GithubSlugger, node: any, length = 7): string => {
+export const generateSlug = (slugger: GithubSlugger, node: React.ReactNode, length = 7): string => {
   const stringToSlug = toString(node)
     .split(' ')
     .splice(0, length)

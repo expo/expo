@@ -38,15 +38,15 @@ export default class SnackInline extends React.Component<Props> {
   // keep `unversioned` in for the selected docs version though. This is used to
   // find the examples in the static dir, and we don't have a `latest` version
   // there, but we do have `unversioned`.
-  private _getSelectedDocsVersion = () => {
+  private getSelectedDocsVersion = () => {
     const { version } = this.context;
     return version === 'latest' ? LATEST_VERSION : version;
   };
 
   // Get a SDK version that Snack will understand. `latest` and `unversioned`
   // are meaningless to Snack so we filter those out and use `LATEST_VERSION` instead
-  private _getSnackSdkVersion = () => {
-    let version = this._getSelectedDocsVersion();
+  private getSnackSdkVersion = () => {
+    let version = this.getSelectedDocsVersion();
     if (version === 'unversioned') {
       version = LATEST_VERSION;
     }
@@ -54,15 +54,15 @@ export default class SnackInline extends React.Component<Props> {
     return version.replace('v', '');
   };
 
-  private _getExamplesPath = () => {
-    return `${document.location.origin}/static/examples/${this._getSelectedDocsVersion()}`;
+  private getExamplesPath = () => {
+    return `${document.location.origin}/static/examples/${this.getSelectedDocsVersion()}`;
   };
 
-  private _getDependencies = () => {
+  private getDependencies = () => {
     return [...this.props.dependencies].join(',');
   };
 
-  private _getCode = () => {
+  private getCode = () => {
     return this.contentRef.current ? this.contentRef.current.textContent : '';
   };
 
@@ -77,8 +77,8 @@ export default class SnackInline extends React.Component<Props> {
             value={this.props.defaultPlatform || DEFAULT_PLATFORM}
           />
           <input type="hidden" name="name" value={this.props.label || 'Example'} />
-          <input type="hidden" name="dependencies" value={this._getDependencies()} />
-          <input type="hidden" name="sdkVersion" value={this._getSnackSdkVersion()} />
+          <input type="hidden" name="dependencies" value={this.getDependencies()} />
+          <input type="hidden" name="sdkVersion" value={this.getSnackSdkVersion()} />
           {this.state.ready && (
             <input
               type="hidden"
@@ -86,9 +86,9 @@ export default class SnackInline extends React.Component<Props> {
               value={JSON.stringify(
                 getSnackFiles({
                   templateId: this.props.templateId,
-                  code: this._getCode(),
+                  code: this.getCode(),
                   files: this.props.files,
-                  baseURL: this._getExamplesPath(),
+                  baseURL: this.getExamplesPath(),
                 })
               )}
             />
