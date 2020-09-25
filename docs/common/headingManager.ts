@@ -1,7 +1,7 @@
 import GithubSlugger from 'github-slugger';
 import * as React from 'react';
 
-import { ElementType, PageMetadata } from './types';
+import { ElementType, PageMetadata } from '../types/common';
 import * as Utilities from './utilities';
 
 /**

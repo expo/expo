@@ -1,19 +1,26 @@
 import * as React from 'react';
 
+import { AdditionalProps } from './headingManager';
+
 import Permalink from '~/components/Permalink';
 import { Code, InlineCode } from '~/components/base/code';
 import { ExpoKitDetails, BareWorkflowDetails } from '~/components/base/details';
 import { H2, H3, H4 } from '~/components/base/headings';
 import { ExternalLink } from '~/components/base/link';
 import { UL, OL, LI } from '~/components/base/list';
-import { PDIV, P, Quote } from '~/components/base/paragraph';
+import { PDIV, B, Quote } from '~/components/base/paragraph';
 
 type Options = {
   customIconStyle?: React.CSSProperties;
   baseNestingLevel?: number;
 };
 
-const createPermalinkedComponent = (BaseComponent: React.ComponentType, options?: Options) => {
+type PermalinkedComponent = React.FC<{ level: number } & AdditionalProps>;
+
+const createPermalinkedComponent = (
+  BaseComponent: React.ComponentType,
+  options?: Options
+): PermalinkedComponent => {
   const { customIconStyle, baseNestingLevel } = options || {};
   return ({ children, level, ...props }) => {
     const nestingLevel = baseNestingLevel != null ? (level ?? 0) + baseNestingLevel : undefined;
@@ -29,7 +36,7 @@ const createPermalinkedComponent = (BaseComponent: React.ComponentType, options?
 };
 
 export const p = PDIV;
-export const strong = P.B;
+export const strong = B;
 export const ul = UL;
 export const li = LI;
 export const ol = OL;

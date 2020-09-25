@@ -3,7 +3,6 @@ import some from 'lodash/some';
 import Router from 'next/router';
 import * as React from 'react';
 
-import { NavigationRoute, Url } from '~/common/types';
 import * as Utilities from '~/common/utilities';
 import * as WindowUtils from '~/common/window';
 import DocumentationFooter from '~/components/DocumentationFooter';
@@ -19,6 +18,7 @@ import { H1 } from '~/components/base/headings';
 import navigation from '~/constants/navigation';
 import * as Constants from '~/constants/theme';
 import { VERSIONS } from '~/constants/versions';
+import { NavigationRoute, Url } from '~/types/common';
 
 const STYLES_DOCUMENT = css`
   background: #fff;
@@ -200,6 +200,8 @@ export default class DocumentationPage extends React.Component<Props, State> {
     } else if (this.isPreviewPath()) {
       return 'preview';
     }
+
+    return 'general';
   };
 
   render() {
@@ -234,7 +236,7 @@ export default class DocumentationPage extends React.Component<Props, State> {
       />
     );
 
-    const handleContentScroll = contentScrollPosition => {
+    const handleContentScroll = (contentScrollPosition: number) => {
       window.requestAnimationFrame(() => {
         if (this.sidebarRightRef && this.sidebarRightRef.current) {
           this.sidebarRightRef.current.handleContentScroll(contentScrollPosition);

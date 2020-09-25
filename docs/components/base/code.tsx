@@ -115,8 +115,12 @@ export class Code extends React.Component<Props> {
       if (lang in remapLanguages) {
         lang = remapLanguages[lang];
       }
-      const grammar = Prism.languages[lang!];
-      if (!grammar) throw new Error(`docs currently do not support language: ${lang}`);
+
+      const grammar = Prism.languages[lang as keyof typeof Prism.languages];
+      if (!grammar) {
+        throw new Error(`docs currently do not support language: ${lang}`);
+      }
+
       html = Prism.highlight(html, grammar, lang as Language);
       html = this.replaceCommentsWithAnnotations(html);
     }
@@ -135,13 +139,13 @@ export class Code extends React.Component<Props> {
   }
 }
 
-const remapLanguages = {
+const remapLanguages: Record<string, string> = {
   'objective-c': 'objc',
   sh: 'bash',
   rb: 'ruby',
 };
 
-export const InlineCode = ({ children }) => (
+export const InlineCode: React.FC = ({ children }) => (
   <code css={STYLES_INLINE_CODE} className="inline">
     {children}
   </code>

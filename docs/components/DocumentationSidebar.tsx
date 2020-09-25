@@ -1,12 +1,12 @@
 import { css } from '@emotion/core';
 import * as React from 'react';
 
-import { NavigationRoute, Url } from '~/common/types';
 import DocumentationSidebarGroup from '~/components/DocumentationSidebarGroup';
 import DocumentationSidebarLink from '~/components/DocumentationSidebarLink';
 import DocumentationSidebarTitle from '~/components/DocumentationSidebarTitle';
 import VersionSelector from '~/components/VersionSelector';
 import * as Constants from '~/constants/theme';
+import { NavigationRoute, Url } from '~/types/common';
 
 const STYLES_SIDEBAR = css`
   padding: 20px 24px 24px 24px;
@@ -53,7 +53,7 @@ export default class DocumentationSidebar extends React.Component<Props> {
     routes: [],
   };
 
-  private renderPostElements = (info, category) => {
+  private renderPostElements = (info: NavigationRoute, category: string) => {
     return (
       <DocumentationSidebarLink
         key={`${category}-${info.name}`}

@@ -6,6 +6,7 @@ import { CheckCircle } from '~/components/icons/CheckCircle';
 import { PendingCircle } from '~/components/icons/PendingCircle';
 import { XCircle } from '~/components/icons/XCircle';
 import * as Constants from '~/constants/theme';
+import { ElementType } from '~/types/common';
 
 const STYLES_TITLE = css`
   margin-bottom: 1rem;
@@ -26,9 +27,18 @@ const STYLES_LINK = css`
   grid-gap: 8px;
 `;
 
+const platforms = [
+  { title: 'Android Device', propName: 'android' },
+  { title: 'Android Emulator', propName: 'emulator' },
+  { title: 'iOS Device', propName: 'ios' },
+  { title: 'iOS Simulator', propName: 'simulator' },
+  { title: 'Web', propName: 'web' },
+];
+
+type Platform = ElementType<typeof platforms>;
 type IsSupported = boolean | undefined | { pending: string };
 
-function getInfo(isSupported: IsSupported, { title }) {
+function getInfo(isSupported: IsSupported, { title }: Platform) {
   if (isSupported === true) {
     return {
       children: <CheckCircle size={20} />,
@@ -51,14 +61,6 @@ function getInfo(isSupported: IsSupported, { title }) {
   };
 }
 
-const platforms = [
-  { title: 'Android Device', propName: 'android' },
-  { title: 'Android Emulator', propName: 'emulator' },
-  { title: 'iOS Device', propName: 'ios' },
-  { title: 'iOS Simulator', propName: 'simulator' },
-  { title: 'Web', propName: 'web' },
-];
-
 type Props = {
   title?: string;
   ios?: boolean;
@@ -67,6 +69,8 @@ type Props = {
   simulator?: boolean;
   emulator?: boolean;
 };
+
+type PlatformProps = Omit<Props, 'title'>;
 
 export default class PlatformsSection extends React.Component<Props> {
   render() {
@@ -87,7 +91,7 @@ export default class PlatformsSection extends React.Component<Props> {
                 <td
                   key={platform.title}
                   css={STYLES_CELL}
-                  {...getInfo(this.props[platform.propName], platform)}
+                  {...getInfo(this.props[platform.propName as keyof PlatformProps], platform)}
                 />
               ))}
             </tr>

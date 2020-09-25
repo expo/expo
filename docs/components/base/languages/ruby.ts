@@ -4,7 +4,7 @@
  * Adds the following new token classes:
  *     constant, builtin, variable, symbol, regex
  */
-export function installRuby(Prism) {
+export function installRuby(Prism: any) {
   Prism.languages.ruby = Prism.languages.extend('clike', {
     comment: [
       /#.*/,

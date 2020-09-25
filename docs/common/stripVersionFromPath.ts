@@ -1,4 +1,4 @@
-export default function stripVersionFromPath(path) {
+export default function stripVersionFromPath(path: string) {
   if (!path) {
     return path;
   }

@@ -16,7 +16,7 @@ const STYLES_PARAGRAPH = css`
   margin-bottom: 1rem;
 `;
 
-export const P = ({ children }) => (
+export const P: React.FC = ({ children }) => (
   <p {...attributes} css={STYLES_PARAGRAPH}>
     {children}
   </p>
@@ -29,9 +29,9 @@ const STYLES_BOLD_PARAGRAPH = css`
   font-weight: 500;
 `;
 
-const B = ({ children }) => <strong css={STYLES_BOLD_PARAGRAPH}>{children}</strong>;
-
-P.B = B;
+export const B: React.FC = ({ children }) => (
+  <strong css={STYLES_BOLD_PARAGRAPH}>{children}</strong>
+);
 
 const STYLES_PARAGRAPH_DIV = css`
   ${paragraph}
@@ -98,7 +98,7 @@ function captureEmoji(children: React.ReactNode) {
   }
 }
 
-function removeEmoji(emoji: string, children) {
+function removeEmoji(emoji: string, children: string[]) {
   const child = firstChild(children) || '';
 
   const modifiedChild = child.replace(emoji, '');
@@ -110,15 +110,15 @@ function removeEmoji(emoji: string, children) {
   }
 }
 
-export const Quote = ({ children }) => {
+export const Quote = ({ children }: { children: JSX.Element[] }) => {
   let icon: React.ReactNode = (
     <div style={{ marginTop: 2 }}>
       <Info size={16} />
     </div>
   );
 
-  const _children = React.Children.map(children, _children => {
-    const emoji = captureEmoji(_children.props.children);
+  const newChildren: JSX.Element[] = React.Children.map(children, _children => {
+    const emoji = captureEmoji(_children?.props.children);
 
     if (emoji) {
       icon = emoji;
@@ -126,19 +126,19 @@ export const Quote = ({ children }) => {
       return {
         ..._children,
         props: {
-          ...children.props,
-          children: removeEmoji(emoji, children.props.children),
+          ..._children.props,
+          children: removeEmoji(emoji, _children.props.children),
         },
       };
     }
 
-    return children;
+    return _children;
   });
 
   return (
     <blockquote {...attributes} css={STYLES_BLOCKQUOTE}>
       <div>{icon}</div>
-      <div>{_children}</div>
+      <div>{newChildren}</div>
     </blockquote>
   );
 };

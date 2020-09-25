@@ -1,13 +1,13 @@
-import { MDXProvider } from '@mdx-js/react';
+import { MDXProvider, Components } from '@mdx-js/react';
 import GithubSlugger from 'github-slugger';
 import { withRouter } from 'next/router';
 import * as React from 'react';
 
 import { HeadingManager } from '~/common/headingManager';
 import * as components from '~/common/translate-markdown';
-import { PageMetadata } from '~/common/types';
 import DocumentationPage from '~/components/DocumentationPage';
 import { HeadingsContext } from '~/components/page-higher-order/withHeadingManager';
+import { PageMetadata } from '~/types/common';
 
 const withDocumentationElements = (meta: PageMetadata) => {
   const DocumentationElementsHOC = withRouter(props => {
@@ -21,7 +21,9 @@ const withDocumentationElements = (meta: PageMetadata) => {
           asPath={router.asPath}
           sourceCodeUrl={meta.sourceCodeUrl}
           tocVisible={!meta.hideTOC}>
-          <MDXProvider components={components}>{props.children}</MDXProvider>
+          <MDXProvider components={(components as unknown) as Components}>
+            {props.children}
+          </MDXProvider>
         </DocumentationPage>
       </HeadingsContext.Provider>
     );

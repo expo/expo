@@ -22,7 +22,7 @@ export type Url = {
 
 export type NavigationRoute = {
   name: string;
-  href?: string;
+  href: string;
   as?: string;
   weight?: number;
   sidebarTitle?: string;

@@ -1,5 +1,6 @@
 import { css } from '@emotion/core';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from '@reach/tabs';
+import { string } from 'prop-types';
 import * as React from 'react';
 
 import * as Constants from '~/constants/theme';
@@ -30,78 +31,77 @@ const STYLES_BUTTON = css`
   display: inline-flex;
 `;
 
-export function CreateAppButton({ href, name }) {
-  return (
-    <a css={STYLES_BUTTON} className="snack-inline-example-button" href={href}>
-      Create {name} App
-    </a>
-  );
-}
+export const CreateAppButton: React.FC<{ href: string; name: string }> = ({ href, name }) => (
+  <a css={STYLES_BUTTON} className="snack-inline-example-button" href={href}>
+    Create {name} App
+  </a>
+);
 
-export function SocialGrid({ children }) {
-  return (
-    <div
-      style={{
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-        gridTemplateRows: '1fr',
-        display: 'grid',
-        gap: '1.35rem',
-      }}>
-      {children}
-    </div>
-  );
-}
+export const SocialGrid: React.FC = ({ children }) => (
+  <div
+    style={{
+      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+      gridTemplateRows: '1fr',
+      display: 'grid',
+      gap: '1.35rem',
+    }}>
+    {children}
+  </div>
+);
 
-export function SocialGridItem({ title, protocol = [], image, href }) {
-  return (
-    <a
-      href={href}
-      css={STYLES_LINK}
+export const SocialGridItem: React.FC<{
+  title: string;
+  image?: string;
+  href?: string;
+  protocol: string[];
+}> = ({ title, protocol = [], image, href }) => (
+  <a
+    href={href}
+    css={STYLES_LINK}
+    style={{
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: '1.65em 2em',
+      gap: '1.35rem',
+      textDecoration: 'none',
+    }}>
+    <img
       style={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: '1.65em 2em',
-        gap: '1.35rem',
-        textDecoration: 'none',
+        width: 56,
+        height: 56,
+        marginBottom: '1.2em',
+      }}
+      src={image}
+    />
+    <p
+      style={{
+        color: '#020814',
+        fontSize: '1.2em',
+        fontWeight: 900,
+        textAlign: 'center',
       }}>
-      <img
-        style={{
-          width: 56,
-          height: 56,
-          marginBottom: '1.2em',
-        }}
-        src={image}
-      />
+      {title}
+    </p>
+    {(protocol || []).length && (
       <p
+        className="protocol"
         style={{
+          transitionProperty: 'all',
+          transitionDuration: '0.15s',
+
+          marginTop: '0.4em',
           color: '#020814',
-          fontSize: '1.2em',
-          fontWeight: 900,
+          fontSize: '0.9em',
+          fontWeight: 400,
           textAlign: 'center',
         }}>
-        {title}
+        {protocol.join(' | ')}
       </p>
-      {(protocol || []).length && (
-        <p
-          className="protocol"
-          style={{
-            transitionProperty: 'all',
-            transitionDuration: '0.15s',
-
-            marginTop: '0.4em',
-            color: '#020814',
-            fontSize: '0.9em',
-            fontWeight: 400,
-            textAlign: 'center',
-          }}>
-          {protocol.join(' | ')}
-        </p>
-      )}
-    </a>
-  );
-}
+    )}
+  </a>
+);
 
 export const AuthMethodTab = TabPanel;
 
@@ -120,6 +120,8 @@ const TAB_BUTTON = css`
   }
 `;
 
+// TODO (barthap): Will not update it, because it is replaced in my Tabs PR
+// @ts-ignore
 function AuthMethodTabButton({ selected, ...props }) {
   return (
     <Tab
@@ -134,25 +136,26 @@ function AuthMethodTabButton({ selected, ...props }) {
 }
 
 // TODO(Bacon): The tab class should define the tab name
-export function AuthCodeTab(props) {
+export function AuthCodeTab(props: any) {
   return <TabPanel {...props} />;
 }
 
-export function ImplicitTab(props) {
+export function ImplicitTab(props: any) {
   return <TabPanel {...props} />;
 }
 
+// @ts-ignore
 export function AuthMethodTabSwitcher({ children, tabs }) {
   const [tabIndex, setTabIndex] = React.useState(0);
 
-  const handleTabsChange = index => {
+  const handleTabsChange = (index: number) => {
     setTabIndex(index);
   };
 
   return (
     <Tabs index={tabIndex} onChange={handleTabsChange}>
       <TabList>
-        {tabs.map((title, index) => {
+        {tabs.map((title: string, index: number) => {
           return (
             <AuthMethodTabButton key={index} selected={tabIndex === index}>
               {title}

@@ -26,28 +26,35 @@ const STYLES_LINK = css`
   }
 `;
 
-export default function InstallSection({
+type Props = {
+  packageName: string;
+  hideBareInstructions?: boolean;
+  cmd?: string[];
+  href?: string;
+};
+
+const InstallSection: React.FC<Props> = ({
   packageName,
   hideBareInstructions = false,
   cmd = [`expo install ${packageName}`],
   href = `https://github.com/expo/expo/tree/master/packages/${packageName}`,
-}) {
-  return (
-    <div>
-      <TerminalBlock cmd={cmd} />
-      {hideBareInstructions ? null : (
-        <p css={STYLES_P}>
-          If you're installing this in a{' '}
-          <a css={STYLES_LINK} href="../../introduction/managed-vs-bare/#bare-workflow">
-            bare React Native app
-          </a>
-          , you should also follow{' '}
-          <a css={STYLES_BOLD} href={href}>
-            these additional installation instructions
-          </a>
-          .
-        </p>
-      )}
-    </div>
-  );
-}
+}) => (
+  <div>
+    <TerminalBlock cmd={cmd} />
+    {hideBareInstructions ? null : (
+      <p css={STYLES_P}>
+        If you're installing this in a{' '}
+        <a css={STYLES_LINK} href="../../introduction/managed-vs-bare/#bare-workflow">
+          bare React Native app
+        </a>
+        , you should also follow{' '}
+        <a css={STYLES_BOLD} href={href}>
+          these additional installation instructions
+        </a>
+        .
+      </p>
+    )}
+  </div>
+);
+
+export default InstallSection;

@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import * as React from 'react';
 
-const redirect = destination =>
+const redirect = (destination: string) =>
   class RedirectRoute extends React.Component {
     render() {
       return (

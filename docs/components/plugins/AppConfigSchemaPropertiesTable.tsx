@@ -52,8 +52,8 @@ type FormattedProperty = {
   nestingLevel: number;
 };
 
-export function formatSchema(rawSchema: [string, Property][]): FormattedProperty[] {
-  const formattedSchema = [];
+export function formatSchema(rawSchema: [string, Property][]) {
+  const formattedSchema: FormattedProperty[] = [];
 
   rawSchema.map(property => {
     appendProperty(formattedSchema, property, 0);
@@ -98,16 +98,16 @@ function appendProperty(
   }
 }
 
-export function _getType(propertyValue) {
+export function _getType(propertyValue: Property) {
   if (propertyValue.enum) {
     return 'enum';
   } else {
-    return propertyValue.type.toString().replace(',', ' || ');
+    return propertyValue.type?.toString().replace(',', ' || ');
   }
 }
 
-export function createDescription(property) {
-  const propertyValue = property[1];
+export function createDescription(propertyEntry: [string, Property]) {
+  const propertyValue = propertyEntry[1];
 
   let propertyDescription = `**(${_getType(propertyValue)})**`;
   if (propertyValue.description) {

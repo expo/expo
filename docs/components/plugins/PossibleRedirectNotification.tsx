@@ -7,7 +7,7 @@ const CONTAINER_STYLE = css`
   margin-bottom: 20px;
 `;
 
-export default function PossibleRedirectNotification({ newUrl }) {
+const PossibleRedirectNotification: React.FC<{ newUrl: string }> = ({ newUrl }) => {
   const [targetId, setTargetId] = React.useState<string | null>(null);
 
   // We could add a listener on `window.onhashchange` but
@@ -30,4 +30,6 @@ export default function PossibleRedirectNotification({ newUrl }) {
   } else {
     return null;
   }
-}
+};
+
+export default PossibleRedirectNotification;

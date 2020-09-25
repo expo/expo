@@ -268,7 +268,7 @@ export default class DocumentationHeader extends React.PureComponent<Props> {
     );
   }
 
-  private renderSectionLinks = hiddenOnMobile => {
+  private renderSectionLinks = (hiddenOnMobile: boolean) => {
     return (
       <div css={[SECTION_LINKS_WRAPPER, hiddenOnMobile && STYLES_HIDDEN_ON_MOBILE]}>
         <SectionContainer spaceBetween={hiddenOnMobile ? 8 : 0}>

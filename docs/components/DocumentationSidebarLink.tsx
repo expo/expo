@@ -3,9 +3,9 @@ import NextLink from 'next/link';
 import * as React from 'react';
 
 import stripVersionFromPath from '~/common/stripVersionFromPath';
-import { NavigationRoute, Url } from '~/common/types';
 import { paragraph } from '~/components/base/typography';
 import * as Constants from '~/constants/theme';
+import { NavigationRoute, Url } from '~/types/common';
 
 const STYLES_LINK = css`
   display: block;

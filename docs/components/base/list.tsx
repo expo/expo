@@ -20,7 +20,7 @@ const STYLES_UNORDERED_LIST = css`
   }
 `;
 
-export const UL = ({ children }) => (
+export const UL: React.FC = ({ children }) => (
   <ul {...attributes} css={STYLES_UNORDERED_LIST}>
     {children}
   </ul>
@@ -38,7 +38,7 @@ const STYLES_ORDERED_LIST = css`
   }
 `;
 
-export const OL = ({ children }) => (
+export const OL: React.FC = ({ children }) => (
   <ol {...attributes} css={STYLES_ORDERED_LIST}>
     {children}
   </ol>
@@ -60,7 +60,7 @@ const STYLES_LIST_ITEM = css`
   }
 `;
 
-export const LI = ({ children }) => {
+export const LI: React.FC = ({ children }) => {
   return (
     <li css={STYLES_LIST_ITEM} className="docs-list-item">
       {children}
