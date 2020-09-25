@@ -6,12 +6,13 @@ import AppConfigSchemaPropertiesTable, {
   formatSchema,
   createDescription,
   _getType,
+  Property,
 } from './AppConfigSchemaPropertiesTable';
 
 import { HeadingManager } from '~/common/headingManager';
 import { HeadingsContext } from '~/components/page-higher-order/withHeadingManager';
 
-var testSchema = {
+const testSchema: Record<string, Property> = {
   name: {
     description: 'Name of your app.',
     type: 'string',
@@ -148,33 +149,33 @@ describe('createDescription', () => {
       `**(${_getType(intentFiltersObjectValue)})** - ${
         intentFiltersObjectValue.description
       }<bareworkflowDetails>${
-        intentFiltersObjectValue.meta.bareWorkflow
+        intentFiltersObjectValue.meta!.bareWorkflow
       }</bareworkflowDetails>\n\n>${intentFiltersObjectValue.exampleString}`
     );
   });
 
   test('regexHuman is added correctly to backgroundColor', () => {
     //Note: to access this subproperty is tedious without a call to formatSchema
-    const backgroundColorObject = Object.entries(Object.values<any>(testSchema)[1].properties)[1];
-    const backgroundColorObjectValue = backgroundColorObject[1] as any;
+    const backgroundColorObject = Object.entries(Object.values(testSchema)[1].properties!)[1];
+    const backgroundColorObjectValue = backgroundColorObject[1];
     const result = createDescription(backgroundColorObject);
 
     expect(result).toBe(
       `**(${_getType(backgroundColorObjectValue)})** - ${
         backgroundColorObjectValue.description
-      }\n\n${backgroundColorObjectValue.meta.regexHuman}`
+      }\n\n${backgroundColorObjectValue.meta!.regexHuman}`
     );
   });
 
   test('expoKit is added correctly to visible', () => {
     //Note: to access this subproperty is tedious without a call to formatSchema
-    const visibleObject: any[] = Object.entries(Object.values<any>(testSchema)[1].properties)[0];
+    const visibleObject = Object.entries(Object.values(testSchema)[1].properties!)[0];
     const visibleObjectValue = visibleObject[1];
     const result = createDescription(visibleObject);
 
     expect(result).toBe(
       `**(${_getType(visibleObjectValue)})** - ${visibleObjectValue.description}<expokitDetails>${
-        visibleObjectValue.meta.expoKit
+        visibleObjectValue.meta!.expoKit
       }</expokitDetails>`
     );
   });
@@ -186,7 +187,7 @@ describe('createDescription', () => {
 
     expect(result).toBe(
       `**(${_getType(nameObjectValue)})** - ${nameObjectValue.description}<bareworkflowDetails>${
-        nameObjectValue.meta.bareWorkflow
+        nameObjectValue.meta!.bareWorkflow
       }</bareworkflowDetails>`
     );
   });
@@ -200,9 +201,9 @@ describe('createDescription', () => {
       `**(${_getType(androidNavigationBarObjectValue)})** - ${
         androidNavigationBarObjectValue.description
       }<expokitDetails>${
-        androidNavigationBarObjectValue.meta.expoKit
+        androidNavigationBarObjectValue.meta!.expoKit
       }</expokitDetails><bareworkflowDetails>${
-        androidNavigationBarObjectValue.meta.bareWorkflow
+        androidNavigationBarObjectValue.meta!.bareWorkflow
       }</bareworkflowDetails>`
     );
   });

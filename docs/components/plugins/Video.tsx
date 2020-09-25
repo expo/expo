@@ -77,7 +77,7 @@ export default class Video extends React.Component<Props, State> {
     return (
       <div
         onClick={this.handleClick}
-        style={this.state.hover ? { cursor: 'pointer' } : null}
+        style={this.state.hover ? { cursor: 'pointer' } : undefined}
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}>
         <VisibilitySensor partialVisibility={isMobileOrTablet}>

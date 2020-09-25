@@ -104,7 +104,7 @@ export class Code extends React.Component<Props> {
   }
 
   render() {
-    let html = this.props.children.toString();
+    let html = this.props.children?.toString() || '';
     // mdx will add the class `language-foo` to codeblocks with the tag `foo`
     // if this class is present, we want to slice out `language-`
     let lang = this.props.className && this.props.className.slice(9).toLowerCase();
@@ -112,8 +112,10 @@ export class Code extends React.Component<Props> {
     // Allow for code blocks without a language.
     if (lang) {
       // sh isn't supported, use Use sh to match js, and ts
-      if (lang in remapLanguages) lang = remapLanguages[lang];
-      const grammar = Prism.languages[lang];
+      if (lang in remapLanguages) {
+        lang = remapLanguages[lang];
+      }
+      const grammar = Prism.languages[lang!];
       if (!grammar) throw new Error(`docs currently do not support language: ${lang}`);
       html = Prism.highlight(html, grammar, lang as Language);
       html = this.replaceCommentsWithAnnotations(html);

@@ -21,8 +21,8 @@ const STYLES_SECTION_CATEGORY = css`
   margin-bottom: 24px;
 `;
 
-function shouldSkipTitle(info: NavigationRoute, parentGroup: NavigationRoute) {
-  if (parentGroup && info.name === parentGroup.name) {
+function shouldSkipTitle(info: NavigationRoute, parentGroup?: NavigationRoute) {
+  if (info.name === parentGroup?.name) {
     // If the title of the group is Expo SDK and the section within it has the same name
     // then we shouldn't show the title twice. You might want to organize your group like
     // so it is collapsable
@@ -40,7 +40,7 @@ function shouldSkipTitle(info: NavigationRoute, parentGroup: NavigationRoute) {
 }
 
 type Props = {
-  url?: Url;
+  url: Url;
   asPath: string;
   isVersionSelectorHidden: boolean;
   routes: NavigationRoute[];

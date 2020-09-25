@@ -81,7 +81,7 @@ export default class SnackEmbed extends React.Component<Props> {
 
     var embedStyle = {};
     if (this.props.hasOwnProperty('style')) {
-      embedStyle = this.props.style;
+      embedStyle = this.props.style!;
     }
 
     return (

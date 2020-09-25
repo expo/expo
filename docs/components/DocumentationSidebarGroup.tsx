@@ -106,9 +106,9 @@ export default class DocumentationSidebarGroup extends React.Component<Props, { 
       }
     };
 
-    let posts = [];
-    sections.forEach(section => {
-      posts = [...posts, ...section.posts];
+    let posts: NavigationRoute[] = [];
+    sections?.forEach(section => {
+      posts = [...posts, ...(section?.posts || [])];
     });
 
     posts.forEach(isSectionActive);

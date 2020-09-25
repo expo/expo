@@ -200,8 +200,8 @@ type Props = {
   isAlgoliaSearchHidden: boolean;
   isMenuActive: boolean;
   isMobileSearchActive: boolean;
-  activeSection: string;
   version: string;
+  activeSection?: string;
   onToggleSearch: () => void;
   onShowMenu: () => void;
   onHideMenu: () => void;

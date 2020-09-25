@@ -74,11 +74,11 @@ export default class DocumentationSidebarTitle extends React.Component<Props, { 
   }
 
   isChildRouteActive() {
+    const { pathname } = this.props.url || {};
     let result = false;
 
-    this.props.info.posts.forEach(post => {
+    this.props.info.posts?.forEach(post => {
       const linkUrl = post.as || post.href;
-      const pathname = this.props.url.pathname;
       const asPath = this.props.asPath;
 
       if (linkUrl === pathname || linkUrl === asPath) {

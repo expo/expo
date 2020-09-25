@@ -109,7 +109,9 @@ export default class DocumentationSidebarLink extends React.Component<Props> {
       : {};
 
     return (
-      <NextLink href={this.props.info.href} as={this.props.info.as || this.props.info.href}>
+      <NextLink
+        href={this.props.info.href as string}
+        as={this.props.info.as || this.props.info.href}>
         <div css={STYLES_ACTIVE_CONTAINER}>
           {this.isSelected() && <div css={STYLES_ACTIVE_BULLET} />}
           <a

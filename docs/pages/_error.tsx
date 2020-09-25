@@ -8,7 +8,7 @@ const REDIRECT_SUFFIX = '?redirected';
 export default class Error extends React.Component {
   state = {
     notFound: false,
-    redirectPath: null,
+    redirectPath: undefined,
     redirectFailed: false,
   };
 

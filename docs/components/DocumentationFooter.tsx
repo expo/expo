@@ -45,7 +45,7 @@ const ISSUES_BLACKLIST = ['Overview'];
 type Props = {
   asPath: string;
   url?: Url;
-  title?: string;
+  title: string;
   sourceCodeUrl?: string;
 };
 

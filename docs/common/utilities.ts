@@ -59,6 +59,6 @@ export const getUserFacingVersionString = (version: string, latestVersion?: stri
   } else if (version === 'unversioned') {
     return 'Unversioned';
   } else {
-    return `SDK${version.substring(1, 3)}`;
+    return `SDK${version?.substring(1, 3)}`;
   }
 };

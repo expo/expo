@@ -138,7 +138,7 @@ export class HeadingManager {
    * @param {string} realTitle Title to find metadata for
    */
   private findMetaForTitle(realTitle: string) {
-    const entry = this._meta.headings.find(
+    const entry = this._meta.headings?.find(
       heading => heading.title === realTitle && !heading._processed
     );
     if (!entry) {

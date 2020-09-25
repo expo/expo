@@ -29,7 +29,7 @@ type RenderFile = (_arg0: {
 }) => JSX.Element;
 
 export default function ConfigurationDiff({ source }) {
-  const [diff, setDiff] = useState(null);
+  const [diff, setDiff] = useState<any[] | null>(null);
   useEffect(() => {
     async function fetchDiffAsync() {
       const response = await fetch(source);

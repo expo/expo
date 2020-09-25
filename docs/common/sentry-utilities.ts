@@ -75,7 +75,7 @@ function getMessage(event) {
 }
 
 function maybeResetReportedErrorsCache() {
-  const timestamp = parseInt(localStorage.getItem(TIMESTAMP_KEY), 10);
+  const timestamp = parseInt(localStorage.getItem(TIMESTAMP_KEY) || '', 10);
   const now = new Date().getTime();
 
   if (!timestamp) {

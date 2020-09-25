@@ -4,7 +4,7 @@ export const SNACK_URL = 'https://snack.expo.io';
 type Config = {
   baseURL: string;
   templateId?: string;
-  code?: string;
+  code?: string | null;
   files?: Record<string, string>;
 };
 

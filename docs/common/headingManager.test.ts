@@ -33,7 +33,7 @@ describe('HeadingManager tests', () => {
     const headingManager = new HeadingManager(SluggerStub, meta);
 
     const result = headingManager['findMetaForTitle'](TITLE);
-    expect(result._processed).toBeTruthy();
+    expect(result?._processed).toBeTruthy();
   });
 });
 
@@ -58,7 +58,7 @@ describe('HeadingManager.addHeading()', () => {
   });
 
   test('uses argument level over meta level', () => {
-    headingManager.metadata.headings.forEach(it => (it._processed = false));
+    headingManager.metadata.headings?.forEach(it => (it._processed = false));
 
     const result = headingManager.addHeading(META_TITLE, 4);
 

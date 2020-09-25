@@ -50,8 +50,8 @@ const STYLES_PARAGRAPH_DIV = css`
   }
 `;
 
-export const PDIV = ({ children }) => {
-  const isWider = children.props && children.props.snackId;
+export const PDIV: React.FC = ({ children }) => {
+  const isWider = (children as JSX.Element)?.props?.snackId;
   return (
     <div {...attributes} css={STYLES_PARAGRAPH_DIV} className={isWider ? 'is-wider' : ''}>
       {children}
@@ -117,14 +117,14 @@ export const Quote = ({ children }) => {
     </div>
   );
 
-  const _children = React.Children.map(children, children => {
-    const emoji = captureEmoji(children.props.children);
+  const _children = React.Children.map(children, _children => {
+    const emoji = captureEmoji(_children.props.children);
 
     if (emoji) {
       icon = emoji;
 
       return {
-        ...children,
+        ..._children,
         props: {
           ...children.props,
           children: removeEmoji(emoji, children.props.children),

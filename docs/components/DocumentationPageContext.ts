@@ -1,3 +1,3 @@
 import * as React from 'react';
 
-export default React.createContext(null);
+export default React.createContext<{ version?: string }>({});

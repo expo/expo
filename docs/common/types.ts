@@ -21,8 +21,8 @@ export type Url = {
 };
 
 export type NavigationRoute = {
+  name: string;
   href?: string;
-  name?: string;
   as?: string;
   weight?: number;
   sidebarTitle?: string;
