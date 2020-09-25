@@ -1,6 +1,6 @@
+import { css } from '@emotion/core';
 import { Tab as ReachTab, TabList, TabPanel, TabPanels, Tabs as ReachTabs } from '@reach/tabs';
 import * as React from 'react';
-import { css } from 'react-emotion';
 
 import * as Constants from '~/constants/theme';
 
@@ -27,7 +27,7 @@ function TabButton({ selected, ...props }) {
   return (
     <ReachTab
       {...props}
-      className={STYLES_TAB_BUTTON}
+      css={STYLES_TAB_BUTTON]
       style={{
         borderColor: selected ? Constants.colors.expo : 'transparent',
         color: selected ? Constants.colors.expo : Constants.colors.darkGrey,
