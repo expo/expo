@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 8.3.1 — 2020-09-23
+
+### 🐛 Bug fixes
+
 - Added `children` property to `LinearGradient` component ([#10227](https://github.com/expo/expo/pull/10227) by [@sjchmiela](https://github.com/sjchmiela))
 
 ## 8.3.0 — 2020-08-18

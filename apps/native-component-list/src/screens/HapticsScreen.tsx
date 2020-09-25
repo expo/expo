@@ -1,12 +1,21 @@
 import * as Haptics from 'expo-haptics';
 import React from 'react';
-import { SectionList, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { SectionList, SectionListData, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
 import Button from '../components/Button';
 import MonoText from '../components/MonoText';
 import Colors from '../constants/Colors';
 
-const sections = [
+type SectionData =
+  // See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  | {}
+  | {
+      accessor: string;
+      value: any;
+    };
+
+const sections: SectionListData<SectionData>[] = [
   {
     methodName: 'notificationAsync',
     method: Haptics.notificationAsync,
@@ -67,13 +76,17 @@ export default class HapticsScreen extends React.Component {
     <Header title={methodName} />
   );
 
-  keyExtractor = ({ accessor, value }: { accessor: string; value: any }) =>
-    `key-${accessor}-${value}`;
+  keyExtractor = (data: SectionData) => {
+    if ('accessor' in data && 'value' in data) {
+      return `key-${data.accessor}-${data.value}`;
+    }
+    return 'key-undefined';
+  };
 
   render() {
     return (
       <View style={styles.container}>
-        <SectionList
+        <SectionList<SectionData>
           style={styles.list}
           sections={sections}
           renderItem={this.renderItem as any}

@@ -10,7 +10,13 @@ function incrementColor(color: string, step: number) {
   return `#${'0'.repeat(6 - newIntColor.length)}${newIntColor}`;
 }
 
-export default class LinearGradientScreen extends React.Component {
+type State = {
+  count: number;
+  colorTop: string;
+  colorBottom: string;
+};
+
+export default class LinearGradientScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'LinearGradient',
   };
@@ -24,12 +30,13 @@ export default class LinearGradientScreen extends React.Component {
   _interval?: number;
 
   componentDidMount() {
+    // @ts-expect-error: TS resolves node types first
     this._interval = setInterval(() => {
-      this.setState({
-        count: this.state.count + 1,
-        colorTop: incrementColor(this.state.colorTop, 1),
-        colorBottom: incrementColor(this.state.colorBottom, -1),
-      });
+      this.setState(state => ({
+        count: state.count + 1,
+        colorTop: incrementColor(state.colorTop, 1),
+        colorBottom: incrementColor(state.colorBottom, -1),
+      }));
     }, 100);
   }
 

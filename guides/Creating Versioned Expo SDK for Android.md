@@ -1,6 +1,6 @@
 # Creating Versioned Expo SDK for Android
 
-This document will guide you through the process of creating a versioned snapshot of Expo SDK solely for Expo client's use. Instructions for creating a new version of `expokit` which is used in ejected projects, see `Updating Expokit Package For Ejected Android Projects` doc.
+This document will guide you through the process of creating a versioned snapshot of Expo SDK solely for Expo client's use.
 
 1. **Ensure that `@expo/xdl` dependency is up-to-date**
 

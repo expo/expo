@@ -46,7 +46,7 @@ export async function launchImageLibraryAsync(options) {
     if (!ExponentImagePicker.launchImageLibraryAsync) {
         throw new UnavailabilityError('ImagePicker', 'launchImageLibraryAsync');
     }
-    return await ExponentImagePicker.launchImageLibraryAsync(options);
+    return await ExponentImagePicker.launchImageLibraryAsync(options ?? {});
 }
 export { MediaTypeOptions, VideoExportPreset, PermissionStatus, };
 //# sourceMappingURL=ImagePicker.js.map

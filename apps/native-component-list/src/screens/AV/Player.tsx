@@ -18,17 +18,16 @@ import Colors from '../../constants/Colors';
 
 interface Props {
   header?: JSX.Element;
-  extraButtons?: Array<
-    () =>
-      | React.ReactNode
-      | {
-          iconName: string;
-          title: string;
-          onPress: (event: GestureResponderEvent) => void;
-          active: boolean;
-          disable?: boolean;
-        }
-  >;
+  extraButtons?: (
+    | {
+        iconName: string;
+        title: string;
+        onPress: (event: GestureResponderEvent) => void;
+        active: boolean;
+        disable?: boolean;
+      }
+    | (() => React.ReactNode)
+  )[];
   style?: StyleProp<ViewStyle>;
 
   // Functions
@@ -51,7 +50,7 @@ interface Props {
   durationMillis: number;
   shouldCorrectPitch: boolean;
   isPlaying: boolean;
-  isMuted?: boolean;
+  isMuted: boolean;
 
   // Error
   errorMessage?: string;
@@ -347,7 +346,9 @@ function VolumeSlider({
   }, [isMutedActive, value]);
 
   React.useEffect(() => {
-    if (value !== volume) setValue(volume);
+    if (value !== volume) {
+      onValueChanged({ volume, isMuted });
+    }
   }, [volume]);
 
   const height = 36;
@@ -365,7 +366,7 @@ function VolumeSlider({
       <Slider
         value={isMutedActive ? 0 : value}
         maximumValue={1}
-        style={{ height: height }}
+        style={{ height, flex: 1 }}
         thumbTintColor={color}
         minimumTrackTintColor={color}
         onSlidingComplete={value => {

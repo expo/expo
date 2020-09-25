@@ -130,6 +130,15 @@ public class RemoteLoader {
 
     UpdateEntity newUpdateEntity = manifest.getUpdateEntity();
     UpdateEntity existingUpdateEntity = mDatabase.updateDao().loadUpdateWithId(newUpdateEntity.id);
+
+    // if something has gone wrong on the server and we have two updates with the same id
+    // but different scope keys, we should try to launch something rather than show a cryptic
+    // error to the user.
+    if (existingUpdateEntity != null && !existingUpdateEntity.scopeKey.equals(newUpdateEntity.scopeKey)) {
+      mDatabase.updateDao().setUpdateScopeKey(existingUpdateEntity, newUpdateEntity.scopeKey);
+      Log.e(TAG, "Loaded an update with the same ID but a different scopeKey than one we already have on disk. This is a server error. Overwriting the scopeKey and loading the existing update.");
+    }
+
     if (existingUpdateEntity != null && existingUpdateEntity.status == UpdateStatus.READY) {
       // hooray, we already have this update downloaded and ready to go!
       mUpdateEntity = existingUpdateEntity;

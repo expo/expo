@@ -15,6 +15,7 @@
     "schema-sync": "node --async-stack-traces --unhandled-rejections=strict ./scripts/schema-sync.js"
   },
   "dependencies": {
+    "@emotion/core": "^10.0.35",
     "@expo/spawn-async": "^1.5.0",
     "@mdx-js/loader": "^1.6.16",
     "@mdx-js/mdx": "^1.6.16",
@@ -27,8 +28,8 @@
     "cross-env": "^5.2.0",
     "docsearch.js": "^2.5.2",
     "emoji-regex": "9.0.0",
-    "emotion": "^9.2.9",
-    "emotion-server": "^9.2.9",
+    "emotion": "^10.0.27",
+    "emotion-server": "^10.0.27",
     "front-matter": "^2.3.0",
     "fs-extra": "^6.0.1",
     "github-slugger": "^1.2.0",
@@ -40,14 +41,15 @@
     "react": "^16.8.1",
     "react-diff-view": "^2.4.4",
     "react-dom": "^16.8.1",
-    "react-emotion": "^9.2.9",
     "react-player": "^1.11.1",
     "react-visibility-sensor": "^5.1.0"
   },
   "devDependencies": {
+    "@emotion/babel-preset-css-prop": "^10.0.27",
     "@testing-library/jest-dom": "5.11.0",
     "@testing-library/react": "10.4.3",
     "axios": "^0.19.2",
+    "babel-plugin-emotion": "^10.0.33",
     "danger": "^9.2.10",
     "http-server": "^0.12.3",
     "jest": "26.1.0",

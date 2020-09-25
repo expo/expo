@@ -1,5 +1,5 @@
+import { css } from '@emotion/core';
 import * as React from 'react';
-import { css } from 'react-emotion';
 
 import * as Constants from '~/constants/theme';
 import { CheckCircle } from '~/components/icons/CheckCircle';
@@ -35,7 +35,7 @@ function getInfo(isSupported, { title }) {
   } else if (typeof isSupported === 'object') {
     return {
       children: (
-        <a className={STYLES_LINK} target="_blank" href={isSupported.pending}>
+        <a css={STYLES_LINK} target="_blank" href={isSupported.pending}>
           <PendingCircle size={20} /> Pending
         </a>
       ),
@@ -63,7 +63,7 @@ export default class PlatformsSection extends React.Component {
   render() {
     return (
       <div>
-        <H4 className={STYLES_TITLE}>{this.props.title || 'Platform Compatibility'}</H4>
+        <H4 css={STYLES_TITLE}>{this.props.title || 'Platform Compatibility'}</H4>
         <table>
           <thead>
             <tr>
@@ -77,7 +77,7 @@ export default class PlatformsSection extends React.Component {
               {platforms.map(platform => (
                 <td
                   key={platform.title}
-                  className={STYLES_CELL}
+                  css={STYLES_CELL}
                   {...getInfo(this.props[platform.propName], platform)}
                 />
               ))}

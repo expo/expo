@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { HeaderStyleInterpolators } from '@react-navigation/stack';
 import * as React from 'react';
 import { Platform, StyleSheet, TouchableOpacity } from 'react-native';
@@ -24,24 +25,28 @@ const styles = StyleSheet.create({
   },
 });
 
-const StackConfig = ({ navigation }) => ({
-  cardStyle: styles.card,
-  screenOptions: () => ({
-    headerStyleInterpolator: HeaderStyleInterpolators.forUIKit,
-    headerStyle: styles.header,
-    headerTintColor: Colors.tintColor,
-    headerTitleStyle: styles.headerTitle,
-    headerPressColorAndroid: Colors.tintColor,
-    headerRight: () => (
-      <TouchableOpacity onPress={() => navigation.navigate('search')} style={{ marginRight: 16 }}>
-        <Ionicons
-          name="md-search"
-          size={Platform.OS === 'ios' ? 22 : 25}
-          color={Colors.tintColor}
-        />
-      </TouchableOpacity>
-    ),
-  }),
-});
-
-export default StackConfig;
+export default function getStackConfig({
+  navigation,
+}: {
+  navigation: BottomTabNavigationProp<any>;
+}) {
+  return {
+    cardStyle: styles.card,
+    screenOptions: () => ({
+      headerStyleInterpolator: HeaderStyleInterpolators.forUIKit,
+      headerStyle: styles.header,
+      headerTintColor: Colors.tintColor,
+      headerTitleStyle: styles.headerTitle,
+      headerPressColorAndroid: Colors.tintColor,
+      headerRight: () => (
+        <TouchableOpacity onPress={() => navigation.navigate('search')} style={{ marginRight: 16 }}>
+          <Ionicons
+            name="md-search"
+            size={Platform.OS === 'ios' ? 22 : 25}
+            color={Colors.tintColor}
+          />
+        </TouchableOpacity>
+      ),
+    }),
+  };
+}

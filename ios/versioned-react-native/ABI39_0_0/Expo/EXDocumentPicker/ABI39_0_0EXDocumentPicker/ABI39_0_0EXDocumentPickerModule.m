@@ -60,7 +60,7 @@ static NSString * ABI39_0_0EXConvertMimeTypeToUTI(NSString *mimeType)
   return (__bridge_transfer NSString *)uti;
 }
 
-@interface ABI39_0_0EXDocumentPickerModule () <UIDocumentPickerDelegate>
+@interface ABI39_0_0EXDocumentPickerModule () <UIDocumentPickerDelegate, UIAdaptivePresentationControllerDelegate>
 
 @property (nonatomic, weak) ABI39_0_0UMModuleRegistry *moduleRegistry;
 @property (nonatomic, weak) id<ABI39_0_0UMFileSystemInterface> fileSystem;
@@ -109,16 +109,20 @@ ABI39_0_0UM_EXPORT_METHOD_AS(getDocumentAsync,
     UIDocumentPickerViewController *documentPickerVC;
 
     @try {
-      if (@available(iOS 14, *)) {
+      // TODO: drop #if macro once Xcode is updated to 12
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 140000
+      if (@available(iOS 14, *)) {
         UTType* utType = ABI39_0_0EXConvertMimeTypeToUTType(mimeType);
         documentPickerVC = [[UIDocumentPickerViewController alloc] initForOpeningContentTypes:@[utType] asCopy:YES];
-#endif
       } else {
+#endif
         NSString* type = ABI39_0_0EXConvertMimeTypeToUTI(mimeType);
         documentPickerVC = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[type]
                                                                                   inMode:UIDocumentPickerModeImport];
+        // TODO: drop #if macro once Xcode is updated to 12
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 140000
       }
+#endif
     }
     @catch (NSException *exception) {
       reject(@"E_PICKER_ICLOUD", @"DocumentPicker requires the iCloud entitlement. If you are using ExpoKit, you need to add this capability to your App Id. See `https://docs.expo.io/versions/latest/expokit/advanced-expokit-topics#using-documentpicker` for more info.", nil);
@@ -127,6 +131,7 @@ ABI39_0_0UM_EXPORT_METHOD_AS(getDocumentAsync,
       return;
     }
     documentPickerVC.delegate = self;
+    documentPickerVC.presentationController.delegate = self;
 
     // Because of the way IPad works with Actionsheets such as this one, we need to provide a source view and set it's position.
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -178,11 +183,18 @@ ABI39_0_0UM_EXPORT_METHOD_AS(getDocumentAsync,
   _reject = nil;
 }
 
+// Document picker view controller has been cancelled with a button
 - (void)documentPickerWasCancelled:(UIDocumentPickerViewController *)controller
 {
   _resolve(@{@"type": @"cancel"});
   _resolve = nil;
   _reject = nil;
+}
+
+// Document picker view controller has been dismissed by gesture
+- (void)presentationControllerDidDismiss:(UIPresentationController *)presentationController
+{
+  [self documentPickerWasCancelled:presentationController.presentedViewController];
 }
 
 + (unsigned long long)getFileSize:(NSString *)path error:(NSError **)error

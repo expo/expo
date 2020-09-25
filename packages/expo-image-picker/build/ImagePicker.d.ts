@@ -6,5 +6,5 @@ export declare function requestCameraPermissionsAsync(): Promise<CameraPermissio
 export declare function requestCameraRollPermissionsAsync(): Promise<CameraRollPermissionResponse>;
 export declare function getPendingResultAsync(): Promise<(ImagePickerResult | ImagePickerErrorResult)[]>;
 export declare function launchCameraAsync(options?: ImagePickerOptions): Promise<ImagePickerResult>;
-export declare function launchImageLibraryAsync<T extends ImagePickerOptions>(options: T): Promise<ExpandImagePickerResult<T>>;
+export declare function launchImageLibraryAsync<T extends ImagePickerOptions>(options?: T): Promise<ExpandImagePickerResult<T>>;
 export { MediaTypeOptions, ImagePickerOptions, ImagePickerResult, ImagePickerErrorResult, VideoExportPreset, CameraPermissionResponse, CameraRollPermissionResponse, PermissionStatus, PermissionExpiration, };

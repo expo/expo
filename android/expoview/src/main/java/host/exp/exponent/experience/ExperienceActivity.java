@@ -39,7 +39,7 @@ import javax.inject.Inject;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import de.greenrobot.event.EventBus;
-import expo.modules.splashscreen.SplashScreen;
+import expo.modules.splashscreen.singletons.SplashScreen;
 import host.exp.exponent.ABIVersion;
 import host.exp.exponent.AppLoader;
 import host.exp.exponent.Constants;
@@ -727,7 +727,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
    */
 
   private void addNotification(final JSONObject options) {
-    if (mManifestUrl == null || mManifest == null) {
+    if (mIsShellApp || mManifestUrl == null || mManifest == null) {
       return;
     }
 
@@ -736,39 +736,13 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       return;
     }
 
-    if (!mManifest.optBoolean(ExponentManifest.MANIFEST_SHOW_EXPONENT_NOTIFICATION_KEY) && mIsShellApp) {
-      return;
-    }
-
-    RemoteViews remoteViews = new RemoteViews(getPackageName(), mIsShellApp ? R.layout.notification_shell_app : R.layout.notification);
+    RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.notification);
     remoteViews.setCharSequence(R.id.home_text_button, "setText", name);
 
     // Home
     Intent homeIntent = new Intent(this, LauncherActivity.class);
     remoteViews.setOnClickPendingIntent(R.id.home_image_button, PendingIntent.getActivity(this, 0,
       homeIntent, 0));
-
-    // Info
-    // Doing PendingIntent.getActivity doesn't work here - it opens the activity in the main
-    // stack and not in the experience's stack
-    remoteViews.setOnClickPendingIntent(R.id.home_text_button, PendingIntent.getService(this, 0,
-      ExponentIntentService.getActionInfoScreen(this, mManifestUrl), PendingIntent.FLAG_UPDATE_CURRENT));
-
-    if (!mIsShellApp) {
-      // Share
-      // TODO: add analytics
-      Intent shareIntent = new Intent(Intent.ACTION_SEND);
-      shareIntent.setType("text/plain");
-      shareIntent.putExtra(Intent.EXTRA_SUBJECT, name + " on Exponent");
-      shareIntent.putExtra(Intent.EXTRA_TEXT, mManifestUrl);
-      remoteViews.setOnClickPendingIntent(R.id.share_button, PendingIntent.getActivity(this, 0,
-        Intent.createChooser(shareIntent, "Share a link to " + name), PendingIntent.FLAG_UPDATE_CURRENT));
-
-      // Save
-      remoteViews.setOnClickPendingIntent(R.id.save_button, PendingIntent.getService(this, 0,
-        ExponentIntentService.getActionSaveExperience(this, mManifestUrl),
-        PendingIntent.FLAG_UPDATE_CURRENT));
-    }
 
     // Reload
     remoteViews.setOnClickPendingIntent(R.id.reload_button, PendingIntent.getService(this, 0,

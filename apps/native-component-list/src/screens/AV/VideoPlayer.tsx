@@ -127,12 +127,11 @@ function ResizeModeSegmentedControl({
 }: {
   onValueChange: (value: ResizeMode) => void;
 }) {
-  const resizeMap = {
+  const resizeMap: Record<string, undefined | ResizeMode> = {
     stretch: ResizeMode.STRETCH,
     contain: ResizeMode.CONTAIN,
     cover: ResizeMode.COVER,
   };
-  const data = Object.keys(resizeMap);
   const [index, setIndex] = React.useState(1);
   return (
     <View
@@ -144,14 +143,19 @@ function ResizeModeSegmentedControl({
         flex: 1,
       }}>
       <SegmentedControl
-        values={data}
+        values={Object.keys(resizeMap)}
         fontStyle={{ color: Colors.tintColor }}
         selectedIndex={index}
         tintColor={'white'}
         onChange={event => {
           setIndex(event.nativeEvent.selectedSegmentIndex);
         }}
-        onValueChange={value => onValueChange(resizeMap[value])}
+        onValueChange={value => {
+          const mappedValue = resizeMap[value];
+          if (mappedValue) {
+            onValueChange(mappedValue);
+          }
+        }}
       />
       <Text
         style={{

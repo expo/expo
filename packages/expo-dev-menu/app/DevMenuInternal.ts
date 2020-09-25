@@ -48,15 +48,14 @@ export type DevMenuKeyCommand = null | {
   modifiers: DevMenuKeyCommandsEnum;
 };
 
-// These options represent iOS `UIKeyModifierFlags`.
 export enum DevMenuKeyCommandsEnum {
-  CONTROL = 262144,
-  COMMAND = 1048576,
-  ALT = 524288,
-  SHIFT = 131072,
+  CONTROL = 1 << 0,
+  ALT = 1 << 1,
+  COMMAND = 1 << 2,
+  SHIFT = 1 << 3,
 }
 
-export const doesDeviceSupportKeyCommands = DevMenu.isDeviceSupportsKeyCommands;
+export const doesDeviceSupportKeyCommands = DevMenu.doesDeviceSupportKeyCommands;
 
 export async function dispatchActionAsync(actionId: string): Promise<void> {
   return await DevMenu.dispatchActionAsync(actionId);

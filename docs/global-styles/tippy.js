@@ -1,7 +1,9 @@
-import * as Constants from '~/constants/theme';
-import { paragraph } from '~/components/base/typography';
+import { css } from '@emotion/core';
 
-export const globalTippy = `
+import { paragraph } from '~/components/base/typography';
+import * as Constants from '~/constants/theme';
+
+export const globalTippy = css`
   div.tippy-tooltip {
     text-align: left;
     background: ${Constants.expoColors.black};
@@ -12,7 +14,7 @@ export const globalTippy = `
   }
 
   .tippy-tooltip.expo-theme .tippy-content {
-    ${paragraph},
+    ${paragraph};
     color: ${Constants.colors.white};
     font-family: ${Constants.fonts.book};
     background: ${Constants.expoColors.black};

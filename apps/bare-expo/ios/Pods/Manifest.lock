@@ -104,7 +104,7 @@ PODS:
     - UMCore
     - UMFileSystemInterface
     - UMImageLoaderInterface
-  - EXImagePicker (9.1.0):
+  - EXImagePicker (9.1.1):
     - UMCore
     - UMFileSystemInterface
     - UMPermissionsInterface
@@ -112,7 +112,7 @@ PODS:
     - UMCore
   - EXKeepAwake (8.3.0):
     - UMCore
-  - EXLinearGradient (8.3.0):
+  - EXLinearGradient (8.3.1):
     - UMCore
   - EXLocalAuthentication (9.3.0):
     - UMConstantsInterface
@@ -970,7 +970,7 @@ SPEC CHECKSUMS:
   EXContacts: dbc32dd1e2798cce1beeced230da989931b47890
   EXCrypto: 80ee65669a5466a7ce9426a8ae985a50be7f3a5d
   EXDevice: e6ede72e08f6adc4b224d0628a9963d394ab9226
-  EXDevMenu: 66bb2b59b4d10de1ce4a3920a2be9c3f222147db
+  EXDevMenu: ef42d21bf1bcc2c505250247f1cbfaeba5f4b85d
   EXDevMenuInterface: 10940ba80c09a99703ee1850b94f7e632c1d4764
   EXDocumentPicker: 417ff098decc69113ed67a5ddb5e13109583a55c
   EXErrorRecovery: 16696fe023fb46a32c3b09033abc361cfcf150a7
@@ -986,10 +986,10 @@ SPEC CHECKSUMS:
   EXHaptics: 4db5fa74b5a87148af4355246981b2dd2d7b9e77
   EXImageLoader: 7153fb1307ac643299a9072b71da0d276f4c7789
   EXImageManipulator: 8bb065265ddaa9d526b70a6825123b85d34d32a4
-  EXImagePicker: 214b34ea9336e2c649ce98315de68fce2349983a
+  EXImagePicker: f2fe9ee19a97b225658e80733896275a198c60f2
   EXInAppPurchases: c647953e5e1dad71bbda2e3bb92966dac440ede4
   EXKeepAwake: 76eed36786534f6a476748e600fa6faf07ac3d09
-  EXLinearGradient: 2f0230aa5d79c956aba618df3988eb0a9d283399
+  EXLinearGradient: c7ca1c2933ac240ffbc805c014a72947e227ac75
   EXLocalAuthentication: 692a1fdd27389b483b44919388e2a814d43af104
   EXLocalization: 8621f60b37c3d3ad8c8e27c2cb3b05ebc7b484a2
   EXLocation: a3b92458ec5c4356c5d932fe0d2bbe552ef7f4cb

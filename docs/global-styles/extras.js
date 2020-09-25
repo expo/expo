@@ -1,7 +1,8 @@
-import * as Constants from '~/constants/theme';
-import { h3, h4, p } from '~/components/base/typography';
+import { css } from '@emotion/core';
 
-export const globalExtras = `
+import * as Constants from '~/constants/theme';
+
+export const globalExtras = css`
   img.wide-image {
     max-width: 900px;
   }

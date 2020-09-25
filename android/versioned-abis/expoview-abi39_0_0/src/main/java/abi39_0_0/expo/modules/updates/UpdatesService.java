@@ -66,6 +66,11 @@ public class UpdatesService implements InternalModule, UpdatesInterface {
   }
 
   @Override
+  public boolean canRelaunch() {
+    return getConfiguration().isEnabled();
+  }
+
+  @Override
   public UpdateEntity getLaunchedUpdate() {
     return UpdatesController.getInstance().getLaunchedUpdate();
   }

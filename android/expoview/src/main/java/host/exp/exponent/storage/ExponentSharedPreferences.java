@@ -42,7 +42,6 @@ public class ExponentSharedPreferences {
 
   // Other
   public static final String IS_FIRST_KERNEL_RUN_KEY = "is_first_kernel_run";
-  public static final String HAS_SAVED_SHORTCUT_KEY = "has_saved_shortcut";
   public static final String UUID_KEY = "uuid";
   public static final String FCM_TOKEN_KEY = "fcm_token";
   public static final String REFERRER_KEY = "referrer";
@@ -68,7 +67,6 @@ public class ExponentSharedPreferences {
 
   static {
     DEFAULT_VALUES.put(USE_INTERNET_KERNEL_KEY, ExpoViewBuildConfig.USE_INTERNET_KERNEL);
-    DEFAULT_VALUES.put(HAS_SAVED_SHORTCUT_KEY, false);
     DEFAULT_VALUES.put(IS_FIRST_KERNEL_RUN_KEY, true);
     DEFAULT_VALUES.put(IS_ONBOARDING_FINISHED_KEY, false);
     DEFAULT_VALUES.put(NUX_HAS_FINISHED_FIRST_RUN_KEY, false);
@@ -124,10 +122,6 @@ public class ExponentSharedPreferences {
 
   public boolean shouldUseInternetKernel() {
     return getBoolean(USE_INTERNET_KERNEL_KEY);
-  }
-
-  public boolean hasSavedShortcut() {
-    return getBoolean(HAS_SAVED_SHORTCUT_KEY);
   }
 
   public String getUUID() {

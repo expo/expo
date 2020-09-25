@@ -100,7 +100,7 @@ function runTiming(clock: any, value: any, dest: any, startStopClock = true) {
       startStopClock && startClock(clock),
     ]),
     timing(clock, state, config),
-    cond(state.finished, startStopClock && stopClock(clock)),
+    cond(state.finished, startStopClock ? stopClock(clock) : []),
     state.position,
   ];
 }

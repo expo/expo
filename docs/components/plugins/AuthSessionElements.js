@@ -1,5 +1,5 @@
+import { css } from '@emotion/core';
 import * as React from 'react';
-import { css } from 'react-emotion';
 
 const STYLES_LINK = css`
   text-decoration: none;
@@ -29,7 +29,7 @@ const STYLES_BUTTON = css`
 
 export function CreateAppButton({ href, name }) {
   return (
-    <a className={`snack-inline-example-button ${STYLES_BUTTON}`} href={href}>
+    <a css={STYLES_BUTTON} className='snack-inline-example-button' href={href}>
       Create {name} App
     </a>
   );
@@ -53,7 +53,7 @@ export function SocialGridItem({ title, protocol = [], image, href }) {
   return (
     <a
       href={href}
-      className={STYLES_LINK}
+      css={STYLES_LINK}
       style={{
         display: 'flex',
         flexDirection: 'column',

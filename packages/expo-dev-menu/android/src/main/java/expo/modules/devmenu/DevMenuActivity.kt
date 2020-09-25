@@ -1,10 +1,11 @@
 package expo.modules.devmenu
 
+import android.content.Context
 import android.os.Bundle
 import android.view.KeyEvent
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
-import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView
+import com.facebook.react.ReactRootView
 import java.util.*
 
 /**
@@ -27,16 +28,16 @@ class DevMenuActivity : ReactActivity() {
         putBundle("appInfo", DevMenuManager.getSession()?.appInfo ?: Bundle.EMPTY)
       }
 
-      override fun createRootView() = RNGestureHandlerEnabledRootView(this@DevMenuActivity)
+      override fun createRootView() = getVendoredClass<ReactRootView>("com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView", arrayOf(Context::class.java), arrayOf(this@DevMenuActivity))
     }
   }
 
-  override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+  override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
     return if (keyCode == KeyEvent.KEYCODE_MENU || DevMenuManager.onKeyEvent(keyCode, event)) {
       DevMenuManager.closeMenu()
       true
     } else {
-      super.onKeyDown(keyCode, event)
+      super.onKeyUp(keyCode, event)
     }
   }
 

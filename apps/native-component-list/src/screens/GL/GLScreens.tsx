@@ -28,7 +28,7 @@ const GLCameraScreen = optionalRequire(() => require('./GLCameraScreen'));
 
 interface Screens {
   [key: string]: {
-    screen: React.ComponentType & { title: string };
+    screen: React.ComponentType & { title?: string };
   };
 }
 
@@ -150,6 +150,8 @@ const GLScreens: Screens = {
   },
 
   ProcessingInAndOut: {
+    // See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+    // eslint-disable-next-line @typescript-eslint/ban-types
     screen: ProcessingWrap<{}>(`'In and out' from openprocessing.org`, p => {
       p.setup = () => {
         p.strokeWeight(7);
@@ -202,6 +204,8 @@ const GLScreens: Screens = {
   },
 
   ProcessingNoClear: {
+    // See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+    // eslint-disable-next-line @typescript-eslint/ban-types
     screen: ProcessingWrap<{}>('Draw without clearing screen with processing.js', p => {
       let t = 0;
 

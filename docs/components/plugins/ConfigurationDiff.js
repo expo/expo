@@ -1,17 +1,6 @@
+import { css } from '@emotion/core';
 import React, { useEffect, useState } from 'react';
 import { parseDiff, Diff, Hunk } from 'react-diff-view';
-import { css } from 'react-emotion';
-
-import * as Constants from '~/constants/theme';
-
-const STYLES_BOLD = css`
-  font-family: ${Constants.fonts.demi};
-  font-weight: 400;
-  text-decoration: none;
-  :hover {
-    text-decoration: underline;
-  }
-`;
 
 const TITLE_CONTAINER = css`
   padding: 15px;
@@ -23,7 +12,7 @@ const TITLE_CONTAINER = css`
 
 function Title({ children }) {
   return (
-    <div className={TITLE_CONTAINER}>
+    <div css={TITLE_CONTAINER}>
       <span>{children}</span>
     </div>
   );

@@ -1,6 +1,5 @@
-import NextLink from 'next/link';
+import { css } from '@emotion/core';
 import * as React from 'react';
-import styled, { keyframes, css } from 'react-emotion';
 
 import * as Constants from '~/constants/theme';
 import stripVersionFromPath from '~/common/stripVersionFromPath';
@@ -131,13 +130,13 @@ export default class DocumentationSidebarGroup extends React.Component {
   render() {
     return (
       <div>
-        <a className={STYLES_TITLE} onClick={this._toggleIsOpen}>
+        <a css={STYLES_TITLE} onClick={this._toggleIsOpen}>
           {this.props.info.name}
-          <ChevronDown size={16} className={this.state.isOpen ? STYLES_OPEN_CHEVRON_ICON : null} />
+          <ChevronDown size={16} css={this.state.isOpen && STYLES_OPEN_CHEVRON_ICON} />
         </a>
-        {this.state.isOpen ? (
-          <div className={STYLES_SIDEBAR_INDENT}>{this.props.children}</div>
-        ) : null}
+        {this.state.isOpen && (
+          <div css={STYLES_SIDEBAR_INDENT}>{this.props.children}</div>
+        )}
       </div>
     );
   }

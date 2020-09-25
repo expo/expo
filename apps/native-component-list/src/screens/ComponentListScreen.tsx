@@ -47,12 +47,11 @@ function LinkButton({
         pointerEvents={rest.disabled === true ? 'none' : 'auto'}
         onPressIn={() => setIsPressed(true)}
         onPressOut={() => setIsPressed(false)}
-        onClick={onPress}
+        onPress={onPress}
         {...props}
         {...rest}
         style={[
           {
-            transitionDuration: '150ms',
             backgroundColor: isPressed ? '#dddddd' : undefined,
           },
           rest.style,

@@ -10887,7 +10887,7 @@ CACHE_KEYS:
       EXImagePicker:
         :debug: 3db5d5996c5eebe6da942be37e175d8a
         :release: 3db5d5996c5eebe6da942be37e175d8a
-    CHECKSUM: 214b34ea9336e2c649ce98315de68fce2349983a
+    CHECKSUM: f2fe9ee19a97b225658e80733896275a198c60f2
     FILES:
       - "../../packages/expo-image-picker/ios/EXImagePicker/EXImagePicker.h"
       - "../../packages/expo-image-picker/ios/EXImagePicker/EXImagePicker.m"
@@ -10897,7 +10897,7 @@ CACHE_KEYS:
       - "../../packages/expo-image-picker/ios/EXImagePicker/EXImagePickerCameraRollPermissionRequester.m"
     PROJECT_NAME: EXImagePicker
     SPECS:
-      - EXImagePicker (9.1.0)
+      - EXImagePicker (9.1.1)
   EXKeepAwake:
     BUILD_SETTINGS_CHECKSUM:
       EXKeepAwake:
@@ -10915,7 +10915,7 @@ CACHE_KEYS:
       EXLinearGradient:
         :debug: 2887b3f3a283a7d788c68076b9176587
         :release: 2887b3f3a283a7d788c68076b9176587
-    CHECKSUM: 2f0230aa5d79c956aba618df3988eb0a9d283399
+    CHECKSUM: c7ca1c2933ac240ffbc805c014a72947e227ac75
     FILES:
       - "../../packages/expo-linear-gradient/ios/EXLinearGradient/EXLinearGradient.h"
       - "../../packages/expo-linear-gradient/ios/EXLinearGradient/EXLinearGradient.m"
@@ -10925,7 +10925,7 @@ CACHE_KEYS:
       - "../../packages/expo-linear-gradient/ios/EXLinearGradient/EXLinearGradientManager.m"
     PROJECT_NAME: EXLinearGradient
     SPECS:
-      - EXLinearGradient (8.3.0)
+      - EXLinearGradient (8.3.1)
   EXLocalAuthentication:
     BUILD_SETTINGS_CHECKSUM:
       EXLocalAuthentication:
@@ -11290,7 +11290,7 @@ CACHE_KEYS:
       EXUpdates:
         :debug: 30bb1eebef7c91abc546b50f14e62479
         :release: 30bb1eebef7c91abc546b50f14e62479
-    CHECKSUM: 8f04b8b093e4eff4c893591cc170be898e6357b4
+    CHECKSUM: 9ed0693ab1c8df9f0472cfb4549d5edccdf05849
     FILES:
       - "../../packages/expo-updates/ios/EXUpdates/AppLauncher/EXUpdatesAppLauncher.h"
       - "../../packages/expo-updates/ios/EXUpdates/AppLauncher/EXUpdatesAppLauncherNoDatabase.h"
@@ -11340,7 +11340,7 @@ CACHE_KEYS:
       - "../../packages/expo-updates/ios/EXUpdates/Update/EXUpdatesUpdate.m"
     PROJECT_NAME: EXUpdates
     SPECS:
-      - EXUpdates (0.3.3)
+      - EXUpdates (0.3.4)
   EXVideoThumbnails:
     BUILD_SETTINGS_CHECKSUM:
       EXVideoThumbnails:

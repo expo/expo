@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
   s.platform       = :ios, '10.0'
   s.swift_version  = '5.2'
   s.source         = { git: 'https://github.com/expo/expo.git' }
-  s.source_files   = 'ios/**/*.{h,m,swift}'
+  s.source_files   = 'ios/**/*.{h,m,swift}', 'vendored/**/*.{h,m}'
   s.preserve_paths = 'ios/**/*.{h,m,swift}'
   s.requires_arc   = true
 

@@ -1,4 +1,4 @@
-import styled, { keyframes, css } from 'react-emotion';
+import { css } from '@emotion/core';
 import NextLink from 'next/link';
 
 import * as React from 'react';
@@ -18,7 +18,7 @@ const STYLES_ACTIVE = css`
   font-family: ${Constants.fontFamilies.demi};
   color: ${Constants.colors.expoLighter};
   position: relative;
-  left -7px;
+  left: -7px;
 
   :visited {
     color: ${Constants.expoColors.primary[500]};
@@ -59,7 +59,7 @@ const STYLES_ACTIVE_BULLET = css`
   background-color: ${Constants.expoColors.primary[500]};
   border-radius: 4px;
   position: relative;
-  left -12px;
+  left: -12px;
   top: 7px;
 `;
 
@@ -103,11 +103,11 @@ export default class DocumentationSidebarLink extends React.Component {
 
     return (
       <NextLink href={this.props.info.href} as={this.props.info.as || this.props.info.href}>
-        <div className={STYLES_ACTIVE_CONTAINER}>
-          {this.isSelected() && <div className={STYLES_ACTIVE_BULLET} />}
+        <div css={STYLES_ACTIVE_CONTAINER}>
+          {this.isSelected() && <div css={STYLES_ACTIVE_BULLET} />}
           <a
             {...customDataAttributes}
-            className={`${STYLES_LINK} ${this.isSelected() ? STYLES_ACTIVE : STYLES_DEFAULT}`}>
+            css={[STYLES_LINK, this.isSelected() ? STYLES_ACTIVE : STYLES_DEFAULT]}>
             {this.props.children}
           </a>
         </div>

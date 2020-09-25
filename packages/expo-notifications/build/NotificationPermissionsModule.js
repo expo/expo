@@ -33,7 +33,19 @@ async function resolvePermissionAsync({ shouldAsk, }) {
     if (typeof Notification.requestPermission !== 'undefined') {
         let status = Notification.permission;
         if (shouldAsk) {
-            status = await Notification.requestPermission();
+            status = await new Promise((resolve, reject) => {
+                let resolved = false;
+                function resolveOnce(status) {
+                    if (!resolved) {
+                        resolved = true;
+                        resolve(status);
+                    }
+                }
+                // Some browsers require a callback argument and some return a Promise
+                Notification.requestPermission(resolveOnce)
+                    ?.then(resolveOnce)
+                    ?.catch(reject);
+            });
         }
         return convertPermissionStatus(status);
     }

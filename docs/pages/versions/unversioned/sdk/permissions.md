@@ -391,7 +391,7 @@ The permission type for reading or writing to the camera roll.
 The permission type for reading or writing to the calendar.
 
 - **Android:** it requires the [`READ_CALENDAR`][calendar-android-read] and [`WRITE_CALENDAR`][calendar-android-write] permissions in your manifest.
-- **iOS:** it requires the `expo-calendar` module and [`NSCalendarUsageDescription`][calendar-ios-plist] message.
+- **iOS:** it requires the `expo-calendar` module and [`NSCalendarsUsageDescription`][calendar-ios-plist] message.
 
 [calendar-android-read]: https://developer.android.com/reference/android/Manifest.permission#READ_CALENDAR
 [calendar-android-write]: https://developer.android.com/reference/android/Manifest.permission#WRITE_CALENDAR

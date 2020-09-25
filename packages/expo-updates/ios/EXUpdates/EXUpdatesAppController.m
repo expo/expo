@@ -228,7 +228,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
   [self _emergencyLaunchWithFatalError:error];
 }
 
-- (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didCompleteBackgroundUpdateWithStatus:(EXUpdatesBackgroundUpdateStatus)status update:(nullable EXUpdatesUpdate *)update error:(nullable NSError *)error
+- (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishBackgroundUpdateWithStatus:(EXUpdatesBackgroundUpdateStatus)status update:(nullable EXUpdatesUpdate *)update error:(nullable NSError *)error
 {
   if (status == EXUpdatesBackgroundUpdateStatusError) {
     NSAssert(error != nil, @"Background update with error status must have a nonnull error object");

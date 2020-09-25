@@ -93,8 +93,6 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   fun maybeInitDevMenuHost(application: Application) {
     if (!this::devMenuHost.isInitialized) {
       devMenuHost = DevMenuHost(application)
-      val packages = devMenuHost.getReactModules()
-      devMenuHost.setPackages(packages)
       UiThreadUtil.runOnUiThread {
         devMenuHost.reactInstanceManager.createReactContextInBackground()
       }
@@ -225,7 +223,10 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
       return false
     }
 
-    val keyCommand = KeyCommand(keyCode, event.modifiers)
+    val keyCommand = KeyCommand(
+      code = keyCode,
+      withShift = event.modifiers and KeyEvent.META_SHIFT_MASK > 0
+    )
     return delegateActions
       .find { it.keyCommand == keyCommand }
       ?.run {
