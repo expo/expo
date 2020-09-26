@@ -22,12 +22,12 @@ There are two ways to use this package: you can import a `Crypto` instance or yo
 
 Importing a `Crypto` instance:
 ```js
-import crypto from 'expo-web-crypto';
+import crypto from 'expo-standard-web-crypto';
 ```
 
 Globally defining `crypto`:
 ```js
-import { polyfillWebCrypto } from 'expo-web-crypto';
+import { polyfillWebCrypto } from 'expo-standard-web-crypto';
 
 polyfillWebCrypto();
 // crypto is now globally defined
