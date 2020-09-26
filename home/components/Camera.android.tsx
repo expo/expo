@@ -1,12 +1,70 @@
 import { Camera as OriginalCamera } from 'expo-camera';
 import React, { useCallback, useState, useEffect } from 'react';
-import { Dimensions, View } from 'react-native';
+import { View } from 'react-native';
 
-type AspectRatio = string[];
 type CameraRef = OriginalCamera;
 type CameraRefCallback = (node: CameraRef) => void;
+type Dimensions = { width: number; height: number };
 
-function useSupportedAspectRatios(): [AspectRatio | null, CameraRefCallback] {
+// This Camera component will automatically pick the appropriate ratio and dimensions
+// to fill the given layout properties, and it will resize according to the same logic as
+// resizeMode: contain. If somehow something goes wrong while attempting to autosize, it
+// will just fill the given layout and use the default aspect ratio.
+export function Camera(props: OriginalCamera['props']) {
+  const [dimensions, onLayout] = useComponentDimensions();
+  const [suggestedAspectRatio, suggestedDimensions, ref] = useAutoSize(dimensions);
+  const [cameraIsReady, setCameraIsReady] = useState(false);
+  const { style, ...rest } = props;
+
+  return (
+    <View
+      onLayout={onLayout}
+      style={[
+        {
+          backgroundColor: '#000',
+          alignItems: 'center',
+          justifyContent: 'center',
+        },
+        style,
+      ]}>
+      <OriginalCamera
+        onCameraReady={() => setCameraIsReady(true)}
+        ref={cameraIsReady ? ref : undefined}
+        ratio={suggestedAspectRatio ?? undefined}
+        style={suggestedDimensions ?? { flex: 1 }}
+        {...rest}
+      />
+    </View>
+  );
+}
+
+function useAutoSize(
+  dimensions: Dimensions | null
+): [string | null, Dimensions | null, CameraRefCallback] {
+  const [supportedAspectRatios, ref] = useSupportedAspectRatios();
+  const [suggestedAspectRatio, setSuggestedAspectRatio] = useState<string | null>(null);
+  const [suggestedDimensions, setSuggestedDimensions] = useState<Dimensions | null>(null);
+
+  useEffect(() => {
+    const suggestedAspectRatio = findClosestAspectRatio(supportedAspectRatios, dimensions);
+    const suggestedDimensions = calculateSuggestedDimensions(dimensions, suggestedAspectRatio);
+
+    if (!suggestedAspectRatio || !suggestedDimensions) {
+      setSuggestedAspectRatio(null);
+      setSuggestedDimensions(null);
+    } else {
+      setSuggestedAspectRatio(suggestedAspectRatio);
+      setSuggestedDimensions(suggestedDimensions);
+    }
+  }, [dimensions, supportedAspectRatios]);
+
+  return [suggestedAspectRatio, suggestedDimensions, ref];
+}
+
+// Get the supported aspect ratios from the camera ref when the node is available
+// NOTE: this will fail if the camera isn't ready yet. So we need to avoid setting the
+// ref until the camera ready callback has fired
+function useSupportedAspectRatios(): [string[] | null, CameraRefCallback] {
   const [aspectRatios, setAspectRatios] = useState<string[] | null>(null);
 
   const ref = useCallback(
@@ -15,11 +73,13 @@ function useSupportedAspectRatios(): [AspectRatio | null, CameraRefCallback] {
         try {
           const result = await node.getSupportedRatiosAsync();
           setAspectRatios(result);
-        } catch (e) {}
+        } catch (e) {
+          console.error(e);
+        }
       }
 
       if (node !== null) {
-        getSupportedAspectRatiosAsync(node!);
+        getSupportedAspectRatiosAsync(node);
       }
     },
     [setAspectRatios]
@@ -28,15 +88,8 @@ function useSupportedAspectRatios(): [AspectRatio | null, CameraRefCallback] {
   return [aspectRatios, ref];
 }
 
-const DEFAULT_DIMENSIONS = {
-  width: Dimensions.get('window').width,
-  height: Dimensions.get('window').height,
-};
-
-type DimensionsResult = { width: number; height: number };
-
-const useComponentDimensions = (): [DimensionsResult, any] => {
-  const [dimensions, setDimensions] = useState<DimensionsResult>(DEFAULT_DIMENSIONS);
+const useComponentDimensions = (): [Dimensions | null, (e: any) => void] => {
+  const [dimensions, setDimensions] = useState<Dimensions | null>(null);
 
   const onLayout = useCallback(
     event => {
@@ -56,81 +109,48 @@ function ratioStringToNumber(ratioString: string) {
 
 function findClosestAspectRatio(
   supportedAspectRatios: string[] | null,
-  dimensions: DimensionsResult
+  dimensions: Dimensions | null
 ) {
-  if (!supportedAspectRatios) {
-    return undefined;
-  }
-
-  const dimensionsRatio =
-    Math.max(dimensions.height, dimensions.width) / Math.min(dimensions.height, dimensions.width);
-
-  const aspectRatios = [...supportedAspectRatios];
-  aspectRatios.sort((a: string, b: string) => {
-    let ratioA = ratioStringToNumber(a);
-    let ratioB = ratioStringToNumber(b);
-    return Math.abs(dimensionsRatio - ratioA) - Math.abs(dimensionsRatio - ratioB);
-  });
-
-  return aspectRatios[0];
-}
-
-function calculateSuggestedDimensions(dimensions: DimensionsResult, ratio?: string) {
-  if (!ratio) {
+  if (!supportedAspectRatios || !dimensions) {
     return null;
   }
 
-  // Aspect ratio only works for height:width, we don't expose a way to rotate it
-  const height = dimensions.height;
-  const ratioNumber = ratioStringToNumber(ratio);
-  const width = height / ratioNumber;
+  try {
+    const dimensionsRatio =
+      Math.max(dimensions.height, dimensions.width) / Math.min(dimensions.height, dimensions.width);
 
-  return { width, height };
+    const aspectRatios = [...supportedAspectRatios];
+    aspectRatios.sort((a: string, b: string) => {
+      const ratioA = ratioStringToNumber(a);
+      const ratioB = ratioStringToNumber(b);
+      return Math.abs(dimensionsRatio - ratioA) - Math.abs(dimensionsRatio - ratioB);
+    });
+
+    return aspectRatios[0];
+  } catch (e) {
+    // If something unexpected happens just bail out
+    console.error(e);
+    return null;
+  }
 }
 
-function useClosestAspectRatio(
-  dimensions: DimensionsResult
-): [string | undefined, DimensionsResult | null, CameraRefCallback] {
-  const [supportedAspectRatios, ref] = useSupportedAspectRatios();
-  const [closestAspectRatio, setClosestAspectRatio] = useState<string | undefined>(
-    findClosestAspectRatio(supportedAspectRatios, dimensions)
-  );
-  const [suggestedDimensions, setSuggestedDimensions] = useState<DimensionsResult | null>(null);
+function calculateSuggestedDimensions(
+  containerDimensions: Dimensions | null,
+  ratio: string | null
+) {
+  if (!ratio || !containerDimensions) {
+    return null;
+  }
 
-  useEffect(() => {
-    const ratio = findClosestAspectRatio(supportedAspectRatios, dimensions);
-    const dims = calculateSuggestedDimensions(dimensions, ratio);
-    setClosestAspectRatio(ratio);
-    setSuggestedDimensions(dims);
-  }, [dimensions, supportedAspectRatios]);
+  try {
+    // Aspect ratio only works for height:width, we don't expose a way to rotate it
+    const height = containerDimensions.height;
+    const ratioNumber = ratioStringToNumber(ratio);
+    const width = height / ratioNumber;
 
-  return [closestAspectRatio, suggestedDimensions, ref];
-}
-
-export function Camera(props: OriginalCamera['props']) {
-  const [dimensions, onLayout] = useComponentDimensions();
-  const [suggestedAspectRatio, suggestedDimensions, ref] = useClosestAspectRatio(dimensions);
-  const [cameraIsReady, setCameraIsReady] = useState(false);
-  const { style, ...rest } = props;
-
-  return (
-    <View
-      onLayout={onLayout}
-      style={[
-        {
-          backgroundColor: '#000',
-          alignItems: 'center',
-          justifyContent: 'center',
-        },
-        style,
-      ]}>
-      <OriginalCamera
-        onCameraReady={() => setCameraIsReady(true)}
-        ref={cameraIsReady ? ref : null}
-        ratio={suggestedAspectRatio}
-        {...rest}
-        style={suggestedDimensions ?? { flex: 1 }}
-      />
-    </View>
-  );
+    return { width, height };
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
 }
