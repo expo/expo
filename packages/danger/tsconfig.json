@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es2018",
-    "lib": ["es2018", "esnext.asynciterable"],
+    "target": "es2020",
+    "lib": ["es2020"],
     "module": "commonjs",
     "sourceMap": true,
     "inlineSources": true,
@@ -19,6 +19,6 @@
     "allowJs": false,
     "declaration": true
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "include": ["src/**/*.ts", "src/**/*.d.ts"],
   "exclude": ["node_modules", "build", "src/__tests__/*"]
 }

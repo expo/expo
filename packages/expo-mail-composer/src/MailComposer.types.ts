@@ -12,11 +12,9 @@ export type MailComposerResult = {
   status: MailComposerStatus;
 };
 
-export const MailComposerStatus = {
-  UNDETERMINED: 'undetermined',
-  SENT: 'sent',
-  SAVED: 'saved',
-  CANCELLED: 'cancelled',
-} as const;
-
-export type MailComposerStatus = typeof MailComposerStatus[keyof typeof MailComposerStatus];
+export enum MailComposerStatus {
+  UNDETERMINED = 'undetermined',
+  SENT = 'sent',
+  SAVED = 'saved',
+  CANCELLED = 'cancelled',
+}
