@@ -281,7 +281,7 @@ export async function getListOfPackagesAsync(): Promise<Package[]> {
   if (!cachedPackages) {
     const paths = await glob('**/package.json', {
       cwd: PACKAGES_DIR,
-      ignore: ['**/example/**', '**/node_modules/**'],
+      ignore: ['**/example/**', '**/expo-development-client/bundle/**', '**/node_modules/**'],
     });
     cachedPackages = paths.map((packageJsonPath) => {
       const fullPackageJsonPath = path.join(PACKAGES_DIR, packageJsonPath);
