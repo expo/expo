@@ -102,7 +102,7 @@ export async function openBrowserAsync(
       );
     }
 
-    return { type: 'locked' };
+    return { type: WebBrowserResultType.LOCKED };
   }
   browserLocked = true;
 
@@ -219,12 +219,12 @@ async function _openBrowserAndWaitAndroidAsync(
     AppState.addEventListener('change', _onAppStateChangeAndroid);
   });
 
-  let result: WebBrowserResult = { type: 'cancel' };
+  let result: WebBrowserResult = { type: WebBrowserResultType.CANCEL };
   const { type } = await openBrowserAsync(startUrl, browserParams);
 
   if (type === 'opened') {
     await appStateChangedToActive;
-    result = { type: 'dismiss' };
+    result = { type: WebBrowserResultType.DISMISS };
   }
 
   AppState.removeEventListener('change', _onAppStateChangeAndroid);

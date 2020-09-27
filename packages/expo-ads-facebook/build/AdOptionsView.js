@@ -35,5 +35,6 @@ AdOptionsView.defaultProps = {
     iconSize: 23,
     orientation: 'horizontal',
 };
+// eslint-disable-next-line @typescript-eslint/no-redeclare -- the type and variable share a name
 export const NativeAdOptionsView = requireNativeViewManager('AdOptionsView');
 //# sourceMappingURL=AdOptionsView.js.map
