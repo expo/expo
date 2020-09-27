@@ -5,7 +5,6 @@
   "description": "Pre-release version of the Expo development client package for testing.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"No tests yet!\" && exit 0"
   },
   "repository": {
     "type": "git",
