@@ -4,12 +4,16 @@
 
 ### 🛠 Breaking changes
 
-- On Android scoped `SplashScreen` objects into separate `singletons` sub-package. ([#10294](https://github.com/expo/expo/pull/10294) by [@bbarthec](https://github.com/bbarthec))
-- Updated `@expo/configure-splash-screen` to `v0.2.0`.
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+## 0.7.1 — 2020-09-28
+
+### 🛠 Breaking changes
+
+- On Android scoped `SplashScreen` objects into separate `singletons` sub-package. ([#10294](https://github.com/expo/expo/pull/10294) by [@bbarthec](https://github.com/bbarthec))
+- Updated `@expo/configure-splash-screen` to `v0.2.0`.
 
 ## 0.7.0 — 2020-09-21
 

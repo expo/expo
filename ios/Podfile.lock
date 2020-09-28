@@ -2230,7 +2230,7 @@ PODS:
     - UMPermissionsInterface
   - EXSpeech (8.4.0):
     - UMCore
-  - EXSplashScreen (0.7.0):
+  - EXSplashScreen (0.7.1):
     - React
     - UMCore
   - EXSQLite (8.4.0):
@@ -4621,7 +4621,7 @@ SPEC CHECKSUMS:
   EXGL: 18197ce91dceb9acdc9b0a839919111ca004f434
   EXGL_CPP: 33f454aae7055477285982e9ce84dff19f83d458
   EXGL_CPP_LEGACY: 53e09fa405bf392e3d24b3c4fd62080f340a7429
-  EXGoogleSignIn: c575e4bc3c34882908167788a2c4a0cd8dfb2eb3
+  EXGoogleSignIn: 80eaddda799dc84496d5bbe9dd6f2c990ff1c5f4
   EXHaptics: 4db5fa74b5a87148af4355246981b2dd2d7b9e77
   EXImageLoader: 7153fb1307ac643299a9072b71da0d276f4c7789
   EXImageManipulator: 8bb065265ddaa9d526b70a6825123b85d34d32a4
@@ -4646,7 +4646,7 @@ SPEC CHECKSUMS:
   EXSharing: 8423c727d474bfc416efc920c985f5fa6ba0cf17
   EXSMS: 62b990a7d9e6132904062b2438002f09418b4f0b
   EXSpeech: daf271faf114448b0dccf6391b6b81f49bf44b99
-  EXSplashScreen: ccedaa70edf3e2efb48f9bc47dc2df04cc4e812f
+  EXSplashScreen: 420a4a9d8f679aa04503ad30c92267751c8d756a
   EXSQLite: d0d8677c13e60d5db2812387f059c697be27d3fb
   EXStoreReview: e847ad9367e8d9ab0d856e6aa21e16c1d30f118e
   EXTaskManager: 85c9d0ad555af2a393a5c4cb34c767f0e2162357

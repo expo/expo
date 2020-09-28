@@ -10833,7 +10833,7 @@ CACHE_KEYS:
       EXGoogleSignIn:
         :debug: 30e34240c7bb5878127e7c1aaca288a9
         :release: 30e34240c7bb5878127e7c1aaca288a9
-    CHECKSUM: c575e4bc3c34882908167788a2c4a0cd8dfb2eb3
+    CHECKSUM: 80eaddda799dc84496d5bbe9dd6f2c990ff1c5f4
     FILES:
       - "../../packages/expo-google-sign-in/ios/EXGoogleSignIn/EXAuthTask.h"
       - "../../packages/expo-google-sign-in/ios/EXGoogleSignIn/EXAuthTask.m"
@@ -11227,7 +11227,7 @@ CACHE_KEYS:
       EXSplashScreen:
         :debug: 438696b27ec330435c6762015b94a5f9
         :release: 438696b27ec330435c6762015b94a5f9
-    CHECKSUM: ccedaa70edf3e2efb48f9bc47dc2df04cc4e812f
+    CHECKSUM: 420a4a9d8f679aa04503ad30c92267751c8d756a
     FILES:
       - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenController.h"
       - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenController.m"
@@ -11240,7 +11240,7 @@ CACHE_KEYS:
       - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenViewProvider.h"
     PROJECT_NAME: EXSplashScreen
     SPECS:
-      - EXSplashScreen (0.7.0)
+      - EXSplashScreen (0.7.1)
   EXSQLite:
     BUILD_SETTINGS_CHECKSUM:
       EXSQLite:
