@@ -88,7 +88,7 @@ Since your app is most likely using App Signing by Google Play, you will need to
 6. Add or replace the **SHA-1 Certificate Fingerprint** with the value copied in step #2
 7. Click **Done** and then click **Save**
 
-<a name="beta-console"><sup>**</sup></a> : _In the new Play Console (currently in Beta), you would go to Play Console -> (your app) -> App Signing_
+<a name="beta-console"><sup>**</sup></a> : _In the new Play Console (currently in Beta), you would go to Play Console → (your app) → App Signing_
 
 ### Deploying Google Maps to a standalone app on iOS
 
