@@ -1,5 +1,5 @@
 export type PageMetadata = {
-  title?: string;
+  title: string;
   sourceCodeUrl?: string;
   maxHeadingDepth?: number;
   hideTOC?: boolean;
@@ -21,8 +21,8 @@ export type Url = {
 };
 
 export type NavigationRoute = {
-  href?: string;
-  name?: string;
+  name: string;
+  href: string;
   as?: string;
   weight?: number;
   sidebarTitle?: string;

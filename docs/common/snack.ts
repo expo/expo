@@ -4,14 +4,20 @@ export const SNACK_URL = 'https://snack.expo.io';
 type Config = {
   baseURL: string;
   templateId?: string;
-  code?: string;
+  code?: string | null;
   files?: Record<string, string>;
 };
 
-export function getSnackFiles(config: Config): Record<string, string> {
+type File = {
+  type: 'CODE' | 'ASSET';
+  contents?: string;
+  url?: string;
+};
+
+export function getSnackFiles(config: Config) {
   const { templateId, code, files, baseURL } = config;
 
-  const result = {};
+  const result: Record<string, File> = {};
   if (files) {
     Object.keys(files).forEach(path => {
       const url = files[path];

@@ -1,6 +1,6 @@
 import { Global } from '@emotion/core';
 import { extractCritical } from 'emotion-server';
-import Document, { Html, Head, Main, NextScript } from 'next/document';
+import Document, { Html, Head, Main, NextScript, DocumentContext } from 'next/document';
 import * as React from 'react';
 
 import * as Analytics from '~/common/analytics';
@@ -13,7 +13,7 @@ import { globalTables } from '~/global-styles/tables';
 import { globalTippy } from '~/global-styles/tippy';
 
 export default class MyDocument extends Document<{ css?: string }> {
-  static async getInitialProps(ctx) {
+  static async getInitialProps(ctx: DocumentContext) {
     const initialProps = await Document.getInitialProps(ctx);
     const styles = extractCritical(initialProps.html);
     return {

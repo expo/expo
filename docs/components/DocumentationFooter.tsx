@@ -1,8 +1,8 @@
 import { css } from '@emotion/core';
 import * as React from 'react';
 
-import { Url } from '~/common/types';
 import * as Constants from '~/constants/theme';
+import { Url } from '~/types/common';
 
 const STYLES_FOOTER = css`
   border-top: 1px solid ${Constants.expoColors.gray[250]};
@@ -45,7 +45,7 @@ const ISSUES_BLACKLIST = ['Overview'];
 type Props = {
   asPath: string;
   url?: Url;
-  title?: string;
+  title: string;
   sourceCodeUrl?: string;
 };
 

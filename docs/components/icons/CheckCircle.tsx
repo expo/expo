@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import * as Constants from '~/constants/theme';
 
-export const CheckCircle = ({ size = 24 }) => (
+export const CheckCircle: React.FC<{ size?: number }> = ({ size = 24 }) => (
   <svg
     aria-label="check"
     width={size}

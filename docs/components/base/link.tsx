@@ -12,7 +12,7 @@ const STYLES_EXTERNAL_LINK = css`
   }
 `;
 
-export const ExternalLink = ({ href, children }) => (
+export const ExternalLink: React.FC<{ href?: string }> = ({ href, children }) => (
   <a href={href} css={STYLES_EXTERNAL_LINK} rel="noopener noreferrer">
     {children}
   </a>

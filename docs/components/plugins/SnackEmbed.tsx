@@ -42,7 +42,8 @@ export default class SnackEmbed extends React.Component<Props> {
     // maybe using `context`?
 
     // get snack data from snack id or from inline code
-    var embedProps;
+    // TODO (barthap): Type all possible keys for this
+    let embedProps: Record<string, any>;
     if (this.props.snackId) {
       embedProps = { 'data-snack-id': this.props.snackId };
     } else {
@@ -81,7 +82,7 @@ export default class SnackEmbed extends React.Component<Props> {
 
     var embedStyle = {};
     if (this.props.hasOwnProperty('style')) {
-      embedStyle = this.props.style;
+      embedStyle = this.props.style!;
     }
 
     return (

@@ -2,9 +2,9 @@ import { css } from '@emotion/core';
 import NextLink from 'next/link';
 import * as React from 'react';
 
-import { NavigationRoute, Url } from '~/common/types';
 import { paragraph } from '~/components/base/typography';
 import * as Constants from '~/constants/theme';
+import { NavigationRoute, Url } from '~/types/common';
 
 const STYLES_TITLE = css`
   ${paragraph}
@@ -51,7 +51,7 @@ type Props = {
 };
 
 export default class DocumentationSidebarTitle extends React.Component<Props, { isOpen: boolean }> {
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
 
     this.state = {
@@ -74,11 +74,11 @@ export default class DocumentationSidebarTitle extends React.Component<Props, { 
   }
 
   isChildRouteActive() {
+    const { pathname } = this.props.url || {};
     let result = false;
 
-    this.props.info.posts.forEach(post => {
+    this.props.info.posts?.forEach(post => {
       const linkUrl = post.as || post.href;
-      const pathname = this.props.url.pathname;
       const asPath = this.props.asPath;
 
       if (linkUrl === pathname || linkUrl === asPath) {

@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import * as Constants from '~/constants/theme';
 
-export const XCircle = ({ size = 24 }) => (
+export const XCircle: React.FC<{ size?: number }> = ({ size = 24 }) => (
   <svg
     aria-label="x"
     width={size}

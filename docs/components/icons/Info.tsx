@@ -2,7 +2,10 @@ import * as React from 'react';
 
 import * as Constants from '~/constants/theme';
 
-export const Info = ({ size = 24, fill = Constants.expoColors.gray[600] }) => (
+export const Info: React.FC<{ size?: number; fill?: string }> = ({
+  size = 24,
+  fill = Constants.expoColors.gray[600],
+}) => (
   <svg
     aria-label="check"
     width={size}

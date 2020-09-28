@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-const PermaLink = () => (
+const PermaLink: React.FC = () => (
   <svg
     aria-label="permalink"
     className="anchor-icon"

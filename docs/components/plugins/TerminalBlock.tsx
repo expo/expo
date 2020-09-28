@@ -35,15 +35,15 @@ const STYLES_COMMENT = css`
   line-height: 150%;
 `;
 
-export function ShellComment({ children }) {
+export const ShellComment: React.FC = ({ children }) => {
   return (
     <code unselectable="on" css={STYLES_COMMENT}>
       {children}
     </code>
   );
-}
+};
 
-export default function TerminalBlock({ cmd }) {
+const TerminalBlock: React.FC<{ cmd: string[] }> = ({ cmd }) => {
   return (
     <div css={STYLES_PROMPT}>
       {cmd.map((line, index) => {
@@ -61,4 +61,6 @@ export default function TerminalBlock({ cmd }) {
       })}
     </div>
   );
-}
+};
+
+export default TerminalBlock;

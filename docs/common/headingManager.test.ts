@@ -1,7 +1,6 @@
 import GithubSlugger from 'github-slugger';
 
 import { BASE_HEADING_LEVEL, HeadingManager, HeadingType } from './headingManager';
-import { PageMetadata } from './types';
 
 const SluggerStub: GithubSlugger = {
   slug: str => str,
@@ -10,7 +9,7 @@ const SluggerStub: GithubSlugger = {
 
 describe('HeadingManager tests', () => {
   test('instantiates properly', () => {
-    const meta: PageMetadata = { maxHeadingDepth: 2 };
+    const meta = { maxHeadingDepth: 2 };
     const headingManager = new HeadingManager(SluggerStub, meta);
 
     expect(headingManager.headings).toEqual([]);
@@ -33,7 +32,7 @@ describe('HeadingManager tests', () => {
     const headingManager = new HeadingManager(SluggerStub, meta);
 
     const result = headingManager['findMetaForTitle'](TITLE);
-    expect(result._processed).toBeTruthy();
+    expect(result?._processed).toBeTruthy();
   });
 });
 
@@ -58,7 +57,7 @@ describe('HeadingManager.addHeading()', () => {
   });
 
   test('uses argument level over meta level', () => {
-    headingManager.metadata.headings.forEach(it => (it._processed = false));
+    headingManager.metadata.headings?.forEach(it => (it._processed = false));
 
     const result = headingManager.addHeading(META_TITLE, 4);
 

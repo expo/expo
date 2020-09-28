@@ -1,3 +1,4 @@
+import { Event } from '@sentry/types';
 /*
  * Error logging filtering - prevent users from submitting errors we do not care about,
  * eg: specific error messages that are caused by extensions or other scripts
@@ -14,7 +15,7 @@ const REPORTED_ERRORS_KEY = 'sentry:reportedErrors';
 const TIMESTAMP_KEY = 'sentry:errorReportingInit';
 const ONE_DAY_MS = 60 * 60 * 24 * 1000;
 
-export function preprocessSentryError(event) {
+export function preprocessSentryError(event: Event) {
   const message = getMessage(event);
 
   // If we don't know about this particular type of event then just pass it along
@@ -59,7 +60,7 @@ function isLocalStorageAvailable() {
 }
 
 // Extract a stable event error message out of the Sentry event object
-function getMessage(event) {
+function getMessage(event: Event) {
   if (event.message) {
     return event.message;
   }
@@ -75,7 +76,7 @@ function getMessage(event) {
 }
 
 function maybeResetReportedErrorsCache() {
-  const timestamp = parseInt(localStorage.getItem(TIMESTAMP_KEY), 10);
+  const timestamp = parseInt(localStorage.getItem(TIMESTAMP_KEY) || '', 10);
   const now = new Date().getTime();
 
   if (!timestamp) {
@@ -86,7 +87,7 @@ function maybeResetReportedErrorsCache() {
   }
 }
 
-function userHasReportedErrorMessage(message) {
+function userHasReportedErrorMessage(message: string) {
   const messages = getReportedErrorMessages();
   if (messages.includes(message)) {
     return true;
@@ -95,12 +96,12 @@ function userHasReportedErrorMessage(message) {
   }
 }
 
-function saveReportedErrorMessage(message) {
+function saveReportedErrorMessage(message: string) {
   const messages = getReportedErrorMessages();
   localStorage.setItem(REPORTED_ERRORS_KEY, JSON.stringify([...messages, message]));
 }
 
-function getReportedErrorMessages() {
+function getReportedErrorMessages(): string[] {
   const messages = localStorage.getItem(REPORTED_ERRORS_KEY);
   if (!messages) {
     return [];

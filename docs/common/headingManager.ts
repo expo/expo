@@ -1,7 +1,7 @@
 import GithubSlugger from 'github-slugger';
 import * as React from 'react';
 
-import { ElementType, PageMetadata } from './types';
+import { ElementType, PageMetadata } from '../types/common';
 import * as Utilities from './utilities';
 
 /**
@@ -42,6 +42,8 @@ export type AdditionalProps = {
   sidebarType?: HeadingType;
 };
 
+type Metadata = Partial<PageMetadata> & Required<Pick<PageMetadata, 'headings'>>;
+
 /**
  * Single heading entry
  */
@@ -51,7 +53,7 @@ export type Heading = {
   level: number;
   type: HeadingType;
   ref: React.RefObject<any>;
-  metadata?: ElementType<PageMetadata['headings']>;
+  metadata?: ElementType<Metadata['headings']>;
 };
 
 /**
@@ -62,7 +64,7 @@ export type Heading = {
 export class HeadingManager {
   private slugger: GithubSlugger;
   private _headings: Heading[];
-  private readonly _meta: PageMetadata;
+  private readonly _meta: Metadata;
   private readonly _maxNestingLevel: number;
 
   public get headings() {
@@ -81,7 +83,7 @@ export class HeadingManager {
    * @param slugger A _GithubSlugger_ instance
    * @param meta Document metadata gathered by `headingsMdPlugin`.
    */
-  constructor(slugger: GithubSlugger, meta: PageMetadata) {
+  constructor(slugger: GithubSlugger, meta: Partial<PageMetadata>) {
     this.slugger = slugger;
     this._meta = { headings: meta.headings || [], ...meta };
     this._headings = [];

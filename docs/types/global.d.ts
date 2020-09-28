@@ -2,7 +2,7 @@ interface Window {
   __NEXT_DATA__: any;
   NProgress: any;
   ExpoSnack: any;
-  opera: any;
+  opera: string;
 
   __sidebarScroll: number;
   sidebarState: Record<string, boolean>;
@@ -14,3 +14,7 @@ declare module NodeJS {
     __NEXT_DATA__: any;
   }
 }
+
+// Module declarations for non-typed libraries or types not exposed;
+declare module 'react-diff-view';
+declare module 'react-player/lib/players/FilePlayer';

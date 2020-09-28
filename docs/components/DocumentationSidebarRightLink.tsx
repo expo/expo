@@ -118,9 +118,9 @@ const DocumentationSidebarRightLink = React.forwardRef<HTMLAnchorElement, Sideba
 
     const [tooltipVisible, setTooltipVisible] = React.useState(false);
     const [tooltipOffset, setTooltipOffset] = React.useState(-20);
-    const onMouseOver = event => {
-      setTooltipVisible(isOverflowing(event.target));
-      setTooltipOffset(event.target.getBoundingClientRect().top + 25);
+    const onMouseOver = (event: React.MouseEvent<HTMLAnchorElement>) => {
+      setTooltipVisible(isOverflowing(event.currentTarget));
+      setTooltipOffset(event.currentTarget.getBoundingClientRect().top + 25);
     };
     const onMouseOut = () => {
       setTooltipVisible(false);

@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 // TODO(jim): Some of these styles are affected globally when under an li.
-const Bullet = () => (
+const Bullet: React.FC = () => (
   <svg
     className="bullet-icon"
     aria-hidden="true"

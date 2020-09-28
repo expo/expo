@@ -1,4 +1,4 @@
-export function installGroovy(Prism) {
+export function installGroovy(Prism: any) {
   Prism.languages.groovy = Prism.languages.extend('clike', {
     string: [
       {
@@ -41,7 +41,7 @@ export function installGroovy(Prism) {
   });
 
   // Handle string interpolation
-  Prism.hooks.add('wrap', function(env) {
+  Prism.hooks.add('wrap', function(env: any) {
     if (env.language === 'groovy' && env.type === 'string') {
       var delimiter = env.content[0];
 

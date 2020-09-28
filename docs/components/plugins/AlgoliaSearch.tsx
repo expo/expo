@@ -117,7 +117,7 @@ class AlgoliaSearch extends React.Component<Props> {
     isFocused: false,
   };
 
-  private processUrl(url) {
+  private processUrl(url: string) {
     // Update URLs for new doc URLs
     var routes = url.split('/');
     routes[routes.length - 1] = routes[routes.length - 1].replace('.html', '');
@@ -149,7 +149,8 @@ class AlgoliaSearch extends React.Component<Props> {
         // include pages without version (guides/get-started) OR exact version (api-reference)
         facetFilters: [['version:none', `version:${currentVersion}`]],
       },
-      handleSelected: (input, event, suggestion) => {
+      // TODO: Get the type definitions for Algolia DocSearch
+      handleSelected: (input: any, event: any, suggestion: any) => {
         input.setVal('');
 
         const url = new URL(suggestion.url);

@@ -7,15 +7,15 @@ const CONTAINER_STYLE = css`
   margin-bottom: 20px;
 `;
 
-export default function PossibleRedirectNotification({ newUrl }) {
-  const [targetId, setTargetId] = React.useState(null);
+const PossibleRedirectNotification: React.FC<{ newUrl: string }> = ({ newUrl }) => {
+  const [targetId, setTargetId] = React.useState<string | null>(null);
 
   // We could add a listener on `window.onhashchange` but
   // I don't think this is actually needed.
   React.useEffect(() => {
     const hash = window.location.hash;
     const id = hash ? hash.replace('#', '') : null;
-    if (hash && !document.getElementById(id)) {
+    if (hash && !document.getElementById(id as string)) {
       setTargetId(id);
     }
   }, []);
@@ -30,4 +30,6 @@ export default function PossibleRedirectNotification({ newUrl }) {
   } else {
     return null;
   }
-}
+};
+
+export default PossibleRedirectNotification;

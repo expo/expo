@@ -1,6 +1,10 @@
 import * as React from 'react';
 
-const ChevronDown = props => (
+const ChevronDown: React.FC<{
+  size?: number;
+  style?: React.CSSProperties;
+  className?: string;
+}> = props => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     height={props.size}

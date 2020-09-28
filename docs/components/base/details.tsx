@@ -17,14 +17,14 @@ const STYLES_CONTENTS = css`
   margin-left: 1rem;
 `;
 
-export const ExpoKitDetails = ({ children }) => (
+export const ExpoKitDetails: React.FC = ({ children }) => (
   <details css={STYLES_DETAILS}>
     <summary css={STYLES_SUMMARY}>ExpoKit</summary>
     <div css={STYLES_CONTENTS}>{children}</div>
   </details>
 );
 
-export const BareWorkflowDetails = ({ children }) => (
+export const BareWorkflowDetails: React.FC = ({ children }) => (
   <details css={STYLES_DETAILS}>
     <summary css={STYLES_SUMMARY}>Bare Workflow</summary>
     <div css={STYLES_CONTENTS}>{children}</div>

@@ -20,8 +20,40 @@ const STYLES_DESCRIPTION_CELL = css`
   padding-bottom: 0.2rem;
 `;
 
-export function formatSchema(rawSchema) {
-  const formattedSchema = [];
+type PropertyMeta = {
+  regexHuman?: string;
+  deprecated?: boolean;
+  hidden?: boolean;
+  expoKit?: string;
+  bareWorkflow?: string;
+};
+
+export type Property = {
+  description?: string;
+  type?: string | string[];
+  meta?: PropertyMeta;
+  pattern?: string;
+  enum?: string[];
+  example?: any;
+  exampleString?: string;
+  host?: object;
+  properties?: Record<string, Property>;
+  items?: {
+    properties?: Record<string, Property>;
+    [key: string]: any;
+  };
+  uniqueItems?: boolean;
+  additionalProperties?: boolean;
+};
+
+type FormattedProperty = {
+  name: string;
+  description: string;
+  nestingLevel: number;
+};
+
+export function formatSchema(rawSchema: [string, Property][]) {
+  const formattedSchema: FormattedProperty[] = [];
 
   rawSchema.map(property => {
     appendProperty(formattedSchema, property, 0);
@@ -31,7 +63,11 @@ export function formatSchema(rawSchema) {
 }
 
 //appends a property and recursivley appends sub-properties
-function appendProperty(formattedSchema, property, _nestingLevel) {
+function appendProperty(
+  formattedSchema: FormattedProperty[],
+  property: [string, Property],
+  _nestingLevel: number
+) {
   let nestingLevel = _nestingLevel;
   const propertyKey = property[0];
   const propertyValue = property[1];
@@ -62,16 +98,16 @@ function appendProperty(formattedSchema, property, _nestingLevel) {
   }
 }
 
-export function _getType(propertyValue) {
+export function _getType(propertyValue: Property) {
   if (propertyValue.enum) {
     return 'enum';
   } else {
-    return propertyValue.type.toString().replace(',', ' || ');
+    return propertyValue.type?.toString().replace(',', ' || ');
   }
 }
 
-export function createDescription(property) {
-  const propertyValue = property[1];
+export function createDescription(propertyEntry: [string, Property]) {
+  const propertyValue = propertyEntry[1];
 
   let propertyDescription = `**(${_getType(propertyValue)})**`;
   if (propertyValue.description) {
@@ -93,10 +129,12 @@ export function createDescription(property) {
   return propertyDescription;
 }
 
-export default class AppConfigSchemaPropertiesTable extends React.Component<{ schema: object }> {
+export default class AppConfigSchemaPropertiesTable extends React.Component<{
+  schema: Record<string, Property>;
+}> {
   render() {
-    var rawSchema = Object.entries(this.props.schema);
-    var formattedSchema = formatSchema(rawSchema);
+    const rawSchema = Object.entries(this.props.schema);
+    const formattedSchema = formatSchema(rawSchema);
 
     return (
       <table css={STYLES_TABLE}>

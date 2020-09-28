@@ -5,10 +5,15 @@ import { VERSIONS } from '~/constants/versions';
 
 const REDIRECT_SUFFIX = '?redirected';
 
-export default class Error extends React.Component {
-  state = {
+type State = {
+  notFound: boolean;
+  redirectPath?: string;
+  redirectFailed: boolean;
+};
+export default class Error extends React.Component<object, State> {
+  state: State = {
     notFound: false,
-    redirectPath: null,
+    redirectPath: undefined,
     redirectFailed: false,
   };
 
@@ -103,7 +108,7 @@ export default class Error extends React.Component {
     Sentry.captureMessage(`Page not found (404)`);
   };
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps: object, prevState: State) {
     if (prevState.redirectPath !== this.state.redirectPath && typeof window !== 'undefined') {
       // Let people actually read the carefully crafted message and absorb the
       // cool emoji selection, they can just click through if they want speed
@@ -190,7 +195,7 @@ export default class Error extends React.Component {
   };
 }
 
-function getVersionFromPath(path) {
+function getVersionFromPath(path: string) {
   const pathParts = path.split(/\//);
   // eg: ["", "versions", "v32.0.0", ""]
   return pathParts[2];
@@ -200,15 +205,15 @@ function getVersionFromPath(path) {
 const supportedVersions = VERSIONS.filter(v => v.match(/^v/));
 
 // Return true if the version is still included in documentation
-function isVersionDocumented(path) {
+function isVersionDocumented(path: string) {
   return supportedVersions.includes(getVersionFromPath(path));
 }
 
-function pathIncludesHtmlExtension(path) {
+function pathIncludesHtmlExtension(path: string) {
   return !!path.match(/\.html$/);
 }
 
-function pathIncludesIndexHtml(path) {
+function pathIncludesIndexHtml(path: string) {
   return !!path.match(/index\.html$/);
 }
 
@@ -218,12 +223,12 @@ const SDK_PATH_PATTERN = `${VERSIONED_PATH_PATTERN}/sdk`;
 const REACT_NATIVE_PATH_PATTERN = `${VERSIONED_PATH_PATTERN}/react-native`;
 
 // Check if path is valid (matches /versions/some-valid-version-here/)
-function isVersionedPath(path) {
+function isVersionedPath(path: string) {
   return !!path.match(new RegExp(VERSIONED_PATH_PATTERN));
 }
 
 // Replace an unsupported SDK version with latest
-function replaceVersionWithLatest(path) {
+function replaceVersionWithLatest(path: string) {
   return path.replace(new RegExp(VERSION_PART_PATTERN), 'latest');
 }
 
@@ -237,7 +242,7 @@ function replaceVersionWithLatest(path) {
  *   - `/versions/<version>/workflow/expo-cli/, moved outside versioned folders.
  *   - `/versions/<version>/guides/assets/, moved outside versioned folders.
  */
-function pathRequiresVersioning(path) {
+function pathRequiresVersioning(path: string) {
   const isExpoSdkPage = path.match(new RegExp(SDK_PATH_PATTERN));
   const isExpoSdkIndexPage = path.match(new RegExp(VERSIONED_PATH_PATTERN + '/$'));
   const isReactNativeApiPage = path.match(new RegExp(REACT_NATIVE_PATH_PATTERN));
@@ -245,18 +250,18 @@ function pathRequiresVersioning(path) {
   return isExpoSdkIndexPage || isExpoSdkPage || isReactNativeApiPage;
 }
 
-function removeVersionFromPath(path) {
+function removeVersionFromPath(path: string) {
   return path.replace(new RegExp(VERSIONED_PATH_PATTERN), '');
 }
 
 // Not sure why this happens but sometimes the URL ends in /null
-function endsInNull(path) {
+function endsInNull(path: string) {
   return !!path.match(/\/null$/);
 }
 
 // Simple remapping of renamed pages, similar to in deploy.sh but in some cases,
 // for reasons I'm not totally clear on, those redirects do not work
-const RENAMED_PAGES = {
+const RENAMED_PAGES: Record<string, string> = {
   '/introduction/project-lifecycle/': '/introduction/managed-vs-bare/',
   '/guides/': '/workflow/exploring-managed-workflow/',
   '/versions/latest/sdk/': '/versions/latest/',

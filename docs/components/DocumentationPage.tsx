@@ -3,7 +3,6 @@ import some from 'lodash/some';
 import Router from 'next/router';
 import * as React from 'react';
 
-import { NavigationRoute, Url } from '~/common/types';
 import * as Utilities from '~/common/utilities';
 import * as WindowUtils from '~/common/window';
 import DocumentationFooter from '~/components/DocumentationFooter';
@@ -19,6 +18,7 @@ import { H1 } from '~/components/base/headings';
 import navigation from '~/constants/navigation';
 import * as Constants from '~/constants/theme';
 import { VERSIONS } from '~/constants/versions';
+import { NavigationRoute, Url } from '~/types/common';
 
 const STYLES_DOCUMENT = css`
   background: #fff;
@@ -66,8 +66,6 @@ export default class DocumentationPage extends React.Component<Props, State> {
     isMobileSearchActive: false,
   };
 
-  private _version?: string;
-
   private layoutRef = React.createRef<DocumentationNestedScrollLayout>();
   private sidebarRightRef = React.createRef<SidebarRightComponentType>();
 
@@ -101,7 +99,6 @@ export default class DocumentationPage extends React.Component<Props, State> {
   };
 
   private handleSetVersion = (version: string) => {
-    this._version = version;
     let newPath = Utilities.replaceVersionInUrl(this.props.url.pathname, version);
 
     if (!newPath.endsWith('/')) {
@@ -181,7 +178,6 @@ export default class DocumentationPage extends React.Component<Props, State> {
       version = 'latest';
     }
 
-    this._version = version;
     return version;
   };
 
@@ -204,17 +200,15 @@ export default class DocumentationPage extends React.Component<Props, State> {
     } else if (this.isPreviewPath()) {
       return 'preview';
     }
+
+    return 'general';
   };
 
   render() {
     const sidebarScrollPosition = process.browser ? window.__sidebarScroll : 0;
 
-    // note: we should probably not keep this version property outside of react.
-    // right now, it's used in non-deterministic ways and depending on variable states.
     const version = this.getVersion();
     const routes = this.getRoutes();
-
-    console.log('routes', routes);
 
     const isReferencePath = this.isReferencePath();
 
@@ -242,7 +236,7 @@ export default class DocumentationPage extends React.Component<Props, State> {
       />
     );
 
-    const handleContentScroll = contentScrollPosition => {
+    const handleContentScroll = (contentScrollPosition: number) => {
       window.requestAnimationFrame(() => {
         if (this.sidebarRightRef && this.sidebarRightRef.current) {
           this.sidebarRightRef.current.handleContentScroll(contentScrollPosition);
@@ -266,18 +260,16 @@ export default class DocumentationPage extends React.Component<Props, State> {
         <Head title={`${this.props.title} - Expo Documentation`}>
           <meta name="docsearch:version" content={isReferencePath ? version : 'none'} />
 
-          {(this._version === 'unversioned' || this.isPreviewPath()) && (
+          {(version === 'unversioned' || this.isPreviewPath()) && (
             <meta name="robots" content="noindex" />
           )}
-          {this._version !== 'unversioned' && (
-            <link rel="canonical" href={this.getCanonicalUrl()} />
-          )}
+          {version !== 'unversioned' && <link rel="canonical" href={this.getCanonicalUrl()} />}
         </Head>
 
         {!this.state.isMenuActive ? (
           <div css={STYLES_DOCUMENT}>
             <H1>{this.props.title}</H1>
-            <DocumentationPageContext.Provider value={{ version: this._version }}>
+            <DocumentationPageContext.Provider value={{ version }}>
               {this.props.children}
             </DocumentationPageContext.Provider>
             <DocumentationFooter
@@ -291,7 +283,7 @@ export default class DocumentationPage extends React.Component<Props, State> {
           <div>
             <div css={[STYLES_DOCUMENT, HIDDEN_ON_MOBILE]}>
               <H1>{this.props.title}</H1>
-              <DocumentationPageContext.Provider value={{ version: this._version }}>
+              <DocumentationPageContext.Provider value={{ version }}>
                 {this.props.children}
               </DocumentationPageContext.Provider>
               <DocumentationFooter

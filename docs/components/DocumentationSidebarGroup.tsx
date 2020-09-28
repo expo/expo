@@ -2,10 +2,10 @@ import { css } from '@emotion/core';
 import * as React from 'react';
 
 import stripVersionFromPath from '~/common/stripVersionFromPath';
-import { NavigationRoute, Url } from '~/common/types';
 import { paragraph } from '~/components/base/typography';
 import ChevronDown from '~/components/icons/ChevronDown';
 import * as Constants from '~/constants/theme';
+import { NavigationRoute, Url } from '~/types/common';
 
 const STYLES_TITLE = css`
   ${paragraph}
@@ -47,7 +47,7 @@ type Props = {
 };
 
 export default class DocumentationSidebarGroup extends React.Component<Props, { isOpen: boolean }> {
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
 
     let isOpen = this.isChildRouteActive();
@@ -92,7 +92,7 @@ export default class DocumentationSidebarGroup extends React.Component<Props, { 
 
     const sections = this.props.info.children;
 
-    const isSectionActive = section => {
+    const isSectionActive = (section: NavigationRoute) => {
       const linkUrl = stripVersionFromPath(section.as || section.href);
       const pathname = stripVersionFromPath(this.props.url.pathname);
       const asPath = stripVersionFromPath(this.props.asPath);
@@ -106,9 +106,9 @@ export default class DocumentationSidebarGroup extends React.Component<Props, { 
       }
     };
 
-    let posts = [];
-    sections.forEach(section => {
-      posts = [...posts, ...section.posts];
+    let posts: NavigationRoute[] = [];
+    sections?.forEach(section => {
+      posts = [...posts, ...(section?.posts ?? [])];
     });
 
     posts.forEach(isSectionActive);

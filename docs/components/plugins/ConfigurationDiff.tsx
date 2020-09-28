@@ -10,13 +10,11 @@ const TITLE_CONTAINER = css`
   font-size: 0.9rem;
 `;
 
-function Title({ children }) {
-  return (
-    <div css={TITLE_CONTAINER}>
-      <span>{children}</span>
-    </div>
-  );
-}
+const Title: React.FC = ({ children }) => (
+  <div css={TITLE_CONTAINER}>
+    <span>{children}</span>
+  </div>
+);
 
 // These types come from `react-diff-view` library
 type RenderFile = (_arg0: {
@@ -28,8 +26,8 @@ type RenderFile = (_arg0: {
   oldPath: string;
 }) => JSX.Element;
 
-export default function ConfigurationDiff({ source }) {
-  const [diff, setDiff] = useState(null);
+const ConfigurationDiff: React.FC<{ source: string }> = ({ source }) => {
+  const [diff, setDiff] = useState<any[] | null>(null);
   useEffect(() => {
     async function fetchDiffAsync() {
       const response = await fetch(source);
@@ -48,10 +46,12 @@ export default function ConfigurationDiff({ source }) {
     <div className="diff-container">
       <Title>{newPath}</Title>
       <Diff key={oldRevision + '-' + newRevision} viewType="unified" diffType={type} hunks={hunks}>
-        {hunks => hunks.map(hunk => <Hunk key={hunk.content} hunk={hunk} />)}
+        {(hunks: any[]) => hunks.map(hunk => <Hunk key={hunk.content} hunk={hunk} />)}
       </Diff>
     </div>
   );
 
   return <div>{diff.map(renderFile)}</div>;
-}
+};
+
+export default ConfigurationDiff;

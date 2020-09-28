@@ -27,75 +27,74 @@ const STYLES_BUTTON = css`
   display: inline-flex;
 `;
 
-export function CreateAppButton({ href, name }) {
-  return (
-    <a css={STYLES_BUTTON} className="snack-inline-example-button" href={href}>
-      Create {name} App
-    </a>
-  );
-}
+export const CreateAppButton: React.FC<{ href: string; name: string }> = ({ href, name }) => (
+  <a css={STYLES_BUTTON} className="snack-inline-example-button" href={href}>
+    Create {name} App
+  </a>
+);
 
-export function SocialGrid({ children }) {
-  return (
-    <div
-      style={{
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-        gridTemplateRows: '1fr',
-        display: 'grid',
-        gap: '1.35rem',
-      }}>
-      {children}
-    </div>
-  );
-}
+export const SocialGrid: React.FC = ({ children }) => (
+  <div
+    style={{
+      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+      gridTemplateRows: '1fr',
+      display: 'grid',
+      gap: '1.35rem',
+    }}>
+    {children}
+  </div>
+);
 
-export function SocialGridItem({ title, protocol = [], image, href }) {
-  return (
-    <a
-      href={href}
-      css={STYLES_LINK}
+export const SocialGridItem: React.FC<{
+  title: string;
+  image?: string;
+  href?: string;
+  protocol: string[];
+}> = ({ title, protocol = [], image, href }) => (
+  <a
+    href={href}
+    css={STYLES_LINK}
+    style={{
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: '1.65em 2em',
+      gap: '1.35rem',
+      textDecoration: 'none',
+    }}>
+    <img
       style={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: '1.65em 2em',
-        gap: '1.35rem',
-        textDecoration: 'none',
+        width: 56,
+        height: 56,
+        marginBottom: '1.2em',
+      }}
+      src={image}
+    />
+    <p
+      style={{
+        color: '#020814',
+        fontSize: '1.2em',
+        fontWeight: 900,
+        textAlign: 'center',
       }}>
-      <img
-        style={{
-          width: 56,
-          height: 56,
-          marginBottom: '1.2em',
-        }}
-        src={image}
-      />
+      {title}
+    </p>
+    {(protocol || []).length && (
       <p
+        className="protocol"
         style={{
+          transitionProperty: 'all',
+          transitionDuration: '0.15s',
+
+          marginTop: '0.4em',
           color: '#020814',
-          fontSize: '1.2em',
-          fontWeight: 900,
+          fontSize: '0.9em',
+          fontWeight: 400,
           textAlign: 'center',
         }}>
-        {title}
+        {protocol.join(' | ')}
       </p>
-      {(protocol || []).length && (
-        <p
-          className="protocol"
-          style={{
-            transitionProperty: 'all',
-            transitionDuration: '0.15s',
-
-            marginTop: '0.4em',
-            color: '#020814',
-            fontSize: '0.9em',
-            fontWeight: 400,
-            textAlign: 'center',
-          }}>
-          {protocol.join(' | ')}
-        </p>
-      )}
-    </a>
-  );
-}
+    )}
+  </a>
+);
