@@ -301,7 +301,7 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
     RNObject builder = versionedUtils.callRecursive("getReactInstanceManagerBuilder", instanceManagerBuilderProperties);
 
     // Since there is no activity to be attached, we cannot set ReactInstanceManager state to RESUMED, so we opt to BEFORE_RESUME
-    builder.call("setInitialLifecycleState", LifecycleState.BEFORE_RESUME);
+    builder.call("setInitialLifecycleState", RNObject.versionedEnum(mSDKVersion, "com.facebook.react.common.LifecycleState", "BEFORE_RESUME"));
 
     if (extraNativeModules != null) {
       for (Object nativeModule : extraNativeModules) {
