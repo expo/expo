@@ -16,46 +16,36 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
 #import <FBAudienceNetwork/FBAdDefines.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-/**
- Represents an image creative.
- */
+typedef NSString *FBAdExperienceType NS_STRING_ENUM;
+extern FBAdExperienceType const FBAdExperienceTypeRewarded;
+extern FBAdExperienceType const FBAdExperienceTypeInterstitial;
+extern FBAdExperienceType const FBAdExperienceTypeRewardedInterstitial;
+
 FB_CLASS_EXPORT
-@interface FBAdImage : NSObject
+/**
+ FBAdExperienceConfig is class designed to add some configuration to ad experience
+ */
+@interface FBAdExperienceConfig : NSObject
 
 /**
- Typed access to the image url.
+ Ad experience type to set up
  */
-@property (nonatomic, copy, readonly) NSURL *url;
-/**
- Typed access to the image width.
- */
-@property (nonatomic, assign, readonly) NSInteger width;
-/**
- Typed access to the image height.
- */
-@property (nonatomic, assign, readonly) NSInteger height;
+@property (nonatomic, strong, readwrite, nonnull) FBAdExperienceType adExperienceType;
+
+- (instancetype)init NS_UNAVAILABLE;
+
++ (instancetype)new NS_UNAVAILABLE;
 
 /**
- This is a method to initialize an FBAdImage.
-
- @param url the image url.
- @param width the image width.
- @param height the image height.
+ Creates an FBAdExperienceConfig with a specified type of experience
  */
-- (instancetype)initWithURL:(NSURL *)url width:(NSInteger)width height:(NSInteger)height NS_DESIGNATED_INITIALIZER;
-
-/**
- Loads an image from self.url over the network, or returns the cached image immediately.
-
- @param block Block to handle the loaded image.
- */
-- (void)loadImageAsyncWithBlock:(nullable void (^)(UIImage *__nullable image))block;
+- (instancetype)initWithAdExperienceType:(FBAdExperienceType)adExperienceType NS_DESIGNATED_INITIALIZER;
 
 @end
 

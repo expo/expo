@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  This is a method to create native ad view attributes with a dictionary
  */
-- (instancetype)initWithDictionary:(NSDictionary<id, id> *) dict NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithDictionary:(NSDictionary<id, id> *)dict NS_DESIGNATED_INITIALIZER;
 
 /**
  Background color of the native ad view.
@@ -77,7 +77,8 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  Enables or disables autoplay for some types of media. Defaults to YES.
  */
-@property (nonatomic, assign, getter=isAutoplayEnabled) BOOL autoplayEnabled __attribute((deprecated("This attribute is no longer used.")));
+@property (nonatomic, assign, getter=isAutoplayEnabled) BOOL autoplayEnabled
+    __attribute((deprecated("This attribute is no longer used.")));
 
 @end
 
