@@ -1,4 +1,4 @@
-import { MDXProvider, Components } from '@mdx-js/react';
+import { MDXProvider } from '@mdx-js/react';
 import GithubSlugger from 'github-slugger';
 import { withRouter } from 'next/router';
 import * as React from 'react';
@@ -21,9 +21,7 @@ const withDocumentationElements = (meta: PageMetadata) => {
           asPath={router.asPath}
           sourceCodeUrl={meta.sourceCodeUrl}
           tocVisible={!meta.hideTOC}>
-          <MDXProvider components={(components as unknown) as Components}>
-            {props.children}
-          </MDXProvider>
+          <MDXProvider components={components}>{props.children}</MDXProvider>
         </DocumentationPage>
       </HeadingsContext.Provider>
     );
