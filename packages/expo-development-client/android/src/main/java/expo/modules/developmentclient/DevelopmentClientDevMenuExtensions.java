@@ -16,11 +16,8 @@ import expo.interfaces.devmenu.items.DevMenuItemImportance;
 import kotlin.Unit;
 
 public class DevelopmentClientDevMenuExtensions extends ReactContextBaseJavaModule implements DevMenuExtensionInterface {
-  private final ReactApplicationContext reactContext;
-
   public DevelopmentClientDevMenuExtensions(ReactApplicationContext reactContext) {
     super(reactContext);
-    this.reactContext = reactContext;
   }
 
   @NotNull
