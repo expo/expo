@@ -69,7 +69,7 @@ If you have already integrated Google Sign In into your standalone app, this is 
   3.  Once it's created, go to the project and enable the **Maps SDK for Android**
   4.  Go to <https://console.developers.google.com/apis/credentials> and click **Create Credentials**, then **API Key**.
   5.  In the modal that popped up, click **RESTRICT KEY**.
-  6.  Under **Key restrictions** -> **Application restrictions**, choose the **Android apps** radio button.
+  6.  Under **Key restrictions** → **Application restrictions**, choose the **Android apps** radio button.
   7.  Click the **+ Add package name and fingerprint** button.
   8.  Add your `android.package` value from step #1 (eg: `ca.brentvatne.growlerprowler`) to the Package name field.
   9.  Run `expo fetch:android:hashes`.
