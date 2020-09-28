@@ -493,7 +493,7 @@ Modify `MainActivity.{java,kt}` or any other activity that is marked in the appl
 Ensure `SplashScreen.show(...)` method is called after `super.onCreate(...)`
 
 ```diff
-+ import expo.modules.splashscreen.SplashScreen;
++ import expo.modules.splashscreen.singletons.SplashScreen;
 + import expo.modules.splashscreen.SplashScreenImageResizeMode;
 
 public class MainActivity extends ReactActivity {
@@ -516,7 +516,7 @@ If the `onCreate` method is not yet overridden in your `MainActivity`, override 
 
 ```diff
 + import android.os.Bundle;
-+ import expo.modules.splashscreen.SplashScreen;
++ import expo.modules.splashscreen.singletons.SplashScreen;
 + import expo.modules.splashscreen.SplashScreenImageResizeMode;
 
 public class MainActivity extends ReactActivity {
