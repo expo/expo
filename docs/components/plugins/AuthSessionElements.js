@@ -1,8 +1,5 @@
 import { css } from '@emotion/core';
-import { Tab, TabList, TabPanel, TabPanels, Tabs } from '@reach/tabs';
 import * as React from 'react';
-
-import * as Constants from '~/constants/theme';
 
 const STYLES_LINK = css`
   text-decoration: none;
@@ -100,67 +97,5 @@ export function SocialGridItem({ title, protocol = [], image, href }) {
         </p>
       )}
     </a>
-  );
-}
-
-export const AuthMethodTab = TabPanel;
-
-const TAB_BUTTON = css`
-  transition: all 0.15s ease 0s;
-
-  padding: 1rem;
-  font-size: 1rem;
-  font-weight: bold;
-  border-width: 0px;
-  border-bottom-width: 3px;
-  background-color: transparent;
-
-  :hover {
-    background-color: rgba(0, 0, 0, 0.05);
-  }
-`;
-
-function AuthMethodTabButton({ selected, ...props }) {
-  return (
-    <Tab
-      {...props}
-      css={TAB_BUTTON}
-      style={{
-        borderColor: selected ? Constants.colors.expo : 'transparent',
-        color: selected ? Constants.colors.expo : Constants.colors.darkGrey,
-      }}
-    />
-  );
-}
-
-// TODO(Bacon): The tab class should define the tab name
-export function AuthCodeTab(props) {
-  return <TabPanel {...props} />;
-}
-
-export function ImplicitTab(props) {
-  return <TabPanel {...props} />;
-}
-
-export function AuthMethodTabSwitcher({ children, tabs }) {
-  const [tabIndex, setTabIndex] = React.useState(0);
-
-  const handleTabsChange = index => {
-    setTabIndex(index);
-  };
-
-  return (
-    <Tabs index={tabIndex} onChange={handleTabsChange}>
-      <TabList>
-        {tabs.map((title, index) => {
-          return (
-            <AuthMethodTabButton key={index} selected={tabIndex === index}>
-              {title}
-            </AuthMethodTabButton>
-          );
-        })}
-      </TabList>
-      <TabPanels style={{ paddingTop: 8 }}>{children}</TabPanels>
-    </Tabs>
   );
 }

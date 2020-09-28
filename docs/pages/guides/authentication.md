@@ -5,7 +5,8 @@ title: Authentication
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import InstallSection from '~/components/plugins/InstallSection';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
-import { SocialGrid, SocialGridItem, CreateAppButton, AuthMethodTabSwitcher, ImplicitTab, AuthMethodTab, AuthCodeTab } from '~/components/plugins/AuthSessionElements';
+import { SocialGrid, SocialGridItem, CreateAppButton } from '~/components/plugins/AuthSessionElements';
+import { Tab, Tabs } from '~/components/plugins/Tabs';
 import TerminalBlock from '~/components/plugins/TerminalBlock';
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -188,9 +189,9 @@ export default function App() {
 - The `redirectUri` requires 2 slashes (`://`).
 - Scopes must be joined with ':' so just create one long string.
 
-<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
+<Tabs tabs={["Auth Code", "Implicit Flow"]}>
 
-<AuthCodeTab>
+<Tab>
 
 <SnackInline label='Coinbase Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -251,14 +252,14 @@ export default function App() {
 
 </SnackInline>
 
-</AuthCodeTab>
+</Tab>
 
-<ImplicitTab>
+<Tab>
 
 - Coinbase does not support implicit grant.
 
-</ImplicitTab>
-</AuthMethodTabSwitcher>
+</Tab>
+</Tabs>
 
 <!-- End Coinbase -->
 
@@ -277,9 +278,9 @@ export default function App() {
 - Implicit auth is supported.
 - When `responseType: ResponseType.Code` is used (default behavior) the `redirectUri` must be `https`. This means that code exchange auth cannot be done on native without `useProxy` enabled.
 
-<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
+<Tabs tabs={["Auth Code", "Implicit Flow"]}>
 
-<AuthCodeTab>
+<Tab>
 
 Auth code responses (`ResponseType.Code`) will only work in native with `useProxy: true`.
 
@@ -349,9 +350,9 @@ export default function App() {
 
 </SnackInline>
 
-</AuthCodeTab>
+</Tab>
 
-<ImplicitTab>
+<Tab>
 
 <SnackInline label='Dropbox Implicit' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -417,9 +418,9 @@ export default function App() {
 
 </SnackInline>
 
-</ImplicitTab>
+</Tab>
 
-</AuthMethodTabSwitcher>
+</Tabs>
 
 <!-- End Dropbox -->
 
@@ -445,9 +446,9 @@ export default function App() {
   - If the path is not `://authorize` then you will get an error like: `Can't Load URL: The domain of this URL isn't included in the app's domains. To be able to load this URL, add all domains and subdomains of your app to the App Domains field in your app settings.`
 - Learn more about [manually building a login flow](https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow/).
 
-<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow", "Firebase"]}>
+<Tabs tabs={["Auth Code", "Implicit Flow", "Firebase"]}>
 
-<AuthCodeTab>
+<Tab>
 
 <SnackInline label='Facebook Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -496,9 +497,9 @@ export default function App() {
 
 </SnackInline>
 
-</AuthCodeTab>
+</Tab>
 
-<ImplicitTab>
+<Tab>
 
 <SnackInline label='Facebook Implicit' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -544,9 +545,9 @@ export default function App() {
 
 </SnackInline>
 
-</ImplicitTab>
+</Tab>
 
-<ImplicitTab>
+<Tab>
 
 - Be sure to setup Facebook auth as described above, this is basically identical.
 - 🔥 Create a new Firebase project
@@ -613,9 +614,9 @@ export default function App() {
 
 </SnackInline>
 
-</ImplicitTab>
+</Tab>
 
-</AuthMethodTabSwitcher>
+</Tabs>
 
 <!-- End Facebook -->
 
@@ -636,8 +637,8 @@ export default function App() {
   - Web: `https://yourwebsite.com/*`
 - The `redirectUri` requires 2 slashes (`://`).
 
-<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
-<AuthCodeTab>
+<Tabs tabs={["Auth Code", "Implicit Flow"]}>
+<Tab>
 
 <SnackInline label='FitBit Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -698,9 +699,9 @@ export default function App() {
 
 </SnackInline>
 
-</AuthCodeTab>
+</Tab>
 
-<ImplicitTab>
+<Tab>
 
 <SnackInline label='FitBit Implicit' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -767,9 +768,9 @@ export default function App() {
 
 </SnackInline>
 
-</ImplicitTab>
+</Tab>
 
-</AuthMethodTabSwitcher>
+</Tabs>
 
 <!-- End FitBit -->
 
@@ -791,8 +792,8 @@ export default function App() {
 - The `redirectUri` requires 2 slashes (`://`).
 - `revocationEndpoint` is dynamic and requires your `config.clientId`.
 
-<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
-<AuthCodeTab>
+<Tabs tabs={["Auth Code", "Implicit Flow"]}>
+<Tab>
 
 <SnackInline label='GitHub Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -853,15 +854,15 @@ export default function App() {
 
 </SnackInline>
 
-</AuthCodeTab>
+</Tab>
 
-<ImplicitTab>
+<Tab>
 
 - Implicit grant is [not supported for Github](https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/).
 
-</ImplicitTab>
+</Tab>
 
-</AuthMethodTabSwitcher>
+</Tabs>
 
 <!-- End Github -->
 
@@ -952,8 +953,8 @@ Expo web client ID for use in the browser.
 - **Authorized redirect URIs**: https://localhost:19006 & https://yourwebsite.com
 - To test this be sure to start your app with `expo start:web --https`.
 
-<AuthMethodTabSwitcher tabs={["Standard", "Firebase"]}>
-<AuthCodeTab>
+<Tabs tabs={["Standard", "Firebase"]}>
+<Tab>
 
 <SnackInline label='Google Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -1001,9 +1002,9 @@ export default function App() {
 
 </SnackInline>
 
-</AuthCodeTab>
+</Tab>
 
-<ImplicitTab>
+<Tab>
 
 - 🔥 Create a new Firebase project
 - Enable Google auth
@@ -1083,9 +1084,9 @@ export default function App() {
 
 </SnackInline>
 
-</ImplicitTab>
+</Tab>
 
-</AuthMethodTabSwitcher>
+</Tabs>
 
 <!-- End Google -->
 
@@ -1102,8 +1103,8 @@ export default function App() {
 - You cannot define a custom `redirectUri`, Okta will provide you with one.
 - You can use the Expo proxy to test this without a native rebuild, just be sure to configure the project as a website.
 
-<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
-<AuthCodeTab>
+<Tabs tabs={["Auth Code", "Implicit Flow"]}>
+<Tab>
 
 <SnackInline label='Okta Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -1163,15 +1164,15 @@ export default function App() {
 
 </SnackInline>
 
-</AuthCodeTab>
+</Tab>
 
-<ImplicitTab>
+<Tab>
 
 - This flow is not documented yet, learn more [from the Okta website](https://developer.okta.com/docs/guides/implement-implicit/use-flow/).
 
-</ImplicitTab>
+</Tab>
 
-</AuthMethodTabSwitcher>
+</Tabs>
 
 <!-- End Okta -->
 
@@ -1192,9 +1193,9 @@ export default function App() {
   - Web: `https://yourwebsite.com/*`
 - The `redirectUri` requires 2 slashes (`://`).
 
-<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
+<Tabs tabs={["Auth Code", "Implicit Flow"]}>
 
-<AuthCodeTab>
+<Tab>
 
 <SnackInline label='Reddit Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -1254,9 +1255,9 @@ export default function App() {
 
 </SnackInline>
 
-</AuthCodeTab>
+</Tab>
 
-<ImplicitTab>
+<Tab>
 
 - You must select the `installed` option for your app on Reddit to use implicit grant.
 
@@ -1321,8 +1322,8 @@ export default function App() {
 
 </SnackInline>
 
-</ImplicitTab>
-</AuthMethodTabSwitcher>
+</Tab>
+</Tabs>
 
 <!-- End Reddit -->
 
@@ -1343,9 +1344,9 @@ export default function App() {
 - Navigate to the **"Scopes"** section to enable scopes.
 - `revocationEndpoint` is not available.
 
-<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
+<Tabs tabs={["Auth Code", "Implicit Flow"]}>
 
-<AuthCodeTab>
+<Tab>
 
 <SnackInline label='Slack Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -1405,15 +1406,15 @@ export default function App() {
 
 </SnackInline>
 
-</AuthCodeTab>
+</Tab>
 
-<ImplicitTab>
+<Tab>
 
 - Slack does not support implicit grant.
 
-</ImplicitTab>
+</Tab>
 
-</AuthMethodTabSwitcher>
+</Tabs>
 
 <!-- End Slack -->
 
@@ -1429,8 +1430,8 @@ export default function App() {
 
 - Learn more about the [Spotify API](https://developer.spotify.com/documentation/web-api/).
 
-<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
-<AuthCodeTab>
+<Tabs tabs={["Auth Code", "Implicit Flow"]}>
+<Tab>
 
 <SnackInline label='Spotify Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -1493,9 +1494,9 @@ export default function App() {
 
 </SnackInline>
 
-</AuthCodeTab>
+</Tab>
 
-<ImplicitTab>
+<Tab>
 
 <SnackInline label='Spotify Implicit' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -1561,8 +1562,8 @@ export default function App() {
 
 </SnackInline>
 
-</ImplicitTab>
-</AuthMethodTabSwitcher>
+</Tab>
+</Tabs>
 
 <!-- End Spotify -->
 
@@ -1580,8 +1581,8 @@ export default function App() {
 - The "Authorization Callback Domain" refers to the final path component of your redirect URI. Ex: In the URI `com.bacon.myapp://redirect` the domain would be `redirect`.
 - No Implicit auth flow is provided by Strava.
 
-<AuthMethodTabSwitcher tabs={["Auth Code"]}>
-<AuthCodeTab>
+<Tabs tabs={["Auth Code"]}>
+<Tab>
 
 <SnackInline label='Strava Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -1662,9 +1663,9 @@ const { accessToken } = await AuthSession.exchangeCodeAsync(
 
 </SnackInline>
 
-</AuthCodeTab>
+</Tab>
 
-</AuthMethodTabSwitcher>
+</Tabs>
 
 <!-- End Strava -->
 
@@ -1681,9 +1682,9 @@ const { accessToken } = await AuthSession.exchangeCodeAsync(
 
 - You will need to enable 2FA on your Twitch account to create an application.
 
-<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
+<Tabs tabs={["Auth Code", "Implicit Flow"]}>
 
-<AuthCodeTab>
+<Tab>
 
 <SnackInline label='Twitch Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -1744,9 +1745,9 @@ export default function App() {
 
 </SnackInline>
 
-</AuthCodeTab>
+</Tab>
 
-<ImplicitTab>
+<Tab>
 
 <SnackInline label='Twitch Implicit' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -1810,9 +1811,9 @@ export default function App() {
 
 </SnackInline>
 
-</ImplicitTab>
+</Tab>
 
-</AuthMethodTabSwitcher>
+</Tabs>
 
 <!-- End Twitch -->
 
@@ -1829,9 +1830,9 @@ export default function App() {
 - The `redirectUri` requires 2 slashes (`://`).
 - `scopes` can be difficult to get approved.
 
-<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
+<Tabs tabs={["Auth Code", "Implicit Flow"]}>
 
-<AuthCodeTab>
+<Tab>
 
 <SnackInline label='Uber Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -1892,9 +1893,9 @@ export default function App() {
 
 </SnackInline>
 
-</AuthCodeTab>
+</Tab>
 
-<ImplicitTab>
+<Tab>
 
 <SnackInline label='Uber Implicit' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -1958,9 +1959,9 @@ export default function App() {
 
 </SnackInline>
 
-</ImplicitTab>
+</Tab>
 
-</AuthMethodTabSwitcher>
+</Tabs>
 
 <!-- End Uber -->
 
