@@ -79,7 +79,7 @@ If you have already integrated Google Sign In into your standalone app, this is 
 
 #### Deploying to the Google Play Store
 
-Since your app is most likely using App Signing by Google Play, you will need to grab their app signing certificate in production rather than the upload certificate returned by `expo fetch:android:hashes`.  You do this by:
+Since your app is most likely using App Signing by Google Play, you will need to grab their app signing certificate in production rather than the upload certificate returned by `expo fetch:android:hashes`. To do this:
 1. Go to [Play Console](https://play.google.com/console) -> (your app) -> Release management -> App Signing <sup>[**](#beta-console)</sup>
 2. Copy the value of _SHA-1 Certificate Fingerprint_
 3. Go to [Google API Dashboard](https://console.developers.google.com/apis/) -> (your project) -> Credentials
