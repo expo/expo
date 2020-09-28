@@ -64,7 +64,7 @@ If you have already integrated Google Sign In into your standalone app, this is 
   3.  In `app.json`, copy the API key from `android.config.googleSignIn` to `android.config.googleMaps.apiKey`.
   4.  Rebuild your standalone app.
 - **If you have not configured Google Sign In**
-  1.  Build your app, take note of your Android package name (eg: in _app.json_, the value of `android.package` might be `"ca.brentvatne.growlerprowler"`)
+  1.  Build your app, take note of your Android package name (eg: in _app.json_, the value of `android.package`)
   2.  Open your browser to the [Google API Manager](https://console.developers.google.com/apis) and create a project.
   3.  Once it's created, go to the project and enable the **Maps SDK for Android**
   4.  Go to <https://console.developers.google.com/apis/credentials> and click **Create Credentials**, then **API Key**.
