@@ -4,11 +4,11 @@
 
 ### 🛠 Breaking changes
 
+- Upgraded `@typescript-eslint/eslint-plugin` to 4.2.0 and `@typescript-eslint/parser` to 4.2.0. [See the changelog for `typescript-eslint`.](https://github.com/typescript-eslint/typescript-eslint/releases/tag/v4.2.0). Notably undeclared variables are no longer linted in TypeScript files and this is now the responsibility of `tsc`.
 
 ### 🎉 New features
 
-- Upgraded `eslint` to 7.7.0. [See the changelog for `eslint`.](https://eslint.org/blog/)
-- Upgraded `@typescript-eslint/eslint-plugin` to 3.9.1 and `@typescript-eslint/parser` to 3.9.1. [See the changelog for `typescript-eslint`.](https://github.com/typescript-eslint/typescript-eslint/releases/tag/v3.9.1)
+- Upgraded `eslint` to 7.9.0. [See the changelog for `eslint`.](https://eslint.org/blog/)
 
 ### 🐛 Bug fixes
 
