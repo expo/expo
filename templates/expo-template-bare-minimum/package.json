@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "expo": "~39.0.2",
-    "expo-splash-screen": "~0.6.0",
+    "expo-splash-screen": "~0.6.2",
     "expo-status-bar": "~1.0.2",
     "expo-updates": "~0.3.2",
     "react": "16.13.1",
