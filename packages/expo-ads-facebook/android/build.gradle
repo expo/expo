@@ -56,7 +56,12 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
           'This package can only be used in such projects. Are you sure you\'ve installed the dependencies properly?')
 }
 
+repositories {
+  mavenCentral()
+  jcenter()
+}
+
 dependencies {
   unimodule 'unimodules-core'
-  api 'com.facebook.android:audience-network-sdk:5.1.1'
+  api 'com.facebook.android:audience-network-sdk:5.11.0'
 }

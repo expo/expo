@@ -27,7 +27,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
-  Additional functionality on top of FBNativeAdsManager to assist in using native ads within a UICollectionView. This class contains a mechanism to map indexPaths to native ads in a stable manner as well as helpers which assist in doing the math to include ads at a regular interval within a collection view.
+  Additional functionality on top of FBNativeAdsManager to assist in using native ads within a UICollectionView. This
+  class contains a mechanism to map indexPaths to native ads in a stable manner as well as helpers which assist in doing
+  the math to include ads at a regular interval within a collection view.
  */
 FB_CLASS_EXPORT
 @interface FBNativeAdCollectionViewAdProvider : NSObject
@@ -50,7 +52,9 @@ FB_CLASS_EXPORT
 - (instancetype)initWithManager:(FBNativeAdsManager *)manager NS_DESIGNATED_INITIALIZER;
 
 /**
-  Retrieve a native ad for an indexPath, will return the same ad for a given indexPath until the native ads manager is refreshed. This method is intended for usage with a collection view and specifically the caller is recommended to wait until  collectionView:cellForRowAtIndexPath: to ensure getting the best native ad for the given collection cell.
+  Retrieve a native ad for an indexPath, will return the same ad for a given indexPath until the native ads manager is
+ refreshed. This method is intended for usage with a collection view and specifically the caller is recommended to wait
+ until  collectionView:cellForRowAtIndexPath: to ensure getting the best native ad for the given collection cell.
 
  @param collectionView The collectionView where native ad will be used
  @param indexPath The indexPath to use as a key for this native ad
@@ -68,7 +72,8 @@ FB_CLASS_EXPORT
 - (BOOL)isAdCellAtIndexPath:(NSIndexPath *)indexPath forStride:(NSUInteger)stride;
 
 /**
-  Support for evenly distributed native ads within a collection view. Adjusts a non-ad cell indexPath to the indexPath it would be in a collection with no ads.
+  Support for evenly distributed native ads within a collection view. Adjusts a non-ad cell indexPath to the indexPath
+ it would be in a collection with no ads.
 
  @param indexPath The indexPath to of the non-ad cell
  @param stride The frequency that native ads are to appear within the collection view
@@ -77,7 +82,8 @@ FB_CLASS_EXPORT
 - (nullable NSIndexPath *)adjustNonAdCellIndexPath:(NSIndexPath *)indexPath forStride:(NSUInteger)stride;
 
 /**
-  Support for evenly distributed native ads within a collection view. Adjusts the total count of cells within the collection view to account for the ad cells.
+  Support for evenly distributed native ads within a collection view. Adjusts the total count of cells within the
+ collection view to account for the ad cells.
 
  @param count The count of cells in the collection view not including ads
  @param stride The frequency that native ads are to appear within the collection view
