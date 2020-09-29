@@ -24,7 +24,6 @@
 -dontnote **
 
 -keep class host.exp.exponent.generated.AppConstants { *; }
--keep class host.exp.exponent.taskManager.ExpoHeadlessAppLoader { *; }
 
 ##### Crashlytics #####
 -keepattributes SourceFile,LineNumberTable
