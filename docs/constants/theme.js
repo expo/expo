@@ -138,6 +138,7 @@ export const fonts = {
   mono: 'expo-brand-mono',
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const fontStack = `system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji'`;
 
 export const fontFamilies = {

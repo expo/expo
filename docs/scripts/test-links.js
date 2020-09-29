@@ -29,8 +29,8 @@ const externalLinks = [
     const page = await browser.newPage();
 
     for (const link of externalLinks) {
-      let response = await page.goto(`${url}${link}`);
-      if (response.status() == 404) {
+      const response = await page.goto(`${url}${link}`);
+      if (response.status() === 404) {
         await page.waitFor(
           () => {
             return (
@@ -40,10 +40,7 @@ const externalLinks = [
           { timeout: 500 }
         );
         if (await page.$('#redirect-link')) {
-          const [response] = await Promise.all([
-            page.waitForNavigation(),
-            page.click('#redirect-link'),
-          ]);
+          await Promise.all([page.waitForNavigation(), page.click('#redirect-link')]);
           console.info(`Redirected from ${link} to ${await page.url()}`);
           try {
             await page.waitFor(
