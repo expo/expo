@@ -9,7 +9,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSDictionary *)serializedNotificationResponse:(UNNotificationResponse *)response;
 + (NSDictionary *)serializedNotification:(UNNotification *)notification;
-+ (NSDictionary *)serializedNotificationRequest:(UNNotificationRequest *)notificationRequest;
 
 @end
 
