@@ -25,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (NSDictionary *)serializedNotificationContent:(UNNotificationRequest *)request
+{
   NSDictionary *serializedContent = [super serializedNotificationContent:request];
   NSMutableDictionary *serializedContentMutable = [serializedContent mutableCopy];
   serializedContentMutable[@"categoryIdentifier"] = request.content.categoryIdentifier ? [self removeCategoryIdentifierPrefix: request.content.categoryIdentifier userInfo:request.content.userInfo] : [NSNull null];
