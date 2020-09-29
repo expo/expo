@@ -6,10 +6,11 @@ type CameraRef = OriginalCamera;
 type CameraRefCallback = (node: CameraRef) => void;
 type Dimensions = { width: number; height: number };
 
-// This Camera component will automatically pick the appropriate ratio and dimensions
-// to fill the given layout properties, and it will resize according to the same logic as
-// resizeMode: contain. If somehow something goes wrong while attempting to autosize, it
-// will just fill the given layout and use the default aspect ratio.
+// This Camera component will automatically pick the appropriate ratio and
+// dimensions to fill the given layout properties, and it will resize according
+// to the same logic as resizeMode: cover. If somehow something goes wrong while
+// attempting to autosize, it will just fill the given layout and use the
+// default aspect ratio, likely resulting in skew.
 export function Camera(props: OriginalCamera['props']) {
   const [dimensions, onLayout] = useComponentDimensions();
   const [suggestedAspectRatio, suggestedDimensions, ref] = useAutoSize(dimensions);
