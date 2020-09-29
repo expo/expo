@@ -73,6 +73,7 @@ export default class DocumentationSidebarGroup extends React.Component<Props, { 
     if (typeof window !== 'undefined') {
       const persistedState = window.sidebarState[this.props.info.name];
       if (typeof persistedState === 'boolean' && this.state.isOpen !== persistedState) {
+        // eslint-disable-next-line react/no-did-mount-set-state
         this.setState({ isOpen: persistedState });
       } else {
         this.persistGlobalSidebarState();
@@ -83,7 +84,7 @@ export default class DocumentationSidebarGroup extends React.Component<Props, { 
   private isChildRouteActive() {
     // Special case for "Get Started"
     if (this.props.info.name === 'Getting to know Expo') {
-      if (this.props.asPath.match(/\/versions\/[\w\.]+\/$/)) {
+      if (this.props.asPath.match(/\/versions\/[\w.]+\/$/)) {
         return true;
       }
     }
