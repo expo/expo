@@ -24,12 +24,12 @@ For ejected (see: [ExpoKit](../../expokit/overview)) apps, here are links to the
 
 Follow [Facebook's developer documentation](https://developers.facebook.com/docs/apps/register) to register an application with Facebook's API and get an application ID. Take note of this application ID because it will be used as the `appId` option in your [`Facebook.logInWithReadPermissionsAsync`](#expofacebookloginwithreadpermissionsasync 'Facebook.logInWithReadPermissionsAsync') call.
 
-Then follow these steps based on the platforms you're targetting. This will need to be done from the [Facebook developer site](https://developers.facebook.com/). You don't need to set up the iOS and Android standalone apps right away, you can do that at any time in the future if you just want to get the Expo client version running first.
+Then follow these steps based on the platforms you're targetting. This will need to be done from the [Facebook developer site](https://developers.facebook.com/).
 
-**No configuration is needed to use the Facebook SDK in the App Store Expo client**, because all of your Facebook API calls will be made with Expo's Facebook App ID. The slight downside to this is that you can't customize which permissions your app requests from Facebook (like `user_photos` or `user_friends`), or integrate Facebook login with other services like Firebase auth. If you need that functionality, you have two options:
+The Android Play Store Expo client will use the Facebook App ID that you provide, however, all Facebook API calls in the **iOS App Store Expo client will use Expo's own Facebook App ID**. This is due to underlying configuration limitations, but the good news is it means less setup for you! The slight downside to this is that you can't customize which permissions your app requests from Facebook (like `user_photos` or `user_friends`), or integrate Facebook login with other services like Firebase auth. If you need that functionality on iOS, you have two options:
 
-- Build a [standalone app](../../distribution/building-standalone-apps/)
 - Build a [custom Expo Client app](../../guides/adhoc-builds/)
+- Build a [standalone app](../../distribution/building-standalone-apps/)
 
 #### Configure `app.json`
 
