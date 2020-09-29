@@ -4,7 +4,7 @@ PODS:
     - Google-Mobile-Ads-SDK
   - ABI36_0_0EXAdsFacebook (7.0.0):
     - ABI36_0_0UMCore
-    - FBAudienceNetwork (= 5.7.1)
+    - FBAudienceNetwork
   - ABI36_0_0EXAmplitude (7.0.0):
     - ABI36_0_0UMConstantsInterface
     - ABI36_0_0UMCore
@@ -482,7 +482,7 @@ PODS:
     - Google-Mobile-Ads-SDK (= 7.55.1)
   - ABI37_0_0EXAdsFacebook (8.0.0):
     - ABI37_0_0UMCore
-    - FBAudienceNetwork (= 5.7.1)
+    - FBAudienceNetwork
   - ABI37_0_0EXAmplitude (8.0.0):
     - ABI37_0_0UMConstantsInterface
     - ABI37_0_0UMCore
@@ -978,7 +978,7 @@ PODS:
     - Google-Mobile-Ads-SDK (= 7.55.1)
   - ABI38_0_0EXAdsFacebook (8.2.1):
     - ABI38_0_0UMCore
-    - FBAudienceNetwork (= 5.7.1)
+    - FBAudienceNetwork
   - ABI38_0_0EXAmplitude (8.2.1):
     - ABI38_0_0UMConstantsInterface
     - ABI38_0_0UMCore
@@ -1507,7 +1507,7 @@ PODS:
     - Google-Mobile-Ads-SDK (= 7.55.1)
   - ABI39_0_0EXAdsFacebook (8.4.0):
     - ABI39_0_0UMCore
-    - FBAudienceNetwork (= 5.7.1)
+    - FBAudienceNetwork
   - ABI39_0_0EXAmplitude (8.3.1):
     - ABI39_0_0UMConstantsInterface
     - ABI39_0_0UMCore
@@ -2058,7 +2058,7 @@ PODS:
     - Google-Mobile-Ads-SDK (= 7.55.1)
     - UMCore
   - EXAdsFacebook (8.4.0):
-    - FBAudienceNetwork (= 5.7.1)
+    - FBAudienceNetwork (~> 5.9.0)
     - UMCore
   - EXAmplitude (8.3.1):
     - Amplitude (~> 6.0.0)
@@ -2251,7 +2251,7 @@ PODS:
     - UMFileSystemInterface
   - EXWebBrowser (8.5.0):
     - UMCore
-  - FBAudienceNetwork (5.7.1):
+  - FBAudienceNetwork (5.9.0):
     - FBSDKCoreKit/Basics (>= 5.6.0)
   - FBLazyVector (0.63.2)
   - FBReactNativeSpec (0.63.2):
@@ -4200,7 +4200,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   ABI36_0_0EXAdsAdMob: 13af16f02700390202cce5c88eb0d7d59347dc76
-  ABI36_0_0EXAdsFacebook: 363afd305489fa0651347342604158aae274266b
+  ABI36_0_0EXAdsFacebook: b3e4621f353055c3d89f81738fe53e81676578e1
   ABI36_0_0EXAmplitude: 1be80f605ffbf0f32fd281063b38c3ca65b21bc8
   ABI36_0_0EXAppAuth: 1a8416ee32dda2ef4172d6529df61ab071e5ab52
   ABI36_0_0EXAppleAuthentication: 41912b454af57052eda1c529e00a8a6421166faa
@@ -4292,7 +4292,7 @@ SPEC CHECKSUMS:
   ABI36_0_0UMTaskManagerInterface: 1fec64031f2e16c59768ad67f91f18911c02782f
   ABI36_0_0Yoga: a47f981447ce601f1ad6b82a5a5ec9673d45ba8e
   ABI37_0_0EXAdsAdMob: ff3bea280dfcbb9f77059cce42a269b7935e1ccf
-  ABI37_0_0EXAdsFacebook: 03663956df3e240105da0556957ad6bb57eef2c0
+  ABI37_0_0EXAdsFacebook: 3e4b4d3118cd081b5a52c6b33345894981dbdf48
   ABI37_0_0EXAmplitude: 48b7ccb4564f058f48433d1adced3ac65445c93c
   ABI37_0_0EXAppAuth: 7438cd12ef50e5978fcba326242a193ae86f5087
   ABI37_0_0EXAppleAuthentication: 4c2bbb6c09c85ff172f1a82c9c5c4d01a16d688b
@@ -4387,7 +4387,7 @@ SPEC CHECKSUMS:
   ABI37_0_0UMTaskManagerInterface: 7b9d92c6e0059229716245d6f3c7b95a5647f18d
   ABI37_0_0Yoga: 59c1b90d1c78d56e62e0ff24abb9c9277c8f2aaa
   ABI38_0_0EXAdsAdMob: 603040c1db1cc6f37537091d97af8e2b5eefb25e
-  ABI38_0_0EXAdsFacebook: 636c759a273fa17e9721012b7499af9bf987da2f
+  ABI38_0_0EXAdsFacebook: e4f6d3f5ecd06a2e304b349546387c76212edd78
   ABI38_0_0EXAmplitude: e076fea5f0a29989631fdb3b4bf5e461751f85ad
   ABI38_0_0EXAppAuth: bae52f278c583c2e073f0857948e7c5a2f798a9e
   ABI38_0_0EXAppleAuthentication: 224e97627dd31b3c7ae847f05d4acaec59ec0571
@@ -4485,7 +4485,7 @@ SPEC CHECKSUMS:
   ABI38_0_0UMTaskManagerInterface: 26dcad5c9e8a4bf6c6a2caa71dd418034cc120b1
   ABI38_0_0Yoga: b5cdb5cd24cced7ad15b84a6a7500e8f4098a250
   ABI39_0_0EXAdsAdMob: 760d2007213b2eb84fc832dfd1bcba1ef9c7313f
-  ABI39_0_0EXAdsFacebook: 495a9e290aa521e0bb2786024e8f6fb9c24775b6
+  ABI39_0_0EXAdsFacebook: d6e11307c23444b8c5f809866e273fb24f4d3ec9
   ABI39_0_0EXAmplitude: 75a77f8459efe03dd46fd79e1ebf5525599dcda6
   ABI39_0_0EXAppAuth: da5325b3b2fece50f55a8562ff3a15df5df318c1
   ABI39_0_0EXAppleAuthentication: 2f97cbd679c6ada55f480c559b89ff9d8151d66d
@@ -4591,7 +4591,7 @@ SPEC CHECKSUMS:
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: cde416483dac037923206447da6e1454df403714
   EXAdsAdMob: d2c317db3c1879bf2c0e36d76468a426917598f3
-  EXAdsFacebook: 930f2e55c1f4a615e96c85cbb090fbe5e49861cf
+  EXAdsFacebook: dddbd62d02b3ae9143048c0959a32ff67e24e325
   EXAmplitude: caa186767e48b4efcb07cf74be76ff16f4700e48
   EXAppAuth: 0346d79802fceaacd16a18faccc80035ac9523dd
   EXAppleAuthentication: 5b3da71bada29e2423d8ea27e5538ef0d75aba62
@@ -4653,7 +4653,7 @@ SPEC CHECKSUMS:
   EXUpdates: 8f04b8b093e4eff4c893591cc170be898e6357b4
   EXVideoThumbnails: 14e86a99ba80dff030a77a0a720f494ac6c1cf84
   EXWebBrowser: 1a3ff931f6e64592c70f5faa226e4802a344d664
-  FBAudienceNetwork: 33fc8c8c07c1cdbf5279784b73729c6410809daa
+  FBAudienceNetwork: 648648b13d8ea3d39676542dece2b04dbe867497
   FBLazyVector: 3ef4a7f62e7db01092f9d517d2ebc0d0677c4a37
   FBReactNativeSpec: dc7fa9088f0f2a998503a352b0554d69a4391c5a
   FBSDKCoreKit: e7dcac0aabcfb09d0166998edd95fe3b05a0ce5d

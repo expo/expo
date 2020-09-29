@@ -30,8 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
   FBAdChoicesView offers a simple way to display a sponsored or AdChoices icon.
  */
-FB_CLASS_EXPORT FB_SUBCLASSING_RESTRICTED
-@interface FBAdChoicesView : UIView
+FB_CLASS_EXPORT FB_SUBCLASSING_RESTRICTED @interface FBAdChoicesView : UIView
 
 /**
   Access to the text label contained in this view.
@@ -86,8 +85,7 @@ FB_CLASS_EXPORT FB_SUBCLASSING_RESTRICTED
  @param nativeAd The native ad to initialize with.
  @param expandable Controls whether view defaults to expanded or not, see property documentation
  */
-- (instancetype)initWithNativeAd:(FBNativeAdBase *)nativeAd
-                      expandable:(BOOL)expandable;
+- (instancetype)initWithNativeAd:(FBNativeAdBase *)nativeAd expandable:(BOOL)expandable;
 
 /**
  Initialize this view with a given native ad. Configuration is pulled from the native ad.
@@ -106,14 +104,16 @@ FB_CLASS_EXPORT FB_SUBCLASSING_RESTRICTED
 - (void)updateFrameFromSuperview;
 
 /**
-  Using the superview, this updates the frame of this view, positioning the icon in the corner specified. UIRectCornerAllCorners not supported.
+  Using the superview, this updates the frame of this view, positioning the icon in the corner specified.
+ UIRectCornerAllCorners not supported.
 
  @param corner The corner to display this view from.
  */
 - (void)updateFrameFromSuperview:(UIRectCorner)corner;
 
 /**
-  Using the superview, this updates the frame of this view, positioning the icon in the corner specified. UIRectCornerAllCorners not supported.
+  Using the superview, this updates the frame of this view, positioning the icon in the corner specified.
+ UIRectCornerAllCorners not supported.
 
  @param corner The corner to display this view from.
  @param insets Insets to take into account when positioning the view. Only respective insets are applied to corners.
