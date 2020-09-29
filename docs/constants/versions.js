@@ -2,6 +2,7 @@
 
 const { readdirSync } = require('fs');
 const semver = require('semver');
+
 const { version } = require('../package.json');
 
 const versionContents = readdirSync('./pages/versions', { withFileTypes: true });

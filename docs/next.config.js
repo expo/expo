@@ -1,14 +1,15 @@
+/* eslint-disable import/order */
 const { copySync, removeSync } = require('fs-extra');
-const { join, resolve } = require('path');
+const { join } = require('path');
 const semver = require('semver');
 
 const headings = require('./common/headingsMdPlugin');
+const navigation = require('./constants/navigation-data');
+const versions = require('./constants/versions');
 const { version } = require('./package.json');
 
 // To generate a sitemap, we need context about the supported versions and navigational data
 const createSitemap = require('./scripts/create-sitemap');
-const navigation = require('./constants/navigation-data');
-const versions = require('./constants/versions');
 
 // copy versions/v(latest version) to versions/latest
 // (Next.js only half-handles symlinks)
@@ -20,7 +21,7 @@ copySync(vLatest, latest);
 module.exports = {
   trailingSlash: true,
   // Rather than use `@zeit/next-mdx`, we replicate it
-  pageExtensions: ['js', 'jsx', 'md', 'mdx'],
+  pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
   webpack: (config, options) => {
     // Add preval support for `constants/*` only and move it to the `.next/preval` cache.
     // It's to prevent over-usage and separate the cache to allow manually invalidation.
@@ -34,10 +35,7 @@ module.exports = {
           ...options.defaultLoaders.babel.options,
           // Keep this path in sync with package.json and other scripts that clear the cache
           cacheDirectory: '.next/preval',
-          plugins: [
-            ...(options.defaultLoaders.babel.options?.plugins ?? []),
-            'preval',
-          ],
+          plugins: [...(options.defaultLoaders.babel.options?.plugins ?? []), 'preval'],
         },
       },
     });

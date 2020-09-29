@@ -2,6 +2,6 @@
 /.next/
 /coverage/
 /node_modules/
-/static/libs/nprogress/nprogress.js
-static/libs/tippy/tippy.all.min.js
+/public/static/libs/nprogress/nprogress.js
+/public/static/libs/tippy/tippy.all.min.js
 global-styles/nprogress.js
