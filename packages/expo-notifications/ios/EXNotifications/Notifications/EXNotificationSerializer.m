@@ -53,8 +53,7 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
   serializedContent[@"badge"] = content.badge ?: [NSNull null];
   serializedContent[@"sound"] = [self serializedNotificationSound:content.sound] ?: [NSNull null];
   serializedContent[@"launchImageName"] = content.launchImageName ?: [NSNull null];
-  NSDictionary *data = isRemote ? [self flatDataDictionary:content.userInfo] : content.userInfo;
-  serializedContent[@"data"] = data ?: [NSNull null];
+  serializedContent[@"data"] = [self serializedNotificationData:request] ?: [NSNull null];
   serializedContent[@"attachments"] = [self serializedNotificationAttachments:content.attachments];
 
   if (@available(iOS 12.0, *)) {
@@ -70,16 +69,10 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
   return serializedContent;
 }
 
-+ (NSDictionary * _Nullable)flatDataDictionary:(NSDictionary * _Nullable)data
++ (NSDictionary *)serializedNotificationData:(UNNotificationRequest *)request
 {
-  if (data[@"body"] && data[@"aps"]) {
-    NSMutableDictionary *result = [data mutableCopy];
-    [result addEntriesFromDictionary:data[@"body"]];
-    [result removeObjectForKey:@"body"];
-    return result;
-  }
-  
-  return data;
+  BOOL isRemote = [request.trigger isKindOfClass:[UNPushNotificationTrigger class]];
+  return isRemote ? request.content.userInfo[@"body"] : request.content.userInfo;
 }
 
 + (NSString *)serializedNotificationSound:(UNNotificationSound *)sound
