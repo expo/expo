@@ -10,16 +10,19 @@
 
 ## 0.7.1 — 2020-09-28
 
-### 🛠 Breaking changes
-
-- On Android scoped `SplashScreen` objects into separate `singletons` sub-package. ([#10294](https://github.com/expo/expo/pull/10294) by [@bbarthec](https://github.com/bbarthec))
-- Updated `@expo/configure-splash-screen` to `v0.2.0`.
-
 ## 0.7.0 — 2020-09-21
 
+## 0.6.2 - 2020-09-28
+
 ### 🛠 Breaking changes
 
-- `yarn run expo-splash-screen` changed its parameters layout. Run `yarn run expo-splash-screen --help` to see the new options layout.
+- On Android fixed `SplashScreen` methods not working in managed workflow. Scoped the `SplashScreen` native object to the separate `singletons` sub-package to work with versioned code. ([#10294](https://github.com/expo/expo/pull/10294) by [@bbarthec](https://github.com/bbarthec))
+- Updated `@expo/configure-splash-screen` to `v0.2.0`.
+  - this version fixes the problem with the wrong `SplashScreen.show` method singnature on Android. It propoerly adds the `ReactRootView` parameter now. 
+  - additionally it properly imports the `SplashScreen` object from the `singletons` sub-packagae on Android.
+- `yarn run expo-splash-screen` changed its parameters layout. Run `yarn run expo-splash-screen --help` to see the new options layout. Every parameter has to provided via the `--[option name]` syntax now.
+
+## 0.6.1 - 2020-09-17
 
 ### 🐛 Bug fixes
 
