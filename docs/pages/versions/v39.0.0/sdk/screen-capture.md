@@ -70,11 +70,13 @@ export default class ScreenCaptureExample extends React.Component {
   _activate = async () => {
     /* @info Screen will be uncapturable once <strong>preventScreenCaptureAsync()</strong> is called. */
     await ScreenCapture.preventScreenCaptureAsync(); /* @end */
+
   };
 
   _deactivate = async () => {
     /* @info Re-allows screen capture, or does nothing if preventScreenCaptureAsync() was never called. */
     await ScreenCapture.allowScreenCaptureAsync(); /* @end */
+
   };
 }
 ```
