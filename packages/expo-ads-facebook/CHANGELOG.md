@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Removed extra padding above banner ads on iOS. ([#10433](https://github.com/expo/expo/pull/10433) by [@cruzach](https://github.com/cruzach))
+
 ## 8.4.0 — 2020-08-18
 
 _This version does not introduce any user-facing changes._
