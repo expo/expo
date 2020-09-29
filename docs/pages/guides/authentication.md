@@ -32,7 +32,7 @@ Here are some **important rules** that apply to all authentication providers:
 If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit/master/docs/pages/guides/authentication.md) or [vote on canny](https://expo.canny.io/feature-requests).
 
 <SocialGrid>
-  <SocialGridItem title="Identity 4" protocol={['OAuth 2', 'OpenID']} href="#identity-4" image="/static/images/sdk/auth-session/identity4.png" />
+  <SocialGridItem title="IdentityServer 4" protocol={['OAuth 2', 'OpenID']} href="#identity-4" image="/static/images/sdk/auth-session/identity4.png" />
   <SocialGridItem title="Azure" protocol={['OAuth 2', 'OpenID']} href="#azure" image="/static/images/sdk/auth-session/azure.png" />
   <SocialGridItem title="Apple" protocol={['iOS Only']} href="/versions/latest/sdk/apple-authentication" image="/static/images/sdk/auth-session/apple.png" />
   <SocialGridItem title="Coinbase" protocol={['OAuth 2']} href="#coinbase" image="/static/images/sdk/auth-session/coinbase.png" />
@@ -53,7 +53,7 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
 
 <br />
 
-### Identity 4
+### IdentityServer 4
 
 | Website                  | Provider | PKCE     | Auto Discovery |
 | ------------------------ | -------- | -------- | -------------- |
@@ -63,7 +63,7 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
 
 - If `offline_access` isn't included then no refresh token will be returned.
 
-<SnackInline label='Identity 4 Auth' dependencies={['expo-auth-session', 'expo-web-browser']}>
+<SnackInline label='IdentityServer 4 Auth' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
 ```tsx
 import * as React from 'react';
@@ -114,7 +114,7 @@ export default function App() {
 
 </SnackInline>
 
-<!-- End Identity 4 -->
+<!-- End IdentityServer 4 -->
 
 ### Azure
 
