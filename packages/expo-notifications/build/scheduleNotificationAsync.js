@@ -1,4 +1,4 @@
-import { UnavailabilityError } from '@unimodules/core';
+import { Platform, UnavailabilityError } from '@unimodules/core';
 import uuidv4 from 'uuid/v4';
 import NotificationScheduler from './NotificationScheduler';
 export default async function scheduleNotificationAsync(request) {
@@ -81,8 +81,10 @@ function parseTrigger(userFacingTrigger) {
         return { type: 'calendar', value: calendarTrigger, repeats };
     }
     else {
-        // @ts-ignore Type '"channel"' is not assignable to type '"daily"'.ts(2322)
-        return { type: 'channel', channelId: userFacingTrigger.channelId };
+        return Platform.select({
+            default: null,
+            android: { type: 'channel', channelId: userFacingTrigger.channelId },
+        });
     }
 }
 function isCalendarTrigger(trigger) {
@@ -92,7 +94,7 @@ function isCalendarTrigger(trigger) {
 function isDateTrigger(trigger) {
     return (trigger instanceof Date ||
         typeof trigger === 'number' ||
-        (typeof trigger === 'object' && trigger['date']));
+        (typeof trigger === 'object' && 'date' in trigger));
 }
 function parseDateTrigger(trigger) {
     if (trigger instanceof Date || typeof trigger === 'number') {
@@ -107,19 +109,21 @@ function toTimestamp(date) {
     return date;
 }
 function isDailyTriggerInput(trigger) {
-    return (Object.keys(trigger).length === 3 &&
-        'hour' in trigger &&
-        'minute' in trigger &&
-        'repeats' in trigger &&
-        trigger.repeats === true);
+    const { channelId, ...triggerWithoutChannelId } = trigger;
+    return (Object.keys(triggerWithoutChannelId).length === 3 &&
+        'hour' in triggerWithoutChannelId &&
+        'minute' in triggerWithoutChannelId &&
+        'repeats' in triggerWithoutChannelId &&
+        triggerWithoutChannelId.repeats === true);
 }
 function isWeeklyTriggerInput(trigger) {
-    return (Object.keys(trigger).length === 4 &&
-        'weekday' in trigger &&
-        'hour' in trigger &&
-        'minute' in trigger &&
-        'repeats' in trigger &&
-        trigger.repeats === true);
+    const { channelId, ...triggerWithoutChannelId } = trigger;
+    return (Object.keys(triggerWithoutChannelId).length === 4 &&
+        'weekday' in triggerWithoutChannelId &&
+        'hour' in triggerWithoutChannelId &&
+        'minute' in triggerWithoutChannelId &&
+        'repeats' in triggerWithoutChannelId &&
+        triggerWithoutChannelId.repeats === true);
 }
 function isSecondsPropertyMisusedInCalendarTriggerInput(trigger) {
     const { channelId, ...triggerWithoutChannelId } = trigger;
