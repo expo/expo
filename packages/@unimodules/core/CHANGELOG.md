@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed the `DoNotStrip` annotation not working with classes. ([#10421](https://github.com/expo/expo/pull/10421) by [@lukmccall](https://github.com/lukmccall))
+
 ## 5.5.0 — 2020-08-11
 
 ### 🎉 New features
