@@ -127,7 +127,7 @@ function isDateTrigger(
   return (
     trigger instanceof Date ||
     typeof trigger === 'number' ||
-    (typeof trigger === 'object' && trigger['date'])
+    (typeof trigger === 'object' && 'date' in trigger)
   );
 }
 
