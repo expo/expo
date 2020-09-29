@@ -15,12 +15,14 @@ export function Camera(props: OriginalCamera['props']) {
   const [suggestedAspectRatio, suggestedDimensions, ref] = useAutoSize(dimensions);
   const [cameraIsReady, setCameraIsReady] = useState(false);
   const { style, ...rest } = props;
+  const { width, height } = suggestedDimensions || {};
 
   return (
     <View
       onLayout={onLayout}
       style={[
         {
+          overflow: 'hidden',
           backgroundColor: '#000',
           alignItems: 'center',
           justifyContent: 'center',
@@ -31,7 +33,18 @@ export function Camera(props: OriginalCamera['props']) {
         onCameraReady={() => setCameraIsReady(true)}
         ref={cameraIsReady ? ref : undefined}
         ratio={suggestedAspectRatio ?? undefined}
-        style={suggestedDimensions ?? { flex: 1 }}
+        style={
+          suggestedDimensions && width && height
+            ? {
+                position: 'absolute',
+                width,
+                height,
+                ...(height! > width!
+                  ? { top: -(height! - dimensions!.height) / 2 }
+                  : { left: -(width! - dimensions!.width) / 2 }),
+              }
+            : { flex: 1 }
+        }
         {...rest}
       />
     </View>
@@ -142,15 +155,8 @@ function calculateSuggestedDimensions(
     return null;
   }
 
-  try {
-    // Aspect ratio only works for height:width, we don't expose a way to rotate it
-    const height = containerDimensions.height;
-    const ratioNumber = ratioStringToNumber(ratio);
-    const width = height / ratioNumber;
-
-    return { width, height };
-  } catch (e) {
-    console.error(e);
-    return null;
-  }
+  const ratioNumber = ratioStringToNumber(ratio);
+  const width = containerDimensions.width;
+  const height = width * ratioNumber;
+  return { width, height };
 }
