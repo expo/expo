@@ -7,7 +7,7 @@ export default async function scheduleNotificationAsync(request) {
     }
     return await NotificationScheduler.scheduleNotificationAsync(request.identifier ?? uuidv4(), request.content, parseTrigger(request.trigger));
 }
-function parseTrigger(userFacingTrigger) {
+export function parseTrigger(userFacingTrigger) {
     if (userFacingTrigger === null) {
         return null;
     }
