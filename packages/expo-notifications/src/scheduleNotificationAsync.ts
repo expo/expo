@@ -1,4 +1,4 @@
-import { UnavailabilityError } from '@unimodules/core';
+import { Platform, UnavailabilityError } from '@unimodules/core';
 import uuidv4 from 'uuid/v4';
 
 import NotificationScheduler from './NotificationScheduler';
@@ -104,8 +104,10 @@ function parseTrigger(userFacingTrigger: NotificationTriggerInput): NativeNotifi
     const { repeats, ...calendarTrigger } = userFacingTrigger;
     return { type: 'calendar', value: calendarTrigger, repeats };
   } else {
-    // @ts-ignore Type '"channel"' is not assignable to type '"daily"'.ts(2322)
-    return { type: 'channel', channelId: userFacingTrigger.channelId };
+    return Platform.select({
+      default: null, // There's no notion of channels on platforms other than Android.
+      android: { type: 'channel', channelId: userFacingTrigger.channelId },
+    });
   }
 }
 
