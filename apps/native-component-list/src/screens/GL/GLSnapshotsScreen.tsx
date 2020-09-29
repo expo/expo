@@ -7,7 +7,9 @@ interface State {
   snapshot?: GL.GLSnapshot;
 }
 
-export default class GLSnapshotsScreen extends React.PureComponent<object, State> {
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
+export default class GLSnapshotsScreen extends React.PureComponent<{}, State> {
   static title = 'Taking snapshots';
 
   readonly state: State = {};

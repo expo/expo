@@ -29,7 +29,9 @@ interface State {
 }
 
 const imageViewSize = 300;
-export default class FeceDetectorScreen extends React.Component<object, State> {
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
+export default class FeceDetectorScreen extends React.Component<{}, State> {
   static navigationOptions = {
     title: 'FaceDetector',
   };

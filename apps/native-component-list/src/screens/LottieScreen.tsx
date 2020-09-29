@@ -110,7 +110,9 @@ interface State {
   config: Config;
 }
 
-export default class LottieScreen extends React.Component<object, State> {
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
+export default class LottieScreen extends React.Component<{}, State> {
   static navigationOptions = {
     title: '<Lottie />',
   };

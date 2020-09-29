@@ -30,7 +30,9 @@ interface State<M extends object> {
   isAvailable?: boolean;
 }
 
-abstract class SensorBlock<M extends object> extends React.Component<object, State<M>> {
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
+abstract class SensorBlock<M extends object> extends React.Component<{}, State<M>> {
   readonly state: State<M> = { data: {} as M };
 
   _subscription?: Subscription;

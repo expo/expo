@@ -131,7 +131,9 @@ interface State {
   snapshot?: GL.GLSnapshot;
 }
 
-export default class GLHeadlessRenderingScreen extends React.PureComponent<object, State> {
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
+export default class GLHeadlessRenderingScreen extends React.PureComponent<{}, State> {
   static title = 'Headless rendering';
 
   isDrawing = false;

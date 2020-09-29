@@ -17,7 +17,9 @@ interface State {
   setMode: Mode;
 }
 
-export default class AudioModeSelector extends React.Component<object, State> {
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
+export default class AudioModeSelector extends React.Component<{}, State> {
   readonly state: State = {
     modeToSet: {
       interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS,

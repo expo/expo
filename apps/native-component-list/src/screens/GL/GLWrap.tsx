@@ -4,7 +4,9 @@ import { View, LayoutChangeEvent, StyleProp, ViewStyle } from 'react-native';
 
 import { Colors } from '../../constants';
 
-export default <P extends { style?: StyleProp<ViewStyle> } = object>(
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
+export default <P extends { style?: StyleProp<ViewStyle> } = {}>(
   title: string,
   onContextCreate: (
     gl: GL.ExpoWebGLRenderingContext
