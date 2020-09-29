@@ -91,6 +91,27 @@ UM_EXPORT_METHOD_AS(cancelAllScheduledNotificationsAsync,
   resolve(nil);
 }
 
+UM_EXPORT_METHOD_AS(getNextTriggerDateAsync,
+                    getNextTriggerDate:(NSDictionary *)triggerSpec resolve:(UMPromiseResolveBlock)resolve rejecting:(UMPromiseRejectBlock)reject)
+{
+  @try {
+    UNNotificationTrigger *trigger = [self triggerFromParams:triggerSpec];
+    if ([trigger isKindOfClass:[UNCalendarNotificationTrigger class]]) {
+      UNCalendarNotificationTrigger *calendarTrigger = (UNCalendarNotificationTrigger *)trigger;
+      resolve(@([[calendarTrigger nextTriggerDate] timeIntervalSince1970]));
+    } else if ([trigger isKindOfClass:[UNTimeIntervalNotificationTrigger class]]) {
+      UNTimeIntervalNotificationTrigger *timeIntervalTrigger = (UNTimeIntervalNotificationTrigger *)trigger;
+      resolve(@([[timeIntervalTrigger nextTriggerDate] timeIntervalSince1970]));
+    } else {
+      NSString *message = [NSString stringWithFormat:@"It is not possible to get next trigger date for triggers other than calendar-based. Provided trigger resulted in %@ trigger.", NSStringFromClass([trigger class])];
+      reject(@"ERR_NOTIFICATIONS_INVALID_CALENDAR_TRIGGER", message, nil);
+    }
+  } @catch (NSException *exception) {
+    NSString *message = [NSString stringWithFormat:@"Failed to get next trigger date. %@", exception];
+    reject(@"ERR_NOTIFICATIONS_FAILED_TO_GET_NEXT_TRIGGER_DATE", message, nil);
+  }
+}
+
 - (NSArray * _Nonnull)serializeNotificationRequests:(NSArray<UNNotificationRequest *> * _Nonnull) requests
 {
   NSMutableArray *serializedRequests = [NSMutableArray new];
