@@ -5,8 +5,8 @@ package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 fb_audience_network_version = '~> 5.9.0'
 using_custom_fb_audience_network_version = defined? $FBAudienceNetworkVersion
 if using_custom_fb_audience_network_version
-  fb_audience_network_version = $AnalyticsVersion
-  Pod::UI.puts "expo-ads-facebook: Using user specified Analytics version '#{$fb_audience_network_version}'"
+  fb_audience_network_version = $FBAudienceNetworkVersion
+  Pod::UI.puts "expo-ads-facebook: Using user specified FBAudienceNetwork version '#{$fb_audience_network_version}'"
 end
 
 Pod::Spec.new do |s|
