@@ -120,6 +120,7 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
   serializedTrigger[@"class"] = NSStringFromClass(trigger.class);
   if ([trigger isKindOfClass:[UNPushNotificationTrigger class]]) {
     serializedTrigger[@"type"] = @"push";
+    serializedTrigger[@"payload"] = request.content.userInfo;
   } else if ([trigger isKindOfClass:[UNCalendarNotificationTrigger class]]) {
     serializedTrigger[@"type"] = @"calendar";
     serializedTrigger[@"repeats"] = @(trigger.repeats);
