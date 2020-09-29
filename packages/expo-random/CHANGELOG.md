@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Clarify that react-native-unimodules is a dependency in README
+
 ## 9.0.0 — 2020-09-15
 
 _This version does not introduce any user-facing changes._
