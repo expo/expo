@@ -1,9 +1,16 @@
 import { CalendarTriggerInput as NativeCalendarTriggerInput } from './NotificationScheduler.types';
 
-export interface PushNotificationTrigger {
-  type: 'push';
-  remoteMessage?: FirebaseRemoteMessage;
-}
+/**
+ * `payload` is set only on iOS,
+ * `remoteMessage` is set only on Android,
+ * no extra entry is for Web
+ */
+export type PushNotificationTrigger = { type: 'push' } & (
+  | { payload: Record<string, unknown> }
+  | { remoteMessage: FirebaseRemoteMessage }
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  | {}
+);
 
 export interface CalendarNotificationTrigger {
   type: 'calendar';
