@@ -37,13 +37,15 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
 {
   NSMutableDictionary *serializedRequest = [NSMutableDictionary dictionary];
   serializedRequest[@"identifier"] = request.identifier;
-  serializedRequest[@"content"] = [self serializedNotificationContent:request.content isRemote:[request.trigger isKindOfClass:[UNPushNotificationTrigger class]]];
-  serializedRequest[@"trigger"] = [self serializedNotificationTrigger:request.trigger];
+  serializedRequest[@"content"] = [self serializedNotificationContent:request];
+  serializedRequest[@"trigger"] = [self serializedNotificationTrigger:request];
   return serializedRequest;
 }
 
-+ (NSDictionary *)serializedNotificationContent:(UNNotificationContent *)content isRemote:(BOOL)isRemote
++ (NSDictionary *)serializedNotificationContent:(UNNotificationRequest *)request
 {
+  UNNotificationContent *content = request.content;
+  BOOL isRemote = [request.trigger isKindOfClass:[UNPushNotificationTrigger class]];
   NSMutableDictionary *serializedContent = [NSMutableDictionary dictionary];
   serializedContent[@"title"] = content.title ?: [NSNull null];
   serializedContent[@"subtitle"] = content.subtitle ?: [NSNull null];
@@ -118,8 +120,9 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
   return serializedAttachment;
 }
 
-+ (NSDictionary *)serializedNotificationTrigger:(UNNotificationTrigger *)trigger
++ (NSDictionary *)serializedNotificationTrigger:(UNNotificationRequest *)request
 {
+  UNNotificationTrigger *trigger = request.trigger;
   NSMutableDictionary *serializedTrigger = [NSMutableDictionary dictionary];
   serializedTrigger[@"class"] = NSStringFromClass(trigger.class);
   if ([trigger isKindOfClass:[UNPushNotificationTrigger class]]) {
