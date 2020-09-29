@@ -56,6 +56,7 @@ export default class ScreenCaptureExample extends React.Component {
     ScreenCapture.addScreenshotListener(() => {
       alert('Thanks for screenshotting my beautiful app 😊');
     }); /* @end */
+
   }
 
   render() {
