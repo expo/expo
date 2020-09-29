@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed a bug causing an application crash when enabling remote debugging on Android. ([#10381](https://github.com/expo/expo/pull/10381) by [@sjchmiela](https://github.com/sjchmiela))
+
 ## 9.1.1 — 2020-08-26
 
 ### 🎉 New features
