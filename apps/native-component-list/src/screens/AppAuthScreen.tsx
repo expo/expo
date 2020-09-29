@@ -42,7 +42,7 @@ async function getCachedAuthAsync() {
   }
 }
 
-async function cacheAuthAsync(authState: object) {
+async function cacheAuthAsync(authState: AppAuth.TokenResponse) {
   return AsyncStorage.setItem(StorageKey, JSON.stringify(authState));
 }
 

@@ -37,7 +37,7 @@ export default class MediaAlbumsScreen extends React.Component<Props, State> {
     this.fetchAlbums(this.state.includeSmartAlbums).then(albums => this.setState({ albums }));
   }
 
-  componentDidUpdate(_: object, lastState: State) {
+  componentDidUpdate(_: Props, lastState: State) {
     if (lastState.includeSmartAlbums !== this.state.includeSmartAlbums) {
       this.fetchAlbums(this.state.includeSmartAlbums).then(albums => this.setState({ albums }));
     }
