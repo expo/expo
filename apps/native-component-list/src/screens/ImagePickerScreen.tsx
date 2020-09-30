@@ -2,7 +2,7 @@ import { Video } from 'expo-av';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
 import React from 'react';
-import { Image, Platform, ScrollView, View, Text, Switch, StyleSheet } from 'react-native';
+import { Image, Platform, ScrollView, View, StyleSheet } from 'react-native';
 
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
@@ -23,7 +23,9 @@ interface State {
   compressionEnabled: boolean;
 }
 
-export default class ImagePickerScreen extends React.Component<object, State> {
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
+export default class ImagePickerScreen extends React.Component<{}, State> {
   static navigationOptions = {
     title: 'ImagePicker',
   };

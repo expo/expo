@@ -41,7 +41,9 @@ interface State {
   permissionsFunction: 'askAsync' | 'getAsync';
 }
 
-export default class PermissionsScreen extends React.Component<object, State> {
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
+export default class PermissionsScreen extends React.Component<{}, State> {
   static navigationOptions = {
     title: 'Permissions',
   };
@@ -56,7 +58,7 @@ export default class PermissionsScreen extends React.Component<object, State> {
   };
 
   renderSinglePermissionsButtons() {
-    const permissions: Array<[string, Permissions.PermissionType]> = [
+    const permissions: [string, Permissions.PermissionType][] = [
       ['CAMERA', Permissions.CAMERA],
       ['MOTION', Permissions.MOTION],
       ['AUDIO_RECORDING', Permissions.AUDIO_RECORDING],

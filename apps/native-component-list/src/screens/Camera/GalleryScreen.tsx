@@ -54,13 +54,14 @@ class LoadedGalleryScreen extends React.Component<
   };
 
   toggleSelection = (uri: string, isSelected: boolean) => {
-    let selected = this.state.selected;
-    if (isSelected) {
-      selected.push(uri);
-    } else {
-      selected = selected.filter(item => item !== uri);
-    }
-    this.setState({ selected });
+    this.setState(({ selected }) => {
+      if (isSelected) {
+        selected.push(uri);
+      } else {
+        selected = selected.filter(item => item !== uri);
+      }
+      return { selected };
+    });
   };
 
   saveToGallery = async () => {

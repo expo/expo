@@ -1,10 +1,10 @@
+import { H2 } from '@expo/html-elements';
 import { Pedometer } from 'expo-sensors';
 import * as React from 'react';
 import { ScrollView, Text, View } from 'react-native';
 
 import ListButton from '../components/ListButton';
 import { useResolvedValue } from '../utilities/useResolvedValue';
-import { H2 } from '@expo/html-elements';
 
 function usePedometer({ isActive }: { isActive: boolean }): Pedometer.PedometerResult | null {
   const [data, setData] = React.useState<Pedometer.PedometerResult | null>(null);

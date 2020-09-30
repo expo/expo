@@ -26,8 +26,9 @@ export default class Photo extends React.Component<
   }
 
   toggleSelection = () => {
-    this.setState({ selected: !this.state.selected }, () =>
-      this.props.onSelectionToggle(this.props.uri, this.state.selected)
+    this.setState(
+      state => ({ selected: !state.selected }),
+      () => this.props.onSelectionToggle(this.props.uri, this.state.selected)
     );
   };
 

@@ -3,9 +3,7 @@ import React from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
 
 import Button from '../components/Button';
-import HeadingText from '../components/HeadingText';
 import MonoText from '../components/MonoText';
-
 import { useResolvedValue } from '../utilities/useResolvedValue';
 
 export default function MailComposerScreen() {

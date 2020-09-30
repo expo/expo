@@ -48,7 +48,7 @@ type Links = {
   MediaAlbums: undefined;
 };
 
-type Props = StackScreenProps<Links, 'MediaLibrary'>
+type Props = StackScreenProps<Links, 'MediaLibrary'>;
 
 type FetchState = {
   refreshing: boolean;

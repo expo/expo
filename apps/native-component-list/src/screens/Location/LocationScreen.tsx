@@ -3,8 +3,8 @@ import * as Location from 'expo-location';
 import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
-import SimpleActionDemo from '../../components/SimpleActionDemo';
 import ListButton from '../../components/ListButton';
+import SimpleActionDemo from '../../components/SimpleActionDemo';
 
 type Subscription = { remove: () => any };
 type SubscriptionDemoProps = {

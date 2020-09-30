@@ -1,7 +1,7 @@
+import * as Font from 'expo-font';
 import React from 'react';
 import { Dimensions, Text, View } from 'react-native';
 import * as Svg from 'react-native-svg';
-import * as Font from 'expo-font';
 import { VictoryArea, VictoryChart, VictoryStack } from 'victory-native';
 
 import Example from './Example';
@@ -59,8 +59,7 @@ class VictoryChartExample extends React.Component {
             fontSize={15}
             fontFamily={Font.processFontFamily('space-mono')!}
             x={25}
-            y={15}
-          >
+            y={15}>
             drawn with victory-native
           </Svg.Text>
         </Svg.Svg>

@@ -125,7 +125,9 @@ window.location = 'data:'; // <- Not sure about this... or anything for that mat
 
 // This could be made better, but I'm not sure if it'll matter for PIXI
 // @ts-ignore
-global.userAgent = global.navigator.userAgent = 'iPhone';
+global.navigator.userAgent = 'iPhone';
+// @ts-ignore
+global.userAgent = global.navigator.userAgent;
 
 class HTMLImageElement2 {
   align: string;
@@ -147,7 +149,10 @@ class HTMLImageElement2 {
     this.border = null;
     this.complete = true;
     this.crossOrigin = '';
-    this.localUri = this.lowSrc = this.currentSrc = this.src = props.localUri;
+    this.localUri = props.localUri;
+    this.lowSrc = props.localUri;
+    this.currentSrc = props.localUri;
+    this.src = props.localUri;
     this.width = props.width;
     this.height = props.height;
     this.isMap = true;
@@ -155,4 +160,6 @@ class HTMLImageElement2 {
 }
 
 // @ts-ignore
-global.HTMLImageElement = global.Image = HTMLImageElement2;
+global.Image = HTMLImageElement2;
+// @ts-ignore
+global.HTMLImageElement = HTMLImageElement2;

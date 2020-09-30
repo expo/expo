@@ -34,24 +34,23 @@ export default class MediaAlbumsScreen extends React.Component<Props, State> {
   };
 
   componentDidMount() {
-    this.fetchAlbums();
+    this.fetchAlbums(this.state.includeSmartAlbums).then(albums => this.setState({ albums }));
   }
 
   componentDidUpdate(_: object, lastState: State) {
     if (lastState.includeSmartAlbums !== this.state.includeSmartAlbums) {
-      this.fetchAlbums();
+      this.fetchAlbums(this.state.includeSmartAlbums).then(albums => this.setState({ albums }));
     }
   }
 
-  async fetchAlbums() {
+  async fetchAlbums(includeSmartAlbums: boolean) {
     try {
-      const albums = await MediaLibrary.getAlbumsAsync({
-        includeSmartAlbums: this.state.includeSmartAlbums,
+      return await MediaLibrary.getAlbumsAsync({
+        includeSmartAlbums,
       });
-      this.setState({ albums });
     } catch (e) {
       if (e.code === 'ERR_NO_ENOUGH_PERMISSIONS') {
-        this.setState({ albums: [] });
+        return [];
       } else {
         throw e;
       }
@@ -83,7 +82,7 @@ export default class MediaAlbumsScreen extends React.Component<Props, State> {
       return (
         <View style={styles.noAlbums}>
           <Text>
-            {"You don't have any media albums! You can create one from asset details screen."}
+            You don't have any media albums! You can create one from asset details screen.
           </Text>
         </View>
       );

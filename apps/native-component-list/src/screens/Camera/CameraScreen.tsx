@@ -81,6 +81,8 @@ interface State {
   showMoreOptions: boolean;
 }
 
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
 export default class CameraScreen extends React.Component<{}, State> {
   readonly state: State = {
     flash: 'off',
@@ -104,13 +106,16 @@ export default class CameraScreen extends React.Component<{}, State> {
 
   camera?: Camera;
 
-  async componentDidMount() {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA);
-    this.setState({ permission: status, permissionsGranted: status === 'granted' });
-
-    if (Platform.OS === 'web') {
-      return;
+  componentDidMount() {
+    if (Platform.OS !== 'web') {
+      this.ensureDirectoryExistsAsync();
     }
+    Permissions.askAsync(Permissions.CAMERA).then(({ status }) => {
+      this.setState({ permission: status, permissionsGranted: status === 'granted' });
+    });
+  }
+
+  async ensureDirectoryExistsAsync() {
     try {
       await FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'photos');
     } catch (error) {
@@ -121,29 +126,32 @@ export default class CameraScreen extends React.Component<{}, State> {
 
   getRatios = async () => this.camera!.getSupportedRatiosAsync();
 
-  toggleView = () => this.setState({ showGallery: !this.state.showGallery, newPhotos: false });
+  toggleView = () =>
+    this.setState(state => ({ showGallery: !state.showGallery, newPhotos: false }));
 
-  toggleMoreOptions = () => this.setState({ showMoreOptions: !this.state.showMoreOptions });
+  toggleMoreOptions = () => this.setState(state => ({ showMoreOptions: !state.showMoreOptions }));
 
-  toggleFacing = () => this.setState({ type: this.state.type === 'back' ? 'front' : 'back' });
+  toggleFacing = () => this.setState(state => ({ type: state.type === 'back' ? 'front' : 'back' }));
 
-  toggleFlash = () => this.setState({ flash: flashModeOrder[this.state.flash] });
+  toggleFlash = () => this.setState(state => ({ flash: flashModeOrder[state.flash] }));
 
   setRatio = (ratio: string) => this.setState({ ratio });
 
-  toggleWB = () => this.setState({ whiteBalance: wbOrder[this.state.whiteBalance] });
+  toggleWB = () => this.setState(state => ({ whiteBalance: wbOrder[state.whiteBalance] }));
 
-  toggleFocus = () => this.setState({ autoFocus: this.state.autoFocus === 'on' ? 'off' : 'on' });
+  toggleFocus = () =>
+    this.setState(state => ({ autoFocus: state.autoFocus === 'on' ? 'off' : 'on' }));
 
-  zoomOut = () => this.setState({ zoom: this.state.zoom - 0.1 < 0 ? 0 : this.state.zoom - 0.1 });
+  zoomOut = () => this.setState(state => ({ zoom: state.zoom - 0.1 < 0 ? 0 : state.zoom - 0.1 }));
 
-  zoomIn = () => this.setState({ zoom: this.state.zoom + 0.1 > 1 ? 1 : this.state.zoom + 0.1 });
+  zoomIn = () => this.setState(state => ({ zoom: state.zoom + 0.1 > 1 ? 1 : state.zoom + 0.1 }));
 
   setFocusDepth = (depth: number) => this.setState({ depth });
 
-  toggleBarcodeScanning = () => this.setState({ barcodeScanning: !this.state.barcodeScanning });
+  toggleBarcodeScanning = () =>
+    this.setState(state => ({ barcodeScanning: !state.barcodeScanning }));
 
-  toggleFaceDetection = () => this.setState({ faceDetecting: !this.state.faceDetecting });
+  toggleFaceDetection = () => this.setState(state => ({ faceDetecting: !state.faceDetecting }));
 
   takePicture = () => {
     if (this.camera) {
@@ -168,8 +176,9 @@ export default class CameraScreen extends React.Component<{}, State> {
 
   onBarCodeScanned = (code: BarCodeScanningResult) => {
     console.log('Found: ', code);
-    this.setState({ barcodeScanning: !this.state.barcodeScanning }, () =>
-      Alert.alert(`Barcode found: ${code.data}`)
+    this.setState(
+      state => ({ barcodeScanning: !state.barcodeScanning }),
+      () => Alert.alert(`Barcode found: ${code.data}`)
     );
   };
 
@@ -177,7 +186,8 @@ export default class CameraScreen extends React.Component<{}, State> {
 
   collectPictureSizes = async () => {
     if (this.camera) {
-      const pictureSizes = await this.camera.getAvailablePictureSizesAsync(this.state.ratio);
+      const { ratio } = this.state;
+      const pictureSizes = await this.camera.getAvailablePictureSizesAsync(ratio);
       let pictureSizeId = 0;
       if (Platform.OS === 'ios') {
         pictureSizeId = pictureSizes.indexOf('High');
@@ -193,14 +203,19 @@ export default class CameraScreen extends React.Component<{}, State> {
   nextPictureSize = () => this.changePictureSize(-1);
 
   changePictureSize = (direction: number) => {
-    let newId = this.state.pictureSizeId + direction;
-    const length = this.state.pictureSizes.length;
-    if (newId >= length) {
-      newId = 0;
-    } else if (newId < 0) {
-      newId = length - 1;
-    }
-    this.setState({ pictureSize: this.state.pictureSizes[newId], pictureSizeId: newId });
+    this.setState(state => {
+      let newId = state.pictureSizeId + direction;
+      const length = state.pictureSizes.length;
+      if (newId >= length) {
+        newId = 0;
+      } else if (newId < 0) {
+        newId = length - 1;
+      }
+      return {
+        pictureSize: state.pictureSizes[newId],
+        pictureSizeId: newId,
+      };
+    });
   };
 
   renderGallery() {

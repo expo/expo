@@ -29,11 +29,11 @@ class GExample extends React.Component<{}, State> {
         });
       }
     }, 2000);
-  }
+  };
 
   componentWillUnmount = () => {
     this._unmounted = true;
-  }
+  };
 
   render() {
     return (

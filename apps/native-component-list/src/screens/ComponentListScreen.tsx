@@ -1,5 +1,5 @@
 import { EvilIcons } from '@expo/vector-icons';
-import { Link, useLinkProps, useNavigation } from '@react-navigation/native';
+import { Link, useLinkProps } from '@react-navigation/native';
 import React from 'react';
 import {
   FlatList,

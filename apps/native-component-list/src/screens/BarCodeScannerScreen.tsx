@@ -1,5 +1,5 @@
 import { usePermissions } from '@use-expo/permissions';
-import { BarCodeScanner, BarCodePoint, BarCodeEvent, BarCodeBounds } from 'expo-barcode-scanner';
+import { BarCodeScanner, BarCodePoint, BarCodeBounds } from 'expo-barcode-scanner';
 import * as Permissions from 'expo-permissions';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import React from 'react';

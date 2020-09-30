@@ -8,15 +8,15 @@ import {
   View,
 } from 'react-native';
 
-import MonoText from './MonoText';
 import Colors from '../constants/Colors';
+import MonoText from './MonoText';
 
-type SimpleActionDemo = {
+type SimpleActionDemoProps = {
   title: string;
   action: (setValue: (value: any) => any) => any;
 };
 
-export default function SimpleActionDemo(props: SimpleActionDemo) {
+export default function SimpleActionDemo(props: SimpleActionDemoProps) {
   const [loading, setLoading] = React.useState(false);
   const [value, setValue] = React.useState<any>(undefined);
 

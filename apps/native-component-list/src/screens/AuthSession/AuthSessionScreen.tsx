@@ -1,18 +1,18 @@
 import { H2 } from '@expo/html-elements';
 import * as AuthSession from 'expo-auth-session';
 import { useAuthRequest } from 'expo-auth-session';
-import * as GoogleAuthSession from 'expo-auth-session/providers/google';
 import * as FacebookAuthSession from 'expo-auth-session/providers/facebook';
+import * as GoogleAuthSession from 'expo-auth-session/providers/google';
 import Constants from 'expo-constants';
 import { maybeCompleteAuthSession } from 'expo-web-browser';
 import React from 'react';
 import { Platform, ScrollView, View } from 'react-native';
 
 import { getGUID } from '../../api/guid';
+import TitledPicker from '../../components/TitledPicker';
 import TitledSwitch from '../../components/TitledSwitch';
 import { AuthSection } from './AuthResult';
 import LegacyAuthSession from './LegacyAuthSession';
-import TitledPicker from '../../components/TitledPicker';
 
 maybeCompleteAuthSession();
 
@@ -188,49 +188,49 @@ function GoogleFirebase({ prompt, language, usePKCE }: any) {
 }
 
 // Couldn't get this working. API is really confusing.
-function Azure({ useProxy, prompt, usePKCE }: any) {
-  const redirectUri = AuthSession.makeRedirectUri({
-    path: 'redirect',
-    preferLocalhost: true,
-    useProxy,
-    native: Platform.select<string>({
-      ios: 'msauth.dev.expo.Payments://auth',
-      android: 'msauth://dev.expo.payments/sZs4aocytGUGvP1%2BgFAavaPMPN0%3D',
-    }),
-  });
+// function Azure({ useProxy, prompt, usePKCE }: any) {
+//   const redirectUri = AuthSession.makeRedirectUri({
+//     path: 'redirect',
+//     preferLocalhost: true,
+//     useProxy,
+//     native: Platform.select<string>({
+//       ios: 'msauth.dev.expo.Payments://auth',
+//       android: 'msauth://dev.expo.payments/sZs4aocytGUGvP1%2BgFAavaPMPN0%3D',
+//     }),
+//   });
 
-  // 'https://login.microsoftonline.com/your-tenant-id/v2.0',
-  const discovery = AuthSession.useAutoDiscovery(
-    'https://login.microsoftonline.com/f8cdef31-a31e-4b4a-93e4-5f571e91255a/v2.0'
-  );
-  const [request, result, promptAsync] = useAuthRequest(
-    // config
-    {
-      clientId: '96891596-721b-4ae1-8e67-674809373165',
-      redirectUri,
-      prompt,
-      extraParams: {
-        domain_hint: 'live.com',
-      },
-      // redirectUri: 'msauth.{bundleId}://auth',
-      scopes: ['openid', 'profile', 'email', 'offline_access'],
-      usePKCE,
-    },
-    // discovery
-    discovery
-  );
+//   // 'https://login.microsoftonline.com/your-tenant-id/v2.0',
+//   const discovery = AuthSession.useAutoDiscovery(
+//     'https://login.microsoftonline.com/f8cdef31-a31e-4b4a-93e4-5f571e91255a/v2.0'
+//   );
+//   const [request, result, promptAsync] = useAuthRequest(
+//     // config
+//     {
+//       clientId: '96891596-721b-4ae1-8e67-674809373165',
+//       redirectUri,
+//       prompt,
+//       extraParams: {
+//         domain_hint: 'live.com',
+//       },
+//       // redirectUri: 'msauth.{bundleId}://auth',
+//       scopes: ['openid', 'profile', 'email', 'offline_access'],
+//       usePKCE,
+//     },
+//     // discovery
+//     discovery
+//   );
 
-  return (
-    <AuthSection
-      title="azure"
-      disabled={isInClient}
-      request={request}
-      result={result}
-      promptAsync={promptAsync}
-      useProxy={useProxy}
-    />
-  );
-}
+//   return (
+//     <AuthSection
+//       title="azure"
+//       disabled={isInClient}
+//       request={request}
+//       result={result}
+//       promptAsync={promptAsync}
+//       useProxy={useProxy}
+//     />
+//   );
+// }
 
 function Okta({ redirectUri, usePKCE, useProxy }: any) {
   const discovery = AuthSession.useAutoDiscovery('https://dev-720924.okta.com/oauth2/default');
@@ -551,8 +551,6 @@ function Strava({ redirectUri, prompt, usePKCE, useProxy }: any) {
   );
 
   React.useEffect(() => {
-    let isMounted = true;
-
     if (request && result?.type === 'success' && result.params.code) {
       AuthSession.exchangeCodeAsync(
         {
@@ -569,9 +567,6 @@ function Strava({ redirectUri, prompt, usePKCE, useProxy }: any) {
         console.log('RES: ', result);
       });
     }
-    return () => {
-      isMounted = false;
-    };
   }, [result]);
 
   return (
