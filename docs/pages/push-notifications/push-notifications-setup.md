@@ -35,7 +35,7 @@ registerForPushNotificationsAsync = async () => {
       return;
     }
     /* @info Alright, we got our token! */
-    const token = await Notifications.getExpoPushTokenAsync();
+    const token = (await Notifications.getExpoPushTokenAsync()).data;
     /* @end */
     console.log(token);
     this.setState({ expoPushToken: token });
