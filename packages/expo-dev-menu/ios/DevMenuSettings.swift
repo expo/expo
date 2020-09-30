@@ -23,7 +23,7 @@ public class DevMenuSettings: NSObject {
     ])
 
     /**
-     We don't want to uninstall `DevMemMotionInterceptor`, because otherwise, the app on shake gesture will bring up the dev-menu from the RN.
+     We don't want to uninstall `DevMenuMotionInterceptor`, because otherwise, the app on shake gesture will bring up the dev-menu from the RN.
      So we added `isEnabled` to disable it, but not uninstall.
      */
     DevMenuMotionInterceptor.isInstalled = true;
