@@ -102,7 +102,7 @@ export default class NotificationScreen extends React.Component<
         <ListButton
           onPress={() =>
             Notifications.getNextTriggerDateAsync({ seconds: 10 }).then(timestamp =>
-              alert(new Date(timestamp * 1000))
+              alert(new Date(timestamp!))
             )
           }
           title="Get next date for time interval + 10 seconds"
@@ -113,7 +113,7 @@ export default class NotificationScreen extends React.Component<
               hour: 9,
               minute: 0,
               repeats: true,
-            }).then(timestamp => alert(new Date(timestamp * 1000)))
+            }).then(timestamp => alert(new Date(timestamp!)))
           }
           title="Get next date for 9 AM"
         />
@@ -124,7 +124,7 @@ export default class NotificationScreen extends React.Component<
               minute: 0,
               weekday: 1,
               repeats: true,
-            }).then(timestamp => alert(new Date(timestamp * 1000)))
+            }).then(timestamp => alert(new Date(timestamp!)))
           }
           title="Get next date for Sunday, 9 AM"
         />

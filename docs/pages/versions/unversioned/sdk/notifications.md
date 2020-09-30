@@ -770,7 +770,7 @@ The schedulable notification trigger you would like to check next trigger date f
 
 #### Returns
 
-If the return value is `null`, the notification won't be triggered. Otherwise, the return value is the Unix timestamp at which the notification will be triggered (to interpret it as a JS `Date` you'll need to multiply the number by 1000).
+If the return value is `null`, the notification won't be triggered. Otherwise, the return value is the Unix timestamp in milliseconds at which the notification will be triggered.
 
 #### Examples
 
@@ -785,7 +785,7 @@ async function logNextTriggerDate() {
       hour: 9,
       minute: 0,
     });
-    console.log(nextTriggerDate === null ? "No next trigger date" : new Date(nextTriggerDate * 1000));
+    console.log(nextTriggerDate === null ? "No next trigger date" : new Date(nextTriggerDate));
   } catch (e) {
     console.warn(`Couldn't have calculated next trigger date: ${e}`);
   }

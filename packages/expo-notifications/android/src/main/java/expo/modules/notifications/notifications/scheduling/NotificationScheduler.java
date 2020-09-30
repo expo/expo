@@ -138,8 +138,7 @@ public class NotificationScheduler extends ExportedModule {
         if (nextTriggerDate == null) {
           promise.resolve(null);
         } else {
-          // The method returns Unix timestamp in seconds
-          promise.resolve((double) (nextTriggerDate.getTime() / 1000));
+          promise.resolve((double) (nextTriggerDate.getTime()));
         }
       } else {
         String triggerDescription = trigger == null ? "null" : trigger.getClass().getName();
