@@ -162,6 +162,7 @@ The following methods are exported by the `expo-notifications` module:
   - [`scheduleNotificationAsync`](#schedulenotificationasyncnotificationrequest-notificationrequestinput-promisestring) -- schedules a notification to be triggered in the future
   - [`cancelScheduledNotificationAsync`](#cancelschedulednotificationasyncidentifier-string-promisevoid) -- removes a specific scheduled notification
   - [`cancelAllScheduledNotificationsAsync`](#cancelallschedulednotificationsasync-promisevoid) -- removes all scheduled notifications
+  - [`getNextTriggerDateAsync`](#getnexttriggerdateasynctrigger-schedulablenotificationtriggerinput-promisenumber--null) -- calculates next trigger date for a notification trigger
 - **dismissing notifications**
   - [`getPresentedNotificationsAsync`](#getpresentednotificationsasync-promisenotification) -- fetches information about all notifications present in the notification tray (Notification Center)
   - [`dismissNotificationAsync`](#dismissnotificationasyncidentifier-string-promisevoid) -- removes a specific notification from the notification tray
@@ -722,6 +723,38 @@ Cancels all scheduled notifications.
 #### Returns
 
 A `Promise` resolving once all the scheduled notifications are successfully cancelled or if there are no scheduled notifications.
+
+### `getNextTriggerDateAsync(trigger: SchedulableNotificationTriggerInput): Promise<number | null>`
+
+Allows you to check what will be the next trigger date for given notification trigger input.
+
+#### Arguments
+
+The schedulable notification trigger you would like to check next trigger date for (of type [`SchedulableNotificationTriggerInput`](#schedulablenotificationtriggerinput)).
+
+#### Returns
+
+If the return value is `null`, the notification won't be triggered. Otherwise, the return value is the Unix timestamp in milliseconds at which the notification will be triggered.
+
+#### Examples
+
+##### Calculating next trigger date for a notification trigger
+
+```ts
+import * as Notifications from 'expo-notifications';
+
+async function logNextTriggerDate() {
+  try {
+    const nextTriggerDate = await Notifications.getNextTriggerDateAsync({
+      hour: 9,
+      minute: 0,
+    });
+    console.log(nextTriggerDate === null ? "No next trigger date" : new Date(nextTriggerDate));
+  } catch (e) {
+    console.warn(`Couldn't have calculated next trigger date: ${e}`);
+  }
+}
+```
 
 ## Dismissing notifications
 
@@ -1307,6 +1340,15 @@ A type representing possible triggers with which you can schedule notifications.
 export type NotificationTriggerInput =
   | null
   | ChannelAwareTriggerInput
+  | SchedulableNotificationTriggerInput;
+```
+
+### `SchedulableNotificationTriggerInput`
+
+A type representing time-based, schedulable triggers. For these triggers you can check the next trigger date with [`getNextTriggerDateAsync`](#getnexttriggerdateasynctrigger-schedulablenotificationtriggerinput-promisenumber--null).
+
+```ts
+export type SchedulableNotificationTriggerInput =
   | DateTriggerInput
   | TimeIntervalTriggerInput
   | DailyTriggerInput

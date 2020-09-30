@@ -28,7 +28,9 @@ export default async function scheduleNotificationAsync(
   );
 }
 
-function parseTrigger(userFacingTrigger: NotificationTriggerInput): NativeNotificationTriggerInput {
+export function parseTrigger(
+  userFacingTrigger: NotificationTriggerInput
+): NativeNotificationTriggerInput {
   if (userFacingTrigger === null) {
     return null;
   }

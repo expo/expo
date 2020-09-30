@@ -14,11 +14,13 @@ import org.unimodules.core.interfaces.ExpoMethod;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 import androidx.annotation.Nullable;
 import expo.modules.notifications.notifications.ArgumentsNotificationContentBuilder;
 import expo.modules.notifications.notifications.NotificationSerializer;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
+import expo.modules.notifications.notifications.interfaces.SchedulableNotificationTrigger;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.service.NotificationSchedulingHelper;
@@ -125,6 +127,29 @@ public class NotificationScheduler extends ExportedModule {
         }
       }
     });
+  }
+
+  @ExpoMethod
+  public void getNextTriggerDateAsync(ReadableArguments triggerParams, Promise promise) {
+    try {
+      NotificationTrigger trigger = triggerFromParams(triggerParams);
+      if (trigger instanceof SchedulableNotificationTrigger) {
+        Date nextTriggerDate = ((SchedulableNotificationTrigger) trigger).nextTriggerDate();
+        if (nextTriggerDate == null) {
+          promise.resolve(null);
+        } else {
+          promise.resolve((double) (nextTriggerDate.getTime()));
+        }
+      } else {
+        String triggerDescription = trigger == null ? "null" : trigger.getClass().getName();
+        String message = String.format("It is not possible to get next trigger date for triggers other than calendar-based. Provided trigger resulted in %s trigger.", triggerDescription);
+        promise.reject("ERR_NOTIFICATIONS_INVALID_CALENDAR_TRIGGER", message);
+      }
+    } catch (InvalidArgumentException e) {
+      promise.reject("ERR_NOTIFICATIONS_FAILED_TO_GET_NEXT_TRIGGER_DATE", "Failed to get next trigger date for the trigger. " + e.getMessage(), e);
+    } catch (NullPointerException e) {
+      promise.reject("ERR_NOTIFICATIONS_FAILED_TO_GET_NEXT_TRIGGER_DATE", "Failed to get next trigger date for the trigger. Encountered unexpected null value. " + e.getMessage(), e);
+    }
   }
 
   @Nullable

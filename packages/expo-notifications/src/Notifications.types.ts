@@ -167,13 +167,16 @@ export interface WeeklyTriggerInput {
 
 export type DateTriggerInput = Date | number | { channelId?: string; date: Date | number };
 
-export type NotificationTriggerInput =
-  | null
-  | ChannelAwareTriggerInput
+export type SchedulableNotificationTriggerInput =
   | DateTriggerInput
   | TimeIntervalTriggerInput
   | DailyTriggerInput
   | CalendarTriggerInput;
+
+export type NotificationTriggerInput =
+  | null
+  | ChannelAwareTriggerInput
+  | SchedulableNotificationTriggerInput;
 
 export enum AndroidNotificationPriority {
   MIN = 'min',
