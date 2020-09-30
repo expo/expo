@@ -41,7 +41,7 @@ You can find the source of the documentation inside the `pages/versions` directo
 
 ### Editing Code
 
-Docs are made in Next.js and TypeScript. If you need to make code changes, follow steps from [Running locally](#running-locally) section, then open a separate terminal and run TypeScript compiler in watch mode - it will watch your code changes and notify you about errors.
+The docs are written with Next.js and TypeScript. If you need to make code changes, follow steps from [Running locally](#running-locally) section, then open a separate terminal and run TypeScript compiler in watch mode - it will watch your code changes and notify you about errors.
 ```sh
 yarn watch
 ```
