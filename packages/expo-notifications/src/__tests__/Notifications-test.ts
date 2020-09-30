@@ -85,6 +85,59 @@ it(`verifies weekly trigger handling`, async () => {
   );
 });
 
+it(`verifies daily trigger handling with channelId`, async () => {
+  const trigger = {
+    hour: 12,
+    minute: 30,
+    channelId: 'test-channel-id',
+    repeats: true as boolean | undefined,
+  };
+  const input = {
+    ...notificationTriggerInputTest,
+    trigger,
+  };
+  await scheduleNotificationAsync(input);
+  delete trigger.repeats;
+  expect(NotificationScheduler.scheduleNotificationAsync).toHaveBeenLastCalledWith(
+    input.identifier,
+    input.content,
+    {
+      type: 'daily',
+      ...input.trigger,
+    }
+  );
+});
+
+it(`verifies immediate trigger handling`, async () => {
+  const trigger = null;
+  const input = {
+    ...notificationTriggerInputTest,
+    trigger,
+  };
+  await scheduleNotificationAsync(input);
+  expect(NotificationScheduler.scheduleNotificationAsync).toHaveBeenLastCalledWith(
+    input.identifier,
+    input.content,
+    null
+  );
+});
+
+it(`verifies immediate trigger handling with channelId`, async () => {
+  const trigger = {
+    channelId: 'test-channel-id',
+  };
+  const input = {
+    ...notificationTriggerInputTest,
+    trigger,
+  };
+  await scheduleNotificationAsync(input);
+  expect(NotificationScheduler.scheduleNotificationAsync).toHaveBeenLastCalledWith(
+    input.identifier,
+    input.content,
+    null
+  );
+});
+
 it(`verifies time interval trigger handling`, async () => {
   const input = {
     ...notificationTriggerInputTest,
