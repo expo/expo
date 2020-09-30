@@ -34,8 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
  The FBNativeBannerAd represents ad metadata to allow you to construct custom ad views.
  See the AdUnitsSample in the sample apps section of the Audience Network framework.
  */
-FB_CLASS_EXPORT FB_SUBCLASSING_RESTRICTED
-@interface FBNativeBannerAd : FBNativeAdBase
+FB_CLASS_EXPORT FB_SUBCLASSING_RESTRICTED @interface FBNativeBannerAd : FBNativeAdBase
 
 @property (nonatomic, weak, nullable) id<FBNativeBannerAdDelegate> delegate;
 
@@ -47,7 +46,8 @@ FB_CLASS_EXPORT FB_SUBCLASSING_RESTRICTED
  @param view The UIView you created to render all the native ads data elements.
  @param iconView The FBMediaView you created to render the icon
  @param viewController The UIViewController that will be used to present SKStoreProductViewController
- (iTunes Store product information) or the in-app browser. If nil is passed, the top view controller currently shown will be used.
+ (iTunes Store product information) or the in-app browser. If nil is passed, the top view controller currently shown
+ will be used.
 
 
  The whole area of the UIView will be clickable.

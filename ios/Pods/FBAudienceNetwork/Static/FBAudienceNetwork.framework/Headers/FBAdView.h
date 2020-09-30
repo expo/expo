@@ -54,7 +54,7 @@ FB_CLASS_EXPORT
 - (nullable instancetype)initWithPlacementID:(NSString *)placementID
                                   bidPayload:(NSString *)bidPayload
                           rootViewController:(nullable UIViewController *)rootViewController
-                                       error:(NSError * __autoreleasing *) error;
+                                       error:(NSError *__autoreleasing *)error;
 
 /**
   Begins loading the FBAdView content.
