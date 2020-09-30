@@ -148,7 +148,8 @@ export declare type DateTriggerInput = Date | number | {
     channelId?: string;
     date: Date | number;
 };
-export declare type NotificationTriggerInput = null | ChannelAwareTriggerInput | DateTriggerInput | TimeIntervalTriggerInput | DailyTriggerInput | CalendarTriggerInput;
+export declare type SchedulableNotificationTriggerInput = DateTriggerInput | TimeIntervalTriggerInput | DailyTriggerInput | CalendarTriggerInput;
+export declare type NotificationTriggerInput = null | ChannelAwareTriggerInput | SchedulableNotificationTriggerInput;
 export declare enum AndroidNotificationPriority {
     MIN = "min",
     LOW = "low",

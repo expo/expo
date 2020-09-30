@@ -101,6 +101,37 @@ export default class NotificationScreen extends React.Component<
         <HeadingText>Notification Permissions</HeadingText>
         <ListButton onPress={this.getPermissionsAsync} title="Get permissions" />
         <ListButton onPress={this.requestPermissionsAsync} title="Request permissions" />
+
+        <HeadingText>Notification triggers debugging</HeadingText>
+        <ListButton
+          onPress={() =>
+            Notifications.getNextTriggerDateAsync({ seconds: 10 }).then(timestamp =>
+              alert(new Date(timestamp!))
+            )
+          }
+          title="Get next date for time interval + 10 seconds"
+        />
+        <ListButton
+          onPress={() =>
+            Notifications.getNextTriggerDateAsync({
+              hour: 9,
+              minute: 0,
+              repeats: true,
+            }).then(timestamp => alert(new Date(timestamp!)))
+          }
+          title="Get next date for 9 AM"
+        />
+        <ListButton
+          onPress={() =>
+            Notifications.getNextTriggerDateAsync({
+              hour: 9,
+              minute: 0,
+              weekday: 1,
+              repeats: true,
+            }).then(timestamp => alert(new Date(timestamp!)))
+          }
+          title="Get next date for Sunday, 9 AM"
+        />
       </ScrollView>
     );
   }

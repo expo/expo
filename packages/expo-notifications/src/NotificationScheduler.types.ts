@@ -11,6 +11,7 @@ export interface NotificationSchedulerModule extends ProxyNativeModule {
   ) => Promise<string>;
   cancelScheduledNotificationAsync?: (identifier: string) => Promise<void>;
   cancelAllScheduledNotificationsAsync?: () => Promise<void>;
+  getNextTriggerDateAsync?: (trigger: NotificationTriggerInput) => Promise<number>;
 }
 
 export interface ChannelAwareTriggerInput {
