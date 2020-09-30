@@ -40,7 +40,7 @@ which is otherwise unavailable in react-native using the Firebase JavaScript SDK
 
 ### iOS
 
-- Open **Project overview** in the firebase console and click on the iOS icon or + button to **Add Firebase to your iOS app**.
+- Open **Project overview** in the Firebase console and click on the iOS icon or + button to **Add Firebase to your iOS app**.
 - **Make sure that the iOS bundle ID is the same as the value of `ios.bundleIdentifier` in your app.json.**
 - Register the app & download the config file by clicking **"Download GoogleService-Info.plist"** and drag the file into your Expo project folder.
 - Add the relative path to the iOS **GoogleService-Info.plist** file to **`app.json`**.
@@ -58,7 +58,7 @@ which is otherwise unavailable in react-native using the Firebase JavaScript SDK
 
 ### Web
 
-- Open **Project overview** in the firebase console and click on the Web icon or + button to **Add Firebase to your Web app**.
+- Open **Project overview** in the Firebase console and click on the Web icon or + button to **Add Firebase to your Web app**.
 - Register the app & copy the config into your **`app.json`** under the key **`web.config.firebase`**.
 
 ```json
@@ -88,7 +88,7 @@ You are free to use any native Firebase packages such as [react-native-firebase]
 
 ### Android
 
-- Open **Project overview** in the firebase console and click on the Android icon or + button to **Add Firebase to your Android app**.
+- Open **Project overview** in the Firebase console and click on the Android icon or + button to **Add Firebase to your Android app**.
 - **Make sure that the Android package name is the same as the value of `applicationId` in your `android/app/build.gradle `.**
 - Register the app & download the config file by clicking **"Download google-services.json"** to this location `/android/app/google-services.json`.
 - Import the `google-services` plugin inside of your `android/build.gradle` file:
@@ -107,7 +107,7 @@ You are free to use any native Firebase packages such as [react-native-firebase]
 
 ### iOS
 
-- Open **Project overview** in the firebase console and click on the iOS icon or + button to **Add Firebase to your iOS app**.
+- Open **Project overview** in the Firebase console and click on the iOS icon or + button to **Add Firebase to your iOS app**.
 - **Make sure that the iOS bundle ID is the same as the value of `Bundle Identifier` of your iOS project.**
 - Register the app & download the config file by clicking **"Download GoogleService-Info.plist"**.
 - Open your Expo iOS project in Xcode `ios/{projectName}.xcworkspace` and then drag the services file into your project. If you don't see the `.xcworkspace` workspace file, run `npx pod-install` to create it.
