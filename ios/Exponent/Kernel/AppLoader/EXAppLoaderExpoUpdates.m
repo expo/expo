@@ -293,6 +293,7 @@ NS_ASSUME_NONNULL_BEGIN
     @"EXUpdatesURL": httpManifestUrl.absoluteString,
     @"EXUpdatesSDKVersion": [self _sdkVersions],
     @"EXUpdatesScopeKey": httpManifestUrl.absoluteString,
+    @"EXUpdatesReleaseChannel": [EXEnvironment sharedEnvironment].releaseChannel,
     @"EXUpdatesHasEmbeddedUpdate": @([EXEnvironment sharedEnvironment].isDetached),
     @"EXUpdatesEnabled": @([EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled),
     @"EXUpdatesLaunchWaitMs": launchWaitMs,
