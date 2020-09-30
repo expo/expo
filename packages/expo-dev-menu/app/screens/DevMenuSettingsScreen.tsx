@@ -1,9 +1,15 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, PixelRatio, View } from 'react-native';
 
-import { DevMenuSettingsType, setSettingsAsync, getSettingsAsync } from '../DevMenuInternal';
+import {
+  DevMenuSettingsType,
+  setSettingsAsync,
+  getSettingsAsync,
+  openDevMenuFromReactNative,
+} from '../DevMenuInternal';
 import ListItemCheckbox from '../components/ListItemCheckbox';
 import ListFooter from '../components/ListFooter';
+import ListItem from '../components/ListItem';
 
 type State = {
   settings: DevMenuSettingsType | null;
@@ -34,6 +40,10 @@ export default class DevMenuSettingsScreen extends React.PureComponent<{}, State
     setSettingsAsync({ showsAtLaunch: !this.state.settings?.showsAtLaunch });
   };
 
+  private openReactNativeDevMenu = () => {
+    openDevMenuFromReactNative();
+  };
+
   componentDidMount() {
     this.refreshSettingsAsync();
   }
@@ -51,22 +61,26 @@ export default class DevMenuSettingsScreen extends React.PureComponent<{}, State
     }
     return (
       <View style={styles.container}>
-        <ListItemCheckbox
-          title="Shake device"
-          initialChecked={settings.motionGestureEnabled}
-          onChange={this.toggleMotionGesture}
-        />
-        <ListItemCheckbox
-          title="Three-finger long press"
-          initialChecked={settings.touchGestureEnabled}
-          onChange={this.toggleTouchGesture}
-        />
-        <ListItemCheckbox
-          title="Show menu at launch"
-          initialChecked={settings.showsAtLaunch}
-          onChange={this.toggleAutoLaunch}
-        />
-        <ListFooter label="Selected gestures will toggle the developer menu." />
+        <ListItem title="Open React Native dev menu" onPress={this.openReactNativeDevMenu} />
+
+        <View style={styles.group}>
+          <ListItemCheckbox
+            title="Shake device"
+            initialChecked={settings.motionGestureEnabled}
+            onChange={this.toggleMotionGesture}
+          />
+          <ListItemCheckbox
+            title="Three-finger long press"
+            initialChecked={settings.touchGestureEnabled}
+            onChange={this.toggleTouchGesture}
+          />
+          <ListItemCheckbox
+            title="Show menu at launch"
+            initialChecked={settings.showsAtLaunch}
+            onChange={this.toggleAutoLaunch}
+          />
+          <ListFooter label="Selected gestures will toggle the developer menu." />
+        </View>
       </View>
     );
   }
@@ -76,5 +90,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 30,
+  },
+  group: {
+    marginVertical: 15,
   },
 });

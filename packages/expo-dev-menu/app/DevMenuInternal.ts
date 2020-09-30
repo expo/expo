@@ -84,3 +84,7 @@ export function subscribeToCloseEvents(listener: () => void): EventSubscription 
 export async function loadFontsAsync(): Promise<void> {
   return await DevMenu.loadFontsAsync();
 }
+
+export function openDevMenuFromReactNative() {
+  DevMenu.openDevMenuFromReactNative();
+}

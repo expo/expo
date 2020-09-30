@@ -108,4 +108,15 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
       DevMenuSettings.showsAtLaunch = showsAtLaunch
     }
   }
+  
+  @objc
+  func openDevMenuFromReactNative() {
+    guard let rctDevMenu = manager.session?.bridge.devMenu else {
+      return
+    }
+    
+    DispatchQueue.main.async {
+      rctDevMenu.show()
+    }
+  }
 }

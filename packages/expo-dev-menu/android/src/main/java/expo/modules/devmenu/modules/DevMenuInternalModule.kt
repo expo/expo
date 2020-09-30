@@ -103,4 +103,13 @@ class DevMenuInternalModule(reactContext: ReactApplicationContext)
 
     promise.resolve(null)
   }
+
+  @ReactMethod
+  fun openDevMenuFromReactNative() {
+    devMenuManger.getSession()?.reactInstanceManager?.devSupportManager?.let {
+      devMenuManger.closeMenu()
+      it.devSupportEnabled = true
+      it.showDevOptionsDialog()
+    }
+  }
 }

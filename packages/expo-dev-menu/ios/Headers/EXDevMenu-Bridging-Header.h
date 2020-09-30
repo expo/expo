@@ -4,6 +4,7 @@
 
 // React Native
 #import <React/RCTDevSettings.h>
+#import <React/RCTDevMenu.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTViewManager.h>
