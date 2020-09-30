@@ -22,8 +22,8 @@ When using the web-platform, you'll also need to run `expo install firebase`, wh
 
 ## Configuration
 
-To use this package, the native Firebase configurations needs to be added to your app.
-[Please follow this guide on how to set up Native Firebase.](../../guides/setup-native-firebase)
+To use this package, the native Firebase configurations need to be added to your app.
+[Please follow this guide on how to set up native Firebase.](/guides/setup-native-firebase)
 
 ## Expo Client: Limitations & configuration
 
@@ -306,7 +306,7 @@ Analytics.setUnavailabilityLogging(false);
 setDebugModeEnabled(isEnabled: boolean): Promise<void>
 ```
 
-Enables debug mode *(Expo client only)* so events can be tracked using the [DebugView in the Analytics dashboard](https://firebase.google.com/docs/analytics/debugview#reporting).
+Enables debug mode _(Expo client only)_ so events can be tracked using the [DebugView in the Analytics dashboard](https://firebase.google.com/docs/analytics/debugview#reporting).
 
 This option is **only available on the standard Expo client**. When using a standalone build, the bare workflow or web, use the [natively available options](https://firebase.google.com/docs/analytics/debugview).
 
