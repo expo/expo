@@ -25,7 +25,7 @@
     "expo": "~39.0.1",
     "expo-2d-context": "^0.0.2",
     "expo-ads-admob": "~8.3.0",
-    "expo-ads-facebook": "~8.4.0",
+    "expo-ads-facebook": "~8.5.0",
     "expo-app-auth": "~9.2.0",
     "expo-apple-authentication": "~2.2.1",
     "expo-asset": "~8.2.0",

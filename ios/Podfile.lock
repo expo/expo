@@ -2057,7 +2057,7 @@ PODS:
   - EXAdsAdMob (8.3.0):
     - Google-Mobile-Ads-SDK (= 7.55.1)
     - UMCore
-  - EXAdsFacebook (8.4.0):
+  - EXAdsFacebook (8.5.0):
     - FBAudienceNetwork (~> 5.9.0)
     - UMCore
   - EXAmplitude (8.3.1):
@@ -4591,7 +4591,7 @@ SPEC CHECKSUMS:
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: cde416483dac037923206447da6e1454df403714
   EXAdsAdMob: d2c317db3c1879bf2c0e36d76468a426917598f3
-  EXAdsFacebook: dddbd62d02b3ae9143048c0959a32ff67e24e325
+  EXAdsFacebook: af03941b7078c6b86f777736daf6c2caefd7cacf
   EXAmplitude: caa186767e48b4efcb07cf74be76ff16f4700e48
   EXAppAuth: 0346d79802fceaacd16a18faccc80035ac9523dd
   EXAppleAuthentication: 5b3da71bada29e2423d8ea27e5538ef0d75aba62
