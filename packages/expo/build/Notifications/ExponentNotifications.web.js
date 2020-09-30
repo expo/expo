@@ -1,5 +1,5 @@
 import * as badgin from 'badgin';
-import uuidv4 from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 import { guardPermission, getExponentPushTokenAsync, getDevicePushTokenAsync, } from './ExponentNotificationsHelper.web';
 // Register `message`'s event listener (side-effect)
 import './ExponentNotifications.fx.web';
