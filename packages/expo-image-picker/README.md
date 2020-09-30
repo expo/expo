@@ -23,11 +23,15 @@ expo install expo-image-picker
 
 ### Configure for iOS
 
-Add `NSPhotoLibraryUsageDescription` key to your `Info.plist`:
+Add `NSPhotoLibraryUsageDescription`, `NSCameraUsageDescription`, and `NSMicrophoneUsageDescription` keys to your `Info.plist`:
 
 ```xml
 <key>NSPhotoLibraryUsageDescription</key>
 <string>Give $(PRODUCT_NAME) permission to save photos</string>
+<key>NSCameraUsageDescription</key>
+<string>Give $(PRODUCT_NAME) permission to access your camera</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>Give $(PRODUCT_NAME) permission to use your microphone</string>
 ```
 
 Run `npx pod-install` after installing the npm package.
