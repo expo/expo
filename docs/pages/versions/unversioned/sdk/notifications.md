@@ -772,7 +772,7 @@ The notification trigger you would like to check next trigger date for.
 
 #### Returns
 
- If return value is `null`, the notification wouldn't be triggered. If return value is a number, it is Unix timestamp at which the notification would be triggered (to interpret it as a JS `Date` you'll need to multiply the number by 1000).
+If the return value is `null`, the notification won't be triggered. Otherwise, the return value is the Unix timestamp at which the notification will be triggered (to interpret it as a JS `Date` you'll need to multiply the number by 1000).
 
 #### Examples
 
