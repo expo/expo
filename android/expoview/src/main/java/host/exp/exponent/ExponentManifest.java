@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Debug;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.LruCache;
 
@@ -630,12 +631,12 @@ public class ExponentManifest {
   }
 
   @Nullable
-  private Bitmap getIconFromCache(final String iconUrl) {
-    if (iconUrl != null && !iconUrl.isEmpty()) {
-      return mMemoryCache.get(iconUrl);
+  private Bitmap getIconFromCache(@Nullable final String iconUrl) {
+    if (TextUtils.isEmpty(iconUrl)) {
+      return BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.ic_launcher);
     }
 
-    return BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.ic_launcher);
+    return mMemoryCache.get(iconUrl);
   }
 
 
