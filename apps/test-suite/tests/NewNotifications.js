@@ -1298,6 +1298,46 @@ export async function test(t) {
       }
     });
 
+    t.fdescribe('getNextTriggerDateAsync', () => {
+      if (Platform.OS === 'ios') {
+        t.it('generates trigger date for a calendar trigger', async () => {
+          const nextDate = await Notifications.getNextTriggerDateAsync({ month: 1, hour: 9 });
+          t.expect(nextDate).not.toBeNull();
+        });
+      } else {
+        t.it('fails to generate trigger date for a calendar trigger', async () => {
+          let exception = null;
+          try {
+            await Notifications.getNextTriggerDateAsync({ month: 1, hour: 9, repeats: true });
+          } catch (e) {
+            exception = e;
+          }
+          t.expect(exception).toBeDefined();
+        });
+      }
+
+      t.it('generates trigger date for a daily trigger', async () => {
+        const nextDate = await Notifications.getNextTriggerDateAsync({
+          hour: 9,
+          minute: 20,
+          repeats: true,
+        });
+        t.expect(nextDate).not.toBeNull();
+        t.expect(new Date(nextDate * 1000).getHours()).toBe(9);
+        t.expect(new Date(nextDate * 1000).getMinutes()).toBe(20);
+      });
+
+      t.it('fails to generate trigger date for the immediate trigger', async () => {
+        let exception = null;
+        try {
+          await Notifications.getNextTriggerDateAsync({ channelId: 'test-channel-id' });
+        } catch (e) {
+          exception = e;
+        }
+        t.expect(exception).toBeDefined();
+      });
+    });
+
     t.describe('cancelScheduledNotificationAsync', () => {
       const identifier = 'test-scheduled-canceled-notification';
       const notification = { title: 'Scheduled, canceled notification' };
@@ -1604,7 +1644,7 @@ export async function test(t) {
             // On iOS because we are using the calendar with repeat, it needs to be
             // greater than 60 seconds
             const triggerDate = new Date(
-                new Date().getTime() + (Platform.OS === 'ios' ? 120000 : 60000)
+              new Date().getTime() + (Platform.OS === 'ios' ? 120000 : 60000)
             );
             await Notifications.scheduleNotificationAsync({
               identifier,
