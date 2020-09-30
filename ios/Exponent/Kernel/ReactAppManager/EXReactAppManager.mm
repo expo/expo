@@ -14,6 +14,7 @@
 #import "EXReactAppManager+Private.h"
 #import "EXVersionManager.h"
 #import "EXVersions.h"
+#import "EXAppViewController.h"
 #import <UMCore/UMModuleRegistryProvider.h>
 #import <EXSplashScreen/EXSplashScreenService.h>
 
@@ -413,6 +414,11 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     _hasBridgeEverLoaded = YES;
     [_versionManager bridgeFinishedLoading:_reactBridge];
     [self appStateDidBecomeActive];
+
+    // TODO: temporary solution for hiding LoadingProgressWindow
+    if (_appRecord.viewController) {
+      [_appRecord.viewController hideLoadingProgressWindow];
+    }
     
     // TODO: To be removed once SDK 38 is phased out
     // Above SDK 38 this code is invoked in different place
