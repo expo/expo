@@ -413,12 +413,11 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     _hasBridgeEverLoaded = YES;
     [_versionManager bridgeFinishedLoading:_reactBridge];
     [self appStateDidBecomeActive];
-    [self appLoadingFinished];
     
     // TODO: To be removed once SDK 38 is phased out
     // Above SDK 38 this code is invoked in different place
     if ([self _compareVersionTo:39] == NSOrderedAscending) {
-      [self _preSDK39BeginWaitingForMaybeHidingSplashScreen];
+      [self _preSDK39BeginWaitingForAppLoading];
     }
   } else if ([notification.name isEqualToString:[self versionedString:RCTJavaScriptDidFailToLoadNotification]]) {
     NSError *error = (notification.userInfo) ? notification.userInfo[@"error"] : nil;
@@ -442,6 +441,12 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     dispatch_async(dispatch_get_main_queue(), ^{
       UM_ENSURE_STRONGIFY(self);
       [self.delegate reactAppManagerAppContentDidAppear:self];
+      
+      if ([self _compareVersionTo:38] == NSOrderedDescending) {
+        // Post SDK 38 code
+        // Up to SDK 38 this code is invoked in different place
+        [self _appLoadingFinished];
+      }
     });
   }
 }
@@ -460,7 +465,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 /**
  * TODO: Remove once SDK 38 is phased out.
  */
-- (void)_preSDK39BeginWaitingForMaybeHidingSplashScreen
+- (void)_preSDK39BeginWaitingForAppLoading
 {
   if (_viewTestTimer) {
     [_viewTestTimer invalidate];
@@ -475,7 +480,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
                                       failureCallback:^(NSString * _Nonnull message) { RCTLogWarn(@"%@", message); }];
   _viewTestTimer = [NSTimer scheduledTimerWithTimeInterval:0.02
                                                     target:self
-                                                  selector:@selector(_preSDK39CheckHideSplashScreen:)
+                                                  selector:@selector(_preSDK39CheckAppFinishedLoading:)
                                                   userInfo:nil
                                                    repeats:YES];
 }
@@ -497,7 +502,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 /**
  * TODO: Remove once SDK 38 is phased out.
  */
-- (void)_preSDK39CheckHideSplashScreen:(NSTimer *)timer
+- (void)_preSDK39CheckAppFinishedLoading:(NSTimer *)timer
 {
   // When root view has been filled with something, there are two cases:
   //   1. AppLoading was never mounted, in which case we hide the loading indicator immediately
@@ -519,11 +524,12 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
       [splashScreenService hideSplashScreenFor:(UIViewController *) _appRecord.viewController
                                successCallback:^(BOOL hasEffect) {}
                                failureCallback:^(NSString * _Nonnull message) { RCTLogWarn(@"%@", message); }];
+      [self _appLoadingFinished];
     }
   }
 }
 
-- (void)appLoadingFinished
+- (void)_appLoadingFinished
 {
   UM_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
