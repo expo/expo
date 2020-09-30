@@ -162,6 +162,7 @@ The following methods are exported by the `expo-notifications` module:
   - [`scheduleNotificationAsync`](#schedulenotificationasyncnotificationrequest-notificationrequestinput-promisestring) -- schedules a notification to be triggered in the future
   - [`cancelScheduledNotificationAsync`](#cancelschedulednotificationasyncidentifier-string-promisevoid) -- removes a specific scheduled notification
   - [`cancelAllScheduledNotificationsAsync`](#cancelallschedulednotificationsasync-promisevoid) -- removes all scheduled notifications
+  - [`getNextTriggerDateAsync`](#getnexttriggerdateasynctrigger-notificationtriggerinput-promisenumber--null) -- calculates next trigger date for a notification trigger
 - **dismissing notifications**
   - [`getPresentedNotificationsAsync`](#getpresentednotificationsasync-promisenotification) -- fetches information about all notifications present in the notification tray (Notification Center)
   - [`dismissNotificationAsync`](#dismissnotificationasyncidentifier-string-promisevoid) -- removes a specific notification from the notification tray
@@ -722,6 +723,40 @@ Cancels all scheduled notifications.
 #### Returns
 
 A `Promise` resolving once all the scheduled notifications are successfully cancelled or if there are no scheduled notifications.
+
+### `getNextTriggerDateAsync(trigger: NotificationTriggerInput): Promise<number | null>`
+
+Allows you to check what will be the next trigger date for given notification trigger input.
+
+#### Arguments
+
+The notification trigger you would like to check next trigger date for.
+
+> **Note:** Only calendar-based notification triggers are supported, trying to get trigger date for triggers of other types will result in `Promise` rejection with code `ERR_NOTIFICATIONS_INVALID_CALENDAR_TRIGGER`.
+
+#### Returns
+
+ If return value is `null`, the notification wouldn't be triggered. If return value is a number, it is Unix timestamp at which the notification would be triggered (to interpret it as a JS `Date` you'll need to multiply the number by 1000).
+
+#### Examples
+
+##### Calculating next trigger date for a notification trigger
+
+```ts
+import * as Notifications from 'expo-notifications';
+
+async function logNextTriggerDate() {
+  try {
+    const nextTriggerDate = await Notifications.getNextTriggerDateAsync({
+      hour: 9,
+      minute: 0,
+    });
+    console.log(nextTriggerDate === null ? "No next trigger date" : new Date(nextTriggerDate * 1000));
+  } catch (e) {
+    console.warn(`Couldn't have calculated next trigger date: ${e}`);
+  }
+}
+```
 
 ## Dismissing notifications
 
