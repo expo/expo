@@ -98,10 +98,12 @@ UM_EXPORT_METHOD_AS(getNextTriggerDateAsync,
     UNNotificationTrigger *trigger = [self triggerFromParams:triggerSpec];
     if ([trigger isKindOfClass:[UNCalendarNotificationTrigger class]]) {
       UNCalendarNotificationTrigger *calendarTrigger = (UNCalendarNotificationTrigger *)trigger;
-      resolve(@([[calendarTrigger nextTriggerDate] timeIntervalSince1970]));
+      NSDate *nextTriggerDate = [calendarTrigger nextTriggerDate];
+      resolve(nextTriggerDate ? @([nextTriggerDate timeIntervalSince1970]) : [NSNull null]);
     } else if ([trigger isKindOfClass:[UNTimeIntervalNotificationTrigger class]]) {
       UNTimeIntervalNotificationTrigger *timeIntervalTrigger = (UNTimeIntervalNotificationTrigger *)trigger;
-      resolve(@([[timeIntervalTrigger nextTriggerDate] timeIntervalSince1970]));
+      NSDate *nextTriggerDate = [timeIntervalTrigger nextTriggerDate];
+      resolve(nextTriggerDate ? @([nextTriggerDate timeIntervalSince1970]) : [NSNull null]);
     } else {
       NSString *message = [NSString stringWithFormat:@"It is not possible to get next trigger date for triggers other than calendar-based. Provided trigger resulted in %@ trigger.", NSStringFromClass([trigger class])];
       reject(@"ERR_NOTIFICATIONS_INVALID_CALENDAR_TRIGGER", message, nil);
