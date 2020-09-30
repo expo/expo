@@ -1375,7 +1375,7 @@ export type NotificationTriggerInput =
 
 ### `SchedulableNotificationTriggerInput`
 
-A type representing time-based, schedulable triggers. For these triggers you can check next trigger date with [`getNextTriggerDateAsync`](#getnexttriggerdateasynctrigger-schedulablenotificationtriggerinput-promisenumber--null).
+A type representing time-based, schedulable triggers. For these triggers you can check the next trigger date with [`getNextTriggerDateAsync`](#getnexttriggerdateasynctrigger-schedulablenotificationtriggerinput-promisenumber--null).
 
 ```ts
 export type SchedulableNotificationTriggerInput =

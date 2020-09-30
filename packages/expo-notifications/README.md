@@ -734,7 +734,7 @@ The schedulable notification trigger you would like to check next trigger date f
 
 #### Returns
 
-If the return value is `null`, the notification won't be triggered. Otherwise, the return value is the Unix timestamp in millseconds at which the notification will be triggered.
+If the return value is `null`, the notification won't be triggered. Otherwise, the return value is the Unix timestamp in milliseconds at which the notification will be triggered.
 
 #### Examples
 
@@ -1345,7 +1345,7 @@ export type NotificationTriggerInput =
 
 ### `SchedulableNotificationTriggerInput`
 
-A type representing time-based, schedulable triggers. For these triggers you can check next trigger date with [`getNextTriggerDateAsync`](#getnexttriggerdateasynctrigger-schedulablenotificationtriggerinput-promisenumber--null).
+A type representing time-based, schedulable triggers. For these triggers you can check the next trigger date with [`getNextTriggerDateAsync`](#getnexttriggerdateasynctrigger-schedulablenotificationtriggerinput-promisenumber--null).
 
 ```ts
 export type SchedulableNotificationTriggerInput =
