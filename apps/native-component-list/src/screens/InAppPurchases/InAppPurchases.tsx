@@ -32,7 +32,11 @@ export default class InAppPurchases extends React.Component<any, any> {
     responseCode: 0,
   };
 
-  async componentDidMount() {
+  componentDidMount() {
+    this.prepareAsync();
+  }
+
+  async prepareAsync() {
     // This method must be called first to initialize listeners and billing client
     await connectAsync();
 

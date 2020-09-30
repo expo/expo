@@ -62,7 +62,7 @@ class ChangingFullAd extends React.Component<
           </Text>
           <Switch
             value={this.state.expanded}
-            onValueChange={() => this.setState({ expanded: !this.state.expanded })}
+            onValueChange={() => this.setState(state => ({ expanded: !state.expanded }))}
           />
         </View>
         <AdOptionsView

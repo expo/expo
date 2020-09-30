@@ -12,7 +12,7 @@ type Link = {
   ImageTest: { test: ImageTest | ImageTestGroup; tests: (ImageTest | ImageTestGroup)[] };
 };
 
-type Props = StackScreenProps<Link, 'ImageTests'>
+type Props = StackScreenProps<Link, 'ImageTests'>;
 
 export default function ImageTestsScreen({ navigation, route }: Props) {
   React.useLayoutEffect(() => {

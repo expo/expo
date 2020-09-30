@@ -1,8 +1,8 @@
-import React from 'react';
-import * as GL from 'expo-gl';
-import * as Permissions from 'expo-permissions';
-import { GLView } from 'expo-gl';
 import { Camera } from 'expo-camera';
+import * as GL from 'expo-gl';
+import { GLView } from 'expo-gl';
+import * as Permissions from 'expo-permissions';
+import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const vertShaderSource = `#version 300 es
@@ -65,7 +65,8 @@ class GLCameraScreen extends React.Component<{}, State> {
 
   onContextCreate = async (gl: GL.ExpoWebGLRenderingContext) => {
     // Create texture asynchronously
-    const cameraTexture = (this.texture = await this.createCameraTexture());
+    this.texture = await this.createCameraTexture();
+    const cameraTexture = this.texture;
 
     // Compile vertex and fragment shaders
     const vertShader = gl.createShader(gl.VERTEX_SHADER)!;
@@ -122,28 +123,28 @@ class GLCameraScreen extends React.Component<{}, State> {
       gl.endFrameEXP();
     };
     loop();
-  }
+  };
 
   toggleFacing = () => {
-    this.setState({
+    this.setState(state => ({
       type:
-        this.state.type === Camera.Constants.Type.back
+        state.type === Camera.Constants.Type.back
           ? Camera.Constants.Type.front
           : Camera.Constants.Type.back,
-    });
-  }
+    }));
+  };
 
   zoomOut = () => {
-    this.setState({
-      zoom: this.state.zoom - 0.1 < 0 ? 0 : this.state.zoom - 0.1,
-    });
-  }
+    this.setState(state => ({
+      zoom: state.zoom - 0.1 < 0 ? 0 : state.zoom - 0.1,
+    }));
+  };
 
   zoomIn = () => {
-    this.setState({
-      zoom: this.state.zoom + 0.1 > 1 ? 1 : this.state.zoom + 0.1,
-    });
-  }
+    this.setState(state => ({
+      zoom: state.zoom + 0.1 > 1 ? 1 : state.zoom + 0.1,
+    }));
+  };
 
   render() {
     return (
@@ -152,12 +153,12 @@ class GLCameraScreen extends React.Component<{}, State> {
           style={StyleSheet.absoluteFill}
           type={this.state.type}
           zoom={this.state.zoom}
-          ref={ref => this.camera = ref!}
+          ref={ref => (this.camera = ref!)}
         />
         <GLView
           style={StyleSheet.absoluteFill}
           onContextCreate={this.onContextCreate}
-          ref={ref => this.glView = ref!}
+          ref={ref => (this.glView = ref!)}
         />
 
         <View style={styles.buttons}>

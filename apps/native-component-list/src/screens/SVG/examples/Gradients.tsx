@@ -2,6 +2,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import * as Svg from 'react-native-svg';
+
 import Example from './Example';
 
 const { Defs, LinearGradient, RadialGradient, Stop, Ellipse, Circle, Text, Rect, G } = Svg;
@@ -48,7 +49,8 @@ class GradientUnits extends React.Component {
   static title = 'Compare gradientUnits="userSpaceOnUse" width default';
   render() {
     return (
-      <View style={{ width: 300, height: 150, flexDirection: 'row', justifyContent: 'space-around' }}>
+      <View
+        style={{ width: 300, height: 150, flexDirection: 'row', justifyContent: 'space-around' }}>
         <Svg.Svg height="150" width="90">
           <Defs>
             <LinearGradient id="defaultUnits" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -66,8 +68,7 @@ class GradientUnits extends React.Component {
               y1="0%"
               x2="0%"
               y2="100%"
-              gradientUnits="userSpaceOnUse"
-            >
+              gradientUnits="userSpaceOnUse">
               <Stop offset="0%" stopColor="#000" stopOpacity="1" />
               <Stop offset="100%" stopColor="#ff0" stopOpacity="1" />
             </LinearGradient>
@@ -115,8 +116,7 @@ class RadialGradientExample extends React.Component {
             r="85"
             fx="150"
             fy="75"
-            gradientUnits="userSpaceOnUse"
-          >
+            gradientUnits="userSpaceOnUse">
             <Stop offset="0" stopColor="#ff0" stopOpacity="1" />
             <Stop offset="0.3" stopColor="#000" stopOpacity="1" />
             <Stop offset="0.7" stopColor="#0f0" stopOpacity="1" />

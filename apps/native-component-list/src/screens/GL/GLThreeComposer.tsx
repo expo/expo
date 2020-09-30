@@ -6,6 +6,7 @@ import { BoxGeometry, Mesh, MeshBasicMaterial, PerspectiveCamera, Scene } from '
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
 import { GlitchPass } from 'three/examples/jsm/postprocessing/GlitchPass';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
+
 import TitledSwitch from '../../components/TitledSwitch';
 
 export default function GLThreeComposer() {
@@ -19,7 +20,7 @@ export default function GLThreeComposer() {
   const scene = React.useRef<null | Scene>(null);
   const renderer = React.useRef<null | Renderer>(null);
   const composer = React.useRef<null | EffectComposer>(null);
-  const cubes = React.useRef<Array<{ angularVelocity: { x: number; y: number }; mesh: Mesh }>>([]);
+  const cubes = React.useRef<{ angularVelocity: { x: number; y: number }; mesh: Mesh }[]>([]);
 
   React.useEffect(() => {
     return () => {

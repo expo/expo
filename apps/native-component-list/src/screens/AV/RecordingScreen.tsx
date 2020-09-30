@@ -10,6 +10,8 @@ interface State {
   recordingUri?: string;
 }
 
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
 export default class RecordingScreen extends React.Component<{}, State> {
   static navigationOptions = {
     title: 'Audio',
@@ -21,10 +23,10 @@ export default class RecordingScreen extends React.Component<{}, State> {
 
   _maybeRenderLastRecording = () =>
     this.state.recordingUri ? (
-      <React.Fragment>
+      <>
         <HeadingText>Last recording</HeadingText>
         <Player source={{ uri: this.state.recordingUri }} />
-      </React.Fragment>
+      </>
     ) : null;
 
   render() {

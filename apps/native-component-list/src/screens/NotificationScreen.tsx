@@ -10,7 +10,9 @@ import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
 
 export default class NotificationScreen extends React.Component<
-  object,
+  // See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  {},
   {
     lastNotifications?: Notifications.Notification;
   }
@@ -22,7 +24,9 @@ export default class NotificationScreen extends React.Component<
   private _onReceivedListener: Subscription | undefined;
   private _onResponseReceivedListener: Subscription | undefined;
 
-  constructor(props: object) {
+  // See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  constructor(props: {}) {
     super(props);
     this.state = {};
   }

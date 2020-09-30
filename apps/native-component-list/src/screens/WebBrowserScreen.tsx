@@ -38,7 +38,9 @@ interface State {
   enableDefaultShare: boolean;
 }
 
-export default class WebBrowserScreen extends React.Component<object, State> {
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
+export default class WebBrowserScreen extends React.Component<{}, State> {
   static navigationOptions = {
     title: 'WebBrowser',
   };
@@ -279,7 +281,9 @@ export default class WebBrowserScreen extends React.Component<object, State> {
           <Button
             style={styles.button}
             onPress={async () => {
-              this.setState({ authResult: await this.startAuthAsync(this.state.shouldPrompt) });
+              // eslint-disable-next-line react/no-access-state-in-setstate
+              const authResult = await this.startAuthAsync(this.state.shouldPrompt);
+              this.setState({ authResult });
             }}
             title="Open web auth session"
           />

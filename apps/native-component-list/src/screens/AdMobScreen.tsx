@@ -7,9 +7,9 @@ import {
 } from 'expo-ads-admob';
 import * as React from 'react';
 import { StyleSheet, Platform, Switch, Text, View } from 'react-native';
-import { useResolvedValue } from '../utilities/useResolvedValue';
 
 import Button from '../components/Button';
+import { useResolvedValue } from '../utilities/useResolvedValue';
 
 export default function AdMobScreen() {
   const [isAvailable, error] = useResolvedValue(isAvailableAsync);

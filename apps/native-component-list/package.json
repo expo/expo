@@ -9,6 +9,7 @@
     "postinstall": "expo-yarn-workspaces postinstall",
     "build:web": "expo build:web --no-pwa",
     "web": "expo start:web --https",
+    "lint": "eslint .",
     "tsc": "tsc --noEmit --watch -p ./tsconfig.json"
   },
   "dependencies": {
