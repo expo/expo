@@ -1,2 +1,2 @@
-import { NotificationTriggerInput } from './Notifications.types';
-export default function getNextTriggerDateAsync(trigger: NotificationTriggerInput): Promise<number | null>;
+import { SchedulableNotificationTriggerInput } from './Notifications.types';
+export default function getNextTriggerDateAsync(trigger: SchedulableNotificationTriggerInput): Promise<number | null>;

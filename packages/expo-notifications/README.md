@@ -162,7 +162,7 @@ The following methods are exported by the `expo-notifications` module:
   - [`scheduleNotificationAsync`](#schedulenotificationasyncnotificationrequest-notificationrequestinput-promisestring) -- schedules a notification to be triggered in the future
   - [`cancelScheduledNotificationAsync`](#cancelschedulednotificationasyncidentifier-string-promisevoid) -- removes a specific scheduled notification
   - [`cancelAllScheduledNotificationsAsync`](#cancelallschedulednotificationsasync-promisevoid) -- removes all scheduled notifications
-  - [`getNextTriggerDateAsync`](#getnexttriggerdateasynctrigger-notificationtriggerinput-promisenumber--null) -- calculates next trigger date for a notification trigger
+  - [`getNextTriggerDateAsync`](#getnexttriggerdateasynctrigger-schedulablenotificationtriggerinput-promisenumber--null) -- calculates next trigger date for a notification trigger
 - **dismissing notifications**
   - [`getPresentedNotificationsAsync`](#getpresentednotificationsasync-promisenotification) -- fetches information about all notifications present in the notification tray (Notification Center)
   - [`dismissNotificationAsync`](#dismissnotificationasyncidentifier-string-promisevoid) -- removes a specific notification from the notification tray
@@ -724,15 +724,13 @@ Cancels all scheduled notifications.
 
 A `Promise` resolving once all the scheduled notifications are successfully cancelled or if there are no scheduled notifications.
 
-### `getNextTriggerDateAsync(trigger: NotificationTriggerInput): Promise<number | null>`
+### `getNextTriggerDateAsync(trigger: SchedulableNotificationTriggerInput): Promise<number | null>`
 
 Allows you to check what will be the next trigger date for given notification trigger input.
 
 #### Arguments
 
-The notification trigger you would like to check next trigger date for.
-
-> **Note:** Only calendar-based notification triggers are supported, trying to get trigger date for triggers of other types will result in `Promise` rejection with code `ERR_NOTIFICATIONS_INVALID_CALENDAR_TRIGGER`.
+The schedulable notification trigger you would like to check next trigger date for (of type [`SchedulableNotificationTriggerInput`](#schedulablenotificationtriggerinput)).
 
 #### Returns
 
@@ -1342,6 +1340,15 @@ A type representing possible triggers with which you can schedule notifications.
 export type NotificationTriggerInput =
   | null
   | ChannelAwareTriggerInput
+  | SchedulableNotificationTriggerInput;
+```
+
+### `SchedulableNotificationTriggerInput`
+
+A type representing time-based, schedulable triggers. For these triggers you can check next trigger date with [`getNextTriggerDateAsync`](#getnexttriggerdateasynctrigger-schedulablenotificationtriggerinput-promisenumber--null).
+
+```ts
+export type SchedulableNotificationTriggerInput =
   | DateTriggerInput
   | TimeIntervalTriggerInput
   | DailyTriggerInput
