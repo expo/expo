@@ -6,7 +6,7 @@ import { parseTrigger } from './scheduleNotificationAsync';
 
 export default async function getNextTriggerDateAsync(
   trigger: NotificationTriggerInput
-): Promise<number> {
+): Promise<number | null> {
   if (!NotificationScheduler.getNextTriggerDateAsync) {
     throw new UnavailabilityError('ExpoNotifications', 'getNextTriggerDateAsync');
   }
