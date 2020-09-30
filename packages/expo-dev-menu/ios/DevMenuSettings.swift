@@ -22,7 +22,12 @@ public class DevMenuSettings: NSObject {
       isOnboardingFinishedKey: false,
     ])
 
-    DevMenuMotionInterceptor.isInstalled = DevMenuSettings.motionGestureEnabled
+    /**
+     We don't want to uninstall `DevMenuMotionInterceptor`, because otherwise, the app on shake gesture will bring up the dev-menu from the RN.
+     So we added `isEnabled` to disable it, but not uninstall.
+     */
+    DevMenuMotionInterceptor.isInstalled = true;
+    DevMenuMotionInterceptor.isEnabled = DevMenuSettings.motionGestureEnabled
     DevMenuTouchInterceptor.isInstalled = DevMenuSettings.touchGestureEnabled
     DevMenuKeyCommandsInterceptor.isInstalled = DevMenuSettings.keyCommandsEnabled
   }
@@ -36,7 +41,7 @@ public class DevMenuSettings: NSObject {
     }
     set {
       setBool(newValue, forKey: motionGestureEnabledKey)
-      DevMenuMotionInterceptor.isInstalled = newValue
+      DevMenuMotionInterceptor.isEnabled = newValue
     }
   }
 
