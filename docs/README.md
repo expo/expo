@@ -46,8 +46,9 @@ Docs are made in Next.js and TypeScript. If you need to make code changes, follo
 yarn watch
 ```
 
-When you are done, don't forget to run tests and linter before committing your changes.
+When you are done, you should run _prettier_ to format your code. Also, don't forget to run tests and linter before committing your changes.
 ```sh
+yarn prettier
 yarn test
 yarn lint
 ```
