@@ -1383,6 +1383,7 @@ export type SchedulableNotificationTriggerInput =
   | DateTriggerInput
   | TimeIntervalTriggerInput
   | DailyTriggerInput
+  | WeeklyTriggerInput
   | CalendarTriggerInput;
 ```
 
