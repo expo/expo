@@ -99,7 +99,13 @@ export default class GLMaskScreen extends React.Component<Props> {
         // Buffer data and draw!
         const speed = this.props.speed || 1;
         const a = 0.48 * Math.sin(0.001 * speed * Date.now()) + 0.5;
-        const verts = new Float32Array([-a, -a, a, -a, -a, a, -a, a, a, -a, a, a]);
+        /* eslint-disable */
+        const verts = new Float32Array([
+          -a, -a,  a, -a,
+          -a,  a, -a,  a,
+           a, -a,  a,  a,
+         ]);
+         /* eslint-enable */
         gl.bufferData(gl.ARRAY_BUFFER, verts, gl.STATIC_DRAW);
         gl.drawArrays(gl.TRIANGLES, 0, verts.length / 2);
 
