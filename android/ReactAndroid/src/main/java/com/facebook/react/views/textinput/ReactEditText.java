@@ -388,6 +388,22 @@ public class ReactEditText extends AppCompatEditText {
     // Input type password defaults to monospace font, so we need to re-apply the font
     super.setTypeface(tf);
 
+    int inputType = type;
+
+    // Set InputType to TYPE_CLASS_TEXT (the default one for Android) to fix a crash on Xiaomi
+    // devices with Android Q. This crash happens when focusing on a email EditText within a
+    // ScrollView, a prompt will be triggered but the system fail to locate it properly.
+    // Here is an example post discussing about this issue:
+    // https://github.com/facebook/react-native/issues/27204
+    if (inputType == InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+      && Build.VERSION.SDK_INT == Build.VERSION_CODES.Q
+      && Build.MANUFACTURER.startsWith("Xiaomi")) {
+      inputType = InputType.TYPE_CLASS_TEXT;
+    }
+
+    super.setInputType(inputType);
+    mStagedInputType = inputType;
+
     /**
      * If set forces multiline on input, because of a restriction on Android source that enables
      * multiline only for inputs of type Text and Multiline on method {@link
@@ -401,7 +417,7 @@ public class ReactEditText extends AppCompatEditText {
     // We override the KeyListener so that all keys on the soft input keyboard as well as hardware
     // keyboards work. Some KeyListeners like DigitsKeyListener will display the keyboard but not
     // accept all input from it
-    mKeyListener.setInputType(type);
+    mKeyListener.setInputType(inputType);
     setKeyListener(mKeyListener);
   }
 
