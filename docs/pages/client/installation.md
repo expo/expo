@@ -7,7 +7,7 @@ import InstallSection from '~/components/plugins/InstallSection';
 import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
 
 
-**Expo Dev Client** is an open source project to improve your development experience while working on your Expo and React Native projects. It allows your team to focus on the JavaScript portion of your project, only needing to interact with XCode or Android Studio when you need to make changes to the native code used in your project .
+**Expo Dev Client** is an open source project to improve your development experience while working on your Expo and React Native projects. It allows your team to focus on the JavaScript portion of your project, only needing to interact with XCode or Android Studio when you need to make changes to the native code used in your project.
 
 > ⚠️ **Managed Expo projects are not yet supported**, but we are working on bringing it to EAS Build! If you want to build a managed Expo project with the Development Client, you'll have to eject it first. See the [Ejecting to Bare Workflow](../../workflow/customizing/) page to learn how.
 
@@ -15,7 +15,8 @@ import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
 ## Dream Instructions
 
 ### The easiest way to get started is to initialize a new project.
-All of our default templates start with expo-dev pre installed
+
+All of our default templates start with expo-dev pre installed.
 <InstallSection packageName="expo-dev" cmd={["expo init my-project", "cd my-project", "npx pod-install"]} hideBareInstructions />
 
 ### If you are upgrading an existing expo project
@@ -69,7 +70,8 @@ The Dev Client module provides an easy way to connect your built application to 
 <InstallSection packageName="expo-development-client" cmd={["npm install expo-development-client", "npm install expo-barcode-scanner", "npm install expo",  "npx pod-install"]} hideBareInstructions />
 
 ### Additional Steps
-On Android, you need to go in to the OS and manually grant yourself the camera permission
+
+On Android, you need to go into the OS and manually grant yourself the camera permission
 
 ### Manual iOS
 <ConfigurationDiff source="/static/diffs/dev-ios.diff" />

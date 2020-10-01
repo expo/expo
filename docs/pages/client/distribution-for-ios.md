@@ -23,7 +23,7 @@ After running the command, the generated APK will be named **MyApp.app** and can
 
 <br /> 
 
-You can transfer the app folder via email, shared network directory, or however you would transfer an arbitrary file.  You may want to compress the .app folder to faciliate the transfer.
+You can transfer the app folder via email, shared network directory, or however you would transfer an arbitrary file. You may want to compress the .app folder to facilitate the transfer.
 
 
 ### 3. Install on simulator
@@ -39,11 +39,11 @@ If you would prefer to install via the command line you can do so via `xcrun sim
 
 ### 1. Collect the UDID for any devices that will need to load the application
 
-Getting the UDID from non-developers is not a fool proof process.  [These](https://help.apple.com/xcode/mac/current/#/dev93ef696c6?sub=devdfa32588f) instructions should help.
+Getting the UDID from non-developers is not a foolproof process. [These](https://help.apple.com/xcode/mac/current/#/dev93ef696c6?sub=devdfa32588f) instructions should help.
 
 ### 2. Register the target devices with an Ad-hoc Distribution Profile 
 
-Your target devices will need to be registered to an Ad-hoc Distribution Profile.  You can find the latest instructions for how to do so [here](https://help.apple.com/developer-account/#/devebd34abb1)
+Your target devices will need to be registered to an Ad-hoc Distribution Profile. You can find the latest instructions for how to do so [here](https://help.apple.com/developer-account/#/devebd34abb1)
 
 ### 3. Export an Ad Hoc IPA
 
@@ -57,5 +57,4 @@ After you have set up your distribution profile, you can follow the instructions
 
 **to install via download**
 
-You can serve the IPA according to the instructions [here](https://docs.monaca.io/en/products_guide/monaca_ide/deploy/non_market_deploy/) under install using OTA Deployment to allow any of your target users / devices to run your IPA afer downloading it from a public URL
-
+You can serve the IPA according to the instructions [here](https://docs.monaca.io/en/products_guide/monaca_ide/deploy/non_market_deploy/) under install using OTA Deployment to allow any of your target users / devices to run your IPA after downloading it from a public URL
