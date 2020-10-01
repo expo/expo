@@ -113,6 +113,7 @@ const styles = {
         shadowOpacity: 0.1,
         shadowRadius: StyleSheet.hairlineWidth,
         shadowOffset: {
+          width: 0,
           height: StyleSheet.hairlineWidth,
         },
         elevation: 4,

@@ -79,6 +79,7 @@ export async function getGroupWithNameAsync(
   if (groups && groups.length > 0) {
     return groups[0];
   }
+  return undefined;
 }
 
 export async function cloneAsync(contactId: string) {
