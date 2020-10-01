@@ -37,13 +37,15 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
 {
   NSMutableDictionary *serializedRequest = [NSMutableDictionary dictionary];
   serializedRequest[@"identifier"] = request.identifier;
-  serializedRequest[@"content"] = [self serializedNotificationContent:request.content isRemote:[request.trigger isKindOfClass:[UNPushNotificationTrigger class]]];
-  serializedRequest[@"trigger"] = [self serializedNotificationTrigger:request.trigger];
+  serializedRequest[@"content"] = [self serializedNotificationContent:request];
+  serializedRequest[@"trigger"] = [self serializedNotificationTrigger:request];
   return serializedRequest;
 }
 
-+ (NSDictionary *)serializedNotificationContent:(UNNotificationContent *)content isRemote:(BOOL)isRemote
++ (NSDictionary *)serializedNotificationContent:(UNNotificationRequest *)request
 {
+  UNNotificationContent *content = request.content;
+  BOOL isRemote = [request.trigger isKindOfClass:[UNPushNotificationTrigger class]];
   NSMutableDictionary *serializedContent = [NSMutableDictionary dictionary];
   serializedContent[@"title"] = content.title ?: [NSNull null];
   serializedContent[@"subtitle"] = content.subtitle ?: [NSNull null];
@@ -51,8 +53,7 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
   serializedContent[@"badge"] = content.badge ?: [NSNull null];
   serializedContent[@"sound"] = [self serializedNotificationSound:content.sound] ?: [NSNull null];
   serializedContent[@"launchImageName"] = content.launchImageName ?: [NSNull null];
-  NSDictionary *data = isRemote ? [self flatDataDictionary:content.userInfo] : content.userInfo;
-  serializedContent[@"data"] = data ?: [NSNull null];
+  serializedContent[@"data"] = [self serializedNotificationData:request] ?: [NSNull null];
   serializedContent[@"attachments"] = [self serializedNotificationAttachments:content.attachments];
 
   if (@available(iOS 12.0, *)) {
@@ -68,16 +69,10 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
   return serializedContent;
 }
 
-+ (NSDictionary * _Nullable)flatDataDictionary:(NSDictionary * _Nullable)data
++ (NSDictionary *)serializedNotificationData:(UNNotificationRequest *)request
 {
-  if (data[@"body"] && data[@"aps"]) {
-    NSMutableDictionary *result = [data mutableCopy];
-    [result addEntriesFromDictionary:data[@"body"]];
-    [result removeObjectForKey:@"body"];
-    return result;
-  }
-  
-  return data;
+  BOOL isRemote = [request.trigger isKindOfClass:[UNPushNotificationTrigger class]];
+  return isRemote ? request.content.userInfo[@"body"] : request.content.userInfo;
 }
 
 + (NSString *)serializedNotificationSound:(UNNotificationSound *)sound
@@ -118,12 +113,14 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
   return serializedAttachment;
 }
 
-+ (NSDictionary *)serializedNotificationTrigger:(UNNotificationTrigger *)trigger
++ (NSDictionary *)serializedNotificationTrigger:(UNNotificationRequest *)request
 {
+  UNNotificationTrigger *trigger = request.trigger;
   NSMutableDictionary *serializedTrigger = [NSMutableDictionary dictionary];
   serializedTrigger[@"class"] = NSStringFromClass(trigger.class);
   if ([trigger isKindOfClass:[UNPushNotificationTrigger class]]) {
     serializedTrigger[@"type"] = @"push";
+    serializedTrigger[@"payload"] = request.content.userInfo;
   } else if ([trigger isKindOfClass:[UNCalendarNotificationTrigger class]]) {
     serializedTrigger[@"type"] = @"calendar";
     serializedTrigger[@"repeats"] = @(trigger.repeats);

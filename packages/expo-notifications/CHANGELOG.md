@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Changed the way `NotificationContent.data` is calculated on iOS. Previously it was the contents of remote notification payload with all entries from under `"body"` moved from under `"body"` to root level. Now it's the sole unchanged contents of `payload["body"]`. Other fields of the payload can now be accessed on iOS through `PushNotificationTrigger.payload` (similarly to how other fields of native remote message can be accessed on Android under `PushNotificationTrigger.remoteMessage`). ([#10453](https://github.com/expo/expo/pull/10453) by [@sjchmiela](https://github.com/sjchmiela))
+
 ### 🎉 New features
 
 - Added `WeeklyTriggerInput` that allows scheduling a weekly recurring notification for a specific day of week, hour and minute. It is supported on both iOS and Android. ([#9973](https://github.com/expo/expo/pull/9973) by [@RikTheunis](https://github.com/riktheunis))

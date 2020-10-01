@@ -1201,13 +1201,14 @@ export type NotificationTrigger =
 
 An object representing a notification delivered by a push notification system.
 
-On Android under `remoteMessage` field a JS version of the Firebase `RemoteMessage` may be accessed.
+On Android under `remoteMessage` field a JS version of the Firebase `RemoteMessage` may be accessed. On iOS under `payload` you may find full contents of [`UNNotificationContent`'s](https://developer.apple.com/documentation/usernotifications/unnotificationcontent?language=objc) [`userInfo`](https://developer.apple.com/documentation/usernotifications/unnotificationcontent/1649869-userinfo?language=objc), i.e. [remote notification payload](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CreatingtheNotificationPayload.html)
 
 ```ts
-export interface PushNotificationTrigger {
-  type: 'push';
-  remoteMessage?: FirebaseRemoteMessage;
-}
+export type PushNotificationTrigger = { type: 'push' } & (
+  | { payload: Record<string, unknown> } // iOS
+  | { remoteMessage: FirebaseRemoteMessage } // Android
+  | {}
+);
 ```
 
 ### `FirebaseRemoteMessage`
