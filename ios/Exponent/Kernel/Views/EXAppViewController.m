@@ -394,6 +394,11 @@ NS_ASSUME_NONNULL_BEGIN
   });
 }
 
+- (void)hideLoadingProgressWindow
+{
+  [self.appLoadingProgressWindowController hide];
+}
+
 #pragma mark - EXAppLoaderDelegate
 
 - (void)appLoader:(EXAppLoader *)appLoader didLoadOptimisticManifest:(NSDictionary *)manifest
