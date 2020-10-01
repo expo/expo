@@ -1,12 +1,16 @@
+import { ActionSheetOptions } from '@expo/react-native-action-sheet';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Text, TextStyle, View } from 'react-native';
 
 const icon = (name: string) => <MaterialCommunityIcons key={name} name={name} size={24} />;
 
 interface Props {
   title: string;
-  showActionSheetWithOptions: (options: object, onSelection: (index: number) => void) => void;
+  showActionSheetWithOptions: (
+    options: ActionSheetOptions,
+    onSelection: (index: number) => void
+  ) => void;
   onSelection: (index: number) => void;
   withTitle?: boolean;
   withMessage?: boolean;
@@ -40,25 +44,27 @@ export default class ShowActionSheetButton extends React.PureComponent<Props> {
     const options = ['Delete', 'Save', 'Share', 'Cancel'];
     const icons = withIcons
       ? [icon('delete'), icon('content-save'), icon('share'), icon('cancel')]
-      : null;
-    const title = withTitle ? 'Choose An Action' : null;
+      : undefined;
+    const title = withTitle ? 'Choose An Action' : undefined;
     const message = withMessage
       ? 'This library tries to mimic the native share sheets as close as possible.'
-      : null;
+      : undefined;
     const destructiveButtonIndex = 0;
     const cancelButtonIndex = 3;
-    const textStyle = withCustomStyles ? { fontSize: 20, fontWeight: '500', color: 'blue' } : null;
-    const titleTextStyle = withCustomStyles
+    const textStyle: TextStyle | undefined = withCustomStyles
+      ? { fontSize: 20, fontWeight: '500', color: 'blue' }
+      : undefined;
+    const titleTextStyle: TextStyle | undefined = withCustomStyles
       ? {
           fontSize: 24,
           textAlign: 'center',
           fontWeight: '700',
           color: 'orange',
         }
-      : null;
-    const messageTextStyle = withCustomStyles
+      : undefined;
+    const messageTextStyle: TextStyle | undefined = withCustomStyles
       ? { fontSize: 12, color: 'purple', textAlign: 'right' }
-      : null;
+      : undefined;
 
     showActionSheetWithOptions(
       {
