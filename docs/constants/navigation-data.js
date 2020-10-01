@@ -26,6 +26,7 @@ const DIR_MAPPING = {
   preview: 'Preview',
   build: 'EAS Build',
   accounts: 'Expo Accounts',
+  client: 'Dev Client',
 };
 
 const processUrl = path => {
@@ -121,7 +122,7 @@ const referenceDirectories = fs
 const startingDirectories = ['introduction', 'get-started', 'tutorial', 'next-steps'];
 
 // A manual list of directories to pull in to the preview section
-const previewDirectories = ['preview', 'build'];
+const previewDirectories = ['preview', 'build', 'client'];
 
 // Find any directories that aren't reference or starting directories. Also exclude the api
 // directory, which is just a shortcut.
