@@ -39,6 +39,22 @@ yarn run export-server
 
 You can find the source of the documentation inside the `pages/versions` directory. Documentation is mostly written in markdown with the help of some React components (for Snack embeds, etc). The routes and navbar are automatically inferred from the directory structure within `versions`.
 
+### Editing Code
+
+The docs are written with Next.js and TypeScript. If you need to make code changes, follow steps from the [Running locally](#running-locally) section, then open a separate terminal and run the TypeScript compiler in watch mode - it will watch your code changes and notify you about errors.
+
+```sh
+yarn watch
+```
+
+When you are done, you should run _prettier_ to format your code. Also, don't forget to run tests and linter before committing your changes.
+
+```sh
+yarn prettier
+yarn test
+yarn lint
+```
+
 ### Redirects
 
 #### Server-side redirects
@@ -60,7 +76,7 @@ You can add your own client-side redirect rules in `pages/_error.js`.
 
 ### Adding Images and Assets
 
-You can add images and assets to the `static` directory.  They'll be served by the production and staging servers at `/static`.
+You can add images and assets to the `public/static` directory.  They'll be served by the production and staging servers at `/static`.
 
 ### New Components
 
