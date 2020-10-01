@@ -1,11 +1,11 @@
 import * as BarCodeScanner from 'expo-barcode-scanner';
 import { BlurView } from 'expo-blur';
-import { Camera } from 'expo-camera';
 import { throttle } from 'lodash';
 import React from 'react';
 import { Linking, Platform, StatusBar, StyleSheet, Text, View } from 'react-native';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { Camera } from '../components/Camera';
 import QRFooterButton from '../components/QRFooterButton';
 import QRIndicator from '../components/QRIndicator';
 
@@ -76,7 +76,7 @@ export default function BarCodeScreen(props) {
     setLit(isLit => !isLit);
   }, []);
 
-  const { top, bottom } = useSafeArea();
+  const { top, bottom } = useSafeAreaInsets();
 
   return (
     <View style={styles.container}>
