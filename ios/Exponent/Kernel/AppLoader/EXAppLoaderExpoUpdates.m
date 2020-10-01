@@ -398,6 +398,7 @@ NS_ASSUME_NONNULL_BEGIN
       [self.delegate appLoader:self didLoadBundleWithProgress:progress];
     }
   } success:^(NSData *bundle) {
+    self.isUpToDate = YES;
     self.bundle = bundle;
     if (self.delegate) {
       [self.delegate appLoader:self didFinishLoadingManifest:self.optimisticManifest bundle:self.bundle];
