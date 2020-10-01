@@ -4,6 +4,8 @@
 
 @implementation EXDisabledRedBox
 
++ (NSString *)moduleName { return @"RCTRedBox"; }
+
 - (void)showError:(NSError *)message {}
 - (void)showErrorMessage:(NSString *)message {}
 - (void)showErrorMessage:(NSString *)message withDetails:(NSString *)details {}
