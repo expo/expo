@@ -146,7 +146,7 @@ type BarometerMeasurement = {
 | Name             | Type                 | Format   | iOS | Android | Web |
 | ---------------- | -------------------- | -------- | --- | ------- | --- |
 | pressure         | `number`             | `hPa`    | ✅  | ✅      | ❌  |
-| relativeAltitude | `number | undefined` | `meters` | ✅  | ❌      | ❌  |
+| relativeAltitude | `number \| undefined` | `meters` | ✅  | ❌      | ❌  |
 
 ## Units and Providers
 
