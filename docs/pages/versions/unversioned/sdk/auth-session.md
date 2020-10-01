@@ -329,10 +329,10 @@ Object returned after an auth request has completed.
 | -------------- | ------------------------ | -------------------------------------------------------------------------- | ------- |
 | type           | `string`                 | How the auth completed `'cancel', 'dismiss', 'locked', 'error', 'success'` | `.Code` |
 | url            | `string`                 | Auth URL that was opened                                                   |         |
-| error          | `AuthError | null`       | Possible error if the auth failed with type `error`                        |         |
+| error          | `AuthError \| null`       | Possible error if the auth failed with type `error`                        |         |
 | params         | `Record<string, string>` | Query params from the `url` as an object                                   |         |
-| authentication | `TokenResponse | null`   | Returned when the auth finishes with an `access_token` property            |         |
-| errorCode      | `string | null`          | Legacy error code query param, use `error` instead                         |         |
+| authentication | `TokenResponse \| null`   | Returned when the auth finishes with an `access_token` property            |         |
+| errorCode      | `string \| null`          | Legacy error code query param, use `error` instead                         |         |
 
 - If the user cancelled the auth session by closing the browser or popup, the result is `{ type: 'cancel' }`.
 - If the auth is dismissed manually with `AuthSession.dismiss()`, the result is `{ type: 'dismiss' }`.
@@ -357,7 +357,7 @@ Represents an OAuth authorization request as JSON.
 
 | Name                | Type                      | Description                                                    | Default | Spec                            |
 | ------------------- | ------------------------- | -------------------------------------------------------------- | ------- | ------------------------------- |
-| responseType        | `ResponseType | string`   | Specifies what is returned from the authorization server       | `.Code` | [Section 3.1.1][s311]           |
+| responseType        | `ResponseType \| string`   | Specifies what is returned from the authorization server       | `.Code` | [Section 3.1.1][s311]           |
 | clientId            | `string`                  | Unique ID representing the info provided by the client         |         | [Section 2.2][s22]              |
 | redirectUri         | `string`                  | The server will redirect to this URI when complete             |         | [Section 3.1.2][s312]           |
 | prompt              | `Prompt`                  | Should the user be prompted to login or consent again.         |         | [Section 3.1.2.1][oidc-authreq] |
