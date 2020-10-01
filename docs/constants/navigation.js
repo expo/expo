@@ -21,6 +21,7 @@ const GROUPS = {
   'React Native': ['React Native'],
   Preview: ['Preview'],
   'EAS Build': ['EAS Build'],
+  'Dev Client': ['Dev Client']
 };
 
 // This array provides the **ordering** for pages within each section
@@ -40,6 +41,17 @@ const sections = [
       'iOS build process',
       'Advanced credentials configuration',
       'How to: configuration examples',
+    ],
+  },
+  {
+    name: 'Dev Client',
+    reference: [
+      'Introduction',
+      'Installation',
+      'Coming from React Native',
+      'Distribution for iOS',
+      'Distribution for Android',
+      'Extending the Development Menu',
     ],
   },
   {
@@ -349,6 +361,7 @@ const sortNav = nav => {
     const section = nav.find(o => {
       return o.name.toLowerCase() === name.toLowerCase();
     });
+
     if (section) {
       section.posts = sortAccordingToReference(section.posts, reference);
     }
