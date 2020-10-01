@@ -13,6 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.URI;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -169,7 +170,7 @@ public class LegacyManifest implements Manifest {
       return Uri.parse(EXPO_ASSETS_URL_BASE);
     } else {
       for (String expoDomain : EXPO_DOMAINS) {
-        if (hostname.contains(expoDomain)) {
+        if (hostname.equals(expoDomain) || hostname.endsWith("." + expoDomain)) {
           return Uri.parse(EXPO_ASSETS_URL_BASE);
         }
       }
@@ -181,9 +182,15 @@ public class LegacyManifest implements Manifest {
       if (maybeAssetsUrl != null && maybeAssetsUrl.isAbsolute()) {
         return maybeAssetsUrl;
       } else {
-        if (assetsPathOrUrl.startsWith("./")) {
-          assetsPathOrUrl = assetsPathOrUrl.substring(2);
+        String normalizedAssetsPath;
+        try {
+          URI assetsPathURI = new URI(assetsPathOrUrl);
+          normalizedAssetsPath = assetsPathURI.normalize().toString();
+        } catch (Exception e) {
+          Log.e(TAG, "Failed to normalize assetUrlOverride", e);
+          normalizedAssetsPath = assetsPathOrUrl;
         }
+
         // use manifest URL as the base
         Uri.Builder assetsBaseUrlBuilder = manifestUrl.buildUpon();
         List<String> segments = manifestUrl.getPathSegments();
@@ -191,7 +198,7 @@ public class LegacyManifest implements Manifest {
         for (int i = 0; i < segments.size() - 1; i++) {
           assetsBaseUrlBuilder.appendPath(segments.get(i));
         }
-        assetsBaseUrlBuilder.appendPath(assetsPathOrUrl);
+        assetsBaseUrlBuilder.appendPath(normalizedAssetsPath);
         return assetsBaseUrlBuilder.build();
       }
     }
