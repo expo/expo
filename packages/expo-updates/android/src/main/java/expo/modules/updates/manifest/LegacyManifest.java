@@ -170,16 +170,23 @@ public class LegacyManifest implements Manifest {
         }
 
         if (mAssetsUrlBase == null) {
-          // use manifest url as the base
-          String assetsPath = getRawManifestJson().optString("assetUrlOverride", "assets");
-          Uri.Builder assetsBaseUrlBuilder = mManifestUrl.buildUpon();
-          List<String> segments = mManifestUrl.getPathSegments();
-          assetsBaseUrlBuilder.path("");
-          for (int i = 0; i < segments.size() - 1; i++) {
-            assetsBaseUrlBuilder.appendPath(segments.get(i));
+          // assetUrlOverride may be an absolute or relative URL
+          // if relative, we should resolve with respect to the manifest URL
+          String assetsPathOrUrl = getRawManifestJson().optString("assetUrlOverride", "assets");
+          Uri maybeAssetsUrl = Uri.parse(assetsPathOrUrl);
+          if (maybeAssetsUrl != null && maybeAssetsUrl.isAbsolute()) {
+            mAssetsUrlBase = maybeAssetsUrl;
+          } else {
+            // use manifest URL as the base
+            Uri.Builder assetsBaseUrlBuilder = mManifestUrl.buildUpon();
+            List<String> segments = mManifestUrl.getPathSegments();
+            assetsBaseUrlBuilder.path("");
+            for (int i = 0; i < segments.size() - 1; i++) {
+              assetsBaseUrlBuilder.appendPath(segments.get(i));
+            }
+            assetsBaseUrlBuilder.appendPath(assetsPathOrUrl);
+            mAssetsUrlBase = assetsBaseUrlBuilder.build();
           }
-          assetsBaseUrlBuilder.appendPath(assetsPath);
-          mAssetsUrlBase = assetsBaseUrlBuilder.build();
         }
       }
     }
