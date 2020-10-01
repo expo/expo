@@ -400,8 +400,8 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     }
 
     this.hideLoadingView();
-    ManagedAppSplashScreenConfiguration config = ManagedAppSplashScreenConfiguration.parseManifest(manifest);
     if (mManagedAppSplashScreenViewProvider == null) {
+      ManagedAppSplashScreenConfiguration config = ManagedAppSplashScreenConfiguration.parseManifest(manifest);
       mManagedAppSplashScreenViewProvider = new ManagedAppSplashScreenViewProvider(config);
       SplashScreen.show(this, mManagedAppSplashScreenViewProvider, getRootViewClass(manifest), true);
     } else {
