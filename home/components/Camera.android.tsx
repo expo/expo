@@ -156,8 +156,14 @@ function calculateSuggestedDimensions(
     return null;
   }
 
-  const ratioNumber = ratioStringToNumber(ratio);
-  const width = containerDimensions.width;
-  const height = width * ratioNumber;
-  return { width, height };
+  try {
+    const ratioNumber = ratioStringToNumber(ratio);
+    const width = containerDimensions.width;
+    const height = width * ratioNumber;
+    return { width, height };
+  } catch (e) {
+    // If something unexpected happens just bail out
+    console.error(e);
+    return null;
+  }
 }
