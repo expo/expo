@@ -41,12 +41,14 @@ You can find the source of the documentation inside the `pages/versions` directo
 
 ### Editing Code
 
-The docs are written with Next.js and TypeScript. If you need to make code changes, follow steps from [Running locally](#running-locally) section, then open a separate terminal and run TypeScript compiler in watch mode - it will watch your code changes and notify you about errors.
+The docs are written with Next.js and TypeScript. If you need to make code changes, follow steps from the [Running locally](#running-locally) section, then open a separate terminal and run the TypeScript compiler in watch mode - it will watch your code changes and notify you about errors.
+
 ```sh
 yarn watch
 ```
 
 When you are done, you should run _prettier_ to format your code. Also, don't forget to run tests and linter before committing your changes.
+
 ```sh
 yarn prettier
 yarn test
