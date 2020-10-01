@@ -14,7 +14,7 @@ An API for handling complex gestures. From the project's README:
 
 ## Installation
 
-<InstallSection packageName="react-native-gesture-handler" href="https://docs.swmansion.com/react-native-gesture-handler/docs/#installation" />
+<InstallSection packageName="react-native-gesture-handler" href="https://docs.swmansion.com/react-native-gesture-handler/docs/" />
 
 ## API
 
