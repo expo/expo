@@ -24,20 +24,11 @@ NS_ASSUME_NONNULL_BEGIN
   return [serializedNotificationMutable copy];
 }
 
-+ (NSDictionary *)serializedNotificationRequest:(UNNotificationRequest *)request
++ (NSDictionary *)serializedNotificationContent:(UNNotificationRequest *)request
 {
-  NSDictionary *serializedRequest = [super serializedNotificationRequest:request];
-  NSMutableDictionary *serializedRequestMutable = [serializedRequest mutableCopy];
-  serializedRequestMutable[@"content"] = [self serializedNotificationContent:request.content isRemote:[request.trigger isKindOfClass:[UNPushNotificationTrigger class]]];
-  
-  return [serializedRequestMutable copy];
-}
-
-+ (NSDictionary *)serializedNotificationContent:(UNNotificationContent *)content isRemote:(BOOL)isRemote
-{
-  NSDictionary *serializedContent = [super serializedNotificationContent:content isRemote:isRemote];
+  NSDictionary *serializedContent = [super serializedNotificationContent:request];
   NSMutableDictionary *serializedContentMutable = [serializedContent mutableCopy];
-  serializedContentMutable[@"categoryIdentifier"] = content.categoryIdentifier ? [self removeCategoryIdentifierPrefix: content.categoryIdentifier userInfo:content.userInfo] : [NSNull null];
+  serializedContentMutable[@"categoryIdentifier"] = request.content.categoryIdentifier ? [self removeCategoryIdentifierPrefix: request.content.categoryIdentifier userInfo:request.content.userInfo] : [NSNull null];
 
   return [serializedContentMutable copy];
 }

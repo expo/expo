@@ -196,6 +196,18 @@ export async function test(t) {
         t.expect(receivedEvent).not.toBeNull();
       });
 
+      t.it('the notification has proper `data` value', async () => {
+        let iterations = 0;
+        while (iterations < 5) {
+          iterations += 1;
+          if (receivedEvent) {
+            break;
+          }
+          await waitFor(1000);
+        }
+        t.expect(receivedEvent.request.content.data.fieldTestedInDataContentsTest).toBe(42);
+      });
+
       t.describe('if handler responds in time', async () => {
         t.it(
           'calls `handleSuccess` callback of the notification handler',
@@ -1693,6 +1705,7 @@ async function sendTestPushNotification(expoPushToken, notificationOverrides) {
         to: expoPushToken,
         title: 'Hello from Expo server!',
         data: {
+          fieldTestedInDataContentsTest: 42, // <- it's true, do not remove it
           firstLevelString: 'value',
           firstLevelObject: {
             secondLevelInteger: 2137,
