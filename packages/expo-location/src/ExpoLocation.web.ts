@@ -125,7 +125,7 @@ export default {
   },
   async watchPositionImplAsync(watchId: string, options: LocationOptions): Promise<string> {
     return new Promise<string>(resolve => {
-      // @ts-ignore
+      // @ts-ignore: the types here need to be fixed
       watchId = global.navigator.geolocation.watchPosition(
         position => {
           lastKnownPosition = geolocationPositionToJSON(position);
@@ -134,7 +134,8 @@ export default {
             location: lastKnownPosition,
           });
         },
-        null,
+        undefined,
+        // @ts-ignore: the options object needs to be fixed
         options
       );
       resolve(watchId);
