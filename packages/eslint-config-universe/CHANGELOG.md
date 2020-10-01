@@ -4,6 +4,14 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+## 5.0.0 — 2020-10-01
+
+### 🛠 Breaking changes
+
 - Upgraded `@typescript-eslint/eslint-plugin` to 4.2.0 and `@typescript-eslint/parser` to 4.2.0. [See the changelog for `typescript-eslint`.](https://github.com/typescript-eslint/typescript-eslint/releases/tag/v4.2.0). Notably undeclared variables are no longer linted in TypeScript files and this is now the responsibility of `tsc`.
 
 ### 🎉 New features
