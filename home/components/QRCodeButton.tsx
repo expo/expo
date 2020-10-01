@@ -23,6 +23,7 @@ function QRCodeButton(props: Props) {
       title="Scan QR Code"
       subtitle="Open your projects without typing"
       onPress={handlePressAsync}
+      last
       {...props}
     />
   );
