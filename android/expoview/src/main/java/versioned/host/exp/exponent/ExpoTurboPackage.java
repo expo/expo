@@ -45,7 +45,7 @@ public class ExpoTurboPackage extends TurboReactPackage {
     mManifest = manifest;
   }
 
-  public static ExpoTurboPackage createWithManifest(JSONObject manifest) {
+  public static ExpoTurboPackage kernelExpoTurboPackage(JSONObject manifest) {
     Map<String, Object> kernelExperienceProperties = new HashMap<>();
     kernelExperienceProperties.put(LINKING_URI_KEY, "exp://");
     kernelExperienceProperties.put(IS_HEADLESS_KEY, false);
