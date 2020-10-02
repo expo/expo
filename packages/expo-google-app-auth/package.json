@@ -31,7 +31,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/google/",
   "jest": {
-    "preset": "expo-module-scripts/ios"
+    "preset": "expo-module-scripts"
   },
   "peerDependencies": {
     "@unimodules/core": "*",
