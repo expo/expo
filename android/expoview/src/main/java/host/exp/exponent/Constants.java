@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import expo.modules.splashscreen.SplashScreenImageResizeMode;
 import host.exp.exponent.analytics.EXL;
 
 public class Constants {
@@ -29,6 +30,7 @@ public class Constants {
     public List<Constants.EmbeddedResponse> EMBEDDED_RESPONSES;
     public int ANDROID_VERSION_CODE;
     public boolean FCM_ENABLED;
+    public SplashScreenImageResizeMode SPLASH_SCREEN_IMAGE_RESIZE_MODE;
     // no longer used, but we need to leave this here so that people's old detached apps don't break
     public boolean ANALYTICS_ENABLED;
     // same but since SDK32
@@ -57,6 +59,7 @@ public class Constants {
   public static int ANDROID_VERSION_CODE;
   public static boolean FCM_ENABLED;
   public static boolean ANALYTICS_ENABLED;
+  public static SplashScreenImageResizeMode SPLASH_SCREEN_IMAGE_RESIZE_MODE;
 
   public static void setSdkVersions(List<String> sdkVersions) {
     ABI_VERSIONS = TextUtils.join(",", sdkVersions);
@@ -119,6 +122,7 @@ public class Constants {
 
       embeddedResponses.addAll(appConstants.EMBEDDED_RESPONSES);
       EMBEDDED_RESPONSES = embeddedResponses;
+      SPLASH_SCREEN_IMAGE_RESIZE_MODE = appConstants.SPLASH_SCREEN_IMAGE_RESIZE_MODE;
     } catch (ClassNotFoundException e) {
       e.printStackTrace();
     } catch (IllegalAccessException e) {
