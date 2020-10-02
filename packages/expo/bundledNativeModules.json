@@ -41,7 +41,7 @@
   "expo-linear-gradient": "~8.3.1",
   "expo-local-authentication": "~9.3.0",
   "expo-localization": "~9.0.0",
-  "expo-location": "~9.0.0",
+  "expo-location": "~9.0.1",
   "expo-mail-composer": "~8.4.0",
   "expo-media-library": "~9.2.1",
   "expo-payments-stripe": "~8.3.0",

@@ -41,7 +41,7 @@
     "expo-device": "~2.3.0",
     "expo-font": "~8.3.0",
     "expo-linear-gradient": "~8.3.1",
-    "expo-location": "~9.0.0",
+    "expo-location": "~9.0.1",
     "expo-permissions": "~9.3.0",
     "expo-splash-screen": "~0.7.1",
     "expo-task-manager": "~8.5.0",
