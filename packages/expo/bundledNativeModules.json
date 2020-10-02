@@ -23,7 +23,7 @@
   "expo-constants": "~9.2.0",
   "expo-contacts": "~8.6.0",
   "expo-crypto": "~8.3.0",
-  "expo-document-picker": "~8.4.0",
+  "expo-document-picker": "~8.4.1",
   "expo-face-detector": "~8.3.0",
   "expo-facebook": "~9.0.0",
   "expo-file-system": "~9.2.0",

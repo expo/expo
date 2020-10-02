@@ -1,7 +1,7 @@
 {
   "name": "expo-development-client",
-  "version": "0.0.1",
-  "summary": "TODO",
+  "version": "0.0.3",
+  "summary": "Pre-release version of the Expo development client package for testing.",
   "description": "expo-development-client",
   "homepage": "https://github.com/github_account/expo-development-client",
   "license": "MIT",
@@ -13,7 +13,7 @@
   },
   "source": {
     "git": "https://github.com/github_account/expo-development-client.git",
-    "tag": "0.0.1"
+    "tag": "0.0.3"
   },
   "source_files": "ios/**/*.{h,m,swift,cpp}",
   "requires_arc": true,

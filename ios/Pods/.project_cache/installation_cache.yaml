@@ -10614,13 +10614,13 @@ CACHE_KEYS:
       EXDocumentPicker:
         :debug: 369e974b51717e3ae629d71a88034ad6
         :release: 369e974b51717e3ae629d71a88034ad6
-    CHECKSUM: 417ff098decc69113ed67a5ddb5e13109583a55c
+    CHECKSUM: 66695681f7bfae2813abe8840f9e0b8742829ee6
     FILES:
       - "../../packages/expo-document-picker/ios/EXDocumentPicker/EXDocumentPickerModule.h"
       - "../../packages/expo-document-picker/ios/EXDocumentPicker/EXDocumentPickerModule.m"
     PROJECT_NAME: EXDocumentPicker
     SPECS:
-      - EXDocumentPicker (8.4.0)
+      - EXDocumentPicker (8.4.1)
   EXErrorRecovery:
     BUILD_SETTINGS_CHECKSUM:
       EXErrorRecovery:
