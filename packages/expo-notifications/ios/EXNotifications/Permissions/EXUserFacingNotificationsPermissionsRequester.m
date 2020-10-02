@@ -71,20 +71,8 @@
 
   dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
 
-  NSString *permissionStatus;
-  switch (generalStatus) {
-    case UMPermissionStatusDenied:
-      permissionStatus = @"denied";
-      break;
-    case UMPermissionStatusGranted:
-      permissionStatus = @"granted";
-      break;
-    case UMPermissionStatusUndetermined:
-      permissionStatus = @"undetermined";
-      break;
-  }
   return @{
-           @"status": permissionStatus,
+           @"status": @(generalStatus),
            @"ios": status
            };
 }
