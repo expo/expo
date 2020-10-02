@@ -1,7 +1,6 @@
 package host.exp.exponent.notifications;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -20,12 +19,12 @@ import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExperienceId;
-import versioned.host.exp.exponent.modules.api.notifications.channels.ScopedNotificationsChannelManager;
-import versioned.host.exp.exponent.modules.api.notifications.channels.ScopedNotificationsGroupManager;
 import host.exp.exponent.notifications.model.ScopedNotificationRequest;
 import host.exp.exponent.storage.ExperienceDBObject;
 import host.exp.exponent.storage.ExponentDB;
 import host.exp.expoview.R;
+import versioned.host.exp.exponent.modules.api.notifications.channels.ScopedNotificationsChannelManager;
+import versioned.host.exp.exponent.modules.api.notifications.channels.ScopedNotificationsGroupManager;
 
 public class ScopedExpoNotificationBuilder extends CategoryAwareNotificationBuilder {
   @Inject
@@ -74,21 +73,6 @@ public class ScopedExpoNotificationBuilder extends CategoryAwareNotificationBuil
   @Override
   protected int getIcon() {
     return Constants.isStandaloneApp() ? R.drawable.shell_notification_icon : R.drawable.notification_icon;
-  }
-
-  @Override
-  protected Bitmap getLargeIcon() {
-    if (manifest == null) {
-      return super.getLargeIcon();
-    }
-
-    JSONObject notificationPreferences = manifest.optJSONObject(ExponentManifest.MANIFEST_NOTIFICATION_INFO_KEY);
-    String iconUrl = manifest.optString(ExponentManifest.MANIFEST_ICON_URL_KEY);
-    if (notificationPreferences != null) {
-      iconUrl = notificationPreferences.optString(ExponentManifest.MANIFEST_NOTIFICATION_ICON_URL_KEY);
-    }
-
-    return mExponentManifest.loadIconBitmapSync(iconUrl);
   }
 
   @Nullable
