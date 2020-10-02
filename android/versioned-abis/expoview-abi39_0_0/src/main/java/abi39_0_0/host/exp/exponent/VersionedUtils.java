@@ -4,17 +4,17 @@ package abi39_0_0.host.exp.exponent;
 
 import android.app.Activity;
 
-import java.util.Collections;
-
 import abi39_0_0.com.facebook.react.ReactInstanceManager;
 import abi39_0_0.com.facebook.react.ReactInstanceManagerBuilder;
 import abi39_0_0.com.facebook.react.common.LifecycleState;
 import abi39_0_0.com.facebook.react.shell.MainReactPackage;
 
-import abi39_0_0.host.exp.exponent.modules.api.reanimated.ReanimatedJSIModulePackage;
+import java.util.Collections;
+
 import host.exp.exponent.RNObject;
 import host.exp.exponent.experience.ReactNativeActivity;
 import host.exp.expoview.Exponent;
+import abi39_0_0.host.exp.exponent.modules.api.reanimated.ReanimatedJSIModulePackage;
 
 public class VersionedUtils {
 

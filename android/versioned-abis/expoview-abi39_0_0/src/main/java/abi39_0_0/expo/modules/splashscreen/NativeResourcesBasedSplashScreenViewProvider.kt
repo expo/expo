@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
 
+// this needs to stay for versioning to work
 import abi39_0_0.host.exp.expoview.R
 
 /**
