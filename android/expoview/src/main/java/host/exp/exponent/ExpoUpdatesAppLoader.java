@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -211,12 +212,17 @@ public class ExpoUpdatesAppLoader {
     }
 
     new LoaderTask(configuration, mDatabaseHolder, directory, selectionPolicy, new LoaderTask.LoaderTaskCallback() {
+      private boolean didAbort = false;
+
       @Override
       public void onFailure(Exception e) {
         if (Constants.isStandaloneApp()) {
           mIsEmergencyLaunch = true;
           launchWithNoDatabase(context, e);
         } else {
+          if (didAbort) {
+            return;
+          }
           Exception exception = e;
           try {
             JSONObject errorJson = new JSONObject(e.getMessage());
@@ -250,6 +256,14 @@ public class ExpoUpdatesAppLoader {
 
       @Override
       public void onRemoteManifestLoaded(Manifest manifest) {
+        // expo-cli does not always respect our SDK version headers and respond with a compatible update or an error
+        // so we need to check the compatibility here
+        if (!isValidSdkVersion(manifest.getRawManifestJson().optString("sdkVersion"))) {
+          mCallback.onError(formatExceptionForIncompatibleSdk(manifest.getRawManifestJson().optString("sdkVersion", "null")));
+          didAbort = true;
+          return;
+        }
+
         setShouldShowAppLoaderStatus(manifest.getRawManifestJson());
         mCallback.onOptimisticManifest(manifest.getRawManifestJson());
         updateStatus(AppLoaderStatus.DOWNLOADING_NEW_UPDATE);
@@ -257,6 +271,9 @@ public class ExpoUpdatesAppLoader {
 
       @Override
       public void onSuccess(Launcher launcher, boolean isUpToDate) {
+        if (didAbort) {
+          return;
+        }
         mLauncher = launcher;
         mIsUpToDate = isUpToDate;
         try {
@@ -274,6 +291,9 @@ public class ExpoUpdatesAppLoader {
 
       @Override
       public void onBackgroundUpdateFinished(LoaderTask.BackgroundUpdateStatus status, @Nullable UpdateEntity update, @Nullable Exception exception) {
+        if (didAbort) {
+          return;
+        }
         try {
           JSONObject jsonParams = new JSONObject();
           if (status == LoaderTask.BackgroundUpdateStatus.ERROR) {
@@ -423,5 +443,34 @@ public class ExpoUpdatesAppLoader {
     } else {
       return "EXPO_DEVICE";
     }
+  }
+
+  private boolean isValidSdkVersion(String sdkVersion) {
+    if (RNObject.UNVERSIONED.equals(sdkVersion)) {
+      return true;
+    }
+
+    for (final String version : Constants.SDK_VERSIONS_LIST) {
+      if (version.equals(sdkVersion)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private ManifestException formatExceptionForIncompatibleSdk(String sdkVersion) {
+    JSONObject errorJson = new JSONObject();
+    try {
+      errorJson.put("errorCode", "EXPERIENCE_SDK_VERSION_OUTDATED");
+      errorJson.put("message", "Invalid SDK version");
+      errorJson.put("metadata", new JSONObject().put(
+        "availableSDKVersions",
+        new JSONArray().put(sdkVersion))
+      );
+    } catch (Exception e) {
+      Log.e(TAG, "Failed to format error message for incompatible SDK version", e);
+    }
+    return new ManifestException(new Exception("Incompatible SDK version"), mManifestUrl, errorJson);
   }
 }
