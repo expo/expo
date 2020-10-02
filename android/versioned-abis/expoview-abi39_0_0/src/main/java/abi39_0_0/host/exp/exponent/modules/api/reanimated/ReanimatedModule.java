@@ -232,6 +232,9 @@ public class ReanimatedModule extends ReactContextBaseJavaModule implements
   @Override
   public void onCatalystInstanceDestroy() {
     super.onCatalystInstanceDestroy();
-    mNodesManager.onCatalystInstanceDestroy();
+
+    if (mNodesManager != null) {
+      mNodesManager.onCatalystInstanceDestroy();
+    }
   }
 }
