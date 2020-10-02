@@ -28,21 +28,22 @@
 
 - (void)updateSplashScreenViewWithManifest:(NSDictionary *)manifest
 {
+  EXManagedAppSplashScreenConfiguration *previousConfiguration = _configuration;
   _configuration = [EXManagedAppSplashScreenConfigurationBuilder parseManifest:manifest];
   if (_splashScreenView) {
-    [self configureSplashScreenView:_splashScreenView];
+    [self configureSplashScreenView:_splashScreenView previousConfiguration:previousConfiguration];
   }
 }
 
 - (UIView *)createSplashScreenView
 {
   UIView *splashScreenView = [UIView new];
-  [self configureSplashScreenView:splashScreenView];
+  [self configureSplashScreenView:splashScreenView previousConfiguration:nil];
   _splashScreenView = splashScreenView;
   return splashScreenView;
 }
 
-- (void)configureSplashScreenView:(UIView *)splashScreenView
+- (void)configureSplashScreenView:(UIView *)splashScreenView previousConfiguration:(EXManagedAppSplashScreenConfiguration *)previousConfiguration
 {
   UM_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
@@ -53,20 +54,22 @@
       EXKernelAppRecord *homeAppRecord = [EXKernel sharedInstance].appRegistry.homeAppRecord;
       
       if (homeAppRecord.appManager.reactBridge) {
-        // remove old splashImageView
-        if (self.splashImageView) {
-          [self.splashImageView removeFromSuperview];
-        }
+        // Only re-create the splashImageView when the imageUrl or imageResizeMode changes
+        if (![previousConfiguration.imageUrl isEqualToString:self.configuration.imageUrl] ||
+            previousConfiguration.imageResizeMode != self.configuration.imageResizeMode) {
+          if (self.splashImageView) {
+            [self.splashImageView removeFromSuperview];
+          }
+          RCTImageSource *imageSource = [RCTConvert RCTImageSource:@{ @"uri": self.configuration.imageUrl }];
 
-        RCTImageSource *imageSource = [RCTConvert RCTImageSource:@{ @"uri": self.configuration.imageUrl }];
-        
-        // splash image loading is taking some time that, what can result in no image visually presented during loading phase
-        // despite the fact the RCTImageView is mounted in the view hierarchy
-        self.splashImageView = [[RCTImageView alloc] initWithBridge:homeAppRecord.appManager.reactBridge];
-        self.splashImageView.frame = splashScreenView.bounds;
-        self.splashImageView.imageSources = @[imageSource];
-        self.splashImageView.resizeMode = self.configuration.imageResizeMode == EXSplashScreenImageResizeModeCover ? RCTResizeModeCover : RCTResizeModeContain;
-        [splashScreenView addSubview:self.splashImageView];
+          // splash image loading is taking some time that, what can result in no image visually presented during loading phase
+          // despite the fact the RCTImageView is mounted in the view hierarchy
+          self.splashImageView = [[RCTImageView alloc] initWithBridge:homeAppRecord.appManager.reactBridge];
+          self.splashImageView.frame = splashScreenView.bounds;
+          self.splashImageView.imageSources = @[imageSource];
+          self.splashImageView.resizeMode = self.configuration.imageResizeMode == EXSplashScreenImageResizeModeCover ? RCTResizeModeCover : RCTResizeModeContain;
+          [splashScreenView addSubview:self.splashImageView];
+        }
       }
     }
   });
