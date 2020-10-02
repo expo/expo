@@ -9,8 +9,10 @@ import abi39_0_0.org.unimodules.core.errors.CurrentActivityNotFoundException
 import abi39_0_0.org.unimodules.core.interfaces.ActivityProvider
 import abi39_0_0.org.unimodules.core.interfaces.ExpoMethod
 
-// Below import is added explicitly to provide a redirection from versioned code realm to unversioned code realm.
-// Without this import any `SplashScreen.methodName(...)` invocation on JS side ends up in versioned SplashScreen kotlin object that stores no information about the ExperienceActivity.
+// Below import must be kept unversioned even in versioned code to provide a redirection from
+// versioned code realm to unversioned code realm.
+// Without this import any `SplashScreen.anyMethodName(...)` invocation on JS side ends up
+// in versioned SplashScreen kotlin object that stores no information about the ExperienceActivity.
 import expo.modules.splashscreen.singletons.SplashScreen
 
 class SplashScreenModule(context: Context) : ExportedModule(context) {
