@@ -28,19 +28,30 @@ class ManagedAppSplashScreenViewProvider(
 
   override fun createSplashScreenView(context: Context): View {
     splashScreenView = SplashScreenView(context)
-    configureSplashScreenView(context, config)
+    configureSplashScreenView(context, config, null)
     return splashScreenView
   }
 
   fun updateSplashScreenViewWithManifest(context: Context, manifest: JSONObject) {
+    val previousConfig = config;
     config = ManagedAppSplashScreenConfiguration.parseManifest(manifest)
-    configureSplashScreenView(context, config)
+    configureSplashScreenView(context, config, previousConfig)
   }
 
-  private fun configureSplashScreenView(context: Context, config: ManagedAppSplashScreenConfiguration) {
+  private fun configureSplashScreenView(
+    context: Context,
+    config: ManagedAppSplashScreenConfiguration,
+    previousConfig: ManagedAppSplashScreenConfiguration?
+  ) {
     splashScreenView.setBackgroundColor(config.backgroundColor)
-    splashScreenView.configureImageViewResizeMode(config.resizeMode)
-    configureSplashScreenImageView(context, config)
+    // Only re-create the image view when the imageUrl or resizeMode changes
+    if (previousConfig == null ||
+      config.resizeMode != previousConfig.resizeMode ||
+      !config.imageUrl.equals(previousConfig.imageUrl)
+    ) {
+      splashScreenView.configureImageViewResizeMode(config.resizeMode)
+      configureSplashScreenImageView(context, config)
+    }
   }
 
   private fun configureSplashScreenImageView(context: Context, config: ManagedAppSplashScreenConfiguration) {
