@@ -53,12 +53,12 @@ PODS:
     - UMCore
   - EXDevice (2.3.0):
     - UMCore
-  - EXDevMenu (0.0.1):
+  - EXDevMenu (0.0.2):
     - EXDevMenuInterface
     - React
-  - EXDevMenuInterface (0.0.1):
+  - EXDevMenuInterface (0.0.2):
     - React
-  - EXDocumentPicker (8.4.0):
+  - EXDocumentPicker (8.4.1):
     - UMCore
     - UMFileSystemInterface
   - EXErrorRecovery (1.3.0):
@@ -139,7 +139,7 @@ PODS:
   - EXPermissions (9.3.0):
     - UMCore
     - UMPermissionsInterface
-  - expo-development-client (0.0.1):
+  - expo-development-client (0.0.3):
     - EXDevMenuInterface
     - React
   - expo-image (1.0.0-alpha.0):
@@ -976,9 +976,9 @@ SPEC CHECKSUMS:
   EXContacts: dbc32dd1e2798cce1beeced230da989931b47890
   EXCrypto: 80ee65669a5466a7ce9426a8ae985a50be7f3a5d
   EXDevice: e6ede72e08f6adc4b224d0628a9963d394ab9226
-  EXDevMenu: ef42d21bf1bcc2c505250247f1cbfaeba5f4b85d
-  EXDevMenuInterface: 10940ba80c09a99703ee1850b94f7e632c1d4764
-  EXDocumentPicker: 417ff098decc69113ed67a5ddb5e13109583a55c
+  EXDevMenu: 088b7b4d4205a648878ea530ae60150cc3170d52
+  EXDevMenuInterface: d0345b75a3e382389087e82121e2692b038f3255
+  EXDocumentPicker: 66695681f7bfae2813abe8840f9e0b8742829ee6
   EXErrorRecovery: 16696fe023fb46a32c3b09033abc361cfcf150a7
   EXFacebook: dd5352a2a74f825922131abf1ed438cf51d116a7
   EXFileSystem: afe9b1fd937d30270bf5108ba44e2f4a1d1ad694
@@ -988,7 +988,7 @@ SPEC CHECKSUMS:
   EXGL: 18197ce91dceb9acdc9b0a839919111ca004f434
   EXGL_CPP: 33f454aae7055477285982e9ce84dff19f83d458
   EXGL_CPP_LEGACY: 53e09fa405bf392e3d24b3c4fd62080f340a7429
-  EXGoogleSignIn: c575e4bc3c34882908167788a2c4a0cd8dfb2eb3
+  EXGoogleSignIn: 80eaddda799dc84496d5bbe9dd6f2c990ff1c5f4
   EXHaptics: 4db5fa74b5a87148af4355246981b2dd2d7b9e77
   EXImageLoader: 7153fb1307ac643299a9072b71da0d276f4c7789
   EXImageManipulator: 8bb065265ddaa9d526b70a6825123b85d34d32a4
@@ -1004,7 +1004,7 @@ SPEC CHECKSUMS:
   EXNetwork: 05c1b87ba7077cb3eea7a3968640e5007e32eb6b
   EXNotifications: 55301e7284ef5427662a2191eb986acb2035a1d5
   EXPermissions: 30cbe5b72bd209b65c00884180ad058a60bb413d
-  expo-development-client: 157880e411e083db6868cccf5c1822d952bc464d
+  expo-development-client: e8c09f0c49f187af7af6c22045d7f81ca5dbdff9
   expo-image: 36f53fe2845e4bb74021f69192a752db29766897
   EXPrint: 969e4d8514319a74405b015cd0bf6023dcdf4b00
   EXRandom: e4fbca1d3a5d6bd22ef22db9d404102b82987600

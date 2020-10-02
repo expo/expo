@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 8.4.1 — 2020-10-02
+
+### 🐛 Bug fixes
+
 - Fixed `UIDocumentPickerViewController` being `nil` on iOS 14 and thus causing the hard-crash of the application. ([#10327](https://github.com/expo/expo/pull/10327) by [@bbarthec](https://github.com/bbarthec))
 - Fixed `Promise` not being fulfilled if the document picker view controller was being dismissed by gesture on iOS. ([#10325](https://github.com/expo/expo/pull/10325) by [@sjchmiela](https://github.com/sjchmiela))
 
