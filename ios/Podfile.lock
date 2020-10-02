@@ -2243,7 +2243,7 @@ PODS:
     - UMConstantsInterface
     - UMCore
     - UMTaskManagerInterface
-  - EXUpdates (0.3.4):
+  - EXUpdates (0.3.5):
     - React
     - UMCore
   - EXVideoThumbnails (4.3.0):
@@ -4650,7 +4650,7 @@ SPEC CHECKSUMS:
   EXSQLite: d0d8677c13e60d5db2812387f059c697be27d3fb
   EXStoreReview: e847ad9367e8d9ab0d856e6aa21e16c1d30f118e
   EXTaskManager: 85c9d0ad555af2a393a5c4cb34c767f0e2162357
-  EXUpdates: 9ed0693ab1c8df9f0472cfb4549d5edccdf05849
+  EXUpdates: 74b39409f68eca207075d87b0077bdf37865a8bf
   EXVideoThumbnails: 14e86a99ba80dff030a77a0a720f494ac6c1cf84
   EXWebBrowser: 1a3ff931f6e64592c70f5faa226e4802a344d664
   FBAudienceNetwork: 648648b13d8ea3d39676542dece2b04dbe867497
