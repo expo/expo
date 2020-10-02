@@ -49,7 +49,7 @@ class StoreReviewModule(private val mContext: Context)
           if (task.isSuccessful) {
             promise.resolve(null)
           } else {
-            promise.reject(null)
+            promise.reject("ERR_STORE_REVIEW_FAILED", "Android ReviewManager task failed")
           }
         }
       } else {

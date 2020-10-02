@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [expo-store-review] Fix Android crash in failure path ([#10265](https://github.com/expo/expo/pull/10265) by [@danmaas](https://github.com/danmaas))
+
 ## 2.2.0 — 2020-08-20
 
 ### 🎉 New features
