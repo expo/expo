@@ -4,7 +4,6 @@
     package="abi39_0_0.host.exp.expoview" >
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="host.exp.exponent.permission.C2D_MESSAGE" />
