@@ -122,7 +122,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
       }
     }
     
-    NSError *sdkVersionError = [self _verifyManifestSdkVersion:innerManifestObj];
+    NSError *sdkVersionError = [self verifyManifestSdkVersion:innerManifestObj];
     if (sdkVersionError) {
       errorBlock(sdkVersionError);
       return;
@@ -323,9 +323,10 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
   return nil;
 }
 
-- (NSError *)_verifyManifestSdkVersion:(NSDictionary *)maybeManifest
+- (NSError *)verifyManifestSdkVersion:(NSDictionary *)maybeManifest
 {
   NSString *errorCode;
+  NSDictionary *metadata;
   if (maybeManifest && maybeManifest[@"sdkVersion"]) {
     if (![maybeManifest[@"sdkVersion"] isEqualToString:@"UNVERSIONED"]) {
       NSInteger manifestSdkVersion = [maybeManifest[@"sdkVersion"] integerValue];
@@ -334,6 +335,9 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
         NSInteger newestSdkVersion = [[self _latestSdkVersionSupported] integerValue];
         if (manifestSdkVersion < oldestSdkVersion) {
           errorCode = @"EXPERIENCE_SDK_VERSION_OUTDATED";
+          // since we are spoofing this error, we put the SDK version of the project as the
+          // "available" SDK version -- it's the only one available from the server
+          metadata = @{@"availableSDKVersions": @[maybeManifest[@"sdkVersion"]]};
         }
         if (manifestSdkVersion > newestSdkVersion) {
           errorCode = @"EXPERIENCE_SDK_VERSION_TOO_NEW";
@@ -355,6 +359,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
     // will be handled by _validateErrorData:
     return [self formatError:[NSError errorWithDomain:EXNetworkErrorDomain code:0 userInfo:@{
       @"errorCode": errorCode,
+      @"metadata": metadata ?: @{},
     }]];
   } else {
     return nil;
