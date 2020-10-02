@@ -335,6 +335,8 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
         NSInteger newestSdkVersion = [[self _latestSdkVersionSupported] integerValue];
         if (manifestSdkVersion < oldestSdkVersion) {
           errorCode = @"EXPERIENCE_SDK_VERSION_OUTDATED";
+          // since we are spoofing this error, we put the SDK version of the project as the
+          // "available" SDK version -- it's the only one available from the server
           metadata = @{@"availableSDKVersions": @[maybeManifest[@"sdkVersion"]]};
         }
         if (manifestSdkVersion > newestSdkVersion) {
