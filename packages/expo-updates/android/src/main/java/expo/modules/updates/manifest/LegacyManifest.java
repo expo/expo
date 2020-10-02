@@ -13,6 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.URI;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -158,39 +159,49 @@ public class LegacyManifest implements Manifest {
 
   private Uri getAssetsUrlBase() {
     if (mAssetsUrlBase == null) {
-      String hostname = mManifestUrl.getHost();
-      if (hostname == null) {
-        mAssetsUrlBase = Uri.parse(EXPO_ASSETS_URL_BASE);
-      } else {
-        for (String expoDomain : EXPO_DOMAINS) {
-          if (hostname.contains(expoDomain)) {
-            mAssetsUrlBase = Uri.parse(EXPO_ASSETS_URL_BASE);
-            break;
-          }
-        }
-
-        if (mAssetsUrlBase == null) {
-          // assetUrlOverride may be an absolute or relative URL
-          // if relative, we should resolve with respect to the manifest URL
-          String assetsPathOrUrl = getRawManifestJson().optString("assetUrlOverride", "assets");
-          Uri maybeAssetsUrl = Uri.parse(assetsPathOrUrl);
-          if (maybeAssetsUrl != null && maybeAssetsUrl.isAbsolute()) {
-            mAssetsUrlBase = maybeAssetsUrl;
-          } else {
-            // use manifest URL as the base
-            Uri.Builder assetsBaseUrlBuilder = mManifestUrl.buildUpon();
-            List<String> segments = mManifestUrl.getPathSegments();
-            assetsBaseUrlBuilder.path("");
-            for (int i = 0; i < segments.size() - 1; i++) {
-              assetsBaseUrlBuilder.appendPath(segments.get(i));
-            }
-            assetsBaseUrlBuilder.appendPath(assetsPathOrUrl);
-            mAssetsUrlBase = assetsBaseUrlBuilder.build();
-          }
-        }
-      }
+      mAssetsUrlBase = getAssetsUrlBase(mManifestUrl, getRawManifestJson());
     }
     return mAssetsUrlBase;
+  }
+
+  /* package */ static Uri getAssetsUrlBase(Uri manifestUrl, JSONObject manifestJson) {
+    String hostname = manifestUrl.getHost();
+    if (hostname == null) {
+      return Uri.parse(EXPO_ASSETS_URL_BASE);
+    } else {
+      for (String expoDomain : EXPO_DOMAINS) {
+        if (hostname.equals(expoDomain) || hostname.endsWith("." + expoDomain)) {
+          return Uri.parse(EXPO_ASSETS_URL_BASE);
+        }
+      }
+
+      // assetUrlOverride may be an absolute or relative URL
+      // if relative, we should resolve with respect to the manifest URL
+      String assetsPathOrUrl = manifestJson.optString("assetUrlOverride", "assets");
+      Uri maybeAssetsUrl = Uri.parse(assetsPathOrUrl);
+      if (maybeAssetsUrl != null && maybeAssetsUrl.isAbsolute()) {
+        return maybeAssetsUrl;
+      } else {
+        String normalizedAssetsPath;
+        try {
+          URI assetsPathURI = new URI(assetsPathOrUrl);
+          normalizedAssetsPath = assetsPathURI.normalize().toString();
+        } catch (Exception e) {
+          Log.e(TAG, "Failed to normalize assetUrlOverride", e);
+          normalizedAssetsPath = assetsPathOrUrl;
+        }
+
+        // use manifest URL as the base
+        Uri.Builder assetsBaseUrlBuilder = manifestUrl.buildUpon();
+        List<String> segments = manifestUrl.getPathSegments();
+        assetsBaseUrlBuilder.path("");
+        for (int i = 0; i < segments.size() - 1; i++) {
+          assetsBaseUrlBuilder.appendPath(segments.get(i));
+        }
+        assetsBaseUrlBuilder.appendPath(normalizedAssetsPath);
+        return assetsBaseUrlBuilder.build();
+      }
+    }
   }
 
   public boolean isDevelopmentMode() {
