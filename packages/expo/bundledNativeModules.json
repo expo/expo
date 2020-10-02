@@ -87,7 +87,7 @@
   "expo-device": "~2.3.0",
   "expo-network": "~2.3.0",
   "expo-store-review": "~2.2.0",
-  "expo-updates": "~0.3.4",
+  "expo-updates": "~0.3.5",
   "@react-native-community/datetimepicker": "3.0.0",
   "@react-native-community/masked-view": "0.1.10",
   "@react-native-community/viewpager": "4.1.6",
