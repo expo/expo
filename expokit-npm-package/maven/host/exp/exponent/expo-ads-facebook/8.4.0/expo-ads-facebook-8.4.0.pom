@@ -10,7 +10,7 @@
     <dependency>
       <groupId>com.facebook.android</groupId>
       <artifactId>audience-network-sdk</artifactId>
-      <version>5.1.1</version>
+      <version>5.11.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

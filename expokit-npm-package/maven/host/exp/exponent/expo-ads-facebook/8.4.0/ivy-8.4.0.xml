@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expo-ads-facebook" revision="8.4.0" status="integration" publication="20200914121745"/>
+  <info organisation="host.exp.exponent" module="expo-ads-facebook" revision="8.4.0" status="integration" publication="20201002141523"/>
   <configurations>
     <conf name="_internal_aapt2_binary" visibility="private" transitive="false"/>
     <conf name="androidApis" visibility="public"/>
@@ -124,10 +124,10 @@
     <dependency org="com.android.tools.build" name="aapt2" rev="4.0.0-6051327" conf="_internal_aapt2_binary-&gt;default">
       <artifact name="aapt2" type="jar" ext="jar" m:classifier="osx" conf="_internal_aapt2_binary"/>
     </dependency>
-    <dependency org="com.facebook.android" name="audience-network-sdk" rev="5.1.1" conf="api-&gt;default"/>
+    <dependency org="com.facebook.android" name="audience-network-sdk" rev="5.11.0" conf="api-&gt;default"/>
     <dependency org="org.unimodules" name="unimodules-core" rev="5.5.0" conf="implementation-&gt;default"/>
     <dependency org="com.android.tools.lint" name="lint-gradle" rev="27.0.0" conf="lintClassPath-&gt;default"/>
-    <dependency org="com.facebook.android" name="audience-network-sdk" rev="5.1.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="com.facebook.android" name="audience-network-sdk" rev="5.11.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.google.android.gms" name="play-services-basement" rev="11.0.4" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="androidx.legacy" name="legacy-support-v4" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="androidx.core" name="core" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
@@ -158,8 +158,5 @@
     <dependency org="androidx.asynclayoutinflater" name="asynclayoutinflater" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="androidx.cursoradapter" name="cursoradapter" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="androidx.fragment" name="fragment" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.google.android.exoplayer" name="exoplayer-core" rev="r2.4.2" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.google.android.exoplayer" name="exoplayer-dash" rev="r2.4.2" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="androidx.recyclerview" name="recyclerview" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
   </dependencies>
 </ivy-module>
