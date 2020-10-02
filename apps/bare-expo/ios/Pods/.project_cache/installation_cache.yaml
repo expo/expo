@@ -2625,7 +2625,7 @@ CACHE_KEYS:
       UMCore:
         :debug: 725599ebffd932f0853dea43e0c4795a
         :release: 725599ebffd932f0853dea43e0c4795a
-    CHECKSUM: 28d7a74260813f906738533ad7dce4529d3d24ee
+    CHECKSUM: 94e4725ab2efbbe247b5910a2a954a2dab64f7eb
     FILES:
       - "../../../../packages/@unimodules/core/ios/UMCore/Protocols/UMAppLifecycleListener.h"
       - "../../../../packages/@unimodules/core/ios/UMCore/Protocols/UMAppLifecycleService.h"
@@ -2660,7 +2660,7 @@ CACHE_KEYS:
       - "../../../../packages/@unimodules/core/ios/UMCore/UMViewManager.m"
     PROJECT_NAME: UMCore
     SPECS:
-      - UMCore (5.5.0)
+      - UMCore (5.5.1)
   UMFileSystemInterface:
     BUILD_SETTINGS_CHECKSUM:
       UMFileSystemInterface:

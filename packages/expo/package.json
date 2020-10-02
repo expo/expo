@@ -51,7 +51,7 @@
   "dependencies": {
     "@babel/runtime": "^7.1.2",
     "@expo/vector-icons": "^10.0.2",
-    "@unimodules/core": "~5.5.0",
+    "@unimodules/core": "~5.5.1",
     "@unimodules/react-native-adapter": "~5.6.0",
     "babel-preset-expo": "~8.3.0",
     "badgin": "^1.1.2",

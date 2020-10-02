@@ -553,7 +553,7 @@ PODS:
   - UMBarCodeScannerInterface (5.3.0)
   - UMCameraInterface (5.3.0)
   - UMConstantsInterface (5.3.0)
-  - UMCore (5.5.0)
+  - UMCore (5.5.1)
   - UMFileSystemInterface (5.3.0)
   - UMFontInterface (5.3.0)
   - UMImageLoaderInterface (5.3.0)
@@ -980,7 +980,7 @@ SPEC CHECKSUMS:
   EXImageLoader: 7153fb1307ac643299a9072b71da0d276f4c7789
   EXImageManipulator: 8bb065265ddaa9d526b70a6825123b85d34d32a4
   EXImagePicker: f2fe9ee19a97b225658e80733896275a198c60f2
-  EXInAppPurchases: c647953e5e1dad71bbda2e3bb92966dac440ede4
+  EXInAppPurchases: efef0c19273abc1027a3c8bfe97741263459f888
   EXKeepAwake: 76eed36786534f6a476748e600fa6faf07ac3d09
   EXLinearGradient: 2f0230aa5d79c956aba618df3988eb0a9d283399
   EXLocalAuthentication: 692a1fdd27389b483b44919388e2a814d43af104
@@ -1070,7 +1070,7 @@ SPEC CHECKSUMS:
   UMBarCodeScannerInterface: 017672479f93de88d94c3a50dfb66b5348b65989
   UMCameraInterface: 22bd2c4bf15dcf68530368fa5704af7490818457
   UMConstantsInterface: ff612789417aace6fd01a9c35616bc87dcdc8d97
-  UMCore: 28d7a74260813f906738533ad7dce4529d3d24ee
+  UMCore: 94e4725ab2efbbe247b5910a2a954a2dab64f7eb
   UMFileSystemInterface: e7795274eee76beaadaf6015bcc7f5da3054b925
   UMFontInterface: bc5dd878b2f6fffdac80e41fd36893c619683712
   UMImageLoaderInterface: 78ab0fd45c2bcaee61957fa23858bf31f2bcb122
