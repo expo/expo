@@ -762,7 +762,7 @@ CACHE_KEYS:
       EXLocation:
         :debug: 2cdf527b8fd9660760dea76fb7930f4a
         :release: 2cdf527b8fd9660760dea76fb7930f4a
-    CHECKSUM: a3b92458ec5c4356c5d932fe0d2bbe552ef7f4cb
+    CHECKSUM: 90232c6f2773b04a3c146bfda9f181035722c10a
     FILES:
       - "../../../../packages/expo-location/ios/EXLocation/EXLocation.h"
       - "../../../../packages/expo-location/ios/EXLocation/EXLocation.m"
@@ -776,7 +776,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-location/ios/EXLocation/TaskConsumers/EXLocationTaskConsumer.m"
     PROJECT_NAME: EXLocation
     SPECS:
-      - EXLocation (9.0.0)
+      - EXLocation (9.0.1)
   EXMailComposer:
     BUILD_SETTINGS_CHECKSUM:
       EXMailComposer:

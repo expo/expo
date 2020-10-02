@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 9.0.1 — 2020-10-02
+
+### 🐛 Bug fixes
+
 - Redeliver intent when restarting task service. ([#10410](https://github.com/expo/expo/pull/10410) by [@byCedric](https://github.com/byCedric))
 
 ## 9.0.0 — 2020-08-18
