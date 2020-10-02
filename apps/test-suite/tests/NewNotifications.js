@@ -287,6 +287,7 @@ export async function test(t) {
         });
         t.expect(permissions).toBeDefined();
         t.expect(typeof permissions).toBe('object');
+        t.expect(typeof permissions.status).toBe('string');
       });
     });
 
