@@ -24,7 +24,7 @@
   </style>
 
   <style name="Theme.Exponent.Splash" parent="Theme.Exponent.Light">
-    <item name="android:windowBackground">@drawable/splash_background</item>
+    <item name="android:windowBackground">@drawable/splashscreen</item>
   </style>
 
   <style name="Theme.Exponent.Light.LightStatusBar" parent="Theme.Exponent.Light">

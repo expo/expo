@@ -6,12 +6,16 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.facebook.react.ReactPackage;
+import com.facebook.react.ReactRootView;
 
 import java.util.List;
 
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
 import org.unimodules.core.interfaces.Package;
 import org.unimodules.core.interfaces.SingletonModule;
+
+import expo.modules.splashscreen.SplashScreenImageResizeMode;
+import expo.modules.splashscreen.singletons.SplashScreen;
 import host.exp.exponent.Constants;
 import host.exp.expoview.ExpoViewBuildConfig;
 import versioned.host.exp.exponent.ExponentPackageDelegate;
@@ -33,6 +37,8 @@ public abstract class DetachActivity extends ExperienceActivity implements Expon
     mManifestUrl = Constants.INITIAL_URL;
 
     super.onCreate(savedInstanceState);
+
+    SplashScreen.show(this, Constants.SPLASH_SCREEN_IMAGE_RESIZE_MODE, ReactRootView.class, true);
 
     mKernel.handleIntent(this, getIntent());
   }
