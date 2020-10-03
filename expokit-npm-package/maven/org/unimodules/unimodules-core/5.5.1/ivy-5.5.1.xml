@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="org.unimodules" module="unimodules-core" revision="5.5.0" status="integration" publication="20201002141517"/>
+  <info organisation="org.unimodules" module="unimodules-core" revision="5.5.1" status="integration" publication="20201002180301"/>
   <configurations>
     <conf name="_internal_aapt2_binary" visibility="private" transitive="false"/>
     <conf name="androidApis" visibility="public"/>

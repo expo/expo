@@ -3,10 +3,10 @@
   <groupId>org.unimodules</groupId>
   <artifactId>unimodules-core</artifactId>
   <versioning>
-    <release>5.5.0</release>
+    <release>5.5.1</release>
     <versions>
-      <version>5.5.0</version>
+      <version>5.5.1</version>
     </versions>
-    <lastUpdated>20201002211517</lastUpdated>
+    <lastUpdated>20201003010301</lastUpdated>
   </versioning>
 </metadata>
