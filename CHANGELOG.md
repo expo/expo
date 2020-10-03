@@ -16,6 +16,22 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🐛 Bug fixes
 
+- Only update the splash screen when it receives update configuration values on iOS ([#10512](https://github.com/expo/expo/pull/10512) by [@brentvatne](https://github.com/brentvatne))
+- Only update the splash screen when it receives update configuration values on Android ([#10522](https://github.com/expo/expo/pull/10522) by [@esamelson](https://github.com/esamelson))
+- Show helpful error message when expo-cli responds with an incompatible project on iOS ([#10508](https://github.com/expo/expo/pull/10508) by [@esamelson](https://github.com/esamelson))
+- Show helpful error message when expo-cli responds with an incompatible project on Android ([#10511](https://github.com/expo/expo/pull/10511) by [@esamelson](https://github.com/esamelson))
+- Pass experience properties correctly to turbo modules ([#10504](https://github.com/expo/expo/pull/10504) by [@esamelson](https://github.com/esamelson))
+- Fix splash screen in standalone app builds for Android ([#10519](https://github.com/expo/expo/pull/10519) by [@bbartec](https://github.com/bbartec))
+- Fix splash screen `hideAsync` warnings in client ([#10294](https://github.com/expo/expo/pull/10294) by [@bbartec](https://github.com/bbartec))
+- Fix EXDisabledRedBox not overriding RCTRedBox, this caused a redbox to appear above the Expo client specific UI when failing to load a published app ([#10498](https://github.com/expo/expo/pull/10498) by [@sjchmiela](https://github.com/sjchmiela))
+- Fix reading splash image from the android.splash config ([#10494](https://github.com/expo/expo/pull/10494) by [@bbartec](https://github.com/bbartec))
+- Remove the large notification icon from managed apps, because there is no mechanism to set it yet ([#10492](https://github.com/expo/expo/pull/10492) by [@lukmccall](https://github.com/lukmccall))
+- Fix the app icon is always added as a notification icon ([#10471](https://github.com/expo/expo/pull/10471) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-updates`**
+  - `Updates.reloadAsync` not supported in development ([#10310](https://github.com/expo/expo/pull/10310) by [@esamelson](https://github.com/esamelson))
+  - Support absolute `assetUrlOverride` ([#10337](https://github.com/expo/expo/pull/10337) by [@esamelson](https://github.com/esamelson))
+  - Handle `./` in `assetUrlOverride` ([#10342](https://github.com/expo/expo/pull/10342) by [@esamelson](https://github.com/esamelson))
+
 ## 39.0.0 — 2020-08-18
 
 ### 📚 3rd party library updates
