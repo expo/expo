@@ -16,6 +16,7 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🐛 Bug fixes
 
+- Set mIntentUri from intent in DetachActivity.onCreate to fix Linking.getInitialURL in Android standalone apps ([#10535](https://github.com/expo/expo/pull/10535) by [@esamelson](https://github.com/esamelson))
 - Only update the splash screen when it receives update configuration values on iOS ([#10512](https://github.com/expo/expo/pull/10512) by [@brentvatne](https://github.com/brentvatne))
 - Only update the splash screen when it receives update configuration values on Android ([#10522](https://github.com/expo/expo/pull/10522) by [@esamelson](https://github.com/esamelson))
 - Show helpful error message when expo-cli responds with an incompatible project on iOS ([#10508](https://github.com/expo/expo/pull/10508) by [@esamelson](https://github.com/esamelson))
