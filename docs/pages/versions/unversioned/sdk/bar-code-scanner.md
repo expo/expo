@@ -169,6 +169,6 @@ Object of type `BarCodeScannerResult` contains following keys:
 - **type (_BarCodeScanner.Constants.BarCodeType_)** -- The barcode type.
 - **data (_string_)** -- The information encoded in the bar code.
 - **bounds : [BarCodeScanner.BarCodeBounds](#barcodescannerbarcodebounds)** -- (_Optional_) The `BarCodeBounds` object.
-- **cornerPoints : Array\<[BarCodeScanner.BarCodePoint](#barcodescannerbarcodepoint)\>** -- (_Optional_) Corner points of the bounding box.
+- **cornerPoints : Array<[BarCodeScanner.BarCodePoint](#barcodescannerbarcodepoint)\>** -- (_Optional_) Corner points of the bounding box.
 
 > **NOTE** `bounds` and `cornerPoints` are not always available. On iOS, for `code39` and `pdf417` you don't get those values. Moreover, on iOS, those values don't have to bounds the whole barcode. For some types, they will represent the area used by the scanner.
