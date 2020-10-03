@@ -58,8 +58,6 @@ async function downloadAndInstallOnAndroidAsync(clientUrl: string): Promise<void
       );
     }
 
-    await Android.assertDeviceReadyAsync(device);
-
     console.log('Uninstalling previously installed Expo client...');
 
     await Android.uninstallExpoAsync(device);
