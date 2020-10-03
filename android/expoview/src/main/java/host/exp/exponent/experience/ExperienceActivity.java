@@ -107,7 +107,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   private ExponentNotification mNotification;
   private ExponentNotification mTempNotification;
   private boolean mIsShellApp;
-  private String mIntentUri;
+  protected String mIntentUri;
   private boolean mIsReadyForBundle;
 
   // TODO: Remove this flag and assume it is always false, once we drop support for SDK37

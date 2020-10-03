@@ -36,6 +36,10 @@ public abstract class DetachActivity extends ExperienceActivity implements Expon
     Constants.INITIAL_URL = isDebug() ? developmentUrl() : publishedUrl();
     mManifestUrl = Constants.INITIAL_URL;
 
+    if (getIntent().getData() != null) {
+      mIntentUri = getIntent().getData().toString();
+    }
+
     super.onCreate(savedInstanceState);
 
     SplashScreen.show(this, Constants.SPLASH_SCREEN_IMAGE_RESIZE_MODE, ReactRootView.class, true);
