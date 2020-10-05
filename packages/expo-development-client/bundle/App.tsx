@@ -8,6 +8,7 @@ import {
   StatusBar,
   StyleSheet,
   Button,
+  TextInput,
 } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 
@@ -45,6 +46,7 @@ const loadAppFromUrl = async (url: string) => {
 const App = () => {
   const [scanning, setScanning] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+  const [textInputUrl, setTextInputUrl] = React.useState('');
 
   const onBarCodeScanned = ({ data }: { data: string }) => {
     loadAppFromUrl(data);
@@ -57,6 +59,11 @@ const App = () => {
 
   const onPressCancelScan = () => {
     setScanning(false);
+  };
+
+  const onPressGoToUrl = () => {
+    loadAppFromUrl(textInputUrl);
+    setLoading(true);
   };
 
   return (
@@ -83,6 +90,17 @@ const App = () => {
             </Text>
             <View style={styles.buttonContainer}>
               <Button onPress={onPressScan} title="Scan QR code" />
+            </View>
+            <View style={styles.urlTextInputContainer}>
+              <TextInput
+                style={styles.urlTextInput}
+                placeholder="Paste a URL"
+                value={textInputUrl}
+                onChangeText={text => setTextInputUrl(text)}
+              />
+            </View>
+            <View style={styles.buttonContainer}>
+              <Button onPress={onPressGoToUrl} title="Go to URL" />
             </View>
           </React.Fragment>
         )}
@@ -124,11 +142,23 @@ const styles = StyleSheet.create({
   buttonContainer: {
     alignSelf: 'flex-start',
     marginTop: 8,
-    fontSize: 24,
   },
 
   headingText: {
     fontSize: 32,
+    marginBottom: 12,
+  },
+
+  urlTextInputContainer: {
+    marginTop: 24,
+  },
+  urlTextInput: {
+    width: '100%',
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 6,
+    fontSize: 18,
+    padding: 8,
   },
 });
 
