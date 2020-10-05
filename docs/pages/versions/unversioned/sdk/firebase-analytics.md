@@ -6,6 +6,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-firebase-
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+import { InlineCode } from '~/components/base/code';
 
 > **This is the only Firebase Analytics package for React Native that has universal platform support (iOS, Android, Web, and Electron).**
 
@@ -200,9 +201,9 @@ Sets the user ID property. This feature must be used in accordance with [Google'
 
 #### Parameters
 
-| Name   | Type            | Description                                                                                                                                                              |
-| ------ | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| userId | `string \| null` | The user ID to ascribe to the user of this app on this device, which must be non-empty and no more than 256 characters long. Setting userID to null removes the user ID. |
+| Name   | Type                                    | Description                                                                                                                                                              |
+| ------ | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| userId | <InlineCode>string \| null</InlineCode> | The user ID to ascribe to the user of this app on this device, which must be non-empty and no more than 256 characters long. Setting userID to null removes the user ID. |
 
 #### Example
 
@@ -227,10 +228,10 @@ The following user property names are reserved and cannot be used:
 
 #### Parameters
 
-| Name  | Type            | Description                                                                                                                                                                                                                                                  |
-| ----- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| name  | `string`        | The name of the user property to set. Should contain 1 to 24 alphanumeric characters or underscores and must start with an alphabetic character. The `firebase_`, `google_`, and `ga_` prefixes are reserved and should not be used for user property names. |
-| value | `string \| null` | The value of the user property. Values can be up to 36 characters long. Setting the value to null removes the user property.                                                                                                                                 |
+| Name  | Type                                    | Description                                                                                                                                                                                                                                                  |
+| ----- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| name  | `string`                                | The name of the user property to set. Should contain 1 to 24 alphanumeric characters or underscores and must start with an alphabetic character. The `firebase_`, `google_`, and `ga_` prefixes are reserved and should not be used for user property names. |
+| value | <InlineCode>string \| null</InlineCode> | The value of the user property. Values can be up to 36 characters long. Setting the value to null removes the user property.                                                                                                                                 |
 
 #### Example
 
@@ -306,7 +307,7 @@ Analytics.setUnavailabilityLogging(false);
 setDebugModeEnabled(isEnabled: boolean): Promise<void>
 ```
 
-Enables debug mode *(Expo client only)* so events can be tracked using the [DebugView in the Analytics dashboard](https://firebase.google.com/docs/analytics/debugview#reporting).
+Enables debug mode _(Expo client only)_ so events can be tracked using the [DebugView in the Analytics dashboard](https://firebase.google.com/docs/analytics/debugview#reporting).
 
 This option is **only available on the standard Expo client**. When using a standalone build, the bare workflow or web, use the [natively available options](https://firebase.google.com/docs/analytics/debugview).
 

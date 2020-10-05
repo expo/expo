@@ -1,18 +1,19 @@
 ---
 title: Barometer
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-sensors"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-35/packages/expo-sensors'
 ---
 
 import SnackInline from '~/components/plugins/SnackInline';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+import { InlineCode } from '~/components/base/code';
 
 Access the device barometer sensor to respond to changes in air pressure. `pressure` is measured in _`hectopascals`_ or _`hPa`_.
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ❌     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ❌            | ✅  |
 
 ## Installation
 
@@ -77,6 +78,7 @@ export default class BarometerSensor extends React.Component {
   }
 }
 ```
+
 </SnackInline>
 
 ## API
@@ -143,10 +145,10 @@ type BarometerMeasurement = {
 };
 ```
 
-| Name             | Type                 | Format   | iOS | Android | Web |
-| ---------------- | -------------------- | -------- | --- | ------- | --- |
-| pressure         | `number`             | `hPa`    | ✅  | ✅      | ❌  |
-| relativeAltitude | `number | undefined` | `meters` | ✅  | ❌      | ❌  |
+| Name             | Type                                         | Format   | iOS | Android | Web |
+| ---------------- | -------------------------------------------- | -------- | --- | ------- | --- |
+| pressure         | `number`                                     | `hPa`    | ✅  | ✅      | ❌  |
+| relativeAltitude | <InlineCode>number \| undefined</InlineCode> | `meters` | ✅  | ❌      | ❌  |
 
 ## Units and Providers
 
