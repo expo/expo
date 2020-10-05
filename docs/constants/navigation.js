@@ -21,7 +21,7 @@ const GROUPS = {
   'React Native': ['React Native'],
   Preview: ['Preview'],
   'EAS Build': ['EAS Build'],
-  'Dev Client': ['Dev Client']
+  'Dev Client': ['Dev Client'],
 };
 
 // This array provides the **ordering** for pages within each section
