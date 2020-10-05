@@ -9,6 +9,7 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 import { SocialGrid, SocialGridItem, CreateAppButton } from '~/components/plugins/AuthSessionElements';
 import TerminalBlock from '~/components/plugins/TerminalBlock';
 import SnackInline from '~/components/plugins/SnackInline';
+import { InlineCode } from '~/components/base/code';
 
 `AuthSession` is the easiest way to add web browser based authentication (for example, browser-based OAuth flows) to your app, built on top of [WebBrowser](../webbrowser/), [Crypto](../crypto/), and [Random](../random/). If you would like to understand how it does this, read this document from top to bottom. If you just want to use it, jump to the [Authentication Guide](/guides/authentication).
 
@@ -283,13 +284,13 @@ This error method will add the missing description for more context on what went
 
 Object returned after an auth request has completed.
 
-| Name      | Type                     | Description                                                                | Default |
-| --------- | ------------------------ | -------------------------------------------------------------------------- | ------- |
-| type      | `string`                 | How the auth completed `'cancel', 'dismiss', 'locked', 'error', 'success'` | `.Code` |
-| url       | `string`                 | Auth URL that was opened                                                   |         |
-| error     | `AuthError | null`       | Possible error if the auth failed with type `error`                        |         |
-| params    | `Record<string, string>` | Query params from the `url` as an object                                   |         |
-| errorCode | `string | null`          | Legacy error code query param, use `error` instead                         |         |
+| Name      | Type                                       | Description                                                                | Default |
+| --------- | ------------------------------------------ | -------------------------------------------------------------------------- | ------- |
+| type      | `string`                                   | How the auth completed `'cancel', 'dismiss', 'locked', 'error', 'success'` | `.Code` |
+| url       | `string`                                   | Auth URL that was opened                                                   |         |
+| error     | <InlineCode>AuthError \| null</InlineCode> | Possible error if the auth failed with type `error`                        |         |
+| params    | `Record<string, string>`                   | Query params from the `url` as an object                                   |         |
+| errorCode | <InlineCode>string \| null</InlineCode>    | Legacy error code query param, use `error` instead                         |         |
 
 - If the user cancelled the auth session by closing the browser or popup, the result is `{ type: 'cancel' }`.
 - If the auth is dismissed manually with `AuthSession.dismiss()`, the result is `{ type: 'dismiss' }`.

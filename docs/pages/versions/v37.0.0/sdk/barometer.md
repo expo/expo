@@ -7,6 +7,7 @@ import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+import { InlineCode } from '~/components/base/code';
 
 `Barometer` from **`expo-sensors`** provides access to the device barometer sensor to respond to changes in air pressure. `pressure` is measured in _`hectopascals`_ or _`hPa`_.
 
@@ -143,10 +144,10 @@ type BarometerMeasurement = {
 };
 ```
 
-| Name             | Type                 | Format   | iOS | Android | Web |
-| ---------------- | -------------------- | -------- | --- | ------- | --- |
-| pressure         | `number`             | `hPa`    | ✅  | ✅      | ❌  |
-| relativeAltitude | `number | undefined` | `meters` | ✅  | ❌      | ❌  |
+| Name             | Type                                         | Format   | iOS | Android | Web |
+| ---------------- | -------------------------------------------- | -------- | --- | ------- | --- |
+| pressure         | `number`                                     | `hPa`    | ✅  | ✅      | ❌  |
+| relativeAltitude | <InlineCode>number \| undefined</InlineCode> | `meters` | ✅  | ❌      | ❌  |
 
 ## Units and Providers
 
