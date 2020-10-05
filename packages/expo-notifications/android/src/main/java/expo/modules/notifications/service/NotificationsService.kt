@@ -1,4 +1,4 @@
-package expo.modules.notifications
+package expo.modules.notifications.service
 
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -17,7 +17,7 @@ import java.util.*
 /**
  * Subclass of FirebaseMessagingService responsible for dispatching new tokens and remote messages.
  */
-open class FirebaseListenerService : FirebaseMessagingService() {
+open class NotificationsService : FirebaseMessagingService() {
   companion object {
     // Unfortunately we cannot save state between instances of a service other way
     // than by static properties. Fortunately, using weak references we can
