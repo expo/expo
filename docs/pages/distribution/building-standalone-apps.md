@@ -59,7 +59,7 @@ for App Store metadata.
 
 Run `expo build:android` or `expo build:ios`. If you don't already have a packager running for this project, `expo` will start one for you.
 
-**Please note:** When you run `expo build`, Expo automatically publishes your app (with `expo publish`). In order to avoid accidentally publishing changes to your production app, you may want to use [release channels](../release-channels/). 
+**Please note:** When you run `expo build`, Expo automatically publishes your app (with `expo publish`). In order to avoid accidentally publishing changes to your production app, you may want to use [release channels](../release-channels/).
 
 ### If you choose to build for Android
 
@@ -155,12 +155,16 @@ When one of our building machines is free, it'll start building your app. You ca
 
 ## 5. Test it on your device or simulator
 
-- You can drag and drop the `.apk` into your Android emulator. This is the easiest way to test out that the build was successful. But it's not the most satisfying.
-- **To run it on your Android device**, make sure you have the Android platform tools installed along with `adb`, then just run `adb install app-filename.apk` with [USB debugging enabled on your device](https://developer.android.com/studio/run/device.html#device-developer-options) and the device plugged in.
-- **To run it on your iOS Simulator**, first build your expo project with the simulator flag by running `expo build:ios -t simulator`, then download the tarball with the link given upon completion when running `expo build:status`. Unpack the tar.gz by running `tar -xvzf your-app.tar.gz`. Then you can run it by starting an iOS Simulator instance, then running `xcrun simctl install booted <app path>` and `xcrun simctl launch booted <app identifier>`.
-- **To test a device build with Apple TestFlight**, download the .ipa file to your local machine. You are ready to upload your app to TestFlight. Within TestFlight, click the plus icon and create a New App. Make sure your `bundleIdentifier` matches what you've placed in `app.json`.
+### Android
 
-> **Note:** You will not see your build here just yet! You will need to use Xcode or [Transporter](https://apps.apple.com/app/transporter/id1450874784) (previously known as Application Loader) to upload your IPA first. Once you do that, you can check the status of your build under `Activity`. Processing an app can take 10-15 minutes before it shows up under available builds.
+- **To run it on your Android emulator**, first build your project with the apk flag by running `expo build:android -t apk`, and you can drag and drop the `.apk` into the emulator.
+- **To run it on your Android device**, make sure you have the Android platform tools installed along with `adb`, then just run `adb install app-filename.apk` with [USB debugging enabled on your device](https://developer.android.com/studio/run/device.html#device-developer-options) and the device plugged in.
+
+### iOS
+
+- **To run it on your iOS simulator**, first build your project with the simulator flag by running `expo build:ios -t simulator`, then download the artifact with the link printed when your build completes. To install the resulting `tar.gz` file, unzip it and drag-and-drop it into your iOS simulator. If you'd like to install it from the command line, run `tar -xvzf your-app.tar.gz` to unpack the file, open a simulator, then run `xcrun simctl install booted <path to .app>`.
+
+- **To test a device build with Apple TestFlight**, download the `.ipa` file to your local machine. Within [AppStoreConnect](https://appstoreconnect.apple.com/apps), click the plus icon and create a New App. Make sure your `bundleIdentifier` matches what you've placed in `app.json`. Now, you need to use Xcode or [Transporter](https://apps.apple.com/app/transporter/id1450874784) (previously known as Application Loader) to upload the `.ipa` you got from `expo build:ios`. Once you do that, you can check the status of your build under `Activity`. Processing an app can take 10-15 minutes before it shows up under available builds.
 
 ## 6. Submit it to the appropriate store
 
