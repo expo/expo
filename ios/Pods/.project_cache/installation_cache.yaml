@@ -10281,7 +10281,7 @@ CACHE_KEYS:
       EXAdsFacebook:
         :debug: 64173b3cb8e7fa2668fbaed42153e865
         :release: 64173b3cb8e7fa2668fbaed42153e865
-    CHECKSUM: af03941b7078c6b86f777736daf6c2caefd7cacf
+    CHECKSUM: a20f0ab3da0957442de9c31a1c31c9dee335fca0
     FILES:
       - "../../packages/expo-ads-facebook/ios/EXAdsFacebook/EXAdIconViewManager.h"
       - "../../packages/expo-ads-facebook/ios/EXAdsFacebook/EXAdIconViewManager.m"
@@ -10303,7 +10303,7 @@ CACHE_KEYS:
       - "../../packages/expo-ads-facebook/ios/EXAdsFacebook/EXNativeMediaViewManager.m"
     PROJECT_NAME: EXAdsFacebook
     SPECS:
-      - EXAdsFacebook (8.5.0)
+      - EXAdsFacebook (8.4.1)
   EXAmplitude:
     BUILD_SETTINGS_CHECKSUM:
       EXAmplitude:
