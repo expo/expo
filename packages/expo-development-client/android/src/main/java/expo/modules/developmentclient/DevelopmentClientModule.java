@@ -9,27 +9,25 @@ import com.facebook.react.bridge.ReadableMap;
 import java.util.HashMap;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class DevelopmentClientModule extends ReactContextBaseJavaModule {
+  public DevelopmentClientModule(ReactApplicationContext reactContext) {
+    super(reactContext);
+  }
 
-    private final ReactApplicationContext reactContext;
+  @NonNull
+  @Override
+  public String getName() {
+    return "EXDevelopmentClient";
+  }
 
-    public DevelopmentClientModule(ReactApplicationContext reactContext) {
-        super(reactContext);
-        this.reactContext = reactContext;
-    }
-
-    @Override
-    public String getName() {
-        return "EXDevelopmentClient";
-    }
-
-    @ReactMethod
-    public void loadApp(String url, ReadableMap options, final Promise promise) {
-        DevelopmentClientController.getInstance().loadApp(reactContext, url, options);
-        promise.resolve(null);
-    }
+  @ReactMethod
+  public void loadApp(String url, ReadableMap options, final Promise promise) {
+    DevelopmentClientController.getInstance().loadApp(getReactApplicationContext(), url, options);
+    promise.resolve(null);
+  }
 
   @Override
   public boolean hasConstants() {

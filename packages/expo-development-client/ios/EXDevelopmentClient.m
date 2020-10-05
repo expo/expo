@@ -7,12 +7,6 @@
 
 RCT_EXPORT_MODULE()
 
-- (instancetype)init {
-  if (self = [super init]) {
-  }
-  return self;
-}
-
 + (BOOL)requiresMainQueueSetup {
   return NO;
 }

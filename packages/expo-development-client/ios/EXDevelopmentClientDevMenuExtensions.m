@@ -26,12 +26,6 @@ RCT_EXTERN void RCTRegisterModule(Class);
   RCTRegisterModule(self);
 }
 
-- (instancetype)init {
-  if (self = [super init]) {
-  }
-  return self;
-}
-
 + (BOOL)requiresMainQueueSetup {
   return YES;
 }
