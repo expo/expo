@@ -8,7 +8,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-ads-facebook`** provides access to the Facebook Audience SDK, allowing you to monetize your app with targeted ads.
 
-<PlatformsSection android emulator ios simulator />
+<PlatformsSection android ios />
 
 ## Installation
 
@@ -320,4 +320,8 @@ FacebookAds.AdSettings.setUrlPrefix('...');
 
 **Note:** This method should never be used in production
 
-#
+## Troubleshooting
+
+Facebook provides a [table of common errors](https://developers.facebook.com/docs/audience-network/guides/test/checklist-errors/) when attempting to serve ads, this should be your first reference if you run into any issues.
+
+There are also some changes with iOS 14 that impact the Audience Network's ability to serve ads. According to facebook, _["some iOS 14 users may not see any ads from Audience Network, while others may still see ads from us, but they'll be less relevant"](https://www.facebook.com/audiencenetwork/news-and-insights/preparing-audience-network-for-ios14)_.
