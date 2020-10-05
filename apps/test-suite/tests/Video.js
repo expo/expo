@@ -29,7 +29,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
       await mp4Asset.downloadAsync();
       source = { uri: mp4Asset.localUri };
 
-      const portraitAsset = Asset.fromModule(require('../asses/portrait_video.mp4'));
+      const portraitAsset = Asset.fromModule(require('../assets/portrait_video.mp4'));
       await portraitAsset.downloadAsync();
       portraitVideoSource = { uri: portraitAsset.localUri };
 
