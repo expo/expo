@@ -14,6 +14,8 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 <InstallSection packageName="expo-ads-facebook" />
 
+For bare apps, you will also need to follow [Facebook's Get Started guide](https://developers.facebook.com/docs/audience-network/get-started).
+
 ## Configuration
 
 ### Creating the placement ID
@@ -29,7 +31,9 @@ In your project's [app.json](../../workflow/configuration/), add your [Facebook 
 
 ### Development vs Production
 
-When using Facebook Ads in development, you'll need to register your device to be able to show ads. You can add the following at the top of your file to register your device:
+When using Facebook Ads in development, you can use Facebook's test ad IDs so that there's minimal setup needed on your part. Wherever a `placementId` is required, simply provide `DEMO_AD_TYPE#YOUR_PLACEMENT_ID` where `DEMO_AD_TYPE` is one of the values [shown here in the "Demo Ad Type Table"](https://developers.facebook.com/docs/audience-network/overview/in-house-mediation/server-to-server/testing/).
+
+Another option is to add the following at the top of your file to register your device:
 
 ```js
 import * as FacebookAds from 'expo-ads-facebook';
