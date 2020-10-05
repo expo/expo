@@ -58,7 +58,7 @@ open class FirebaseListenerService : FirebaseMessagingService() {
       }
     }
   }
-  
+
   /**
    * Called on new token, dispatches it to [FirebaseListenerService.sTokenListenersReferences].
    *
@@ -67,8 +67,7 @@ open class FirebaseListenerService : FirebaseMessagingService() {
   override fun onNewToken(token: String) {
     super.onNewToken(token)
     for (listenerReference in sTokenListenersReferences.values) {
-      val listener = listenerReference!!.get()
-      listener?.onNewToken(token)
+      listenerReference?.get()?.onNewToken(token)
     }
     sLastToken = token
   }
@@ -83,17 +82,14 @@ open class FirebaseListenerService : FirebaseMessagingService() {
   }
 
   protected fun createNotification(remoteMessage: RemoteMessage): Notification {
-    var identifier = remoteMessage.messageId
-    if (identifier == null) {
-      identifier = UUID.randomUUID().toString()
-    }
+    val identifier = remoteMessage.messageId ?: UUID.randomUUID().toString()
     val payload = JSONObject(remoteMessage.data as Map<*, *>)
     val content = JSONNotificationContentBuilder(this).setPayload(payload).build()
     val request = createNotificationRequest(identifier, content, FirebaseNotificationTrigger(remoteMessage))
     return Notification(request, Date(remoteMessage.sentTime))
   }
 
-  protected open fun createNotificationRequest(identifier: String?, content: NotificationContent?, notificationTrigger: FirebaseNotificationTrigger?): NotificationRequest {
+  protected open fun createNotificationRequest(identifier: String, content: NotificationContent, notificationTrigger: FirebaseNotificationTrigger): NotificationRequest {
     return NotificationRequest(identifier, content, notificationTrigger)
   }
 
