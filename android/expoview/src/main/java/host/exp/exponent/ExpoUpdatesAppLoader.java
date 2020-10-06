@@ -321,7 +321,14 @@ public class ExpoUpdatesAppLoader {
 
   private void launchWithNoDatabase(Context context, Exception e) {
     mLauncher = new NoDatabaseLauncher(context, mUpdatesConfiguration, e);
-    mCallback.onManifestCompleted(EmbeddedLoader.readEmbeddedManifest(context, mUpdatesConfiguration).getRawManifestJson());
+
+    JSONObject manifest = EmbeddedLoader.readEmbeddedManifest(context, mUpdatesConfiguration).getRawManifestJson();
+    try {
+      manifest = processAndSaveManifest(manifest);
+    } catch (Exception ex) {
+      Log.e(TAG, "Failed to process manifest; attempting to launch with raw manifest. This may cause errors or unexpected behavior.", e);
+    }
+    mCallback.onManifestCompleted(manifest);
 
     String launchAssetFile = mLauncher.getLaunchAssetFile();
     if (launchAssetFile == null) {
