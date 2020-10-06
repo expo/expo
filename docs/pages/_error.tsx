@@ -217,7 +217,7 @@ function pathIncludesIndexHtml(path: string) {
   return !!path.match(/index\.html$/);
 }
 
-const VERSION_PART_PATTERN = `(latest|unversioned|v\\d+\\.\\d+\.\\d+)`;
+const VERSION_PART_PATTERN = `(latest|unversioned|v\\d+\\.\\d+.\\d+)`;
 const VERSIONED_PATH_PATTERN = `^\\/versions\\/${VERSION_PART_PATTERN}`;
 const SDK_PATH_PATTERN = `${VERSIONED_PATH_PATTERN}/sdk`;
 const REACT_NATIVE_PATH_PATTERN = `${VERSIONED_PATH_PATTERN}/react-native`;

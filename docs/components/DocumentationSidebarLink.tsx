@@ -85,7 +85,7 @@ export default class DocumentationSidebarLink extends React.Component<Props> {
     // Special case for root url
     if (this.props.info.name === 'Introduction') {
       const { asPath } = this.props;
-      if (asPath.match(/\/versions\/[\w\.]+\/$/) || asPath === '/versions/latest/') {
+      if (asPath.match(/\/versions\/[\w.]+\/$/) || asPath === '/versions/latest/') {
         return true;
       }
     }
