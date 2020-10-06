@@ -2,11 +2,11 @@
 title: Working Together
 ---
 
-You can grant other users access to the projects belonging to your Personal Account with Expo Teams. The type of access depends on the granted role. You can [sign up for Teams](https://expo.io/dashboard/[account]/settings/services) on any of your accounts.
+You can grant other users access to the projects belonging to your Personal Account with Expo Teams. The type of access depends on the granted role. You can [sign up for Teams](https://expo.io/settings/services) on any of your accounts.
 
 ## Adding Members
 
-You can invite new members to your Personal Account, or any account you administrate, from the [Members page](https://expo.io/dashboard/[account]/settings/members) in your dashboard. You can only add users with Expo accounts as members; you can direct them to [https://expo.io/signup](https://expo.io/signup) if they don't have an account yet.
+You can invite new members to your Personal Account, or any account you administrate, from the [Members page](https://expo.io/settings/members) in your dashboard. You can only add users with Expo accounts as members; you can direct them to [https://expo.io/signup](https://expo.io/signup) if they don't have an account yet.
 
 > When adding new developers to your projects, who are publishing updates or create new builds, make sure to add the [`owner`](../../versions/latest/config/app/#owner) property to your project app manifest.
 
@@ -22,4 +22,4 @@ Access for members is managed through a role-based system. Users can have the _a
 
 ## Removing members
 
-To remove members, go to the [Members](https://expo.io/dashboard/[account]/settings/members) page and revoke access.
+To remove members, go to the [Members](https://expo.io/settings/members) page and revoke access.
