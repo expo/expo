@@ -53,6 +53,10 @@ android {
     targetCompatibility JavaVersion.VERSION_1_8
   }
 
+  kotlinOptions {
+    jvmTarget = JavaVersion.VERSION_1_8
+  }
+
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 29)

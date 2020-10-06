@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 import java.util.Map;
 
+import androidx.annotation.NonNull;
 import expo.modules.notifications.FirebaseListenerService;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
@@ -24,7 +25,7 @@ import host.exp.exponent.storage.ExponentDB;
 public class ExpoFcmMessagingService extends FirebaseListenerService {
 
   @Override
-  public void onNewToken(String token) {
+  public void onNewToken(@NonNull String token) {
     if (!Constants.FCM_ENABLED) {
       return;
     }
@@ -34,7 +35,7 @@ public class ExpoFcmMessagingService extends FirebaseListenerService {
   }
 
   @Override
-  public void onMessageReceived(RemoteMessage remoteMessage) {
+  public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
     if (!Constants.FCM_ENABLED) {
       return;
     }
@@ -81,8 +82,9 @@ public class ExpoFcmMessagingService extends FirebaseListenerService {
     PushNotificationHelper.getInstance().onMessageReceived(this, remoteMessage.getData().get("experienceId"), remoteMessage.getData().get("channelId"), remoteMessage.getData().get("message"), remoteMessage.getData().get("body"), remoteMessage.getData().get("title"), remoteMessage.getData().get("categoryId"));
   }
 
+  @NonNull
   @Override
-  protected NotificationRequest createNotificationRequest(String identifier, NotificationContent content, FirebaseNotificationTrigger notificationTrigger) {
+  protected NotificationRequest createNotificationRequest(@NonNull String identifier, @NonNull NotificationContent content, FirebaseNotificationTrigger notificationTrigger) {
     ExperienceId experienceId;
     Map<String, String> data = notificationTrigger.getRemoteMessage().getData();
     if (!data.containsKey("experienceId")) {
