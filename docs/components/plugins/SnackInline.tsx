@@ -14,7 +14,7 @@ type Props = {
   defaultPlatform?: string;
   templateId?: string;
   files?: Record<string, string>;
-  supportedPlatforms?: string[];
+  platforms?: string[];
 };
 
 export default class SnackInline extends React.Component<Props> {
@@ -80,12 +80,8 @@ export default class SnackInline extends React.Component<Props> {
           <input type="hidden" name="name" value={this.props.label || 'Example'} />
           <input type="hidden" name="dependencies" value={this.getDependencies()} />
           <input type="hidden" name="sdkVersion" value={this.getSnackSdkVersion()} />
-          {this.props.supportedPlatforms && (
-            <input
-              type="hidden"
-              name="supportedPlatforms"
-              value={this.props.supportedPlatforms.join(',')}
-            />
+          {this.props.platforms && (
+            <input type="hidden" name="supportedPlatforms" value={this.props.platforms.join(',')} />
           )}
           {this.state.ready && (
             <input
