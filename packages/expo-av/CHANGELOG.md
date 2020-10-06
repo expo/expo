@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix orientation being returned incorrectly for videos in portrait mode in onReadyForDisplay on iOS. ([#10449](https://github.com/expo/expo/pull/10449) by [@lachenmayer](https://github.com/lachenmayer))
+
 ## 8.6.0 — 2020-08-18
 
 _This version does not introduce any user-facing changes._
