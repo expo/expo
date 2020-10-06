@@ -16,7 +16,7 @@ import org.json.JSONObject
 import java.lang.ref.WeakReference
 import java.util.*
 
-open class FirebaseMessagingDelegate : FirebaseMessagingDelegate {
+open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseMessagingDelegate {
   companion object {
     // Unfortunately we cannot save state between instances of a service other way
     // than by static properties. Fortunately, using weak references we can
@@ -61,18 +61,18 @@ open class FirebaseMessagingDelegate : FirebaseMessagingDelegate {
    *
    * @param token New device push token.
    */
-  override fun onNewToken(context: Context, token: String) {
+  override fun onNewToken(token: String) {
     for (listenerReference in sTokenListenersReferences.values) {
       listenerReference?.get()?.onNewToken(token)
     }
     sLastToken = token
   }
 
-  override fun onMessageReceived(context: Context, remoteMessage: RemoteMessage) {
-    createNotificationsHelper(context).notificationReceived(createNotification(context, remoteMessage))
+  override fun onMessageReceived(remoteMessage: RemoteMessage) {
+    createNotificationsHelper().notificationReceived(createNotification(context, remoteMessage))
   }
 
-  protected fun createNotificationsHelper(context: Context): NotificationsHelper {
+  protected fun createNotificationsHelper(): NotificationsHelper {
     return NotificationsHelper(context, NotificationsScoper.create(context).createReconstructor())
   }
 
@@ -88,7 +88,7 @@ open class FirebaseMessagingDelegate : FirebaseMessagingDelegate {
     return NotificationRequest(identifier, content, notificationTrigger)
   }
 
-  override fun onDeletedMessages(context: Context) {
-    createNotificationsHelper(context).dropped(null)
+  override fun onDeletedMessages() {
+    createNotificationsHelper().dropped(null)
   }
 }

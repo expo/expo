@@ -4,7 +4,6 @@ import android.content.Context;
 
 import com.google.firebase.messaging.RemoteMessage;
 
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -25,18 +24,22 @@ import host.exp.exponent.storage.ExperienceDBObject;
 import host.exp.exponent.storage.ExponentDB;
 
 public class ExpoFirebaseMessagingDelegate extends FirebaseMessagingDelegate {
+  public ExpoFirebaseMessagingDelegate(@NonNull Context context) {
+    super(context);
+  }
+
   @Override
-  public void onNewToken(@NonNull Context context, @NonNull String token) {
+  public void onNewToken(@NonNull String token) {
     if (!Constants.FCM_ENABLED) {
       return;
     }
 
-    super.onNewToken(context, token);
-    FcmRegistrationIntentService.registerForeground(context.getApplicationContext(), token);
+    super.onNewToken(token);
+    FcmRegistrationIntentService.registerForeground(getContext().getApplicationContext(), token);
   }
 
   @Override
-  public void onMessageReceived(@NonNull Context context, @NonNull RemoteMessage remoteMessage) {
+  public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
     if (!Constants.FCM_ENABLED) {
       return;
     }
@@ -50,7 +53,7 @@ public class ExpoFirebaseMessagingDelegate extends FirebaseMessagingDelegate {
         // If an experience is on SDK newer than 39, that is SDK40 and beyond up till UNVERSIONED
         // we only use the new notifications API as it is going to be removed from SDK40.
         if (sdkVersion >= 40) {
-          dispatchToNextNotificationModule(context, remoteMessage);
+          dispatchToNextNotificationModule(remoteMessage);
           return;
         } else if (sdkVersion == 38 || sdkVersion == 39) {
           // In SDK38 and 39 we want to let people decide which notifications API to use,
@@ -59,13 +62,13 @@ public class ExpoFirebaseMessagingDelegate extends FirebaseMessagingDelegate {
           if (androidSection != null) {
             boolean useNextNotificationsApi = androidSection.optBoolean("useNextNotificationsApi", false);
             if (useNextNotificationsApi) {
-              dispatchToNextNotificationModule(context, remoteMessage);
+              dispatchToNextNotificationModule(remoteMessage);
               return;
             }
           }
         }
         // If it's an older experience or useNextNotificationsApi is set to false, let's use the legacy notifications API
-        dispatchToLegacyNotificationModule(context, remoteMessage);
+        dispatchToLegacyNotificationModule(remoteMessage);
       } catch (JSONException e) {
         e.printStackTrace();
         EXL.e("expo-notifications", "Couldn't parse the manifest.");
@@ -75,17 +78,17 @@ public class ExpoFirebaseMessagingDelegate extends FirebaseMessagingDelegate {
     }
   }
 
-  private void dispatchToNextNotificationModule(Context context, RemoteMessage remoteMessage) {
-    super.onMessageReceived(context, remoteMessage);
+  private void dispatchToNextNotificationModule(RemoteMessage remoteMessage) {
+    super.onMessageReceived(remoteMessage);
   }
 
-  private void dispatchToLegacyNotificationModule(Context context, RemoteMessage remoteMessage) {
-    PushNotificationHelper.getInstance().onMessageReceived(context, remoteMessage.getData().get("experienceId"), remoteMessage.getData().get("channelId"), remoteMessage.getData().get("message"), remoteMessage.getData().get("body"), remoteMessage.getData().get("title"), remoteMessage.getData().get("categoryId"));
+  private void dispatchToLegacyNotificationModule(RemoteMessage remoteMessage) {
+    PushNotificationHelper.getInstance().onMessageReceived(getContext(), remoteMessage.getData().get("experienceId"), remoteMessage.getData().get("channelId"), remoteMessage.getData().get("message"), remoteMessage.getData().get("body"), remoteMessage.getData().get("title"), remoteMessage.getData().get("categoryId"));
   }
 
-  @NotNull
+  @NonNull
   @Override
-  protected NotificationRequest createNotificationRequest(@NotNull String identifier, @NotNull NotificationContent content, FirebaseNotificationTrigger notificationTrigger) {
+  protected NotificationRequest createNotificationRequest(@NonNull String identifier, @NonNull NotificationContent content, FirebaseNotificationTrigger notificationTrigger) {
     ExperienceId experienceId;
     Map<String, String> data = notificationTrigger.getRemoteMessage().getData();
     if (!data.containsKey("experienceId")) {

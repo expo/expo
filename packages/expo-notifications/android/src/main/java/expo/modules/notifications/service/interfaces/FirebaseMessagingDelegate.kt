@@ -1,6 +1,5 @@
 package expo.modules.notifications.service.interfaces
 
-import android.content.Context
 import com.google.firebase.messaging.RemoteMessage
 import expo.modules.notifications.service.NotificationsService
 
@@ -10,9 +9,9 @@ interface FirebaseMessagingDelegate {
    *
    * @param token New device push token.
    */
-  fun onNewToken(context: Context, token: String)
+  fun onNewToken(token: String)
 
-  fun onMessageReceived(context: Context, remoteMessage: RemoteMessage)
+  fun onMessageReceived(remoteMessage: RemoteMessage)
 
-  fun onDeletedMessages(context: Context)
+  fun onDeletedMessages()
 }
