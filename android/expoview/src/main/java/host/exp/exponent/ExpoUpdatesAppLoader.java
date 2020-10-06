@@ -34,10 +34,8 @@ import expo.modules.updates.manifest.Manifest;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.exceptions.ManifestException;
 import host.exp.exponent.kernel.ExpoViewKernel;
-import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.kernel.KernelConfig;
-import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 
 public class ExpoUpdatesAppLoader {
@@ -277,7 +275,7 @@ public class ExpoUpdatesAppLoader {
         mLauncher = launcher;
         mIsUpToDate = isUpToDate;
         try {
-          JSONObject manifest = processAndSaveManifest(launcher.getLaunchedUpdate().metadata);
+          JSONObject manifest = processManifest(launcher.getLaunchedUpdate().metadata);
           mCallback.onManifestCompleted(manifest);
 
           // ReactAndroid will load the bundle on its own in development mode
@@ -321,7 +319,14 @@ public class ExpoUpdatesAppLoader {
 
   private void launchWithNoDatabase(Context context, Exception e) {
     mLauncher = new NoDatabaseLauncher(context, mUpdatesConfiguration, e);
-    mCallback.onManifestCompleted(EmbeddedLoader.readEmbeddedManifest(context, mUpdatesConfiguration).getRawManifestJson());
+
+    JSONObject manifest = EmbeddedLoader.readEmbeddedManifest(context, mUpdatesConfiguration).getRawManifestJson();
+    try {
+      manifest = processManifest(manifest);
+    } catch (Exception ex) {
+      Log.e(TAG, "Failed to process manifest; attempting to launch with raw manifest. This may cause errors or unexpected behavior.", e);
+    }
+    mCallback.onManifestCompleted(manifest);
 
     String launchAssetFile = mLauncher.getLaunchAssetFile();
     if (launchAssetFile == null) {
@@ -331,7 +336,7 @@ public class ExpoUpdatesAppLoader {
     mCallback.onBundleCompleted(launchAssetFile);
   }
 
-  private JSONObject processAndSaveManifest(JSONObject manifest) throws JSONException {
+  private JSONObject processManifest(JSONObject manifest) throws JSONException {
     Uri parsedManifestUrl = Uri.parse(mManifestUrl);
     if (!manifest.has(ExponentManifest.MANIFEST_IS_VERIFIED_KEY) &&
         isThirdPartyHosted(parsedManifestUrl) &&
@@ -356,11 +361,6 @@ public class ExpoUpdatesAppLoader {
       // automatically verified
       manifest.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true);
     }
-
-    String bundleUrl = ExponentUrls.toHttp(manifest.getString(ExponentManifest.MANIFEST_BUNDLE_URL_KEY));
-
-    mExponentSharedPreferences.updateManifest(mManifestUrl, manifest, bundleUrl);
-    ExponentDB.saveExperience(mManifestUrl, manifest, bundleUrl);
 
     return manifest;
   }

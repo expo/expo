@@ -67,6 +67,7 @@ import host.exp.exponent.notifications.ExponentNotificationManager;
 import host.exp.exponent.notifications.NotificationConstants;
 import host.exp.exponent.notifications.PushNotificationHelper;
 import host.exp.exponent.notifications.ReceivedNotificationEvent;
+import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.AsyncCondition;
 import host.exp.exponent.utils.ExperienceActivityUtils;
@@ -466,6 +467,12 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
     mManifestUrl = manifestUrl;
     mManifest = manifest;
+
+    // TODO(eric): remove when deleting old AppLoader class/logic
+    mExponentSharedPreferences.updateManifest(mManifestUrl, manifest, bundleUrl);
+
+    // Notifications logic uses this to determine which experience to route a notification to
+    ExponentDB.saveExperience(mManifestUrl, manifest, bundleUrl);
 
     new ExponentNotificationManager(this).maybeCreateNotificationChannelGroup(mManifest);
 
