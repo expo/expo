@@ -1,5 +1,6 @@
 /* eslint-disable import/order */
 const { copySync, removeSync } = require('fs-extra');
+const merge = require('lodash/merge');
 const { join } = require('path');
 const semver = require('semver');
 
@@ -29,15 +30,13 @@ module.exports = {
     config.module.rules.push({
       test: /.jsx?$/,
       include: [join(__dirname, 'constants')],
-      use: {
-        ...options.defaultLoaders.babel,
+      use: merge({}, options.defaultLoaders.babel, {
         options: {
-          ...options.defaultLoaders.babel.options,
           // Keep this path in sync with package.json and other scripts that clear the cache
           cacheDirectory: '.next/preval',
-          plugins: [...(options.defaultLoaders.babel.options?.plugins ?? []), 'preval'],
+          plugins: ['preval'],
         },
-      },
+      }),
     });
     // Add support for MDX with our custom loader
     config.module.rules.push({
