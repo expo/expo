@@ -59,7 +59,10 @@ const authResult = await firebase.auth().signInWithCredential(credential);
 
 ## Example usage
 
-<SnackInline label='Firebase Phone Auth' dependencies={['expo-firebase-recaptcha', 'firebase', 'react-native-webview']}>
+<SnackInline
+  label='Firebase Phone Auth'
+  dependencies={['expo-firebase-recaptcha', 'firebase', 'react-native-webview']}
+  platforms={['ios', 'android']}>
 
 ```js
 import * as React from "react";
