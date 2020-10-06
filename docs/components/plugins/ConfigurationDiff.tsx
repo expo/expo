@@ -1,4 +1,4 @@
-import { css, jsx } from '@emotion/core';
+import { css } from '@emotion/core';
 import React, { useEffect, useState } from 'react';
 import { parseDiff, Diff, Hunk } from 'react-diff-view';
 

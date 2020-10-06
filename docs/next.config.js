@@ -62,7 +62,7 @@ module.exports = {
     }
     const pathMap = Object.assign(
       ...Object.entries(defaultPathMap).map(([pathname, page]) => {
-        if (pathname.match(/\/v[1-9][^\/]*$/)) {
+        if (pathname.match(/\/v[1-9][^/]*$/)) {
           // ends in "/v<version>"
           pathname += '/index.html'; // TODO: find out why we need to do this
         }

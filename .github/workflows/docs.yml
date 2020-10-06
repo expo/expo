@@ -41,6 +41,7 @@ jobs:
             ${{ runner.os }}-yarn-
       - run: yarn install --frozen-lockfile
       - run: yarn test
+      - run: yarn lint --max-warnings 0
       - run: yarn danger ci
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
