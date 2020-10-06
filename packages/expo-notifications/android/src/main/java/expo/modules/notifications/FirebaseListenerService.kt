@@ -37,9 +37,7 @@ open class FirebaseListenerService : FirebaseMessagingService() {
      * Used only by [FirebaseTokenListener] instances. If you look for a place to register
      * your listener, use [FirebaseTokenListener] singleton module.
      *
-     *
      * Purposefully the argument is expected to be a [FirebaseTokenListener] and just a listener.
-     *
      *
      * This class doesn't hold strong references to listeners, so you need to own your listeners.
      *
@@ -49,8 +47,7 @@ open class FirebaseListenerService : FirebaseMessagingService() {
     fun addTokenListener(listener: FirebaseTokenListener) {
       // Checks whether this listener has already been registered
       if (!sTokenListenersReferences.containsKey(listener)) {
-        val listenerReference = WeakReference(listener)
-        sTokenListenersReferences[listener] = listenerReference
+        sTokenListenersReferences[listener] = WeakReference(listener)
         // Since it's a new listener and we know of a last valid token, let's let them know.
         if (sLastToken != null) {
           listener.onNewToken(sLastToken)
@@ -89,7 +86,11 @@ open class FirebaseListenerService : FirebaseMessagingService() {
     return Notification(request, Date(remoteMessage.sentTime))
   }
 
-  protected open fun createNotificationRequest(identifier: String, content: NotificationContent, notificationTrigger: FirebaseNotificationTrigger): NotificationRequest {
+  protected open fun createNotificationRequest(
+    identifier: String,
+    content: NotificationContent,
+    notificationTrigger: FirebaseNotificationTrigger
+  ): NotificationRequest {
     return NotificationRequest(identifier, content, notificationTrigger)
   }
 
