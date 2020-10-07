@@ -1,3 +1,4 @@
+import { BarCodeScanner } from 'expo-barcode-scanner';
 import React from 'react';
 import {
   Text,
@@ -10,7 +11,6 @@ import {
   Button,
   TextInput,
 } from 'react-native';
-import { BarCodeScanner } from 'expo-barcode-scanner';
 
 const DevelopmentClient = NativeModules.EXDevelopmentClient;
 

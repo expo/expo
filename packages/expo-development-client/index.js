@@ -1,5 +1,11 @@
-import { NativeModules } from 'react-native';
+import { AppRegistry, Platform, NativeModules } from 'react-native';
 
-const { EXDevelopmentClient } = NativeModules;
+import App from './bundle/App';
 
-export default EXDevelopmentClient;
+const DevelopmentClient = NativeModules.EXDevelopmentClient;
+
+if (Platform.OS === 'android') {
+  AppRegistry.registerComponent(DevelopmentClient.mainComponentName, () => App);
+} else {
+  AppRegistry.registerComponent('main', () => App);
+}

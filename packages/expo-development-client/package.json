@@ -5,6 +5,8 @@
   "description": "Pre-release version of the Expo development client package for testing.",
   "main": "index.js",
   "scripts": {
+    "start": "npx react-native start",
+    "bundle": "./write_embedded_bundle.sh"
   },
   "repository": {
     "type": "git",
@@ -22,7 +24,10 @@
     "react-native": ">=0.60.0-rc.0 <1.0.x"
   },
   "devDependencies": {
-    "react": "16.11.0",
-    "react-native": "*"
+    "expo-yarn-workspaces": "1.2.1",
+    "expo-barcode-scanner": "^9.0.0",
+    "babel-preset-expo": "~8.3.0",
+    "react-native": "0.63.2",
+    "react": "16.13.1"
   }
 }
