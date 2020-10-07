@@ -84,7 +84,7 @@ export default function App() {
   );
 }
 
-// Can use this function below, OR use Expo's Push Notification Tool-> https://expo.io/dashboard/notifications
+// Can use this function below, OR use Expo's Push Notification Tool-> https://expo.io/notifications
 async function sendPushNotification(expoPushToken) {
   const message = {
     to: expoPushToken,
