@@ -18,7 +18,7 @@ const wait = timeout => {
   });
 };
 
-export function App() {
+export default function App() {
   const [refreshing, setRefreshing] = React.useState(false);
 
   const onRefresh = React.useCallback(() => {
