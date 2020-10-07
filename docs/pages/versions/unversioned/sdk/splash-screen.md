@@ -56,12 +56,16 @@ export default class App extends React.Component {
    * Method that serves to load resources and make API calls
    */
   prepareResources = async () => {
-    await performAPICalls();
-    await downloadAssets();
-
-    this.setState({ appIsReady: true }, async () => {
-      await SplashScreen.hideAsync();
-    });
+    try {
+      await performAPICalls();
+      await downloadAssets();
+    } catch (e) {
+      console.warn(e);
+    } finally {
+      this.setState({ appIsReady: true }, async () => {
+        await SplashScreen.hideAsync();
+      });
+    }
   };
 
   render() {
@@ -139,17 +143,23 @@ export default class App extends React.Component {
 
   _cacheResourcesAsync = async () => {
     SplashScreen.hideAsync();
-    const images = [
-      require('./assets/images/expo-icon.png'),
-      require('./assets/images/slack-icon.png'),
-    ];
 
-    const cacheImages = images.map(image => {
-      return Asset.fromModule(image).downloadAsync();
-    });
+    try {
+      const images = [
+        require('./assets/images/expo-icon.png'),
+        require('./assets/images/slack-icon.png'),
+      ];
 
-    await Promise.all(cacheImages);
-    this.setState({ isReady: true });
+      const cacheImages = images.map(image => {
+        return Asset.fromModule(image).downloadAsync();
+      });
+
+      await Promise.all(cacheImages);
+    } catch (e) {
+      console.warn(e);
+    } finally {
+      this.setState({ isReady: true });
+    }
   };
 }
 ```
