@@ -5,13 +5,13 @@ sidebar_label: Up and Running
 
 > This guide assumes that you have Xcode and/or Android Studio installed and working. It also assumes that you want to create a new project. If you have an existing app that you would like to integrate the Expo SDK in an existing app, read the [existing apps guide](/bare/existing-apps/).
 
-To get started with a bare React Native project, run `expo init` and choose one of the bare templates. We'll use the minimum template here.
+Before you get started with a bare React Native project, make sure you set up your environment for [React Native CLI](https://reactnative.dev/docs/environment-setup).
+
+After this, let's get started with a bare project. Run `expo init` and choose one of the bare templates. We'll use the minimum template here.
 
 ```sh
 # If you don't have expo-cli yet, get it
 npm i -g expo-cli
-# If you don't have react-native-cli yet, get it
-npm i -g react-native-cli
 # This is a shortcut to skip the UI for picking the template
 expo init --template bare-minimum
 ```
