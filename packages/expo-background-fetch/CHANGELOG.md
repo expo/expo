@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed case where Android apps could crash after update from Expo SDK 36 to SDK 39. ([#10587](https://github.com/expo/expo/pull/10587) by [@RodolfoGS](https://github.com/RodolfoGS))
+
 ## 8.5.0 — 2020-08-18
 
 ### 🐛 Bug fixes
