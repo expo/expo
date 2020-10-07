@@ -119,6 +119,10 @@ public class BackgroundFetchTaskConsumer extends TaskConsumer implements TaskCon
   }
 
   private void startAlarm() {
+    if (mTask == null) {
+      return;
+    }
+
     Context context = getContext();
     AlarmManager alarmManager = getAlarmManager();
 
