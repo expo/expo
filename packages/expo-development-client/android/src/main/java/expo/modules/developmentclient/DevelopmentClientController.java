@@ -1,25 +1,15 @@
 package expo.modules.developmentclient;
 
+import android.app.Application;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
-import android.preference.PreferenceManager;
 
-import com.facebook.react.ReactApplication;
+import com.facebook.react.ReactNativeHost;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
-
-import org.apache.commons.io.IOUtils;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
-import javax.annotation.Nullable;
 
 public class DevelopmentClientController {
   // Use this to load from a development server for the development client launcher UI
@@ -27,28 +17,22 @@ public class DevelopmentClientController {
   private final String DEV_LAUNCHER_HOST = null;
 
   // Host to which network requests always fails, forcing React Native to use our embedded bundle
-  private final String FAKE_HOST = "127.0.0.1:1234";
+//  private final String FAKE_HOST = "127.0.0.1:1234";
 
   // Must be in sync with value in `DevSupportManagerImpl` from React Native internals
-  private static final String JS_BUNDLE_FILE_NAME = "ReactNativeDevBundle.js";
+//  private static final String JS_BUNDLE_FILE_NAME = "ReactNativeDevBundle.js";
 
   // Singleton instance
   private static DevelopmentClientController sInstance;
 
-  private Context mContext;
   private String mMainComponentName;
+  private DevelopmentClientHost mDevClientHost;
+  private ReactNativeHost mAppHost;
 
-  private DevelopmentClientController(Context context, String mainComponentName) {
-    mContext = context;
+  private DevelopmentClientController(Context context, ReactNativeHost appHost, String mainComponentName) {
     mMainComponentName = mainComponentName;
-
-    // Delete React Native's cached development JS bundle so that it always loads the latest one.
-    File jsBundleTempFile = new File(context.getFilesDir(), JS_BUNDLE_FILE_NAME);
-    if (jsBundleTempFile.exists()) {
-      jsBundleTempFile.delete();
-    }
-
-    saveLauncherHTTPHost();
+    mAppHost = appHost;
+    mDevClientHost = new DevelopmentClientHost((Application) context);
   }
 
   public static DevelopmentClientController getInstance() {
@@ -58,61 +42,26 @@ public class DevelopmentClientController {
     return sInstance;
   }
 
-  public static void initialize(Context context, String mainComponentName) {
+  public static void initialize(Context context, ReactNativeHost appHost, String mainComponentName) {
     if (sInstance == null) {
-      sInstance = new DevelopmentClientController(context, mainComponentName);
+      sInstance = new DevelopmentClientController(context, appHost, mainComponentName);
     }
   }
 
-  public static void initialize(Context context) {
-    initialize(context, "main");
+  public static void initialize(Context context, ReactNativeHost appHost) {
+    initialize(context, appHost, "main");
   }
 
   String getMainComponentName() {
     return mMainComponentName;
   }
 
-  public @Nullable String getJSBundleFile() {
-    if (DEV_LAUNCHER_HOST != null) {
-      // If we're using a development URL for the launcher, don't return anything here. React Native
-      // will then try to load from the bundler.
-      return null;
-    }
-
-    // React Native needs an actual file path, while the embedded bundle is a 'raw resource' which
-    // doesn't have a true file path. So we write it out to a temporary file then return a path
-    // to that file.
-    File bundle = new File(mContext.getCacheDir().getAbsolutePath() + "/expo_development_client_android.bundle");
-    try {
-      // TODO(nikki): We could cache this? Biasing toward always using latest for now...
-      FileOutputStream output = new FileOutputStream(bundle);
-      InputStream input = mContext.getResources().openRawResource(R.raw.expo_development_client_android);
-      IOUtils.copy(input, output);
-      output.close();
-      return bundle.getAbsolutePath();
-    } catch (IOException e) {
-      return null;
-    }
-  }
-
-  private void saveLauncherHTTPHost() {
-    // If we're using a development server for our launcher UI, set the host to that. Else use the
-    // fake host so React Native thinks the packager is down and uses our embedded bundle.
-    saveDebugHTTPHost(DEV_LAUNCHER_HOST != null ? DEV_LAUNCHER_HOST : FAKE_HOST);
-  }
-
-  private void saveDebugHTTPHost(String host) {
-    // React Native's internal `PackagerConnectionSettings` reads from this
-    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-    SharedPreferences.Editor editor = sharedPreferences.edit();
-    editor.putString("debug_http_host", host);
-    editor.commit();
+  public ReactNativeHost getReactNativeHost() {
+    return mDevClientHost;
   }
 
   void loadApp(ReactContext reactContext, String url, ReadableMap options) {
-    // Set the host from the given URL
     Uri uri = Uri.parse(url);
-    saveDebugHTTPHost(uri.getHost() + ":" + uri.getPort());
 
     // Read orientation config
     final int orientation =
@@ -120,25 +69,18 @@ public class DevelopmentClientController {
             ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE :
             ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT;
 
-    // Restart the bridge on the main thread
+    // Start the app on the main thread
     new Handler(Looper.getMainLooper()).post(new Runnable() {
       @Override
       public void run() {
-        reactContext.getCurrentActivity().setRequestedOrientation(orientation);
-        ((ReactApplication) mContext).getReactNativeHost().getReactInstanceManager().recreateReactContextInBackground();
+        // TODO(nikki): Implement this...
+        mDevClientHost.getReactInstanceManager().destroy();
+        mAppHost.getReactInstanceManager().createReactContextInBackground();
       }
     });
   }
 
   void navigateToLauncher() {
-    saveLauncherHTTPHost();
-
-    // Restart the bridge on the main thread
-    new Handler(Looper.getMainLooper()).post(new Runnable() {
-      @Override
-      public void run() {
-        ((ReactApplication) mContext).getReactNativeHost().getReactInstanceManager().recreateReactContextInBackground();
-      }
-    });
+    // TODO(nikki): Implement this...
   }
 }

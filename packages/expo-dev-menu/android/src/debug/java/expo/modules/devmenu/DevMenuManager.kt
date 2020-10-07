@@ -109,14 +109,16 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
       ?: reactContext.applicationContext as Application)
     maybeStartDetectors(devMenuHost.getContext())
 
-    settings = reactContext
-      .getNativeModule(DevMenuSettings::class.java)
-      .also {
-        shouldLaunchDevMenuOnStart = it.showsAtLaunch
-        if (shouldLaunchDevMenuOnStart) {
-          reactContext.addLifecycleEventListener(this)
+    if (reactContext.hasNativeModule(DevMenuSettings::class.java)) {
+      settings = reactContext
+        .getNativeModule(DevMenuSettings::class.java)
+        .also {
+          shouldLaunchDevMenuOnStart = it.showsAtLaunch
+          if (shouldLaunchDevMenuOnStart) {
+            reactContext.addLifecycleEventListener(this)
+          }
         }
-      }
+    }
   }
 
   //endregion
