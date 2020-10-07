@@ -21,6 +21,7 @@ npm install expo-standard-crypto
 There are two ways to use this package: you can import a `Crypto` instance or you can globally define `crypto`. Some code may expect the latter.
 
 Importing a `Crypto` instance:
+
 ```js
 import crypto from 'expo-standard-web-crypto';
 ```
