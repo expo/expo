@@ -1069,7 +1069,7 @@ export default function App() {
   return (
     <Button
       /* @info Disable the button until the request is loaded asynchronously. */
-      disabled={!request)}
+      disabled={!request}
       /* @end */
       title="Login"
       onPress={() => {
