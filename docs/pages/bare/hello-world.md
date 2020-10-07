@@ -10,8 +10,6 @@ Before you get started with a bare React Native project, make sure you set up yo
 After this, let's get started with a bare project. Run `expo init` and choose one of the bare templates. We'll use the minimum template here.
 
 ```sh
-# If you don't have @react-native-community/cli, install it and check out https://reactnative.dev/docs/environment-setup
-npm i -g @react-native-community/cli
 # If you don't have expo-cli yet, get it
 npm i -g expo-cli
 # This is a shortcut to skip the UI for picking the template
