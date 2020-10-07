@@ -6,6 +6,8 @@ import TerminalBlock from '~/components/plugins/TerminalBlock';
 
 There are two tools that you need to develop apps with Expo: a command line app called Expo CLI to initialize and serve your project and a mobile client app called Expo client to open it on iOS and Android. Any web browser will work for opening the project on the web.
 
+> 💡 You don't need macOS to build an iOS app with Expo, you only need an iOS device to run the Expo client app. For your development machine, Windows, Linux, and macOS are all supported.
+
 ## 1. Expo CLI
 
 Expo CLI is a command line app that is the main interface between a developer and Expo tools. Expo CLI also has a web-based GUI that pops up in your web browser when you start your project &mdash; you can use the GUI instead of the command line interface if you're not yet comfortable using a terminal or prefer GUIs, both have similar capabilities.
@@ -26,7 +28,7 @@ Verify that the installation was successful by running `expo whoami`. You're not
 
 ## 2. Expo client app for iOS and Android
 
-The fastest way to get up and running is to use the Expo client app on your iOS or Android device. Expo client allows you to open up apps that are being served through Expo CLI.
+The fastest way to get up and running is to use the Expo client app on your iOS or Android device. Expo client allows you to open up apps that are being served through Expo CLI. 
 
 - 🤖 [Android Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent) - Android Lollipop (5) and greater.
 - 🍎 [iOS App Store](https://itunes.com/apps/exponent) - iOS 10 and greater.
