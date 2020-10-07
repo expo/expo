@@ -7,7 +7,7 @@ sidebar_label: Up and Running
 
 Before you get started with a bare React Native project, make sure you set up your environment for [React Native CLI](https://reactnative.dev/docs/environment-setup).
 
-After this, let's get started with a bare project. Run `expo init` and choose one of the bare templates. We'll use the minimum templat ehere.
+After this, let's get started with a bare project. Run `expo init` and choose one of the bare templates. We'll use the minimum template here.
 
 ```sh
 # If you don't have @react-native-community/cli, install it and check out https://reactnative.dev/docs/environment-setup
