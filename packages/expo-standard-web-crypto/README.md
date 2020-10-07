@@ -26,6 +26,7 @@ import crypto from 'expo-standard-web-crypto';
 ```
 
 Globally defining `crypto`:
+
 ```js
 import { polyfillWebCrypto } from 'expo-standard-web-crypto';
 
