@@ -39,6 +39,10 @@ const STYLES_PERMALINK_LINK = css`
   }
 `;
 
+const STYLED_PERMALINK_CONTENT = css`
+  display: inline-block;
+`;
+
 const STYLES_PERMALINK_ICON = css`
   cursor: pointer;
   vertical-align: text-top;
@@ -97,7 +101,7 @@ const Permalink: React.FC<EnhancedProps> = withHeadingManager(props => {
       <div css={STYLES_PERMALINK} ref={heading.ref}>
         <span css={STYLES_PERMALINK_TARGET} id={permalinkKey} />
         <a css={STYLES_PERMALINK_LINK} href={'#' + permalinkKey}>
-          {children}
+          <span css={STYLED_PERMALINK_CONTENT}>{children}</span>
           <span css={STYLES_PERMALINK_ICON} style={props.customIconStyle}>
             <PermalinkIcon />
           </span>
