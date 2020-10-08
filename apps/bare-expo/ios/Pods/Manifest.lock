@@ -71,7 +71,7 @@ PODS:
   - EXFileSystem (9.2.0):
     - UMCore
     - UMFileSystemInterface
-  - EXFirebaseAnalytics (2.5.0):
+  - EXFirebaseAnalytics (2.5.1):
     - EXFirebaseCore
     - Firebase/Core (= 6.14.0)
     - UMCore
@@ -982,7 +982,7 @@ SPEC CHECKSUMS:
   EXErrorRecovery: 16696fe023fb46a32c3b09033abc361cfcf150a7
   EXFacebook: dd5352a2a74f825922131abf1ed438cf51d116a7
   EXFileSystem: afe9b1fd937d30270bf5108ba44e2f4a1d1ad694
-  EXFirebaseAnalytics: d76da8440905e04f94a3e3304f94f4966e730ad7
+  EXFirebaseAnalytics: 221c39fb16102fb61f8d5b835fc2cadc8a7aed31
   EXFirebaseCore: d5befdb22015f9b71168ed89dda0b50dbb07fed1
   EXFont: a6a4353271395f3bb4ee528b52a5035b4b0e412a
   EXGL: 18197ce91dceb9acdc9b0a839919111ca004f434
