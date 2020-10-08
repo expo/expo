@@ -1,6 +1,6 @@
 # expo-standard-crypto
 
-A partial implementation of the W3c Crypto API for Expo
+A partial implementation of the W3C Crypto API for Expo
 
 # API documentation
 
