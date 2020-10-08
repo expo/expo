@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+## 2.5.1 — 2020-10-08
+
 - Fix failed network requests on Android. ([#10606](https://github.com/expo/expo/pull/10606) by [@IjzerenHein](https://github.com/IjzerenHein))
 
 ## 2.5.0 — 2020-08-18
