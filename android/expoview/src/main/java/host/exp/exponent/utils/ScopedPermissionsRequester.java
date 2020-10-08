@@ -113,13 +113,18 @@ public class ScopedPermissionsRequester {
 
     AlertDialog.Builder builder = new AlertDialog.Builder(activity);
     ScopedPermissionsRequester.PermissionsDialogOnClickListener onClickListener = new ScopedPermissionsRequester.PermissionsDialogOnClickListener(permission);
-    builder.setMessage(activity.getString(
-        R.string.experience_needs_permissions,
-        mExperienceName,
-        activity.getString(permissionToResId(permission))))
-        .setPositiveButton(R.string.allow_experience_permissions, onClickListener)
-        .setNegativeButton(R.string.deny_experience_permissions, onClickListener).show();
 
+    builder
+      .setMessage(
+        activity.getString(
+          R.string.experience_needs_permissions,
+          mExperienceName,
+          activity.getString(permissionToResId(permission))
+        )
+      )
+      .setPositiveButton(R.string.allow_experience_permissions, onClickListener)
+      .setNegativeButton(R.string.deny_experience_permissions, onClickListener)
+      .show();
   }
 
   private int permissionToResId(String permission) {
@@ -146,6 +151,8 @@ public class ScopedPermissionsRequester {
         return R.string.perm_fine_location;
       case android.Manifest.permission.ACCESS_COARSE_LOCATION:
         return R.string.perm_coarse_location;
+      case android.Manifest.permission.ACCESS_BACKGROUND_LOCATION:
+        return R.string.perm_background_location;
       default:
         return -1;
     }
