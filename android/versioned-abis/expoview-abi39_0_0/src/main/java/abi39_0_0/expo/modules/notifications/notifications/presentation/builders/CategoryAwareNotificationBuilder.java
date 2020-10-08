@@ -3,12 +3,12 @@ package abi39_0_0.expo.modules.notifications.notifications.presentation.builders
 import android.app.PendingIntent;
 import android.content.Context;
 import android.util.Log;
-import androidx.annotation.NonNull;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.RemoteInput;
 import expo.modules.notifications.notifications.model.NotificationAction;
@@ -36,7 +36,14 @@ public class CategoryAwareNotificationBuilder extends ExpoNotificationBuilder {
     
     String categoryIdentifier = content.getCategoryId();
     if (categoryIdentifier != null) {
-      List<NotificationAction> actions = Collections.emptyList();
+      addActionsToBuilder(builder, categoryIdentifier);
+    }
+    
+    return builder;
+  }
+
+  protected void addActionsToBuilder(NotificationCompat.Builder builder, @NonNull String categoryIdentifier) {
+    List<NotificationAction> actions = Collections.emptyList();
       try {
         NotificationCategory category = mStore.getNotificationCategory(categoryIdentifier);
         if (category != null) {
@@ -53,9 +60,6 @@ public class CategoryAwareNotificationBuilder extends ExpoNotificationBuilder {
           builder.addAction(buildButtonAction(action));
         }
       }
-    }
-
-    return builder;
   }
 
   protected NotificationCompat.Action buildButtonAction(@NonNull NotificationAction action) {
