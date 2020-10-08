@@ -756,20 +756,17 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
           if (removedPlayerItem && removedPlayerItem != (id)[NSNull null]) {
             // Observers may have been removed in _finishObserver or replayWithStatus:resolver:rejecter
 
-            // Item is already prepared, so let's just append it to the queue
-            if (CMTimeCompare(removedPlayerItem.currentTime, kCMTimeZero) == 0) {
-              [strongSelf.player insertItem:removedPlayerItem afterItem:nil];
-            } else {
-              // Prepare the item and then append it to the queue
-              [removedPlayerItem seekToTime:kCMTimeZero completionHandler:^(BOOL finished) {
-                dispatch_async(strongEXAV.methodQueue, ^{
-                  __strong EXAVPlayerData *strongSelfInner = weakSelf;
-                  if (strongSelfInner) {
-                    [strongSelfInner.player insertItem:removedPlayerItem afterItem:nil];
-                  }
-                });
-              }];
+            // Rewind player item and re-add to queue
+            if (CMTimeCompare(removedPlayerItem.currentTime, kCMTimeZero) != 0) {
+              // In some cases (when using HSLS/m3u8 files), the completionHandler
+              // was not called after the stream had completed fully.
+              // This appears to be a bug in iOS.
+              // Therefore, do not wait for the seek to complete, but merely
+              // initiate the seek and expect it to have completed when it's
+              // this AVPlayerItem's turn to play.
+              [removedPlayerItem seekToTime:kCMTimeZero completionHandler:nil];
             }
+            [strongSelf.player insertItem:removedPlayerItem afterItem:nil];
           }
         }
       } else if (object == strongSelf.player.currentItem) {
