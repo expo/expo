@@ -8,6 +8,7 @@ type Props = {
   title: string;
   initialChecked?: boolean;
   onChange?: (checked: boolean) => void;
+  disabled?: boolean;
 };
 
 type State = {
