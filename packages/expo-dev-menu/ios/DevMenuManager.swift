@@ -208,7 +208,12 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
         items.append(contentsOf: extensionItems)
       }
     })
-    return items.sorted { $0.importance > $1.importance }
+    return items.sorted {
+      if $0.importance == $1.importance {
+        return $0.label().localizedCaseInsensitiveCompare($1.label()) == .orderedAscending
+      }
+      return $0.importance > $1.importance
+    }
   }
 
   /**
