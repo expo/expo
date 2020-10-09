@@ -182,7 +182,7 @@ export class Recording {
   _cleanupForUnloadedRecorder = async (finalStatus?: RecordingStatus) => {
     this._canRecord = false;
     this._isDoneRecording = true;
-    this._finalDurationMillis = finalStatus?.durationMillis || 0;
+    this._finalDurationMillis = finalStatus?.durationMillis ?? 0;
     _recorderExists = false;
     if (this._subscription) {
       this._subscription.remove();
