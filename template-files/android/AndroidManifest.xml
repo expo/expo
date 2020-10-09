@@ -314,7 +314,7 @@
 
     <!-- FCM -->
     <service
-      android:name=".fcm.ScopedExpoFcmMessagingService">
+      android:name=".fcm.ExpoFcmMessagingService">
       <intent-filter>
         <action android:name="com.google.firebase.MESSAGING_EVENT" />
       </intent-filter>
