@@ -15,8 +15,12 @@ public abstract class KernelInterface {
   public abstract void handleError(String errorMessage);
   public abstract void handleError(Exception exception);
   public abstract void openExperience(final KernelConstants.ExperienceOptions options);
-  public abstract boolean reloadVisibleExperience(String manifestUrl, boolean forceCache);
+  public abstract boolean reloadVisibleExperience(String manifestUrl, boolean forceCache, boolean forceReload);
   public abstract ExpoUpdatesAppLoader getAppLoaderForManifestUrl(String manifestUrl);
+
+  public boolean reloadVisibleExperience(String manifestUrl, boolean forceCache) {
+    return reloadVisibleExperience(manifestUrl, forceCache, false);
+  }
 
   public boolean reloadVisibleExperience(String manifestUrl) {
     return reloadVisibleExperience(manifestUrl, false);

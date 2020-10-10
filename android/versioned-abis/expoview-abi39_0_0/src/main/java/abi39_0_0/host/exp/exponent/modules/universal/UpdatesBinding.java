@@ -94,7 +94,7 @@ public class UpdatesBinding extends UpdatesService implements UpdatesInterface {
 
   @Override
   public void relaunchReactApplication(Launcher.LauncherCallback callback) {
-    KernelProvider.getInstance().reloadVisibleExperience(mManifestUrl, true);
+    KernelProvider.getInstance().reloadVisibleExperience(mManifestUrl, true, true);
     callback.onSuccess();
   }
 }

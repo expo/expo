@@ -989,7 +989,7 @@ public class Kernel extends KernelInterface {
   }
 
   @Override
-  public boolean reloadVisibleExperience(String manifestUrl, boolean forceCache) {
+  public boolean reloadVisibleExperience(String manifestUrl, boolean forceCache, boolean forceReload) {
     if (manifestUrl == null) {
       return false;
     }
@@ -1004,7 +1004,9 @@ public class Kernel extends KernelInterface {
           break;
         }
 
-        if (weakActivity.isLoading()) {
+        // if forceReload is true (when called from Updates module), force a reload even if the
+        // activity thinks it's still loading
+        if (weakActivity.isLoading() && !forceReload) {
           // Already loading. Don't need to do anything.
           return true;
         } else {
