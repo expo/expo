@@ -540,8 +540,10 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   UM_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
     UM_ENSURE_STRONGIFY(self);
-    [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceFinishedLoadingWithId:self.appRecord.experienceId];
-    [self.delegate reactAppManagerFinishedLoadingJavaScript:self];
+    if (self.appRecord.experienceId) {
+      [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceFinishedLoadingWithId:self.appRecord.experienceId];
+      [self.delegate reactAppManagerFinishedLoadingJavaScript:self];
+    }
   });
 }
 

@@ -140,6 +140,9 @@
 
 - (void)experienceFinishedLoadingWithId:(NSString *)experienceId
 {
+  if (!experienceId) {
+    return;
+  }
   EXErrorRecoveryRecord *record = [self _recordForExperienceId:experienceId];
   if (!record) {
     record = [[EXErrorRecoveryRecord alloc] init];
