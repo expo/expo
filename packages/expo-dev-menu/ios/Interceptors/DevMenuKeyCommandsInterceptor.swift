@@ -33,10 +33,11 @@ class DevMenuKeyCommandsInterceptor {
  Extend `UIResponder` so we can put our key commands to all responders.
  */
 extension UIResponder: DevMenuUIResponderExtensionProtocol {
-  // NOTE: throttle the key handler because on iOS 9 the handleKeyCommand:
+  // NOTE: throttle the key handler because on iOS the handleKeyCommand:
   // method gets called repeatedly if the command key is held down.
   static private var lastKeyCommandExecutionTime: TimeInterval = 0
-
+  static private var lastKeyCommand: UIKeyCommand? = nil
+  
   @objc
   var EXDevMenu_keyCommands: [UIKeyCommand] {
     let actionsWithKeyCommands = DevMenuManager.shared.devMenuActions.filter { $0.keyCommand != nil }
@@ -48,7 +49,7 @@ extension UIResponder: DevMenuUIResponderExtensionProtocol {
 
   @objc
   public func EXDevMenu_handleKeyCommand(_ key: UIKeyCommand) {
-    if CACurrentMediaTime() - UIResponder.lastKeyCommandExecutionTime > 0.5 {
+    tryHandleKeyCommand(key) {
       let actions = DevMenuManager.shared.devMenuActions
       let action = actions.first { $0.keyCommand == key }
 
@@ -59,6 +60,20 @@ extension UIResponder: DevMenuUIResponderExtensionProtocol {
 
   @objc
   func EXDevMenu_toggleDevMenu(_ key: UIKeyCommand) {
-    DevMenuManager.shared.toggleMenu()
+    tryHandleKeyCommand(key) {
+      DevMenuManager.shared.toggleMenu()
+    }
+  }
+  
+  private func shouldTriggerAction(_ key: UIKeyCommand) -> Bool {
+    return UIResponder.lastKeyCommand !== key || CACurrentMediaTime() - UIResponder.lastKeyCommandExecutionTime > 0.5
+  }
+  
+  private func tryHandleKeyCommand(_ key: UIKeyCommand, handler: () -> Void ) {
+    if shouldTriggerAction(key) {
+      handler()
+      UIResponder.lastKeyCommand = key
+      UIResponder.lastKeyCommandExecutionTime = CACurrentMediaTime()
+    }
   }
 }
