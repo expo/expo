@@ -13,6 +13,7 @@ import { sleepAsync } from '../Utils';
 
 type ActionOptions = {
   sdkVersion: string;
+  root: boolean;
   deprecated?: boolean;
   releaseNoteUrl?: string;
   key?: string;
@@ -48,13 +49,13 @@ async function askForCorrectnessAsync(): Promise<boolean> {
   return isCorrect;
 }
 
-function setSdkVersionConfig(sdkVersionConfig: object, key: string, value: any): void {
+function setConfigValueForKey(config: object, key: string, value: any): void {
   if (value === undefined) {
     console.log(`Deleting ${chalk.yellow(key)} config key ...`);
-    unset(sdkVersionConfig, key);
+    unset(config, key);
   } else {
     console.log(`Changing ${chalk.yellow(key)} config key ...`);
-    set(sdkVersionConfig, key, value);
+    set(config, key, value);
   }
 }
 
@@ -107,14 +108,26 @@ async function resetStagingConfigurationAsync() {
   await applyChangesToStagingAsync(delta, stagingVersions, productionVersions);
 }
 
-async function action(options: ActionOptions) {
-  if (options.reset) {
-    await resetStagingConfigurationAsync();
-    return;
+async function applyChangesToRootAsync(options: ActionOptions, versions: any) {
+  const newVersions = cloneDeep(versions);
+  if (options.key) {
+    if (!('value' in options) && !options.delete) {
+      console.log(chalk.red('`--key` flag requires `--value` or `--delete` flag.'));
+      return;
+    }
+    setConfigValueForKey(
+      newVersions,
+      options.key,
+      options.delete ? undefined : options.value
+    );
   }
 
-  Config.api.host = STAGING_API_HOST;
-  const versions = await Versions.versionsAsync();
+  const delta = jsondiffpatch.diff(versions, newVersions);
+
+  await applyChangesToStagingAsync(delta, versions, newVersions);
+}
+
+async function applyChangesToSDKVersionAsync(options: ActionOptions, versions: any) {
   const sdkVersions = Object.keys(versions.sdkVersions).sort(semver.rcompare);
   const sdkVersion = options.sdkVersion || (await chooseSdkVersionAsync(sdkVersions));
   const containsSdk = sdkVersions.includes(sdkVersion);
@@ -147,17 +160,21 @@ async function action(options: ActionOptions) {
   console.log(`Using SDK ${chalk.cyan(sdkVersion)} ...`);
 
   if ('deprecated' in options) {
-    setSdkVersionConfig(sdkVersionConfig, 'isDeprecated', !!options.deprecated);
+    setConfigValueForKey(sdkVersionConfig, 'isDeprecated', !!options.deprecated);
   }
   if ('releaseNoteUrl' in options && typeof options.releaseNoteUrl === 'string') {
-    setSdkVersionConfig(sdkVersionConfig, 'releaseNoteUrl', options.releaseNoteUrl);
+    setConfigValueForKey(sdkVersionConfig, 'releaseNoteUrl', options.releaseNoteUrl);
   }
   if (options.key) {
     if (!('value' in options) && !options.delete) {
       console.log(chalk.red('`--key` flag requires `--value` or `--delete` flag.'));
       return;
     }
-    setSdkVersionConfig(sdkVersionConfig, options.key, options.delete ? undefined : options.value);
+    setConfigValueForKey(
+      sdkVersionConfig,
+      options.key,
+      options.delete ? undefined : options.value
+    );
   }
 
   const newVersions = {
@@ -180,6 +197,22 @@ async function action(options: ActionOptions) {
   await applyChangesToStagingAsync(delta, versions.sdkVersions[sdkVersion], newVersions);
 }
 
+async function action(options: ActionOptions) {
+  if (options.reset) {
+    await resetStagingConfigurationAsync();
+    return;
+  }
+
+  Config.api.host = STAGING_API_HOST;
+  const versions = await Versions.versionsAsync();
+
+  if (options.root) {
+    await applyChangesToRootAsync(options, versions);
+  } else {
+    await applyChangesToSDKVersionAsync(options, versions);
+  }
+}
+
 export default (program: Command) => {
   program
     .command('update-versions-endpoint')
@@ -190,6 +223,11 @@ export default (program: Command) => {
     .option(
       '-s, --sdkVersion [string]',
       'SDK version to update. Can be chosen from the list if not provided.'
+    )
+    .option(
+      '--root',
+      'Modify a key at the root of the versions config rather than a specific SDK version.',
+      false
     )
     .option('-d, --deprecated [boolean]', 'Sets chosen SDK version as deprecated.')
     .option('-r, --release-note-url [string]', 'URL pointing to the release blog post.')
