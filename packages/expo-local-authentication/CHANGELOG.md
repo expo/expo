@@ -10,10 +10,6 @@
 
 ## 9.4.0 — 2020-10-12
 
-_This version does not introduce any user-facing changes._
-
-## 9.4.0 — 2020-10-12
-
 ### 🐛 Bug fixes
 
 - Fixed `cancelAuthenticate` not working in Android as expected. ([#10482](https://github.com/expo/expo/pull/10482) by [@huisf](https://github.com/HuiSF))
