@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: Platform.select({
       android: 'monospace',
-      ios: 'Courier New',
+      ios: 'Courier',
     }),
   },
 });
