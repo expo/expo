@@ -99,7 +99,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   private static final String TAG = ExperienceActivity.class.getSimpleName();
 
   private static final String KERNEL_STARTED_RUNNING_KEY = "experienceActivityKernelDidLoad";
-  private static final int NOTIFICATION_ID = 10101;
+  public static final int NOTIFICATION_ID = 10101;
   private static String READY_FOR_BUNDLE = "readyForBundle";
 
   private static ExperienceActivity sCurrentActivity;
