@@ -9,11 +9,18 @@ import { TouchableHighlight } from './Touchables';
 type Props = {
   title?: string;
   onPress?: () => void;
+  disabled?: boolean;
 };
 
 class ListItem extends React.PureComponent<Props> {
   render() {
     const { title, ...props } = this.props;
+    const textColor = props.disabled
+      ? {
+          lightColor: Colors.light.grayText,
+          darkColor: Colors.dark.grayText,
+        }
+      : {};
 
     return (
       <TouchableHighlight {...props}>
@@ -23,7 +30,9 @@ class ListItem extends React.PureComponent<Props> {
           lightBorderColor={Colors.light.border}
           darkBackgroundColor={Colors.dark.secondaryBackground}
           darkBorderColor={Colors.dark.border}>
-          <StyledText style={styles.title}>{title}</StyledText>
+          <StyledText style={styles.title} {...textColor}>
+            {title}
+          </StyledText>
           {this.props.children}
         </StyledView>
       </TouchableHighlight>
