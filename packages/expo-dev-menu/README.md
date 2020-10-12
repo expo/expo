@@ -280,6 +280,12 @@ Then you can start to configure the native projects using steps below.
 
       </details>
 
+# 📂 Accessing the Developer Menu
+
+You can access the developer menu by shaking your device, making a three-finger long-press gesture, or by selecting "Shake Gesture" inside the Hardware menu in the iOS simulator. You can also use keyboard shortcuts - `⌘D` on iOS, or `⌘M` on Android when you're using Mac OS and `Ctrl+M` on Windows and Linux. Alternatively for Android, you can run the command `adb shell input keyevent 82` to open the dev menu (`82` being the Menu key code).
+
+> **Note:** if you're using the iOS simulator and keyboard shortcuts don't work, make sure you've selected `Send Keyboard Input to Device` inside the `I/O` menu in the Simulator.
+
 # 💪 Extending the dev-menu's functionalities
 
 One of the main purposes of this package was to provide an easy way to create extensions. We know that developing a React Native app can be painful - often, developers need to create additional tools, which for example, clear the local storage, to test or debug their applications. Some of their work can be integrated with the application itself to save time and make the development more enjoyable.

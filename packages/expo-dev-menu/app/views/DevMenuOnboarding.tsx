@@ -26,13 +26,11 @@ const ONBOARDING_MESSAGE = (() => {
   let fragment;
   if (doesDeviceSupportKeyCommands) {
     fragment = `in a simulator you can press ${KEYBOARD_CODES[Platform.OS]}`;
-  } else {
     if (Platform.OS === 'ios') {
-      fragment =
-        'you can shake your device or long press anywhere on the screen with three fingers';
-    } else {
-      fragment = 'you can shake your device';
+      fragment += ` (make sure that 'I/O -> Send Keyboard Input to Device' is enabled on your simulator)`;
     }
+  } else {
+    fragment = 'you can shake your device or long press anywhere on the screen with three fingers';
   }
   return `Since this is your first time opening the Expo client, we wanted to show you this menu and let you know that ${fragment} to get back to it at any time.`;
 })();
