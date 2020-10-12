@@ -121,7 +121,7 @@ public class NotificationsHelper {
     }
   }
 
-  private boolean mIsAppInForeground = false;
+  private boolean mIsAppInForeground = ProcessLifecycleOwner.get().getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED);
 
   /**
    * A function returning all presented notifications to receiver
