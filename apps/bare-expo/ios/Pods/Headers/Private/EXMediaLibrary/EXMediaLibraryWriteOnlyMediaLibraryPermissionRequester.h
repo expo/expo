@@ -1,0 +1,1 @@
+../../../../../../../packages/expo-media-library/ios/EXMediaLibrary/Permissions/EXMediaLibraryWriteOnlyMediaLibraryPermissionRequester.h

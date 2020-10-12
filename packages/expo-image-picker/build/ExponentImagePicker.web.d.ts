@@ -12,7 +12,7 @@ declare const _default: {
     }): Promise<ImagePickerResult | ImagePickerMultipleResult>;
     getCameraPermissionsAsync(): Promise<PermissionResponse>;
     requestCameraPermissionsAsync(): Promise<PermissionResponse>;
-    getCameraRollPermissionsAsync(): Promise<PermissionResponse>;
-    requestCameraRollPermissionsAsync(): Promise<PermissionResponse>;
+    getMediaLibraryPermissionsAsync(_writeOnly: boolean): Promise<PermissionResponse>;
+    requestMediaLibraryPermissionsAsync(_writeOnly: boolean): Promise<PermissionResponse>;
 };
 export default _default;

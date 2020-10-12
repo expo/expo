@@ -56,7 +56,6 @@ export default class ScreenCaptureExample extends React.Component {
     ScreenCapture.addScreenshotListener(() => {
       alert('Thanks for screenshotting my beautiful app 😊');
     }); /* @end */
-
   }
 
   render() {
@@ -71,13 +70,11 @@ export default class ScreenCaptureExample extends React.Component {
   _activate = async () => {
     /* @info Screen will be uncapturable once <strong>preventScreenCaptureAsync()</strong> is called. */
     await ScreenCapture.preventScreenCaptureAsync(); /* @end */
-
   };
 
   _deactivate = async () => {
     /* @info Re-allows screen capture, or does nothing if preventScreenCaptureAsync() was never called. */
     await ScreenCapture.allowScreenCaptureAsync(); /* @end */
-
   };
 }
 ```
@@ -120,7 +117,7 @@ Re-allows the user to screen record or screenshot your app. If you haven't calle
 
 ### `addScreenshotListener(listener)`
 
-Adds a listener that will fire whenever the user takes a screenshot while the app is foregrounded. On Android, this method requires the `READ_EXTERNAL_STORAGE` permission- you can request this with [`Permissions.askAsync(Permissions.CAMERA_ROLL)`](../sdk/permissions/#permissionscamera_roll).
+Adds a listener that will fire whenever the user takes a screenshot while the app is foregrounded. On Android, this method requires the `READ_EXTERNAL_STORAGE` permission- you can request this with [`Permissions.askAsync(Permissions.MEDIA_LIBRARY)`](../sdk/permissions/#permissionsmedia_library).
 
 #### Arguments
 

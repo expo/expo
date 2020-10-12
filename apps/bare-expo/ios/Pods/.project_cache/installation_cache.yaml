@@ -686,10 +686,12 @@ CACHE_KEYS:
     FILES:
       - "../../../../packages/expo-image-picker/ios/EXImagePicker/EXImagePicker.h"
       - "../../../../packages/expo-image-picker/ios/EXImagePicker/EXImagePicker.m"
-      - "../../../../packages/expo-image-picker/ios/EXImagePicker/EXImagePickerCameraPermissionRequester.h"
-      - "../../../../packages/expo-image-picker/ios/EXImagePicker/EXImagePickerCameraPermissionRequester.m"
-      - "../../../../packages/expo-image-picker/ios/EXImagePicker/EXImagePickerCameraRollPermissionRequester.h"
-      - "../../../../packages/expo-image-picker/ios/EXImagePicker/EXImagePickerCameraRollPermissionRequester.m"
+      - "../../../../packages/expo-image-picker/ios/EXImagePicker/Permissions/EXImagePickerCameraPermissionRequester.h"
+      - "../../../../packages/expo-image-picker/ios/EXImagePicker/Permissions/EXImagePickerCameraPermissionRequester.m"
+      - "../../../../packages/expo-image-picker/ios/EXImagePicker/Permissions/EXImagePickerMediaLibraryPermissionRequester.h"
+      - "../../../../packages/expo-image-picker/ios/EXImagePicker/Permissions/EXImagePickerMediaLibraryPermissionRequester.m"
+      - "../../../../packages/expo-image-picker/ios/EXImagePicker/Permissions/EXImagePickerWriteOnlyMediaLibraryPermissionRequester.h"
+      - "../../../../packages/expo-image-picker/ios/EXImagePicker/Permissions/EXImagePickerWriteOnlyMediaLibraryPermissionRequester.m"
     PROJECT_NAME: EXImagePicker
     SPECS:
       - EXImagePicker (9.1.1)
@@ -798,12 +800,14 @@ CACHE_KEYS:
     FILES:
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.h"
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.m"
-      - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibraryCameraRollRequester.h"
-      - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibraryCameraRollRequester.m"
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibraryImageLoader.h"
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibraryImageLoader.m"
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXSaveToLibraryDelegate.h"
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXSaveToLibraryDelegate.m"
+      - "../../../../packages/expo-media-library/ios/EXMediaLibrary/Permissions/EXMediaLibraryMediaLibraryPermissionRequester.h"
+      - "../../../../packages/expo-media-library/ios/EXMediaLibrary/Permissions/EXMediaLibraryMediaLibraryPermissionRequester.m"
+      - "../../../../packages/expo-media-library/ios/EXMediaLibrary/Permissions/EXMediaLibraryWriteOnlyMediaLibraryPermissionRequester.h"
+      - "../../../../packages/expo-media-library/ios/EXMediaLibrary/Permissions/EXMediaLibraryWriteOnlyMediaLibraryPermissionRequester.m"
     PROJECT_NAME: EXMediaLibrary
     SPECS:
       - EXMediaLibrary (9.2.1)
@@ -1132,7 +1136,7 @@ CACHE_KEYS:
       EXWebBrowser:
         :debug: 8a03493ab01357acaad4113c212a979d
         :release: 8a03493ab01357acaad4113c212a979d
-    CHECKSUM: 1a3ff931f6e64592c70f5faa226e4802a344d664
+    CHECKSUM: f942a57dcf60d917f153d9d501c2547fd9f7f347
     FILES:
       - "../../../../packages/expo-web-browser/ios/EXWebBrowser/EXWebBrowser.h"
       - "../../../../packages/expo-web-browser/ios/EXWebBrowser/EXWebBrowser.m"

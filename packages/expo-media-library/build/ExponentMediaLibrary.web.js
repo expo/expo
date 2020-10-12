@@ -31,10 +31,10 @@ export default {
             duration: 'duration',
         };
     },
-    async getPermissionsAsync() {
+    async getPermissionsAsync(_writeOnly) {
         return noPermissionResponse;
     },
-    async requestPermissionsAsync() {
+    async requestPermissionsAsync(_writeOnly) {
         return noPermissionResponse;
     },
 };
