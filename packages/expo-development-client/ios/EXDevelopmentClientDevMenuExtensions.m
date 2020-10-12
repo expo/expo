@@ -40,7 +40,7 @@ RCT_EXTERN void RCTRegisterModule(Class);
   backToLauncher.label = ^{ return @"Back to launcher"; };
   backToLauncher.glyphName = ^{ return @"exit-to-app"; };
   backToLauncher.importance = DevMenuItemImportanceHigh;
-
+  [backToLauncher registerKeyCommandWithInput:@"L" modifiers:UIKeyModifierCommand];
   return @[backToLauncher];
 }
 
