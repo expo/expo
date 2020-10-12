@@ -9,6 +9,7 @@ import DevMenuSettingsScreen from '../screens/DevMenuSettingsScreen';
 import DevMenuTestScreen from '../screens/DevMenuTestScreen';
 import DevMenuBottomSheet from './DevMenuBottomSheet';
 import DevMenuOnboarding from './DevMenuOnboarding';
+import NavigationHeaderButton from '../components/NavigationHeaderButton';
 
 type Props = {
   uuid: string;
@@ -16,6 +17,14 @@ type Props = {
 };
 
 const { call, cond, eq, onChange } = Animated;
+
+function applyNavigationSettings(navigationOptions) {
+  return ({ navigation }) => ({
+    headerTitleAlign: 'center',
+    headerLeft: () => <NavigationHeaderButton onPress={() => navigation.pop()} />,
+    ...navigationOptions,
+  });
+}
 
 // @refresh
 export default class DevMenuContainer extends React.PureComponent<Props, any> {
@@ -81,17 +90,17 @@ export default class DevMenuContainer extends React.PureComponent<Props, any> {
     {
       name: 'Main',
       component: DevMenuMainScreen,
-      options: DevMenuMainScreen.navigationOptions,
+      options: applyNavigationSettings(DevMenuMainScreen.navigationOptions),
     },
     {
       name: 'Settings',
       component: DevMenuSettingsScreen,
-      options: DevMenuSettingsScreen.navigationOptions,
+      options: applyNavigationSettings(DevMenuSettingsScreen.navigationOptions),
     },
     {
       name: 'Test',
       component: DevMenuTestScreen,
-      options: DevMenuTestScreen.navigationOptions,
+      options: applyNavigationSettings(DevMenuTestScreen.navigationOptions),
     },
   ];
 
