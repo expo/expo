@@ -49,7 +49,7 @@ extension UIResponder: DevMenuUIResponderExtensionProtocol {
 
   @objc
   public func EXDevMenu_handleKeyCommand(_ key: UIKeyCommand) {
-    tryHandelKeyCommand(key) {
+    tryHandleKeyCommand(key) {
       let actions = DevMenuManager.shared.devMenuActions
       let action = actions.first { $0.keyCommand == key }
 
@@ -60,7 +60,7 @@ extension UIResponder: DevMenuUIResponderExtensionProtocol {
 
   @objc
   func EXDevMenu_toggleDevMenu(_ key: UIKeyCommand) {
-    tryHandelKeyCommand(key) {
+    tryHandleKeyCommand(key) {
       DevMenuManager.shared.toggleMenu()
     }
   }
@@ -69,7 +69,7 @@ extension UIResponder: DevMenuUIResponderExtensionProtocol {
     return UIResponder.lastKeyCommand !== key || CACurrentMediaTime() - UIResponder.lastKeyCommandExecutionTime > 0.5
   }
   
-  private func tryHandelKeyCommand(_ key: UIKeyCommand, handler: () -> Void ) {
+  private func tryHandleKeyCommand(_ key: UIKeyCommand, handler: () -> Void ) {
     if shouldTriggerAction(key) {
       handler()
       UIResponder.lastKeyCommand = key
