@@ -1,6 +1,6 @@
-package expo.modules.notifications
+package expo.modules.notifications.service.delegates
 
-import com.google.firebase.messaging.FirebaseMessagingService
+import android.content.Context
 import com.google.firebase.messaging.RemoteMessage
 import expo.modules.notifications.notifications.JSONNotificationContentBuilder
 import expo.modules.notifications.notifications.interfaces.NotificationsScoper
@@ -9,15 +9,14 @@ import expo.modules.notifications.notifications.model.NotificationContent
 import expo.modules.notifications.notifications.model.NotificationRequest
 import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger
 import expo.modules.notifications.notifications.service.NotificationsHelper
+import expo.modules.notifications.service.NotificationsService
+import expo.modules.notifications.service.interfaces.FirebaseMessagingDelegate
 import expo.modules.notifications.tokens.interfaces.FirebaseTokenListener
 import org.json.JSONObject
 import java.lang.ref.WeakReference
 import java.util.*
 
-/**
- * Subclass of FirebaseMessagingService responsible for dispatching new tokens and remote messages.
- */
-open class FirebaseListenerService : FirebaseMessagingService() {
+open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseMessagingDelegate {
   companion object {
     // Unfortunately we cannot save state between instances of a service other way
     // than by static properties. Fortunately, using weak references we can
@@ -25,13 +24,13 @@ open class FirebaseListenerService : FirebaseMessagingService() {
     /**
      * We store this value to be able to inform new listeners of last known token.
      */
-    private var sLastToken: String? = null
+    protected var sLastToken: String? = null
 
     /**
      * A weak map of listeners -> reference. Used to check quickly whether given listener
      * is already registered and to iterate over when notifying of new token.
      */
-    private val sTokenListenersReferences = WeakHashMap<FirebaseTokenListener, WeakReference<FirebaseTokenListener?>?>()
+    protected val sTokenListenersReferences = WeakHashMap<FirebaseTokenListener, WeakReference<FirebaseTokenListener?>?>()
 
     /**
      * Used only by [FirebaseTokenListener] instances. If you look for a place to register
@@ -57,12 +56,11 @@ open class FirebaseListenerService : FirebaseMessagingService() {
   }
 
   /**
-   * Called on new token, dispatches it to [FirebaseListenerService.sTokenListenersReferences].
+   * Called on new token, dispatches it to [NotificationsService.sTokenListenersReferences].
    *
    * @param token New device push token.
    */
   override fun onNewToken(token: String) {
-    super.onNewToken(token)
     for (listenerReference in sTokenListenersReferences.values) {
       listenerReference?.get()?.onNewToken(token)
     }
@@ -70,18 +68,17 @@ open class FirebaseListenerService : FirebaseMessagingService() {
   }
 
   override fun onMessageReceived(remoteMessage: RemoteMessage) {
-    super.onMessageReceived(remoteMessage)
     createNotificationsHelper().notificationReceived(createNotification(remoteMessage))
   }
 
   protected fun createNotificationsHelper(): NotificationsHelper {
-    return NotificationsHelper(this, NotificationsScoper.create(this).createReconstructor())
+    return NotificationsHelper(context, NotificationsScoper.create(context).createReconstructor())
   }
 
   protected fun createNotification(remoteMessage: RemoteMessage): Notification {
     val identifier = remoteMessage.messageId ?: UUID.randomUUID().toString()
     val payload = JSONObject(remoteMessage.data as Map<*, *>)
-    val content = JSONNotificationContentBuilder(this).setPayload(payload).build()
+    val content = JSONNotificationContentBuilder(context).setPayload(payload).build()
     val request = createNotificationRequest(identifier, content, FirebaseNotificationTrigger(remoteMessage))
     return Notification(request, Date(remoteMessage.sentTime))
   }
@@ -95,7 +92,6 @@ open class FirebaseListenerService : FirebaseMessagingService() {
   }
 
   override fun onDeletedMessages() {
-    super.onDeletedMessages()
     createNotificationsHelper().dropped(null)
   }
 }
