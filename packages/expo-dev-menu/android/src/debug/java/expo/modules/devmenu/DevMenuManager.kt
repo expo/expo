@@ -76,7 +76,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
         cachedDevMenuItems[delegateBridge] = delegateExtensions
           .map { it.devMenuItems() ?: emptyList() }
           .flatten()
-          .sortedByDescending { it.importance }
+          .sortedWith(compareBy({ -it.importance }, { it.label() }))
       }
 
       return cachedDevMenuItems.getOrDefault(delegateBridge, emptyList())
