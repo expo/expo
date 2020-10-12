@@ -47,6 +47,9 @@ index 9f2ede1..c3e09a4 100644
 @@ -44,11 +56,19 @@ static void InitializeFlipper(UIApplication *application) {
    self.window.rootViewController = rootViewController;
    [self.window makeKeyAndVisible];
+
++  [super application:application didFinishLaunchingWithOptions:launchOptions];
+
    return YES;
  }
  
