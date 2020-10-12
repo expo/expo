@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, PixelRatio, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import {
   DevMenuSettingsType,
