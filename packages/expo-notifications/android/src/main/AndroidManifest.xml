@@ -11,14 +11,6 @@
         <action android:name="com.google.firebase.MESSAGING_EVENT" />
       </intent-filter>
     </service>
-    <service
-      android:name=".notifications.service.ExpoNotificationsService"
-      android:exported="false"
-      android:permission="android.permission.BIND_JOB_SERVICE">
-      <intent-filter android:order="-1">
-        <action android:name="expo.modules.notifications.CATEGORY_EVENT" />
-      </intent-filter>
-    </service>
 
     <receiver
       android:name=".notifications.service.ScheduledAlarmReceiver"
