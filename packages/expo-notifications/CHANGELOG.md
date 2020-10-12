@@ -6,6 +6,8 @@
 
 - Changed the way `PermissionResponse.status` is calculated on iOS. Previously, it returns the numeric value of `UMPermissionStatus` which does not match the TypeScript enum declaration. ([#10513](https://github.com/expo/expo/pull/10513) by [@cHaLkdusT](https://github.com/cHaLkdusT))
 - Changed the way `NotificationContent.data` is calculated on iOS. Previously it was the contents of remote notification payload with all entries from under `"body"` moved from under `"body"` to root level. Now it's the sole unchanged contents of `payload["body"]`. Other fields of the payload can now be accessed on iOS through `PushNotificationTrigger.payload` (similarly to how other fields of native remote message can be accessed on Android under `PushNotificationTrigger.remoteMessage`). ([#10453](https://github.com/expo/expo/pull/10453) by [@sjchmiela](https://github.com/sjchmiela))
+- Changed class responsible for handling Firebase events from `FirebaseMessagingService` to `.service.NotificationsService`. ([#10558](https://github.com/expo/expo/pull/10558) by [@sjchmiela](https://github.com/sjchmiela))
+    > Note that this change most probably will not affect you — it only affects projects that override `FirebaseMessagingService` to implement some custom handling logic.
 
 ### 🎉 New features
 
