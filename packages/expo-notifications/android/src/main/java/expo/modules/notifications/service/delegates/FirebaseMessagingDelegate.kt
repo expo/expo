@@ -46,8 +46,7 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
     fun addTokenListener(listener: FirebaseTokenListener) {
       // Checks whether this listener has already been registered
       if (!sTokenListenersReferences.containsKey(listener)) {
-        val listenerReference = WeakReference(listener)
-        sTokenListenersReferences[listener] = listenerReference
+        sTokenListenersReferences[listener] = WeakReference(listener)
         // Since it's a new listener and we know of a last valid token, let's let them know.
         if (sLastToken != null) {
           listener.onNewToken(sLastToken)
@@ -69,14 +68,14 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
   }
 
   override fun onMessageReceived(remoteMessage: RemoteMessage) {
-    createNotificationsHelper().notificationReceived(createNotification(context, remoteMessage))
+    createNotificationsHelper().notificationReceived(createNotification(remoteMessage))
   }
 
   protected fun createNotificationsHelper(): NotificationsHelper {
     return NotificationsHelper(context, NotificationsScoper.create(context).createReconstructor())
   }
 
-  protected fun createNotification(context: Context, remoteMessage: RemoteMessage): Notification {
+  protected fun createNotification(remoteMessage: RemoteMessage): Notification {
     val identifier = remoteMessage.messageId ?: UUID.randomUUID().toString()
     val payload = JSONObject(remoteMessage.data as Map<*, *>)
     val content = JSONNotificationContentBuilder(context).setPayload(payload).build()
@@ -84,7 +83,11 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
     return Notification(request, Date(remoteMessage.sentTime))
   }
 
-  protected open fun createNotificationRequest(identifier: String, content: NotificationContent, notificationTrigger: FirebaseNotificationTrigger): NotificationRequest {
+  protected open fun createNotificationRequest(
+    identifier: String,
+    content: NotificationContent,
+    notificationTrigger: FirebaseNotificationTrigger
+  ): NotificationRequest {
     return NotificationRequest(identifier, content, notificationTrigger)
   }
 
