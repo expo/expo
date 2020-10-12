@@ -8,6 +8,7 @@ import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.NotificationResponse;
 import expo.modules.notifications.notifications.service.NotificationsHelper;
+import expo.modules.notifications.service.delegates.ExpoPresentationDelegate;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.notifications.model.ScopedNotificationRequest;
 
@@ -33,7 +34,7 @@ public class ScopedNotificationsUtils {
     }
 
     // legacy or foreign notification
-    Pair<String, Integer> foreignNotification = NotificationsHelper.parseNotificationIdentifier(notificationRequest.getIdentifier());
+    Pair<String, Integer> foreignNotification = ExpoPresentationDelegate.Companion.parseNotificationIdentifier(notificationRequest.getIdentifier());
     if (foreignNotification != null) {
       boolean notificationBelongsToSomeExperience = mExponentNotificationManager.getAllNotificationsIds(foreignNotification.first).contains(foreignNotification.second);
       boolean notificationExperienceIsCurrentExperience = experienceId.get().equals(foreignNotification.first);

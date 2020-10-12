@@ -11,6 +11,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationBehavior
+import expo.modules.notifications.service.delegates.ExpoPresentationDelegate
 import expo.modules.notifications.service.interfaces.FirebaseMessagingDelegate
 import expo.modules.notifications.service.interfaces.PresentationDelegate
 
@@ -129,7 +130,9 @@ open class NotificationsService : FirebaseMessagingService() {
   protected open val firebaseMessagingDelegate: FirebaseMessagingDelegate by lazy {
     expo.modules.notifications.service.delegates.FirebaseMessagingDelegate(this)
   }
-  protected open val presentationDelegate: PresentationDelegate by lazy {}
+  protected open val presentationDelegate: PresentationDelegate by lazy {
+    ExpoPresentationDelegate(this)
+  }
 
   override fun getStartCommandIntent(intent: Intent?): Intent {
     if (intent?.action === NOTIFICATION_EVENT_ACTION) {
@@ -156,7 +159,7 @@ open class NotificationsService : FirebaseMessagingService() {
           )
 
           DISMISS_SELECTED_TYPE -> onDismissNotifications(
-            intent.extras?.getStringArrayList(IDENTIFIERS_KEY)!! // throw exception if empty
+            intent.extras?.getStringArray(IDENTIFIERS_KEY)!!.asList() // throw exception if empty
           )
 
           DISMISS_ALL_TYPE -> onDismissAllNotifications()
@@ -177,10 +180,10 @@ open class NotificationsService : FirebaseMessagingService() {
     }
   }
 
-  fun onPresentNotification(notification: Notification, behavior: NotificationBehavior?) = presentationDelegate.presentNotification(notification, behavior)
-  fun onGetAllPresentedNotifications() = presentationDelegate.getAllPresentedNotifications()
-  fun onDismissNotifications(identifiers: Collection<String>) = presentationDelegate.dismissNotifications(identifiers)
-  fun onDismissAllNotifications() = presentationDelegate.dismissAllNotifications()
+  open fun onPresentNotification(notification: Notification, behavior: NotificationBehavior?) = presentationDelegate.presentNotification(notification, behavior)
+  open fun onGetAllPresentedNotifications() = presentationDelegate.getAllPresentedNotifications()
+  open fun onDismissNotifications(identifiers: Collection<String>) = presentationDelegate.dismissNotifications(identifiers)
+  open fun onDismissAllNotifications() = presentationDelegate.dismissAllNotifications()
 
   override fun onMessageReceived(remoteMessage: RemoteMessage) = firebaseMessagingDelegate.onMessageReceived(remoteMessage)
   override fun onNewToken(token: String) = firebaseMessagingDelegate.onNewToken(token)
