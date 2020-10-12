@@ -7,9 +7,9 @@ import {
   getSettingsAsync,
   openDevMenuFromReactNative,
 } from '../DevMenuInternal';
-import ListItemCheckbox from '../components/ListItemCheckbox';
 import ListFooter from '../components/ListFooter';
 import ListItem from '../components/ListItem';
+import ListItemCheckbox from '../components/ListItemCheckbox';
 
 type State = {
   settings: DevMenuSettingsType | null;
@@ -29,16 +29,21 @@ export default class DevMenuSettingsScreen extends React.PureComponent<{}, State
   };
 
   private toggleMotionGesture = () => {
-    setSettingsAsync({ motionGestureEnabled: !this.state.settings?.motionGestureEnabled });
+    this.saveSettings({ motionGestureEnabled: !this.state.settings?.motionGestureEnabled });
   };
 
   private toggleTouchGesture = () => {
-    setSettingsAsync({ touchGestureEnabled: !this.state.settings?.touchGestureEnabled });
+    this.saveSettings({ touchGestureEnabled: !this.state.settings?.touchGestureEnabled });
   };
 
   private toggleAutoLaunch = () => {
-    setSettingsAsync({ showsAtLaunch: !this.state.settings?.showsAtLaunch });
+    this.saveSettings({ showsAtLaunch: !this.state.settings?.showsAtLaunch });
   };
+
+  private saveSettings(newSettings: DevMenuSettingsType) {
+    setSettingsAsync(newSettings);
+    this.setState(prev => ({ settings: { ...prev.settings, ...newSettings } }));
+  }
 
   private openReactNativeDevMenu = () => {
     openDevMenuFromReactNative();
@@ -59,25 +64,33 @@ export default class DevMenuSettingsScreen extends React.PureComponent<{}, State
     if (!settings) {
       return null;
     }
+
+    const shouldLockOneOption =
+      [settings.motionGestureEnabled, settings.touchGestureEnabled, settings.showsAtLaunch].filter(
+        x => x
+      ).length === 1;
+
     return (
       <View style={styles.container}>
         <ListItem title="Open React Native dev menu" onPress={this.openReactNativeDevMenu} />
-
         <View style={styles.group}>
           <ListItemCheckbox
             title="Shake device"
             initialChecked={settings.motionGestureEnabled}
             onChange={this.toggleMotionGesture}
+            disabled={shouldLockOneOption && settings.motionGestureEnabled}
           />
           <ListItemCheckbox
             title="Three-finger long press"
             initialChecked={settings.touchGestureEnabled}
             onChange={this.toggleTouchGesture}
+            disabled={shouldLockOneOption && settings.touchGestureEnabled}
           />
           <ListItemCheckbox
             title="Show menu at launch"
             initialChecked={settings.showsAtLaunch}
             onChange={this.toggleAutoLaunch}
+            disabled={shouldLockOneOption && settings.showsAtLaunch}
           />
           <ListFooter label="Selected gestures will toggle the developer menu." />
         </View>
