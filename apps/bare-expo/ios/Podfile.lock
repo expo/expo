@@ -114,7 +114,7 @@ PODS:
     - UMCore
   - EXLinearGradient (8.3.1):
     - UMCore
-  - EXLocalAuthentication (9.3.0):
+  - EXLocalAuthentication (9.4.0):
     - UMConstantsInterface
     - UMCore
   - EXLocalization (9.0.0):
@@ -996,7 +996,7 @@ SPEC CHECKSUMS:
   EXInAppPurchases: c647953e5e1dad71bbda2e3bb92966dac440ede4
   EXKeepAwake: 76eed36786534f6a476748e600fa6faf07ac3d09
   EXLinearGradient: c7ca1c2933ac240ffbc805c014a72947e227ac75
-  EXLocalAuthentication: 692a1fdd27389b483b44919388e2a814d43af104
+  EXLocalAuthentication: d020e5c714f07967a05b37a939c3a22457e758e9
   EXLocalization: 8621f60b37c3d3ad8c8e27c2cb3b05ebc7b484a2
   EXLocation: 90232c6f2773b04a3c146bfda9f181035722c10a
   EXMailComposer: 7436a0388652ee26b11b74d3c23180cadc000a45
