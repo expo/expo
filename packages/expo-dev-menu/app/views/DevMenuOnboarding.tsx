@@ -27,7 +27,7 @@ const ONBOARDING_MESSAGE = (() => {
   if (doesDeviceSupportKeyCommands) {
     fragment = `in a simulator you can press ${KEYBOARD_CODES[Platform.OS]}`;
     if (Platform.OS === 'ios') {
-      fragment += ` (make sure that 'I/O -> Send Keyboard Input to Device' is enable on your simulator)`;
+      fragment += ` (make sure that 'I/O -> Send Keyboard Input to Device' is enabled on your simulator)`;
     }
   } else {
     fragment = 'you can shake your device or long press anywhere on the screen with three fingers';
