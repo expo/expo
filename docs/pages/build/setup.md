@@ -37,25 +37,33 @@ Let's start with the following minimal configuration:
 
 If you want to learn more about the configuration options see the [Configuring with eas.json](../eas-json/) page.
 
-## 4. Eject to Bare Workflow if needed
+## 4. Eject to bare workflow if needed
 
 > ✅ You can skip this step if you are using the bare workflow or have a vanilla React Native project.
 
 Building managed Expo projects with EAS Build is not supported yet. We're working hard to deliver this soon! In the meantime, if you wish to build a managed project, you'll have to run `expo eject`. [Learn more here.](../../workflow/customizing/)
 
-## 5. Run the build
+## 5. Configure the project
 
-- Run `expo eas:build --platform android` to build for Android. If you have not yet generated a keystore for your app, you can let Expo take care of that for you. If you have already built your app in the managed workflow with `expo build:android` then the same credentials will be used by EAS Build. If you would rather manually generate your keystore, please see the advanced [Android Credentials](../advanced-credentials-configuration/#android-credentials) section for more information.
+Run `expo eas:build:init` to configure your iOS and Android projects to run on EAS Build.
 
-- Run `expo eas:build --platform ios` to build for iOS. This requires access to a **paid** [Apple Developer Account](https://developer.apple.com/programs) to configure the credentials required for signing your app. Expo will take care of acquiring the credentials for you, and if you have already built your app in the managed workflow with `expo build:ios` then the same credentials will be used by EAS Build. If you would rather manually provide your credentials, refer to the advanced [iOS Credentials](../advanced-credentials-configuration/#ios-credentials) section for more information.
+- **Android**: If you have not yet generated a keystore for your app, you can let Expo take care of that for you. If you have already built your app in the managed workflow with `expo build:android` then the same credentials will be used by EAS Build. If you would rather manually generate your keystore, please see the advanced [Android Credentials](../advanced-credentials-configuration/#android-credentials) section for more information.
+
+- **iOS**: This requires access to a **paid** [Apple Developer Account](https://developer.apple.com/programs) to configure the credentials required for signing your app. Expo will take care of acquiring the credentials for you, and if you have already built your app in the managed workflow with `expo build:ios` then the same credentials will be used by EAS Build. If you would rather manually provide your credentials, refer to the advanced [iOS Credentials](../advanced-credentials-configuration/#ios-credentials) section for more information.
+
+## 6. Run the build
+
+- Run `expo eas:build --platform android` to build for Android.
+
+- Run `expo eas:build --platform ios` to build for iOS.
 
 > 💡 You can run `expo eas:build --platform all` to build for Android and iOS at the same time.
 
-## 6. Check the status of your builds
+## 7. Check the status of your builds
 
 By default, the `expo eas:build` command will wait for your build to complete. However, if you interrupt this command you can still monitor the progress of your builds by either visiting [the Expo website](https://expo.io/) or running the `expo eas:build:status` command.
 
-## 7. Learn more
+## 8. Learn more
 
 - Read the [Configuration with eas.json](../eas-json/) guide to get familiar with EAS Build configuration options.
 - If you want to learn more about the internals of Android and iOS builds, check out our [Android build process](../android-builds/) and [iOS build process](../ios-builds/) pages.
