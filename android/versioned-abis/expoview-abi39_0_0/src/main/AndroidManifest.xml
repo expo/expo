@@ -143,42 +143,6 @@
                 android:resource="@xml/mail_composer_provider_paths" />
         </provider>
 
-        <service
-            android:name="abi39_0_0.expo.modules.notifications.FirebaseListenerService"
-            android:exported="false" >
-            <intent-filter android:priority="-1" >
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
-        <service
-            android:name="abi39_0_0.expo.modules.notifications.notifications.service.ExpoNotificationsService"
-            android:exported="false"
-            android:permission="android.permission.BIND_JOB_SERVICE" >
-            <intent-filter android:order="-1" >
-                <action android:name="abi39_0_0.expo.modules.notifications.CATEGORY_EVENT" />
-            </intent-filter>
-        </service>
-
-        <receiver
-            android:name="abi39_0_0.expo.modules.notifications.notifications.service.ScheduledAlarmReceiver"
-            android:enabled="true"
-            android:exported="false" >
-            <intent-filter>
-                <action android:name="abi39_0_0.expo.modules.notifications.TRIGGER_EVENT" />
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
-                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
-            </intent-filter>
-        </receiver>
-        <receiver
-            android:name="abi39_0_0.expo.modules.notifications.notifications.service.NotificationResponseReceiver"
-            android:enabled="true"
-            android:exported="false" />
-        <receiver
-            android:name="abi39_0_0.expo.modules.notifications.notifications.service.TextInputNotificationResponseReceiver"
-            android:enabled="true"
-            android:exported="false" />
-
         <meta-data
             android:name="abi39_0_0.expo.modules.notifications#NotificationsScoper"
             android:value="abi39_0_0.expo.modules.notifications.NotificationsScoper" />

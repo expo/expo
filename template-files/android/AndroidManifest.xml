@@ -331,15 +331,6 @@
       android:exported="false">
     </service>
 
-    <service
-      android:name="host.exp.exponent.services.ScopedExpoNotificationsService"
-      android:exported="false"
-      android:permission="android.permission.BIND_JOB_SERVICE">
-      <intent-filter>
-          <action android:name="expo.modules.notifications.NOTIFICATION_EVENT" />
-      </intent-filter>
-    </service>
-
     <!-- ImagePicker native module -->
     <activity
       android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
