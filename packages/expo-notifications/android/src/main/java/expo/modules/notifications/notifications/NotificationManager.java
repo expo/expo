@@ -26,7 +26,7 @@ public class NotificationManager implements SingletonModule, expo.modules.notifi
   public NotificationManager() {
     mListenerReferenceMap = new WeakHashMap<>();
 
-    // Registers this singleton instance in static ExpoNotificationsService listeners collection.
+    // Registers this singleton instance in static NotificationsHelper listeners collection.
     // Since it doesn't hold strong reference to the object this should be safe.
     NotificationsHelper.addListener(this);
   }
@@ -70,7 +70,7 @@ public class NotificationManager implements SingletonModule, expo.modules.notifi
   }
 
   /**
-   * Used by {@link ExpoNotificationsService} to notify of new messages.
+   * Used by {@link NotificationsHelper} to notify of new messages.
    * Calls {@link NotificationListener#onNotificationReceived(Notification)} on all values
    * of {@link NotificationManager#mListenerReferenceMap}.
    *
@@ -86,7 +86,7 @@ public class NotificationManager implements SingletonModule, expo.modules.notifi
   }
 
   /**
-   * Used by {@link ExpoNotificationsService} to notify of new notification responses.
+   * Used by {@link NotificationsHelper} to notify of new notification responses.
    * Calls {@link NotificationListener#onNotificationResponseReceived(NotificationResponse)} on all values
    * of {@link NotificationManager#mListenerReferenceMap}.
    *
@@ -106,7 +106,7 @@ public class NotificationManager implements SingletonModule, expo.modules.notifi
   }
 
   /**
-   * Used by {@link ExpoNotificationsService} to notify of message deletion event.
+   * Used by {@link NotificationsHelper} to notify of message deletion event.
    * Calls {@link NotificationListener#onNotificationsDropped()} on all values
    * of {@link NotificationManager#mListenerReferenceMap}.
    */
