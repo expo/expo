@@ -1,6 +1,6 @@
 ---
 title: Sending Notifications with Expo's Push API
-sidebar_title: Sending Notifications with Expo
+sidebar_title: Sending Notifications with Expo's Push API
 ---
 
 import { InlineCode } from '~/components/base/code';
@@ -32,9 +32,11 @@ Check out the source if you would like to implement it in another language.
 >
 > If you're **not** testing in the Expo client app, make sure you've [generated the proper push credentials](../push-notifications-setup/#credentials) before proceeding! If you haven't, push notifications will not work.
 
-## Don't want to use one of the above libraries?
+## HTTP/2 API
 
-You may want to send requests directly to our HTTP/2 API (this API currently does not require any authentication), and that's easy to do! All you need to do is send a POST request to `https://exp.host/--/api/v2/push/send` with the following HTTP headers:
+Don't want to use one of the above libraries? You may want to send requests directly to our HTTP/2 API (this API currently does not require any authentication).
+
+To do so, send a POST request to `https://exp.host/--/api/v2/push/send` with the following HTTP headers:
 
 ```
 host: exp.host
@@ -157,11 +159,11 @@ The [response body](#push-receipt-response-format) for push receipts is very sim
 
 If the entire request failed, the HTTP status code will be 4xx or 5xx and the `errors` field will be an array of error objects (usually just one). Otherwise, the HTTP status code will be 200 and your messages will be on their way to your users' devices!
 
-# Errors
+## Errors
 
 Expo provides details regarding any errors that occur during this entire process. We'll cover some of the most common errors below so that you can implement logic to handle them automatically on your server. If, for whatever reason, Expo couldn't deliver the message to the Android or iOS push notification service, the push receipt's details may also include service-specific information. This is useful mostly for debugging and reporting possible bugs to Expo.
 
-## Individual errors
+### Individual errors
 
 Inside both push tickets and push receipts, look for a `details` object with an `error` field. If present, it may be one of the following values, and you should handle these errors like so:
 
@@ -182,7 +184,7 @@ Inside both push tickets and push receipts, look for a `details` object with an 
 
 > Note: For a better understanding of iOS credentials, including push notification credentials, read our [App Signing docs](../../distribution/app-signing/#ios)
 
-## Request errors
+### Request errors
 
 If there's an error with the entire request for either push tickets or push receipts, the `errors` object may be one of the following values, and you should handle these errors like so:
 
@@ -192,9 +194,9 @@ If there's an error with the entire request for either push tickets or push rece
 
 - `PUSH_TOO_MANY_RECEIPTS`: you are trying to get more than 1000 push receipts in one request. Make sure you are only sending an array of 1000 (or less) ticket ID strings to get your push receipts.
 
-# Formats
+## Formats
 
-## Message request format
+### Message request format
 
 Each message must be a JSON object with the given fields (only the `to` field is required):
 
@@ -218,7 +220,7 @@ Each message must be a JSON object with the given fields (only the `to` field is
 
 **Note on `channelId`**: If left null, a "Default" channel will be used, and Expo will create the channel on the device if it does not yet exist. However, use caution, as the "Default" channel is user-facing and you may not be able to fully delete it.
 
-## Push ticket format
+### Push ticket format
 
 ```javascript
 {
@@ -240,7 +242,7 @@ Each message must be a JSON object with the given fields (only the `to` field is
 }
 ```
 
-## Push receipt request format
+### Push receipt request format
 
 ```javascript
 {
@@ -248,7 +250,7 @@ Each message must be a JSON object with the given fields (only the `to` field is
 }
 ```
 
-## Push receipt response format
+### Push receipt response format
 
 ```javascript
 {
@@ -269,7 +271,7 @@ Each message must be a JSON object with the given fields (only the `to` field is
 }
 ```
 
-# Delivery Guarantees
+## Delivery Guarantees
 
 Expo makes a best effort to deliver notifications to the push notification services operated by Apple and Google. Expo's infrastructure is designed for at-least-once delivery to the underlying push notification services; it is more likely for a notification to be delivered to Apple or Google more than once rather than not at all, though both are uncommon but possible.
 
