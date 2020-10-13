@@ -1,20 +1,14 @@
 package expo.modules.notifications.notifications.service;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.util.Log;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.WeakHashMap;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import expo.modules.notifications.notifications.NotificationManager;
 import expo.modules.notifications.notifications.interfaces.NotificationsReconstructor;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationBehavior;
@@ -38,9 +32,6 @@ public class NotificationsHelper {
 
   private SharedPreferencesNotificationCategoriesStore mStore;
   private Context mContext;
-
-
-  protected static Collection<NotificationResponse> sPendingNotificationResponses = new ArrayList<>();
 
   public NotificationsHelper(Context context, NotificationsReconstructor notificationsReconstructor) {
     this.mContext = context.getApplicationContext();
@@ -124,20 +115,7 @@ public class NotificationsHelper {
    * @param response Notification response received
    */
   public void responseReceived(NotificationResponse response) {
-    Collection<NotificationManager> listeners = getListeners();
-    if (listeners.isEmpty()) {
-      sPendingNotificationResponses.add(response);
-    } else {
-      for (NotificationManager listener : listeners) {
-        listener.onNotificationResponseReceived(response);
-      }
-    }
-  }
-
-  private void notifyReceiverSuccess(@Nullable ResultReceiver receiver, @Nullable Bundle data) {
-    if (receiver != null) {
-      receiver.send(SUCCESS_CODE, data);
-    }
+    NotificationsService.Companion.enqueueResponseReceived(mContext, response, null);
   }
 
   public Collection<NotificationCategory> getCategories() {

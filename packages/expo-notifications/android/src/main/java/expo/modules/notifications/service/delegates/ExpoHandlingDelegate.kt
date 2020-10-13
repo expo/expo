@@ -13,6 +13,8 @@ import java.util.*
 
 class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
   companion object {
+    protected var sPendingNotificationResponses: MutableCollection<NotificationResponse> = ArrayList()
+
     /**
      * A weak map of listeners -> reference. Used to check quickly whether given listener
      * is already registered and to iterate over when notifying of new token.
@@ -62,6 +64,13 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
   }
 
   override fun handleNotificationResponse(notificationResponse: NotificationResponse) {
+    if (getListeners().isEmpty()) {
+      sPendingNotificationResponses.add(notificationResponse)
+    } else {
+      getListeners().forEach {
+        it.onNotificationResponseReceived(notificationResponse)
+      }
+    }
   }
 
   override fun handleNotificationsDropped() {
