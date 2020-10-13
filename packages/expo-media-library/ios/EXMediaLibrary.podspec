@@ -12,12 +12,15 @@ Pod::Spec.new do |s|
   s.homepage       = package['homepage']
   s.platform       = :ios, '10.0'
   s.source         = { git: 'https://github.com/expo/expo.git' }
-  s.source_files   = 'EXMediaLibrary/**/*.{h,m}'
-  s.preserve_paths = 'EXMediaLibrary/**/*.{h,m}'
+  s.source_files   = 'EXMediaLibrary/**/*.{h,m,swift}'
+  s.preserve_paths = 'EXMediaLibrary/**/*.{h,m,swift}'
   s.requires_arc   = true
 
   s.dependency 'UMCore'
   s.dependency 'UMPermissionsInterface'
   s.dependency 'UMFileSystemInterface'
   s.dependency 'React'
+  
+  # Swift/Objective-C compatibility
+  s.pod_target_xcconfig = { "DEFINES_MODULE" => "YES" }
 end
