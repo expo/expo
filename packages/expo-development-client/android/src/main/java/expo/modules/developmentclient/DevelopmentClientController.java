@@ -6,10 +6,50 @@ import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
+import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
+import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.devsupport.DevInternalSettings;
+import com.facebook.react.devsupport.interfaces.DevSupportManager;
+import com.facebook.react.packagerconnection.PackagerConnectionSettings;
+
+import java.lang.reflect.Field;
+
+class DevelopmentClientPackagerConnectionSettings extends PackagerConnectionSettings {
+  String mDebugServerHost;
+
+  public DevelopmentClientPackagerConnectionSettings(Context context, String debugServerHost) {
+    super(context);
+    mDebugServerHost = debugServerHost;
+  }
+
+  @Override
+  public String getDebugServerHost() {
+    return mDebugServerHost;
+  }
+
+  @Override
+  public void setDebugServerHost(String host) {
+  }
+}
+
+class DevelopmentClientInternalSettings extends DevInternalSettings {
+  DevelopmentClientPackagerConnectionSettings mPackagerConnectionSettings;
+
+  public DevelopmentClientInternalSettings(Context context, String debugServerHost) {
+    super(context, null);
+    mPackagerConnectionSettings = new DevelopmentClientPackagerConnectionSettings(context, debugServerHost);
+  }
+
+  @Override
+  public PackagerConnectionSettings getPackagerConnectionSettings() {
+    return mPackagerConnectionSettings;
+  }
+}
 
 public class DevelopmentClientController {
   // Use this to load from a development server for the development client launcher UI
@@ -28,6 +68,7 @@ public class DevelopmentClientController {
   private String mMainComponentName;
   private DevelopmentClientHost mDevClientHost;
   private ReactNativeHost mAppHost;
+  private ReactRootView mRootView;
 
   private DevelopmentClientController(Context context, ReactNativeHost appHost, String mainComponentName) {
     mMainComponentName = mainComponentName;
@@ -60,8 +101,13 @@ public class DevelopmentClientController {
     return mDevClientHost;
   }
 
+  public void setRootView(ReactRootView rootView) {
+    mRootView = rootView;
+  }
+
   void loadApp(ReactContext reactContext, String url, ReadableMap options) {
     Uri uri = Uri.parse(url);
+    final String host = uri.getHost() + ":" + uri.getPort();
 
     // Read orientation config
     final int orientation =
@@ -73,9 +119,33 @@ public class DevelopmentClientController {
     new Handler(Looper.getMainLooper()).post(new Runnable() {
       @Override
       public void run() {
-        // TODO(nikki): Implement this...
+        mRootView.unmountReactApplication();
         mDevClientHost.getReactInstanceManager().destroy();
-        mAppHost.getReactInstanceManager().createReactContextInBackground();
+
+        ReactInstanceManager appInstanceManager = mAppHost.getReactInstanceManager();
+
+        try {
+          DevelopmentClientInternalSettings settings = new DevelopmentClientInternalSettings(reactContext, host);
+
+          DevSupportManager devSupportManager = appInstanceManager.getDevSupportManager();
+          Class<?> devSupportManagerBaseClass = devSupportManager.getClass().getSuperclass();
+
+          Field mDevSettingsField = devSupportManagerBaseClass.getDeclaredField("mDevSettings");
+          mDevSettingsField.setAccessible(true);
+          mDevSettingsField.set(devSupportManager, settings);
+
+          Field mDevServerHelperField = devSupportManagerBaseClass.getDeclaredField("mDevServerHelper");
+          mDevServerHelperField.setAccessible(true);
+          Object devServerHelper = mDevServerHelperField.get(devSupportManager);
+          Field mSettingsField = devServerHelper.getClass().getDeclaredField("mSettings");
+          mSettingsField.setAccessible(true);
+          mSettingsField.set(devServerHelper, settings);
+
+          appInstanceManager.createReactContextInBackground();
+          appInstanceManager.attachRootView(mRootView);
+        } catch (Exception e) {
+          Log.e("ExpoDevelopmentClient", "Couldn't inject settings.", e);
+        }
       }
     });
   }
