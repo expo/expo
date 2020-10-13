@@ -12,6 +12,7 @@ import com.google.firebase.messaging.RemoteMessage
 import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationBehavior
 import expo.modules.notifications.notifications.model.NotificationResponse
+import expo.modules.notifications.service.delegates.ExpoHandlingDelegate
 import expo.modules.notifications.service.delegates.ExpoPresentationDelegate
 import expo.modules.notifications.service.interfaces.FirebaseMessagingDelegate
 import expo.modules.notifications.service.interfaces.HandlingDelegate
@@ -183,6 +184,7 @@ open class NotificationsService : FirebaseMessagingService() {
     ExpoPresentationDelegate(this)
   }
   protected open val handlingDelegate: HandlingDelegate by lazy {
+    ExpoHandlingDelegate(this)
   }
 
   override fun getStartCommandIntent(intent: Intent?): Intent {
