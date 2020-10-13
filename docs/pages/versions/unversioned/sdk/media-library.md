@@ -51,7 +51,7 @@ A promise that resolves to an object of type [CameraRollPermissionResponse](#med
 
 ### `MediaLibrary.presentLimitedLibraryPickerAsync()`
 
-Allows the user to update the assets which your app will have access to. This method will display a system prompt only if permissions were `granted` and the `accessPrivileges` is equal to `limited`.
+**Available only on iOS >= 14.** Allows the user to update the assets which your app will have access to. This method will display a system prompt only if permissions were `granted` and the `accessPrivileges` is equal to `limited`.
 
 #### Returns
 
