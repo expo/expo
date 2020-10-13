@@ -51,6 +51,11 @@ const STYLES_INLINE_CODE = css`
   border-radius: 4px;
   vertical-align: middle;
   overflow-x: scroll;
+
+  /* Disable Safari from adding border when used within a (perma)link */
+  a & {
+    border-color: ${Constants.expoColors.gray[250]};
+  }
 `;
 
 const STYLES_CODE_CONTAINER = css`

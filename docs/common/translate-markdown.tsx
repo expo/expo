@@ -51,9 +51,7 @@ export const expokitDetails = ExpoKitDetails;
 export const bareworkflowDetails = BareWorkflowDetails;
 export const propertyAnchor = createPermalinkedComponent(PDIV, {
   baseNestingLevel: 3,
-  customIconStyle: { top: -8 },
 });
 export const subpropertyAnchor = createPermalinkedComponent(PDIV, {
-  customIconStyle: { left: -44, top: -8 },
   baseNestingLevel: 3,
 });
