@@ -1,3 +1,5 @@
+import { NativeModulesProxy } from '@unimodules/core';
+
 import {
   AndroidManifest,
   AppOwnership,
@@ -35,6 +37,14 @@ if (ExponentConstants && ExponentConstants.manifest) {
   manifest = ExponentConstants.manifest;
   if (typeof manifest === 'string') {
     manifest = JSON.parse(manifest);
+  }
+} else if (NativeModulesProxy.ExpoUpdates) {
+  // in the bare workflow, manifest is not defined on ExponentConstants, but we can try to get it
+  // from expo-updates
+  if (NativeModulesProxy.ExpoUpdates.manifest) {
+    manifest = NativeModulesProxy.ExpoUpdates.manifest;
+  } else if (NativeModulesProxy.ExpoUpdates.manifestString) {
+    manifest = JSON.parse(NativeModulesProxy.ExpoUpdates.manifestString);
   }
 }
 
