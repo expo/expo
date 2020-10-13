@@ -93,7 +93,7 @@ UM_EXPORT_METHOD_AS(isAvailableAsync,
                     isAvailable:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  resolve(@([_taskService ]));
+  resolve(@(_taskService != nil));
 }
 
 UM_EXPORT_METHOD_AS(notifyTaskFinishedAsync,

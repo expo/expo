@@ -44,7 +44,7 @@ public class TaskManagerModule extends ExportedModule {
   
   @ExpoMethod
   public void isAvailableAsync(final Promise promise) {
-    promise.resolve(true);
+    promise.resolve(mTaskService != null);
   }
 
   @ExpoMethod

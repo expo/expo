@@ -8,6 +8,6 @@ export default {
   addListener() {},
   removeListeners() {},
   async isAvailableAsync(): Promise<boolean> {
-    return true;
+    return false;
   },
 };
