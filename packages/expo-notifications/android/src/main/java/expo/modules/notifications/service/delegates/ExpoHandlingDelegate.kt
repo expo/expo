@@ -46,6 +46,9 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
       }
     }
   }
+
+  fun getListeners() = sListenersReferences.values.mapNotNull { it.get() }
+
   override fun handleNotification(notification: Notification) {
   }
 
@@ -53,4 +56,8 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
   }
 
   override fun handleNotificationsDropped() {
+    getListeners().forEach {
+      it.onNotificationsDropped()
+    }
+  }
 }

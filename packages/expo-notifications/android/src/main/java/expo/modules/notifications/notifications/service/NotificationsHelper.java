@@ -143,11 +143,8 @@ public class NotificationsHelper {
   /**
    * A helper function for dispatching dropped notification
    */
-  public void dropped(@Nullable ResultReceiver receiver) {
-    for (NotificationManager listener : getListeners()) {
-      listener.onNotificationsDropped();
-    }
-    notifyReceiverSuccess(receiver, null);
+  public void dropped() {
+    NotificationsService.Companion.enqueueDropped(mContext);
   }
 
   /**
