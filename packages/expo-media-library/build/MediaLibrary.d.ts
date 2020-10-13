@@ -45,9 +45,10 @@ export declare type MediaLibraryAssetInfoQueryOptions = {
     shouldDownloadFromNetwork?: boolean;
 };
 export declare type MediaLibraryAssetChangeEvent = {
-    insertedAssets: Asset[];
-    deletedAssets: Asset[];
-    updatedAssets: Asset[];
+    shouldFullyReload?: boolean;
+    insertedAssets?: Asset[];
+    deletedAssets?: Asset[];
+    updatedAssets?: Asset[];
 };
 export declare type Location = {
     latitude: number;
@@ -88,6 +89,7 @@ export declare const MediaType: MediaTypeObject;
 export declare const SortBy: SortByObject;
 export declare function requestPermissionsAsync(writeOnly?: boolean): Promise<PermissionResponse>;
 export declare function getPermissionsAsync(writeOnly?: boolean): Promise<PermissionResponse>;
+export declare function presentLimitedLibraryPickerAsync(): Promise<void>;
 export declare function createAssetAsync(localUri: string): Promise<Asset>;
 export declare function saveToLibraryAsync(localUri: string): Promise<void>;
 export declare function addAssetsToAlbumAsync(assets: AssetRef[] | AssetRef, album: AlbumRef, copy?: boolean): Promise<any>;

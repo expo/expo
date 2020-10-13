@@ -42,6 +42,16 @@ Checks user's permissions for accessing media library. Alias for `Permissions.ge
 
 A promise that resolves to an object of type [CameraRollPermissionResponse](#medialibrarycamerarollpermissionresponse).
 
+### `MediaLibrary.presentLimitedLibraryPickerAsync()`
+
+Allows the user to update the assets which your app will have access to. This method will display a system prompt only if permissions were `granted` and the `accessPrivileges` is equal to `limited`.
+
+#### Returns
+
+A promise that resolves to void if prompt will be displayed correctly.
+
+> **Note:** This method doesn't inform you if the user changes permitted assets. To check this you need to subscribe for updates in the user's media library using [MediaLibrary.addListener(listener)](#medialibraryaddlistenerlistener). If `shouldFullyReload` is set to true, the user changed the permissions.
+
 ### `MediaLibrary.createAssetAsync(localUri)`
 
 Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](../camera/). This method requires `CAMERA_ROLL` permission.
@@ -223,6 +233,7 @@ Subscribes for updates in user's media library.
 #### Arguments
 
 - **listener (_function_)** -- A callback that is called when any assets have been inserted or deleted from the library. **On Android** it's invoked with an empty object. **On iOS** it's invoked with an object that contains following keys:
+  - **shouldFullyReload (_boolean_)** -- Whether to all assets reloads is needed. When the user changes the permissions, this value will be set to `true` and you should reload all used assets.
   - **insertedAssets (_array_)** -- Array of [assets](#assets) that have been inserted to the library.
   - **deletedAssets (_array_)** -- Array of [assets](#assets) that have been deleted from the library.
   - **updatedAssets (_array_)** -- Array of [assets](#assets) that have been updated or completed downloading from network storage (iCloud in iOS).

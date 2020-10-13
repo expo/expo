@@ -70,9 +70,10 @@ export type MediaLibraryAssetInfoQueryOptions = {
 };
 
 export type MediaLibraryAssetChangeEvent = {
-  insertedAssets: Asset[];
-  deletedAssets: Asset[];
-  updatedAssets: Asset[];
+  shouldFullyReload?: boolean;
+  insertedAssets?: Asset[];
+  deletedAssets?: Asset[];
+  updatedAssets?: Asset[];
 };
 
 export type Location = {
@@ -192,6 +193,13 @@ export async function getPermissionsAsync(writeOnly: boolean = false): Promise<P
     throw new UnavailabilityError('MediaLibrary', 'getPermissionsAsync');
   }
   return await MediaLibrary.getPermissionsAsync(writeOnly);
+}
+
+export async function presentLimitedLibraryPickerAsync(): Promise<void> {
+  if (MediaLibrary.presentLimitedLibraryPickerAsync) {
+    return await MediaLibrary.presentLimitedLibraryPickerAsync();
+  }
+  return Promise.resolve();
 }
 
 export async function createAssetAsync(localUri: string): Promise<Asset> {
