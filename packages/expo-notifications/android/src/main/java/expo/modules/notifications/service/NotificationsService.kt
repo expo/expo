@@ -159,6 +159,10 @@ open class NotificationsService : FirebaseMessagingService() {
      * @param intent  Intent to dispatch
      */
     fun enqueueWork(context: Context, intent: Intent) {
+      currentService?.let {
+        it.handleIntent(it.getStartCommandIntent(intent))
+        return
+      }
       val searchIntent = Intent(intent.action).setPackage(context.packageName)
       context.packageManager.resolveService(searchIntent, 0)?.serviceInfo?.let {
         intent.component = ComponentName(it.packageName, it.name)
@@ -175,6 +179,8 @@ open class NotificationsService : FirebaseMessagingService() {
     protected fun getUriBuilderForIdentifier(identifier: String): Uri.Builder {
       return getUriBuilder().appendPath(identifier)
     }
+
+    private var currentService: NotificationsService? = null
   }
 
   protected open val firebaseMessagingDelegate: FirebaseMessagingDelegate by lazy {
@@ -185,6 +191,16 @@ open class NotificationsService : FirebaseMessagingService() {
   }
   protected open val handlingDelegate: HandlingDelegate by lazy {
     ExpoHandlingDelegate(this)
+  }
+
+  override fun onCreate() {
+    super.onCreate()
+    currentService = this
+  }
+
+  override fun onDestroy() {
+    currentService = null
+    super.onDestroy()
   }
 
   override fun getStartCommandIntent(intent: Intent?): Intent {
