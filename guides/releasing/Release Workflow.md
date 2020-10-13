@@ -3,7 +3,7 @@
 - [Stage 0 - Infra & Prerelease](#stage-0---infra--prerelease)
   - [0.1. Dropping old SDKs](#01-dropping-old-sdks)
   - [0.2. Update vendored modules](#02-update-vendored-modules)
-  - [0.3. Update schema on staging](#03-update-schema-on-staging)
+  - [0.3. Update schema](#03-update-schema)
   - [0.4. Update versions on staging](#04-update-versions-on-staging)
   - [0.5. Tag React Native fork](#05-tag-react-native-fork)
   - [0.6. Generate new mocks](#06-generate-new-mocks)
@@ -12,7 +12,7 @@
   - [0.9. Publish `next` project templates](#09-publish-next-project-templates)
   - [0.10. Generate new SDK docs](#010-generate-new-sdk-docs)
 - [Stage 1 - Unversioned Quality Assurance and Versioning](#stage-1---unversioned-quality-assurance-and-versioning)
-  - [1.1. Cutting off release branch](#11-cutting-off-release-branch)
+  - [1.1. Cut off release branch](#11-cut-off-release-branch)
   - [1.2. Update React Native](#12-update-react-native)
   - [1.3. Unversioned Quality Assurance](#13-unversioned-quality-assurance)
   - [1.4. Versioning code for the new SDK](#14-versioning-code-for-the-new-sdk)
@@ -29,26 +29,28 @@
 - [Stage 4 - Standalone apps](#stage-4---standalone-apps)
   - [4.1. Update JS dependencies required for build](#41-update-js-dependencies-required-for-build)
   - [4.2. Make shell app build](#42-make-shell-app-build)
-  - [4.3. Make adhoc client shell app for iOS](#43-make-adhoc-client-shell-app-for-ios)
-  - [4.4. Deploy Turtle with new shell tarballs](#44-deploy-turtle-with-new-shell-tarballs)
+  - [4.3. Deploy Turtle with new shell tarballs](#43-deploy-turtle-with-new-shell-tarballs)
 - [Stage 5 - Beta release](#stage-5---beta-release)
   - [5.1. Deploy Turtle to production](#51-deploy-turtle-to-production)
   - [5.2. Deploy new docs with beta version](#52-deploy-new-docs-with-beta-version)
   - [5.3. Add related packages to versions endpoint](#53-add-related-packages-to-versions-endpoint)
-  - [5.4. Promote versions to production with new SDK version flagged as beta](#54-promote-versions-to-production-with-new-sdk-version-flagged-as-beta)
-  - [5.5. Publish project templates tagged as beta](#55-publish-project-templates-tagged-as-beta)
-  - [5.6. Announce beta availability](#56-announce-beta-availability)
-  - [5.7. Test, fix, and monitor](#57-test-fix-and-monitor)
+  - [5.4. Re-publish project templates](#54-re-publish-project-templates)
+  - [5.5. Promote versions to production with new SDK version flagged as beta](#55-promote-versions-to-production-with-new-sdk-version-flagged-as-beta)
+  - [5.6. Add SDK support to Snack](#56-add-sdk-support-to-snack)
+  - [5.7. Announce beta availability](#57-announce-beta-availability)
+  - [5.8. Test, fix, and monitor](#58-test-fix-and-monitor)
 - [Stage 6 - Final release](#stage-6---final-release)
-  - [6.1. Release iOS/Android beta clients](#61-release-iosandroid-beta-clients)
-  - [6.2. Promote packages to latest on NPM registry](#62-promote-packages-to-latest-on-npm-registry)
-  - [6.3 Remove beta tag from new SDK on versions endpoint](#63-remove-beta-tag-from-new-sdk-on-versions-endpoint)
-  - [6.4. Deploy final docs](#64-deploy-final-docs)
-  - [6.5. Publish final project templates](#65-publish-final-project-templates)
-  - [6.6. Press release](#66-press-release)
-  - [6.7. Follow-up](#67-follow-up)
-- [Stage 7 - Snack](#stage-7---snack)
-  - [7.1. Add SDK support to Snack](#71-add-sdk-support-to-snack)
+  - [6.1. Release iOS/Android clients to the general public](#61-release-iosandroid-clients-to-the-general-public)
+  - [6.2. Make adhoc client shell app for iOS](#62-make-adhoc-client-shell-app-for-ios)
+  - [6.3. Promote packages to latest on NPM registry](#63-promote-packages-to-latest-on-npm-registry)
+  - [6.4. Remove beta tag from new SDK on versions endpoint](#64-remove-beta-tag-from-new-sdk-on-versions-endpoint)
+  - [6.5. Remove beta tag from new SDK on Snack](#65-remove-beta-tag-from-new-sdk-on-snack)
+  - [6.6. Deploy final docs](#66-deploy-final-docs)
+  - [6.7. Publish final project templates](#67-publish-final-project-templates)
+  - [6.8. Press release](#68-press-release)
+  - [6.8. Follow-up](#68-follow-up)
+- [Stage 7 - Clean up](#stage-7---clean-up)
+  - [7.1. Remove old SDK from Turtle](#71-remove-old-sdk-from-turtle)
 
 # Stage 0 - Infra & Prerelease
 
@@ -85,7 +87,7 @@
 
 - Finally, talk to @brentvatne or @tsapeta about any modules extracted from RN that we need to include community versions of.
 
-## 0.3. Update schema on staging
+## 0.3. Update schema
 
 **Why:** Various tools we will use throughout this process, including `expo-cli`, depend on the versioned schema hosted by www. We need to create the schema for this new SDK version.
 
@@ -93,7 +95,7 @@
 
 - In `universe`, `cd server/www/xdl-schemas`.
 - `cp UNVERSIONED-schema.json XX.X.X-schema.json`
-- Commit and push to `master` in order to deploy to staging.
+- Commit and push to `master` in order to deploy to staging. It is also good to deploy to production, you can feel free to do this at any time as long as `www` is safe to deploy.
 
 ## 0.4. Update versions on staging
 
@@ -157,7 +159,8 @@
 **How:**
 
 - On master branch, run `et update-project-templates`/`et upt` that checks all `expo-template-*` packages under `templates` directory and bumps dependency versions wherever possible – based on versions stored in `packages/expo/bundledNativeModules.json` for Expo modules and 3rd-party libraries, `react-native` fork with appropriate SDK version and `expo` package itself.
-- Test these project templates in Expo client or by building them (bare workflow) - you don't have to use `expo init` at this point, just `expo start` them locally.
+- Update the native project files in bare templates based on the diffs on https://react-native-community.github.io/upgrade-helper/
+- Test these project templates - you don't have to use `expo init` at this point, just `expo start` them locally.
 - Run `et publish-templates`/`et ppt` and answer to questions it asks. **IMPORTANT:** These versions should be tagged as `next` and not `latest`. (If tagged as `latest` they will be used by default whenever anyone runs `expo init`.)
 - If everything works as expected, commit changes to master.
 
@@ -174,7 +177,7 @@
 
 # Stage 1 - Unversioned Quality Assurance and Versioning
 
-## 1.1. Cutting off release branch
+## 1.1. Cut off release branch
 
 | Prerequisites      |
 | ------------------ |
@@ -258,7 +261,7 @@
   - The process for building a standalone app locally is to publish the app you want to build and then run `et android-shell-app --url <url> --sdkVersion XX.X.X`.
 - **iOS**:
   - In theory it should be possible to run `et ios-shell-app --url <url> --sdkVersion XX.X.X` + some more options to create a workspace that should be buildable in Xcode. Good luck!
-    > Note from @sjchmiela — I used `et ios-shell-app --action create-workspace -u "https://staging.exp.host/@sjchmiela/native-component-list/index.exp?sdkVersion=39.0.0" -s 39.0.0 --skipRepoUpdate` when I was testing SDK39 shell apps and it created a buildable Xcode workspace. I hope it does that for you too!
+    > Note from Stanley (@sjchmiela) — I used `et ios-shell-app --action create-workspace -u "https://staging.exp.host/@sjchmiela/native-component-list/index.exp?sdkVersion=39.0.0" -s 39.0.0 --skipRepoUpdate` when I was testing SDK39 shell apps and it created a buildable Xcode workspace. I hope it does that for you too!
 
 ## 2.3. Web Quality Assurance
 
@@ -280,7 +283,7 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 | -------------------------------------------------------------------------------------------------------------- |
 | [2.1. Versioned Quality Assurance - iOS/Android clients](#21-versioned-quality-assurance---iosandroid-clients) |
 | [2.2. Standalone App Quality Assurance](#22-standalone-app-quality-assurance)                                  |
-| [2.3. Web Quality Assurance](#21-web-quality-assurance)                                                        |
+| [2.3. Web Quality Assurance](#23-web-quality-assurance)                                                        |
 
 **Why:** Most commits should flow in the `master` -> `sdk-XX` branch direction. Versioning is an exception to this because we explicitly want to version the set of code on the `sdk-XX` branch, but we want that versioned code on master for later releases.
 
@@ -294,7 +297,7 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 | -------------------------------------------------------------------------------------------------------------- |
 | [2.1. Versioned Quality Assurance - iOS/Android clients](#21-versioned-quality-assurance---iosandroid-clients) |
 | [2.2. Standalone App Quality Assurance](#22-standalone-app-quality-assurance)                                  |
-| [2.3. Web Quality Assurance](#21-web-quality-assurance)                                                        |
+| [2.3. Web Quality Assurance](#23-web-quality-assurance)                                                        |
 
 **Why:** We need to publish `native-component-list` so other people can try it out (including app reviewers from Apple).
 
@@ -312,7 +315,7 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 | [2.2. Standalone App Quality Assurance](#22-standalone-app-quality-assurance)                                  |
 | [2.3. Web Quality Assurance](#21-web-quality-assurance)                                                        |
 
-**Why:** Any changes that have been made to packages during QA / since the initial publish (step 0.7) still need to be published for bare workflow users (and managed, for TS changes).
+**Why:** Any changes that have been made to packages during QA / since the initial publish (step [0.7](#07-publish-next-packages)) still need to be published for bare workflow users (and managed, for TS changes).
 
 **How:**
 
@@ -324,11 +327,9 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 ## 3.1. Build and submit
 
-| Prerequisites                                                                               |
-| ------------------------------------------------------------------------------------------- |
-| [2.6. Publish any missing or changed packages](#26-publish-any-missing-or-changed-packages) |
-
-**Why:** As we already published prerelease versions of the packages, now we can publish prerelease version of the client.
+| Prerequisites      |
+| ------------------ |
+| All previous tasks |
 
 **How:**
 
@@ -341,7 +342,7 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
   - Run `fastlane ios release` from the project root folder and follow the prompt. This step can take 30+ minutes, as fastlane will update (or create) the App Store Connect record, generate a signed archive, and upload it.
   - Wait for Apple to finish processing your new build. This step can take another 30+ minutes (but sometimes just a few).
   - Once the processing is done, go to TestFlight section in App Store Connect, click on the new build and then click `Provide Export Compliance Information` button and select **"No"** in the dialog - we generally have not made changes to encryption.
-  - Publish that build to TestFlight and ensure the external testers group is added to the build.
+  - Publish that build to TestFlight and ensure the external testers group is added to the build. **This will trigger a review**, and the build won't be available to external testers until the review is completed.
   - You should also do some smoke tests as soon as the app becomes available for internal TestFlight testers, for example against `native-component-list` published under `applereview` account. If you notice something important isn't working right, remove the app from review and re-do this process once it's resolved.
 
 - **Android**:
@@ -368,7 +369,7 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 | Prerequisites                                                                               |
 | ------------------------------------------------------------------------------------------- |
-| [3.1. Publish any missing or changed packages](#31-publish-any-missing-or-changed-packages) |
+| [2.6. Publish any missing or changed packages](#26-publish-any-missing-or-changed-packages) |
 
 **Why:** When building an iOS shell app XDL installs some extra packages needed for the build process.
 
@@ -391,23 +392,7 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 - Copy the url to the tarball that has been uploaded to `exp-artifacts` S3 bucket (it's printed in `Upload shell app tarball to S3` step of the workflow).
 - Now go to `expo/turtle` repo and put the copied link into `shellTarballs/{ios,android}/sdkXX` file and put appropriate change information in the `CHANGELOG.md` file, commit and then push changes.
 
-## 4.3. Make adhoc client shell app for iOS
-
-**Why:** The client shell app is the base app for the custom client workflow on iOS (also known as the Adhoc build workflow).
-
-**How:**
-
-- Follow the same workflow as above, but instead choose the `sdk-XX/client_shell_app` workflow and approve the build.
-- Copy the URL to the `shellTarballs/ios/client` file in `expo/turtle` and update the CHANGELOG.
-
-**How:**
-
-## 4.4. Deploy Turtle with new shell tarballs
-
-| Prerequisites                                                       |
-| ------------------------------------------------------------------- |
-| [4.2. Make shell app build](#42-make-shell-app-build)               |
-| [4.3. Make adhoc client shell app](#43-make-adhoc-client-shell-app) |
+## 4.3. Deploy Turtle with new shell tarballs
 
 **Why:** Once we've made standalone and adhoc client shell apps, we're now ready to deploy Turtle to staging, test it and then roll out to production.
 
@@ -440,7 +425,7 @@ Once everything above is completed and Apple has approved the iOS client for Tes
 
 **Why:** Make the docs available to beta testers and discoverable through the version selector, but not the default.
 
-**How:** Merge the new SDK docs into master, but don't update the `version` in `package.json` yet.
+**How:** Merge the new SDK docs into master, but don't update the `version` in `package.json` yet. Instead, set the `betaVersion` field to the SDK version number, eg: `"betaVersion": "40.0.0"`.
 
 ## 5.3. Add related packages to versions endpoint
 
@@ -458,14 +443,18 @@ Once everything above is completed and Apple has approved the iOS client for Tes
   - `react-native-unimodules`
 - One way to get the right version numbers is to run `yarn why <package-name>` to see which version is used by apps in the expo/expo repo. Generally the version numbers should have a carat (`^`) except for `react-native-unimodules`, which should have a tilde (`~`).
 
-## 5.4. Promote versions to production with new SDK version flagged as beta
 
-| Prerequisites                                                                                   |
-| ----------------------------------------------------------------------------------------------- |
-| [6.1. Release iOS/Android beta clients](#61-release-iosandroid-clients)                              |
-| [6.2. Deploy Turtle to production](#62-deploy-turtle-to-production)                             |
-| [6.3. Deploy new docs](#63-deploy-new-docs)                                                     |
-| [6.4. Add related packages to versions endpoint](#64-add-related-packages-to-versions-endpoint) |
+## 5.4. Re-publish project templates
+
+**Why:** Ensure that the templates include the latest version of packages, so when we release the beta
+
+**How:** Follow [0.9. Publish `next` project templates](#09-publish-next-project-templates) but be sure that the published template has the `sdk-xx` tag on npm in addition to `next`.
+
+## 5.5. Promote versions to production with new SDK version flagged as beta
+
+| Prerequisites                                 |
+| --------------------------------------------- |
+| **All previous steps** |
 
 **Why:** It's time for everything that uses the production versions endpoint to know about this new SDK version!
 
@@ -475,32 +464,27 @@ Once everything above is completed and Apple has approved the iOS client for Tes
 - `et promote-versions-to-prod`
 - Double check every change before pressing `y`!
 
-## 5.5. Publish project templates tagged as beta
+## 5.6. Add SDK support to Snack
 
-| Prerequisites                                                                                     |
-| ------------------------------------------------------------------------------------------------- |
-| [5.5. Promote versions to production with new SDK version flagged as beta](#55-promote-versions-to-production)                         |
+| Prerequisites                                                 |
+| ------------------------------------------------------------- |
+| [2.6. Publish any missing or changed packages](#26-publish-any-missing-or-changed-packages) |
+| [4.2. Making a simulator/emulator build](#42-making-a-simulatoremulator-build) |
 
-**Why:** After this change, people will start getting the new SDK version whenever they run `EXPO_BETA=1 expo init`
+**How:** Reach out to Hein (@ijzerenhein)
 
-**How:**
-
-- **TODO**: these steps are incomplete!
-
-- On master branch, run `et update-project-templates`/`et upt` that checks all `expo-template-*` packages under `templates` directory and bumps dependency versions wherever possible – based on versions stored in `packages/expo/bundledNativeModules.json` for Expo modules and 3rd-party libraries, `react-native` fork with appropriate SDK version and `expo` package itself.
-- Run `et publish-templates`/`et ppt` and answer to questions it asks. Final versions should be tagged as `latest` on NPM.
-- Test these project templates in Expo client or by building them (bare workflow) - use `expo init` at this point.
-- If everything works as expected, commit changes to master and make sure to cherry-pick that commit to the release branch as well.
-
-## 5.6. Announce beta availability
+## 5.7. Announce beta availability
 
 **Why:** We want interested developers to try it out and report any issues they encounter.
 
 **How:**
 
-TBD! Do we write a blog post? How much content do we include in there? Do we just link to CHANGELOG and provide instructions for how to opt-in?
+Publish a blog post that includes the following information:
+- Link to a Github umbrella issue for beta release issues
+- Link to CHANGELOG
+- Provide instructions for how to opt-in
 
-## 5.7. Test, fix, and monitor
+## 5.8. Test, fix, and monitor
 
 **Why:** The beta period will run for approximately 1 week. During that time we should try to discover regressions and new bugs, fix them, and roll the fixes out to the beta users. The fixes will require repeating many of the previous steps, such as re-submitting an iOS build and re-deploying Turtle.
 
@@ -509,26 +493,50 @@ TBD! Do we write a blog post? How much content do we include in there? Do we jus
 - Monitor GitHub issues.
 - Expo team should all update any dogfooding apps they work on, including re-building standalone apps.
 - Test out new features.
+- Report updates in the umbrealla issue.
 - Fix, test, repeat.
 
 # Stage 6 - Final release
 
-**If today is Friday:** STOP! Wait until next week to finish the release :)
+**If today is Friday:** You may want to submit the iOS app for approval, but otherwise STOP! Wait until next week to finish the release :) 
 
-## 6.1. Release iOS/Android beta clients
+## 6.1. Release iOS/Android clients to the general public
 
 **How:**
 
 - **iOS**:
-  - Log into [App Store Connect](https://appstoreconnect.apple.com) and release the approved version that was most recently tested on TestFlight public beta.
+  - If needed, refer back to [3.1. Build and submit](#31-build-and-submit) to create a new build and upload it to the App Store. Wait for it to finish processing.
+  - In [App Store Connect](https://appstoreconnect.apple.com), select the build you previously uploaded and released to TestFlight, glance through the metadata to verify that it's what you want, and save the changes if any.
+    - Fill in "What's New in This Version" with something like "This version contains minor improvements and adds support for SDK XX".
+  - Click Submit to send the new binary to Apple. When prompted, give the following answers:
+    - “Yes”, we use the IDFA, check the boxes in this Segment guide: [https://segment.com/docs/sources/mobile/ios/quickstart/](https://segment.com/docs/sources/mobile/ios/quickstart/).
+    - “Serve advertisements within the app” should not be checked.
+
 - **Android**:
   - Add a new file under `/fastlane/android/metadata/en-US/changelogs/[versionCode].txt` (it should usually read “Add support for Expo SDK XX”).
   - Open `Android Client` workflow on GitHub Actions and when it completes, download the APK from Artifacts and do a smoke test -- install it on a fresh Android device, turn on airplane mode, and make sure Home loads.
-  - Run `et dispatch client-android-release` to trigger appropriate job on GitHub Actions. About 45 minutes later the update should be downloadable via Play Store.
+  - Run `et dispatch client-android-release` to trigger appropriate job on GitHub Actions. About 45 minutes later the update should be **downloadable** via Play Store.
 
-## 6.2. Promote packages to latest on NPM registry
+## 6.2. Make adhoc client shell app for iOS
 
-## 6.3 Remove beta tag from new SDK on versions endpoint
+**Why:** The client shell app is the base app for the custom client workflow on iOS (also known as the Adhoc build workflow). We only support one version of the custom client at any given time, and there isn't much value in testing it in the beta release period because we are already testing simulator and app store clients.
+
+**How:**
+
+- Follow the same workflow as [4.2. Make shell app build](#42-make-shell-app-build), but instead choose the `sdk-XX/client_shell_app` workflow and approve the build.
+- Copy the URL to the `shellTarballs/ios/client` file in `expo/turtle` and update the CHANGELOG.
+- Deploy to staging, test, and deploy to production.
+
+## 6.3. Promote packages to latest on NPM registry
+
+**Why:** Previously we've published packages and now that we have gone through beta testing and everything is good to go, we can promote those packages to `latest` on NPM.
+
+**How:**
+
+- Use the `et promote-packages` script.
+- Select the packages that should be promoted and continue.
+
+## 6.4. Remove beta tag from new SDK on versions endpoint
 
 **Why:** Make the new SDK the default for everything that depends on the versions endpoint, eg: `expo upgrade`.
 
@@ -538,16 +546,22 @@ TBD! Do we write a blog post? How much content do we include in there? Do we jus
 - `et promote-versions-to-prod`
 - Double check every change before pressing `y`!
 
-## 6.4. Deploy final docs
+## 6.5. Remove beta tag from new SDK on Snack
+
+**Why:** Once the new SDK is available publicly, we should switch to using it by default on Snack.
+
+**How:** Reach out to Hein (@ijzerenhein)
+
+## 6.6. Deploy final docs
 
 **Why:** Show the new docs by default now that the SDK is being released!
 
 **How:**
 
-- Update the `version` field docs/package.json to match the new SDK version and push to master.
+- Update the `version` field docs/package.json to match the new SDK version, delete the `betaVersion` field, and push to master.
 - Ensure that the new SDK version is visible in the API reference and is marked as latest.
 
-## 6.5. Publish final project templates
+## 6.7. Publish final project templates
 
 **Why:** We need to make sure the templates point to the latest versions of our packages and update the tags on npm so they will be used by default with `expo init`.
 
@@ -558,11 +572,11 @@ TBD! Do we write a blog post? How much content do we include in there? Do we jus
 - Run `et publish-templates`/`et ppt` and answer to questions it asks. **IMPORTANT:** These versions should be tagged as `latest` and `sdk-xx` where `xx` is the major version for the SDK being released.
 - If everything works as expected, commit changes to master and make sure to cherry-pick that commit to the release branch as well.
 
-## 6.6. Press release
+## 6.8. Press release
 
-| Prerequisites                                                                     |
-| --------------------------------------------------------------------------------- |
-| [7.5. Publishing final project templates](#75-publishing-final-project-templates) |
+| Prerequisites                                 |
+| --------------------------------------------- |
+| **All previous steps** |
 
 This should be ready to publish immediately after the previous step is finished!
 
@@ -570,14 +584,10 @@ This should be ready to publish immediately after the previous step is finished!
 
 **How:**
 
-- Publish release notes to Medium/dev.to. Coordinate with @esamelson on this.
+- Publish release notes to Medium/dev.to. Coordinate with Eric (@esamelson) on this.
 - Tweet a link on the @expo account.
 
-## 6.7. Follow-up
-
-| Prerequisites                           |
-| --------------------------------------- |
-| [7.6. Press release](#76-press-release) |
+## 6.8. Follow-up
 
 **Why:** A few places in our infrastructure need to know about the release notes once they're published.
 
@@ -585,17 +595,12 @@ This should be ready to publish immediately after the previous step is finished!
 
 - Add the release notes to the versions endpoint: `et update-versions --sdkVersion XX.X.X --key releaseNoteUrl --value <url>` and `et promote-versions-to-prod`
 - Add the release notes URL to the `upgrading-expo-sdk-walkthrough` docs page, commit and push to master, and deploy docs again.
-- Coordinate with @FiberJW / @jonsamp to make sure the release notes get added to the expo.io homepage.
+- Coordinate with Juwan (@FiberJW) / Jon (@jonsamp) to make sure the release notes get added to the expo.io homepage.
 
-# Stage 7 - Snack
+# Stage 7 - Clean up
 
-## 7.1. Add SDK support to Snack
+## 7.1. Remove old SDK from Turtle
 
-| Prerequisites                                                 |
-| ------------------------------------------------------------- |
-| [4.1. Releasing beta version](#41-releasing-beta-version)     |
-| [4.2. Making a simulator/emulator build](#42-making-a-simulatoremulator-build) |
+**Why:** We don't support old Turtle shell apps indefinitely, and this is a good time to clean up.
 
-**Why:** Once the new SDK is available publicly, we need to update Snack to support that SDK.
-
-**How:** For now the only responsible person for this task is @tc - coordinate this with him.
+**How:** Remove the corresponding shell tarballs from the turtle repository. Deploy to production when convenient, there is no rush on this.
