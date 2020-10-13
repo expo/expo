@@ -65,6 +65,12 @@ export async function getPermissionsAsync(writeOnly = false) {
     }
     return await MediaLibrary.getPermissionsAsync(writeOnly);
 }
+export async function presentLimitedLibraryPickerAsync() {
+    if (MediaLibrary.presentLimitedLibraryPickerAsync) {
+        return await MediaLibrary.presentLimitedLibraryPickerAsync();
+    }
+    return Promise.resolve();
+}
 export async function createAssetAsync(localUri) {
     if (!MediaLibrary.createAssetAsync) {
         throw new UnavailabilityError('MediaLibrary', 'createAssetAsync');
