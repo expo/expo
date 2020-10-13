@@ -37,22 +37,6 @@ public class ScopedCategoryAwareNotificationBuilder extends ScopedExpoNotificati
       scopedCategoryIdentifier = content.getCategoryId();
     }
 
-    List<NotificationAction> actions = Collections.emptyList();
-    try {
-      NotificationCategory category = super.mStore.getNotificationCategory(scopedCategoryIdentifier);
-      if (category != null) {
-        actions = category.getActions();
-      }
-    } catch (ClassNotFoundException | IOException e) {
-      Log.e("expo-notifications", String.format("Could not read category with identifier: %s. %s", scopedCategoryIdentifier, e.getMessage()));
-      e.printStackTrace();
-    }
-    for (NotificationAction action : actions) {
-      if (action instanceof TextInputNotificationAction) {
-        builder.addAction(super.buildTextInputAction((TextInputNotificationAction) action));
-      } else {
-        builder.addAction(super.buildButtonAction(action));
-      }
-    }
+    super.addActionsToBuilder(builder, scopedCategoryIdentifier);
   }
 }
