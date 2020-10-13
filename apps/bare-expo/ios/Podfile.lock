@@ -1020,7 +1020,7 @@ SPEC CHECKSUMS:
   EXStoreReview: e847ad9367e8d9ab0d856e6aa21e16c1d30f118e
   EXTaskManager: 85c9d0ad555af2a393a5c4cb34c767f0e2162357
   EXVideoThumbnails: 14e86a99ba80dff030a77a0a720f494ac6c1cf84
-  EXWebBrowser: 1a3ff931f6e64592c70f5faa226e4802a344d664
+  EXWebBrowser: f942a57dcf60d917f153d9d501c2547fd9f7f347
   FBLazyVector: 3ef4a7f62e7db01092f9d517d2ebc0d0677c4a37
   FBReactNativeSpec: dc7fa9088f0f2a998503a352b0554d69a4391c5a
   FBSDKCoreKit: e7dcac0aabcfb09d0166998edd95fe3b05a0ce5d

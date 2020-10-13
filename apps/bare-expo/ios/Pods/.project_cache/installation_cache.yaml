@@ -1132,7 +1132,7 @@ CACHE_KEYS:
       EXWebBrowser:
         :debug: 8a03493ab01357acaad4113c212a979d
         :release: 8a03493ab01357acaad4113c212a979d
-    CHECKSUM: 1a3ff931f6e64592c70f5faa226e4802a344d664
+    CHECKSUM: f942a57dcf60d917f153d9d501c2547fd9f7f347
     FILES:
       - "../../../../packages/expo-web-browser/ios/EXWebBrowser/EXWebBrowser.h"
       - "../../../../packages/expo-web-browser/ios/EXWebBrowser/EXWebBrowser.m"
