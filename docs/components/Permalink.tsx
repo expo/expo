@@ -18,53 +18,59 @@ type EnhancedProps = {
   id?: string;
 };
 
-class Permalink extends React.Component<BaseProps> {
-  render() {
-    const { component, className, children, ...rest } = this.props;
-    return React.cloneElement(
-      component,
-      {
-        className: [className, component.props.className || ''].join(' '),
-        ...rest,
-      },
-      children
-    );
-  }
-}
-
-const STYLES_CONTAINER = css`
+const STYLES_PERMALINK = css`
   position: relative;
-
-  .anchor-icon {
-    cursor: pointer;
-    position: absolute;
-    top: 8px;
-    width: 20px;
-    height: 20px;
-    visibility: hidden;
-  }
-
-  :hover {
-    .anchor-icon {
-      visibility: visible;
-    }
-  }
 `;
 
-const STYLES_CONTAINER_ANCHOR = css`
-  position: absolute;
-  top: 0;
-  left: -24px;
-  width: 20px;
-  height: 20px;
-`;
-
-const STYLES_CONTAINER_TARGET = css`
+const STYLES_PERMALINK_TARGET = css`
   display: block;
   position: absolute;
   top: -100px;
   visibility: hidden;
 `;
+
+const STYLES_PERMALINK_LINK = css`
+  color: inherit;
+  text-decoration: inherit;
+
+  /* Disable link when used in collapsible, to allow expand on click */
+  details & {
+    pointer-events: none;
+  }
+`;
+
+const STYLED_PERMALINK_CONTENT = css`
+  display: inline-block;
+`;
+
+const STYLES_PERMALINK_ICON = css`
+  cursor: pointer;
+  vertical-align: text-top;
+  display: inline-block;
+  width: 1.2em;
+  height: 1.2em;
+  padding: 0 0.2em;
+  visibility: hidden;
+
+  a:hover & {
+    visibility: visible;
+  }
+
+  svg {
+    width: 100%;
+    height: auto;
+  }
+`;
+
+const PermalinkBase: React.FC<BaseProps> = ({ component, children, className, ...rest }) =>
+  React.cloneElement(
+    component,
+    {
+      className: [className, component.props.className || ''].join(' '),
+      ...rest,
+    },
+    children
+  );
 
 /**
  * Props:
@@ -72,7 +78,7 @@ const STYLES_CONTAINER_TARGET = css`
  * - nestingLevel: Sidebar heading level override
  * - additionalProps: Additional properties passed to component
  */
-export default withHeadingManager<EnhancedProps>(props => {
+const Permalink: React.FC<EnhancedProps> = withHeadingManager(props => {
   // NOTE(jim): Not the greatest way to generate permalinks.
   // for now I've shortened the length of permalinks.
   const component = props.children as JSX.Element;
@@ -91,18 +97,18 @@ export default withHeadingManager<EnhancedProps>(props => {
   }
 
   return (
-    <Permalink component={component} data-components-heading>
-      <div css={STYLES_CONTAINER} ref={heading.ref}>
-        <span id={permalinkKey} css={STYLES_CONTAINER_TARGET} />
-        <a
-          style={props.customIconStyle}
-          href={'#' + permalinkKey}
-          className="permalink"
-          css={STYLES_CONTAINER_ANCHOR}>
-          <PermalinkIcon />
+    <PermalinkBase component={component} data-components-heading>
+      <div css={STYLES_PERMALINK} ref={heading.ref}>
+        <span css={STYLES_PERMALINK_TARGET} id={permalinkKey} />
+        <a css={STYLES_PERMALINK_LINK} href={'#' + permalinkKey}>
+          <span css={STYLED_PERMALINK_CONTENT}>{children}</span>
+          <span css={STYLES_PERMALINK_ICON} style={props.customIconStyle}>
+            <PermalinkIcon />
+          </span>
         </a>
-        <div className="permalink-child">{children}</div>
       </div>
-    </Permalink>
+    </PermalinkBase>
   );
 });
+
+export default Permalink;

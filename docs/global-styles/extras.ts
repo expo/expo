@@ -57,10 +57,6 @@ export const globalExtras = css`
     margin-left: 1rem;
   }
 
-  details summary .anchor-icon {
-    display: none;
-  }
-
   .snack-inline-example-button {
     display: grid;
     grid-template-columns: 16px 1fr;
