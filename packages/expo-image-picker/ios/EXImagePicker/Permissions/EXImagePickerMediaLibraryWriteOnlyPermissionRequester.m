@@ -1,12 +1,14 @@
 // Copyright 2017-present 650 Industries. All rights reserved.
 
-#import <EXMediaLibrary/EXMediaLibraryWriteOnlyMediaLibraryPermissionRequester.h>
+#import <EXImagePicker/EXImagePickerMediaLibraryWriteOnlyPermissionRequester.h>
 
-@implementation EXMediaLibraryWriteOnlyMediaLibraryPermissionRequester
+#import <Photos/Photos.h>
+
+@implementation EXImagePickerMediaLibraryWriteOnlyPermissionRequester
 
 + (NSString *)permissionType
 {
-  return @"writeOnlyMediaLibrary";
+  return @"mediaLibraryWriteOnly";
 }
 
 #ifdef __IPHONE_14_0

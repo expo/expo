@@ -64,7 +64,7 @@ The following table shows you which permissions correspond to which packages.
 | `CAMERA`                                         | `expo-barcode-scanner` <br /> `expo-camera` <br /> `expo-face-detector` <br /> `expo-image-picker` <br /> `expo-media-library` |
 | `AUDIO_RECORDING`                                | `expo-av`                                                                                                                      |
 | `CONTACTS`                                       | `expo-contacts`                                                                                                                |
-| `MEDIA_LIBRARY`<br /> `WRITE_ONLY_MEDIA_LIBRARY` | `expo-image-picker`<br /> `expo-media-library`                                                                                 |
+| `MEDIA_LIBRARY`<br /> `MEDIA_LIBRARY_WRITE_ONLY` | `expo-image-picker`<br /> `expo-media-library`                                                                                 |
 | `CALENDAR`                                       | `expo-calendar`                                                                                                                |
 | `REMINDERS`                                      | `expo-calendar`                                                                                                                |
 | `SYSTEM_BRIGHTNESS`                              | `expo-brightness`                                                                                                              |
@@ -275,7 +275,7 @@ interface PermissionInfo {
 - [`Permissions.CAMERA`](#permissionscamera) -- using the camera to capture images or videos
 - [`Permissions.AUDIO_RECORDING`](#permissionsaudio_recording) -- using the microphone to capture audio
 - [`Permissions.CONTACTS`](#permissionscontacts) -- reading or writing to contacts
-- [`Permissions.WRITE_ONLY_MEDIA_LIBRARY`](#permissionswrite_only_media_library) -- writing to media library
+- [`Permissions.WRITE_ONLY_MEDIA_LIBRARY`](#permissionsmedia_library_write_only) -- writing to media library
 - [`Permissions.MEDIA_LIBRARY`](#permissionsmedia_library) -- accessing the images or videos from the user
 - [`Permissions.CALENDAR`](#permissionscalendar) -- reading or writing calendar items
 - [`Permissions.REMINDERS`](#permissionsreminders) -- reading or writing calendar reminders (_iOS-only_)
@@ -369,7 +369,7 @@ The permission type for reading or writing contacts.
 [contacts-android-write]: https://developer.android.com/reference/android/Manifest.permission#WRITE_CONTACTS
 [contacts-ios-plist]: https://developer.apple.com/documentation/eventkit/accessing_the_event_store#2975207
 
-### `Permissions.WRITE_ONLY_MEDIA_LIBRARY`
+### `Permissions.MEDIA_LIBRARY_WRITE_ONLY`
 
 The permission type for writing to the media library.
 

@@ -6,7 +6,7 @@
 #import <EXMediaLibrary/EXMediaLibrary.h>
 #import <EXMediaLibrary/EXSaveToLibraryDelegate.h>
 #import <EXMediaLibrary/EXMediaLibraryMediaLibraryPermissionRequester.h>
-#import <EXMediaLibrary/EXMediaLibraryWriteOnlyMediaLibraryPermissionRequester.h>
+#import <EXMediaLibrary/EXMediaLibraryMediaLibraryWriteOnlyPermissionRequester.h>
 
 #import <UMCore/UMDefines.h>
 #import <UMCore/UMUtilities.h>
@@ -56,7 +56,7 @@ UM_EXPORT_MODULE(ExponentMediaLibrary);
   _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
-  [UMPermissionsMethodsDelegate registerRequesters:@[[EXMediaLibraryMediaLibraryPermissionRequester new], [EXMediaLibraryWriteOnlyMediaLibraryPermissionRequester new]] withPermissionsManager:_permissionsManager];
+  [UMPermissionsMethodsDelegate registerRequesters:@[[EXMediaLibraryMediaLibraryPermissionRequester new], [EXMediaLibraryMediaLibraryWriteOnlyPermissionRequester new]] withPermissionsManager:_permissionsManager];
 }
 
 - (dispatch_queue_t)methodQueue
@@ -100,7 +100,7 @@ UM_EXPORT_MODULE(ExponentMediaLibrary);
 - (id)requesterClass:(BOOL)writeOnly
 {
   if (writeOnly) {
-    return [EXMediaLibraryWriteOnlyMediaLibraryPermissionRequester class];
+    return [EXMediaLibraryMediaLibraryWriteOnlyPermissionRequester class];
   } else {
     return [EXMediaLibraryMediaLibraryPermissionRequester class];
   }

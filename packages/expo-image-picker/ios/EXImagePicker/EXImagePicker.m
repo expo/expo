@@ -1,7 +1,7 @@
 #import <EXImagePicker/EXImagePicker.h>
 #import <EXImagePicker/EXImagePickerCameraPermissionRequester.h>
 #import <EXImagePicker/EXImagePickerMediaLibraryPermissionRequester.h>
-#import <EXImagePicker/EXImagePickerWriteOnlyMediaLibraryPermissionRequester.h>
+#import <EXImagePicker/EXImagePickerMediaLibraryWriteOnlyPermissionRequester.h>
 
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
 #import <UMCore/UMUtilitiesInterface.h>
@@ -61,7 +61,7 @@ UM_EXPORT_MODULE(ExponentImagePicker);
   [UMPermissionsMethodsDelegate registerRequesters:@[
                                                     [EXImagePickerCameraPermissionRequester new],
                                                     [EXImagePickerMediaLibraryPermissionRequester new],
-                                                    [EXImagePickerWriteOnlyMediaLibraryPermissionRequester new]
+                                                    [EXImagePickerMediaLibraryWriteOnlyPermissionRequester new]
                                                     ]
                            withPermissionsManager:_permissionsManager];
 }
@@ -69,7 +69,7 @@ UM_EXPORT_MODULE(ExponentImagePicker);
 - (id)requesterClass:(BOOL)writeOnly
 {
   if (writeOnly) {
-    return [EXImagePickerWriteOnlyMediaLibraryPermissionRequester class];
+    return [EXImagePickerMediaLibraryWriteOnlyPermissionRequester class];
   } else {
     return [EXImagePickerMediaLibraryPermissionRequester class];
   }

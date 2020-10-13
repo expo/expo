@@ -690,8 +690,8 @@ CACHE_KEYS:
       - "../../../../packages/expo-image-picker/ios/EXImagePicker/Permissions/EXImagePickerCameraPermissionRequester.m"
       - "../../../../packages/expo-image-picker/ios/EXImagePicker/Permissions/EXImagePickerMediaLibraryPermissionRequester.h"
       - "../../../../packages/expo-image-picker/ios/EXImagePicker/Permissions/EXImagePickerMediaLibraryPermissionRequester.m"
-      - "../../../../packages/expo-image-picker/ios/EXImagePicker/Permissions/EXImagePickerWriteOnlyMediaLibraryPermissionRequester.h"
-      - "../../../../packages/expo-image-picker/ios/EXImagePicker/Permissions/EXImagePickerWriteOnlyMediaLibraryPermissionRequester.m"
+      - "../../../../packages/expo-image-picker/ios/EXImagePicker/Permissions/EXImagePickerMediaLibraryWriteOnlyPermissionRequester.h"
+      - "../../../../packages/expo-image-picker/ios/EXImagePicker/Permissions/EXImagePickerMediaLibraryWriteOnlyPermissionRequester.m"
     PROJECT_NAME: EXImagePicker
     SPECS:
       - EXImagePicker (9.1.1)
@@ -806,8 +806,8 @@ CACHE_KEYS:
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXSaveToLibraryDelegate.m"
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/Permissions/EXMediaLibraryMediaLibraryPermissionRequester.h"
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/Permissions/EXMediaLibraryMediaLibraryPermissionRequester.m"
-      - "../../../../packages/expo-media-library/ios/EXMediaLibrary/Permissions/EXMediaLibraryWriteOnlyMediaLibraryPermissionRequester.h"
-      - "../../../../packages/expo-media-library/ios/EXMediaLibrary/Permissions/EXMediaLibraryWriteOnlyMediaLibraryPermissionRequester.m"
+      - "../../../../packages/expo-media-library/ios/EXMediaLibrary/Permissions/EXMediaLibraryMediaLibraryWriteOnlyPermissionRequester.h"
+      - "../../../../packages/expo-media-library/ios/EXMediaLibrary/Permissions/EXMediaLibraryMediaLibraryWriteOnlyPermissionRequester.m"
     PROJECT_NAME: EXMediaLibrary
     SPECS:
       - EXMediaLibrary (9.2.1)

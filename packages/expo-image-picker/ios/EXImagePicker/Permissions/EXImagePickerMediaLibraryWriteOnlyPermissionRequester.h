@@ -2,6 +2,6 @@
 
 #import <EXImagePicker/EXImagePickerMediaLibraryPermissionRequester.h>
 
-@interface EXImagePickerWriteOnlyMediaLibraryPermissionRequester : EXImagePickerMediaLibraryPermissionRequester
+@interface EXImagePickerMediaLibraryWriteOnlyPermissionRequester : EXImagePickerMediaLibraryPermissionRequester
 
 @end

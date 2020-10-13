@@ -27,9 +27,9 @@ export {
 
 export const CAMERA = 'camera';
 export const MEDIA_LIBRARY = 'mediaLibrary';
-export const WRITE_ONLY_MEDIA_LIBRARY = 'writeOnlyMediaLibrary';
+export const MEDIA_LIBRARY_WRITE_ONLY = 'mediaLibraryWriteOnly';
 /**
- * @deprecated Use `MEDIA_LIBRARY` or `WRITE_ONLY_MEDIA_LIBRARY`
+ * @deprecated Use `MEDIA_LIBRARY` or `MEDIA_LIBRARY_WRITE_ONLY`
  */
 export const CAMERA_ROLL = MEDIA_LIBRARY;
 export const AUDIO_RECORDING = 'audioRecording';
@@ -47,7 +47,7 @@ const PERMISSION_MODULE_MAPPING = {
   [CAMERA]: 'expo-camera',
   [CAMERA_ROLL]: 'expo-media-library',
   [MEDIA_LIBRARY]: 'expo-media-library',
-  [WRITE_ONLY_MEDIA_LIBRARY]: 'expo-media-library',
+  [MEDIA_LIBRARY_WRITE_ONLY]: 'expo-media-library',
   [AUDIO_RECORDING]: 'expo-av',
   [LOCATION]: 'expo-location',
   [USER_FACING_NOTIFICATIONS]: 'expo-notifications',

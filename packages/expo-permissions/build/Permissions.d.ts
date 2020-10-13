@@ -2,9 +2,9 @@ import { PermissionResponse, PermissionType, PermissionMap, PermissionStatus, Pe
 export { PermissionStatus, PermissionResponse, PermissionExpiration, PermissionMap, PermissionInfo, PermissionType, };
 export declare const CAMERA = "camera";
 export declare const MEDIA_LIBRARY = "mediaLibrary";
-export declare const WRITE_ONLY_MEDIA_LIBRARY = "writeOnlyMediaLibrary";
+export declare const MEDIA_LIBRARY_WRITE_ONLY = "mediaLibraryWriteOnly";
 /**
- * @deprecated Use `MEDIA_LIBRARY` or `WRITE_ONLY_MEDIA_LIBRARY`
+ * @deprecated Use `MEDIA_LIBRARY` or `MEDIA_LIBRARY_WRITE_ONLY`
  */
 export declare const CAMERA_ROLL = "mediaLibrary";
 export declare const AUDIO_RECORDING = "audioRecording";

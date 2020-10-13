@@ -5,7 +5,7 @@ enum class PermissionsTypes(val type: String) {
   CAMERA("camera"),
   CONTACTS("contacts"),
   AUDIO_RECORDING("audioRecording"),
-  WRITE_ONLY_MEDIA_LIBRARY("writeOnlyMediaLibrary"),
+  MEDIA_LIBRARY_WRITE_ONLY("mediaLibraryWriteOnly"),
   MEDIA_LIBRARY("mediaLibrary"),
   CALENDAR("calendar"),
   SMS("sms"),

@@ -67,7 +67,7 @@ export default class PermissionsScreen extends React.Component<{}, State> {
       ['NOTIFICATIONS', Permissions.NOTIFICATIONS],
       ['CONTACTS', Permissions.CONTACTS],
       ['SYSTEM_BRIGHTNESS', Permissions.SYSTEM_BRIGHTNESS],
-      ['WRITE_ONLY_MEDIA_LIBRARY', Permissions.WRITE_ONLY_MEDIA_LIBRARY],
+      ['MEDIA_LIBRARY_WRITE_ONLY', Permissions.MEDIA_LIBRARY_WRITE_ONLY],
       ['MEDIA_LIBRARY', Permissions.MEDIA_LIBRARY],
       ['CALENDAR', Permissions.CALENDAR],
       ['REMINDERS', Permissions.REMINDERS],

@@ -2,6 +2,6 @@
 
 #import <EXMediaLibrary/EXMediaLibraryMediaLibraryPermissionRequester.h>
 
-@interface EXMediaLibraryWriteOnlyMediaLibraryPermissionRequester : EXMediaLibraryMediaLibraryPermissionRequester
+@interface EXMediaLibraryMediaLibraryWriteOnlyPermissionRequester : EXMediaLibraryMediaLibraryPermissionRequester
 
 @end
