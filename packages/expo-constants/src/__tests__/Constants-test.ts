@@ -1,5 +1,3 @@
-import { NativeModulesProxy } from '@unimodules/core';
-
 import Constants from '../Constants';
 
 it(`defines a manifest`, () => {
