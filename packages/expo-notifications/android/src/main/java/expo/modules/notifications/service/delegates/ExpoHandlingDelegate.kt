@@ -47,9 +47,18 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
     }
   }
 
+  fun isAppInForeground() = ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)
+
   fun getListeners() = sListenersReferences.values.mapNotNull { it.get() }
 
   override fun handleNotification(notification: Notification) {
+    if (isAppInForeground()) {
+      getListeners().forEach {
+        it.onNotificationReceived(notification)
+      }
+    } else {
+      NotificationsService.enqueuePresent(context, notification)
+    }
   }
 
   override fun handleNotificationResponse(notificationResponse: NotificationResponse) {

@@ -14,8 +14,6 @@ import java.util.WeakHashMap;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.ProcessLifecycleOwner;
 import expo.modules.notifications.notifications.NotificationManager;
 import expo.modules.notifications.notifications.interfaces.NotificationsReconstructor;
 import expo.modules.notifications.notifications.model.Notification;
@@ -39,7 +37,6 @@ public class NotificationsHelper {
   public static final String CATEGORIES_KEY = "categories";
 
   private SharedPreferencesNotificationCategoriesStore mStore;
-  private NotificationsHelperLifecycleObserver mLifecycleObserver;
   private Context mContext;
 
 
@@ -48,24 +45,6 @@ public class NotificationsHelper {
   public NotificationsHelper(Context context, NotificationsReconstructor notificationsReconstructor) {
     this.mContext = context.getApplicationContext();
     mStore = new SharedPreferencesNotificationCategoriesStore(context);
-
-    // Note we're not removing the observer anywhere because NotificationsHelper
-    // does not receive any information about its removal.
-    // NotificationsHelperLifecycleObserver does not hold strong reference to this class
-    // so we try to leak as little as possible.
-    mLifecycleObserver = new NotificationsHelperLifecycleObserver(this);
-    ProcessLifecycleOwner.get().getLifecycle().addObserver(mLifecycleObserver);
-  }
-
-
-  private boolean mIsAppInForeground = ProcessLifecycleOwner.get().getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED);
-
-  public void onResume() {
-    mIsAppInForeground = true;
-  }
-
-  public void onPause() {
-    mIsAppInForeground = false;
   }
 
   /**
@@ -104,15 +83,7 @@ public class NotificationsHelper {
    * @param receiver     Result receiver
    */
   public void notificationReceived(Notification notification, ResultReceiver receiver) {
-    if (mIsAppInForeground) {
-      for (NotificationManager listener : getListeners()) {
-        listener.onNotificationReceived(notification);
-      }
-      notifyReceiverSuccess(receiver, null);
-    } else {
-      // Receiver is notified by NotificationsService
-      NotificationsService.Companion.enqueuePresent(mContext, notification, null, receiver);
-    }
+    NotificationsService.Companion.enqueueReceive(mContext, notification, receiver);
   }
 
   /**
