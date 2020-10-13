@@ -22,6 +22,7 @@
 - Fixed crashing when Proguard is enabled. ([#10421](https://github.com/expo/expo/pull/10421) by [@lukmccall](https://github.com/lukmccall))
 - Fixed the application icon being always added as a notification icon. ([#10471](https://github.com/expo/expo/pull/10471) by [@lukmccall](https://github.com/lukmccall))
 - Fixed faulty trigger detection mechanism which caused some triggers with `channelId` specified get recognized as triggers of other types. ([#10454](https://github.com/expo/expo/pull/10454) by [@sjchmiela](https://github.com/sjchmiela))
+- Fixed fatal exception sometimes being thrown when notification was received or tapped on Android due to observer being cleared before it's added. ([#10640](https://github.com/expo/expo/pull/10640) by [@sjchmiela](https://github.com/sjchmiela))
 - Removed the large icon from managed workflow. ([#10492](https://github.com/expo/expo/pull/10492) by [@lukmccall](https://github.com/lukmccall))
 
 ## 0.7.1 — 2020-08-26

@@ -27,9 +27,7 @@ import java.util.WeakHashMap;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationManagerCompat;
-import androidx.lifecycle.DefaultLifecycleObserver;
-import androidx.lifecycle.LifecycleObserver;
-import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ProcessLifecycleOwner;
 import expo.modules.notifications.notifications.NotificationManager;
 import expo.modules.notifications.notifications.enums.NotificationPriority;
@@ -69,6 +67,7 @@ public class NotificationsHelper {
   private Context mContext;
   private NotificationsReconstructor mNotificationsReconstructor;
   private SharedPreferencesNotificationCategoriesStore mStore;
+  private NotificationsHelperLifecycleObserver mLifecycleObserver;
 
   /**
    * A weak map of listeners -> reference. Used to check quickly whether given listener
@@ -81,19 +80,14 @@ public class NotificationsHelper {
   public NotificationsHelper(Context context, NotificationsReconstructor notificationsReconstructor) {
     this.mContext = context.getApplicationContext();
     this.mNotificationsReconstructor = notificationsReconstructor;
-    WeakReference<LifecycleObserver> observer = new WeakReference<>(new DefaultLifecycleObserver() {
-      @Override
-      public void onResume(@NonNull LifecycleOwner owner) {
-        mIsAppInForeground = true;
-      }
-
-      @Override
-      public void onPause(@NonNull LifecycleOwner owner) {
-        mIsAppInForeground = false;
-      }
-    });
     mStore = new SharedPreferencesNotificationCategoriesStore(context);
-    ProcessLifecycleOwner.get().getLifecycle().addObserver(observer.get());
+
+    // Note we're not removing the observer anywhere because NotificationsHelper
+    // does not receive any information about its removal.
+    // NotificationsHelperLifecycleObserver does not hold strong reference to this class
+    // so we try to leak as little as possible.
+    mLifecycleObserver = new NotificationsHelperLifecycleObserver(this);
+    ProcessLifecycleOwner.get().getLifecycle().addObserver(mLifecycleObserver);
   }
 
   /**
@@ -121,7 +115,15 @@ public class NotificationsHelper {
     }
   }
 
-  private boolean mIsAppInForeground = false;
+  private boolean mIsAppInForeground = ProcessLifecycleOwner.get().getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED);
+
+  public void onResume() {
+    mIsAppInForeground = true;
+  }
+
+  public void onPause() {
+    mIsAppInForeground = false;
+  }
 
   /**
    * A function returning all presented notifications to receiver
