@@ -42,11 +42,6 @@ public class NotificationsHelper {
   private NotificationsHelperLifecycleObserver mLifecycleObserver;
   private Context mContext;
 
-  /**
-   * A weak map of listeners -> reference. Used to check quickly whether given listener
-   * is already registered and to iterate over when notifying of new token.
-   */
-  protected static WeakHashMap<NotificationManager, WeakReference<NotificationManager>> sListenersReferences = new WeakHashMap<>();
 
   protected static Collection<NotificationResponse> sPendingNotificationResponses = new ArrayList<>();
 
@@ -62,30 +57,6 @@ public class NotificationsHelper {
     ProcessLifecycleOwner.get().getLifecycle().addObserver(mLifecycleObserver);
   }
 
-  /**
-   * Used only by {@link NotificationManager} instances. If you look for a place to register
-   * your listener, use {@link NotificationManager} singleton module.
-   * <p>
-   * Purposefully the argument is expected to be a {@link NotificationManager} and just a listener.
-   * <p>
-   * This class doesn't hold strong references to listeners, so you need to own your listeners.
-   *
-   * @param listener A listener instance to be informed of new push device tokens.
-   */
-  public static void addListener(NotificationManager listener) {
-    // Checks whether this listener has already been registered
-    if (!sListenersReferences.containsKey(listener)) {
-      WeakReference<NotificationManager> listenerReference = new WeakReference<>(listener);
-      sListenersReferences.put(listener, listenerReference);
-      if (!sPendingNotificationResponses.isEmpty()) {
-        Iterator<NotificationResponse> responseIterator = sPendingNotificationResponses.iterator();
-        while (responseIterator.hasNext()) {
-          listener.onNotificationResponseReceived(responseIterator.next());
-          responseIterator.remove();
-        }
-      }
-    }
-  }
 
   private boolean mIsAppInForeground = ProcessLifecycleOwner.get().getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED);
 
@@ -217,16 +188,5 @@ public class NotificationsHelper {
 
   public boolean deleteCategory(String identifier) {
     return mStore.removeNotificationCategory(identifier);
-  }
-
-  private Collection<NotificationManager> getListeners() {
-    Collection<NotificationManager> listeners = new ArrayList<>();
-    for (WeakReference<NotificationManager> reference : sListenersReferences.values()) {
-      NotificationManager manager = reference.get();
-      if (manager != null) {
-        listeners.add(manager);
-      }
-    }
-    return listeners;
   }
 }
