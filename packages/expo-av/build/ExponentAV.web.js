@@ -1,6 +1,25 @@
 import { SyntheticPlatformEmitter } from '@unimodules/core';
 import { PermissionStatus } from 'expo-modules-core';
 import { RECORDING_OPTIONS_PRESET_HIGH_QUALITY } from './Audio/Recording';
+/**
+ * Gets the permission details. The implementation is not very good as it actually requests
+ * access to the microhpone, not all browsers support the experimental permissions api
+ */
+async function getPermissionsAsync() {
+    const resolveWithStatus = (status) => ({
+        status,
+        granted: status === PermissionStatus.GRANTED,
+        canAskAgain: true,
+        expires: 0,
+    });
+    try {
+        await navigator.mediaDevices.getUserMedia({ audio: true });
+        return resolveWithStatus(PermissionStatus.GRANTED);
+    }
+    catch (e) {
+        return resolveWithStatus(PermissionStatus.DENIED);
+    }
+}
 function getStatusFromMedia(media) {
     if (!media) {
         return {
@@ -216,18 +235,9 @@ export default {
     async unloadAudioRecorder() {
         mediaRecorder = null;
     },
-    // Recording isn't available on the web
-    async getPermissionsAsync() {
-        return {
-            status: PermissionStatus.DENIED,
-            expires: 'never',
-            canAskAgain: false,
-            granted: false,
-        };
-    },
-    // Recording isn't available on the web
+    getPermissionsAsync,
     async requestPermissionsAsync() {
-        return this.getPermissionsAsync();
+        return getPermissionsAsync();
     },
 };
 //# sourceMappingURL=ExponentAV.web.js.map

@@ -4,6 +4,26 @@ import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
 import { AVPlaybackNativeSource, AVPlaybackStatus, AVPlaybackStatusToSet } from './AV';
 import { RecordingStatus, RECORDING_OPTIONS_PRESET_HIGH_QUALITY } from './Audio/Recording';
 
+/**
+ * Gets the permission details. The implementation is not very good as it actually requests
+ * access to the microhpone, not all browsers support the experimental permissions api
+ */
+async function getPermissionsAsync(): Promise<PermissionResponse> {
+  const resolveWithStatus = (status: PermissionStatus) => ({
+    status,
+    granted: status === PermissionStatus.GRANTED,
+    canAskAgain: true,
+    expires: 0,
+  });
+
+  try {
+    await navigator.mediaDevices.getUserMedia({ audio: true });
+    return resolveWithStatus(PermissionStatus.GRANTED);
+  } catch (e) {
+    return resolveWithStatus(PermissionStatus.DENIED);
+  }
+}
+
 function getStatusFromMedia(media?: HTMLMediaElement): AVPlaybackStatus {
   if (!media) {
     return {
@@ -290,18 +310,8 @@ export default {
     mediaRecorder = null;
   },
 
-  // Recording isn't available on the web
-  async getPermissionsAsync(): Promise<PermissionResponse> {
-    return {
-      status: PermissionStatus.DENIED,
-      expires: 'never',
-      canAskAgain: false,
-      granted: false,
-    };
-  },
-
-  // Recording isn't available on the web
+  getPermissionsAsync,
   async requestPermissionsAsync(): Promise<PermissionResponse> {
-    return this.getPermissionsAsync();
+    return getPermissionsAsync();
   },
 };
