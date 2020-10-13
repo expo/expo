@@ -6,8 +6,6 @@
 
 ### 🎉 New features
 
-- Add isAvailableAsync to expo-task-manager ([#10657](https://github.com/expo/expo/pull/10657) by [@PranshuChittora](https://github.com/pranshuchittora))
-
 ### 🐛 Bug fixes
 
 ## 8.5.0 — 2020-08-18

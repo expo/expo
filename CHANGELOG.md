@@ -14,7 +14,7 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🎉 New features
 
-- Add isAvailableAsync to expo-task-manager ([#10657](https://github.com/expo/expo/pull/10657) by [@PranshuChittora](https://github.com/pranshuchittora))
+- Added `isAvailableAsync` method. ([#10657](https://github.com/expo/expo/pull/10657) by [@PranshuChittora](https://github.com/pranshuchittora))
 
 ### 🐛 Bug fixes
 
