@@ -114,12 +114,9 @@ open class ExpoPresentationDelegate(
         NotificationManagerCompat.from(context).cancel(identifier, ANDROID_NOTIFICATION_ID)
       }
     }
-
   }
 
-  override fun dismissAllNotifications() {
-    NotificationManagerCompat.from(context).cancelAll()
-  }
+  override fun dismissAllNotifications() = NotificationManagerCompat.from(context).cancelAll()
 
   protected open fun createNotification(notification: Notification, notificationBehavior: NotificationBehavior?): android.app.Notification {
     return notificationsBuilderCreator.get(context, SharedPreferencesNotificationCategoriesStore(context)).also {
