@@ -41,6 +41,11 @@ public class TaskManagerModule extends ExportedModule {
   }
 
   //region Expo methods
+  
+  @ExpoMethod
+  public void isAvailableAsync(final Promise promise) {
+    promise.resolve(true);
+  }
 
   @ExpoMethod
   public void notifyTaskFinishedAsync(String taskName, Map<String, Object> response, final Promise promise) {
