@@ -73,6 +73,16 @@ This limitation is due to the fact that when the application is launched in the 
 - **taskName (_string_)** -- Name of the task.
 - **task (_function_)** -- A function that will be invoked when the task with given **taskName** is executed.
 
+### `TaskManager.isAvailableAsync()`
+
+Determine if the `TaskManager` API can be used in this app.
+
+#### Returns
+
+A promise resolves to `true` if the API can be used, and `false` otherwise.
+
+- Always returns `false` in the browser.
+
 ### `TaskManager.isTaskRegisteredAsync(taskName)`
 
 Determine whether the task is registered. Registered tasks are stored in a persistent storage and preserved between sessions.

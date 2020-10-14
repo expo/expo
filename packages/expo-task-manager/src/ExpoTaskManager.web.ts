@@ -7,4 +7,7 @@ export default {
   },
   addListener() {},
   removeListeners() {},
+  async isAvailableAsync(): Promise<boolean> {
+    return false;
+  },
 };
