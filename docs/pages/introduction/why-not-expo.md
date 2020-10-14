@@ -76,6 +76,14 @@ You also can use the [bare workflow](../../bare/exploring-bare-workflow/) with t
 </p>
 </details>
 
+<details><summary><h4>You cannot participate in Google's "Designed for Families" Program</h4></summary>
+<p>
+
+Google requires any app that primarily targets children under 13 to follow a [strict set of guidelines](https://support.google.com/googleplay/android-developer/answer/9285070?hl=en). One of these guidelines is that any ad library included in the app must be a part of [Google's Families Ads Program](https://support.google.com/googleplay/android-developer/answer/9283445). Managed workflow apps [contain the code for the entire Expo SDK by default](https://expo.fyi/managed-app-size), including Facebook's Audience Network library. Because this library is not part of Google's Families Ads Program yet, you cannot list your app as "designed primarily for children under 13" in the Play Store. 
+
+</p>
+</details>
+
 <br />
 
 > 👉 We are either actively working on or planning to build solutions to all of the limitations listed above, and if you think anything is missing, please bring it to our attention by posting to our [feature requests board](https://expo.canny.io/feature-requests) or the [forums](http://forums.expo.io/).
