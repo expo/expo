@@ -12,6 +12,7 @@ import expo.modules.notifications.notifications.interfaces.NotificationListener;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationResponse;
 import expo.modules.notifications.notifications.service.NotificationsHelper;
+import expo.modules.notifications.service.delegates.ExpoHandlingDelegate;
 
 public class NotificationManager implements SingletonModule, expo.modules.notifications.notifications.interfaces.NotificationManager {
   private static final String SINGLETON_NAME = "NotificationManager";
@@ -28,7 +29,7 @@ public class NotificationManager implements SingletonModule, expo.modules.notifi
 
     // Registers this singleton instance in static NotificationsHelper listeners collection.
     // Since it doesn't hold strong reference to the object this should be safe.
-    NotificationsHelper.addListener(this);
+    ExpoHandlingDelegate.Companion.addListener(this);
   }
 
   @Override

@@ -1,22 +1,14 @@
 package expo.modules.notifications.notifications.service;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.util.Log;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.WeakHashMap;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.ProcessLifecycleOwner;
-import expo.modules.notifications.notifications.NotificationManager;
 import expo.modules.notifications.notifications.interfaces.NotificationsReconstructor;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationBehavior;
@@ -39,62 +31,11 @@ public class NotificationsHelper {
   public static final String CATEGORIES_KEY = "categories";
 
   private SharedPreferencesNotificationCategoriesStore mStore;
-  private NotificationsHelperLifecycleObserver mLifecycleObserver;
   private Context mContext;
-
-  /**
-   * A weak map of listeners -> reference. Used to check quickly whether given listener
-   * is already registered and to iterate over when notifying of new token.
-   */
-  protected static WeakHashMap<NotificationManager, WeakReference<NotificationManager>> sListenersReferences = new WeakHashMap<>();
-
-  protected static Collection<NotificationResponse> sPendingNotificationResponses = new ArrayList<>();
 
   public NotificationsHelper(Context context, NotificationsReconstructor notificationsReconstructor) {
     this.mContext = context.getApplicationContext();
     mStore = new SharedPreferencesNotificationCategoriesStore(context);
-
-    // Note we're not removing the observer anywhere because NotificationsHelper
-    // does not receive any information about its removal.
-    // NotificationsHelperLifecycleObserver does not hold strong reference to this class
-    // so we try to leak as little as possible.
-    mLifecycleObserver = new NotificationsHelperLifecycleObserver(this);
-    ProcessLifecycleOwner.get().getLifecycle().addObserver(mLifecycleObserver);
-  }
-
-  /**
-   * Used only by {@link NotificationManager} instances. If you look for a place to register
-   * your listener, use {@link NotificationManager} singleton module.
-   * <p>
-   * Purposefully the argument is expected to be a {@link NotificationManager} and just a listener.
-   * <p>
-   * This class doesn't hold strong references to listeners, so you need to own your listeners.
-   *
-   * @param listener A listener instance to be informed of new push device tokens.
-   */
-  public static void addListener(NotificationManager listener) {
-    // Checks whether this listener has already been registered
-    if (!sListenersReferences.containsKey(listener)) {
-      WeakReference<NotificationManager> listenerReference = new WeakReference<>(listener);
-      sListenersReferences.put(listener, listenerReference);
-      if (!sPendingNotificationResponses.isEmpty()) {
-        Iterator<NotificationResponse> responseIterator = sPendingNotificationResponses.iterator();
-        while (responseIterator.hasNext()) {
-          listener.onNotificationResponseReceived(responseIterator.next());
-          responseIterator.remove();
-        }
-      }
-    }
-  }
-
-  private boolean mIsAppInForeground = ProcessLifecycleOwner.get().getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED);
-
-  public void onResume() {
-    mIsAppInForeground = true;
-  }
-
-  public void onPause() {
-    mIsAppInForeground = false;
   }
 
   /**
@@ -133,15 +74,7 @@ public class NotificationsHelper {
    * @param receiver     Result receiver
    */
   public void notificationReceived(Notification notification, ResultReceiver receiver) {
-    if (mIsAppInForeground) {
-      for (NotificationManager listener : getListeners()) {
-        listener.onNotificationReceived(notification);
-      }
-      notifyReceiverSuccess(receiver, null);
-    } else {
-      // Receiver is notified by NotificationsService
-      NotificationsService.Companion.enqueuePresent(mContext, notification, null, receiver);
-    }
+    NotificationsService.Companion.enqueueReceive(mContext, notification, receiver);
   }
 
   /**
@@ -172,11 +105,8 @@ public class NotificationsHelper {
   /**
    * A helper function for dispatching dropped notification
    */
-  public void dropped(@Nullable ResultReceiver receiver) {
-    for (NotificationManager listener : getListeners()) {
-      listener.onNotificationsDropped();
-    }
-    notifyReceiverSuccess(receiver, null);
+  public void dropped() {
+    NotificationsService.Companion.enqueueDropped(mContext);
   }
 
   /**
@@ -185,20 +115,7 @@ public class NotificationsHelper {
    * @param response Notification response received
    */
   public void responseReceived(NotificationResponse response) {
-    Collection<NotificationManager> listeners = getListeners();
-    if (listeners.isEmpty()) {
-      sPendingNotificationResponses.add(response);
-    } else {
-      for (NotificationManager listener : listeners) {
-        listener.onNotificationResponseReceived(response);
-      }
-    }
-  }
-
-  private void notifyReceiverSuccess(@Nullable ResultReceiver receiver, @Nullable Bundle data) {
-    if (receiver != null) {
-      receiver.send(SUCCESS_CODE, data);
-    }
+    NotificationsService.Companion.enqueueResponseReceived(mContext, response, null);
   }
 
   public Collection<NotificationCategory> getCategories() {
@@ -217,16 +134,5 @@ public class NotificationsHelper {
 
   public boolean deleteCategory(String identifier) {
     return mStore.removeNotificationCategory(identifier);
-  }
-
-  private Collection<NotificationManager> getListeners() {
-    Collection<NotificationManager> listeners = new ArrayList<>();
-    for (WeakReference<NotificationManager> reference : sListenersReferences.values()) {
-      NotificationManager manager = reference.get();
-      if (manager != null) {
-        listeners.add(manager);
-      }
-    }
-    return listeners;
   }
 }
