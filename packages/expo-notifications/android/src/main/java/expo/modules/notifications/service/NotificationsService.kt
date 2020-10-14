@@ -38,7 +38,7 @@ open class NotificationsService : FirebaseMessagingService() {
     private const val DROPPED_TYPE = "dropped"
     private const val GET_CATEGORIES_TYPE = "getCategories"
     private const val SET_CATEGORY_TYPE = "setCategory"
-    private const val DELETE_CATEGORIES_TYPE = "deleteCategories"
+    private const val DELETE_CATEGORY_TYPE = "deleteCategory"
 
     // Messages parts
     const val SUCCESS_CODE = 0
@@ -50,7 +50,9 @@ open class NotificationsService : FirebaseMessagingService() {
     // Specific messages parts
     const val NOTIFICATION_KEY = "notification"
     const val NOTIFICATION_RESPONSE_KEY = "notificationResponse"
+    const val SUCCEEDED_KEY = "succeeded"
     const val IDENTIFIERS_KEY = "identifiers"
+    const val IDENTIFIER_KEY = "identifier"
     const val NOTIFICATION_BEHAVIOR_KEY = "notificationBehavior"
     const val NOTIFICATIONS_KEY = "notifications"
     const val NOTIFICATION_CATEGORY_KEY = "notificationCategory"
@@ -189,13 +191,13 @@ open class NotificationsService : FirebaseMessagingService() {
     /**
      * A helper function for dispatching a "delete notification category" command to the service.
      *
-     * @param context     Context where to start the service.
-     * @param identifiers Category Identifiers
+     * @param context    Context where to start the service.
+     * @param identifier Category Identifier
      */
-    fun deleteCategories(context: Context, identifiers: Collection<String>, receiver: ResultReceiver? = null) {
-      doWork(context, Intent(NOTIFICATION_EVENT_ACTION, getUriBuilder().appendPath("categories").build()).also {
-        it.putExtra(EVENT_TYPE_KEY, DELETE_CATEGORIES_TYPE)
-        it.putExtra(IDENTIFIERS_KEY, identifiers.toTypedArray())
+    fun deleteCategory(context: Context, identifier: String, receiver: ResultReceiver? = null) {
+      doWork(context, Intent(NOTIFICATION_EVENT_ACTION, getUriBuilder().appendPath("categories").appendPath(identifier).build()).also {
+        it.putExtra(EVENT_TYPE_KEY, DELETE_CATEGORY_TYPE)
+        it.putExtra(IDENTIFIER_KEY, identifier)
         it.putExtra(RECEIVER_KEY, receiver)
       })
     }
@@ -307,9 +309,17 @@ open class NotificationsService : FirebaseMessagingService() {
             }
           }
 
-          SET_CATEGORY_TYPE -> onSetCategory(intent.getParcelableExtra(NOTIFICATION_CATEGORY_KEY)!!)
+          SET_CATEGORY_TYPE -> {
+            resultData = Bundle().also {
+              it.putSerializable(NOTIFICATION_CATEGORY_KEY, onSetCategory(intent.getParcelableExtra(NOTIFICATION_CATEGORY_KEY)!!))
+            }
+          }
 
-          DELETE_CATEGORIES_TYPE -> onDeleteCategories(intent.extras?.getStringArray(IDENTIFIERS_KEY)!!.asList())
+          DELETE_CATEGORY_TYPE -> {
+            resultData = Bundle().also {
+              it.putBoolean(SUCCEEDED_KEY, onDeleteCategory(intent.extras?.getString(IDENTIFIER_KEY)!!))
+            }
+          }
 
           else -> throw IllegalArgumentException("Received event of unrecognized type: $eventType. Ignoring.")
         }
@@ -338,7 +348,7 @@ open class NotificationsService : FirebaseMessagingService() {
 
   open fun onGetCategories() = categoriesDelegate.getCategories()
   open fun onSetCategory(category: NotificationCategory) = categoriesDelegate.setCategory(category)
-  open fun onDeleteCategories(identifiers: Collection<String>) = categoriesDelegate.deleteCategories(identifiers)
+  open fun onDeleteCategory(identifier: String) = categoriesDelegate.deleteCategory(identifier)
 
   override fun onMessageReceived(remoteMessage: RemoteMessage) = firebaseMessagingDelegate.onMessageReceived(remoteMessage)
   override fun onNewToken(token: String) = firebaseMessagingDelegate.onNewToken(token)
