@@ -33,7 +33,7 @@ To add to an value, such as an array of file extensions, defined in the default 
 One use case for custom `metro.config.js` is adding more file extensions that are considered to be an [asset](assets/). Many image, video, audio and font formats (e.g. `jpg`, `png`, `mp4`, `mp3` and `ttf`) are included by default. To add more asset file extensions, create a `metro.config.js` file in the project root. In the file add the file extension (without a leading `.`) to `assetExts`:
 
 ```js
-const { getDefaultConfig } = require('@expo/metro-config');
+const { getDefaultConfig } = require('metro-config');
 
 const defaultConfig = getDefaultConfig(__dirname);
 
