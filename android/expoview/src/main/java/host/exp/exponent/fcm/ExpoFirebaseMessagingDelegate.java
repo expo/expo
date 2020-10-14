@@ -92,7 +92,6 @@ public class ExpoFirebaseMessagingDelegate extends FirebaseMessagingDelegate {
     if (Constants.isStandaloneApp()) {
       return super.createNotificationRequest(identifier, content, notificationTrigger);
     }
-    
     ExperienceId experienceId;
     Map<String, String> data = notificationTrigger.getRemoteMessage().getData();
     if (!data.containsKey("experienceId")) {
