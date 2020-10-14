@@ -54,8 +54,8 @@ open class NotificationsService : FirebaseMessagingService() {
      * @param context  Context where to start the service.
      * @param receiver A receiver to which send the notifications
      */
-    fun enqueueGetAllPresented(context: Context, receiver: ResultReceiver? = null) {
-      enqueueWork(context, Intent(NOTIFICATION_EVENT_ACTION, getUriBuilder().build()).also {
+    fun getAllPresented(context: Context, receiver: ResultReceiver? = null) {
+      doWork(context, Intent(NOTIFICATION_EVENT_ACTION, getUriBuilder().build()).also {
         it.putExtra(EVENT_TYPE_KEY, GET_ALL_DISPLAYED_TYPE)
         it.putExtra(RECEIVER_KEY, receiver)
       })
@@ -69,9 +69,9 @@ open class NotificationsService : FirebaseMessagingService() {
      * @param behavior     Allowed notification behavior
      * @param receiver     A receiver to which send the result of presenting the notification
      */
-    fun enqueuePresent(context: Context, notification: Notification, behavior: NotificationBehavior? = null, receiver: ResultReceiver? = null) {
+    fun present(context: Context, notification: Notification, behavior: NotificationBehavior? = null, receiver: ResultReceiver? = null) {
       val data = getUriBuilderForIdentifier(notification.notificationRequest.identifier).appendPath("present").build()
-      enqueueWork(context, Intent(NOTIFICATION_EVENT_ACTION, data).also { intent ->
+      doWork(context, Intent(NOTIFICATION_EVENT_ACTION, data).also { intent ->
         intent.putExtra(EVENT_TYPE_KEY, PRESENT_TYPE)
         intent.putExtra(NOTIFICATION_KEY, notification)
         intent.putExtra(NOTIFICATION_BEHAVIOR_KEY, behavior)
@@ -86,9 +86,9 @@ open class NotificationsService : FirebaseMessagingService() {
      * @param notification Notification received
      * @param receiver     Result receiver
      */
-    fun enqueueReceive(context: Context, notification: Notification, receiver: ResultReceiver? = null) {
+    fun receive(context: Context, notification: Notification, receiver: ResultReceiver? = null) {
       val data = getUriBuilderForIdentifier(notification.notificationRequest.identifier).appendPath("receive").build()
-      enqueueWork(context, Intent(NOTIFICATION_EVENT_ACTION, data).also { intent ->
+      doWork(context, Intent(NOTIFICATION_EVENT_ACTION, data).also { intent ->
         intent.putExtra(EVENT_TYPE_KEY, RECEIVE_TYPE)
         intent.putExtra(NOTIFICATION_KEY, notification)
         intent.putExtra(RECEIVER_KEY, receiver)
@@ -102,9 +102,9 @@ open class NotificationsService : FirebaseMessagingService() {
      * @param notificationResponse Notification response received
      * @param receiver     Result receiver
      */
-    fun enqueueResponseReceived(context: Context, response: NotificationResponse, receiver: ResultReceiver? = null) {
+    fun handleResponseReceived(context: Context, response: NotificationResponse, receiver: ResultReceiver? = null) {
       val data = getUriBuilderForIdentifier(response.notification.notificationRequest.identifier).appendPath("response").build()
-      enqueueWork(context, Intent(NOTIFICATION_EVENT_ACTION, data).also { intent ->
+      doWork(context, Intent(NOTIFICATION_EVENT_ACTION, data).also { intent ->
         intent.putExtra(EVENT_TYPE_KEY, RECEIVE_TYPE)
         intent.putExtra(NOTIFICATION_RESPONSE_KEY, response)
         intent.putExtra(RECEIVER_KEY, receiver)
@@ -118,9 +118,9 @@ open class NotificationsService : FirebaseMessagingService() {
      * @param identifier Notification identifier
      * @param receiver   A receiver to which send the result of the action
      */
-    fun enqueueDismiss(context: Context, identifiers: Array<String>, receiver: ResultReceiver? = null) {
+    fun dismiss(context: Context, identifiers: Array<String>, receiver: ResultReceiver? = null) {
       val data = getUriBuilder().appendPath("dismiss").build()
-      enqueueWork(context, Intent(NOTIFICATION_EVENT_ACTION, data).also { intent ->
+      doWork(context, Intent(NOTIFICATION_EVENT_ACTION, data).also { intent ->
         intent.putExtra(EVENT_TYPE_KEY, DISMISS_SELECTED_TYPE)
         intent.putExtra(IDENTIFIERS_KEY, identifiers)
         intent.putExtra(RECEIVER_KEY, receiver)
@@ -133,9 +133,9 @@ open class NotificationsService : FirebaseMessagingService() {
      * @param context    Context where to start the service.
      * @param receiver   A receiver to which send the result of the action
      */
-    fun enqueueDismissAll(context: Context, receiver: ResultReceiver? = null) {
+    fun dismissAll(context: Context, receiver: ResultReceiver? = null) {
       val data = getUriBuilder().appendPath("dismiss").build()
-      enqueueWork(context, Intent(NOTIFICATION_EVENT_ACTION, data).also { intent ->
+      doWork(context, Intent(NOTIFICATION_EVENT_ACTION, data).also { intent ->
         intent.putExtra(EVENT_TYPE_KEY, DISMISS_ALL_TYPE)
         intent.putExtra(RECEIVER_KEY, receiver)
       })
@@ -146,8 +146,8 @@ open class NotificationsService : FirebaseMessagingService() {
      *
      * @param context Context where to start the service.
      */
-    fun enqueueDropped(context: Context) {
-      enqueueWork(context, Intent(NOTIFICATION_EVENT_ACTION).also { intent ->
+    fun handleDropped(context: Context) {
+      doWork(context, Intent(NOTIFICATION_EVENT_ACTION).also { intent ->
         intent.putExtra(EVENT_TYPE_KEY, DROPPED_TYPE)
       })
     }
@@ -158,7 +158,7 @@ open class NotificationsService : FirebaseMessagingService() {
      * @param context Context where to start the service
      * @param intent  Intent to dispatch
      */
-    fun enqueueWork(context: Context, intent: Intent) {
+    fun doWork(context: Context, intent: Intent) {
       currentService?.let {
         it.handleIntent(it.getStartCommandIntent(intent))
         return
