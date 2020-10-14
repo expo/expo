@@ -13,6 +13,7 @@ import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationBehavior
 import expo.modules.notifications.notifications.model.NotificationCategory
 import expo.modules.notifications.notifications.model.NotificationResponse
+import expo.modules.notifications.service.delegates.ExpoCategoriesDelegate
 import expo.modules.notifications.service.delegates.ExpoHandlingDelegate
 import expo.modules.notifications.service.delegates.ExpoPresentationDelegate
 import expo.modules.notifications.service.interfaces.CategoriesDelegate
@@ -255,7 +256,9 @@ open class NotificationsService : FirebaseMessagingService() {
   protected open val handlingDelegate: HandlingDelegate by lazy {
     ExpoHandlingDelegate(this)
   }
-  protected open val categoriesDelegate: CategoriesDelegate
+  protected open val categoriesDelegate: CategoriesDelegate by lazy {
+    ExpoCategoriesDelegate(this)
+  }
 
   override fun onCreate() {
     super.onCreate()
