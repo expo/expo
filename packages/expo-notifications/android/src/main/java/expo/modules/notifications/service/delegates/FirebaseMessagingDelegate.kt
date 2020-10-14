@@ -92,6 +92,6 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
   }
 
   override fun onDeletedMessages() {
-    createNotificationsHelper().dropped(null)
+    createNotificationsHelper().dropped()
   }
 }

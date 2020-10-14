@@ -11,8 +11,11 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationBehavior
+import expo.modules.notifications.notifications.model.NotificationResponse
+import expo.modules.notifications.service.delegates.ExpoHandlingDelegate
 import expo.modules.notifications.service.delegates.ExpoPresentationDelegate
 import expo.modules.notifications.service.interfaces.FirebaseMessagingDelegate
+import expo.modules.notifications.service.interfaces.HandlingDelegate
 import expo.modules.notifications.service.interfaces.PresentationDelegate
 
 /**
@@ -27,6 +30,9 @@ open class NotificationsService : FirebaseMessagingService() {
     private const val PRESENT_TYPE = "present"
     private const val DISMISS_SELECTED_TYPE = "dismissSelected"
     private const val DISMISS_ALL_TYPE = "dismissAll"
+    private const val RECEIVE_TYPE = "receive"
+    private const val RECEIVE_RESPONSE_TYPE = "receiveResponse"
+    private const val DROPPED_TYPE = "dropped"
 
     // Messages parts
     const val SUCCESS_CODE = 0
@@ -37,6 +43,7 @@ open class NotificationsService : FirebaseMessagingService() {
 
     // Specific messages parts
     const val NOTIFICATION_KEY = "notification"
+    const val NOTIFICATION_RESPONSE_KEY = "notificationResponse"
     const val IDENTIFIERS_KEY = "identifiers"
     const val NOTIFICATION_BEHAVIOR_KEY = "notificationBehavior"
     const val NOTIFICATIONS_KEY = "notifications"
@@ -73,6 +80,38 @@ open class NotificationsService : FirebaseMessagingService() {
     }
 
     /**
+     * A helper function for dispatching a "notification received" command to the service.
+     *
+     * @param context      Context where to start the service.
+     * @param notification Notification received
+     * @param receiver     Result receiver
+     */
+    fun enqueueReceive(context: Context, notification: Notification, receiver: ResultReceiver? = null) {
+      val data = getUriBuilderForIdentifier(notification.notificationRequest.identifier).appendPath("receive").build()
+      enqueueWork(context, Intent(NOTIFICATION_EVENT_ACTION, data).also { intent ->
+        intent.putExtra(EVENT_TYPE_KEY, RECEIVE_TYPE)
+        intent.putExtra(NOTIFICATION_KEY, notification)
+        intent.putExtra(RECEIVER_KEY, receiver)
+      })
+    }
+
+    /**
+     * A helper function for dispatching a "notification response received" command to the service.
+     *
+     * @param context      Context where to start the service.
+     * @param notificationResponse Notification response received
+     * @param receiver     Result receiver
+     */
+    fun enqueueResponseReceived(context: Context, response: NotificationResponse, receiver: ResultReceiver? = null) {
+      val data = getUriBuilderForIdentifier(response.notification.notificationRequest.identifier).appendPath("response").build()
+      enqueueWork(context, Intent(NOTIFICATION_EVENT_ACTION, data).also { intent ->
+        intent.putExtra(EVENT_TYPE_KEY, RECEIVE_TYPE)
+        intent.putExtra(NOTIFICATION_RESPONSE_KEY, response)
+        intent.putExtra(RECEIVER_KEY, receiver)
+      })
+    }
+
+    /**
      * A helper function for dispatching a "dismiss notification" command to the service.
      *
      * @param context    Context where to start the service.
@@ -99,6 +138,17 @@ open class NotificationsService : FirebaseMessagingService() {
       enqueueWork(context, Intent(NOTIFICATION_EVENT_ACTION, data).also { intent ->
         intent.putExtra(EVENT_TYPE_KEY, DISMISS_ALL_TYPE)
         intent.putExtra(RECEIVER_KEY, receiver)
+      })
+    }
+
+    /**
+     * A helper function for dispatching a "notifications dropped" command to the service.
+     *
+     * @param context Context where to start the service.
+     */
+    fun enqueueDropped(context: Context) {
+      enqueueWork(context, Intent(NOTIFICATION_EVENT_ACTION).also { intent ->
+        intent.putExtra(EVENT_TYPE_KEY, DROPPED_TYPE)
       })
     }
 
@@ -133,6 +183,9 @@ open class NotificationsService : FirebaseMessagingService() {
   protected open val presentationDelegate: PresentationDelegate by lazy {
     ExpoPresentationDelegate(this)
   }
+  protected open val handlingDelegate: HandlingDelegate by lazy {
+    ExpoHandlingDelegate(this)
+  }
 
   override fun getStartCommandIntent(intent: Intent?): Intent {
     if (intent?.action === NOTIFICATION_EVENT_ACTION) {
@@ -152,6 +205,12 @@ open class NotificationsService : FirebaseMessagingService() {
               it.putParcelableArrayList(NOTIFICATIONS_KEY, ArrayList(onGetAllPresentedNotifications()))
             }
           }
+
+          RECEIVE_TYPE -> onReceiveNotification(intent.getParcelableExtra(NOTIFICATION_KEY)!!)
+
+          RECEIVE_RESPONSE_TYPE -> onReceiveNotificationResponse(intent.getParcelableExtra(NOTIFICATION_RESPONSE_KEY)!!)
+
+          DROPPED_TYPE -> onNotificationsDropped()
 
           PRESENT_TYPE -> onPresentNotification(
             intent.extras?.getParcelable(NOTIFICATION_KEY)!!, // throw exception if empty
@@ -184,6 +243,10 @@ open class NotificationsService : FirebaseMessagingService() {
   open fun onGetAllPresentedNotifications() = presentationDelegate.getAllPresentedNotifications()
   open fun onDismissNotifications(identifiers: Collection<String>) = presentationDelegate.dismissNotifications(identifiers)
   open fun onDismissAllNotifications() = presentationDelegate.dismissAllNotifications()
+
+  open fun onReceiveNotification(notification: Notification) = handlingDelegate.handleNotification(notification)
+  open fun onReceiveNotificationResponse(response: NotificationResponse) = handlingDelegate.handleNotificationResponse(response)
+  open fun onNotificationsDropped() = handlingDelegate.handleNotificationsDropped()
 
   override fun onMessageReceived(remoteMessage: RemoteMessage) = firebaseMessagingDelegate.onMessageReceived(remoteMessage)
   override fun onNewToken(token: String) = firebaseMessagingDelegate.onNewToken(token)
