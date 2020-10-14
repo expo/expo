@@ -1311,7 +1311,7 @@ export async function test(t) {
       }
     });
 
-    t.fdescribe('getNextTriggerDateAsync', () => {
+    t.describe('getNextTriggerDateAsync', () => {
       if (Platform.OS === 'ios') {
         t.it('generates trigger date for a calendar trigger', async () => {
           const nextDate = await Notifications.getNextTriggerDateAsync({ month: 1, hour: 9 });
