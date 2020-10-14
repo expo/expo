@@ -14,8 +14,6 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🎉 New features
 
-- Added `isAvailableAsync` method. ([#10657](https://github.com/expo/expo/pull/10657) by [@PranshuChittora](https://github.com/pranshuchittora))
-
 ### 🐛 Bug fixes
 
 - Set mIntentUri from intent in DetachActivity.onCreate to fix Linking.getInitialURL in Android standalone apps ([#10535](https://github.com/expo/expo/pull/10535) by [@esamelson](https://github.com/esamelson))
