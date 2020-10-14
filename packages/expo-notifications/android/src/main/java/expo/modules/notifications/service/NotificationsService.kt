@@ -153,7 +153,8 @@ open class NotificationsService : FirebaseMessagingService() {
     }
 
     /**
-     * Sends the intent to the best service to handle the {@link #NOTIFICATION_EVENT_ACTION} intent.
+     * Sends the intent to the best service to handle the {@link #NOTIFICATION_EVENT_ACTION} intent
+     * or handles the intent immediately if the service is already up.
      *
      * @param context Context where to start the service
      * @param intent  Intent to dispatch
@@ -180,6 +181,18 @@ open class NotificationsService : FirebaseMessagingService() {
       return getUriBuilder().appendPath(identifier)
     }
 
+    /**
+     * Since starting new background services while the app is in background
+     * is forbidden since Android 8 (see https://developer.android.com/about/versions/oreo/background#services),
+     * we aren't allowed to use [startService] while the app is in background to dispatch actions,
+     * otherwise the app is killed with "java.lang.IllegalStateException: Not allowed to start service".
+     *
+     * In order to overcome this we're going to hold a reference to this service
+     * while it's alive (see [onCreate] and [onDestroy]). If the service is alive,
+     * work that otherwise would have been dispatched via Android service system,
+     * triggering the background execution limits or not, will be done immediately
+     * and synchronously on the current service instance (see [doWork]).
+     */
     private var currentService: NotificationsService? = null
   }
 
