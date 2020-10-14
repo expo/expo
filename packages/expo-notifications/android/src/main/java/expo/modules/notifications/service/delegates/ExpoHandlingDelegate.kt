@@ -25,25 +25,24 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
      * Used only by [NotificationManager] instances. If you look for a place to register
      * your listener, use [NotificationManager] singleton module.
      *
-     *
      * Purposefully the argument is expected to be a [NotificationManager] and just a listener.
-     *
      *
      * This class doesn't hold strong references to listeners, so you need to own your listeners.
      *
      * @param listener A listener instance to be informed of new push device tokens.
      */
     fun addListener(listener: NotificationManager) {
-      // Checks whether this listener has already been registered
-      if (!sListenersReferences.containsKey(listener)) {
-        val listenerReference = WeakReference(listener)
-        sListenersReferences[listener] = listenerReference
-        if (!sPendingNotificationResponses.isEmpty()) {
-          val responseIterator = sPendingNotificationResponses.iterator()
-          while (responseIterator.hasNext()) {
-            listener.onNotificationResponseReceived(responseIterator.next())
-            responseIterator.remove()
-          }
+      if (sListenersReferences.containsKey(listener)) {
+        // Listener is already registered
+        return
+      }
+
+      sListenersReferences[listener] = WeakReference(listener)
+      if (!sPendingNotificationResponses.isEmpty()) {
+        val responseIterator = sPendingNotificationResponses.iterator()
+        while (responseIterator.hasNext()) {
+          listener.onNotificationResponseReceived(responseIterator.next())
+          responseIterator.remove()
         }
       }
     }
