@@ -85,12 +85,6 @@ import expo.modules.notifications.notifications.service.NotificationsHelper;
    */
   /* package */ void handleResponse(NotificationBehavior behavior, final Promise promise) {
     mBehavior = behavior;
-    if (!behavior.shouldShowAlert()) {
-      promise.resolve(null);
-      finish();
-      return;
-    }
-
     mHandler.post(new Runnable() {
       @Override
       public void run() {

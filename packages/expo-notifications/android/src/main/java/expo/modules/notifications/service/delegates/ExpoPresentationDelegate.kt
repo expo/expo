@@ -2,10 +2,12 @@ package expo.modules.notifications.service.delegates
 
 import android.app.NotificationManager
 import android.content.Context
+import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcel
+import android.provider.Settings
 import android.service.notification.StatusBarNotification
 import android.util.Log
 import android.util.Pair
@@ -81,7 +83,23 @@ open class ExpoPresentationDelegate(
     }
   }
 
+  /**
+   * Callback called to present the system UI for a notification.
+   *
+   * If the notification behavior is set to not show any alert,
+   * we (may) play a sound, but then bail out early. You cannot
+   * set badge count without showing a notification.
+   */
   override fun presentNotification(notification: Notification, behavior: NotificationBehavior?) {
+    if (behavior != null && !behavior.shouldShowAlert()) {
+      if (behavior.shouldPlaySound()) {
+        RingtoneManager.getRingtone(
+          context, 
+          notification.notificationRequest.content.sound ?: Settings.System.DEFAULT_NOTIFICATION_URI
+        ).play()
+      }
+      return
+    }
     val tag = notification.notificationRequest.identifier
     NotificationManagerCompat.from(context).notify(tag, ANDROID_NOTIFICATION_ID, createNotification(notification, behavior))
   }
