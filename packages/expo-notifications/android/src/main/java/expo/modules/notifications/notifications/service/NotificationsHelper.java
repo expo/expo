@@ -119,29 +119,14 @@ public class NotificationsHelper {
   }
 
   public void getCategories(ResultReceiver resultReceiver) {
-    Bundle result = new Bundle();
-    result.putParcelableArrayList(CATEGORIES_KEY, new ArrayList<>(mStore.getAllNotificationCategories()));
-    resultReceiver.send(SUCCESS_CODE, result);
+    NotificationsService.Companion.getCategories(mContext, resultReceiver);
   }
 
   public void setCategory(NotificationCategory category, ResultReceiver resultReceiver) {
-    try {
-      Bundle result = new Bundle();
-      result.putParcelable(CATEGORIES_KEY, mStore.saveNotificationCategory(category));
-      resultReceiver.send(SUCCESS_CODE, result);
-    } catch (IOException e) {
-      Log.e("expo-notifications", String.format("Could not save category \"%s\": %s.", category.getIdentifier(), e.getMessage()));
-      e.printStackTrace();
-
-      Bundle result = new Bundle();
-      result.putSerializable(EXCEPTION_KEY, e);
-      resultReceiver.send(EXCEPTION_OCCURRED_CODE, result);
-    }
+    NotificationsService.Companion.setCategory(mContext, category, resultReceiver);
   }
 
   public void deleteCategory(String identifier, ResultReceiver resultReceiver) {
-    Bundle result = new Bundle();
-    result.putBoolean(CATEGORIES_KEY, mStore.removeNotificationCategory(identifier));
-    resultReceiver.send(SUCCESS_CODE, result);
+    NotificationsService.Companion.deleteCategory(mContext, identifier, resultReceiver);
   }
 }

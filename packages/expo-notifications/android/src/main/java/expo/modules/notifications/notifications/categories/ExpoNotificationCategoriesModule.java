@@ -17,13 +17,17 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import expo.modules.notifications.notifications.NotificationSerializer;
 import expo.modules.notifications.notifications.categories.serializers.NotificationsCategoriesSerializer;
 import expo.modules.notifications.notifications.interfaces.NotificationsScoper;
 import expo.modules.notifications.notifications.model.NotificationAction;
 import expo.modules.notifications.notifications.model.NotificationCategory;
 import expo.modules.notifications.notifications.model.TextInputNotificationAction;
 import expo.modules.notifications.notifications.service.NotificationsHelper;
+
+import static expo.modules.notifications.service.NotificationsService.NOTIFICATION_CATEGORIES_KEY;
+import static expo.modules.notifications.service.NotificationsService.NOTIFICATION_CATEGORY_KEY;
+import static expo.modules.notifications.service.NotificationsService.SUCCEEDED_KEY;
+import static expo.modules.notifications.service.NotificationsService.SUCCESS_CODE;
 
 public class ExpoNotificationCategoriesModule extends ExportedModule {
   private static final String EXPORTED_NAME = "ExpoNotificationCategoriesModule";
@@ -57,8 +61,8 @@ public class ExpoNotificationCategoriesModule extends ExportedModule {
     getNotificationsHelper().getCategories(new ResultReceiver(null) {
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
-        Collection<NotificationCategory> categories = resultData.getParcelableArrayList(NotificationsHelper.CATEGORIES_KEY);
-        if (resultCode == NotificationsHelper.SUCCESS_CODE && categories != null) {
+        Collection<NotificationCategory> categories = resultData.getParcelableArrayList(NOTIFICATION_CATEGORIES_KEY);
+        if (resultCode == SUCCESS_CODE && categories != null) {
           promise.resolve(serializeCategories(categories));
         } else {
           promise.reject("ERR_CATEGORIES_FETCH_FAILED", "A list of notification categories could not be fetched.");
@@ -88,8 +92,8 @@ public class ExpoNotificationCategoriesModule extends ExportedModule {
     getNotificationsHelper().setCategory(new NotificationCategory(identifier, actions), new ResultReceiver(null) {
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
-        NotificationCategory category = resultData.getParcelable(NotificationsHelper.CATEGORIES_KEY);
-        if (resultCode == NotificationsHelper.SUCCESS_CODE && category != null) {
+        NotificationCategory category = resultData.getParcelable(NOTIFICATION_CATEGORY_KEY);
+        if (resultCode == SUCCESS_CODE && category != null) {
           promise.resolve(mSerializer.toBundle(category));
         } else {
           promise.reject("ERR_CATEGORY_SET_FAILED", "The provided category could not be set.");
@@ -103,8 +107,8 @@ public class ExpoNotificationCategoriesModule extends ExportedModule {
     getNotificationsHelper().deleteCategory(identifier, new ResultReceiver(null) {
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
-        if (resultCode == NotificationsHelper.SUCCESS_CODE) {
-          promise.resolve(resultData.getBoolean(NotificationsHelper.CATEGORIES_KEY));
+        if (resultCode == SUCCESS_CODE) {
+          promise.resolve(resultData.getBoolean(SUCCEEDED_KEY));
         } else {
           promise.reject("ERR_CATEGORY_DELETE_FAILED", "The category could not be deleted.");
         }

@@ -5,15 +5,19 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Parcelable
 import android.os.ResultReceiver
 import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationBehavior
+import expo.modules.notifications.notifications.model.NotificationCategory
 import expo.modules.notifications.notifications.model.NotificationResponse
+import expo.modules.notifications.service.delegates.ExpoCategoriesDelegate
 import expo.modules.notifications.service.delegates.ExpoHandlingDelegate
 import expo.modules.notifications.service.delegates.ExpoPresentationDelegate
+import expo.modules.notifications.service.interfaces.CategoriesDelegate
 import expo.modules.notifications.service.interfaces.FirebaseMessagingDelegate
 import expo.modules.notifications.service.interfaces.HandlingDelegate
 import expo.modules.notifications.service.interfaces.PresentationDelegate
@@ -33,6 +37,9 @@ open class NotificationsService : FirebaseMessagingService() {
     private const val RECEIVE_TYPE = "receive"
     private const val RECEIVE_RESPONSE_TYPE = "receiveResponse"
     private const val DROPPED_TYPE = "dropped"
+    private const val GET_CATEGORIES_TYPE = "getCategories"
+    private const val SET_CATEGORY_TYPE = "setCategory"
+    private const val DELETE_CATEGORY_TYPE = "deleteCategory"
 
     // Messages parts
     const val SUCCESS_CODE = 0
@@ -44,9 +51,13 @@ open class NotificationsService : FirebaseMessagingService() {
     // Specific messages parts
     const val NOTIFICATION_KEY = "notification"
     const val NOTIFICATION_RESPONSE_KEY = "notificationResponse"
+    const val SUCCEEDED_KEY = "succeeded"
     const val IDENTIFIERS_KEY = "identifiers"
+    const val IDENTIFIER_KEY = "identifier"
     const val NOTIFICATION_BEHAVIOR_KEY = "notificationBehavior"
     const val NOTIFICATIONS_KEY = "notifications"
+    const val NOTIFICATION_CATEGORY_KEY = "notificationCategory"
+    const val NOTIFICATION_CATEGORIES_KEY = "notificationCategories"
 
     /**
      * A helper function for dispatching a "fetch all displayed notifications" command to the service.
@@ -153,6 +164,72 @@ open class NotificationsService : FirebaseMessagingService() {
     }
 
     /**
+     * A helper function for dispatching a "get notification categories" command to the service.
+     *
+     * @param context Context where to start the service.
+     */
+    fun getCategories(context: Context, receiver: ResultReceiver? = null) {
+      doWork(
+        context,
+        Intent(
+          NOTIFICATION_EVENT_ACTION,
+          getUriBuilder()
+            .appendPath("categories")
+            .build()
+        ).also {
+          it.putExtra(EVENT_TYPE_KEY, GET_CATEGORIES_TYPE)
+          it.putExtra(RECEIVER_KEY, receiver)
+        }
+      )
+    }
+
+    /**
+     * A helper function for dispatching a "set notification category" command to the service.
+     *
+     * @param context  Context where to start the service.
+     * @param category Notification category to be set
+     */
+    fun setCategory(context: Context, category: NotificationCategory, receiver: ResultReceiver? = null) {
+      doWork(
+        context,
+        Intent(
+          NOTIFICATION_EVENT_ACTION,
+          getUriBuilder()
+            .appendPath("categories")
+            .appendPath(category.identifier)
+            .build()
+        ).also {
+          it.putExtra(EVENT_TYPE_KEY, SET_CATEGORY_TYPE)
+          it.putExtra(NOTIFICATION_CATEGORY_KEY, category as Parcelable)
+          it.putExtra(RECEIVER_KEY, receiver)
+        }
+      )
+    }
+
+    /**
+     * A helper function for dispatching a "delete notification category" command to the service.
+     *
+     * @param context    Context where to start the service.
+     * @param identifier Category Identifier
+     */
+    fun deleteCategory(context: Context, identifier: String, receiver: ResultReceiver? = null) {
+      doWork(
+        context,
+        Intent(
+          NOTIFICATION_EVENT_ACTION,
+          getUriBuilder()
+            .appendPath("categories")
+            .appendPath(identifier)
+            .build()
+        ).also {
+          it.putExtra(EVENT_TYPE_KEY, DELETE_CATEGORY_TYPE)
+          it.putExtra(IDENTIFIER_KEY, identifier)
+          it.putExtra(RECEIVER_KEY, receiver)
+        }
+      )
+    }
+
+    /**
      * Sends the intent to the best service to handle the {@link #NOTIFICATION_EVENT_ACTION} intent
      * or handles the intent immediately if the service is already up.
      *
@@ -205,6 +282,9 @@ open class NotificationsService : FirebaseMessagingService() {
   protected open val handlingDelegate: HandlingDelegate by lazy {
     ExpoHandlingDelegate(this)
   }
+  protected open val categoriesDelegate: CategoriesDelegate by lazy {
+    ExpoCategoriesDelegate(this)
+  }
 
   override fun onCreate() {
     super.onCreate()
@@ -252,6 +332,24 @@ open class NotificationsService : FirebaseMessagingService() {
 
           DISMISS_ALL_TYPE -> onDismissAllNotifications()
 
+          GET_CATEGORIES_TYPE -> {
+            resultData = Bundle().also {
+              it.putParcelableArrayList(NOTIFICATION_CATEGORIES_KEY, ArrayList(onGetCategories()))
+            }
+          }
+
+          SET_CATEGORY_TYPE -> {
+            resultData = Bundle().also {
+              it.putSerializable(NOTIFICATION_CATEGORY_KEY, onSetCategory(intent.getParcelableExtra(NOTIFICATION_CATEGORY_KEY)!!))
+            }
+          }
+
+          DELETE_CATEGORY_TYPE -> {
+            resultData = Bundle().also {
+              it.putBoolean(SUCCEEDED_KEY, onDeleteCategory(intent.extras?.getString(IDENTIFIER_KEY)!!))
+            }
+          }
+
           else -> throw IllegalArgumentException("Received event of unrecognized type: $eventType. Ignoring.")
         }
 
@@ -276,6 +374,10 @@ open class NotificationsService : FirebaseMessagingService() {
   open fun onReceiveNotification(notification: Notification) = handlingDelegate.handleNotification(notification)
   open fun onReceiveNotificationResponse(response: NotificationResponse) = handlingDelegate.handleNotificationResponse(response)
   open fun onNotificationsDropped() = handlingDelegate.handleNotificationsDropped()
+
+  open fun onGetCategories() = categoriesDelegate.getCategories()
+  open fun onSetCategory(category: NotificationCategory) = categoriesDelegate.setCategory(category)
+  open fun onDeleteCategory(identifier: String) = categoriesDelegate.deleteCategory(identifier)
 
   override fun onMessageReceived(remoteMessage: RemoteMessage) = firebaseMessagingDelegate.onMessageReceived(remoteMessage)
   override fun onNewToken(token: String) = firebaseMessagingDelegate.onNewToken(token)
