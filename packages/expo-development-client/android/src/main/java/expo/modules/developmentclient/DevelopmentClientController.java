@@ -69,6 +69,7 @@ public class DevelopmentClientController {
   private DevelopmentClientHost mDevClientHost;
   private ReactNativeHost mAppHost;
   private ReactRootView mRootView;
+  private Boolean appWasLoaded = false;
 
   private DevelopmentClientController(Context context, ReactNativeHost appHost, String mainComponentName) {
     mMainComponentName = mainComponentName;
@@ -98,6 +99,9 @@ public class DevelopmentClientController {
   }
 
   public ReactNativeHost getReactNativeHost() {
+    if (appWasLoaded) {
+      return mAppHost;
+    }
     return mDevClientHost;
   }
 
@@ -111,17 +115,14 @@ public class DevelopmentClientController {
 
     // Read orientation config
     final int orientation =
-        options.hasKey("orientation") && options.getString("orientation").equals("landscape") ?
-            ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE :
-            ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT;
+      options.hasKey("orientation") && options.getString("orientation").equals("landscape") ?
+        ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE :
+        ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT;
 
     // Start the app on the main thread
     new Handler(Looper.getMainLooper()).post(new Runnable() {
       @Override
       public void run() {
-        mRootView.unmountReactApplication();
-        mDevClientHost.getReactInstanceManager().destroy();
-
         ReactInstanceManager appInstanceManager = mAppHost.getReactInstanceManager();
 
         try {
@@ -141,8 +142,12 @@ public class DevelopmentClientController {
           mSettingsField.setAccessible(true);
           mSettingsField.set(devServerHelper, settings);
 
-          appInstanceManager.createReactContextInBackground();
-          appInstanceManager.attachRootView(mRootView);
+          mRootView.unmountReactApplication();
+
+          mRootView.startReactApplication(appInstanceManager, "BareExpo");
+          appInstanceManager.onHostResume(reactContext.getCurrentActivity());
+
+          appWasLoaded = true;
         } catch (Exception e) {
           Log.e("ExpoDevelopmentClient", "Couldn't inject settings.", e);
         }
