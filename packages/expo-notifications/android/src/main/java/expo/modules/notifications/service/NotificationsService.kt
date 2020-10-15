@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Parcelable
 import android.os.ResultReceiver
 import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -20,7 +21,6 @@ import expo.modules.notifications.service.interfaces.CategoriesDelegate
 import expo.modules.notifications.service.interfaces.FirebaseMessagingDelegate
 import expo.modules.notifications.service.interfaces.HandlingDelegate
 import expo.modules.notifications.service.interfaces.PresentationDelegate
-import java.io.Serializable
 
 /**
  * Subclass of FirebaseMessagingService, central dispatcher for all the notifications-related actions.
@@ -169,10 +169,18 @@ open class NotificationsService : FirebaseMessagingService() {
      * @param context Context where to start the service.
      */
     fun getCategories(context: Context, receiver: ResultReceiver? = null) {
-      doWork(context, Intent(NOTIFICATION_EVENT_ACTION, getUriBuilder().appendPath("categories").build()).also {
-        it.putExtra(EVENT_TYPE_KEY, GET_CATEGORIES_TYPE)
-        it.putExtra(RECEIVER_KEY, receiver)
-      })
+      doWork(
+        context,
+        Intent(
+          NOTIFICATION_EVENT_ACTION,
+          getUriBuilder()
+            .appendPath("categories")
+            .build()
+        ).also {
+          it.putExtra(EVENT_TYPE_KEY, GET_CATEGORIES_TYPE)
+          it.putExtra(RECEIVER_KEY, receiver)
+        }
+      )
     }
 
     /**
@@ -182,11 +190,20 @@ open class NotificationsService : FirebaseMessagingService() {
      * @param category Notification category to be set
      */
     fun setCategory(context: Context, category: NotificationCategory, receiver: ResultReceiver? = null) {
-      doWork(context, Intent(NOTIFICATION_EVENT_ACTION, getUriBuilder().appendPath("categories").appendPath(category.identifier).build()).also {
-        it.putExtra(EVENT_TYPE_KEY, SET_CATEGORY_TYPE)
-        it.putExtra(NOTIFICATION_CATEGORY_KEY, category as Serializable)
-        it.putExtra(RECEIVER_KEY, receiver)
-      })
+      doWork(
+        context,
+        Intent(
+          NOTIFICATION_EVENT_ACTION,
+          getUriBuilder()
+            .appendPath("categories")
+            .appendPath(category.identifier)
+            .build()
+        ).also {
+          it.putExtra(EVENT_TYPE_KEY, SET_CATEGORY_TYPE)
+          it.putExtra(NOTIFICATION_CATEGORY_KEY, category as Parcelable)
+          it.putExtra(RECEIVER_KEY, receiver)
+        }
+      )
     }
 
     /**
@@ -196,11 +213,20 @@ open class NotificationsService : FirebaseMessagingService() {
      * @param identifier Category Identifier
      */
     fun deleteCategory(context: Context, identifier: String, receiver: ResultReceiver? = null) {
-      doWork(context, Intent(NOTIFICATION_EVENT_ACTION, getUriBuilder().appendPath("categories").appendPath(identifier).build()).also {
-        it.putExtra(EVENT_TYPE_KEY, DELETE_CATEGORY_TYPE)
-        it.putExtra(IDENTIFIER_KEY, identifier)
-        it.putExtra(RECEIVER_KEY, receiver)
-      })
+      doWork(
+        context,
+        Intent(
+          NOTIFICATION_EVENT_ACTION,
+          getUriBuilder()
+            .appendPath("categories")
+            .appendPath(identifier)
+            .build()
+        ).also {
+          it.putExtra(EVENT_TYPE_KEY, DELETE_CATEGORY_TYPE)
+          it.putExtra(IDENTIFIER_KEY, identifier)
+          it.putExtra(RECEIVER_KEY, receiver)
+        }
+      )
     }
 
     /**
