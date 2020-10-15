@@ -4,19 +4,20 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 
-import abi39_0_0.org.unimodules.core.Promise;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import abi39_0_0.expo.modules.notifications.notifications.categories.ExpoNotificationCategoriesModule;
-import expo.modules.notifications.notifications.model.NotificationCategory;
-import expo.modules.notifications.notifications.service.NotificationsHelper;
-import host.exp.exponent.kernel.ExperienceId;
 import abi39_0_0.host.exp.exponent.modules.api.notifications.ScopedNotificationsIdUtils;
+import abi39_0_0.org.unimodules.core.Promise;
+import androidx.annotation.NonNull;
+import expo.modules.notifications.notifications.model.NotificationCategory;
+import host.exp.exponent.kernel.ExperienceId;
+
+import static expo.modules.notifications.service.NotificationsService.NOTIFICATION_CATEGORIES_KEY;
+import static expo.modules.notifications.service.NotificationsService.SUCCESS_CODE;
 
 public class ScopedExpoNotificationCategoriesModule extends ExpoNotificationCategoriesModule {
   private final ExperienceId mExperienceId;
@@ -31,8 +32,8 @@ public class ScopedExpoNotificationCategoriesModule extends ExpoNotificationCate
     getNotificationsHelper().getCategories(new ResultReceiver(null) {
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
-        Collection<NotificationCategory> categories = resultData.getParcelableArrayList(NotificationsHelper.CATEGORIES_KEY);
-        if (resultCode == NotificationsHelper.SUCCESS_CODE && categories != null) {
+        Collection<NotificationCategory> categories = resultData.getParcelableArrayList(NOTIFICATION_CATEGORIES_KEY);
+        if (resultCode == SUCCESS_CODE && categories != null) {
           promise.resolve(serializeScopedCategories(categories));
         } else {
           promise.reject("ERR_CATEGORIES_FETCH_FAILED", "A list of notification categories could not be fetched.");
