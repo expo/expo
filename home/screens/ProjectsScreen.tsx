@@ -5,6 +5,7 @@ import * as React from 'react';
 import { Alert, AppState, Clipboard, Platform, StyleSheet, View } from 'react-native';
 
 import ApiV2HttpClient from '../api/ApiV2HttpClient';
+import Config from '../api/Config';
 import Connectivity from '../api/Connectivity';
 import DevIndicator from '../components/DevIndicator';
 import ListItem from '../components/ListItem';
@@ -281,7 +282,7 @@ class ProjectsView extends React.Component<Props, State> {
 
     return this.props.recentHistory.map((project, i) => {
       if (!project) return null;
-      const username = project.manifestUrl.includes('exp://exp.host')
+      const username = project.manifestUrl.includes(`exp://${Config.api.host}`)
         ? extractUsername(project.manifestUrl)
         : undefined;
       let releaseChannel = project.manifest?.releaseChannel;
