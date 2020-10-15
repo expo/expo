@@ -1,5 +1,35 @@
 require 'json'
 
+def use_expo_flipper!(versions = {}, configurations: ['Debug', 'Release'])
+  versions['Flipper'] ||= '~> 0.54.0'
+  versions['Flipper-DoubleConversion'] ||= '1.1.7'
+  versions['Flipper-Folly'] ||= '~> 2.2'
+  versions['Flipper-Glog'] ||= '0.3.6'
+  versions['Flipper-PeerTalk'] ||= '~> 0.0.4'
+  versions['Flipper-RSocket'] ||= '~> 1.1'
+  pod 'FlipperKit', versions['Flipper'], :configurations => configurations
+  pod 'FlipperKit/FlipperKitLayoutPlugin', versions['Flipper'], :configurations => configurations
+  pod 'FlipperKit/SKIOSNetworkPlugin', versions['Flipper'], :configurations => configurations
+  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', versions['Flipper'], :configurations => configurations
+  pod 'FlipperKit/FlipperKitReactPlugin', versions['Flipper'], :configurations => configurations
+  # List all transitive dependencies for FlipperKit pods
+  # to avoid them being linked in Release builds
+  pod 'Flipper', versions['Flipper'], :configurations => configurations
+  pod 'Flipper-DoubleConversion', versions['Flipper-DoubleConversion'], :configurations => configurations
+  pod 'Flipper-Folly', versions['Flipper-Folly'], :configurations => configurations
+  pod 'Flipper-Glog', versions['Flipper-Glog'], :configurations => configurations
+  pod 'Flipper-PeerTalk', versions['Flipper-PeerTalk'], :configurations => configurations
+  pod 'Flipper-RSocket', versions['Flipper-RSocket'], :configurations => configurations
+  pod 'FlipperKit/Core', versions['Flipper'], :configurations => configurations
+  pod 'FlipperKit/CppBridge', versions['Flipper'], :configurations => configurations
+  pod 'FlipperKit/FBCxxFollyDynamicConvert', versions['Flipper'], :configurations => configurations
+  pod 'FlipperKit/FBDefines', versions['Flipper'], :configurations => configurations
+  pod 'FlipperKit/FKPortForwarding', versions['Flipper'], :configurations => configurations
+  pod 'FlipperKit/FlipperKitHighlightOverlay', versions['Flipper'], :configurations => configurations
+  pod 'FlipperKit/FlipperKitLayoutTextSearchable', versions['Flipper'], :configurations => configurations
+  pod 'FlipperKit/FlipperKitNetworkPlugin', versions['Flipper'], :configurations => configurations
+end
+
 install! 'cocoapods',
          :generate_multiple_pod_projects => true,
          :incremental_installation => true
@@ -43,8 +73,14 @@ target 'BareExpo' do
   pod 'EXRandom', path: '../../../packages/expo-random/ios'
   pod 'expo-development-client', path: '../../../packages/expo-development-client'
 
-  # Fix Google Sign-in
+  # Enables Flipper.
+  # Note that if you have use_frameworks! enabled, Flipper will not work and
+  use_expo_flipper!('Flipper' => '~> 0.62.0') # should match the version of your Flipper client app
+
+  # Fix Google Sign-in and do Flipper post install
   post_install do |installer|
+    flipper_post_install(installer)
+    
     installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
       target_installation_result.native_target.build_configurations.each do |config|
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '10.0'

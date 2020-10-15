@@ -1,19 +1,7 @@
-Alamofire:
-  LABEL: Alamofire
-  PROJECT_PATH: Alamofire.xcodeproj
-  UUID: 81B7E9B7CD0CADA087A4BB042FBA92E7
-AlamofireRouter:
-  LABEL: AlamofireRouter
-  PROJECT_PATH: AlamofireRouter.xcodeproj
-  UUID: 99FAD2131028EB45782ACC35269F19EA
 Amplitude:
   LABEL: Amplitude
   PROJECT_PATH: Amplitude.xcodeproj
   UUID: A8506691BCF493596D6E68176F7E0129
-Amplitude-iOS:
-  LABEL: Amplitude-iOS
-  PROJECT_PATH: Amplitude-iOS.xcodeproj
-  UUID: E9F5188151EE37F157A617BBBC3DB105
 Analytics:
   LABEL: Analytics
   PROJECT_PATH: Analytics.xcodeproj
@@ -26,14 +14,14 @@ boost-for-react-native:
   LABEL: boost-for-react-native
   PROJECT_PATH: boost-for-react-native.xcodeproj
   UUID: AA4CE39926C0C12D02F874C1C48A5710
-Branch:
-  LABEL: Branch
-  PROJECT_PATH: Branch.xcodeproj
-  UUID: 32AB2597F26D238AAF12A9F8A95B992E
-Debug:
-  LABEL: Debug
-  PROJECT_PATH: Debug.xcodeproj
-  UUID: B45E9125D995ECFABBE857A099AB9E5B
+CocoaAsyncSocket:
+  LABEL: CocoaAsyncSocket
+  PROJECT_PATH: CocoaAsyncSocket.xcodeproj
+  UUID: 028565F879BDCF0F420E4AB07AAF9426
+CocoaLibEvent:
+  LABEL: CocoaLibEvent
+  PROJECT_PATH: CocoaLibEvent.xcodeproj
+  UUID: 0E4F8F3811F0945641866082B5F12145
 DoubleConversion:
   LABEL: DoubleConversion
   PROJECT_PATH: DoubleConversion.xcodeproj
@@ -66,10 +54,6 @@ EXBattery:
   LABEL: EXBattery
   PROJECT_PATH: EXBattery.xcodeproj
   UUID: 5941E7B2BA388644B9A594045D22DE1D
-EXBluetooth:
-  LABEL: EXBluetooth
-  PROJECT_PATH: EXBluetooth.xcodeproj
-  UUID: 85E4ABA3FE5052C9FD39179D7166A9C1
 EXBlur:
   LABEL: EXBlur
   PROJECT_PATH: EXBlur.xcodeproj
@@ -82,10 +66,6 @@ EXCalendar:
   LABEL: EXCalendar
   PROJECT_PATH: EXCalendar.xcodeproj
   UUID: 0F2988851D689F1E41CFC89C31422758
-EXCamera:
-  LABEL: EXCamera
-  PROJECT_PATH: EXCamera.xcodeproj
-  UUID: 4B109C23F45DFD6B4CA40B87D733EB11
 EXCellular:
   LABEL: EXCellular
   PROJECT_PATH: EXCellular.xcodeproj
@@ -114,14 +94,6 @@ EXDevMenuInterface:
   LABEL: EXDevMenuInterface
   PROJECT_PATH: EXDevMenuInterface.xcodeproj
   UUID: 4D3A2802599AB5CFD5DCC16429ABBF2C
-EXDevMenuProtocole:
-  LABEL: EXDevMenuProtocole
-  PROJECT_PATH: EXDevMenuProtocole.xcodeproj
-  UUID: C962ABE329C4939C48A45EBA6661D1B0
-EXDevMenuProtocoles:
-  LABEL: EXDevMenuProtocoles
-  PROJECT_PATH: EXDevMenuProtocoles.xcodeproj
-  UUID: EB3EC63A63BB9D45CDBBFDAEFE5F561A
 EXDocumentPicker:
   LABEL: EXDocumentPicker
   PROJECT_PATH: EXDocumentPicker.xcodeproj
@@ -134,10 +106,6 @@ EXFacebook:
   LABEL: EXFacebook
   PROJECT_PATH: EXFacebook.xcodeproj
   UUID: FEAA3FBA5C5225363EE9E6D0B5B3183B
-EXFaceDetector:
-  LABEL: EXFaceDetector
-  PROJECT_PATH: EXFaceDetector.xcodeproj
-  UUID: E3D1D7C85F27952DD8B1371AFE371A98
 EXFileSystem:
   LABEL: EXFileSystem
   PROJECT_PATH: EXFileSystem.xcodeproj
@@ -290,10 +258,6 @@ EXTaskManager:
   LABEL: EXTaskManager
   PROJECT_PATH: EXTaskManager.xcodeproj
   UUID: 86D546D1F048CDA66BE7589194F91D23
-EXUpdates:
-  LABEL: EXUpdates
-  PROJECT_PATH: EXUpdates.xcodeproj
-  UUID: 076FF2640FFF3466FB36FD12A629113A
 EXVideoThumbnails:
   LABEL: EXVideoThumbnails
   PROJECT_PATH: EXVideoThumbnails.xcodeproj
@@ -342,18 +306,34 @@ FirebaseInstanceID:
   LABEL: FirebaseInstanceID
   PROJECT_PATH: FirebaseInstanceID.xcodeproj
   UUID: 828A845A4F63A824ED62A82D61941B85
-FirebaseMLCommon:
-  LABEL: FirebaseMLCommon
-  PROJECT_PATH: FirebaseMLCommon.xcodeproj
-  UUID: 655B4D5DC1C1034B3458073E51ECD859
-FirebaseMLVision:
-  LABEL: FirebaseMLVision
-  PROJECT_PATH: FirebaseMLVision.xcodeproj
-  UUID: 3D5358053745F186EF3299093007AD97
-FirebaseMLVisionFaceModel:
-  LABEL: FirebaseMLVisionFaceModel
-  PROJECT_PATH: FirebaseMLVisionFaceModel.xcodeproj
-  UUID: D61B01865B69609E47812F6C78446AFB
+Flipper:
+  LABEL: Flipper
+  PROJECT_PATH: Flipper.xcodeproj
+  UUID: E37FFB87E7DF4D8CB6E3FBD5373DC6D0
+Flipper-DoubleConversion:
+  LABEL: Flipper-DoubleConversion
+  PROJECT_PATH: Flipper-DoubleConversion.xcodeproj
+  UUID: 37536435931E49AAE030DC5B8307BD28
+Flipper-Folly:
+  LABEL: Flipper-Folly
+  PROJECT_PATH: Flipper-Folly.xcodeproj
+  UUID: BC71C7B21753292689B3040E2CC24B53
+Flipper-Glog:
+  LABEL: Flipper-Glog
+  PROJECT_PATH: Flipper-Glog.xcodeproj
+  UUID: 62C2C1B208D60EBCBCCEFAF36D906B32
+Flipper-PeerTalk:
+  LABEL: Flipper-PeerTalk
+  PROJECT_PATH: Flipper-PeerTalk.xcodeproj
+  UUID: 1A523ED12092D1D5730897FA5D8F0D95
+Flipper-RSocket:
+  LABEL: Flipper-RSocket
+  PROJECT_PATH: Flipper-RSocket.xcodeproj
+  UUID: 1A456A673F68CCC772569FBA33E4A9E0
+FlipperKit:
+  LABEL: FlipperKit
+  PROJECT_PATH: FlipperKit.xcodeproj
+  UUID: 21747C582544BA8AFFF8CE8331CB4D93
 Folly:
   LABEL: Folly
   PROJECT_PATH: Folly.xcodeproj
@@ -362,10 +342,6 @@ glog:
   LABEL: glog
   PROJECT_PATH: glog.xcodeproj
   UUID: 86F597DC3D8F3D7A34EC5A5C413F7255
-GoogleAPIClientForREST:
-  LABEL: GoogleAPIClientForREST
-  PROJECT_PATH: GoogleAPIClientForREST.xcodeproj
-  UUID: E899E01EE94E3AAE44DBC0A0C183AD70
 GoogleAppMeasurement:
   LABEL: GoogleAppMeasurement
   PROJECT_PATH: GoogleAppMeasurement.xcodeproj
@@ -382,10 +358,6 @@ GoogleSignIn:
   LABEL: GoogleSignIn
   PROJECT_PATH: GoogleSignIn.xcodeproj
   UUID: 70D52585A9FA4EEA343010638ADABC11
-GoogleToolboxForMac:
-  LABEL: GoogleToolboxForMac
-  PROJECT_PATH: GoogleToolboxForMac.xcodeproj
-  UUID: 6A6C31AF5480BB69EDDFCD50D28967CD
 GoogleUtilities:
   LABEL: GoogleUtilities
   PROJECT_PATH: GoogleUtilities.xcodeproj
@@ -402,6 +374,10 @@ nanopb:
   LABEL: nanopb
   PROJECT_PATH: nanopb.xcodeproj
   UUID: 052B66B57BF269A4B160A5659F7D46D4
+OpenSSL-Universal:
+  LABEL: OpenSSL-Universal
+  PROJECT_PATH: OpenSSL-Universal.xcodeproj
+  UUID: 6F68E8F1AF30EB52FE60841D139BAC02
 Pods-BareExpo:
   LABEL: Pods-BareExpo
   PROJECT_PATH: Pods.xcodeproj
@@ -414,10 +390,6 @@ PromisesObjC:
   LABEL: PromisesObjC
   PROJECT_PATH: PromisesObjC.xcodeproj
   UUID: 615BB6D15EC37D16C898941802F0D251
-Protobuf:
-  LABEL: Protobuf
-  PROJECT_PATH: Protobuf.xcodeproj
-  UUID: BF47F3270E009392526FDEE0C3BA42AD
 RCTRequired:
   LABEL: RCTRequired
   PROJECT_PATH: RCTRequired.xcodeproj
@@ -462,10 +434,6 @@ react-native-appearance:
   LABEL: react-native-appearance
   PROJECT_PATH: react-native-appearance.xcodeproj
   UUID: A6256F4276AA88FDEAAA83D3F4FEBA89
-react-native-branch:
-  LABEL: react-native-branch
-  PROJECT_PATH: react-native-branch.xcodeproj
-  UUID: BA47A315C7B71D68560B96280D945371
 react-native-netinfo:
   LABEL: react-native-netinfo
   PROJECT_PATH: react-native-netinfo.xcodeproj
@@ -594,10 +562,6 @@ UMCore:
   LABEL: UMCore
   PROJECT_PATH: UMCore.xcodeproj
   UUID: 153171642F5C5CBC05FD3EF6B23A3F36
-UMFaceDetectorInterface:
-  LABEL: UMFaceDetectorInterface
-  PROJECT_PATH: UMFaceDetectorInterface.xcodeproj
-  UUID: 8DC606D9CFDD04C553C81728629364B3
 UMFileSystemInterface:
   LABEL: UMFileSystemInterface
   PROJECT_PATH: UMFileSystemInterface.xcodeproj
@@ -630,6 +594,10 @@ Yoga:
   LABEL: Yoga
   PROJECT_PATH: Yoga.xcodeproj
   UUID: 8DB658880A3F558549A84D99BCFADCBC
+YogaKit:
+  LABEL: YogaKit
+  PROJECT_PATH: YogaKit.xcodeproj
+  UUID: 0329F50521131A4BC4034736FA91D109
 ZXingObjC:
   LABEL: ZXingObjC
   PROJECT_PATH: ZXingObjC.xcodeproj
