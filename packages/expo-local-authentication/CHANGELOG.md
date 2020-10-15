@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Guard against crash on Android when `FragmentActivity` is null creating the Biometric Prompt. ([#10679](https://github.com/expo/expo/pull/10679) by [@vascofg](https://github.com/vascofg))
+
 ## 9.4.0 — 2020-10-12
 
 ### 🐛 Bug fixes
