@@ -53,6 +53,11 @@ const VERSIONS = versionDirectories
     if (b === 'unversioned' || b === 'latest') return 1;
 
     return semver.major(b) - semver.major(a);
+  })
+  .sort((a, b) => {
+    if (a === BETA_VERSION) return -1;
+    if (b === BETA_VERSION) return 1;
+    return 0;
   });
 
 module.exports = {
