@@ -248,6 +248,9 @@ export default {
     mediaRecorder.addEventListener('stop', () => {
       mediaRecorderDurationAlreadyRecorded = getAudioRecorderDurationMillis();
       mediaRecorderIsRecording = false;
+
+      // Clears recording icon in Chrome tab
+      stream.getTracks().forEach(track => track.stop());
     });
 
     const { uri, ...status } = await this.getAudioRecordingStatus();
