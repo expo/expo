@@ -1,11 +1,12 @@
 package expo.modules.notifications.notifications.service;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.util.Log;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,7 +25,6 @@ public class NotificationsHelper {
 
   // Known result codes
   public static final int SUCCESS_CODE = 0;
-  @SuppressWarnings("unused")
   public static final int EXCEPTION_OCCURRED_CODE = -1;
   public static final String EXCEPTION_KEY = "exception";
   public static final String NOTIFICATIONS_KEY = "notifications";
@@ -118,21 +118,30 @@ public class NotificationsHelper {
     NotificationsService.Companion.enqueueResponseReceived(mContext, response, null);
   }
 
-  public Collection<NotificationCategory> getCategories() {
-    return mStore.getAllNotificationCategories();
+  public void getCategories(ResultReceiver resultReceiver) {
+    Bundle result = new Bundle();
+    result.putParcelableArrayList(CATEGORIES_KEY, new ArrayList<>(mStore.getAllNotificationCategories()));
+    resultReceiver.send(SUCCESS_CODE, result);
   }
 
-  public NotificationCategory setCategory(NotificationCategory category) {
+  public void setCategory(NotificationCategory category, ResultReceiver resultReceiver) {
     try {
-      return mStore.saveNotificationCategory(category);
+      Bundle result = new Bundle();
+      result.putParcelable(CATEGORIES_KEY, mStore.saveNotificationCategory(category));
+      resultReceiver.send(SUCCESS_CODE, result);
     } catch (IOException e) {
       Log.e("expo-notifications", String.format("Could not save category \"%s\": %s.", category.getIdentifier(), e.getMessage()));
       e.printStackTrace();
-      return null;
+
+      Bundle result = new Bundle();
+      result.putSerializable(EXCEPTION_KEY, e);
+      resultReceiver.send(EXCEPTION_OCCURRED_CODE, result);
     }
   }
 
-  public boolean deleteCategory(String identifier) {
-    return mStore.removeNotificationCategory(identifier);
+  public void deleteCategory(String identifier, ResultReceiver resultReceiver) {
+    Bundle result = new Bundle();
+    result.putBoolean(CATEGORIES_KEY, mStore.removeNotificationCategory(identifier));
+    resultReceiver.send(SUCCESS_CODE, result);
   }
 }
