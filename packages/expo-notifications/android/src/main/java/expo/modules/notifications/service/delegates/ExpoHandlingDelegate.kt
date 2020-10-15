@@ -58,7 +58,7 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
         it.onNotificationReceived(notification)
       }
     } else {
-      NotificationsService.enqueuePresent(context, notification)
+      NotificationsService.present(context, notification)
     }
   }
 
