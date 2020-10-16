@@ -19,6 +19,7 @@ import expo.modules.notifications.notifications.model.NotificationResponse
 import expo.modules.notifications.service.delegates.ExpoCategoriesDelegate
 import expo.modules.notifications.service.delegates.ExpoHandlingDelegate
 import expo.modules.notifications.service.delegates.ExpoPresentationDelegate
+import expo.modules.notifications.service.delegates.ExpoSchedulingDelegate
 import expo.modules.notifications.service.interfaces.CategoriesDelegate
 import expo.modules.notifications.service.interfaces.HandlingDelegate
 import expo.modules.notifications.service.interfaces.PresentationDelegate
@@ -426,7 +427,8 @@ open class NotificationsService : BroadcastReceiver() {
   protected open fun getCategoriesDelegate(context: Context): CategoriesDelegate =
     ExpoCategoriesDelegate(context)
 
-  protected open fun getSchedulingDelegate(context: Context): SchedulingDelegate = null!! // TODO
+  protected open fun getSchedulingDelegate(context: Context): SchedulingDelegate =
+    ExpoSchedulingDelegate(context)
 
   override fun onReceive(context: Context, intent: Intent?) {
     if (intent != null && SETUP_ACTIONS.contains(intent.action)) {
