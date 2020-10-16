@@ -144,6 +144,16 @@ public class LocalAuthenticationModule extends ExportedModule {
       return;
     }
 
+    final FragmentActivity fragmentActivity = (FragmentActivity) getCurrentActivity();
+    if (fragmentActivity == null) {
+      Bundle errorResult = new Bundle();
+      errorResult.putBoolean("success", false);
+      errorResult.putString("error", "not_available");
+      errorResult.putString("message", "getCurrentActivity() returned null");
+      promise.resolve(errorResult);
+      return;
+    }
+
     // BiometricPrompt callbacks are invoked on the main thread so also run this there to avoid
     // having to do locking.
     mUIManager.runOnUiQueueThread(new Runnable() {
@@ -177,7 +187,6 @@ public class LocalAuthenticationModule extends ExportedModule {
         mIsAuthenticating = true;
         mPromise = promise;
 
-        FragmentActivity fragmentActivity = (FragmentActivity) getCurrentActivity();
         Executor executor = Executors.newSingleThreadExecutor();
         mBiometricPrompt = new BiometricPrompt(fragmentActivity, executor, mAuthenticationCallback);
 
