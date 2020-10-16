@@ -26,6 +26,15 @@
     </receiver>
 
     <receiver
+      android:name=".service.NotificationsService"
+      android:enabled="true"
+      android:exported="false">
+      <intent-filter android:priority="-1">
+        <action android:name="expo.modules.notifications.NOTIFICATION_EVENT" />
+      </intent-filter>
+    </receiver>
+
+    <receiver
       android:name=".notifications.service.NotificationResponseReceiver"
       android:enabled="true"
       android:exported="false" />

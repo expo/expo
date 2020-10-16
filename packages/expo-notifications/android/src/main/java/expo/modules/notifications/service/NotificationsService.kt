@@ -1,5 +1,6 @@
 package expo.modules.notifications.service
 
+import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -22,7 +23,7 @@ import expo.modules.notifications.service.interfaces.PresentationDelegate
 /**
  * Subclass of FirebaseMessagingService, central dispatcher for all the notifications-related actions.
  */
-open class NotificationsService : FirebaseMessagingService() {
+open class NotificationsService : BroadcastReceiver() {
   companion object {
     const val NOTIFICATION_EVENT_ACTION = "expo.modules.notifications.NOTIFICATION_EVENT"
 
@@ -234,14 +235,10 @@ open class NotificationsService : FirebaseMessagingService() {
      * @param intent  Intent to dispatch
      */
     fun doWork(context: Context, intent: Intent) {
-      currentService?.let {
-        it.handleIntent(it.getStartCommandIntent(intent))
-        return
-      }
       val searchIntent = Intent(intent.action).setPackage(context.packageName)
-      context.packageManager.resolveService(searchIntent, 0)?.serviceInfo?.let {
+      context.packageManager.queryBroadcastReceivers(searchIntent, 0).firstOrNull()?.activityInfo?.let {
         intent.component = ComponentName(it.packageName, it.name)
-        context.startService(intent)
+        context.sendBroadcast(intent)
         return
       }
       Log.e("expo-notifications", "No service capable of handling notifications found (intent = ${intent.action}). Ensure that you have configured your AndroidManifest.xml properly.")
@@ -254,46 +251,18 @@ open class NotificationsService : FirebaseMessagingService() {
     protected fun getUriBuilderForIdentifier(identifier: String): Uri.Builder {
       return getUriBuilder().appendPath(identifier)
     }
-
-    /**
-     * Since starting new background services while the app is in background
-     * is forbidden since Android 8 (see https://developer.android.com/about/versions/oreo/background#services),
-     * we aren't allowed to use [startService] while the app is in background to dispatch actions,
-     * otherwise the app is killed with "java.lang.IllegalStateException: Not allowed to start service".
-     *
-     * In order to overcome this we're going to hold a reference to this service
-     * while it's alive (see [onCreate] and [onDestroy]). If the service is alive,
-     * work that otherwise would have been dispatched via Android service system,
-     * triggering the background execution limits or not, will be done immediately
-     * and synchronously on the current service instance (see [doWork]).
-     */
-    private var currentService: NotificationsService? = null
   }
 
-  override fun onCreate() {
-    super.onCreate()
-    currentService = this
-  }
   protected open fun getPresentationDelegate(context: Context): PresentationDelegate =
     ExpoPresentationDelegate(context)
 
-  override fun onDestroy() {
-    currentService = null
-    super.onDestroy()
-  }
   protected open fun getHandlingDelegate(context: Context): HandlingDelegate =
     ExpoHandlingDelegate(context)
 
-  override fun getStartCommandIntent(intent: Intent?): Intent {
-    if (intent?.action === NOTIFICATION_EVENT_ACTION) {
-      return intent
-    }
-    return super.getStartCommandIntent(intent)
-  }
   protected open fun getCategoriesDelegate(context: Context): CategoriesDelegate =
     ExpoCategoriesDelegate(context)
 
-  override fun handleIntent(intent: Intent?) {
+  override fun onReceive(context: Context, intent: Intent?) {
     if (intent?.action === NOTIFICATION_EVENT_ACTION) {
       val receiver: ResultReceiver? = intent.extras?.get(RECEIVER_KEY) as? ResultReceiver
       try {
@@ -335,7 +304,7 @@ open class NotificationsService : FirebaseMessagingService() {
         receiver?.send(ERROR_CODE, Bundle().also { it.putSerializable(EXCEPTION_KEY, e) })
       }
     } else {
-      super.handleIntent(intent)
+      throw IllegalArgumentException("Received intent of unrecognized action: ${intent?.action}. Ignoring.")
     }
   }
 
