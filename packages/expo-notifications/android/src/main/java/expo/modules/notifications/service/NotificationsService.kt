@@ -8,8 +8,6 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.os.ResultReceiver
 import android.util.Log
-import com.google.firebase.messaging.FirebaseMessagingService
-import com.google.firebase.messaging.RemoteMessage
 import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationBehavior
 import expo.modules.notifications.notifications.model.NotificationCategory
@@ -18,7 +16,6 @@ import expo.modules.notifications.service.delegates.ExpoCategoriesDelegate
 import expo.modules.notifications.service.delegates.ExpoHandlingDelegate
 import expo.modules.notifications.service.delegates.ExpoPresentationDelegate
 import expo.modules.notifications.service.interfaces.CategoriesDelegate
-import expo.modules.notifications.service.interfaces.FirebaseMessagingDelegate
 import expo.modules.notifications.service.interfaces.HandlingDelegate
 import expo.modules.notifications.service.interfaces.PresentationDelegate
 
@@ -273,9 +270,6 @@ open class NotificationsService : FirebaseMessagingService() {
     private var currentService: NotificationsService? = null
   }
 
-  protected open val firebaseMessagingDelegate: FirebaseMessagingDelegate by lazy {
-    expo.modules.notifications.service.delegates.FirebaseMessagingDelegate(this)
-  }
   protected open val presentationDelegate: PresentationDelegate by lazy {
     ExpoPresentationDelegate(this)
   }
@@ -379,7 +373,4 @@ open class NotificationsService : FirebaseMessagingService() {
   open fun onSetCategory(category: NotificationCategory) = categoriesDelegate.setCategory(category)
   open fun onDeleteCategory(identifier: String) = categoriesDelegate.deleteCategory(identifier)
 
-  override fun onMessageReceived(remoteMessage: RemoteMessage) = firebaseMessagingDelegate.onMessageReceived(remoteMessage)
-  override fun onNewToken(token: String) = firebaseMessagingDelegate.onNewToken(token)
-  override fun onDeletedMessages() = firebaseMessagingDelegate.onDeletedMessages()
 }
