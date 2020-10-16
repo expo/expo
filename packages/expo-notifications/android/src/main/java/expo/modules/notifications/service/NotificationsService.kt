@@ -270,25 +270,19 @@ open class NotificationsService : FirebaseMessagingService() {
     private var currentService: NotificationsService? = null
   }
 
-  protected open val presentationDelegate: PresentationDelegate by lazy {
-    ExpoPresentationDelegate(this)
-  }
-  protected open val handlingDelegate: HandlingDelegate by lazy {
-    ExpoHandlingDelegate(this)
-  }
-  protected open val categoriesDelegate: CategoriesDelegate by lazy {
-    ExpoCategoriesDelegate(this)
-  }
-
   override fun onCreate() {
     super.onCreate()
     currentService = this
   }
+  protected open fun getPresentationDelegate(context: Context): PresentationDelegate =
+    ExpoPresentationDelegate(context)
 
   override fun onDestroy() {
     currentService = null
     super.onDestroy()
   }
+  protected open fun getHandlingDelegate(context: Context): HandlingDelegate =
+    ExpoHandlingDelegate(context)
 
   override fun getStartCommandIntent(intent: Intent?): Intent {
     if (intent?.action === NOTIFICATION_EVENT_ACTION) {
@@ -296,6 +290,8 @@ open class NotificationsService : FirebaseMessagingService() {
     }
     return super.getStartCommandIntent(intent)
   }
+  protected open fun getCategoriesDelegate(context: Context): CategoriesDelegate =
+    ExpoCategoriesDelegate(context)
 
   override fun handleIntent(intent: Intent?) {
     if (intent?.action === NOTIFICATION_EVENT_ACTION) {
@@ -303,46 +299,29 @@ open class NotificationsService : FirebaseMessagingService() {
       try {
         var resultData: Bundle? = null
         when (val eventType = intent.getStringExtra(EVENT_TYPE_KEY)) {
-          GET_ALL_DISPLAYED_TYPE -> {
-            resultData = Bundle().also {
-              it.putParcelableArrayList(NOTIFICATIONS_KEY, ArrayList(onGetAllPresentedNotifications()))
-            }
-          }
+          GET_ALL_DISPLAYED_TYPE ->
+            resultData = onGetAllPresentedNotifications(context, intent)
 
-          RECEIVE_TYPE -> onReceiveNotification(intent.getParcelableExtra(NOTIFICATION_KEY)!!)
+          RECEIVE_TYPE -> onReceiveNotification(context, intent)
 
-          RECEIVE_RESPONSE_TYPE -> onReceiveNotificationResponse(intent.getParcelableExtra(NOTIFICATION_RESPONSE_KEY)!!)
+          RECEIVE_RESPONSE_TYPE -> onReceiveNotificationResponse(context, intent)
 
-          DROPPED_TYPE -> onNotificationsDropped()
+          DROPPED_TYPE -> onNotificationsDropped(context, intent)
 
-          PRESENT_TYPE -> onPresentNotification(
-            intent.extras?.getParcelable(NOTIFICATION_KEY)!!, // throw exception if empty
-            intent.extras?.getParcelable(NOTIFICATION_BEHAVIOR_KEY)
-          )
+          PRESENT_TYPE -> onPresentNotification(context, intent)
 
-          DISMISS_SELECTED_TYPE -> onDismissNotifications(
-            intent.extras?.getStringArray(IDENTIFIERS_KEY)!!.asList() // throw exception if empty
-          )
+          DISMISS_SELECTED_TYPE -> onDismissNotifications(context, intent)
 
-          DISMISS_ALL_TYPE -> onDismissAllNotifications()
+          DISMISS_ALL_TYPE -> onDismissAllNotifications(context, intent)
 
-          GET_CATEGORIES_TYPE -> {
-            resultData = Bundle().also {
-              it.putParcelableArrayList(NOTIFICATION_CATEGORIES_KEY, ArrayList(onGetCategories()))
-            }
-          }
+          GET_CATEGORIES_TYPE ->
+            resultData = onGetCategories(context, intent)
 
-          SET_CATEGORY_TYPE -> {
-            resultData = Bundle().also {
-              it.putSerializable(NOTIFICATION_CATEGORY_KEY, onSetCategory(intent.getParcelableExtra(NOTIFICATION_CATEGORY_KEY)!!))
-            }
-          }
+          SET_CATEGORY_TYPE ->
+            resultData = onSetCategory(context, intent)
 
-          DELETE_CATEGORY_TYPE -> {
-            resultData = Bundle().also {
-              it.putBoolean(SUCCEEDED_KEY, onDeleteCategory(intent.extras?.getString(IDENTIFIER_KEY)!!))
-            }
-          }
+          DELETE_CATEGORY_TYPE ->
+            resultData = onDeleteCategory(context, intent)
 
           else -> throw IllegalArgumentException("Received event of unrecognized type: $eventType. Ignoring.")
         }
@@ -360,17 +339,81 @@ open class NotificationsService : FirebaseMessagingService() {
     }
   }
 
-  open fun onPresentNotification(notification: Notification, behavior: NotificationBehavior?) = presentationDelegate.presentNotification(notification, behavior)
-  open fun onGetAllPresentedNotifications() = presentationDelegate.getAllPresentedNotifications()
-  open fun onDismissNotifications(identifiers: Collection<String>) = presentationDelegate.dismissNotifications(identifiers)
-  open fun onDismissAllNotifications() = presentationDelegate.dismissAllNotifications()
+  //region Presenting notifications
 
-  open fun onReceiveNotification(notification: Notification) = handlingDelegate.handleNotification(notification)
-  open fun onReceiveNotificationResponse(response: NotificationResponse) = handlingDelegate.handleNotificationResponse(response)
-  open fun onNotificationsDropped() = handlingDelegate.handleNotificationsDropped()
+  open fun onPresentNotification(context: Context, intent: Intent) =
+    getPresentationDelegate(context).presentNotification(
+      intent.extras?.getParcelable(NOTIFICATION_KEY)!!,
+      intent.extras?.getParcelable(NOTIFICATION_BEHAVIOR_KEY)
+    )
 
-  open fun onGetCategories() = categoriesDelegate.getCategories()
-  open fun onSetCategory(category: NotificationCategory) = categoriesDelegate.setCategory(category)
-  open fun onDeleteCategory(identifier: String) = categoriesDelegate.deleteCategory(identifier)
+  open fun onGetAllPresentedNotifications(context: Context, intent: Intent) =
+    Bundle().also {
+      it.putParcelableArrayList(
+        NOTIFICATIONS_KEY,
+        ArrayList(
+          getPresentationDelegate(context).getAllPresentedNotifications()
+        )
+      )
+    }
 
+  open fun onDismissNotifications(context: Context, intent: Intent) =
+    getPresentationDelegate(context).dismissNotifications(
+      intent.extras?.getStringArray(IDENTIFIERS_KEY)!!.asList()
+    )
+
+  open fun onDismissAllNotifications(context: Context, intent: Intent) =
+    getPresentationDelegate(context).dismissAllNotifications()
+
+  //endregion
+
+  //region Handling notifications
+
+  open fun onReceiveNotification(context: Context, intent: Intent) =
+    getHandlingDelegate(context).handleNotification(
+      intent.getParcelableExtra(NOTIFICATION_KEY)!!
+    )
+
+  open fun onReceiveNotificationResponse(context: Context, intent: Intent) =
+    getHandlingDelegate(context).handleNotificationResponse(
+      intent.getParcelableExtra(NOTIFICATION_RESPONSE_KEY)!!
+    )
+
+  open fun onNotificationsDropped(context: Context, intent: Intent) =
+    getHandlingDelegate(context).handleNotificationsDropped()
+
+  //endregion
+
+  //region Category handling
+
+  open fun onGetCategories(context: Context, intent: Intent) =
+    Bundle().also {
+      it.putParcelableArrayList(
+        NOTIFICATION_CATEGORIES_KEY,
+        ArrayList(
+          getCategoriesDelegate(context).getCategories()
+        )
+      )
+    }
+
+  open fun onSetCategory(context: Context, intent: Intent) =
+    Bundle().also {
+      it.putParcelable(
+        NOTIFICATION_CATEGORY_KEY,
+        getCategoriesDelegate(context).setCategory(
+          intent.getParcelableExtra(NOTIFICATION_CATEGORY_KEY)!!
+        )
+      )
+    }
+
+  open fun onDeleteCategory(context: Context, intent: Intent) =
+    Bundle().also {
+      it.putBoolean(
+        SUCCEEDED_KEY,
+        getCategoriesDelegate(context).deleteCategory(
+          intent.extras?.getString(IDENTIFIER_KEY)!!
+        )
+      )
+    }
+  //endregion
 }
