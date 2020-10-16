@@ -480,7 +480,7 @@ Once everything above is completed and Apple has approved the iOS client for Tes
 **How:**
 
 Publish a blog post that includes the following information:
-- Link to a Github umbrella issue for beta release issues
+- Link to a GitHub umbrella issue for beta release issues
 - Link to CHANGELOG
 - Provide instructions for how to opt-in
 
