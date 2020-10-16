@@ -93,9 +93,9 @@ In order to use app signing by Google Play, follow the instructions below.
 
 If you want to create the upload certificate yourself, replace steps 2 and 3 from above with:
 
-1. Generate a new keystore
+2. Generate a new keystore
 
-2. Extract the upload certificate with the following command (replace values where needed)
+3. Extract the upload certificate with the following command (replace values where needed)
 
 ```bash
 keytool -export -rfc
