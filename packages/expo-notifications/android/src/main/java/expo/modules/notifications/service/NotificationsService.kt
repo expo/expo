@@ -1,9 +1,11 @@
 package expo.modules.notifications.service
 
+import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
@@ -361,8 +363,7 @@ open class NotificationsService : BroadcastReceiver() {
      * @param intent  Intent to dispatch
      */
     fun doWork(context: Context, intent: Intent) {
-      val searchIntent = Intent(intent.action).setPackage(context.packageName)
-      context.packageManager.queryBroadcastReceivers(searchIntent, 0).firstOrNull()?.activityInfo?.let {
+      findDesignatedBroadcastReceiver(context, intent)?.let {
         intent.component = ComponentName(it.packageName, it.name)
         context.sendBroadcast(intent)
         return
@@ -376,6 +377,43 @@ open class NotificationsService : BroadcastReceiver() {
 
     protected fun getUriBuilderForIdentifier(identifier: String): Uri.Builder {
       return getUriBuilder().appendPath(identifier)
+    }
+
+    fun findDesignatedBroadcastReceiver(context: Context, intent: Intent): ActivityInfo? {
+      val searchIntent = Intent(intent.action).setPackage(context.packageName)
+      return context.packageManager.queryBroadcastReceivers(searchIntent, 0).firstOrNull()?.activityInfo
+    }
+
+    /**
+     * Creates and returns a pending intent that will trigger [NotificationsService],
+     * which hands off the work to this class. The intent triggers notification of the given identifier.
+     *
+     * @param context    Context this is being called from
+     * @param identifier Notification identifier
+     * @return [PendingIntent] triggering [NotificationsService], triggering notification of given ID.
+     */
+    fun createNotificationTrigger(context: Context, identifier: String): PendingIntent {
+      val intent = Intent(
+        NOTIFICATION_EVENT_ACTION,
+        getUriBuilder()
+          .appendPath("scheduled")
+          .appendPath(identifier)
+          .appendPath("trigger")
+          .build()
+      ).also { intent ->
+        findDesignatedBroadcastReceiver(context, intent)?.let {
+          intent.component = ComponentName(it.packageName, it.name)
+        }
+        intent.putExtra(EVENT_TYPE_KEY, TRIGGER_TYPE)
+        intent.putExtra(IDENTIFIER_KEY, identifier)
+      }
+
+      return PendingIntent.getBroadcast(
+        context,
+        intent.component?.className?.hashCode() ?: NotificationsService::class.java.hashCode(),
+        intent,
+        PendingIntent.FLAG_UPDATE_CURRENT
+      )
     }
   }
 
