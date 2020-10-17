@@ -103,7 +103,7 @@ The following methods are exported by the `expo-notifications` module:
   - [`getNotificationCategoriesAsync`](#getnotificationcategoriesasync-promisenotificationcategory) -- fetches information about all active notification categories
   - [`deleteNotificationCategoryAsync`](#deletenotificationcategoryasyncidentifier-string-promiseboolean) -- deletes a notification category
 
-<TableOfContentSection title='Types' contents={['DevicePushToken', 'PushTokenListener', 'ExpoPushToken', 'Subscription', 'Notification', 'NotificationRequest', 'NotificationContent', 'NotificationContentInput', 'NotificationRequestInput', 'AndroidNotificationPriority', 'NotificationTrigger', 'PushNotificationTrigger', 'FirebaseRemoteMessage', 'TimeIntervalNotificationTrigger', 'DailyNotificationTrigger', 'CalendarNotificationTrigger', 'LocationNotificationTrigger', 'UnknownNotificationTrigger', 'NotificationTriggerInput', 'SchedulableNotificationTriggerInput', 'DateTriggerInput', 'TimeIntervalTriggerInput', 'DailyTriggerInput', 'CalendarTriggerInput', 'NotificationResponse', 'NotificationBehavior', 'NotificationChannel', 'NotificationChannelInput', 'NotificationChannelGroup', 'NotificationChannelGroupInput' ]} />
+<TableOfContentSection title='Types' contents={['DevicePushToken', 'PushTokenListener', 'ExpoPushToken', 'Subscription', 'Notification', 'NotificationRequest', 'NotificationContent', 'NotificationContentInput', 'NotificationRequestInput', 'AndroidNotificationPriority', 'NotificationTrigger', 'PushNotificationTrigger', 'FirebaseRemoteMessage', 'TimeIntervalNotificationTrigger', 'DailyNotificationTrigger', 'WeeklyNotificationTrigger', 'CalendarNotificationTrigger', 'LocationNotificationTrigger', 'UnknownNotificationTrigger', 'NotificationTriggerInput', 'SchedulableNotificationTriggerInput', 'DateTriggerInput', 'TimeIntervalTriggerInput', 'DailyTriggerInput', 'WeeklyTriggerInput', 'CalendarTriggerInput', 'NotificationResponse', 'NotificationBehavior', 'NotificationChannel', 'NotificationChannelInput', 'NotificationChannelGroup', 'NotificationChannelGroupInput' ]} />
 
 Check out the Snack below to see Notifications in action, but be sure to use a physical device! Push notifications don't work on simulators/emulators.
 
@@ -1194,6 +1194,7 @@ export type NotificationTrigger =
   | LocationNotificationTrigger
   | TimeIntervalNotificationTrigger
   | DailyNotificationTrigger
+  | WeeklyNotificationTrigger
   | UnknownNotificationTrigger;
 ```
 
@@ -1277,6 +1278,19 @@ A trigger related to a daily notification. This is an Android-only type, the sam
 ```ts
 export interface DailyNotificationTrigger {
   type: 'daily';
+  hour: number;
+  minute: number;
+}
+```
+
+### `WeeklyNotificationTrigger`
+
+A trigger related to a weekly notification. This is an Android-only type, the same functionality will be achieved on iOS with a `CalendarNotificationTrigger`.
+
+```ts
+export interface WeeklyNotificationTrigger {
+  type: 'weekly';
+  weekday: number;
   hour: number;
   minute: number;
 }
@@ -1424,6 +1438,22 @@ A trigger that will cause the notification to be delivered once per day.
 ```ts
 export interface DailyTriggerInput {
   channelId?: string;
+  hour: number;
+  minute: number;
+  repeats: true;
+}
+```
+
+### `WeeklyTriggerInput`
+
+A trigger that will cause the notification to be delivered once every week.
+
+> **Note:** Weekdays are specified with a number from 1 through 7, with 1 indicating Sunday.
+
+```ts
+export interface WeeklyTriggerInput {
+  channelId?: string;
+  weekday: number;
   hour: number;
   minute: number;
   repeats: true;
