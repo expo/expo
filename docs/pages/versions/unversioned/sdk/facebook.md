@@ -28,7 +28,7 @@ Then follow these steps based on the platforms you're targetting. This will need
 
 The Android Play Store Expo client will use the Facebook App ID that you provide, however, all Facebook API calls in the **iOS App Store Expo client will use Expo's own Facebook App ID**. This is due to underlying configuration limitations, but the good news is it means less setup for you! The slight downside to this is that you can't customize which permissions your app requests from Facebook (like `user_photos` or `user_friends`), or integrate Facebook login with other services like Firebase auth. If you need that functionality on iOS, you have two options:
 
-- Build a [custom Expo Client app](../../guides/adhoc-builds/)
+- Build a [custom Expo client app](../../guides/adhoc-builds/)
 - Build a [standalone app](../../distribution/building-standalone-apps/)
 
 #### Configure `app.json`

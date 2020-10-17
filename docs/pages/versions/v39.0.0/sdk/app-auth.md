@@ -48,7 +48,7 @@ To create a scheme that is appropriate for the environment, be sure to use `Link
 import { Linking } from 'expo';
 
 const prefix = Linking.makeUrl('/');
-// Expo Client: `exp://ADDRESS:PORT`
+// Expo client: `exp://ADDRESS:PORT`
 // Standalone: `myapp://`
 ```
 
@@ -303,7 +303,7 @@ await AppAuth.revokeAsync(config, options);
 
 ### `AppAuth.OAuthRedirect`
 
-Redirect scheme used to assemble the `redirectUrl` prop. In standalone apps, this is either the `android.package` (for Android) or `ios.bundleIdentifier` (for iOS) value from your `app.json`. However, for apps running in the Expo Client, `AppAuth.OAuthRedirect` is `host.exp.exponent`.
+Redirect scheme used to assemble the `redirectUrl` prop. In standalone apps, this is either the `android.package` (for Android) or `ios.bundleIdentifier` (for iOS) value from your `app.json`. However, for apps running in the Expo client, `AppAuth.OAuthRedirect` is `host.exp.exponent`.
 
 ### `AppAuth.URLSchemes`
 

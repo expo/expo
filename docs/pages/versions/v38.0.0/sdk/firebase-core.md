@@ -44,7 +44,7 @@ import * as FirebaseCore from 'expo-firebase-core';
 
 Name of the default Firebase app (e.g. `[DEFAULT]`).
 
-On the Expo Client a Firebase App is created for each project that is loaded, and a unique name for each project is returned.
+On the Expo client a Firebase App is created for each project that is loaded, and a unique name for each project is returned.
 
 ### `FirebaseCore.DEFAULT_APP_OPTIONS`
 

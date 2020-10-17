@@ -60,7 +60,7 @@ To access these values at runtime, you can use the [Expo Constants API](/version
 ## Android Permissions
 
 - Permissions are configured via the [`android.permissions` key in your `app.json` file](../../workflow/configuration/#android)
-- By default, your app will include **all** permissions supported by Expo. This is so that your standalone app will match its behavior in the Expo Client and simply "work out of the box" no matter what permissions you ask for, with hardly any configuration needed on your part.
+- By default, your app will include **all** permissions supported by Expo. This is so that your standalone app will match its behavior in the Expo client and simply "work out of the box" no matter what permissions you ask for, with hardly any configuration needed on your part.
 - There are some drawbacks to this. For example, let's say your To-do list app requests `CAMERA` permission upon installation. Your users may be wary of installing since nothing in the app seems to use the camera, so why would it need that permission?
 - To remedy this, simply add the `android.permissions` key in your `app.json` file, and specify which permissions your app will use. A list of all Android permissions and configuration options can be found [here](../../workflow/configuration/#android).
 - To use _only_ the minimum necessary permissions that Expo requires to run, set `"permissions" : []`. To use those in addition to `CAMERA` permission, for example, you'd set `"permissions" : ["CAMERA"]`.

@@ -73,7 +73,7 @@ The difference between this method and native authentication are very sparce. Go
 | behavior                                | <InlineCode>'system' \| 'web'</InlineCode>   | **DEPRECATED** use `expo-google-sign-in` for system authentication.                                                                                   |
 
 **Note on `redirectUrl`**:
-If you choose to provide your own `redirectUrl`, it should start with the value returned by [`AppAuth.OAuthRedirect`](../../sdk/app-auth/#appauthoauthredirect). This way, the method will function correctly and consistently whether you are testing in the Expo Client or as a standalone app.
+If you choose to provide your own `redirectUrl`, it should start with the value returned by [`AppAuth.OAuthRedirect`](../../sdk/app-auth/#appauthoauthredirect). This way, the method will function correctly and consistently whether you are testing in the Expo client or as a standalone app.
 
 **Returns**
 
