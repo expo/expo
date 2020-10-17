@@ -39,6 +39,7 @@
   - [5.6. Add SDK support to Snack](#56-add-sdk-support-to-snack)
   - [5.7. Announce beta availability](#57-announce-beta-availability)
   - [5.8. Test, fix, and monitor](#58-test-fix-and-monitor)
+  - [5.9. Submit iOS client for review](#59-submit-ios-client-for-review)
 - [Stage 6 - Final release](#stage-6---final-release)
   - [6.1. Release iOS/Android clients to the general public](#61-release-iosandroid-clients-to-the-general-public)
   - [6.2. Make adhoc client shell app for iOS](#62-make-adhoc-client-shell-app-for-ios)
@@ -496,6 +497,21 @@ Publish a blog post that includes the following information:
 - Report updates in the umbrealla issue.
 - Fix, test, repeat.
 
+## 5.9. Submit iOS client for review
+
+**Why:** When the iOS client appears to be a good candidate for the final release, we should submit it for review in order to have an accepted release ready to deploy to the App Store in one button click when we proceed to the next stage. This should be ideally be done ~1-3 days before moving on to the final release, to account for review delays.
+
+**How:**
+
+- If needed, refer back to [3.1. Build and submit](#31-build-and-submit) to create a new build and upload it to the App Store. Wait for it to finish processing.
+- In [App Store Connect](https://appstoreconnect.apple.com), select the build you previously uploaded and released to TestFlight, glance through the metadata to verify that it's what you want, and save the changes if any.
+  - Fill in "What's New in This Version" with something like "This version contains minor improvements and adds support for SDK XX".
+- Click Submit to send the new binary to Apple. When prompted, give the following answers:
+  - “Yes”, we use the IDFA, check the boxes in this Segment guide: [https://segment.com/docs/sources/mobile/ios/quickstart/](https://segment.com/docs/sources/mobile/ios/quickstart/).
+  - “Serve advertisements within the app” should not be checked.
+  - **Note:** are you reading this for the release that drops SDK 38? If so, this step may not be needed anymore. Please follow up with James (@ide).
+- If changes are required after submission, you can remove the release from review and repeat this step.
+
 # Stage 6 - Final release
 
 **If today is Friday:** You may want to submit the iOS app for approval, but otherwise STOP! Wait until next week to finish the release :) 
@@ -505,13 +521,7 @@ Publish a blog post that includes the following information:
 **How:**
 
 - **iOS**:
-  - If needed, refer back to [3.1. Build and submit](#31-build-and-submit) to create a new build and upload it to the App Store. Wait for it to finish processing.
-  - In [App Store Connect](https://appstoreconnect.apple.com), select the build you previously uploaded and released to TestFlight, glance through the metadata to verify that it's what you want, and save the changes if any.
-    - Fill in "What's New in This Version" with something like "This version contains minor improvements and adds support for SDK XX".
-  - Click Submit to send the new binary to Apple. When prompted, give the following answers:
-    - “Yes”, we use the IDFA, check the boxes in this Segment guide: [https://segment.com/docs/sources/mobile/ios/quickstart/](https://segment.com/docs/sources/mobile/ios/quickstart/).
-    - “Serve advertisements within the app” should not be checked.
-
+ - Log into [App Store Connect](https://appstoreconnect.apple.com) and release the approved version.
 - **Android**:
   - Add a new file under `/fastlane/android/metadata/en-US/changelogs/[versionCode].txt` (it should usually read “Add support for Expo SDK XX”).
   - Open `Android Client` workflow on GitHub Actions and when it completes, download the APK from Artifacts and do a smoke test -- install it on a fresh Android device, turn on airplane mode, and make sure Home loads.
