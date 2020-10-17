@@ -631,8 +631,8 @@ export default function App() {
 [c-fitbit]: https://dev.fitbit.com/apps/new
 
 - Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
-  - Expo Client: `exp://localhost:19000/--/*`
-  - Expo Client + Proxy: `https://auth.expo.io/@you/your-app`
+  - Expo client: `exp://localhost:19000/--/*`
+  - Expo client + Proxy: `https://auth.expo.io/@you/your-app`
   - Standalone or Bare: `com.your.app://*`
   - Web: `https://yourwebsite.com/*`
 - The `redirectUri` requires 2 slashes (`://`).
@@ -785,8 +785,8 @@ export default function App() {
 [c-github]: https://github.com/settings/developers
 
 - Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
-  - Expo Client: `exp://localhost:19000/--/*`
-  - Expo Client + Proxy: `https://auth.expo.io/@you/your-app`
+  - Expo client: `exp://localhost:19000/--/*`
+  - Expo client + Proxy: `https://auth.expo.io/@you/your-app`
   - Standalone or Bare: `com.your.app://*`
   - Web: `https://yourwebsite.com/*`
 - The `redirectUri` requires 2 slashes (`://`).
@@ -890,7 +890,7 @@ To create a client ID, go to the [Credentials Page][c-google]:
 - Create an app for your project if you haven't already.
 - Once that's done, click "Create Credentials" and then "OAuth client ID." You will be prompted to set the product name on the consent screen, go ahead and do that.
 
-#### Development in the Expo Client
+#### Development in the Expo client
 
 While developing in the Expo client, you cannot use proper native authentication. Instead you must use web login during development. Be sure to follow the **standalone** guide below for setting up production apps.
 
@@ -899,7 +899,7 @@ First, be sure to login to your Expo account `expo login`. This will be part of 
 [Create a new Google Client ID][c-google] that will be used with `expoClientId`.
 
 - **Application Type**: Web Application
-- Give it a name (e.g. "Expo Client Proxy").
+- Give it a name (e.g. "Expo client Proxy").
 - **URIs** (Authorized JavaScript origins): https://auth.expo.io
 - **Authorized redirect URIs**: https://auth.expo.io/@your-username/your-project-slug
 
@@ -1015,10 +1015,10 @@ export default function App() {
   - https://console.developers.google.com/apis/credentials/oauthclient/YOUR_GUID.apps.googleusercontent.com
 - Under "URIs" add your hosts URLs
   - Web dev: https://localhost:19006
-  - Expo Client Proxy: https://auth.expo.io
+  - Expo client Proxy: https://auth.expo.io
 - Under "Authorized redirect URIs"
   - Web dev: https://localhost:19006 -- this is assuming you want to invoke `WebBrowser.maybeCompleteAuthSession();` from the root URL of your app.
-  - Expo Client Proxy: https://auth.expo.io/@yourname/your-app
+  - Expo client Proxy: https://auth.expo.io/@yourname/your-app
 
 <img alt="Google Firebase Console for URIs" src="/static/images/sdk/auth-session/guide/google-firebase-auth-console.png" />
 
@@ -1187,8 +1187,8 @@ export default function App() {
 [c-reddit]: https://www.reddit.com/prefs/apps
 
 - Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
-  - Expo Client: `exp://localhost:19000/--/*`
-  - Expo Client + Proxy: `https://auth.expo.io/@you/your-app`
+  - Expo client: `exp://localhost:19000/--/*`
+  - Expo client + Proxy: `https://auth.expo.io/@you/your-app`
   - Standalone or Bare: `com.your.app://*`
   - Web: `https://yourwebsite.com/*`
 - The `redirectUri` requires 2 slashes (`://`).
@@ -1980,7 +1980,7 @@ Here are a few examples of some common redirect URI patterns you may end up usin
   - The link is constructed from your Expo username and the Expo app name, which are appended to the proxy website.
 - **Usage:** `promptAsync({ useProxy: true, redirectUri })`
 
-#### Published project in the Expo Client
+#### Published project in the Expo client
 
 > `exp://exp.host/@yourname/your-app`
 

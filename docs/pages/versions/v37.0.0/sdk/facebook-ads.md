@@ -24,7 +24,7 @@ You need to create a placement ID to display ads. Follow steps 1 and 3 from the 
 
 In your project's [app.json](../../workflow/configuration/), add your [Facebook App ID and Facebook Display Name](https://developers.facebook.com/docs/facebook-login/ios) under the `facebookAppId` and `facebookDisplayName` keys.
 
-- In the Expo Client, all of your Facebook API calls will be made with Expo's Facebook App ID. This means you will not see any related ad info in your Facebook developer page while running your project in the Expo Client.
+- In the Expo client, all of your Facebook API calls will be made with Expo's Facebook App ID. This means you will not see any related ad info in your Facebook developer page while running your project in the Expo client.
 - To use your app's own Facebook App ID (and thus see any related ad info in your Facebook developer page), you'll need to [build a standalone app](../../distribution/building-standalone-apps/).
 
 ### Development vs Production

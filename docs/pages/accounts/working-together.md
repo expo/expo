@@ -18,7 +18,7 @@ Access for members is managed through a role-based system. Users can have the _a
 | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Admin**     | Can control most settings on your account, including signing up for paid services, change permissions of other users, and manage programmatic access. |
 | **Developer** | Can create new projects, make new builds, release updates, and manage credentials.                                                                    |
-| **Viewer**    | Can only view your projects through the Expo Client, but can't modify your projects in any way.                                                       |
+| **Viewer**    | Can only view your projects through the Expo client, but can't modify your projects in any way.                                                       |
 
 ## Removing members
 

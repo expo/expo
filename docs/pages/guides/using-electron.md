@@ -50,7 +50,7 @@ To simplify this we created the package `@expo/electron-adapter` which wraps [`e
 
 - To reveal the main process (highly recommended) run - `yarn expo-electron customize`
   - This will generate the `electron/main/` and `electron/webpack.config.js` files for you to customize.
-  - Everything running in the `electron/main/` folder is on a different process to the rest of your app. Think of this like the native code in the Expo Client app (but not really because it's JavaScript and simple).
+  - Everything running in the `electron/main/` folder is on a different process to the rest of your app. Think of this like the native code in the Expo client app (but not really because it's JavaScript and simple).
 - To revert back to the default main process or reset to the latest default template simply delete the `electron/` folder and the adapter will go back to using the hidden version.
 
 ### Building your project

@@ -121,7 +121,7 @@ Alias: `expo bs`
 </p>
 </details>
 
-<details><summary><h3>expo client:ios</h3><p>Build a custom version of the Expo Client for iOS using your own Apple credentials and install it on your mobile device using Safari.</p></summary>
+<details><summary><h3>expo client:ios</h3><p>Build a custom version of the Expo client for iOS using your own Apple credentials and install it on your mobile device using Safari.</p></summary>
 <p>
 
 | Option                 | Description                                                                          |
@@ -136,7 +136,7 @@ Alias: `expo bs`
 </p></summary>
 </details>
 
-<details><summary><h3>expo client:install:android</h3><p>Install the latest version of Expo Client for Android on a connected device or emulator.
+<details><summary><h3>expo client:install:android</h3><p>Install the latest version of Expo client for Android on a connected device or emulator.
 </p></summary>
 </details>
 
@@ -282,7 +282,7 @@ Alias: `expo i`
 </p>
 </details>
 
-<details><summary><h3>expo ios</h3><p>Opens your app in the Expo Client in an iOS simulator.</p></summary>
+<details><summary><h3>expo ios</h3><p>Opens your app in the Expo client in an iOS simulator.</p></summary>
 <p>
 
 | Option            | Description                       |

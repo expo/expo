@@ -29,7 +29,7 @@ Then follow these steps based on the platforms you're targetting. This will need
 **No configuration is needed to use the Facebook SDK in the App Store Expo client**, because all of your Facebook API calls will be made with Expo's Facebook App ID. The slight downside to this is that you can't customize which permissions your app requests from Facebook (like `user_photos` or `user_friends`), or integrate Facebook login with other services like Firebase auth. If you need that functionality, you have two options:
 
 - Build a [standalone app](../../distribution/building-standalone-apps/)
-- Build a [custom Expo Client app](../../guides/adhoc-builds/)
+- Build a [custom Expo client app](../../guides/adhoc-builds/)
 
 #### Configure `app.json`
 
