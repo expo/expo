@@ -2,7 +2,7 @@ import url from 'url';
 
 import Config from '../api/Config';
 
-const HTTPS_HOSTS = [Config.api.host, 'exponentjs.com', 'getexponent.com'];
+const HTTPS_HOSTS = [Config.api.host, 'exp.host', 'exponentjs.com', 'getexponent.com'];
 
 export function normalizeUrl(rawUrl: string): string {
   let components = url.parse(rawUrl, false, true);
