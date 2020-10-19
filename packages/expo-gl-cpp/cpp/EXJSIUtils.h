@@ -32,13 +32,12 @@ inline std::vector<std::string> jsArrayToVector(jsi::Runtime &runtime, const jsi
   return strings;
 }
 
-inline std::vector<uint8_t> rawArrayBuffer(jsi::Runtime &runtime, const jsi::Object &arr) {
+inline std::vector<uint8_t> rawTypedArray(jsi::Runtime &runtime, const jsi::Object &arr) {
   if (arr.isArrayBuffer(runtime)) {
     auto buffer = arr.getArrayBuffer(runtime);
     return arrayBufferToVector(runtime, buffer);
   } else if (isTypedArray(runtime, arr)) {
-    auto buffer = getTypedArray(runtime, arr).getBuffer(runtime);
-    return arrayBufferToVector(runtime, buffer);
+    return getTypedArray(runtime, arr).toVector(runtime);
   }
   throw std::runtime_error("Object is not an ArrayBuffer nor a TypedArray");
 }

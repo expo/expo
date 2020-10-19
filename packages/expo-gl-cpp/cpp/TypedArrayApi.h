@@ -89,6 +89,7 @@ class TypedArrayBase : public jsi::Object {
   size_t byteOffset(jsi::Runtime &runtime) const;
   bool hasBuffer(jsi::Runtime &runtime) const;
 
+  std::vector<uint8_t> toVector(jsi::Runtime &runtime);
   jsi::ArrayBuffer getBuffer(jsi::Runtime &runtime) const;
 
  private:
