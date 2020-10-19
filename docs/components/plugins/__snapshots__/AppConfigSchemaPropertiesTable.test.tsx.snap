@@ -40,7 +40,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   href="#name"
                 >
                   <span
-                    class="css-ylg0u1-STYLED_PERMALINK_CONTENT"
+                    class="css-cd9zxx-STYLED_PERMALINK_CONTENT"
                   >
                     <code
                       class="inline css-y9z195-STYLES_INLINE_CODE-STYLES_INLINE_CODE"
@@ -133,7 +133,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   href="#androidnavigationbar"
                 >
                   <span
-                    class="css-ylg0u1-STYLED_PERMALINK_CONTENT"
+                    class="css-cd9zxx-STYLED_PERMALINK_CONTENT"
                   >
                     <code
                       class="inline css-y9z195-STYLES_INLINE_CODE-STYLES_INLINE_CODE"
@@ -240,7 +240,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   href="#visible"
                 >
                   <span
-                    class="css-ylg0u1-STYLED_PERMALINK_CONTENT"
+                    class="css-cd9zxx-STYLED_PERMALINK_CONTENT"
                   >
                     <code
                       class="inline css-y9z195-STYLES_INLINE_CODE-STYLES_INLINE_CODE"
@@ -333,7 +333,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   href="#always"
                 >
                   <span
-                    class="css-ylg0u1-STYLED_PERMALINK_CONTENT"
+                    class="css-cd9zxx-STYLED_PERMALINK_CONTENT"
                   >
                     <code
                       class="inline css-y9z195-STYLES_INLINE_CODE-STYLES_INLINE_CODE"
@@ -412,7 +412,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   href="#backgroundcolor"
                 >
                   <span
-                    class="css-ylg0u1-STYLED_PERMALINK_CONTENT"
+                    class="css-cd9zxx-STYLED_PERMALINK_CONTENT"
                   >
                     <code
                       class="inline css-y9z195-STYLES_INLINE_CODE-STYLES_INLINE_CODE"
@@ -502,7 +502,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   href="#intentfilters"
                 >
                   <span
-                    class="css-ylg0u1-STYLED_PERMALINK_CONTENT"
+                    class="css-cd9zxx-STYLED_PERMALINK_CONTENT"
                   >
                     <code
                       class="inline css-y9z195-STYLES_INLINE_CODE-STYLES_INLINE_CODE"
@@ -632,7 +632,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   href="#autoverify"
                 >
                   <span
-                    class="css-ylg0u1-STYLED_PERMALINK_CONTENT"
+                    class="css-cd9zxx-STYLED_PERMALINK_CONTENT"
                   >
                     <code
                       class="inline css-y9z195-STYLES_INLINE_CODE-STYLES_INLINE_CODE"
@@ -711,7 +711,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   href="#data"
                 >
                   <span
-                    class="css-ylg0u1-STYLED_PERMALINK_CONTENT"
+                    class="css-cd9zxx-STYLED_PERMALINK_CONTENT"
                   >
                     <code
                       class="inline css-y9z195-STYLES_INLINE_CODE-STYLES_INLINE_CODE"
@@ -789,7 +789,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   href="#host"
                 >
                   <span
-                    class="css-ylg0u1-STYLED_PERMALINK_CONTENT"
+                    class="css-cd9zxx-STYLED_PERMALINK_CONTENT"
                   >
                     <code
                       class="inline css-y9z195-STYLES_INLINE_CODE-STYLES_INLINE_CODE"
