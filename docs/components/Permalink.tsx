@@ -40,7 +40,7 @@ const STYLES_PERMALINK_LINK = css`
 `;
 
 const STYLED_PERMALINK_CONTENT = css`
-  display: inline-block;
+  display: inline;
 `;
 
 const STYLES_PERMALINK_ICON = css`
