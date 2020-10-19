@@ -4,12 +4,16 @@
 
 ### 🛠 Breaking changes
 
-- Replaced `babel-eslint` (now deprecated) with `@babel/eslint-parser`. This fixes a peer dependency warning. See [`babel-eslint` v11's readme](https://github.com/babel/babel-eslint/blob/b5b9a09edbac4350e4e51033a4608dd95dad1f67/README.md#breaking-changes-in-v11xx) for information about the main breaking change. Namely, Babel config files are now loaded. See [the `@babel/eslint-parser` readme](https://github.com/babel/babel/tree/main/eslint/babel-eslint-parser) for further information.
-- Removed support for parsing legacy decorators in JS files. Decorators are likely still a few years away from completion and we don't use them anymore.
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+## 6.0.0 — 2020-10-19
+
+### 🛠 Breaking changes
+
+- Replaced `babel-eslint` (now deprecated) with `@babel/eslint-parser`. This fixes a peer dependency warning. See [`babel-eslint` v11's readme](https://github.com/babel/babel-eslint/blob/b5b9a09edbac4350e4e51033a4608dd95dad1f67/README.md#breaking-changes-in-v11xx) for information about the main breaking change. Namely, Babel config files are now loaded. See [the `@babel/eslint-parser` readme](https://github.com/babel/babel/tree/main/eslint/babel-eslint-parser) for further information.
+- Removed support for parsing legacy decorators in JS files. Decorators are likely still a few years away from completion and we don't use them anymore.
 
 ## 5.0.0 — 2020-10-01
 
