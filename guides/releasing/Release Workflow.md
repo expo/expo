@@ -514,7 +514,7 @@ Publish a blog post that includes the following information:
 
 # Stage 6 - Final release
 
-**If today is Friday:** You may want to submit the iOS app for approval, but otherwise STOP! Wait until next week to finish the release :) 
+**If today is Friday:** Wait until next week to finish the release :)
 
 ## 6.1. Release iOS/Android clients to the general public
 
