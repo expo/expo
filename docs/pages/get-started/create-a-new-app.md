@@ -63,7 +63,7 @@ The Expo client is configured by default to automatically reload the app wheneve
 - First, make sure you have [development mode enabled in Expo CLI](../../workflow/development-mode/#development-mode).
 - Next, close the app and reopen it.
 - Once the app is open again, shake your device to reveal the developer menu. If you are using an emulator, press `⌘+d` for iOS or `ctrl+m` for Android.
-- If you see `Enable Live Reload`, press it and your app will reload. If you see `Disable Live Reload` then exit the developer menu and try making another change.<br/><br/>
+- If you see `Enable Fast Refresh`, press it. If you see `Disable Fast Refresh`, then dismiss the developer menu. Now try making another change.<br/><br/>
 
   ![In-app developer menu](/static/images/developer-menu.png)
 
