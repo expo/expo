@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { Linking, Share, View, Text, StyleSheet } from 'react-native';
+import { Linking, Share, View, StyleSheet } from 'react-native';
 
 import * as UrlUtils from '../utils/UrlUtils';
+import Badge from './Badge';
 import ListItem from './ListItem';
 
 type Props = React.ComponentProps<typeof ListItem> & {
@@ -31,16 +32,10 @@ function SnackListItem({ url, subtitle, isDraft, ...props }: Props) {
     <ListItem
       subtitle={normalizeDescription(subtitle)}
       rightContent={
-        isDraft ? (
+        isDraft && (
           <View style={styles.rightContentContainer}>
-            <View style={styles.draftContainer}>
-              <Text style={styles.draftText} numberOfLines={1} ellipsizeMode="tail">
-                Draft
-              </Text>
-            </View>
+            <Badge text="Draft" />
           </View>
-        ) : (
-          undefined
         )
       }
       onPress={handlePressProject}
@@ -54,20 +49,8 @@ const styles = StyleSheet.create({
   rightContentContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  draftContainer: {
     marginEnd: 10,
     marginStart: 5,
-    backgroundColor: 'rgba(0,0,0,0.025)',
-    borderRadius: 4,
-    paddingHorizontal: 5,
-    paddingVertical: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  draftText: {
-    color: '#888',
-    fontSize: 11,
   },
 });
 
