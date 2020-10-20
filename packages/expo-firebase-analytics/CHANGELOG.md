@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Update setup native firebase doc link. ([#10740](https://github.com/expo/expo/pull/10740) by [@jarvisluong](https://github.com/jarvisluong))
+- Fix setup native firebase link in README. ([#10740](https://github.com/expo/expo/pull/10740) by [@jarvisluong](https://github.com/jarvisluong))
 
 ## 2.5.1 — 2020-10-08
 
