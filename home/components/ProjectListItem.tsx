@@ -1,10 +1,11 @@
 import { useNavigation } from '@react-navigation/native';
 import * as React from 'react';
-import { Linking, Share, StyleSheet, Text, View } from 'react-native';
+import { Linking, Share, StyleSheet, View } from 'react-native';
 
 import Colors from '../constants/Colors';
 import * as UrlUtils from '../utils/UrlUtils';
 import { useSDKExpired } from '../utils/useSDKExpired';
+import Badge from './Badge';
 import { Experience } from './ExperienceView.types';
 import ListItem from './ListItem';
 import { StyledText } from './Text';
@@ -32,15 +33,11 @@ function ProjectListItem({
 
   const renderRightContent = React.useCallback((): React.ReactNode => {
     return (
-      <View style={styles.rightContentContainer}>
-        {releaseChannel && (
-          <View style={styles.releaseChannelContainer}>
-            <Text style={styles.releaseChannelText} numberOfLines={1} ellipsizeMode="tail">
-              {releaseChannel}
-            </Text>
-          </View>
-        )}
-      </View>
+      releaseChannel && (
+        <View style={styles.rightContentContainer}>
+          <Badge text={releaseChannel} />
+        </View>
+      )
     );
   }, [isExpired, releaseChannel]);
 
@@ -106,25 +103,8 @@ const styles = StyleSheet.create({
   rightContentContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  expiredIconContainer: {
-    marginRight: 4,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  releaseChannelContainer: {
-    marginEnd: 5,
+    marginEnd: 10,
     marginStart: 5,
-    backgroundColor: 'rgba(0,0,0,0.025)',
-    borderRadius: 4,
-    paddingHorizontal: 5,
-    paddingVertical: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  releaseChannelText: {
-    color: '#888',
-    fontSize: 11,
   },
 });
 
