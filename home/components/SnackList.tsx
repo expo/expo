@@ -11,6 +11,7 @@ export type Snack = {
   fullName: string;
   slug: string;
   description: string;
+  isDraft?: boolean;
 };
 
 type Props = {
@@ -88,6 +89,7 @@ function SnackList({ data, loadMoreAsync, belongsToCurrentUser }: Props) {
         url={snack.fullName}
         title={snack.name}
         subtitle={snack.description}
+        isDraft={snack.isDraft}
       />
     );
   }, []);
