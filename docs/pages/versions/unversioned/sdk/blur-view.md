@@ -17,7 +17,7 @@ A React component that blurs everything underneath the view. On iOS, it renders 
 
 ## Usage
 
-<SnackInline label='Basic BlurView usage' templateId="blur-view" dependencies={['expo-blur']}>
+<SnackInline label='Basic BlurView usage' templateId="blur-view" dependencies={['expo-blur', 'expo-constants']}>
 
 ```js
 import React from 'react';

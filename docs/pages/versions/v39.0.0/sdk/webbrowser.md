@@ -18,7 +18,7 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 ## Usage
 
-<SnackInline label="Basic WebBrowser usage" templateId="web-browser" dependencies={["expo-web-browser"]}>
+<SnackInline label="Basic WebBrowser usage" templateId="web-browser" dependencies={["expo-web-browser", "expo-constants"]}>
 
 ```js
 import React, { Component } from 'react';
