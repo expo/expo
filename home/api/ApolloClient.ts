@@ -2,11 +2,12 @@ import ApolloClient from 'apollo-boost';
 import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory';
 
 import Store from '../redux/Store';
+import Config from './Config';
 import Connectivity from './Connectivity';
 import graphqlFragmentTypes from './generated/graphqlFragmentTypes.json';
 
 export default new ApolloClient({
-  uri: 'https://exp.host/--/graphql',
+  uri: `${Config.api.origin}/--/graphql`,
 
   async request(operation): Promise<void> {
     const isConnected = await Connectivity.isAvailableAsync();

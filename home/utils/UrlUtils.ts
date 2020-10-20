@@ -1,6 +1,8 @@
 import url from 'url';
 
-const HTTPS_HOSTS = ['exp.host', 'exponentjs.com', 'getexponent.com'];
+import Config from '../api/Config';
+
+const HTTPS_HOSTS = [Config.api.host, 'exp.host', 'exponentjs.com', 'getexponent.com'];
 
 export function normalizeUrl(rawUrl: string): string {
   let components = url.parse(rawUrl, false, true);
@@ -10,7 +12,7 @@ export function normalizeUrl(rawUrl: string): string {
   ) {
     if (components.path && components.path.charAt(0) === '@') {
       // try parsing as @user/experience-id shortcut
-      components = url.parse('exp://exp.host/' + rawUrl);
+      components = url.parse(`exp://${Config.api.host}/${rawUrl}`);
     } else {
       // just treat it as a url with no protocol and assume exp://
       components = url.parse('exp://' + rawUrl);
@@ -53,7 +55,7 @@ export function conformsToExpoProtocol(str: string): boolean {
     return true;
   } else if (str.startsWith('exp://')) {
     return true;
-  } else if (str.startsWith('https://expo.io/') || str.startsWith('https://exp.host/')) {
+  } else if (str.startsWith('https://expo.io/') || str.startsWith(`${Config.api.origin}/`)) {
     return true;
   }
 
