@@ -1,6 +1,6 @@
 ---
 title: AsyncStorage
-sourceCodeUrl: 'https://github.com/react-native-community/async-storage'
+sourceCodeUrl: 'https://github.com/react-native-async-storage/async-storage'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
@@ -12,8 +12,8 @@ An asynchronous, unencrypted, persistent, key-value storage API.
 
 ## Installation
 
-<InstallSection packageName="@react-native-community/async-storage" href="https://react-native-async-storage.github.io/async-storage/docs/install/" />
+<InstallSection packageName="@react-native-community/async-storage" href="https://react-native-async-storage.github.io/async-storage/docs/install" />
 
 ## Usage
 
-See full documentation at [https://react-native-async-storage.github.io/async-storage/](https://react-native-async-storage.github.io/async-storage/).
+See full documentation at [https://react-native-async-storage.github.io/async-storage/](https://react-native-async-storage.github.io/async-storage/docs/usage).
