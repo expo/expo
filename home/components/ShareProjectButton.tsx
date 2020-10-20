@@ -2,6 +2,7 @@ import { useRoute, useTheme } from '@react-navigation/native';
 import * as React from 'react';
 import { Share, StyleSheet, TouchableOpacity } from 'react-native';
 
+import Config from '../api/Config';
 import * as UrlUtils from '../utils/UrlUtils';
 import * as Icons from './Icons';
 
@@ -12,7 +13,7 @@ export default function ShareProjectButton(
   const route = useRoute();
   const onPress = React.useCallback(() => {
     const { username, slug } = route.params as any;
-    const url = `exp://exp.host/@${username}/${slug}`;
+    const url = `exp://${Config.api.host}/@${username}/${slug}`;
     const message = UrlUtils.normalizeUrl(url);
     Share.share({
       title: url,
