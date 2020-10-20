@@ -20,7 +20,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Configuration
 
-In managed apps, the permissions to pick images, from camera ([`Permissions.CAMERA`](../permissions/#permissionscamera)) or camera roll ([`Permissions.CAMERA_ROLL`](../permissions/#permissionscamera_roll)), are added automatically.
+In managed apps, the permissions to pick images, from camera ([`Permissions.CAMERA`](../permissions/#permissionscamera)) or camera roll ([`Permissions.MEDIA_LIBRARY`](../permissions/#permissionsmedia_library)), are added automatically.
 
 ## Example Usage
 
@@ -38,7 +38,7 @@ export default function ImagePickerExample() {
   useEffect(() => {
     (async () => {
       if (Platform.OS !== 'web') {
-        const { status } = await ImagePicker.requestCameraRollPermissionsAsync();
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== 'granted') {
           alert('Sorry, we need camera roll permissions to make this work!');
         }
@@ -97,13 +97,17 @@ Asks the user to grant permissions for accessing camera. Alias for `Permissions.
 
 A promise that resolves to an object of type [CameraPermissionResponse](#imagepickercamerapermissionresponse).
 
-### `ImagePicker.requestCameraRollPermissionsAsync()`
+### `ImagePicker.requestMediaLibraryPermissionsAsync(writeOnly)`
 
-Asks the user to grant permissions for accessing user's photo. Alias for `Permissions.askAsync(Permissions.CAMERA_ROLL)`. This does nothing on web.
+Asks the user to grant permissions for accessing user's photo. Alias for `Permissions.askAsync(Permissions.MEDIA_LIBRARY)`. This does nothing on web.
+
+#### Arguments
+
+- **writeOnly** (_boolean_) - whether to request write or read and write permissions. Defaults to `false`.
 
 #### Returns
 
-A promise that resolves to an object of type [CameraRollPermissionResponse](#imagepickercamerarollpermissionresponse).
+A promise that resolves to an object of type [MediaLibraryPermissionResponse](#imagepickercamerarollpermissionresponse).
 
 ### `ImagePicker.getCameraPermissionsAsync()`
 
@@ -113,17 +117,21 @@ Checks user's permissions for accessing camera. Alias for `Permissions.getAsync(
 
 A promise that resolves to an object of type [CameraPermissionResponse](#imagepickercamerapermissionresponse).
 
-### `ImagePicker.getCameraRollPermissionsAsync()`
+### `ImagePicker.getMediaLibraryPermissionsAsync()`
 
-Checks user's permissions for accessing photos. Alias for `Permissions.getAsync(Permissions.CAMERA_ROLL)`.
+Checks user's permissions for accessing photos. Alias for `Permissions.getAsync(Permissions.MEDIA_LIBRARY)`.
+
+#### Arguments
+
+- **writeOnly** (_boolean_) - whether to get write or read and write permissions. Defaults to `false`.
 
 #### Returns
 
-A promise that resolves to an object of type [CameraRollPermissionResponse](#imagepickercamerarollpermissionresponse).
+A promise that resolves to an object of type [MediaLibraryPermissionResponse](#imagepickermedialibrarypermissionresponse).
 
 ### `ImagePicker.launchImageLibraryAsync(options)`
 
-Display the system UI for choosing an image or a video from the phone's library. Requires `Permissions.CAMERA_ROLL` on iOS 10 only. On mobile web, this must be called immediately in a user interaction like a button press, otherwise the browser will block the request without a warning.
+Display the system UI for choosing an image or a video from the phone's library. Requires `Permissions.MEDIA_LIBRARY` on iOS 10 only. On mobile web, this must be called immediately in a user interaction like a button press, otherwise the browser will block the request without a warning.
 
 #### Arguments
 
@@ -253,9 +261,9 @@ Android system sometimes kills the `MainActivity` after the `ImagePicker` finish
 
 ## Types
 
-### `ImagePicker.CameraRollPermissionResponse`
+### `ImagePicker.MediaLibraryPermissionResponse`
 
-`ImagePicker.CameraRollPermissionResponse` extends [PermissionResponse](../permissions/#permissionresponse) type exported by `unimodules-permission-interface` and contains additional iOS-specific field:
+`ImagePicker.MediaLibraryPermissionResponse` extends [PermissionResponse](../permissions/#permissionresponse) type exported by `unimodules-permission-interface` and contains additional iOS-specific field:
 
 - `accessPrivileges` **(string)** - Indicates if your app has access to the whole or only part of the photo library. Possible values are:
   - `all` if the user granted your app access to the whole photo library

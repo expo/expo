@@ -5,7 +5,8 @@
 
 #import <EXMediaLibrary/EXMediaLibrary.h>
 #import <EXMediaLibrary/EXSaveToLibraryDelegate.h>
-#import <EXMediaLibrary/EXMediaLibraryCameraRollRequester.h>
+#import <EXMediaLibrary/EXMediaLibraryMediaLibraryPermissionRequester.h>
+#import <EXMediaLibrary/EXMediaLibraryMediaLibraryWriteOnlyPermissionRequester.h>
 
 #import <UMCore/UMDefines.h>
 #import <UMCore/UMUtilities.h>
@@ -55,7 +56,7 @@ UM_EXPORT_MODULE(ExponentMediaLibrary);
   _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
-  [UMPermissionsMethodsDelegate registerRequesters:@[[EXMediaLibraryCameraRollRequester new]] withPermissionsManager:_permissionsManager];
+  [UMPermissionsMethodsDelegate registerRequesters:@[[EXMediaLibraryMediaLibraryPermissionRequester new], [EXMediaLibraryMediaLibraryWriteOnlyPermissionRequester new]] withPermissionsManager:_permissionsManager];
 }
 
 - (dispatch_queue_t)methodQueue
@@ -96,22 +97,33 @@ UM_EXPORT_MODULE(ExponentMediaLibrary);
   return @[EXMediaLibraryDidChangeEvent];
 }
 
+- (id)requesterClass:(BOOL)writeOnly
+{
+  if (writeOnly) {
+    return [EXMediaLibraryMediaLibraryWriteOnlyPermissionRequester class];
+  } else {
+    return [EXMediaLibraryMediaLibraryPermissionRequester class];
+  }
+}
+
 UM_EXPORT_METHOD_AS(getPermissionsAsync,
-                    getPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    getPermissionsAsync:(BOOL)writeOnly
+                    resolve:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
-                                                      withRequester:[EXMediaLibraryCameraRollRequester class]
+                                                      withRequester:[self requesterClass:writeOnly]
                                                             resolve:resolve
                                                              reject:reject];
 }
 
 UM_EXPORT_METHOD_AS(requestPermissionsAsync,
-                    requestPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    requestPermissionsAsync:(BOOL)writeOnly
+                    resolve:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
-                                                         withRequester:[EXMediaLibraryCameraRollRequester class]
+                                                         withRequester:[self requesterClass:writeOnly]
                                                                resolve:resolve
                                                                 reject:reject];
 }
@@ -1049,11 +1061,11 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
 
 - (void)_runIfAllPermissionsWereGranted:(UMPromiseRejectBlock)reject block:(void (^)(void))block
 {
-  [_permissionsManager getPermissionUsingRequesterClass:[EXMediaLibraryCameraRollRequester class] resolve:^(id result) {
+  [_permissionsManager getPermissionUsingRequesterClass:[EXMediaLibraryMediaLibraryPermissionRequester class] resolve:^(id result) {
     NSDictionary *permissions = (NSDictionary *)result;
     
     if (![permissions[@"status"] isEqualToString:@"granted"]) {
-      reject(@"E_NO_PERMISSIONS", @"CAMERA_ROLL permission is required to do this operation.", nil);
+      reject(@"E_NO_PERMISSIONS", @"MEDIA_LIBRARY permission is required to do this operation.", nil);
       return;
     }
     
@@ -1070,8 +1082,8 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
 
 - (BOOL)_checkPermissions:(UMPromiseRejectBlock)reject
 {
-  if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXMediaLibraryCameraRollRequester class]]) {
-    reject(@"E_NO_PERMISSIONS", @"CAMERA_ROLL permission is required to do this operation.", nil);
+  if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXMediaLibraryMediaLibraryPermissionRequester class]]) {
+    reject(@"E_NO_PERMISSIONS", @"MEDIA_LIBRARY permission is required to do this operation.", nil);
     return NO;
   }
   return YES;

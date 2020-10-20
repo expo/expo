@@ -52,23 +52,23 @@ Often you want to be able to test what happens when a user rejects a permission,
 
 ### Permissions and required packages on iOS
 
-`expo-permissions` includes the shared infrastructure for handling system permissions. On iOS, it does not include the code specific to particular permissions. For example, if you want to use the `CAMERA_ROLL` permission, you need to install `expo-image-picker` or `expo-media-library`.
+`expo-permissions` includes the shared infrastructure for handling system permissions. On iOS, it does not include the code specific to particular permissions. For example, if you want to use the `MEDIA_LIBRARY` permission, you need to install `expo-image-picker` or `expo-media-library`.
 
 The following table shows you which permissions correspond to which packages.
 
-| Permission type             | Packages                                  |
-| --------------------------- | ----------------------------------------- |
-| `NOTIFICATIONS`             | `expo-notifications`                      |
-| `USER_FACING_NOTIFICATIONS` | `expo-notifications`                      |
-| `LOCATION`                  | `expo-location`                           |
-| `CAMERA`                    | `expo-barcode-scanner` <br /> `expo-camera` <br /> `expo-face-detector` <br /> `expo-image-picker` <br /> `expo-media-library` |
-| `AUDIO_RECORDING`           | `expo-av`                                 |
-| `CONTACTS`                  | `expo-contacts`                           |
-| `CAMERA_ROLL`               | `expo-image-picker`<br /> `expo-media-library` |
-| `CALENDAR`                  | `expo-calendar`                           |
-| `REMINDERS`                 | `expo-calendar`                           |
-| `SYSTEM_BRIGHTNESS`         | `expo-brightness`                         |
-| `MOTION`                    | `expo-sensors`                            |
+| Permission type                                  | Packages                                                                                                                       |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| `NOTIFICATIONS`                                  | `expo-notifications`                                                                                                           |
+| `USER_FACING_NOTIFICATIONS`                      | `expo-notifications`                                                                                                           |
+| `LOCATION`                                       | `expo-location`                                                                                                                |
+| `CAMERA`                                         | `expo-barcode-scanner` <br /> `expo-camera` <br /> `expo-face-detector` <br /> `expo-image-picker` <br /> `expo-media-library` |
+| `AUDIO_RECORDING`                                | `expo-av`                                                                                                                      |
+| `CONTACTS`                                       | `expo-contacts`                                                                                                                |
+| `MEDIA_LIBRARY`<br /> `MEDIA_LIBRARY_WRITE_ONLY` | `expo-image-picker`<br /> `expo-media-library`                                                                                 |
+| `CALENDAR`                                       | `expo-calendar`                                                                                                                |
+| `REMINDERS`                                      | `expo-calendar`                                                                                                                |
+| `SYSTEM_BRIGHTNESS`                              | `expo-brightness`                                                                                                              |
+| `MOTION`                                         | `expo-sensors`                                                                                                                 |
 
 ### Excluding Android permissions in bare workflow
 
@@ -83,7 +83,6 @@ Since the `android.permissions` manifest property doesn't work in the bare workf
 ```
 
 > **Note:** you have to define the `xmlns:tools` attribute on `<manifest>` before you can use the `tools:node` attribute on permissions.
-
 
 # API
 
@@ -208,7 +207,8 @@ interface PermissionResponse {
   granted: boolean;
   expires: 'never' | number;
   canAskAgain: boolean;
-  permissions: { // an object with an entry for each permission requested
+  permissions: {
+    // an object with an entry for each permission requested
     [permissionType: string /* PermissionType */]: PermissionInfo;
   };
 }
@@ -248,7 +248,6 @@ This property is set to `true` when the app can request the user to grant all re
 
 This object contains information, per requested permission, using the [`PermissionInfo`](#permissioninfo) type.
 
-
 ### `PermissionInfo`
 
 This object contains information about a single requested permission, it's retuned within the `PermissionResponse` using the `permissions` property. It also may include additional platform-specific info, like the scope of the permission.
@@ -276,7 +275,8 @@ interface PermissionInfo {
 - [`Permissions.CAMERA`](#permissionscamera) -- using the camera to capture images or videos
 - [`Permissions.AUDIO_RECORDING`](#permissionsaudio_recording) -- using the microphone to capture audio
 - [`Permissions.CONTACTS`](#permissionscontacts) -- reading or writing to contacts
-- [`Permissions.CAMERA_ROLL`](#permissionscamera_roll) -- accessing the images or videos from the user
+- [`Permissions.MEDIA_LIBRARY_WRITE_ONLY`](#permissionsmedia_library_write_only) -- writing to media library
+- [`Permissions.MEDIA_LIBRARY`](#permissionsmedia_library) -- accessing the images or videos from the user
 - [`Permissions.CALENDAR`](#permissionscalendar) -- reading or writing calendar items
 - [`Permissions.REMINDERS`](#permissionsreminders) -- reading or writing calendar reminders (_iOS-only_)
 - [`Permissions.SYSTEM_BRIGHTNESS`](#permissionssystem_brightness) -- changing brightness of the screen system-wide
@@ -300,7 +300,7 @@ The permission type for user-facing notifications **and** remote push notificati
 The permission type for user-facing notifications. This does **not** register your app to receive remote push notifications; see the `NOTIFICATIONS` permission.
 
 - **Android:** _this permission is the same as `NOTIFICATIONS` and returns the status from that permission._
-_ **iOS:** it requires the `expo-notifications` module and doesn't require a message.
+  \_ **iOS:** it requires the `expo-notifications` module and doesn't require a message.
 
 > **Note (iOS):** It provides more detailed permissions, so the permission status will contain not only `status` and `expires`, but also Boolean values for `allowsSound`, `allowsAlert` and `allowsBadge`.
 
@@ -369,12 +369,19 @@ The permission type for reading or writing contacts.
 [contacts-android-write]: https://developer.android.com/reference/android/Manifest.permission#WRITE_CONTACTS
 [contacts-ios-plist]: https://developer.apple.com/documentation/eventkit/accessing_the_event_store#2975207
 
-### `Permissions.CAMERA_ROLL`
+### `Permissions.MEDIA_LIBRARY_WRITE_ONLY`
 
-The permission type for reading or writing to the camera roll.
+The permission type for writing to the media library.
 
-- **Android:** it requires the [`READ_EXTERNAL_STORAGE`][cameraroll-android-read] and [`WRITE_EXTERNAL_STORAGE`][cameraroll-android-write] permissions in your manifest.
-- **iOS** it requires the `expo-image-picker` or `expo-media-library` module and [`NSPhotoLibraryUsageDescription`][cameraroll-ios-plist] message.
+- **Android:** it requires the [`WRITE_EXTERNAL_STORAGE`][medialibrary-android-write] permissions in your manifest.
+- **iOS** it requires the `expo-image-picker` or `expo-media-library` module and [`NSPhotoLibraryAddUsageDescription`][medialibrary-ios-plist] message.
+
+### `Permissions.MEDIA_LIBRARY`
+
+The permission type for reading or writing to the media library.
+
+- **Android:** it requires the [`READ_EXTERNAL_STORAGE`][medialibrary-android-read] and [`WRITE_EXTERNAL_STORAGE`][medialibrary-android-write] permissions in your manifest.
+- **iOS** it requires the `expo-image-picker` or `expo-media-library` module and [`NSPhotoLibraryUsageDescription`][medialibrary-ios-plist] message.
 
 > **Note (iOS):** iOS provides more detailed permissions, returning `{ status, permissions: { cameraRoll: { accessPrivileges } } }` where `accessPrivileges` can be:
 >
@@ -382,9 +389,9 @@ The permission type for reading or writing to the camera roll.
 > - `limited` if the user granted your app access only to selected photos (only available on **iOS 14.0+**)
 > - `none` if user denied or hasn't yet granted the permission
 
-[cameraroll-android-read]: https://developer.android.com/reference/android/Manifest.permission#READ_EXTERNAL_STORAGE
-[cameraroll-android-write]: https://developer.android.com/reference/android/Manifest.permission#WRITE_EXTERNAL_STORAGE
-[cameraroll-ios-plist]: https://developer.apple.com/documentation/photokit/requesting_authorization_to_access_photos#3030690
+[medialibrary-android-read]: https://developer.android.com/reference/android/Manifest.permission#READ_EXTERNAL_STORAGE
+[medialibrary-android-write]: https://developer.android.com/reference/android/Manifest.permission#WRITE_EXTERNAL_STORAGE
+[medialibrary-ios-plist]: https://developer.apple.com/documentation/photokit/requesting_authorization_to_access_photos#3030690
 
 ### `Permissions.CALENDAR`
 

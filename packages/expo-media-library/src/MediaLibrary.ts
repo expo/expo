@@ -178,18 +178,20 @@ function dateToNumber(value?: Date | number): number | undefined {
 export const MediaType: MediaTypeObject = MediaLibrary.MediaType;
 export const SortBy: SortByObject = MediaLibrary.SortBy;
 
-export async function requestPermissionsAsync(): Promise<PermissionResponse> {
+export async function requestPermissionsAsync(
+  writeOnly: boolean = false
+): Promise<PermissionResponse> {
   if (!MediaLibrary.requestPermissionsAsync) {
     throw new UnavailabilityError('MediaLibrary', 'requestPermissionsAsync');
   }
-  return await MediaLibrary.requestPermissionsAsync();
+  return await MediaLibrary.requestPermissionsAsync(writeOnly);
 }
 
-export async function getPermissionsAsync(): Promise<PermissionResponse> {
+export async function getPermissionsAsync(writeOnly: boolean = false): Promise<PermissionResponse> {
   if (!MediaLibrary.getPermissionsAsync) {
     throw new UnavailabilityError('MediaLibrary', 'getPermissionsAsync');
   }
-  return await MediaLibrary.getPermissionsAsync();
+  return await MediaLibrary.getPermissionsAsync(writeOnly);
 }
 
 export async function createAssetAsync(localUri: string): Promise<Asset> {

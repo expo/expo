@@ -1,15 +1,20 @@
 // Copyright 2017-present 650 Industries. All rights reserved.
 
-#import <EXMediaLibrary/EXMediaLibraryCameraRollRequester.h>
+#import <EXMediaLibrary/EXMediaLibraryMediaLibraryPermissionRequester.h>
 
-#import <Photos/Photos.h>
-
-@implementation EXMediaLibraryCameraRollRequester
+@implementation EXMediaLibraryMediaLibraryPermissionRequester
 
 + (NSString *)permissionType
 {
-  return @"cameraRoll";
+  return @"mediaLibrary";
 }
+
+#ifdef __IPHONE_14_0
+- (PHAccessLevel)accessLevel
+{
+  return PHAccessLevelReadWrite;
+}
+#endif
 
 - (NSDictionary *)getPermissions
 {
@@ -19,7 +24,7 @@
   PHAuthorizationStatus permissions;
 #ifdef __IPHONE_14_0
   if (@available(iOS 14, *)) {
-    permissions = [PHPhotoLibrary authorizationStatusForAccessLevel:PHAccessLevelReadWrite];
+    permissions = [PHPhotoLibrary authorizationStatusForAccessLevel:[self accessLevel]];
   } else {
     permissions = [PHPhotoLibrary authorizationStatus];
   }
@@ -66,7 +71,7 @@
 
 #ifdef __IPHONE_14_0
   if (@available(iOS 14, *)) {
-    [PHPhotoLibrary requestAuthorizationForAccessLevel:PHAccessLevelReadWrite handler:handler];
+    [PHPhotoLibrary requestAuthorizationForAccessLevel:[self accessLevel] handler:handler];
   } else {
     [PHPhotoLibrary requestAuthorization:handler];
   }

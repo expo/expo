@@ -53,17 +53,17 @@ function dateToNumber(value) {
 // export constants
 export const MediaType = MediaLibrary.MediaType;
 export const SortBy = MediaLibrary.SortBy;
-export async function requestPermissionsAsync() {
+export async function requestPermissionsAsync(writeOnly = false) {
     if (!MediaLibrary.requestPermissionsAsync) {
         throw new UnavailabilityError('MediaLibrary', 'requestPermissionsAsync');
     }
-    return await MediaLibrary.requestPermissionsAsync();
+    return await MediaLibrary.requestPermissionsAsync(writeOnly);
 }
-export async function getPermissionsAsync() {
+export async function getPermissionsAsync(writeOnly = false) {
     if (!MediaLibrary.getPermissionsAsync) {
         throw new UnavailabilityError('MediaLibrary', 'getPermissionsAsync');
     }
-    return await MediaLibrary.getPermissionsAsync();
+    return await MediaLibrary.getPermissionsAsync(writeOnly);
 }
 export async function createAssetAsync(localUri) {
     if (!MediaLibrary.createAssetAsync) {

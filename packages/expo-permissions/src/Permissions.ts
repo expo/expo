@@ -26,7 +26,12 @@ export {
 };
 
 export const CAMERA = 'camera';
-export const CAMERA_ROLL = 'cameraRoll';
+export const MEDIA_LIBRARY = 'mediaLibrary';
+export const MEDIA_LIBRARY_WRITE_ONLY = 'mediaLibraryWriteOnly';
+/**
+ * @deprecated Use `MEDIA_LIBRARY` or `MEDIA_LIBRARY_WRITE_ONLY`
+ */
+export const CAMERA_ROLL = MEDIA_LIBRARY;
 export const AUDIO_RECORDING = 'audioRecording';
 export const LOCATION = 'location';
 export const USER_FACING_NOTIFICATIONS = 'userFacingNotifications';
@@ -41,6 +46,8 @@ export const MOTION = 'motion';
 const PERMISSION_MODULE_MAPPING = {
   [CAMERA]: 'expo-camera',
   [CAMERA_ROLL]: 'expo-media-library',
+  [MEDIA_LIBRARY]: 'expo-media-library',
+  [MEDIA_LIBRARY_WRITE_ONLY]: 'expo-media-library',
   [AUDIO_RECORDING]: 'expo-av',
   [LOCATION]: 'expo-location',
   [USER_FACING_NOTIFICATIONS]: 'expo-notifications',
