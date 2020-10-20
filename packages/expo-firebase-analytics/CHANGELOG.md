@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix setup native firebase link in README. ([#10740](https://github.com/expo/expo/pull/10740) by [@jarvisluong](https://github.com/jarvisluong))
+
 ## 2.5.1 — 2020-10-08
 
 - Fix failed network requests on Android. ([#10606](https://github.com/expo/expo/pull/10606) by [@IjzerenHein](https://github.com/IjzerenHein))
