@@ -28,7 +28,9 @@ export interface PermissionMap {
 }
 
 export interface PermissionInfo extends UMPermissionResponse {
-  // iOS only - Permission.MEDIA_LIBRARY/MEDIA_LIBRARY_WRITE_ONLY
+  /**
+   * iOS only - Permission.MEDIA_LIBRARY/MEDIA_LIBRARY_WRITE_ONLY
+   */
   accessPrivileges?: 'all' | 'limited' | 'none';
   scope?: 'whenInUse' | 'always' | 'none';
   android?: PermissionDetailsLocationAndroid;
