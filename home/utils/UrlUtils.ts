@@ -55,7 +55,7 @@ export function conformsToExpoProtocol(str: string): boolean {
     return true;
   } else if (str.startsWith('exp://')) {
     return true;
-  } else if (str.startsWith('https://expo.io/') || str.startsWith(`${Config.api.url}/`)) {
+  } else if (str.startsWith('https://expo.io/') || str.startsWith(`${Config.api.origin}/`)) {
     return true;
   }
 

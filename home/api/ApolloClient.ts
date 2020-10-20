@@ -7,7 +7,7 @@ import Connectivity from './Connectivity';
 import graphqlFragmentTypes from './generated/graphqlFragmentTypes.json';
 
 export default new ApolloClient({
-  uri: `${Config.api.url}/--/graphql`,
+  uri: `${Config.api.origin}/--/graphql`,
 
   async request(operation): Promise<void> {
     const isConnected = await Connectivity.isAvailableAsync();
