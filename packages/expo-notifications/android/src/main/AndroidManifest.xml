@@ -18,10 +18,13 @@
       android:exported="false">
       <intent-filter android:priority="-1">
         <action android:name="expo.modules.notifications.NOTIFICATION_EVENT" />
+
         <action android:name="android.intent.action.BOOT_COMPLETED" />
         <action android:name="android.intent.action.REBOOT" />
         <action android:name="android.intent.action.QUICKBOOT_POWERON" />
         <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
+
+        <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
       </intent-filter>
     </receiver>
 
