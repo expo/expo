@@ -104,7 +104,7 @@ export default function MediaLibraryScreen({ navigation, route }: Props) {
   }, [album, navigation]);
 
   // Ensure the permissions are granted.
-  const [permission] = usePermissions(Permissions.CAMERA_ROLL, { ask: true });
+  const [permission] = usePermissions(Permissions.MEDIA_LIBRARY, { ask: true });
 
   if (!permission) {
     return null;
@@ -113,8 +113,8 @@ export default function MediaLibraryScreen({ navigation, route }: Props) {
     return (
       <View style={styles.permissions}>
         <Text>
-          Missing CAMERA_ROLL permission. To continue, you'll need to allow media gallery access in
-          Settings.
+          Missing MEDIA_LIBRARY permission. To continue, you'll need to allow media gallery access
+          in Settings.
         </Text>
       </View>
     );

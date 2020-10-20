@@ -21,8 +21,8 @@ final class MediaLibraryConstants {
   static final String ERROR_NO_ASSET = "E_NO_ASSET";
   static final String ERROR_IO_EXCEPTION = "E_IO_EXCEPTION";
   static final String ERROR_NO_PERMISSIONS = "E_NO_PERMISSIONS";
-  static final String ERROR_NO_PERMISSIONS_MESSAGE = "Missing CAMERA_ROLL permissions.";
-  static final String ERROR_NO_WRITE_PERMISSION_MESSAGE = "Missing CAMERA_ROLL write permission.";
+  static final String ERROR_NO_PERMISSIONS_MESSAGE = "Missing MEDIA_LIBRARY permissions.";
+  static final String ERROR_NO_WRITE_PERMISSION_MESSAGE = "Missing MEDIA_LIBRARY write permission.";
   static final String ERROR_NO_FILE_EXTENSION = "E_NO_FILE_EXTENSION";
 
   static final String MEDIA_TYPE_AUDIO = "audio";
