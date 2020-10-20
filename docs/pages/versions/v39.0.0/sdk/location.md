@@ -38,7 +38,7 @@ On Android, This module requires the permissions for approximate and exact devic
 
 If you're using the iOS or Android Emulators, ensure that [Location is enabled](#enabling-emulator-location).
 
-<SnackInline label='Linear Gradient' templateId='location' dependencies={['expo-location', 'expo-constants']}>
+<SnackInline label='Location' templateId='location' dependencies={['expo-location', 'expo-constants']}>
 
 ```js
 import React, { useState, useEffect } from 'react';

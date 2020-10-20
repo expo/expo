@@ -22,7 +22,6 @@ A React component that blurs everything underneath the view. On iOS, it renders 
 ```js
 import React from 'react';
 import { Image, Text, StyleSheet, View } from 'react-native';
-import Constants from 'expo-constants';
 import { BlurView } from 'expo-blur';
 
 const uri = 'https://s3.amazonaws.com/exp-icon-assets/ExpoEmptyManifest_192.png';
