@@ -223,7 +223,10 @@ export async function logInAsync(config: GoogleLogInConfig): Promise<LogInResult
     // Web login only returns an accessToken so use it to fetch the same info as the native login
     // does.
     const userInfoResponse = await fetch('https://www.googleapis.com/userinfo/v2/me', {
-      headers: { Authorization: `Bearer ${logInResult.accessToken}` },
+      headers: { 
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${logInResult.accessToken}`
+      },
     });
     const userInfo = await userInfoResponse.json();
 
