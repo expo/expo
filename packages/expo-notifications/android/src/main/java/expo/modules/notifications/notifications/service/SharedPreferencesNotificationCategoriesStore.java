@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Base64;
 
-import androidx.annotation.NonNull;
-
 import org.json.JSONException;
 
 import java.io.ByteArrayInputStream;
@@ -18,10 +16,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
 import expo.modules.notifications.notifications.model.NotificationCategory;
 
 /**
- * A fairly straightforward {@link SharedPreferences} wrapper to be used by {@link NotificationSchedulingHelper}.
+ * A fairly straightforward {@link SharedPreferences} wrapper to be used by {@link expo.modules.notifications.service.delegates.ExpoSchedulingDelegate}.
  * Saves and reads notification category information (identifiers, actions, and options) to and from persistent storage.
  * <p>
  * A notification category with identifier = 123abc will be persisted under key:
@@ -79,13 +78,13 @@ public class SharedPreferencesNotificationCategoriesStore {
    * Saves given category in persistent storage.
    *
    * @param notificationCategory Notification category
-   * @throws IOException Thrown if there is an error while serializing the category
    * @return The category that was just created, or null if it couldn't be created.
+   * @throws IOException Thrown if there is an error while serializing the category
    */
   public NotificationCategory saveNotificationCategory(@NonNull NotificationCategory notificationCategory) throws IOException {
     boolean successful = mSharedPreferences.edit()
-        .putString(preferencesNotificationCategoryKey(notificationCategory.getIdentifier()), serializeNotificationCategory(notificationCategory))
-        .commit();
+      .putString(preferencesNotificationCategoryKey(notificationCategory.getIdentifier()), serializeNotificationCategory(notificationCategory))
+      .commit();
     return successful ? notificationCategory : null;
   }
 
