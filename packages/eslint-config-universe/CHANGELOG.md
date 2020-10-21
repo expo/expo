@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+Make `@babel/core` an optional peer dependency since pure TypeScript projects don't need it
+
 ## 6.0.0 — 2020-10-19
 
 ### 🛠 Breaking changes

@@ -56,6 +56,11 @@
     "eslint": ">= 6.0.0",
     "prettier": ">= 1.19.0"
   },
+  "peerDependenciesMeta": {
+    "@babel/core": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@babel/core": "^7.11.6",
     "@expo/spawn-async": "^1.5.0",
