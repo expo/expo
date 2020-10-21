@@ -92,6 +92,9 @@ export declare type RecordingStatus = {
     isRecording: boolean;
     isDoneRecording: boolean;
     durationMillis: number;
+    meter?: {
+        value: number;
+    };
 };
 export { PermissionResponse, PermissionStatus };
 export declare function getPermissionsAsync(): Promise<PermissionResponse>;
@@ -115,7 +118,7 @@ export declare class Recording {
     getStatusAsync: () => Promise<RecordingStatus>;
     setOnRecordingStatusUpdate(onRecordingStatusUpdate: ((status: RecordingStatus) => void) | null): void;
     setProgressUpdateInterval(progressUpdateIntervalMillis: number): void;
-    prepareToRecordAsync(options?: RecordingOptions): Promise<RecordingStatus>;
+    prepareToRecordAsync(options?: RecordingOptions, isMeteringEnabled?: boolean): Promise<RecordingStatus>;
     startAsync(): Promise<RecordingStatus>;
     pauseAsync(): Promise<RecordingStatus>;
     stopAndUnloadAsync(): Promise<RecordingStatus>;

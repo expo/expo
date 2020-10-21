@@ -44,7 +44,7 @@ public interface AVManagerInterface {
 
   void getStatusForVideo(final Integer tag, final Promise promise);
 
-  void prepareAudioRecorder(final ReadableArguments options, final Promise promise);
+  void prepareAudioRecorder(final ReadableArguments options, final boolean isMeteringEnabled, final Promise promise);
 
   void startAudioRecording(final Promise promise);
 

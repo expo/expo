@@ -90,6 +90,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   private boolean mAudioRecorderIsRecording = false;
   private boolean mAudioRecorderIsPaused = false;
   private boolean mIsRegistered = false;
+  private boolean mAudioRecorderIsMeteringEnabled = false;
 
   private ModuleRegistry mModuleRegistry;
 
@@ -534,12 +535,40 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
     return duration;
   }
 
+  private int getAudioRecorderLevels() {
+    if (mAudioRecorder == null) {
+      return 0;
+    }
+    if(!mAudioRecorderIsMeteringEnabled) {
+      return 0;
+    }
+
+    int result;
+    int amplitude = mAudioRecorder.getMaxAmplitude();
+    if(amplitude == 0) {
+      result = -160;
+    } else {
+      result = (int) (20 * Math.log(((double) amplitude) / 32767d));
+    }
+
+    return result;
+  }
+
   private Bundle getAudioRecorderStatus() {
     final Bundle map = new Bundle();
     if (mAudioRecorder != null) {
-      map.putBoolean("canRecord", true);
-      map.putBoolean("isRecording", mAudioRecorderIsRecording);
-      map.putInt("durationMillis", (int) getAudioRecorderDurationMillis());
+      if(mAudioRecorderIsMeteringEnabled) {
+        final Bundle meteringMap = new Bundle();
+        meteringMap.putInt("value",  (int) getAudioRecorderLevels());
+        map.putBoolean("canRecord", true);
+        map.putBoolean("isRecording", mAudioRecorderIsRecording);
+        map.putInt("durationMillis", (int) getAudioRecorderDurationMillis());
+        map.putBundle("metering", meteringMap);
+      } else {
+        map.putBoolean("canRecord", true);
+        map.putBoolean("isRecording", mAudioRecorderIsRecording);
+        map.putInt("durationMillis", (int) getAudioRecorderDurationMillis());
+      }
     }
     return map;
   }
@@ -580,10 +609,16 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   }
 
   @Override
-  public void prepareAudioRecorder(final ReadableArguments options, final Promise promise) {
+  public void prepareAudioRecorder(final ReadableArguments options, final boolean isMeteringEnabled, final Promise promise) {
     if (isMissingAudioRecordingPermissions()) {
       promise.reject("E_MISSING_PERMISSION", "Missing audio recording permissions.");
       return;
+    }
+
+    if(isMeteringEnabled) {
+      mAudioRecorderIsMeteringEnabled = true;
+    } else {
+      mAudioRecorderIsMeteringEnabled = false;
     }
 
     removeAudioRecorder();

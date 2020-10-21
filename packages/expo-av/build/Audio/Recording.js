@@ -209,7 +209,7 @@ export class Recording {
         this.getStatusAsync();
     }
     // Record API
-    async prepareToRecordAsync(options = RECORDING_OPTIONS_PRESET_LOW_QUALITY) {
+    async prepareToRecordAsync(options = RECORDING_OPTIONS_PRESET_LOW_QUALITY, isMeteringEnabled = false) {
         throwIfAudioIsDisabled();
         if (_recorderExists) {
             throw new Error('Only one Recording object can be prepared at a given time.');
@@ -231,7 +231,7 @@ export class Recording {
             if (eventEmitter) {
                 this._subscription = eventEmitter.addListener('Expo.Recording.recorderUnloaded', this._cleanupForUnloadedRecorder);
             }
-            const { uri, status, } = await ExponentAV.prepareAudioRecorder(options);
+            const { uri, status, } = await ExponentAV.prepareAudioRecorder(options, isMeteringEnabled);
             _recorderExists = true;
             this._uri = uri;
             this._options = options;

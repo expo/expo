@@ -529,6 +529,15 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
     int durationMillisFromRecorder = [self _getDurationMillisOfRecordingAudioRecorder];
     // After stop, the recorder's duration goes to zero, so we replace it with the correct duration in this case.
     int durationMillis = durationMillisFromRecorder == 0 ? _audioRecorderDurationMillis : durationMillisFromRecorder;
+    if(_audioRecorder.meteringEnabled) {
+        
+        [_audioRecorder updateMeters];
+      float _currentLevel = [_audioRecorder averagePowerForChannel: 0];
+      return @{@"canRecord": @(YES),
+             @"isRecording": @([_audioRecorder isRecording]),
+             @"durationMillis": @(durationMillis),
+             @"metering": @{@"value": @(_currentLevel)}};
+    }
     return @{@"canRecord": @(YES),
              @"isRecording": @([_audioRecorder isRecording]),
              @"durationMillis": @(durationMillis)};
@@ -770,7 +779,7 @@ UM_EXPORT_METHOD_AS(requestPermissionsAsync,
 }
 
 UM_EXPORT_METHOD_AS(prepareAudioRecorder,
-                    prepareAudioRecorder:(NSDictionary *)options
+                    prepareAudioRecorder:(NSDictionary *)options withMeteringState:(BOOL)isMeteringEnabled
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
@@ -795,6 +804,7 @@ UM_EXPORT_METHOD_AS(prepareAudioRecorder,
       reject(@"E_AUDIO_RECORDERNOTCREATED", [NSString stringWithFormat:@"Prepare encountered an error: %@", error.description], error);
       return;
     } else if ([_audioRecorder prepareToRecord]) {
+        _audioRecorder.meteringEnabled = isMeteringEnabled;
       resolve(@{@"uri": [[_audioRecorder url] absoluteString],
                 @"status": [self _getAudioRecorderStatus]});
     } else {

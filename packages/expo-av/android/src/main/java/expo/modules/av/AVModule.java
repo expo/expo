@@ -92,8 +92,8 @@ public class AVModule extends ExportedModule {
   }
 
   @ExpoMethod
-  public void prepareAudioRecorder(final ReadableArguments options, final Promise promise) {
-    mAVManager.prepareAudioRecorder(options, promise);
+  public void prepareAudioRecorder(final ReadableArguments options, final Boolean isMeteringEnabled, final Promise promise) {
+    mAVManager.prepareAudioRecorder(options, isMeteringEnabled, promise);
   }
 
   @ExpoMethod

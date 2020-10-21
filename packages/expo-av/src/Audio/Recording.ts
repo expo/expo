@@ -151,6 +151,9 @@ export type RecordingStatus = {
   isRecording: boolean;
   isDoneRecording: boolean;
   durationMillis: number;
+  meter?: {
+    value: number;
+  };
 };
 
 export { PermissionResponse, PermissionStatus };
@@ -276,7 +279,8 @@ export class Recording {
   // Record API
 
   async prepareToRecordAsync(
-    options: RecordingOptions = RECORDING_OPTIONS_PRESET_LOW_QUALITY
+    options: RecordingOptions = RECORDING_OPTIONS_PRESET_LOW_QUALITY,
+    isMeteringEnabled = false
   ): Promise<RecordingStatus> {
     throwIfAudioIsDisabled();
 
@@ -319,8 +323,7 @@ export class Recording {
         uri: string;
         // status is of type RecordingStatus, but without the canRecord field populated
         status: Pick<RecordingStatus, Exclude<keyof RecordingStatus, 'canRecord'>>;
-      } = await ExponentAV.prepareAudioRecorder(options);
-
+      } = await ExponentAV.prepareAudioRecorder(options, isMeteringEnabled);
       _recorderExists = true;
       this._uri = uri;
       this._options = options;
