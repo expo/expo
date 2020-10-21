@@ -11,12 +11,15 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.os.ResultReceiver
 import android.util.Log
+import androidx.core.app.RemoteInput
 import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationAction
 import expo.modules.notifications.notifications.model.NotificationBehavior
 import expo.modules.notifications.notifications.model.NotificationCategory
 import expo.modules.notifications.notifications.model.NotificationRequest
 import expo.modules.notifications.notifications.model.NotificationResponse
+import expo.modules.notifications.notifications.model.TextInputNotificationAction
+import expo.modules.notifications.notifications.model.TextInputNotificationResponse
 import expo.modules.notifications.service.delegates.ExpoCategoriesDelegate
 import expo.modules.notifications.service.delegates.ExpoHandlingDelegate
 import expo.modules.notifications.service.delegates.ExpoPresentationDelegate
@@ -565,10 +568,16 @@ open class NotificationsService : BroadcastReceiver() {
       intent.getParcelableExtra(NOTIFICATION_KEY)!!
     )
 
-  open fun onReceiveNotificationResponse(context: Context, intent: Intent) =
-    getHandlingDelegate(context).handleNotificationResponse(
-      intent.getParcelableExtra(NOTIFICATION_RESPONSE_KEY)!!
-    )
+  open fun onReceiveNotificationResponse(context: Context, intent: Intent) {
+    val notification = intent.getParcelableExtra<Notification>(NOTIFICATION_KEY)!!
+    val action = intent.getParcelableExtra<NotificationAction>(NOTIFICATION_ACTION_KEY)!!
+    val response = if (action is TextInputNotificationAction) {
+      TextInputNotificationResponse(action, notification, RemoteInput.getResultsFromIntent(intent).getString(USER_TEXT_RESPONSE_KEY))
+    } else {
+      NotificationResponse(action, notification)
+    }
+    getHandlingDelegate(context).handleNotificationResponse(response)
+  }
 
   open fun onNotificationsDropped(context: Context, intent: Intent) =
     getHandlingDelegate(context).handleNotificationsDropped()
