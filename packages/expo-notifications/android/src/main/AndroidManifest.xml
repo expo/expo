@@ -28,15 +28,6 @@
       </intent-filter>
     </receiver>
 
-    <receiver
-      android:name=".notifications.service.NotificationResponseReceiver"
-      android:enabled="true"
-      android:exported="false" />
-    <receiver
-      android:name=".notifications.service.TextInputNotificationResponseReceiver"
-      android:enabled="true"
-      android:exported="false" />
-
     <meta-data
       android:name="expo.modules.notifications#NotificationsScoper"
       android:value="expo.modules.notifications.NotificationsScoper" />
