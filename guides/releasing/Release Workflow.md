@@ -5,7 +5,7 @@
   - [0.2. Update vendored modules](#02-update-vendored-modules)
   - [0.3. Update schema](#03-update-schema)
   - [0.4. Update versions on staging](#04-update-versions-on-staging)
-  - [0.5. Tag React Native fork](#05-tag-react-native-fork)
+  - [0.5. Cut branch, sync, and tag React Native](#05-cut-branch-sync-and-tag-react-native)
   - [0.6. Generate new mocks](#06-generate-new-mocks)
   - [0.7. Publish `next` packages](#07-publish-next-packages)
   - [0.8. Merge and cutoff changelogs](#08-merge-and-cutoff-changelogs)
@@ -13,9 +13,8 @@
   - [0.10. Generate new SDK docs](#010-generate-new-sdk-docs)
 - [Stage 1 - Unversioned Quality Assurance and Versioning](#stage-1---unversioned-quality-assurance-and-versioning)
   - [1.1. Cut off release branch](#11-cut-off-release-branch)
-  - [1.2. Update React Native](#12-update-react-native)
-  - [1.3. Unversioned Quality Assurance](#13-unversioned-quality-assurance)
-  - [1.4. Versioning code for the new SDK](#14-versioning-code-for-the-new-sdk)
+  - [1.2. Unversioned Quality Assurance](#12-unversioned-quality-assurance)
+  - [1.3. Version code for the new SDK](#13-version-code-for-the-new-sdk)
 - [Stage 2 - Quality Assurance](#stage-2---quality-assurance)
   - [2.1. Versioned Quality Assurance - iOS/Android clients](#21-versioned-quality-assurance---iosandroid-clients)
   - [2.2. Standalone App Quality Assurance](#22-standalone-app-quality-assurance)
@@ -41,6 +40,7 @@
   - [5.7. Announce beta availability](#57-announce-beta-availability)
   - [5.8. Test, fix, and monitor](#58-test-fix-and-monitor)
   - [5.9. Submit iOS client for review](#59-submit-ios-client-for-review)
+  - [5.10. Start release notes document](#510-start-release-notes-document)
 - [Stage 6 - Final release](#stage-6---final-release)
   - [6.1. Release iOS/Android clients to the general public](#61-release-iosandroid-clients-to-the-general-public)
   - [6.2. Make adhoc client shell app for iOS](#62-make-adhoc-client-shell-app-for-ios)
@@ -110,16 +110,26 @@
 - `et update-versions --sdkVersion XX.X.X --key facebookReactNativeVersion --value <react-native package version>`
 - `et update-versions --sdkVersion XX.X.X --key expoReactNativeTag --value sdk-XX.X.X`
 
-## 0.5. Tag React Native fork
+## 0.5. Cut branch, sync, and tag React Native
 
-**Why:** In managed Expo workflow, we use our forked `react-native` repo. The submodule under `react-native-lab/react-native` is the source of truth for `react-native` version used throughout the repository. We will use it in later steps.
+If we're planning to update React Native version for the upcoming SDK then it should have been done before starting any of this!
+
+If we didn't update the React Native version, now is a good time to check if we need to cherry-pick commits from the latest version (for example: bug fixes that landed since our previous release). This should be done from the `exp-latest` branch - reset it to the latest released SDK version if it isn't already pointing there. After that's done, proceed to this step. If unsure about any of this, check with Brent (@brentvatne).
+
+**Why:**
+
+In the managed workflow, we use our forked `react-native` repository because we need to deviate slightly from the upstream version in order to pull in some set of fixes and improvements. The submodule under `react-native-lab/react-native` is the source of truth for `react-native` version used throughout the `expo/expo` repository. Each SDK version has its own tagged version of React Native, even if it ends up being the same upstream version number (eg: 0.63.3) as the previous release.
 
 **How:**
 
 - Go to `react-native-lab/react-native` submodule.
-- Make sure you're on the branch dedicated for this SDK release and that your local version of it is up to date by running `git checkout sdk-XX` and then `git pull`.
+- Coordinate with whoever did the React Native upgrade (if anyone) or Brent (@brentvatne) to create a new branch for new SDK in our `react-native` fork (`sdk-XX` typically, where `XX` is the major number of the SDK version).
+- Run `et update-react-native`. This expotools command copies `ReactAndroid` and `ReactCommon` folders from the submodule to the respective paths: `android/ReactAndroid` and `android/ReactCommon` and then executes `ReactAndroidCodeTransformer` that applies some Expo-specific code transformations.
+- Add your git changes from both `react-native-lab` and `android` folders and create a pull request to `master` branch.
 - Run `git tag -a 'sdk-XX.X.X' -m 'React Native X.Y.Z for Expo SDKXX'` (where `X.Y.Z` is the React Native version and `XX` is the major number of SDK version), to make a tag for the latest commit in your local repo.
 - Push the tag to the remote using `git push --tags`.
+
+**Note:** We may end up making changes to the `react-native#sdk-XX` branch at some point prior to release in order to fix issues that were encountered during QA and beta testing. We should delete and re-create the `sdk-XX.X.X` tag if this is done, so that when we do the final release the `react-native` version is `sdk-XX.0.0`.
 
 ## 0.6. Generate new mocks
 
@@ -191,18 +201,7 @@
 
 **How:** After the SDK branch cutoff deadline, cut the `sdk-XX` branch from `master` and push it to the remote repo.
 
-## 1.2. Update React Native
-
-**Why:** Each SDK version has its own version of React Native. If we're planning to update React Native version for the upcoming SDK then we need to update our fork of React Native and update `react-native-lab/react-native` submodule in this repo which is the source of truth for `react-native` version used throughout the repository.
-
-**How:**
-
-- Go to `react-native-lab/react-native` submodule.
-- Coordinate with James (@ide) to create a new branch for new SDK in our `react-native` fork (`sdk-XX` typically, where `XX` is the major number of the SDK version).
-- Run `et update-react-native`. This expotools command copies `ReactAndroid` and `ReactCommon` folders from the submodule to the respective paths: `android/ReactAndroid` and `android/ReactCommon` and then executes `ReactAndroidCodeTransformer` that applies some Expo-specific code transformations.
-- Add your git changes from both `react-native-lab` and `android` folders and create a pull request to `master` branch. Cherry-pick this commit to the `sdk-XX` branch.
-
-## 1.3. Unversioned Quality Assurance
+## 1.2. Unversioned Quality Assurance
 
 | Prerequisites                                       |
 | --------------------------------------------------- |
@@ -215,11 +214,11 @@
 - Go through another guide about [Quality Assurance](./Quality%20Assurance.md). Use `UNVERSIONED` as a `sdkVersion`.
 - Fix everything you noticed in quality assurance steps or delegate these issues to other people in a team (preferably unimodule owners). Fixes for all discovered bugs should land on `master` and then be cherry-picked to the `sdk-XX` branch before versioning.
 
-## 1.4. Versioning code for the new SDK
+## 1.3. Version code for the new SDK
 
 | Prerequisites                                                           |
 | ----------------------------------------------------------------------- |
-| [1.3. Unversioned Quality Assurance](#13-unversioned-quality-assurance) |
+| [1.2. Unversioned Quality Assurance](#12-unversioned-quality-assurance) |
 
 **Why:** As we need to support multiple SDK versions, the code needs to be prefixed for each version so we don't get conflicts and duplicated classes. Such prefixed version of our APIs is called ABI.
 
@@ -241,7 +240,7 @@
 
 | Prerequisites                                                               |
 | --------------------------------------------------------------------------- |
-| [1.4. Version code for the new SDK](#14-version-code-for-the-new-sdk) |
+| [1.3. Version code for the new SDK](#13-version-code-for-the-new-sdk) |
 
 **Why:** We really care about the quality of the code that we release for the users. Quality Assurance is the most important task during the release process, so please don't ignore any steps and also focus on things that have been changed/reworked/refactored in this cycle.
 
@@ -532,6 +531,18 @@ Publish a blog post that includes the following information:
   - **Note:** are you reading this for the release that drops SDK 38? If so, this step may not be needed anymore. Please follow up with James (@ide).
 - If changes are required after submission, you can remove the release from review and repeat this step.
 
+## 5.10. Start release notes document
+
+**Why:** The release notes are a collaborative effort, we need contributions from folks who worked on the various improvements shipping with the release to draft brief explainations for them if they believe its worth calling out. It can take time for everyone to carve out time for this, so it's best to start it well before the final release in order to give people a week or so to contribute.
+
+**How:**
+
+- Create a "SDK XX Release Notes" doc and write start an "Outline" section. Add the items that you are aware of to this section, and short descriptions of those items where appropriate.
+- Share the link in the #blog channel and ask for help, for example:
+  > I started putting together some ideas for high-level items that will go into the SDK 39 release notes here: `<link to notes>`.
+  >
+  > I know there are probably some things I missed, so @bacon @brent @Cruzan @cedric could you all take a look at this before the end of the week and let me know what other things you think we should highlight (or just add them to the list yourself)?
+
 # Stage 6 - Final release
 
 **If today is Friday:** Wait until next week to finish the release :)
@@ -541,7 +552,7 @@ Publish a blog post that includes the following information:
 **How:**
 
 - **iOS**:
- - Log into [App Store Connect](https://appstoreconnect.apple.com) and release the approved version.
+  - Log into [App Store Connect](https://appstoreconnect.apple.com) and release the approved version.
 - **Android**:
   - Add a new file under `/fastlane/android/metadata/en-US/changelogs/[versionCode].txt` (it should usually read “Add support for Expo SDK XX”).
   - Open `Android Client` workflow on GitHub Actions and when it completes, download the APK from Artifacts and do a smoke test -- install it on a fresh Android device, turn on airplane mode, and make sure Home loads.
