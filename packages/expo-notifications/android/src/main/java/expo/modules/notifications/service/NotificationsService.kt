@@ -457,6 +457,8 @@ open class NotificationsService : BroadcastReceiver() {
         PendingIntent.FLAG_UPDATE_CURRENT
       )
     }
+
+    fun getNotificationResponseFromIntent(intent: Intent): NotificationResponse? = intent.getParcelableExtra(NOTIFICATION_RESPONSE_KEY)
   }
 
   protected open fun getPresentationDelegate(context: Context): PresentationDelegate =

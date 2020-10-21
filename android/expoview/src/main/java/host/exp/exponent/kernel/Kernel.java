@@ -42,7 +42,8 @@ import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 import expo.modules.notifications.notifications.model.NotificationResponse;
-import expo.modules.notifications.notifications.service.NotificationResponseReceiver;
+import expo.modules.notifications.service.NotificationsService;
+import expo.modules.notifications.service.delegates.ExpoHandlingDelegate;
 import host.exp.exponent.ExpoUpdatesAppLoader;
 import host.exp.exponent.LauncherActivity;
 import host.exp.exponent.ReactNativeStaticHelpers;
@@ -453,7 +454,7 @@ public class Kernel extends KernelInterface {
 
     setActivityContext(activity);
 
-    if (intent.getAction() != null && NotificationResponseReceiver.NOTIFICATION_OPEN_APP_ACTION.equals(intent.getAction())) {
+    if (intent.getAction() != null && ExpoHandlingDelegate.OPEN_APP_INTENT_ACTION.equals(intent.getAction())) {
       if (!openExperienceFromNotificationIntent(intent)) {
         openDefaultUrl();
       }
@@ -517,7 +518,7 @@ public class Kernel extends KernelInterface {
   }
 
   private boolean openExperienceFromNotificationIntent(Intent intent) {
-    NotificationResponse response = NotificationResponseReceiver.getNotificationResponse(intent);
+    NotificationResponse response = NotificationsService.Companion.getNotificationResponseFromIntent(intent);
     String experienceIdString = ScopedNotificationsUtils.getExperienceId(response);
     if (experienceIdString == null) {
       return false;
