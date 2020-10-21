@@ -55,12 +55,6 @@ public class DevelopmentClientController {
 //  private final String DEV_LAUNCHER_HOST = "10.0.0.175:8090";
   private final String DEV_LAUNCHER_HOST = null;
 
-  // Host to which network requests always fails, forcing React Native to use our embedded bundle
-//  private final String FAKE_HOST = "127.0.0.1:1234";
-
-  // Must be in sync with value in `DevSupportManagerImpl` from React Native internals
-//  private static final String JS_BUNDLE_FILE_NAME = "ReactNativeDevBundle.js";
-
   // Singleton instance
   private static DevelopmentClientController sInstance;
 
@@ -119,48 +113,50 @@ public class DevelopmentClientController {
 
   void loadApp(ReactContext reactContext, String url, ReadableMap options) {
     Uri uri = Uri.parse(url);
-    final String host = uri.getHost() + ":" + uri.getPort();
-
-    // Start the app on the main thread
-    new Handler(Looper.getMainLooper()).post(() -> {
-      ReactInstanceManager appInstanceManager = mAppHost.getReactInstanceManager();
-
-      try {
-        DevelopmentClientInternalSettings settings = new DevelopmentClientInternalSettings(reactContext, host);
-
-        DevSupportManager devSupportManager = appInstanceManager.getDevSupportManager();
-        Class<?> devSupportManagerBaseClass = devSupportManager.getClass().getSuperclass();
-
-        Field mDevSettingsField = devSupportManagerBaseClass.getDeclaredField("mDevSettings");
-        mDevSettingsField.setAccessible(true);
-        mDevSettingsField.set(devSupportManager, settings);
-
-        Field mDevServerHelperField = devSupportManagerBaseClass.getDeclaredField("mDevServerHelper");
-        mDevServerHelperField.setAccessible(true);
-        Object devServerHelper = mDevServerHelperField.get(devSupportManager);
-        Field mSettingsField = devServerHelper.getClass().getDeclaredField("mSettings");
-        mSettingsField.setAccessible(true);
-        mSettingsField.set(devServerHelper, settings);
-
-        mode = Mode.APP;
-        mRootView.unmountReactApplication();
-        mRootView.startReactApplication(appInstanceManager, mMainComponentName);
-        appInstanceManager.onHostResume(reactContext.getCurrentActivity());
-      } catch (Exception e) {
-        Log.e("ExpoDevelopmentClient", "Couldn't inject settings.", e);
-        mode = Mode.LAUNCHER;
-      }
-    });
+    String debugServerHost = uri.getHost() + ":" + uri.getPort();
+    if (injectDebugServerHost(reactContext, mAppHost, debugServerHost)) {
+      mode = Mode.APP;
+      startReactInstance(reactContext, mAppHost);
+    }
   }
 
   void navigateToLauncher(ReactContext reactContext) {
-    // Go back to launcher on main thread
+    mode = Mode.LAUNCHER;
+    startReactInstance(reactContext, mDevClientHost);
+  }
+
+  boolean injectDebugServerHost(ReactContext reactContext, ReactNativeHost reactNativeHost, String debugServerHost) {
+    try {
+      ReactInstanceManager instanceManager = reactNativeHost.getReactInstanceManager();
+
+      DevelopmentClientInternalSettings settings = new DevelopmentClientInternalSettings(reactContext, debugServerHost);
+
+      DevSupportManager devSupportManager = instanceManager.getDevSupportManager();
+      Class<?> devSupportManagerBaseClass = devSupportManager.getClass().getSuperclass();
+
+      Field mDevSettingsField = devSupportManagerBaseClass.getDeclaredField("mDevSettings");
+      mDevSettingsField.setAccessible(true);
+      mDevSettingsField.set(devSupportManager, settings);
+
+      Field mDevServerHelperField = devSupportManagerBaseClass.getDeclaredField("mDevServerHelper");
+      mDevServerHelperField.setAccessible(true);
+      Object devServerHelper = mDevServerHelperField.get(devSupportManager);
+      Field mSettingsField = devServerHelper.getClass().getDeclaredField("mSettings");
+      mSettingsField.setAccessible(true);
+      mSettingsField.set(devServerHelper, settings);
+      return true;
+    } catch (Exception e) {
+      Log.e("ExpoDevelopmentClient", "Unable to inject debug server host settings.", e);
+      return false;
+    }
+  }
+
+  void startReactInstance(ReactContext reactContext, ReactNativeHost reactNativeHost) {
     new Handler(Looper.getMainLooper()).post(() -> {
-      ReactInstanceManager launcherInstanceManager = mDevClientHost.getReactInstanceManager();
-      mode = Mode.LAUNCHER;
+      ReactInstanceManager instanceManager = reactNativeHost.getReactInstanceManager();
       mRootView.unmountReactApplication();
-      mRootView.startReactApplication(launcherInstanceManager, mMainComponentName);
-      launcherInstanceManager.onHostResume(reactContext.getCurrentActivity());
+      mRootView.startReactApplication(instanceManager, mMainComponentName);
+      instanceManager.onHostResume(reactContext.getCurrentActivity());
     });
   }
 }
