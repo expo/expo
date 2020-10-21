@@ -17,11 +17,9 @@ import java.util.Map;
 import expo.modules.notifications.notifications.emitting.NotificationsEmitter;
 import expo.modules.notifications.notifications.interfaces.NotificationListener;
 import expo.modules.notifications.notifications.interfaces.NotificationManager;
-import expo.modules.notifications.notifications.interfaces.NotificationsScoper;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationBehavior;
 import expo.modules.notifications.notifications.model.NotificationResponse;
-import expo.modules.notifications.notifications.service.NotificationsHelper;
 
 /**
  * {@link NotificationListener} responsible for managing app's reaction to incoming
@@ -40,7 +38,6 @@ public class NotificationsHandler extends ExportedModule implements Notification
   private static final String PRIORITY_KEY = "priority";
 
   private NotificationManager mNotificationManager;
-  private NotificationsHelper mNotificationsHelper;
   private ModuleRegistry mModuleRegistry;
 
   /**
@@ -57,7 +54,6 @@ public class NotificationsHandler extends ExportedModule implements Notification
 
   public NotificationsHandler(Context context) {
     super(context);
-    this.mNotificationsHelper = new NotificationsHelper(context, NotificationsScoper.create(context).createReconstructor());
   }
 
   @Override

@@ -4,36 +4,26 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 
-import abi39_0_0.org.unimodules.core.ExportedModule;
-import abi39_0_0.org.unimodules.core.Promise;
-import abi39_0_0.org.unimodules.core.arguments.ReadableArguments;
-import abi39_0_0.org.unimodules.core.interfaces.ExpoMethod;
-
 import java.util.ArrayList;
 import java.util.Collection;
 
 import abi39_0_0.expo.modules.notifications.notifications.ArgumentsNotificationContentBuilder;
 import abi39_0_0.expo.modules.notifications.notifications.NotificationSerializer;
+import abi39_0_0.org.unimodules.core.ExportedModule;
+import abi39_0_0.org.unimodules.core.Promise;
+import abi39_0_0.org.unimodules.core.arguments.ReadableArguments;
+import abi39_0_0.org.unimodules.core.interfaces.ExpoMethod;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
-import expo.modules.notifications.notifications.interfaces.NotificationsScoper;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
-import expo.modules.notifications.notifications.service.NotificationsHelper;
 import expo.modules.notifications.service.NotificationsService;
 
 public class ExpoNotificationPresentationModule extends ExportedModule {
   private static final String EXPORTED_NAME = "ExpoNotificationPresenter";
 
-  private final NotificationsHelper mNotificationsHelper;
-
   public ExpoNotificationPresentationModule(Context context) {
     super(context);
-    mNotificationsHelper = new NotificationsHelper(context, NotificationsScoper.create(context).createReconstructor());
-  }
-
-  protected NotificationsHelper getNotificationsHelper() {
-    return mNotificationsHelper;
   }
 
   @Override

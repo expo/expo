@@ -11,7 +11,6 @@ import java.util.WeakHashMap;
 import expo.modules.notifications.notifications.interfaces.NotificationListener;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationResponse;
-import expo.modules.notifications.notifications.service.NotificationsHelper;
 import expo.modules.notifications.service.delegates.ExpoHandlingDelegate;
 
 public class NotificationManager implements SingletonModule, expo.modules.notifications.notifications.interfaces.NotificationManager {
@@ -27,7 +26,7 @@ public class NotificationManager implements SingletonModule, expo.modules.notifi
   public NotificationManager() {
     mListenerReferenceMap = new WeakHashMap<>();
 
-    // Registers this singleton instance in static NotificationsHelper listeners collection.
+    // Registers this singleton instance in static ExpoHandlingDelegate listeners collection.
     // Since it doesn't hold strong reference to the object this should be safe.
     ExpoHandlingDelegate.Companion.addListener(this);
   }
@@ -71,7 +70,7 @@ public class NotificationManager implements SingletonModule, expo.modules.notifi
   }
 
   /**
-   * Used by {@link NotificationsHelper} to notify of new messages.
+   * Used by {@link expo.modules.notifications.service.delegates.ExpoSchedulingDelegate} to notify of new messages.
    * Calls {@link NotificationListener#onNotificationReceived(Notification)} on all values
    * of {@link NotificationManager#mListenerReferenceMap}.
    *
@@ -87,7 +86,7 @@ public class NotificationManager implements SingletonModule, expo.modules.notifi
   }
 
   /**
-   * Used by {@link NotificationsHelper} to notify of new notification responses.
+   * Used by {@link expo.modules.notifications.service.delegates.ExpoSchedulingDelegate} to notify of new notification responses.
    * Calls {@link NotificationListener#onNotificationResponseReceived(NotificationResponse)} on all values
    * of {@link NotificationManager#mListenerReferenceMap}.
    *
@@ -107,7 +106,7 @@ public class NotificationManager implements SingletonModule, expo.modules.notifi
   }
 
   /**
-   * Used by {@link NotificationsHelper} to notify of message deletion event.
+   * Used by {@link expo.modules.notifications.service.delegates.ExpoSchedulingDelegate} to notify of message deletion event.
    * Calls {@link NotificationListener#onNotificationsDropped()} on all values
    * of {@link NotificationManager#mListenerReferenceMap}.
    */

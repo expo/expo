@@ -15,25 +15,16 @@ import java.util.Collection;
 import expo.modules.notifications.notifications.ArgumentsNotificationContentBuilder;
 import expo.modules.notifications.notifications.NotificationSerializer;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
-import expo.modules.notifications.notifications.interfaces.NotificationsScoper;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
-import expo.modules.notifications.notifications.service.NotificationsHelper;
 import expo.modules.notifications.service.NotificationsService;
 
 public class ExpoNotificationPresentationModule extends ExportedModule {
   private static final String EXPORTED_NAME = "ExpoNotificationPresenter";
 
-  private final NotificationsHelper mNotificationsHelper;
-
   public ExpoNotificationPresentationModule(Context context) {
     super(context);
-    mNotificationsHelper = new NotificationsHelper(context, NotificationsScoper.create(context).createReconstructor());
-  }
-
-  protected NotificationsHelper getNotificationsHelper() {
-    return mNotificationsHelper;
   }
 
   @Override

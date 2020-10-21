@@ -18,11 +18,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import expo.modules.notifications.notifications.categories.serializers.NotificationsCategoriesSerializer;
-import expo.modules.notifications.notifications.interfaces.NotificationsScoper;
 import expo.modules.notifications.notifications.model.NotificationAction;
 import expo.modules.notifications.notifications.model.NotificationCategory;
 import expo.modules.notifications.notifications.model.TextInputNotificationAction;
-import expo.modules.notifications.notifications.service.NotificationsHelper;
 import expo.modules.notifications.service.NotificationsService;
 
 import static expo.modules.notifications.service.NotificationsService.NOTIFICATION_CATEGORIES_KEY;
@@ -39,12 +37,10 @@ public class ExpoNotificationCategoriesModule extends ExportedModule {
   private static final String TEXT_INPUT_OPTIONS_KEY = "textInput";
   private static final String PLACEHOLDER_KEY = "placeholder";
 
-  private final NotificationsHelper mNotificationsHelper;
   protected NotificationsCategoriesSerializer mSerializer;
 
   public ExpoNotificationCategoriesModule(Context context) {
     super(context);
-    this.mNotificationsHelper = new NotificationsHelper(context, NotificationsScoper.create(context).createReconstructor());
   }
 
   @Override
@@ -115,10 +111,6 @@ public class ExpoNotificationCategoriesModule extends ExportedModule {
         }
       }
     });
-  }
-
-  protected NotificationsHelper getNotificationsHelper() {
-    return mNotificationsHelper;
   }
 
   protected ArrayList<Bundle> serializeCategories(Collection<NotificationCategory> categories) {
