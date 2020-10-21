@@ -12,7 +12,6 @@ import org.unimodules.core.interfaces.services.EventEmitter;
 import expo.modules.notifications.notifications.NotificationSerializer;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationBehavior;
-import expo.modules.notifications.notifications.service.NotificationsHelper;
 import expo.modules.notifications.service.NotificationsService;
 
 /**
@@ -94,10 +93,10 @@ import expo.modules.notifications.service.NotificationsService;
           @Override
           protected void onReceiveResult(int resultCode, Bundle resultData) {
             super.onReceiveResult(resultCode, resultData);
-            if (resultCode == NotificationsHelper.SUCCESS_CODE) {
+            if (resultCode == NotificationsService.SUCCESS_CODE) {
               promise.resolve(null);
             } else {
-              Exception e = (Exception) resultData.getSerializable(NotificationsHelper.EXCEPTION_KEY);
+              Exception e = (Exception) resultData.getSerializable(NotificationsService.EXCEPTION_KEY);
               promise.reject("ERR_NOTIFICATION_PRESENTATION_FAILED", "Notification presentation failed.", e);
             }
           }

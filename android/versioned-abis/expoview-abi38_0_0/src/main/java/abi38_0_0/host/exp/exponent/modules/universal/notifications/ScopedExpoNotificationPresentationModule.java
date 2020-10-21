@@ -14,7 +14,6 @@ import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
-import expo.modules.notifications.notifications.service.NotificationsHelper;
 import expo.modules.notifications.service.NotificationsService;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.notifications.ScopedNotificationsUtils;
@@ -54,8 +53,8 @@ public class ScopedExpoNotificationPresentationModule extends ExpoNotificationPr
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);
-        Collection<Notification> notifications = resultData.getParcelableArrayList(NotificationsHelper.NOTIFICATIONS_KEY);
-        if (resultCode == NotificationsHelper.SUCCESS_CODE && notifications != null) {
+        Collection<Notification> notifications = resultData.getParcelableArrayList(NotificationsService.NOTIFICATIONS_KEY);
+        if (resultCode == NotificationsService.SUCCESS_CODE && notifications != null) {
           Notification notification = findNotification(notifications, identifier);
           if (notification == null || !mScopedNotificationsUtils.shouldHandleNotification(notification, mExperienceId)) {
             promise.resolve(null);
@@ -64,7 +63,7 @@ public class ScopedExpoNotificationPresentationModule extends ExpoNotificationPr
 
           doDismissNotificationAsync(identifier, promise);
         } else {
-          Exception e = resultData.getParcelable(NotificationsHelper.EXCEPTION_KEY);
+          Exception e = resultData.getParcelable(NotificationsService.EXCEPTION_KEY);
           promise.reject("ERR_NOTIFICATIONS_FETCH_FAILED", "A list of displayed notifications could not be fetched.", e);
         }
       }
@@ -77,8 +76,8 @@ public class ScopedExpoNotificationPresentationModule extends ExpoNotificationPr
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);
-        Collection<Notification> notifications = resultData.getParcelableArrayList(NotificationsHelper.NOTIFICATIONS_KEY);
-        if (resultCode == NotificationsHelper.SUCCESS_CODE && notifications != null) {
+        Collection<Notification> notifications = resultData.getParcelableArrayList(NotificationsService.NOTIFICATIONS_KEY);
+        if (resultCode == NotificationsService.SUCCESS_CODE && notifications != null) {
           ArrayList<String> toDismiss = new ArrayList<>();
           for (Notification notification : notifications) {
             if (mScopedNotificationsUtils.shouldHandleNotification(notification, mExperienceId)) {
@@ -87,7 +86,7 @@ public class ScopedExpoNotificationPresentationModule extends ExpoNotificationPr
           }
           dismissSelectedAsync(toDismiss.toArray(new String[0]), promise);
         } else {
-          Exception e = resultData.getParcelable(NotificationsHelper.EXCEPTION_KEY);
+          Exception e = resultData.getParcelable(NotificationsService.EXCEPTION_KEY);
           promise.reject("ERR_NOTIFICATIONS_FETCH_FAILED", "A list of displayed notifications could not be fetched.", e);
         }
       }
@@ -103,10 +102,10 @@ public class ScopedExpoNotificationPresentationModule extends ExpoNotificationPr
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);
-        if (resultCode == NotificationsHelper.SUCCESS_CODE) {
+        if (resultCode == NotificationsService.SUCCESS_CODE) {
           promise.resolve(null);
         } else {
-          Exception e = resultData.getParcelable(NotificationsHelper.EXCEPTION_KEY);
+          Exception e = resultData.getParcelable(NotificationsService.EXCEPTION_KEY);
           promise.reject("ERR_NOTIFICATIONS_DISMISSAL_FAILED", "Notifications could not be dismissed.", e);
         }
       }
