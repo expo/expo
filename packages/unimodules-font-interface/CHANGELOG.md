@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix import error when importing from JavaScript. ([#10753](https://github.com/expo/expo/pull/10753) by [@IjzerenHein](https://github.com/IjzerenHein))
+
 ## 5.3.0 — 2020-08-18
 
 _This version does not introduce any user-facing changes._
