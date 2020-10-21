@@ -232,8 +232,8 @@ Subscribes for updates in user's media library.
 
 #### Arguments
 
-- **listener (_function_)** -- A callback that is called when any assets have been inserted or deleted from the library. **On Android** it's invoked with an empty object. **On iOS** it's invoked with an object that contains following keys:
-  - **shouldFullyReload (_boolean_)** -- Whether to all assets reloads is needed. When the user changes the permissions, this value will be set to `true` and you should reload all used assets.
+- **listener (_function_)** -- A callback that is fired when any assets have been inserted or deleted from the library, or when the user changes which assets they're allowing access to. **On Android** it's invoked with an empty object. **On iOS** it's invoked with an object containing following keys:
+  - **assetPermissionsChanged (_boolean_)** -- Flag indicating a permissions change occurred in the user's limited library selection. If `true`, the user has changed access to individual assets in their library, and you should reload all used assets to comply with the new permissions.
   - **insertedAssets (_array_)** -- Array of [assets](#assets) that have been inserted to the library.
   - **deletedAssets (_array_)** -- Array of [assets](#assets) that have been deleted from the library.
   - **updatedAssets (_array_)** -- Array of [assets](#assets) that have been updated or completed downloading from network storage (iCloud in iOS).

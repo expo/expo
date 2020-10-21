@@ -69,12 +69,17 @@ export type MediaLibraryAssetInfoQueryOptions = {
   shouldDownloadFromNetwork?: boolean;
 };
 
-export type MediaLibraryAssetChangeEvent = {
-  shouldFullyReload?: boolean;
-  insertedAssets?: Asset[];
-  deletedAssets?: Asset[];
-  updatedAssets?: Asset[];
-};
+export type MediaLibraryAssetChangeEvent =
+  /**
+   * iOS only
+   */
+  | {
+      assetPermissionsChanged: boolean;
+      insertedAssets: Asset[];
+      deletedAssets: Asset[];
+      updatedAssets: Asset[];
+    }
+  | object;
 
 export type Location = {
   latitude: number;
@@ -195,11 +200,15 @@ export async function getPermissionsAsync(writeOnly: boolean = false): Promise<P
   return await MediaLibrary.getPermissionsAsync(writeOnly);
 }
 
+/**
+ * @iOS-only
+ * @throws Will throw an error if called on platform that doesn't support this functionality (eg. iOS < 14, Android, etc.).
+ */
 export async function presentLimitedLibraryPickerAsync(): Promise<void> {
-  if (MediaLibrary.presentLimitedLibraryPickerAsync) {
-    return await MediaLibrary.presentLimitedLibraryPickerAsync();
+  if (!MediaLibrary.presentLimitedLibraryPickerAsync) {
+    throw new UnavailabilityError('MediaLibrary', 'presentLimitedLibraryPickerAsync');
   }
-  return Promise.resolve();
+  return await MediaLibrary.presentLimitedLibraryPickerAsync();
 }
 
 export async function createAssetAsync(localUri: string): Promise<Asset> {
