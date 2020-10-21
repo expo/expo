@@ -1,3 +1,18 @@
+diff --git a/ios/MyApp/AppDelegate.h b/ios/MyApp/AppDelegate.h
+index 9f2ede1..c3e09a4 100644
+--- a/ios/MyApp/AppDelegate.h
++++ b/ios/MyApp/AppDelegate.h
+@@ -1,7 +1,9 @@
+ #import <React/RCTBridgeDelegate.h>
+ #import <UIKit/UIKit.h>
+ 
+-@interface AppDelegate : UIResponder <UIApplicationDelegate, RCTBridgeDelegate>
++#import <UMCore/UMAppDelegateWrapper.h>
++
++@interface AppDelegate : UMAppDelegateWrapper <UIApplicationDelegate, RCTBridgeDelegate>
+ 
+ @property (nonatomic, strong) UIWindow *window;
+
 diff --git a/ios/MyApp/AppDelegate.m b/ios/MyApp/AppDelegate.m
 index 9f2ede1..c3e09a4 100644
 --- a/ios/MyApp/AppDelegate.m
@@ -47,6 +62,9 @@ index 9f2ede1..c3e09a4 100644
 @@ -44,11 +56,19 @@ static void InitializeFlipper(UIApplication *application) {
    self.window.rootViewController = rootViewController;
    [self.window makeKeyAndVisible];
+
++  [super application:application didFinishLaunchingWithOptions:launchOptions];
+
    return YES;
  }
  
