@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `MediaLibrary.presentLimitedLibraryPickerAsync` function, which will display the system prompt allowing the users to change the selected permitted assets` on iOS. ([#10662](https://github.com/expo/expo/pull/10662) by [@lukmccall](https://github.com/lukmccall))
+
 ### 🐛 Bug fixes
 
 ## 9.2.1 — 2020-09-02
