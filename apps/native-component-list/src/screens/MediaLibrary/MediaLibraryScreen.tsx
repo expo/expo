@@ -218,8 +218,8 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
   useFocusEffect(
     React.useCallback(() => {
       // When new media is added or removed, update the library
-      const subscription = MediaLibrary.addListener(({ shouldFullyReload }) => {
-        if (shouldFullyReload) {
+      const subscription = MediaLibrary.addListener(event => {
+        if ('assetPermissionsChanged' in event && event.assetPermissionsChanged) {
           dispatch({ type: 'reset', refreshing: false });
           return;
         }
