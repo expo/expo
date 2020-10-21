@@ -14,6 +14,7 @@ import expo.modules.notifications.notifications.interfaces.NotificationsScoper;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationAction;
 import expo.modules.notifications.notifications.model.NotificationResponse;
+import expo.modules.notifications.service.NotificationsService;
 
 /**
  * A broadcast receiver responsible for redirecting responses to notifications
@@ -46,7 +47,7 @@ public class NotificationResponseReceiver extends BroadcastReceiver {
     if (intent.getBooleanExtra(ACTION_FOREGROUNDS_APP, true)) {
       openAppToForeground(context, response);
     }
-    getNotificationsHelper(context).responseReceived(response);
+    NotificationsService.Companion.handleResponseReceived(context, response, null);
   }
 
   protected NotificationsHelper getNotificationsHelper(Context context) {

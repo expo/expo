@@ -13,6 +13,7 @@ import androidx.core.app.RemoteInput;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.TextInputNotificationAction;
 import expo.modules.notifications.notifications.model.TextInputNotificationResponse;
+import expo.modules.notifications.service.NotificationsService;
 
 /**
  * A broadcast receiver responsible for redirecting responses to text input notifications
@@ -38,7 +39,7 @@ public class TextInputNotificationResponseReceiver extends NotificationResponseR
     if (intent.getBooleanExtra(ACTION_FOREGROUNDS_APP, true)) {
       openAppToForeground(context, response);
     }
-    getNotificationsHelper(context).responseReceived(response);
+    NotificationsService.Companion.handleResponseReceived(context, response, null);
   }
 
   private String getMessageText(Intent intent) {

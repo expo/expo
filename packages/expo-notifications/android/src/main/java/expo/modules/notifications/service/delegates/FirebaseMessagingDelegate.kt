@@ -68,7 +68,7 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
   }
 
   override fun onMessageReceived(remoteMessage: RemoteMessage) {
-    createNotificationsHelper().notificationReceived(createNotification(remoteMessage))
+    NotificationsService.receive(context, createNotification(remoteMessage))
   }
 
   protected fun createNotificationsHelper(): NotificationsHelper {
@@ -92,6 +92,6 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
   }
 
   override fun onDeletedMessages() {
-    createNotificationsHelper().dropped()
+    NotificationsService.handleDropped(context)
   }
 }
