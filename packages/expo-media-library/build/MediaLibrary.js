@@ -65,11 +65,15 @@ export async function getPermissionsAsync(writeOnly = false) {
     }
     return await MediaLibrary.getPermissionsAsync(writeOnly);
 }
+/**
+ * @iOS-only
+ * @throws Will throw an error if called on platform that doesn't support this functionality (eg. iOS < 14, Android, etc.).
+ */
 export async function presentLimitedLibraryPickerAsync() {
-    if (MediaLibrary.presentLimitedLibraryPickerAsync) {
-        return await MediaLibrary.presentLimitedLibraryPickerAsync();
+    if (!MediaLibrary.presentLimitedLibraryPickerAsync) {
+        throw new UnavailabilityError('MediaLibrary', 'presentLimitedLibraryPickerAsync');
     }
-    return Promise.resolve();
+    return await MediaLibrary.presentLimitedLibraryPickerAsync();
 }
 export async function createAssetAsync(localUri) {
     if (!MediaLibrary.createAssetAsync) {

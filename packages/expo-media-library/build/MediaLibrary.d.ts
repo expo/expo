@@ -44,12 +44,16 @@ export declare type AssetInfo = Asset & {
 export declare type MediaLibraryAssetInfoQueryOptions = {
     shouldDownloadFromNetwork?: boolean;
 };
-export declare type MediaLibraryAssetChangeEvent = {
-    shouldFullyReload?: boolean;
-    insertedAssets?: Asset[];
-    deletedAssets?: Asset[];
-    updatedAssets?: Asset[];
-};
+export declare type MediaLibraryAssetChangeEvent = 
+/**
+ * iOS only
+ */
+{
+    assetPermissionsChanged: boolean;
+    insertedAssets: Asset[];
+    deletedAssets: Asset[];
+    updatedAssets: Asset[];
+} | object;
 export declare type Location = {
     latitude: number;
     longitude: number;
@@ -89,6 +93,10 @@ export declare const MediaType: MediaTypeObject;
 export declare const SortBy: SortByObject;
 export declare function requestPermissionsAsync(writeOnly?: boolean): Promise<PermissionResponse>;
 export declare function getPermissionsAsync(writeOnly?: boolean): Promise<PermissionResponse>;
+/**
+ * @iOS-only
+ * @throws Will throw an error if called on platform that doesn't support this functionality (eg. iOS < 14, Android, etc.).
+ */
 export declare function presentLimitedLibraryPickerAsync(): Promise<void>;
 export declare function createAssetAsync(localUri: string): Promise<Asset>;
 export declare function saveToLibraryAsync(localUri: string): Promise<void>;

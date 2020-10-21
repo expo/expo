@@ -559,13 +559,13 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
       _allAssetsFetchResult = changeDetails.fetchResultAfterChanges;
       
       // PHPhotoLibraryChangeObserver is calling this method too often, so we need to filter out some calls before they are sent to JS.
-      // Ultimately, we emit an event when something has been inserted, removed from the library or changed the permissions.
+      // Ultimately, we emit an event when something has been inserted or removed from the library, or the user changed the permissions.
       if (changeDetails.hasIncrementalChanges && (changeDetails.insertedObjects.count > 0 || changeDetails.removedObjects.count > 0)) {
         NSMutableArray *insertedAssets = [NSMutableArray new];
         NSMutableArray *deletedAssets = [NSMutableArray new];
         NSMutableArray *updatedAssets = [NSMutableArray new];
         NSDictionary *body = @{
-                               @"shouldFullyReload": @(false),
+                               @"assetPermissionsChanged": @(false),
                                @"insertedAssets": insertedAssets,
                                @"deletedAssets": deletedAssets,
                                @"updatedAssets": updatedAssets
@@ -589,7 +589,7 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
         // Emit event when the user changed the limited permissions.
         if (!changeDetails.hasIncrementalChanges) {
           [_eventEmitter sendEventWithName:EXMediaLibraryDidChangeEvent body:@{
-            @"shouldFullyReload": @(true),
+            @"assetPermissionsChanged": @(true),
             @"insertedAssets": @[],
             @"deletedAssets": @[],
             @"updatedAssets": @[]
