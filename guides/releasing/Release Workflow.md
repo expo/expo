@@ -24,8 +24,9 @@
   - [2.5. Publish demo apps](#25-publish-demo-apps)
   - [2.6. Publish any missing or changed packages](#26-publish-any-missing-or-changed-packages)
 - [Stage 3 - Expo client](#stage-3---expo-client)
-  - [3.1. Build and submit](#31-build-and-submit)
-  - [3.2. Make a simulator/emulator build](#32-make-a-simulatoremulator-build)
+  - [3.1. Publish home](#31-publish-home)
+  - [3.2. Build and submit](#32-build-and-submit)
+  - [3.3. Make a simulator/emulator build](#33-make-a-simulatoremulator-build)
 - [Stage 4 - Standalone apps](#stage-4---standalone-apps)
   - [4.1. Update JS dependencies required for build](#41-update-js-dependencies-required-for-build)
   - [4.2. Make shell app build](#42-make-shell-app-build)
@@ -52,6 +53,7 @@
   - [6.8. Follow-up](#68-follow-up)
 - [Stage 7 - Clean up](#stage-7---clean-up)
   - [7.1. Remove old SDK from Turtle](#71-remove-old-sdk-from-turtle)
+  - [7.2. Mark old SDK as deprecated](#72-mark-old-sdk-as-deprecated)
 
 # Stage 0 - Infra & Prerelease
 
@@ -173,6 +175,7 @@
 
 - Do this step immediately before cutting the release branch.
 - Run `et generate-sdk-docs --sdk XX.X.X` to generate versioned docs for the new SDK. If we've upgraded React Native version in this release, we should also use `--update-react-native-docs` flag which imports the current version of React Native docs that also show up on our docs page. (If there are issues with this, talk with @byCedric.)
+- Run `yarn run schema-sync XX` (`XX` being the major version number) and then change the schema import in `pages/versions/<version>/config/app.md` from `unversioned` to the new versioned schema file.
 - Ensure that the `version` in package.json has NOT been updated to the new SDK version. SDK versions greater than the `version` in package.json will be hidden in production docs, and we do not want the new version to show up until the SDK has been released.
 - Commit and push changes to master.
 
@@ -326,7 +329,23 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 # Stage 3 - Expo client
 
-## 3.1. Build and submit
+## 3.1. Publish home
+
+| Prerequisites |
+| --- |
+| [1.3. Unversioned Quality Assurance](#13-unversioned-quality-assurance) |
+
+**Why:** We need to publish a new version of home in order to embed it in the clients before building them.
+
+**How:**
+
+- Update `version` and `sdkVersion` in `home/app.json`. Commit this change.
+- Make sure to run `yarn` in `home`.
+- Publish dev home first by running `et publish-dev-home`. Commit the change to `dev-home-config.json`; do not commit any other changes from the script (in particular, if it changes `home/app.json`, do not commit those changes).
+- Run a debug build of both the iOS and Android clients to smoke test the newly published dev home.
+- To publish production home, log into expo-cli with the `exponent` account (credentials in 1P). Then publish home with `EXPO_NO_DOCTOR=true expo publish`. This will publish home to production (making it available as an OTA update for the SDK version in `app.json`) and write changes to two manifests and bundles (one each for iOS and Android) in the repo. Commit these changes.
+
+## 3.2. Build and submit
 
 | Prerequisites      |
 | ------------------ |
@@ -351,11 +370,11 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
   - The APK will be available as an artifact from the `client_android` CI job. If no CI jobs are running on the release branch, you just need to open a PR from the release branch to master. (Don't merge it; it only exists to make CI jobs run.)
   - We won't actually submit this to the Play Store, we will use built `apk` from the next step through `expo-cli` for beta testing instead.
 
-## 3.2. Make a simulator/emulator build
+## 3.3. Make a simulator/emulator build
 
 | Prerequisites                                             |
 | --------------------------------------------------------- |
-| [3.1. Build and submit](#31-build-and-submit) |
+| [3.2. Build and submit](#32-build-and-submit) |
 
 **Why:** To allow our users install Expo client on the simulator (which doesn't have an App Store) we need to make a build for it, upload it to S3 servers and save its url and version on the versions endpoint. These builds are then downloaded and installed by the users using `expo client:install:ios`.
 
@@ -389,6 +408,7 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 **How:**
 
 - Run `et update-versions -k 'packagesToInstallWhenEjecting.react-native' -v 'https://github.com/expo/react-native/archive/sdk-XX.X.X.tar.gz'` using the corresponding tag created in step [0.5](#05-tag-react-native-fork).
+- Run `et promote-versions-to-prod` to promote these versions to production, since the production endpoint is used when building the shell app.
 - On the release branch, run `et dispatch shell-app-ios-upload` and/or `et dispatch shell-app-android` and wait for the job(s) to finish.
 - Copy the url to the tarball that has been uploaded to `exp-artifacts` S3 bucket (it's printed in `Upload shell app tarball to S3` step of the workflow).
 - Now go to `expo/turtle` repo and put the copied link into `shellTarballs/{ios,android}/sdkXX` file and put appropriate change information in the `CHANGELOG.md` file, commit and then push changes.
@@ -503,7 +523,7 @@ Publish a blog post that includes the following information:
 
 **How:**
 
-- If needed, refer back to [3.1. Build and submit](#31-build-and-submit) to create a new build and upload it to the App Store. Wait for it to finish processing.
+- If needed, refer back to [3.2. Build and submit](#32-build-and-submit) to create a new build and upload it to the App Store. Wait for it to finish processing.
 - In [App Store Connect](https://appstoreconnect.apple.com), select the build you previously uploaded and released to TestFlight, glance through the metadata to verify that it's what you want, and save the changes if any.
   - Fill in "What's New in This Version" with something like "This version contains minor improvements and adds support for SDK XX".
 - Click Submit to send the new binary to Apple. When prompted, give the following answers:
@@ -614,3 +634,9 @@ This should be ready to publish immediately after the previous step is finished!
 **Why:** We don't support old Turtle shell apps indefinitely, and this is a good time to clean up.
 
 **How:** Remove the corresponding shell tarballs from the turtle repository. Deploy to production when convenient, there is no rush on this.
+
+## 7.2. Mark old SDK as deprecated
+
+**Why:** A few expo-cli commands use this flag to determine which SDK versions are still supported.
+
+**How:** `et update-versions --sdkVersion XX.X.X --deprecated true`, then `et promote-versions`
