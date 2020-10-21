@@ -12,6 +12,7 @@ import android.os.Parcelable
 import android.os.ResultReceiver
 import android.util.Log
 import expo.modules.notifications.notifications.model.Notification
+import expo.modules.notifications.notifications.model.NotificationAction
 import expo.modules.notifications.notifications.model.NotificationBehavior
 import expo.modules.notifications.notifications.model.NotificationCategory
 import expo.modules.notifications.notifications.model.NotificationRequest
@@ -38,6 +39,7 @@ open class NotificationsService : BroadcastReceiver() {
       "android.intent.action.QUICKBOOT_POWERON",
       "com.htc.intent.action.QUICKBOOT_POWERON"
     )
+    const val USER_TEXT_RESPONSE_KEY = "userTextResponse"
 
     // Event types
     private const val GET_ALL_DISPLAYED_TYPE = "getAllDisplayed"
@@ -76,6 +78,7 @@ open class NotificationsService : BroadcastReceiver() {
     const val NOTIFICATION_CATEGORIES_KEY = "notificationCategories"
     const val NOTIFICATION_REQUEST_KEY = "notificationRequest"
     const val NOTIFICATION_REQUESTS_KEY = "notificationRequests"
+    const val NOTIFICATION_ACTION_KEY = "notificationAction"
 
     /**
      * A helper function for dispatching a "fetch all displayed notifications" command to the service.
@@ -408,6 +411,40 @@ open class NotificationsService : BroadcastReceiver() {
         }
         intent.putExtra(EVENT_TYPE_KEY, TRIGGER_TYPE)
         intent.putExtra(IDENTIFIER_KEY, identifier)
+      }
+
+      return PendingIntent.getBroadcast(
+        context,
+        intent.component?.className?.hashCode() ?: NotificationsService::class.java.hashCode(),
+        intent,
+        PendingIntent.FLAG_UPDATE_CURRENT
+      )
+    }
+
+    /**
+     * Creates and returns a pending intent that will trigger [NotificationsService]'s "response received"
+     * event.
+     *
+     * @param context    Context this is being called from
+     * @param notification Notification being responded to
+     * @param action Notification action being undertaken
+     * @return [PendingIntent] triggering [NotificationsService], triggering "response received" event
+     */
+    fun createNotificationResponseIntent(context: Context, notification: Notification, action: NotificationAction): PendingIntent {
+      val intent = Intent(
+        NOTIFICATION_EVENT_ACTION,
+        getUriBuilder()
+          .appendPath(notification.notificationRequest.identifier)
+          .appendPath("actions")
+          .appendPath(action.identifier)
+          .build()
+      ).also { intent ->
+        findDesignatedBroadcastReceiver(context, intent)?.let {
+          intent.component = ComponentName(it.packageName, it.name)
+        }
+        intent.putExtra(EVENT_TYPE_KEY, RECEIVE_RESPONSE_TYPE)
+        intent.putExtra(NOTIFICATION_KEY, notification)
+        intent.putExtra(NOTIFICATION_ACTION_KEY, action as Parcelable)
       }
 
       return PendingIntent.getBroadcast(
