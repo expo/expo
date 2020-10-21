@@ -14,6 +14,7 @@ import abi39_0_0.host.exp.exponent.modules.api.notifications.ScopedNotifications
 import abi39_0_0.org.unimodules.core.Promise;
 import androidx.annotation.NonNull;
 import expo.modules.notifications.notifications.model.NotificationCategory;
+import expo.modules.notifications.service.NotificationsService;
 import host.exp.exponent.kernel.ExperienceId;
 
 import static expo.modules.notifications.service.NotificationsService.NOTIFICATION_CATEGORIES_KEY;
@@ -29,7 +30,7 @@ public class ScopedExpoNotificationCategoriesModule extends ExpoNotificationCate
 
   @Override
   public void getNotificationCategoriesAsync(final Promise promise) {
-    getNotificationsHelper().getCategories(new ResultReceiver(null) {
+    NotificationsService.Companion.getCategories(getContext(), new ResultReceiver(null) {
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
         Collection<NotificationCategory> categories = resultData.getParcelableArrayList(NOTIFICATION_CATEGORIES_KEY);

@@ -118,15 +118,4 @@ public class NotificationsHelper {
     NotificationsService.Companion.handleResponseReceived(mContext, response, null);
   }
 
-  public void getCategories(ResultReceiver resultReceiver) {
-    NotificationsService.Companion.getCategories(mContext, resultReceiver);
-  }
-
-  public void setCategory(NotificationCategory category, ResultReceiver resultReceiver) {
-    NotificationsService.Companion.setCategory(mContext, category, resultReceiver);
-  }
-
-  public void deleteCategory(String identifier, ResultReceiver resultReceiver) {
-    NotificationsService.Companion.deleteCategory(mContext, identifier, resultReceiver);
-  }
 }

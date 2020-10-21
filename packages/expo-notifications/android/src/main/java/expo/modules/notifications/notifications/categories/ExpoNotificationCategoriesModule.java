@@ -23,6 +23,7 @@ import expo.modules.notifications.notifications.model.NotificationAction;
 import expo.modules.notifications.notifications.model.NotificationCategory;
 import expo.modules.notifications.notifications.model.TextInputNotificationAction;
 import expo.modules.notifications.notifications.service.NotificationsHelper;
+import expo.modules.notifications.service.NotificationsService;
 
 import static expo.modules.notifications.service.NotificationsService.NOTIFICATION_CATEGORIES_KEY;
 import static expo.modules.notifications.service.NotificationsService.NOTIFICATION_CATEGORY_KEY;
@@ -58,7 +59,7 @@ public class ExpoNotificationCategoriesModule extends ExportedModule {
 
   @ExpoMethod
   public void getNotificationCategoriesAsync(final Promise promise) {
-    getNotificationsHelper().getCategories(new ResultReceiver(null) {
+    NotificationsService.Companion.getCategories(getContext(), new ResultReceiver(null) {
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
         Collection<NotificationCategory> categories = resultData.getParcelableArrayList(NOTIFICATION_CATEGORIES_KEY);
@@ -89,7 +90,7 @@ public class ExpoNotificationCategoriesModule extends ExportedModule {
     if (actions.isEmpty()) {
       throw new InvalidArgumentException("Invalid arguments provided for notification category. Must provide at least one action.");
     }
-    getNotificationsHelper().setCategory(new NotificationCategory(identifier, actions), new ResultReceiver(null) {
+    NotificationsService.Companion.setCategory(getContext(), new NotificationCategory(identifier, actions), new ResultReceiver(null) {
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
         NotificationCategory category = resultData.getParcelable(NOTIFICATION_CATEGORY_KEY);
@@ -104,7 +105,7 @@ public class ExpoNotificationCategoriesModule extends ExportedModule {
 
   @ExpoMethod
   public void deleteNotificationCategoryAsync(String identifier, final Promise promise) {
-    getNotificationsHelper().deleteCategory(identifier, new ResultReceiver(null) {
+    NotificationsService.Companion.deleteCategory(getContext(), identifier, new ResultReceiver(null) {
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
         if (resultCode == SUCCESS_CODE) {
