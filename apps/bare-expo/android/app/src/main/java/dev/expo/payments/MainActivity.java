@@ -24,7 +24,9 @@ public class MainActivity extends DevMenuAwareReactActivity {
       @Override
       protected ReactRootView createRootView() {
         RNGestureHandlerEnabledRootView view = new RNGestureHandlerEnabledRootView(MainActivity.this);
-        DevelopmentClientController.getInstance().setRootView(view);
+        if (MainApplication.USE_DEV_CLIENT) {
+          DevelopmentClientController.getInstance().setRootView(view);
+        }
         return view;
       }
     };
