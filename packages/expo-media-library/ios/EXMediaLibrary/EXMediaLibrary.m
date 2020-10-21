@@ -133,14 +133,18 @@ UM_EXPORT_METHOD_AS(presentLimitedLibraryPickerAsync,
                     presentLimitedLibraryPickerAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
+#ifdef __IPHONE_14_0
   if (@available(iOS 14, *)) {
     dispatch_async(dispatch_get_main_queue(), ^{
       [[PHPhotoLibrary sharedPhotoLibrary] presentLimitedLibraryPickerFromViewController:[[[[UIApplication sharedApplication] delegate] window] rootViewController]];
       resolve(nil);
     });
   } else {
+#endif
     reject(@"ERR_METHOD_UNAVAILABLE", @"presentLimitedLibraryPickerAsync is only available on iOS >= 14.", nil);
+#ifdef __IPHONE_14_0 
   }
+#endif
 }
 
 UM_EXPORT_METHOD_AS(createAssetAsync,
