@@ -1,5 +1,6 @@
 package expo.modules.notifications.notifications.handling;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
@@ -12,6 +13,7 @@ import expo.modules.notifications.notifications.NotificationSerializer;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationBehavior;
 import expo.modules.notifications.notifications.service.NotificationsHelper;
+import expo.modules.notifications.service.NotificationsService;
 
 /**
  * A "task" responsible for managing response to a single notification.
@@ -36,16 +38,16 @@ import expo.modules.notifications.notifications.service.NotificationsHelper;
   private EventEmitter mEventEmitter;
   private Notification mNotification;
   private NotificationBehavior mBehavior;
-  private NotificationsHelper mNotificationsHelper;
+  private Context mContext;
   private NotificationsHandler mDelegate;
 
   private Runnable mTimeoutRunnable = SingleNotificationHandlerTask.this::handleTimeout;
 
-  /* package */ SingleNotificationHandlerTask(Handler handler, ModuleRegistry moduleRegistry, Notification notification, NotificationsHelper notificationsHelper, NotificationsHandler delegate) {
+  /* package */ SingleNotificationHandlerTask(Context context, Handler handler, ModuleRegistry moduleRegistry, Notification notification, NotificationsHandler delegate) {
+    mContext = context;
     mHandler = handler;
     mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
     mNotification = notification;
-    mNotificationsHelper = notificationsHelper;
     mDelegate = delegate;
   }
 
@@ -88,7 +90,7 @@ import expo.modules.notifications.notifications.service.NotificationsHelper;
     mHandler.post(new Runnable() {
       @Override
       public void run() {
-        mNotificationsHelper.presentNotification(mNotification, mBehavior, new ResultReceiver(mHandler) {
+        NotificationsService.Companion.present(mContext, mNotification, mBehavior, new ResultReceiver(mHandler) {
           @Override
           protected void onReceiveResult(int resultCode, Bundle resultData) {
             super.onReceiveResult(resultCode, resultData);

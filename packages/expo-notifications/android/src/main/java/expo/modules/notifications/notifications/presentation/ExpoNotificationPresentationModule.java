@@ -20,6 +20,7 @@ import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.service.NotificationsHelper;
+import expo.modules.notifications.service.NotificationsService;
 
 public class ExpoNotificationPresentationModule extends ExportedModule {
   private static final String EXPORTED_NAME = "ExpoNotificationPresenter";
@@ -46,7 +47,7 @@ public class ExpoNotificationPresentationModule extends ExportedModule {
     NotificationContent content = new ArgumentsNotificationContentBuilder(getContext()).setPayload(payload).build();
     NotificationRequest request = createNotificationRequest(identifier, content, null);
     Notification notification = new Notification(request);
-    mNotificationsHelper.presentNotification(notification, null, new ResultReceiver(null) {
+    NotificationsService.Companion.present(getContext(), notification, null, new ResultReceiver(null) {
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);
@@ -62,7 +63,7 @@ public class ExpoNotificationPresentationModule extends ExportedModule {
 
   @ExpoMethod
   public void getPresentedNotificationsAsync(final Promise promise) {
-    mNotificationsHelper.getAllPresented(new ResultReceiver(null) {
+    NotificationsService.Companion.getAllPresented(getContext(), new ResultReceiver(null) {
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);
@@ -79,7 +80,7 @@ public class ExpoNotificationPresentationModule extends ExportedModule {
 
   @ExpoMethod
   public void dismissNotificationAsync(String identifier, final Promise promise) {
-    mNotificationsHelper.dismiss(identifier, new ResultReceiver(null) {
+    NotificationsService.Companion.dismiss(getContext(), new String[]{identifier}, new ResultReceiver(null) {
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);
@@ -95,7 +96,7 @@ public class ExpoNotificationPresentationModule extends ExportedModule {
 
   @ExpoMethod
   public void dismissAllNotificationsAsync(final Promise promise) {
-    mNotificationsHelper.dismissAll(new ResultReceiver(null) {
+    NotificationsService.Companion.dismissAll(getContext(), new ResultReceiver(null) {
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);

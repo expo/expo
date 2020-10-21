@@ -4,18 +4,18 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 
-import abi39_0_0.org.unimodules.core.Promise;
-
 import java.util.ArrayList;
 import java.util.Collection;
 
 import abi39_0_0.expo.modules.notifications.notifications.NotificationSerializer;
+import abi39_0_0.expo.modules.notifications.notifications.presentation.ExpoNotificationPresentationModule;
+import abi39_0_0.org.unimodules.core.Promise;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
-import abi39_0_0.expo.modules.notifications.notifications.presentation.ExpoNotificationPresentationModule;
 import expo.modules.notifications.notifications.service.NotificationsHelper;
+import expo.modules.notifications.service.NotificationsService;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.notifications.ScopedNotificationsUtils;
 import host.exp.exponent.notifications.model.ScopedNotificationRequest;
@@ -50,7 +50,7 @@ public class ScopedExpoNotificationPresentationModule extends ExpoNotificationPr
 
   @Override
   public void dismissNotificationAsync(String identifier, Promise promise) {
-    getNotificationsHelper().getAllPresented(new ResultReceiver(null) {
+    NotificationsService.Companion.getAllPresented(getContext(), new ResultReceiver(null) {
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);
@@ -73,7 +73,7 @@ public class ScopedExpoNotificationPresentationModule extends ExpoNotificationPr
 
   @Override
   public void dismissAllNotificationsAsync(Promise promise) {
-    getNotificationsHelper().getAllPresented(new ResultReceiver(null) {
+    NotificationsService.Companion.getAllPresented(getContext(), new ResultReceiver(null) {
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);
@@ -99,7 +99,7 @@ public class ScopedExpoNotificationPresentationModule extends ExpoNotificationPr
   }
 
   private void dismissSelectedAsync(String[] identifiers, final Promise promise) {
-    getNotificationsHelper().enqueueDismissSelected(identifiers, new ResultReceiver(null) {
+    NotificationsService.Companion.dismiss(getContext(), identifiers, new ResultReceiver(null) {
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);

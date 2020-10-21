@@ -39,26 +39,6 @@ public class NotificationsHelper {
   }
 
   /**
-   * A function returning all presented notifications to receiver
-   *
-   * @param receiver A receiver to which send the notifications
-   */
-  public void getAllPresented(@Nullable ResultReceiver receiver) {
-    NotificationsService.Companion.getAllPresented(mContext, receiver);
-  }
-
-  /**
-   * A helper function for presenting a notification
-   *
-   * @param notification Notification to present
-   * @param behavior     Allowed notification behavior
-   * @param receiver     A receiver to which send the result of presenting the notification
-   */
-  public void presentNotification(@NonNull Notification notification, @Nullable NotificationBehavior behavior, @Nullable ResultReceiver receiver) {
-    NotificationsService.Companion.present(mContext, notification, behavior, receiver);
-  }
-
-  /**
    * A helper function for handling received notification
    *
    * @param notification Notification received
@@ -75,31 +55,6 @@ public class NotificationsHelper {
    */
   public void notificationReceived(Notification notification, ResultReceiver receiver) {
     NotificationsService.Companion.receive(mContext, notification, receiver);
-  }
-
-  /**
-   * A helper function for dismissing notification.
-   *
-   * @param identifier Notification identifier
-   */
-  public void dismiss(@NonNull String identifier, @Nullable ResultReceiver receiver) {
-    NotificationsService.Companion.dismiss(mContext, new String[]{identifier}, receiver);
-  }
-
-  /**
-   * A helper function for dismissing multiple notifications
-   *
-   * @param identifiers Notification identifiers
-   */
-  public void enqueueDismissSelected(@NonNull String[] identifiers, @Nullable ResultReceiver receiver) {
-    NotificationsService.Companion.dismiss(mContext, identifiers, receiver);
-  }
-
-  /**
-   * A helper function for dispatching all notification
-   */
-  public void dismissAll(@Nullable ResultReceiver receiver) {
-    NotificationsService.Companion.dismissAll(mContext, receiver);
   }
 
   /**
