@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.os.Bundle
+import android.os.Parcel
 import android.os.Parcelable
 import android.os.ResultReceiver
 import android.util.Log
@@ -72,6 +73,7 @@ open class NotificationsService : BroadcastReceiver() {
     // Specific messages parts
     const val NOTIFICATION_KEY = "notification"
     const val NOTIFICATION_RESPONSE_KEY = "notificationResponse"
+    const val TEXT_INPUT_NOTIFICATION_RESPONSE_KEY = "textInputNotificationResponse"
     const val SUCCEEDED_KEY = "succeeded"
     const val IDENTIFIERS_KEY = "identifiers"
     const val IDENTIFIER_KEY = "identifier"
@@ -458,7 +460,63 @@ open class NotificationsService : BroadcastReceiver() {
       )
     }
 
-    fun getNotificationResponseFromIntent(intent: Intent): NotificationResponse? = intent.getParcelableExtra(NOTIFICATION_RESPONSE_KEY)
+    fun getNotificationResponseFromIntent(intent: Intent): NotificationResponse? {
+      intent.getByteArrayExtra(NOTIFICATION_RESPONSE_KEY)?.let { return unmarshalObject(NotificationResponse.CREATOR, it) }
+      intent.getByteArrayExtra(TEXT_INPUT_NOTIFICATION_RESPONSE_KEY)?.let { return unmarshalObject(TextInputNotificationResponse.CREATOR, it) }
+      return null
+    }
+
+    // Class loader used in BaseBundle when unmarshalling notification extras
+    // cannot handle expo.modules.notifications.….NotificationResponse
+    // so we go around it by marshalling and unmarshalling the object ourselves.
+    fun setNotificationResponseToIntent(intent: Intent, notificationResponse: NotificationResponse) {
+      try {
+        val keyToPutResponseUnder = if (notificationResponse is TextInputNotificationResponse) {
+          TEXT_INPUT_NOTIFICATION_RESPONSE_KEY
+        } else {
+          NOTIFICATION_RESPONSE_KEY
+        }
+        intent.putExtra(keyToPutResponseUnder, marshalObject(notificationResponse))
+      } catch (e: Exception) {
+        // If we couldn't marshal the request, let's not fail the whole build process.
+        Log.e("expo-notifications", "Could not marshal notification response: ${notificationResponse.actionIdentifier}.")
+        e.printStackTrace()
+      }
+    }
+
+    /**
+     * Marshals [Parcelable] into to a byte array.
+     *
+     * @param notificationResponse Notification response to marshall
+     * @return Given request marshalled to a byte array or null if the process failed.
+     */
+    private fun marshalObject(objectToMarshal: Parcelable): ByteArray? {
+      val parcel: Parcel = Parcel.obtain()
+      objectToMarshal.writeToParcel(parcel, 0)
+      val bytes: ByteArray = parcel.marshall()
+      parcel.recycle()
+      return bytes
+    }
+
+    /**
+     * UNmarshals [Parcelable] object from a byte array given a [Parcelable.Creator].
+     * @return Object instance or null if the process failed.
+     */
+    private fun <T> unmarshalObject(creator: Parcelable.Creator<T>, byteArray: ByteArray?): T? {
+      byteArray?.let {
+        try {
+          val parcel = Parcel.obtain()
+          parcel.unmarshall(it, 0, it.size)
+          parcel.setDataPosition(0)
+          val unmarshaledObject = creator.createFromParcel(parcel)
+          parcel.recycle()
+          return unmarshaledObject
+        } catch (e: Exception) {
+          Log.e("expo-notifications", "Could not unmarshall NotificationResponse from Intent.extra.", e)
+        }
+      }
+      return null
+    }
   }
 
   protected open fun getPresentationDelegate(context: Context): PresentationDelegate =

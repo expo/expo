@@ -82,7 +82,7 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
 
   protected fun openAppToForeground(context: Context, notificationResponse: NotificationResponse) {
     (getNotificationActionLauncher(context) ?: getMainActivityLauncher(context))?.let { intent ->
-      intent.putExtra(NotificationsService.NOTIFICATION_RESPONSE_KEY, notificationResponse)
+      NotificationsService.setNotificationResponseToIntent(intent, notificationResponse)
       context.startActivity(intent)
       return
     }
