@@ -1,9 +1,11 @@
 package expo.modules.notifications.service
 
+import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
@@ -12,13 +14,16 @@ import android.util.Log
 import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationBehavior
 import expo.modules.notifications.notifications.model.NotificationCategory
+import expo.modules.notifications.notifications.model.NotificationRequest
 import expo.modules.notifications.notifications.model.NotificationResponse
 import expo.modules.notifications.service.delegates.ExpoCategoriesDelegate
 import expo.modules.notifications.service.delegates.ExpoHandlingDelegate
 import expo.modules.notifications.service.delegates.ExpoPresentationDelegate
+import expo.modules.notifications.service.delegates.ExpoSchedulingDelegate
 import expo.modules.notifications.service.interfaces.CategoriesDelegate
 import expo.modules.notifications.service.interfaces.HandlingDelegate
 import expo.modules.notifications.service.interfaces.PresentationDelegate
+import expo.modules.notifications.service.interfaces.SchedulingDelegate
 
 /**
  * Subclass of FirebaseMessagingService, central dispatcher for all the notifications-related actions.
@@ -26,6 +31,13 @@ import expo.modules.notifications.service.interfaces.PresentationDelegate
 open class NotificationsService : BroadcastReceiver() {
   companion object {
     const val NOTIFICATION_EVENT_ACTION = "expo.modules.notifications.NOTIFICATION_EVENT"
+    val SETUP_ACTIONS = listOf(
+      Intent.ACTION_BOOT_COMPLETED,
+      Intent.ACTION_REBOOT,
+      Intent.ACTION_MY_PACKAGE_REPLACED,
+      "android.intent.action.QUICKBOOT_POWERON",
+      "com.htc.intent.action.QUICKBOOT_POWERON"
+    )
 
     // Event types
     private const val GET_ALL_DISPLAYED_TYPE = "getAllDisplayed"
@@ -38,6 +50,12 @@ open class NotificationsService : BroadcastReceiver() {
     private const val GET_CATEGORIES_TYPE = "getCategories"
     private const val SET_CATEGORY_TYPE = "setCategory"
     private const val DELETE_CATEGORY_TYPE = "deleteCategory"
+    private const val SCHEDULE_TYPE = "schedule"
+    private const val TRIGGER_TYPE = "trigger"
+    private const val GET_ALL_SCHEDULED_TYPE = "getAllScheduled"
+    private const val GET_SCHEDULED_TYPE = "getScheduled"
+    private const val REMOVE_SELECTED_TYPE = "removeSelected"
+    private const val REMOVE_ALL_TYPE = "removeAll"
 
     // Messages parts
     const val SUCCESS_CODE = 0
@@ -56,6 +74,8 @@ open class NotificationsService : BroadcastReceiver() {
     const val NOTIFICATIONS_KEY = "notifications"
     const val NOTIFICATION_CATEGORY_KEY = "notificationCategory"
     const val NOTIFICATION_CATEGORIES_KEY = "notificationCategories"
+    const val NOTIFICATION_REQUEST_KEY = "notificationRequest"
+    const val NOTIFICATION_REQUESTS_KEY = "notificationRequests"
 
     /**
      * A helper function for dispatching a "fetch all displayed notifications" command to the service.
@@ -228,6 +248,116 @@ open class NotificationsService : BroadcastReceiver() {
     }
 
     /**
+     * Fetches all scheduled notifications asynchronously.
+     *
+     * @param context        Context this is being called from
+     * @param resultReceiver Receiver to be called with the results
+     */
+    fun getAllScheduledNotifications(context: Context, resultReceiver: ResultReceiver? = null) {
+      doWork(context, Intent(NOTIFICATION_EVENT_ACTION).also { intent ->
+        intent.putExtra(EVENT_TYPE_KEY, GET_ALL_SCHEDULED_TYPE)
+        intent.putExtra(RECEIVER_KEY, resultReceiver)
+      })
+    }
+
+    /**
+     * Fetches scheduled notification asynchronously.
+     *
+     * @param context        Context this is being called from
+     * @param identifier     Identifier of the notification to be fetched
+     * @param resultReceiver Receiver to be called with the results
+     */
+    fun getScheduledNotification(context: Context, identifier: String, resultReceiver: ResultReceiver? = null) {
+      doWork(
+        context,
+        Intent(
+          NOTIFICATION_EVENT_ACTION,
+          getUriBuilder()
+            .appendPath("scheduled")
+            .appendPath(identifier)
+            .build()
+        ).also { intent ->
+          intent.putExtra(EVENT_TYPE_KEY, GET_SCHEDULED_TYPE)
+          intent.putExtra(IDENTIFIER_KEY, identifier)
+          intent.putExtra(RECEIVER_KEY, resultReceiver)
+        }
+      )
+    }
+
+    /**
+     * Schedule notification asynchronously.
+     *
+     * @param context             Context this is being called from
+     * @param notificationRequest Notification request to schedule
+     * @param resultReceiver      Receiver to be called with the result
+     */
+    fun schedule(context: Context, notificationRequest: NotificationRequest, resultReceiver: ResultReceiver? = null) {
+      doWork(
+        context,
+        Intent(
+          NOTIFICATION_EVENT_ACTION,
+          getUriBuilder()
+            .appendPath("scheduled")
+            .appendPath(notificationRequest.identifier)
+            .build()
+        ).also { intent ->
+          intent.putExtra(EVENT_TYPE_KEY, SCHEDULE_TYPE)
+          intent.putExtra(NOTIFICATION_REQUEST_KEY, notificationRequest as Parcelable)
+          intent.putExtra(RECEIVER_KEY, resultReceiver)
+        }
+      )
+    }
+
+    /**
+     * Cancel selected scheduled notification and remove it from the storage asynchronously.
+     *
+     * @param context        Context this is being called from
+     * @param identifier     Identifier of the notification to be removed
+     * @param resultReceiver Receiver to be called with the result
+     */
+    fun removeScheduledNotification(context: Context, identifier: String, resultReceiver: ResultReceiver? = null) =
+      removeScheduledNotifications(context, listOf(identifier), resultReceiver)
+
+    /**
+     * Cancel selected scheduled notifications and remove them from the storage asynchronously.
+     *
+     * @param context        Context this is being called from
+     * @param identifiers    Identifiers of selected notifications to be removed
+     * @param resultReceiver Receiver to be called with the result
+     */
+    fun removeScheduledNotifications(context: Context, identifiers: Collection<String>, resultReceiver: ResultReceiver? = null) {
+      doWork(
+        context,
+        Intent(
+          NOTIFICATION_EVENT_ACTION,
+          getUriBuilder()
+            .appendPath("scheduled")
+            .build()
+        ).also { intent ->
+          intent.putExtra(EVENT_TYPE_KEY, REMOVE_SELECTED_TYPE)
+          intent.putExtra(IDENTIFIERS_KEY, identifiers.toTypedArray())
+          intent.putExtra(RECEIVER_KEY, resultReceiver)
+        }
+      )
+    }
+
+    /**
+     * Cancel all scheduled notifications and remove them from the storage asynchronously.
+     *
+     * @param context        Context this is being called from
+     * @param resultReceiver Receiver to be called with the result
+     */
+    fun removeAllScheduledNotifications(context: Context, resultReceiver: ResultReceiver? = null) {
+      doWork(
+        context,
+        Intent(NOTIFICATION_EVENT_ACTION).also { intent ->
+          intent.putExtra(EVENT_TYPE_KEY, REMOVE_ALL_TYPE)
+          intent.putExtra(RECEIVER_KEY, resultReceiver)
+        }
+      )
+    }
+
+    /**
      * Sends the intent to the best service to handle the {@link #NOTIFICATION_EVENT_ACTION} intent
      * or handles the intent immediately if the service is already up.
      *
@@ -235,8 +365,7 @@ open class NotificationsService : BroadcastReceiver() {
      * @param intent  Intent to dispatch
      */
     fun doWork(context: Context, intent: Intent) {
-      val searchIntent = Intent(intent.action).setPackage(context.packageName)
-      context.packageManager.queryBroadcastReceivers(searchIntent, 0).firstOrNull()?.activityInfo?.let {
+      findDesignatedBroadcastReceiver(context, intent)?.let {
         intent.component = ComponentName(it.packageName, it.name)
         context.sendBroadcast(intent)
         return
@@ -251,6 +380,43 @@ open class NotificationsService : BroadcastReceiver() {
     protected fun getUriBuilderForIdentifier(identifier: String): Uri.Builder {
       return getUriBuilder().appendPath(identifier)
     }
+
+    fun findDesignatedBroadcastReceiver(context: Context, intent: Intent): ActivityInfo? {
+      val searchIntent = Intent(intent.action).setPackage(context.packageName)
+      return context.packageManager.queryBroadcastReceivers(searchIntent, 0).firstOrNull()?.activityInfo
+    }
+
+    /**
+     * Creates and returns a pending intent that will trigger [NotificationsService],
+     * which hands off the work to this class. The intent triggers notification of the given identifier.
+     *
+     * @param context    Context this is being called from
+     * @param identifier Notification identifier
+     * @return [PendingIntent] triggering [NotificationsService], triggering notification of given ID.
+     */
+    fun createNotificationTrigger(context: Context, identifier: String): PendingIntent {
+      val intent = Intent(
+        NOTIFICATION_EVENT_ACTION,
+        getUriBuilder()
+          .appendPath("scheduled")
+          .appendPath(identifier)
+          .appendPath("trigger")
+          .build()
+      ).also { intent ->
+        findDesignatedBroadcastReceiver(context, intent)?.let {
+          intent.component = ComponentName(it.packageName, it.name)
+        }
+        intent.putExtra(EVENT_TYPE_KEY, TRIGGER_TYPE)
+        intent.putExtra(IDENTIFIER_KEY, identifier)
+      }
+
+      return PendingIntent.getBroadcast(
+        context,
+        intent.component?.className?.hashCode() ?: NotificationsService::class.java.hashCode(),
+        intent,
+        PendingIntent.FLAG_UPDATE_CURRENT
+      )
+    }
   }
 
   protected open fun getPresentationDelegate(context: Context): PresentationDelegate =
@@ -262,8 +428,13 @@ open class NotificationsService : BroadcastReceiver() {
   protected open fun getCategoriesDelegate(context: Context): CategoriesDelegate =
     ExpoCategoriesDelegate(context)
 
+  protected open fun getSchedulingDelegate(context: Context): SchedulingDelegate =
+    ExpoSchedulingDelegate(context)
+
   override fun onReceive(context: Context, intent: Intent?) {
-    if (intent?.action === NOTIFICATION_EVENT_ACTION) {
+    if (intent != null && SETUP_ACTIONS.contains(intent.action)) {
+      onSetupScheduledNotifications(context, intent)
+    } else if (intent?.action === NOTIFICATION_EVENT_ACTION) {
       val receiver: ResultReceiver? = intent.extras?.get(RECEIVER_KEY) as? ResultReceiver
       try {
         var resultData: Bundle? = null
@@ -291,6 +462,20 @@ open class NotificationsService : BroadcastReceiver() {
 
           DELETE_CATEGORY_TYPE ->
             resultData = onDeleteCategory(context, intent)
+
+          GET_ALL_SCHEDULED_TYPE ->
+            resultData = onGetAllScheduledNotifications(context, intent)
+
+          GET_SCHEDULED_TYPE ->
+            resultData = onGetScheduledNotification(context, intent)
+
+          SCHEDULE_TYPE -> onScheduleNotification(context, intent)
+
+          REMOVE_SELECTED_TYPE -> onRemoveScheduledNotifications(context, intent)
+
+          REMOVE_ALL_TYPE -> onRemoveAllScheduledNotifications(context, intent)
+
+          TRIGGER_TYPE -> onNotificationTriggered(context, intent)
 
           else -> throw IllegalArgumentException("Received event of unrecognized type: $eventType. Ignoring.")
         }
@@ -384,5 +569,50 @@ open class NotificationsService : BroadcastReceiver() {
         )
       )
     }
+  //endregion
+
+  //region Scheduling notifications
+
+  open fun onGetAllScheduledNotifications(context: Context, intent: Intent) =
+    Bundle().also {
+      it.putParcelableArrayList(
+        NOTIFICATION_REQUESTS_KEY,
+        ArrayList(
+          getSchedulingDelegate(context).getAllScheduledNotifications()
+        )
+      )
+    }
+
+  open fun onGetScheduledNotification(context: Context, intent: Intent) =
+    Bundle().also {
+      it.putParcelable(
+        NOTIFICATION_REQUEST_KEY,
+        getSchedulingDelegate(context).getScheduledNotification(
+          intent.extras?.getString(IDENTIFIER_KEY)!!
+        )
+      )
+    }
+
+  open fun onScheduleNotification(context: Context, intent: Intent) =
+    getSchedulingDelegate(context).scheduleNotification(
+      intent.extras?.getParcelable(NOTIFICATION_REQUEST_KEY)!!
+    )
+
+  open fun onNotificationTriggered(context: Context, intent: Intent) =
+    getSchedulingDelegate(context).triggerNotification(
+      intent.extras?.getString(IDENTIFIER_KEY)!!
+    )
+
+  open fun onRemoveScheduledNotifications(context: Context, intent: Intent) =
+    getSchedulingDelegate(context).removeScheduledNotifications(
+      intent.extras?.getStringArray(IDENTIFIERS_KEY)!!.asList()
+    )
+
+  open fun onRemoveAllScheduledNotifications(context: Context, intent: Intent) =
+    getSchedulingDelegate(context).removeAllScheduledNotifications()
+
+  open fun onSetupScheduledNotifications(context: Context, intent: Intent) =
+    getSchedulingDelegate(context).setupScheduledNotifications()
+
   //endregion
 }
