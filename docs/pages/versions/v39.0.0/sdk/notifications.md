@@ -913,7 +913,7 @@ Calling one of the following methods is a no-op on Web.
     - `submitButtonTitle`: (**iOS only**) A string which will be used as the title for the button used for submitting the text response.
     - `placeholder`: A string that serves as a placeholder until the user begins typing. Defaults to no placeholder string.
   - `options`: **Optional** object of additional configuration options.
-    - `opensAppToForeground`: Boolean indicating whether triggering this action foregrounds the app.
+    - `opensAppToForeground`: Boolean indicating whether triggering this action foregrounds the app (defaults to `true`).
     - `isAuthenticationRequired`: (**iOS only**) Boolean indicating whether triggering the action will require authentication from the user.
     - `isDestructive`: (**iOS only**) Boolean indicating whether the button title will be highlighted a different color (usually red). This usually signifies a destructive action such as deleting data.
 - `options`: An optional object of additional configuration options for your category (**these are all iOS only**):
