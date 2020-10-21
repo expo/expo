@@ -58,6 +58,7 @@ public class DevelopmentClientController {
   // Singleton instance
   private static DevelopmentClientController sInstance;
 
+  private Context mContext;
   private String mMainComponentName;
   private DevelopmentClientHost mDevClientHost;
   private ReactNativeHost mAppHost;
@@ -70,9 +71,13 @@ public class DevelopmentClientController {
   Mode mode = Mode.LAUNCHER;
 
   private DevelopmentClientController(Context context, ReactNativeHost appHost, String mainComponentName) {
+    mContext = context;
     mMainComponentName = mainComponentName;
     mAppHost = appHost;
-    mDevClientHost = new DevelopmentClientHost((Application) context);
+    mDevClientHost = new DevelopmentClientHost((Application) context, DEV_LAUNCHER_HOST != null);
+    if (DEV_LAUNCHER_HOST != null) {
+      injectDebugServerHost(mDevClientHost, DEV_LAUNCHER_HOST);
+    }
   }
 
   public static DevelopmentClientController getInstance() {
@@ -114,7 +119,7 @@ public class DevelopmentClientController {
   void loadApp(ReactContext reactContext, String url, ReadableMap options) {
     Uri uri = Uri.parse(url);
     String debugServerHost = uri.getHost() + ":" + uri.getPort();
-    if (injectDebugServerHost(reactContext, mAppHost, debugServerHost)) {
+    if (injectDebugServerHost(mAppHost, debugServerHost)) {
       mode = Mode.APP;
       startReactInstance(reactContext, mAppHost);
     }
@@ -125,11 +130,11 @@ public class DevelopmentClientController {
     startReactInstance(reactContext, mDevClientHost);
   }
 
-  boolean injectDebugServerHost(ReactContext reactContext, ReactNativeHost reactNativeHost, String debugServerHost) {
+  boolean injectDebugServerHost(ReactNativeHost reactNativeHost, String debugServerHost) {
     try {
       ReactInstanceManager instanceManager = reactNativeHost.getReactInstanceManager();
 
-      DevelopmentClientInternalSettings settings = new DevelopmentClientInternalSettings(reactContext, debugServerHost);
+      DevelopmentClientInternalSettings settings = new DevelopmentClientInternalSettings(mContext, debugServerHost);
 
       DevSupportManager devSupportManager = instanceManager.getDevSupportManager();
       Class<?> devSupportManagerBaseClass = devSupportManager.getClass().getSuperclass();
