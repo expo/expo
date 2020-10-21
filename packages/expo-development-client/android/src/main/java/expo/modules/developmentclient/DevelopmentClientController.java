@@ -2,7 +2,6 @@ package expo.modules.developmentclient;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
@@ -154,7 +153,14 @@ public class DevelopmentClientController {
     });
   }
 
-  void navigateToLauncher() {
-    // TODO(nikki): Implement this...
+  void navigateToLauncher(ReactContext reactContext) {
+    // Go back to launcher on main thread
+    new Handler(Looper.getMainLooper()).post(() -> {
+      ReactInstanceManager launcherInstanceManager = mDevClientHost.getReactInstanceManager();
+      mode = Mode.LAUNCHER;
+      mRootView.unmountReactApplication();
+      mRootView.startReactApplication(launcherInstanceManager, mMainComponentName);
+      launcherInstanceManager.onHostResume(reactContext.getCurrentActivity());
+    });
   }
 }
