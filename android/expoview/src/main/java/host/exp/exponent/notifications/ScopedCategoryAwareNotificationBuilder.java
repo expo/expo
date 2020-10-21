@@ -26,33 +26,17 @@ public class ScopedCategoryAwareNotificationBuilder extends ScopedExpoNotificati
   }
 
   @Override
-  protected NotificationCompat.Builder createBuilder() {
-    NotificationCompat.Builder builder = super.createBuilder();
-
+  protected void addActionsToBuilder(NotificationCompat.Builder builder, @NonNull String categoryIdentifier) {
+    NotificationRequest requester = getNotification().getNotificationRequest();
     NotificationContent content = getNotificationContent();
+    String scopedCategoryIdentifier;
 
-    if (content.getCategoryId() != null) {
-      NotificationRequest requester = getNotification().getNotificationRequest();
-      String scopedCategoryIdentifier = ScopedNotificationsIdUtils.getScopedCategoryId(ExperienceId.create(((ScopedNotificationRequest) requester).getExperienceIdString()), content.getCategoryId());
-      List<NotificationAction> actions = Collections.emptyList();
-      try {
-        NotificationCategory category = super.mStore.getNotificationCategory(scopedCategoryIdentifier);
-        if (category != null) {
-          actions = category.getActions();
-        }
-      } catch (ClassNotFoundException | IOException e) {
-        Log.e("expo-notifications", String.format("Could not read category with identifier: %s. %s", scopedCategoryIdentifier, e.getMessage()));
-        e.printStackTrace();
-      }
-      for (NotificationAction action : actions) {
-        if (action instanceof TextInputNotificationAction) {
-          builder.addAction(super.buildTextInputAction((TextInputNotificationAction) action));
-        } else {
-          builder.addAction(super.buildButtonAction(action));
-        }
-      }
+    if (requester instanceof ScopedNotificationRequest) {
+      scopedCategoryIdentifier = ScopedNotificationsIdUtils.getScopedCategoryId(ExperienceId.create(((ScopedNotificationRequest) requester).getExperienceIdString()), content.getCategoryId());
+    } else {
+      scopedCategoryIdentifier = content.getCategoryId();
     }
 
-    return builder;
+    super.addActionsToBuilder(builder, scopedCategoryIdentifier);
   }
 }
