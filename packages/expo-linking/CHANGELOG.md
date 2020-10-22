@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 1.0.5 — 2020-10-22
+
+### 🐛 Bug fixes
+
 - Prevent crash in bare workflow if `Constants.manifest` isn't defined.
 
 ## 1.0.4 — 2020-08-18

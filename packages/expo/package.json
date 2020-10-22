@@ -63,7 +63,7 @@
     "expo-font": "~8.3.0",
     "expo-keep-awake": "~8.3.0",
     "expo-linear-gradient": "~8.3.1",
-    "expo-linking": "~1.0.4",
+    "expo-linking": "~1.0.5",
     "expo-location": "~9.0.1",
     "expo-permissions": "~9.3.0",
     "expo-splash-screen": "^0.7.1",
