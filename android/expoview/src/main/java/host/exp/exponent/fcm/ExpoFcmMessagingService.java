@@ -83,6 +83,9 @@ public class ExpoFcmMessagingService extends FirebaseListenerService {
 
   @Override
   protected NotificationRequest createNotificationRequest(String identifier, NotificationContent content, FirebaseNotificationTrigger notificationTrigger) {
+    if (Constants.isStandaloneApp()) {
+      return super.createNotificationRequest(identifier, content, notificationTrigger);
+    }
     ExperienceId experienceId;
     Map<String, String> data = notificationTrigger.getRemoteMessage().getData();
     if (!data.containsKey("experienceId")) {
