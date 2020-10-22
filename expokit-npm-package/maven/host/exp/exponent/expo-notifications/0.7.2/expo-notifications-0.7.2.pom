@@ -53,7 +53,7 @@
     <dependency>
       <groupId>org.unimodules</groupId>
       <artifactId>unimodules-core</artifactId>
-      <version>5.5.0</version>
+      <version>5.5.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

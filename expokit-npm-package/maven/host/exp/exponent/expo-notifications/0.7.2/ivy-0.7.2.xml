@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expo-notifications" revision="0.7.2" status="integration" publication="20201002141548"/>
+  <info organisation="host.exp.exponent" module="expo-notifications" revision="0.7.2" status="integration" publication="20201022114313"/>
   <configurations>
     <conf name="_internal_aapt2_binary" visibility="private" transitive="false"/>
     <conf name="androidApis" visibility="public"/>
@@ -132,7 +132,7 @@
     <dependency org="me.leolin" name="ShortcutBadger" rev="1.1.22" transitive="false" conf="api-&gt;default">
       <artifact name="ShortcutBadger" type="aar" ext="aar" conf="api"/>
     </dependency>
-    <dependency org="org.unimodules" name="unimodules-core" rev="5.5.0" conf="implementation-&gt;default"/>
+    <dependency org="org.unimodules" name="unimodules-core" rev="5.5.1" conf="implementation-&gt;default"/>
     <dependency org="org.unimodules" name="unimodules-permissions-interface" rev="5.3.0" conf="implementation-&gt;default"/>
     <dependency org="org.unimodules" name="unimodules-image-loader-interface" rev="5.3.0" conf="implementation-&gt;default"/>
     <dependency org="com.android.tools.lint" name="lint-gradle" rev="27.0.0" conf="lintClassPath-&gt;default"/>
