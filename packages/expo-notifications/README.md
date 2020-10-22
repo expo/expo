@@ -126,6 +126,36 @@ If you would like to send notifications with Expo servers, the servers will need
     - if you can't let Expo handle the process or you want to upload your own key, select _I want to upload my own file_
       - provide a path to the P8 file you have downloaded from [developer.apple.com](https://developer.apple.com/) website.
 
+# Common gotchas / known issues
+
+### Setting custom notification sound on Android
+
+To set a custom notification sound for an Android notification setting `sound` property on the `NotificationContentInput` is sometimes not sufficient — for Androids 8.0+ you will also need to configure the `NotificationChannel` with the appropriate `sound` and use it when sending/scheduling the notification.
+
+```ts
+import * as Notifications from 'expo-notifications';
+
+// Prepare the notification channel
+Notifications.setNotificationChannelAsync('new-emails', {
+  name: 'E-mail notifications',
+  importance: Notifications.AndroidImportance.HIGH,
+  sound: 'email-sound.wav', // <- for Android 8.0+, see channelId property below
+});
+
+// Eg. schedule the notification
+Notifications.scheduleNotificationAsync({
+  content: {
+    title: "You've got mail! 📬",
+    body: 'Open the notification to read them all',
+    sound: 'email-sound.wav', // <- for Android below 8.0
+  },
+  trigger: {
+    seconds: 2,
+    channelId: 'new-emails', // <- for Android 8.0+, see definition above
+  },
+});
+```
+
 # Contributing
 
 Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).
@@ -749,7 +779,7 @@ async function logNextTriggerDate() {
       hour: 9,
       minute: 0,
     });
-    console.log(nextTriggerDate === null ? "No next trigger date" : new Date(nextTriggerDate));
+    console.log(nextTriggerDate === null ? 'No next trigger date' : new Date(nextTriggerDate));
   } catch (e) {
     console.warn(`Couldn't have calculated next trigger date: ${e}`);
   }
