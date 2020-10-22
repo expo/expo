@@ -17,6 +17,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule
 import expo.interfaces.devmenu.DevMenuDelegateInterface
 import expo.interfaces.devmenu.DevMenuExtensionInterface
 import expo.interfaces.devmenu.DevMenuManagerInterface
+import expo.interfaces.devmenu.DevMenuSettingsInterface
 import expo.interfaces.devmenu.items.DevMenuAction
 import expo.interfaces.devmenu.items.DevMenuItem
 import expo.interfaces.devmenu.items.KeyCommand
@@ -29,7 +30,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   private var shakeDetector: ShakeDetector? = null
   private var threeFingerLongPressDetector: ThreeFingerLongPressDetector? = null
   private var session: DevMenuSession? = null
-  private var settings: DevMenuSettings? = null
+  private var settings: DevMenuSettingsInterface? = null
   private var delegate: DevMenuDelegateInterface? = null
   private var shouldLaunchDevMenuOnStart: Boolean = false
   private lateinit var devMenuHost: DevMenuHost
@@ -109,14 +110,16 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
       ?: reactContext.applicationContext as Application)
     maybeStartDetectors(devMenuHost.getContext())
 
-    settings = reactContext
-      .getNativeModule(DevMenuSettings::class.java)
-      .also {
-        shouldLaunchDevMenuOnStart = it.showsAtLaunch
-        if (shouldLaunchDevMenuOnStart) {
-          reactContext.addLifecycleEventListener(this)
-        }
+    settings = if (reactContext.hasNativeModule(DevMenuSettings::class.java)) {
+      reactContext.getNativeModule(DevMenuSettings::class.java)
+    } else {
+      DevMenuDefaultSettings()
+    }.also {
+      shouldLaunchDevMenuOnStart = it.showsAtLaunch
+      if (shouldLaunchDevMenuOnStart) {
+        reactContext.addLifecycleEventListener(this)
       }
+    }
   }
 
   //endregion
@@ -263,7 +266,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   override fun getSession(): DevMenuSession? = session
 
-  override fun getSettings(): DevMenuSettings? = settings
+  override fun getSettings(): DevMenuSettingsInterface? = settings
 
   override fun getMenuHost() = devMenuHost
 
