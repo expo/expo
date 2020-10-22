@@ -101,7 +101,7 @@ RCT_EXPORT_METHOD(removeProxiedListeners:(NSString *)moduleName count:(double)co
   id<UMEventEmitter> eventEmitter = (id<UMEventEmitter>)module;
 
   // Per-module observing state
-  int newModuleListenersCount = [self moduleListenersCountFor:moduleName] - 1;
+  int newModuleListenersCount = [self moduleListenersCountFor:moduleName] - count;
   if (newModuleListenersCount == 0) {
     [eventEmitter stopObserving];
   } else if (newModuleListenersCount < 0) {
@@ -111,11 +111,11 @@ RCT_EXPORT_METHOD(removeProxiedListeners:(NSString *)moduleName count:(double)co
   _modulesListenersCounts[moduleName] = [NSNumber numberWithInt:newModuleListenersCount];
 
   // Global observing state
-  if (_listenersCount - 1 < 0) {
+  if (_listenersCount - count < 0) {
     UMLogError(@"Attempted to remove more proxied event emitter listeners than added");
     _listenersCount = 0;
   } else {
-    _listenersCount -= 1;
+    _listenersCount -= count;
   }
 
   if (_listenersCount == 0) {
