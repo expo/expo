@@ -19,7 +19,12 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 This will first rotate the image 90 degrees clockwise, then flip the rotated image vertically and save it as a PNG.
 
-<SnackInline label='Basic ImageManipulator usage' templateId='image-manipulator' dependencies={['expo-asset', 'expo-image-manipulator']}>
+<SnackInline
+  label='Basic ImageManipulator usage'
+  files={{
+    'assets/snack-icon.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/2f7d32b1787708aba49b3586082d327b'
+  }}
+  dependencies={['expo-asset', 'expo-image-manipulator']}>
 
 ```js
 import React, { useState, useEffect } from "react";
@@ -33,10 +38,10 @@ export default function App() {
 
   useEffect(() => {
     (async () => {
-      const image = Asset.fromModule(require("./assets/snack-embed.png"));
+      const image = Asset.fromModule(require("./assets/snack-icon.png"));
       await image.downloadAsync();
-      setReady(true);
       setImage(image);
+      setReady(true);
     })();
   }, []);
 
