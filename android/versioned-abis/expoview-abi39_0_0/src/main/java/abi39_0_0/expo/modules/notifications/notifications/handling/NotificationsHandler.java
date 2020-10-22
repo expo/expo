@@ -115,10 +115,12 @@ public class NotificationsHandler extends ExportedModule implements Notification
    * Does nothing.
    *
    * @param response Notification response received
+   * @return
    */
   @Override
-  public void onNotificationResponseReceived(NotificationResponse response) {
+  public boolean onNotificationResponseReceived(NotificationResponse response) {
     // do nothing, the response is received through emitter
+    return false;
   }
 
   /**
