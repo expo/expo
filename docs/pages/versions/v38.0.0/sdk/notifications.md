@@ -50,6 +50,36 @@ Open your `app.json` and add the following inside of the "expo" field:
 }
 ```
 
+## Common gotchas / known issues
+
+### Setting custom notification sound on Android
+
+To set a custom notification sound for an Android notification setting `sound` property on the `NotificationContentInput` is sometimes not sufficient — for Androids 8.0+ you will also need to configure the `NotificationChannel` with the appropriate `sound` and use it when sending/scheduling the notification.
+
+```ts
+import * as Notifications from 'expo-notifications';
+
+// Prepare the notification channel
+Notifications.setNotificationChannelAsync('new-emails', {
+  name: 'E-mail notifications',
+  importance: Notifications.AndroidImportance.HIGH,
+  sound: 'email-sound.wav', // <- for Android 8.0+, see channelId property below
+});
+
+// Eg. schedule the notification
+Notifications.scheduleNotificationAsync({
+  content: {
+    title: "You've got mail! 📬",
+    body: 'Open the notification to read them all',
+    sound: 'email-sound.wav', // <- for Android below 8.0
+  },
+  trigger: {
+    seconds: 2,
+    channelId: 'new-emails', // <- for Android 8.0+, see definition above
+  },
+});
+```
+
 ## API
 
 ```js
