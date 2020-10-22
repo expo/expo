@@ -21,8 +21,9 @@ public interface NotificationListener {
    * Callback called when new notification response is received.
    *
    * @param response Notification response received
+   * @return Whether the notification response has been handled
    */
-  void onNotificationResponseReceived(NotificationResponse response);
+  boolean onNotificationResponseReceived(NotificationResponse response);
 
   /**
    * Callback called when some notifications are dropped.
