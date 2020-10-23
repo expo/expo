@@ -16,16 +16,21 @@ import expo.interfaces.devmenu.items.DevMenuItem
 import expo.interfaces.devmenu.items.DevMenuItemImportance
 import expo.interfaces.devmenu.items.KeyCommand
 import expo.interfaces.devmenu.DevMenuExtensionInterface
+import expo.modules.devmenu.modules.DevMenuManagerProvider
 
 class DevMenuExtension(reactContext: ReactApplicationContext)
   : ReactContextBaseJavaModule(reactContext), DevMenuExtensionInterface {
   override fun getName() = "ExpoDevMenuExtensions"
 
+  private val devMenuManger by lazy {
+    reactContext
+      .getNativeModule(DevMenuManagerProvider::class.java)
+      .getDevMenuManager()
+  }
+
   private val devSupportManager: DevSupportManager?
-    get() {
-      val reactApplication = currentActivity?.application as ReactApplication?
-      return reactApplication?.reactNativeHost?.reactInstanceManager?.devSupportManager
-    }
+    get() = devMenuManger.getSession()?.reactInstanceManager?.devSupportManager
+
 
   override fun devMenuItems(): List<DevMenuItem>? {
     val reactDevManager = devSupportManager
