@@ -3,7 +3,7 @@ title: Limitations
 sidebar_title: Limitations
 ---
 
-Your success will be limited if you don't know the limitations of your tools. A good software engineer strives to understand the tradeoffs in the decisions she makes.
+Your success will be limited if you don't know the limitations of your tools. A good software engineer strives to understand the tradeoffs in the decisions they make.
 
 ## Limitations of the managed workflow
 
