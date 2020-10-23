@@ -15,7 +15,8 @@ public interface NotificationListener {
    *
    * @param notification Notification received
    */
-  void onNotificationReceived(Notification notification);
+  default void onNotificationReceived(Notification notification) {
+  }
 
   /**
    * Callback called when new notification response is received.
