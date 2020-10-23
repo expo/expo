@@ -15,15 +15,14 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
-
 import expo.modules.notifications.notifications.enums.NotificationPriority;
 import expo.modules.notifications.notifications.interfaces.NotificationBuilder;
 import expo.modules.notifications.notifications.model.NotificationAction;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
+import expo.modules.notifications.service.NotificationsService;
 
 import static expo.modules.notifications.notifications.model.NotificationResponse.DEFAULT_ACTION_IDENTIFIER;
-import static expo.modules.notifications.notifications.service.NotificationResponseReceiver.getActionIntent;
 
 /**
  * {@link NotificationBuilder} interpreting a JSON request object.
@@ -108,9 +107,9 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
     // so we go around it by marshalling and unmarshalling the object ourselves.
     requestExtras.putByteArray(EXTRAS_MARSHALLED_NOTIFICATION_REQUEST_KEY, marshallNotificationRequest(getNotification().getNotificationRequest()));
     builder.addExtras(requestExtras);
-    
+
     NotificationAction defaultAction = new NotificationAction(DEFAULT_ACTION_IDENTIFIER, null, true);
-    builder.setContentIntent(getActionIntent(getContext(), defaultAction, getNotification()));
+    builder.setContentIntent(NotificationsService.Companion.createNotificationResponseIntent(getContext(), getNotification(), defaultAction));
 
     return builder;
   }
