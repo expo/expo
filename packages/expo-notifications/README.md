@@ -130,7 +130,7 @@ If you would like to send notifications with Expo servers, the servers will need
 
 ### Setting custom notification sound on Android
 
-To set a custom notification sound for an Android notification setting `sound` property on the `NotificationContentInput` is sometimes not sufficient — for Androids 8.0+ you will also need to configure the `NotificationChannel` with the appropriate `sound` and use it when sending/scheduling the notification.
+On Androids 8.0+, playing a custom sound for a notification requires more than setting the `sound` property on the `NotificationContentInput`. You will _also_ need to configure the `NotificationChannel` with the appropriate `sound`, and use it when sending/scheduling the notification.
 
 ```ts
 import * as Notifications from 'expo-notifications';
