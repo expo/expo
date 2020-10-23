@@ -8,14 +8,19 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.os.Bundle
+import android.os.Parcel
 import android.os.Parcelable
 import android.os.ResultReceiver
 import android.util.Log
+import androidx.core.app.RemoteInput
 import expo.modules.notifications.notifications.model.Notification
+import expo.modules.notifications.notifications.model.NotificationAction
 import expo.modules.notifications.notifications.model.NotificationBehavior
 import expo.modules.notifications.notifications.model.NotificationCategory
 import expo.modules.notifications.notifications.model.NotificationRequest
 import expo.modules.notifications.notifications.model.NotificationResponse
+import expo.modules.notifications.notifications.model.TextInputNotificationAction
+import expo.modules.notifications.notifications.model.TextInputNotificationResponse
 import expo.modules.notifications.service.delegates.ExpoCategoriesDelegate
 import expo.modules.notifications.service.delegates.ExpoHandlingDelegate
 import expo.modules.notifications.service.delegates.ExpoPresentationDelegate
@@ -38,6 +43,7 @@ open class NotificationsService : BroadcastReceiver() {
       "android.intent.action.QUICKBOOT_POWERON",
       "com.htc.intent.action.QUICKBOOT_POWERON"
     )
+    const val USER_TEXT_RESPONSE_KEY = "userTextResponse"
 
     // Event types
     private const val GET_ALL_DISPLAYED_TYPE = "getAllDisplayed"
@@ -67,6 +73,7 @@ open class NotificationsService : BroadcastReceiver() {
     // Specific messages parts
     const val NOTIFICATION_KEY = "notification"
     const val NOTIFICATION_RESPONSE_KEY = "notificationResponse"
+    const val TEXT_INPUT_NOTIFICATION_RESPONSE_KEY = "textInputNotificationResponse"
     const val SUCCEEDED_KEY = "succeeded"
     const val IDENTIFIERS_KEY = "identifiers"
     const val IDENTIFIER_KEY = "identifier"
@@ -76,6 +83,7 @@ open class NotificationsService : BroadcastReceiver() {
     const val NOTIFICATION_CATEGORIES_KEY = "notificationCategories"
     const val NOTIFICATION_REQUEST_KEY = "notificationRequest"
     const val NOTIFICATION_REQUESTS_KEY = "notificationRequests"
+    const val NOTIFICATION_ACTION_KEY = "notificationAction"
 
     /**
      * A helper function for dispatching a "fetch all displayed notifications" command to the service.
@@ -120,22 +128,6 @@ open class NotificationsService : BroadcastReceiver() {
       doWork(context, Intent(NOTIFICATION_EVENT_ACTION, data).also { intent ->
         intent.putExtra(EVENT_TYPE_KEY, RECEIVE_TYPE)
         intent.putExtra(NOTIFICATION_KEY, notification)
-        intent.putExtra(RECEIVER_KEY, receiver)
-      })
-    }
-
-    /**
-     * A helper function for dispatching a "notification response received" command to the service.
-     *
-     * @param context      Context where to start the service.
-     * @param notificationResponse Notification response received
-     * @param receiver     Result receiver
-     */
-    fun handleResponseReceived(context: Context, response: NotificationResponse, receiver: ResultReceiver? = null) {
-      val data = getUriBuilderForIdentifier(response.notification.notificationRequest.identifier).appendPath("response").build()
-      doWork(context, Intent(NOTIFICATION_EVENT_ACTION, data).also { intent ->
-        intent.putExtra(EVENT_TYPE_KEY, RECEIVE_TYPE)
-        intent.putExtra(NOTIFICATION_RESPONSE_KEY, response)
         intent.putExtra(RECEIVER_KEY, receiver)
       })
     }
@@ -417,6 +409,98 @@ open class NotificationsService : BroadcastReceiver() {
         PendingIntent.FLAG_UPDATE_CURRENT
       )
     }
+
+    /**
+     * Creates and returns a pending intent that will trigger [NotificationsService]'s "response received"
+     * event.
+     *
+     * @param context    Context this is being called from
+     * @param notification Notification being responded to
+     * @param action Notification action being undertaken
+     * @return [PendingIntent] triggering [NotificationsService], triggering "response received" event
+     */
+    fun createNotificationResponseIntent(context: Context, notification: Notification, action: NotificationAction): PendingIntent {
+      val intent = Intent(
+        NOTIFICATION_EVENT_ACTION,
+        getUriBuilder()
+          .appendPath(notification.notificationRequest.identifier)
+          .appendPath("actions")
+          .appendPath(action.identifier)
+          .build()
+      ).also { intent ->
+        findDesignatedBroadcastReceiver(context, intent)?.let {
+          intent.component = ComponentName(it.packageName, it.name)
+        }
+        intent.putExtra(EVENT_TYPE_KEY, RECEIVE_RESPONSE_TYPE)
+        intent.putExtra(NOTIFICATION_KEY, notification)
+        intent.putExtra(NOTIFICATION_ACTION_KEY, action as Parcelable)
+      }
+
+      return PendingIntent.getBroadcast(
+        context,
+        intent.component?.className?.hashCode() ?: NotificationsService::class.java.hashCode(),
+        intent,
+        PendingIntent.FLAG_UPDATE_CURRENT
+      )
+    }
+
+    fun getNotificationResponseFromIntent(intent: Intent): NotificationResponse? {
+      intent.getByteArrayExtra(NOTIFICATION_RESPONSE_KEY)?.let { return unmarshalObject(NotificationResponse.CREATOR, it) }
+      intent.getByteArrayExtra(TEXT_INPUT_NOTIFICATION_RESPONSE_KEY)?.let { return unmarshalObject(TextInputNotificationResponse.CREATOR, it) }
+      return null
+    }
+
+    // Class loader used in BaseBundle when unmarshalling notification extras
+    // cannot handle expo.modules.notifications.….NotificationResponse
+    // so we go around it by marshalling and unmarshalling the object ourselves.
+    fun setNotificationResponseToIntent(intent: Intent, notificationResponse: NotificationResponse) {
+      try {
+        val keyToPutResponseUnder = if (notificationResponse is TextInputNotificationResponse) {
+          TEXT_INPUT_NOTIFICATION_RESPONSE_KEY
+        } else {
+          NOTIFICATION_RESPONSE_KEY
+        }
+        intent.putExtra(keyToPutResponseUnder, marshalObject(notificationResponse))
+      } catch (e: Exception) {
+        // If we couldn't marshal the request, let's not fail the whole build process.
+        Log.e("expo-notifications", "Could not marshal notification response: ${notificationResponse.actionIdentifier}.")
+        e.printStackTrace()
+      }
+    }
+
+    /**
+     * Marshals [Parcelable] into to a byte array.
+     *
+     * @param notificationResponse Notification response to marshall
+     * @return Given request marshalled to a byte array or null if the process failed.
+     */
+    private fun marshalObject(objectToMarshal: Parcelable): ByteArray? {
+      val parcel: Parcel = Parcel.obtain()
+      objectToMarshal.writeToParcel(parcel, 0)
+      val bytes: ByteArray = parcel.marshall()
+      parcel.recycle()
+      return bytes
+    }
+
+    /**
+     * UNmarshals [Parcelable] object from a byte array given a [Parcelable.Creator].
+     * @return Object instance or null if the process failed.
+     */
+    private fun <T> unmarshalObject(creator: Parcelable.Creator<T>, byteArray: ByteArray?): T? {
+      byteArray?.let {
+        try {
+          val parcel = Parcel.obtain()
+          parcel.unmarshall(it, 0, it.size)
+          parcel.setDataPosition(0)
+          val unmarshaledObject = creator.createFromParcel(parcel)
+          parcel.recycle()
+          return unmarshaledObject
+        } catch (e: Exception) {
+          Log.e("expo-notifications", "Could not unmarshall NotificationResponse from Intent.extra.", e)
+        }
+      }
+      return null
+    }
   }
 
   protected open fun getPresentationDelegate(context: Context): PresentationDelegate =
@@ -528,10 +612,16 @@ open class NotificationsService : BroadcastReceiver() {
       intent.getParcelableExtra(NOTIFICATION_KEY)!!
     )
 
-  open fun onReceiveNotificationResponse(context: Context, intent: Intent) =
-    getHandlingDelegate(context).handleNotificationResponse(
-      intent.getParcelableExtra(NOTIFICATION_RESPONSE_KEY)!!
-    )
+  open fun onReceiveNotificationResponse(context: Context, intent: Intent) {
+    val notification = intent.getParcelableExtra<Notification>(NOTIFICATION_KEY)!!
+    val action = intent.getParcelableExtra<NotificationAction>(NOTIFICATION_ACTION_KEY)!!
+    val response = if (action is TextInputNotificationAction) {
+      TextInputNotificationResponse(action, notification, RemoteInput.getResultsFromIntent(intent).getString(USER_TEXT_RESPONSE_KEY))
+    } else {
+      NotificationResponse(action, notification)
+    }
+    getHandlingDelegate(context).handleNotificationResponse(response)
+  }
 
   open fun onNotificationsDropped(context: Context, intent: Intent) =
     getHandlingDelegate(context).handleNotificationsDropped()
