@@ -1141,6 +1141,23 @@
     xcode "^3.0.0"
     xml-js "^1.6.11"
 
+"@expo/configure-splash-screen@0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@expo/configure-splash-screen/-/configure-splash-screen-0.2.0.tgz#84f9f71363259f16fd0073636a198c750a3cdd7c"
+  integrity sha512-2RG0NOeXZAGKNJXVEEA9wukDsxjmMdDTclZP9FPb15r3+siWI/GZaC36IqoQ8/mw4wzX5Y+OvZ2cHhc0J8t+0A==
+  dependencies:
+    "@react-native-community/cli-platform-android" "^4.10.0"
+    "@react-native-community/cli-platform-ios" "^4.10.0"
+    color-string "^1.5.3"
+    commander "^5.1.0"
+    core-js "^3.6.5"
+    deep-equal "^2.0.3"
+    fs-extra "^9.0.0"
+    lodash "^4.17.15"
+    pngjs "^5.0.0"
+    xcode "^3.0.0"
+    xml-js "^1.6.11"
+
 "@expo/image-utils@0.3.6":
   version "0.3.6"
   resolved "https://registry.yarnpkg.com/@expo/image-utils/-/image-utils-0.3.6.tgz#b51d8c51b6fc467696fdad0ee86b3663af482df5"
@@ -3661,12 +3678,19 @@ expo-permissions@~9.3.0:
   resolved "https://registry.yarnpkg.com/expo-permissions/-/expo-permissions-9.3.0.tgz#b90c7e9e411d306c1c7ba2bae18d5c53c201affd"
   integrity sha512-ylSJZVvEGJVFTKsFrUL2S6gCvFt+/o8TJ3xT4WaMjHe2/2Z7R8ng6NR47Kt54t7XBIV/SZ7DIY9uRiR7TPuNYA==
 
-expo-splash-screen@^0.6.1, expo-splash-screen@~0.6.1:
+expo-splash-screen@^0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/expo-splash-screen/-/expo-splash-screen-0.6.1.tgz#c333340169e2a855d18e2e52d5f5738cc2e0b9ad"
   integrity sha512-m4cEGN/9TJr9G1xr7H5QJqvvAwKMrZPxSuWqp9ht/XfPsy3RD37Ao+384lohAHt6BKjIcYiDgxDDDJ1QDExdjg==
   dependencies:
     "@expo/configure-splash-screen" "0.1.13"
+
+expo-splash-screen@~0.6.2:
+  version "0.6.2"
+  resolved "https://registry.yarnpkg.com/expo-splash-screen/-/expo-splash-screen-0.6.2.tgz#2be7fc28ad62549e870c69f1fe133ebe756c524f"
+  integrity sha512-Rvi+aiVDztFyLh5fYJYcZxVuQNDCy6ATSTfxuch5uVQ1jA9/vjVzUKG4iZCoChaSCnMV56aFftHBWSDNWPvLFQ==
+  dependencies:
+    "@expo/configure-splash-screen" "0.2.0"
 
 expo-sqlite@~8.4.0:
   version "8.4.0"
@@ -6814,9 +6838,9 @@ react-native-web@~0.13.12:
     prop-types "^15.6.0"
     react-timer-mixin "^0.13.4"
 
-"react-native@https://github.com/expo/react-native/archive/sdk-39.0.0.tar.gz":
+"react-native@https://github.com/expo/react-native/archive/sdk-39.0.4.tar.gz":
   version "0.63.2"
-  resolved "https://github.com/expo/react-native/archive/sdk-39.0.0.tar.gz#b8576762d605744f207be9fa6e87391640603c7b"
+  resolved "https://github.com/expo/react-native/archive/sdk-39.0.4.tar.gz#701dd827e27167db70cced8d09bedcc3c2d52897"
   dependencies:
     "@babel/runtime" "^7.0.0"
     "@react-native-community/cli" "^4.7.0"
