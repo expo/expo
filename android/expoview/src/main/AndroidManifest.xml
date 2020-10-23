@@ -114,6 +114,22 @@
       tools:replace="android:value"
       android:name="expo.modules.notifications#NotificationsScoper"
       android:value="host.exp.exponent.notifications.NotificationsScoper" />
+
+    <receiver
+      android:name="host.exp.exponent.notifications.ExpoNotificationsService"
+      android:enabled="true"
+      android:exported="false">
+      <intent-filter>
+        <action android:name="expo.modules.notifications.NOTIFICATION_EVENT" />
+
+        <action android:name="android.intent.action.BOOT_COMPLETED" />
+        <action android:name="android.intent.action.REBOOT" />
+        <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+        <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
+
+        <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+      </intent-filter>
+    </receiver>
   </application>
 
 </manifest>
