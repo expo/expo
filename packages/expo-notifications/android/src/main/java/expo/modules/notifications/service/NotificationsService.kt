@@ -133,22 +133,6 @@ open class NotificationsService : BroadcastReceiver() {
     }
 
     /**
-     * A helper function for dispatching a "notification response received" command to the service.
-     *
-     * @param context      Context where to start the service.
-     * @param notificationResponse Notification response received
-     * @param receiver     Result receiver
-     */
-    fun handleResponseReceived(context: Context, response: NotificationResponse, receiver: ResultReceiver? = null) {
-      val data = getUriBuilderForIdentifier(response.notification.notificationRequest.identifier).appendPath("response").build()
-      doWork(context, Intent(NOTIFICATION_EVENT_ACTION, data).also { intent ->
-        intent.putExtra(EVENT_TYPE_KEY, RECEIVE_TYPE)
-        intent.putExtra(NOTIFICATION_RESPONSE_KEY, response)
-        intent.putExtra(RECEIVER_KEY, receiver)
-      })
-    }
-
-    /**
      * A helper function for dispatching a "dismiss notification" command to the service.
      *
      * @param context    Context where to start the service.
