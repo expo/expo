@@ -15,7 +15,6 @@ import java.io.ObjectOutputStream
  * A fairly straightforward [SharedPreferences] wrapper to be used by [NotificationSchedulingHelper].
  * Saves and reads notification category information (identifiers, actions, and options) to and from persistent storage.
  *
- *
  * A notification category with identifier = 123abc will be persisted under key:
  * [SharedPreferencesNotificationCategoriesStore.NOTIFICATION_CATEGORY_KEY_PREFIX]123abc
  */
@@ -38,16 +37,13 @@ class SharedPreferencesNotificationCategoriesStore(context: Context) {
    */
   @Throws(IOException::class, ClassNotFoundException::class)
   fun getNotificationCategory(identifier: String) =
-    deserializeNotificationCategory(
-      sharedPreferences.getString(
-        preferencesNotificationCategoryKey(identifier),
-        null
-      )
-    )
+    sharedPreferences.getString(
+      preferencesNotificationCategoryKey(identifier),
+      null
+    )?.asBase64EncodedObject<NotificationCategory>()
 
   /**
    * Fetches all categories, ignoring invalid ones.
-   *
    *
    * Goes through all the [SharedPreferences] entries, interpreting only the ones conforming
    * to the expected format.
@@ -56,18 +52,20 @@ class SharedPreferencesNotificationCategoriesStore(context: Context) {
    */
   val allNotificationCategories: Collection<NotificationCategory>
     get() =
-      sharedPreferences.all.mapNotNull { (key, value) ->
-        if (key.startsWith(NOTIFICATION_CATEGORY_KEY_PREFIX)) {
-          try {
-            return@mapNotNull deserializeNotificationCategory(value as String?)
+      sharedPreferences
+        .all
+        .filter { it.key.startsWith(NOTIFICATION_CATEGORY_KEY_PREFIX) }
+        .mapNotNull { (_, value) ->
+          return@mapNotNull try {
+            (value as String?)?.asBase64EncodedObject<NotificationCategory>()
           } catch (e: ClassNotFoundException) {
             // do nothing
+            null
           } catch (e: IOException) {
             // do nothing
+            null
           }
         }
-        null
-      }
 
   /**
    * Saves given category in persistent storage.
@@ -82,7 +80,7 @@ class SharedPreferencesNotificationCategoriesStore(context: Context) {
       .edit()
       .putString(
         preferencesNotificationCategoryKey(notificationCategory.identifier),
-        serializeNotificationCategory(notificationCategory)
+        notificationCategory.encodedInBase64()
       )
       .commit()
       .let { if (it) notificationCategory else null }
@@ -103,48 +101,6 @@ class SharedPreferencesNotificationCategoriesStore(context: Context) {
       .edit()
       .remove(preferencesNotificationCategoryKey(identifier))
       .commit()
-  }
-
-  /**
-   * Serializes the category to a Base64-encoded string.
-   *
-   * @param notificationCategory Notification category to serialize
-   * @return Base64-encoded, serialized category
-   * @throws IOException Thrown if there is an error while writing category to string.
-   */
-  @Throws(IOException::class)
-  private fun serializeNotificationCategory(notificationCategory: NotificationCategory) =
-    ByteArrayOutputStream().use { byteArrayOutputStream ->
-      ObjectOutputStream(byteArrayOutputStream).use { objectOutputStream ->
-        objectOutputStream.writeObject(notificationCategory)
-        Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.NO_WRAP)
-      }
-    }
-
-  /**
-   * Deserializes the category from the string representation.
-   *
-   * @param category Base64-encoded, serialized category representation
-   * @return Deserialized category or null
-   * @throws IOException            Thrown if there is an error while reading category from String
-   * @throws ClassNotFoundException Thrown if the deserialization failes due to class not being found.
-   * @throws InvalidClassException  Thrown if the category is of invalid class.
-   */
-  @Throws(IOException::class, ClassNotFoundException::class, InvalidClassException::class)
-  private fun deserializeNotificationCategory(category: String?): NotificationCategory? {
-    category?.let {
-      val data = Base64.decode(it, Base64.NO_WRAP)
-      ByteArrayInputStream(data).use { byteArrayInputStream ->
-        ObjectInputStream(byteArrayInputStream).use { ois ->
-          val o = ois.readObject()
-          if (o is NotificationCategory) {
-            return o
-          }
-          throw InvalidClassException("Expected serialized notification category to be an instance of NotificationCategory. Found: $o")
-        }
-      }
-    }
-    return null
   }
 
   /**
