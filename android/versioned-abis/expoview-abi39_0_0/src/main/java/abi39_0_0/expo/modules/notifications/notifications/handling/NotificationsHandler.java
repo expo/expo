@@ -124,16 +124,6 @@ public class NotificationsHandler extends ExportedModule implements Notification
   }
 
   /**
-   * Callback called by {@link NotificationManager} to inform that some push notifications
-   * haven't been delivered to the app. It doesn't make sense to react to this event in this class.
-   * Apps get notified of this event by {@link NotificationsEmitter}.
-   */
-  @Override
-  public void onNotificationsDropped() {
-    // do nothing
-  }
-
-  /**
    * Callback called once {@link SingleNotificationHandlerTask} finishes.
    * A cue for removal of the task.
    *

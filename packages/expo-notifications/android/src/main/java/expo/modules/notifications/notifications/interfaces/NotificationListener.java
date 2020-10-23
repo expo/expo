@@ -31,5 +31,6 @@ public interface NotificationListener {
    * Callback called when some notifications are dropped.
    * See {@link FirebaseMessagingService#onDeletedMessages()}
    */
-  void onNotificationsDropped();
+  default void onNotificationsDropped() {
+  }
 }
