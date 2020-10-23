@@ -10,14 +10,14 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import expo.modules.notifications.notifications.interfaces.NotificationsScoper;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationAction;
 import expo.modules.notifications.notifications.model.NotificationResponse;
+import expo.modules.notifications.service.NotificationsService;
 
 /**
  * A broadcast receiver responsible for redirecting responses to notifications
- * to {@link NotificationsHelper}.
+ * to {@link NotificationsService}.
  */
 public class NotificationResponseReceiver extends BroadcastReceiver {
   public static final String NOTIFICATION_OPEN_APP_ACTION = "expo.modules.notifications.OPEN_APP_ACTION";
@@ -46,11 +46,7 @@ public class NotificationResponseReceiver extends BroadcastReceiver {
     if (intent.getBooleanExtra(ACTION_FOREGROUNDS_APP, true)) {
       openAppToForeground(context, response);
     }
-    getNotificationsHelper(context).responseReceived(response);
-  }
-
-  protected NotificationsHelper getNotificationsHelper(Context context) {
-    return new NotificationsHelper(context, NotificationsScoper.create(context).createReconstructor());
+    NotificationsService.Companion.handleResponseReceived(context, response, null);
   }
 
   protected void openAppToForeground(Context context, NotificationResponse notificationResponse) {

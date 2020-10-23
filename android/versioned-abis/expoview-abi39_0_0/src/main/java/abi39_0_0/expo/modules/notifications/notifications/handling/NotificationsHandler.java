@@ -4,24 +4,21 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
 
-import abi39_0_0.org.unimodules.core.ExportedModule;
-import abi39_0_0.org.unimodules.core.ModuleRegistry;
-import abi39_0_0.org.unimodules.core.Promise;
-import abi39_0_0.org.unimodules.core.arguments.ReadableArguments;
-import abi39_0_0.org.unimodules.core.interfaces.ExpoMethod;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import abi39_0_0.expo.modules.notifications.notifications.emitting.NotificationsEmitter;
+import abi39_0_0.org.unimodules.core.ExportedModule;
+import abi39_0_0.org.unimodules.core.ModuleRegistry;
+import abi39_0_0.org.unimodules.core.Promise;
+import abi39_0_0.org.unimodules.core.arguments.ReadableArguments;
+import abi39_0_0.org.unimodules.core.interfaces.ExpoMethod;
 import expo.modules.notifications.notifications.interfaces.NotificationListener;
 import expo.modules.notifications.notifications.interfaces.NotificationManager;
-import expo.modules.notifications.notifications.interfaces.NotificationsScoper;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationBehavior;
 import expo.modules.notifications.notifications.model.NotificationResponse;
-import expo.modules.notifications.notifications.service.NotificationsHelper;
 
 /**
  * {@link NotificationListener} responsible for managing app's reaction to incoming
@@ -40,7 +37,6 @@ public class NotificationsHandler extends ExportedModule implements Notification
   private static final String PRIORITY_KEY = "priority";
 
   private NotificationManager mNotificationManager;
-  private NotificationsHelper mNotificationsHelper;
   private ModuleRegistry mModuleRegistry;
 
   /**
@@ -57,7 +53,6 @@ public class NotificationsHandler extends ExportedModule implements Notification
 
   public NotificationsHandler(Context context) {
     super(context);
-    this.mNotificationsHelper = new NotificationsHelper(context, NotificationsScoper.create(context).createReconstructor());
   }
 
   @Override
@@ -134,7 +129,7 @@ public class NotificationsHandler extends ExportedModule implements Notification
    */
   @Override
   public void onNotificationReceived(Notification notification) {
-    SingleNotificationHandlerTask task = new SingleNotificationHandlerTask(mHandler, mModuleRegistry, notification, mNotificationsHelper, this);
+    SingleNotificationHandlerTask task = new SingleNotificationHandlerTask(getContext(), mHandler, mModuleRegistry, notification, this);
     mTasksMap.put(task.getIdentifier(), task);
     task.start();
   }
