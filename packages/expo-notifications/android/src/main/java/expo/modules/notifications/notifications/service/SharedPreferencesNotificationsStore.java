@@ -19,7 +19,7 @@ import java.util.Map;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 
 /**
- * A fairly straightforward {@link SharedPreferences} wrapper to be used by {@link NotificationSchedulingHelper}.
+ * A fairly straightforward {@link SharedPreferences} wrapper to be used by {@link expo.modules.notifications.service.delegates.ExpoSchedulingDelegate}.
  * Saves and reads notifications (identifiers, requests and triggers) to and from the persistent storage.
  * <p>
  * A notification request of identifier = 123abc, it will be persisted under key:
