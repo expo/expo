@@ -92,19 +92,6 @@ public class NotificationsHandler extends ExportedModule implements Notification
   }
 
   /**
-   * Callback called when {@link NotificationManager} gets notified of a new notification response.
-   * Does nothing.
-   *
-   * @param response Notification response received
-   * @return
-   */
-  @Override
-  public boolean onNotificationResponseReceived(NotificationResponse response) {
-    // do nothing, the response is received through emitter
-    return false;
-  }
-
-  /**
    * Callback called by {@link NotificationManager} to inform its listeners of new messages.
    * Starts up a new {@link SingleNotificationHandlerTask} which will take it on from here.
    *

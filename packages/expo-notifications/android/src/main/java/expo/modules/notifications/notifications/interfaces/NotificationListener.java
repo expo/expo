@@ -23,7 +23,9 @@ public interface NotificationListener {
    * @param response Notification response received
    * @return Whether the notification response has been handled
    */
-  boolean onNotificationResponseReceived(NotificationResponse response);
+  default boolean onNotificationResponseReceived(NotificationResponse response) {
+    return false;
+  }
 
   /**
    * Callback called when some notifications are dropped.
