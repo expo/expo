@@ -28,7 +28,7 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-video-thumbnails",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/video-thumbnails/",
   "peerDependencies": {
     "@unimodules/core": "*"
   },

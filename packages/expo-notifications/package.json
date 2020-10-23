@@ -29,7 +29,7 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-notifications",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/notifications/",
   "jest": {
     "preset": "expo-module-scripts/ios"
   },
