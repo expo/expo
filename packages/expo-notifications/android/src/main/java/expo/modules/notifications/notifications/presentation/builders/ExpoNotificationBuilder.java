@@ -99,7 +99,7 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
     }
 
     // Save the notification request in extras for later usage
-    // eg. in NotificationsHelper when we fetch active notifications.
+    // eg. in ExpoPresentationDelegate when we fetch active notifications.
     // Otherwise we'd have to create expo.Notification from android.Notification
     // and deal with two-way interpreting.
     Bundle requestExtras = new Bundle();
