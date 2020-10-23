@@ -858,6 +858,8 @@ Resolves once the request to dismiss the notifications is successfully dispatche
 
 > Starting in Android 8.0 (API level 26), all notifications must be assigned to a channel. For each channel, you can set the visual and auditory behavior that is applied to all notifications in that channel. Then, users can change these settings and decide which notification channels from your app should be intrusive or visible at all. [(source: developer.android.com)](https://developer.android.com/training/notify-user/channels)
 
+> **Note:** For some settings to be applied on all Android versions it may be necessary to duplicate the configuration between a single notification and notification channel. For example for a notification to play a custom sound on Android versions below 8.0, the custom notification sound has to be set on the notification and for the custom sound to play on Android versions above 8.0, the notification channel that the notification will be assigned to has to have the custom sound configured (for more information see [Setting custom notification sound on Android](#setting-custom-notification-sound-on-android) instruction).
+
 If you do not specify a notification channel, `expo-notifications` will create a fallback channel for you, named _Miscellaneous_. We encourage you to always ensure appropriate channels with informative names are set up for the application and to always send notifications to these channels.
 
 Calling these methods is a no-op for platforms that do not support this feature (iOS, Web and Android below version 8.0 (26)).
@@ -885,6 +887,8 @@ A `Promise` resolving to the channel object (of type [`NotificationChannel`](#no
 ### `setNotificationChannelAsync(identifier: string, channel: NotificationChannelInput): Promise<NotificationChannel | null>`
 
 Assigns the channel configuration to a channel of a specified name (creating it if need be). This method lets you assign given notification channel to a notification channel group.
+
+> **Note:** For some settings to be applied on all Android versions it may be necessary to duplicate the configuration between a single notification and notification channel. For example for a notification to play a custom sound on Android versions below 8.0, the custom notification sound has to be set on the notification and for the custom sound to play on Android versions above 8.0, the notification channel that the notification will be assigned to has to have the custom sound configured (for more information see [Setting custom notification sound on Android](#setting-custom-notification-sound-on-android) instruction).
 
 #### Arguments
 
