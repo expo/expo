@@ -8,7 +8,7 @@ import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewGroupManager
 import com.facebook.react.views.view.ReactViewGroup
 
-// React navigation uses a safe area providere, but we don't need this.
+// React navigation uses a safe area provider, but we don't need this.
 // So we can just mock it.
 class MockedSafeAreaPackage : ReactPackage {
   override fun createNativeModules(reactContext: ReactApplicationContext) = mutableListOf<NativeModule>()
