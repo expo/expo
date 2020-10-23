@@ -28,7 +28,7 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/module-template",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/status-bar/",
   "devDependencies": {
     "expo-module-scripts": "^1.2.0"
   },

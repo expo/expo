@@ -28,7 +28,7 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-application",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/application/",
   "devDependencies": {
     "expo-module-scripts": "~1.2.0"
   },

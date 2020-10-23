@@ -29,7 +29,7 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-sharing",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/sharing/",
   "dependencies": {},
   "unimodulePeerDependencies": {
     "@unimodules/core": "*",
