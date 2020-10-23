@@ -23,7 +23,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/expo/expo.git"
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-screen-orientation"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
