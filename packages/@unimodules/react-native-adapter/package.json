@@ -21,7 +21,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/expo/expo.git"
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@unimodules/react-native-adapter"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"

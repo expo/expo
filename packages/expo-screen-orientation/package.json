@@ -23,14 +23,15 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/expo/expo.git"
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-screen-orientation"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-screen-orientation",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/screen-orientation/",
   "jest": {
     "preset": "expo-module-scripts"
   },
