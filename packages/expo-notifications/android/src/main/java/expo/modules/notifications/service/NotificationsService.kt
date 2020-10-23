@@ -29,6 +29,7 @@ import expo.modules.notifications.service.interfaces.CategoriesDelegate
 import expo.modules.notifications.service.interfaces.HandlingDelegate
 import expo.modules.notifications.service.interfaces.PresentationDelegate
 import expo.modules.notifications.service.interfaces.SchedulingDelegate
+import kotlin.concurrent.thread
 
 /**
  * Subclass of FirebaseMessagingService, central dispatcher for all the notifications-related actions.
@@ -516,6 +517,17 @@ open class NotificationsService : BroadcastReceiver() {
     ExpoSchedulingDelegate(context)
 
   override fun onReceive(context: Context, intent: Intent?) {
+    val pendingIntent = goAsync()
+    thread {
+      try {
+        handleIntent(context, intent)
+      } finally {
+        pendingIntent.finish()
+      }
+    }
+  }
+
+  open fun handleIntent(context: Context, intent: Intent?) {
     if (intent != null && SETUP_ACTIONS.contains(intent.action)) {
       onSetupScheduledNotifications(context, intent)
     } else if (intent?.action === NOTIFICATION_EVENT_ACTION) {
