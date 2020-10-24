@@ -1,0 +1,50 @@
+name: Android Instrumentation Tests
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [master]
+    paths:
+      - .github/workflows/android-instrumentation-tests.yml
+      - 'fastlane/**'
+      - 'packages/**/android/**'
+      - 'tools/expotools/**'
+      - yarn.lock
+  pull_request:
+    branches: [master]
+    paths:
+      - .github/workflows/android-instrumentation-tests.yml
+      - 'fastlane/**'
+      - 'packages/**/android/**'
+      - 'tools/expotools/**'
+      - yarn.lock
+
+jobs:
+  test:
+    runs-on: macos-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v1
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - run: yarn install --frozen-lockfile
+      - uses: actions/cache@v1
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('android/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Run instrumented unit tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          script: ./bin/expotools android-native-unit-tests --type instrumented
