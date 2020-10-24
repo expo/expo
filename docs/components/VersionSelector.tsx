@@ -5,7 +5,7 @@ import * as Utilities from '~/common/utilities';
 import { paragraph } from '~/components/base/typography';
 import ChevronDownIcon from '~/components/icons/ChevronDown';
 import * as Constants from '~/constants/theme';
-import { VERSIONS, LATEST_VERSION } from '~/constants/versions';
+import { VERSIONS, LATEST_VERSION, BETA_VERSION } from '~/constants/versions';
 
 const STYLES_SELECT = css`
   position: relative;
@@ -57,7 +57,7 @@ type Props = {
 const VersionSelector: React.FC<Props> = ({ version, style, onSetVersion }) => (
   <div css={STYLES_SELECT} style={style}>
     <label css={STYLES_SELECT_TEXT} htmlFor="version-menu">
-      <div>{Utilities.getUserFacingVersionString(version, LATEST_VERSION)}</div>
+      <div>{Utilities.getUserFacingVersionString(version, LATEST_VERSION, BETA_VERSION)}</div>
       <ChevronDownIcon style={{ height: '16px', width: '16px' }} />
     </label>
     {// hidden links to help test-links spidering
@@ -71,7 +71,7 @@ const VersionSelector: React.FC<Props> = ({ version, style, onSetVersion }) => (
       onChange={e => onSetVersion(e.target.value)}>
       {VERSIONS.map(v => (
         <option key={v} value={v}>
-          {Utilities.getUserFacingVersionString(v, LATEST_VERSION)}
+          {Utilities.getUserFacingVersionString(v, LATEST_VERSION, BETA_VERSION)}
         </option>
       ))}
     </select>
