@@ -6,8 +6,15 @@ import * as Directories from '../Directories';
 import { androidNativeUnitTests } from './AndroidNativeUnitTests';
 
 type PlatformName = 'android' | 'ios' | 'both';
+type TestType = 'local' | 'instrumented';
 
-async function thisAction({ platform }: { platform?: PlatformName }) {
+async function thisAction({
+  platform,
+  type,
+}: {
+  platform?: PlatformName;
+  type?: TestType;
+}) {
   if (!platform) {
     console.log(chalk.yellow("You haven't specified platform to run unit tests for!"));
     const result = await inquirer.prompt<{ platform: PlatformName }>([
@@ -36,7 +43,7 @@ async function thisAction({ platform }: { platform?: PlatformName }) {
   }
 
   if (runAndroid) {
-    await androidNativeUnitTests();
+    await androidNativeUnitTests({ type });
   }
 }
 
@@ -46,6 +53,10 @@ export default (program: any) => {
     .option(
       '-p, --platform <string>',
       'Determine for which platform we should run native tests: android, ios or both'
+    )
+    .option(
+      '-t, --type <string>',
+      'Type of unit test to run, if supported by this platform. local (default) or instrumented'
     )
     .description('Runs native unit tests for each unimodules that provides them.')
     .asyncAction(thisAction);
