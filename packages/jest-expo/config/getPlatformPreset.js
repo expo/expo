@@ -47,7 +47,10 @@ function getBaseWebPreset() {
   return {
     ...expoPreset,
     ...reactNativePreset,
-    setupFiles: reactNativePreset.setupFiles,
+    setupFiles: [
+      ...reactNativePreset.setupFiles,
+      require.resolve('../src/preset/setup.web.js'),
+    ],
     moduleNameMapper: {
       ...expoPreset.moduleNameMapper,
       // Add react-native-web alias
