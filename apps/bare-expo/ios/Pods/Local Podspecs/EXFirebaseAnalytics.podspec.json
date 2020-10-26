@@ -5,7 +5,7 @@
   "description": "A universal module that interfaces with the native firebase analytics API",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-firebase-analytics",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/firebase-analytics/",
   "platforms": {
     "ios": "10.0"
   },
