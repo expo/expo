@@ -186,6 +186,10 @@ android {
     }
 }
 
+repositories {
+    jcenter()
+}
+
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
@@ -215,6 +219,15 @@ dependencies {
         releaseImplementation files(hermesPath + "hermes-release.aar")
     } else {
         implementation jscFlavor
+    }
+
+    // Flipper
+    implementation('com.facebook.flipper:flipper:0.62.0') {
+        exclude group:'com.facebook.fbjni'
+    }
+
+    implementation('com.facebook.flipper:flipper-network-plugin:0.62.0') {
+        exclude group:'com.facebook.flipper'
     }
 }
 
