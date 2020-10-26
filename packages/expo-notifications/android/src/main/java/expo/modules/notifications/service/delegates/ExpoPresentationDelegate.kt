@@ -145,41 +145,41 @@ open class ExpoPresentationDelegate(
 
   protected open fun getNotification(statusBarNotification: StatusBarNotification): Notification? {
     val notification = statusBarNotification.notification
-    val notificationRequestByteArray = notification.extras.getByteArray(ExpoNotificationBuilder.EXTRAS_MARSHALLED_NOTIFICATION_REQUEST_KEY)
-    if (notificationRequestByteArray != null) {
+    notification.extras.getByteArray(ExpoNotificationBuilder.EXTRAS_MARSHALLED_NOTIFICATION_REQUEST_KEY)?.let {
       try {
-        return with(Parcel.obtain()) {
-          this.unmarshall(notificationRequestByteArray, 0, notificationRequestByteArray.size)
+        with(Parcel.obtain()) {
+          this.unmarshall(it, 0, it.size)
           this.setDataPosition(0)
           val request: NotificationRequest = notificationsReconstructor.reconstructNotificationRequest(this)
           this.recycle()
           val notificationDate = Date(statusBarNotification.postTime)
-          Notification(request, notificationDate)
+          return Notification(request, notificationDate)
         }
       } catch (e: Exception) {
         // Let's catch all the exceptions -- there's nothing we can do here
-        // and we'd rather return an array without a single, invalid notification
+        // and we'd rather return an array with a single, naively reconstructed notification
         // than throw an exception and return none.
         val message = "Could not have unmarshalled NotificationRequest from (${statusBarNotification.tag}, ${statusBarNotification.id})."
         Log.e("expo-notifications", message)
-        return null
       }
-    } else {
-      // It's not our notification. Let's do what we can.
-      val content = NotificationContent.Builder()
-        .setTitle(notification.extras.getString(android.app.Notification.EXTRA_TITLE))
-        .setText(notification.extras.getString(android.app.Notification.EXTRA_TEXT))
-        .setSubtitle(notification.extras.getString(android.app.Notification.EXTRA_SUB_TEXT)) // using deprecated field
-        .setPriority(NotificationPriority.fromNativeValue(notification.priority)) // using deprecated field
-        .setVibrationPattern(notification.vibrate) // using deprecated field
-        .setSound(notification.sound)
-        .setAutoDismiss(notification.flags and android.app.Notification.FLAG_AUTO_CANCEL != 0)
-        .setSticky(notification.flags and android.app.Notification.FLAG_ONGOING_EVENT != 0)
-        .setBody(fromBundle(notification.extras))
-        .build()
-      val request = NotificationRequest(getInternalIdentifierKey(statusBarNotification), content, null)
-      return Notification(request, Date(statusBarNotification.postTime))
     }
+
+    // We weren't able to reconstruct the notification from our data, which means
+    // it's either not our notification or we couldn't have unmarshaled it from
+    // the byte array. Let's do what we can.
+    val content = NotificationContent.Builder()
+      .setTitle(notification.extras.getString(android.app.Notification.EXTRA_TITLE))
+      .setText(notification.extras.getString(android.app.Notification.EXTRA_TEXT))
+      .setSubtitle(notification.extras.getString(android.app.Notification.EXTRA_SUB_TEXT)) // using deprecated field
+      .setPriority(NotificationPriority.fromNativeValue(notification.priority)) // using deprecated field
+      .setVibrationPattern(notification.vibrate) // using deprecated field
+      .setSound(notification.sound)
+      .setAutoDismiss(notification.flags and android.app.Notification.FLAG_AUTO_CANCEL != 0)
+      .setSticky(notification.flags and android.app.Notification.FLAG_ONGOING_EVENT != 0)
+      .setBody(fromBundle(notification.extras))
+      .build()
+    val request = NotificationRequest(getInternalIdentifierKey(statusBarNotification), content, null)
+    return Notification(request, Date(statusBarNotification.postTime))
   }
 
   protected open fun fromBundle(bundle: Bundle): JSONObject {
