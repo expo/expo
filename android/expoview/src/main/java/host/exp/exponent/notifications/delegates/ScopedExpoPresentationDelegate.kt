@@ -6,10 +6,9 @@ import android.service.notification.StatusBarNotification
 import android.util.Log
 import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationBehavior
-import expo.modules.notifications.notifications.model.NotificationRequest
 import expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder
-import expo.modules.notifications.notifications.service.SharedPreferencesNotificationCategoriesStore
 import expo.modules.notifications.service.delegates.ExpoPresentationDelegate
+import expo.modules.notifications.service.delegates.SharedPreferencesNotificationCategoriesStore
 import host.exp.exponent.notifications.ScopedCategoryAwareNotificationBuilder
 import host.exp.exponent.notifications.model.ScopedNotificationRequest
 import java.util.*
