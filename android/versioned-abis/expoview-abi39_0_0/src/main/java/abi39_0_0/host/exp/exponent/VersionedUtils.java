@@ -26,11 +26,9 @@ public class VersionedUtils {
           if (currentActivity instanceof ReactNativeActivity) {
             ReactNativeActivity reactNativeActivity = (ReactNativeActivity) currentActivity;
             RNObject devSettings = reactNativeActivity.getDevSupportManager().callRecursive("getDevSettings");
-            if (devSettings != null) {
-              boolean isRemoteJSDebugEnabled = (boolean) devSettings.call("isRemoteJSDebugEnabled");
-              if (!isRemoteJSDebugEnabled) {
-                return new ReanimatedJSIModulePackage().getJSIModules(reactApplicationContext, jsContext);
-              }
+            boolean isRemoteJSDebugEnabled = devSettings != null && (boolean) devSettings.call("isRemoteJSDebugEnabled");
+            if (!isRemoteJSDebugEnabled) {
+              return new ReanimatedJSIModulePackage().getJSIModules(reactApplicationContext, jsContext);
             }
           }
           return Collections.emptyList();
