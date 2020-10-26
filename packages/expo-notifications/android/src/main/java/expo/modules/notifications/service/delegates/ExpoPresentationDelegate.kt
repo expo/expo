@@ -94,7 +94,7 @@ open class ExpoPresentationDelegate(
     if (behavior != null && !behavior.shouldShowAlert()) {
       if (behavior.shouldPlaySound()) {
         RingtoneManager.getRingtone(
-          context, 
+          context,
           notification.notificationRequest.content.sound ?: Settings.System.DEFAULT_NOTIFICATION_URI
         ).play()
       }
