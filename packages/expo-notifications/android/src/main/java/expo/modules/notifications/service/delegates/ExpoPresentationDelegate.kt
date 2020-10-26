@@ -20,6 +20,7 @@ import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationBehavior
 import expo.modules.notifications.notifications.model.NotificationContent
 import expo.modules.notifications.notifications.model.NotificationRequest
+import expo.modules.notifications.notifications.presentation.builders.CategoryAwareNotificationBuilder
 import expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder
 import expo.modules.notifications.notifications.service.SharedPreferencesNotificationCategoriesStore
 import expo.modules.notifications.service.interfaces.PresentationDelegate
@@ -29,8 +30,7 @@ import java.util.*
 
 open class ExpoPresentationDelegate(
   protected val context: Context,
-  protected val notificationsReconstructor: NotificationsReconstructor = NotificationsScoper.create(context).createReconstructor(),
-  protected val notificationsBuilderCreator: NotificationsBuilderCreator = NotificationsScoper.create(context).createBuilderCreator()
+  protected val notificationsReconstructor: NotificationsReconstructor = NotificationsScoper.create(context).createReconstructor()
 ) : PresentationDelegate {
   companion object {
     protected const val ANDROID_NOTIFICATION_ID = 0
@@ -136,12 +136,11 @@ open class ExpoPresentationDelegate(
 
   override fun dismissAllNotifications() = NotificationManagerCompat.from(context).cancelAll()
 
-  protected open fun createNotification(notification: Notification, notificationBehavior: NotificationBehavior?): android.app.Notification {
-    return notificationsBuilderCreator.get(context, SharedPreferencesNotificationCategoriesStore(context)).also {
+  protected open fun createNotification(notification: Notification, notificationBehavior: NotificationBehavior?): android.app.Notification =
+    CategoryAwareNotificationBuilder(context, SharedPreferencesNotificationCategoriesStore(context)).also {
       it.setNotification(notification)
       it.setAllowedBehavior(notificationBehavior)
     }.build()
-  }
 
   protected open fun getNotification(statusBarNotification: StatusBarNotification): Notification? {
     val notification = statusBarNotification.notification
