@@ -65,7 +65,7 @@ public class NotificationsEmitter extends ExportedModule implements Notification
    * Emits a {@link NotificationsEmitter#NEW_RESPONSE_EVENT_NAME} event.
    *
    * @param response Notification response received
-   * @return
+   * @return Whether notification has been handled
    */
   @Override
   public boolean onNotificationResponseReceived(NotificationResponse response) {
