@@ -18,7 +18,7 @@ Expo CLI is a command line app that is the main interface between a developer an
 - [Git](https://git-scm.com)
 - [Watchman](https://facebook.github.io/watchman/docs/install#buildinstall) for macOS users
 
-> Only Node.js LTS releases (even-numbered) are supported. As Node.js [officially states](https://nodejs.org/en/about/releases/), "Production applications should only use Active LTS or Maintenance LTS releases."
+> Only Node.js LTS releases (even-numbered) are recommended. As Node.js [officially states](https://nodejs.org/en/about/releases/), "Production applications should only use Active LTS or Maintenance LTS releases."
 
 ### Installing Expo CLI
 
