@@ -25,10 +25,10 @@ class ScopedExpoPresentationDelegate(context: Context) : ExpoPresentationDelegat
     statusBarNotification.notification.extras.getByteArray(ExpoNotificationBuilder.EXTRAS_MARSHALLED_NOTIFICATION_REQUEST_KEY)?.let {
       try {
         with(Parcel.obtain()) {
-          this.unmarshall(it, 0, it.size)
-          this.setDataPosition(0)
+          unmarshall(it, 0, it.size)
+          setDataPosition(0)
           val request: ScopedNotificationRequest = ScopedNotificationRequest.CREATOR.createFromParcel(this)
-          this.recycle()
+          recycle()
           val notificationDate = Date(statusBarNotification.postTime)
           return Notification(request, notificationDate)
         }
