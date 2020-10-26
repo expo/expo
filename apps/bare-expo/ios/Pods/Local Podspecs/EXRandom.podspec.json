@@ -5,7 +5,7 @@
   "description": "Expo universal module for random bytes",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-random",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/random/",
   "platforms": {
     "ios": "10.0"
   },

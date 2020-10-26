@@ -5,7 +5,7 @@
   "description": "Notifications module",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-notifications",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/notifications/",
   "platforms": {
     "ios": "10.0"
   },
