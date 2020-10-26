@@ -52,7 +52,7 @@ Open your `app.json` and add the following inside of the "expo" field:
 
 ## Common gotchas / known issues
 
-### Setting custom notification sound on Android
+### Setting custom notification sounds on Android
 
 On Androids 8.0+, playing a custom sound for a notification requires more than setting the `sound` property on the `NotificationContentInput`. You will _also_ need to configure the `NotificationChannel` with the appropriate `sound`, and use it when sending/scheduling the notification.
 
