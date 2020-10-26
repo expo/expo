@@ -13,9 +13,6 @@ import android.util.Log
 import android.util.Pair
 import androidx.core.app.NotificationManagerCompat
 import expo.modules.notifications.notifications.enums.NotificationPriority
-import expo.modules.notifications.notifications.interfaces.NotificationsBuilderCreator
-import expo.modules.notifications.notifications.interfaces.NotificationsReconstructor
-import expo.modules.notifications.notifications.interfaces.NotificationsScoper
 import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationBehavior
 import expo.modules.notifications.notifications.model.NotificationContent
@@ -29,8 +26,7 @@ import org.json.JSONObject
 import java.util.*
 
 open class ExpoPresentationDelegate(
-  protected val context: Context,
-  protected val notificationsReconstructor: NotificationsReconstructor = NotificationsScoper.create(context).createReconstructor()
+  protected val context: Context
 ) : PresentationDelegate {
   companion object {
     protected const val ANDROID_NOTIFICATION_ID = 0
@@ -149,7 +145,7 @@ open class ExpoPresentationDelegate(
         with(Parcel.obtain()) {
           this.unmarshall(it, 0, it.size)
           this.setDataPosition(0)
-          val request: NotificationRequest = notificationsReconstructor.reconstructNotificationRequest(this)
+          val request: NotificationRequest = NotificationRequest.CREATOR.createFromParcel(this)
           this.recycle()
           val notificationDate = Date(statusBarNotification.postTime)
           return Notification(request, notificationDate)
