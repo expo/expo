@@ -15,8 +15,8 @@ import expo.modules.notifications.notifications.model.NotificationAction;
 import expo.modules.notifications.notifications.model.NotificationCategory;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.TextInputNotificationAction;
-import expo.modules.notifications.notifications.service.SharedPreferencesNotificationCategoriesStore;
 import expo.modules.notifications.service.NotificationsService;
+import expo.modules.notifications.service.delegates.SharedPreferencesNotificationCategoriesStore;
 
 public class CategoryAwareNotificationBuilder extends ExpoNotificationBuilder {
   protected SharedPreferencesNotificationCategoriesStore mStore;

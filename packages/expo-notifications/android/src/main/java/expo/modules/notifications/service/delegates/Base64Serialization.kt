@@ -28,6 +28,6 @@ inline fun <reified T> String.asBase64EncodedObject(): T =
       if (o is T) {
         return o
       }
-      throw InvalidClassException("Expected serialized notification category to be an instance of NotificationCategory. Found: $o")
+      throw InvalidClassException("Expected serialized object to be an instance of ${T::class.java}. Found: $o")
     }
   }
