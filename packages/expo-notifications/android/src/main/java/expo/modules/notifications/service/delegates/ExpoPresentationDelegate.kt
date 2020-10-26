@@ -21,7 +21,6 @@ import expo.modules.notifications.notifications.model.NotificationBehavior
 import expo.modules.notifications.notifications.model.NotificationContent
 import expo.modules.notifications.notifications.model.NotificationRequest
 import expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder
-import expo.modules.notifications.notifications.service.SharedPreferencesNotificationCategoriesStore
 import expo.modules.notifications.service.interfaces.PresentationDelegate
 import org.json.JSONException
 import org.json.JSONObject

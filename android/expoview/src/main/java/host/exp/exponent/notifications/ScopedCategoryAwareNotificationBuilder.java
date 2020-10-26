@@ -14,7 +14,7 @@ import expo.modules.notifications.notifications.model.NotificationCategory;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.TextInputNotificationAction;
-import expo.modules.notifications.notifications.service.SharedPreferencesNotificationCategoriesStore;
+import expo.modules.notifications.service.delegates.SharedPreferencesNotificationCategoriesStore;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.notifications.model.ScopedNotificationRequest;
 import versioned.host.exp.exponent.modules.api.notifications.ScopedNotificationsIdUtils;

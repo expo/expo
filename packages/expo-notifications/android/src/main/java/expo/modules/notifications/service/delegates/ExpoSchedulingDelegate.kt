@@ -7,7 +7,6 @@ import androidx.core.app.AlarmManagerCompat
 import expo.modules.notifications.notifications.interfaces.SchedulableNotificationTrigger
 import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationRequest
-import expo.modules.notifications.notifications.service.SharedPreferencesNotificationsStore
 import expo.modules.notifications.service.NotificationsService
 import expo.modules.notifications.service.interfaces.SchedulingDelegate
 import java.io.IOException
@@ -70,7 +69,7 @@ class ExpoSchedulingDelegate(protected val context: Context) : SchedulingDelegat
 
   override fun triggerNotification(identifier: String) {
     try {
-      val notificationRequest: NotificationRequest = store.getNotificationRequest(identifier)
+      val notificationRequest: NotificationRequest = store.getNotificationRequest(identifier)!!
       NotificationsService.receive(context, Notification(notificationRequest))
       NotificationsService.schedule(context, notificationRequest)
     } catch (e: ClassNotFoundException) {
@@ -78,6 +77,10 @@ class ExpoSchedulingDelegate(protected val context: Context) : SchedulingDelegat
       e.printStackTrace()
       NotificationsService.removeScheduledNotification(context, identifier)
     } catch (e: InvalidClassException) {
+      Log.e("expo-notifications", "An exception occurred while triggering notification " + identifier + ", removing. " + e.message)
+      e.printStackTrace()
+      NotificationsService.removeScheduledNotification(context, identifier)
+    } catch (e: NullPointerException) {
       Log.e("expo-notifications", "An exception occurred while triggering notification " + identifier + ", removing. " + e.message)
       e.printStackTrace()
       NotificationsService.removeScheduledNotification(context, identifier)
