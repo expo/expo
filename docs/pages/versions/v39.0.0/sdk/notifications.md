@@ -50,6 +50,36 @@ Open your `app.json` and add the following inside of the "expo" field:
 
 On Android, this module requires permission to subscribe to device boot. It's used to setup the scheduled notifications right after the device (re)starts. The `RECEIVE_BOOT_COMPLETED` permission is added automatically.
 
+## Common gotchas / known issues
+
+### Setting custom notification sounds on Android
+
+On Androids 8.0+, playing a custom sound for a notification requires more than setting the `sound` property on the `NotificationContentInput`. You will _also_ need to configure the `NotificationChannel` with the appropriate `sound`, and use it when sending/scheduling the notification.
+
+```ts
+import * as Notifications from 'expo-notifications';
+
+// Prepare the notification channel
+Notifications.setNotificationChannelAsync('new-emails', {
+  name: 'E-mail notifications',
+  importance: Notifications.AndroidImportance.HIGH,
+  sound: 'email-sound.wav', // <- for Android 8.0+, see channelId property below
+});
+
+// Eg. schedule the notification
+Notifications.scheduleNotificationAsync({
+  content: {
+    title: "You've got mail! 📬",
+    body: 'Open the notification to read them all',
+    sound: 'email-sound.wav', // <- for Android below 8.0
+  },
+  trigger: {
+    seconds: 2,
+    channelId: 'new-emails', // <- for Android 8.0+, see definition above
+  },
+});
+```
+
 ## API
 
 ```js
@@ -822,6 +852,8 @@ A `Promise` resolving to the channel object (of type [`NotificationChannel`](#no
 ### `setNotificationChannelAsync(identifier: string, channel: NotificationChannelInput): Promise<NotificationChannel | null>`
 
 Assigns the channel configuration to a channel of a specified name (creating it if need be). This method lets you assign given notification channel to a notification channel group.
+
+> **Note:** For some settings to be applied on all Android versions, it may be necessary to duplicate the configuration across both a single notification _and_ it's respective notification channel. For example, for a notification to play a custom sound on Android versions **below** 8.0, the custom notification sound has to be set on the notification (through the [`NotificationContentInput`](#notificationcontentinput)), and for the custom sound to play on Android versions **above** 8.0, the relevant notification channel must have the custom sound configured (through the [`NotificationChannelInput`](#notificationchannelinput)). For more information, see ["Setting custom notification sounds on Android"](#setting-custom-notification-sounds-on-android).
 
 #### Arguments
 
