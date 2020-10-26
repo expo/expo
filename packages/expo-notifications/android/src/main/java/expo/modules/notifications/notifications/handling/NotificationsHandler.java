@@ -112,17 +112,6 @@ public class NotificationsHandler extends ExportedModule implements Notification
   }
 
   /**
-   * Callback called when {@link NotificationManager} gets notified of a new notification response.
-   * Does nothing.
-   *
-   * @param response Notification response received
-   */
-  @Override
-  public void onNotificationResponseReceived(NotificationResponse response) {
-    // do nothing, the response is received through emitter
-  }
-
-  /**
    * Callback called by {@link NotificationManager} to inform its listeners of new messages.
    * Starts up a new {@link SingleNotificationHandlerTask} which will take it on from here.
    *
@@ -133,16 +122,6 @@ public class NotificationsHandler extends ExportedModule implements Notification
     SingleNotificationHandlerTask task = new SingleNotificationHandlerTask(getContext(), mHandler, mModuleRegistry, notification, this);
     mTasksMap.put(task.getIdentifier(), task);
     task.start();
-  }
-
-  /**
-   * Callback called by {@link NotificationManager} to inform that some push notifications
-   * haven't been delivered to the app. It doesn't make sense to react to this event in this class.
-   * Apps get notified of this event by {@link NotificationsEmitter}.
-   */
-  @Override
-  public void onNotificationsDropped() {
-    // do nothing
   }
 
   /**

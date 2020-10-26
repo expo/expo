@@ -51,8 +51,9 @@ public class NotificationManager implements SingletonModule, expo.modules.notifi
       if (!mPendingNotificationResponses.isEmpty()) {
         Iterator<NotificationResponse> responseIterator = mPendingNotificationResponses.iterator();
         while (responseIterator.hasNext()) {
-          listener.onNotificationResponseReceived(responseIterator.next());
-          responseIterator.remove();
+          if (listener.onNotificationResponseReceived(responseIterator.next())) {
+            responseIterator.remove();
+          }
         }
       }
     }

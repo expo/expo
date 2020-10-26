@@ -65,12 +65,15 @@ public class NotificationsEmitter extends ExportedModule implements Notification
    * Emits a {@link NotificationsEmitter#NEW_RESPONSE_EVENT_NAME} event.
    *
    * @param response Notification response received
+   * @return Whether notification has been handled
    */
   @Override
-  public void onNotificationResponseReceived(NotificationResponse response) {
+  public boolean onNotificationResponseReceived(NotificationResponse response) {
     if (mEventEmitter != null) {
       mEventEmitter.emit(NEW_RESPONSE_EVENT_NAME, NotificationSerializer.toBundle(response));
+      return true;
     }
+    return false;
   }
 
   /**
