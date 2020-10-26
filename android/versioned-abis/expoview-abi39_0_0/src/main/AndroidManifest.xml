@@ -91,10 +91,6 @@
             android:value="host.exp.exponent.taskManager.ExpoHeadlessAppLoader"
             tools:replace="android:value" />
         <meta-data
-            android:name="expo.modules.notifications#NotificationsScoper"
-            android:value="host.exp.exponent.notifications.NotificationsScoper"
-            tools:replace="android:value" />
-        <meta-data
             android:name="abi39_0_0.org.unimodules.core.AppLoader#react-native-headless"
             android:value="abi39_0_0.org.unimodules.adapters.react.apploader.RNHeadlessAppLoader" />
 
@@ -142,10 +138,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/mail_composer_provider_paths" />
         </provider>
-
-        <meta-data
-            android:name="abi39_0_0.expo.modules.notifications#NotificationsScoper"
-            android:value="abi39_0_0.expo.modules.notifications.NotificationsScoper" />
 
         <activity
             android:name="abi39_0_0.expo.modules.payments.stripe.OpenBrowserActivity"

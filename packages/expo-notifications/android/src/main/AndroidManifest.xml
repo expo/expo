@@ -27,10 +27,5 @@
         <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
       </intent-filter>
     </receiver>
-
-    <meta-data
-      android:name="expo.modules.notifications#NotificationsScoper"
-      android:value="expo.modules.notifications.NotificationsScoper" />
-
   </application>
 </manifest>

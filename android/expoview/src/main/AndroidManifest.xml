@@ -110,11 +110,6 @@
       android:name="org.unimodules.core.AppLoader#react-native-headless"
       android:value="host.exp.exponent.taskManager.ExpoHeadlessAppLoader" />
 
-    <meta-data
-      tools:replace="android:value"
-      android:name="expo.modules.notifications#NotificationsScoper"
-      android:value="host.exp.exponent.notifications.NotificationsScoper" />
-
     <receiver
       android:name="host.exp.exponent.notifications.ExpoNotificationsService"
       android:enabled="true"
