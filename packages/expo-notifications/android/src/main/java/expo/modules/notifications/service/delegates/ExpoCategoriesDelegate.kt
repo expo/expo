@@ -2,7 +2,6 @@ package expo.modules.notifications.service.delegates
 
 import android.content.Context
 import expo.modules.notifications.notifications.model.NotificationCategory
-import expo.modules.notifications.notifications.service.SharedPreferencesNotificationCategoriesStore
 import expo.modules.notifications.service.interfaces.CategoriesDelegate
 
 class ExpoCategoriesDelegate(protected val context: Context) : CategoriesDelegate {
@@ -12,7 +11,7 @@ class ExpoCategoriesDelegate(protected val context: Context) : CategoriesDelegat
     return mStore.allNotificationCategories
   }
 
-  override fun setCategory(category: NotificationCategory): NotificationCategory {
+  override fun setCategory(category: NotificationCategory): NotificationCategory? {
     return mStore.saveNotificationCategory(category)
   }
 
