@@ -1,0 +1,6 @@
+module FlipperKit {
+  umbrella header "FlipperKit-umbrella.h"
+
+  export *
+  module * { export * }
+}
