@@ -27,10 +27,10 @@ This will first rotate the image 90 degrees clockwise, then flip the rotated ima
   dependencies={['expo-asset', 'expo-image-manipulator']}>
 
 ```js
-import React, { useState, useEffect } from "react";
-import { Button, View, Image } from "react-native";
-import { Asset } from "expo-asset";
-import * as ImageManipulator from "expo-image-manipulator";
+import React, { useState, useEffect } from 'react';
+import { Button, View, Image } from 'react-native';
+import { Asset } from 'expo-asset';
+import * as ImageManipulator from 'expo-image-manipulator';
 
 export default function App() {
   const [ready, setReady] = useState(false);
@@ -38,7 +38,7 @@ export default function App() {
 
   useEffect(() => {
     (async () => {
-      const image = Asset.fromModule(require("./assets/snack-icon.png"));
+      const image = Asset.fromModule(require('./assets/snack-icon.png'));
       await image.downloadAsync();
       setImage(image);
       setReady(true);
@@ -59,22 +59,22 @@ export default function App() {
       <View
         style={{
           marginVertical: 20,
-          alignItems: "center",
-          justifyContent: "center"
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
       >
         <Image
           source={{ uri: image.localUri || image.uri }}
-          style={{ width: 300, height: 300, resizeMode: "contain" }}
+          style={{ width: 300, height: 300, resizeMode: 'contain' }}
         />
       </View>
     );
   };
 
   return (
-    <View style={{ flex: 1, justifyContent: "center" }}>
+    <View style={{ flex: 1, justifyContent: 'center' }}>
       {ready && image && _renderImage()}
-      <Button title="Rotate and Flip" onPress={_rotate90andFlip} />
+      <Button title='Rotate and Flip' onPress={_rotate90andFlip} />
     </View>
   );
 }
