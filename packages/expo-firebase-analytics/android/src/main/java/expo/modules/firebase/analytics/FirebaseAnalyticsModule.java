@@ -108,7 +108,7 @@ public class FirebaseAnalyticsModule extends ExportedModule implements RegistryL
 
   @ExpoMethod
   public void setCurrentScreen(final String screenName, final String screenClassOverride, final Promise promise) {
-    Activity activity = mActivityProvider.getCurrentActivity();
+    final Activity activity = mActivityProvider.getCurrentActivity();
 
     if (activity == null) {
       promise.reject(new CurrentActivityNotFoundException());
