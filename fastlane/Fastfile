@@ -195,7 +195,15 @@ platform :android do
 
   private_lane :verify_upload_to_staging do |version_name: |
     require 'open-uri'
-    staging_version = JSON.parse(open(URI.join(STAGING_API_URL, "/--/api/v2/versions")).read)["androidVersion"]
+    begin
+      versions = JSON.parse(open(URI.join(STAGING_API_URL, "/--/api/v2/versions")).read)
+      latest_major_version = versions['sdkVersions'].keys.map(&:to_i).sort().reverse().first()
+      latest_version = versions['sdkVersions']["#{latest_major_version}.0.0"]
+      staging_version = latest_version['androidClientVersion']
+    rescue StandardError => e
+      UI.user_error!("Unable to validate androidClientVersion for latest SDK version on versions endpoint: #{e.inspect}. If this issue persists, remove the verify_upload_to_staging step from Fastfile and manually verify that the Android client has been deployed and tested on staging.")
+    end
+
     unless staging_version == version_name
       UI.user_error!("APK version #{version_name} is not yet uploaded to staging. Please download from the client_android CI job, test and upload manually.")
     end
