@@ -1,5 +1,6 @@
 package expo.modules.developmentclient;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.net.Uri;
@@ -7,6 +8,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import com.facebook.react.ReactActivity;
+import com.facebook.react.ReactActivityDelegate;
+import com.facebook.react.ReactDelegate;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactRootView;
@@ -16,6 +20,7 @@ import com.facebook.react.devsupport.DevInternalSettings;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.packagerconnection.PackagerConnectionSettings;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 
 class DevelopmentClientPackagerConnectionSettings extends PackagerConnectionSettings {
@@ -55,6 +60,8 @@ public class DevelopmentClientController {
 //  private final String DEV_LAUNCHER_HOST = "10.0.0.175:8090";
   private final String DEV_LAUNCHER_HOST = null;
 
+  private static final String DEV_MENU_MAIN_COMPONENT_NAME = "main";
+
   // Singleton instance
   private static DevelopmentClientController sInstance;
 
@@ -63,11 +70,18 @@ public class DevelopmentClientController {
   private DevelopmentClientHost mDevClientHost;
   private ReactNativeHost mAppHost;
   private ReactRootView mRootView;
+  private ReactActivityDelegate mReactActivityDelegate;
+  private WeakReference<Activity> mActivity;
+
+  public void registerActivity(Activity activity) {
+    mActivity = new WeakReference(activity);
+  }
 
   enum Mode {
     LAUNCHER,
     APP,
-  };
+  }
+
   Mode mode = Mode.LAUNCHER;
 
   private DevelopmentClientController(Context context, ReactNativeHost appHost, String mainComponentName) {
@@ -94,7 +108,7 @@ public class DevelopmentClientController {
   }
 
   public static void initialize(Context context, ReactNativeHost appHost) {
-    initialize(context, appHost, "main");
+    initialize(context, appHost, DEV_MENU_MAIN_COMPONENT_NAME);
   }
 
   String getMainComponentName() {
@@ -112,6 +126,10 @@ public class DevelopmentClientController {
     }
   }
 
+  public void registerReactActivityDelegate(ReactActivityDelegate activityDelegate) {
+    mReactActivityDelegate = activityDelegate;
+  }
+
   public void setRootView(ReactRootView rootView) {
     mRootView = rootView;
   }
@@ -121,13 +139,13 @@ public class DevelopmentClientController {
     String debugServerHost = uri.getHost() + ":" + uri.getPort();
     if (injectDebugServerHost(mAppHost, debugServerHost)) {
       mode = Mode.APP;
-      startReactInstance(reactContext, mAppHost);
+      startReactInstance(mAppHost);
     }
   }
 
   void navigateToLauncher(ReactContext reactContext) {
     mode = Mode.LAUNCHER;
-    startReactInstance(reactContext, mDevClientHost);
+    startReactInstance(mDevClientHost);
   }
 
   boolean injectDebugServerHost(ReactNativeHost reactNativeHost, String debugServerHost) {
@@ -156,12 +174,32 @@ public class DevelopmentClientController {
     }
   }
 
-  void startReactInstance(ReactContext reactContext, ReactNativeHost reactNativeHost) {
+  boolean changeReactDelegate(ReactDelegate newDelegate) {
+    try {
+      Field reactDelegateField = mReactActivityDelegate.getClass().getSuperclass().getDeclaredField("mReactDelegate");
+      reactDelegateField.setAccessible(true);
+      reactDelegateField.set(mReactActivityDelegate, newDelegate);
+      return true;
+    } catch (Exception e) {
+      Log.e("ExpoDevelopmentClient", "Unable to change react delegate.", e);
+      return false;
+    }
+  }
+
+  void startReactInstance(ReactNativeHost reactNativeHost) {
     new Handler(Looper.getMainLooper()).post(() -> {
       ReactInstanceManager instanceManager = reactNativeHost.getReactInstanceManager();
+
       mRootView.unmountReactApplication();
+      if (reactNativeHost.getReactInstanceManager().hasStartedCreatingInitialContext()) {
+        reactNativeHost.getReactInstanceManager().destroy();
+      }
+
+      ReactDelegate reactDelegate = new ReactDelegate(mActivity.get(), reactNativeHost, mMainComponentName, null);
+      changeReactDelegate(reactDelegate);
       mRootView.startReactApplication(instanceManager, mMainComponentName);
-      instanceManager.onHostResume(reactContext.getCurrentActivity());
+
+      reactDelegate.onHostResume();
     });
   }
 }
