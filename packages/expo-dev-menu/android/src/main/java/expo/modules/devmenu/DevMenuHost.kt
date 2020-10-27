@@ -67,6 +67,7 @@ class DevMenuHost(application: Application) : ReactNativeHost(application) {
           newValue = devMenuInternalReactSettings
         )
 
+        Log.i(DEV_MENU_TAG, "DevSettings was correctly injected.")
       } catch (e: FileNotFoundException) {
         Log.e(DEV_MENU_TAG, "Couldn't find `dev-menu-packager-host` file.", e)
       } catch (e: Exception) {
