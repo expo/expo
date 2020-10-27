@@ -5,7 +5,7 @@
   "description": "Provides a module to allow keeping the native Splash Screen visible until you choose to hide it.",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-splash-screen",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/splash-screen/",
   "platforms": {
     "ios": "10.0"
   },

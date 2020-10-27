@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2D61636483B561BF86C677608F0EFA0C /* react-native-view-shot-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 684A56A29BC6EF675B7C8919C391D61B /* react-native-view-shot-dummy.m */; };
-		448B47B295A2B98AB1E13EE8B4908339 /* RNViewShot.h in Headers */ = {isa = PBXBuildFile; fileRef = B0BF9571336AF788F4C7E342CDF16161 /* RNViewShot.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		FC3B942862DC0CDF93F9018D1DC06D03 /* RNViewShot.m in Sources */ = {isa = PBXBuildFile; fileRef = 95BA0BACB7375D1CAB43C9EAD1546E5D /* RNViewShot.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		8A0790726D9CA458674E59EC8BF70095 /* RNViewShot.h in Headers */ = {isa = PBXBuildFile; fileRef = B0BF9571336AF788F4C7E342CDF16161 /* RNViewShot.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A5E30490850B16C7C547A6E585B98489 /* RNViewShot.m in Sources */ = {isa = PBXBuildFile; fileRef = 95BA0BACB7375D1CAB43C9EAD1546E5D /* RNViewShot.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		B08C10F1802ACBDDA7BDB4E39B474A87 /* react-native-view-shot-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 684A56A29BC6EF675B7C8919C391D61B /* react-native-view-shot-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		398E705B177678155F9F06AABC249B6E /* PBXContainerItemProxy */ = {
+		2B6F9668D7334457F4506A361EC4F1F2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5F8E786E81FDD31F0976C93E5936F4F6 /* React.xcodeproj */;
 			proxyType = 1;
@@ -37,7 +37,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		4AC4A950A6CDA4A54DAFEAACDD4CFD41 /* Frameworks */ = {
+		3239D596354A3F5687B633B481D83B19 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -117,11 +117,11 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		789553FF66E218CEBEBC0B631831A8C2 /* Headers */ = {
+		FAC0837D2E0B6A757569B3908B64BC5F /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				448B47B295A2B98AB1E13EE8B4908339 /* RNViewShot.h in Headers */,
+				8A0790726D9CA458674E59EC8BF70095 /* RNViewShot.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -130,16 +130,16 @@
 /* Begin PBXNativeTarget section */
 		E2467C029EBD31A567D815A97DFFBB51 /* react-native-view-shot */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 5E957A285262288C77CDE6B97578A4DE /* Build configuration list for PBXNativeTarget "react-native-view-shot" */;
+			buildConfigurationList = 48767B779E099A4E8DEFFEF1DF43B920 /* Build configuration list for PBXNativeTarget "react-native-view-shot" */;
 			buildPhases = (
-				789553FF66E218CEBEBC0B631831A8C2 /* Headers */,
-				0CEE33DC210226F358313A300D3DE6AD /* Sources */,
-				4AC4A950A6CDA4A54DAFEAACDD4CFD41 /* Frameworks */,
+				FAC0837D2E0B6A757569B3908B64BC5F /* Headers */,
+				BD49BAE2A7124565EA61718E8847A898 /* Sources */,
+				3239D596354A3F5687B633B481D83B19 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				746FDBF5CAC42493B38F73FB18B07177 /* PBXTargetDependency */,
+				D4D94939A4848BB709146D989512AC72 /* PBXTargetDependency */,
 			);
 			name = "react-native-view-shot";
 			productName = "react-native-view-shot";
@@ -179,51 +179,27 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		0CEE33DC210226F358313A300D3DE6AD /* Sources */ = {
+		BD49BAE2A7124565EA61718E8847A898 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2D61636483B561BF86C677608F0EFA0C /* react-native-view-shot-dummy.m in Sources */,
-				FC3B942862DC0CDF93F9018D1DC06D03 /* RNViewShot.m in Sources */,
+				B08C10F1802ACBDDA7BDB4E39B474A87 /* react-native-view-shot-dummy.m in Sources */,
+				A5E30490850B16C7C547A6E585B98489 /* RNViewShot.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		746FDBF5CAC42493B38F73FB18B07177 /* PBXTargetDependency */ = {
+		D4D94939A4848BB709146D989512AC72 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = React;
-			targetProxy = 398E705B177678155F9F06AABC249B6E /* PBXContainerItemProxy */;
+			targetProxy = 2B6F9668D7334457F4506A361EC4F1F2 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		26E7A0558B7C52678E331DA6259A361E /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0C300C52D5307246D60845E57B077320 /* react-native-view-shot.debug.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/react-native-view-shot/react-native-view-shot-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = react_native_view_shot;
-				PRODUCT_NAME = "react-native-view-shot";
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		9040DAC55314C4CD85C6CA73192D683A /* Release */ = {
+		04657E9FF2706FA2CD542267A5B23ABE /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 23AC13F1A14F70FEF5B917A4711D658C /* react-native-view-shot.release.xcconfig */;
 			buildSettings = {
@@ -247,6 +223,30 @@
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
+		};
+		7FE9091A3944F861159AB977B326B0E3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0C300C52D5307246D60845E57B077320 /* react-native-view-shot.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/react-native-view-shot/react-native-view-shot-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = react_native_view_shot;
+				PRODUCT_NAME = "react-native-view-shot";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
 		};
 		A341A2F20604BF42D6EEAF93C780827E /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -375,11 +375,11 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		5E957A285262288C77CDE6B97578A4DE /* Build configuration list for PBXNativeTarget "react-native-view-shot" */ = {
+		48767B779E099A4E8DEFFEF1DF43B920 /* Build configuration list for PBXNativeTarget "react-native-view-shot" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				26E7A0558B7C52678E331DA6259A361E /* Debug */,
-				9040DAC55314C4CD85C6CA73192D683A /* Release */,
+				7FE9091A3944F861159AB977B326B0E3 /* Debug */,
+				04657E9FF2706FA2CD542267A5B23ABE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

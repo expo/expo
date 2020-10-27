@@ -10,9 +10,6 @@ expo.modules.notifications.badge.interfaces.BadgeManager
 expo.modules.notifications.notifications.interfaces.NotificationBuilder
 expo.modules.notifications.notifications.interfaces.NotificationListener
 expo.modules.notifications.notifications.interfaces.NotificationManager
-expo.modules.notifications.notifications.interfaces.NotificationsBuilderCreator
-expo.modules.notifications.notifications.interfaces.NotificationsReconstructor
-expo.modules.notifications.notifications.interfaces.NotificationsScoper
 expo.modules.notifications.notifications.interfaces.NotificationTrigger
 expo.modules.notifications.notifications.interfaces.SchedulableNotificationTrigger
 expo.modules.notifications.notifications.NotificationManager

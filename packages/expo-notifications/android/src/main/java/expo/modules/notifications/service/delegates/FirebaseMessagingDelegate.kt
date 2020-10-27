@@ -3,12 +3,10 @@ package expo.modules.notifications.service.delegates
 import android.content.Context
 import com.google.firebase.messaging.RemoteMessage
 import expo.modules.notifications.notifications.JSONNotificationContentBuilder
-import expo.modules.notifications.notifications.interfaces.NotificationsScoper
 import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationContent
 import expo.modules.notifications.notifications.model.NotificationRequest
 import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger
-import expo.modules.notifications.notifications.service.NotificationsHelper
 import expo.modules.notifications.service.NotificationsService
 import expo.modules.notifications.service.interfaces.FirebaseMessagingDelegate
 import expo.modules.notifications.tokens.interfaces.FirebaseTokenListener
@@ -68,11 +66,7 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
   }
 
   override fun onMessageReceived(remoteMessage: RemoteMessage) {
-    createNotificationsHelper().notificationReceived(createNotification(remoteMessage))
-  }
-
-  protected fun createNotificationsHelper(): NotificationsHelper {
-    return NotificationsHelper(context, NotificationsScoper.create(context).createReconstructor())
+    NotificationsService.receive(context, createNotification(remoteMessage))
   }
 
   protected fun createNotification(remoteMessage: RemoteMessage): Notification {
@@ -92,6 +86,6 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
   }
 
   override fun onDeletedMessages() {
-    createNotificationsHelper().dropped()
+    NotificationsService.handleDropped(context)
   }
 }

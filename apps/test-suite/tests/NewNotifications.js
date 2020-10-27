@@ -658,13 +658,19 @@ export async function test(t) {
       const allTestCategoryIds = ['testNotificationCategory1', 'testNotificationCategory2'];
 
       t.describe('getNotificationCategoriesAsync()', () => {
+        let existingCategoriesCount = 0;
+        t.beforeAll(async () => {
+          existingCategoriesCount = (await Notifications.getNotificationCategoriesAsync()).length;
+        });
+
         t.afterEach(async () => {
           allTestCategoryIds.forEach(async id => {
             await Notifications.deleteNotificationCategoryAsync(id);
           });
         });
+
         t.it('returns an empty array if there are no categories', async () => {
-          t.expect((await Notifications.getNotificationCategoriesAsync()).length).toEqual(0);
+          t.expect((await Notifications.getNotificationCategoriesAsync()).length).toEqual(existingCategoriesCount);
         });
 
         t.it('returns an array with the just-created categories', async () => {
@@ -678,7 +684,7 @@ export async function test(t) {
             testCategory2.actions,
             testCategory2.options
           );
-          t.expect((await Notifications.getNotificationCategoriesAsync()).length).toEqual(2);
+          t.expect((await Notifications.getNotificationCategoriesAsync()).length).toEqual(existingCategoriesCount + 2);
         });
       });
 
@@ -855,7 +861,7 @@ export async function test(t) {
         );
       });
 
-      // TODO: Limited this test to Android platform only as on iOS it never succeeds
+      // TODO: Limited this test to Android platform only as only there we have the "Exponent notification"
       if (Constants.appOwnership === 'expo' && Platform.OS === 'android') {
         t.it('includes the foreign persistent notification', async () => {
           const displayedNotifications = await Notifications.getPresentedNotificationsAsync();
@@ -865,11 +871,6 @@ export async function test(t) {
                 identifier: t.jasmine.stringMatching(
                   /^expo-notifications:\/\/foreign_notifications/
                 ),
-                content: t.jasmine.objectContaining({
-                  data: t.jasmine.objectContaining({
-                    'android.contains.customView': true,
-                  }),
-                }),
               }),
             })
           );
@@ -1336,8 +1337,8 @@ export async function test(t) {
           repeats: true,
         });
         t.expect(nextDate).not.toBeNull();
-        t.expect(new Date(nextDate * 1000).getHours()).toBe(9);
-        t.expect(new Date(nextDate * 1000).getMinutes()).toBe(20);
+        t.expect(new Date(nextDate).getHours()).toBe(9);
+        t.expect(new Date(nextDate).getMinutes()).toBe(20);
       });
 
       t.it('fails to generate trigger date for the immediate trigger', async () => {

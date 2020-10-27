@@ -1,6 +1,8 @@
 package expo.modules.notifications.service.delegates
 
 import android.content.Context
+import android.content.Intent
+import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ProcessLifecycleOwner
 import expo.modules.notifications.notifications.NotificationManager
@@ -13,6 +15,8 @@ import java.util.*
 
 class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
   companion object {
+    const val OPEN_APP_INTENT_ACTION = "expo.modules.notifications.OPEN_APP_ACTION"
+
     protected var sPendingNotificationResponses: MutableCollection<NotificationResponse> = ArrayList()
 
     /**
@@ -63,6 +67,10 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
   }
 
   override fun handleNotificationResponse(notificationResponse: NotificationResponse) {
+    if (notificationResponse.action.opensAppToForeground()) {
+      openAppToForeground(context, notificationResponse)
+    }
+
     if (getListeners().isEmpty()) {
       sPendingNotificationResponses.add(notificationResponse)
     } else {
@@ -71,6 +79,30 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
       }
     }
   }
+
+  protected fun openAppToForeground(context: Context, notificationResponse: NotificationResponse) {
+    (getNotificationActionLauncher(context) ?: getMainActivityLauncher(context))?.let { intent ->
+      NotificationsService.setNotificationResponseToIntent(intent, notificationResponse)
+      context.startActivity(intent)
+      return
+    }
+
+    Log.w("expo-notifications", "No launch intent found for application. Interacting with the notification won't open the app. The implementation uses `getLaunchIntentForPackage` to find appropriate activity.")
+  }
+
+  private fun getNotificationActionLauncher(context: Context): Intent? {
+    Intent(OPEN_APP_INTENT_ACTION).also { intent ->
+      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+      intent.setPackage(context.applicationContext.packageName)
+      context.packageManager.resolveActivity(intent, 0)?.let {
+        return intent
+      }
+    }
+    return null
+  }
+
+  private fun getMainActivityLauncher(context: Context) =
+    context.packageManager.getLaunchIntentForPackage(context.packageName)
 
   override fun handleNotificationsDropped() {
     getListeners().forEach {

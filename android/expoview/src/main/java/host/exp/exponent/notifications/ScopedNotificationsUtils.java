@@ -7,7 +7,6 @@ import androidx.annotation.Nullable;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.NotificationResponse;
-import expo.modules.notifications.notifications.service.NotificationsHelper;
 import expo.modules.notifications.service.delegates.ExpoPresentationDelegate;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.notifications.model.ScopedNotificationRequest;

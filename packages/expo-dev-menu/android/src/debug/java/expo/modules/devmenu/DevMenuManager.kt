@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.hardware.SensorManager
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.MotionEvent
 import com.facebook.react.ReactInstanceManager
@@ -106,6 +107,8 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
    * So we wait until the [reactContext] activity will be ready.
    */
   private fun handleLoadedDelegate(reactContext: ReactContext) {
+    Log.i(DEV_MENU_TAG, "Delegate's context was loaded.")
+
     maybeInitDevMenuHost(reactContext.currentActivity?.application
       ?: reactContext.applicationContext as Application)
     maybeStartDetectors(devMenuHost.getContext())
@@ -239,6 +242,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   }
 
   override fun setDelegate(newDelegate: DevMenuDelegateInterface) {
+    Log.i(DEV_MENU_TAG, "Set new dev-menu delegate: ${newDelegate.javaClass}")
     // removes event listener for old delegate
     delegateReactContext?.removeLifecycleEventListener(this)
 

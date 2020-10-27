@@ -22,14 +22,15 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/expo/expo.git"
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-apple-authentication"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-apple-authentication",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/apple-authentication/",
   "unimodulePeerDependencies": {
     "@unimodules/core": "*",
     "@unimodules/react-native-adapter": "*"

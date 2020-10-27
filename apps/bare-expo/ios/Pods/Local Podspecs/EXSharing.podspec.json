@@ -5,7 +5,7 @@
   "description": "ExpoSharing standalone module",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-sharing",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/sharing/",
   "platforms": {
     "ios": "10.0"
   },

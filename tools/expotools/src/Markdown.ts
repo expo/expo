@@ -204,9 +204,9 @@ export class MarkdownRenderer implements Renderer {
       case TokenType.LIST_ITEM:
         return this.listItem(token, ctx);
       case TokenType.PARAGRAPH:
-        return this.paragraph(token);
+        return this.paragraph(token, ctx);
       case TokenType.TEXT:
-        return this.text(token);
+        return this.text(token, ctx);
       case TokenType.SPACE:
         return this.space(token);
       case TokenType.CODE:
@@ -247,19 +247,23 @@ export class MarkdownRenderer implements Renderer {
     const bullet = ctx.orderedList ? `${ctx.itemIndex ?? 1}.` : '-';
     let output = this.indent(indent) + bullet + ' ';
 
-    for (const child of token.tokens) {
+    if (token.tokens[0]) {
+      output += this.renderToken(token.tokens[0], ctx).trimRight() + EOL;
+    }
+
+    for (const child of token.tokens.slice(1)) {
       output += this.renderToken(child, { ...ctx, indent: indent + 1 }).trimRight() + EOL;
     }
     return output.trimRight() + EOL;
   }
 
-  paragraph(token: ParagraphToken): string {
-    return token.text + EOL;
+  paragraph(token: ParagraphToken, ctx: RenderingContext): string {
+    return this.indent(ctx.indent) + token.text + EOL;
   }
 
-  text(token: TextToken): string {
+  text(token: TextToken, ctx: RenderingContext): string {
     // TextToken may have children which we don't really need - they would render to `text` either way.
-    return token.text;
+    return this.indent(ctx.indent) + token.text;
   }
 
   space(token: SpaceToken): string {
@@ -280,8 +284,11 @@ export class MarkdownRenderer implements Renderer {
   blockquote(token: BlockquoteToken, ctx: RenderingContext): string {
     const indentStr = this.indent(ctx.indent);
 
-    return token.tokens
-      .map((child) => '> ' + this.renderToken(child, ctx).trimRight())
-      .join(EOL + indentStr);
+    return (
+      indentStr +
+      token.tokens
+        .map((child) => '> ' + this.renderToken(child, { ...ctx, indent: 0 }).trimRight())
+        .join(EOL + indentStr)
+    );
   }
 }

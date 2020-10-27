@@ -33,7 +33,7 @@ public class DevelopmentClientDevMenuExtensions extends ReactContextBaseJavaModu
   @Override
   public List<DevMenuItem> devMenuItems() {
     DevMenuAction backToLauncher = new DevMenuAction("development-client-back-to-launcher", () -> {
-      DevelopmentClientController.getInstance().navigateToLauncher();
+      DevelopmentClientController.getInstance().navigateToLauncher(getReactApplicationContext());
       return Unit.INSTANCE;
     });
     backToLauncher.setEnabled(() -> true);

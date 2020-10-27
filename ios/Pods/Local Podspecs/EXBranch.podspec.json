@@ -5,7 +5,7 @@
   "description": "A unimodule wrapping react-native-branch, enabling its use in Expo managed workflow",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-branch",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/branch/",
   "platforms": {
     "ios": "10.0"
   },

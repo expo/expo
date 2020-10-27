@@ -53,12 +53,22 @@ export const getVersionFromUrl = (url: string) => {
  * Get the user facing or human-readable version from the SDK verion.
  * If you provide a `latestVersion`, `latest` will include the sdk version in parentheses.
  */
-export const getUserFacingVersionString = (version: string, latestVersion?: string): string => {
+export const getUserFacingVersionString = (
+  version: string,
+  latestVersion?: string,
+  betaVersion?: string
+): string => {
   if (version === 'latest') {
     return latestVersion ? `Latest (${getUserFacingVersionString(latestVersion)})` : 'Latest';
   } else if (version === 'unversioned') {
     return 'Unversioned';
-  } else {
-    return `SDK${version?.substring(1, 3)}`;
   }
+
+  const versionString = `SDK${version?.substring(1, 3)}`;
+
+  if (version === betaVersion) {
+    return `Beta (${versionString})`;
+  }
+
+  return versionString;
 };

@@ -8,7 +8,6 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
 
-import androidx.annotation.Nullable;
 import expo.modules.developmentclient.DevelopmentClientController;
 import expo.modules.random.RandomPackage;
 
@@ -44,30 +43,25 @@ public class MainApplication extends Application implements ReactApplication {
     protected String getJSMainModuleName() {
       return "index";
     }
-
-    @Nullable
-    @Override
-    protected String getJSBundleFile() {
-      if (USE_DEV_CLIENT) {
-        return DevelopmentClientController.getInstance().getJSBundleFile();
-      } else {
-        return null; // Uses default bundle file
-      }
-    }
   };
 
   @Override
   public ReactNativeHost getReactNativeHost() {
-    return mReactNativeHost;
+    if (USE_DEV_CLIENT) {
+      return DevelopmentClientController.getInstance().getReactNativeHost();
+    } else {
+      return mReactNativeHost;
+    }
   }
 
   @Override
   public void onCreate() {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
+    ReactNativeFlipper.initializeFlipper(this);
 
     if (USE_DEV_CLIENT) {
-      DevelopmentClientController.initialize(this, "BareExpo");
+      DevelopmentClientController.initialize(this, mReactNativeHost, "BareExpo");
     }
   }
 }

@@ -5,7 +5,7 @@
   "description": "A unimodule that provides SignIn With Apple",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-apple-authentication",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/apple-authentication/",
   "platforms": {
     "ios": "10.0"
   },

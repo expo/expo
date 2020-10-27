@@ -12,6 +12,10 @@ import EXDevMenuInterface
 import EXDevMenu
 #endif
 
+#if FB_SONARKIT_ENABLED
+import FlipperKit
+#endif
+
 @UIApplicationMain
 class AppDelegate: UMAppDelegateWrapper {
   var moduleRegistryAdapter: UMModuleRegistryAdapter!
@@ -21,6 +25,7 @@ class AppDelegate: UMAppDelegateWrapper {
   let useDevClient: Bool = false
   
   override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    initializeFlipper(with: application)
     moduleRegistryAdapter = UMModuleRegistryAdapter(moduleRegistryProvider: UMModuleRegistryProvider())
     window = UIWindow(frame: UIScreen.main.bounds)
     self.launchOptions = launchOptions;
@@ -64,6 +69,18 @@ class AppDelegate: UMAppDelegateWrapper {
   
   override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
     return RCTLinkingManager.application(app, open: url, options: options)
+  }
+  
+  private func initializeFlipper(with application: UIApplication) {
+  #if FB_SONARKIT_ENABLED
+    let client = FlipperClient.shared()
+    let layoutDescriptorMapper = SKDescriptorMapper(defaults: ())
+    client?.add(FlipperKitLayoutPlugin(rootNode: application, with: layoutDescriptorMapper!))
+    client?.add(FKUserDefaultsPlugin(suiteName: nil))
+    client?.add(FlipperKitReactPlugin())
+    client?.add(FlipperKitNetworkPlugin(networkAdapter: SKIOSNetworkAdapter()))
+    client?.start()
+  #endif
   }
 }
 

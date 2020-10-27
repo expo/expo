@@ -5,7 +5,7 @@
   "description": "ExpoStoreReview standalone module",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/store-review/",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/storereview/",
   "platforms": {
     "ios": "10.0"
   },
