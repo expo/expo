@@ -22,14 +22,14 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
   : ReactContextBaseJavaModule(reactContext), DevMenuExtensionInterface {
   override fun getName() = "ExpoDevMenuExtensions"
 
-  private val devMenuManger by lazy {
+  private val devMenuManager by lazy {
     reactContext
       .getNativeModule(DevMenuManagerProvider::class.java)
       .getDevMenuManager()
   }
 
   private val devSupportManager: DevSupportManager?
-    get() = devMenuManger.getSession()?.reactInstanceManager?.devSupportManager
+    get() = devMenuManager.getSession()?.reactInstanceManager?.devSupportManager
 
 
   override fun devMenuItems(): List<DevMenuItem>? {
