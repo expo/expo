@@ -73,7 +73,7 @@ PODS:
   - EXFileSystem (9.2.0):
     - UMCore
     - UMFileSystemInterface
-  - EXFirebaseAnalytics (2.5.1):
+  - EXFirebaseAnalytics (2.6.0):
     - EXFirebaseCore
     - Firebase/Core (= 6.14.0)
     - UMCore
@@ -1067,7 +1067,7 @@ SPEC CHECKSUMS:
   EXErrorRecovery: 16696fe023fb46a32c3b09033abc361cfcf150a7
   EXFacebook: dd5352a2a74f825922131abf1ed438cf51d116a7
   EXFileSystem: afe9b1fd937d30270bf5108ba44e2f4a1d1ad694
-  EXFirebaseAnalytics: deb8e5064f3496bc3e9ea518e93fbb893c199c8a
+  EXFirebaseAnalytics: d72f553dc0c0a8ee451714499fac21883c3f7369
   EXFirebaseCore: d5befdb22015f9b71168ed89dda0b50dbb07fed1
   EXFont: a6a4353271395f3bb4ee528b52a5035b4b0e412a
   EXGL: 18197ce91dceb9acdc9b0a839919111ca004f434
@@ -1189,6 +1189,6 @@ SPEC CHECKSUMS:
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: f8de1204579ffa002611d28fc837ae98810c3706
+PODFILE CHECKSUM: 6761d312ede82b1591e5b17c134100c3acfd4d22
 
 COCOAPODS: 1.9.3
