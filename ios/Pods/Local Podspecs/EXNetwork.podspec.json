@@ -5,7 +5,7 @@
   "description": "Provides useful information about the device's network such as its IP address, MAC address, and airplane mode status",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-network",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/network/",
   "platforms": {
     "ios": "10.0"
   },

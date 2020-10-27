@@ -5,7 +5,7 @@
   "description": "A universal module that gets native application information such as its ID, app name, and build version at runtime",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-application",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/application/",
   "platforms": {
     "ios": "10.0"
   },
