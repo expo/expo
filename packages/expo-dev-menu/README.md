@@ -35,9 +35,6 @@ Then you can start to configure the native projects using steps below.
     ```gradle
     include(":expo-dev-menu")
     project(":expo-dev-menu").projectDir = new File("../node_modules/expo-dev-menu/android")
-
-    include(":expo-dev-menu-interface")
-    project(":expo-dev-menu-interface").projectDir = new File("../node_modules/expo-dev-menu-interface/android")
     ```
 
     II. Go to the `build.gradle` of your application and add `expo-dev-menu` as a dependency:
@@ -45,7 +42,6 @@ Then you can start to configure the native projects using steps below.
     ```gradle
     dependencies {
       ...
-      implementation project(":expo-dev-menu-interface")
       implementation project(":expo-dev-menu")
       ...
     }
@@ -210,7 +206,6 @@ Then you can start to configure the native projects using steps below.
       ...
       target '<your app>' do
         ...
-        pod 'EXDevMenuInterface', path: '../node_modules/expo-dev-menu-interface'
         pod 'EXDevMenu', path: '../node_modules/expo-dev-menu', :configurations => :debug
         ...
       end
