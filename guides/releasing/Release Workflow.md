@@ -365,9 +365,10 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
   - You should also do some smoke tests as soon as the app becomes available for internal TestFlight testers, for example against `native-component-list` published under `applereview` account. If you notice something important isn't working right, remove the app from review and re-do this process once it's resolved.
 
 - **Android**:
+  - Unlike for iOS, we will not submit the Android app to the store at this point. We just need to bump the version so we can do an APK build for distribution through Expo CLI.
   - Bump the `versionCode` and `versionName` in android/app/build.gradle. Commit this to master and cherry-pick to the release branch. You might need to check the previous release branch to make sure the new `versionCode` is greater than the previous patch version, in case that commit never made it to master.
-  - The APK will be available as an artifact from the `client_android` CI job. If no CI jobs are running on the release branch, you just need to open a PR from the release branch to master. (Don't merge it; it only exists to make CI jobs run.)
-  - We won't actually submit this to the Play Store, we will use built `apk` from the next step through `expo-cli` for beta testing instead.
+  - The APK will be available as an artifact from the "Android Client" CI job. If no CI jobs are running on the release branch, you just need to open a PR from the release branch to master. (Don't merge it; it only exists to make CI jobs run.)
+  - Download the APK and do a quick smoke test: install it in your local emulator or on a device and open a project.
 
 ## 3.3. Make a simulator/emulator build
 
