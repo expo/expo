@@ -320,15 +320,23 @@
       </intent-filter>
     </service>
     <meta-data
+      android:name="expo.modules.notifications.default_notification_icon"
+      android:resource="@drawable/shell_notification_icon" />
+    <meta-data
+      android:name="expo.modules.notifications.default_notification_color"
+      android:resource="@color/notification_icon_color" />
+    <service
+      android:name=".fcm.FcmRegistrationIntentService"
+      android:exported="false">
+    </service>
+    <!-- Remove the following 2 when we drop support for Legacy Notifications -->
+    <meta-data
       android:name="com.google.firebase.messaging.default_notification_icon"
       android:resource="@drawable/shell_notification_icon" />
     <meta-data
       android:name="com.google.firebase.messaging.default_notification_color"
       android:resource="@color/colorAccent" />
-    <service
-      android:name=".fcm.FcmRegistrationIntentService"
-      android:exported="false">
-    </service>
+
 
     <!-- ImagePicker native module -->
     <activity
