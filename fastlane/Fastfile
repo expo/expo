@@ -195,6 +195,7 @@ platform :android do
 
   private_lane :verify_upload_to_staging do |version_name: |
     require 'open-uri'
+    staging_version = nil
     begin
       versions = JSON.parse(open(URI.join(STAGING_API_URL, "/--/api/v2/versions")).read)
       latest_major_version = versions['sdkVersions'].keys.map(&:to_i).sort().reverse().first()
