@@ -1,4 +1,4 @@
-// test cases which should pass when the runtime is running in an Expo Client environment.
+// test cases which should pass when the runtime is running in Expo Go.
 
 #import <XCTest/XCTest.h>
 

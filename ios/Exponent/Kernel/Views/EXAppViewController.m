@@ -75,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) EXManagedAppSplashScreenViewProvider *managedAppSplashScreenViewProvider;
 
 /*
- * This view is available in managed apps run in Expo Client only.
+ * This view is available in managed apps run in Expo Go only.
  * It is shown only before any managed app manifest is delivered by the app loader.
  */
 @property (nonatomic, strong, nullable) EXAppLoadingCancelView *appLoadingCancelView;
@@ -370,7 +370,7 @@ NS_ASSUME_NONNULL_BEGIN
   // 2. hide the splash screen of root view controller
   // Disclaimer:
   //  there's only one root view controller, but possibly many EXAppViewControllers
-  //  (in Expo Client: one Experience -> one EXAppViewController)
+  //  (in Expo Go: one project -> one EXAppViewController)
   //  and we want to hide SplashScreen only once for the root view controller, hence the "once"
   static dispatch_once_t once;
   void (^hideRootViewControllerSplashScreen)(void) = ^void() {

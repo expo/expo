@@ -24,7 +24,7 @@ ABI39_0_0UM_EXPORT_METHOD_AS(setEnabledAsync,
                     rejecter:(ABI39_0_0UMPromiseRejectBlock)reject)
 {
   if (_isInExpoClient) {
-    reject(@"E_UNSUPPORTED", @"Setting Segment's `enabled` is not supported in Expo Client.", nil);
+    reject(@"E_UNSUPPORTED", @"Setting Segment's `enabled` is not supported in Expo Go.", nil);
     return;
   }
 
