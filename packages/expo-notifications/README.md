@@ -156,6 +156,63 @@ Notifications.scheduleNotificationAsync({
 });
 ```
 
+### Sending a notification directly to the recipient via Firebase API and device push token
+
+> **Context:** There are two types of Firebase Cloud Messaging messages: notification and data messages (see [official documentation](https://firebase.google.com/docs/cloud-messaging/concept-options#notifications_and_data_messages)).
+>
+> - Notification messages are handled by Firebase library more, i.e. they are displayed by Firebase, they don't necessarily wake the app.
+> - Data messages are not handled by Firebase library at all, they are immediately handed off to the application for processing. That's where `expo-notifications` comes in -- takes the data payload, interprets it, displays or pushes to your application.
+
+When sending a notification with Firebase API make sure not to send a message of notification type, otherwise notification will be handled, presented by Firebase SDK and since it will be presented by Firebase SDK, `expo-notifications` won't be able to configure the notification properly:
+
+- set the `contentIntent` which will trigger `expo-notifications` and then your app once someone interacts with the notification ([`setContentIntent`](<https://developer.android.com/reference/androidx/core/app/NotificationCompat.Builder#setContentIntent(android.app.PendingIntent)>)) and you won't receive `onNotificationResponse` events,
+- interpret the payload properly, parsing content (any events you receive through event listeners will have empty data under `.content`).
+
+> **Note:** Using Firebase notification messages may have its upsides when you try to use some configuration option that has not been exposed by `expo-notifications` yet, but in general it may lead to less predictable situations than using only `expo-notifications` (plus it's not our field of responsibility, you'd have to go to Google to report issues).
+
+Since code is worth more than a million words, let's see an example of Node.js Firebase Admin SDK usage:
+
+```js
+const devicePushToken = /* ... */;
+const options = /* ... */;
+
+// ❌ The payload has root-level notification object and thus
+// it will not trigger expo-notifications and may not work
+// as expected.
+admin.messaging().sendToDevice(
+  devicePushToken,
+  {
+    notification: {
+      title: "Somebody liked your photo",
+      body: "React now!",
+    },
+    data: {
+      photoId: 42,
+    },
+  },
+  options
+);
+
+// ✅ There is no "notification" key in the root level of payload
+// so the message is a "data" message, triggering expo-notifications.
+admin.messaging().sendToDevice(
+  devicePushToken,
+  {
+    data: {
+      title: "Somebody liked your photo",
+      message: "React now!", // ⚠️ Notice the schema of notification is different
+                             // than that of Firebase SDK, what there is called "body"
+                             // here is a "message", for more info see
+                             // the "Android push notification payload specification" section in this document
+      body: {        // ⚠️ As per "Android push notification payload specification",
+        photoId: 42, // the additional "data" should be placed under "body" key.
+      }
+    },
+  },
+  options
+);
+```
+
 # Contributing
 
 Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).
