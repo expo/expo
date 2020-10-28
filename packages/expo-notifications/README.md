@@ -220,6 +220,11 @@ export interface FirebaseData {
   title?: string;
   message?: string;
   subtitle?: string;
+  body?: { [key: string]: unknown };
+  color?: string;
+  autoDismiss?: boolean;
+  categoryId?: string;
+  sticky?: boolean;
   sound?: boolean | string;
   vibrate?: boolean | number[];
   priority?: AndroidNotificationPriority;
