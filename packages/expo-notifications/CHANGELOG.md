@@ -12,6 +12,9 @@
 - Changed how you can override ways in which a notification is reinterpreted from a [`StatusBarNotification`](https://developer.android.com/reference/android/service/notification/StatusBarNotification) and in which a [`Notification`](https://developer.android.com/reference/android/app/Notification.html?hl=en) is built from defining an `expo.modules.notifications#NotificationsScoper` meta-data value in `AndroidManifest.xml` to implementing a `BroadcastReceiver` subclassing `NotificationsService` delegating those responsibilities to your custom `PresentationDelegate` instance. ([#10558](https://github.com/expo/expo/pull/10558) by [@sjchmiela](https://github.com/sjchmiela))
 
   > Note that this change most probably will not affect you — it only affects projects that override those methods to implement some custom handling logic.
+- Added a peer dependency on `react-native@>=0.20.0`. ([#10811](https://github.com/expo/expo/pull/10811) by [@sjchmiela](https://github.com/sjchmiela))
+
+  > Note that this change most probably will not affect you — it only affects projects that use unimodules and this library without React Native which is not possible without some serious gymnastics.
 
 ### 🎉 New features
 
