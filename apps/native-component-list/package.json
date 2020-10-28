@@ -66,7 +66,7 @@
     "expo-print": "~9.1.0",
     "expo-processing": "2.0.2",
     "expo-progress": "^0.0.2",
-    "expo-random": "^9.0.0",
+    "expo-random": "^9.0.1",
     "expo-secure-store": "~9.2.0",
     "expo-sensors": "~9.1.0",
     "expo-sharing": "~8.4.0",

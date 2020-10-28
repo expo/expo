@@ -11101,13 +11101,13 @@ CACHE_KEYS:
       EXRandom:
         :debug: cf0fc244a5cff207ba734b93651c9754
         :release: cf0fc244a5cff207ba734b93651c9754
-    CHECKSUM: 7ef2d50d08c615b78aaa8a6e4fbebee562c21b90
+    CHECKSUM: 10419e13e311477711fa4bfc5e560e690ff6667b
     FILES:
       - "../../packages/expo-random/ios/EXRandom/EXRandom.h"
       - "../../packages/expo-random/ios/EXRandom/EXRandom.m"
     PROJECT_NAME: EXRandom
     SPECS:
-      - EXRandom (9.0.0)
+      - EXRandom (9.0.1)
   EXScreenCapture:
     BUILD_SETTINGS_CHECKSUM:
       EXScreenCapture:
