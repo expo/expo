@@ -30,10 +30,10 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "peerDependencies": {
-    "expo-random": ">=9.0.0"
+    "expo-random": "9.0.1"
   },
   "devDependencies": {
     "expo-module-scripts": "~1.2.0",
-    "expo-random": "~9.0.0"
+    "expo-random": "~9.0.1"
   }
 }

@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 9.0.1 — 2020-10-28
+
+### 🐛 Bug fixes
+
 - Clarify that react-native-unimodules is a dependency in README
 - Add a placeholder .xcodeproj file so that React Native CLI autolinking will detect the EXRandom podspec
 
