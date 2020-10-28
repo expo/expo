@@ -1,6 +1,6 @@
 # expo-random
 
-Provides a native interface for creating strong random bytes. With `Random` you can create values equivalent to `Node.js` core `crypto.randomBytes` API.
+Provides a native interface for creating strong random bytes. With `Random` you can generate random values to address use cases that other APIs like the web's `crypto.getRandomValues` and Node's `crypto.randomBytes` might address.
 
 # Installation in managed Expo projects
 
