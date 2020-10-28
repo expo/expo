@@ -11,7 +11,6 @@ Refer to the bare workflow ["Up and Running"](../hello-world/) page to learn abo
 
 The bare workflow is our way of describing the workflow where you use some of the Expo tools in a vanilla React Native app, and any of the following APIs are available in the bare workflow and therefore also in any React Native app.
 
-- [AV](/versions/latest/sdk/av/)
 - [Accelerometer](/versions/latest/sdk/accelerometer/)
 - [Admob](/versions/latest/sdk/admob/)
 - [Amplitude](/versions/latest/sdk/amplitude/)
@@ -20,6 +19,7 @@ The bare workflow is our way of describing the workflow where you use some of th
 - [Asset](/versions/latest/sdk/asset/)
 - [Audio](/versions/latest/sdk/audio/)
 - [AuthSession](/versions/latest/sdk/auth-session/)
+- [AV](/versions/latest/sdk/av/)
 - [BackgroundFetch](/versions/latest/sdk/background-fetch/)
 - [BarCodeScanner](/versions/latest/sdk/bar-code-scanner/)
 - [Barometer](/versions/latest/sdk/barometer/)
@@ -32,12 +32,12 @@ The bare workflow is our way of describing the workflow where you use some of th
 - [Constants](/versions/latest/sdk/constants/)
 - [Contacts](/versions/latest/sdk/contacts/)
 - [Crypto](/versions/latest/sdk/crypto/)
-- [DeviceMotion](/versions/latest/sdk/devicemotion/)
 - [Device](/versions/latest/sdk/device/)
+- [DeviceMotion](/versions/latest/sdk/devicemotion/)
 - [DocumentPicker](/versions/latest/sdk/document-picker/)
 - [ErrorRecovery](/versions/latest/sdk/error-recovery/)
-- [FaceDetector](/versions/latest/sdk/facedetector/)
 - [Facebook](/versions/latest/sdk/facebook/)
+- [FaceDetector](/versions/latest/sdk/facedetector/)
 - [FileSystem](/versions/latest/sdk/filesystem/)
 - [Font](/versions/latest/sdk/font/)
 - [GLView](/versions/latest/sdk/gl-view/)
@@ -72,8 +72,8 @@ The bare workflow is our way of describing the workflow where you use some of th
 - [StoreReview](/versions/latest/sdk/storereview/)
 - [TaskManager](/versions/latest/sdk/task-manager/)
 - [Updates](/versions/latest/sdk/updates/)
-- [VideoThumbnails](/versions/latest/sdk/video-thumbnails/)
 - [Video](/versions/latest/sdk/video/)
+- [VideoThumbnails](/versions/latest/sdk/video-thumbnails/)
 - [WebBrowser](/versions/latest/sdk/webbrowser/)
 
 ## Only available in the bare workflow currently
@@ -83,5 +83,4 @@ The bare workflow is our way of describing the workflow where you use some of th
 
 ## Only available in managed workflow currently
 
-- [AR](/versions/latest/sdk/AR/) (\* _deprecated, soon to be available only in bare_)
-- [AppLoading](/versions/latest/sdk/app-loading/) (\* _use [SplashScreen](/versions/latest/sdk/splash-screen/)instead for same capabilities_)
+- [AppLoading](/versions/latest/sdk/app-loading/) (\* _use [SplashScreen](/versions/latest/sdk/splash-screen/) instead for same capabilities_)
