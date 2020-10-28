@@ -409,27 +409,79 @@ A [`Subscription`](#subscription) object representing the subscription of the pr
 
 #### Examples
 
-Registering a notification listener using a React hook
+##### Registering a notification listener using a React hook
 
 ```tsx
 import React from 'react';
 import { Linking } from 'react-native';
 import * as Notifications from 'expo-notifications';
 
-export default function Container({ navigation }) {
+export default function Container() {
   React.useEffect(() => {
     const subscription = Notifications.addNotificationResponseReceivedListener(response => {
       const url = response.notification.request.content.data.url;
       Linking.openUrl(url);
     });
     return () => subscription.remove();
-  }, [navigation]);
+  }, []);
 
   return (
     // Your app content
   );
 }
 ```
+
+##### Handling push notifications with React Navigation
+
+If you'd like to deep link to a specific screen in your app when you receive a push notification, you can configure React Navigation's [linking](https://reactnavigation.org/docs/navigation-container#linking) prop to do that:
+
+```tsx
+import React from 'react';
+import { Linking } from 'react-native';
+import * as Notifications from 'expo-notifications';
+import { NavigationContainer } from '@react-navigation/native';
+
+export default function App() {
+  return (
+    <NavigationContainer
+      linking={{
+        config: {
+          // Configuration for linking
+        },
+        subscribe(listener) {
+          const onReceiveURL = ({ url }: { url: string }) => listener(url);
+
+          // Listen to incoming links from deep linking
+          Linking.addEventListener('url', onReceiveURL);
+
+          // Listen to expo push notifications
+          const subscription = Notifications.addNotificationResponseReceivedListener (
+            (response) => {
+              const url = response.notification.request.content.data.url;
+
+              // Any custom logic to see whether the URL needs to be handled
+              //...
+
+              // Let React Navigation handle the URL
+              listener(url);
+            }
+          );
+
+          return () => {
+            // Clean up the event listeners
+            Linking.removeEventListener('url', onReceiveURL);
+            subscription.remove();
+          };
+        },
+      }}
+    >
+      {/* Your app content */}
+    </NavigationContainer>
+  );
+}
+```
+
+See more details on [React Navigation documentation](https://reactnavigation.org/docs/deep-linking/#third-party-integrations).
 
 ### `removeNotificationSubscription(subscription: Subscription): void`
 
