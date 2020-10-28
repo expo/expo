@@ -10,7 +10,7 @@ The `SplashScreen` module tells the splash screen to remain visible until it has
 
 Read more about [creating a splash screen image](../../guides/splash-screens/), or [quickly generate an icon and splash screen on the web](https://buildicon.netlify.app/)
 
-<PlatformsSection android emulator ios simulator web />
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
