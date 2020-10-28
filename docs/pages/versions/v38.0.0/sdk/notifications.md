@@ -52,6 +52,10 @@ Open your `app.json` and add the following inside of the "expo" field:
 
 ## Common gotchas / known issues
 
+### Sending notifications directly through APNs and FCM
+
+If you are not using [Expo's push notification service](/push-notifications/sending-notifications/) and would instead like to communicate with Apple and Firebase directly, then you should read [this guide closely](/push-notifications/sending-notifications-custom/), paying **special attention to the payload formats**, since providing different formats can result in unexpected behavior on both platforms.
+
 ### Setting custom notification sounds on Android
 
 On Androids 8.0+, playing a custom sound for a notification requires more than setting the `sound` property on the `NotificationContentInput`. You will _also_ need to configure the `NotificationChannel` with the appropriate `sound`, and use it when sending/scheduling the notification.
