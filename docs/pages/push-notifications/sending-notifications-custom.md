@@ -134,26 +134,6 @@ APNs provides their full list of supported fields in the notification payload [h
 
 The examples above show bare minimum notification requests, which aren't that exciting. You probably want to send category identifiers, custom sounds, icons, custom key-value pairs, etc. `expo-notifications` documents all the fields it supports, and here are the payloads we send in our notifications service, as an example:
 
-### Android
-
-```json
-{
-  "token": native device token string,
-  "collapse_key": string that identifies notification as collapsable,
-  "priority": "normal" || "high",
-  "data": {
-    "experienceId": "@yourExpoUsername/yourProjectSlug",
-    "title": title of your message,
-    "message": body of your message,
-    "channelId": the android channel ID associated with this notification,
-    "categoryId": the category associated with this notification,
-    "icon": the icon to show with this notification,
-    "link": the link this notification should open,
-    "body": { object of key-value pairs }
-  }
-}
-```
-
 ### iOS
 
 ```json
@@ -173,4 +153,85 @@ The examples above show bare minimum notification requests, which aren't that ex
   "body": { object of key-value pairs },
   "experienceId": "@yourExpoUsername/yourProjectSlug",
 }
+```
+
+### Android
+
+```json
+{
+  "token": native device token string,
+  "collapse_key": string that identifies notification as collapsable,
+  "priority": "normal" || "high",
+  "data": {
+    "experienceId": "@yourExpoUsername/yourProjectSlug",
+    "title": title of your message,
+    "message": body of your message,
+    "channelId": the android channel ID associated with this notification,
+    "categoryId": the category associated with this notification,
+    "icon": the icon to show with this notification,
+    "link": the link this notification should open,
+    "sound": boolean or the custom sound file you'd like to play,
+    "vibrate": "true" | "false" | number[],
+    "priority": AndroidNotificationPriority, // https://docs.expo.io/versions/latest/sdk/notifications/#androidnotificationpriority
+    "badge": the number to set the icon badge to,
+    "body": { object of key-value pairs }
+  }
+}
+```
+
+### Firebase notification types
+
+There are two types of Firebase Cloud Messaging messages: notification and data messages (see the [official documentation](https://firebase.google.com/docs/cloud-messaging/concept-options#notifications_and_data_messages) for more information). Although the naming can be confusing, we'll try to clear things up:
+
+1. **Notification** messages are only handled (and displayed) by the Firebase library, meaning they won't necessarily wake the app, and `expo-notifications` will not be made aware that your app has received any notification.
+
+2. **Data** messages, on the other hand, are not handled by the Firebase library at all- they are immediately handed off to your app for processing. That's where `expo-notifications` comes in and interprets the data payload, then takes further action based on that data. **In almost all cases, this is the type of notification you want to send.**
+
+When sending a message directly through Firebase, if you send a message of type "notification" instead of "data", you won't know if a user interacted with the notification (no `onNotificationResponse` event), nor will you be able to parse the notification payload for any data in your notification event-related listeners.
+
+> Note: Using notification-type messages may have its upsides when you need a configuration option that has not been exposed by `expo-notifications` yet, but in general it may lead to less predictable situations than using only data-type messages (plus it's not our field of responsibility, you'd have to go to Google to report issues).
+
+How do you send data-type messages instead of notification-type messages? Since code is worth more than a million words, let's see examples of each type using the Node.js Firebase Admin SDK:
+
+```js
+const devicePushToken = /* ... */;
+const options = /* ... */;
+
+// ❌ The following payload has a root-level notification object
+// and thus it will NOT trigger expo-notifications and may not work
+// as expected.
+admin.messaging().sendToDevice(
+  devicePushToken,
+  {
+    notification: {
+      title: "This is a notification-type message",
+      body: "`expo-notifications` will never see this 😢",
+    },
+    data: {
+      photoId: 42,
+    },
+  },
+  options
+);
+
+// ✅ There is no "notification" key in the root level of the payload
+// so the message is a "data" message, thus triggering expo-notifications.
+admin.messaging().sendToDevice(
+  devicePushToken,
+  {
+    data: {
+      title: "This is a data-type message",
+      message: "`expo-notifications` events will be triggered 🤗",
+      // ⚠️ Notice the schema of this payload is different
+      // than that of Firebase SDK. What is there called "body"
+      // here is a "message". For more info see:
+      // https://docs.expo.io/versions/latest/sdk/notifications/#android-push-notification-payload-specification
+
+      body: {        // ⚠️ As per Android payload format specified above, the
+        photoId: 42, // additional "data" should be placed under "body" key.
+      }
+    },
+  },
+  options
+);
 ```
