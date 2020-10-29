@@ -1,4 +1,4 @@
-package expo.modules.developmentclient;
+package expo.modules.developmentclient.modules;
 
 import android.view.KeyEvent;
 
@@ -16,6 +16,7 @@ import expo.interfaces.devmenu.items.DevMenuAction;
 import expo.interfaces.devmenu.items.DevMenuItem;
 import expo.interfaces.devmenu.items.DevMenuItemImportance;
 import expo.interfaces.devmenu.items.KeyCommand;
+import expo.modules.developmentclient.DevelopmentClientController;
 import kotlin.Unit;
 
 public class DevelopmentClientDevMenuExtensions extends ReactContextBaseJavaModule implements DevMenuExtensionInterface {
@@ -33,7 +34,7 @@ public class DevelopmentClientDevMenuExtensions extends ReactContextBaseJavaModu
   @Override
   public List<DevMenuItem> devMenuItems() {
     DevMenuAction backToLauncher = new DevMenuAction("development-client-back-to-launcher", () -> {
-      DevelopmentClientController.getInstance().navigateToLauncher(getReactApplicationContext());
+      DevelopmentClientController.getInstance().navigateToLauncher();
       return Unit.INSTANCE;
     });
     backToLauncher.setEnabled(() -> true);

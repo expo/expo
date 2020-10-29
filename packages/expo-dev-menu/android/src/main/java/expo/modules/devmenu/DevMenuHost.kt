@@ -19,15 +19,13 @@ import java.io.InputStreamReader
  */
 class DevMenuHost(application: Application) : ReactNativeHost(application) {
 
-  override fun getPackages(): MutableList<ReactPackage>? {
-    return mutableListOf(
-      MainReactPackage(null),
-      DevMenuPackage(),
-      getVendoredPackage("com.swmansion.reanimated.ReanimatedPackage"),
-      getVendoredPackage("com.swmansion.gesturehandler.react.RNGestureHandlerPackage"),
-      MockedSafeAreaPackage()
-    )
-  }
+  override fun getPackages() = listOf(
+    MainReactPackage(null),
+    DevMenuPackage(),
+    getVendoredPackage("com.swmansion.reanimated.ReanimatedPackage"),
+    getVendoredPackage("com.swmansion.gesturehandler.react.RNGestureHandlerPackage"),
+    MockedSafeAreaPackage()
+  )
 
   override fun getUseDeveloperSupport() = false // change it and run `yarn start` in `expo-dev-menu` to launch dev menu from local packager
 

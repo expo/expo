@@ -20,15 +20,11 @@ public class MainActivity extends DevMenuAwareReactActivity {
 
   @Override
   protected ReactActivityDelegate createReactActivityDelegate() {
-    return new ReactActivityDelegate(this, getMainComponentName()) {
+    return DevelopmentClientController.getInstance().wrapReactActivityDelegate(this, new ReactActivityDelegate(this, getMainComponentName()) {
       @Override
       protected ReactRootView createRootView() {
-        RNGestureHandlerEnabledRootView view = new RNGestureHandlerEnabledRootView(MainActivity.this);
-        if (MainApplication.USE_DEV_CLIENT) {
-          DevelopmentClientController.getInstance().setRootView(view);
-        }
-        return view;
+        return new RNGestureHandlerEnabledRootView(MainActivity.this);
       }
-    };
+    });
   }
 }

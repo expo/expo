@@ -9,6 +9,9 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
 
+import expo.modules.developmentclient.modules.DevelopmentClientDevMenuExtensions;
+import expo.modules.developmentclient.modules.DevelopmentClientModule;
+
 public class DevelopmentClientPackage implements ReactPackage {
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
