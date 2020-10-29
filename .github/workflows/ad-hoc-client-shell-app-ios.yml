@@ -61,7 +61,6 @@ jobs:
             -zcf ${{ steps.tarball.outputs.filename }} \
             expo-client-build/Exponent.xcarchive \
             ios
-      - run: brew install awscli
       - name: upload tarball
         if: ${{ github.event_name == 'workflow_dispatch' }}
         timeout-minutes: 40

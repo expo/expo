@@ -53,7 +53,6 @@ jobs:
       - name: Build iOS shell app for simulators
         timeout-minutes: 30
         run: expotools ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
-      - run: brew install awscli
       - name: Set tarball name
         id: tarball
         run: echo "::set-output name=filename::ios-shell-builder-sdk-latest-${{ github.sha }}.tar.gz"
