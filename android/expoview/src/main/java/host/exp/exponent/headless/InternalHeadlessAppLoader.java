@@ -224,7 +224,7 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
   @SuppressWarnings("unchecked")
   private List<ReactPackage> reactPackages() {
     if (!Constants.isStandaloneApp()) {
-      // Pass null if it's on Expo Client. In that case packages from ExperiencePackagePicker will be used instead.
+      // Pass null if it's on Expo Go. In that case packages from ExperiencePackagePicker will be used instead.
       return null;
     }
     try {
@@ -239,7 +239,7 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
   @SuppressWarnings("unchecked")
   public List<Package> expoPackages() {
     if (!Constants.isStandaloneApp()) {
-      // Pass null if it's on Expo Client. In that case packages from ExperiencePackagePicker will be used instead.
+      // Pass null if it's on Expo Go. In that case packages from ExperiencePackagePicker will be used instead.
       return null;
     }
     try {

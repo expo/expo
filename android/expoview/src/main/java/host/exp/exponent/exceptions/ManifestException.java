@@ -57,10 +57,10 @@ public class ManifestException extends ExponentException {
               JSONObject metadata = mErrorJSON.getJSONObject("metadata");
               JSONArray availableSDKVersions = metadata.getJSONArray("availableSDKVersions");
               String sdkVersionRequired = availableSDKVersions.getString(0);
-              formattedMessage = "This project uses SDK v" + sdkVersionRequired + " , but this version of the Expo client requires at least v" + Constants.SDK_VERSIONS_LIST.get(Constants.SDK_VERSIONS_LIST.size() - 1) + ".";
+              formattedMessage = "This project uses SDK v" + sdkVersionRequired + " , but this version of Expo Go requires at least v" + Constants.SDK_VERSIONS_LIST.get(Constants.SDK_VERSIONS_LIST.size() - 1) + ".";
               break;
             case "EXPERIENCE_SDK_VERSION_TOO_NEW":
-              formattedMessage = "This project requires a newer version of the Expo client - please download the latest version from the Play Store.";
+              formattedMessage = "This project requires a newer version of Expo Go - please download the latest version from the Play Store.";
               break;
             case "EXPERIENCE_NOT_VIEWABLE":
               formattedMessage = rawMessage; // From server: The experience you requested is not viewable by you. You will need to log in or ask the owner to grant you access.
