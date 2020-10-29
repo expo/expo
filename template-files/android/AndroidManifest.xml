@@ -319,17 +319,19 @@
         <action android:name="com.google.firebase.MESSAGING_EVENT" />
       </intent-filter>
     </service>
+    <service
+      android:name=".fcm.FcmRegistrationIntentService"
+      android:exported="false">
+    </service>
+    <!-- Applied to Firebase data messages -->
     <meta-data
       android:name="expo.modules.notifications.default_notification_icon"
       android:resource="@drawable/shell_notification_icon" />
     <meta-data
       android:name="expo.modules.notifications.default_notification_color"
       android:resource="@color/notification_icon_color" />
-    <service
-      android:name=".fcm.FcmRegistrationIntentService"
-      android:exported="false">
-    </service>
-    <!-- Remove the following 2 when we drop support for Legacy Notifications -->
+      
+    <!-- Applied to Firebase notification messages -->
     <meta-data
       android:name="com.google.firebase.messaging.default_notification_icon"
       android:resource="@drawable/shell_notification_icon" />
