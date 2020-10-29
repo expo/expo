@@ -54,7 +54,7 @@ export default function HomeApp() {
 
   React.useEffect(() => {
     if (!isShowingSplashScreen && Platform.OS === 'ios') {
-      // if expo client is opened via deep linking, we'll get the url here
+      // If Expo Go is opened via deep linking, we'll get the URL here
       Linking.getInitialURL().then(initialUrl => {
         if (initialUrl) {
           Linking.openURL(initialUrl);
