@@ -72,7 +72,6 @@ jobs:
         with:
           name: fastlane-logs
           path: ~/Logs/fastlane
-      - run: brew install awscli
       - name: Upload shell app tarball to S3
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
