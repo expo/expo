@@ -16,6 +16,8 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: true
+      - name: Switch to Xcode 12.1
+        run: sudo xcode-select --switch /Applications/Xcode_12.1.app
       - name: Get cache key of git lfs files
         id: git-lfs
         run: echo "::set-output name=sha256::$(git lfs ls-files | openssl dgst -sha256)"
