@@ -167,6 +167,20 @@ export async function requestPermissionsAsync(): Promise<LocationPermissionRespo
   return await ExpoLocation.requestPermissionsAsync();
 }
 
+/**
+ * Requests the user to grant location permissions.
+ */
+export async function requestWhenInUsePermissionsAsync(): Promise<LocationPermissionResponse> {
+  return await ExpoLocation.requestWhenInUsePermissionsAsync();
+}
+
+/**
+ * Requests the user to grant location permissions.
+ */
+export async function requestAlwaysPermissionsAsync(): Promise<LocationPermissionResponse> {
+  return await ExpoLocation.requestAlwaysPermissionsAsync();
+}
+
 // --- Location service
 
 /**

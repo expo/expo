@@ -136,12 +136,12 @@ UM_EXPORT_METHOD_AS(askAsync,
     return reject(@"E_PERMISSIONS_UNKNOWN", [NSString stringWithFormat:@"Unrecognized requester: %@", NSStringFromClass(requesterClass)], nil);
   }
   
-  BOOL isGranted = [EXPermissions statusForPermission:permission] == UMPermissionStatusGranted;
-  permission[@"granted"] = @(isGranted);
+  // BOOL isGranted = [EXPermissions statusForPermission:permission] == UMPermissionStatusGranted;
+  // permission[@"granted"] = @(isGranted);
   
-  if (isGranted) {
-    return onResult(permission);
-  }
+  // if (isGranted) {
+  //   return onResult(permission);
+  // }
   
   [self askForGlobalPermissionUsingRequesterClass:requesterClass withResolver:onResult withRejecter:reject];
 }

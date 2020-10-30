@@ -1,6 +1,6 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <EXLocation/EXLocationPermissionRequester.h>
+#import <EXLocation/EXLocationAlwaysPermissionRequester.h>
 #import <UMCore/UMUtilities.h>
 
 #import <objc/message.h>
@@ -10,7 +10,7 @@
 static SEL alwaysAuthorizationSelector;
 static SEL whenInUseAuthorizationSelector;
 
-@interface EXLocationPermissionRequester () <CLLocationManagerDelegate>
+@interface EXLocationAlwaysPermissionRequester () <CLLocationManagerDelegate>
 
 @property (nonatomic, strong) CLLocationManager *locMgr;
 @property (nonatomic, strong) UMPromiseResolveBlock resolve;
@@ -18,7 +18,7 @@ static SEL whenInUseAuthorizationSelector;
 
 @end
 
-@implementation EXLocationPermissionRequester
+@implementation EXLocationAlwaysPermissionRequester
 
 + (NSString *)permissionType
 {
@@ -75,12 +75,12 @@ static SEL whenInUseAuthorizationSelector;
 
 - (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
 {
-  NSDictionary *existingPermissions = [self getPermissions];
-  if (existingPermissions && [existingPermissions[@"status"] intValue] != UMPermissionStatusUndetermined) {
-    // since permissions are already determined, the iOS request methods will be no-ops.
-    // just resolve with whatever existing permissions.
-    resolve(existingPermissions);
-  } else {
+  // NSDictionary *existingPermissions = [self getPermissions];
+  // if (existingPermissions && [existingPermissions[@"status"] intValue] != UMPermissionStatusUndetermined) {
+  //   // since permissions are already determined, the iOS request methods will be no-ops.
+  //   // just resolve with whatever existing permissions.
+  //   resolve(existingPermissions);
+  // } else {
     _resolve = resolve;
     _reject = reject;
 
@@ -119,14 +119,14 @@ static SEL whenInUseAuthorizationSelector;
     //    To support this use case we will have to change the way location authorization is requested
     //    from promise-based to listener-based.
 
-    if ([[self class] isConfiguredForAlwaysAuthorization] && [_locMgr respondsToSelector:alwaysAuthorizationSelector]) {
-      ((void (*)(id, SEL))objc_msgSend)(_locMgr, alwaysAuthorizationSelector);
-    } else if ([[self class] isConfiguredForWhenInUseAuthorization] && [_locMgr respondsToSelector:whenInUseAuthorizationSelector]) {
-      ((void (*)(id, SEL))objc_msgSend)(_locMgr, whenInUseAuthorizationSelector);
-    } else {
-      _reject(@"E_LOCATION_INFO_PLIST", @"One of the `NSLocation*UsageDescription` keys must be present in Info.plist to be able to use geolocation.", nil);
-    }
-  }
+    ((void (*)(id, SEL))objc_msgSend)(_locMgr, alwaysAuthorizationSelector);
+    // if ([[self class] isConfiguredForAlwaysAuthorization] && [_locMgr respondsToSelector:alwaysAuthorizationSelector]) {
+    // } else if ([[self class] isConfiguredForWhenInUseAuthorization] && [_locMgr respondsToSelector:whenInUseAuthorizationSelector]) {
+    //   ((void (*)(id, SEL))objc_msgSend)(_locMgr, whenInUseAuthorizationSelector);
+    // } else {
+    //   _reject(@"E_LOCATION_INFO_PLIST", @"One of the `NSLocation*UsageDescription` keys must be present in Info.plist to be able to use geolocation.", nil);
+    // }
+  // }
 }
 
 # pragma mark - internal
@@ -159,6 +159,8 @@ static SEL whenInUseAuthorizationSelector;
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
 {
+    
+    printf("DID CHANGE ALWAYS STATUS");
   // TODO: Permissions.LOCATION issue (search by this phrase)
   // if Permissions.LOCATION is being called for the first time on iOS devide and prompts for user action it might not call this callback at all
   // it happens if user requests more that one permission at the same time via Permissions.askAsync(...) and LOCATION dialog is not being called first

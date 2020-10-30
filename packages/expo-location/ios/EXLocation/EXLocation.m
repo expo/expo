@@ -5,6 +5,8 @@
 #import <EXLocation/EXLocationTaskConsumer.h>
 #import <EXLocation/EXGeofencingTaskConsumer.h>
 #import <EXLocation/EXLocationPermissionRequester.h>
+#import <EXLocation/EXLocationAlwaysPermissionRequester.h>
+#import <EXLocation/EXLocationWhenInUsePermissionRequester.h>
 
 #import <CoreLocation/CLLocationManager.h>
 #import <CoreLocation/CLLocationManagerDelegate.h>
@@ -54,6 +56,8 @@ UM_EXPORT_MODULE(ExpoLocation);
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
   [UMPermissionsMethodsDelegate registerRequesters:@[[EXLocationPermissionRequester new]] withPermissionsManager:_permissionsManager];
+  [UMPermissionsMethodsDelegate registerRequesters:@[[EXLocationAlwaysPermissionRequester new]] withPermissionsManager:_permissionsManager];
+  [UMPermissionsMethodsDelegate registerRequesters:@[[EXLocationWhenInUsePermissionRequester new]] withPermissionsManager:_permissionsManager];
   _tasksManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMTaskManagerInterface)];
 }
 
@@ -323,6 +327,26 @@ UM_EXPORT_METHOD_AS(getPermissionsAsync,
                                                              reject:reject];
 }
 
+UM_EXPORT_METHOD_AS(requestWhenInUseAuthorization,
+                    requestWhenInUseAuthorization:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+    [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+                                                        withRequester:[EXLocationWhenInUsePermissionRequester class]
+                                                              resolve:resolve
+                                                              reject:reject];
+}
+
+UM_EXPORT_METHOD_AS(requestAlwaysAuthorization,
+                    requestAlwaysAuthorization:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+                                                        withRequester:[EXLocationAlwaysPermissionRequester class]
+                                                              resolve:resolve
+                                                              reject:reject];
+}
+
 UM_EXPORT_METHOD_AS(requestPermissionsAsync,
                     requestPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
@@ -452,7 +476,7 @@ UM_EXPORT_METHOD_AS(hasStartedGeofencingAsync,
 {
   CLLocationManager *locMgr = [[CLLocationManager alloc] init];
   locMgr.allowsBackgroundLocationUpdates = NO;
-
+  
   if (options) {
     locMgr.distanceFilter = options[@"distanceInterval"] ? [options[@"distanceInterval"] doubleValue] ?: kCLDistanceFilterNone : kCLLocationAccuracyHundredMeters;
 

@@ -1,6 +1,6 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <EXLocation/EXLocationPermissionRequester.h>
+#import <EXLocation/EXLocationWhenInUsePermissionRequester.h>
 #import <UMCore/UMUtilities.h>
 
 #import <objc/message.h>
@@ -10,7 +10,7 @@
 static SEL alwaysAuthorizationSelector;
 static SEL whenInUseAuthorizationSelector;
 
-@interface EXLocationPermissionRequester () <CLLocationManagerDelegate>
+@interface EXLocationWhenInUsePermissionRequester () <CLLocationManagerDelegate>
 
 @property (nonatomic, strong) CLLocationManager *locMgr;
 @property (nonatomic, strong) UMPromiseResolveBlock resolve;
@@ -18,7 +18,7 @@ static SEL whenInUseAuthorizationSelector;
 
 @end
 
-@implementation EXLocationPermissionRequester
+@implementation EXLocationWhenInUsePermissionRequester
 
 + (NSString *)permissionType
 {
@@ -118,14 +118,13 @@ static SEL whenInUseAuthorizationSelector;
     //        user responded to the dialog selecting `whenInUse` or is still deciding
     //    To support this use case we will have to change the way location authorization is requested
     //    from promise-based to listener-based.
-
-    if ([[self class] isConfiguredForAlwaysAuthorization] && [_locMgr respondsToSelector:alwaysAuthorizationSelector]) {
-      ((void (*)(id, SEL))objc_msgSend)(_locMgr, alwaysAuthorizationSelector);
-    } else if ([[self class] isConfiguredForWhenInUseAuthorization] && [_locMgr respondsToSelector:whenInUseAuthorizationSelector]) {
-      ((void (*)(id, SEL))objc_msgSend)(_locMgr, whenInUseAuthorizationSelector);
-    } else {
-      _reject(@"E_LOCATION_INFO_PLIST", @"One of the `NSLocation*UsageDescription` keys must be present in Info.plist to be able to use geolocation.", nil);
-    }
+    ((void (*)(id, SEL))objc_msgSend)(_locMgr, whenInUseAuthorizationSelector);
+    // if ([[self class] isConfiguredForAlwaysAuthorization] && [_locMgr respondsToSelector:alwaysAuthorizationSelector]) {
+    //   ((void (*)(id, SEL))objc_msgSend)(_locMgr, alwaysAuthorizationSelector);
+    // } else if ([[self class] isConfiguredForWhenInUseAuthorization] && [_locMgr respondsToSelector:whenInUseAuthorizationSelector]) {
+    // } else {
+    //   _reject(@"E_LOCATION_INFO_PLIST", @"One of the `NSLocation*UsageDescription` keys must be present in Info.plist to be able to use geolocation.", nil);
+    // }
   }
 }
 
