@@ -65,7 +65,7 @@ jobs:
         run: npx now deploy web-build --env NODE_ENV=production --confirm --public --no-clipboard --token=${ZEIT_TOKEN} > deploy-url.txt
       # Save variable
       - name: Set deploy url to env variable
-        run: echo "::set-env name=ZEIT_DEPLOY::$(cat deploy-url.txt)"
+        run: echo "ZEIT_DEPLOY=$(cat deploy-url.txt)" >> $GITHUB_ENV
       # Alias the now deployment URL
       - name: Alias with PR number
         working-directory: ./apps/native-component-list

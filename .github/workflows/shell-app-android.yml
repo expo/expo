@@ -21,10 +21,8 @@ jobs:
           path: .git/lfs
           key: ${{ steps.git-lfs.outputs.sha256 }}
       - run: git lfs pull
-      - name: Set up bin paths and env
-        run: |
-          echo "::add-path::$(pwd)/bin"
-          echo "::set-env name=EXPO_ROOT_DIR::$(pwd)"
+      - run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - run: echo "EXPO_ROOT_DIR=$(pwd)" >> $GITHUB_ENV
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
@@ -79,9 +77,9 @@ jobs:
         if: ${{ github.event_name != 'push' }}
         run: |
           if [ ${{ github.event_name }} == 'schedule' ]; then
-            echo "::set-env name=SLACK_MESSAGE_DESCRIPTION::scheduled"
+            echo "SLACK_MESSAGE_DESCRIPTION=scheduled" >> $GITHUB_ENV
           else
-            echo "::set-env name=SLACK_MESSAGE_DESCRIPTION::triggered by ${{ github.actor }}"
+            echo "SLACK_MESSAGE_DESCRIPTION=triggered by ${{ github.actor }}" >> $GITHUB_ENV
           fi
       - uses: 8398a7/action-slack@v3
         if: ${{ github.event_name != 'push' }}
