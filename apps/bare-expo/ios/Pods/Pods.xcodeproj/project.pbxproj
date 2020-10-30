@@ -113,14 +113,14 @@
 		};
 		1EF8AA59FA93DF5B95790A0970270B5C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 4BEE7ACE3F7241458856959A17279BB4 /* GTMAppAuth.xcodeproj */;
+			containerPortal = 89667C7AFE59CE5F712A100DCAD74916 /* GTMAppAuth.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = AFFE62B58843E7D325544E4D760E8920;
 			remoteInfo = GTMAppAuth;
 		};
 		23298049FAE884026E27EBED356170F2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 243083C38F670D90F7B28E74E5F1E21A /* FirebaseInstanceID.xcodeproj */;
+			containerPortal = 8535BDB3A222CBA5A5DF90C59E090078 /* FirebaseInstanceID.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 828A845A4F63A824ED62A82D61941B85;
 			remoteInfo = FirebaseInstanceID;
@@ -134,7 +134,7 @@
 		};
 		291A99041257C36484C60064E72752DE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 7DD84F398028F8B90361479846896947 /* glog.xcodeproj */;
+			containerPortal = 2BDF3C28F52C47C2565E05098F2C3B19 /* glog.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 86F597DC3D8F3D7A34EC5A5C413F7255;
 			remoteInfo = glog;
@@ -148,7 +148,7 @@
 		};
 		31748E8606E3C7F1044098C69BCA336F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = CCAF3739C888CA76E546FD115E070FFA /* Firebase.xcodeproj */;
+			containerPortal = 048219580AA201E9CE931FFC289A2E0A /* Firebase.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 15B99218A87324F316F0E937B3DAAC8B;
 			remoteInfo = Firebase;
@@ -169,7 +169,7 @@
 		};
 		358D071250B40AB283302C3ECD437B10 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = DC6D6CB3089B3C1E1D428D0CC6C2CAC7 /* boost-for-react-native.xcodeproj */;
+			containerPortal = 126B098AB73EFE3E84BE6D831A98CC79 /* boost-for-react-native.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = AA4CE39926C0C12D02F874C1C48A5710;
 			remoteInfo = "boost-for-react-native";
@@ -204,7 +204,7 @@
 		};
 		3A1AAE03E1A709F01E60A0B237C365C2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 44E9EE392FDA50D26FBC6CDF991E2CB9 /* SDWebImage.xcodeproj */;
+			containerPortal = F5229B7E1FC7DB557272397D014749A1 /* SDWebImage.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 4ECF4E662EEBE4FA58102FF984D920CC;
 			remoteInfo = SDWebImage;
@@ -225,7 +225,7 @@
 		};
 		457DFBD7B488B87FF65824EACECA61D0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = CB777ECF90F094ACFEE48812B6E914F9 /* FlipperKit.xcodeproj */;
+			containerPortal = 8B27E9282932838EE1CEE0919DE9CE6F /* FlipperKit.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 21747C582544BA8AFFF8CE8331CB4D93;
 			remoteInfo = FlipperKit;
@@ -246,7 +246,7 @@
 		};
 		4F2EA4592145DD9D69044B7C7B58F4B4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 697DAC53D0628A7DC63C30512823A49B /* DoubleConversion.xcodeproj */;
+			containerPortal = 0A16B5614AC53AF93EB7EDF015136682 /* DoubleConversion.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 725D0E8C1060F8939288E8C91236BA4F;
 			remoteInfo = DoubleConversion;
@@ -260,7 +260,7 @@
 		};
 		51036B30A58D8B6DAEFBB83ACCDFC587 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 8810B4FC35B59F90830756C8A4AB5EEB /* OpenSSL-Universal.xcodeproj */;
+			containerPortal = 8ABBBA03BC11977C2AC7472408042852 /* OpenSSL-Universal.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 6F68E8F1AF30EB52FE60841D139BAC02;
 			remoteInfo = "OpenSSL-Universal";
@@ -288,7 +288,7 @@
 		};
 		5AD68F4FFED40348201BDBFAAB0D9CB2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = A6974EC7C0F23511EDC8A3C9597DBEAE /* nanopb.xcodeproj */;
+			containerPortal = 0447766467D4BBAB90F93B82B76E3EB9 /* nanopb.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 052B66B57BF269A4B160A5659F7D46D4;
 			remoteInfo = nanopb;
@@ -302,7 +302,7 @@
 		};
 		5C14CA63E00FDA2CD6E3DA65E3768737 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = DD61318771AB67155632B63C14C85BF1 /* FBSDKLoginKit.xcodeproj */;
+			containerPortal = 2BBFFB424A4595C0E4C749A1CFA91D2C /* FBSDKLoginKit.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 99D9EFC28DE380315427F305282258E8;
 			remoteInfo = FBSDKLoginKit;
@@ -330,7 +330,7 @@
 		};
 		6465609C471599C95FDBE713D036750B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = D73483B12590D0919FED4EE24739A702 /* AppAuth.xcodeproj */;
+			containerPortal = 3CAD37FF4F17181E8DB0FF51B19C6D92 /* AppAuth.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 4EFA7E4CE531453CF475A9A4322A84F8;
 			remoteInfo = AppAuth;
@@ -344,7 +344,7 @@
 		};
 		6D90794CCE93342F3D91EEF874F0D0A2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = BF64EFCB4C7B797D661EE843AFE361E0 /* FirebaseCore.xcodeproj */;
+			containerPortal = 416994BCF06E1248FEBB2ACD79D27683 /* FirebaseCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 4BD5DE1E00ED67A59118DB4A3CD5F288;
 			remoteInfo = FirebaseCore;
@@ -421,7 +421,7 @@
 		};
 		76AB5EE7BA906EB1894F86F6E57E55CB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 1FDAF51ABE6B3A53D6727FD02DE4746A /* FirebaseCoreDiagnostics.xcodeproj */;
+			containerPortal = DC1E93E9F9CF1B2386EA7E7467D29DBE /* FirebaseCoreDiagnostics.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 0CE453D8DBD3396B4C74B9ACD7A09387;
 			remoteInfo = FirebaseCoreDiagnostics;
@@ -435,14 +435,14 @@
 		};
 		791D1E8307D7D36D83175CFE2700E43D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 5A7CF4906D724FD23B3C8A8B02A4803E /* FirebaseAnalytics.xcodeproj */;
+			containerPortal = 67125572D0378049D328B71A8CC34E10 /* FirebaseAnalytics.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 3DC59710253F562E6B3BE135BABFBA19;
 			remoteInfo = FirebaseAnalytics;
 		};
 		794186A5F5A2C4D9E1640248D9790343 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = EE8FA4CFC8BB4BA22D470EBED0E20F6E /* FirebaseCoreDiagnosticsInterop.xcodeproj */;
+			containerPortal = 87D14724D2C891636D703FDB6553DE20 /* FirebaseCoreDiagnosticsInterop.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 82BE183BB67FD85793E8A161FAEDC1AF;
 			remoteInfo = FirebaseCoreDiagnosticsInterop;
@@ -463,7 +463,7 @@
 		};
 		7B7E8B06BAFD553D92F1D2E605D71526 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 82E701BCE1C9BA339A7804BE26EB0C7B /* CocoaAsyncSocket.xcodeproj */;
+			containerPortal = 938A9F9FCB89C65186461BF3BFB0F132 /* CocoaAsyncSocket.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 028565F879BDCF0F420E4AB07AAF9426;
 			remoteInfo = CocoaAsyncSocket;
@@ -498,7 +498,7 @@
 		};
 		840A4C2BB846872C9DDAE5AF247B7F1B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 93C7BB45CDAE4EFC4D68B6F35BAA2DEF /* Amplitude.xcodeproj */;
+			containerPortal = AFDCD53AA38FDB130CE116D7F4B734D4 /* Amplitude.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = A8506691BCF493596D6E68176F7E0129;
 			remoteInfo = Amplitude;
@@ -582,7 +582,7 @@
 		};
 		9F2B7B6165C696612465C5FF30B65157 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 511EA655E900C4E2B259A51387F3BB6B /* FBSDKCoreKit.xcodeproj */;
+			containerPortal = A9FD7E709A37370C715C61350A2718D4 /* FBSDKCoreKit.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 322040CF2C7D2642650A8BFCDB4B2AD3;
 			remoteInfo = FBSDKCoreKit;
@@ -610,7 +610,7 @@
 		};
 		A8F470F47C5D1DCAEE7C43E61CDC5106 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 6688E9476B32D15AE7764AD4C10EDF91 /* GoogleUtilities.xcodeproj */;
+			containerPortal = F7B34005D40FD42D59D22B3FE4EEF6B1 /* GoogleUtilities.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 80B861CBFC18436AFD9A3703F00CEEC4;
 			remoteInfo = GoogleUtilities;
@@ -722,7 +722,7 @@
 		};
 		C3EED8C158C5C9E57B224E4FA98B5B67 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 9816328A5B14EB8834FA7C2F765DC1B2 /* Flipper-Folly.xcodeproj */;
+			containerPortal = 140D564088C4F0DED4BB880BCA69E3DF /* Flipper-Folly.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = BC71C7B21753292689B3040E2CC24B53;
 			remoteInfo = "Flipper-Folly";
@@ -750,7 +750,7 @@
 		};
 		CF34F3EFB93D1641178A41415CB8640D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 356B3B4E4E26785739BF2AE515B09BFA /* Analytics.xcodeproj */;
+			containerPortal = B7DF27361C035B123C577184A73A4468 /* Analytics.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 428EE321470913F61A7C253ACF3B4D53;
 			remoteInfo = Analytics;
@@ -778,7 +778,7 @@
 		};
 		D01FF6EE35C881A93730F983A8C28230 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 593360857ECBDDE47954AC194EDFF990 /* PromisesObjC.xcodeproj */;
+			containerPortal = F8D0FF7E8403476850BA4DE6BDD21255 /* PromisesObjC.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 615BB6D15EC37D16C898941802F0D251;
 			remoteInfo = PromisesObjC;
@@ -820,28 +820,28 @@
 		};
 		D771D31EFE10135906E31D7CC411051F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = DE1BF6E0007297124C707172D2D0A9BE /* GoogleSignIn.xcodeproj */;
+			containerPortal = 9BD72B182499ECD251AE39959EA92A42 /* GoogleSignIn.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 70D52585A9FA4EEA343010638ADABC11;
 			remoteInfo = GoogleSignIn;
 		};
 		D795A06A8AE8B943BFA94098BE6F65C2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B7C9CCFA9934111EC18D9E9BD02ED5A0 /* GoogleAppMeasurement.xcodeproj */;
+			containerPortal = DA253D15291287CA8AA066DD5528CDFA /* GoogleAppMeasurement.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 9677266E0E3834B96EA12E3394F9063D;
 			remoteInfo = GoogleAppMeasurement;
 		};
 		DA8C03AAB4E0FE83CDE9BB4B6D5CCCC2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 466FE782E4DDC3289D4AF201D977C35A /* Folly.xcodeproj */;
+			containerPortal = BE19C870187665F5A2D4FC8F24DFFFDD /* Folly.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 14BB2B7275726942E762F076FA966088;
 			remoteInfo = Folly;
 		};
 		DB2332F2FC56823D579E50798559A6A8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 299B8804F65EBF27AF47BAD57DA2E276 /* GoogleDataTransportCCTSupport.xcodeproj */;
+			containerPortal = 5F8AA7BA04FC26375EECFEC307522BC3 /* GoogleDataTransportCCTSupport.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 11C41BD6B3D59337B4AE45F453918096;
 			remoteInfo = GoogleDataTransportCCTSupport;
@@ -876,14 +876,14 @@
 		};
 		E148FC2B1C33E9462E084CB08F0B7BD3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = A2872FA2A3F50D12A077E57F58B2ADC8 /* Flipper-PeerTalk.xcodeproj */;
+			containerPortal = 45543AC33B1B129EFC3465D61F5FB84D /* Flipper-PeerTalk.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 1A523ED12092D1D5730897FA5D8F0D95;
 			remoteInfo = "Flipper-PeerTalk";
 		};
 		E2087EBFB7798C35170FC0588BF9291E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 9A1BEEA83B6DD79B27E96F95352AD7AE /* Flipper-RSocket.xcodeproj */;
+			containerPortal = B6ABD43E0C286BBC02079F2EF0C505D5 /* Flipper-RSocket.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 1A456A673F68CCC772569FBA33E4A9E0;
 			remoteInfo = "Flipper-RSocket";
@@ -897,7 +897,7 @@
 		};
 		E648025A5990FD3285C6A3D4294BC488 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = FC6CE437981FB40775CFCCB346778A1B /* CocoaLibEvent.xcodeproj */;
+			containerPortal = A70D05D1A70E0638581CB1FB083EEE77 /* CocoaLibEvent.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 0E4F8F3811F0945641866082B5F12145;
 			remoteInfo = CocoaLibEvent;
@@ -918,7 +918,7 @@
 		};
 		E7552AE2D6864105A7DBF52E0D28A782 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 58DB7F90D69CF846B709C2808EF149CF /* Flipper-Glog.xcodeproj */;
+			containerPortal = B87A6AF6D03D15B833EF233041470E4D /* Flipper-Glog.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 62C2C1B208D60EBCBCCEFAF36D906B32;
 			remoteInfo = "Flipper-Glog";
@@ -932,14 +932,14 @@
 		};
 		EA22C8DA019ACD62BDE5EE352468634B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = CFA444B026F34012614D36E853210720 /* YogaKit.xcodeproj */;
+			containerPortal = 0194E7E01FD3C8324755AB72A878D5CF /* YogaKit.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 0329F50521131A4BC4034736FA91D109;
 			remoteInfo = YogaKit;
 		};
 		EDE7DDE9D3D5C49256F28E7B843BA8E6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = A7CF2869B544721F0EA25AE8144AA7E4 /* Flipper.xcodeproj */;
+			containerPortal = F4ADA59EBA2DB280A9F705119F2377F2 /* Flipper.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = E37FFB87E7DF4D8CB6E3FBD5373DC6D0;
 			remoteInfo = Flipper;
@@ -967,7 +967,7 @@
 		};
 		F17D3CFC77D70C047A7062C9659CA8E6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 814439BB5BB9193A18434DAF084BF0E0 /* ZXingObjC.xcodeproj */;
+			containerPortal = FDA28DC49C821065BEC06F540391241D /* ZXingObjC.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = F1A98E99C5291C55C29C32D889990685;
 			remoteInfo = ZXingObjC;
@@ -1023,14 +1023,14 @@
 		};
 		F9CAA32377F4890B1E8F6715C35FDE64 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 96B1ABEAAA407EB8628125396A28F0B5 /* GoogleDataTransport.xcodeproj */;
+			containerPortal = A1C52852FBE4915BFE9F4AEDAD79289C /* GoogleDataTransport.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 78B41281B6D2EAC6C3C75FFE5052E985;
 			remoteInfo = GoogleDataTransport;
 		};
 		FA408C3FF371B9805B11682388FC8A65 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = A48B2F8F29C6B93D575464F4CAF7AB8E /* GTMSessionFetcher.xcodeproj */;
+			containerPortal = 1664E1789DE5343752FF2F4C41D41E2C /* GTMSessionFetcher.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = BD7A8A3BC22FD28DCB40568BE43D7C70;
 			remoteInfo = GTMSessionFetcher;
@@ -1051,7 +1051,7 @@
 		};
 		FE9FA8AECB66AF909F4F373703DCA3E3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 0ED9EF65D9276F4428CCA8C491BFB7CE /* Flipper-DoubleConversion.xcodeproj */;
+			containerPortal = 0A7AAF56BD356BAA0AB3DEC25295E6BB /* Flipper-DoubleConversion.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 37536435931E49AAE030DC5B8307BD28;
 			remoteInfo = "Flipper-DoubleConversion";
@@ -1066,40 +1066,44 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0194E7E01FD3C8324755AB72A878D5CF /* YogaKit */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = YogaKit; path = YogaKit.xcodeproj; sourceTree = "<group>"; };
 		022DBCA4B0EC9E5BEA5342DC7DE4CD96 /* RCTRequired */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTRequired; path = RCTRequired.xcodeproj; sourceTree = "<group>"; };
+		0447766467D4BBAB90F93B82B76E3EB9 /* nanopb */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = nanopb; path = nanopb.xcodeproj; sourceTree = "<group>"; };
+		048219580AA201E9CE931FFC289A2E0A /* Firebase */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Firebase; path = Firebase.xcodeproj; sourceTree = "<group>"; };
+		0A16B5614AC53AF93EB7EDF015136682 /* DoubleConversion */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DoubleConversion; path = DoubleConversion.xcodeproj; sourceTree = "<group>"; };
+		0A7AAF56BD356BAA0AB3DEC25295E6BB /* Flipper-DoubleConversion */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Flipper-DoubleConversion"; path = "Flipper-DoubleConversion.xcodeproj"; sourceTree = "<group>"; };
 		0C66BAA3F8CA38BB9D80B40B42587D3E /* Pods-BareExpo-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-BareExpo-acknowledgements.plist"; sourceTree = "<group>"; };
 		0ED0DBE8C4E33CFE652901814BFD1AE7 /* UMImageLoaderInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMImageLoaderInterface; path = UMImageLoaderInterface.xcodeproj; sourceTree = "<group>"; };
-		0ED9EF65D9276F4428CCA8C491BFB7CE /* Flipper-DoubleConversion */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Flipper-DoubleConversion"; path = "Flipper-DoubleConversion.xcodeproj"; sourceTree = "<group>"; };
 		111AA78E79B6A5910B2EEF1FAE2AD5E0 /* RCTTypeSafety */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTTypeSafety; path = RCTTypeSafety.xcodeproj; sourceTree = "<group>"; };
+		126B098AB73EFE3E84BE6D831A98CC79 /* boost-for-react-native */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "boost-for-react-native"; path = "boost-for-react-native.xcodeproj"; sourceTree = "<group>"; };
+		140D564088C4F0DED4BB880BCA69E3DF /* Flipper-Folly */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Flipper-Folly"; path = "Flipper-Folly.xcodeproj"; sourceTree = "<group>"; };
 		14E0FE9028BAD21EA1B8C44C1D39C3A6 /* EXBattery */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXBattery; path = EXBattery.xcodeproj; sourceTree = "<group>"; };
+		1664E1789DE5343752FF2F4C41D41E2C /* GTMSessionFetcher */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GTMSessionFetcher; path = GTMSessionFetcher.xcodeproj; sourceTree = "<group>"; };
 		167217158CA8279D5B9D61FB31EEEA60 /* EXGL_CPP */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXGL_CPP; path = EXGL_CPP.xcodeproj; sourceTree = "<group>"; };
 		17CE4663B226B5FD8DC8E63C094250F5 /* Pods-BareExpo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-BareExpo.release.xcconfig"; sourceTree = "<group>"; };
 		1FCBD8E750FDB5E63FC73CE48056A26C /* EXNetwork */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXNetwork; path = EXNetwork.xcodeproj; sourceTree = "<group>"; };
-		1FDAF51ABE6B3A53D6727FD02DE4746A /* FirebaseCoreDiagnostics */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FirebaseCoreDiagnostics; path = FirebaseCoreDiagnostics.xcodeproj; sourceTree = "<group>"; };
-		243083C38F670D90F7B28E74E5F1E21A /* FirebaseInstanceID */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FirebaseInstanceID; path = FirebaseInstanceID.xcodeproj; sourceTree = "<group>"; };
 		25C5903E8E31BCDFBDD55584DECA52F8 /* react-native-view-shot */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "react-native-view-shot"; path = "react-native-view-shot.xcodeproj"; sourceTree = "<group>"; };
 		27B7AEBE55A470504C476E65B2518C8D /* EXBackgroundFetch */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXBackgroundFetch; path = EXBackgroundFetch.xcodeproj; sourceTree = "<group>"; };
-		299B8804F65EBF27AF47BAD57DA2E276 /* GoogleDataTransportCCTSupport */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoogleDataTransportCCTSupport; path = GoogleDataTransportCCTSupport.xcodeproj; sourceTree = "<group>"; };
-		356B3B4E4E26785739BF2AE515B09BFA /* Analytics */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Analytics; path = Analytics.xcodeproj; sourceTree = "<group>"; };
+		2BBFFB424A4595C0E4C749A1CFA91D2C /* FBSDKLoginKit */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBSDKLoginKit; path = FBSDKLoginKit.xcodeproj; sourceTree = "<group>"; };
+		2BDF3C28F52C47C2565E05098F2C3B19 /* glog */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = glog; path = glog.xcodeproj; sourceTree = "<group>"; };
 		390D78DAEB9D068B11CA0D509E41A2C6 /* EXGL_CPP_LEGACY */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXGL_CPP_LEGACY; path = EXGL_CPP_LEGACY.xcodeproj; sourceTree = "<group>"; };
 		3A712DF283C368CA1E5228EE6E4E22AD /* EXSensors */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXSensors; path = EXSensors.xcodeproj; sourceTree = "<group>"; };
+		3CAD37FF4F17181E8DB0FF51B19C6D92 /* AppAuth */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AppAuth; path = AppAuth.xcodeproj; sourceTree = "<group>"; };
 		3D2ED7E83C1B011ECDBCA755A43AC769 /* RNGestureHandler */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNGestureHandler; path = RNGestureHandler.xcodeproj; sourceTree = "<group>"; };
 		3EC3BD1F2011CBA488FD4B326C695E81 /* ReactCommon */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ReactCommon; path = ReactCommon.xcodeproj; sourceTree = "<group>"; };
 		3EC3BE41BA1AC1FF4940B0690365098A /* RNCAsyncStorage */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNCAsyncStorage; path = RNCAsyncStorage.xcodeproj; sourceTree = "<group>"; };
 		40C4229521BBC90BB916B6265F24114E /* RNCPicker */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNCPicker; path = RNCPicker.xcodeproj; sourceTree = "<group>"; };
+		416994BCF06E1248FEBB2ACD79D27683 /* FirebaseCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FirebaseCore; path = FirebaseCore.xcodeproj; sourceTree = "<group>"; };
 		42359716519B5D122677266E1BC8C7A5 /* React-RCTImage */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-RCTImage"; path = "React-RCTImage.xcodeproj"; sourceTree = "<group>"; };
 		443D83B99A33DF4F7DA2E415CD5B787F /* Pods-BareExpo-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-BareExpo-acknowledgements.markdown"; sourceTree = "<group>"; };
-		44E9EE392FDA50D26FBC6CDF991E2CB9 /* SDWebImage */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDWebImage; path = SDWebImage.xcodeproj; sourceTree = "<group>"; };
-		466FE782E4DDC3289D4AF201D977C35A /* Folly */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Folly; path = Folly.xcodeproj; sourceTree = "<group>"; };
+		45543AC33B1B129EFC3465D61F5FB84D /* Flipper-PeerTalk */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Flipper-PeerTalk"; path = "Flipper-PeerTalk.xcodeproj"; sourceTree = "<group>"; };
 		484AC26AD18AE93A84815EF2704E21C4 /* EXGL */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXGL; path = EXGL.xcodeproj; sourceTree = "<group>"; };
 		486CE8CCFF9129CC233C81EE741AA2DC /* EXLocalAuthentication */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXLocalAuthentication; path = EXLocalAuthentication.xcodeproj; sourceTree = "<group>"; };
 		49DCD6EE65F9E79826DF0383FA2A1D18 /* EXDocumentPicker */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXDocumentPicker; path = EXDocumentPicker.xcodeproj; sourceTree = "<group>"; };
-		4BEE7ACE3F7241458856959A17279BB4 /* GTMAppAuth */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GTMAppAuth; path = GTMAppAuth.xcodeproj; sourceTree = "<group>"; };
 		4E7B29E79E4D809A6525EF1901AC3B48 /* react-native-viewpager */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "react-native-viewpager"; path = "react-native-viewpager.xcodeproj"; sourceTree = "<group>"; };
 		4F3A07063A9AD258EDA06BE84CD54DFA /* EXConstants */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXConstants; path = EXConstants.xcodeproj; sourceTree = "<group>"; };
 		4F7EE5D785CC7B4CE80097C7751A2D76 /* EXDevice */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXDevice; path = EXDevice.xcodeproj; sourceTree = "<group>"; };
 		50E3418E79A6AE77AF40EFEEF32D0841 /* React */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React; path = React.xcodeproj; sourceTree = "<group>"; };
-		511EA655E900C4E2B259A51387F3BB6B /* FBSDKCoreKit */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBSDKCoreKit; path = FBSDKCoreKit.xcodeproj; sourceTree = "<group>"; };
 		51B704DB85DB577F51FE39BA9B88D4E2 /* UMConstantsInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMConstantsInterface; path = UMConstantsInterface.xcodeproj; sourceTree = "<group>"; };
 		51E0BDE71C0D0E32EA9782B41986371E /* React-RCTSettings */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-RCTSettings"; path = "React-RCTSettings.xcodeproj"; sourceTree = "<group>"; };
 		51F86F32196F12B0CE5B8F73332201A2 /* EXDevMenu */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXDevMenu; path = EXDevMenu.xcodeproj; sourceTree = "<group>"; };
@@ -1107,20 +1111,17 @@
 		545E3A7D107E11346E83C67D1EDA1A86 /* React-jsi */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-jsi"; path = "React-jsi.xcodeproj"; sourceTree = "<group>"; };
 		5522BAFF47588E7885E9D6D7F540452A /* UMTaskManagerInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMTaskManagerInterface; path = UMTaskManagerInterface.xcodeproj; sourceTree = "<group>"; };
 		578C6358DF0FA69B38E4F13B25249032 /* EXSecureStore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXSecureStore; path = EXSecureStore.xcodeproj; sourceTree = "<group>"; };
-		58DB7F90D69CF846B709C2808EF149CF /* Flipper-Glog */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Flipper-Glog"; path = "Flipper-Glog.xcodeproj"; sourceTree = "<group>"; };
-		593360857ECBDDE47954AC194EDFF990 /* PromisesObjC */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PromisesObjC; path = PromisesObjC.xcodeproj; sourceTree = "<group>"; };
 		59F99398FE91713A55BC02A5CD11B63A /* RNSharedElement */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNSharedElement; path = RNSharedElement.xcodeproj; sourceTree = "<group>"; };
-		5A7CF4906D724FD23B3C8A8B02A4803E /* FirebaseAnalytics */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FirebaseAnalytics; path = FirebaseAnalytics.xcodeproj; sourceTree = "<group>"; };
 		5C52B123A6C763FB25B68FB0DA9BEE5E /* FBLazyVector */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBLazyVector; path = FBLazyVector.xcodeproj; sourceTree = "<group>"; };
 		5D30DDA11837F72842C54DE46CD4E09C /* EXImageLoader */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXImageLoader; path = EXImageLoader.xcodeproj; sourceTree = "<group>"; };
+		5F8AA7BA04FC26375EECFEC307522BC3 /* GoogleDataTransportCCTSupport */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoogleDataTransportCCTSupport; path = GoogleDataTransportCCTSupport.xcodeproj; sourceTree = "<group>"; };
 		5FAAE741D9971287D3376D0F9CC3A601 /* EXMailComposer */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXMailComposer; path = EXMailComposer.xcodeproj; sourceTree = "<group>"; };
 		6215806D7E60B892F633B07B38A8BEB4 /* EXPrint */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXPrint; path = EXPrint.xcodeproj; sourceTree = "<group>"; };
 		627911FE720FA1481BA6F2D7264D954C /* EXVideoThumbnails */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXVideoThumbnails; path = EXVideoThumbnails.xcodeproj; sourceTree = "<group>"; };
 		658D8383B96A4F7B0040A31878D81BC9 /* Pods-BareExpoTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-BareExpoTests.release.xcconfig"; sourceTree = "<group>"; };
-		6688E9476B32D15AE7764AD4C10EDF91 /* GoogleUtilities */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoogleUtilities; path = GoogleUtilities.xcodeproj; sourceTree = "<group>"; };
+		67125572D0378049D328B71A8CC34E10 /* FirebaseAnalytics */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FirebaseAnalytics; path = FirebaseAnalytics.xcodeproj; sourceTree = "<group>"; };
 		680162CE36691ECDA1C24EE96D1AFF6E /* React-RCTActionSheet */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-RCTActionSheet"; path = "React-RCTActionSheet.xcodeproj"; sourceTree = "<group>"; };
 		6927D2073D97E512C3B7AF659CE4E646 /* EXInAppPurchases */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXInAppPurchases; path = EXInAppPurchases.xcodeproj; sourceTree = "<group>"; };
-		697DAC53D0628A7DC63C30512823A49B /* DoubleConversion */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DoubleConversion; path = DoubleConversion.xcodeproj; sourceTree = "<group>"; };
 		6A4F8C9E440F792F50A8DF26E2573687 /* Pods-BareExpo-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-BareExpo-umbrella.h"; sourceTree = "<group>"; };
 		6C61A3F9CA6F9F73C8025481A060916E /* EXAmplitude */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXAmplitude; path = EXAmplitude.xcodeproj; sourceTree = "<group>"; };
 		724977E10DA7A347D9306FDC4AABB9E2 /* react-native-netinfo */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "react-native-netinfo"; path = "react-native-netinfo.xcodeproj"; sourceTree = "<group>"; };
@@ -1130,17 +1131,18 @@
 		7908E04D76FF55B5BD021F4AD58B35DE /* EXLocalization */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXLocalization; path = EXLocalization.xcodeproj; sourceTree = "<group>"; };
 		7958CD30BD588AE934189C7B7CF70E87 /* expo-image */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "expo-image"; path = "expo-image.xcodeproj"; sourceTree = "<group>"; };
 		7CE4BE18176206A8FFEF1CCFF1120ACC /* EXWebBrowser */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXWebBrowser; path = EXWebBrowser.xcodeproj; sourceTree = "<group>"; };
-		7DD84F398028F8B90361479846896947 /* glog */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = glog; path = glog.xcodeproj; sourceTree = "<group>"; };
 		7DFEEF793536D87B26BB43D1DE2FD8F9 /* EXCrypto */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXCrypto; path = EXCrypto.xcodeproj; sourceTree = "<group>"; };
 		7E9FB64C99F47A1DBD0A73AC5F3BF9DC /* EXCalendar */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXCalendar; path = EXCalendar.xcodeproj; sourceTree = "<group>"; };
 		80C3D1BD5E63A748A0C880AAF193520F /* react-native-segmented-control */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "react-native-segmented-control"; path = "react-native-segmented-control.xcodeproj"; sourceTree = "<group>"; };
 		811BFEA08F99A13C94EAE5A7CFB735D4 /* React-Core */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-Core"; path = "React-Core.xcodeproj"; sourceTree = "<group>"; };
-		814439BB5BB9193A18434DAF084BF0E0 /* ZXingObjC */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ZXingObjC; path = ZXingObjC.xcodeproj; sourceTree = "<group>"; };
-		82E701BCE1C9BA339A7804BE26EB0C7B /* CocoaAsyncSocket */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CocoaAsyncSocket; path = CocoaAsyncSocket.xcodeproj; sourceTree = "<group>"; };
+		8535BDB3A222CBA5A5DF90C59E090078 /* FirebaseInstanceID */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FirebaseInstanceID; path = FirebaseInstanceID.xcodeproj; sourceTree = "<group>"; };
 		85E43E5A8210FA626FD0E3D42CD2E608 /* EXBrightness */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXBrightness; path = EXBrightness.xcodeproj; sourceTree = "<group>"; };
 		878E77864652C9881F9C85C3BC4CA6E7 /* libPods-BareExpoTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libPods-BareExpoTests.a"; path = "libPods-BareExpoTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		8810B4FC35B59F90830756C8A4AB5EEB /* OpenSSL-Universal */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "OpenSSL-Universal"; path = "OpenSSL-Universal.xcodeproj"; sourceTree = "<group>"; };
+		87D14724D2C891636D703FDB6553DE20 /* FirebaseCoreDiagnosticsInterop */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FirebaseCoreDiagnosticsInterop; path = FirebaseCoreDiagnosticsInterop.xcodeproj; sourceTree = "<group>"; };
+		89667C7AFE59CE5F712A100DCAD74916 /* GTMAppAuth */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GTMAppAuth; path = GTMAppAuth.xcodeproj; sourceTree = "<group>"; };
 		897F09A0B35506E69FFD7A99A3289424 /* EXLinearGradient */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXLinearGradient; path = EXLinearGradient.xcodeproj; sourceTree = "<group>"; };
+		8ABBBA03BC11977C2AC7472408042852 /* OpenSSL-Universal */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "OpenSSL-Universal"; path = "OpenSSL-Universal.xcodeproj"; sourceTree = "<group>"; };
+		8B27E9282932838EE1CEE0919DE9CE6F /* FlipperKit */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FlipperKit; path = FlipperKit.xcodeproj; sourceTree = "<group>"; };
 		8BE4E117A7F75ED80447FBC786743976 /* EXKeepAwake */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXKeepAwake; path = EXKeepAwake.xcodeproj; sourceTree = "<group>"; };
 		8C4369896C950CADE1DDDED32D1111BE /* react-native-safe-area-context */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "react-native-safe-area-context"; path = "react-native-safe-area-context.xcodeproj"; sourceTree = "<group>"; };
 		8D4487EEFB71786954C9372F19A16FCF /* EXNotifications */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXNotifications; path = EXNotifications.xcodeproj; sourceTree = "<group>"; };
@@ -1150,39 +1152,39 @@
 		9058BDB0B5F2490D02C7D0398314D336 /* Pods-BareExpo-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-BareExpo-dummy.m"; sourceTree = "<group>"; };
 		90A03F72FE3F2CF869DF0172CEE1AFBA /* UMReactNativeAdapter */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMReactNativeAdapter; path = UMReactNativeAdapter.xcodeproj; sourceTree = "<group>"; };
 		91DF92B284829E22AC9951C24E0E0348 /* EXScreenCapture */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXScreenCapture; path = EXScreenCapture.xcodeproj; sourceTree = "<group>"; };
-		93C7BB45CDAE4EFC4D68B6F35BAA2DEF /* Amplitude */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Amplitude; path = Amplitude.xcodeproj; sourceTree = "<group>"; };
+		938A9F9FCB89C65186461BF3BFB0F132 /* CocoaAsyncSocket */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CocoaAsyncSocket; path = CocoaAsyncSocket.xcodeproj; sourceTree = "<group>"; };
 		94971B1DAA4FAC505E564494C3A28B98 /* React-jsiexecutor */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-jsiexecutor"; path = "React-jsiexecutor.xcodeproj"; sourceTree = "<group>"; };
-		96B1ABEAAA407EB8628125396A28F0B5 /* GoogleDataTransport */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoogleDataTransport; path = GoogleDataTransport.xcodeproj; sourceTree = "<group>"; };
-		9816328A5B14EB8834FA7C2F765DC1B2 /* Flipper-Folly */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Flipper-Folly"; path = "Flipper-Folly.xcodeproj"; sourceTree = "<group>"; };
-		9A1BEEA83B6DD79B27E96F95352AD7AE /* Flipper-RSocket */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Flipper-RSocket"; path = "Flipper-RSocket.xcodeproj"; sourceTree = "<group>"; };
+		9BD72B182499ECD251AE39959EA92A42 /* GoogleSignIn */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoogleSignIn; path = GoogleSignIn.xcodeproj; sourceTree = "<group>"; };
 		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		9DDFB1AA692910B2344B6A40776923CC /* EXLocation */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXLocation; path = EXLocation.xcodeproj; sourceTree = "<group>"; };
 		9E651005DCB0A84C70DEC795C5BAAAC9 /* React-RCTAnimation */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-RCTAnimation"; path = "React-RCTAnimation.xcodeproj"; sourceTree = "<group>"; };
 		9FAD34678C209CB564AF4FDFB6DB79F8 /* Pods-BareExpoTests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-BareExpoTests-dummy.m"; sourceTree = "<group>"; };
 		A0F189371FFB8B9D3708CD181198A0AE /* Pods-BareExpoTests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-BareExpoTests-acknowledgements.plist"; sourceTree = "<group>"; };
 		A10688065FEE37DB6878E59A80501785 /* React-RCTNetwork */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-RCTNetwork"; path = "React-RCTNetwork.xcodeproj"; sourceTree = "<group>"; };
+		A1C52852FBE4915BFE9F4AEDAD79289C /* GoogleDataTransport */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoogleDataTransport; path = GoogleDataTransport.xcodeproj; sourceTree = "<group>"; };
 		A1E06CC30B2BA9145051839A6BEF6AD3 /* EXCellular */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXCellular; path = EXCellular.xcodeproj; sourceTree = "<group>"; };
-		A2872FA2A3F50D12A077E57F58B2ADC8 /* Flipper-PeerTalk */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Flipper-PeerTalk"; path = "Flipper-PeerTalk.xcodeproj"; sourceTree = "<group>"; };
 		A2DA613CF3291237CDB398280D52148D /* RNSVG */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNSVG; path = RNSVG.xcodeproj; sourceTree = "<group>"; };
 		A4132FE1A16DA440EF5CC09EDAFFC75E /* EXRandom */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXRandom; path = EXRandom.xcodeproj; sourceTree = "<group>"; };
-		A48B2F8F29C6B93D575464F4CAF7AB8E /* GTMSessionFetcher */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GTMSessionFetcher; path = GTMSessionFetcher.xcodeproj; sourceTree = "<group>"; };
 		A63364982DFC6B27E8C94EBD31765273 /* EXSpeech */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXSpeech; path = EXSpeech.xcodeproj; sourceTree = "<group>"; };
-		A6974EC7C0F23511EDC8A3C9597DBEAE /* nanopb */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = nanopb; path = nanopb.xcodeproj; sourceTree = "<group>"; };
+		A70D05D1A70E0638581CB1FB083EEE77 /* CocoaLibEvent */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CocoaLibEvent; path = CocoaLibEvent.xcodeproj; sourceTree = "<group>"; };
 		A7B9BA1DFFF1F34A082F2E12F0CD5F00 /* UMFontInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMFontInterface; path = UMFontInterface.xcodeproj; sourceTree = "<group>"; };
-		A7CF2869B544721F0EA25AE8144AA7E4 /* Flipper */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Flipper; path = Flipper.xcodeproj; sourceTree = "<group>"; };
 		A83DBD446A37B781BC8BEAD283D472DE /* EXContacts */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXContacts; path = EXContacts.xcodeproj; sourceTree = "<group>"; };
+		A9FD7E709A37370C715C61350A2718D4 /* FBSDKCoreKit */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBSDKCoreKit; path = FBSDKCoreKit.xcodeproj; sourceTree = "<group>"; };
 		AA7B8CE4B2EC51F5B8E4DC376A77245C /* UMFileSystemInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMFileSystemInterface; path = UMFileSystemInterface.xcodeproj; sourceTree = "<group>"; };
+		AFDCD53AA38FDB130CE116D7F4B734D4 /* Amplitude */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Amplitude; path = Amplitude.xcodeproj; sourceTree = "<group>"; };
 		B0515DAA653FC2E796360D4467FA57B1 /* EXAppAuth */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXAppAuth; path = EXAppAuth.xcodeproj; sourceTree = "<group>"; };
 		B2517697CB1B62E253E7D5795B4BB964 /* EXImageManipulator */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXImageManipulator; path = EXImageManipulator.xcodeproj; sourceTree = "<group>"; };
 		B2EC349F67729D3CE6056C850484C557 /* React-callinvoker */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-callinvoker"; path = "React-callinvoker.xcodeproj"; sourceTree = "<group>"; };
-		B7C9CCFA9934111EC18D9E9BD02ED5A0 /* GoogleAppMeasurement */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoogleAppMeasurement; path = GoogleAppMeasurement.xcodeproj; sourceTree = "<group>"; };
+		B6ABD43E0C286BBC02079F2EF0C505D5 /* Flipper-RSocket */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Flipper-RSocket"; path = "Flipper-RSocket.xcodeproj"; sourceTree = "<group>"; };
+		B7DF27361C035B123C577184A73A4468 /* Analytics */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Analytics; path = Analytics.xcodeproj; sourceTree = "<group>"; };
+		B87A6AF6D03D15B833EF233041470E4D /* Flipper-Glog */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Flipper-Glog"; path = "Flipper-Glog.xcodeproj"; sourceTree = "<group>"; };
 		B989D8A027C2DE5426E67CF4C75A16E9 /* Yoga */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Yoga; path = Yoga.xcodeproj; sourceTree = "<group>"; };
 		BA08824F21588073F8EA7A13F04EEC69 /* EXSharing */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXSharing; path = EXSharing.xcodeproj; sourceTree = "<group>"; };
 		BC642458EAEB7BB15F778BB7CB7B6933 /* UMAppLoader */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMAppLoader; path = UMAppLoader.xcodeproj; sourceTree = "<group>"; };
 		BD0FB11BCE0A6FC8322C89D10B32FA63 /* RNScreens */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNScreens; path = RNScreens.xcodeproj; sourceTree = "<group>"; };
 		BD62AFE5DA27BC77E93CD4E6A32A1C89 /* EXStoreReview */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXStoreReview; path = EXStoreReview.xcodeproj; sourceTree = "<group>"; };
+		BE19C870187665F5A2D4FC8F24DFFFDD /* Folly */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Folly; path = Folly.xcodeproj; sourceTree = "<group>"; };
 		BEA1F5E22EB91F642D86AA8C711B2C6F /* react-native-appearance */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "react-native-appearance"; path = "react-native-appearance.xcodeproj"; sourceTree = "<group>"; };
-		BF64EFCB4C7B797D661EE843AFE361E0 /* FirebaseCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FirebaseCore; path = FirebaseCore.xcodeproj; sourceTree = "<group>"; };
 		C0523D7991C786A643E9FBA5E9C2C4E8 /* RNReanimated */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNReanimated; path = RNReanimated.xcodeproj; sourceTree = "<group>"; };
 		C1B5566BC756A3157C5A0EC6342FC76B /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
 		C2E40640929418D1D61EEA0803EE3DC4 /* Pods-BareExpoTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-BareExpoTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -1192,28 +1194,23 @@
 		C738CC8E18ACCF4EF6A6FCFBE1B5F7D2 /* EXFileSystem */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXFileSystem; path = EXFileSystem.xcodeproj; sourceTree = "<group>"; };
 		CA1EBD04C05308C1A291D448D868524C /* EXSegment */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXSegment; path = EXSegment.xcodeproj; sourceTree = "<group>"; };
 		CA7F6698DF2FF760FA6FAC7B696B11F7 /* EXFirebaseCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXFirebaseCore; path = EXFirebaseCore.xcodeproj; sourceTree = "<group>"; };
-		CB777ECF90F094ACFEE48812B6E914F9 /* FlipperKit */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FlipperKit; path = FlipperKit.xcodeproj; sourceTree = "<group>"; };
-		CCAF3739C888CA76E546FD115E070FFA /* Firebase */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Firebase; path = Firebase.xcodeproj; sourceTree = "<group>"; };
 		CD01A2E66EE7A1CF48510E3DE4F54298 /* EXMediaLibrary */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXMediaLibrary; path = EXMediaLibrary.xcodeproj; sourceTree = "<group>"; };
 		CE8C0975628209000F9D5994F622551A /* EXApplication */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXApplication; path = EXApplication.xcodeproj; sourceTree = "<group>"; };
-		CFA444B026F34012614D36E853210720 /* YogaKit */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = YogaKit; path = YogaKit.xcodeproj; sourceTree = "<group>"; };
 		D03E835F1B743E98DC4595E1634287BE /* EXFont */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXFont; path = EXFont.xcodeproj; sourceTree = "<group>"; };
 		D1014EA3C6789E7FAA1DC562E34C204D /* libPods-BareExpo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libPods-BareExpo.a"; path = "libPods-BareExpo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D23B83CE1647AD6656E5D3729A82F0BF /* EXSMS */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXSMS; path = EXSMS.xcodeproj; sourceTree = "<group>"; };
 		D28F8136D08729FAC21B8D31D3D8C33B /* react-native-slider */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "react-native-slider"; path = "react-native-slider.xcodeproj"; sourceTree = "<group>"; };
-		D73483B12590D0919FED4EE24739A702 /* AppAuth */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AppAuth; path = AppAuth.xcodeproj; sourceTree = "<group>"; };
 		D89B43EF12C3F0103C672E68EE9278AE /* EXDevMenuInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXDevMenuInterface; path = EXDevMenuInterface.xcodeproj; sourceTree = "<group>"; };
 		D9AE69745214EBC76117528A2773B076 /* EXTaskManager */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXTaskManager; path = EXTaskManager.xcodeproj; sourceTree = "<group>"; };
 		DA03D0FA02A3A6DD98FB32F067C88229 /* Pods-BareExpoTests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-BareExpoTests-acknowledgements.markdown"; sourceTree = "<group>"; };
+		DA253D15291287CA8AA066DD5528CDFA /* GoogleAppMeasurement */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoogleAppMeasurement; path = GoogleAppMeasurement.xcodeproj; sourceTree = "<group>"; };
 		DA9B653E2F0A9E01EF2D6DF3F8BAC226 /* React-RCTText */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-RCTText"; path = "React-RCTText.xcodeproj"; sourceTree = "<group>"; };
 		DBA6BA752C988EAEC28EA68B7D78F3BF /* EXAV */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXAV; path = EXAV.xcodeproj; sourceTree = "<group>"; };
 		DBEC0059358A183E774CDA9BFCC2881B /* EXFacebook */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXFacebook; path = EXFacebook.xcodeproj; sourceTree = "<group>"; };
+		DC1E93E9F9CF1B2386EA7E7467D29DBE /* FirebaseCoreDiagnostics */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FirebaseCoreDiagnostics; path = FirebaseCoreDiagnostics.xcodeproj; sourceTree = "<group>"; };
 		DC452D92B72033FC636153691323F69A /* UMBarCodeScannerInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMBarCodeScannerInterface; path = UMBarCodeScannerInterface.xcodeproj; sourceTree = "<group>"; };
-		DC6D6CB3089B3C1E1D428D0CC6C2CAC7 /* boost-for-react-native */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "boost-for-react-native"; path = "boost-for-react-native.xcodeproj"; sourceTree = "<group>"; };
 		DD2C3494DAED00E5A20D49F166A4A5A4 /* React-RCTLinking */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-RCTLinking"; path = "React-RCTLinking.xcodeproj"; sourceTree = "<group>"; };
-		DD61318771AB67155632B63C14C85BF1 /* FBSDKLoginKit */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBSDKLoginKit; path = FBSDKLoginKit.xcodeproj; sourceTree = "<group>"; };
 		DDB7B615B43799EB00518106E2F3CBD6 /* EXBarCodeScanner */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXBarCodeScanner; path = EXBarCodeScanner.xcodeproj; sourceTree = "<group>"; };
-		DE1BF6E0007297124C707172D2D0A9BE /* GoogleSignIn */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoogleSignIn; path = GoogleSignIn.xcodeproj; sourceTree = "<group>"; };
 		E279A9AE9DEDDCE2CD3F83DB5D6A4384 /* React-RCTBlob */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-RCTBlob"; path = "React-RCTBlob.xcodeproj"; sourceTree = "<group>"; };
 		E54317EA2DC099097F7CE9FBA8CE9CD7 /* EXScreenOrientation */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXScreenOrientation; path = EXScreenOrientation.xcodeproj; sourceTree = "<group>"; };
 		E9239786CB952A82544FF1154BA8067A /* EXHaptics */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXHaptics; path = EXHaptics.xcodeproj; sourceTree = "<group>"; };
@@ -1221,16 +1218,19 @@
 		E9B814F980B56C0C1BFAF22AD6829180 /* React-cxxreact */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-cxxreact"; path = "React-cxxreact.xcodeproj"; sourceTree = "<group>"; };
 		EBC1243E181E34C54C5E053F5881C8C0 /* React-RCTVibration */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-RCTVibration"; path = "React-RCTVibration.xcodeproj"; sourceTree = "<group>"; };
 		EDE407B4823BDCF41F07020AABEB0D06 /* Pods-BareExpo.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-BareExpo.modulemap"; sourceTree = "<group>"; };
-		EE8FA4CFC8BB4BA22D470EBED0E20F6E /* FirebaseCoreDiagnosticsInterop */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FirebaseCoreDiagnosticsInterop; path = FirebaseCoreDiagnosticsInterop.xcodeproj; sourceTree = "<group>"; };
 		EEEE56895747337EA6DCF5376CD7D052 /* react-native-webview */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "react-native-webview"; path = "react-native-webview.xcodeproj"; sourceTree = "<group>"; };
 		EFD0436038EA47EA2A317AD9DCB1FE13 /* EXErrorRecovery */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXErrorRecovery; path = EXErrorRecovery.xcodeproj; sourceTree = "<group>"; };
 		F27C1A0ACD0DAC77FD4D2BC710C951B0 /* RNCMaskedView */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNCMaskedView; path = RNCMaskedView.xcodeproj; sourceTree = "<group>"; };
 		F42E86D876C7AB61E4DF46BF36C25900 /* Pods-BareExpo-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-BareExpo-resources.sh"; sourceTree = "<group>"; };
 		F4AA36DDD0A12CFDD04FFA623E221812 /* FBReactNativeSpec */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBReactNativeSpec; path = FBReactNativeSpec.xcodeproj; sourceTree = "<group>"; };
+		F4ADA59EBA2DB280A9F705119F2377F2 /* Flipper */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Flipper; path = Flipper.xcodeproj; sourceTree = "<group>"; };
 		F4B06DBAD6A9ACA1639A5BECF513955B /* React-CoreModules */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-CoreModules"; path = "React-CoreModules.xcodeproj"; sourceTree = "<group>"; };
+		F5229B7E1FC7DB557272397D014749A1 /* SDWebImage */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDWebImage; path = SDWebImage.xcodeproj; sourceTree = "<group>"; };
+		F7B34005D40FD42D59D22B3FE4EEF6B1 /* GoogleUtilities */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoogleUtilities; path = GoogleUtilities.xcodeproj; sourceTree = "<group>"; };
 		F7E685395FC99C02761DEE25190C8526 /* expo-development-client */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "expo-development-client"; path = "expo-development-client.xcodeproj"; sourceTree = "<group>"; };
+		F8D0FF7E8403476850BA4DE6BDD21255 /* PromisesObjC */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PromisesObjC; path = PromisesObjC.xcodeproj; sourceTree = "<group>"; };
 		FB5DD2F26E4FDAB15DAC86F5E4A6DB0D /* React-jsinspector */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-jsinspector"; path = "React-jsinspector.xcodeproj"; sourceTree = "<group>"; };
-		FC6CE437981FB40775CFCCB346778A1B /* CocoaLibEvent */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CocoaLibEvent; path = CocoaLibEvent.xcodeproj; sourceTree = "<group>"; };
+		FDA28DC49C821065BEC06F540391241D /* ZXingObjC */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ZXingObjC; path = ZXingObjC.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1379,6 +1379,50 @@
 			name = "Development Pods";
 			sourceTree = "<group>";
 		};
+		570C286F068D61074E2BB09AD76318B0 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				AFDCD53AA38FDB130CE116D7F4B734D4 /* Amplitude */,
+				B7DF27361C035B123C577184A73A4468 /* Analytics */,
+				3CAD37FF4F17181E8DB0FF51B19C6D92 /* AppAuth */,
+				126B098AB73EFE3E84BE6D831A98CC79 /* boost-for-react-native */,
+				938A9F9FCB89C65186461BF3BFB0F132 /* CocoaAsyncSocket */,
+				A70D05D1A70E0638581CB1FB083EEE77 /* CocoaLibEvent */,
+				0A16B5614AC53AF93EB7EDF015136682 /* DoubleConversion */,
+				A9FD7E709A37370C715C61350A2718D4 /* FBSDKCoreKit */,
+				2BBFFB424A4595C0E4C749A1CFA91D2C /* FBSDKLoginKit */,
+				048219580AA201E9CE931FFC289A2E0A /* Firebase */,
+				67125572D0378049D328B71A8CC34E10 /* FirebaseAnalytics */,
+				416994BCF06E1248FEBB2ACD79D27683 /* FirebaseCore */,
+				DC1E93E9F9CF1B2386EA7E7467D29DBE /* FirebaseCoreDiagnostics */,
+				87D14724D2C891636D703FDB6553DE20 /* FirebaseCoreDiagnosticsInterop */,
+				8535BDB3A222CBA5A5DF90C59E090078 /* FirebaseInstanceID */,
+				F4ADA59EBA2DB280A9F705119F2377F2 /* Flipper */,
+				0A7AAF56BD356BAA0AB3DEC25295E6BB /* Flipper-DoubleConversion */,
+				140D564088C4F0DED4BB880BCA69E3DF /* Flipper-Folly */,
+				B87A6AF6D03D15B833EF233041470E4D /* Flipper-Glog */,
+				45543AC33B1B129EFC3465D61F5FB84D /* Flipper-PeerTalk */,
+				B6ABD43E0C286BBC02079F2EF0C505D5 /* Flipper-RSocket */,
+				8B27E9282932838EE1CEE0919DE9CE6F /* FlipperKit */,
+				BE19C870187665F5A2D4FC8F24DFFFDD /* Folly */,
+				2BDF3C28F52C47C2565E05098F2C3B19 /* glog */,
+				DA253D15291287CA8AA066DD5528CDFA /* GoogleAppMeasurement */,
+				A1C52852FBE4915BFE9F4AEDAD79289C /* GoogleDataTransport */,
+				5F8AA7BA04FC26375EECFEC307522BC3 /* GoogleDataTransportCCTSupport */,
+				9BD72B182499ECD251AE39959EA92A42 /* GoogleSignIn */,
+				F7B34005D40FD42D59D22B3FE4EEF6B1 /* GoogleUtilities */,
+				89667C7AFE59CE5F712A100DCAD74916 /* GTMAppAuth */,
+				1664E1789DE5343752FF2F4C41D41E2C /* GTMSessionFetcher */,
+				0447766467D4BBAB90F93B82B76E3EB9 /* nanopb */,
+				8ABBBA03BC11977C2AC7472408042852 /* OpenSSL-Universal */,
+				F8D0FF7E8403476850BA4DE6BDD21255 /* PromisesObjC */,
+				F5229B7E1FC7DB557272397D014749A1 /* SDWebImage */,
+				0194E7E01FD3C8324755AB72A878D5CF /* YogaKit */,
+				FDA28DC49C821065BEC06F540391241D /* ZXingObjC */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		7E85E1DF70E3B28995DD00C3384978F7 /* Pods-BareExpo */ = {
 			isa = PBXGroup;
 			children = (
@@ -1408,57 +1452,13 @@
 			path = "Target Support Files/Pods-BareExpoTests";
 			sourceTree = "<group>";
 		};
-		BA2C4A303E37A9A90D16ED053BBFAC1F /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				93C7BB45CDAE4EFC4D68B6F35BAA2DEF /* Amplitude */,
-				356B3B4E4E26785739BF2AE515B09BFA /* Analytics */,
-				D73483B12590D0919FED4EE24739A702 /* AppAuth */,
-				DC6D6CB3089B3C1E1D428D0CC6C2CAC7 /* boost-for-react-native */,
-				82E701BCE1C9BA339A7804BE26EB0C7B /* CocoaAsyncSocket */,
-				FC6CE437981FB40775CFCCB346778A1B /* CocoaLibEvent */,
-				697DAC53D0628A7DC63C30512823A49B /* DoubleConversion */,
-				511EA655E900C4E2B259A51387F3BB6B /* FBSDKCoreKit */,
-				DD61318771AB67155632B63C14C85BF1 /* FBSDKLoginKit */,
-				CCAF3739C888CA76E546FD115E070FFA /* Firebase */,
-				5A7CF4906D724FD23B3C8A8B02A4803E /* FirebaseAnalytics */,
-				BF64EFCB4C7B797D661EE843AFE361E0 /* FirebaseCore */,
-				1FDAF51ABE6B3A53D6727FD02DE4746A /* FirebaseCoreDiagnostics */,
-				EE8FA4CFC8BB4BA22D470EBED0E20F6E /* FirebaseCoreDiagnosticsInterop */,
-				243083C38F670D90F7B28E74E5F1E21A /* FirebaseInstanceID */,
-				A7CF2869B544721F0EA25AE8144AA7E4 /* Flipper */,
-				0ED9EF65D9276F4428CCA8C491BFB7CE /* Flipper-DoubleConversion */,
-				9816328A5B14EB8834FA7C2F765DC1B2 /* Flipper-Folly */,
-				58DB7F90D69CF846B709C2808EF149CF /* Flipper-Glog */,
-				A2872FA2A3F50D12A077E57F58B2ADC8 /* Flipper-PeerTalk */,
-				9A1BEEA83B6DD79B27E96F95352AD7AE /* Flipper-RSocket */,
-				CB777ECF90F094ACFEE48812B6E914F9 /* FlipperKit */,
-				466FE782E4DDC3289D4AF201D977C35A /* Folly */,
-				7DD84F398028F8B90361479846896947 /* glog */,
-				B7C9CCFA9934111EC18D9E9BD02ED5A0 /* GoogleAppMeasurement */,
-				96B1ABEAAA407EB8628125396A28F0B5 /* GoogleDataTransport */,
-				299B8804F65EBF27AF47BAD57DA2E276 /* GoogleDataTransportCCTSupport */,
-				DE1BF6E0007297124C707172D2D0A9BE /* GoogleSignIn */,
-				6688E9476B32D15AE7764AD4C10EDF91 /* GoogleUtilities */,
-				4BEE7ACE3F7241458856959A17279BB4 /* GTMAppAuth */,
-				A48B2F8F29C6B93D575464F4CAF7AB8E /* GTMSessionFetcher */,
-				A6974EC7C0F23511EDC8A3C9597DBEAE /* nanopb */,
-				8810B4FC35B59F90830756C8A4AB5EEB /* OpenSSL-Universal */,
-				593360857ECBDDE47954AC194EDFF990 /* PromisesObjC */,
-				44E9EE392FDA50D26FBC6CDF991E2CB9 /* SDWebImage */,
-				CFA444B026F34012614D36E853210720 /* YogaKit */,
-				814439BB5BB9193A18434DAF084BF0E0 /* ZXingObjC */,
-			);
-			name = Pods;
-			sourceTree = "<group>";
-		};
 		CF1408CF629C7361332E53B88F7BD30C = {
 			isa = PBXGroup;
 			children = (
 				9D940727FF8FB9C785EB98E56350EF41 /* Podfile */,
 				41350D08F5BFD7411D8115E1CD26F066 /* Development Pods */,
 				D89477F20FB1DE18A04690586D7808C4 /* Frameworks */,
-				BA2C4A303E37A9A90D16ED053BBFAC1F /* Pods */,
+				570C286F068D61074E2BB09AD76318B0 /* Pods */,
 				E71A1A9A54AF9481ED09CD84DBFA729C /* Products */,
 				36A99EF74074F182AA2BD757533F06CD /* Targets Support Files */,
 			);
@@ -1707,22 +1707,49 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProjectRef = 93C7BB45CDAE4EFC4D68B6F35BAA2DEF /* Amplitude */;
+					ProjectRef = 938A9F9FCB89C65186461BF3BFB0F132 /* CocoaAsyncSocket */;
 				},
 				{
-					ProjectRef = 356B3B4E4E26785739BF2AE515B09BFA /* Analytics */;
+					ProjectRef = A70D05D1A70E0638581CB1FB083EEE77 /* CocoaLibEvent */;
 				},
 				{
-					ProjectRef = D73483B12590D0919FED4EE24739A702 /* AppAuth */;
+					ProjectRef = F4ADA59EBA2DB280A9F705119F2377F2 /* Flipper */;
 				},
 				{
-					ProjectRef = 82E701BCE1C9BA339A7804BE26EB0C7B /* CocoaAsyncSocket */;
+					ProjectRef = 0A7AAF56BD356BAA0AB3DEC25295E6BB /* Flipper-DoubleConversion */;
 				},
 				{
-					ProjectRef = FC6CE437981FB40775CFCCB346778A1B /* CocoaLibEvent */;
+					ProjectRef = 140D564088C4F0DED4BB880BCA69E3DF /* Flipper-Folly */;
 				},
 				{
-					ProjectRef = 697DAC53D0628A7DC63C30512823A49B /* DoubleConversion */;
+					ProjectRef = B87A6AF6D03D15B833EF233041470E4D /* Flipper-Glog */;
+				},
+				{
+					ProjectRef = 45543AC33B1B129EFC3465D61F5FB84D /* Flipper-PeerTalk */;
+				},
+				{
+					ProjectRef = B6ABD43E0C286BBC02079F2EF0C505D5 /* Flipper-RSocket */;
+				},
+				{
+					ProjectRef = 8B27E9282932838EE1CEE0919DE9CE6F /* FlipperKit */;
+				},
+				{
+					ProjectRef = 8ABBBA03BC11977C2AC7472408042852 /* OpenSSL-Universal */;
+				},
+				{
+					ProjectRef = 0194E7E01FD3C8324755AB72A878D5CF /* YogaKit */;
+				},
+				{
+					ProjectRef = AFDCD53AA38FDB130CE116D7F4B734D4 /* Amplitude */;
+				},
+				{
+					ProjectRef = B7DF27361C035B123C577184A73A4468 /* Analytics */;
+				},
+				{
+					ProjectRef = 3CAD37FF4F17181E8DB0FF51B19C6D92 /* AppAuth */;
+				},
+				{
+					ProjectRef = 0A16B5614AC53AF93EB7EDF015136682 /* DoubleConversion */;
 				},
 				{
 					ProjectRef = DBA6BA752C988EAEC28EA68B7D78F3BF /* EXAV */;
@@ -1905,79 +1932,55 @@
 					ProjectRef = F4AA36DDD0A12CFDD04FFA623E221812 /* FBReactNativeSpec */;
 				},
 				{
-					ProjectRef = 511EA655E900C4E2B259A51387F3BB6B /* FBSDKCoreKit */;
+					ProjectRef = A9FD7E709A37370C715C61350A2718D4 /* FBSDKCoreKit */;
 				},
 				{
-					ProjectRef = DD61318771AB67155632B63C14C85BF1 /* FBSDKLoginKit */;
+					ProjectRef = 2BBFFB424A4595C0E4C749A1CFA91D2C /* FBSDKLoginKit */;
 				},
 				{
-					ProjectRef = CCAF3739C888CA76E546FD115E070FFA /* Firebase */;
+					ProjectRef = 048219580AA201E9CE931FFC289A2E0A /* Firebase */;
 				},
 				{
-					ProjectRef = 5A7CF4906D724FD23B3C8A8B02A4803E /* FirebaseAnalytics */;
+					ProjectRef = 67125572D0378049D328B71A8CC34E10 /* FirebaseAnalytics */;
 				},
 				{
-					ProjectRef = BF64EFCB4C7B797D661EE843AFE361E0 /* FirebaseCore */;
+					ProjectRef = 416994BCF06E1248FEBB2ACD79D27683 /* FirebaseCore */;
 				},
 				{
-					ProjectRef = 1FDAF51ABE6B3A53D6727FD02DE4746A /* FirebaseCoreDiagnostics */;
+					ProjectRef = DC1E93E9F9CF1B2386EA7E7467D29DBE /* FirebaseCoreDiagnostics */;
 				},
 				{
-					ProjectRef = EE8FA4CFC8BB4BA22D470EBED0E20F6E /* FirebaseCoreDiagnosticsInterop */;
+					ProjectRef = 87D14724D2C891636D703FDB6553DE20 /* FirebaseCoreDiagnosticsInterop */;
 				},
 				{
-					ProjectRef = 243083C38F670D90F7B28E74E5F1E21A /* FirebaseInstanceID */;
+					ProjectRef = 8535BDB3A222CBA5A5DF90C59E090078 /* FirebaseInstanceID */;
 				},
 				{
-					ProjectRef = A7CF2869B544721F0EA25AE8144AA7E4 /* Flipper */;
+					ProjectRef = BE19C870187665F5A2D4FC8F24DFFFDD /* Folly */;
 				},
 				{
-					ProjectRef = 0ED9EF65D9276F4428CCA8C491BFB7CE /* Flipper-DoubleConversion */;
+					ProjectRef = 89667C7AFE59CE5F712A100DCAD74916 /* GTMAppAuth */;
 				},
 				{
-					ProjectRef = 9816328A5B14EB8834FA7C2F765DC1B2 /* Flipper-Folly */;
+					ProjectRef = 1664E1789DE5343752FF2F4C41D41E2C /* GTMSessionFetcher */;
 				},
 				{
-					ProjectRef = 58DB7F90D69CF846B709C2808EF149CF /* Flipper-Glog */;
+					ProjectRef = DA253D15291287CA8AA066DD5528CDFA /* GoogleAppMeasurement */;
 				},
 				{
-					ProjectRef = A2872FA2A3F50D12A077E57F58B2ADC8 /* Flipper-PeerTalk */;
+					ProjectRef = A1C52852FBE4915BFE9F4AEDAD79289C /* GoogleDataTransport */;
 				},
 				{
-					ProjectRef = 9A1BEEA83B6DD79B27E96F95352AD7AE /* Flipper-RSocket */;
+					ProjectRef = 5F8AA7BA04FC26375EECFEC307522BC3 /* GoogleDataTransportCCTSupport */;
 				},
 				{
-					ProjectRef = CB777ECF90F094ACFEE48812B6E914F9 /* FlipperKit */;
+					ProjectRef = 9BD72B182499ECD251AE39959EA92A42 /* GoogleSignIn */;
 				},
 				{
-					ProjectRef = 466FE782E4DDC3289D4AF201D977C35A /* Folly */;
+					ProjectRef = F7B34005D40FD42D59D22B3FE4EEF6B1 /* GoogleUtilities */;
 				},
 				{
-					ProjectRef = 4BEE7ACE3F7241458856959A17279BB4 /* GTMAppAuth */;
-				},
-				{
-					ProjectRef = A48B2F8F29C6B93D575464F4CAF7AB8E /* GTMSessionFetcher */;
-				},
-				{
-					ProjectRef = B7C9CCFA9934111EC18D9E9BD02ED5A0 /* GoogleAppMeasurement */;
-				},
-				{
-					ProjectRef = 96B1ABEAAA407EB8628125396A28F0B5 /* GoogleDataTransport */;
-				},
-				{
-					ProjectRef = 299B8804F65EBF27AF47BAD57DA2E276 /* GoogleDataTransportCCTSupport */;
-				},
-				{
-					ProjectRef = DE1BF6E0007297124C707172D2D0A9BE /* GoogleSignIn */;
-				},
-				{
-					ProjectRef = 6688E9476B32D15AE7764AD4C10EDF91 /* GoogleUtilities */;
-				},
-				{
-					ProjectRef = 8810B4FC35B59F90830756C8A4AB5EEB /* OpenSSL-Universal */;
-				},
-				{
-					ProjectRef = 593360857ECBDDE47954AC194EDFF990 /* PromisesObjC */;
+					ProjectRef = F8D0FF7E8403476850BA4DE6BDD21255 /* PromisesObjC */;
 				},
 				{
 					ProjectRef = 022DBCA4B0EC9E5BEA5342DC7DE4CD96 /* RCTRequired */;
@@ -2067,7 +2070,7 @@
 					ProjectRef = 3EC3BD1F2011CBA488FD4B326C695E81 /* ReactCommon */;
 				},
 				{
-					ProjectRef = 44E9EE392FDA50D26FBC6CDF991E2CB9 /* SDWebImage */;
+					ProjectRef = F5229B7E1FC7DB557272397D014749A1 /* SDWebImage */;
 				},
 				{
 					ProjectRef = BC642458EAEB7BB15F778BB7CB7B6933 /* UMAppLoader */;
@@ -2109,13 +2112,10 @@
 					ProjectRef = B989D8A027C2DE5426E67CF4C75A16E9 /* Yoga */;
 				},
 				{
-					ProjectRef = CFA444B026F34012614D36E853210720 /* YogaKit */;
+					ProjectRef = FDA28DC49C821065BEC06F540391241D /* ZXingObjC */;
 				},
 				{
-					ProjectRef = 814439BB5BB9193A18434DAF084BF0E0 /* ZXingObjC */;
-				},
-				{
-					ProjectRef = DC6D6CB3089B3C1E1D428D0CC6C2CAC7 /* boost-for-react-native */;
+					ProjectRef = 126B098AB73EFE3E84BE6D831A98CC79 /* boost-for-react-native */;
 				},
 				{
 					ProjectRef = F7E685395FC99C02761DEE25190C8526 /* expo-development-client */;
@@ -2124,10 +2124,10 @@
 					ProjectRef = 7958CD30BD588AE934189C7B7CF70E87 /* expo-image */;
 				},
 				{
-					ProjectRef = 7DD84F398028F8B90361479846896947 /* glog */;
+					ProjectRef = 2BDF3C28F52C47C2565E05098F2C3B19 /* glog */;
 				},
 				{
-					ProjectRef = A6974EC7C0F23511EDC8A3C9597DBEAE /* nanopb */;
+					ProjectRef = 0447766467D4BBAB90F93B82B76E3EB9 /* nanopb */;
 				},
 				{
 					ProjectRef = BEA1F5E22EB91F642D86AA8C711B2C6F /* react-native-appearance */;
