@@ -1,6 +1,6 @@
 # Updating Prebuilt Android Packages For Turtle
 
-This document will guide you through the process of creating a new version of prebuilt Android packages which are used in Turtle. Instructions for creating a versioned snapshot of Expo SDK solely for Expo client's use, see `Creating Versioned Expo SDK for Android` doc.
+This document will guide you through the process of creating a new version of prebuilt Android packages which are used in Turtle. For instructions for creating a versioned snapshot of Expo SDK solely for Expo Go's use, see `Creating Versioned Expo SDK for Android` doc.
 
 1. **Update AARs in local Maven repo**
 
