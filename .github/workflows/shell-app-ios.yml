@@ -81,6 +81,14 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_ios }}
         with:
           channel: '#platform-ios'
-          status: ${{ job.status }}
-          fields: author,job,message,eventName,ref
-          author_name: iOS Shell App build
+          status: custom
+          fields: author,commit,ref,workflow
+          custom_payload: |
+            {
+              username: 'github-actions',
+              icon_emoji: ':octocat:',
+              attachments: [{
+                color: 'danger',
+                text: `${process.env.AS_WORKFLOW}@${process.env.AS_REF} failed: ${(process.env.AS_EVENT_NAME === 'schedule') ? 'scheduled build' : process.env.AS_COMMIT + ' by ' + process.env.AS_AUTHOR}`,
+              }]
+            }
