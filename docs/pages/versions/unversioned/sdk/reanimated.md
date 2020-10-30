@@ -14,7 +14,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-<InstallSection packageName="react-native-reanimated" href="https://github.com/kmagiera/react-native-reanimated#getting-started" />
+<InstallSection packageName="react-native-reanimated" href="https://docs.swmansion.com/react-native-reanimated/docs/installation" />
 
 ### Experimental support for v2-alpha
 
@@ -64,7 +64,7 @@ Some of your project's dependencies are not compatible with currently installed 
 
 ## API Usage
 
-You should refer to the [react-native-reanimated docs](https://github.com/kmagiera/react-native-reanimated#reanimated-overview) for more information on the API and its usage. But the following example (courtesy of that repo) is a quick way to get started.
+You should refer to the [react-native-reanimated docs](https://docs.swmansion.com/react-native-reanimated/docs/2.0.0-alpha.7/) for more information on the API and its usage. But the following example (courtesy of that repo) is a quick way to get started.
 
 ```js
 import React from 'react';
