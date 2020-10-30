@@ -63,6 +63,14 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_api }}
         with:
           channel: '#api'
-          status: ${{ job.status }}
-          fields: author,job,message,ref
-          author_name: sdk check-packages
+          status: custom
+          fields: author,commit,ref,workflow
+          custom_payload: |
+            {
+              username: 'github-actions',
+              icon_emoji: ':octocat:',
+              attachments: [{
+                color: 'danger',
+                text: `${process.env.AS_WORKFLOW}@${process.env.AS_REF} failed: ${(process.env.AS_EVENT_NAME === 'schedule') ? 'scheduled build' : process.env.AS_COMMIT + ' by ' + process.env.AS_AUTHOR}`,
+              }]
+            }

@@ -79,14 +79,6 @@ jobs:
           echo "Release tarball uploaded to s3://exp-artifacts/${{ steps.tarball.outputs.filename }}"
           echo "You can deploy this by updating https://github.com/expo/turtle/tree/master/shellTarballs/ios/client"
           echo "Then follow the deployment instructions: https://github.com/expo/turtle-deploy"
-      - name: Set the description for slack message
-        if: ${{ github.event_name != 'push' }}
-        run: |
-          if [ ${{ github.event_name }} == 'schedule' ]; then
-            echo "SLACK_MESSAGE_DESCRIPTION=scheduled" >> $GITHUB_ENV
-          else
-            echo "SLACK_MESSAGE_DESCRIPTION=triggered by ${{ github.actor }}" >> $GITHUB_ENV
-          fi
       - uses: 8398a7/action-slack@v3
         if: always()
         env:
@@ -94,6 +86,14 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_ios }}
         with:
           channel: '#platform-ios'
-          status: ${{ job.status }}
-          fields: job,commit,ref,eventName,author,took
-          author_name: Ad-hoc iOS Client Shell App (${{ env.SLACK_MESSAGE_DESCRIPTION }})
+          status: custom
+          fields: author,commit,ref,workflow
+          custom_payload: |
+            {
+              username: 'github-actions',
+              icon_emoji: ':octocat:',
+              attachments: [{
+                color: 'danger',
+                text: `${process.env.AS_WORKFLOW}@${process.env.AS_REF} failed: ${(process.env.AS_EVENT_NAME === 'schedule') ? 'scheduled build' : process.env.AS_COMMIT + ' by ' + process.env.AS_AUTHOR}`,
+              }]
+            }
