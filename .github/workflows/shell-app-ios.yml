@@ -8,6 +8,11 @@ on:
         required: false
   schedule:
     - cron: '20 5 * * 2,4,6'
+  pull_request:
+    branches: [ master ]
+    paths:
+      - .github/workflows/shell-app-ios.yml
+      - .ruby-version
 
 jobs:
   build:
