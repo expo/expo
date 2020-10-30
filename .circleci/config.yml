@@ -655,7 +655,6 @@ jobs:
     steps:
       - install_nix
       - setup
-      - guard_sdk_tests
       - update_submodules
       - git_lfs_pull
       - fetch_cocoapods_specs
