@@ -159,8 +159,6 @@ static SEL whenInUseAuthorizationSelector;
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
 {
-    
-    printf("DID CHANGE ALWAYS STATUS");
   // TODO: Permissions.LOCATION issue (search by this phrase)
   // if Permissions.LOCATION is being called for the first time on iOS devide and prompts for user action it might not call this callback at all
   // it happens if user requests more that one permission at the same time via Permissions.askAsync(...) and LOCATION dialog is not being called first
