@@ -114,6 +114,18 @@ export async function getPermissionsAsync() {
 export async function requestPermissionsAsync() {
     return await ExpoLocation.requestPermissionsAsync();
 }
+/**
+ * Requests the user to grant location permissions.
+ */
+export async function requestWhenInUsePermissionsAsync() {
+    return await ExpoLocation.requestWhenInUsePermissionsAsync();
+}
+/**
+ * Requests the user to grant location permissions.
+ */
+export async function requestAlwaysPermissionsAsync() {
+    return await ExpoLocation.requestAlwaysPermissionsAsync();
+}
 // --- Location service
 /**
  * Returns `true` if the device has location services enabled or `false` otherwise.

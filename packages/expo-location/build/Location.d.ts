@@ -52,6 +52,14 @@ export declare function getPermissionsAsync(): Promise<LocationPermissionRespons
  */
 export declare function requestPermissionsAsync(): Promise<LocationPermissionResponse>;
 /**
+ * Requests the user to grant location permissions.
+ */
+export declare function requestWhenInUsePermissionsAsync(): Promise<LocationPermissionResponse>;
+/**
+ * Requests the user to grant location permissions.
+ */
+export declare function requestAlwaysPermissionsAsync(): Promise<LocationPermissionResponse>;
+/**
  * Returns `true` if the device has location services enabled or `false` otherwise.
  */
 export declare function hasServicesEnabledAsync(): Promise<boolean>;
