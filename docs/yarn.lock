@@ -1182,13 +1182,6 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@expo/spawn-async@^1.5.0":
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/@expo/spawn-async/-/spawn-async-1.5.0.tgz#799827edd8c10ef07eb1a2ff9dcfe081d596a395"
-  integrity sha512-LB7jWkqrHo+5fJHNrLAFdimuSXQ2MQ4lA7SQW5bf/HbsXuV2VrT/jN/M8f/KoWt0uJMGN4k/j7Opx4AvOOxSew==
-  dependencies:
-    cross-spawn "^6.0.5"
-
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@istanbuljs/load-nyc-config/-/load-nyc-config-1.1.0.tgz#fd3db1d59ecf7cf121e80650bb86712f9b55eced"
