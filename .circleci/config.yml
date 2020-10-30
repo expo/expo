@@ -264,7 +264,7 @@ executors:
     resource_class: small
   mac:
     macos: # https://circleci.com/docs/2.0/testing-ios/#supported-xcode-versions
-      xcode: '11.4.0'
+      xcode: '12.1.0'
     working_directory: /Users/distiller/project
     environment:
       BASH_ENV: /Users/distiller/.bash_profile
