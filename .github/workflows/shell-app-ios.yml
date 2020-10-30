@@ -26,11 +26,11 @@ jobs:
           path: .git/lfs
           key: ${{ steps.git-lfs.outputs.sha256 }}
       - run: git lfs pull
-      - run: echo "::add-path::$(pwd)/bin"
-      - run: echo "::set-env name=EXPO_ROOT_DIR::$(pwd)"
+      - run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - run: echo "EXPO_ROOT_DIR=$(pwd)" >> $GITHUB_ENV
       - run: expotools ios-generate-dynamic-macros
       - uses: ruby/setup-ruby@v1
-      - run: echo "::set-env name=BUNDLE_BIN::$(pwd)/.direnv/bin"
+      - run: echo "BUNDLE_BIN=$(pwd)/.direnv/bin" >> $GITHUB_ENV
       - name: bundler cache
         uses: actions/cache@v1
         with:
@@ -42,7 +42,7 @@ jobs:
         run: |
           bundle config path vendor/bundle
           bundle install --jobs 4 --retry 3
-      - run: echo "::add-path::$BUNDLE_BIN"
+      - run: echo "$BUNDLE_BIN" >> $GITHUB_PATH
       - uses: actions/cache@v1
         with:
           path: ios/Pods

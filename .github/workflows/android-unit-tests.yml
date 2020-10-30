@@ -43,7 +43,7 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('android/*.gradle*') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - run: echo "::add-path::$(pwd)/bin"
+      - run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - run: expotools native-unit-tests --platform android
       - name: Save test results
         if: always()
