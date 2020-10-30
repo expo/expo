@@ -33,7 +33,7 @@ In your project directory, run `expo install expo-image-picker`. This will tell 
 
 ## Picking an image
 
-With the library installed our project, we can now actually use it.
+With the library installed in our project, we can now actually use it.
 
 <SnackInline label="Image picker" templateId="tutorial/image-picker-log" dependencies={['expo-image-picker']}>
 
