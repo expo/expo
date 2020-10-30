@@ -41,7 +41,6 @@
     "next": "^9.5.3",
     "nprogress": "0.2.0",
     "prism-react-renderer": "1.0.2",
-    "prop-types": "15.6.2",
     "react": "^16.8.1",
     "react-diff-view": "^2.4.4",
     "react-dom": "^16.8.1",
