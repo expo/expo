@@ -124,7 +124,7 @@ commands:
             fi
   install_nix:
     steps:
-      - run: curl https://nixos.org/releases/nix/nix-2.3.8/install | bash -s -- --no-daemon
+      - run: curl https://nixos.org/releases/nix/nix-2.3.8/install | bash -s -- --no-daemon --darwin-use-unencrypted-nix-store-volume
       - run: echo ". ~/.nix-profile/etc/profile.d/nix.sh" >> ~/.bash_profile
   setup:
     steps:
