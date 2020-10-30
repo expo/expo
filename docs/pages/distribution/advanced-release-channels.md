@@ -79,7 +79,6 @@ Now we can see that our releases are available on the production channel.
 | publishedTime  | appVersion  | sdkVersion  | platform  | channel  | publicationId  |
 |---|---|---|---|---|---|---|
 | 2018-01-04T22:43:19.302Z  |  1.0.0 | 36.0.0 |  ios | production | d6b61741-a8dc-11e9-852a-3b0715b88238 |
-| 2018-01-04T22:43:46.714Z  |  1.0.0 | 36.0.0 |  android | production | 43d89652-a8dc-11e9-b565-4586c71668b9 |
 
 ## Release channels CLI tools
 ### Publish history
