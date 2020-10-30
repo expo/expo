@@ -4,7 +4,7 @@ title: Authentication
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import InstallSection from '~/components/plugins/InstallSection';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
 import { SocialGrid, SocialGridItem, CreateAppButton } from '~/components/plugins/AuthSessionElements';
 import { Tab, Tabs } from '~/components/plugins/Tabs';
 import TerminalBlock from '~/components/plugins/TerminalBlock';
@@ -19,12 +19,6 @@ Here are some **important rules** that apply to all authentication providers:
 - Build requests using `AuthSession.useAuthRequest()`, the hook allows for async setup which means mobile browsers won't block the authentication.
 - Be sure to disable the prompt until `request` is defined.
 - You can only invoke `promptAsync` in a user-interaction on web.
-
-<TableOfContentSection title="Table of contents" contents={[
-"Guides",
-"Redirect URI patterns",
-"Improving User Experience"
-]} />
 
 ## Guides
 

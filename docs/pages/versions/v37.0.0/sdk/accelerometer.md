@@ -5,7 +5,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-sensors'
 
 import InstallSection from '~/components/plugins/InstallSection';
 import SnackInline from '~/components/plugins/SnackInline';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 `Accelerometer` from **`expo-sensors`** provides access to the device accelerometer sensor(s) and associated listeners to respond to changes in acceleration in 3d space, meaning any movement or vibration.
@@ -104,7 +104,7 @@ function round(n) {
 import { Accelerometer } from 'expo-sensors';
 ```
 
-<TableOfContentSection title='Methods' contents={['Accelerometer.isAvailableAsync()', 'Accelerometer.addListener(listener)', 'Accelerometer.removeAllListeners()', 'Accelerometer.setUpdateInterval(intervalMs)']} />
+
 
 ## Methods
 

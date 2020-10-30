@@ -6,7 +6,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-notificat
 import SnackInline from '~/components/plugins/SnackInline';
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
 
 The **`expo-notifications`** provides an API to fetch push notification tokens and to present, schedule, receive and respond to notifications.
 
@@ -137,7 +137,7 @@ The following methods are exported by the `expo-notifications` module:
   - [`getNotificationCategoriesAsync`](#getnotificationcategoriesasync-promisenotificationcategory) -- fetches information about all active notification categories
   - [`deleteNotificationCategoryAsync`](#deletenotificationcategoryasyncidentifier-string-promiseboolean) -- deletes a notification category
 
-<TableOfContentSection title='Types' contents={['DevicePushToken', 'PushTokenListener', 'ExpoPushToken', 'Subscription', 'Notification', 'NotificationRequest', 'NotificationContent', 'NotificationContentInput', 'NotificationRequestInput', 'AndroidNotificationPriority', 'NotificationTrigger', 'PushNotificationTrigger', 'FirebaseRemoteMessage', 'TimeIntervalNotificationTrigger', 'DailyNotificationTrigger', 'CalendarNotificationTrigger', 'LocationNotificationTrigger', 'UnknownNotificationTrigger', 'NotificationTriggerInput', 'SchedulableNotificationTriggerInput', 'DateTriggerInput', 'TimeIntervalTriggerInput', 'DailyTriggerInput', 'CalendarTriggerInput', 'NotificationResponse', 'NotificationBehavior', 'NotificationChannel', 'NotificationChannelInput', 'NotificationChannelGroup', 'NotificationChannelGroupInput' ]} />
+
 
 Check out the Snack below to see Notifications in action, but be sure to use a physical device! Push notifications don't work on simulators/emulators.
 

@@ -6,7 +6,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-sensors'
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
 import { InlineCode } from '~/components/base/code';
 
 `Barometer` from **`expo-sensors`** provides access to the device barometer sensor to respond to changes in air pressure. `pressure` is measured in _`hectopascals`_ or _`hPa`_.
@@ -86,9 +86,9 @@ export default function App() {
 import { Barometer } from 'expo-sensors';
 ```
 
-<TableOfContentSection title='Methods' contents={['Barometer.isAvailableAsync()', 'Barometer.addListener((data: BarometerMeasurement) => void)', 'Barometer.removeAllListeners()']}/>
 
-<TableOfContentSection title='Types' contents={['BarometerMeasurement']} />
+
+
 
 ## Methods
 

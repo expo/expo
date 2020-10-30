@@ -5,7 +5,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-screen-ca
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
 
 **`expo-screen-capture`** allows you to protect screens in your app from being captured or recorded, as well as be notified if a screenshot is taken while your app is foregrounded. The two most common reasons you may want to prevent screen capture are:
 
@@ -85,7 +85,7 @@ export default class ScreenCaptureExample extends React.Component {
 import * as ScreenCapture from 'expo-screen-capture';
 ```
 
-<TableOfContentSection title='Methods' contents={['usepreventscreencapture(key)', 'preventScreenCaptureAsync(key)', 'allowScreenCaptureAsync(key)', 'addScreenshotListener(listener)', 'removeScreenshotListener(subscription)']} />
+
 
 ## Methods
 

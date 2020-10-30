@@ -5,7 +5,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-firebase-
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
 
 **`expo-firebase-core`** provides access to the Firebase configuration and performs initialisation
 of the native Firebase App.
@@ -36,7 +36,7 @@ At the moment, only Firebase Analytics is supported natively. We are working on 
 import * as FirebaseCore from 'expo-firebase-core';
 ```
 
-<TableOfContentSection title='Constants' contents={['FirebaseCore.DEFAULT_APP_NAME', 'FirebaseCore.DEFAULT_APP_OPTIONS']} />
+
 
 ## Constants
 

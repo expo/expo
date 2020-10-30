@@ -5,7 +5,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-38/packages/expo/src/Updat
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
 
 The `Updates` API from **`expo`** allows you to programatically control and respond to over-the-air updates to your app.
 
@@ -36,13 +36,13 @@ The changes in the new API are as follows:
 import * as Updates from 'expo-updates';
 ```
 
-<TableOfContentSection title='Constants' contents={['Updates.isEmergencyLaunch', 'Updates.manifest', 'Updates.releaseChannel', 'Updates.updateId']} />
 
-<TableOfContentSection title='Methods' contents={['Updates.reloadAsync()', 'Updates.checkForUpdateAsync()', 'Updates.fetchUpdateAsync()']} />
 
-<TableOfContentSection title='Related Types' contents={['EventSubscription', 'UpdateEvent', 'UpdateEventType']} />
 
-<TableOfContentSection title='Error Codes' contents={[]} />
+
+
+
+
 
 ## Constants
 

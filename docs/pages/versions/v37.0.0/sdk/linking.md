@@ -6,7 +6,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo/src/Linki
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
 
 This module allows your app to interact with other apps via deep links. It provides helper methods for constructing and parsing deep links into your app.
 
@@ -26,7 +26,7 @@ For information and examples on how to use this API and the `react-native` Linki
 import * as Linking from 'expo-linking';
 ```
 
-<TableOfContentSection title='Methods' contents={['Linking.makeUrl(path, queryParams)', 'Linking.parse(url)', 'Linking.parseInitialURLAsync()']} />
+
 
 ## Methods
 

@@ -6,7 +6,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-38/packages/expo-sensors'
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
 
 `Gyroscope` from **`expo-sensors`** provides access to the device's gyroscope sensor to respond to changes in rotation in 3D space.
 
@@ -104,7 +104,7 @@ function round(n) {
 import { Gyroscope } from 'expo-sensors';
 ```
 
-<TableOfContentSection title='Methods' contents={['Gyroscope.isAvailableAsync()', 'Gyroscope.addListener(listener)', 'Gyroscope.removeAllListeners()', 'Gyroscope.setUpdateInterval(intervalMs)']} />
+
 
 ## Methods
 

@@ -5,7 +5,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo/src/Updat
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
 
 The `Updates` API from **`expo`** allows you to programatically control and respond to over-the-air updates to your app.
 
@@ -25,13 +25,13 @@ Since extra setup is required to use this module in bare React Native apps, for 
 import * as Updates from 'expo-updates';
 ```
 
-<TableOfContentSection title='Constants' contents={['Updates.isEmergencyLaunch', 'Updates.manifest', 'Updates.releaseChannel', 'Updates.updateId']} />
 
-<TableOfContentSection title='Methods' contents={['Updates.reloadAsync()', 'Updates.checkForUpdateAsync()', 'Updates.fetchUpdateAsync()']} />
 
-<TableOfContentSection title='Related Types' contents={['EventSubscription', 'UpdateEvent', 'UpdateEventType']} />
 
-<TableOfContentSection title='Error Codes' contents={[]} />
+
+
+
+
 
 ## Constants
 
