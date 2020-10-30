@@ -50,6 +50,7 @@ In order to be able to deep link back into your app, you will need to set a `sch
 
 ## Example
 
+<!-- prettier-ignore -->
 ```javascript
 import React from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';

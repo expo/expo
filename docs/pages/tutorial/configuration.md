@@ -50,6 +50,7 @@ So far we have been making all of our changes to `App.js`. There are some aspect
 
 Open up `app.json` from your project directory in your code editor and make the following change in the `splash` section:
 
+<!-- prettier-ignore -->
 ```js
 "splash": {
   "image": "./assets/splash.png",

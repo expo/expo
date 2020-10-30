@@ -26,6 +26,7 @@ This is especially important on Android, since the [`android.media.projection`](
 
 ### Example: hook
 
+<!-- prettier-ignore -->
 ```javascript
 import { usePreventScreenCapture } from 'expo-screen-capture';
 import React from 'react';
@@ -45,6 +46,7 @@ export default function ScreenCaptureExample {
 
 ### Example: functions
 
+<!-- prettier-ignore -->
 ```javascript
 import { preventScreenCaptureAsync, allowScreenCaptureAsync } from 'expo-screen-capture';
 import React from 'react';

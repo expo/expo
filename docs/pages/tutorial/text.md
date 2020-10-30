@@ -13,6 +13,7 @@ Change your code according to the following example. Throughout the tutorial, an
 
 <SnackInline label="Updated text">
 
+<!-- prettier-ignore -->
 ```js
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -52,6 +53,7 @@ Our text is black and small. We should change the color because, according to so
 
 <SnackInline label="Styled text">
 
+<!-- prettier-ignore -->
 ```js
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';

@@ -19,6 +19,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ### Example: hook
 
+<!-- prettier-ignore -->
 ```javascript
 import { useKeepAwake } from 'expo-keep-awake';
 import React from 'react';
@@ -38,6 +39,7 @@ export default function KeepAwakeExample {
 
 ### Example: functions
 
+<!-- prettier-ignore -->
 ```javascript
 import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
 import React from 'react';

@@ -17,6 +17,7 @@ You can install expo-sharing in the same way as you installed expo-image-picker:
 
 <SnackInline label="Sharing" templateId="tutorial/sharing-simple" dependencies={['expo-image-picker', 'expo-sharing']}>
 
+<!-- prettier-ignore -->
 ```js
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
