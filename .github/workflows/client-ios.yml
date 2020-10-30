@@ -45,7 +45,7 @@ jobs:
           else
             git crypt unlock <(echo $GIT_CRYPT_KEY_BASE64 | base64 --decode)
           fi
-      - run: echo "::add-path::$(pwd)/bin"
+      - run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - run: expotools ios-generate-dynamic-macros
       - uses: ruby/setup-ruby@v1
       - name: bundler cache
@@ -55,8 +55,8 @@ jobs:
           key: ${{ runner.os }}-gems-${{ hashFiles('.ruby-version') }}-${{ hashFiles('Gemfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-gems-
-      - run: echo "::set-env name=BUNDLE_BIN::$(pwd)/.direnv/bin"
-      - run: echo "::add-path::$BUNDLE_BIN"
+      - run: echo "BUNDLE_BIN=$(pwd)/.direnv/bin" >> $GITHUB_ENV
+      - run: echo "$BUNDLE_BIN" >> $GITHUB_PATH
       - name: install fastlane
         run: |
           bundle config path vendor/bundle
