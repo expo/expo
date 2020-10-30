@@ -22,7 +22,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 On Android, this module requires permissions to interact with the filesystem and create resumable downloads. The `READ_EXTERNAL_STORAGE`, `WRITE_EXTERNAL_STORAGE` and `INTERNET` permissions are automatically added.
 
-## Example Usage
+## Usage
 
 #### Downloading files
 

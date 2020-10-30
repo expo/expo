@@ -15,7 +15,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 <InstallSection packageName="expo-file-system" />
 
-## Example Usage
+## Usage
 
 ```javascript
 const callback = downloadProgress => {

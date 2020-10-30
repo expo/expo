@@ -18,7 +18,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 <InstallSection packageName="expo-status-bar" />
 
-## Example Usage
+## Usage
 
 <SnackInline dependencies={["expo-status-bar"]}>
 

@@ -18,7 +18,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 <InstallSection packageName="expo-image-picker" />
 
-## Example Usage
+## Usage
 
 <SnackInline label='Image Picker' dependencies={['expo-constants', 'expo-permissions', 'expo-image-picker']}>
 

@@ -20,7 +20,7 @@ Provides an API for interacting with the device's system calendars, events, remi
 
 In managed apps, `Calendar` requires `Permissions.CALENDAR`. Interacting with reminders on iOS requires `Permissions.REMINDERS`.
 
-## Example Usage
+## Usage
 
 <SnackInline label='Basic Calendar usage' templateId='calendar' dependencies={['expo-calendar']}>
 

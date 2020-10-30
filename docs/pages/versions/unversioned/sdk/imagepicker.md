@@ -22,7 +22,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 In managed apps, the permissions to pick images, from camera ([`Permissions.CAMERA`](../permissions/#permissionscamera)) or camera roll ([`Permissions.MEDIA_LIBRARY`](../permissions/#permissionsmedia_library)), are added automatically.
 
-## Example Usage
+## Usage
 
 <SnackInline label='Image Picker' dependencies={['expo-constants', 'expo-permissions', 'expo-image-picker']}>
 

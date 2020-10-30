@@ -16,7 +16,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 <InstallSection packageName="expo-battery" />
 
-## Example Usage
+## Usage
 
 <SnackInline label='Basic Battery Usage' templateId='battery' dependencies={['expo-battery']}>
 

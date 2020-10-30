@@ -17,7 +17,7 @@ import { InlineCode } from '~/components/base/code';
 
 <InstallSection packageName="expo-sensors" />
 
-## Example Usage
+## Usage
 
 <SnackInline label='Basic Barometer usage' templateId='barometer' dependencies={['expo-sensors']}>
 

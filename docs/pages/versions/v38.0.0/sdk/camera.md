@@ -25,7 +25,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 In managed apps, `Camera` requires `Permissions.CAMERA`. Video recording requires `Permissions.AUDIO_RECORDING`.
 
-## Example Usage
+## Usage
 
 <SnackInline label='Basic Camera usage' templateId='camera' dependencies={['expo-camera']}>
 
