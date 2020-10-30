@@ -12,38 +12,13 @@ Install Expo CLI by running `npm install -g expo-cli` (or `yarn global add expo-
 
 Sign in with `expo login`, or sign up with `expo register` if you don't have an Expo account yet. You can check if you're logged in by running `expo whoami`.
 
-## 3. Create eas.json
-
-To start using EAS Build, you'll need to create the `eas.json` file in the root of your project. Creating this file will enable new Expo CLI commands for you, namely `expo eas:build` and `expo eas build:status`.
-
-Let's start with the following minimal configuration:
-
-```json
-{
-  "builds": {
-    "android": {
-      "release": {
-        "workflow": "generic"
-      }
-    },
-    "ios": {
-      "release": {
-        "workflow": "generic"
-      }
-    }
-  }
-}
-```
-
-If you want to learn more about the configuration options see the [Configuring with eas.json](../eas-json/) page.
-
-## 4. Eject to bare workflow if needed
+## 3. Eject to bare workflow if needed
 
 > ✅ You can skip this step if you are using the bare workflow or have a vanilla React Native project.
 
 Building managed Expo projects with EAS Build is not supported yet. We're working hard to deliver this soon! In the meantime, if you wish to build a managed project, you'll have to run `expo eject`. [Learn more here.](../../workflow/customizing/)
 
-## 5. Configure the project
+## 4. Configure the project
 
 Run `expo eas:build:init` to configure your iOS and Android projects to run on EAS Build.
 
@@ -51,7 +26,7 @@ Run `expo eas:build:init` to configure your iOS and Android projects to run on E
 
 - **iOS**: This requires access to a **paid** [Apple Developer Account](https://developer.apple.com/programs) to configure the credentials required for signing your app. Expo will take care of acquiring the credentials for you, and if you have already built your app in the managed workflow with `expo build:ios` then the same credentials will be used by EAS Build. If you would rather manually provide your credentials, refer to the advanced [iOS Credentials](../advanced-credentials-configuration/#ios-credentials) section for more information.
 
-## 6. Run the build
+## 5. Run the build
 
 - Run `expo eas:build --platform android` to build for Android.
 
@@ -59,11 +34,11 @@ Run `expo eas:build:init` to configure your iOS and Android projects to run on E
 
 > 💡 You can run `expo eas:build --platform all` to build for Android and iOS at the same time.
 
-## 7. Check the status of your builds
+## 6. Check the status of your builds
 
 By default, the `expo eas:build` command will wait for your build to complete. However, if you interrupt this command you can still monitor the progress of your builds by either visiting [the Expo website](https://expo.io/) or running the `expo eas:build:status` command.
 
-## 8. Learn more
+## 7. Learn more
 
 - Read the [Configuration with eas.json](../eas-json/) guide to get familiar with EAS Build configuration options.
 - If you want to learn more about the internals of Android and iOS builds, check out our [Android build process](../android-builds/) and [iOS build process](../ios-builds/) pages.
