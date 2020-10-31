@@ -7,7 +7,7 @@ import Video from '~/components/plugins/Video'
 
 In the perfect world we want to write code to perform our task just once and have it run the same on every platform. Even on the web, where this is an explicit design goal, it's often necessary to consider differences between web browsers.
 
-Expo tools try to handle smoothing over these differences between iOS, Android, web (and different web browsers) for you, but it isn't always possible. There are two important differences between how the iOS and Android share APIs work and how the Web Share API works. 
+Expo tools try to handle smoothing over these differences between iOS, Android, web (and different web browsers) for you, but it isn't always possible. There are two important differences between how the iOS and Android share APIs work and how the Web Share API works.
 
 1. It isn't always available on web.
 2. We can't share local file URIs on web.
@@ -22,6 +22,7 @@ Run `expo install anonymous-files` to install a library to handle uploading the 
 
 <SnackInline label="Sharing web workaround" templateId="tutorial/sharing-web-workaround" dependencies={['expo-image-picker', 'expo-sharing', 'anonymous-files']} defaultPlatform="web">
 
+<!-- prettier-ignore -->
 ```js
 import React from 'react';
 import { Image, /* @info Import Platform, you can order imports however you like, here we did it alphabetically. */Platform,/* @end */ StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -77,4 +78,3 @@ export default function App() {
 ## Up next
 
 Our app does everything we set out for it to do, so it's time to shift our focus towards the purely aesthetic. In the next step of this tutorial we will [customize our app icon and splash screen](../../tutorial/configuration/).
-

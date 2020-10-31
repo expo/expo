@@ -5,7 +5,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-38/packages/expo/src/Updat
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 The `Updates` API from **`expo`** allows you to programatically control and respond to over-the-air updates to your app.
 
@@ -35,14 +34,6 @@ The changes in the new API are as follows:
 ```js
 import * as Updates from 'expo-updates';
 ```
-
-<TableOfContentSection title='Constants' contents={['Updates.isEmergencyLaunch', 'Updates.manifest', 'Updates.releaseChannel', 'Updates.updateId']} />
-
-<TableOfContentSection title='Methods' contents={['Updates.reloadAsync()', 'Updates.checkForUpdateAsync()', 'Updates.fetchUpdateAsync()']} />
-
-<TableOfContentSection title='Related Types' contents={['EventSubscription', 'UpdateEvent', 'UpdateEventType']} />
-
-<TableOfContentSection title='Error Codes' contents={[]} />
 
 ## Constants
 
@@ -146,9 +137,9 @@ An object that is passed into each event listener when an auto-update check has 
 
 ## Error Codes
 
-| Code | Description |
-| --- | --- |
-| `ERR_UPDATES_DISABLED` | A method call was attempted when the Updates module was disabled, or the application was running in development mode |
-| `ERR_UPDATES_RELOAD` | An error occurred when trying to reload the application and it could not be reloaded. For bare workflow apps, double check the setup steps for this module to ensure it has been installed correctly and the proper native initialization methods are called. |
-| `ERR_UPDATES_CHECK` | An unexpected error occurred when trying to check for new updates. Check the error message for more information. |
-| `ERR_UPDATES_FETCH` | An unexpected error occurred when trying to fetch a new update. Check the error message for more information. |
+| Code                   | Description                                                                                                                                                                                                                                                   |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ERR_UPDATES_DISABLED` | A method call was attempted when the Updates module was disabled, or the application was running in development mode                                                                                                                                          |
+| `ERR_UPDATES_RELOAD`   | An error occurred when trying to reload the application and it could not be reloaded. For bare workflow apps, double check the setup steps for this module to ensure it has been installed correctly and the proper native initialization methods are called. |
+| `ERR_UPDATES_CHECK`    | An unexpected error occurred when trying to check for new updates. Check the error message for more information.                                                                                                                                              |
+| `ERR_UPDATES_FETCH`    | An unexpected error occurred when trying to fetch a new update. Check the error message for more information.                                                                                                                                                 |

@@ -5,8 +5,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo/src/Linki
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
-
 This module allows your app to interact with other apps via deep links. It provides helper methods for constructing and parsing deep links into your app.
 
 This module is an extension of the React Native [Linking module](https://reactnative.dev/docs/linking.html), meaning that all methods in the RN module can be accessed via `Linking`, on top of the extra methods provided by Expo (detailed here). **These methods only apply to the managed workflow, you cannot use them in a bare React Native app**.
@@ -16,8 +14,6 @@ For information and examples on how to use this API and the `react-native` Linki
 <PlatformsSection android emulator ios simulator web />
 
 ## API
-
-<TableOfContentSection title='Methods' contents={['Linking.makeUrl(path, queryParams)', 'Linking.parse(url)', 'Linking.parseInitialURLAsync()']} />
 
 ## Methods
 

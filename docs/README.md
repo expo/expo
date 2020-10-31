@@ -76,7 +76,7 @@ You can add your own client-side redirect rules in `pages/_error.js`.
 
 ### Adding Images and Assets
 
-You can add images and assets to the `public/static` directory.  They'll be served by the production and staging servers at `/static`.
+You can add images and assets to the `public/static` directory. They'll be served by the production and staging servers at `/static`.
 
 ### New Components
 
@@ -84,8 +84,8 @@ Always try to use the existing components and features in markdown. Create a new
 
 ### Quirks
 
-* You can't have curly brace without quotes: \`{}\` -> `{}`
-* Make sure to leave a empty newline between a table and following content
+- You can't have curly brace without quotes: \`{}\` -> `{}`
+- Make sure to leave a empty newline between a table and following content
 
 ## A note about versioning
 
@@ -111,7 +111,6 @@ on `v8.0.0` and `v7.0.0`, you'd do the following after editing the docs in
 Any changes in your `git diff` outside the `unversioned` directory are ignored
 so don't worry if you have code changes or such elsewhere.
 
-
 ### Updating latest version of docs
 
 When we release a new SDK, we copy the `unversioned` directory, and rename it to the new version. Latest version of docs is read from `package.json` so make sure to update the `version` key there as well. However, if you update the `version` key there, you need to `rm -rf node_modules/.cache/` before the change is picked up (why? [read this](https://github.com/zeit/next.js/blob/4.0.0/examples/with-universal-configuration/README.md#caveats)).
@@ -124,9 +123,9 @@ Because the navbar is automatically generated from the directory structure, the 
 
 #### Syncing app.json / app.config.js with the schema
 
-To render the app.json / app.config.js properties table, we currently store a local copy of the appropriate version of the schema. 
+To render the app.json / app.config.js properties table, we currently store a local copy of the appropriate version of the schema.
 
-If the schema is updated, in order to sync and rewrite our local copy, run `yarn run schema-sync 39` (or relevant version number) or `yarn run schema-sync unversioned`.  
+If the schema is updated, in order to sync and rewrite our local copy, run `yarn run schema-sync 39` (or relevant version number) or `yarn run schema-sync unversioned`.
 
 #### Importing from the React Native docs
 
@@ -140,7 +139,4 @@ You may need to tweak the script as the source docs change; the script hackily t
 
 The React Native docs are actually versioned but we currently read off of master.
 
-TODOs:
-    - Handle image sizing in imports better
-    - Read from the appropriate version (configurable) of the React Native docs, not just master
-    - Make Snack embeds work; these are marked in some of the React Native docs but they are just imported as plain JS code blocks
+TODOs: - Handle image sizing in imports better - Read from the appropriate version (configurable) of the React Native docs, not just master - Make Snack embeds work; these are marked in some of the React Native docs but they are just imported as plain JS code blocks

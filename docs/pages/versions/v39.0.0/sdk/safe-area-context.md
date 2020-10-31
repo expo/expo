@@ -101,6 +101,7 @@ class ClassComponent extends React.Component {
   }
 }
 ```
+
 ## Optimization
 
 If you can, use `SafeAreaView`. It's implemented natively so when rotating the device, there is no delay from the asynchronous bridge.

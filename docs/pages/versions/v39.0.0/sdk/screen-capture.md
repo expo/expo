@@ -5,7 +5,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-39/packages/expo-screen-ca
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-screen-capture`** allows you to protect screens in your app from being captured or recorded, as well as be notified if a screenshot is taken while your app is foregrounded. The two most common reasons you may want to prevent screen capture are:
 
@@ -26,6 +25,7 @@ This is especially important on Android, since the [`android.media.projection`](
 
 ### Example: prevent screen capture hook
 
+<!-- prettier-ignore -->
 ```javascript
 import { usePreventScreenCapture } from 'expo-screen-capture';
 import React from 'react';
@@ -45,6 +45,7 @@ export default function ScreenCaptureExample {
 
 ### Example: functions
 
+<!-- prettier-ignore -->
 ```javascript
 import * as ScreenCapture from 'expo-screen-capture';
 import React from 'react';
@@ -56,7 +57,6 @@ export default class ScreenCaptureExample extends React.Component {
     ScreenCapture.addScreenshotListener(() => {
       alert('Thanks for screenshotting my beautiful app 😊');
     }); /* @end */
-
   }
 
   render() {
@@ -71,13 +71,11 @@ export default class ScreenCaptureExample extends React.Component {
   _activate = async () => {
     /* @info Screen will be uncapturable once <strong>preventScreenCaptureAsync()</strong> is called. */
     await ScreenCapture.preventScreenCaptureAsync(); /* @end */
-
   };
 
   _deactivate = async () => {
     /* @info Re-allows screen capture, or does nothing if preventScreenCaptureAsync() was never called. */
     await ScreenCapture.allowScreenCaptureAsync(); /* @end */
-
   };
 }
 ```
@@ -87,8 +85,6 @@ export default class ScreenCaptureExample extends React.Component {
 ```js
 import * as ScreenCapture from 'expo-screen-capture';
 ```
-
-<TableOfContentSection title='Methods' contents={['usepreventscreencapture(key)', 'preventScreenCaptureAsync(key)', 'allowScreenCaptureAsync(key)', 'addScreenshotListener(listener)', 'removeScreenshotListener(subscription)']} />
 
 ## Methods
 

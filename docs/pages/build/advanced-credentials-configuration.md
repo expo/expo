@@ -39,11 +39,11 @@ It specifies credentials for Android and iOS (but you can configure only one of 
 ## Configuring credentials.json
 
 You have two options for handling your app credentials:
+
 - Let Expo generate and manage your credentials for you, and keep them stored securely on Expo's servers, or
 - Create credentials manually, yourself, and provide them to EAS Build via the credentials.json file
 
 No matter which option you choose, you can always sync your credentials by running `expo eas:credentials:sync`, so that the ones you have stored locally match those on Expo's servers.
-
 
 ## Automatic configuration
 

@@ -6,7 +6,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-sensors'
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 `Magnetometer` from **`expo-sensors`** provides access to the device magnetometer sensor(s) to respond to and measure the changes in the magnetic field. You can access the calibrated values with `Magnetometer.` and uncalibrated raw values with `MagnetometerUncalibrated`.
 
@@ -21,8 +20,6 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 ```js
 import { Magnetometer } from 'expo-sensors';
 ```
-
-<TableOfContentSection title='Methods' contents={['Magnetometer.isAvailableAsync()', 'Magnetometer.addListener(listener)', 'Magnetometer.removeAllListeners()', 'Magnetometer.setUpdateInterval(intervalMs)']} />
 
 ## Methods
 

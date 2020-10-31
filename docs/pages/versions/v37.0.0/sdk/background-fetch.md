@@ -4,7 +4,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-backgroun
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-background-fetch`** provides an API to perform [background fetch](https://developer.apple.com/documentation/uikit/core_app/managing_your_app_s_life_cycle/preparing_your_app_to_run_in_the_background/updating_your_app_with_background_app_refresh) tasks, allowing you to run specific code periodically in the background to update your app. This module uses [TaskManager](../task-manager) Native API under the hood.
 
@@ -27,8 +26,6 @@ In order to use `BackgroundFetch` API in standalone, detached and bare apps on i
 ```js
 import * as BackgroundFetch from 'expo-background-fetch';
 ```
-
-<TableOfContentSection title='Methods' contents={['BackgroundFetch.getStatusAsync()', 'BackgroundFetch.registerTaskAsync(taskName, options)', 'BackgroundFetch.unregisterTaskAsync(taskName)', 'BackgroundFetch.setMinimumIntervalAsync(minimumInterval)']} />
 
 ## Methods
 

@@ -5,7 +5,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-location'
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
 import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-location`** allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.
@@ -82,16 +82,6 @@ export default function App() {
 ```js
 import * as Location from 'expo-location';
 ```
-
-<TableOfContentSection title='Methods' contents={['Location.hasServicesEnabledAsync()', 'Location.requestPermissionsAsync()', 'Location.getPermissionsAsync()', 'Location.getLastKnownPositionAsync()', 'Location.getCurrentPositionAsync(options)', 'Location.watchPositionAsync(options, callback)', 'Location.getProviderStatusAsync()', 'Location.enableNetworkProviderAsync()', 'Location.getHeadingAsync()', 'Location.watchHeadingAsync(callback)', 'Location.geocodeAsync(address)', 'Location.reverseGeocodeAsync(location)', 'Location.setApiKey(apiKey)', 'Location.installWebGeolocationPolyfill()']} />
-
-<TableOfContentSection title='Background Location Methods' contents={['Location.startLocationUpdatesAsync(taskName, options)', 'Location.stopLocationUpdatesAsync(taskName)', 'Location.hasStartedLocationUpdatesAsync(taskName)']} />
-
-<TableOfContentSection title='Geofencing Methods' contents={['Location.startGeofencingAsync(taskName, regions)', 'Location.stopGeofencingAsync(taskName)', 'Location.hasStartedGeofencingAsync(taskName)']} />
-
-<TableOfContentSection title='Types' contents={['Location', 'LocationRegion', 'PermissionDetailsLocationIOS', 'PermissionDetailsLocationAndroid']} />
-
-<TableOfContentSection title='Enums' contents={['Location.Accuracy', 'Location.ActivityType', 'Location.GeofencingEventType', 'Location.GeofencingRegionState']} />
 
 ## Methods
 

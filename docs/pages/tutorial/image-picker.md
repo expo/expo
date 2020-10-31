@@ -5,7 +5,7 @@ title: Picking an image
 import SnackInline from '~/components/plugins/SnackInline';
 import Video from '~/components/plugins/Video'
 
-So far we have been using code from React and React Native in our app. React gives us a nice way to build components and React Native gives us pre-built components that work on iOS, Android, and web &mdash; like `View`, `Text`, `TouchableOpacity`. React Native does *not* provide us with an image picker. For this, we can use an Expo library called [expo-image-picker](/versions/latest/sdk/imagepicker/):
+So far we have been using code from React and React Native in our app. React gives us a nice way to build components and React Native gives us pre-built components that work on iOS, Android, and web &mdash; like `View`, `Text`, `TouchableOpacity`. React Native does _not_ provide us with an image picker. For this, we can use an Expo library called [expo-image-picker](/versions/latest/sdk/imagepicker/):
 
 > **`expo-image-picker`** provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.
 
@@ -17,7 +17,6 @@ So far we have been using code from React and React Native in our app. React giv
 
 </p>
 </details> -->
-
 
 ## Installing expo-image-picker
 
@@ -37,6 +36,7 @@ With the library installed in our project, we can now actually use it.
 
 <SnackInline label="Image picker" templateId="tutorial/image-picker-log" dependencies={['expo-image-picker']}>
 
+<!-- prettier-ignore -->
 ```js
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -89,6 +89,7 @@ Now we will take the data that we get from the image picker and use it to show t
 
 <SnackInline label="Image picker show image" templateId="tutorial/image-picker-show" dependencies={['expo-image-picker']}>
 
+<!-- prettier-ignore -->
 ```js
 export default function App() {
   /* @info Initialize a variable to hold our selected image data */const [selectedImage, setSelectedImage] = React.useState(null);/* @end */

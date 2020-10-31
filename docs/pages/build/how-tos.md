@@ -1,5 +1,5 @@
 ---
-title: "How to: configuration examples"
+title: 'How to: configuration examples'
 ---
 
 This document outlines how to configure EAS Build for some common scenarios, such as monorepos and repositories with private dependencies. The examples described here do not provide step-by-step instructions to set up EAS Build from scratch; instead, they explain the changes from the standard process that are necessary to acommodate the given scenario.
@@ -13,7 +13,7 @@ This document outlines how to configure EAS Build for some common scenarios, suc
 ```json
 {
   "scripts": {
-    "postinstall": "cd ../.. && yarn build",
+    "postinstall": "cd ../.. && yarn build"
   }
 }
 ```
@@ -22,6 +22,7 @@ This document outlines how to configure EAS Build for some common scenarios, suc
 
 - Configure your project in a way that works with `yarn` and relies on the `NPM_TOKEN` env variable to authenticate with private repositories
 - add `experimental.npmToken` in `credentials.json`
+
 ```json
 {
   "experimental": {

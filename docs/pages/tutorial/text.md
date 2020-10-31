@@ -5,7 +5,7 @@ title: Styling text
 import SnackInline from '~/components/plugins/SnackInline';
 import Highlight from '~/components/plugins/Highlight';
 
-> 👶🏻 We believe in "learning by doing" and so this tutorial emphasizes **doing** over *explaining*. If you find yourself typing code that you do not understand, do not worry &mdash; we will link to you to appropriate resources to help you get a deeper understanding at the end of the tutorial.
+> 👶🏻 We believe in "learning by doing" and so this tutorial emphasizes **doing** over _explaining_. If you find yourself typing code that you do not understand, do not worry &mdash; we will link to you to appropriate resources to help you get a deeper understanding at the end of the tutorial.
 
 Let's change the text that's currently instructing us to "Open up App.js to start working on your app!" to instead instruct our users how to use the app. The app doesn't yet do anything but we can pretend that it does, such is the way of programming.
 
@@ -13,6 +13,7 @@ Change your code according to the following example. Throughout the tutorial, an
 
 <SnackInline label="Updated text">
 
+<!-- prettier-ignore -->
 ```js
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -37,7 +38,6 @@ const styles = StyleSheet.create({
 });
 ```
 
-
 </SnackInline>
 
 <br/>
@@ -52,6 +52,7 @@ Our text is black and small. We should change the color because, according to so
 
 <SnackInline label="Styled text">
 
+<!-- prettier-ignore -->
 ```js
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';

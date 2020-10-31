@@ -28,7 +28,7 @@ Verify that the installation was successful by running `expo whoami`. You're not
 
 ## 2. Expo client app for iOS and Android
 
-The fastest way to get up and running is to use the Expo client app on your iOS or Android device. Expo client allows you to open up apps that are being served through Expo CLI. 
+The fastest way to get up and running is to use the Expo client app on your iOS or Android device. Expo client allows you to open up apps that are being served through Expo CLI.
 
 - 🤖 [Android Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent) - Android Lollipop (5) and greater.
 - 🍎 [iOS App Store](https://itunes.com/apps/exponent) - iOS 10 and greater.

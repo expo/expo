@@ -6,7 +6,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-calendar'
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 Provides an API for interacting with the device's system calendars, events, reminders, and associated records.
 
@@ -20,7 +19,7 @@ Provides an API for interacting with the device's system calendars, events, remi
 
 In managed apps, `Calendar` requires `Permissions.CALENDAR`. Interacting with reminders on iOS requires `Permissions.REMINDERS`.
 
-## Example Usage
+## Usage
 
 <SnackInline label='Basic Calendar usage' templateId='calendar' dependencies={['expo-calendar']}>
 
@@ -87,12 +86,6 @@ async function createCalendar() {
 ```js
 import * as Calendar from 'expo-calendar';
 ```
-
-<TableOfContentSection title='Methods' contents={['Calendar.getCalendarsAsync(entityType)', 'Calendar.getDefaultCalendarAsync()', 'Calendar.requestCalendarPermissionsAsync()', 'Calendar.requestRemindersPermissionsAsync()', 'Calendar.getCalendarPermissionsAsync()', 'Calendar.createCalendarAsync(details)', 'Calendar.updateCalendarAsync(id, details)', 'Calendar.deleteCalendarAsync(id)', 'Calendar.getEventsAsync(calendarIds, startDate, endDate)', 'Calendar.getEventAsync(id, recurringEventOptions)', 'Calendar.createEventAsync(calendarId, details)', 'Calendar.updateEventAsync(id, details, recurringEventOptions)', 'Calendar.deleteEventAsync(id, recurringEventOptions)', 'Calendar.getAttendeesForEventAsync(eventId, recurringEventOptions)', 'Calendar.createAttendeeAsync(eventId, details)', 'Calendar.updateAttendeeAsync(id, details)', 'Calendar.deleteAttendeeAsync(id)', 'Calendar.getRemindersAsync(calendarIds, status, startDate, endDate)', 'Calendar.getReminderAsync(id)', 'Calendar.createReminderAsync(calendarId, details)', 'Calendar.updateReminderAsync(id, details)', 'Calendar.deleteReminderAsync(id)', 'Calendar.getSourcesAsync()', 'Calendar.getSourceAsync(id)', 'Calendar.openEventInCalendar(id)']} />
-
-<TableOfContentSection title='Object Types' contents={['Calendar', 'Event', 'Reminder', 'Attendee', 'RecurrenceRule', 'Alarm', 'Source']} />
-
-<TableOfContentSection title='Enum Types' contents={['Calendar.DayOfTheWeek', 'Calendar.MonthOfTheYear']} />
 
 ## Methods
 
@@ -515,7 +508,7 @@ A calendar record upon which events (or, on iOS, reminders) can be stored. Setti
 | allowsModifications   | _boolean_ | both      | Boolean value that determines whether this calendar can be modified           |                                                                                                                                                                                                                                                                                                                                                                    |
 | type                  | _string_  | iOS       | Type of calendar this object represents                                       | `Calendar.CalendarType.LOCAL`, `Calendar.CalendarType.CALDAV`, `Calendar.CalendarType.EXCHANGE`, `Calendar.CalendarType.SUBSCRIBED`, `Calendar.CalendarType.BIRTHDAYS`, `Calendar.CalendarType.UNKNOWN`                                                                                                                                                            |
 | isPrimary             | _boolean_ | Android   | Boolean value indicating whether this is the device's primary calendar        |                                                                                                                                                                                                                                                                                                                                                                    |
-| name                  | _string | null_  | Android   | Internal system name of the calendar                                          |                                                                                                                                                                                                                                                                                                                                                                    |
+| name                  | \_string  | null\_    | Android                                                                       | Internal system name of the calendar                                                                                                                                                                                                                                                                                                                               |  |
 | ownerAccount          | _string_  | Android   | Name for the account that owns this calendar                                  |                                                                                                                                                                                                                                                                                                                                                                    |
 | timeZone              | _string_  | Android   | Time zone for the calendar                                                    |                                                                                                                                                                                                                                                                                                                                                                    |
 | allowedAvailabilities | _array_   | both      | Availability types that this calendar supports                                | array of `Calendar.Availability.BUSY`, `Calendar.Availability.FREE`, `Calendar.Availability.TENTATIVE`, `Calendar.Availability.UNAVAILABLE` (iOS only), `Calendar.Availability.NOT_SUPPORTED` (iOS only)                                                                                                                                                           |

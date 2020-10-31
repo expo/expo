@@ -35,7 +35,7 @@ title: Publishing Websites
 {
     "homepage": "/webapp"
 }
-``` 
+```
 
 [webpack-optimize]: https://webpack.js.org/configuration/optimization/
 

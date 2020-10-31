@@ -11,7 +11,7 @@
     "export-server": "http-server out -p 8000",
     "import-react-native-docs": "node ./scripts/import-react-native-docs.js",
     "test-links": "node --async-stack-traces --unhandled-rejections=strict ./scripts/test-links.js",
-    "prettier": "prettier --write '**/*.{js,ts,tsx}'",
+    "prettier": "prettier --write '**/*.{js,ts,tsx,md}'",
     "lint": "tsc --noEmit && eslint .",
     "watch": "tsc --noEmit -w",
     "test": "jest",

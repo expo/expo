@@ -32,22 +32,18 @@ export default function App() {
     return <AppLoading />;
   }
 
-  return (
-    <Text style={{ fontFamily: 'Inter_900Black' }}>Inter Black</Text>
-  );
+  return <Text style={{ fontFamily: 'Inter_900Black' }}>Inter Black</Text>;
 }
 ```
-
 
 ## A minimal but complete working example
 
 To create a new project including this example, run `npx create-react-native-app --template with-custom-font` in your terminal.
 
-
 <SnackInline
-  label="Custom Font"
-  dependencies={['expo-font']}
-  files={{
+label="Custom Font"
+dependencies={['expo-font']}
+files={{
     'assets/fonts/Inter-Black.otf': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/44b1541a96341780b29112665c66ac67'
   }}>
 
@@ -67,15 +63,12 @@ export default props => {
   } else {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{ fontFamily: 'Inter-Black', fontSize: 40 }}>
-          Inter Black
-        </Text>
+        <Text style={{ fontFamily: 'Inter-Black', fontSize: 40 }}>Inter Black</Text>
         <Text style={{ fontSize: 40 }}>Platform Default</Text>
       </View>
     );
   }
 };
-
 ```
 
 </SnackInline>
@@ -199,9 +192,9 @@ export default props => {
 If you don't want to use the `useFonts` hook (for example, maybe you prefer class components), you can use `Font.loadAsync` directly. What is happening under the hood is that your fonts are being loaded using `Font.loadAsync` from the [`expo-font` library](/versions/latest/sdk/font). You can use that directly if you prefer, or if you want to have more fine-grained control over when your fonts are loaded before rendering.
 
 <SnackInline
-  label="Font loadAsync"
-  dependencies={['expo-font']}
-  files={{
+label="Font loadAsync"
+dependencies={['expo-font']}
+files={{
     'assets/fonts/Inter-Black.otf': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/44b1541a96341780b29112665c66ac67'
   }}>
 
@@ -213,8 +206,7 @@ import * as Font from 'expo-font';
 
 let customFonts = {
   'Inter-Black': require('./assets/fonts/Inter-Black.otf'),
-  'Inter-SemiBoldItalic':
-    'https://rsms.me/inter/font-files/Inter-SemiBoldItalic.otf?v=3.12',
+  'Inter-SemiBoldItalic': 'https://rsms.me/inter/font-files/Inter-SemiBoldItalic.otf?v=3.12',
 };
 
 export default class App extends React.Component {
@@ -234,13 +226,10 @@ export default class App extends React.Component {
   render() {
     if (this.state.fontsLoaded) {
       return (
-        <View
-          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <Text>Platform Default</Text>
           <Text style={{ fontFamily: 'Inter-Black' }}>Inter Black</Text>
-          <Text style={{ fontFamily: 'Inter-SemiBoldItalic' }}>
-            Inter SemiBoldItalic
-          </Text>
+          <Text style={{ fontFamily: 'Inter-SemiBoldItalic' }}>Inter SemiBoldItalic</Text>
         </View>
       );
     } else {
@@ -248,7 +237,6 @@ export default class App extends React.Component {
     }
   }
 }
-
 ```
 
 </SnackInline>
