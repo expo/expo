@@ -38,19 +38,8 @@ jobs:
         # Will be generated later in the build process if the user provides their own ios.googleServicesFile
         run: expotools ios-generate-dynamic-macros --skip-template=GoogleService-Info.plist
       - uses: ruby/setup-ruby@v1
-      - run: echo "BUNDLE_BIN=$(pwd)/.direnv/bin" >> $GITHUB_ENV
-      - name: bundler cache
-        uses: actions/cache@v1
         with:
-          path: vendor/bundle
-          key: ${{ runner.os }}-gems-${{ hashFiles('.ruby-version') }}-${{ hashFiles('Gemfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-gems-
-      - name: install fastlane
-        run: |
-          bundle config path vendor/bundle
-          bundle install --jobs 4 --retry 3
-      - run: echo "$BUNDLE_BIN" >> $GITHUB_PATH
+          bundler-cache: true
       - uses: actions/cache@v1
         with:
           path: ios/Pods
