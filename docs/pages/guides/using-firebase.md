@@ -15,14 +15,6 @@ See the [official Firebase blog post announcing React Native compatibility](http
 
 > **Note:** This guide mostly covers Firebase Realtime Database (and some Firestore as well). For more background on why some Firebase services are not supported, please read [Brent Vatne's response on Canny](https://expo.canny.io/feature-requests/p/full-native-firebase-integration).
 
-##### Table of Contents
-
-- [Firebase SDK Setup](#firebase-sdk-setup)
-- [Storing Data and Receiving Updates](#storing-data-and-receiving-updates)
-- [User Authentication](#user-authentication)
-- [Using Expo with Firestore](#using-expo-with-firestore)
-- [Recording events with Analytics](#recording-events-with-analytics)
-
 ## Firebase SDK Setup
 
 First we need to setup a Firebase Account and create a new project. We will be using the JavaScript SDK provided by Firebase, so pull it into your Expo project.
