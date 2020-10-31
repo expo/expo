@@ -2,19 +2,6 @@
 title: Publishing Websites
 ---
 
-## Table of contents
-
-- [Building](#creating-a-build)
-  - [Serving](#serving-locally)
-- [AWS Amplify Console](#aws-amplify-console)
-- [Netlify](#netlify)
-  - [Manual deployment with the Netlify CDN](#manual-deployment-with-the-netlify-cdn)
-  - [Continuous delivery](#continuous-delivery)
-- [GitHub Pages](#github-pages)
-- [Vercel](#vercel)
-- [Firebase Hosting](#firebase-hosting)
-- [Surge](#surge)
-
 ## Creating a Build
 
 - Optimize the assets for speed - `npx expo-optimize` (formerly `expo optimize`)

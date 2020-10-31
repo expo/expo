@@ -2,18 +2,6 @@
 title: Optimizing Updates
 ---
 
-## Table of contents
-
-- [What's in an update?](#whats-in-an-update)
-  - [Estimating the size of an update](#estimating-the-size-of-an-update)
-- [Limits on the updates service](#limits-on-the-updates-service)
-  - [Optimize images](#optimize-images)
-  - [Reduce large dependencies](#reduce-large-dependencies)
-  - [Download Files when needed](#download-files-when-needed)
-  - [Building your app on your own computer](#building-your-app-on-your-own-computer)
-  - [Self-hosting your updates](#self-hosting-your-updates)
-- [A glimpse at the future](#a-glimpse-at-the-future)
-
 ## What's in an update?
 
 An update for an Expo app comprises the JavaScript, manifest, images, and other assets that a compatible Expo client app can download and run.
