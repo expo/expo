@@ -6,7 +6,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-sensors'
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-
 `Magnetometer` from **`expo-sensors`** provides access to the device magnetometer sensor(s) to respond to and measure the changes in the magnetic field. You can access the calibrated values with `Magnetometer.` and uncalibrated raw values with `MagnetometerUncalibrated`.
 
 <PlatformsSection android emulator ios simulator />
@@ -20,8 +19,6 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 ```js
 import { Magnetometer } from 'expo-sensors';
 ```
-
-
 
 ## Methods
 

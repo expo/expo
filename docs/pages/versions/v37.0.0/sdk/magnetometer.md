@@ -7,7 +7,6 @@ import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
-
 `Magnetometer` from **`expo-sensors`** provides access to the device magnetometer sensor(s) to respond to and measure the changes in the magnetic field. You can access the calibrated values with `Magnetometer.` and uncalibrated raw values with `MagnetometerUncalibrated`.
 
 <PlatformsSection android emulator ios simulator />
@@ -21,8 +20,6 @@ import SnackInline from '~/components/plugins/SnackInline';
 ```js
 import { Magnetometer } from 'expo-sensors';
 ```
-
-
 
 ## Methods
 
@@ -113,7 +110,7 @@ export function Compass() {
 
   const _subscribe = () => {
     setSubscription(
-      Magnetometer.addListener((result) => {
+      Magnetometer.addListener(result => {
         setData(result);
       })
     );

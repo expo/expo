@@ -80,7 +80,8 @@ If you have already integrated Google Sign In into your standalone app, this is 
 #### Deploying to the Google Play Store
 
 Since your app is most likely using App Signing by Google Play, you will need to grab their app signing certificate in production rather than the upload certificate returned by `expo fetch:android:hashes`. To do this:
-1. Go to [Play Console](https://play.google.com/console) → (your app) → Release management → App Signing <sup>[**](#beta-console)</sup>
+
+1. Go to [Play Console](https://play.google.com/console) → (your app) → Release management → App Signing <sup>[\*\*](#beta-console)</sup>
 2. Copy the value of _SHA-1 Certificate Fingerprint_
 3. Go to [Google API Dashboard](https://console.developers.google.com/apis/) → (your project) → Credentials
 4. Select the appropriate "API keys" entry
@@ -88,7 +89,7 @@ Since your app is most likely using App Signing by Google Play, you will need to
 6. Add or replace the **SHA-1 Certificate Fingerprint** with the value copied in step #2
 7. Click **Done** and then click **Save**
 
-<a name="beta-console"><sup>**</sup></a> : _In the new Play Console (currently in Beta), you would go to Play Console → (your app) → App Signing_
+<a name="beta-console"><sup>\*\*</sup></a> : _In the new Play Console (currently in Beta), you would go to Play Console → (your app) → App Signing_
 
 ### Deploying Google Maps to a standalone app on iOS
 
@@ -103,7 +104,7 @@ Apple Maps will work with no extra configuration. For Google Maps:
 7.  Add your `ios.bundleIdentifier` from `app.json` (eg: `ca.brentvatne.growlerprowler`) to the bundle ID field.
 8.  Copy the API key (the first text input on the page) into `app.json` under the `ios.config.googleMapsApiKey` field.
 9.  Press `Save` and then rebuild the app.
-10. In your code, import `{ PROVIDER_GOOGLE }` from `react-native-maps` and add the property `provider=PROVIDER_GOOGLE` to your `<MapView>`.  This property works on both iOS and Android.
+10. In your code, import `{ PROVIDER_GOOGLE }` from `react-native-maps` and add the property `provider=PROVIDER_GOOGLE` to your `<MapView>`. This property works on both iOS and Android.
 
 **Note:** This can also be accessed through your app's [Constants](../../sdk/constants#constantsmanifest) (via `Constants.manifest.ios.config.googleMapsApiKey`) if you'd prefer not to have the API key in your code.
 

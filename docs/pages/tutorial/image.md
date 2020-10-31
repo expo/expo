@@ -13,7 +13,7 @@ Let's imagine that our designer has provided us with a beautiful logo:
 
 Save this image to the `assets` directory inside of your project and call it `logo.png`.
 
-> 💡 An "asset" is any file that your project uses that is not code. Images, videos, sounds, and fonts are all considered to be assets. 
+> 💡 An "asset" is any file that your project uses that is not code. Images, videos, sounds, and fonts are all considered to be assets.
 
 ## Displaying the image in the app
 

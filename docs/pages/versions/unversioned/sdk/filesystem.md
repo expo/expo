@@ -85,9 +85,9 @@ try {
 #### Managing Giphy's
 
 <SnackInline
-  label="Managing Giphy's"
-  templateId="filesystem/App"
-  files={{
+label="Managing Giphy's"
+templateId="filesystem/App"
+files={{
     'GifFetching.ts': 'filesystem/GifFetching.ts',
     'GifManagement.ts': 'filesystem/GifManagement.ts'
   }}>
@@ -101,21 +101,21 @@ const gifUrl = (gifId: string) => `https://media1.giphy.com/media/${gifId}/200.g
 
 // Checks if gif directory exists. If not, creates it
 async function ensureDirExists() {
-  const dirInfo = await FileSystem.getInfoAsync(gifDir)
+  const dirInfo = await FileSystem.getInfoAsync(gifDir);
   if (!dirInfo.exists) {
-    console.log('Gif directory doesn\'t exist, creating...');
+    console.log("Gif directory doesn't exist, creating...");
     await FileSystem.makeDirectoryAsync(gifDir, { intermediates: true });
   }
 }
 
-// Downloads all gifs specified as array of IDs 
+// Downloads all gifs specified as array of IDs
 export async function addMultipleGifs(gifIds: string[]) {
   try {
     await ensureDirExists();
 
     console.log('Downloading', gifIds.length, 'gif files...');
     await Promise.all(gifIds.map(id => FileSystem.downloadAsync(gifUrl(id), gifFileUri(id))));
-  } catch(e) {
+  } catch (e) {
     console.error("Couldn't download gif files:", e);
   }
 }
@@ -124,7 +124,7 @@ export async function addMultipleGifs(gifIds: string[]) {
 // If our gif doesn't exist locally, it downloads it
 export async function getSingleGif(gifId: string) {
   await ensureDirExists();
-  
+
   const fileUri = gifFileUri(gifId);
   const fileInfo = await FileSystem.getInfoAsync(fileUri);
 
@@ -146,7 +146,6 @@ export async function deleteAllGifs() {
   console.log('Deleting all GIF files...');
   await FileSystem.deleteAsync(gifDir);
 }
-
 ```
 
 </SnackInline>
@@ -156,12 +155,6 @@ export async function deleteAllGifs() {
 ```js
 import * as FileSystem from 'expo-file-system';
 ```
-
-
-
-
-
-
 
 ### [Supported URI schemes](#supported-uri-schemes-1)
 

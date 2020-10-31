@@ -24,7 +24,6 @@ When we take a look at that file, in line 10, we can see we are calling the func
 
 This is a simple example, but it shows how useful error messages and stacktraces can be if you take the time to decipher them. Debugging errors is one of the most frustrating, but also satisyfing parts of development, and remember that you're never alone! The Expo community and the React and React Native communities are great resources for help when you get stuck. There's a good chance someone else has run into the exact same error as you, so make sure to read the documentation, search the [forums](https://forums.expo.io/), [Github issues](https://github.com/expo/expo/issues/), and [StackOverflow](https://stackoverflow.com/).
 
-
 ## Up Next
 
 We suggest [following a tutorial](../../tutorial/planning/) before proceeding to the rest of the documentation, this will guide you through building a simple but meaningful project. [Continue to the tutorial](../../tutorial/planning/).

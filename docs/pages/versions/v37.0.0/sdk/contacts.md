@@ -7,7 +7,6 @@ import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
-
 **`expo-contacts`** provides access to the device's system contacts, allowing you to get contact information as well as adding, editing, or removing contacts.
 
 <PlatformsSection android emulator ios simulator />
@@ -67,14 +66,6 @@ export default function App() {
 ```js
 import * as Contacts from 'expo-contacts';
 ```
-
-
-
-
-
-
-
-
 
 ## Methods
 

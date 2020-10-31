@@ -6,7 +6,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-39/packages/expo-store-rev
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-
 **`expo-store-review`** provides access to the `SKStoreReviewController` API in iOS 10.3+ devices, allowing you to ask the user to rate your app without ever having to leave the app itself.
 
 > If this is used in Android the device will attempt to link to the Play Store using native `Linking` and the `android.playStoreUrl` from `app.config.js` or `app.json` instead.
@@ -24,10 +23,6 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 ```js
 import * as StoreReview from 'expo-store-review';
 ```
-
-
-
-
 
 ### `StoreReview.requestReview()`
 

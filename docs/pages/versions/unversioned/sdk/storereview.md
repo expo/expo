@@ -6,7 +6,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-store-rev
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-
 **`expo-store-review`** provides access to the `SKStoreReviewController` API in iOS 10.3+ devices, and `ReviewManager` API in Android 5.0+ allowing you to ask the user to rate your app without ever having to leave the app itself.
 
 <PlatformsSection android emulator ios simulator />
@@ -22,10 +21,6 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 ```js
 import * as StoreReview from 'expo-store-review';
 ```
-
-
-
-
 
 ### `StoreReview.requestReview()`
 

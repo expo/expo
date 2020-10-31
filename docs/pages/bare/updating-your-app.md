@@ -33,15 +33,15 @@ The `expo-updates` implementation requires a single URL (provided at build-time)
 
 The response to these requests should be a manifest JSON object with metadata about the latest update that's compatible with the requesting app binary. (More on compatibility below.) The manifest should have at least the following fields:
 
-| Key | Type | Description |
-| --- | --- | --- |
-| `releaseId` | string | A UUID uniquely identifying this update. |
-| `commitTime` | string | A JavaScript Date string representing the time this update was committed/published. This is used to compare two updates to determine which is newest. |
-| `runtimeVersion` | object | An object with keys `ios` and `android` whose corresponding values are the [Runtime Version](#runtime-version) this update is compatible with. Required only if `sdkVersion` is not provided. |
-| `sdkVersion` | string | The Expo SDK version this update uses. Required only if `runtimeVersion` is not provided. |
-| `bundleUrl` | string | A URL pointing to the JavaScript bundle this metadata represents. |
-| `bundledAssets` | array | An array of asset filenames to download as part of this update. |
-| `assetUrlOverride` | string | Base URL from which to resolve all of the filenames listed in `bundledAssets`. |
+| Key                | Type   | Description                                                                                                                                                                                   |
+| ------------------ | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `releaseId`        | string | A UUID uniquely identifying this update.                                                                                                                                                      |
+| `commitTime`       | string | A JavaScript Date string representing the time this update was committed/published. This is used to compare two updates to determine which is newest.                                         |
+| `runtimeVersion`   | object | An object with keys `ios` and `android` whose corresponding values are the [Runtime Version](#runtime-version) this update is compatible with. Required only if `sdkVersion` is not provided. |
+| `sdkVersion`       | string | The Expo SDK version this update uses. Required only if `runtimeVersion` is not provided.                                                                                                     |
+| `bundleUrl`        | string | A URL pointing to the JavaScript bundle this metadata represents.                                                                                                                             |
+| `bundledAssets`    | array  | An array of asset filenames to download as part of this update.                                                                                                                               |
+| `assetUrlOverride` | string | Base URL from which to resolve all of the filenames listed in `bundledAssets`.                                                                                                                |
 
 `expo-updates` assumes that URLs for assets and JavaScript bundles are immutable; that is, if it has already downloaded an asset or bundle at a given URL, it will not attempt to re-download. Therefore, if you change any assets in your updates, you **must** host them at a different URL.
 
@@ -103,45 +103,45 @@ On iOS, these properties are set as keys in `Expo.plist` and on Android as `meta
 
 On Android, you may also define these properties at runtime by passing a `Map` as the second parameter of `UpdatesController.initialize()`. If provided, the values in this Map will override any values specified in `AndroidManifest.xml`. On iOS, you may set these properties at runtime by calling `[UpdatesController.sharedInstance setConfiguration:]` at any point _before_ calling `start` or `startAndShowLaunchScreen`, and the values in this dictionary will override Expo.plist.
 
-| iOS plist/dictionary key | Android Map key | Android meta-data name | Default | Required? |
-| --- | --- | --- | --- | --- |
-| `EXUpdatesEnabled` | `enabled` | `expo.modules.updates.ENABLED` | `true` | ❌ |
+| iOS plist/dictionary key | Android Map key | Android meta-data name         | Default | Required? |
+| ------------------------ | --------------- | ------------------------------ | ------- | --------- |
+| `EXUpdatesEnabled`       | `enabled`       | `expo.modules.updates.ENABLED` | `true`  | ❌        |
 
 Whether updates are enabled. Setting this to `false` disables all update functionality, all module methods, and forces the app to load with the manifest and assets bundled into the app binary.
 
-| iOS plist/dictionary key | Android Map key | Android meta-data name | Default | Required? |
-| --- | --- | --- | --- | --- |
-| `EXUpdatesURL` | `updateUrl` | `expo.modules.updates.EXPO_UPDATE_URL` | (none) | ✅ |
+| iOS plist/dictionary key | Android Map key | Android meta-data name                 | Default | Required? |
+| ------------------------ | --------------- | -------------------------------------- | ------- | --------- |
+| `EXUpdatesURL`           | `updateUrl`     | `expo.modules.updates.EXPO_UPDATE_URL` | (none)  | ✅        |
 
 The URL to the remote server where the app should check for updates. A request to this URL should return a valid manifest object for the latest available update that tells expo-updates how to fetch the JS bundle and other assets that comprise an update. (Example: for apps published with `expo publish`, this URL would be `https://exp.host/@username/slug`.)
 
-| iOS plist/dictionary key | Android Map key | Android meta-data name | Default | Required? |
-| --- | --- | --- | --- | --- |
-| `EXUpdatesSDKVersion` | `sdkVersion` | `expo.modules.updates.EXPO_SDK_VERSION` | (none) | (exactly one of `sdkVersion` or `runtimeVersion` is required) |
+| iOS plist/dictionary key | Android Map key | Android meta-data name                  | Default | Required?                                                     |
+| ------------------------ | --------------- | --------------------------------------- | ------- | ------------------------------------------------------------- |
+| `EXUpdatesSDKVersion`    | `sdkVersion`    | `expo.modules.updates.EXPO_SDK_VERSION` | (none)  | (exactly one of `sdkVersion` or `runtimeVersion` is required) |
 
 The SDK version string to send under the `Expo-SDK-Version` header in the manifest request. Required for apps hosted on Expo's server.
 
-| iOS plist/dictionary key | Android Map key | Android meta-data name | Default | Required? |
-| --- | --- | --- | --- | --- |
-| `EXUpdatesRuntimeVersion` | `runtimeVersion` | `expo.modules.updates.EXPO_RUNTIME_VERSION` | (none) | (exactly one of `sdkVersion` or `runtimeVersion` is required) |
+| iOS plist/dictionary key  | Android Map key  | Android meta-data name                      | Default | Required?                                                     |
+| ------------------------- | ---------------- | ------------------------------------------- | ------- | ------------------------------------------------------------- |
+| `EXUpdatesRuntimeVersion` | `runtimeVersion` | `expo.modules.updates.EXPO_RUNTIME_VERSION` | (none)  | (exactly one of `sdkVersion` or `runtimeVersion` is required) |
 
 The Runtime Version string to send under the `Expo-Runtime-Version` header in the manifest request.
 
-| iOS plist/dictionary key | Android Map key | Android meta-data name | Default | Required? |
-| --- | --- | --- | --- | --- |
-| `EXUpdatesReleaseChannel` | `releaseChannel` | `expo.modules.updates.EXPO_RELEASE_CHANNEL` | `default` | ❌ |
+| iOS plist/dictionary key  | Android Map key  | Android meta-data name                      | Default   | Required? |
+| ------------------------- | ---------------- | ------------------------------------------- | --------- | --------- |
+| `EXUpdatesReleaseChannel` | `releaseChannel` | `expo.modules.updates.EXPO_RELEASE_CHANNEL` | `default` | ❌        |
 
 The release channel string to send under the `Expo-Release-Channel` header in the manifest request.
 
-| iOS plist/dictionary key | Android Map key | Android meta-data name | Default | Required? |
-| --- | --- | --- | --- | --- |
-| `EXUpdatesCheckOnLaunch` | `checkOnLaunch` | `expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH` | `ALWAYS` | ❌ |
+| iOS plist/dictionary key | Android Map key | Android meta-data name                              | Default  | Required? |
+| ------------------------ | --------------- | --------------------------------------------------- | -------- | --------- |
+| `EXUpdatesCheckOnLaunch` | `checkOnLaunch` | `expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH` | `ALWAYS` | ❌        |
 
 The condition under which `expo-updates` should automatically check for (and download, if one exists) an update upon app launch. Possible values are `ALWAYS`, `NEVER` (if you want to exclusively control updates via this module's JS API), or `WIFI_ONLY` (if you want the app to automatically download updates only if the device is on an unmetered Wi-Fi connection when it launches).
 
-| iOS plist/dictionary key | Android Map key | Android meta-data name | Default | Required? |
-| --- | --- | --- | --- | --- |
-| `EXUpdatesLaunchWaitMs` | `launchWaitMs` | `expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS` | `0` | ❌ |
+| iOS plist/dictionary key | Android Map key | Android meta-data name                             | Default | Required? |
+| ------------------------ | --------------- | -------------------------------------------------- | ------- | --------- |
+| `EXUpdatesLaunchWaitMs`  | `launchWaitMs`  | `expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS` | `0`     | ❌        |
 
 The number of milliseconds `expo-updates` should delay the app launch and stay on the splash screen while trying to download an update, before falling back to a previously downloaded version. Setting this to `0` will cause the app to always launch with a previously downloaded update and will result in the fastest app launch possible.
 

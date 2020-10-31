@@ -6,7 +6,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-constants
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-
 **`expo-constants`** provides system information that remains constant throughout the lifetime of your app's install.
 
 <PlatformsSection android emulator ios simulator web />
@@ -20,8 +19,6 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 ```js
 import Constants from 'expo-constants';
 ```
-
-
 
 ## Properties
 
@@ -111,4 +108,3 @@ The default status bar height for the device. Does not factor in changes when lo
 ### `Constants.systemFonts`
 
 A list of the system font names available on the current device.
-

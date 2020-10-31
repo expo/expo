@@ -193,12 +193,6 @@ The `expo-app-auth` module is based on [react-native-app-auth](https://github.co
 import * as AppAuth from 'expo-app-auth';
 ```
 
-
-
-
-
-
-
 ## Methods
 
 ### `AppAuth.authAsync()`

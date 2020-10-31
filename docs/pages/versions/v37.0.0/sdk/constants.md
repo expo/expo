@@ -6,7 +6,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-constants
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-
 **`expo-constants`** provides system information that remains constant throughout the lifetime of your app's install.
 
 <PlatformsSection android emulator ios simulator web />
@@ -20,8 +19,6 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 ```js
 import Constants from 'expo-constants';
 ```
-
-
 
 ## Properties
 

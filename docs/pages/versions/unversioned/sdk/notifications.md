@@ -7,7 +7,6 @@ import SnackInline from '~/components/plugins/SnackInline';
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-
 The **`expo-notifications`** provides an API to fetch push notification tokens and to present, schedule, receive and respond to notifications.
 
 ### Features
@@ -136,8 +135,6 @@ The following methods are exported by the `expo-notifications` module:
   - [`setNotificationCategoryAsync`](#setnotificationcategoryasyncidentifier-string-actions-notificationaction-options-categoryoptions-promisenotificationcategory) -- creates a new notification category for interactive notifications
   - [`getNotificationCategoriesAsync`](#getnotificationcategoriesasync-promisenotificationcategory) -- fetches information about all active notification categories
   - [`deleteNotificationCategoryAsync`](#deletenotificationcategoryasyncidentifier-string-promiseboolean) -- deletes a notification category
-
-
 
 Check out the Snack below to see Notifications in action, but be sure to use a physical device! Push notifications don't work on simulators/emulators.
 
@@ -495,17 +492,15 @@ export default function App() {
           Linking.addEventListener('url', onReceiveURL);
 
           // Listen to expo push notifications
-          const subscription = Notifications.addNotificationResponseReceivedListener (
-            (response) => {
-              const url = response.notification.request.content.data.url;
+          const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+            const url = response.notification.request.content.data.url;
 
-              // Any custom logic to see whether the URL needs to be handled
-              //...
+            // Any custom logic to see whether the URL needs to be handled
+            //...
 
-              // Let React Navigation handle the URL
-              listener(url);
-            }
-          );
+            // Let React Navigation handle the URL
+            listener(url);
+          });
 
           return () => {
             // Clean up the event listeners
@@ -513,8 +508,7 @@ export default function App() {
             subscription.remove();
           };
         },
-      }}
-    >
+      }}>
       {/* Your app content */}
     </NavigationContainer>
   );

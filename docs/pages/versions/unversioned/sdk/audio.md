@@ -188,10 +188,10 @@ A static convenience method to construct and load a sound is also provided:
 
   ```javascript
   try {
-    const { sound: soundObject, status } = await Audio.Sound.createAsync(
-      require('./assets/sounds/hello.mp3'),
-      { shouldPlay: true }
-    );
+    const {
+      sound: soundObject,
+      status,
+    } = await Audio.Sound.createAsync(require('./assets/sounds/hello.mp3'), { shouldPlay: true });
     // Your sound is playing!
   } catch (error) {
     // An error occurred!

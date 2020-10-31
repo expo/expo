@@ -6,7 +6,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-38/packages/expo-haptics'
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-
 **`expo-haptics`** provides haptic (touch) feedback for
 
 - iOS 10+ devices using the Taptic Engine
@@ -32,8 +31,6 @@ On iOS, _the Taptic engine will do nothing if any of the following conditions ar
 ```js
 import * as Haptics from 'expo-haptics';
 ```
-
-
 
 ## Methods
 

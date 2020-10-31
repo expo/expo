@@ -86,10 +86,6 @@ export default function App() {
 import { Barometer } from 'expo-sensors';
 ```
 
-
-
-
-
 ## Methods
 
 ### `Barometer.isAvailableAsync()`

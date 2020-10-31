@@ -6,7 +6,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-38/packages/expo-media-lib
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-
 **`expo-media-library`** provides access to the user's media library, allowing them to access their existing images and videos from your app, as well as save new ones. You can also subscribe to any updates made to the user's media library.
 
 <PlatformsSection android emulator ios simulator />
@@ -24,12 +23,6 @@ In managed apps, `MediaLibrary` requires `Permissions.CAMERA_ROLL`.
 ```js
 import * as MediaLibrary from 'expo-media-library';
 ```
-
-
-
-
-
-
 
 ## Methods
 

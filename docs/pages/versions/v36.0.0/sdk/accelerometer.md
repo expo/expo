@@ -104,8 +104,6 @@ function round(n) {
 import { Accelerometer } from 'expo-sensors';
 ```
 
-
-
 ## Methods
 
 ### `Accelerometer.isAvailableAsync()`

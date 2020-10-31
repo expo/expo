@@ -7,7 +7,6 @@ import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
-
 **`expo-web-browser`** provides access to the system's web browser and supports handling redirects. On iOS, it uses `SFSafariViewController` or `SFAuthenticationSession`, depending on the method you call, and on Android it uses `ChromeCustomTabs`. As of iOS 11, `SFSafariViewController` no longer shares cookies with the Safari, so if you are using `WebBrowser` for authentication you will want to use `WebBrowser.openAuthSessionAsync`, and if you just want to open a webpage (such as your app privacy policy), then use `WebBrowser.openBrowserAsync`.
 
 <PlatformsSection android emulator ios simulator web />
@@ -57,8 +56,6 @@ If you are using the `WebBrowser` window for authentication or another use case 
 ```js
 import * as WebBrowser from 'expo-web-browser';
 ```
-
-
 
 ### `WebBrowser.openBrowserAsync(url)`
 

@@ -22,7 +22,7 @@ Here you will find a list of errors that are commonly encountered by developers 
 
 - Try running `expo start --no-dev --minify` to reproduce the production JS bundle locally. If possible, connect your device and access the device logs via Android Studio or Xcode. Device logs contain much more detailed stacktraces and information. Check to see if you have any changes or errors in your Babel configuration. In some rare cases, this issue could be caused by incompatibility between the Metro JavaScript minifier and certain code in your app ([more information](https://forums.expo.io/t/change-minifierconfig-for-minify-uglify/36460/2)).
 
-### npm ERR! No git binary found in $PATH
+### npm ERR! No git binary found in \$PATH
 
 - Either you do not have git installed or it is not properly configured in your `$PATH`.
 
@@ -30,6 +30,6 @@ Here you will find a list of errors that are commonly encountered by developers 
 
 ### XX.X.X is not a valid SDK version
 
-- The SDK version you are running has been deprecated and is no longer supported. 
+- The SDK version you are running has been deprecated and is no longer supported.
 
 - [Upgrade your project](../../workflow/upgrading-expo-sdk-walkthrough/) to a supported SDK version. If you are using a supported version and see this message, you'll need to update your Expo client app. If you experience this error in a standalone app, make sure you have published a JS bundle for the specific SDK version and release channel for the given binary via `expo publish`.

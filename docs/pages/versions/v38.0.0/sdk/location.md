@@ -88,16 +88,6 @@ const styles = StyleSheet.create({
 import * as Location from 'expo-location';
 ```
 
-
-
-
-
-
-
-
-
-
-
 ## Methods
 
 ### `Location.hasServicesEnabledAsync()`

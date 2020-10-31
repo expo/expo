@@ -7,7 +7,6 @@ import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
-
 Provides an API for interacting with the device's system calendars, events, reminders, and associated records.
 
 <PlatformsSection android emulator ios simulator />
@@ -87,12 +86,6 @@ async function createCalendar() {
 ```js
 import * as Calendar from 'expo-calendar';
 ```
-
-
-
-
-
-
 
 ## Methods
 

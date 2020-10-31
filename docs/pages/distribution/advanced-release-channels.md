@@ -14,22 +14,24 @@ When you publish your app by running `expo publish --release-channel staging`, i
 For simplicity, the rest of this article will refer to just the `ios` releases, but you could swap out ios for android at any point and everything would still be true.
 
 ## See past publishes
+
 You can see everything that you’ve published with `expo publish:history`.
 
 #### Example command and output
+
 `expo publish:history --platform ios`
 
-| publishedTime  | appVersion  | sdkVersion  | platform  | channel  | publicationId  |
-|---|---|---|---|---|---|---|
-| 2018-01-05T23:55:04.603Z  |  1.0.0 | 24.0.0 |  ios | staging  | 80b1ffd7-4e05-4851-95f9-697e122033c3 |
+| publishedTime            | appVersion | sdkVersion | platform | channel | publicationId                        |
+| ------------------------ | ---------- | ---------- | -------- | ------- | ------------------------------------ |
+| 2018-01-05T23:55:04.603Z | 1.0.0      | 24.0.0     | ios      | staging | 80b1ffd7-4e05-4851-95f9-697e122033c3 |
 
 To see more details about this particular release, you can run `expo publish:details`
 
 #### Example command and output
-`expo publish:details --publish-id 80b1ffd7-4e05-4851-95f9-697e122033c3  `
+
+`expo publish:details --publish-id 80b1ffd7-4e05-4851-95f9-697e122033c3`
 
 ![Publish Details](/static/images/release-channels-pub-details-1.png)
-
 
 ## What version of the app will my users get?
 
@@ -54,12 +56,11 @@ Continuing from the previous section, we can see that our release is available i
 
 `expo publish:history --platform ios`
 
-| publishedTime  | appVersion  | sdkVersion  | platform  | channel  | publicationId  |
-|---|---|---|---|---|---|---|
-| 2018-01-05T23:55:04.603Z  |  1.0.0 | 36.0.0 |  ios | staging | 80b1ffd7-4e05-4851-95f9-697e122033c3  |
-| 2018-01-05T23:55:04.603Z  |  1.0.0 | 36.0.0 |  ios | production | 80b1ffd7-4e05-4851-95f9-697e122033c3  |
-| 2018-01-04T22:43:19.302Z  |  1.0.0 | 36.0.0 |  ios | production | d6b61741-a8dc-11e9-852a-3b0715b88238 |
-
+| publishedTime            | appVersion | sdkVersion | platform | channel    | publicationId                        |
+| ------------------------ | ---------- | ---------- | -------- | ---------- | ------------------------------------ |
+| 2018-01-05T23:55:04.603Z | 1.0.0      | 36.0.0     | ios      | staging    | 80b1ffd7-4e05-4851-95f9-697e122033c3 |
+| 2018-01-05T23:55:04.603Z | 1.0.0      | 36.0.0     | ios      | production | 80b1ffd7-4e05-4851-95f9-697e122033c3 |
+| 2018-01-04T22:43:19.302Z | 1.0.0      | 36.0.0     | ios      | production | d6b61741-a8dc-11e9-852a-3b0715b88238 |
 
 ## Rollback a channel entry
 
@@ -76,11 +77,12 @@ Now we can see that our releases are available on the production channel.
 
 `expo publish:history --platform ios`
 
-| publishedTime  | appVersion  | sdkVersion  | platform  | channel  | publicationId  |
-|---|---|---|---|---|---|---|
-| 2018-01-04T22:43:19.302Z  |  1.0.0 | 36.0.0 |  ios | production | d6b61741-a8dc-11e9-852a-3b0715b88238 |
+| publishedTime            | appVersion | sdkVersion | platform | channel    | publicationId                        |
+| ------------------------ | ---------- | ---------- | -------- | ---------- | ------------------------------------ |
+| 2018-01-04T22:43:19.302Z | 1.0.0      | 36.0.0     | ios      | production | d6b61741-a8dc-11e9-852a-3b0715b88238 |
 
 ## Release channels CLI tools
+
 ### Publish history
 
 ```
@@ -96,6 +98,7 @@ Now we can see that our releases are available on the production channel.
 ```
 
 ### Publish details
+
 ```
   Usage: expo publish:details --publish-id <publish-id>
   View the details of a published release.
@@ -106,6 +109,7 @@ Now we can see that our releases are available on the production channel.
 ```
 
 ### Publish rollback
+
 ```
 Usage: expo publish:rollback
 
@@ -118,6 +122,7 @@ Usage: expo publish:rollback
 ```
 
 ### Publish set
+
 ```
  Usage: expo publish:set --release-channel <channel-name> --publish-id <publish-id>
 

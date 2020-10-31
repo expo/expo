@@ -6,7 +6,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-file-syst
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-
 **`expo-file-system`** provides access to a file system stored locally on the device. Within the Expo client, each app has a separate file system and has no access to the file system of other Expo apps.
 
 <PlatformsSection android emulator ios simulator />
@@ -78,12 +77,6 @@ try {
 ```js
 import * as FileSystem from 'expo-file-system';
 ```
-
-
-
-
-
-
 
 ## Directories
 

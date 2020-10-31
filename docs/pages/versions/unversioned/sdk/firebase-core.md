@@ -6,7 +6,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-firebase-
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-
 **`expo-firebase-core`** provides access to the Firebase configuration and performs initialisation
 of the native Firebase App.
 
@@ -21,7 +20,6 @@ of the native Firebase App.
 To use this package, Firebase needs to be configured for your app.
 [Please follow this guide on how to configure native Firebase.](../../guides/setup-native-firebase)
 
-
 > No explicit calls to `expo-firebase-core` are required to initialize Firebase. This library will auto-initialize the Firebase app when a valid configuration exists.
 
 ## Native Firebase packages
@@ -35,8 +33,6 @@ At the moment, only Firebase Analytics is supported natively. We are working on 
 ```js
 import * as FirebaseCore from 'expo-firebase-core';
 ```
-
-
 
 ## Constants
 

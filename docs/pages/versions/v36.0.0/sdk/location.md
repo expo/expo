@@ -83,16 +83,6 @@ export default function App() {
 import * as Location from 'expo-location';
 ```
 
-
-
-
-
-
-
-
-
-
-
 ## Methods
 
 ### `Location.hasServicesEnabledAsync()`

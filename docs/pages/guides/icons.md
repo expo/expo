@@ -14,9 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 export default class IconExample extends React.Component {
   render() {
-    return (
-      <Ionicons name="md-checkmark-circle" size={32} color="green" />
-    );
+    return <Ionicons name="md-checkmark-circle" size={32} color="green" />;
   }
 }
 ```
@@ -43,11 +41,9 @@ import { createIconSet } from '@expo/vector-icons';
 const glyphMap = { 'icon-name': 1234, test: '∆' };
 const CustomIcon = createIconSet(glyphMap, 'FontName', 'custom-icon-font.ttf');
 
-export default class CustomIconExample extends React.Component {  
+export default class CustomIconExample extends React.Component {
   render() {
-    return (
-      <CustomIcon name="icon-name" size={32} color="red" />
-    );
+    return <CustomIcon name="icon-name" size={32} color="red" />;
   }
 }
 ```
@@ -89,7 +85,7 @@ export default class SlackIcon extends React.Component {
       <Image
         source={require('../assets/images/slack-icon.png')}
         fadeDuration={0}
-        style={{width: 20, height: 20}}
+        style={{ width: 20, height: 20 }}
       />
     );
   }
@@ -101,7 +97,8 @@ Let's assume that our `SlackIcon` class is located in `my-project/components/Sla
 We also set the `fadeDuration` (an Android specific property) to `0` because we usually want the icon to appear immediately rather than fade in over several hundred milliseconds.
 
 ## Button Component
-A convenience component for creating buttons with an icon on the left side. 
+
+A convenience component for creating buttons with an icon on the left side.
 
 ```js
 import { FontAwesome } from '@expo/vector-icons';
@@ -114,13 +111,14 @@ const myButton = (
 ```
 
 ### Properties
+
 Any [`Text`](http://reactnative.dev/docs/text.html), [`TouchableHighlight`](http://reactnative.dev/docs/touchablehighlight.html) or [`TouchableWithoutFeedback`](http://reactnative.dev/docs/touchablewithoutfeedback.html) property in addition to these:
 
-| Prop | Description | Default |
-|---|---|---|
-|**`color`**|Text and icon color, use `iconStyle` or nest a `Text` component if you need different colors.|`white`|
-|**`size`**|Icon size.|`20`|
-|**`iconStyle`**|Styles applied to the icon only, good for setting margins or a different color. *Note: use `iconStyle` for margins or expect unstable behaviour.*|\`{marginRight: 10}\`|
-|**`backgroundColor`**|Background color of the button.|`#007AFF`|
-|**`borderRadius`**|Border radius of the button, set to `0` to disable. |`5`|
-|**`onPress`**|A function called when the button is pressed. |*None*|
+| Prop                  | Description                                                                                                                                       | Default               |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
+| **`color`**           | Text and icon color, use `iconStyle` or nest a `Text` component if you need different colors.                                                     | `white`               |
+| **`size`**            | Icon size.                                                                                                                                        | `20`                  |
+| **`iconStyle`**       | Styles applied to the icon only, good for setting margins or a different color. _Note: use `iconStyle` for margins or expect unstable behaviour._ | \`{marginRight: 10}\` |
+| **`backgroundColor`** | Background color of the button.                                                                                                                   | `#007AFF`             |
+| **`borderRadius`**    | Border radius of the button, set to `0` to disable.                                                                                               | `5`                   |
+| **`onPress`**         | A function called when the button is pressed.                                                                                                     | _None_                |

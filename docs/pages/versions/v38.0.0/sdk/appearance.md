@@ -106,19 +106,15 @@ export default function AppContainer() {
 function App() {
   const colorScheme = useColorScheme();
 
-  const themeStatusBarStyle =
-    colorScheme === 'light' ? 'dark-content' : 'light-content';
-  const themeTextStyle =
-    colorScheme === 'light' ? styles.lightThemeText : styles.darkThemeText;
+  const themeStatusBarStyle = colorScheme === 'light' ? 'dark-content' : 'light-content';
+  const themeTextStyle = colorScheme === 'light' ? styles.lightThemeText : styles.darkThemeText;
   const themeContainerStyle =
     colorScheme === 'light' ? styles.lightContainer : styles.darkContainer;
 
   return (
     <SafeAreaView style={[styles.container, themeContainerStyle]}>
       <StatusBar barStyle={themeStatusBarStyle} />
-      <Text style={[styles.text, themeTextStyle]}>
-        Color scheme: {colorScheme}
-      </Text>
+      <Text style={[styles.text, themeTextStyle]}>Color scheme: {colorScheme}</Text>
     </SafeAreaView>
   );
 }

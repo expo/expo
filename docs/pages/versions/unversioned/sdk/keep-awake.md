@@ -6,7 +6,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-keep-awak
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-
 **`expo-keep-awake`** provides a React hook that prevents the screen from sleeping and a pair of functions to enable this behavior imperatively.
 
 <PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/6889' }} />
@@ -75,8 +74,6 @@ export default class KeepAwakeExample extends React.Component {
 ```js
 import KeepAwake from 'expo-keep-awake';
 ```
-
-
 
 ## Methods
 

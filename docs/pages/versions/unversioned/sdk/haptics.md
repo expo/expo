@@ -6,7 +6,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-haptics'
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-
 **`expo-haptics`** provides haptic (touch) feedback for
 
 - iOS 10+ devices using the Taptic Engine
@@ -36,8 +35,6 @@ On Android, this module requires permission to control vibration on the device. 
 ```js
 import * as Haptics from 'expo-haptics';
 ```
-
-
 
 ## Methods
 

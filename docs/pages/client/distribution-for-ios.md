@@ -6,7 +6,6 @@ import InstallSection from '~/components/plugins/InstallSection';
 
 import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
 
-
 Now that you've installed the Expo Dev Client, you are ready to share builds with your team.
 
 > ⚠️ **Managed Expo projects are not yet supported**, but we are working on bringing it to EAS Build! If you want to build a managed Expo project with the Development Client, you'll have to eject it first. See the [Ejecting to Bare Workflow](../../workflow/customizing/) page to learn how.
@@ -21,10 +20,9 @@ You can generate a simulator build with `xcodebuild -sdk iphonesimulator -worksp
 
 After running the command, the generated APK will be named **MyApp.app** and can be found under `ios/build/Release-iphonesimulator/`
 
-<br /> 
+<br />
 
 You can transfer the app folder via email, shared network directory, or however you would transfer an arbitrary file. You may want to compress the .app folder to facilitate the transfer.
-
 
 ### 3. Install on simulator
 
@@ -34,14 +32,13 @@ If you would prefer to install via the command line you can do so via `xcrun sim
 
 ## If you are installing on a physical device
 
-> 💡 The process for installing a development client build is currently **very manual**.  We are hard at work to provide a smoother flow for developers utiliziing our build service.
-
+> 💡 The process for installing a development client build is currently **very manual**. We are hard at work to provide a smoother flow for developers utiliziing our build service.
 
 ### 1. Collect the UDID for any devices that will need to load the application
 
 Getting the UDID from non-developers is not a foolproof process. [These](https://help.apple.com/xcode/mac/current/#/dev93ef696c6?sub=devdfa32588f) instructions should help.
 
-### 2. Register the target devices with an Ad-hoc Distribution Profile 
+### 2. Register the target devices with an Ad-hoc Distribution Profile
 
 Your target devices will need to be registered to an Ad-hoc Distribution Profile. You can find the latest instructions for how to do so [here](https://help.apple.com/developer-account/#/devebd34abb1)
 

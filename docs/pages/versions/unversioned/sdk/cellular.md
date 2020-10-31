@@ -6,7 +6,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-cellular'
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-
 **`expo-cellular`** provides information about the user’s cellular service provider, such as its unique identifier, cellular connection type, and whether it allows VoIP calls on its network.
 
 <PlatformsSection android emulator ios web />
@@ -20,14 +19,6 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 ```js
 import * as Cellular from 'expo-cellular';
 ```
-
-
-
-
-
-
-
-
 
 ## Constants
 

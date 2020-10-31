@@ -7,7 +7,6 @@ import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
-
 **`expo-speech`** provides an API that allows you to utilize Text-to-speech functionality in your app.
 
 <PlatformsSection android emulator ios simulator web />
@@ -66,14 +65,6 @@ const styles = StyleSheet.create({
 import * as Speech from 'expo-speech';
 ```
 
-
-
-
-
-
-
-
-
 ## Constants
 
 ### `Speech.maxSpeechInputLength`
@@ -105,7 +96,6 @@ Speak out loud the `text` given `options`. Calling this when another text is bei
 #### Error Codes
 
 - [`ERR_SPEECH_INPUT_LENGTH`](#err_speech_input_length)
-
 
 ### `Speech.stop()`
 

@@ -6,7 +6,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-intent-la
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-
 **`expo-intent-launcher`** provides a way to launch Android intents. For example, you can use this API to open a specific settings screen.
 
 <PlatformsSection android emulator ios simulator />
@@ -29,12 +28,6 @@ IntentLauncher.startActivityAsync(IntentLauncher.ACTION_LOCATION_SOURCE_SETTINGS
 ```js
 import * as IntentLauncher from 'expo-intent-launcher';
 ```
-
-
-
-
-
-
 
 ## Methods
 

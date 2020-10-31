@@ -7,7 +7,6 @@ import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
-
 **`expo-battery`** provides battery information for the physical device (such as battery level, whether or not the device is charging, and more) as well as corresponding event listeners.
 
 <PlatformsSection android emulator ios web />
@@ -30,7 +29,7 @@ export default class App extends React.Component {
     batteryLevel: null,
   };
 
-  componentDidMount() {  
+  componentDidMount() {
     this._subscribe();
   }
 
@@ -69,12 +68,6 @@ export default class App extends React.Component {
 ```js
 import * as Battery from 'expo-battery';
 ```
-
-
-
-
-
-
 
 ## Methods
 

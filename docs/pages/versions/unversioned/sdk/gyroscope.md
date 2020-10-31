@@ -7,7 +7,6 @@ import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
-
 `Gyroscope` from **`expo-sensors`** provides access to the device's gyroscope sensor to respond to changes in rotation in 3D space.
 
 <PlatformsSection android emulator ios web />
@@ -103,8 +102,6 @@ function round(n) {
 ```js
 import { Gyroscope } from 'expo-sensors';
 ```
-
-
 
 ## Methods
 

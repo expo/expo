@@ -6,7 +6,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-38/packages/expo-screen-ca
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-
 **`expo-screen-capture`** allows you to protect screens in your app from being captured or recorded. The two most common reasons you may want to prevent screen capture are:
 
 - If a screen is displaying sensitive information (password, credit card data, etc.)
@@ -82,11 +81,9 @@ export default class ScreenCaptureExample extends React.Component {
 import {
   usePreventScreenCapture,
   preventScreenCaptureAsync,
-  allowScreenCaptureAsync
+  allowScreenCaptureAsync,
 } from 'expo-screen-capture';
 ```
-
-
 
 ## Methods
 
