@@ -5,7 +5,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-38/packages/expo-screen-ca
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-screen-capture`** allows you to protect screens in your app from being captured or recorded. The two most common reasons you may want to prevent screen capture are:
 
@@ -26,6 +25,7 @@ This is especially important on Android, since the [`android.media.projection`](
 
 ### Example: hook
 
+<!-- prettier-ignore -->
 ```javascript
 import { usePreventScreenCapture } from 'expo-screen-capture';
 import React from 'react';
@@ -45,6 +45,7 @@ export default function ScreenCaptureExample {
 
 ### Example: functions
 
+<!-- prettier-ignore -->
 ```javascript
 import { preventScreenCaptureAsync, allowScreenCaptureAsync } from 'expo-screen-capture';
 import React from 'react';
@@ -80,11 +81,9 @@ export default class ScreenCaptureExample extends React.Component {
 import {
   usePreventScreenCapture,
   preventScreenCaptureAsync,
-  allowScreenCaptureAsync
+  allowScreenCaptureAsync,
 } from 'expo-screen-capture';
 ```
-
-<TableOfContentSection title='Methods' contents={['usePreventScreenCapture()', 'preventScreenCaptureAsync()', 'allowScreenCaptureAsync()']} />
 
 ## Methods
 

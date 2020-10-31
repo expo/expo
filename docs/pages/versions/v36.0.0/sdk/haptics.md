@@ -5,7 +5,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-haptics'
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-haptics`** provides haptic (touch) feedback for
 
@@ -32,8 +31,6 @@ On iOS, _the Taptic engine will do nothing if any of the following conditions ar
 ```js
 import * as Haptics from 'expo-haptics';
 ```
-
-<TableOfContentSection title='Methods' contents={['Haptics.selectionAsync()', 'Haptics.notificationAsync(type)', 'Haptics.impactAsync(style)']} />
 
 ## Methods
 

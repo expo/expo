@@ -5,7 +5,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-haptics'
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-haptics`** provides haptic (touch) feedback for
 
@@ -36,8 +35,6 @@ On Android, this module requires permission to control vibration on the device. 
 ```js
 import * as Haptics from 'expo-haptics';
 ```
-
-<TableOfContentSection title='Methods' contents={['Haptics.selectionAsync()', 'Haptics.notificationAsync(type)', 'Haptics.impactAsync(style)']} />
 
 ## Methods
 

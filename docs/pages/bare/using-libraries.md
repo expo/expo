@@ -66,7 +66,9 @@ import * as Device from 'expo-device';
 export default function App() {
   return (
     <View style={{ flex: 1, paddingTop: 100 }}>
-      <Text>{Device.manufacturer}: {Device.modelName}</Text>
+      <Text>
+        {Device.manufacturer}: {Device.modelName}
+      </Text>
     </View>
   );
 }

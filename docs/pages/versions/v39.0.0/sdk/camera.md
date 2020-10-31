@@ -6,7 +6,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-39/packages/expo-camera'
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-camera`** provides a React component that renders a preview for the device's front or back camera. The camera's parameters like zoom, auto focus, white balance and flash mode are adjustable. With the use of `Camera`, one can also take photos and record videos that are then saved to the app's cache. Morever, the component is also capable of detecting faces and bar codes appearing in the preview. Run the [example](#usage) on your device to see all these features working together!
 
@@ -88,12 +87,6 @@ export default function App() {
 ```js
 import { Camera } from 'expo-camera';
 ```
-
-<TableOfContentSection title='Static Methods' contents={['Camera.isAvailableAsync()', 'Camera.getAvailableCameraTypesAsync(): string[]']} />
-
-<TableOfContentSection title='Props' contents={['type', 'flashMode', 'autoFocus', 'zoom', 'whiteBalance', 'focusDepth', 'ratio', 'pictureSize', 'onCameraReady', 'onFacesDetected', 'faceDetectorSettings', 'onMountError', 'onBarCodeScanned', 'barCodeScannerSettings', 'useCamera2Api', 'videoStablizationMode']} />
-
-<TableOfContentSection title='Methods' contents={['takePictureAsync()', 'recordAsync()', 'stopRecording()', 'getSupportedRatiosAsync()', 'getAvailablePictureSizesAsync()', 'pausePreview()', 'resumePreview()', 'requestPermissionsAsync()', 'getPermissionsAsync()']} />
 
 ## Static Methods
 

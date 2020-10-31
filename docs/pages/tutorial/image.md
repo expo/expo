@@ -13,12 +13,13 @@ Let's imagine that our designer has provided us with a beautiful logo:
 
 Save this image to the `assets` directory inside of your project and call it `logo.png`.
 
-> 💡 An "asset" is any file that your project uses that is not code. Images, videos, sounds, and fonts are all considered to be assets. 
+> 💡 An "asset" is any file that your project uses that is not code. Images, videos, sounds, and fonts are all considered to be assets.
 
 ## Displaying the image in the app
 
 We have displayed text using the `Text` component from React Native, and we can display the image using the `Image` component. When creating an `Image` component, you will need to explicitly specify a width and height, or the image won't be visible.
 
+<!-- prettier-ignore -->
 ```js
 import React from 'react';
 import { /* @info Add the Image component to your list of imports */ Image, /* @end */ StyleSheet, Text, View } from 'react-native';
@@ -56,6 +57,7 @@ Sometimes you will want to load images from the web rather than from your projec
 
 <SnackInline>
 
+<!-- prettier-ignore -->
 ```js
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
@@ -96,6 +98,7 @@ Let's organize our code a bit by moving our styles into one place so our code is
 
 <SnackInline>
 
+<!-- prettier-ignore -->
 ```js
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';

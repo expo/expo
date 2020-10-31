@@ -58,6 +58,7 @@ Your application's keystore should be kept private. **Under no circumstances sho
 
 Let's focus on building a release app binary. Like we previously mentioned, your app binary needs to be signed with the keystore. Because we're building the project on a remote server we had to come up with a way of providing Gradle with the credentials which are not checked in to the repository. When running `expo eas:build:init`, we're writing the `android/app/eas-build.gradle` file with the following contents:
 
+<!-- prettier-ignore -->
 ```groovy
 android {
   signingConfigs {

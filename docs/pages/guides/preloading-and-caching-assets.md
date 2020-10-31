@@ -29,8 +29,7 @@ For images that saved to the local filesytem, use [`Asset.fromModule(image).down
 For web images, use `Image.prefetch(image)`. Continue referencing the image normally, e.g. with `<Image source={require('path/to/image.png')} />`.
 
 Fonts are pre-loaded using `Font.loadAsync(font)`. The `font`
-argument in this case is an object such as the following: `{OpenSans:
-require('./assets/fonts/OpenSans.ttf')}`. `@expo/vector-icons` provides a helpful shortcut for this object, which you see below as `FontAwesome.font`.
+argument in this case is an object such as the following: `{OpenSans: require('./assets/fonts/OpenSans.ttf')}`. `@expo/vector-icons` provides a helpful shortcut for this object, which you see below as `FontAwesome.font`.
 
 ```javascript
 import * as React from 'react';
@@ -91,7 +90,6 @@ export default class AppContainer extends React.Component {
 ```
 
 See a full working example in [this Expo template project](https://github.com/expo/expo/blob/master/templates/expo-template-tabs/App.js). You can also run `expo init --template tabs`, which will set you up locally with the same template.
-
 
 ### Publishing Assets
 

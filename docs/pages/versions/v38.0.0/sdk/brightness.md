@@ -6,7 +6,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-38/packages/expo-brightnes
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 An API to get and set screen brightness.
 
@@ -58,12 +57,6 @@ export default function App() {
 ```js
 import * as Brightness from 'expo-brightness';
 ```
-
-<TableOfContentSection title='Methods' contents={['Brightness.requestPermissionsAsync()', 'Brightness.getPermissionsAsync()', 'Brightness.getBrightnessAsync()', 'Brightness.setBrightnessAsync(brightnessValue)', 'Brightness.useSystemBrightnessAsync()', 'Brightness.isUsingSystemBrightnessAsync()', 'Brightness.getSystemBrightnessAsync()', 'Brightness.setSystemBrightnessAsync(brightnessValue)', 'Brightness.getSystemBrightnessModeAsync()', 'Brightness.setSystemBrightnessModeAsync(brightnessMode)' ]} />
-
-<TableOfContentSection title='Enum Types' contents={['Brightness.BrightnessMode']} />
-
-<TableOfContentSection title='Error Codes' contents={['ERR_BRIGHTNESS', 'ERR_BRIGHTNESS_MODE', 'ERR_BRIGHTNESS_PERMISSIONS_DENIED', 'ERR_BRIGHTNESS_SYSTEM', 'ERR_INVALID_ARGUMENT']} />
 
 ## Methods
 

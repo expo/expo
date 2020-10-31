@@ -2,7 +2,7 @@
 title: Using Firebase
 ---
 
-[Firebase](https://firebase.google.com/) gives you functionality like analytics, databases, messaging and crash reporting so you can move quickly and focus on your users.  Firebase is built on Google infrastructure and scales automatically, for even the largest apps.
+[Firebase](https://firebase.google.com/) gives you functionality like analytics, databases, messaging and crash reporting so you can move quickly and focus on your users. Firebase is built on Google infrastructure and scales automatically, for even the largest apps.
 
 ## Usage with Expo
 
@@ -16,6 +16,7 @@ See the [official Firebase blog post announcing React Native compatibility](http
 > **Note:** This guide mostly covers Firebase Realtime Database (and some Firestore as well). For more background on why some Firebase services are not supported, please read [Brent Vatne's response on Canny](https://expo.canny.io/feature-requests/p/full-native-firebase-integration).
 
 ##### Table of Contents
+
 - [Firebase SDK Setup](#firebase-sdk-setup)
 - [Storing Data and Receiving Updates](#storing-data-and-receiving-updates)
 - [User Authentication](#user-authentication)
@@ -42,14 +43,14 @@ import * as firebase from 'firebase';
 
 // Initialize Firebase
 const firebaseConfig = {
-  apiKey: "api-key",
-  authDomain: "project-id.firebaseapp.com",
-  databaseURL: "https://project-id.firebaseio.com",
-  projectId: "project-id",
-  storageBucket: "project-id.appspot.com",
-  messagingSenderId: "sender-id",
-  appId: "app-id",
-  measurementId: "G-measurement-id"
+  apiKey: 'api-key',
+  authDomain: 'project-id.firebaseapp.com',
+  databaseURL: 'https://project-id.firebaseio.com',
+  projectId: 'project-id',
+  storageBucket: 'project-id.appspot.com',
+  messagingSenderId: 'sender-id',
+  appId: 'app-id',
+  measurementId: 'G-measurement-id',
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -80,9 +81,12 @@ Storing data through Firebase RTDB is pretty simple. Imagine we're creating a ga
 
 ```javascript
 function storeHighScore(userId, score) {
-  firebase.database().ref('users/' + userId).set({
-    highscore: score
-  });
+  firebase
+    .database()
+    .ref('users/' + userId)
+    .set({
+      highscore: score,
+    });
 }
 ```
 
@@ -111,7 +115,7 @@ We can choose different login methods that make sense to our application. The lo
 
 A common login system many developers opt for is a simple Facebook login that users are already familiar with. Expo provides a great Facebook login component already, so we just need to plug that in.
 
-See the Facebook section of our docs for information on how to set this up. This works just as well with Google and [several others](https://firebase.google.com/docs/reference/android/com/google/firebase/auth/AuthCredential#getProvider()).
+See the Facebook section of our docs for information on how to set this up. This works just as well with Google and [several others](<https://firebase.google.com/docs/reference/android/com/google/firebase/auth/AuthCredential#getProvider()>).
 
 ### Tying Sign-In Providers with Firebase
 
@@ -152,31 +156,32 @@ We are now ready to connect the Facebook login code in our app with our Firebase
 firebase.initializeApp(config);
 
 // Listen for authentication state to change.
-firebase.auth().onAuthStateChanged((user) => {
+firebase.auth().onAuthStateChanged(user => {
   if (user != null) {
-    console.log("We are authenticated now!");
+    console.log('We are authenticated now!');
   }
 
   // Do other things
 });
 
 async function loginWithFacebook() {
-  await Facebook.initializeAsync(
-     '<FACEBOOK_APP_ID>',
-  );
+  await Facebook.initializeAsync('<FACEBOOK_APP_ID>');
 
-  const { type, token } = await Facebook.logInWithReadPermissionsAsync(
-    { permissions: ['public_profile'] }
-  );
+  const { type, token } = await Facebook.logInWithReadPermissionsAsync({
+    permissions: ['public_profile'],
+  });
 
   if (type === 'success') {
     // Build Firebase credential with the Facebook access token.
     const credential = firebase.auth.FacebookAuthProvider.credential(token);
 
     // Sign in with credential from the Facebook user.
-    firebase.auth().signInWithCredential(credential).catch((error) => {
-      // Handle Errors here.
-    });
+    firebase
+      .auth()
+      .signInWithCredential(credential)
+      .catch(error => {
+        // Handle Errors here.
+      });
   }
 }
 ```
@@ -192,16 +197,19 @@ Now that we have a user object for our authenticated user, we can adapt our prev
 ```javascript
 function storeHighScore(user, score) {
   if (user != null) {
-    firebase.database().ref('users/' + user.uid).set({
-      highscore: score
-    });
+    firebase
+      .database()
+      .ref('users/' + user.uid)
+      .set({
+        highscore: score,
+      });
   }
 }
 ```
 
 ## Using Expo with Firestore
 
-[Firestore](https://firebase.google.com/docs/firestore/) is another database offered in Firebase's suite of services.  Realtime Database can be thought of as a "JSON tree in the cloud" where your app can listen to and modify different portions of the tree. On the other hand, Firestore is a "document store" database.  Your application will store and retrieve entire "documents" at a time, where a "document" is essentially a JavaScript object.
+[Firestore](https://firebase.google.com/docs/firestore/) is another database offered in Firebase's suite of services. Realtime Database can be thought of as a "JSON tree in the cloud" where your app can listen to and modify different portions of the tree. On the other hand, Firestore is a "document store" database. Your application will store and retrieve entire "documents" at a time, where a "document" is essentially a JavaScript object.
 
 Here's is an example of storing a document named "mario" inside of a collection named "characters" in Firestore:
 
@@ -238,6 +246,6 @@ To configure native Firebase, please follow the configuration instructions for t
 import * as Analytics from 'expo-firebase-analytics';
 
 Analytics.logEvent('hero_spotted', {
-  hero_name: 'Saitama'
+  hero_name: 'Saitama',
 });
 ```

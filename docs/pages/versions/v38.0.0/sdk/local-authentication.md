@@ -5,7 +5,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-38/packages/expo-local-aut
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-local-authentication`** allows you to use FaceID and TouchID (iOS) or the Biometric Prompt (Android) to authenticate the user with a face or fingerprint scan.
 
@@ -20,8 +19,6 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 ```js
 import * as LocalAuthentication from 'expo-local-authentication';
 ```
-
-<TableOfContentSection title='Methods' contents={['LocalAuthentication.hasHardwareAsync()', 'LocalAuthentication.supportedAuthenticationTypesAsync()', 'LocalAuthentication.isEnrolledAsync()', 'LocalAuthentication.authenticateAsync(options)', 'LocalAuthentication.cancelAuthenticate()']} />
 
 ## Methods
 

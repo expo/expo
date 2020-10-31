@@ -28,10 +28,10 @@ Sometimes you will want to use a file type that is not supported out of the box 
 
 Images often take up the most space out of the assets in an Expo project. Optimizing your images will make them take up less space on end users' devices and reduce the time and bandwidth needed to download before they are ready to display. To compress the images (PNGs and JPEGs) in your project, you can run `npx expo-optimize`. You can also pass in the following options:
 
-* `--save`: Backup a copy of each file with a `.orig` extension.
-* `--quality=N`: Compress the images to a certain integer quality N between 1 and 100 inclusive (defaults to 60).
-* `--include="[pattern]"`: Only optimize assets that match this glob pattern (defaults to `assetBundlePatterns` field in `app.json`)
-* `--exclude="[pattern]"`: Exclude assets that match this glob pattern.
+- `--save`: Backup a copy of each file with a `.orig` extension.
+- `--quality=N`: Compress the images to a certain integer quality N between 1 and 100 inclusive (defaults to 60).
+- `--include="[pattern]"`: Only optimize assets that match this glob pattern (defaults to `assetBundlePatterns` field in `app.json`)
+- `--exclude="[pattern]"`: Exclude assets that match this glob pattern.
 
 Note: glob patterns are always relative to the project root regardless of where the command is called from.
 

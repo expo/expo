@@ -33,7 +33,7 @@ To use these `.extra` properties in your Expo app, you have to use the [`expo-co
 ```js
 import Constants from 'expo-constants';
 
-export const Post = (props) => (
+export const Post = props => (
   <View>
     <Text>...</Text>
     {props.enableComments && <Comments />}
@@ -66,7 +66,7 @@ module.exports = function(api) {
 After adding the new Babel plugin to your config, you can access the environment variable. Here you can see the same component as above, but without `expo-constants`.
 
 ```js
-export const Post = (props) => (
+export const Post = props => (
   <View>
     <Text>...</Text>
     {props.enableComments && <Comments />}
@@ -74,7 +74,7 @@ export const Post = (props) => (
 );
 
 Post.defaultProps = {
-  enableComments: (process.env.EXPO_COOLAPP_COMMENTS === 'true') || false,
+  enableComments: process.env.EXPO_COOLAPP_COMMENTS === 'true' || false,
 };
 ```
 

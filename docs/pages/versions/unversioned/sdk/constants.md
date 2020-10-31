@@ -5,7 +5,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-constants
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-constants`** provides system information that remains constant throughout the lifetime of your app's install.
 
@@ -20,8 +19,6 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 ```js
 import Constants from 'expo-constants';
 ```
-
-<TableOfContentSection title='Properties' contents={['Constants.appOwnership', 'Constants.deviceName', 'Constants.deviceYearClass', 'Constants.expoVersion', 'Constants.getWebViewUserAgentAsync()', 'Constants.installationId', 'Constants.isDevice', 'Constants.manifest', 'Constants.nativeAppVersion', 'Constants.nativeBuildVersion', 'Constants.platform', 'Constants.sessionId', 'Constants.statusBarHeight', 'Constants.systemFonts']} />
 
 ## Properties
 
@@ -111,4 +108,3 @@ The default status bar height for the device. Does not factor in changes when lo
 ### `Constants.systemFonts`
 
 A list of the system font names available on the current device.
-

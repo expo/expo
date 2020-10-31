@@ -1,6 +1,6 @@
 ---
 title: Amplitude
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-analytics-amplitude"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-analytics-amplitude'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
@@ -88,7 +88,6 @@ Add the current user to a group. For more information, see here for [iOS](https:
 - **groupType (_string_)** -- The group name, e.g. "sports".
 - **groupNames (_object_)** -- An array of group names, e.g. \["tennis", "soccer"]. Note: the iOS and Android Amplitude SDKs allow you to use a string or an array of strings. We only support an array of strings. Just use an array with one element if you only want one group name.
 
-
 ### `Amplitude.setTrackingOptions(trackingOptions)`
 
 By default the Amplitude SDK will track several user properties such as carrier and city. You can use this method to customize and disable individual fields.
@@ -100,7 +99,7 @@ By default the Amplitude SDK will track several user properties such as carrier 
 - **trackingOptions (object)** -- Options object for what should not be tracked. The table below describes what properties the object may contain. All properties are expected to be booleans. For example, passing `disableCarrier: true` disables tracking the device's carrier.
 
 | Property                    | Description                                                                |
-|-----------------------------|----------------------------------------------------------------------------|
+| --------------------------- | -------------------------------------------------------------------------- |
 | `disableCarrier`            | Disable tracking of the device's carrier.                                  |
 | `disableCity`               | Disable tracking of the user's city.                                       |
 | `disableCountry`            | Disable tracking of the user's country.                                    |

@@ -5,7 +5,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-39/packages/expo-localizat
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-localization`** allows you to Localize your app, customizing the experience for specific regions, languages, or cultures. It also provides access to the locale data on the native device.
 Using the popular library [`i18n-js`](https://github.com/fnando/i18n-js) with `expo-localization` will enable you to create a very accessible experience for users.
@@ -79,10 +78,6 @@ function App() {
 ```ts
 import * as Localization from 'expo-localization';
 ```
-
-<TableOfContentSection title='Constants' contents={['Localization.locale', 'Localization.locales', 'Localization.region', 'Localization.isoCurrencyCodes', 'Localization.timezone', 'Localization.isRTL']} />
-
-<TableOfContentSection title='Methods' contents={['Localization.getLocalizationAsync()']} />
 
 ## Constants
 

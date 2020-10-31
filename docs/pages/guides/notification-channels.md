@@ -12,7 +12,7 @@ Channels give users more control over the various kinds of alerts they want to r
 
 According to the Android developer documentation:
 
->You should create a channel for each distinct type of notification you need to send. You can also create notification channels to reflect choices made by users of your app. For example, you can set up separate notification channels for each conversation group created by a user in a messaging app.
+> You should create a channel for each distinct type of notification you need to send. You can also create notification channels to reflect choices made by users of your app. For example, you can set up separate notification channels for each conversation group created by a user in a messaging app.
 
 When you create a channel, you can specify various settings for its notifications, such as priority, sound, and vibration. After you create the channel, control switches entirely to the user, who can then customize these settings to their own liking for each channel. Your app can no longer change any of the settings. Although it is possible for your app to programmatically delete channels, Android does not recommend this and keeps a relic on the user's device.
 
@@ -47,7 +47,7 @@ Notifications.presentLocalNotificationAsync({
 
 Expo will then present your notification to the user through the `chat-messages` channel, respecting all of the user's settings for that channel.
 
-If you create a notification and do not specify a `channelId`, Expo will automatically create a 'Default' channel for you and present the notification through that channel. If, however, you specify a `channelId` that has not yet been created on the device, __the notification will not be shown on Android 8+ devices.__ Therefore, it's important to plan ahead and make sure that you create all of the channels you may need before sending out notifications.
+If you create a notification and do not specify a `channelId`, Expo will automatically create a 'Default' channel for you and present the notification through that channel. If, however, you specify a `channelId` that has not yet been created on the device, **the notification will not be shown on Android 8+ devices.** Therefore, it's important to plan ahead and make sure that you create all of the channels you may need before sending out notifications.
 
 On devices with Android 7 and below, which don't support notification channels, Expo will remember the relevant settings you created the channel with (in this case, `sound: true`) and apply them directly to the individual notification before presenting it to the user.
 
@@ -59,7 +59,7 @@ To do this, first make sure you are using the latest minor update of `expo` for 
 
 Next, plan out the notification channels your app will need. These may correspond to the different permutations of the `sound`, `vibrate` and `priority` settings you used on individual notifications.
 
-Once you've decided on a set of channels, you need to add logic to your app to create them. We recommend simply creating all channels in  `componentDidMount` of your app's root component; this way all users will be sure to get all channels and not miss any notifications.
+Once you've decided on a set of channels, you need to add logic to your app to create them. We recommend simply creating all channels in `componentDidMount` of your app's root component; this way all users will be sure to get all channels and not miss any notifications.
 
 For example, if this is your code before:
 
@@ -74,7 +74,7 @@ _createNotificationAsync = () => {
       color: '#FF0000',
     },
   });
-}
+};
 ```
 
 You might change it to something like this:
@@ -108,13 +108,16 @@ _createNotificationAsync = () => {
 This will create a channel called "Reminders" with default settings of `max` priority and the vibrate pattern `[0, 250, 250, 250]`. Android 8 users can change these settings whenever they want, or even turn off notifications completely for the "Reminders" channel. When `presentLocalNotificationAsync` is called, the OS will read the channel's settings and present the notification accordingly.
 
 ## Send channel notification with Expo api service.
- ```javascript
-[{
-  "to": "ExponentPushToken[xxxxxx]",
-  "title":"test",
-  "priority":"high",
-  "body": "test",
-  "sound":"default", // android 7.0 , 6, 5 , 4
-  "channelId": "chat-messages", // android 8.0 later
-}]
+
+```javascript
+[
+  {
+    to: 'ExponentPushToken[xxxxxx]',
+    title: 'test',
+    priority: 'high',
+    body: 'test',
+    sound: 'default', // android 7.0 , 6, 5 , 4
+    channelId: 'chat-messages', // android 8.0 later
+  },
+];
 ```

@@ -6,7 +6,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-speech'
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-speech`** provides an API that allows you to utilize Text-to-speech functionality in your app.
 
@@ -66,14 +65,6 @@ const styles = StyleSheet.create({
 import * as Speech from 'expo-speech';
 ```
 
-<TableOfContentSection title='Constants' contents={['Speech.maxSpeechInputLength']} />
-
-<TableOfContentSection title='Methods' contents={['Speech.speak(text, options)', 'Speech.stop()', 'Speech.pause()', 'Speech.resume()', 'Speech.isSpeakingAsync()', 'Speech.getAvailableVoicesAsync()']} />
-
-<TableOfContentSection title='Enum Types' contents={['Speech.VoiceQuality']} />
-
-<TableOfContentSection title='Error Codes' contents={['ERR_SPEECH_INPUT_LENGTH']} />
-
 ## Constants
 
 ### `Speech.maxSpeechInputLength`
@@ -105,7 +96,6 @@ Speak out loud the `text` given `options`. Calling this when another text is bei
 #### Error Codes
 
 - [`ERR_SPEECH_INPUT_LENGTH`](#err_speech_input_length)
-
 
 ### `Speech.stop()`
 

@@ -5,7 +5,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-38/packages/expo-intent-la
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-intent-launcher`** provides a way to launch Android intents. For example, you can use this API to open a specific settings screen.
 
@@ -29,12 +28,6 @@ IntentLauncher.startActivityAsync(IntentLauncher.ACTION_LOCATION_SOURCE_SETTINGS
 ```js
 import * as IntentLauncher from 'expo-intent-launcher';
 ```
-
-<TableOfContentSection title='Methods' contents={['IntentLauncher.startActivityAsync(activityAction, intentParams)']} />
-
-<TableOfContentSection title='Types' contents={['IntentLauncherParams', 'IntentLauncherResult']} />
-
-<TableOfContentSection title='Enums' contents={['ResultCode']} />
 
 ## Methods
 

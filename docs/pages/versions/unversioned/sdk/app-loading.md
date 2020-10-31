@@ -17,6 +17,7 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 
 ## Usage
 
+<!-- prettier-ignore -->
 ```javascript
 import React from 'react';
 import { Image, Text, View } from 'react-native';

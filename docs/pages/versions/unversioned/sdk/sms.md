@@ -71,10 +71,12 @@ Android does not provide information about the status of the SMS message, so on 
 const { result } = await SMS.sendSMSAsync(
   ['0123456789', '9876543210'],
   'My sample HelloWorld message',
-  attachments: {
-    uri: 'path/myfile.png',
-    mimeType: 'image/png',
-    filename: 'myfile.png',
+  {
+    attachments: {
+      uri: 'path/myfile.png',
+      mimeType: 'image/png',
+      filename: 'myfile.png',
+    },
   }
 );
 ```

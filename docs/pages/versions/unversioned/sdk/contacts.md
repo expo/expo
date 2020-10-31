@@ -6,7 +6,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-contacts'
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-contacts`** provides access to the device's system contacts, allowing you to get contact information as well as adding, editing, or removing contacts.
 
@@ -20,7 +19,7 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 In Managed apps, `Contacts` requires `Permissions.CONTACTS`.
 
-## Example Usage
+## Usage
 
 <SnackInline label='Basic Contacts Usage' templateId='contacts' dependencies={['expo-contacts']}>
 
@@ -67,14 +66,6 @@ export default function App() {
 ```js
 import * as Contacts from 'expo-contacts';
 ```
-
-<TableOfContentSection title='Methods' contents={['Contacts.isAvailableAsync()', 'Contacts.requestPermissionsAsync', 'Contacts.getPermissionsAsync', 'Contacts.getContactsAsync(contactQuery)', 'Contacts.getContactByIdAsync(contactId, fields)', 'Contacts.addContactAsync(contact, containerId)', 'Contacts.updateContactAsync(contact)', 'Contacts.presentFormAsync(contactId, contact, formOptions)', 'Contacts.removeContactAsync(contactId)', 'Contacts.writeContactToFileAsync(contactQuery)']} />
-
-<TableOfContentSection title='iOS-only Methods' contents={['Contacts.addExistingGroupToContainerAsync(groupId, containerId)', 'Contacts.createGroupAsync(groupName, containerId?)', 'Contacts.updateGroupNameAsync(groupName, groupId)', 'Contacts.removeGroupAsync(groupId)', 'Contacts.addExistingContactToGroupAsync(contactId, groupId)', 'Contacts.removeContactFromGroupAsync(contactId, groupId)', 'Contacts.getGroupsAsync(query)', 'Contacts.getDefaultContainerIdAsync()', 'Contacts.getContainersAsync(containerQuery)']} />
-
-<TableOfContentSection title='Types' contents={['Contact', 'Group', 'Container', 'Date', 'Relationship', 'Email', 'PhoneNumber', 'Address', 'SocialProfile', 'InstantMessageAddress', 'UrlAddress', 'Image', 'FormOptions', 'ContactQuery', 'GroupQuery', 'ContainerQuery', 'ContactResponse']} />
-
-<TableOfContentSection title='Constants' contents={['Field', 'FormType', 'ContactType', 'SortType', 'ContainerType', 'CalendarFormat']} />
 
 ## Methods
 

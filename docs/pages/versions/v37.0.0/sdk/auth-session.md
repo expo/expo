@@ -5,7 +5,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/sdk-37/master/packages/expo-auth-se
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import InstallSection from '~/components/plugins/InstallSection';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
 import { SocialGrid, SocialGridItem, CreateAppButton } from '~/components/plugins/AuthSessionElements';
 import TerminalBlock from '~/components/plugins/TerminalBlock';
 import SnackInline from '~/components/plugins/SnackInline';
@@ -14,17 +14,6 @@ import { InlineCode } from '~/components/base/code';
 `AuthSession` is the easiest way to add web browser based authentication (for example, browser-based OAuth flows) to your app, built on top of [WebBrowser](../webbrowser/), [Crypto](../crypto/), and [Random](../random/). If you would like to understand how it does this, read this document from top to bottom. If you just want to use it, jump to the [Authentication Guide](/guides/authentication).
 
 <PlatformsSection android emulator ios simulator web />
-
-<TableOfContentSection title="Table of contents" contents={[
-"Installation",
-"Guides",
-"API",
-"Hooks",
-"Methods",
-"Classes",
-"Types",
-"Advanced usage"
-]} />
 
 ## Installation
 

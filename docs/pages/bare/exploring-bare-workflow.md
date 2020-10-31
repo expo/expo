@@ -23,7 +23,6 @@ If you already have a React Native project that has been created with `react-nat
 
 > _Note: We moved superhumanly fast in this video. You're not meant to follow along, we just want to give you a rough sense of what's involved in this process. Full instructions to get set up are available in the [react-native-unimodules README](https://github.com/expo/expo/tree/master/packages/react-native-unimodules)._
 
-
 ### Existing Expo managed workflow apps
 
 If you already have an Expo managed workflow app and you need to customize the native code, you can eject to the bare workflow by running `expo eject`. This will give you a vanilla React Native app that includes all of the Expo SDK APIs that you were using already, and no more than that. The outcome is that you will be in just as good of a position as if you had started your app in the bare workflow from scratch, only you probably saved yourself some time!

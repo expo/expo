@@ -27,6 +27,7 @@ Each object under the platform key can contain multiple build profiles. Every bu
 
 Generally, the schema of this file looks like this:
 
+<!-- prettier-ignore -->
 ```json
 {
   "builds": {
@@ -147,6 +148,7 @@ This is the minimal working example. Expo CLI will ask you for the app's credent
 
 If you'd like to build your iOS project with a custom `Gymfile` ([learn more on this here](../ios-builds/#building-ios-projects-with-fastlane)) where you've defined a different output directory than `ios/build`, use the following example:
 
+<!-- prettier-ignore -->
 ```json
 {
   "workflow": "generic",

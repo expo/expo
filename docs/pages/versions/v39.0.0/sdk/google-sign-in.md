@@ -5,8 +5,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-39/packages/expo-google-si
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
-
 **`expo-google-sign-in`** provides native Google authentication for **standalone** Expo apps or bare React Native apps. It cannot be used in the Expo client as the native `GoogleSignIn` library expects your `REVERSED_CLIENT_ID` in the `info.plist` at build-time. To use Google authentication in the Expo client, check out [`expo-google-app-auth`](../google) or [expo-app-auth](../app-auth).
 
 <PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/6884' }} />
@@ -149,14 +147,6 @@ try {
 ```js
 import * as GoogleSignIn from 'expo-google-sign-in';
 ```
-
-<TableOfContentSection title='Methods' contents={['GoogleSignIn.getPlayServiceAvailability(shouldAsk)', 'GoogleSignIn.askForPlayServicesAsync()', 'GoogleSignIn.initAsync(options)', 'GoogleSignIn.isSignedInAsync()', 'GoogleSignIn.signInSilentlyAsync()', 'GoogleSignIn.signInAsync()', 'GoogleSignIn.signOutAsync()', 'GoogleSignIn.isConnectedAsync()', 'GoogleSignIn.disconnectAsync()', 'GoogleSignIn.getCurrentUserAsync()', 'GoogleSignIn.getCurrentUser()', 'GoogleSignIn.getPhotoAsync(size)']} />
-
-<TableOfContentSection title='Types' contents={[]} />
-
-<TableOfContentSection title='Classes' contents={['GoogleAuthData', 'GoogleIdentity', 'GoogleUser', 'GoogleAuthentication']} />
-
-<TableOfContentSection title='Constants' contents={['GoogleSignIn.ERRORS', 'GoogleSignIn.SCOPES', 'GoogleSignIn.TYPES']} />
 
 ## Methods
 

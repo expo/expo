@@ -96,7 +96,6 @@ export default function Playlists() {
 </p>
 </details>
 
-
 ## Themes and status bar styles
 
 If you use `expo-status-bar` to control your status bar style, the `style="auto"` configuration will automatically pick the appropriate default style depending on the color scheme currently used by the app (this is the default behavior, if you leave out the style prop entirely then `auto` will be used). Please note that if you provide a way for users to toggle between color schemes rather than using the operating system theme, this will not have the intended behavior, and you should use `style="light"` and `style="dark"` as needed depending on the selected color scheme.

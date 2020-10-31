@@ -5,7 +5,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-app-auth'
 
 import InstallSection from '~/components/plugins/InstallSection';
 import SnackInline from '~/components/plugins/SnackInline';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { H3 } from '~/components/plugins/Headings';
 import { InlineCode } from '~/components/base/code';
@@ -190,12 +190,6 @@ The `expo-app-auth` module is based on [react-native-app-auth](https://github.co
 ```js
 import * as AppAuth from 'expo-app-auth';
 ```
-
-<TableOfContentSection title='Methods' contents={['AppAuth.authAsync()', 'AppAuth.refreshAsync()', 'AppAuth.revokeAsync()']} />
-
-<TableOfContentSection title='Constants' contents={['AppAuth.OAuthRedirect', 'AppAuth.URLSchemes']} />
-
-<TableOfContentSection title='Types' contents={['TokenResponse', 'OAuthBaseProps', 'OAuthProps', 'OAuthRevokeOptions', 'OAuthServiceConfiguration', 'OAuthParameters', 'OAuthDisplayParameter', 'OAuthPromptParameter', 'OAuthNonceParameter', 'OAuthUILocalesParameter', 'OAuthIDTokenHintParamater', 'OAuthMaxAgeParameter', 'OAuthLoginHintParameter', 'OAuthACRValuesParameter']} />
 
 ## Methods
 

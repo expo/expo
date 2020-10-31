@@ -88,7 +88,6 @@ Sets the test device ID. For simulators/emulators you can use `'EMULATOR'` for t
 
 - **testDeviceID (_string_)** -- Test device ID.
 
-
 ### AdMobBanner
 
 #### servePersonalizedAds property
@@ -161,8 +160,8 @@ Opens a rewarded AdMob ad.
 | ------------------------------- | ---------------------------------------------- |
 | `setAdUnitID(adUnitID: string)` | sets the AdUnit ID for all future ad requests. |
 
-| `requestAdAsync(options)`               | (async) requests a rewarded ad. An optional `options` object argument may specify `servePersonalizedAds: true` value — then ad will be personalized. |
-| `showAdAsync()`                         | (async) shows a rewarded if it is ready (async)                                                                                                      |
+| `requestAdAsync(options)` | (async) requests a rewarded ad. An optional `options` object argument may specify `servePersonalizedAds: true` value — then ad will be personalized. |
+| `showAdAsync()` | (async) shows a rewarded if it is ready (async) |
 
 #### Events
 

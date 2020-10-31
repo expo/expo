@@ -8,6 +8,7 @@ We're going to create our own custom button using the `TouchableOpacity` compone
 
 <SnackInline label="Simple button">
 
+<!-- prettier-ignore -->
 ```js
 import React from 'react';
 import { Image, StyleSheet, Text, /* @info Add the TouchableOpacity component to your list of imports */ TouchableOpacity,/* @end */ View } from 'react-native';
@@ -66,6 +67,7 @@ We can make our button bigger by adding some `padding` to our `TouchableOpacity`
 
 <SnackInline label="Simple button">
 
+<!-- prettier-ignore -->
 ```js
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';

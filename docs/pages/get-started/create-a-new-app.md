@@ -50,7 +50,6 @@ If you are using a simulator or emulator, you may find the following Expo CLI ke
 </p>
 </details>
 
-
 ## Making your first change
 
 Open up `App.js` and change the text to "Hello, world!". You should see it update on your device. This is great progress, we now have the Expo toolchain running on our machine and we are able to edit the source code for a project and see the changes live on our device!

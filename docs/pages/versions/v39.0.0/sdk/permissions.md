@@ -56,19 +56,19 @@ Often you want to be able to test what happens when a user rejects a permission,
 
 The following table shows you which permissions correspond to which packages.
 
-| Permission type             | Packages                                  |
-| --------------------------- | ----------------------------------------- |
-| `NOTIFICATIONS`             | `expo-notifications`                      |
-| `USER_FACING_NOTIFICATIONS` | `expo-notifications`                      |
-| `LOCATION`                  | `expo-location`                           |
+| Permission type             | Packages                                                                                                                       |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `NOTIFICATIONS`             | `expo-notifications`                                                                                                           |
+| `USER_FACING_NOTIFICATIONS` | `expo-notifications`                                                                                                           |
+| `LOCATION`                  | `expo-location`                                                                                                                |
 | `CAMERA`                    | `expo-barcode-scanner` <br /> `expo-camera` <br /> `expo-face-detector` <br /> `expo-image-picker` <br /> `expo-media-library` |
-| `AUDIO_RECORDING`           | `expo-av`                                 |
-| `CONTACTS`                  | `expo-contacts`                           |
-| `CAMERA_ROLL`               | `expo-image-picker`<br /> `expo-media-library` |
-| `CALENDAR`                  | `expo-calendar`                           |
-| `REMINDERS`                 | `expo-calendar`                           |
-| `SYSTEM_BRIGHTNESS`         | `expo-brightness`                         |
-| `MOTION`                    | `expo-sensors`                            |
+| `AUDIO_RECORDING`           | `expo-av`                                                                                                                      |
+| `CONTACTS`                  | `expo-contacts`                                                                                                                |
+| `CAMERA_ROLL`               | `expo-image-picker`<br /> `expo-media-library`                                                                                 |
+| `CALENDAR`                  | `expo-calendar`                                                                                                                |
+| `REMINDERS`                 | `expo-calendar`                                                                                                                |
+| `SYSTEM_BRIGHTNESS`         | `expo-brightness`                                                                                                              |
+| `MOTION`                    | `expo-sensors`                                                                                                                 |
 
 ### Excluding Android permissions in bare workflow
 
@@ -83,7 +83,6 @@ Since the `android.permissions` manifest property doesn't work in the bare workf
 ```
 
 > **Note:** you have to define the `xmlns:tools` attribute on `<manifest>` before you can use the `tools:node` attribute on permissions.
-
 
 # API
 
@@ -208,7 +207,8 @@ interface PermissionResponse {
   granted: boolean;
   expires: 'never' | number;
   canAskAgain: boolean;
-  permissions: { // an object with an entry for each permission requested
+  permissions: {
+    // an object with an entry for each permission requested
     [permissionType: string /* PermissionType */]: PermissionInfo;
   };
 }
@@ -247,7 +247,6 @@ This property is set to `true` when the app can request the user to grant all re
 #### PermissionResponse.permissions
 
 This object contains information, per requested permission, using the [`PermissionInfo`](#permissioninfo) type.
-
 
 ### `PermissionInfo`
 
@@ -300,7 +299,7 @@ The permission type for user-facing notifications **and** remote push notificati
 The permission type for user-facing notifications. This does **not** register your app to receive remote push notifications; see the `NOTIFICATIONS` permission.
 
 - **Android:** _this permission is the same as `NOTIFICATIONS` and returns the status from that permission._
-_ **iOS:** it requires the `expo-notifications` module and doesn't require a message.
+  \_ **iOS:** it requires the `expo-notifications` module and doesn't require a message.
 
 > **Note (iOS):** It provides more detailed permissions, so the permission status will contain not only `status` and `expires`, but also Boolean values for `allowsSound`, `allowsAlert` and `allowsBadge`.
 

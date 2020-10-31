@@ -4,7 +4,6 @@ title: Common questions
 
 In addition to the questions below, see the [forums](http://forums.expo.io/) for more common questions and answers. Some of this information is repeated from earlier sections of the introduction but we include it here for comprehensiveness.
 
-
 <details><summary><h4>Is Expo similar to React for web development?</h4></summary>
 <p>
 
@@ -80,8 +79,6 @@ Expo supports Android 5+ and iOS 10+.
 
 </p>
 </details>
-
-
 
 ## Up next
 

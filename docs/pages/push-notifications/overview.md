@@ -15,7 +15,7 @@ There are three main steps to setting up push notifications, and we provide a gu
 - [Sending: calling Expo's Push API with the token when you want to send a notification](../sending-notifications/)
 - [Receiving: responding to the notification in your app](../receiving-notifications/) (maybe upon opening, you want to jump to a particular screen that the notification refers to)
 
-## Example Usage
+## Usage
 
 The Snack below shows a full example of how to register for, send, and receive push notifications in an Expo app. But make sure to read the rest of the guide, so that you understand how Expo's push notification service works, what the best practices are, and how to investigate any problems you run into!
 

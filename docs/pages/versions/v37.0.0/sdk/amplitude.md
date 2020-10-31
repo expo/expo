@@ -99,7 +99,7 @@ By default the Amplitude SDK will track several user properties such as carrier 
 - **trackingOptions (object)** -- Options object for what should not be tracked. The table below describes what properties the object may contain. All properties are expected to be booleans. For example, passing `disableCarrier: true` disables tracking the device's carrier.
 
 | Property                    | Description                                                                |
-|-----------------------------|----------------------------------------------------------------------------|
+| --------------------------- | -------------------------------------------------------------------------- |
 | `disableCarrier`            | Disable tracking of the device's carrier.                                  |
 | `disableCity`               | Disable tracking of the user's city.                                       |
 | `disableCountry`            | Disable tracking of the user's country.                                    |

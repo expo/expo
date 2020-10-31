@@ -23,17 +23,17 @@ const Container = styled.View`
   background-color: #fff;
   align-items: center;
   justify-content: center;
-`
+`;
 const Title = styled.Text`
   color: #000;
   text-align: center;
   font-size: 16px;
-`
+`;
 export default () => (
-    <Container>
-        <Title>Hello</Title>
-    </Container>
-)
+  <Container>
+    <Title>Hello</Title>
+  </Container>
+);
 ```
 
 ## Usage with Next.js
