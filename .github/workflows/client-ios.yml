@@ -48,19 +48,8 @@ jobs:
       - run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - run: expotools ios-generate-dynamic-macros
       - uses: ruby/setup-ruby@v1
-      - name: bundler cache
-        uses: actions/cache@v1
         with:
-          path: vendor/bundle
-          key: ${{ runner.os }}-gems-${{ hashFiles('.ruby-version') }}-${{ hashFiles('Gemfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-gems-
-      - run: echo "BUNDLE_BIN=$(pwd)/.direnv/bin" >> $GITHUB_ENV
-      - run: echo "$BUNDLE_BIN" >> $GITHUB_PATH
-      - name: install fastlane
-        run: |
-          bundle config path vendor/bundle
-          bundle install --jobs 4 --retry 3
+          bundler-cache: true
       - run: expotools client-build --platform ios
         timeout-minutes: 120
         env:
