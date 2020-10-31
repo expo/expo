@@ -26,7 +26,7 @@ const STYLES_DOCUMENT = css`
   padding: 40px 56px;
 
   hr {
-    border-top: 1px solid ${Constants.expoColors.gray[250]};
+    border-top: 1px solid ${Constants.expoColors.semantic.border};
     border-bottom: 0px;
   }
 

@@ -5,7 +5,7 @@ import * as Constants from '~/constants/theme';
 import { Url } from '~/types/common';
 
 const STYLES_FOOTER = css`
-  border-top: 1px solid ${Constants.expoColors.gray[250]};
+  border-top: 1px solid ${Constants.expoColors.semantic.border};
   padding: 24px 0 24px 0;
 `;
 

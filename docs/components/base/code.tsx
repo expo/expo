@@ -47,19 +47,19 @@ const STYLES_INLINE_CODE = css`
 
   word-wrap: break-word;
   background-color: ${Constants.expoColors.gray[100]};
-  border: 1px solid ${Constants.expoColors.gray[250]};
+  border: 1px solid ${Constants.expoColors.semantic.border};
   border-radius: 4px;
   vertical-align: middle;
   overflow-x: scroll;
 
   /* Disable Safari from adding border when used within a (perma)link */
   a & {
-    border-color: ${Constants.expoColors.gray[250]};
+    border-color: ${Constants.expoColors.semantic.border};
   }
 `;
 
 const STYLES_CODE_CONTAINER = css`
-  border: 1px solid ${Constants.expoColors.gray[250]};
+  border: 1px solid ${Constants.expoColors.semantic.border};
   padding: 16px;
   margin: 16px 0;
   white-space: pre;

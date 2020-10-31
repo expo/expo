@@ -20,6 +20,7 @@
   "dependencies": {
     "@emotion/core": "^10.0.35",
     "@expo/spawn-async": "^1.5.0",
+    "@expo/styleguide": "1.0.2",
     "@mdx-js/loader": "^1.6.16",
     "@mdx-js/mdx": "^1.6.16",
     "@mdx-js/react": "^1.6.16",

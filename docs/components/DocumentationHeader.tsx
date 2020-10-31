@@ -60,7 +60,7 @@ const STYLES_NAV = css`
   height: 60px;
   box-sizing: unset;
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-    border-bottom: 1px solid ${Constants.expoColors.gray[250]};
+    border-bottom: 1px solid ${Constants.expoColors.semantic.border};
   }
 `;
 
@@ -72,7 +72,7 @@ const STYLES_MOBILE_NAV = css`
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     display: flex;
-    border-bottom: 1px solid ${Constants.expoColors.gray[250]};
+    border-bottom: 1px solid ${Constants.expoColors.semantic.border};
   }
 `;
 
