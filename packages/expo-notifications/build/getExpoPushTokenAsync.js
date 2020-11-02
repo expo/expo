@@ -1,6 +1,7 @@
 import { Platform, CodedError, UnavailabilityError } from '@unimodules/core';
 import * as Application from 'expo-application';
 import Constants from 'expo-constants';
+import { addAutoTokenRegistrationAsync } from './ExpoTokenAutoUpdater.fx';
 import InstallationIdProvider from './InstallationIdProvider';
 import getDevicePushTokenAsync from './getDevicePushTokenAsync';
 const productionBaseUrl = 'https://exp.host/--/api/v2/';
@@ -47,6 +48,22 @@ export default async function getExpoPushTokenAsync(options = {}) {
         throw new CodedError('ERR_NOTIFICATIONS_SERVER_ERROR', `Error encountered while fetching Expo token, expected an OK response, received: ${statusInfo} (body: "${body}").`);
     }
     const expoPushToken = getExpoPushToken(await parseResponse(response));
+    try {
+        // Since we registered successfully
+        // we want to automatically reregister
+        // the device push token on the server.
+        await addAutoTokenRegistrationAsync({
+            url,
+            type: options.type,
+            deviceId: options.deviceId,
+            development: options.development,
+            experienceId: options.experienceId,
+            applicationId: options.applicationId,
+        });
+    }
+    catch (e) {
+        console.warn('[expo-notifications] Could not have added automatic token registration of `getExpoPushTokenAsync` for options: ', options, e);
+    }
     return {
         type: 'expo',
         data: expoPushToken,
