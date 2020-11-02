@@ -17,6 +17,7 @@ xcodebuild \
   -scheme BareExpo \
   -configuration "$configuration" \
   -sdk iphonesimulator \
+  -arch x86_64 \
   -derivedDataPath "ios/build" \
   -UseModernBuildSystem="$UseModernBuildSystem" 2>&1 | xcpretty --knock
 
