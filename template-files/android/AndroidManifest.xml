@@ -319,16 +319,26 @@
         <action android:name="com.google.firebase.MESSAGING_EVENT" />
       </intent-filter>
     </service>
+    <service
+      android:name=".fcm.FcmRegistrationIntentService"
+      android:exported="false">
+    </service>
+    <!-- Applied to Firebase data messages -->
+    <meta-data
+      android:name="expo.modules.notifications.default_notification_icon"
+      android:resource="@drawable/shell_notification_icon" />
+    <meta-data
+      android:name="expo.modules.notifications.default_notification_color"
+      android:resource="@color/notification_icon_color" />
+      
+    <!-- Applied to Firebase notification messages -->
     <meta-data
       android:name="com.google.firebase.messaging.default_notification_icon"
       android:resource="@drawable/shell_notification_icon" />
     <meta-data
       android:name="com.google.firebase.messaging.default_notification_color"
-      android:resource="@color/colorAccent" />
-    <service
-      android:name=".fcm.FcmRegistrationIntentService"
-      android:exported="false">
-    </service>
+      android:resource="@color/notification_icon_color" />
+
 
     <!-- ImagePicker native module -->
     <activity
