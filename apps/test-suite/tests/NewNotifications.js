@@ -5,6 +5,7 @@ import Constants from 'expo-constants';
 import * as Device from 'expo-device';
 import * as FileSystem from 'expo-file-system';
 import * as Notifications from 'expo-notifications';
+import InstallationIdProvider from 'expo-notifications/build/InstallationIdProvider';
 import { Alert, AppState } from 'react-native';
 
 import * as TestUtils from '../TestUtils';
@@ -18,6 +19,43 @@ export async function test(t) {
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
 
   t.describe('expo-notifications', () => {
+    t.describe('Private API', () => {
+      const STRANGE_SCOPE = 'http://root:password@backend.server/api/--/?set=token';
+
+      t.it('returns a registrations dictionary', async () => {
+        t.expect(await InstallationIdProvider.getRegistrationsAsync()).toEqual(
+          t.jasmine.any(Object)
+        );
+      });
+
+      t.it(
+        'successfully sets registration for a given scope and returns it when fetching registrations',
+        async () => {
+          await InstallationIdProvider.setRegistrationAsync(STRANGE_SCOPE, true);
+          t.expect(await InstallationIdProvider.getRegistrationsAsync()).toEqual(
+            t.jasmine.objectContaining({
+              [STRANGE_SCOPE]: true,
+            })
+          );
+        }
+      );
+
+      t.it('removes registration when unregistered', async () => {
+        await InstallationIdProvider.setRegistrationAsync(STRANGE_SCOPE, true);
+        t.expect(await InstallationIdProvider.getRegistrationsAsync()).toEqual(
+          t.jasmine.objectContaining({
+            [STRANGE_SCOPE]: true,
+          })
+        );
+        await InstallationIdProvider.setRegistrationAsync(STRANGE_SCOPE, false);
+        t.expect(await InstallationIdProvider.getRegistrationsAsync()).not.toEqual(
+          t.jasmine.objectContaining({
+            [STRANGE_SCOPE]: true,
+          })
+        );
+      });
+    });
+
     t.describe('getDevicePushTokenAsync', () => {
       let subscription = null;
       let tokenFromEvent = null;
