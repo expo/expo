@@ -2,7 +2,7 @@ import { Platform, CodedError, UnavailabilityError } from '@unimodules/core';
 import * as Application from 'expo-application';
 import Constants from 'expo-constants';
 
-import InstallationIdProvider from './InstallationIdProvider';
+import ServerRegistrationModule from './ServerRegistrationModule';
 import { DevicePushToken, ExpoPushToken } from './Tokens.types';
 import getDevicePushTokenAsync from './getDevicePushTokenAsync';
 
@@ -140,11 +140,11 @@ function getExpoPushToken(data: any) {
 
 async function getDeviceIdAsync() {
   try {
-    if (!InstallationIdProvider.getInstallationIdAsync) {
-      throw new UnavailabilityError('InstallationIdProvider', 'getInstallationIdAsync');
+    if (!ServerRegistrationModule.getInstallationIdAsync) {
+      throw new UnavailabilityError('ExpoServerRegistrationModule', 'getInstallationIdAsync');
     }
 
-    return await InstallationIdProvider.getInstallationIdAsync();
+    return await ServerRegistrationModule.getInstallationIdAsync();
   } catch (e) {
     throw new CodedError(
       'ERR_NOTIF_DEVICE_ID',

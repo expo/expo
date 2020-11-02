@@ -1,4 +1,4 @@
-package expo.modules.notifications.installationid;
+package expo.modules.notifications.serverregistration;
 
 import android.content.Context;
 
@@ -6,12 +6,12 @@ import org.unimodules.core.ExportedModule;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
 
-public class InstallationIdProvider extends ExportedModule {
-  private static final String EXPORTED_NAME = "NotificationsInstallationIdProvider";
+public class ServerRegistrationModule extends ExportedModule {
+  private static final String EXPORTED_NAME = "NotificationsServerRegistrationModule";
 
   protected InstallationId mInstallationId;
 
-  public InstallationIdProvider(Context context) {
+  public ServerRegistrationModule(Context context) {
     super(context);
     mInstallationId = new InstallationId(context);
   }

@@ -4,7 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXInstallationIdProvider : UMExportedModule
+@interface EXServerRegistrationModule : UMExportedModule
 
 - (NSString *)getInstallationId;
 

@@ -1,5 +1,5 @@
 import { ProxyNativeModule } from '@unimodules/core';
 
-export interface InstallationIdProvider extends ProxyNativeModule {
+export interface ServerRegistrationModule extends ProxyNativeModule {
   getInstallationIdAsync?: () => Promise<string>;
 }

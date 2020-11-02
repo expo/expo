@@ -1,6 +1,6 @@
 import uuidv4 from 'uuid/v4';
 
-import { InstallationIdProvider } from './InstallationIdProvider.types';
+import { ServerRegistrationModule } from './ServerRegistrationModule.types';
 
 const INSTALLATION_ID_KEY = 'EXPO_NOTIFICATIONS_INSTALLATION_ID';
 
@@ -29,4 +29,4 @@ export default {
   // mock implementations
   addListener: () => {},
   removeListeners: () => {},
-} as InstallationIdProvider;
+} as ServerRegistrationModule;
