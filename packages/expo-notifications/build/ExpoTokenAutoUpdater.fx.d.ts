@@ -7,9 +7,9 @@ declare type Registration = {
     applicationId?: string;
 };
 /**
- * Adds the registration information to the persisted storage so that the device push token
- * gets pushed to the given registration endpoint
+ * Sets the registration information to the persisted storage so that the device push token
+ * gets pushed to the given registration endpoint, overridding previous registrations
  * @param registration Registration endpoint to inform of new tokens
  */
-export declare function addAutoTokenRegistrationAsync(registration: Registration): Promise<void>;
+export declare function setAutoTokenRegistrationAsync(registration: Registration): Promise<void>;
 export {};

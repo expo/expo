@@ -1,7 +1,7 @@
 import { Platform, CodedError, UnavailabilityError } from '@unimodules/core';
 import * as Application from 'expo-application';
 import Constants from 'expo-constants';
-import { addAutoTokenRegistrationAsync } from './ExpoTokenAutoUpdater.fx';
+import { setAutoTokenRegistrationAsync } from './ExpoTokenAutoUpdater.fx';
 import InstallationIdProvider from './InstallationIdProvider';
 import getDevicePushTokenAsync from './getDevicePushTokenAsync';
 const productionBaseUrl = 'https://exp.host/--/api/v2/';
@@ -52,7 +52,7 @@ export default async function getExpoPushTokenAsync(options = {}) {
         // Since we registered successfully
         // we want to automatically reregister
         // the device push token on the server.
-        await addAutoTokenRegistrationAsync({
+        await setAutoTokenRegistrationAsync({
             url,
             type: options.type,
             deviceId: options.deviceId,
