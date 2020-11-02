@@ -2837,7 +2837,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "$SRCROOT/Build-Phases/generate-dynamic-macros.sh\n";
+			shellScript = "# $SRCROOT/Build-Phases/generate-dynamic-macros.sh\n";
 		};
 		AD799953B44D18A93FDD0639 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
