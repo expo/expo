@@ -8,6 +8,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)getInstallationId;
 
+- (void)getLastRegistrationInfoAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject;
+- (void)setLastRegistrationInfoAsync:(NSString *)lastRegistrationInfo resolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject;
+
 @end
 
 NS_ASSUME_NONNULL_END
