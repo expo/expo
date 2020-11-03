@@ -256,6 +256,7 @@ Modal screen that is automatically shown and displays a reCAPTCHA widget. The re
 
 - **firebaseConfig (IFirebaseOptions)** -- Firebase web configuration.
 - **firebaseVersion (string)** -- Optional version of the Firebase JavaScript SDK to load in the web-view. You can use this to load a custom or newer version. For example `version="6.8.0"`.
+- **appVerificationDisabledForTesting (boolean)** -- When set, this property disables app verification for the purpose of testing phone authentication. When this is disabled, a mock reCAPTCHA is rendered instead. This is useful for manual testing during development or for automated integration tests.
 - **title (string)** -- Title that is displayed on the top of the modal. The default is "reCAPTCHA".
 - **cancelLabel (string)** -- Label of the cancel button.
 
@@ -267,6 +268,7 @@ The reCAPTCHA v3 widget displayed inside a web-view.
 
 - **firebaseConfig (IFirebaseOptions)** -- Firebase web configuration.
 - **firebaseVersion (string)** -- Optional version of the Firebase JavaScript SDK to load in the web-view. You can use this to load a custom or newer version. For example `version="6.8.0"`.
+- - **appVerificationDisabledForTesting (boolean)** -- When set, this property disables app verification for the purpose of testing phone authentication. When this is disabled, a mock reCAPTCHA is rendered instead. This is useful for manual testing during development or for automated integration tests.
 - **onLoad (function)** -- A callback that is invoked when the widget has been loaded.
 - **onError (function)** -- A callback that is invoked when the widget failed to load.
 - **onVerify (function)** -- A callback that is invoked when reCAPTCHA has verified that the user is not a bot. The callback is provided with the reCAPTCHA token string. Example `onVerify={(recaptchaToken: string) => this.setState({recaptchaToken})}`.
