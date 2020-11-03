@@ -16,7 +16,7 @@ const STYLES_SELECT = css`
   margin-bottom: 15px;
   width: 100%;
   background-color: ${Constants.expoColors.white};
-  border: 1px solid ${Constants.expoColors.gray[250]};
+  border: 1px solid ${Constants.expoColors.semantic.border};
   box-shadow: 0 2px 2px 0 rgba(0, 0, 20, 0.015), 0 0 0 1px rgba(0, 0, 20, 0.0075);
 
   :hover {
