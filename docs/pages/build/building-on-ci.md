@@ -23,7 +23,7 @@ Before building with EAS on CI, we need to install and configure `expo-cli`. The
 
 To interact with the Expo API, we need to install Expo CLI. You can use an environment with this library preinstalled, or you can add it to the project as a development dependency.
 
-The later is the easiest way but might increase the installation time.
+The latter is the easiest way, but may increase the installation time.
 For vendors that charge you per minute, it might we worth creating a prebuilt environment.
 
 To install Expo CLI in your project, run:
