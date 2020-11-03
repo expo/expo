@@ -1,6 +1,7 @@
 import { Platform, CodedError, UnavailabilityError } from '@unimodules/core';
 import * as Application from 'expo-application';
 import Constants from 'expo-constants';
+import { setAutoServerRegistrationAsync } from './DevicePushTokenAutoRegistration.fx';
 import ServerRegistrationModule from './ServerRegistrationModule';
 import getDevicePushTokenAsync from './getDevicePushTokenAsync';
 const productionBaseUrl = 'https://exp.host/--/api/v2/';
@@ -17,7 +18,8 @@ export default async function getExpoPushTokenAsync(options = {}) {
     }
     const type = options.type || getTypeOfToken(devicePushToken);
     const development = options.development || (await shouldUseDevelopmentNotificationService());
-    const url = options.url || `${options.baseUrl || productionBaseUrl}push/getExpoPushToken`;
+    const baseUrl = options.baseUrl || productionBaseUrl;
+    const url = options.url || `${baseUrl}push/getExpoPushToken`;
     const body = {
         type,
         deviceId,
@@ -47,6 +49,38 @@ export default async function getExpoPushTokenAsync(options = {}) {
         throw new CodedError('ERR_NOTIFICATIONS_SERVER_ERROR', `Error encountered while fetching Expo token, expected an OK response, received: ${statusInfo} (body: "${body}").`);
     }
     const expoPushToken = getExpoPushToken(await parseResponse(response));
+    try {
+        if (options.url) {
+            console.debug(`[expo-notifications] Since a custom URL endpoint has been provided ("${options.url}"), expo-notifications won't try to autoupdate the device push token on the server (not knowing the specific endpoint). If you want to enable autoupdating, use setAutoServerRegistrationAsync method directly.`);
+        }
+        else {
+            await setAutoServerRegistrationAsync({
+                url: `${baseUrl}push/updateDeviceToken`,
+                body: {
+                    // `applicationId` can be reused and persisted as this gives us only advantages:
+                    // 1. If it cannot be inferred from `expo-application` and has been provided
+                    //    in `getExpoPushTokenAsync` options, we want to use the same argument
+                    //    when updating the device push token.
+                    // 2. If the application identifier changes the backing store of server registration
+                    //    module clears, so this `applicationId` will always be valid if the developer
+                    //    doesn't provide an invalid value to this method.
+                    // 3. We don't have to pass it explicitly in request body
+                    //    in `DevicePushTokenAutoRegistration`.
+                    applicationId,
+                    // `deviceId` can be reused and persisted:
+                    // 1. It should never change per installation (per backing store of server registration
+                    //    module).
+                    // 2. We honor developer's override if one is provided.
+                    // 2. We don't have to pass it explicitly in request body
+                    //    in `DevicePushTokenAutoRegistration`.
+                    deviceId,
+                },
+            });
+        }
+    }
+    catch (e) {
+        console.warn('[expo-notifications] Could not have set Expo server registration for automatic token updates.', e);
+    }
     return {
         type: 'expo',
         data: expoPushToken,
