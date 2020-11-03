@@ -2,7 +2,7 @@ import { CodedError } from '@unimodules/core';
 import { DEFAULT_WEB_APP_OPTIONS } from 'expo-firebase-core';
 import * as React from 'react';
 import { WebView } from './WebView';
-function getWebviewSource(firebaseConfig, firebaseVersion) {
+function getWebviewSource(firebaseConfig, firebaseVersion, appVerificationDisabledForTesting = false) {
     firebaseVersion = firebaseVersion || '7.12.0';
     return {
         baseUrl: `https://${firebaseConfig.authDomain}`,
@@ -23,6 +23,7 @@ function getWebviewSource(firebaseConfig, firebaseVersion) {
       window.ReactNativeWebView.postMessage(JSON.stringify({
         type: 'load'
       }));
+      firebase.auth().settings.appVerificationDisabledForTesting = ${appVerificationDisabledForTesting};
       window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier("recaptcha-cont", {
         size: "normal",
         callback: function(response) {
@@ -54,13 +55,13 @@ function validateFirebaseConfig(firebaseConfig) {
     }
 }
 export default function FirebaseRecaptcha(props) {
-    const { firebaseConfig, firebaseVersion, onVerify, onLoad, onError, ...otherProps } = props;
+    const { firebaseConfig, firebaseVersion, appVerificationDisabledForTesting, onVerify, onLoad, onError, ...otherProps } = props;
     validateFirebaseConfig(firebaseConfig);
     if (!firebaseConfig) {
         console.error(`FirebaseRecaptcha: Missing firebase web configuration. Please set the "expo.web.config.firebase" field in "app.json" or use the "firebaseConfig" prop.`);
         return null;
     }
-    return (React.createElement(WebView, Object.assign({ javaScriptEnabled: true, automaticallyAdjustContentInsets: true, scalesPageToFit: true, mixedContentMode: "always", source: getWebviewSource(firebaseConfig, firebaseVersion), onError: onError, onMessage: event => {
+    return (React.createElement(WebView, Object.assign({ javaScriptEnabled: true, automaticallyAdjustContentInsets: true, scalesPageToFit: true, mixedContentMode: "always", source: getWebviewSource(firebaseConfig, firebaseVersion, appVerificationDisabledForTesting), onError: onError, onMessage: event => {
             const data = JSON.parse(event.nativeEvent.data);
             switch (data.type) {
                 case 'load':
