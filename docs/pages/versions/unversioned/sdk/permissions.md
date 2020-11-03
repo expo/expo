@@ -34,7 +34,7 @@ To limit the permissions your managed workflow app requires, set the `android.pe
 
 See the [`Permission types`](#permission-types) below to learn about which Android permissions are added. You can find a full list of all available permissions in the [Android Manifest.permissions reference](https://developer.android.com/reference/android/Manifest.permission).
 
-> **Note:** [see the `android.permissions` documentation](../../config/app/#android) to learn about which permissions are always included.
+> **Note:** [see the `android.permissions` documentation](../../config/app/#permissions) to learn about which permissions are always included.
 
 > **Note:** apps using dangerous or signature permissions without valid reasons _may be rejected by Google_. Make sure you follow the [Android permissions best practices](https://developer.android.com/training/permissions/usage-notes) when submitting your app.
 
