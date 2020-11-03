@@ -3,7 +3,7 @@ import {
   FirebaseRecaptchaVerifierModal,
 } from 'expo-firebase-recaptcha';
 import * as React from 'react';
-import { Alert, ScrollView } from 'react-native';
+import { Alert, ScrollView, StyleProp, TextStyle } from 'react-native';
 
 import ListButton from '../components/ListButton';
 
@@ -22,6 +22,10 @@ interface State {
   title?: string;
   cancelLabel?: string;
   firebaseConfig?: any;
+  inProgress: boolean;
+  textStyle?: StyleProp<TextStyle>;
+  linkStyle?: StyleProp<TextStyle>;
+  appVerificationDisabledForTesting: boolean;
 }
 
 // See: https://github.com/expo/expo/pull/10229#discussion_r490961694
@@ -33,12 +37,22 @@ export default class FirebaseRecaptchaScreen extends React.Component<{}, State> 
 
   state: State = {
     firebaseConfig,
+    inProgress: false,
+    textStyle: undefined,
+    linkStyle: undefined,
+    appVerificationDisabledForTesting: false,
   };
 
-  applicationVerifier: FirebaseAuthApplicationVerifier | null = null;
+  recaptchaVerifier: FirebaseAuthApplicationVerifier | null = null;
 
   render() {
-    const { title, cancelLabel, firebaseConfig } = this.state;
+    const {
+      title,
+      cancelLabel,
+      firebaseConfig,
+      inProgress,
+      appVerificationDisabledForTesting,
+    } = this.state;
     const modalProps: any = {
       ...(title && { title }),
       ...(cancelLabel && { cancelLabel }),
@@ -46,35 +60,46 @@ export default class FirebaseRecaptchaScreen extends React.Component<{}, State> 
     };
     return (
       <ScrollView style={{ padding: 10 }}>
-        <ListButton onPress={this._requestRecaptchaToken} title="Request reCAPTCHA token" />
         <ListButton
-          onPress={() => this.setState({ title: 'Prove you are human!' })}
-          title="Set custom title"
+          onPress={this.requestRecaptchaToken}
+          title={inProgress ? 'Requesting reCAPTCHA token...' : 'Request reCAPTCHA token'}
         />
         <ListButton
-          onPress={() => this.setState({ cancelLabel: 'Close' })}
-          title="Set custom cancel label"
+          onPress={() =>
+            this.setState(state => ({
+              appVerificationDisabledForTesting: !state.appVerificationDisabledForTesting,
+            }))
+          }
+          title={`Toggle appVerificationDisabledForTesting (${
+            appVerificationDisabledForTesting ? 'On' : 'Off'
+          })`}
         />
         <ListButton
-          onPress={() => this.setState({ title: undefined })}
-          title="Reset custom title"
+          onPress={() =>
+            this.setState(state => ({ title: state.title ? undefined : 'Prove you are human!' }))
+          }
+          title={`Toggle custom title (${title ? 'On' : 'Off'})`}
         />
         <ListButton
-          onPress={() => this.setState({ cancelLabel: undefined })}
-          title="Reset custom cancel label"
+          onPress={() =>
+            this.setState(state => ({ cancelLabel: state.cancelLabel ? undefined : 'Close' }))
+          }
+          title={`Toggle custom cancel label (${cancelLabel ? 'On' : 'Off'})`}
         />
         <FirebaseRecaptchaVerifierModal
-          ref={ref => (this.applicationVerifier = ref)}
+          ref={ref => (this.recaptchaVerifier = ref)}
+          appVerificationDisabledForTesting={appVerificationDisabledForTesting}
           {...modalProps}
         />
       </ScrollView>
     );
   }
 
-  _requestRecaptchaToken = async () => {
+  private requestRecaptchaToken = async () => {
+    this.setState({ inProgress: true });
     try {
       // @ts-ignore
-      const token = await this.applicationVerifier.verify();
+      const token = await this.recaptchaVerifier.verify();
       setTimeout(
         () =>
           Alert.alert('Congratulations, you are not a bot! 🧑', `token: ${token.slice(0, 10)}...`),
@@ -83,5 +108,6 @@ export default class FirebaseRecaptchaScreen extends React.Component<{}, State> 
     } catch (e) {
       setTimeout(() => Alert.alert('Error!', e.message), 1000);
     }
+    setTimeout(() => this.setState({ inProgress: false }), 1000);
   };
 }
