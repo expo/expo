@@ -91,7 +91,43 @@ A `Transaction` object is passed in as a parameter to the `callback` parameter f
 
 - **rows._array (\_number_)** -- The actual array of rows returned by the query. Can be used directly instead of getting rows through `rows.item()`.
 
-## Executing statements outside of a transaction
+## Guides
+
+### Importing an existing database
+
+In order to open a new SQLite database using an existing `.db` file you already have, you need to do three things:
+
+- `expo install expo-file-system expo-asset @expo/metro-config`
+- create a `metro.config.js` file in the root of your project with the following contents ([curious why? read here](/guides/customizing-metro/#adding-more-file-extensions-to--assetexts)):
+
+```ts
+const { getDefaultConfig } = require('@expo/metro-config');
+
+const defaultConfig = getDefaultConfig(__dirname);
+
+module.exports = {
+  resolver: {
+    assetExts: [...defaultConfig.resolver.assetExts, 'db'],
+  },
+};
+```
+
+- Use the following function (or similar) to open your database:
+
+```ts
+async function openDatabase(pathToDatabaseFile: string): SQLite.WebSQLDatabase {
+  if (!(await FileSystem.getInfoAsync(FileSystem.documentDirectory + 'SQLite')).exists) {
+    await FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'SQLite');
+  }
+  await FileSystem.downloadAsync(
+    Asset.fromModule(require(pathToDatabaseFile)).uri,
+    FileSystem.documentDirectory + 'SQLite/myDatabaseName.db'
+  );
+  return SQLite.openDatabase('myDatabaseName.db');
+}
+```
+
+### Executing statements outside of a transaction
 
 > Please note that you should use this kind of execution only when it is necessary. For instance, when code is a no-op within transactions (like eg. `PRAGMA foreign_keys = ON;`).
 
