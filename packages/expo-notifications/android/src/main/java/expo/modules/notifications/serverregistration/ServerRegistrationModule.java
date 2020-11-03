@@ -10,10 +10,12 @@ public class ServerRegistrationModule extends ExportedModule {
   private static final String EXPORTED_NAME = "NotificationsServerRegistrationModule";
 
   protected InstallationId mInstallationId;
+  private LastRegistrationInfo mLastRegistrationInfo;
 
   public ServerRegistrationModule(Context context) {
     super(context);
     mInstallationId = new InstallationId(context);
+    mLastRegistrationInfo = new LastRegistrationInfo(context);
   }
 
   @Override
@@ -24,5 +26,16 @@ public class ServerRegistrationModule extends ExportedModule {
   @ExpoMethod
   public void getInstallationIdAsync(Promise promise) {
     promise.resolve(mInstallationId.getOrCreateUUID());
+  }
+
+  @ExpoMethod
+  public void getLastRegistrationInfoAsync(Promise promise) {
+    promise.resolve(mLastRegistrationInfo.get());
+  }
+
+  @ExpoMethod
+  public void setLastRegistrationInfoAsync(String lastRegistrationInfo, Promise promise) {
+    mLastRegistrationInfo.set(lastRegistrationInfo);
+    promise.resolve(null);
   }
 }

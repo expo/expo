@@ -1,5 +1,6 @@
 import uuidv4 from 'uuid/v4';
 const INSTALLATION_ID_KEY = 'EXPO_NOTIFICATIONS_INSTALLATION_ID';
+const LAST_REGISTRATION_INFO_KEY = 'EXPO_NOTIFICATIONS_LAST_REGISTRATION_INFO';
 // Lazy fallback installationId per session initializer
 let getFallbackInstallationId = () => {
     const sessionInstallationId = uuidv4();
@@ -19,6 +20,17 @@ export default {
             installationId = getFallbackInstallationId();
         }
         return installationId;
+    },
+    getLastRegistrationInfoAsync: async () => {
+        return localStorage.getItem(LAST_REGISTRATION_INFO_KEY);
+    },
+    setLastRegistrationInfoAsync: async (lastRegistrationInfo) => {
+        if (lastRegistrationInfo) {
+            localStorage.setItem(LAST_REGISTRATION_INFO_KEY, lastRegistrationInfo);
+        }
+        else {
+            localStorage.removeItem(LAST_REGISTRATION_INFO_KEY);
+        }
     },
     // mock implementations
     addListener: () => { },
