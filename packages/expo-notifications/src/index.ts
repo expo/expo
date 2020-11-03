@@ -23,6 +23,10 @@ export { default as setNotificationCategoryAsync } from './setNotificationCatego
 export { default as deleteNotificationCategoryAsync } from './deleteNotificationCategoryAsync';
 export { default as getNextTriggerDateAsync } from './getNextTriggerDateAsync';
 export { default as useLastNotificationResponse } from './useLastNotificationResponse';
+export {
+  setAutoServerRegistrationAsync,
+  removeAutoServerRegistrationAsync,
+} from './DevicePushTokenAutoRegistration.fx';
 export * from './TokenEmitter';
 export * from './NotificationsEmitter';
 export * from './NotificationsHandler';

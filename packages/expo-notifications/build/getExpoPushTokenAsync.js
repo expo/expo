@@ -93,6 +93,7 @@ function getDeviceToken(devicePushToken) {
     }
     return JSON.stringify(devicePushToken.data);
 }
+// Same as in DevicePushTokenAutoRegistration
 async function shouldUseDevelopmentNotificationService() {
     if (Platform.OS === 'ios') {
         try {
@@ -107,6 +108,7 @@ async function shouldUseDevelopmentNotificationService() {
     }
     return false;
 }
+// Same as in DevicePushTokenAutoRegistration
 function getTypeOfToken(devicePushToken) {
     switch (devicePushToken.type) {
         case 'ios':
