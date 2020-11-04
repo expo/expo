@@ -65,6 +65,7 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
    `DevMenuAppInstance` instance that is responsible for initializing and managing React Native context for the dev menu.
    */
   var appInstance: DevMenuAppInstance?
+  
 
   /**
    Instance of `DevMenuSession` that keeps the details of the currently opened dev menu session.
