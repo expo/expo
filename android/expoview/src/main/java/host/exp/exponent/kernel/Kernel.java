@@ -1005,13 +1005,8 @@ public class Kernel extends KernelInterface {
           break;
         }
 
-        if (weakActivity.isLoading()) {
-          // Already loading. Don't need to do anything.
-          return true;
-        } else {
-          Exponent.getInstance().runOnUiThread(weakActivity::startLoading);
-          break;
-        }
+        Exponent.getInstance().runOnUiThread(weakActivity::startLoading);
+        break;
       }
     }
 
