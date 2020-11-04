@@ -681,18 +681,13 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   NSMutableDictionary *props = [NSMutableDictionary dictionary];
   NSMutableDictionary *expProps = [NSMutableDictionary dictionary];
 
-  if (_appRecord.experienceId) {
-    NSDictionary *errorRecoveryProps = [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager developerInfoForExperienceId:_appRecord.experienceId];
-    if ([[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:_appRecord.experienceId]) {
-      [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager increaseAutoReloadBuffer];
-      if (errorRecoveryProps) {
-        expProps[@"errorRecovery"] = errorRecoveryProps;
-      }
-    }
+  NSAssert(_appRecord.experienceId, @"Experience id should be nonnull when getting initial properties for root view");
 
-    EXPendingNotification *initialNotification = [[EXKernel sharedInstance].serviceRegistry.notificationsManager initialNotificationForExperience:_appRecord.experienceId];
-    if (initialNotification) {
-      expProps[@"notification"] = initialNotification.properties;
+  NSDictionary *errorRecoveryProps = [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager developerInfoForExperienceId:_appRecord.experienceId];
+  if ([[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:_appRecord.experienceId]) {
+    [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager increaseAutoReloadBuffer];
+    if (errorRecoveryProps) {
+      expProps[@"errorRecovery"] = errorRecoveryProps;
     }
   }
 
@@ -700,6 +695,10 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   expProps[@"appOwnership"] = [self _appOwnership];
   if (_initialProps) {
     [expProps addEntriesFromDictionary:_initialProps];
+  }
+  EXPendingNotification *initialNotification = [[EXKernel sharedInstance].serviceRegistry.notificationsManager initialNotificationForExperience:_appRecord.experienceId];
+  if (initialNotification) {
+    expProps[@"notification"] = initialNotification.properties;
   }
 
   expProps[@"manifest"] = _appRecord.appLoader.manifest;
