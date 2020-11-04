@@ -17,7 +17,16 @@ const excludedInTests = [
 
 type TestType = 'local' | 'instrumented';
 
-export async function androidNativeUnitTests({ type }: { type?: TestType }) {
+export async function androidNativeUnitTests({ type }: { type: TestType }) {
+  if (!type) {
+    throw new Error(
+      'Must specify which type of unit test to run with `--type local` or `--type instrumented`.'
+    );
+  }
+  if (type !== 'local' && type !== 'instrumented') {
+    throw new Error('Invalid type specified. Must use `--type local` or `--type instrumented`.');
+  }
+
   const packages = await Packages.getListOfPackagesAsync();
 
   function consoleErrorOutput(
@@ -76,10 +85,7 @@ export async function androidNativeUnitTests({ type }: { type?: TestType }) {
 export default (program: any) => {
   program
     .command('android-native-unit-tests')
-    .option(
-      '-t, --type <string>',
-      'Type of unit test to run: local (default) or instrumented'
-    )
+    .option('-t, --type <string>', 'Type of unit test to run: local or instrumented')
     .description('Runs Android native unit tests for each package that provides them.')
     .asyncAction(androidNativeUnitTests);
 };

@@ -10,10 +10,10 @@ type TestType = 'local' | 'instrumented';
 
 async function thisAction({
   platform,
-  type,
+  type = 'local',
 }: {
   platform?: PlatformName;
-  type?: TestType;
+  type: TestType;
 }) {
   if (!platform) {
     console.log(chalk.yellow("You haven't specified platform to run unit tests for!"));
