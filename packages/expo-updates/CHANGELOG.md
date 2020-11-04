@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed issue in **managed workflow** where `reloadAsync` doesn't reload the app if called immediately after the app starts. ([#10917](https://github.com/expo/expo/pull/10917) and [#10918](https://github.com/expo/expo/pull/10918) by [@esamelson](https://github.com/esamelson))
+
 ## 0.3.5 — 2020-10-02
 
 _This version does not introduce any user-facing changes._
