@@ -33,7 +33,7 @@ Pod::Spec.new do |s|
     ss.dependency 'CocoaLumberjack', '~> 3.5.3'
     ss.dependency 'GoogleMaps', '~> 3.3'
     ss.dependency 'Google-Maps-iOS-Utils', '~> 2.1.0'
-    ss.dependency 'lottie-ios', '~> 2.5.0'
+    ss.dependency 'lottie-ios', '~> 3.1.8'
     ss.dependency 'JKBigInteger2', '0.0.5'
     ss.dependency 'React' # explicit dependency required for CocoaPods >= 1.5.0
 
