@@ -2418,7 +2418,7 @@ PODS:
   - GTMSessionFetcher/Full (1.2.2):
     - GTMSessionFetcher/Core (= 1.2.2)
   - JKBigInteger2 (0.0.5)
-  - lottie-ios (2.5.3)
+  - lottie-ios (3.1.8)
   - nanopb (0.3.9011):
     - nanopb/decode (= 0.3.9011)
     - nanopb/encode (= 0.3.9011)
@@ -3148,7 +3148,7 @@ DEPENDENCIES:
   - Google-Maps-iOS-Utils (~> 2.1.0)
   - GoogleMaps (~> 3.6)
   - JKBigInteger2 (= 0.0.5)
-  - lottie-ios (~> 2.5.0)
+  - lottie-ios (~> 3.1.8)
   - RCTRequired (from `../react-native-lab/react-native/Libraries/RCTRequired`)
   - RCTTypeSafety (from `../react-native-lab/react-native/Libraries/TypeSafety`)
   - React (from `../react-native-lab/react-native/`)
@@ -4336,7 +4336,7 @@ SPEC CHECKSUMS:
   ABI37_0_0EXModuleTemplate: 4bf6d16d0e1a175ae15bd8f2b6bad76232fffa36
   ABI37_0_0EXNetwork: 23a2ba8ba90956eddec839532f790c54dd778233
   ABI37_0_0EXPermissions: 419eb72b484505cd327c026f624bb8514d363804
-  ABI37_0_0ExpoKit: 3bc49c314f5181d20fd52e8c4b529d9f756234f0
+  ABI37_0_0ExpoKit: 46fb1ca65c2f21fe2d66c01083d9cbda4497d890
   ABI37_0_0EXPrint: e41f4d13cd747215b42f629b4d6f7ca99e550bc3
   ABI37_0_0EXRandom: c41d8e27bc5d5954c0133c32fa08b909650bd5e5
   ABI37_0_0EXScreenOrientation: afe890516ee48c308e5a156f59bf296fd673c96d
@@ -4432,7 +4432,7 @@ SPEC CHECKSUMS:
   ABI38_0_0EXNetwork: f4232f717bb866690bbfd9be0cb67bb831caf9c1
   ABI38_0_0EXNotifications: 478a2998bd524c65e254a6f5ab85cc4011659895
   ABI38_0_0EXPermissions: e7a5cbe07c89f0accaadd599a7ae180ca558f64c
-  ABI38_0_0ExpoKit: a08ede8fb51fde73d3d696ab1712f9d10ec1b4e9
+  ABI38_0_0ExpoKit: 4cc9f2d7aa2a352ef5296a4b24085a769c004a16
   ABI38_0_0EXPrint: 6ad34604d84744a9ed2d0ebda2873d0eb6ebd694
   ABI38_0_0EXRandom: c211900ed39eae32cbad83a69493f0d40ef5243c
   ABI38_0_0EXScreenCapture: 536bb9191edf6e07684825cf974a55fd89395f84
@@ -4529,7 +4529,7 @@ SPEC CHECKSUMS:
   ABI39_0_0EXNetwork: 2ce996e75a4d3feb933aa02bd3625fc7edc7161f
   ABI39_0_0EXNotifications: 216c39dc1d0b8f7bacb02e30b9cc18ff575bd9a8
   ABI39_0_0EXPermissions: 6291a86cd79b165eff12d0356a650e2fde6979c5
-  ABI39_0_0ExpoKit: dbbb33082218f4b04db923ae8f38ef9bfe466cca
+  ABI39_0_0ExpoKit: f7a4b3b4c27328369c48d4a95b8ce902fec4f00b
   ABI39_0_0EXPrint: 13457af22f53cca03c76a7b37d6847ec25e8989e
   ABI39_0_0EXRandom: ba8521fce6c49e2dde2f5bb83e4b7740de0621d3
   ABI39_0_0EXScreenCapture: 97709523d41e93ae1a684d281837b43774f3e401
@@ -4682,7 +4682,7 @@ SPEC CHECKSUMS:
   GTMAppAuth: 4deac854479704f348309e7b66189e604cf5e01e
   GTMSessionFetcher: 61bb0f61a4cb560030f1222021178008a5727a23
   JKBigInteger2: e91672035c42328c48b7dd015b66812ddf40ca9b
-  lottie-ios: a50d5c0160425cd4b01b852bb9578963e6d92d31
+  lottie-ios: 48fac6be217c76937e36e340e2d09cf7b10b7f5f
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   Protobuf: dd1aaea7140debfe4dd0683fb8ef208e527ae153
   RCTRequired: f13f25e7b12f925f1f6a6a8c69d929a03c0129fe
@@ -4721,6 +4721,6 @@ SPEC CHECKSUMS:
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 43b291c30373b1843656e6e178ce3556eeabac22
+PODFILE CHECKSUM: f667d10e5a248d09cacdd8751403c794d95fef47
 
 COCOAPODS: 1.9.3

@@ -10,6 +10,7 @@
   "platforms": {
     "ios": "10.0"
   },
+  "static_framework": true,
   "default_subspecs": "Core",
   "source": {
     "git": "http://github.com/expo/expo.git"

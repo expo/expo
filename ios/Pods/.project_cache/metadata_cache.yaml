@@ -1538,10 +1538,6 @@ Amplitude:
   LABEL: Amplitude
   PROJECT_PATH: Amplitude.xcodeproj
   UUID: A8506691BCF493596D6E68176F7E0129
-Amplitude-iOS:
-  LABEL: Amplitude-iOS
-  PROJECT_PATH: Amplitude-iOS.xcodeproj
-  UUID: E9F5188151EE37F157A617BBBC3DB105
 Analytics:
   LABEL: Analytics
   PROJECT_PATH: Analytics.xcodeproj

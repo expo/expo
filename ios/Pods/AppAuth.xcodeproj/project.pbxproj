@@ -415,7 +415,7 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		629FBE44D11031A39D81B35E3B8FF678 /* Debug */ = {
+		514FE0AFD5895DB1393C4D8FBDBCEDA7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -466,7 +466,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -479,7 +479,7 @@
 			};
 			name = Debug;
 		};
-		7688D8BE65FBF3F698DB43327F7E02CB /* Debug */ = {
+		C9EB93BC3353CBDC5A1599A6DE77954E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C0694131D2A211E03A03F299B2B2E164 /* AppAuth.debug.xcconfig */;
 			buildSettings = {
@@ -503,32 +503,7 @@
 			};
 			name = Debug;
 		};
-		84AB4F16A724739165310E5D24ABB7AD /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = B3DA7F52B0451C99B0FB3D99F99081B9 /* AppAuth.release.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/AppAuth/AppAuth-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = AppAuth;
-				PRODUCT_NAME = AppAuth;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		DB5A0131BC8349B615207CA58B9D3586 /* Release */ = {
+		E56357E539AC18A28AD87E37BEFD41CF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -576,7 +551,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -588,14 +563,39 @@
 			};
 			name = Release;
 		};
+		E99665AC500DE70724092CF65BDDD63D /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B3DA7F52B0451C99B0FB3D99F99081B9 /* AppAuth.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/AppAuth/AppAuth-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = AppAuth;
+				PRODUCT_NAME = AppAuth;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		3A20E39C1ECBD6DC67EFDCA25DEBBE9F /* Build configuration list for PBXNativeTarget "AppAuth" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				7688D8BE65FBF3F698DB43327F7E02CB /* Debug */,
-				84AB4F16A724739165310E5D24ABB7AD /* Release */,
+				C9EB93BC3353CBDC5A1599A6DE77954E /* Debug */,
+				E99665AC500DE70724092CF65BDDD63D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -603,8 +603,8 @@
 		CF9EC65B070BA085EAC0E2A967DE3DE9 /* Build configuration list for PBXProject "AppAuth" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				629FBE44D11031A39D81B35E3B8FF678 /* Debug */,
-				DB5A0131BC8349B615207CA58B9D3586 /* Release */,
+				514FE0AFD5895DB1393C4D8FBDBCEDA7 /* Debug */,
+				E56357E539AC18A28AD87E37BEFD41CF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

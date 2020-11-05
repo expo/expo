@@ -375,7 +375,7 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		287BCD75B99105F2DB0ECD114A03AC61 /* Release */ = {
+		1FB7FE2A4F2AE1DFFDC7FDFC0264AE2C /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2553F79EF21151AAB4BCA3C1C3204773 /* Analytics.release.xcconfig */;
 			buildSettings = {
@@ -400,7 +400,7 @@
 			};
 			name = Release;
 		};
-		938D44878541CC9FF9CABC389533A0B7 /* Debug */ = {
+		94E128D9E8B79D65A5216C19BE191DD3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 50CFA7D80C3ADD6D9D991C2543BDA299 /* Analytics.debug.xcconfig */;
 			buildSettings = {
@@ -424,7 +424,7 @@
 			};
 			name = Debug;
 		};
-		A604D7CB8D01833894E49A28C67D60EF /* Release */ = {
+		BF7CF930137F7A9038BF4F98E5A7AB5B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -472,7 +472,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -484,7 +484,7 @@
 			};
 			name = Release;
 		};
-		DE81BEC45C82A99E1A470E79C6952FF6 /* Debug */ = {
+		D7DD0FB6C832A50F91E3692435465793 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -535,7 +535,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -554,8 +554,8 @@
 		2EB2EE60C19EF5E19D8062F926FAAABA /* Build configuration list for PBXNativeTarget "Analytics" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				938D44878541CC9FF9CABC389533A0B7 /* Debug */,
-				287BCD75B99105F2DB0ECD114A03AC61 /* Release */,
+				94E128D9E8B79D65A5216C19BE191DD3 /* Debug */,
+				1FB7FE2A4F2AE1DFFDC7FDFC0264AE2C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -563,8 +563,8 @@
 		8176F1FC40389E4935A577C115BED6C2 /* Build configuration list for PBXProject "Analytics" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				DE81BEC45C82A99E1A470E79C6952FF6 /* Debug */,
-				A604D7CB8D01833894E49A28C67D60EF /* Release */,
+				D7DD0FB6C832A50F91E3692435465793 /* Debug */,
+				BF7CF930137F7A9038BF4F98E5A7AB5B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

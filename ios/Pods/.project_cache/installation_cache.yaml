@@ -682,8 +682,8 @@ CACHE_KEYS:
   ABI36_0_0ExpoKit:
     BUILD_SETTINGS_CHECKSUM:
       ABI36_0_0ExpoKit:
-        :debug: 58f7099c6735bf90daab7a8e821e89bd
-        :release: 58f7099c6735bf90daab7a8e821e89bd
+        :debug: 34a149e4d3b77216e35a867d4fe636d6
+        :release: 34a149e4d3b77216e35a867d4fe636d6
     CHECKSUM: b89ea769144fab8adaf4a7eeb6499f4528c0def2
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/ExpoKit/Core/ABI36_0_0EXUnversioned.h"
@@ -797,10 +797,7 @@ CACHE_KEYS:
       - "../versioned-react-native/ABI36_0_0/Expo/ExpoKit/Core/Api/Components/GoogleMaps/ABI36_0_0AIRGoogleMapWMSTileManager.m"
       - "../versioned-react-native/ABI36_0_0/Expo/ExpoKit/Core/Api/Components/GoogleMaps/ABI36_0_0RCTConvert+GMSMapViewType.h"
       - "../versioned-react-native/ABI36_0_0/Expo/ExpoKit/Core/Api/Components/GoogleMaps/ABI36_0_0RCTConvert+GMSMapViewType.m"
-      - "../versioned-react-native/ABI36_0_0/Expo/ExpoKit/Core/Api/Components/Lottie/ABI36_0_0EXAnimationViewManager.h"
-      - "../versioned-react-native/ABI36_0_0/Expo/ExpoKit/Core/Api/Components/Lottie/ABI36_0_0EXAnimationViewManager.m"
-      - "../versioned-react-native/ABI36_0_0/Expo/ExpoKit/Core/Api/Components/Lottie/ABI36_0_0EXContainerView.h"
-      - "../versioned-react-native/ABI36_0_0/Expo/ExpoKit/Core/Api/Components/Lottie/ABI36_0_0EXContainerView.m"
+      - "../versioned-react-native/ABI36_0_0/Expo/ExpoKit/Core/Api/Components/Lottie/ABI36_0_0EXAnimationViewManagerObjC.m"
       - "../versioned-react-native/ABI36_0_0/Expo/ExpoKit/Core/Api/Components/Maps/ABI36_0_0AIRMap.h"
       - "../versioned-react-native/ABI36_0_0/Expo/ExpoKit/Core/Api/Components/Maps/ABI36_0_0AIRMap.m"
       - "../versioned-react-native/ABI36_0_0/Expo/ExpoKit/Core/Api/Components/Maps/ABI36_0_0AIRMapCallout.h"
@@ -3125,9 +3122,9 @@ CACHE_KEYS:
   ABI37_0_0ExpoKit:
     BUILD_SETTINGS_CHECKSUM:
       ABI37_0_0ExpoKit:
-        :debug: 90d706b28e03984c3ca0a0bb8d87b101
-        :release: 90d706b28e03984c3ca0a0bb8d87b101
-    CHECKSUM: 3bc49c314f5181d20fd52e8c4b529d9f756234f0
+        :debug: 7557a7652db6c717374c1f1e46185866
+        :release: 7557a7652db6c717374c1f1e46185866
+    CHECKSUM: 46fb1ca65c2f21fe2d66c01083d9cbda4497d890
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/ExpoKit/Core/ABI37_0_0EXUnversioned.h"
       - "../versioned-react-native/ABI37_0_0/Expo/ExpoKit/Core/ABI37_0_0EXVersionManager.h"
@@ -3238,10 +3235,7 @@ CACHE_KEYS:
       - "../versioned-react-native/ABI37_0_0/Expo/ExpoKit/Core/Api/Components/GoogleMaps/ABI37_0_0AIRGoogleMapWMSTileManager.m"
       - "../versioned-react-native/ABI37_0_0/Expo/ExpoKit/Core/Api/Components/GoogleMaps/ABI37_0_0RCTConvert+GMSMapViewType.h"
       - "../versioned-react-native/ABI37_0_0/Expo/ExpoKit/Core/Api/Components/GoogleMaps/ABI37_0_0RCTConvert+GMSMapViewType.m"
-      - "../versioned-react-native/ABI37_0_0/Expo/ExpoKit/Core/Api/Components/Lottie/ABI37_0_0EXAnimationViewManager.h"
-      - "../versioned-react-native/ABI37_0_0/Expo/ExpoKit/Core/Api/Components/Lottie/ABI37_0_0EXAnimationViewManager.m"
-      - "../versioned-react-native/ABI37_0_0/Expo/ExpoKit/Core/Api/Components/Lottie/ABI37_0_0EXContainerView.h"
-      - "../versioned-react-native/ABI37_0_0/Expo/ExpoKit/Core/Api/Components/Lottie/ABI37_0_0EXContainerView.m"
+      - "../versioned-react-native/ABI37_0_0/Expo/ExpoKit/Core/Api/Components/Lottie/ABI37_0_0EXAnimationViewManagerObjC.m"
       - "../versioned-react-native/ABI37_0_0/Expo/ExpoKit/Core/Api/Components/Maps/ABI37_0_0AIRMap.h"
       - "../versioned-react-native/ABI37_0_0/Expo/ExpoKit/Core/Api/Components/Maps/ABI37_0_0AIRMap.m"
       - "../versioned-react-native/ABI37_0_0/Expo/ExpoKit/Core/Api/Components/Maps/ABI37_0_0AIRMapCallout.h"
@@ -5635,9 +5629,9 @@ CACHE_KEYS:
   ABI38_0_0ExpoKit:
     BUILD_SETTINGS_CHECKSUM:
       ABI38_0_0ExpoKit:
-        :debug: e9e43f5e67de4f178563f2a4883020b1
-        :release: e9e43f5e67de4f178563f2a4883020b1
-    CHECKSUM: a08ede8fb51fde73d3d696ab1712f9d10ec1b4e9
+        :debug: 654d92f41d3d2e3b3c3ad61e3a64ffcc
+        :release: 654d92f41d3d2e3b3c3ad61e3a64ffcc
+    CHECKSUM: 4cc9f2d7aa2a352ef5296a4b24085a769c004a16
     FILES:
       - "../versioned-react-native/ABI38_0_0/Expo/ExpoKit/Core/ABI38_0_0EXUnversioned.h"
       - "../versioned-react-native/ABI38_0_0/Expo/ExpoKit/Core/ABI38_0_0EXVersionManager.h"
@@ -5748,10 +5742,7 @@ CACHE_KEYS:
       - "../versioned-react-native/ABI38_0_0/Expo/ExpoKit/Core/Api/Components/GoogleMaps/ABI38_0_0AIRGoogleMapWMSTileManager.m"
       - "../versioned-react-native/ABI38_0_0/Expo/ExpoKit/Core/Api/Components/GoogleMaps/ABI38_0_0RCTConvert+GMSMapViewType.h"
       - "../versioned-react-native/ABI38_0_0/Expo/ExpoKit/Core/Api/Components/GoogleMaps/ABI38_0_0RCTConvert+GMSMapViewType.m"
-      - "../versioned-react-native/ABI38_0_0/Expo/ExpoKit/Core/Api/Components/Lottie/ABI38_0_0EXAnimationViewManager.h"
-      - "../versioned-react-native/ABI38_0_0/Expo/ExpoKit/Core/Api/Components/Lottie/ABI38_0_0EXAnimationViewManager.m"
-      - "../versioned-react-native/ABI38_0_0/Expo/ExpoKit/Core/Api/Components/Lottie/ABI38_0_0EXContainerView.h"
-      - "../versioned-react-native/ABI38_0_0/Expo/ExpoKit/Core/Api/Components/Lottie/ABI38_0_0EXContainerView.m"
+      - "../versioned-react-native/ABI38_0_0/Expo/ExpoKit/Core/Api/Components/Lottie/ABI38_0_0EXAnimationViewManagerObjC.m"
       - "../versioned-react-native/ABI38_0_0/Expo/ExpoKit/Core/Api/Components/Maps/ABI38_0_0AIRMap.h"
       - "../versioned-react-native/ABI38_0_0/Expo/ExpoKit/Core/Api/Components/Maps/ABI38_0_0AIRMap.m"
       - "../versioned-react-native/ABI38_0_0/Expo/ExpoKit/Core/Api/Components/Maps/ABI38_0_0AIRMapCallout.h"
@@ -8233,9 +8224,9 @@ CACHE_KEYS:
   ABI39_0_0ExpoKit:
     BUILD_SETTINGS_CHECKSUM:
       ABI39_0_0ExpoKit:
-        :debug: e42c4a496ba2b7fa7e3aa5dea6a12787
-        :release: e42c4a496ba2b7fa7e3aa5dea6a12787
-    CHECKSUM: dbbb33082218f4b04db923ae8f38ef9bfe466cca
+        :debug: e3e605b746f98ba1a02466763b00a5dc
+        :release: e3e605b746f98ba1a02466763b00a5dc
+    CHECKSUM: f7a4b3b4c27328369c48d4a95b8ce902fec4f00b
     FILES:
       - "../versioned-react-native/ABI39_0_0/Expo/ExpoKit/Core/ABI39_0_0EXUnversioned.h"
       - "../versioned-react-native/ABI39_0_0/Expo/ExpoKit/Core/ABI39_0_0EXVersionManager.h"
@@ -8344,10 +8335,7 @@ CACHE_KEYS:
       - "../versioned-react-native/ABI39_0_0/Expo/ExpoKit/Core/Api/Components/GoogleMaps/ABI39_0_0AIRGoogleMapWMSTileManager.m"
       - "../versioned-react-native/ABI39_0_0/Expo/ExpoKit/Core/Api/Components/GoogleMaps/ABI39_0_0RCTConvert+GMSMapViewType.h"
       - "../versioned-react-native/ABI39_0_0/Expo/ExpoKit/Core/Api/Components/GoogleMaps/ABI39_0_0RCTConvert+GMSMapViewType.m"
-      - "../versioned-react-native/ABI39_0_0/Expo/ExpoKit/Core/Api/Components/Lottie/ABI39_0_0EXAnimationViewManager.h"
-      - "../versioned-react-native/ABI39_0_0/Expo/ExpoKit/Core/Api/Components/Lottie/ABI39_0_0EXAnimationViewManager.m"
-      - "../versioned-react-native/ABI39_0_0/Expo/ExpoKit/Core/Api/Components/Lottie/ABI39_0_0EXContainerView.h"
-      - "../versioned-react-native/ABI39_0_0/Expo/ExpoKit/Core/Api/Components/Lottie/ABI39_0_0EXContainerView.m"
+      - "../versioned-react-native/ABI39_0_0/Expo/ExpoKit/Core/Api/Components/Lottie/ABI39_0_0EXAnimationViewManagerObjC.m"
       - "../versioned-react-native/ABI39_0_0/Expo/ExpoKit/Core/Api/Components/Maps/ABI39_0_0AIRMap.h"
       - "../versioned-react-native/ABI39_0_0/Expo/ExpoKit/Core/Api/Components/Maps/ABI39_0_0AIRMap.m"
       - "../versioned-react-native/ABI39_0_0/Expo/ExpoKit/Core/Api/Components/Maps/ABI39_0_0AIRMapCallout.h"
@@ -11667,12 +11655,12 @@ CACHE_KEYS:
   lottie-ios:
     BUILD_SETTINGS_CHECKSUM:
       lottie-ios:
-        :debug: ac91781cdd66fe71ed331af5175da8b3
-        :release: ac91781cdd66fe71ed331af5175da8b3
-    CHECKSUM: a50d5c0160425cd4b01b852bb9578963e6d92d31
+        :debug: f7f0e2b5ee6c15bb06a3ab4d0d1b2eca
+        :release: f7f0e2b5ee6c15bb06a3ab4d0d1b2eca
+    CHECKSUM: 48fac6be217c76937e36e340e2d09cf7b10b7f5f
     PROJECT_NAME: lottie-ios
     SPECS:
-      - lottie-ios (2.5.3)
+      - lottie-ios (3.1.8)
   nanopb:
     BUILD_SETTINGS_CHECKSUM:
       nanopb:
@@ -11686,8 +11674,8 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-Exponent:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: ad8c65b220f8614aa7dd207ee63bc6e7
-      Release: ad8c65b220f8614aa7dd207ee63bc6e7
+      Debug: e85cf5bf0bca036647194b5fa2f73a3e
+      Release: e85cf5bf0bca036647194b5fa2f73a3e
     FILES:
       - "${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0React-Core/ABI39_0_0AccessibilityResources.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/FirebaseMLVisionFaceModel/GoogleMVFaceDetectorResources.bundle"
@@ -11698,12 +11686,12 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-ExponentIntegrationTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: a9f8863b18da446384410a099528a3cd
-      Release: a9f8863b18da446384410a099528a3cd
+      Debug: eccd5a6a3e5608043737163d64ea3267
+      Release: eccd5a6a3e5608043737163d64ea3267
   Pods-Tests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: a9f8863b18da446384410a099528a3cd
-      Release: a9f8863b18da446384410a099528a3cd
+      Debug: eccd5a6a3e5608043737163d64ea3267
+      Release: eccd5a6a3e5608043737163d64ea3267
   Protobuf:
     BUILD_SETTINGS_CHECKSUM:
       Protobuf:

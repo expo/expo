@@ -1,0 +1,6 @@
+framework module Pods_ExponentIntegrationTests {
+  umbrella header "Pods-ExponentIntegrationTests-umbrella.h"
+
+  export *
+  module * { export * }
+}

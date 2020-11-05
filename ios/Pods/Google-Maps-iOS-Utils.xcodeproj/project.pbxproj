@@ -461,7 +461,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		70F661B57ABCACECA557CC9718DA24AA /* Debug */ = {
+		67DB563C52BEBABA97C1FDB1DCD97E2F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -512,7 +512,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -525,7 +525,7 @@
 			};
 			name = Debug;
 		};
-		77ABEBD904371C875D4DD2A1ADD87A9F /* Release */ = {
+		745561683920940622D7C3FF740B0D9D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -573,7 +573,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -585,7 +585,31 @@
 			};
 			name = Release;
 		};
-		A0D406D8F0FC5479D973B602F02F4CAE /* Release */ = {
+		78235E1D74C2E2BEA85ADE970B9FBFAC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9A787208988D802DD4E71F8985C44F5A /* Google-Maps-iOS-Utils.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/Google-Maps-iOS-Utils/Google-Maps-iOS-Utils-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = Google_Maps_iOS_Utils;
+				PRODUCT_NAME = "Google-Maps-iOS-Utils";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		DB15F8713F77BEC5402FE31A8D6E2210 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 6059158D5E8A00AF5F547D892CFBEA5D /* Google-Maps-iOS-Utils.release.xcconfig */;
 			buildSettings = {
@@ -610,38 +634,14 @@
 			};
 			name = Release;
 		};
-		C79331A588B007B0ACAF43E8121C1B71 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9A787208988D802DD4E71F8985C44F5A /* Google-Maps-iOS-Utils.debug.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/Google-Maps-iOS-Utils/Google-Maps-iOS-Utils-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = Google_Maps_iOS_Utils;
-				PRODUCT_NAME = "Google-Maps-iOS-Utils";
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		992859DE89009C9AF8A908D97EAB813A /* Build configuration list for PBXProject "Google-Maps-iOS-Utils" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				70F661B57ABCACECA557CC9718DA24AA /* Debug */,
-				77ABEBD904371C875D4DD2A1ADD87A9F /* Release */,
+				67DB563C52BEBABA97C1FDB1DCD97E2F /* Debug */,
+				745561683920940622D7C3FF740B0D9D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -649,8 +649,8 @@
 		DC595CB8035154D00ED2930BB5197B59 /* Build configuration list for PBXNativeTarget "Google-Maps-iOS-Utils" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C79331A588B007B0ACAF43E8121C1B71 /* Debug */,
-				A0D406D8F0FC5479D973B602F02F4CAE /* Release */,
+				78235E1D74C2E2BEA85ADE970B9FBFAC /* Debug */,
+				DB15F8713F77BEC5402FE31A8D6E2210 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

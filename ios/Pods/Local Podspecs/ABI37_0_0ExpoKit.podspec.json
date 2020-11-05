@@ -11,6 +11,7 @@
     "ios": "10.0"
   },
   "default_subspecs": "Core",
+  "static_framework": true,
   "source": {
     "git": "http://github.com/expo/expo.git"
   },
