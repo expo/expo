@@ -5,25 +5,23 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-39/packages/expo-branch'
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-> **Android Support Update:** You now have the option to include Branch in your Android builds built with SDK34+. Please follow the configuration steps below to do so. We previously had removed Branch support for Android builds which you can more about in [this blog post](https://blog.expo.io/changes-to-expo-branch-support-d002c4bc564e).
-
-**`expo-branch`** provides support for the [Branch](https://branch.io/) SDK, which is used for install referalls and attribution with deep links.
+**`expo-branch`** provides support for the [Branch](https://branch.io/) SDK, which is used for install referalls and attribution with deep links. **This module only works in standalone apps &mdash; you will need to [build a standalone app](/distribution/building-standalone-apps/) in order to test it, rather than using Expo client.**
 
 <PlatformsSection android emulator ios simulator />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-branch`. In a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, you should use [react-native-branch-deep-linking](https://github.com/BranchMetrics/react-native-branch-deep-linking) instead.
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-branch`. In a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, you should use [react-native-branch-deep-linking-attribution](https://github.com/BranchMetrics/react-native-branch-deep-linking-attribution) instead.
 
-## Configuration (standalone apps only)
+## Configuration
 
 - Add the **Branch Key** to your `app.json` in the section `android.config.branch.apiKey` and `ios.config.branch.apiKey`. You can find your key on [this page](https://dashboard.branch.io/account-settings/app) of the Branch Dashboard.
 - Add a **linking scheme** to your `app.json` in the `scheme` section if you don't already have one.
 - On iOS, the `Branch` module will automatically be bundled with your `.ipa`. For Android, `expo-branch` must be present in your dependencies in `package.json` at the time `expo build:android` is run in order for the module to be bundled with your `.apk`.
 
-### Enable Branch support for universal links (iOS only)
+### Enable Branch support for Universal Links (iOS only)
 
-Branch can track universal links from domains you associate with your app. **Note:** Expo won't forward these to your JS via the normal Linking API.
+Branch can track universal links from domains you associate with your app. **Note:** Universal Links handled by Branch won't be forwarded to the [Linking](../linking/) module.
 
 - Enable associated domains on [Apple's Developer Portal](https://developer.apple.com/account/ios/identifier/bundle) for your app id. To do so go in the `App IDs` section and click on your app id. Select `Edit`, check the `Associated Domains` checkbox and click `Done`.
 
@@ -39,7 +37,7 @@ import Branch, { BranchEvent } from 'expo-branch';
 
 ## Using the Branch API
 
-We pull in the API from [react-native-branch](https://github.com/BranchMetrics/react-native-branch-deep-linking#usage), so the documentation there is the best resource to follow. Make sure you import Branch using the above instructions (from `Branch`).
+We pull in the API from [react-native-branch-deep-linking-attribution](https://github.com/BranchMetrics/react-native-branch-deep-linking-attribution#usage), so the documentation there is the best resource to follow. Make sure you import Branch using the above instructions (from `Branch`).
 
 ## Example
 
@@ -89,5 +87,3 @@ class ArticleScreen extends Component {
   };
 }
 ```
-
-#
