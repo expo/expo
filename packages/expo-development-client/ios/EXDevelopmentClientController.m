@@ -12,19 +12,6 @@
 
 #import <UIKit/UIKit.h>
 
-#if RCT_DEV
-
-// This is needed because RCTPerfMonitor does not declare a public interface that we can import.
-@interface RCTPerfMonitor <NSObject>
-
-- (void)show;
-- (void)hide;
-
-@end
-
-#endif
-
-
 // Uncomment the below and set it to a React Native bundler URL to develop the launcher JS
 //#define DEV_LAUNCHER_URL "http://10.0.0.176:8090/index.bundle?platform=ios&dev=true&minify=false"
 
