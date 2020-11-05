@@ -19,24 +19,19 @@ apply plugin: 'maven'
 apply plugin: 'kotlin-android'
 
 buildscript {
-  // The Android Gradle plugin is only required when opening the android folder stand-alone.
-  // This avoids unnecessary downloads and potential conflicts when the library is included as a
-  // module dependency in an application project.
-  // ref: https://docs.gradle.org/current/userguide/tutorial_using_tasks.html#sec:build_script_external_dependencies
-  if (project == rootProject) {
-    repositories {
-      google()
-      jcenter()
-    }
-    dependencies {
-      classpath 'com.android.tools.build:gradle:3.4.1'
-      classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet("kotlinVersion", "1.3.50")}")
-    }
+  // Simple helper that allows the root project to override versions declared by this library.
+  ext.safeExtGet = { prop, fallback ->
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+  }
+
+  repositories {
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet("kotlinVersion", "1.3.50")}")
   }
 }
-
-apply plugin: 'com.android.library'
-apply plugin: 'maven'
 
 android {
   compileSdkVersion safeExtGet('compileSdkVersion', 29)
