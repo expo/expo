@@ -17,6 +17,7 @@ Pod::Spec.new do |s|
   s.author = "650 Industries, Inc."
   s.requires_arc = true
   s.platform = :ios, "10.0"
+  s.static_framework = true
   s.default_subspec = "Core"
   s.source = { :git => "http://github.com/expo/expo.git" }
   s.xcconfig = {

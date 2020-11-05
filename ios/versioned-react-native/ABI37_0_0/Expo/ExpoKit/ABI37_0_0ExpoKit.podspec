@@ -12,6 +12,7 @@ Pod::Spec.new do |s|
   s.requires_arc = true
   s.platform = :ios, "10.0"
   s.default_subspec = "Core"
+  s.static_framework = true
   s.source = { :git => "http://github.com/expo/expo.git" }
 
   s.subspec "Expo" do |ss|
