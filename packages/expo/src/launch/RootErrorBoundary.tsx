@@ -1,7 +1,7 @@
 import React from 'react';
 import { NativeModules } from 'react-native';
 
-import { getAppLoadingLifecycleEmitter } from './AppLoading';
+// import { getAppLoadingLifecycleEmitter } from './AppLoading';
 
 const { ExponentAppLoadingManager } = NativeModules;
 
@@ -45,8 +45,8 @@ export default class RootErrorBoundary extends React.Component<Props, State> {
     super(props);
 
     _appLoadingIsMounted = false;
-    getAppLoadingLifecycleEmitter().once('componentDidMount', this._subscribeToGlobalErrors);
-    getAppLoadingLifecycleEmitter().once('componentWillUnmount', this._unsubscribeFromGlobalErrors);
+    // getAppLoadingLifecycleEmitter().once('componentDidMount', this._subscribeToGlobalErrors);
+    // getAppLoadingLifecycleEmitter().once('componentWillUnmount', this._unsubscribeFromGlobalErrors);
 
     this.state = {
       error: null,

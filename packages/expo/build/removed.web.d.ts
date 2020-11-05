@@ -6,6 +6,7 @@ export declare const AdMobRewarded: null;
 export declare const Amplitude: null;
 export declare const Animated: null;
 export declare const AppAuth: null;
+export declare const AppLoading: null;
 export declare const Asset: null;
 export declare const Audio: null;
 export declare const AuthSession: null;
