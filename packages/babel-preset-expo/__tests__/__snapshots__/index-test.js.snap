@@ -3,7 +3,7 @@
 exports[`"lazyImports" option accepts ["inline-comp", "./inline-func", "../inline-func-with-side-effects.fx.ts"] 1`] = `
 "var _interopRequireDefault=require(\\"@babel/runtime/helpers/interopRequireDefault\\");var _interopRequireWildcard=require(\\"@babel/runtime/helpers/interopRequireWildcard\\");Object.defineProperty(exports,\\"__esModule\\",{value:true});exports.default=void 0;var _classCallCheck2=_interopRequireDefault(require(\\"@babel/runtime/helpers/classCallCheck\\"));var _createClass2=_interopRequireDefault(require(\\"@babel/runtime/helpers/createClass\\"));var _inherits2=_interopRequireDefault(require(\\"@babel/runtime/helpers/inherits\\"));var _possibleConstructorReturn2=_interopRequireDefault(require(\\"@babel/runtime/helpers/possibleConstructorReturn\\"));var _getPrototypeOf2=_interopRequireDefault(require(\\"@babel/runtime/helpers/getPrototypeOf\\"));var _vectorIcons=require(\\"@expo/vector-icons\\");
 var Boo=_interopRequireWildcard(require(\\"Boo\\"));
-var _expo=require(\\"expo\\");
+var _expoAppLoading=_interopRequireDefault(require(\\"expo-app-loading\\"));
 var _expoAsset=require(\\"expo-asset\\");
 var _fooView=_interopRequireDefault(require(\\"foo-view\\"));
 function _inlineComp(){var data=_interopRequireDefault(require(\\"inline-comp\\"));_inlineComp=function _inlineComp(){return data;};return data;}
@@ -35,7 +35,7 @@ _expoAsset.Asset.loadAsync([require(\\"./assets/icon.png\\")]);
 {
 return(
 _react.default.createElement(_reactNative.View,null,
-_react.default.createElement(_expo.AppLoading,null),
+_react.default.createElement(_expoAppLoading.default,null),
 _react.default.createElement(_vectorIcons.Ionicons,{name:\\"md-options\\",size:28}),
 _react.default.createElement(_fooView.default,null)));
 
@@ -53,7 +53,7 @@ Lazy;exports.default=_default;"
 exports[`"lazyImports" option accepts [Function anonymous] 1`] = `
 "var _interopRequireDefault=require(\\"@babel/runtime/helpers/interopRequireDefault\\");var _interopRequireWildcard=require(\\"@babel/runtime/helpers/interopRequireWildcard\\");Object.defineProperty(exports,\\"__esModule\\",{value:true});exports.default=void 0;function _classCallCheck2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/classCallCheck\\"));_classCallCheck2=function _classCallCheck2(){return data;};return data;}function _createClass2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/createClass\\"));_createClass2=function _createClass2(){return data;};return data;}function _inherits2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/inherits\\"));_inherits2=function _inherits2(){return data;};return data;}function _possibleConstructorReturn2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/possibleConstructorReturn\\"));_possibleConstructorReturn2=function _possibleConstructorReturn2(){return data;};return data;}function _getPrototypeOf2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/getPrototypeOf\\"));_getPrototypeOf2=function _getPrototypeOf2(){return data;};return data;}function _vectorIcons(){var data=require(\\"@expo/vector-icons\\");_vectorIcons=function _vectorIcons(){return data;};return data;}
 function Boo(){var data=_interopRequireWildcard(require(\\"Boo\\"));Boo=function Boo(){return data;};return data;}
-function _expo(){var data=require(\\"expo\\");_expo=function _expo(){return data;};return data;}
+function _expoAppLoading(){var data=_interopRequireDefault(require(\\"expo-app-loading\\"));_expoAppLoading=function _expoAppLoading(){return data;};return data;}
 function _expoAsset(){var data=require(\\"expo-asset\\");_expoAsset=function _expoAsset(){return data;};return data;}
 function _fooView(){var data=_interopRequireDefault(require(\\"foo-view\\"));_fooView=function _fooView(){return data;};return data;}
 function _inlineComp(){var data=_interopRequireDefault(require(\\"inline-comp\\"));_inlineComp=function _inlineComp(){return data;};return data;}
@@ -85,7 +85,7 @@ _expoAsset().Asset.loadAsync([require(\\"./assets/icon.png\\")]);
 {
 return(
 _react().default.createElement(_reactNative().View,null,
-_react().default.createElement(_expo().AppLoading,null),
+_react().default.createElement(_expoAppLoading().default,null),
 _react().default.createElement(_vectorIcons().Ionicons,{name:\\"md-options\\",size:28}),
 _react().default.createElement(_fooView().default,null)));
 
@@ -103,7 +103,7 @@ Lazy;exports.default=_default;"
 exports[`"lazyImports" option accepts false 1`] = `
 "var _interopRequireDefault=require(\\"@babel/runtime/helpers/interopRequireDefault\\");var _interopRequireWildcard=require(\\"@babel/runtime/helpers/interopRequireWildcard\\");Object.defineProperty(exports,\\"__esModule\\",{value:true});exports.default=void 0;var _classCallCheck2=_interopRequireDefault(require(\\"@babel/runtime/helpers/classCallCheck\\"));var _createClass2=_interopRequireDefault(require(\\"@babel/runtime/helpers/createClass\\"));var _inherits2=_interopRequireDefault(require(\\"@babel/runtime/helpers/inherits\\"));var _possibleConstructorReturn2=_interopRequireDefault(require(\\"@babel/runtime/helpers/possibleConstructorReturn\\"));var _getPrototypeOf2=_interopRequireDefault(require(\\"@babel/runtime/helpers/getPrototypeOf\\"));var _vectorIcons=require(\\"@expo/vector-icons\\");
 var Boo=_interopRequireWildcard(require(\\"Boo\\"));
-var _expo=require(\\"expo\\");
+var _expoAppLoading=_interopRequireDefault(require(\\"expo-app-loading\\"));
 var _expoAsset=require(\\"expo-asset\\");
 var _fooView=_interopRequireDefault(require(\\"foo-view\\"));
 var _inlineComp=_interopRequireDefault(require(\\"inline-comp\\"));
@@ -135,7 +135,7 @@ _expoAsset.Asset.loadAsync([require(\\"./assets/icon.png\\")]);
 {
 return(
 _react.default.createElement(_reactNative.View,null,
-_react.default.createElement(_expo.AppLoading,null),
+_react.default.createElement(_expoAppLoading.default,null),
 _react.default.createElement(_vectorIcons.Ionicons,{name:\\"md-options\\",size:28}),
 _react.default.createElement(_fooView.default,null)));
 
@@ -153,7 +153,7 @@ Lazy;exports.default=_default;"
 exports[`"lazyImports" option accepts null 1`] = `
 "var _interopRequireDefault=require(\\"@babel/runtime/helpers/interopRequireDefault\\");var _interopRequireWildcard=require(\\"@babel/runtime/helpers/interopRequireWildcard\\");Object.defineProperty(exports,\\"__esModule\\",{value:true});exports.default=void 0;var _classCallCheck2=_interopRequireDefault(require(\\"@babel/runtime/helpers/classCallCheck\\"));var _createClass2=_interopRequireDefault(require(\\"@babel/runtime/helpers/createClass\\"));var _inherits2=_interopRequireDefault(require(\\"@babel/runtime/helpers/inherits\\"));var _possibleConstructorReturn2=_interopRequireDefault(require(\\"@babel/runtime/helpers/possibleConstructorReturn\\"));var _getPrototypeOf2=_interopRequireDefault(require(\\"@babel/runtime/helpers/getPrototypeOf\\"));var _vectorIcons=require(\\"@expo/vector-icons\\");
 var Boo=_interopRequireWildcard(require(\\"Boo\\"));
-var _expo=require(\\"expo\\");
+var _expoAppLoading=_interopRequireDefault(require(\\"expo-app-loading\\"));
 var _expoAsset=require(\\"expo-asset\\");
 var _fooView=_interopRequireDefault(require(\\"foo-view\\"));
 var _inlineComp=_interopRequireDefault(require(\\"inline-comp\\"));
@@ -185,7 +185,7 @@ _expoAsset.Asset.loadAsync([require(\\"./assets/icon.png\\")]);
 {
 return(
 _react.default.createElement(_reactNative.View,null,
-_react.default.createElement(_expo.AppLoading,null),
+_react.default.createElement(_expoAppLoading.default,null),
 _react.default.createElement(_vectorIcons.Ionicons,{name:\\"md-options\\",size:28}),
 _react.default.createElement(_fooView.default,null)));
 
@@ -203,7 +203,7 @@ Lazy;exports.default=_default;"
 exports[`"lazyImports" option accepts true 1`] = `
 "var _interopRequireDefault=require(\\"@babel/runtime/helpers/interopRequireDefault\\");var _interopRequireWildcard=require(\\"@babel/runtime/helpers/interopRequireWildcard\\");Object.defineProperty(exports,\\"__esModule\\",{value:true});exports.default=void 0;function _classCallCheck2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/classCallCheck\\"));_classCallCheck2=function _classCallCheck2(){return data;};return data;}function _createClass2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/createClass\\"));_createClass2=function _createClass2(){return data;};return data;}function _inherits2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/inherits\\"));_inherits2=function _inherits2(){return data;};return data;}function _possibleConstructorReturn2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/possibleConstructorReturn\\"));_possibleConstructorReturn2=function _possibleConstructorReturn2(){return data;};return data;}function _getPrototypeOf2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/getPrototypeOf\\"));_getPrototypeOf2=function _getPrototypeOf2(){return data;};return data;}function _vectorIcons(){var data=require(\\"@expo/vector-icons\\");_vectorIcons=function _vectorIcons(){return data;};return data;}
 function Boo(){var data=_interopRequireWildcard(require(\\"Boo\\"));Boo=function Boo(){return data;};return data;}
-var _expo=require(\\"expo\\");
+function _expoAppLoading(){var data=_interopRequireDefault(require(\\"expo-app-loading\\"));_expoAppLoading=function _expoAppLoading(){return data;};return data;}
 var _expoAsset=require(\\"expo-asset\\");
 function _fooView(){var data=_interopRequireDefault(require(\\"foo-view\\"));_fooView=function _fooView(){return data;};return data;}
 function _inlineComp(){var data=_interopRequireDefault(require(\\"inline-comp\\"));_inlineComp=function _inlineComp(){return data;};return data;}
@@ -235,7 +235,7 @@ _expoAsset.Asset.loadAsync([require(\\"./assets/icon.png\\")]);
 {
 return(
 _react().default.createElement(_reactNative().View,null,
-_react().default.createElement(_expo.AppLoading,null),
+_react().default.createElement(_expoAppLoading().default,null),
 _react().default.createElement(_vectorIcons().Ionicons,{name:\\"md-options\\",size:28}),
 _react().default.createElement(_fooView().default,null)));
 

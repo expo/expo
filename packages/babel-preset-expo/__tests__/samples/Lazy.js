@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import * as Boo from 'Boo';
-import { AppLoading } from 'expo';
+import AppLoading from 'expo-app-loading';
 import { Asset } from 'expo-asset';
 import FooView from 'foo-view';
 import InlineFuncFromPackage from 'inline-comp';
