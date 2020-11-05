@@ -72,6 +72,7 @@
     "expo-sharing": "~8.4.0",
     "expo-sms": "~8.3.0",
     "expo-speech": "~8.4.0",
+    "expo-splash-screen": "~0.7.1",
     "expo-store-review": "~2.2.0",
     "expo-task-manager": "~8.5.0",
     "expo-three": "5.2.0",

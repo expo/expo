@@ -1,8 +1,8 @@
-import { AppLoading } from 'expo';
 import * as React from 'react';
 import { Platform, StatusBar } from 'react-native';
 import { AppearanceProvider } from 'react-native-appearance';
 import { enableScreens } from 'react-native-screens';
+import * as SplashScreen from 'expo-splash-screen';
 
 import RootNavigation from './src/navigation/RootNavigation';
 import loadAssetsAsync from './src/utilities/loadAssetsAsync';
@@ -11,35 +11,46 @@ if (Platform.OS === 'android') {
   enableScreens(true);
 }
 
-export default function App(props: any) {
-  const [isReady, setReady] = React.useState(false);
+function useSplashScreen(loadingFunction: () => void | Promise<void>) {
+  const [isLoadingCompleted, setLoadingComplete] = React.useState(false);
 
+  // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
+    async function loadAsync() {
+      try {
+        await SplashScreen.preventAutoHideAsync();
+        await loadingFunction();
+      } catch (e) {
+        // We might want to provide this error information to an error reporting service
+        console.warn(e);
+      } finally {
+        setLoadingComplete(true);
+        SplashScreen.hideAsync();
+      }
+    }
+
+    loadAsync();
+  }, []);
+
+  return isLoadingCompleted;
+}
+
+
+export default function App(props: any) {
+  const isLoadingCompleted = useSplashScreen(async () => {
     if (Platform.OS === 'ios') {
       StatusBar.setBarStyle('dark-content', false);
     }
-    (async () => {
-      try {
-        await loadAssetsAsync();
-      } catch (e) {
-        console.log({ e });
-      } finally {
-        setReady(true);
-      }
-    })();
-  }, []);
+    await loadAssetsAsync();
+  });
 
-  if (isReady) {
-    return (
-      <AppearanceProvider>
-        <RootNavigation {...props} />
-      </AppearanceProvider>
-    );
+  if (!isLoadingCompleted) {
+    return null;
   }
-  // We should check whether `AppLoading` is set, as this code may be used by `bare-expo`
-  // where this module is not exported due to bare workflow.
-  if (AppLoading) {
-    return <AppLoading />;
-  }
-  return null;
+
+  return (
+    <AppearanceProvider>
+      <RootNavigation {...props} />
+    </AppearanceProvider>
+  );
 }
