@@ -19,7 +19,7 @@ import java.util.List;
 import dev.expo.payments.generated.BasePackageList;
 
 public class MainApplication extends Application implements ReactApplication {
-  static final boolean USE_DEV_CLIENT = true;
+  static final boolean USE_DEV_CLIENT = false;
 
   private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(
     new BasePackageList().getPackageList()

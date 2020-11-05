@@ -39,6 +39,9 @@ class DevelopmentClientController private constructor(private val mContext: Cont
 
   fun navigateToLauncher() {
     mode = Mode.LAUNCHER
+    if (mAppHost.hasInstance()) {
+      mAppHost.reactInstanceManager.destroy()
+    }
     val launcherIntent = Intent(mContext, DevelopmentClientActivity::class.java)
     launcherIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
     mContext.applicationContext.startActivity(launcherIntent)
