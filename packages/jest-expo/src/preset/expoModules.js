@@ -578,8 +578,10 @@ module.exports = {
           { key: 5, argumentsCount: 0, name: 'getVoices' },
         ],
         MediaViewManager: [],
-        NotificationsInstallationIdProvider: [
-          { key: 0, argumentsCount: 0, name: 'getInstallationIdAsync' },
+        NotificationsServerRegistrationModule: [
+          { key: 0, argumentsCount: 0, name: 'getLastRegistrationInfoAsync' },
+          { key: 1, argumentsCount: 1, name: 'setLastRegistrationInfoAsync' },
+          { key: 2, argumentsCount: 0, name: 'getInstallationIdAsync' },
         ],
       },
     },
