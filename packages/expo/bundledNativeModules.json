@@ -102,5 +102,6 @@
   "firebase": "7.9.0",
   "@react-native-community/picker": "1.6.6",
   "@react-native-community/slider": "3.0.3",
-  "expo-status-bar": "~1.0.2"
+  "expo-status-bar": "~1.0.2",
+  "@react-native-picker/picker": "1.9.2"
 }
