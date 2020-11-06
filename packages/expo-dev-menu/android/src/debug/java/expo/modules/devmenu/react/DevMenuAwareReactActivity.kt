@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.MotionEvent
 import com.facebook.react.ReactActivity
+import com.facebook.react.ReactNativeHost
 import expo.modules.devmenu.DevMenuManager
 
 /**
@@ -13,8 +14,8 @@ import expo.modules.devmenu.DevMenuManager
 abstract class DevMenuAwareReactActivity : ReactActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    if (!wasInitialized) {
-      wasInitialized = true
+    if (currentReactNative == null || currentReactNative != reactNativeHost) {
+      currentReactNative = reactNativeHost
       DevMenuManager.initializeWithReactNativeHost(reactNativeHost)
     }
   }
@@ -31,6 +32,6 @@ abstract class DevMenuAwareReactActivity : ReactActivity() {
   companion object {
     @get:Synchronized
     @set:Synchronized
-    var wasInitialized = false
+    var currentReactNative: ReactNativeHost? = null
   }
 }

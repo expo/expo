@@ -47,11 +47,7 @@ public class MainApplication extends Application implements ReactApplication {
 
   @Override
   public ReactNativeHost getReactNativeHost() {
-    if (USE_DEV_CLIENT) {
-      return DevelopmentClientController.getInstance().getReactNativeHost();
-    } else {
-      return mReactNativeHost;
-    }
+    return mReactNativeHost;
   }
 
   @Override
@@ -61,7 +57,7 @@ public class MainApplication extends Application implements ReactApplication {
     ReactNativeFlipper.initializeFlipper(this);
 
     if (USE_DEV_CLIENT) {
-      DevelopmentClientController.initialize(this, mReactNativeHost, "BareExpo");
+      DevelopmentClientController.initialize(this, mReactNativeHost);
     }
   }
 }
