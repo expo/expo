@@ -9,7 +9,6 @@ title: Introduction
 ## Discover the Dev Client
 
 - [Get Started with the Dev Menu](../installation/) - This is a step-by-step tutorial that will guide you through initializing a new project and kicking off a build in less than 5 mintues. If you want to experiment with EAS Build before integrating it with your existing project, this is a good place to start.
-- [Coming from React Native?](../coming-from-react-native/) - You'll need to follow a couple extra steps to get up and running.
 - [Distributing to Android Devices](../distribution-for-android/) - Get your development client running on an Android device.
 - [Distributing to iOS Devices](../distibution-for-ios/) - Get your development client running on an iOS device.
 - [Extending the Development Menu](../extending-the-development-menu/) - Add functionality to the Development Menu.
