@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   s.source = { :git => "http://github.com/expo/expo.git" }
 
   s.subspec "Expo" do |ss|
-    ss.source_files     = "Core/**/*.{h,m,mm}"
+    ss.source_files     = "Core/**/*.{h,m,mm,swift}"
 
     ss.dependency         "ABI38_0_0React-Core"
     ss.dependency         "ABI38_0_0React-Core/DevSupport"

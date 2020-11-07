@@ -43,7 +43,7 @@ Pod::Spec.new do |s|
   }
 
   s.subspec "Expo" do |ss|
-    ss.source_files     = "Core/**/*.{h,m,mm,cpp}"
+    ss.source_files     = "Core/**/*.{h,m,mm,cpp,swift}"
 
     ss.dependency         "ABI39_0_0React-Core"
     ss.dependency         "ABI39_0_0React-Core/DevSupport"
