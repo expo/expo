@@ -1,0 +1,6 @@
+module EXFirebaseAnalytics {
+  umbrella header "EXFirebaseAnalytics-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -1,0 +1,6 @@
+module ABI38_0_0EXMediaLibrary {
+  umbrella header "ABI38_0_0EXMediaLibrary-umbrella.h"
+
+  export *
+  module * { export * }
+}

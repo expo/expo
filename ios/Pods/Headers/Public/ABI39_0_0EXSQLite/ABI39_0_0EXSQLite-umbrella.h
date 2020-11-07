@@ -1,0 +1,1 @@
+../../../Target Support Files/ABI39_0_0EXSQLite/ABI39_0_0EXSQLite-umbrella.h

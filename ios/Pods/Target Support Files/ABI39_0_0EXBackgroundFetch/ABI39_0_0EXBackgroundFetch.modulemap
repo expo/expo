@@ -1,0 +1,6 @@
+module ABI39_0_0EXBackgroundFetch {
+  umbrella header "ABI39_0_0EXBackgroundFetch-umbrella.h"
+
+  export *
+  module * { export * }
+}

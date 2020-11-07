@@ -1,0 +1,6 @@
+module EXAmplitude {
+  umbrella header "EXAmplitude-umbrella.h"
+
+  export *
+  module * { export * }
+}

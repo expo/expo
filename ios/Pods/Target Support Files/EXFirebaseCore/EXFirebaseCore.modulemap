@@ -1,0 +1,6 @@
+module EXFirebaseCore {
+  umbrella header "EXFirebaseCore-umbrella.h"
+
+  export *
+  module * { export * }
+}

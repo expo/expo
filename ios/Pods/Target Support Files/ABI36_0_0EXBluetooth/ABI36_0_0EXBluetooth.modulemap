@@ -1,0 +1,6 @@
+module ABI36_0_0EXBluetooth {
+  umbrella header "ABI36_0_0EXBluetooth-umbrella.h"
+
+  export *
+  module * { export * }
+}

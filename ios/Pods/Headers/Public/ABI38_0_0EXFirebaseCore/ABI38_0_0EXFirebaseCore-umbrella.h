@@ -1,0 +1,1 @@
+../../../Target Support Files/ABI38_0_0EXFirebaseCore/ABI38_0_0EXFirebaseCore-umbrella.h

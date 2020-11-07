@@ -1,0 +1,1 @@
+../../../Target Support Files/React-RCTVibration/React-RCTVibration-umbrella.h

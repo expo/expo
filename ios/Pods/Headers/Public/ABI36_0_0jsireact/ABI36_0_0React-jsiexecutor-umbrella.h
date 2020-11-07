@@ -1,0 +1,1 @@
+../../../Target Support Files/ABI36_0_0React-jsiexecutor/ABI36_0_0React-jsiexecutor-umbrella.h

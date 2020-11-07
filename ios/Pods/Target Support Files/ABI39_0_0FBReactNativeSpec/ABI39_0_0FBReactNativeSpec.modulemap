@@ -1,0 +1,6 @@
+module ABI39_0_0FBReactNativeSpec {
+  umbrella header "ABI39_0_0FBReactNativeSpec-umbrella.h"
+
+  export *
+  module * { export * }
+}

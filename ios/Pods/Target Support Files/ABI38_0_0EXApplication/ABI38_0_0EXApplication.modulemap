@@ -1,0 +1,6 @@
+module ABI38_0_0EXApplication {
+  umbrella header "ABI38_0_0EXApplication-umbrella.h"
+
+  export *
+  module * { export * }
+}

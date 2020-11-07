@@ -1,0 +1,1 @@
+../../../Target Support Files/ABI36_0_0React-RCTAnimation/ABI36_0_0React-RCTAnimation-umbrella.h

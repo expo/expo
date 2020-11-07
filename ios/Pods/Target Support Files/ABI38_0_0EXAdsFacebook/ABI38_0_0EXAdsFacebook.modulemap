@@ -1,0 +1,6 @@
+module ABI38_0_0EXAdsFacebook {
+  umbrella header "ABI38_0_0EXAdsFacebook-umbrella.h"
+
+  export *
+  module * { export * }
+}

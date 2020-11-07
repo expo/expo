@@ -1,0 +1,6 @@
+module ABI38_0_0EXSMS {
+  umbrella header "ABI38_0_0EXSMS-umbrella.h"
+
+  export *
+  module * { export * }
+}

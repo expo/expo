@@ -1,0 +1,6 @@
+module ABI39_0_0EXGoogleSignIn {
+  umbrella header "ABI39_0_0EXGoogleSignIn-umbrella.h"
+
+  export *
+  module * { export * }
+}

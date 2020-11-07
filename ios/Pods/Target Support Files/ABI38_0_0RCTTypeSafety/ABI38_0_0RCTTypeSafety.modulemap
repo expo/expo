@@ -1,0 +1,6 @@
+module ABI38_0_0RCTTypeSafety {
+  umbrella header "ABI38_0_0RCTTypeSafety-umbrella.h"
+
+  export *
+  module * { export * }
+}

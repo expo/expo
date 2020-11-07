@@ -1,0 +1,6 @@
+module ABI38_0_0EXStoreReview {
+  umbrella header "ABI38_0_0EXStoreReview-umbrella.h"
+
+  export *
+  module * { export * }
+}

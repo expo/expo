@@ -1,0 +1,6 @@
+module ABI36_0_0UMCore {
+  umbrella header "ABI36_0_0UMCore-umbrella.h"
+
+  export *
+  module * { export * }
+}

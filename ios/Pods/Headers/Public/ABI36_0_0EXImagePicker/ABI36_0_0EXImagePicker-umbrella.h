@@ -1,0 +1,1 @@
+../../../Target Support Files/ABI36_0_0EXImagePicker/ABI36_0_0EXImagePicker-umbrella.h

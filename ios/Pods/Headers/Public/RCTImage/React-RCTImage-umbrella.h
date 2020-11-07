@@ -1,0 +1,1 @@
+../../../Target Support Files/React-RCTImage/React-RCTImage-umbrella.h

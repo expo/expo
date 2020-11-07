@@ -7,41 +7,42 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4CB1F3EF86EE73BF3B5B8D81EF4154DA /* RCTVibrationPlugins.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5C90B6F0D29F5168B7AC4B737698D792 /* RCTVibrationPlugins.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		AB4DCF7DDF9E352CD5586804AD9C9EF9 /* RCTVibration.mm in Sources */ = {isa = PBXBuildFile; fileRef = 6787DB944E0508F3E6D3F489BE078673 /* RCTVibration.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		FFCF263D0E94187670380CE153A97906 /* React-RCTVibration-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CD7676FDA692AC668295533CF74BE31 /* React-RCTVibration-dummy.m */; };
+		688BE741B3FE2BA5790656215BF0B439 /* RCTVibrationPlugins.mm in Sources */ = {isa = PBXBuildFile; fileRef = D7C7F3C46742A3ACCFEE15AA3587FDF3 /* RCTVibrationPlugins.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		701D80F00CC759DF5546276661C4DC76 /* React-RCTVibration-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 44869763FEDFE5F937782EE264755FEE /* React-RCTVibration-dummy.m */; };
+		AAE29A6190E9FD830644564BA61E4C41 /* React-RCTVibration-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = D8886E941FCF7CAC0929B89CB788BD4F /* React-RCTVibration-umbrella.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		F5F38FAD0961C1DA2FDDA6D050D879AE /* RCTVibration.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9FF65E93B3E5E3BE18C66F3BBA8123A3 /* RCTVibration.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		01CE92224B7B24FD8985CC82A84EE4F0 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 55B093730FF88B7E4DEA0716D6723724 /* FBReactNativeSpec.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 5CDFFFDA1BEA16A0D3629FE9F761022A;
-			remoteInfo = FBReactNativeSpec;
-		};
-		3DF3511B42638D53ACEABBD785582429 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DE3735BCC643B2EA1E56B5ABEB8736EC /* React-Core.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 5DA1A74647F652AE8E4DE074AFC4C6B7;
-			remoteInfo = "React-Core";
-		};
-		4E56D67FF5FDA8A202F594200BA88AA0 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 19EDA07CD2AF7E8B54E9BEA3FEAFF79A /* ReactCommon.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 2610D146B211EB79FECF83D4FA5AB36D;
-			remoteInfo = ReactCommon;
-		};
-		8D2B6AEF4C3B5103681788C27E189245 /* PBXContainerItemProxy */ = {
+		2E0D76763A8B13151DE674CF82B74F0A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 057B63365123FDD32AF4A2448ED5E208 /* React-jsi.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = D0DB82AB65D33935072718EA2468992F;
 			remoteInfo = "React-jsi";
 		};
-		FFFA0BD2FC643091E3A2077C36D28324 /* PBXContainerItemProxy */ = {
+		425D18CECCAAE2A1EBDDBC1887594354 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DE3735BCC643B2EA1E56B5ABEB8736EC /* React-Core.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 5DA1A74647F652AE8E4DE074AFC4C6B7;
+			remoteInfo = "React-Core";
+		};
+		791F3323EC789D8BF7695EC2A0C39C67 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 19EDA07CD2AF7E8B54E9BEA3FEAFF79A /* ReactCommon.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 2610D146B211EB79FECF83D4FA5AB36D;
+			remoteInfo = ReactCommon;
+		};
+		829FA2276EF4526149CEA2D91AB8A841 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 55B093730FF88B7E4DEA0716D6723724 /* FBReactNativeSpec.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 5CDFFFDA1BEA16A0D3629FE9F761022A;
+			remoteInfo = FBReactNativeSpec;
+		};
+		F7E1A7B09B577A528A27F1AF7C092B6E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 59E4C0BB43BA177A5F16201CF280C26C /* Folly.xcodeproj */;
 			proxyType = 1;
@@ -52,22 +53,24 @@
 
 /* Begin PBXFileReference section */
 		057B63365123FDD32AF4A2448ED5E208 /* React-jsi */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-jsi"; path = "React-jsi.xcodeproj"; sourceTree = "<group>"; };
-		0CD7676FDA692AC668295533CF74BE31 /* React-RCTVibration-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "React-RCTVibration-dummy.m"; sourceTree = "<group>"; };
+		1983F1248D22A4F6AC723151F258E7B8 /* React-RCTVibration-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "React-RCTVibration-prefix.pch"; sourceTree = "<group>"; };
 		19EDA07CD2AF7E8B54E9BEA3FEAFF79A /* ReactCommon */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ReactCommon; path = ReactCommon.xcodeproj; sourceTree = "<group>"; };
+		44869763FEDFE5F937782EE264755FEE /* React-RCTVibration-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "React-RCTVibration-dummy.m"; sourceTree = "<group>"; };
+		45C41FBF1EE40CD8946892D458A15AF5 /* React-RCTVibration.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "React-RCTVibration.modulemap"; sourceTree = "<group>"; };
 		4F743BA77E984A4C641D9FBDD820722B /* libReact-RCTVibration.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libReact-RCTVibration.a"; path = "libReact-RCTVibration.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		55B093730FF88B7E4DEA0716D6723724 /* FBReactNativeSpec */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBReactNativeSpec; path = FBReactNativeSpec.xcodeproj; sourceTree = "<group>"; };
 		59E4C0BB43BA177A5F16201CF280C26C /* Folly */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Folly; path = Folly.xcodeproj; sourceTree = "<group>"; };
-		5C90B6F0D29F5168B7AC4B737698D792 /* RCTVibrationPlugins.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTVibrationPlugins.mm; sourceTree = "<group>"; };
-		6787DB944E0508F3E6D3F489BE078673 /* RCTVibration.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTVibration.mm; sourceTree = "<group>"; };
-		B6187894558FED0DA1481A68DC42722D /* React-RCTVibration.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = "React-RCTVibration.podspec"; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		CE485187122F991B4256EC53680D7B05 /* React-RCTVibration-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "React-RCTVibration-prefix.pch"; sourceTree = "<group>"; };
+		671BB8B46F096317CD48E2EF5B6708E2 /* React-RCTVibration.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "React-RCTVibration.debug.xcconfig"; sourceTree = "<group>"; };
+		9FF65E93B3E5E3BE18C66F3BBA8123A3 /* RCTVibration.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTVibration.mm; sourceTree = "<group>"; };
+		ACAFDC7CF0C92178B6E586F3F5FD8E6A /* React-RCTVibration.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = "React-RCTVibration.podspec"; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		D7C7F3C46742A3ACCFEE15AA3587FDF3 /* RCTVibrationPlugins.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTVibrationPlugins.mm; sourceTree = "<group>"; };
+		D8886E941FCF7CAC0929B89CB788BD4F /* React-RCTVibration-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "React-RCTVibration-umbrella.h"; sourceTree = "<group>"; };
 		DE3735BCC643B2EA1E56B5ABEB8736EC /* React-Core */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-Core"; path = "React-Core.xcodeproj"; sourceTree = "<group>"; };
-		F947C103BD6171EE04FECA1D3CD0D1AE /* React-RCTVibration.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "React-RCTVibration.debug.xcconfig"; sourceTree = "<group>"; };
-		FD2F0ED9EAF651E55E4C786DDE3BBFD0 /* React-RCTVibration.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "React-RCTVibration.release.xcconfig"; sourceTree = "<group>"; };
+		F0715B474932D5069C2BBA2230CF9FE8 /* React-RCTVibration.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "React-RCTVibration.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		EE276EDC45EAF42BF87EAD02E0A5DC86 /* Frameworks */ = {
+		2B28BE8783011EFB7AAA8FF42BDCF573 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -77,16 +80,12 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		2FA5734DBD34C61510296917BC5342BC /* Support Files */ = {
+		08E03E06CAD757B1029D730C8A8D4747 /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				0CD7676FDA692AC668295533CF74BE31 /* React-RCTVibration-dummy.m */,
-				CE485187122F991B4256EC53680D7B05 /* React-RCTVibration-prefix.pch */,
-				F947C103BD6171EE04FECA1D3CD0D1AE /* React-RCTVibration.debug.xcconfig */,
-				FD2F0ED9EAF651E55E4C786DDE3BBFD0 /* React-RCTVibration.release.xcconfig */,
+				ACAFDC7CF0C92178B6E586F3F5FD8E6A /* React-RCTVibration.podspec */,
 			);
-			name = "Support Files";
-			path = "../../../../ios/Pods/Target Support Files/React-RCTVibration";
+			name = Pod;
 			sourceTree = "<group>";
 		};
 		33D48A22A08E24B62D3B98434813BC4C /* Products */ = {
@@ -97,19 +96,23 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		3A667ACEDDFB56D76BD6D7ACCC5012FE /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				B6187894558FED0DA1481A68DC42722D /* React-RCTVibration.podspec */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
 		758E72BEDDA5C66B1DCA3642EF58DB37 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		7B8A0776EAA996008BD85886887BEF35 /* React-RCTVibration */ = {
+			isa = PBXGroup;
+			children = (
+				9FF65E93B3E5E3BE18C66F3BBA8123A3 /* RCTVibration.mm */,
+				D7C7F3C46742A3ACCFEE15AA3587FDF3 /* RCTVibrationPlugins.mm */,
+				08E03E06CAD757B1029D730C8A8D4747 /* Pod */,
+				DAD3E10DC233C80C8DC1D5951B1B5122 /* Support Files */,
+			);
+			name = "React-RCTVibration";
+			path = "../../react-native-lab/react-native/Libraries/Vibration";
 			sourceTree = "<group>";
 		};
 		B0B4708F17BA514A2046A7EAFFF406A3 = {
@@ -118,8 +121,22 @@
 				EF2ED6C66FE19A87BDC9FBEB0527C1D2 /* Dependencies */,
 				758E72BEDDA5C66B1DCA3642EF58DB37 /* Frameworks */,
 				33D48A22A08E24B62D3B98434813BC4C /* Products */,
-				FDA9193F146B3448B53453EFA39B649B /* React-RCTVibration */,
+				7B8A0776EAA996008BD85886887BEF35 /* React-RCTVibration */,
 			);
+			sourceTree = "<group>";
+		};
+		DAD3E10DC233C80C8DC1D5951B1B5122 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				45C41FBF1EE40CD8946892D458A15AF5 /* React-RCTVibration.modulemap */,
+				44869763FEDFE5F937782EE264755FEE /* React-RCTVibration-dummy.m */,
+				1983F1248D22A4F6AC723151F258E7B8 /* React-RCTVibration-prefix.pch */,
+				D8886E941FCF7CAC0929B89CB788BD4F /* React-RCTVibration-umbrella.h */,
+				671BB8B46F096317CD48E2EF5B6708E2 /* React-RCTVibration.debug.xcconfig */,
+				F0715B474932D5069C2BBA2230CF9FE8 /* React-RCTVibration.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../../../../ios/Pods/Target Support Files/React-RCTVibration";
 			sourceTree = "<group>";
 		};
 		EF2ED6C66FE19A87BDC9FBEB0527C1D2 /* Dependencies */ = {
@@ -134,25 +151,14 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		FDA9193F146B3448B53453EFA39B649B /* React-RCTVibration */ = {
-			isa = PBXGroup;
-			children = (
-				6787DB944E0508F3E6D3F489BE078673 /* RCTVibration.mm */,
-				5C90B6F0D29F5168B7AC4B737698D792 /* RCTVibrationPlugins.mm */,
-				3A667ACEDDFB56D76BD6D7ACCC5012FE /* Pod */,
-				2FA5734DBD34C61510296917BC5342BC /* Support Files */,
-			);
-			name = "React-RCTVibration";
-			path = "../../react-native-lab/react-native/Libraries/Vibration";
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		D58985B4D92E5DD47932A056A3D5245C /* Headers */ = {
+		2F59E7BE898C1C3F6C153D56C3F69537 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AAE29A6190E9FD830644564BA61E4C41 /* React-RCTVibration-umbrella.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -161,20 +167,20 @@
 /* Begin PBXNativeTarget section */
 		502D208480A94D02F62BB739D7512657 /* React-RCTVibration */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F9B95E0DFF9BFA400E85F9DBE3D00057 /* Build configuration list for PBXNativeTarget "React-RCTVibration" */;
+			buildConfigurationList = D8FFCE59A61DF015F64A191CA15758F5 /* Build configuration list for PBXNativeTarget "React-RCTVibration" */;
 			buildPhases = (
-				D58985B4D92E5DD47932A056A3D5245C /* Headers */,
-				AF7FA5A09489C6DF3D4BB1568D7A733C /* Sources */,
-				EE276EDC45EAF42BF87EAD02E0A5DC86 /* Frameworks */,
+				2F59E7BE898C1C3F6C153D56C3F69537 /* Headers */,
+				2A1D9460D4F6D73B71CEA1F5138ABB19 /* Sources */,
+				2B28BE8783011EFB7AAA8FF42BDCF573 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				EF89A961884E09D2B1B8913851D2E9EE /* PBXTargetDependency */,
-				EBEF9F1788FD14FF3E474EE2633E9F09 /* PBXTargetDependency */,
-				1BA41702C9ED4BEA7457990A8099800C /* PBXTargetDependency */,
-				30F45772BB669EB1A97773285DD00BA5 /* PBXTargetDependency */,
-				85204009B766935996999E82F7696E78 /* PBXTargetDependency */,
+				17F8064BE4FDC6C00873AC2C9C8F25DE /* PBXTargetDependency */,
+				009B7D3B7FFEB6BEF142E4DE671EA2CE /* PBXTargetDependency */,
+				41836E355674C4020D0A8AE553D54E76 /* PBXTargetDependency */,
+				73DA9E69963ED468C252B0DCBC452AB3 /* PBXTargetDependency */,
+				30D9138A46F52FD56A9B56334B8A607B /* PBXTargetDependency */,
 			);
 			name = "React-RCTVibration";
 			productName = "React-RCTVibration";
@@ -226,79 +232,47 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		AF7FA5A09489C6DF3D4BB1568D7A733C /* Sources */ = {
+		2A1D9460D4F6D73B71CEA1F5138ABB19 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AB4DCF7DDF9E352CD5586804AD9C9EF9 /* RCTVibration.mm in Sources */,
-				4CB1F3EF86EE73BF3B5B8D81EF4154DA /* RCTVibrationPlugins.mm in Sources */,
-				FFCF263D0E94187670380CE153A97906 /* React-RCTVibration-dummy.m in Sources */,
+				F5F38FAD0961C1DA2FDDA6D050D879AE /* RCTVibration.mm in Sources */,
+				688BE741B3FE2BA5790656215BF0B439 /* RCTVibrationPlugins.mm in Sources */,
+				701D80F00CC759DF5546276661C4DC76 /* React-RCTVibration-dummy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		1BA41702C9ED4BEA7457990A8099800C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "React-Core";
-			targetProxy = 3DF3511B42638D53ACEABBD785582429 /* PBXContainerItemProxy */;
-		};
-		30F45772BB669EB1A97773285DD00BA5 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "React-jsi";
-			targetProxy = 8D2B6AEF4C3B5103681788C27E189245 /* PBXContainerItemProxy */;
-		};
-		85204009B766935996999E82F7696E78 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = ReactCommon;
-			targetProxy = 4E56D67FF5FDA8A202F594200BA88AA0 /* PBXContainerItemProxy */;
-		};
-		EBEF9F1788FD14FF3E474EE2633E9F09 /* PBXTargetDependency */ = {
+		009B7D3B7FFEB6BEF142E4DE671EA2CE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Folly;
-			targetProxy = FFFA0BD2FC643091E3A2077C36D28324 /* PBXContainerItemProxy */;
+			targetProxy = F7E1A7B09B577A528A27F1AF7C092B6E /* PBXContainerItemProxy */;
 		};
-		EF89A961884E09D2B1B8913851D2E9EE /* PBXTargetDependency */ = {
+		17F8064BE4FDC6C00873AC2C9C8F25DE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = FBReactNativeSpec;
-			targetProxy = 01CE92224B7B24FD8985CC82A84EE4F0 /* PBXContainerItemProxy */;
+			targetProxy = 829FA2276EF4526149CEA2D91AB8A841 /* PBXContainerItemProxy */;
+		};
+		30D9138A46F52FD56A9B56334B8A607B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ReactCommon;
+			targetProxy = 791F3323EC789D8BF7695EC2A0C39C67 /* PBXContainerItemProxy */;
+		};
+		41836E355674C4020D0A8AE553D54E76 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "React-Core";
+			targetProxy = 425D18CECCAAE2A1EBDDBC1887594354 /* PBXContainerItemProxy */;
+		};
+		73DA9E69963ED468C252B0DCBC452AB3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "React-jsi";
+			targetProxy = 2E0D76763A8B13151DE674CF82B74F0A /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		58857D0ADC325D3DA414751F325F3E64 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = FD2F0ED9EAF651E55E4C786DDE3BBFD0 /* React-RCTVibration.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/React-RCTVibration/React-RCTVibration-prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"$(inherited)",
-					"RCT_DEV=1",
-					"RCT_ENABLE_INSPECTOR=0",
-					"ENABLE_PACKAGER_CONNECTION=0",
-				);
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = RCTVibration;
-				PRODUCT_NAME = "React-RCTVibration";
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 		B10719726FE69A88E702C40B755012B9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -423,9 +397,9 @@
 			};
 			name = Release;
 		};
-		EA42DBD3F1D5764946C9F9C16B1BCF41 /* Debug */ = {
+		F2C711BD09D083AF9FDCEDD034E17530 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F947C103BD6171EE04FECA1D3CD0D1AE /* React-RCTVibration.debug.xcconfig */;
+			baseConfigurationReference = 671BB8B46F096317CD48E2EF5B6708E2 /* React-RCTVibration.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -440,6 +414,7 @@
 					"ENABLE_PACKAGER_CONNECTION=0",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MODULEMAP_FILE = "Headers/Public/RCTVibration/React-RCTVibration.modulemap";
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -454,6 +429,39 @@
 			};
 			name = Debug;
 		};
+		F9F39396D725608EC5C2399D8847D34C /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F0715B474932D5069C2BBA2230CF9FE8 /* React-RCTVibration.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/React-RCTVibration/React-RCTVibration-prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"RCT_DEV=1",
+					"RCT_ENABLE_INSPECTOR=0",
+					"ENABLE_PACKAGER_CONNECTION=0",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MODULEMAP_FILE = "Headers/Public/RCTVibration/React-RCTVibration.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RCTVibration;
+				PRODUCT_NAME = "React-RCTVibration";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -466,11 +474,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F9B95E0DFF9BFA400E85F9DBE3D00057 /* Build configuration list for PBXNativeTarget "React-RCTVibration" */ = {
+		D8FFCE59A61DF015F64A191CA15758F5 /* Build configuration list for PBXNativeTarget "React-RCTVibration" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				EA42DBD3F1D5764946C9F9C16B1BCF41 /* Debug */,
-				58857D0ADC325D3DA414751F325F3E64 /* Release */,
+				F2C711BD09D083AF9FDCEDD034E17530 /* Debug */,
+				F9F39396D725608EC5C2399D8847D34C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

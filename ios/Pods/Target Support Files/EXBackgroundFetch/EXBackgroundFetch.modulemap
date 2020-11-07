@@ -1,0 +1,6 @@
+module EXBackgroundFetch {
+  umbrella header "EXBackgroundFetch-umbrella.h"
+
+  export *
+  module * { export * }
+}

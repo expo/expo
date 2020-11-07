@@ -1,0 +1,6 @@
+module EXBarCodeScanner {
+  umbrella header "EXBarCodeScanner-umbrella.h"
+
+  export *
+  module * { export * }
+}

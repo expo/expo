@@ -1,0 +1,6 @@
+module ABI39_0_0UMPermissionsInterface {
+  umbrella header "ABI39_0_0UMPermissionsInterface-umbrella.h"
+
+  export *
+  module * { export * }
+}

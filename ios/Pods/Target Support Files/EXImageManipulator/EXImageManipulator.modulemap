@@ -1,0 +1,6 @@
+module EXImageManipulator {
+  umbrella header "EXImageManipulator-umbrella.h"
+
+  export *
+  module * { export * }
+}

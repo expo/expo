@@ -1,0 +1,6 @@
+module EXWebBrowser {
+  umbrella header "EXWebBrowser-umbrella.h"
+
+  export *
+  module * { export * }
+}

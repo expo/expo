@@ -1,0 +1,6 @@
+module ABI39_0_0EXSegment {
+  umbrella header "ABI39_0_0EXSegment-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -1,0 +1,6 @@
+module ABI39_0_0UMAppLoader {
+  umbrella header "ABI39_0_0UMAppLoader-umbrella.h"
+
+  export *
+  module * { export * }
+}

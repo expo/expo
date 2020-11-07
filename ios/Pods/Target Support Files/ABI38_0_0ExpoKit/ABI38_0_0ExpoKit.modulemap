@@ -1,0 +1,6 @@
+module ABI38_0_0ExpoKit {
+  umbrella header "ABI38_0_0ExpoKit-umbrella.h"
+
+  export *
+  module * { export * }
+}

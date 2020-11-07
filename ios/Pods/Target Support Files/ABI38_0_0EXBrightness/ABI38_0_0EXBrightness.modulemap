@@ -1,0 +1,6 @@
+module ABI38_0_0EXBrightness {
+  umbrella header "ABI38_0_0EXBrightness-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -1,4 +1,4 @@
-framework module Pods_Exponent {
+module Pods_Exponent {
   umbrella header "Pods-Exponent-umbrella.h"
 
   export *

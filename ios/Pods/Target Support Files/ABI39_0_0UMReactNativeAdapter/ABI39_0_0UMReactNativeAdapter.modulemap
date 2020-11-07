@@ -1,0 +1,6 @@
+module ABI39_0_0UMReactNativeAdapter {
+  umbrella header "ABI39_0_0UMReactNativeAdapter-umbrella.h"
+
+  export *
+  module * { export * }
+}

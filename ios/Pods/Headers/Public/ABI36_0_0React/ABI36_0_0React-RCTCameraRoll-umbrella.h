@@ -1,0 +1,1 @@
+../../../Target Support Files/ABI36_0_0React-RCTCameraRoll/ABI36_0_0React-RCTCameraRoll-umbrella.h

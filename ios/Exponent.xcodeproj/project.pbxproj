@@ -32,6 +32,7 @@
 		2596F06B22201A9500DEEFF9 /* EXScopedFileSystemModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2596F06A22201A9400DEEFF9 /* EXScopedFileSystemModule.m */; };
 		25E12698EDFA4F52BD58F16C /* NativeReanimatedModuleSpec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ADB4FFDFF3154C1BAB67737F /* NativeReanimatedModuleSpec.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		28E9B2F58D214976A0686D92 /* FrozenObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08CC64AA5921475995168914 /* FrozenObject.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
+		299129175FB98ACA8068E7B1 /* libPods-ExponentIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B4C103010A1930301A8B780E /* libPods-ExponentIntegrationTests.a */; };
 		2CFE1F25CD524A7ABFCAA366 /* RNSharedElementNodeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 80598B49D2DB4720B1935D89 /* RNSharedElementNodeManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		2E50A3637BCE4846A8676DEC /* ReactViewPagerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 36D368D781234C37BC0979B5 /* ReactViewPagerManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		2F7A50E095D6492596EA0B26 /* RNSharedElementNode.m in Sources */ = {isa = PBXBuildFile; fileRef = D29BDFCEEA8F4701829ADCD1 /* RNSharedElementNode.m */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -117,7 +118,7 @@
 		4FA89DFCDD9842F7AAFC1CAF /* RNSVGPathMeasure.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E8A7DA8E798407CA5410CF6 /* RNSVGPathMeasure.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		50620A8F1BBC4330AF4B4E26 /* AIRGoogleMapHeatmapManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A5B705024D7B4371B0EB68EC /* AIRGoogleMapHeatmapManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		50659F05B6314F5192BC2215 /* RNSharedElementStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = 391920741A374C4AB61BDB48 /* RNSharedElementStyle.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		5146D70F6E937C8ACCB0FC21 /* Pods_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06EAF1BD2EA62148A103BDD3 /* Pods_Tests.framework */; };
+		5A8110BCA2619FAD3FB5C7B3 /* libPods-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE5DB2F2DA57D736A111487C /* libPods-Tests.a */; };
 		5E91B590D3BD401FB31B6D2D /* RCTOnPageSelected.m in Sources */ = {isa = PBXBuildFile; fileRef = 1460D7587BE24FA0B26C74B7 /* RCTOnPageSelected.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		66827DD222C54196B1FDA739 /* RNSScreenStackHeaderConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 6261E3DAD1C3435E87DCF5DB /* RNSScreenStackHeaderConfig.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		6A336FB8681B4FF2A16E754B /* RCTConvert+UIPageViewControllerNavigationOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = 50FA56FBAFB44A7AB2A97B96 /* RCTConvert+UIPageViewControllerNavigationOrientation.m */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -243,7 +244,6 @@
 		97635343A010490BBF92C76F /* RNCSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = C5DF76A1DCE14D2F9460F314 /* RNCSegmentedControl.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		9B83C7319E6A42FDBFAD2E58 /* RNSVGMarker.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B5470F008B04F93A7E19D7B /* RNSVGMarker.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		9C7C7E9CB1C14EDCAE259B74 /* REAIOSErrorHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 750CD5458DDA4D4BB556F555 /* REAIOSErrorHandler.mm */; settings = {COMPILER_FLAGS = "-w"; }; };
-		A3938CC914A95930B5454BE7 /* Pods_Exponent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F4241839C4C124D375D15A6 /* Pods_Exponent.framework */; };
 		A845744006CE4B049D8B3A1F /* NativeMethods.mm in Sources */ = {isa = PBXBuildFile; fileRef = CC7986C2FC404501906FF740 /* NativeMethods.mm */; settings = {COMPILER_FLAGS = "-w"; }; };
 		ABC18CFCC0224BF0B95B691A /* RNCSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = EC7E234A4A564DFE84B2B1D0 /* RNCSlider.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		AF898917F5C94A00ADF8ED47 /* EventHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EEE60406590143F384331AD9 /* EventHandler.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -253,6 +253,7 @@
 		B236C4F324740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B236C4F224740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.m */; };
 		B23D9AA324758C6600D09AC8 /* EXScopedNotificationPresentationModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B23D9AA224758C6600D09AC8 /* EXScopedNotificationPresentationModule.m */; };
 		B2B492172462F5EF001576D8 /* EXScopedNotificationsEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = B2B492162462F5EF001576D8 /* EXScopedNotificationsEmitter.m */; };
+		B2B5688139AE9E46D27AB36A /* libPods-Exponent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EF82C3D96F422CE6F951F58E /* libPods-Exponent.a */; };
 		B2F7C02B246B09890060EE06 /* EXScopedNotificationsHandlerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B2F7C02A246B09890060EE06 /* EXScopedNotificationsHandlerModule.m */; };
 		B2F7C02E246B09AE0060EE06 /* EXScopedNotificationsUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = B2F7C02D246B09AE0060EE06 /* EXScopedNotificationsUtils.m */; };
 		B4FF3D8631BB48D290E44742 /* RNCConnectionState.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FE9493F87604B4B8CBB87C8 /* RNCConnectionState.m */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -358,7 +359,6 @@
 		CDD9BBD2CB3E4DAFB174D08C /* ShareableValue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5386CF8C5BF64B689032A3D4 /* ShareableValue.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		D0BF188CA1D140ACA64BB49D /* RNCMaskedViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 78EFF1819B1C44F2A92FC309 /* RNCMaskedViewManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		E076A3A138374780BD9CAEA0 /* RCTOnPageScrollEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = AFCE476CA6D546178EEF9B3C /* RCTOnPageScrollEvent.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		E2210891B6EF5D20D57AEFB4 /* Pods_ExponentIntegrationTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 739AE56A3468F3026ADD34E2 /* Pods_ExponentIntegrationTests.framework */; };
 		E2BF7EA6366243D98A78D9E8 /* RNCPickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 93C9E2950F474416B3F7A60E /* RNCPickerManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		E75397FDFB6B4FF780EA612A /* RNCSegmentedControlManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F502F71E43A44658A6B20C26 /* RNCSegmentedControlManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		E77A18FAA07E47EFBBDD7338 /* ReactNativePageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 01D6195E420E433AA7BB8584 /* ReactNativePageView.m */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -406,7 +406,6 @@
 /* Begin PBXFileReference section */
 		01D6195E420E433AA7BB8584 /* ReactNativePageView.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = ReactNativePageView.m; sourceTree = "<group>"; };
 		02F26B94889E4EB5BA470AFB /* Pods-Exponent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Exponent.debug.xcconfig"; path = "Target Support Files/Pods-Exponent/Pods-Exponent.debug.xcconfig"; sourceTree = "<group>"; };
-		06EAF1BD2EA62148A103BDD3 /* Pods_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0726F0572007E438004992E7 /* EXKernelAppRecord.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXKernelAppRecord.h; sourceTree = "<group>"; };
 		0726F0582007E438004992E7 /* EXKernelAppRecord.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXKernelAppRecord.m; sourceTree = "<group>"; };
 		0726F05A2007E446004992E7 /* EXKernelAppRegistry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXKernelAppRegistry.h; sourceTree = "<group>"; };
@@ -756,7 +755,6 @@
 		7043DF752283303800272D74 /* RNSVGContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNSVGContainer.h; sourceTree = "<group>"; };
 		70CF0556ED2440AA98B83B1C /* FrozenObject.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = FrozenObject.h; sourceTree = "<group>"; };
 		731D1E5D176247F4893297CE /* RNSVGMarker.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSVGMarker.h; sourceTree = "<group>"; };
-		739AE56A3468F3026ADD34E2 /* Pods_ExponentIntegrationTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ExponentIntegrationTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		750CD5458DDA4D4BB556F555 /* REAIOSErrorHandler.mm */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; path = REAIOSErrorHandler.mm; sourceTree = "<group>"; };
 		7711740A91C24BB68D6DBB1D /* REAIOSScheduler.mm */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; path = REAIOSScheduler.mm; sourceTree = "<group>"; };
 		780F0BF062134A048B33344C /* RNSharedElementCornerRadii.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSharedElementCornerRadii.m; sourceTree = "<group>"; };
@@ -860,7 +858,6 @@
 		7A2EAF5D0C4245019A94A807 /* UIViewController+CreateExtension.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = "UIViewController+CreateExtension.h"; sourceTree = "<group>"; };
 		7B5470F008B04F93A7E19D7B /* RNSVGMarker.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSVGMarker.m; sourceTree = "<group>"; };
 		7E7497021CDE4FBA925D5F50 /* RNSharedElementTransitionItem.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSharedElementTransitionItem.m; sourceTree = "<group>"; };
-		7F4241839C4C124D375D15A6 /* Pods_Exponent.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Exponent.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7F6CB974983B435DB3C2F7BE /* RNSVGForeignObject.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSVGForeignObject.h; sourceTree = "<group>"; };
 		80598B49D2DB4720B1935D89 /* RNSharedElementNodeManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSharedElementNodeManager.m; sourceTree = "<group>"; };
 		8746D75D24D04B2300BFAD22 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -914,6 +911,7 @@
 		B2F7C02C246B09AE0060EE06 /* EXScopedNotificationsUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationsUtils.h; sourceTree = "<group>"; };
 		B2F7C02D246B09AE0060EE06 /* EXScopedNotificationsUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationsUtils.m; sourceTree = "<group>"; };
 		B405557B9F0E4EF8B7BF58CA /* NativeReanimatedModule.cpp */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; path = NativeReanimatedModule.cpp; sourceTree = "<group>"; };
+		B4C103010A1930301A8B780E /* libPods-ExponentIntegrationTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ExponentIntegrationTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B505BA0E20CAF77A0046ACFB /* Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B505BA1220CAF77A0046ACFB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B505BA1A20CAF80D0046ACFB /* EXEnvironmentMocks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXEnvironmentMocks.m; sourceTree = "<group>"; };
@@ -1112,6 +1110,7 @@
 		CC7986C2FC404501906FF740 /* NativeMethods.mm */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; path = NativeMethods.mm; sourceTree = "<group>"; };
 		CCF7710E4F58478DA6A63F09 /* RNCSliderManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCSliderManager.m; sourceTree = "<group>"; };
 		CE32F209D83549EABA4AC64F /* REAIOSLogger.mm */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; path = REAIOSLogger.mm; sourceTree = "<group>"; };
+		CE5DB2F2DA57D736A111487C /* libPods-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE6F5BFF055A475ABEADCD97 /* MutableValueSetterProxy.cpp */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; path = MutableValueSetterProxy.cpp; sourceTree = "<group>"; };
 		CF19DC7F168E4FEEAAEC06DC /* MutableValue.cpp */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; path = MutableValue.cpp; sourceTree = "<group>"; };
 		D290562E102943CEA478BC08 /* REATurboModuleProvider.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = REATurboModuleProvider.h; sourceTree = "<group>"; };
@@ -1137,6 +1136,7 @@
 		EE5757442E5343FAAC728C45 /* RNCMaskedView.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCMaskedView.h; sourceTree = "<group>"; };
 		EEE60406590143F384331AD9 /* EventHandler.cpp */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; path = EventHandler.cpp; sourceTree = "<group>"; };
 		EF26CAC6602D46B3B6C94E66 /* RNCConnectionStateWatcher.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCConnectionStateWatcher.h; sourceTree = "<group>"; };
+		EF82C3D96F422CE6F951F58E /* libPods-Exponent.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Exponent.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F00D28C949584726A2B48E1C /* EventHandlerRegistry.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = EventHandlerRegistry.h; sourceTree = "<group>"; };
 		F10869892448B11D00B7DC04 /* EXDevMenuMotionInterceptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXDevMenuMotionInterceptor.h; sourceTree = "<group>"; };
 		F108698A2448B11D00B7DC04 /* EXDevMenuMotionInterceptor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXDevMenuMotionInterceptor.m; sourceTree = "<group>"; };
@@ -1183,7 +1183,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F77DDB931E04AC1100624CA2 /* SafariServices.framework in Frameworks */,
-				A3938CC914A95930B5454BE7 /* Pods_Exponent.framework in Frameworks */,
+				B2B5688139AE9E46D27AB36A /* libPods-Exponent.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1191,7 +1191,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5146D70F6E937C8ACCB0FC21 /* Pods_Tests.framework in Frameworks */,
+				5A8110BCA2619FAD3FB5C7B3 /* libPods-Tests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1199,7 +1199,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E2210891B6EF5D20D57AEFB4 /* Pods_ExponentIntegrationTests.framework in Frameworks */,
+				299129175FB98ACA8068E7B1 /* libPods-ExponentIntegrationTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1233,9 +1233,9 @@
 			children = (
 				FCDE2DCB25530FFC0043897F /* Lottie.framework */,
 				F77DDB921E04AC1100624CA2 /* SafariServices.framework */,
-				7F4241839C4C124D375D15A6 /* Pods_Exponent.framework */,
-				739AE56A3468F3026ADD34E2 /* Pods_ExponentIntegrationTests.framework */,
-				06EAF1BD2EA62148A103BDD3 /* Pods_Tests.framework */,
+				EF82C3D96F422CE6F951F58E /* libPods-Exponent.a */,
+				B4C103010A1930301A8B780E /* libPods-ExponentIntegrationTests.a */,
+				CE5DB2F2DA57D736A111487C /* libPods-Tests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -2601,7 +2601,6 @@
 				78CEE2BE1ACD07D70095B124 /* Resources */,
 				347794D3234BFFC20087B402 /* Copy Bundle Resources Conditionally */,
 				65CD50218C6CF1A5BF985CC7 /* [CP] Copy Pods Resources */,
-				5139A278359107770C27DFFB /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -2797,24 +2796,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
 			shellScript = "$SRCROOT/Build-Phases/cp-bundle-resources-conditionally.sh\n\n";
-		};
-		5139A278359107770C27DFFB /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Exponent/Pods-Exponent-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/lottie-ios/Lottie.framework",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Lottie.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Exponent/Pods-Exponent-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
 		};
 		65CD50218C6CF1A5BF985CC7 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -3439,10 +3420,528 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = NO;
-				DEVELOPMENT_TEAM = C8D8QTF339;
+				DEVELOPMENT_TEAM = 6485NTXJHW;
 				EX_BUNDLE_NAME = Expo;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Exponent/Supporting/Exponent-Prefix.pch";
+				"HEADER_SEARCH_PATHS[arch=*]" = (
+					"$(inherited)",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXAV/ABI36_0_0EXAV.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXAdsAdMob/ABI36_0_0EXAdsAdMob.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXAdsFacebook/ABI36_0_0EXAdsFacebook.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXAmplitude/ABI36_0_0EXAmplitude.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXAppAuth/ABI36_0_0EXAppAuth.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXAppLoaderProvider/ABI36_0_0EXAppLoaderProvider.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXAppleAuthentication/ABI36_0_0EXAppleAuthentication.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXApplication/ABI36_0_0EXApplication.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXBackgroundFetch/ABI36_0_0EXBackgroundFetch.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXBarCodeScanner/ABI36_0_0EXBarCodeScanner.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXBattery/ABI36_0_0EXBattery.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXBluetooth/ABI36_0_0EXBluetooth.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXBlur/ABI36_0_0EXBlur.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXBrightness/ABI36_0_0EXBrightness.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXCalendar/ABI36_0_0EXCalendar.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXCamera/ABI36_0_0EXCamera.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXCellular/ABI36_0_0EXCellular.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXConstants/ABI36_0_0EXConstants.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXContacts/ABI36_0_0EXContacts.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXCrypto/ABI36_0_0EXCrypto.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXDevice/ABI36_0_0EXDevice.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXDocumentPicker/ABI36_0_0EXDocumentPicker.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXErrorRecovery/ABI36_0_0EXErrorRecovery.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXFaceDetector/ABI36_0_0EXFaceDetector.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXFacebook/ABI36_0_0EXFacebook.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXFileSystem/ABI36_0_0EXFileSystem.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXFont/ABI36_0_0EXFont.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXGL/ABI36_0_0EXGL.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXGoogleSignIn/ABI36_0_0EXGoogleSignIn.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXHaptics/ABI36_0_0EXHaptics.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXImageManipulator/ABI36_0_0EXImageManipulator.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXImagePicker/ABI36_0_0EXImagePicker.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXInAppPurchases/ABI36_0_0EXInAppPurchases.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXKeepAwake/ABI36_0_0EXKeepAwake.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXLinearGradient/ABI36_0_0EXLinearGradient.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXLocalAuthentication/ABI36_0_0EXLocalAuthentication.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXLocalization/ABI36_0_0EXLocalization.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXLocation/ABI36_0_0EXLocation.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXMailComposer/ABI36_0_0EXMailComposer.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXMediaLibrary/ABI36_0_0EXMediaLibrary.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXNetwork/ABI36_0_0EXNetwork.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXPermissions/ABI36_0_0EXPermissions.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXPrint/ABI36_0_0EXPrint.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXRandom/ABI36_0_0EXRandom.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXSMS/ABI36_0_0EXSMS.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXSQLite/ABI36_0_0EXSQLite.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXSecureStore/ABI36_0_0EXSecureStore.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXSegment/ABI36_0_0EXSegment.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXSensors/ABI36_0_0EXSensors.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXSharing/ABI36_0_0EXSharing.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXSpeech/ABI36_0_0EXSpeech.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXStoreReview/ABI36_0_0EXStoreReview.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXTaskManager/ABI36_0_0EXTaskManager.framework/Headers\"",
+					"\"${PO`DS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXUpdates/ABI36_0_0EXUpdates.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXVideoThumbnails/ABI36_0_0EXVideoThumbnails.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0EXWebBrowser/ABI36_0_0EXWebBrowser.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0ExpoKit/ABI36_0_0ExpoKit.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0FBReactNativeSpec/ABI36_0_0FBReactNativeSpec.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0RCTTypeSafety/ABI36_0_0RCTTypeSafety.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0React-Core/ABI36_0_0React.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0React-CoreModules/ABI36_0_0CoreModules.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0React-RCTActionSheet/ABI36_0_0RCTActionSheet.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0React-RCTAnimation/ABI36_0_0RCTAnimation.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0React-RCTBlob/ABI36_0_0RCTBlob.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0React-RCTCameraRoll/ABI36_0_0React.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0React-RCTImage/ABI36_0_0RCTImage.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0React-RCTLinking/ABI36_0_0RCTLinking.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0React-RCTNetwork/ABI36_0_0RCTNetwork.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0React-RCTSettings/ABI36_0_0RCTSettings.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0React-RCTText/ABI36_0_0RCTText.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0React-RCTVibration/ABI36_0_0RCTVibration.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0React-cxxreact/ABI36_0_0cxxreact.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0React-jsi/ABI36_0_0jsi.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0React-jsiexecutor/ABI36_0_0jsireact.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0React-jsinspector/ABI36_0_0jsinspector.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0ReactCommon/ABI36_0_0ReactCommon.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0UMCore/ABI36_0_0UMCore.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0UMPermissionsInterface/ABI36_0_0UMPermissionsInterface.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0UMReactNativeAdapter/ABI36_0_0UMReactNativeAdapter.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI36_0_0Yoga/ABI36_0_0yoga.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXAV/ABI37_0_0EXAV.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXAdsAdMob/ABI37_0_0EXAdsAdMob.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXAdsFacebook/ABI37_0_0EXAdsFacebook.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXAmplitude/ABI37_0_0EXAmplitude.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXAppAuth/ABI37_0_0EXAppAuth.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXAppleAuthentication/ABI37_0_0EXAppleAuthentication.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXApplication/ABI37_0_0EXApplication.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXBackgroundFetch/ABI37_0_0EXBackgroundFetch.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXBarCodeScanner/ABI37_0_0EXBarCodeScanner.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXBattery/ABI37_0_0EXBattery.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXBluetooth/ABI37_0_0EXBluetooth.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXBlur/ABI37_0_0EXBlur.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXBrightness/ABI37_0_0EXBrightness.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXCalendar/ABI37_0_0EXCalendar.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXCamera/ABI37_0_0EXCamera.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXCellular/ABI37_0_0EXCellular.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXConstants/ABI37_0_0EXConstants.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXContacts/ABI37_0_0EXContacts.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXCrypto/ABI37_0_0EXCrypto.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXDevice/ABI37_0_0EXDevice.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXDocumentPicker/ABI37_0_0EXDocumentPicker.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXErrorRecovery/ABI37_0_0EXErrorRecovery.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXFaceDetector/ABI37_0_0EXFaceDetector.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXFacebook/ABI37_0_0EXFacebook.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXFileSystem/ABI37_0_0EXFileSystem.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXFirebaseAnalytics/ABI37_0_0EXFirebaseAnalytics.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXFirebaseCore/ABI37_0_0EXFirebaseCore.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXFont/ABI37_0_0EXFont.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXGL/ABI37_0_0EXGL.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXGoogleSignIn/ABI37_0_0EXGoogleSignIn.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXHaptics/ABI37_0_0EXHaptics.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXImageLoader/ABI37_0_0EXImageLoader.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXImageManipulator/ABI37_0_0EXImageManipulator.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXImagePicker/ABI37_0_0EXImagePicker.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXInAppPurchases/ABI37_0_0EXInAppPurchases.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXKeepAwake/ABI37_0_0EXKeepAwake.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXLinearGradient/ABI37_0_0EXLinearGradient.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXLocalAuthentication/ABI37_0_0EXLocalAuthentication.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXLocalization/ABI37_0_0EXLocalization.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXLocation/ABI37_0_0EXLocation.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXMailComposer/ABI37_0_0EXMailComposer.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXMediaLibrary/ABI37_0_0EXMediaLibrary.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXModuleTemplate/ABI37_0_0EXModuleTemplate.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXNetwork/ABI37_0_0EXNetwork.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXPermissions/ABI37_0_0EXPermissions.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXPrint/ABI37_0_0EXPrint.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXRandom/ABI37_0_0EXRandom.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXSMS/ABI37_0_0EXSMS.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXSQLite/ABI37_0_0EXSQLite.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXScreenOrientation/ABI37_0_0EXScreenOrientation.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXSecureStore/ABI37_0_0EXSecureStore.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXSegment/ABI37_0_0EXSegment.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXSensors/ABI37_0_0EXSensors.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXSharing/ABI37_0_0EXSharing.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXSpeech/ABI37_0_0EXSpeech.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXStoreReview/ABI37_0_0EXStoreReview.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXTaskManager/ABI37_0_0EXTaskManager.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXVideoThumbnails/ABI37_0_0EXVideoThumbnails.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0EXWebBrowser/ABI37_0_0EXWebBrowser.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0ExpoKit/ABI37_0_0ExpoKit.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0FBReactNativeSpec/ABI37_0_0FBReactNativeSpec.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0RCTTypeSafety/ABI37_0_0RCTTypeSafety.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0React-Core/ABI37_0_0React.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0React-CoreModules/ABI37_0_0CoreModules.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0React-RCTActionSheet/ABI37_0_0RCTActionSheet.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0React-RCTAnimation/ABI37_0_0RCTAnimation.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0React-RCTBlob/ABI37_0_0RCTBlob.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0React-RCTImage/ABI37_0_0RCTImage.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0React-RCTLinking/ABI37_0_0RCTLinking.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0React-RCTNetwork/ABI37_0_0RCTNetwork.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0React-RCTSettings/ABI37_0_0RCTSettings.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0React-RCTText/ABI37_0_0RCTText.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0React-RCTVibration/ABI37_0_0RCTVibration.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0React-cxxreact/ABI37_0_0cxxreact.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0React-jsi/ABI37_0_0jsi.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0React-jsiexecutor/ABI37_0_0jsireact.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0React-jsinspector/ABI37_0_0jsinspector.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0ReactCommon/ABI37_0_0ReactCommon.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0UMAppLoader/ABI37_0_0UMAppLoader.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0UMCore/ABI37_0_0UMCore.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0UMPermissionsInterface/ABI37_0_0UMPermissionsInterface.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0UMReactNativeAdapter/ABI37_0_0UMReactNativeAdapter.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI37_0_0Yoga/ABI37_0_0yoga.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXAV/ABI38_0_0EXAV.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXAdsAdMob/ABI38_0_0EXAdsAdMob.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXAdsFacebook/ABI38_0_0EXAdsFacebook.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXAmplitude/ABI38_0_0EXAmplitude.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXAppAuth/ABI38_0_0EXAppAuth.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXAppleAuthentication/ABI38_0_0EXAppleAuthentication.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXApplication/ABI38_0_0EXApplication.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXBackgroundFetch/ABI38_0_0EXBackgroundFetch.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXBarCodeScanner/ABI38_0_0EXBarCodeScanner.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXBattery/ABI38_0_0EXBattery.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXBluetooth/ABI38_0_0EXBluetooth.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXBlur/ABI38_0_0EXBlur.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXBrightness/ABI38_0_0EXBrightness.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXCalendar/ABI38_0_0EXCalendar.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXCamera/ABI38_0_0EXCamera.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXCellular/ABI38_0_0EXCellular.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXConstants/ABI38_0_0EXConstants.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXContacts/ABI38_0_0EXContacts.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXCrypto/ABI38_0_0EXCrypto.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXDevice/ABI38_0_0EXDevice.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXDocumentPicker/ABI38_0_0EXDocumentPicker.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXErrorRecovery/ABI38_0_0EXErrorRecovery.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXFaceDetector/ABI38_0_0EXFaceDetector.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXFacebook/ABI38_0_0EXFacebook.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXFileSystem/ABI38_0_0EXFileSystem.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXFirebaseAnalytics/ABI38_0_0EXFirebaseAnalytics.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXFirebaseCore/ABI38_0_0EXFirebaseCore.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXFont/ABI38_0_0EXFont.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXGL/ABI38_0_0EXGL.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXGoogleSignIn/ABI38_0_0EXGoogleSignIn.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXHaptics/ABI38_0_0EXHaptics.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXImageLoader/ABI38_0_0EXImageLoader.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXImageManipulator/ABI38_0_0EXImageManipulator.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXImagePicker/ABI38_0_0EXImagePicker.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXInAppPurchases/ABI38_0_0EXInAppPurchases.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXKeepAwake/ABI38_0_0EXKeepAwake.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXLinearGradient/ABI38_0_0EXLinearGradient.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXLocalAuthentication/ABI38_0_0EXLocalAuthentication.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXLocalization/ABI38_0_0EXLocalization.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXLocation/ABI38_0_0EXLocation.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXMailComposer/ABI38_0_0EXMailComposer.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXMediaLibrary/ABI38_0_0EXMediaLibrary.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXModuleTemplate/ABI38_0_0EXModuleTemplate.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXNetwork/ABI38_0_0EXNetwork.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXNotifications/ABI38_0_0EXNotifications.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXPermissions/ABI38_0_0EXPermissions.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXPrint/ABI38_0_0EXPrint.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXRandom/ABI38_0_0EXRandom.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXSMS/ABI38_0_0EXSMS.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXSQLite/ABI38_0_0EXSQLite.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXScreenCapture/ABI38_0_0EXScreenCapture.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXScreenOrientation/ABI38_0_0EXScreenOrientation.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXSecureStore/ABI38_0_0EXSecureStore.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXSegment/ABI38_0_0EXSegment.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXSensors/ABI38_0_0EXSensors.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXSharing/ABI38_0_0EXSharing.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXSpeech/ABI38_0_0EXSpeech.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXSplashScreen/ABI38_0_0EXSplashScreen.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXStoreReview/ABI38_0_0EXStoreReview.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXTaskManager/ABI38_0_0EXTaskManager.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXVideoThumbnails/ABI38_0_0EXVideoThumbnails.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0EXWebBrowser/ABI38_0_0EXWebBrowser.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0ExpoKit/ABI38_0_0ExpoKit.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0FBReactNativeSpec/ABI38_0_0FBReactNativeSpec.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0RCTTypeSafety/ABI38_0_0RCTTypeSafety.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0React-Core/ABI38_0_0React.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0React-CoreModules/ABI38_0_0CoreModules.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0React-RCTAnimation/ABI38_0_0RCTAnimation.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0React-RCTBlob/ABI38_0_0RCTBlob.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0React-RCTImage/ABI38_0_0RCTImage.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0React-RCTLinking/ABI38_0_0RCTLinking.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0React-RCTNetwork/ABI38_0_0RCTNetwork.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0React-RCTSettings/ABI38_0_0RCTSettings.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0React-RCTText/ABI38_0_0RCTText.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0React-RCTVibration/ABI38_0_0RCTVibration.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0React-cxxreact/ABI38_0_0cxxreact.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0React-jsi/ABI38_0_0jsi.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0React-jsiexecutor/ABI38_0_0jsireact.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0React-jsinspector/ABI38_0_0jsinspector.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0ReactCommon/ABI38_0_0ReactCommon.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0UMAppLoader/ABI38_0_0UMAppLoader.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0UMCore/ABI38_0_0UMCore.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0UMPermissionsInterface/ABI38_0_0UMPermissionsInterface.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0UMReactNativeAdapter/ABI38_0_0UMReactNativeAdapter.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI38_0_0Yoga/ABI38_0_0yoga.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXAV/ABI39_0_0EXAV.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXAdsAdMob/ABI39_0_0EXAdsAdMob.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXAdsFacebook/ABI39_0_0EXAdsFacebook.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXAmplitude/ABI39_0_0EXAmplitude.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXAppAuth/ABI39_0_0EXAppAuth.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXAppleAuthentication/ABI39_0_0EXAppleAuthentication.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXApplication/ABI39_0_0EXApplication.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXBackgroundFetch/ABI39_0_0EXBackgroundFetch.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXBarCodeScanner/ABI39_0_0EXBarCodeScanner.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXBattery/ABI39_0_0EXBattery.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXBlur/ABI39_0_0EXBlur.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXBrightness/ABI39_0_0EXBrightness.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXCalendar/ABI39_0_0EXCalendar.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXCamera/ABI39_0_0EXCamera.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXCellular/ABI39_0_0EXCellular.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXConstants/ABI39_0_0EXConstants.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXContacts/ABI39_0_0EXContacts.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXCrypto/ABI39_0_0EXCrypto.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXDevice/ABI39_0_0EXDevice.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXDocumentPicker/ABI39_0_0EXDocumentPicker.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXErrorRecovery/ABI39_0_0EXErrorRecovery.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXFaceDetector/ABI39_0_0EXFaceDetector.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXFacebook/ABI39_0_0EXFacebook.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXFileSystem/ABI39_0_0EXFileSystem.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXFirebaseAnalytics/ABI39_0_0EXFirebaseAnalytics.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXFirebaseCore/ABI39_0_0EXFirebaseCore.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXFont/ABI39_0_0EXFont.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXGL/ABI39_0_0EXGL.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXGoogleSignIn/ABI39_0_0EXGoogleSignIn.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXHaptics/ABI39_0_0EXHaptics.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXImageLoader/ABI39_0_0EXImageLoader.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXImageManipulator/ABI39_0_0EXImageManipulator.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXImagePicker/ABI39_0_0EXImagePicker.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXInAppPurchases/ABI39_0_0EXInAppPurchases.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXKeepAwake/ABI39_0_0EXKeepAwake.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXLinearGradient/ABI39_0_0EXLinearGradient.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXLocalAuthentication/ABI39_0_0EXLocalAuthentication.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXLocalization/ABI39_0_0EXLocalization.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXLocation/ABI39_0_0EXLocation.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXMailComposer/ABI39_0_0EXMailComposer.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXMediaLibrary/ABI39_0_0EXMediaLibrary.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXModuleTemplate/ABI39_0_0EXModuleTemplate.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXNetwork/ABI39_0_0EXNetwork.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXNotifications/ABI39_0_0EXNotifications.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXPermissions/ABI39_0_0EXPermissions.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXPrint/ABI39_0_0EXPrint.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXRandom/ABI39_0_0EXRandom.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXSMS/ABI39_0_0EXSMS.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXSQLite/ABI39_0_0EXSQLite.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXScreenCapture/ABI39_0_0EXScreenCapture.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXScreenOrientation/ABI39_0_0EXScreenOrientation.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXSecureStore/ABI39_0_0EXSecureStore.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXSegment/ABI39_0_0EXSegment.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXSensors/ABI39_0_0EXSensors.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXSharing/ABI39_0_0EXSharing.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXSpeech/ABI39_0_0EXSpeech.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXSplashScreen/ABI39_0_0EXSplashScreen.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXStoreReview/ABI39_0_0EXStoreReview.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXTaskManager/ABI39_0_0EXTaskManager.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXUpdates/ABI39_0_0EXUpdates.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXVideoThumbnails/ABI39_0_0EXVideoThumbnails.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0EXWebBrowser/ABI39_0_0EXWebBrowser.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0ExpoKit/ABI39_0_0ExpoKit.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0FBReactNativeSpec/ABI39_0_0FBReactNativeSpec.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0RCTTypeSafety/ABI39_0_0RCTTypeSafety.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0React-Core/ABI39_0_0React.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0React-CoreModules/ABI39_0_0CoreModules.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0React-RCTAnimation/ABI39_0_0RCTAnimation.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0React-RCTBlob/ABI39_0_0RCTBlob.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0React-RCTImage/ABI39_0_0RCTImage.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0React-RCTLinking/ABI39_0_0RCTLinking.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0React-RCTNetwork/ABI39_0_0RCTNetwork.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0React-RCTSettings/ABI39_0_0RCTSettings.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0React-RCTText/ABI39_0_0RCTText.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0React-RCTVibration/ABI39_0_0RCTVibration.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0React-cxxreact/ABI39_0_0cxxreact.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0React-jsi/ABI39_0_0jsi.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0React-jsiexecutor/ABI39_0_0jsireact.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0React-jsinspector/ABI39_0_0jsinspector.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0ReactCommon/ABI39_0_0ReactCommon.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0UMAppLoader/ABI39_0_0UMAppLoader.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0UMCore/ABI39_0_0UMCore.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0UMPermissionsInterface/ABI39_0_0UMPermissionsInterface.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0UMReactNativeAdapter/ABI39_0_0UMReactNativeAdapter.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0Yoga/ABI39_0_0yoga.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/Amplitude/Amplitude.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/Analytics/Analytics.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/AppAuth/AppAuth.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/Branch/Branch.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/CocoaLumberjack/CocoaLumberjack.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/DoubleConversion/DoubleConversion.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXAV/EXAV.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXAdsAdMob/EXAdsAdMob.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXAdsFacebook/EXAdsFacebook.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXAmplitude/EXAmplitude.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXAppAuth/EXAppAuth.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXAppleAuthentication/EXAppleAuthentication.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXApplication/EXApplication.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXBackgroundFetch/EXBackgroundFetch.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXBarCodeScanner/EXBarCodeScanner.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXBattery/EXBattery.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXBlur/EXBlur.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXBranch/EXBranch.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXBrightness/EXBrightness.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXCalendar/EXCalendar.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXCamera/EXCamera.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXCellular/EXCellular.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXContacts/EXContacts.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXCrypto/EXCrypto.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXDevice/EXDevice.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXDocumentPicker/EXDocumentPicker.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXErrorRecovery/EXErrorRecovery.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXFaceDetector/EXFaceDetector.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXFacebook/EXFacebook.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXFileSystem/EXFileSystem.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXFirebaseAnalytics/EXFirebaseAnalytics.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXFirebaseCore/EXFirebaseCore.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXFont/EXFont.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXGL/EXGL.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXGL_CPP/EXGL_CPP.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXGL_CPP_LEGACY/EXGL_CPP_LEGACY.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXGoogleSignIn/EXGoogleSignIn.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXHaptics/EXHaptics.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXImageLoader/EXImageLoader.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXImageManipulator/EXImageManipulator.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXImagePicker/EXImagePicker.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXKeepAwake/EXKeepAwake.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXLinearGradient/EXLinearGradient.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXLocalAuthentication/EXLocalAuthentication.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXLocalization/EXLocalization.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXLocation/EXLocation.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXMailComposer/EXMailComposer.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXMediaLibrary/EXMediaLibrary.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXNetwork/EXNetwork.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXNotifications/EXNotifications.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXPermissions/EXPermissions.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXPrint/EXPrint.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXRandom/EXRandom.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXSMS/EXSMS.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXSQLite/EXSQLite.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXScreenCapture/EXScreenCapture.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXScreenOrientation/EXScreenOrientation.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXSecureStore/EXSecureStore.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXSegment/EXSegment.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXSensors/EXSensors.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXSharing/EXSharing.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXSpeech/EXSpeech.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXSplashScreen/EXSplashScreen.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXStoreReview/EXStoreReview.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXTaskManager/EXTaskManager.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXUpdates/EXUpdates.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXVideoThumbnails/EXVideoThumbnails.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXWebBrowser/EXWebBrowser.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/FBReactNativeSpec/FBReactNativeSpec.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/FBSDKCoreKit/FBSDKCoreKit.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/FBSDKLoginKit/FBSDKLoginKit.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseCore/FirebaseCore.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseCoreDiagnostics/FirebaseCoreDiagnostics.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseInstanceID/FirebaseInstanceID.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/Folly/folly.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/GTMAppAuth/GTMAppAuth.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/Google-Maps-iOS-Utils/Google_Maps_iOS_Utils.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/GoogleAPIClientForREST/GoogleAPIClientForREST.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/GoogleDataTransport/GoogleDataTransport.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/GoogleDataTransportCCTSupport/GoogleDataTransportCCTSupport.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/GoogleUtilities/GoogleUtilities.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/JKBigInteger2/JKBigInteger2.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/Protobuf/protobuf.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/RCTTypeSafety/RCTTypeSafety.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/React.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/React-CoreModules/CoreModules.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTAnimation/RCTAnimation.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTBlob/RCTBlob.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTImage/RCTImage.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTLinking/RCTLinking.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTNetwork/RCTNetwork.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTSettings/RCTSettings.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTText/RCTText.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTVibration/RCTVibration.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/React-cxxreact/cxxreact.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/React-jsi/jsi.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/React-jsiexecutor/jsireact.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/React-jsinspector/jsinspector.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/UMAppLoader/UMAppLoader.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/UMCore/UMCore.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/UMPermissionsInterface/UMPermissionsInterface.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/UMReactNativeAdapter/UMReactNativeAdapter.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/Yoga/yoga.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/ZXingObjC/ZXingObjC.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/glog/glog.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/lottie-ios/Lottie.framework/Headers\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/nanopb/nanopb.framework/Headers\"",
+					"\"${PODS_ROOT}/Headers/Public\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI36_0_0FBLazyVector\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI36_0_0RCTRequired\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI36_0_0UMBarCodeScannerInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI36_0_0UMCameraInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI36_0_0UMConstantsInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI36_0_0UMFaceDetectorInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI36_0_0UMFileSystemInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI36_0_0UMFontInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI36_0_0UMImageLoaderInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI36_0_0UMSensorsInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI36_0_0UMTaskManagerInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI37_0_0FBLazyVector\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI37_0_0RCTRequired\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI37_0_0UMBarCodeScannerInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI37_0_0UMCameraInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI37_0_0UMConstantsInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI37_0_0UMFaceDetectorInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI37_0_0UMFileSystemInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI37_0_0UMFontInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI37_0_0UMImageLoaderInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI37_0_0UMSensorsInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI37_0_0UMTaskManagerInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI38_0_0FBLazyVector\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI38_0_0RCTRequired\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI38_0_0UMBarCodeScannerInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI38_0_0UMCameraInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI38_0_0UMConstantsInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI38_0_0UMFaceDetectorInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI38_0_0UMFileSystemInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI38_0_0UMFontInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI38_0_0UMImageLoaderInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI38_0_0UMSensorsInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI38_0_0UMTaskManagerInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI39_0_0FBLazyVector\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI39_0_0RCTRequired\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI39_0_0React-callinvoker\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI39_0_0UMBarCodeScannerInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI39_0_0UMCameraInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI39_0_0UMConstantsInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI39_0_0UMFaceDetectorInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI39_0_0UMFileSystemInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI39_0_0UMFontInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI39_0_0UMImageLoaderInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI39_0_0UMSensorsInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/ABI39_0_0UMTaskManagerInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/FBLazyVector\"",
+					"\"${PODS_ROOT}/Headers/Public/Firebase\"",
+					"\"${PODS_ROOT}/Headers/Public/FirebaseCoreDiagnosticsInterop\"",
+					"\"${PODS_ROOT}/Headers/Public/RCTRequired\"",
+					"\"${PODS_ROOT}/Headers/Public/React-callinvoker\"",
+					"\"${PODS_ROOT}/Headers/Public/UMBarCodeScannerInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/UMCameraInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/UMConstantsInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/UMFaceDetectorInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/UMFileSystemInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/UMFontInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/UMImageLoaderInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/UMSensorsInterface\"",
+					"\"${PODS_ROOT}/Headers/Public/UMTaskManagerInterface\"",
+					"\"$(PODS_ROOT)/Headers/Private/ABI36_0_0React-Core\"",
+					"\"$(PODS_ROOT)/Headers/Private/ABI37_0_0React-Core\"",
+					"\"$(PODS_ROOT)/Headers/Private/ABI38_0_0React-Core\"",
+					"\"$(PODS_ROOT)/boost-for-react-native\"",
+					"\"$(PODS_ROOT)/glog\"",
+					"\"$(PODS_ROOT)/Folly\"",
+					"\"$(PODS_ROOT)/Headers/Private/ABI39_0_0React-Core\"",
+					"\"$(PODS_ROOT)/Headers/Private/ABI39_0_0React-Core\"",
+					"$(inherited)",
+					"${PODS_ROOT}/Firebase/CoreOnly/Sources",
+					"\"$(PODS_ROOT)/Headers/Private/React-Core\"",
+				);
 				INFOPLIST_FILE = Exponent/Supporting/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

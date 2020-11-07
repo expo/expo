@@ -1,0 +1,6 @@
+module ABI38_0_0EXDocumentPicker {
+  umbrella header "ABI38_0_0EXDocumentPicker-umbrella.h"
+
+  export *
+  module * { export * }
+}

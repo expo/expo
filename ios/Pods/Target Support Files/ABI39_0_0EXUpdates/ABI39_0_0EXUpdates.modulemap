@@ -1,0 +1,6 @@
+module ABI39_0_0EXUpdates {
+  umbrella header "ABI39_0_0EXUpdates-umbrella.h"
+
+  export *
+  module * { export * }
+}

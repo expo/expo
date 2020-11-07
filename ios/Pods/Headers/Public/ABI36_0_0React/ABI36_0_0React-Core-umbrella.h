@@ -1,0 +1,1 @@
+../../../Target Support Files/ABI36_0_0React-Core/ABI36_0_0React-Core-umbrella.h

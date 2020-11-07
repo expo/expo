@@ -1,0 +1,1 @@
+../../../Target Support Files/ABI36_0_0React-RCTVibration/ABI36_0_0React-RCTVibration-umbrella.h

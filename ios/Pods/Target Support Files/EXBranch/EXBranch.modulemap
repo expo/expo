@@ -1,0 +1,6 @@
+module EXBranch {
+  umbrella header "EXBranch-umbrella.h"
+
+  export *
+  module * { export * }
+}

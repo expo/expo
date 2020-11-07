@@ -1,0 +1,6 @@
+module EXApplication {
+  umbrella header "EXApplication-umbrella.h"
+
+  export *
+  module * { export * }
+}

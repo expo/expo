@@ -1,0 +1,6 @@
+module GoogleUtilities {
+  umbrella header "GoogleUtilities-umbrella.h"
+
+  export *
+  module * { export * }
+}

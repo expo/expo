@@ -1,0 +1,6 @@
+module EXSQLite {
+  umbrella header "EXSQLite-umbrella.h"
+
+  export *
+  module * { export * }
+}

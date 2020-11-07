@@ -1,0 +1,1 @@
+../../../Target Support Files/FBReactNativeSpec/FBReactNativeSpec-umbrella.h

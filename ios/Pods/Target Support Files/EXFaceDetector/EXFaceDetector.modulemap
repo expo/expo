@@ -1,0 +1,6 @@
+module EXFaceDetector {
+  umbrella header "EXFaceDetector-umbrella.h"
+
+  export *
+  module * { export * }
+}

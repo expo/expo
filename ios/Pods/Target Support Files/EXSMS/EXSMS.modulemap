@@ -1,0 +1,6 @@
+module EXSMS {
+  umbrella header "EXSMS-umbrella.h"
+
+  export *
+  module * { export * }
+}

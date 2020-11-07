@@ -1,0 +1,6 @@
+module EXSplashScreen {
+  umbrella header "EXSplashScreen-umbrella.h"
+
+  export *
+  module * { export * }
+}

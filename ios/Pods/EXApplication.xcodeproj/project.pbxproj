@@ -7,15 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		6006F8BCB338392C4840802E78258109 /* EXProvisioningProfile.h in Headers */ = {isa = PBXBuildFile; fileRef = BD23AF55A5E1919C1F635E63F97C879F /* EXProvisioningProfile.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		967988573BD1C463F2D68DA4E81E4782 /* EXApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FE41C8320DD85EC1832216A06855ECD /* EXApplication.m */; };
-		AACC7490A272E513C6A4FACF311EFC48 /* EXApplication-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 91C9415A769A9CE9AD1C1F3DC42F9CD9 /* EXApplication-dummy.m */; };
-		DE81588EC64BD00A405B9588CFC9E4C7 /* EXProvisioningProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = FED88C5CAC1C9B4839A2BC47E69452D9 /* EXProvisioningProfile.m */; };
-		F3D6F7E4E7BB4886A17FDCE58D6E2ADE /* EXApplication.h in Headers */ = {isa = PBXBuildFile; fileRef = 939E86A18EDFC13BD5C1291653BE8E03 /* EXApplication.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		2E1C0AFB9A1BA10290C207D203390517 /* EXProvisioningProfile.h in Headers */ = {isa = PBXBuildFile; fileRef = D0C99D1FB509502EEFE6101782F2FE62 /* EXProvisioningProfile.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		90A3B12B564511D1281389493C66B782 /* EXApplication-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = D2FE16DE04587482C21334B2F7C1F114 /* EXApplication-umbrella.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C7D2CB0D2CF410D9EDF18C0D066E7399 /* EXProvisioningProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C83693B0D53D89EA80514D7C55A190C /* EXProvisioningProfile.m */; };
+		D415290AEB83B522AE13A1C4DC15BE2E /* EXApplication-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = B3BE0C4D0C433C8CFA0F4E6681BE453D /* EXApplication-dummy.m */; };
+		DBA5F72952F87BB5211D8A89179D03C1 /* EXApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 6954AD8C56E6BCED313DD5246EF9EE7E /* EXApplication.m */; };
+		F5A52ABAAD886A11E743FF1C09DA4BBE /* EXApplication.h in Headers */ = {isa = PBXBuildFile; fileRef = C0B505C10B0BCD224B3797348F526D4D /* EXApplication.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		B6BE829E166BB7A8E45B0500A70DF3E4 /* PBXContainerItemProxy */ = {
+		35479F22CBEE14F22CC65464909E6CF3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D235D9A92F093BF19BC4BA36FEA73BBB /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -25,21 +26,23 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		2782D109AEC09BA5638FC2BD8BEE870E /* EXApplication.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXApplication.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		5FE41C8320DD85EC1832216A06855ECD /* EXApplication.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXApplication.m; path = EXApplication/EXApplication.m; sourceTree = "<group>"; };
-		7BEEFD2035C8A359DAC91ACB435AE13D /* EXApplication.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXApplication.release.xcconfig; sourceTree = "<group>"; };
-		8A55190643A4E30C38C768D0A5D13921 /* EXApplication-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXApplication-prefix.pch"; sourceTree = "<group>"; };
-		91C9415A769A9CE9AD1C1F3DC42F9CD9 /* EXApplication-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXApplication-dummy.m"; sourceTree = "<group>"; };
-		939E86A18EDFC13BD5C1291653BE8E03 /* EXApplication.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXApplication.h; path = EXApplication/EXApplication.h; sourceTree = "<group>"; };
-		BD23AF55A5E1919C1F635E63F97C879F /* EXProvisioningProfile.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXProvisioningProfile.h; path = EXApplication/EXProvisioningProfile.h; sourceTree = "<group>"; };
+		1EB9826E997619762C704FD334D86FD8 /* EXApplication.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXApplication.debug.xcconfig; sourceTree = "<group>"; };
+		250F96D8FD2B5FD3C86B81F639F391D8 /* EXApplication-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXApplication-prefix.pch"; sourceTree = "<group>"; };
+		4810D04F55E9B65986596BA39E402EB8 /* EXApplication.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXApplication.release.xcconfig; sourceTree = "<group>"; };
+		6954AD8C56E6BCED313DD5246EF9EE7E /* EXApplication.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXApplication.m; path = EXApplication/EXApplication.m; sourceTree = "<group>"; };
+		6C83693B0D53D89EA80514D7C55A190C /* EXProvisioningProfile.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXProvisioningProfile.m; path = EXApplication/EXProvisioningProfile.m; sourceTree = "<group>"; };
+		94A0F6C2926778F7ECA5D9929B9C96EC /* EXApplication.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXApplication.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		A838FFD9F2A6D4D3F80BB9F3B85E3A0B /* EXApplication.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = EXApplication.modulemap; sourceTree = "<group>"; };
+		B3BE0C4D0C433C8CFA0F4E6681BE453D /* EXApplication-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXApplication-dummy.m"; sourceTree = "<group>"; };
 		BFCD5C75F9FE3DC04DD407A746ADA642 /* libEXApplication.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXApplication.a; path = libEXApplication.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		C0B505C10B0BCD224B3797348F526D4D /* EXApplication.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXApplication.h; path = EXApplication/EXApplication.h; sourceTree = "<group>"; };
+		D0C99D1FB509502EEFE6101782F2FE62 /* EXProvisioningProfile.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXProvisioningProfile.h; path = EXApplication/EXProvisioningProfile.h; sourceTree = "<group>"; };
 		D235D9A92F093BF19BC4BA36FEA73BBB /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		EF6D3AE3781AF52F43EAFCDA2B2BC15E /* EXApplication.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXApplication.debug.xcconfig; sourceTree = "<group>"; };
-		FED88C5CAC1C9B4839A2BC47E69452D9 /* EXProvisioningProfile.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXProvisioningProfile.m; path = EXApplication/EXProvisioningProfile.m; sourceTree = "<group>"; };
+		D2FE16DE04587482C21334B2F7C1F114 /* EXApplication-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXApplication-umbrella.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		2707AFA9FF26AFA4E645C0B89CDEFF79 /* Frameworks */ = {
+		0A55C232FEC577066280992D42DFD57E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -57,19 +60,19 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		2B4C502A85BF13299D98110E0A5C8CC4 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				2782D109AEC09BA5638FC2BD8BEE870E /* EXApplication.podspec */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
 		4F69F4E33FB642DF98685F05332A47A8 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		5F60B16F59C65059E32B42F14C9D904D /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				94A0F6C2926778F7ECA5D9929B9C96EC /* EXApplication.podspec */,
+			);
+			name = Pod;
 			sourceTree = "<group>";
 		};
 		722B5EA932844751279F881434696DB3 /* Products */ = {
@@ -80,37 +83,39 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		8DC764288F0586CD38BE29ACF95607BE = {
+		7E0FFB37E41033BD3BCD3EA1CA2E0401 /* EXApplication */ = {
 			isa = PBXGroup;
 			children = (
-				05A17C8F20C101D99717A0C3B596FDB8 /* Dependencies */,
-				CAC1187F00B9BB11939DF02E5F3C9F01 /* EXApplication */,
-				4F69F4E33FB642DF98685F05332A47A8 /* Frameworks */,
-				722B5EA932844751279F881434696DB3 /* Products */,
-			);
-			sourceTree = "<group>";
-		};
-		CAC1187F00B9BB11939DF02E5F3C9F01 /* EXApplication */ = {
-			isa = PBXGroup;
-			children = (
-				939E86A18EDFC13BD5C1291653BE8E03 /* EXApplication.h */,
-				5FE41C8320DD85EC1832216A06855ECD /* EXApplication.m */,
-				BD23AF55A5E1919C1F635E63F97C879F /* EXProvisioningProfile.h */,
-				FED88C5CAC1C9B4839A2BC47E69452D9 /* EXProvisioningProfile.m */,
-				2B4C502A85BF13299D98110E0A5C8CC4 /* Pod */,
-				E9F175C120D747E461DDEDEA6BBBA32D /* Support Files */,
+				C0B505C10B0BCD224B3797348F526D4D /* EXApplication.h */,
+				6954AD8C56E6BCED313DD5246EF9EE7E /* EXApplication.m */,
+				D0C99D1FB509502EEFE6101782F2FE62 /* EXProvisioningProfile.h */,
+				6C83693B0D53D89EA80514D7C55A190C /* EXProvisioningProfile.m */,
+				5F60B16F59C65059E32B42F14C9D904D /* Pod */,
+				FD9940210C88C4ABB496B31E78B3666F /* Support Files */,
 			);
 			name = EXApplication;
 			path = "../../packages/expo-application/ios";
 			sourceTree = "<group>";
 		};
-		E9F175C120D747E461DDEDEA6BBBA32D /* Support Files */ = {
+		8DC764288F0586CD38BE29ACF95607BE = {
 			isa = PBXGroup;
 			children = (
-				91C9415A769A9CE9AD1C1F3DC42F9CD9 /* EXApplication-dummy.m */,
-				8A55190643A4E30C38C768D0A5D13921 /* EXApplication-prefix.pch */,
-				EF6D3AE3781AF52F43EAFCDA2B2BC15E /* EXApplication.debug.xcconfig */,
-				7BEEFD2035C8A359DAC91ACB435AE13D /* EXApplication.release.xcconfig */,
+				05A17C8F20C101D99717A0C3B596FDB8 /* Dependencies */,
+				7E0FFB37E41033BD3BCD3EA1CA2E0401 /* EXApplication */,
+				4F69F4E33FB642DF98685F05332A47A8 /* Frameworks */,
+				722B5EA932844751279F881434696DB3 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		FD9940210C88C4ABB496B31E78B3666F /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				A838FFD9F2A6D4D3F80BB9F3B85E3A0B /* EXApplication.modulemap */,
+				B3BE0C4D0C433C8CFA0F4E6681BE453D /* EXApplication-dummy.m */,
+				250F96D8FD2B5FD3C86B81F639F391D8 /* EXApplication-prefix.pch */,
+				D2FE16DE04587482C21334B2F7C1F114 /* EXApplication-umbrella.h */,
+				1EB9826E997619762C704FD334D86FD8 /* EXApplication.debug.xcconfig */,
+				4810D04F55E9B65986596BA39E402EB8 /* EXApplication.release.xcconfig */,
 			);
 			name = "Support Files";
 			path = "../../../ios/Pods/Target Support Files/EXApplication";
@@ -119,12 +124,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		14BB78C12F295FDD1FEAB2BFF022A31B /* Headers */ = {
+		F00FFF1E08FAD394BADAFB90B9343249 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F3D6F7E4E7BB4886A17FDCE58D6E2ADE /* EXApplication.h in Headers */,
-				6006F8BCB338392C4840802E78258109 /* EXProvisioningProfile.h in Headers */,
+				90A3B12B564511D1281389493C66B782 /* EXApplication-umbrella.h in Headers */,
+				F5A52ABAAD886A11E743FF1C09DA4BBE /* EXApplication.h in Headers */,
+				2E1C0AFB9A1BA10290C207D203390517 /* EXProvisioningProfile.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -133,16 +139,16 @@
 /* Begin PBXNativeTarget section */
 		2C391225329DE46C6566ED1ADF52F10D /* EXApplication */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = FEE3E852AB6EA3B2E17EFE58FD9AAE85 /* Build configuration list for PBXNativeTarget "EXApplication" */;
+			buildConfigurationList = BC7A8F3CD43A0CF0B71245A40D847E14 /* Build configuration list for PBXNativeTarget "EXApplication" */;
 			buildPhases = (
-				14BB78C12F295FDD1FEAB2BFF022A31B /* Headers */,
-				183DF83BCCD3A5D517C108C9D471A528 /* Sources */,
-				2707AFA9FF26AFA4E645C0B89CDEFF79 /* Frameworks */,
+				F00FFF1E08FAD394BADAFB90B9343249 /* Headers */,
+				3F822BC7EDF2D3217408AE2F5F281121 /* Sources */,
+				0A55C232FEC577066280992D42DFD57E /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				BE3B4427B5E02AF46BCE3E5F26FC07CE /* PBXTargetDependency */,
+				5F675F32F64A26497AA895C5DC26F338 /* PBXTargetDependency */,
 			);
 			name = EXApplication;
 			productName = EXApplication;
@@ -182,78 +188,27 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		183DF83BCCD3A5D517C108C9D471A528 /* Sources */ = {
+		3F822BC7EDF2D3217408AE2F5F281121 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AACC7490A272E513C6A4FACF311EFC48 /* EXApplication-dummy.m in Sources */,
-				967988573BD1C463F2D68DA4E81E4782 /* EXApplication.m in Sources */,
-				DE81588EC64BD00A405B9588CFC9E4C7 /* EXProvisioningProfile.m in Sources */,
+				D415290AEB83B522AE13A1C4DC15BE2E /* EXApplication-dummy.m in Sources */,
+				DBA5F72952F87BB5211D8A89179D03C1 /* EXApplication.m in Sources */,
+				C7D2CB0D2CF410D9EDF18C0D066E7399 /* EXProvisioningProfile.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		BE3B4427B5E02AF46BCE3E5F26FC07CE /* PBXTargetDependency */ = {
+		5F675F32F64A26497AA895C5DC26F338 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = B6BE829E166BB7A8E45B0500A70DF3E4 /* PBXContainerItemProxy */;
+			targetProxy = 35479F22CBEE14F22CC65464909E6CF3 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		2108063BEF866CC29F108FBFD57A70AC /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7BEEFD2035C8A359DAC91ACB435AE13D /* EXApplication.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXApplication/EXApplication-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXApplication;
-				PRODUCT_NAME = EXApplication;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		246C6DCC625D39235ECE244479C1960E /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = EF6D3AE3781AF52F43EAFCDA2B2BC15E /* EXApplication.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXApplication/EXApplication-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXApplication;
-				PRODUCT_NAME = EXApplication;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		BBDE9075AC14AEBF2BC803A728262169 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -315,6 +270,59 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		D8E063D144980094A665070786E0A182 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4810D04F55E9B65986596BA39E402EB8 /* EXApplication.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXApplication/EXApplication-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MODULEMAP_FILE = Headers/Public/EXApplication/EXApplication.modulemap;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXApplication;
+				PRODUCT_NAME = EXApplication;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		DF58B3B2EA715F28AC464878368D4B10 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1EB9826E997619762C704FD334D86FD8 /* EXApplication.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXApplication/EXApplication-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MODULEMAP_FILE = Headers/Public/EXApplication/EXApplication.modulemap;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXApplication;
+				PRODUCT_NAME = EXApplication;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -381,20 +389,20 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		BC7A8F3CD43A0CF0B71245A40D847E14 /* Build configuration list for PBXNativeTarget "EXApplication" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DF58B3B2EA715F28AC464878368D4B10 /* Debug */,
+				D8E063D144980094A665070786E0A182 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		E0A32C73E012662728CB7BCB6DA9259E /* Build configuration list for PBXProject "EXApplication" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BBDE9075AC14AEBF2BC803A728262169 /* Debug */,
 				E36E8865092FC1C145DEA61C717851BD /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		FEE3E852AB6EA3B2E17EFE58FD9AAE85 /* Build configuration list for PBXNativeTarget "EXApplication" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				246C6DCC625D39235ECE244479C1960E /* Debug */,
-				2108063BEF866CC29F108FBFD57A70AC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

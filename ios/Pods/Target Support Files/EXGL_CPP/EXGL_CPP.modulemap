@@ -1,0 +1,6 @@
+module EXGL_CPP {
+  umbrella header "EXGL_CPP-umbrella.h"
+
+  export *
+  module * { export * }
+}

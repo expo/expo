@@ -1,0 +1,6 @@
+module ABI37_0_0EXFaceDetector {
+  umbrella header "ABI37_0_0EXFaceDetector-umbrella.h"
+
+  export *
+  module * { export * }
+}

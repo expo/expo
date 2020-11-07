@@ -1,0 +1,6 @@
+module FirebaseInstanceID {
+  umbrella header "FirebaseInstanceID-umbrella.h"
+
+  export *
+  module * { export * }
+}

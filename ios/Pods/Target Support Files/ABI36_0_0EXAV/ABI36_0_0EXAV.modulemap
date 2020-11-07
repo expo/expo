@@ -1,0 +1,6 @@
+module ABI36_0_0EXAV {
+  umbrella header "ABI36_0_0EXAV-umbrella.h"
+
+  export *
+  module * { export * }
+}

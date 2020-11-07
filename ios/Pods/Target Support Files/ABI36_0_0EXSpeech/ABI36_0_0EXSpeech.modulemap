@@ -1,0 +1,6 @@
+module ABI36_0_0EXSpeech {
+  umbrella header "ABI36_0_0EXSpeech-umbrella.h"
+
+  export *
+  module * { export * }
+}

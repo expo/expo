@@ -7,43 +7,46 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0846DDC8A867368E66E517D3A88337C2 /* EXLocalAuthentication-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B753EB49A388D6A60F08F9AE20F61F4 /* EXLocalAuthentication-dummy.m */; };
-		41F18C29D26182E3F0ADEE6066101704 /* EXLocalAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 26C6348FF8097731C88FF72FDE8FE2A0 /* EXLocalAuthentication.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		8CB418C98A508B27D428335BCEF4DD0F /* EXLocalAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BCC90FB7F5088D0232CFCE75A892EA9 /* EXLocalAuthentication.m */; };
+		0E983D3CADC8B6E3F5DCD637D54D61D4 /* EXLocalAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 59A5F00FD47729179E4EAD31259FD7A5 /* EXLocalAuthentication.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8B85E79667611E544847C4A02FB59FF2 /* EXLocalAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = 5961C81710818E41316A47067998532F /* EXLocalAuthentication.m */; };
+		994CC1B8EDD79E4C2BD2809182282BDC /* EXLocalAuthentication-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 72A99E569B9493BE3A046516F6EC685C /* EXLocalAuthentication-dummy.m */; };
+		F6B4D47C116A5E6030BFD3C56B47448D /* EXLocalAuthentication-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = AEA4C2D5D6615853A3E5E770A93576A5 /* EXLocalAuthentication-umbrella.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		8A45357B6C4FFE80F4A38ED22D8B874D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 3DEF00518FD4CB9CD86A45E2307D43BB /* UMCore.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
-			remoteInfo = UMCore;
-		};
-		DED1BB41991A679E5B89C53EF40BF569 /* PBXContainerItemProxy */ = {
+		1E8C912DE1BAEDAA02A7723375AD15A2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 390E3D148DAAAA8261A98558C1658AB2 /* UMConstantsInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 46F82E84687582F366B907E2BD5F1EA2;
 			remoteInfo = UMConstantsInterface;
 		};
+		37456635C40D4B4EA4D80208A75CBD27 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3DEF00518FD4CB9CD86A45E2307D43BB /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		06D66C79B17DF8DA1102E568AF74D05E /* EXLocalAuthentication.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXLocalAuthentication.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		26C6348FF8097731C88FF72FDE8FE2A0 /* EXLocalAuthentication.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXLocalAuthentication.h; path = EXLocalAuthentication/EXLocalAuthentication.h; sourceTree = "<group>"; };
-		331064274FEAF12C63981DDFE9C69444 /* EXLocalAuthentication.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXLocalAuthentication.debug.xcconfig; sourceTree = "<group>"; };
+		146C89DE4B427043B183AA26A2BD4DBC /* EXLocalAuthentication.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = EXLocalAuthentication.modulemap; sourceTree = "<group>"; };
 		390E3D148DAAAA8261A98558C1658AB2 /* UMConstantsInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMConstantsInterface; path = UMConstantsInterface.xcodeproj; sourceTree = "<group>"; };
 		3DEF00518FD4CB9CD86A45E2307D43BB /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
 		3F417EA42D2B8AFAE8F227A498E73A3F /* libEXLocalAuthentication.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXLocalAuthentication.a; path = libEXLocalAuthentication.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		4BCC90FB7F5088D0232CFCE75A892EA9 /* EXLocalAuthentication.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXLocalAuthentication.m; path = EXLocalAuthentication/EXLocalAuthentication.m; sourceTree = "<group>"; };
-		5FEB0C10308284D6273F40085C03701F /* EXLocalAuthentication.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXLocalAuthentication.release.xcconfig; sourceTree = "<group>"; };
-		7B753EB49A388D6A60F08F9AE20F61F4 /* EXLocalAuthentication-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXLocalAuthentication-dummy.m"; sourceTree = "<group>"; };
-		80CEF35484369B10C7E11988FB071F5A /* EXLocalAuthentication-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXLocalAuthentication-prefix.pch"; sourceTree = "<group>"; };
+		52660C368A126BD01FDBA44F108D205C /* EXLocalAuthentication-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXLocalAuthentication-prefix.pch"; sourceTree = "<group>"; };
+		5961C81710818E41316A47067998532F /* EXLocalAuthentication.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXLocalAuthentication.m; path = EXLocalAuthentication/EXLocalAuthentication.m; sourceTree = "<group>"; };
+		59A5F00FD47729179E4EAD31259FD7A5 /* EXLocalAuthentication.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXLocalAuthentication.h; path = EXLocalAuthentication/EXLocalAuthentication.h; sourceTree = "<group>"; };
+		72A99E569B9493BE3A046516F6EC685C /* EXLocalAuthentication-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXLocalAuthentication-dummy.m"; sourceTree = "<group>"; };
+		7D4A2756AABE68F2A6C2447315DE04A8 /* EXLocalAuthentication.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXLocalAuthentication.release.xcconfig; sourceTree = "<group>"; };
+		AEA4C2D5D6615853A3E5E770A93576A5 /* EXLocalAuthentication-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXLocalAuthentication-umbrella.h"; sourceTree = "<group>"; };
+		CFEA4C77AF9E33EC8E2E1F08E9FA2F32 /* EXLocalAuthentication.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXLocalAuthentication.debug.xcconfig; sourceTree = "<group>"; };
+		EF9207F86761F715952598B1014086D4 /* EXLocalAuthentication.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXLocalAuthentication.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		6437BBD9F8172F88CE5DB947EFD01C0A /* Frameworks */ = {
+		EC606F4B5085F3DEF7D3FADA3C26093E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -53,13 +56,27 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0343F0FA7F252F9694E4AEEA822C0958 /* EXLocalAuthentication */ = {
+		1470A6EA09B917D4D00BA8BE8EDD6E2A /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				26C6348FF8097731C88FF72FDE8FE2A0 /* EXLocalAuthentication.h */,
-				4BCC90FB7F5088D0232CFCE75A892EA9 /* EXLocalAuthentication.m */,
-				EA2104F252E39285E8DE4E55CF0A9323 /* Pod */,
-				603310E0D29F7325EFB0977727368497 /* Support Files */,
+				146C89DE4B427043B183AA26A2BD4DBC /* EXLocalAuthentication.modulemap */,
+				72A99E569B9493BE3A046516F6EC685C /* EXLocalAuthentication-dummy.m */,
+				52660C368A126BD01FDBA44F108D205C /* EXLocalAuthentication-prefix.pch */,
+				AEA4C2D5D6615853A3E5E770A93576A5 /* EXLocalAuthentication-umbrella.h */,
+				CFEA4C77AF9E33EC8E2E1F08E9FA2F32 /* EXLocalAuthentication.debug.xcconfig */,
+				7D4A2756AABE68F2A6C2447315DE04A8 /* EXLocalAuthentication.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../../../ios/Pods/Target Support Files/EXLocalAuthentication";
+			sourceTree = "<group>";
+		};
+		25A84CE604747CF6301788D7BD64E008 /* EXLocalAuthentication */ = {
+			isa = PBXGroup;
+			children = (
+				59A5F00FD47729179E4EAD31259FD7A5 /* EXLocalAuthentication.h */,
+				5961C81710818E41316A47067998532F /* EXLocalAuthentication.m */,
+				F30B2556774220A853B22D80D108EB31 /* Pod */,
+				1470A6EA09B917D4D00BA8BE8EDD6E2A /* Support Files */,
 			);
 			name = EXLocalAuthentication;
 			path = "../../packages/expo-local-authentication/ios";
@@ -73,18 +90,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		603310E0D29F7325EFB0977727368497 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				7B753EB49A388D6A60F08F9AE20F61F4 /* EXLocalAuthentication-dummy.m */,
-				80CEF35484369B10C7E11988FB071F5A /* EXLocalAuthentication-prefix.pch */,
-				331064274FEAF12C63981DDFE9C69444 /* EXLocalAuthentication.debug.xcconfig */,
-				5FEB0C10308284D6273F40085C03701F /* EXLocalAuthentication.release.xcconfig */,
-			);
-			name = "Support Files";
-			path = "../../../ios/Pods/Target Support Files/EXLocalAuthentication";
-			sourceTree = "<group>";
-		};
 		7C151BC402F8404A3F45395269ABF6EB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -96,7 +101,7 @@
 			isa = PBXGroup;
 			children = (
 				AC06126D5D83A73C44A75C8505A9A579 /* Dependencies */,
-				0343F0FA7F252F9694E4AEEA822C0958 /* EXLocalAuthentication */,
+				25A84CE604747CF6301788D7BD64E008 /* EXLocalAuthentication */,
 				7C151BC402F8404A3F45395269ABF6EB /* Frameworks */,
 				3FF7E7AF21717F6EC86E27ED7A8EF94A /* Products */,
 			);
@@ -111,10 +116,10 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		EA2104F252E39285E8DE4E55CF0A9323 /* Pod */ = {
+		F30B2556774220A853B22D80D108EB31 /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				06D66C79B17DF8DA1102E568AF74D05E /* EXLocalAuthentication.podspec */,
+				EF9207F86761F715952598B1014086D4 /* EXLocalAuthentication.podspec */,
 			);
 			name = Pod;
 			sourceTree = "<group>";
@@ -122,11 +127,12 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		69F39D4523390F1BD713B2F915C6329D /* Headers */ = {
+		5A4016D375B3DE7D41818C329CCE2E0E /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				41F18C29D26182E3F0ADEE6066101704 /* EXLocalAuthentication.h in Headers */,
+				F6B4D47C116A5E6030BFD3C56B47448D /* EXLocalAuthentication-umbrella.h in Headers */,
+				0E983D3CADC8B6E3F5DCD637D54D61D4 /* EXLocalAuthentication.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -135,17 +141,17 @@
 /* Begin PBXNativeTarget section */
 		8D12244750972C21D688A2875A0E77F4 /* EXLocalAuthentication */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 6A79242EC68E83DA25514EED507D1F9C /* Build configuration list for PBXNativeTarget "EXLocalAuthentication" */;
+			buildConfigurationList = E853507DDDF7446A5DF855B6B647E6DE /* Build configuration list for PBXNativeTarget "EXLocalAuthentication" */;
 			buildPhases = (
-				69F39D4523390F1BD713B2F915C6329D /* Headers */,
-				60DE448E40E38659B94D9F56DC7EB7D8 /* Sources */,
-				6437BBD9F8172F88CE5DB947EFD01C0A /* Frameworks */,
+				5A4016D375B3DE7D41818C329CCE2E0E /* Headers */,
+				3117CF9B88D736763FF8C0A6DF8C548A /* Sources */,
+				EC606F4B5085F3DEF7D3FADA3C26093E /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				698F6803B7D33634F5A913353E5211C8 /* PBXTargetDependency */,
-				6B760565612EC8892365ACB876DF1049 /* PBXTargetDependency */,
+				B642A2D2A95E695420C59CF611C0EF7B /* PBXTargetDependency */,
+				6D3471448BAC84197F068077C797995B /* PBXTargetDependency */,
 			);
 			name = EXLocalAuthentication;
 			productName = EXLocalAuthentication;
@@ -188,34 +194,34 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		60DE448E40E38659B94D9F56DC7EB7D8 /* Sources */ = {
+		3117CF9B88D736763FF8C0A6DF8C548A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0846DDC8A867368E66E517D3A88337C2 /* EXLocalAuthentication-dummy.m in Sources */,
-				8CB418C98A508B27D428335BCEF4DD0F /* EXLocalAuthentication.m in Sources */,
+				994CC1B8EDD79E4C2BD2809182282BDC /* EXLocalAuthentication-dummy.m in Sources */,
+				8B85E79667611E544847C4A02FB59FF2 /* EXLocalAuthentication.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		698F6803B7D33634F5A913353E5211C8 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMConstantsInterface;
-			targetProxy = DED1BB41991A679E5B89C53EF40BF569 /* PBXContainerItemProxy */;
-		};
-		6B760565612EC8892365ACB876DF1049 /* PBXTargetDependency */ = {
+		6D3471448BAC84197F068077C797995B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 8A45357B6C4FFE80F4A38ED22D8B874D /* PBXContainerItemProxy */;
+			targetProxy = 37456635C40D4B4EA4D80208A75CBD27 /* PBXContainerItemProxy */;
+		};
+		B642A2D2A95E695420C59CF611C0EF7B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMConstantsInterface;
+			targetProxy = 1E8C912DE1BAEDAA02A7723375AD15A2 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		50DC11750074EECACC5388714CB2B636 /* Debug */ = {
+		0792FE3E279C8383490A697EBF6F1BF1 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 331064274FEAF12C63981DDFE9C69444 /* EXLocalAuthentication.debug.xcconfig */;
+			baseConfigurationReference = CFEA4C77AF9E33EC8E2E1F08E9FA2F32 /* EXLocalAuthentication.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -224,6 +230,7 @@
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				GCC_PREFIX_HEADER = "Target Support Files/EXLocalAuthentication/EXLocalAuthentication-prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MODULEMAP_FILE = Headers/Public/EXLocalAuthentication/EXLocalAuthentication.modulemap;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -238,9 +245,9 @@
 			};
 			name = Debug;
 		};
-		5A2C4B6CA78AB9085FE52D5024BA68C4 /* Release */ = {
+		28834E5218690A754D51F0D2923B3113 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5FEB0C10308284D6273F40085C03701F /* EXLocalAuthentication.release.xcconfig */;
+			baseConfigurationReference = 7D4A2756AABE68F2A6C2447315DE04A8 /* EXLocalAuthentication.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -249,6 +256,7 @@
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				GCC_PREFIX_HEADER = "Target Support Files/EXLocalAuthentication/EXLocalAuthentication-prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MODULEMAP_FILE = Headers/Public/EXLocalAuthentication/EXLocalAuthentication.modulemap;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -391,11 +399,11 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		6A79242EC68E83DA25514EED507D1F9C /* Build configuration list for PBXNativeTarget "EXLocalAuthentication" */ = {
+		E853507DDDF7446A5DF855B6B647E6DE /* Build configuration list for PBXNativeTarget "EXLocalAuthentication" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				50DC11750074EECACC5388714CB2B636 /* Debug */,
-				5A2C4B6CA78AB9085FE52D5024BA68C4 /* Release */,
+				0792FE3E279C8383490A697EBF6F1BF1 /* Debug */,
+				28834E5218690A754D51F0D2923B3113 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

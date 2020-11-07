@@ -7,63 +7,66 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		07839EE7BF321F22255789834CB49BCA /* RCTTypeSafety-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 8090A0EB57C9D633E775EA390F13654D /* RCTTypeSafety-dummy.m */; };
-		4FF9DED591D9D7D8B20E388757A013ED /* RCTConvertHelpers.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6026AB24EA66E3A4B4B8D42913E1E27 /* RCTConvertHelpers.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		7402101721ED2FAE1386B817040D316A /* RCTTypedModuleConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = 864EE4E68F51F28F9DDDA17EE63B165C /* RCTTypedModuleConstants.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		94D259046EBD2192DF458A2316836C11 /* RCTConvertHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 366D6283B8E5CB8B24610FCD433AB609 /* RCTConvertHelpers.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		B815FD2CD6C97207B6AB5111D94F9968 /* RCTTypedModuleConstants.mm in Sources */ = {isa = PBXBuildFile; fileRef = 63E376B301083A55C12E316D736059EC /* RCTTypedModuleConstants.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		29DD2C3DDA8C4DF4A1C950DFD149402C /* RCTTypeSafety-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = BEAFF83B297E6E2D08377EADB8028B53 /* RCTTypeSafety-dummy.m */; };
+		39F297FDAAEB317BD839D17559D9622F /* RCTTypedModuleConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = DA8A50809CCA8F31D976A38AEBA5D09B /* RCTTypedModuleConstants.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A4D1D0847C8CFA2443687937055F6501 /* RCTTypeSafety-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 3C32165E6CDD5BD4C7F67E0AE6566F2B /* RCTTypeSafety-umbrella.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B1CD0EF902EF4106543B1A493D778E96 /* RCTConvertHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 49C41EF513604288193B1DC32DFCF822 /* RCTConvertHelpers.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		BA15C9B98EDBADFE89B84253554D2A1C /* RCTConvertHelpers.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7849318D43A2052C151E2169F56A9071 /* RCTConvertHelpers.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		F017566035863A779AC276FB2A7CB26B /* RCTTypedModuleConstants.mm in Sources */ = {isa = PBXBuildFile; fileRef = 619BEBACFC1D9BCD85DB88FAF6F018C6 /* RCTTypedModuleConstants.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		423A1992444898E73D3F366771AABCDE /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F097AEE3B0E05553B9B4C4010CFCFC44 /* React-Core.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 5DA1A74647F652AE8E4DE074AFC4C6B7;
-			remoteInfo = "React-Core";
-		};
-		54623C350EEB003F290B61E607925FFB /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 1E1FA085DCE6B12DC08468B1F56BFA23 /* FBLazyVector.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 4B95F1280DBD545D036916608691C3EF;
-			remoteInfo = FBLazyVector;
-		};
-		8DC6D61AFDDB1707DAB61C838A0E4CA2 /* PBXContainerItemProxy */ = {
+		1947CFBA83B5BD172B229DE14E3B102E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B9675F2F4D9BBBE48CC6AAB81E79C5D9 /* RCTRequired.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 7B4E6DC12B1D694845842E9A06C59213;
 			remoteInfo = RCTRequired;
 		};
-		974D99485C4A1651727AB100C8CAB61E /* PBXContainerItemProxy */ = {
+		584E44D6EF680A862C0426AAE19D500A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F097AEE3B0E05553B9B4C4010CFCFC44 /* React-Core.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 5DA1A74647F652AE8E4DE074AFC4C6B7;
+			remoteInfo = "React-Core";
+		};
+		835D822EAD5BF70A151C3AFAF19FE433 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 71217326F34DBC7C5956ABC1E7B023EA /* Folly.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 14BB2B7275726942E762F076FA966088;
 			remoteInfo = Folly;
 		};
+		A513BEBD15E678CBE36C76BB33C11840 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1E1FA085DCE6B12DC08468B1F56BFA23 /* FBLazyVector.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 4B95F1280DBD545D036916608691C3EF;
+			remoteInfo = FBLazyVector;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		16CF3EDA961807991CCF6946F7374DBC /* RCTTypeSafety.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = RCTTypeSafety.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		19B3478AB6BC74D79FA09DC18EECDC52 /* RCTTypeSafety.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = RCTTypeSafety.release.xcconfig; sourceTree = "<group>"; };
+		08FDEDBCE93D34CA4EA0058AD68E4E3F /* RCTTypeSafety.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = RCTTypeSafety.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		1E1FA085DCE6B12DC08468B1F56BFA23 /* FBLazyVector */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBLazyVector; path = FBLazyVector.xcodeproj; sourceTree = "<group>"; };
-		366D6283B8E5CB8B24610FCD433AB609 /* RCTConvertHelpers.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTConvertHelpers.h; sourceTree = "<group>"; };
+		3C32165E6CDD5BD4C7F67E0AE6566F2B /* RCTTypeSafety-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "RCTTypeSafety-umbrella.h"; sourceTree = "<group>"; };
+		49C41EF513604288193B1DC32DFCF822 /* RCTConvertHelpers.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTConvertHelpers.h; sourceTree = "<group>"; };
 		5BD86BE09B7BCB3FF5F253FF0F8C57E9 /* libRCTTypeSafety.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libRCTTypeSafety.a; path = libRCTTypeSafety.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		63E376B301083A55C12E316D736059EC /* RCTTypedModuleConstants.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTTypedModuleConstants.mm; sourceTree = "<group>"; };
+		619BEBACFC1D9BCD85DB88FAF6F018C6 /* RCTTypedModuleConstants.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTTypedModuleConstants.mm; sourceTree = "<group>"; };
+		63970A35D7851C2B3FAA7AA4661F3045 /* RCTTypeSafety-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "RCTTypeSafety-prefix.pch"; sourceTree = "<group>"; };
 		71217326F34DBC7C5956ABC1E7B023EA /* Folly */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Folly; path = Folly.xcodeproj; sourceTree = "<group>"; };
-		8090A0EB57C9D633E775EA390F13654D /* RCTTypeSafety-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "RCTTypeSafety-dummy.m"; sourceTree = "<group>"; };
-		864EE4E68F51F28F9DDDA17EE63B165C /* RCTTypedModuleConstants.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTTypedModuleConstants.h; sourceTree = "<group>"; };
-		8EC907730BF070259D8CAB86BD5D9081 /* RCTTypeSafety.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = RCTTypeSafety.debug.xcconfig; sourceTree = "<group>"; };
-		B0C4A196148768576BE3466870B1B123 /* RCTTypeSafety-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "RCTTypeSafety-prefix.pch"; sourceTree = "<group>"; };
-		B6026AB24EA66E3A4B4B8D42913E1E27 /* RCTConvertHelpers.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTConvertHelpers.mm; sourceTree = "<group>"; };
+		7849318D43A2052C151E2169F56A9071 /* RCTConvertHelpers.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTConvertHelpers.mm; sourceTree = "<group>"; };
+		82B93A9E2BB1649884EBC0CE53EC62D1 /* RCTTypeSafety.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = RCTTypeSafety.release.xcconfig; sourceTree = "<group>"; };
+		AE19BDE81FE70FA977C58882A391565E /* RCTTypeSafety.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = RCTTypeSafety.modulemap; sourceTree = "<group>"; };
 		B9675F2F4D9BBBE48CC6AAB81E79C5D9 /* RCTRequired */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTRequired; path = RCTRequired.xcodeproj; sourceTree = "<group>"; };
+		BEAFF83B297E6E2D08377EADB8028B53 /* RCTTypeSafety-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "RCTTypeSafety-dummy.m"; sourceTree = "<group>"; };
+		DA8A50809CCA8F31D976A38AEBA5D09B /* RCTTypedModuleConstants.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTTypedModuleConstants.h; sourceTree = "<group>"; };
+		F029F649529B6E3E4C143E7F732CE6C3 /* RCTTypeSafety.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = RCTTypeSafety.debug.xcconfig; sourceTree = "<group>"; };
 		F097AEE3B0E05553B9B4C4010CFCFC44 /* React-Core */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-Core"; path = "React-Core.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		AD920F58A79A58CAB3C5AEA2F8C4E24F /* Frameworks */ = {
+		899EAC6DE91952D6B586FC7DDA719B91 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -79,7 +82,7 @@
 				6A682297E7D1E4B9C9EB5CD5BF94762E /* Dependencies */,
 				674A9563B2151ACD17FF0A22BFA6777B /* Frameworks */,
 				882EE28BF009357B3D70CCB30DD60B7D /* Products */,
-				8FC74620CE59858EF261709195EBCFC2 /* RCTTypeSafety */,
+				797C7B297568C89A21793DC739C7C936 /* RCTTypeSafety */,
 			);
 			sourceTree = "<group>";
 		};
@@ -101,6 +104,20 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
+		797C7B297568C89A21793DC739C7C936 /* RCTTypeSafety */ = {
+			isa = PBXGroup;
+			children = (
+				49C41EF513604288193B1DC32DFCF822 /* RCTConvertHelpers.h */,
+				7849318D43A2052C151E2169F56A9071 /* RCTConvertHelpers.mm */,
+				DA8A50809CCA8F31D976A38AEBA5D09B /* RCTTypedModuleConstants.h */,
+				619BEBACFC1D9BCD85DB88FAF6F018C6 /* RCTTypedModuleConstants.mm */,
+				D5A5BAA058BF6E92EB79E8A49B3BF0C8 /* Pod */,
+				9A9B6D52DC893F128C04690C6C5ADA10 /* Support Files */,
+			);
+			name = RCTTypeSafety;
+			path = "../../react-native-lab/react-native/Libraries/TypeSafety";
+			sourceTree = "<group>";
+		};
 		882EE28BF009357B3D70CCB30DD60B7D /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -109,49 +126,38 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		8FC74620CE59858EF261709195EBCFC2 /* RCTTypeSafety */ = {
+		9A9B6D52DC893F128C04690C6C5ADA10 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				366D6283B8E5CB8B24610FCD433AB609 /* RCTConvertHelpers.h */,
-				B6026AB24EA66E3A4B4B8D42913E1E27 /* RCTConvertHelpers.mm */,
-				864EE4E68F51F28F9DDDA17EE63B165C /* RCTTypedModuleConstants.h */,
-				63E376B301083A55C12E316D736059EC /* RCTTypedModuleConstants.mm */,
-				C046F09F027827B40A40E877C8953F2E /* Pod */,
-				E19F5EE6A46B471E21746E0B5BE1D943 /* Support Files */,
-			);
-			name = RCTTypeSafety;
-			path = "../../react-native-lab/react-native/Libraries/TypeSafety";
-			sourceTree = "<group>";
-		};
-		C046F09F027827B40A40E877C8953F2E /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				16CF3EDA961807991CCF6946F7374DBC /* RCTTypeSafety.podspec */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
-		E19F5EE6A46B471E21746E0B5BE1D943 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				8090A0EB57C9D633E775EA390F13654D /* RCTTypeSafety-dummy.m */,
-				B0C4A196148768576BE3466870B1B123 /* RCTTypeSafety-prefix.pch */,
-				8EC907730BF070259D8CAB86BD5D9081 /* RCTTypeSafety.debug.xcconfig */,
-				19B3478AB6BC74D79FA09DC18EECDC52 /* RCTTypeSafety.release.xcconfig */,
+				AE19BDE81FE70FA977C58882A391565E /* RCTTypeSafety.modulemap */,
+				BEAFF83B297E6E2D08377EADB8028B53 /* RCTTypeSafety-dummy.m */,
+				63970A35D7851C2B3FAA7AA4661F3045 /* RCTTypeSafety-prefix.pch */,
+				3C32165E6CDD5BD4C7F67E0AE6566F2B /* RCTTypeSafety-umbrella.h */,
+				F029F649529B6E3E4C143E7F732CE6C3 /* RCTTypeSafety.debug.xcconfig */,
+				82B93A9E2BB1649884EBC0CE53EC62D1 /* RCTTypeSafety.release.xcconfig */,
 			);
 			name = "Support Files";
 			path = "../../../../ios/Pods/Target Support Files/RCTTypeSafety";
 			sourceTree = "<group>";
 		};
+		D5A5BAA058BF6E92EB79E8A49B3BF0C8 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				08FDEDBCE93D34CA4EA0058AD68E4E3F /* RCTTypeSafety.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		AD685FB86171F3BE181DA00F2347BB55 /* Headers */ = {
+		EB44700BEC14125CB81F3F678CB5D8D1 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				94D259046EBD2192DF458A2316836C11 /* RCTConvertHelpers.h in Headers */,
-				7402101721ED2FAE1386B817040D316A /* RCTTypedModuleConstants.h in Headers */,
+				B1CD0EF902EF4106543B1A493D778E96 /* RCTConvertHelpers.h in Headers */,
+				39F297FDAAEB317BD839D17559D9622F /* RCTTypedModuleConstants.h in Headers */,
+				A4D1D0847C8CFA2443687937055F6501 /* RCTTypeSafety-umbrella.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -160,19 +166,19 @@
 /* Begin PBXNativeTarget section */
 		9C3601DE72183D42B9DC3FF333D35CF7 /* RCTTypeSafety */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D80997530F283A1BF6F1BC6F7937B1E7 /* Build configuration list for PBXNativeTarget "RCTTypeSafety" */;
+			buildConfigurationList = 5AA4308273E333011B2884602935B5DE /* Build configuration list for PBXNativeTarget "RCTTypeSafety" */;
 			buildPhases = (
-				AD685FB86171F3BE181DA00F2347BB55 /* Headers */,
-				D09C313305A93FF1B3B35DB617DA8390 /* Sources */,
-				AD920F58A79A58CAB3C5AEA2F8C4E24F /* Frameworks */,
+				EB44700BEC14125CB81F3F678CB5D8D1 /* Headers */,
+				C39790F96D3E17BA5B19E2A33988082E /* Sources */,
+				899EAC6DE91952D6B586FC7DDA719B91 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				54031AFFF1F31F86CC9AF28A9D292BDF /* PBXTargetDependency */,
-				5AA5580507E7156E80A736C396557FB8 /* PBXTargetDependency */,
-				27151CCF413E785E70B0EA6BCCA972DA /* PBXTargetDependency */,
-				233C695D8534DAA6B7E1CA2294FF8830 /* PBXTargetDependency */,
+				B582FB38CAA67243C1B981087A223B89 /* PBXTargetDependency */,
+				9CD4D1B90A2E967AC74CB7BDFD18BA55 /* PBXTargetDependency */,
+				21AC3AF7123021BE67F7237DD6B5D589 /* PBXTargetDependency */,
+				0588D596AD11D1C92F23BF478B061CD9 /* PBXTargetDependency */,
 			);
 			name = RCTTypeSafety;
 			productName = RCTTypeSafety;
@@ -221,68 +227,42 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		D09C313305A93FF1B3B35DB617DA8390 /* Sources */ = {
+		C39790F96D3E17BA5B19E2A33988082E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4FF9DED591D9D7D8B20E388757A013ED /* RCTConvertHelpers.mm in Sources */,
-				B815FD2CD6C97207B6AB5111D94F9968 /* RCTTypedModuleConstants.mm in Sources */,
-				07839EE7BF321F22255789834CB49BCA /* RCTTypeSafety-dummy.m in Sources */,
+				BA15C9B98EDBADFE89B84253554D2A1C /* RCTConvertHelpers.mm in Sources */,
+				F017566035863A779AC276FB2A7CB26B /* RCTTypedModuleConstants.mm in Sources */,
+				29DD2C3DDA8C4DF4A1C950DFD149402C /* RCTTypeSafety-dummy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		233C695D8534DAA6B7E1CA2294FF8830 /* PBXTargetDependency */ = {
+		0588D596AD11D1C92F23BF478B061CD9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-Core";
-			targetProxy = 423A1992444898E73D3F366771AABCDE /* PBXContainerItemProxy */;
+			targetProxy = 584E44D6EF680A862C0426AAE19D500A /* PBXContainerItemProxy */;
 		};
-		27151CCF413E785E70B0EA6BCCA972DA /* PBXTargetDependency */ = {
+		21AC3AF7123021BE67F7237DD6B5D589 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = RCTRequired;
-			targetProxy = 8DC6D61AFDDB1707DAB61C838A0E4CA2 /* PBXContainerItemProxy */;
+			targetProxy = 1947CFBA83B5BD172B229DE14E3B102E /* PBXContainerItemProxy */;
 		};
-		54031AFFF1F31F86CC9AF28A9D292BDF /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = FBLazyVector;
-			targetProxy = 54623C350EEB003F290B61E607925FFB /* PBXContainerItemProxy */;
-		};
-		5AA5580507E7156E80A736C396557FB8 /* PBXTargetDependency */ = {
+		9CD4D1B90A2E967AC74CB7BDFD18BA55 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Folly;
-			targetProxy = 974D99485C4A1651727AB100C8CAB61E /* PBXContainerItemProxy */;
+			targetProxy = 835D822EAD5BF70A151C3AFAF19FE433 /* PBXContainerItemProxy */;
+		};
+		B582FB38CAA67243C1B981087A223B89 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = FBLazyVector;
+			targetProxy = A513BEBD15E678CBE36C76BB33C11840 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		246B24565088CD20081299CD529927C7 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 19B3478AB6BC74D79FA09DC18EECDC52 /* RCTTypeSafety.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/RCTTypeSafety/RCTTypeSafety-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = RCTTypeSafety;
-				PRODUCT_NAME = RCTTypeSafety;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 		5B2E6D6CD06654412BB027B635042DEC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -343,9 +323,9 @@
 			};
 			name = Release;
 		};
-		A03F5B7CED9F4067CF6E75937ED335A7 /* Debug */ = {
+		68D01B066F53A9CBE518043E7420CCBF /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8EC907730BF070259D8CAB86BD5D9081 /* RCTTypeSafety.debug.xcconfig */;
+			baseConfigurationReference = F029F649529B6E3E4C143E7F732CE6C3 /* RCTTypeSafety.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -354,6 +334,7 @@
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				GCC_PREFIX_HEADER = "Target Support Files/RCTTypeSafety/RCTTypeSafety-prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MODULEMAP_FILE = Headers/Public/RCTTypeSafety/RCTTypeSafety.modulemap;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -367,6 +348,33 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
+		};
+		9B7F614F17EB00499B1B82FAE5CC8996 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 82B93A9E2BB1649884EBC0CE53EC62D1 /* RCTTypeSafety.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/RCTTypeSafety/RCTTypeSafety-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MODULEMAP_FILE = Headers/Public/RCTTypeSafety/RCTTypeSafety.modulemap;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RCTTypeSafety;
+				PRODUCT_NAME = RCTTypeSafety;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
 		};
 		AF9FFD400157C5188EE18154D3D12A41 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -444,11 +452,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D80997530F283A1BF6F1BC6F7937B1E7 /* Build configuration list for PBXNativeTarget "RCTTypeSafety" */ = {
+		5AA4308273E333011B2884602935B5DE /* Build configuration list for PBXNativeTarget "RCTTypeSafety" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				A03F5B7CED9F4067CF6E75937ED335A7 /* Debug */,
-				246B24565088CD20081299CD529927C7 /* Release */,
+				68D01B066F53A9CBE518043E7420CCBF /* Debug */,
+				9B7F614F17EB00499B1B82FAE5CC8996 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

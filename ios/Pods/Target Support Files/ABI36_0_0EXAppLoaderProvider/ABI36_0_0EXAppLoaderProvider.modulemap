@@ -1,0 +1,6 @@
+module ABI36_0_0EXAppLoaderProvider {
+  umbrella header "ABI36_0_0EXAppLoaderProvider-umbrella.h"
+
+  export *
+  module * { export * }
+}

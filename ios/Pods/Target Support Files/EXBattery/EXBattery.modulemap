@@ -1,0 +1,6 @@
+module EXBattery {
+  umbrella header "EXBattery-umbrella.h"
+
+  export *
+  module * { export * }
+}

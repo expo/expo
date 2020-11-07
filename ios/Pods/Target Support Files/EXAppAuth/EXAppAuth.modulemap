@@ -1,0 +1,6 @@
+module EXAppAuth {
+  umbrella header "EXAppAuth-umbrella.h"
+
+  export *
+  module * { export * }
+}

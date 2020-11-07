@@ -1,0 +1,7 @@
+module ABI36_0_0React {
+  umbrella header "ABI36_0_0React-Core-umbrella.h"
+  exclude header "ABI36_0_0React-RCTCameraRoll-umbrella.h"
+
+  export *
+  module * { export * }
+}

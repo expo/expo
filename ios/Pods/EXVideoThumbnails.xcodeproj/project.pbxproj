@@ -7,43 +7,46 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		302177E034652D5E9E7CB05F8438C984 /* EXVideoThumbnailsModule.h in Headers */ = {isa = PBXBuildFile; fileRef = A0F30A217B500B193FBB3E63CB2FC3FE /* EXVideoThumbnailsModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		7E50A9AB2029C0D0BBF13E93B72EE455 /* EXVideoThumbnails-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 896725C3E70281727BDDEC4A6784B073 /* EXVideoThumbnails-dummy.m */; };
-		D9CD4345D23F962352D982FD7867F747 /* EXVideoThumbnailsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 082555148E69EF792A1E6DBE7AB243CA /* EXVideoThumbnailsModule.m */; };
+		2C40F01B75570103A723B99EA4F12F91 /* EXVideoThumbnailsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DE688C17E958A024F7D1A5D44DA9819D /* EXVideoThumbnailsModule.m */; };
+		3300A0685DE4D40EC82E3ABCED4FFD0B /* EXVideoThumbnails-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 7B755CA3CD4E5C365291E52C90456B59 /* EXVideoThumbnails-umbrella.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		5AD91E358F27FECCD9F52CE4C7D9A557 /* EXVideoThumbnailsModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 6C8262AA7E64B17E09DD6C91D1E6796A /* EXVideoThumbnailsModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A50809C579F76C1433C27EC5CFD5C746 /* EXVideoThumbnails-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = FE8E41B97FA63ED1D674DF8CD20A599E /* EXVideoThumbnails-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		02E01906DC2A296FB213F3EAC8A145A8 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = B77444528BEEDC29D2F616A4C3E94C6E /* UMFileSystemInterface.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
-			remoteInfo = UMFileSystemInterface;
-		};
-		7D4BEA7EF3BF7918D812288F59F662AC /* PBXContainerItemProxy */ = {
+		260C64C823CA0948B13AF88F9539C85B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5DAC50812CE3AE7B2163C4E17E8A4D30 /* UMCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
 		};
+		E4886767F0A111259BE513362AD13006 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B77444528BEEDC29D2F616A4C3E94C6E /* UMFileSystemInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
+			remoteInfo = UMFileSystemInterface;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		082555148E69EF792A1E6DBE7AB243CA /* EXVideoThumbnailsModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXVideoThumbnailsModule.m; path = EXVideoThumbnails/EXVideoThumbnailsModule.m; sourceTree = "<group>"; };
+		1F0CB5F60923611AC9C9B1D714E9B9F5 /* EXVideoThumbnails.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = EXVideoThumbnails.modulemap; sourceTree = "<group>"; };
 		5DAC50812CE3AE7B2163C4E17E8A4D30 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		7FB6916DBB84A9AC54A01EC4EBE9BF1E /* EXVideoThumbnails.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXVideoThumbnails.debug.xcconfig; sourceTree = "<group>"; };
-		816BAC237F6E3EFE7DD08ABEE56331B2 /* EXVideoThumbnails.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXVideoThumbnails.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		896725C3E70281727BDDEC4A6784B073 /* EXVideoThumbnails-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXVideoThumbnails-dummy.m"; sourceTree = "<group>"; };
-		94F6A6A49B9500417A2818639F506903 /* EXVideoThumbnails.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXVideoThumbnails.release.xcconfig; sourceTree = "<group>"; };
-		9890F35A729FBF2193BCA341D0EEDB57 /* EXVideoThumbnails-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXVideoThumbnails-prefix.pch"; sourceTree = "<group>"; };
-		A0F30A217B500B193FBB3E63CB2FC3FE /* EXVideoThumbnailsModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXVideoThumbnailsModule.h; path = EXVideoThumbnails/EXVideoThumbnailsModule.h; sourceTree = "<group>"; };
+		6C8262AA7E64B17E09DD6C91D1E6796A /* EXVideoThumbnailsModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXVideoThumbnailsModule.h; path = EXVideoThumbnails/EXVideoThumbnailsModule.h; sourceTree = "<group>"; };
+		7B755CA3CD4E5C365291E52C90456B59 /* EXVideoThumbnails-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXVideoThumbnails-umbrella.h"; sourceTree = "<group>"; };
+		9ED4191E9094BBA77148471EAB9F7DB9 /* EXVideoThumbnails-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXVideoThumbnails-prefix.pch"; sourceTree = "<group>"; };
 		B531CD6C7F8E464ED8DF0393B25F8CAF /* libEXVideoThumbnails.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXVideoThumbnails.a; path = libEXVideoThumbnails.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		B749DD29AE505F1FC828C7B90DD9FF70 /* EXVideoThumbnails.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXVideoThumbnails.debug.xcconfig; sourceTree = "<group>"; };
 		B77444528BEEDC29D2F616A4C3E94C6E /* UMFileSystemInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMFileSystemInterface; path = UMFileSystemInterface.xcodeproj; sourceTree = "<group>"; };
+		D36AF7CA63DD85C78D6485E3EF75D78D /* EXVideoThumbnails.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXVideoThumbnails.release.xcconfig; sourceTree = "<group>"; };
+		D7B7746075A116ED041D82C8130FF348 /* EXVideoThumbnails.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXVideoThumbnails.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		DE688C17E958A024F7D1A5D44DA9819D /* EXVideoThumbnailsModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXVideoThumbnailsModule.m; path = EXVideoThumbnails/EXVideoThumbnailsModule.m; sourceTree = "<group>"; };
+		FE8E41B97FA63ED1D674DF8CD20A599E /* EXVideoThumbnails-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXVideoThumbnails-dummy.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		E0C80711CF651F185ABC411C7F302362 /* Frameworks */ = {
+		27BBB2BA26BB2772ACAA0C6E313EB367 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -60,16 +63,12 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		43694EAFCCD0C9DD882AD6C8D5F25138 /* EXVideoThumbnails */ = {
+		2A6CD61515EB8F99D7F476805173410F /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				A0F30A217B500B193FBB3E63CB2FC3FE /* EXVideoThumbnailsModule.h */,
-				082555148E69EF792A1E6DBE7AB243CA /* EXVideoThumbnailsModule.m */,
-				9D1954058C91A37A1CD4D3C8A33468F7 /* Pod */,
-				AB86E8ED813FD153A406EEDBC549746E /* Support Files */,
+				D7B7746075A116ED041D82C8130FF348 /* EXVideoThumbnails.podspec */,
 			);
-			name = EXVideoThumbnails;
-			path = "../../packages/expo-video-thumbnails/ios";
+			name = Pod;
 			sourceTree = "<group>";
 		};
 		5C3D2F808807BC1902B98D90B2E2847C /* Dependencies */ = {
@@ -85,30 +84,36 @@
 			isa = PBXGroup;
 			children = (
 				5C3D2F808807BC1902B98D90B2E2847C /* Dependencies */,
-				43694EAFCCD0C9DD882AD6C8D5F25138 /* EXVideoThumbnails */,
+				88108116C1B601DA3B1C5CAC469DB1E7 /* EXVideoThumbnails */,
 				142688AA54D3D761DA38E42B5F0943B5 /* Frameworks */,
 				C30D393A2788CB86EAFC2BF10D37DA58 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		9D1954058C91A37A1CD4D3C8A33468F7 /* Pod */ = {
+		849CC5E2B5E354D1472238F657992174 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				816BAC237F6E3EFE7DD08ABEE56331B2 /* EXVideoThumbnails.podspec */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
-		AB86E8ED813FD153A406EEDBC549746E /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				896725C3E70281727BDDEC4A6784B073 /* EXVideoThumbnails-dummy.m */,
-				9890F35A729FBF2193BCA341D0EEDB57 /* EXVideoThumbnails-prefix.pch */,
-				7FB6916DBB84A9AC54A01EC4EBE9BF1E /* EXVideoThumbnails.debug.xcconfig */,
-				94F6A6A49B9500417A2818639F506903 /* EXVideoThumbnails.release.xcconfig */,
+				1F0CB5F60923611AC9C9B1D714E9B9F5 /* EXVideoThumbnails.modulemap */,
+				FE8E41B97FA63ED1D674DF8CD20A599E /* EXVideoThumbnails-dummy.m */,
+				9ED4191E9094BBA77148471EAB9F7DB9 /* EXVideoThumbnails-prefix.pch */,
+				7B755CA3CD4E5C365291E52C90456B59 /* EXVideoThumbnails-umbrella.h */,
+				B749DD29AE505F1FC828C7B90DD9FF70 /* EXVideoThumbnails.debug.xcconfig */,
+				D36AF7CA63DD85C78D6485E3EF75D78D /* EXVideoThumbnails.release.xcconfig */,
 			);
 			name = "Support Files";
 			path = "../../../ios/Pods/Target Support Files/EXVideoThumbnails";
+			sourceTree = "<group>";
+		};
+		88108116C1B601DA3B1C5CAC469DB1E7 /* EXVideoThumbnails */ = {
+			isa = PBXGroup;
+			children = (
+				6C8262AA7E64B17E09DD6C91D1E6796A /* EXVideoThumbnailsModule.h */,
+				DE688C17E958A024F7D1A5D44DA9819D /* EXVideoThumbnailsModule.m */,
+				2A6CD61515EB8F99D7F476805173410F /* Pod */,
+				849CC5E2B5E354D1472238F657992174 /* Support Files */,
+			);
+			name = EXVideoThumbnails;
+			path = "../../packages/expo-video-thumbnails/ios";
 			sourceTree = "<group>";
 		};
 		C30D393A2788CB86EAFC2BF10D37DA58 /* Products */ = {
@@ -122,11 +127,12 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		D956DCC5EA4AAEFDA3B0BE33F5E8770F /* Headers */ = {
+		83037EA9ED7C6727EADBAE8479EFC290 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				302177E034652D5E9E7CB05F8438C984 /* EXVideoThumbnailsModule.h in Headers */,
+				3300A0685DE4D40EC82E3ABCED4FFD0B /* EXVideoThumbnails-umbrella.h in Headers */,
+				5AD91E358F27FECCD9F52CE4C7D9A557 /* EXVideoThumbnailsModule.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -135,17 +141,17 @@
 /* Begin PBXNativeTarget section */
 		16ED442C06F5D444E672AE845A57E796 /* EXVideoThumbnails */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 763B63C6701CEFABF4822347C37A33C9 /* Build configuration list for PBXNativeTarget "EXVideoThumbnails" */;
+			buildConfigurationList = C8B6EEC166CCF9A36DE48475ACED6715 /* Build configuration list for PBXNativeTarget "EXVideoThumbnails" */;
 			buildPhases = (
-				D956DCC5EA4AAEFDA3B0BE33F5E8770F /* Headers */,
-				16415F35359B6CEDB88B94C2B5C6E5CD /* Sources */,
-				E0C80711CF651F185ABC411C7F302362 /* Frameworks */,
+				83037EA9ED7C6727EADBAE8479EFC290 /* Headers */,
+				A895344E6DCF29B250D33F841F3DC7F6 /* Sources */,
+				27BBB2BA26BB2772ACAA0C6E313EB367 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				F6AC46B4868AC66CB5A92508CCC694F2 /* PBXTargetDependency */,
-				366B3A8A316B8E4C3D3D68E622F8B0A3 /* PBXTargetDependency */,
+				576CEFF3B1C6BE563B6DEA963601B769 /* PBXTargetDependency */,
+				5532D28586539116E1DE3C67C871B7A0 /* PBXTargetDependency */,
 			);
 			name = EXVideoThumbnails;
 			productName = EXVideoThumbnails;
@@ -188,31 +194,58 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		16415F35359B6CEDB88B94C2B5C6E5CD /* Sources */ = {
+		A895344E6DCF29B250D33F841F3DC7F6 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7E50A9AB2029C0D0BBF13E93B72EE455 /* EXVideoThumbnails-dummy.m in Sources */,
-				D9CD4345D23F962352D982FD7867F747 /* EXVideoThumbnailsModule.m in Sources */,
+				A50809C579F76C1433C27EC5CFD5C746 /* EXVideoThumbnails-dummy.m in Sources */,
+				2C40F01B75570103A723B99EA4F12F91 /* EXVideoThumbnailsModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		366B3A8A316B8E4C3D3D68E622F8B0A3 /* PBXTargetDependency */ = {
+		5532D28586539116E1DE3C67C871B7A0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMFileSystemInterface;
-			targetProxy = 02E01906DC2A296FB213F3EAC8A145A8 /* PBXContainerItemProxy */;
+			targetProxy = E4886767F0A111259BE513362AD13006 /* PBXContainerItemProxy */;
 		};
-		F6AC46B4868AC66CB5A92508CCC694F2 /* PBXTargetDependency */ = {
+		576CEFF3B1C6BE563B6DEA963601B769 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 7D4BEA7EF3BF7918D812288F59F662AC /* PBXContainerItemProxy */;
+			targetProxy = 260C64C823CA0948B13AF88F9539C85B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		1FFB7B99A6E60465E0A2645CC45A1146 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D36AF7CA63DD85C78D6485E3EF75D78D /* EXVideoThumbnails.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXVideoThumbnails/EXVideoThumbnails-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MODULEMAP_FILE = Headers/Public/EXVideoThumbnails/EXVideoThumbnails.modulemap;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXVideoThumbnails;
+				PRODUCT_NAME = EXVideoThumbnails;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		30C9E94EF4C6F58194539B5F317E2E1B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -273,9 +306,9 @@
 			};
 			name = Release;
 		};
-		597BEFE8649B68E53C477AE73F3AD755 /* Debug */ = {
+		A1B30F56A9CE6CB8762DF06ED5660238 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7FB6916DBB84A9AC54A01EC4EBE9BF1E /* EXVideoThumbnails.debug.xcconfig */;
+			baseConfigurationReference = B749DD29AE505F1FC828C7B90DD9FF70 /* EXVideoThumbnails.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -284,6 +317,7 @@
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				GCC_PREFIX_HEADER = "Target Support Files/EXVideoThumbnails/EXVideoThumbnails-prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MODULEMAP_FILE = Headers/Public/EXVideoThumbnails/EXVideoThumbnails.modulemap;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -297,32 +331,6 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
-		};
-		E8403E7B2020C38004F4309D86CAEEB4 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 94F6A6A49B9500417A2818639F506903 /* EXVideoThumbnails.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXVideoThumbnails/EXVideoThumbnails-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXVideoThumbnails;
-				PRODUCT_NAME = EXVideoThumbnails;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
 		};
 		EF6D5A9080B8EA9C84DA45A9F785C2B5 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -391,11 +399,11 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		763B63C6701CEFABF4822347C37A33C9 /* Build configuration list for PBXNativeTarget "EXVideoThumbnails" */ = {
+		C8B6EEC166CCF9A36DE48475ACED6715 /* Build configuration list for PBXNativeTarget "EXVideoThumbnails" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				597BEFE8649B68E53C477AE73F3AD755 /* Debug */,
-				E8403E7B2020C38004F4309D86CAEEB4 /* Release */,
+				A1B30F56A9CE6CB8762DF06ED5660238 /* Debug */,
+				1FFB7B99A6E60465E0A2645CC45A1146 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

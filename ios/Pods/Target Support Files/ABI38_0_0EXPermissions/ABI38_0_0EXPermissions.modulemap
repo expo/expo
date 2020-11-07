@@ -1,0 +1,6 @@
+module ABI38_0_0EXPermissions {
+  umbrella header "ABI38_0_0EXPermissions-umbrella.h"
+
+  export *
+  module * { export * }
+}

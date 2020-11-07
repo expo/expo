@@ -1,0 +1,6 @@
+module ABI38_0_0EXRandom {
+  umbrella header "ABI38_0_0EXRandom-umbrella.h"
+
+  export *
+  module * { export * }
+}

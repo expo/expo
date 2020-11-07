@@ -1,0 +1,6 @@
+module EXCellular {
+  umbrella header "EXCellular-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -1,0 +1,6 @@
+module EXAdsAdMob {
+  umbrella header "EXAdsAdMob-umbrella.h"
+
+  export *
+  module * { export * }
+}

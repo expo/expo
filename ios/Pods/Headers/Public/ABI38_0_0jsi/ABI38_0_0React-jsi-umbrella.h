@@ -1,0 +1,1 @@
+../../../Target Support Files/ABI38_0_0React-jsi/ABI38_0_0React-jsi-umbrella.h

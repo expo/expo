@@ -1,0 +1,6 @@
+module ABI38_0_0EXNotifications {
+  umbrella header "ABI38_0_0EXNotifications-umbrella.h"
+
+  export *
+  module * { export * }
+}

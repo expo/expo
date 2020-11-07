@@ -1,0 +1,1 @@
+../../../Target Support Files/ABI39_0_0EXVideoThumbnails/ABI39_0_0EXVideoThumbnails-umbrella.h

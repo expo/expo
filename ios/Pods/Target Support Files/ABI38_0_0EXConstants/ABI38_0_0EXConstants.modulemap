@@ -1,0 +1,6 @@
+module ABI38_0_0EXConstants {
+  umbrella header "ABI38_0_0EXConstants-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -1,0 +1,6 @@
+module ABI36_0_0EXHaptics {
+  umbrella header "ABI36_0_0EXHaptics-umbrella.h"
+
+  export *
+  module * { export * }
+}

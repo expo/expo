@@ -1,0 +1,1 @@
+../../../Target Support Files/ABI37_0_0React-RCTImage/ABI37_0_0React-RCTImage-umbrella.h

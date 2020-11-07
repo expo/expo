@@ -1,0 +1,6 @@
+module Amplitude {
+  umbrella header "Amplitude-umbrella.h"
+
+  export *
+  module * { export * }
+}

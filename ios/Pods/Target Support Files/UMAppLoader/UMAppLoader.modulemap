@@ -1,0 +1,6 @@
+module UMAppLoader {
+  umbrella header "UMAppLoader-umbrella.h"
+
+  export *
+  module * { export * }
+}

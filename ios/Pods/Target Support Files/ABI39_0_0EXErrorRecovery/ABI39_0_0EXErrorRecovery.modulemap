@@ -1,0 +1,6 @@
+module ABI39_0_0EXErrorRecovery {
+  umbrella header "ABI39_0_0EXErrorRecovery-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -7,51 +7,54 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3CBC472BECFC5C2AD22AD26D767212EA /* EXAmplitude.m in Sources */ = {isa = PBXBuildFile; fileRef = DDD19589A13C554F0F1F04061FC6CE3E /* EXAmplitude.m */; };
-		51556209C305FC06F9D4A3913DFA8F4E /* EXAmplitude.h in Headers */ = {isa = PBXBuildFile; fileRef = CEB23C6F1087BC4400491788396142A3 /* EXAmplitude.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		54F645336C5D2CFD53168891B7C6A323 /* EXAmplitude-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = ECE46139130345E05A95D35A9F2CD372 /* EXAmplitude-dummy.m */; };
+		3A58A724EA26E3F5330A09C48725F936 /* EXAmplitude.h in Headers */ = {isa = PBXBuildFile; fileRef = C8153CC08A86188C607A3CDE38CF183F /* EXAmplitude.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		557B8537DBB648BF73545FBC7E138CB1 /* EXAmplitude-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = BF48C7DC1CFAAD72A301A63E3C9B6A45 /* EXAmplitude-umbrella.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		963EA5F4140564FDAD59915B1EEF1BEA /* EXAmplitude-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BA779FE9EC5883DE2425678DDAFCACA /* EXAmplitude-dummy.m */; };
+		DA8D4B1295999451B5DCD194EB718C7D /* EXAmplitude.m in Sources */ = {isa = PBXBuildFile; fileRef = E1D3427B8816418F9DAF3228211CD540 /* EXAmplitude.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		3440D131C86460E8DAD009703AB005A5 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 5184B8B4813245C2A4BD4357FE078C27 /* UMCore.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
-			remoteInfo = UMCore;
-		};
-		66D6C1511BA9D1AD27763452622A5BB3 /* PBXContainerItemProxy */ = {
+		0FAD06A8D80285BDC4911DC7B99FF6C1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = CB33E2D57F3209B959FEE906EB48EF57 /* Amplitude.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = A8506691BCF493596D6E68176F7E0129;
 			remoteInfo = Amplitude;
 		};
-		A041AC9D9DB5DB71923D68CCD8142B24 /* PBXContainerItemProxy */ = {
+		6DC7585C0D9141FCAC813E50CFE0DBF5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AD56C4BF6DE935B05B35B89CC4FAA818 /* UMConstantsInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 46F82E84687582F366B907E2BD5F1EA2;
 			remoteInfo = UMConstantsInterface;
 		};
+		E513055A236EC7F48BBC156B41E087C8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5184B8B4813245C2A4BD4357FE078C27 /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		20DBB8240667343E21018F56C89090FD /* EXAmplitude-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXAmplitude-prefix.pch"; sourceTree = "<group>"; };
+		314A38AF8563396E8A5AE1DBB2168C97 /* EXAmplitude.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = EXAmplitude.modulemap; sourceTree = "<group>"; };
 		463402081A46EB38CD3DC1CE798D7BC7 /* libEXAmplitude.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXAmplitude.a; path = libEXAmplitude.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		5184B8B4813245C2A4BD4357FE078C27 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		583C214BF27F76F76C20575176670555 /* EXAmplitude.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXAmplitude.release.xcconfig; sourceTree = "<group>"; };
-		6A608CF24870EE595A9DD0571BE23D0D /* EXAmplitude.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXAmplitude.debug.xcconfig; sourceTree = "<group>"; };
-		7E1529BB3613C8BCCBDE72B829FE8EA4 /* EXAmplitude.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXAmplitude.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		5BA779FE9EC5883DE2425678DDAFCACA /* EXAmplitude-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXAmplitude-dummy.m"; sourceTree = "<group>"; };
+		7B8596703CA8D84FD4754DDB7679A651 /* EXAmplitude.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXAmplitude.debug.xcconfig; sourceTree = "<group>"; };
+		984C67B3F68415BBCE3E404C5D777556 /* EXAmplitude.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXAmplitude.release.xcconfig; sourceTree = "<group>"; };
 		AD56C4BF6DE935B05B35B89CC4FAA818 /* UMConstantsInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMConstantsInterface; path = UMConstantsInterface.xcodeproj; sourceTree = "<group>"; };
+		BF48C7DC1CFAAD72A301A63E3C9B6A45 /* EXAmplitude-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXAmplitude-umbrella.h"; sourceTree = "<group>"; };
+		C8153CC08A86188C607A3CDE38CF183F /* EXAmplitude.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAmplitude.h; path = EXAmplitude/EXAmplitude.h; sourceTree = "<group>"; };
 		CB33E2D57F3209B959FEE906EB48EF57 /* Amplitude */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Amplitude; path = Amplitude.xcodeproj; sourceTree = "<group>"; };
-		CEB23C6F1087BC4400491788396142A3 /* EXAmplitude.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAmplitude.h; path = EXAmplitude/EXAmplitude.h; sourceTree = "<group>"; };
-		DDD19589A13C554F0F1F04061FC6CE3E /* EXAmplitude.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAmplitude.m; path = EXAmplitude/EXAmplitude.m; sourceTree = "<group>"; };
-		ECE46139130345E05A95D35A9F2CD372 /* EXAmplitude-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXAmplitude-dummy.m"; sourceTree = "<group>"; };
+		D6139DA68563863E0F15E5C93A8F5417 /* EXAmplitude.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXAmplitude.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		DC79B5E2D5346E86B542478D641F64D9 /* EXAmplitude-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXAmplitude-prefix.pch"; sourceTree = "<group>"; };
+		E1D3427B8816418F9DAF3228211CD540 /* EXAmplitude.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAmplitude.m; path = EXAmplitude/EXAmplitude.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		F766D5877796EC613F0BE24F6F9E09EC /* Frameworks */ = {
+		8433E154C6CADB51998CF5FB5F80F55E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -71,34 +74,14 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		3BC0C6B199134B15A7EA33CA6D552555 /* EXAmplitude */ = {
-			isa = PBXGroup;
-			children = (
-				CEB23C6F1087BC4400491788396142A3 /* EXAmplitude.h */,
-				DDD19589A13C554F0F1F04061FC6CE3E /* EXAmplitude.m */,
-				5D8E3C448D73A6FA643E7AFA97570ABB /* Pod */,
-				F96AA685601FFF2F50BEB4575037501D /* Support Files */,
-			);
-			name = EXAmplitude;
-			path = "../../packages/expo-analytics-amplitude/ios";
-			sourceTree = "<group>";
-		};
 		49B47C1AEB7579A59A256E5EE1A1C0C7 = {
 			isa = PBXGroup;
 			children = (
 				16FF197AA0C8CFB4EDDDB6CB41567598 /* Dependencies */,
-				3BC0C6B199134B15A7EA33CA6D552555 /* EXAmplitude */,
+				F85D28D2F9AECF42D22816A4BEC37B11 /* EXAmplitude */,
 				7947E6F8BC4765B612E1335D8ADA7DD2 /* Frameworks */,
 				67946ED29343B3D134035288A0D8C35F /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		5D8E3C448D73A6FA643E7AFA97570ABB /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				7E1529BB3613C8BCCBDE72B829FE8EA4 /* EXAmplitude.podspec */,
-			);
-			name = Pod;
 			sourceTree = "<group>";
 		};
 		67946ED29343B3D134035288A0D8C35F /* Products */ = {
@@ -116,26 +99,49 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		F96AA685601FFF2F50BEB4575037501D /* Support Files */ = {
+		ABB7CADCCA42C175EB2A52F248648259 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				ECE46139130345E05A95D35A9F2CD372 /* EXAmplitude-dummy.m */,
-				20DBB8240667343E21018F56C89090FD /* EXAmplitude-prefix.pch */,
-				6A608CF24870EE595A9DD0571BE23D0D /* EXAmplitude.debug.xcconfig */,
-				583C214BF27F76F76C20575176670555 /* EXAmplitude.release.xcconfig */,
+				314A38AF8563396E8A5AE1DBB2168C97 /* EXAmplitude.modulemap */,
+				5BA779FE9EC5883DE2425678DDAFCACA /* EXAmplitude-dummy.m */,
+				DC79B5E2D5346E86B542478D641F64D9 /* EXAmplitude-prefix.pch */,
+				BF48C7DC1CFAAD72A301A63E3C9B6A45 /* EXAmplitude-umbrella.h */,
+				7B8596703CA8D84FD4754DDB7679A651 /* EXAmplitude.debug.xcconfig */,
+				984C67B3F68415BBCE3E404C5D777556 /* EXAmplitude.release.xcconfig */,
 			);
 			name = "Support Files";
 			path = "../../../ios/Pods/Target Support Files/EXAmplitude";
 			sourceTree = "<group>";
 		};
+		E4EF43EF648456F85B43054E2B8702F8 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				D6139DA68563863E0F15E5C93A8F5417 /* EXAmplitude.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		F85D28D2F9AECF42D22816A4BEC37B11 /* EXAmplitude */ = {
+			isa = PBXGroup;
+			children = (
+				C8153CC08A86188C607A3CDE38CF183F /* EXAmplitude.h */,
+				E1D3427B8816418F9DAF3228211CD540 /* EXAmplitude.m */,
+				E4EF43EF648456F85B43054E2B8702F8 /* Pod */,
+				ABB7CADCCA42C175EB2A52F248648259 /* Support Files */,
+			);
+			name = EXAmplitude;
+			path = "../../packages/expo-analytics-amplitude/ios";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		9F3E94B2D4468B5210146C5ED95B6B3F /* Headers */ = {
+		B21F9132E0D66CB3B1316EB7D040DE96 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				51556209C305FC06F9D4A3913DFA8F4E /* EXAmplitude.h in Headers */,
+				557B8537DBB648BF73545FBC7E138CB1 /* EXAmplitude-umbrella.h in Headers */,
+				3A58A724EA26E3F5330A09C48725F936 /* EXAmplitude.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -144,18 +150,18 @@
 /* Begin PBXNativeTarget section */
 		700BA3D76A8C4362E721FECC92A96DFB /* EXAmplitude */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 5F8C33019C140AC62990A801788811E3 /* Build configuration list for PBXNativeTarget "EXAmplitude" */;
+			buildConfigurationList = 01F74AE1F3F5DF865DA35F91844FAAA5 /* Build configuration list for PBXNativeTarget "EXAmplitude" */;
 			buildPhases = (
-				9F3E94B2D4468B5210146C5ED95B6B3F /* Headers */,
-				BA8F3278150BC46E27C599E7F4C74806 /* Sources */,
-				F766D5877796EC613F0BE24F6F9E09EC /* Frameworks */,
+				B21F9132E0D66CB3B1316EB7D040DE96 /* Headers */,
+				3E13D257C68C215F045EE3F02A0D8527 /* Sources */,
+				8433E154C6CADB51998CF5FB5F80F55E /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				EC5D4504D7D1A11CB96BC6C3D5A868D2 /* PBXTargetDependency */,
-				B481C9028855EB47E6A6DD6C667831AD /* PBXTargetDependency */,
-				8129636515E12FC50637837AEE816C87 /* PBXTargetDependency */,
+				9BC399C6A2C1420774FC2C32AD4F2310 /* PBXTargetDependency */,
+				8444F997A3DCFEC27991E0973D7D7633 /* PBXTargetDependency */,
+				E24A3B958C989FEE185E46A225BB6B59 /* PBXTargetDependency */,
 			);
 			name = EXAmplitude;
 			productName = EXAmplitude;
@@ -201,32 +207,32 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		BA8F3278150BC46E27C599E7F4C74806 /* Sources */ = {
+		3E13D257C68C215F045EE3F02A0D8527 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				54F645336C5D2CFD53168891B7C6A323 /* EXAmplitude-dummy.m in Sources */,
-				3CBC472BECFC5C2AD22AD26D767212EA /* EXAmplitude.m in Sources */,
+				963EA5F4140564FDAD59915B1EEF1BEA /* EXAmplitude-dummy.m in Sources */,
+				DA8D4B1295999451B5DCD194EB718C7D /* EXAmplitude.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		8129636515E12FC50637837AEE816C87 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMCore;
-			targetProxy = 3440D131C86460E8DAD009703AB005A5 /* PBXContainerItemProxy */;
-		};
-		B481C9028855EB47E6A6DD6C667831AD /* PBXTargetDependency */ = {
+		8444F997A3DCFEC27991E0973D7D7633 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMConstantsInterface;
-			targetProxy = A041AC9D9DB5DB71923D68CCD8142B24 /* PBXContainerItemProxy */;
+			targetProxy = 6DC7585C0D9141FCAC813E50CFE0DBF5 /* PBXContainerItemProxy */;
 		};
-		EC5D4504D7D1A11CB96BC6C3D5A868D2 /* PBXTargetDependency */ = {
+		9BC399C6A2C1420774FC2C32AD4F2310 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Amplitude;
-			targetProxy = 66D6C1511BA9D1AD27763452622A5BB3 /* PBXContainerItemProxy */;
+			targetProxy = 0FAD06A8D80285BDC4911DC7B99FF6C1 /* PBXContainerItemProxy */;
+		};
+		E24A3B958C989FEE185E46A225BB6B59 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = E513055A236EC7F48BBC156B41E087C8 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -355,9 +361,9 @@
 			};
 			name = Debug;
 		};
-		5D2A8598256EF83BCDB66CD8A7AAE5D4 /* Release */ = {
+		8098A062A1D8BBB91134F8AD00D0BA15 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 583C214BF27F76F76C20575176670555 /* EXAmplitude.release.xcconfig */;
+			baseConfigurationReference = 984C67B3F68415BBCE3E404C5D777556 /* EXAmplitude.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -366,6 +372,7 @@
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				GCC_PREFIX_HEADER = "Target Support Files/EXAmplitude/EXAmplitude-prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MODULEMAP_FILE = Headers/Public/EXAmplitude/EXAmplitude.modulemap;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -381,9 +388,9 @@
 			};
 			name = Release;
 		};
-		78DCAFBA261E81655F8505E11F4395B4 /* Debug */ = {
+		8D065AA710D7E01E1491A115FECD8A81 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6A608CF24870EE595A9DD0571BE23D0D /* EXAmplitude.debug.xcconfig */;
+			baseConfigurationReference = 7B8596703CA8D84FD4754DDB7679A651 /* EXAmplitude.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -392,6 +399,7 @@
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				GCC_PREFIX_HEADER = "Target Support Files/EXAmplitude/EXAmplitude-prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MODULEMAP_FILE = Headers/Public/EXAmplitude/EXAmplitude.modulemap;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -409,11 +417,11 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		5F8C33019C140AC62990A801788811E3 /* Build configuration list for PBXNativeTarget "EXAmplitude" */ = {
+		01F74AE1F3F5DF865DA35F91844FAAA5 /* Build configuration list for PBXNativeTarget "EXAmplitude" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				78DCAFBA261E81655F8505E11F4395B4 /* Debug */,
-				5D2A8598256EF83BCDB66CD8A7AAE5D4 /* Release */,
+				8D065AA710D7E01E1491A115FECD8A81 /* Debug */,
+				8098A062A1D8BBB91134F8AD00D0BA15 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

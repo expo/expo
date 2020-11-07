@@ -1,0 +1,6 @@
+module EXKeepAwake {
+  umbrella header "EXKeepAwake-umbrella.h"
+
+  export *
+  module * { export * }
+}

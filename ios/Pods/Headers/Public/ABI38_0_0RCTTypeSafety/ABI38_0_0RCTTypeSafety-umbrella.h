@@ -1,0 +1,1 @@
+../../../Target Support Files/ABI38_0_0RCTTypeSafety/ABI38_0_0RCTTypeSafety-umbrella.h

@@ -27,7 +27,7 @@
   "subspecs": [
     {
       "name": "Expo",
-      "source_files": "Core/**/*.{h,m,mm,cpp}",
+      "source_files": "Core/**/*.{h,m,mm,cpp,swift}",
       "dependencies": {
         "ABI39_0_0React-Core": [
 

@@ -1,0 +1,6 @@
+module EXNetwork {
+  umbrella header "EXNetwork-umbrella.h"
+
+  export *
+  module * { export * }
+}

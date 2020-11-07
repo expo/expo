@@ -1,0 +1,6 @@
+module ABI37_0_0jsinspector {
+  umbrella header "ABI37_0_0React-jsinspector-umbrella.h"
+
+  export *
+  module * { export * }
+}

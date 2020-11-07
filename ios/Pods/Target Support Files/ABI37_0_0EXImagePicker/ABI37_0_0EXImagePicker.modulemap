@@ -1,0 +1,6 @@
+module ABI37_0_0EXImagePicker {
+  umbrella header "ABI37_0_0EXImagePicker-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -1,0 +1,6 @@
+module EXNotifications {
+  umbrella header "EXNotifications-umbrella.h"
+
+  export *
+  module * { export * }
+}

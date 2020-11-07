@@ -1,0 +1,6 @@
+module EXVideoThumbnails {
+  umbrella header "EXVideoThumbnails-umbrella.h"
+
+  export *
+  module * { export * }
+}

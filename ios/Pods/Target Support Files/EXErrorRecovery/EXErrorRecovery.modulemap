@@ -1,0 +1,6 @@
+module EXErrorRecovery {
+  umbrella header "EXErrorRecovery-umbrella.h"
+
+  export *
+  module * { export * }
+}

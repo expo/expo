@@ -1,0 +1,6 @@
+module ABI37_0_0EXFont {
+  umbrella header "ABI37_0_0EXFont-umbrella.h"
+
+  export *
+  module * { export * }
+}

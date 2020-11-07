@@ -1,0 +1,6 @@
+module ABI38_0_0EXLocalAuthentication {
+  umbrella header "ABI38_0_0EXLocalAuthentication-umbrella.h"
+
+  export *
+  module * { export * }
+}

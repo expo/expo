@@ -1,0 +1,6 @@
+module EXContacts {
+  umbrella header "EXContacts-umbrella.h"
+
+  export *
+  module * { export * }
+}

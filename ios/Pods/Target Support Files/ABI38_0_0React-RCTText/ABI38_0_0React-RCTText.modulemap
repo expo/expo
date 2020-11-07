@@ -1,0 +1,6 @@
+module ABI38_0_0RCTText {
+  umbrella header "ABI38_0_0React-RCTText-umbrella.h"
+
+  export *
+  module * { export * }
+}

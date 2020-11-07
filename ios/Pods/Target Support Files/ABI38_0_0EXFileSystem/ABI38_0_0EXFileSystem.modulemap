@@ -1,0 +1,6 @@
+module ABI38_0_0EXFileSystem {
+  umbrella header "ABI38_0_0EXFileSystem-umbrella.h"
+
+  export *
+  module * { export * }
+}

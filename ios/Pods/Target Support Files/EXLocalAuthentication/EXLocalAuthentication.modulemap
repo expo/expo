@@ -1,0 +1,6 @@
+module EXLocalAuthentication {
+  umbrella header "EXLocalAuthentication-umbrella.h"
+
+  export *
+  module * { export * }
+}

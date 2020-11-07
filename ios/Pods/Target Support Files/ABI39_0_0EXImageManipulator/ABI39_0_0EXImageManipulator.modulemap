@@ -1,0 +1,6 @@
+module ABI39_0_0EXImageManipulator {
+  umbrella header "ABI39_0_0EXImageManipulator-umbrella.h"
+
+  export *
+  module * { export * }
+}

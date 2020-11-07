@@ -1,0 +1,6 @@
+module ABI38_0_0EXKeepAwake {
+  umbrella header "ABI38_0_0EXKeepAwake-umbrella.h"
+
+  export *
+  module * { export * }
+}

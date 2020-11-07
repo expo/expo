@@ -1,0 +1,6 @@
+module ABI37_0_0EXAppAuth {
+  umbrella header "ABI37_0_0EXAppAuth-umbrella.h"
+
+  export *
+  module * { export * }
+}

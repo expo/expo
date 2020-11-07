@@ -1,0 +1,6 @@
+module RCTVibration {
+  umbrella header "React-RCTVibration-umbrella.h"
+
+  export *
+  module * { export * }
+}

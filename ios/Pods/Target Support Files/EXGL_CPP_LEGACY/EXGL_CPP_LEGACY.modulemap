@@ -1,0 +1,6 @@
+module EXGL_CPP_LEGACY {
+  umbrella header "EXGL_CPP_LEGACY-umbrella.h"
+
+  export *
+  module * { export * }
+}

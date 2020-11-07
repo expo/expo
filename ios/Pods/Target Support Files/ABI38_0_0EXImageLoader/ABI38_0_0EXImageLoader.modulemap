@@ -1,0 +1,6 @@
+module ABI38_0_0EXImageLoader {
+  umbrella header "ABI38_0_0EXImageLoader-umbrella.h"
+
+  export *
+  module * { export * }
+}

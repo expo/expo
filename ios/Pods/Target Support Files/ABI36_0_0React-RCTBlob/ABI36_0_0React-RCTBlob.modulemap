@@ -1,0 +1,6 @@
+module ABI36_0_0RCTBlob {
+  umbrella header "ABI36_0_0React-RCTBlob-umbrella.h"
+
+  export *
+  module * { export * }
+}

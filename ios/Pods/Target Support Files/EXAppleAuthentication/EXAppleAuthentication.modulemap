@@ -1,0 +1,6 @@
+module EXAppleAuthentication {
+  umbrella header "EXAppleAuthentication-umbrella.h"
+
+  export *
+  module * { export * }
+}

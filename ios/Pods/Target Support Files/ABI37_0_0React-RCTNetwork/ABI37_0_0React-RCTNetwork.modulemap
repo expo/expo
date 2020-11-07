@@ -1,0 +1,6 @@
+module ABI37_0_0RCTNetwork {
+  umbrella header "ABI37_0_0React-RCTNetwork-umbrella.h"
+
+  export *
+  module * { export * }
+}

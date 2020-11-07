@@ -1,0 +1,6 @@
+module ABI38_0_0EXScreenOrientation {
+  umbrella header "ABI38_0_0EXScreenOrientation-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -1,0 +1,6 @@
+module ABI38_0_0EXSQLite {
+  umbrella header "ABI38_0_0EXSQLite-umbrella.h"
+
+  export *
+  module * { export * }
+}

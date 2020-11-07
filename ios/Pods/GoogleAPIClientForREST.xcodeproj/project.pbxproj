@@ -7,47 +7,48 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		057B6331869861B9A2DD91F10FC0D25A /* GTLRErrorObject.m in Sources */ = {isa = PBXBuildFile; fileRef = E52D7AFEA6464A4007B824D846E5EF87 /* GTLRErrorObject.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		0BF7F1CDD6A77F4F0B4ECD525E8E4FAA /* GTLRBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DEEF1DE21A1C5FBAD1691A5D4F8C6BA /* GTLRBase64.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		1C3E92154A392AB4A2C50D0BC0A93CA1 /* GTLRQuery.h in Headers */ = {isa = PBXBuildFile; fileRef = 99190F3C7C8F1978120E384D42DF6B61 /* GTLRQuery.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		1E01599AEE444BE5AD070AA5C56BB62D /* GTLRBase64.h in Headers */ = {isa = PBXBuildFile; fileRef = 078158A15E8E5CD28AF01F4B3B7BB0F2 /* GTLRBase64.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		244D0E3A113BFD5EC026C419DC48CB3B /* GTLRURITemplate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6889D167A8C5C48584D2C5DBD24522BC /* GTLRURITemplate.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		29237FA8B159CD0A9A145EB3B3C489D0 /* GTLRUploadParameters.h in Headers */ = {isa = PBXBuildFile; fileRef = 3EB58170CD4005491C774B702BE35731 /* GTLRUploadParameters.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		2AF5E29271C3B3E9C0E9F5D0ACB2B18C /* GTLRUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = EB063916966961DBA1D030C04905AB43 /* GTLRUtilities.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		361B077D905B09038599D6202B5A873B /* GTLRRuntimeCommon.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C30043A28F33FA2B3176DD2C08E70F1 /* GTLRRuntimeCommon.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		4B27E1CB1FA6A00A9C8347EF2D738964 /* GTLRBatchQuery.h in Headers */ = {isa = PBXBuildFile; fileRef = 02721F5DE74838942EC753D98A9A8A07 /* GTLRBatchQuery.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		4F292FDED90F9390872E238ADA8527B8 /* GTLRQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = 12C352C4EBB19969EBF6DF710233B8F9 /* GTLRQuery.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		51AEEE5AC0048C15F7EFC649930A5AC1 /* GTLRVisionQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = 482803F0167734E2B88DAE5F122DEDA1 /* GTLRVisionQuery.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		576B913E75CBF9247102099A376EEEA8 /* GTLRVisionQuery.h in Headers */ = {isa = PBXBuildFile; fileRef = 99BCDC780061EBCED0DE6791D8CFCF84 /* GTLRVisionQuery.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		5E579CC8675BC8E1384E2B7AC23B8129 /* GTLRRuntimeCommon.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C74DA444049A0E314675AEDADB8A86B /* GTLRRuntimeCommon.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		5FBF9604FA2B209527F92B9D7F394267 /* GTLRUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 0478B5E6672BE66C6156C4C17926A896 /* GTLRUtilities.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		628DAFB2FBFA69CAAFB30F612E94AE5A /* GTLRObject.m in Sources */ = {isa = PBXBuildFile; fileRef = F7743A610D475087AB632B82AD8D7B64 /* GTLRObject.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		63D59BFF2A9D30C002382439C2B8F7A2 /* GTLRVision.h in Headers */ = {isa = PBXBuildFile; fileRef = 34D031B20F3E60DE96825219A3766812 /* GTLRVision.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		85ABD45B86315700E188774B82FD7329 /* GTLRDuration.h in Headers */ = {isa = PBXBuildFile; fileRef = 3E4E3B86A1548E152222E0920C7F6B64 /* GTLRDuration.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		86C030F3958A76578FF08CDC7B9621C4 /* GTLRDuration.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D4C98140C53497D0EE298EA26C67B74 /* GTLRDuration.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		8943966E8FDC0AE417B05239928A4ABE /* GTLRVisionService.h in Headers */ = {isa = PBXBuildFile; fileRef = 0ECC78C8DDD51D136D20467955E66D61 /* GTLRVisionService.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		894E8E66FF7F0C29BF5BF9B10408B2B9 /* GTLRErrorObject.h in Headers */ = {isa = PBXBuildFile; fileRef = B42464660C091A33F208254C9828EC14 /* GTLRErrorObject.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		897350D009C188E14A596CEA37517032 /* GTLRService.h in Headers */ = {isa = PBXBuildFile; fileRef = B884CD495748A70B4D0925A22EAE6063 /* GTLRService.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		9030B3F3EA79DDFFF5AD33AD01BBF635 /* GTLRBatchResult.h in Headers */ = {isa = PBXBuildFile; fileRef = 6B6DF9AC5FB3DF089196242393CAA119 /* GTLRBatchResult.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		944759F6E900CBA33D9F1BEF3D9BA623 /* GTLRVisionService.m in Sources */ = {isa = PBXBuildFile; fileRef = 1DD5485685C331CBC72DFB8A9C4C74AA /* GTLRVisionService.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		9BC9115470AA1CE5C8BE33F451AC5BAE /* GTLRObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 61D7C14121746D24C2070898BFD5D028 /* GTLRObject.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		9DCC8EA3B3DDEAA085C15E1DB0AEB0F0 /* GTLRDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = ED0775A7B65D65B9FFE0C923D170E7D8 /* GTLRDefines.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		A1A3908085CD6054BF3196F30C4A2FB8 /* GTLRFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = 97B9DA301585AB6D75222D9A06A44B25 /* GTLRFramework.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		A8DDF0369F05E06B7C1AED6B5441BF8B /* GTLRUploadParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = 038597B9AAEF2AECF28F934FAD95F66C /* GTLRUploadParameters.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		B584CD55B254B71C54725415DAC8071B /* GTLRBatchQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = 612C65AA6367CD3B028716E3A366B08F /* GTLRBatchQuery.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		B6741950AC78F40B9C762E9279E888B8 /* GoogleAPIClientForREST-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 39CD518EE8F207B988FD03574678909F /* GoogleAPIClientForREST-dummy.m */; };
-		BF00B855885D20741E51CD8D9D66854A /* GTLRVisionObjects.h in Headers */ = {isa = PBXBuildFile; fileRef = 10A9C09D9E10E63E026AE39417967CE3 /* GTLRVisionObjects.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		C44DE75A92F21B7F4EDB9EE7F10DD379 /* GTLRDateTime.m in Sources */ = {isa = PBXBuildFile; fileRef = D792389DA4C3AFC4DF7AC0F41D7CD58B /* GTLRDateTime.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		D312D6EA3CDDF015BF14B122E1D93136 /* GTLRFramework.h in Headers */ = {isa = PBXBuildFile; fileRef = 144CDAA43124AD3EFA4B64139AB9C3A9 /* GTLRFramework.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		DE9085D73B69EFA95C71AAFCFE013980 /* GTLRBatchResult.m in Sources */ = {isa = PBXBuildFile; fileRef = FBFC6FB4D75DB5AF029368DDC9A8E443 /* GTLRBatchResult.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		E40FE894BE01CFC9553E83D6E7D0A066 /* GTLRVisionObjects.m in Sources */ = {isa = PBXBuildFile; fileRef = 01067890470D4B1959701A1968991392 /* GTLRVisionObjects.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		E84E5AE3F9EB9A795FD02F32F7B5795D /* GTLRDateTime.h in Headers */ = {isa = PBXBuildFile; fileRef = FA1FA62D27B4477710F308D59EBFDDAF /* GTLRDateTime.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		F524274D839C50EBFCC7191C3F9237D1 /* GTLRService.m in Sources */ = {isa = PBXBuildFile; fileRef = DEDE951A572F2B4AF1FF67867814BD47 /* GTLRService.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		F5729B071DB7B6294FC9B40C28B66234 /* GTLRURITemplate.h in Headers */ = {isa = PBXBuildFile; fileRef = C0EC5AD2B2999646520578A27D64098A /* GTLRURITemplate.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		01E28EC0D3F5E314E259373FC8CE41D4 /* GTLRDateTime.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A2FC48E1ED5423CC1FDEC7E77C038D1 /* GTLRDateTime.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		08064233AD2F648F599A7A403A7D1FD8 /* GTLRVisionService.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0B114FABA25CB6114C55313A8C8F6D /* GTLRVisionService.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		0F38C6A847CB95FDC3EE8EF8D58758A1 /* GTLRURITemplate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E601FBB25F70E587182DBE5E3AA55EF /* GTLRURITemplate.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		10A786245F031199F45B39B65674CD25 /* GTLRUploadParameters.h in Headers */ = {isa = PBXBuildFile; fileRef = FB890A50CEB5099A84308BFED7793ED3 /* GTLRUploadParameters.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		139620DC81D56FA0302FF501DB546729 /* GTLRVisionService.h in Headers */ = {isa = PBXBuildFile; fileRef = E4A13B7AC6A0BA0E8906B33DDE2EF1BE /* GTLRVisionService.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		1AFC6AF3BC50B0BC751D4BB5BD5D47B1 /* GTLRUploadParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = 7988061632B263056C0D4C3DF32B926C /* GTLRUploadParameters.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		1C3A8F198ED0B8D2521B204E007F25D0 /* GTLRDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = EA5AB7AEF9E57FC74E76CBCF207245F3 /* GTLRDefines.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		29F382DFE6ACF000B92AAD1B6A476941 /* GTLRQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = 29D1A15F632562B43016063EDFCFB664 /* GTLRQuery.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		36025BA14986EB3A1C88AB5A75E46EE8 /* GTLRService.h in Headers */ = {isa = PBXBuildFile; fileRef = 3992EAFCFC22048CA08C006D3E86FACB /* GTLRService.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3DE85252BEBD2F6B380242A510F6FBB1 /* GoogleAPIClientForREST-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 75298C96BCECBACCB83DB73AFFB844F1 /* GoogleAPIClientForREST-umbrella.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3ED6D00A502B0317C043E87009901F02 /* GTLRVisionQuery.h in Headers */ = {isa = PBXBuildFile; fileRef = 642AF6876CD5436B30993601B78F708C /* GTLRVisionQuery.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		42AD531706E23FA333DFC5612B18F9F2 /* GTLRDuration.h in Headers */ = {isa = PBXBuildFile; fileRef = 259536FC2EBD75C77586C26E3718C068 /* GTLRDuration.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		4EEA8F20131F7917638F8F23F248FB2A /* GTLRDateTime.m in Sources */ = {isa = PBXBuildFile; fileRef = BF6C0E6898DE39F705A33521B1A97C5F /* GTLRDateTime.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		4FAD9E1390C38B45C70AC4718799B196 /* GTLRUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 72A54280C333FAF7692F640891DFFCDC /* GTLRUtilities.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		5307F16E5551F9706730E0E590CC02DD /* GTLRFramework.h in Headers */ = {isa = PBXBuildFile; fileRef = 15B9BAB265F36BF8C79AC148229F09FD /* GTLRFramework.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		577004BDA652CA7C4939AE9FA4077C27 /* GTLRErrorObject.h in Headers */ = {isa = PBXBuildFile; fileRef = EE39398CD7AE1F1A2B5CECED4DFC5759 /* GTLRErrorObject.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		64456B924590C00485F39D45BA6383A4 /* GTLRDuration.m in Sources */ = {isa = PBXBuildFile; fileRef = C1FF2D651F8BDE6E0F090C70053B03DD /* GTLRDuration.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		6BDF11AD836D20F10F17709A0D8E98D3 /* GTLRFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = FC975FA8061CCE9A68D7EA60D2848DAF /* GTLRFramework.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		74E10ECA9C22E554300E1C5A0A298879 /* GTLRBatchQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = EEE1E560650C4F7AA99E3184B3C2F7CF /* GTLRBatchQuery.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		7839BE83657548AABA28A0E41EE7592A /* GTLRObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A37535E771278A8617CBB06DBAB2AEA /* GTLRObject.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		7F650D9CBE135FC1A67E76EE57D2925F /* GTLRRuntimeCommon.m in Sources */ = {isa = PBXBuildFile; fileRef = 8ADBA1F371013EA649B9904E2690B74E /* GTLRRuntimeCommon.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		8758CD450DA030C186567267A452EFF4 /* GTLRBatchResult.h in Headers */ = {isa = PBXBuildFile; fileRef = 62166FF77F5AB5DB77F1B17F94125C30 /* GTLRBatchResult.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8866F7EF8E73466CD379C48F53E0A62F /* GTLRRuntimeCommon.h in Headers */ = {isa = PBXBuildFile; fileRef = F3CCABB12C214C60B04C7462FAE6244A /* GTLRRuntimeCommon.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8B735438A02714B85E9ECD782556D8E8 /* GTLRVision.h in Headers */ = {isa = PBXBuildFile; fileRef = 01E7A4F33DAFAD50023ABABB20364B7B /* GTLRVision.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		9A88823718714A8AE30DEA4A88012628 /* GTLRBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = 046DB386A87E0578B975BF33876AD436 /* GTLRBase64.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		9CAD331C301727882C77B87AC6A26BD6 /* GTLRBase64.h in Headers */ = {isa = PBXBuildFile; fileRef = 152BF8B5E985A406961B997EF26AB0DA /* GTLRBase64.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A2F8F9C66C9D93B618880DA1195E82A2 /* GTLRVisionObjects.h in Headers */ = {isa = PBXBuildFile; fileRef = 9117F2731DE1079270253576A11E62FB /* GTLRVisionObjects.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A49EA5DBC033429F25A5560B7C68B4B9 /* GTLRURITemplate.h in Headers */ = {isa = PBXBuildFile; fileRef = F75A1D4DA1B86596FA329DCB4FEA01CA /* GTLRURITemplate.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B35399F351F8D34A62CD07322833C1A0 /* GTLRVisionQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = E2E50CB6306E8099F7ECA50DE0E0A386 /* GTLRVisionQuery.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		B4E4F9767EEA48A1905583F800B772F0 /* GTLRObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 41ECD2A2454DD79AA0D5E1F89C80560B /* GTLRObject.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B8DD0B19FCBC6200D086639983670ABD /* GoogleAPIClientForREST-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F35915E017B1079385BD62EA05ED3C2 /* GoogleAPIClientForREST-dummy.m */; };
+		C6DFF6A00B81275860CE7978F92B4A60 /* GTLRService.m in Sources */ = {isa = PBXBuildFile; fileRef = EC064368CCD44E3D781D2B9CE82DC7D6 /* GTLRService.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		CB7D2AF45C703336B3AE6C8F8F199390 /* GTLRErrorObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B7E1884E3CACD18AF996D4B59D1952A /* GTLRErrorObject.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		CC639BF7967E136266C5D3448BC892E0 /* GTLRVisionObjects.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B1DB32372A6469D71B6D567556CFA83 /* GTLRVisionObjects.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		E348796DBC48E125EA88AF11642247A6 /* GTLRBatchQuery.h in Headers */ = {isa = PBXBuildFile; fileRef = F6A71303C18B7F0E5A96408E364AEBA3 /* GTLRBatchQuery.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		E618B9650EEDF398B0D12ACF195CE99A /* GTLRUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = AF7B9014459A6436C683F40ABABFF972 /* GTLRUtilities.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		F08E1F9AD4A9308D64A668850CE9E82F /* GTLRBatchResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 33B4F0E3F62F36476372521E7ACB2026 /* GTLRBatchResult.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		F2CE52C7B2ECD2515D2222AD3FC6AD6E /* GTLRQuery.h in Headers */ = {isa = PBXBuildFile; fileRef = 78502F8FBD98431EDD9A23A53A1B7295 /* GTLRQuery.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		B33EB3A1F5ADBB487F61527C7798A4EA /* PBXContainerItemProxy */ = {
+		9C5D89A501D4F5D67026CA86A8D879AC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A8E04363EAC63999209AF96AD95102CB /* GTMSessionFetcher.xcodeproj */;
 			proxyType = 1;
@@ -57,52 +58,54 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		01067890470D4B1959701A1968991392 /* GTLRVisionObjects.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRVisionObjects.m; path = Source/GeneratedServices/Vision/GTLRVisionObjects.m; sourceTree = "<group>"; };
-		02721F5DE74838942EC753D98A9A8A07 /* GTLRBatchQuery.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRBatchQuery.h; path = Source/Objects/GTLRBatchQuery.h; sourceTree = "<group>"; };
-		038597B9AAEF2AECF28F934FAD95F66C /* GTLRUploadParameters.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRUploadParameters.m; path = Source/Objects/GTLRUploadParameters.m; sourceTree = "<group>"; };
-		0478B5E6672BE66C6156C4C17926A896 /* GTLRUtilities.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRUtilities.m; path = Source/Utilities/GTLRUtilities.m; sourceTree = "<group>"; };
-		078158A15E8E5CD28AF01F4B3B7BB0F2 /* GTLRBase64.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRBase64.h; path = Source/Utilities/GTLRBase64.h; sourceTree = "<group>"; };
-		0C30043A28F33FA2B3176DD2C08E70F1 /* GTLRRuntimeCommon.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRRuntimeCommon.m; path = Source/Objects/GTLRRuntimeCommon.m; sourceTree = "<group>"; };
-		0DEEF1DE21A1C5FBAD1691A5D4F8C6BA /* GTLRBase64.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRBase64.m; path = Source/Utilities/GTLRBase64.m; sourceTree = "<group>"; };
-		0ECC78C8DDD51D136D20467955E66D61 /* GTLRVisionService.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRVisionService.h; path = Source/GeneratedServices/Vision/GTLRVisionService.h; sourceTree = "<group>"; };
-		10A9C09D9E10E63E026AE39417967CE3 /* GTLRVisionObjects.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRVisionObjects.h; path = Source/GeneratedServices/Vision/GTLRVisionObjects.h; sourceTree = "<group>"; };
-		12C352C4EBB19969EBF6DF710233B8F9 /* GTLRQuery.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRQuery.m; path = Source/Objects/GTLRQuery.m; sourceTree = "<group>"; };
-		144CDAA43124AD3EFA4B64139AB9C3A9 /* GTLRFramework.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRFramework.h; path = Source/Utilities/GTLRFramework.h; sourceTree = "<group>"; };
-		181EE1340F32F3800D9ABF8B0193D301 /* GoogleAPIClientForREST-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "GoogleAPIClientForREST-prefix.pch"; sourceTree = "<group>"; };
-		1D4C98140C53497D0EE298EA26C67B74 /* GTLRDuration.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRDuration.m; path = Source/Objects/GTLRDuration.m; sourceTree = "<group>"; };
-		1DD5485685C331CBC72DFB8A9C4C74AA /* GTLRVisionService.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRVisionService.m; path = Source/GeneratedServices/Vision/GTLRVisionService.m; sourceTree = "<group>"; };
-		34D031B20F3E60DE96825219A3766812 /* GTLRVision.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRVision.h; path = Source/GeneratedServices/Vision/GTLRVision.h; sourceTree = "<group>"; };
-		39CD518EE8F207B988FD03574678909F /* GoogleAPIClientForREST-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "GoogleAPIClientForREST-dummy.m"; sourceTree = "<group>"; };
-		3E4E3B86A1548E152222E0920C7F6B64 /* GTLRDuration.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRDuration.h; path = Source/Objects/GTLRDuration.h; sourceTree = "<group>"; };
-		3EB58170CD4005491C774B702BE35731 /* GTLRUploadParameters.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRUploadParameters.h; path = Source/Objects/GTLRUploadParameters.h; sourceTree = "<group>"; };
-		482803F0167734E2B88DAE5F122DEDA1 /* GTLRVisionQuery.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRVisionQuery.m; path = Source/GeneratedServices/Vision/GTLRVisionQuery.m; sourceTree = "<group>"; };
-		4C74DA444049A0E314675AEDADB8A86B /* GTLRRuntimeCommon.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRRuntimeCommon.h; path = Source/Objects/GTLRRuntimeCommon.h; sourceTree = "<group>"; };
-		612C65AA6367CD3B028716E3A366B08F /* GTLRBatchQuery.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRBatchQuery.m; path = Source/Objects/GTLRBatchQuery.m; sourceTree = "<group>"; };
-		61D7C14121746D24C2070898BFD5D028 /* GTLRObject.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRObject.h; path = Source/Objects/GTLRObject.h; sourceTree = "<group>"; };
-		6889D167A8C5C48584D2C5DBD24522BC /* GTLRURITemplate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRURITemplate.m; path = Source/Utilities/GTLRURITemplate.m; sourceTree = "<group>"; };
+		01E7A4F33DAFAD50023ABABB20364B7B /* GTLRVision.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRVision.h; path = Source/GeneratedServices/Vision/GTLRVision.h; sourceTree = "<group>"; };
+		046DB386A87E0578B975BF33876AD436 /* GTLRBase64.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRBase64.m; path = Source/Utilities/GTLRBase64.m; sourceTree = "<group>"; };
+		0B1DB32372A6469D71B6D567556CFA83 /* GTLRVisionObjects.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRVisionObjects.m; path = Source/GeneratedServices/Vision/GTLRVisionObjects.m; sourceTree = "<group>"; };
+		1495DA1E6ABA7D57995FA362680BC297 /* GoogleAPIClientForREST-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "GoogleAPIClientForREST-prefix.pch"; sourceTree = "<group>"; };
+		152BF8B5E985A406961B997EF26AB0DA /* GTLRBase64.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRBase64.h; path = Source/Utilities/GTLRBase64.h; sourceTree = "<group>"; };
+		15B9BAB265F36BF8C79AC148229F09FD /* GTLRFramework.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRFramework.h; path = Source/Utilities/GTLRFramework.h; sourceTree = "<group>"; };
+		1A37535E771278A8617CBB06DBAB2AEA /* GTLRObject.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRObject.m; path = Source/Objects/GTLRObject.m; sourceTree = "<group>"; };
+		259536FC2EBD75C77586C26E3718C068 /* GTLRDuration.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRDuration.h; path = Source/Objects/GTLRDuration.h; sourceTree = "<group>"; };
+		29D1A15F632562B43016063EDFCFB664 /* GTLRQuery.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRQuery.m; path = Source/Objects/GTLRQuery.m; sourceTree = "<group>"; };
+		33B4F0E3F62F36476372521E7ACB2026 /* GTLRBatchResult.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRBatchResult.m; path = Source/Objects/GTLRBatchResult.m; sourceTree = "<group>"; };
+		3992EAFCFC22048CA08C006D3E86FACB /* GTLRService.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRService.h; path = Source/Objects/GTLRService.h; sourceTree = "<group>"; };
+		41ECD2A2454DD79AA0D5E1F89C80560B /* GTLRObject.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRObject.h; path = Source/Objects/GTLRObject.h; sourceTree = "<group>"; };
+		5A2FC48E1ED5423CC1FDEC7E77C038D1 /* GTLRDateTime.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRDateTime.h; path = Source/Objects/GTLRDateTime.h; sourceTree = "<group>"; };
+		5EA1E7576FF9902C5725937881EC79A1 /* GoogleAPIClientForREST.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = GoogleAPIClientForREST.debug.xcconfig; sourceTree = "<group>"; };
+		5F35915E017B1079385BD62EA05ED3C2 /* GoogleAPIClientForREST-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "GoogleAPIClientForREST-dummy.m"; sourceTree = "<group>"; };
+		62166FF77F5AB5DB77F1B17F94125C30 /* GTLRBatchResult.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRBatchResult.h; path = Source/Objects/GTLRBatchResult.h; sourceTree = "<group>"; };
+		642AF6876CD5436B30993601B78F708C /* GTLRVisionQuery.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRVisionQuery.h; path = Source/GeneratedServices/Vision/GTLRVisionQuery.h; sourceTree = "<group>"; };
 		6B4317561A204B05F2B4C5557C55A674 /* libGoogleAPIClientForREST.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libGoogleAPIClientForREST.a; path = libGoogleAPIClientForREST.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		6B6DF9AC5FB3DF089196242393CAA119 /* GTLRBatchResult.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRBatchResult.h; path = Source/Objects/GTLRBatchResult.h; sourceTree = "<group>"; };
-		7F9CA57B931343C966579385A25979DB /* GoogleAPIClientForREST.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = GoogleAPIClientForREST.release.xcconfig; sourceTree = "<group>"; };
-		97B9DA301585AB6D75222D9A06A44B25 /* GTLRFramework.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRFramework.m; path = Source/Utilities/GTLRFramework.m; sourceTree = "<group>"; };
-		99190F3C7C8F1978120E384D42DF6B61 /* GTLRQuery.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRQuery.h; path = Source/Objects/GTLRQuery.h; sourceTree = "<group>"; };
-		99BCDC780061EBCED0DE6791D8CFCF84 /* GTLRVisionQuery.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRVisionQuery.h; path = Source/GeneratedServices/Vision/GTLRVisionQuery.h; sourceTree = "<group>"; };
+		72A54280C333FAF7692F640891DFFCDC /* GTLRUtilities.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRUtilities.h; path = Source/Utilities/GTLRUtilities.h; sourceTree = "<group>"; };
+		75298C96BCECBACCB83DB73AFFB844F1 /* GoogleAPIClientForREST-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "GoogleAPIClientForREST-umbrella.h"; sourceTree = "<group>"; };
+		78502F8FBD98431EDD9A23A53A1B7295 /* GTLRQuery.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRQuery.h; path = Source/Objects/GTLRQuery.h; sourceTree = "<group>"; };
+		7988061632B263056C0D4C3DF32B926C /* GTLRUploadParameters.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRUploadParameters.m; path = Source/Objects/GTLRUploadParameters.m; sourceTree = "<group>"; };
+		7E601FBB25F70E587182DBE5E3AA55EF /* GTLRURITemplate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRURITemplate.m; path = Source/Utilities/GTLRURITemplate.m; sourceTree = "<group>"; };
+		8ADBA1F371013EA649B9904E2690B74E /* GTLRRuntimeCommon.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRRuntimeCommon.m; path = Source/Objects/GTLRRuntimeCommon.m; sourceTree = "<group>"; };
+		8B7E1884E3CACD18AF996D4B59D1952A /* GTLRErrorObject.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRErrorObject.m; path = Source/Objects/GTLRErrorObject.m; sourceTree = "<group>"; };
+		9117F2731DE1079270253576A11E62FB /* GTLRVisionObjects.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRVisionObjects.h; path = Source/GeneratedServices/Vision/GTLRVisionObjects.h; sourceTree = "<group>"; };
+		9CD44173C82DB6E28B77055CB1F1193B /* GoogleAPIClientForREST.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = GoogleAPIClientForREST.modulemap; sourceTree = "<group>"; };
 		A8E04363EAC63999209AF96AD95102CB /* GTMSessionFetcher */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GTMSessionFetcher; path = GTMSessionFetcher.xcodeproj; sourceTree = "<group>"; };
-		B42464660C091A33F208254C9828EC14 /* GTLRErrorObject.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRErrorObject.h; path = Source/Objects/GTLRErrorObject.h; sourceTree = "<group>"; };
-		B884CD495748A70B4D0925A22EAE6063 /* GTLRService.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRService.h; path = Source/Objects/GTLRService.h; sourceTree = "<group>"; };
-		C0EC5AD2B2999646520578A27D64098A /* GTLRURITemplate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRURITemplate.h; path = Source/Utilities/GTLRURITemplate.h; sourceTree = "<group>"; };
-		D792389DA4C3AFC4DF7AC0F41D7CD58B /* GTLRDateTime.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRDateTime.m; path = Source/Objects/GTLRDateTime.m; sourceTree = "<group>"; };
-		DEDE951A572F2B4AF1FF67867814BD47 /* GTLRService.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRService.m; path = Source/Objects/GTLRService.m; sourceTree = "<group>"; };
-		E52D7AFEA6464A4007B824D846E5EF87 /* GTLRErrorObject.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRErrorObject.m; path = Source/Objects/GTLRErrorObject.m; sourceTree = "<group>"; };
-		EB063916966961DBA1D030C04905AB43 /* GTLRUtilities.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRUtilities.h; path = Source/Utilities/GTLRUtilities.h; sourceTree = "<group>"; };
-		ED0775A7B65D65B9FFE0C923D170E7D8 /* GTLRDefines.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRDefines.h; path = Source/GTLRDefines.h; sourceTree = "<group>"; };
-		F7743A610D475087AB632B82AD8D7B64 /* GTLRObject.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRObject.m; path = Source/Objects/GTLRObject.m; sourceTree = "<group>"; };
-		F8372A42F43407CD40D118B6EAE7B5BF /* GoogleAPIClientForREST.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = GoogleAPIClientForREST.debug.xcconfig; sourceTree = "<group>"; };
-		FA1FA62D27B4477710F308D59EBFDDAF /* GTLRDateTime.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRDateTime.h; path = Source/Objects/GTLRDateTime.h; sourceTree = "<group>"; };
-		FBFC6FB4D75DB5AF029368DDC9A8E443 /* GTLRBatchResult.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRBatchResult.m; path = Source/Objects/GTLRBatchResult.m; sourceTree = "<group>"; };
+		AF7B9014459A6436C683F40ABABFF972 /* GTLRUtilities.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRUtilities.m; path = Source/Utilities/GTLRUtilities.m; sourceTree = "<group>"; };
+		B9584D6896FE20F27EABD89B71F4B66E /* GoogleAPIClientForREST.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = GoogleAPIClientForREST.release.xcconfig; sourceTree = "<group>"; };
+		BF6C0E6898DE39F705A33521B1A97C5F /* GTLRDateTime.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRDateTime.m; path = Source/Objects/GTLRDateTime.m; sourceTree = "<group>"; };
+		C1FF2D651F8BDE6E0F090C70053B03DD /* GTLRDuration.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRDuration.m; path = Source/Objects/GTLRDuration.m; sourceTree = "<group>"; };
+		E2E50CB6306E8099F7ECA50DE0E0A386 /* GTLRVisionQuery.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRVisionQuery.m; path = Source/GeneratedServices/Vision/GTLRVisionQuery.m; sourceTree = "<group>"; };
+		E4A13B7AC6A0BA0E8906B33DDE2EF1BE /* GTLRVisionService.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRVisionService.h; path = Source/GeneratedServices/Vision/GTLRVisionService.h; sourceTree = "<group>"; };
+		EA5AB7AEF9E57FC74E76CBCF207245F3 /* GTLRDefines.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRDefines.h; path = Source/GTLRDefines.h; sourceTree = "<group>"; };
+		EC064368CCD44E3D781D2B9CE82DC7D6 /* GTLRService.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRService.m; path = Source/Objects/GTLRService.m; sourceTree = "<group>"; };
+		EE0B114FABA25CB6114C55313A8C8F6D /* GTLRVisionService.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRVisionService.m; path = Source/GeneratedServices/Vision/GTLRVisionService.m; sourceTree = "<group>"; };
+		EE39398CD7AE1F1A2B5CECED4DFC5759 /* GTLRErrorObject.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRErrorObject.h; path = Source/Objects/GTLRErrorObject.h; sourceTree = "<group>"; };
+		EEE1E560650C4F7AA99E3184B3C2F7CF /* GTLRBatchQuery.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRBatchQuery.m; path = Source/Objects/GTLRBatchQuery.m; sourceTree = "<group>"; };
+		F3CCABB12C214C60B04C7462FAE6244A /* GTLRRuntimeCommon.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRRuntimeCommon.h; path = Source/Objects/GTLRRuntimeCommon.h; sourceTree = "<group>"; };
+		F6A71303C18B7F0E5A96408E364AEBA3 /* GTLRBatchQuery.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRBatchQuery.h; path = Source/Objects/GTLRBatchQuery.h; sourceTree = "<group>"; };
+		F75A1D4DA1B86596FA329DCB4FEA01CA /* GTLRURITemplate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRURITemplate.h; path = Source/Utilities/GTLRURITemplate.h; sourceTree = "<group>"; };
+		FB890A50CEB5099A84308BFED7793ED3 /* GTLRUploadParameters.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRUploadParameters.h; path = Source/Objects/GTLRUploadParameters.h; sourceTree = "<group>"; };
+		FC975FA8061CCE9A68D7EA60D2848DAF /* GTLRFramework.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRFramework.m; path = Source/Utilities/GTLRFramework.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		20B87538971D5142CDFE8B35BF527D98 /* Frameworks */ = {
+		D45147A56BD0530BDF2C338ECF3A91AC /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -117,9 +120,20 @@
 			children = (
 				A3D40EE4D26A707E40D10A2542495112 /* Dependencies */,
 				C1B642307160DC4A4981434220F1C3F0 /* Frameworks */,
-				F61C97FAC9A245987EC9BDF160FBFBD9 /* GoogleAPIClientForREST */,
+				2C00718A8E59E2B7DDB633EEA28718C7 /* GoogleAPIClientForREST */,
 				51C8BCF358E31BFC9E1787A0DF389D0F /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		2C00718A8E59E2B7DDB633EEA28718C7 /* GoogleAPIClientForREST */ = {
+			isa = PBXGroup;
+			children = (
+				A0FC298CFCC26BB3BE435963FC9C6783 /* Core */,
+				E136EB79E053636E0DE3E50AE0382249 /* Support Files */,
+				E75C84BB223D552B8642D1A3983F6CC9 /* Vision */,
+			);
+			name = GoogleAPIClientForREST;
+			path = GoogleAPIClientForREST;
 			sourceTree = "<group>";
 		};
 		51C8BCF358E31BFC9E1787A0DF389D0F /* Products */ = {
@@ -130,66 +144,40 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		5FADBDE2E68DBC9DBA1E14DF48FFEFBD /* Core */ = {
+		A0FC298CFCC26BB3BE435963FC9C6783 /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				078158A15E8E5CD28AF01F4B3B7BB0F2 /* GTLRBase64.h */,
-				0DEEF1DE21A1C5FBAD1691A5D4F8C6BA /* GTLRBase64.m */,
-				02721F5DE74838942EC753D98A9A8A07 /* GTLRBatchQuery.h */,
-				612C65AA6367CD3B028716E3A366B08F /* GTLRBatchQuery.m */,
-				6B6DF9AC5FB3DF089196242393CAA119 /* GTLRBatchResult.h */,
-				FBFC6FB4D75DB5AF029368DDC9A8E443 /* GTLRBatchResult.m */,
-				FA1FA62D27B4477710F308D59EBFDDAF /* GTLRDateTime.h */,
-				D792389DA4C3AFC4DF7AC0F41D7CD58B /* GTLRDateTime.m */,
-				ED0775A7B65D65B9FFE0C923D170E7D8 /* GTLRDefines.h */,
-				3E4E3B86A1548E152222E0920C7F6B64 /* GTLRDuration.h */,
-				1D4C98140C53497D0EE298EA26C67B74 /* GTLRDuration.m */,
-				B42464660C091A33F208254C9828EC14 /* GTLRErrorObject.h */,
-				E52D7AFEA6464A4007B824D846E5EF87 /* GTLRErrorObject.m */,
-				144CDAA43124AD3EFA4B64139AB9C3A9 /* GTLRFramework.h */,
-				97B9DA301585AB6D75222D9A06A44B25 /* GTLRFramework.m */,
-				61D7C14121746D24C2070898BFD5D028 /* GTLRObject.h */,
-				F7743A610D475087AB632B82AD8D7B64 /* GTLRObject.m */,
-				99190F3C7C8F1978120E384D42DF6B61 /* GTLRQuery.h */,
-				12C352C4EBB19969EBF6DF710233B8F9 /* GTLRQuery.m */,
-				4C74DA444049A0E314675AEDADB8A86B /* GTLRRuntimeCommon.h */,
-				0C30043A28F33FA2B3176DD2C08E70F1 /* GTLRRuntimeCommon.m */,
-				B884CD495748A70B4D0925A22EAE6063 /* GTLRService.h */,
-				DEDE951A572F2B4AF1FF67867814BD47 /* GTLRService.m */,
-				3EB58170CD4005491C774B702BE35731 /* GTLRUploadParameters.h */,
-				038597B9AAEF2AECF28F934FAD95F66C /* GTLRUploadParameters.m */,
-				C0EC5AD2B2999646520578A27D64098A /* GTLRURITemplate.h */,
-				6889D167A8C5C48584D2C5DBD24522BC /* GTLRURITemplate.m */,
-				EB063916966961DBA1D030C04905AB43 /* GTLRUtilities.h */,
-				0478B5E6672BE66C6156C4C17926A896 /* GTLRUtilities.m */,
+				152BF8B5E985A406961B997EF26AB0DA /* GTLRBase64.h */,
+				046DB386A87E0578B975BF33876AD436 /* GTLRBase64.m */,
+				F6A71303C18B7F0E5A96408E364AEBA3 /* GTLRBatchQuery.h */,
+				EEE1E560650C4F7AA99E3184B3C2F7CF /* GTLRBatchQuery.m */,
+				62166FF77F5AB5DB77F1B17F94125C30 /* GTLRBatchResult.h */,
+				33B4F0E3F62F36476372521E7ACB2026 /* GTLRBatchResult.m */,
+				5A2FC48E1ED5423CC1FDEC7E77C038D1 /* GTLRDateTime.h */,
+				BF6C0E6898DE39F705A33521B1A97C5F /* GTLRDateTime.m */,
+				EA5AB7AEF9E57FC74E76CBCF207245F3 /* GTLRDefines.h */,
+				259536FC2EBD75C77586C26E3718C068 /* GTLRDuration.h */,
+				C1FF2D651F8BDE6E0F090C70053B03DD /* GTLRDuration.m */,
+				EE39398CD7AE1F1A2B5CECED4DFC5759 /* GTLRErrorObject.h */,
+				8B7E1884E3CACD18AF996D4B59D1952A /* GTLRErrorObject.m */,
+				15B9BAB265F36BF8C79AC148229F09FD /* GTLRFramework.h */,
+				FC975FA8061CCE9A68D7EA60D2848DAF /* GTLRFramework.m */,
+				41ECD2A2454DD79AA0D5E1F89C80560B /* GTLRObject.h */,
+				1A37535E771278A8617CBB06DBAB2AEA /* GTLRObject.m */,
+				78502F8FBD98431EDD9A23A53A1B7295 /* GTLRQuery.h */,
+				29D1A15F632562B43016063EDFCFB664 /* GTLRQuery.m */,
+				F3CCABB12C214C60B04C7462FAE6244A /* GTLRRuntimeCommon.h */,
+				8ADBA1F371013EA649B9904E2690B74E /* GTLRRuntimeCommon.m */,
+				3992EAFCFC22048CA08C006D3E86FACB /* GTLRService.h */,
+				EC064368CCD44E3D781D2B9CE82DC7D6 /* GTLRService.m */,
+				FB890A50CEB5099A84308BFED7793ED3 /* GTLRUploadParameters.h */,
+				7988061632B263056C0D4C3DF32B926C /* GTLRUploadParameters.m */,
+				F75A1D4DA1B86596FA329DCB4FEA01CA /* GTLRURITemplate.h */,
+				7E601FBB25F70E587182DBE5E3AA55EF /* GTLRURITemplate.m */,
+				72A54280C333FAF7692F640891DFFCDC /* GTLRUtilities.h */,
+				AF7B9014459A6436C683F40ABABFF972 /* GTLRUtilities.m */,
 			);
 			name = Core;
-			sourceTree = "<group>";
-		};
-		63FD47E3EB341AA633B7DF7A20582E6F /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				39CD518EE8F207B988FD03574678909F /* GoogleAPIClientForREST-dummy.m */,
-				181EE1340F32F3800D9ABF8B0193D301 /* GoogleAPIClientForREST-prefix.pch */,
-				F8372A42F43407CD40D118B6EAE7B5BF /* GoogleAPIClientForREST.debug.xcconfig */,
-				7F9CA57B931343C966579385A25979DB /* GoogleAPIClientForREST.release.xcconfig */,
-			);
-			name = "Support Files";
-			path = "../Target Support Files/GoogleAPIClientForREST";
-			sourceTree = "<group>";
-		};
-		6A6E8F7410037083B2A6C972E8BD28FC /* Vision */ = {
-			isa = PBXGroup;
-			children = (
-				34D031B20F3E60DE96825219A3766812 /* GTLRVision.h */,
-				10A9C09D9E10E63E026AE39417967CE3 /* GTLRVisionObjects.h */,
-				01067890470D4B1959701A1968991392 /* GTLRVisionObjects.m */,
-				99BCDC780061EBCED0DE6791D8CFCF84 /* GTLRVisionQuery.h */,
-				482803F0167734E2B88DAE5F122DEDA1 /* GTLRVisionQuery.m */,
-				0ECC78C8DDD51D136D20467955E66D61 /* GTLRVisionService.h */,
-				1DD5485685C331CBC72DFB8A9C4C74AA /* GTLRVisionService.m */,
-			);
-			name = Vision;
 			sourceTree = "<group>";
 		};
 		A3D40EE4D26A707E40D10A2542495112 /* Dependencies */ = {
@@ -207,43 +195,61 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		F61C97FAC9A245987EC9BDF160FBFBD9 /* GoogleAPIClientForREST */ = {
+		E136EB79E053636E0DE3E50AE0382249 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				5FADBDE2E68DBC9DBA1E14DF48FFEFBD /* Core */,
-				63FD47E3EB341AA633B7DF7A20582E6F /* Support Files */,
-				6A6E8F7410037083B2A6C972E8BD28FC /* Vision */,
+				9CD44173C82DB6E28B77055CB1F1193B /* GoogleAPIClientForREST.modulemap */,
+				5F35915E017B1079385BD62EA05ED3C2 /* GoogleAPIClientForREST-dummy.m */,
+				1495DA1E6ABA7D57995FA362680BC297 /* GoogleAPIClientForREST-prefix.pch */,
+				75298C96BCECBACCB83DB73AFFB844F1 /* GoogleAPIClientForREST-umbrella.h */,
+				5EA1E7576FF9902C5725937881EC79A1 /* GoogleAPIClientForREST.debug.xcconfig */,
+				B9584D6896FE20F27EABD89B71F4B66E /* GoogleAPIClientForREST.release.xcconfig */,
 			);
-			name = GoogleAPIClientForREST;
-			path = GoogleAPIClientForREST;
+			name = "Support Files";
+			path = "../Target Support Files/GoogleAPIClientForREST";
+			sourceTree = "<group>";
+		};
+		E75C84BB223D552B8642D1A3983F6CC9 /* Vision */ = {
+			isa = PBXGroup;
+			children = (
+				01E7A4F33DAFAD50023ABABB20364B7B /* GTLRVision.h */,
+				9117F2731DE1079270253576A11E62FB /* GTLRVisionObjects.h */,
+				0B1DB32372A6469D71B6D567556CFA83 /* GTLRVisionObjects.m */,
+				642AF6876CD5436B30993601B78F708C /* GTLRVisionQuery.h */,
+				E2E50CB6306E8099F7ECA50DE0E0A386 /* GTLRVisionQuery.m */,
+				E4A13B7AC6A0BA0E8906B33DDE2EF1BE /* GTLRVisionService.h */,
+				EE0B114FABA25CB6114C55313A8C8F6D /* GTLRVisionService.m */,
+			);
+			name = Vision;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		C3CE72A759B2E80536E4ABD3BF411C7E /* Headers */ = {
+		111661918772FBD6D9580404AB184E5B /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1E01599AEE444BE5AD070AA5C56BB62D /* GTLRBase64.h in Headers */,
-				4B27E1CB1FA6A00A9C8347EF2D738964 /* GTLRBatchQuery.h in Headers */,
-				9030B3F3EA79DDFFF5AD33AD01BBF635 /* GTLRBatchResult.h in Headers */,
-				E84E5AE3F9EB9A795FD02F32F7B5795D /* GTLRDateTime.h in Headers */,
-				9DCC8EA3B3DDEAA085C15E1DB0AEB0F0 /* GTLRDefines.h in Headers */,
-				85ABD45B86315700E188774B82FD7329 /* GTLRDuration.h in Headers */,
-				894E8E66FF7F0C29BF5BF9B10408B2B9 /* GTLRErrorObject.h in Headers */,
-				D312D6EA3CDDF015BF14B122E1D93136 /* GTLRFramework.h in Headers */,
-				9BC9115470AA1CE5C8BE33F451AC5BAE /* GTLRObject.h in Headers */,
-				1C3E92154A392AB4A2C50D0BC0A93CA1 /* GTLRQuery.h in Headers */,
-				5E579CC8675BC8E1384E2B7AC23B8129 /* GTLRRuntimeCommon.h in Headers */,
-				897350D009C188E14A596CEA37517032 /* GTLRService.h in Headers */,
-				29237FA8B159CD0A9A145EB3B3C489D0 /* GTLRUploadParameters.h in Headers */,
-				F5729B071DB7B6294FC9B40C28B66234 /* GTLRURITemplate.h in Headers */,
-				2AF5E29271C3B3E9C0E9F5D0ACB2B18C /* GTLRUtilities.h in Headers */,
-				63D59BFF2A9D30C002382439C2B8F7A2 /* GTLRVision.h in Headers */,
-				BF00B855885D20741E51CD8D9D66854A /* GTLRVisionObjects.h in Headers */,
-				576B913E75CBF9247102099A376EEEA8 /* GTLRVisionQuery.h in Headers */,
-				8943966E8FDC0AE417B05239928A4ABE /* GTLRVisionService.h in Headers */,
+				3DE85252BEBD2F6B380242A510F6FBB1 /* GoogleAPIClientForREST-umbrella.h in Headers */,
+				9CAD331C301727882C77B87AC6A26BD6 /* GTLRBase64.h in Headers */,
+				E348796DBC48E125EA88AF11642247A6 /* GTLRBatchQuery.h in Headers */,
+				8758CD450DA030C186567267A452EFF4 /* GTLRBatchResult.h in Headers */,
+				01E28EC0D3F5E314E259373FC8CE41D4 /* GTLRDateTime.h in Headers */,
+				1C3A8F198ED0B8D2521B204E007F25D0 /* GTLRDefines.h in Headers */,
+				42AD531706E23FA333DFC5612B18F9F2 /* GTLRDuration.h in Headers */,
+				577004BDA652CA7C4939AE9FA4077C27 /* GTLRErrorObject.h in Headers */,
+				5307F16E5551F9706730E0E590CC02DD /* GTLRFramework.h in Headers */,
+				B4E4F9767EEA48A1905583F800B772F0 /* GTLRObject.h in Headers */,
+				F2CE52C7B2ECD2515D2222AD3FC6AD6E /* GTLRQuery.h in Headers */,
+				8866F7EF8E73466CD379C48F53E0A62F /* GTLRRuntimeCommon.h in Headers */,
+				36025BA14986EB3A1C88AB5A75E46EE8 /* GTLRService.h in Headers */,
+				10A786245F031199F45B39B65674CD25 /* GTLRUploadParameters.h in Headers */,
+				A49EA5DBC033429F25A5560B7C68B4B9 /* GTLRURITemplate.h in Headers */,
+				4FAD9E1390C38B45C70AC4718799B196 /* GTLRUtilities.h in Headers */,
+				8B735438A02714B85E9ECD782556D8E8 /* GTLRVision.h in Headers */,
+				A2F8F9C66C9D93B618880DA1195E82A2 /* GTLRVisionObjects.h in Headers */,
+				3ED6D00A502B0317C043E87009901F02 /* GTLRVisionQuery.h in Headers */,
+				139620DC81D56FA0302FF501DB546729 /* GTLRVisionService.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -252,16 +258,16 @@
 /* Begin PBXNativeTarget section */
 		E899E01EE94E3AAE44DBC0A0C183AD70 /* GoogleAPIClientForREST */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 66A2C941B23F757188E10FC3F534948D /* Build configuration list for PBXNativeTarget "GoogleAPIClientForREST" */;
+			buildConfigurationList = 71EAEEAD5C958099B14686E6212B9912 /* Build configuration list for PBXNativeTarget "GoogleAPIClientForREST" */;
 			buildPhases = (
-				C3CE72A759B2E80536E4ABD3BF411C7E /* Headers */,
-				5DE92785B1BDC6C5F4B9A238CA6EA4E0 /* Sources */,
-				20B87538971D5142CDFE8B35BF527D98 /* Frameworks */,
+				111661918772FBD6D9580404AB184E5B /* Headers */,
+				21937AD5F953B02A557879B6558E66E8 /* Sources */,
+				D45147A56BD0530BDF2C338ECF3A91AC /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				26922E3FB64C2243B55695DCC6071304 /* PBXTargetDependency */,
+				A8FBB1B1A66999E0D6D53C393E8D5E75 /* PBXTargetDependency */,
 			);
 			name = GoogleAPIClientForREST;
 			productName = GoogleAPIClientForREST;
@@ -301,45 +307,45 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		5DE92785B1BDC6C5F4B9A238CA6EA4E0 /* Sources */ = {
+		21937AD5F953B02A557879B6558E66E8 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B6741950AC78F40B9C762E9279E888B8 /* GoogleAPIClientForREST-dummy.m in Sources */,
-				0BF7F1CDD6A77F4F0B4ECD525E8E4FAA /* GTLRBase64.m in Sources */,
-				B584CD55B254B71C54725415DAC8071B /* GTLRBatchQuery.m in Sources */,
-				DE9085D73B69EFA95C71AAFCFE013980 /* GTLRBatchResult.m in Sources */,
-				C44DE75A92F21B7F4EDB9EE7F10DD379 /* GTLRDateTime.m in Sources */,
-				86C030F3958A76578FF08CDC7B9621C4 /* GTLRDuration.m in Sources */,
-				057B6331869861B9A2DD91F10FC0D25A /* GTLRErrorObject.m in Sources */,
-				A1A3908085CD6054BF3196F30C4A2FB8 /* GTLRFramework.m in Sources */,
-				628DAFB2FBFA69CAAFB30F612E94AE5A /* GTLRObject.m in Sources */,
-				4F292FDED90F9390872E238ADA8527B8 /* GTLRQuery.m in Sources */,
-				361B077D905B09038599D6202B5A873B /* GTLRRuntimeCommon.m in Sources */,
-				F524274D839C50EBFCC7191C3F9237D1 /* GTLRService.m in Sources */,
-				A8DDF0369F05E06B7C1AED6B5441BF8B /* GTLRUploadParameters.m in Sources */,
-				244D0E3A113BFD5EC026C419DC48CB3B /* GTLRURITemplate.m in Sources */,
-				5FBF9604FA2B209527F92B9D7F394267 /* GTLRUtilities.m in Sources */,
-				E40FE894BE01CFC9553E83D6E7D0A066 /* GTLRVisionObjects.m in Sources */,
-				51AEEE5AC0048C15F7EFC649930A5AC1 /* GTLRVisionQuery.m in Sources */,
-				944759F6E900CBA33D9F1BEF3D9BA623 /* GTLRVisionService.m in Sources */,
+				B8DD0B19FCBC6200D086639983670ABD /* GoogleAPIClientForREST-dummy.m in Sources */,
+				9A88823718714A8AE30DEA4A88012628 /* GTLRBase64.m in Sources */,
+				74E10ECA9C22E554300E1C5A0A298879 /* GTLRBatchQuery.m in Sources */,
+				F08E1F9AD4A9308D64A668850CE9E82F /* GTLRBatchResult.m in Sources */,
+				4EEA8F20131F7917638F8F23F248FB2A /* GTLRDateTime.m in Sources */,
+				64456B924590C00485F39D45BA6383A4 /* GTLRDuration.m in Sources */,
+				CB7D2AF45C703336B3AE6C8F8F199390 /* GTLRErrorObject.m in Sources */,
+				6BDF11AD836D20F10F17709A0D8E98D3 /* GTLRFramework.m in Sources */,
+				7839BE83657548AABA28A0E41EE7592A /* GTLRObject.m in Sources */,
+				29F382DFE6ACF000B92AAD1B6A476941 /* GTLRQuery.m in Sources */,
+				7F650D9CBE135FC1A67E76EE57D2925F /* GTLRRuntimeCommon.m in Sources */,
+				C6DFF6A00B81275860CE7978F92B4A60 /* GTLRService.m in Sources */,
+				1AFC6AF3BC50B0BC751D4BB5BD5D47B1 /* GTLRUploadParameters.m in Sources */,
+				0F38C6A847CB95FDC3EE8EF8D58758A1 /* GTLRURITemplate.m in Sources */,
+				E618B9650EEDF398B0D12ACF195CE99A /* GTLRUtilities.m in Sources */,
+				CC639BF7967E136266C5D3448BC892E0 /* GTLRVisionObjects.m in Sources */,
+				B35399F351F8D34A62CD07322833C1A0 /* GTLRVisionQuery.m in Sources */,
+				08064233AD2F648F599A7A403A7D1FD8 /* GTLRVisionService.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		26922E3FB64C2243B55695DCC6071304 /* PBXTargetDependency */ = {
+		A8FBB1B1A66999E0D6D53C393E8D5E75 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = GTMSessionFetcher;
-			targetProxy = B33EB3A1F5ADBB487F61527C7798A4EA /* PBXContainerItemProxy */;
+			targetProxy = 9C5D89A501D4F5D67026CA86A8D879AC /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		9ACCC3FDC9EB12B205E771903100989A /* Release */ = {
+		68BB6BA951FC65044AE4C2745D266D66 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7F9CA57B931343C966579385A25979DB /* GoogleAPIClientForREST.release.xcconfig */;
+			baseConfigurationReference = 5EA1E7576FF9902C5725937881EC79A1 /* GoogleAPIClientForREST.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -347,6 +353,32 @@
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				GCC_PREFIX_HEADER = "Target Support Files/GoogleAPIClientForREST/GoogleAPIClientForREST-prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MODULEMAP_FILE = Headers/Public/GoogleAPIClientForREST/GoogleAPIClientForREST.modulemap;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = GoogleAPIClientForREST;
+				PRODUCT_NAME = GoogleAPIClientForREST;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		720B493CEE4BA2CD7B701E74899D01BA /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B9584D6896FE20F27EABD89B71F4B66E /* GoogleAPIClientForREST.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/GoogleAPIClientForREST/GoogleAPIClientForREST-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MODULEMAP_FILE = Headers/Public/GoogleAPIClientForREST/GoogleAPIClientForREST.modulemap;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -362,7 +394,67 @@
 			};
 			name = Release;
 		};
-		BF34FEC9BE1981C73F8190797C5281C6 /* Debug */ = {
+		9EC99A4662AF9F8CE9BD5DE1FA244FAF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		F8F898734DBCC991040E97A6F51EE08E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -413,7 +505,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -426,98 +518,14 @@
 			};
 			name = Debug;
 		};
-		EB65EC89D40BF434F388D47B945980C6 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"POD_CONFIGURATION_RELEASE=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.0;
-				SYMROOT = "${SRCROOT}/../build";
-			};
-			name = Release;
-		};
-		EEEF2DE2ABDEB33629CD803C2A9781D7 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = F8372A42F43407CD40D118B6EAE7B5BF /* GoogleAPIClientForREST.debug.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/GoogleAPIClientForREST/GoogleAPIClientForREST-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = GoogleAPIClientForREST;
-				PRODUCT_NAME = GoogleAPIClientForREST;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		66A2C941B23F757188E10FC3F534948D /* Build configuration list for PBXNativeTarget "GoogleAPIClientForREST" */ = {
+		71EAEEAD5C958099B14686E6212B9912 /* Build configuration list for PBXNativeTarget "GoogleAPIClientForREST" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				EEEF2DE2ABDEB33629CD803C2A9781D7 /* Debug */,
-				9ACCC3FDC9EB12B205E771903100989A /* Release */,
+				68BB6BA951FC65044AE4C2745D266D66 /* Debug */,
+				720B493CEE4BA2CD7B701E74899D01BA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -525,8 +533,8 @@
 		A9FB7A1B5FAFF16EFA8580A07B5D9669 /* Build configuration list for PBXProject "GoogleAPIClientForREST" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				BF34FEC9BE1981C73F8190797C5281C6 /* Debug */,
-				EB65EC89D40BF434F388D47B945980C6 /* Release */,
+				F8F898734DBCC991040E97A6F51EE08E /* Debug */,
+				9EC99A4662AF9F8CE9BD5DE1FA244FAF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

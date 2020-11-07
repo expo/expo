@@ -1,0 +1,6 @@
+module ABI37_0_0EXAmplitude {
+  umbrella header "ABI37_0_0EXAmplitude-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -1,0 +1,6 @@
+module EXLocalization {
+  umbrella header "EXLocalization-umbrella.h"
+
+  export *
+  module * { export * }
+}

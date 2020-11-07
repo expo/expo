@@ -7,13 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		05CEDE34E00CEF84445D8049960314AD /* EXRandom-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 9872F246FA16A5C5C6D5987C26B812D9 /* EXRandom-dummy.m */; };
-		14EAFB29B871633E638DE6E77C603A37 /* EXRandom.m in Sources */ = {isa = PBXBuildFile; fileRef = B426262711636D8D1E0F6F11B03781C9 /* EXRandom.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		4C9A17CE833C89D845C2CA7DC694C76C /* EXRandom.h in Headers */ = {isa = PBXBuildFile; fileRef = 232C3A11B38832A13CB055F69420FD8C /* EXRandom.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		26A2E63406BDBA4270A5EF4EA52D0F38 /* EXRandom.m in Sources */ = {isa = PBXBuildFile; fileRef = BC680ED3849C61549BF47EA610BDF9A8 /* EXRandom.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		76286F54185566BBCB91AFFA1941036E /* EXRandom-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 706BF374810BD41CD2A16F4054146113 /* EXRandom-dummy.m */; };
+		963087755D85C1370158B08FC6F31C63 /* EXRandom.h in Headers */ = {isa = PBXBuildFile; fileRef = 9863698C1BA648AE7E449E285B8E15C5 /* EXRandom.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		969E42AB2126D15A4480A9EE6BEA208D /* EXRandom-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 09ADE4F093E84793A228DF297F338C92 /* EXRandom-umbrella.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		C0971CF7C0B74D3E53AF8EF8D1551347 /* PBXContainerItemProxy */ = {
+		0684154EFE30D2D2BBAC9129A1B7ABB7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = FDCA8F549D32EB7E5A41359356DA801D /* React.xcodeproj */;
 			proxyType = 1;
@@ -23,19 +24,21 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1C7A324C557D5242205C0775EFE3EB37 /* EXRandom.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXRandom.debug.xcconfig; sourceTree = "<group>"; };
-		232C3A11B38832A13CB055F69420FD8C /* EXRandom.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXRandom.h; path = EXRandom/EXRandom.h; sourceTree = "<group>"; };
-		779CD56F5BF18E1ADC18904FEE959D4A /* EXRandom.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXRandom.release.xcconfig; sourceTree = "<group>"; };
-		9872F246FA16A5C5C6D5987C26B812D9 /* EXRandom-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXRandom-dummy.m"; sourceTree = "<group>"; };
+		09ADE4F093E84793A228DF297F338C92 /* EXRandom-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXRandom-umbrella.h"; sourceTree = "<group>"; };
+		319D059D588077CD207F01BDFD9D87B6 /* EXRandom.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXRandom.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		5CEEDDA7E5981E3DEACA0CF0A6DA74E2 /* EXRandom.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = EXRandom.modulemap; sourceTree = "<group>"; };
+		706BF374810BD41CD2A16F4054146113 /* EXRandom-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXRandom-dummy.m"; sourceTree = "<group>"; };
+		7ECBE50B8B4D66D5D16D9978BABBC1C8 /* EXRandom.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXRandom.debug.xcconfig; sourceTree = "<group>"; };
+		9863698C1BA648AE7E449E285B8E15C5 /* EXRandom.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXRandom.h; path = EXRandom/EXRandom.h; sourceTree = "<group>"; };
 		ABA839BF6EF1B661F43A935E0835C42B /* libEXRandom.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXRandom.a; path = libEXRandom.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		B426262711636D8D1E0F6F11B03781C9 /* EXRandom.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXRandom.m; path = EXRandom/EXRandom.m; sourceTree = "<group>"; };
-		E396195E7EADBFFCB015571C731148DF /* EXRandom-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXRandom-prefix.pch"; sourceTree = "<group>"; };
-		E52F8EB47E1DF969770D020770A136C1 /* EXRandom.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXRandom.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		BC680ED3849C61549BF47EA610BDF9A8 /* EXRandom.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXRandom.m; path = EXRandom/EXRandom.m; sourceTree = "<group>"; };
+		D9843EC31B0B48D048A45C0621B22C87 /* EXRandom-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXRandom-prefix.pch"; sourceTree = "<group>"; };
+		F281C713C45E52F5991EF96F37731A1C /* EXRandom.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXRandom.release.xcconfig; sourceTree = "<group>"; };
 		FDCA8F549D32EB7E5A41359356DA801D /* React */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React; path = React.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		F0256F54D0C6225A6C556908D019455D /* Frameworks */ = {
+		D4607C05BA579AEDA0E793B3CAB5C766 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -45,26 +48,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		2A89C716F9C01D1433EE1FBC0DF27F0C /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				E52F8EB47E1DF969770D020770A136C1 /* EXRandom.podspec */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
-		3725D91E2217E0578507A50762D70F7D /* EXRandom */ = {
-			isa = PBXGroup;
-			children = (
-				232C3A11B38832A13CB055F69420FD8C /* EXRandom.h */,
-				B426262711636D8D1E0F6F11B03781C9 /* EXRandom.m */,
-				2A89C716F9C01D1433EE1FBC0DF27F0C /* Pod */,
-				51DC8986620281F78F14AB6594F6AA27 /* Support Files */,
-			);
-			name = EXRandom;
-			path = "../../packages/expo-random/ios";
-			sourceTree = "<group>";
-		};
 		389259836FBA79F409DA40FEE4D80FA0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -80,13 +63,15 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		51DC8986620281F78F14AB6594F6AA27 /* Support Files */ = {
+		5BC2B42C6D92EA9D9C3D7FA1D99AEC5E /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				9872F246FA16A5C5C6D5987C26B812D9 /* EXRandom-dummy.m */,
-				E396195E7EADBFFCB015571C731148DF /* EXRandom-prefix.pch */,
-				1C7A324C557D5242205C0775EFE3EB37 /* EXRandom.debug.xcconfig */,
-				779CD56F5BF18E1ADC18904FEE959D4A /* EXRandom.release.xcconfig */,
+				5CEEDDA7E5981E3DEACA0CF0A6DA74E2 /* EXRandom.modulemap */,
+				706BF374810BD41CD2A16F4054146113 /* EXRandom-dummy.m */,
+				D9843EC31B0B48D048A45C0621B22C87 /* EXRandom-prefix.pch */,
+				09ADE4F093E84793A228DF297F338C92 /* EXRandom-umbrella.h */,
+				7ECBE50B8B4D66D5D16D9978BABBC1C8 /* EXRandom.debug.xcconfig */,
+				F281C713C45E52F5991EF96F37731A1C /* EXRandom.release.xcconfig */,
 			);
 			name = "Support Files";
 			path = "../../../ios/Pods/Target Support Files/EXRandom";
@@ -100,11 +85,31 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		B83F226F5CD3011D869BE547FB3EE24F /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				319D059D588077CD207F01BDFD9D87B6 /* EXRandom.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		C29FC1B498BD7DBEFDE9081C0155E4E2 /* EXRandom */ = {
+			isa = PBXGroup;
+			children = (
+				9863698C1BA648AE7E449E285B8E15C5 /* EXRandom.h */,
+				BC680ED3849C61549BF47EA610BDF9A8 /* EXRandom.m */,
+				B83F226F5CD3011D869BE547FB3EE24F /* Pod */,
+				5BC2B42C6D92EA9D9C3D7FA1D99AEC5E /* Support Files */,
+			);
+			name = EXRandom;
+			path = "../../packages/expo-random/ios";
+			sourceTree = "<group>";
+		};
 		EF3248404F968B773E287A4D87F4BEF4 = {
 			isa = PBXGroup;
 			children = (
 				4B2CF50C97A9D9CBC0704814DD7C993F /* Dependencies */,
-				3725D91E2217E0578507A50762D70F7D /* EXRandom */,
+				C29FC1B498BD7DBEFDE9081C0155E4E2 /* EXRandom */,
 				389259836FBA79F409DA40FEE4D80FA0 /* Frameworks */,
 				600BD6871B5DA12DF656FA3C6572A3B5 /* Products */,
 			);
@@ -113,11 +118,12 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		1A5E357382B0273D3C8E350BA00ADFF3 /* Headers */ = {
+		381768FDE758F4B1DF5328BFF392304C /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4C9A17CE833C89D845C2CA7DC694C76C /* EXRandom.h in Headers */,
+				969E42AB2126D15A4480A9EE6BEA208D /* EXRandom-umbrella.h in Headers */,
+				963087755D85C1370158B08FC6F31C63 /* EXRandom.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -126,16 +132,16 @@
 /* Begin PBXNativeTarget section */
 		00EB4A6BB9778AFFF7F587D732973596 /* EXRandom */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 36A85DEC73C5B4E48FEB3E2CE2A26F3C /* Build configuration list for PBXNativeTarget "EXRandom" */;
+			buildConfigurationList = 6FF430EEA6701B1D54C46381203E9B8E /* Build configuration list for PBXNativeTarget "EXRandom" */;
 			buildPhases = (
-				1A5E357382B0273D3C8E350BA00ADFF3 /* Headers */,
-				D37FFF0DCD3D17DBB65BCA36753A22BA /* Sources */,
-				F0256F54D0C6225A6C556908D019455D /* Frameworks */,
+				381768FDE758F4B1DF5328BFF392304C /* Headers */,
+				291930B86C1526A4C0D89CA10538FE34 /* Sources */,
+				D4607C05BA579AEDA0E793B3CAB5C766 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				D04A0E8F2CF02CEC6EF5D985D8755793 /* PBXTargetDependency */,
+				72095DB755ED9CFF3E880CBA70D789DB /* PBXTargetDependency */,
 			);
 			name = EXRandom;
 			productName = EXRandom;
@@ -175,22 +181,22 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		D37FFF0DCD3D17DBB65BCA36753A22BA /* Sources */ = {
+		291930B86C1526A4C0D89CA10538FE34 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				05CEDE34E00CEF84445D8049960314AD /* EXRandom-dummy.m in Sources */,
-				14EAFB29B871633E638DE6E77C603A37 /* EXRandom.m in Sources */,
+				76286F54185566BBCB91AFFA1941036E /* EXRandom-dummy.m in Sources */,
+				26A2E63406BDBA4270A5EF4EA52D0F38 /* EXRandom.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		D04A0E8F2CF02CEC6EF5D985D8755793 /* PBXTargetDependency */ = {
+		72095DB755ED9CFF3E880CBA70D789DB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = React;
-			targetProxy = C0971CF7C0B74D3E53AF8EF8D1551347 /* PBXContainerItemProxy */;
+			targetProxy = 0684154EFE30D2D2BBAC9129A1B7ABB7 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -259,9 +265,9 @@
 			};
 			name = Debug;
 		};
-		7045DB3ABDD227D30A1753624D0021F7 /* Release */ = {
+		67C845B58BB186D4DDD296BD548DEFEA /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 779CD56F5BF18E1ADC18904FEE959D4A /* EXRandom.release.xcconfig */;
+			baseConfigurationReference = 7ECBE50B8B4D66D5D16D9978BABBC1C8 /* EXRandom.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -270,6 +276,7 @@
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				GCC_PREFIX_HEADER = "Target Support Files/EXRandom/EXRandom-prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MODULEMAP_FILE = Headers/Public/EXRandom/EXRandom.modulemap;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -281,9 +288,8 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
 		7E3223FFA731463206A0217DA17610E5 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -345,9 +351,9 @@
 			};
 			name = Release;
 		};
-		8ED9F549BC989B7DDEB5FBA6A4E01B6B /* Debug */ = {
+		D29C28077F71EC65860BE00F1A6D48DE /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1C7A324C557D5242205C0775EFE3EB37 /* EXRandom.debug.xcconfig */;
+			baseConfigurationReference = F281C713C45E52F5991EF96F37731A1C /* EXRandom.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -356,6 +362,7 @@
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				GCC_PREFIX_HEADER = "Target Support Files/EXRandom/EXRandom-prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MODULEMAP_FILE = Headers/Public/EXRandom/EXRandom.modulemap;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -367,17 +374,18 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		36A85DEC73C5B4E48FEB3E2CE2A26F3C /* Build configuration list for PBXNativeTarget "EXRandom" */ = {
+		6FF430EEA6701B1D54C46381203E9B8E /* Build configuration list for PBXNativeTarget "EXRandom" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8ED9F549BC989B7DDEB5FBA6A4E01B6B /* Debug */,
-				7045DB3ABDD227D30A1753624D0021F7 /* Release */,
+				67C845B58BB186D4DDD296BD548DEFEA /* Debug */,
+				D29C28077F71EC65860BE00F1A6D48DE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

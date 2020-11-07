@@ -1,0 +1,6 @@
+module EXGoogleSignIn {
+  umbrella header "EXGoogleSignIn-umbrella.h"
+
+  export *
+  module * { export * }
+}

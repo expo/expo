@@ -1,0 +1,6 @@
+module EXCamera {
+  umbrella header "EXCamera-umbrella.h"
+
+  export *
+  module * { export * }
+}

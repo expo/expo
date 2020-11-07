@@ -1,0 +1,6 @@
+module EXCrypto {
+  umbrella header "EXCrypto-umbrella.h"
+
+  export *
+  module * { export * }
+}

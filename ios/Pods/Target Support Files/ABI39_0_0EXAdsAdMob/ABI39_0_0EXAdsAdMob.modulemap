@@ -1,0 +1,6 @@
+module ABI39_0_0EXAdsAdMob {
+  umbrella header "ABI39_0_0EXAdsAdMob-umbrella.h"
+
+  export *
+  module * { export * }
+}

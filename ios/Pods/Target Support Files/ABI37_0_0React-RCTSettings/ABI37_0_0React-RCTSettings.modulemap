@@ -1,0 +1,6 @@
+module ABI37_0_0RCTSettings {
+  umbrella header "ABI37_0_0React-RCTSettings-umbrella.h"
+
+  export *
+  module * { export * }
+}

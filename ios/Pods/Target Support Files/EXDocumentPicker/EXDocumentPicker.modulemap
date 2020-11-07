@@ -1,0 +1,6 @@
+module EXDocumentPicker {
+  umbrella header "EXDocumentPicker-umbrella.h"
+
+  export *
+  module * { export * }
+}

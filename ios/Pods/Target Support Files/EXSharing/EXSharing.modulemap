@@ -1,0 +1,6 @@
+module EXSharing {
+  umbrella header "EXSharing-umbrella.h"
+
+  export *
+  module * { export * }
+}

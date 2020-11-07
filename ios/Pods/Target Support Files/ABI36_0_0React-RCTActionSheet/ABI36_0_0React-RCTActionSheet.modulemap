@@ -1,0 +1,6 @@
+module ABI36_0_0RCTActionSheet {
+  umbrella header "ABI36_0_0React-RCTActionSheet-umbrella.h"
+
+  export *
+  module * { export * }
+}

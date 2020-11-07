@@ -7,13 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		6951D85CF6A8D94C07A5ABD46E71569B /* EXSpeech.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FAB5831C9F9F3AB9F738702BD99AE66 /* EXSpeech.m */; };
-		7D2A3E5611BCF621BE1852F198A245B4 /* EXSpeech.h in Headers */ = {isa = PBXBuildFile; fileRef = 06CB68F97A0D7D7187A59D0B03067F91 /* EXSpeech.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		892D001EC4834C7B1A503AF8EAFA83D4 /* EXSpeech-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = AA390D654A626C333D056D0B604333FD /* EXSpeech-dummy.m */; };
+		4A63C357BB0E3170614B1E27EB90771F /* EXSpeech-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 7250B881A43350277970D6EB257DCD94 /* EXSpeech-umbrella.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D386865235920BED9793DB14367F9F4D /* EXSpeech-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4193E5A57A9A8F42E52C68F0FA18FC7C /* EXSpeech-dummy.m */; };
+		EAD02FCE3384D548D0A6A2997036C8B0 /* EXSpeech.h in Headers */ = {isa = PBXBuildFile; fileRef = 38495225B8B3FA9E759C5262F689CBF3 /* EXSpeech.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		F95A2CCBB8A2B22546DDA709EB2FBBBA /* EXSpeech.m in Sources */ = {isa = PBXBuildFile; fileRef = DE74F51E6242259793D76BD03C865E00 /* EXSpeech.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		3E92A2ECFE7ADBF4DAE997635F537D01 /* PBXContainerItemProxy */ = {
+		FB9291FC2DA8731DD674D36B989B4CB7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E3422DCAA36451BC562729CADA1B60B4 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -23,19 +24,21 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		06CB68F97A0D7D7187A59D0B03067F91 /* EXSpeech.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXSpeech.h; path = EXSpeech/EXSpeech.h; sourceTree = "<group>"; };
-		15BF56CD64E1B3CCC702DDD7151962E7 /* EXSpeech.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXSpeech.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		1AD3C68B8DCAB3A3210F403C12627B85 /* EXSpeech.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXSpeech.release.xcconfig; sourceTree = "<group>"; };
-		2FAB5831C9F9F3AB9F738702BD99AE66 /* EXSpeech.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXSpeech.m; path = EXSpeech/EXSpeech.m; sourceTree = "<group>"; };
+		15A6D0716E5C865F222AC26BE965DD36 /* EXSpeech.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXSpeech.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		38495225B8B3FA9E759C5262F689CBF3 /* EXSpeech.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXSpeech.h; path = EXSpeech/EXSpeech.h; sourceTree = "<group>"; };
+		4193E5A57A9A8F42E52C68F0FA18FC7C /* EXSpeech-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXSpeech-dummy.m"; sourceTree = "<group>"; };
 		4EECAA31C5ADC03ACFEECFEA881BCD05 /* libEXSpeech.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXSpeech.a; path = libEXSpeech.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		58E4D754ABEC87912C9E6F356AFA808F /* EXSpeech.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXSpeech.debug.xcconfig; sourceTree = "<group>"; };
-		AA390D654A626C333D056D0B604333FD /* EXSpeech-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXSpeech-dummy.m"; sourceTree = "<group>"; };
-		C6C895C13D69906E8ABF569BBA9AB5EC /* EXSpeech-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXSpeech-prefix.pch"; sourceTree = "<group>"; };
+		513FEA07F251449401E6917248AD3B7F /* EXSpeech.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXSpeech.release.xcconfig; sourceTree = "<group>"; };
+		58C07DDC57A2D9232A2F98AE86B8ECDA /* EXSpeech.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = EXSpeech.modulemap; sourceTree = "<group>"; };
+		5BAFB43985F479A856E40A2714C866DC /* EXSpeech.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXSpeech.debug.xcconfig; sourceTree = "<group>"; };
+		6A92BA736EB1C99C0CED4BADDEF0F271 /* EXSpeech-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXSpeech-prefix.pch"; sourceTree = "<group>"; };
+		7250B881A43350277970D6EB257DCD94 /* EXSpeech-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXSpeech-umbrella.h"; sourceTree = "<group>"; };
+		DE74F51E6242259793D76BD03C865E00 /* EXSpeech.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXSpeech.m; path = EXSpeech/EXSpeech.m; sourceTree = "<group>"; };
 		E3422DCAA36451BC562729CADA1B60B4 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		A7B9B2A1DDE865914996F66355A422F5 /* Frameworks */ = {
+		7358E72C5F2108F4E273EB1A87A1A10E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -60,18 +63,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		36407E4A8ECC425691D9BA250B630F5D /* EXSpeech */ = {
-			isa = PBXGroup;
-			children = (
-				06CB68F97A0D7D7187A59D0B03067F91 /* EXSpeech.h */,
-				2FAB5831C9F9F3AB9F738702BD99AE66 /* EXSpeech.m */,
-				B0917564DEAAE0F70C2ECA7E21557100 /* Pod */,
-				A7FE823F240278CD999E6FE15DC9F496 /* Support Files */,
-			);
-			name = EXSpeech;
-			path = "../../packages/expo-speech/ios";
-			sourceTree = "<group>";
-		};
 		6AB96B7641452FE84DFDBD95E1DE9E37 /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
@@ -80,44 +71,59 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
+		7256A0D4F471D77475520EADDF2FBF29 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				15A6D0716E5C865F222AC26BE965DD36 /* EXSpeech.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
 		8FD44242A745118B2E9087ED12CFAE17 = {
 			isa = PBXGroup;
 			children = (
 				6AB96B7641452FE84DFDBD95E1DE9E37 /* Dependencies */,
-				36407E4A8ECC425691D9BA250B630F5D /* EXSpeech */,
+				EEE8FE785D2175D0C30FEE12E85470FD /* EXSpeech */,
 				1BEBCE2538AE42700810BC4B5151F1C9 /* Frameworks */,
 				0F80633B203A98AFB0FCC5A4ACEA51E0 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		A7FE823F240278CD999E6FE15DC9F496 /* Support Files */ = {
+		B28D8419697F389C06C2F2DFA4F65550 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				AA390D654A626C333D056D0B604333FD /* EXSpeech-dummy.m */,
-				C6C895C13D69906E8ABF569BBA9AB5EC /* EXSpeech-prefix.pch */,
-				58E4D754ABEC87912C9E6F356AFA808F /* EXSpeech.debug.xcconfig */,
-				1AD3C68B8DCAB3A3210F403C12627B85 /* EXSpeech.release.xcconfig */,
+				58C07DDC57A2D9232A2F98AE86B8ECDA /* EXSpeech.modulemap */,
+				4193E5A57A9A8F42E52C68F0FA18FC7C /* EXSpeech-dummy.m */,
+				6A92BA736EB1C99C0CED4BADDEF0F271 /* EXSpeech-prefix.pch */,
+				7250B881A43350277970D6EB257DCD94 /* EXSpeech-umbrella.h */,
+				5BAFB43985F479A856E40A2714C866DC /* EXSpeech.debug.xcconfig */,
+				513FEA07F251449401E6917248AD3B7F /* EXSpeech.release.xcconfig */,
 			);
 			name = "Support Files";
 			path = "../../../ios/Pods/Target Support Files/EXSpeech";
 			sourceTree = "<group>";
 		};
-		B0917564DEAAE0F70C2ECA7E21557100 /* Pod */ = {
+		EEE8FE785D2175D0C30FEE12E85470FD /* EXSpeech */ = {
 			isa = PBXGroup;
 			children = (
-				15BF56CD64E1B3CCC702DDD7151962E7 /* EXSpeech.podspec */,
+				38495225B8B3FA9E759C5262F689CBF3 /* EXSpeech.h */,
+				DE74F51E6242259793D76BD03C865E00 /* EXSpeech.m */,
+				7256A0D4F471D77475520EADDF2FBF29 /* Pod */,
+				B28D8419697F389C06C2F2DFA4F65550 /* Support Files */,
 			);
-			name = Pod;
+			name = EXSpeech;
+			path = "../../packages/expo-speech/ios";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		363B9C1140C6C871AF896DC05F2CD048 /* Headers */ = {
+		FCB36E6B9ABDB4CBDCEF4E91C3B33301 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7D2A3E5611BCF621BE1852F198A245B4 /* EXSpeech.h in Headers */,
+				4A63C357BB0E3170614B1E27EB90771F /* EXSpeech-umbrella.h in Headers */,
+				EAD02FCE3384D548D0A6A2997036C8B0 /* EXSpeech.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -126,16 +132,16 @@
 /* Begin PBXNativeTarget section */
 		AC043527FC46D59E5210AD9D49B847FC /* EXSpeech */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = DF15A136AAE224BEC2FE63F0D1238C10 /* Build configuration list for PBXNativeTarget "EXSpeech" */;
+			buildConfigurationList = 2330D04C21E4ACD46A3FBDD27A497406 /* Build configuration list for PBXNativeTarget "EXSpeech" */;
 			buildPhases = (
-				363B9C1140C6C871AF896DC05F2CD048 /* Headers */,
-				AC1FD6C6DFF7443F92E5649A2AA6FB0B /* Sources */,
-				A7B9B2A1DDE865914996F66355A422F5 /* Frameworks */,
+				FCB36E6B9ABDB4CBDCEF4E91C3B33301 /* Headers */,
+				D328E8BDD4F2B60952DE74014BE4A6DC /* Sources */,
+				7358E72C5F2108F4E273EB1A87A1A10E /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				1704D49AAEFC1D14430DA55CE68F8088 /* PBXTargetDependency */,
+				86E323653CEA3233CD47F9CFAC1CC320 /* PBXTargetDependency */,
 			);
 			name = EXSpeech;
 			productName = EXSpeech;
@@ -175,77 +181,26 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		AC1FD6C6DFF7443F92E5649A2AA6FB0B /* Sources */ = {
+		D328E8BDD4F2B60952DE74014BE4A6DC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				892D001EC4834C7B1A503AF8EAFA83D4 /* EXSpeech-dummy.m in Sources */,
-				6951D85CF6A8D94C07A5ABD46E71569B /* EXSpeech.m in Sources */,
+				D386865235920BED9793DB14367F9F4D /* EXSpeech-dummy.m in Sources */,
+				F95A2CCBB8A2B22546DDA709EB2FBBBA /* EXSpeech.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		1704D49AAEFC1D14430DA55CE68F8088 /* PBXTargetDependency */ = {
+		86E323653CEA3233CD47F9CFAC1CC320 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 3E92A2ECFE7ADBF4DAE997635F537D01 /* PBXContainerItemProxy */;
+			targetProxy = FB9291FC2DA8731DD674D36B989B4CB7 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		54CC226C003BA385D77575C1C48C00E3 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 58E4D754ABEC87912C9E6F356AFA808F /* EXSpeech.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXSpeech/EXSpeech-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXSpeech;
-				PRODUCT_NAME = EXSpeech;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		70EA1DECD612782E0FD8FA0C06749FEA /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1AD3C68B8DCAB3A3210F403C12627B85 /* EXSpeech.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXSpeech/EXSpeech-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXSpeech;
-				PRODUCT_NAME = EXSpeech;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 		A009CDCFC380CDCEBF205D908094E69D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -305,6 +260,59 @@
 				SYMROOT = "${SRCROOT}/../build";
 			};
 			name = Release;
+		};
+		AEDE35222B4E27757975F82F64F0615A /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 513FEA07F251449401E6917248AD3B7F /* EXSpeech.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXSpeech/EXSpeech-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MODULEMAP_FILE = Headers/Public/EXSpeech/EXSpeech.modulemap;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXSpeech;
+				PRODUCT_NAME = EXSpeech;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		EEF108B99F32223EE82941AA310E27BF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5BAFB43985F479A856E40A2714C866DC /* EXSpeech.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXSpeech/EXSpeech-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MODULEMAP_FILE = Headers/Public/EXSpeech/EXSpeech.modulemap;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXSpeech;
+				PRODUCT_NAME = EXSpeech;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
 		};
 		F73A8832B6A6248C53FB59F78993CDC4 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -373,20 +381,20 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		2330D04C21E4ACD46A3FBDD27A497406 /* Build configuration list for PBXNativeTarget "EXSpeech" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EEF108B99F32223EE82941AA310E27BF /* Debug */,
+				AEDE35222B4E27757975F82F64F0615A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		702FB7BEE721C6C5B9D6C9E09614D367 /* Build configuration list for PBXProject "EXSpeech" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F73A8832B6A6248C53FB59F78993CDC4 /* Debug */,
 				A009CDCFC380CDCEBF205D908094E69D /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		DF15A136AAE224BEC2FE63F0D1238C10 /* Build configuration list for PBXNativeTarget "EXSpeech" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				54CC226C003BA385D77575C1C48C00E3 /* Debug */,
-				70EA1DECD612782E0FD8FA0C06749FEA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

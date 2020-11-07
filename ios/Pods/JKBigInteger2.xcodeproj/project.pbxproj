@@ -7,35 +7,38 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		071843436321C7B78EAE12E2D836A903 /* tommath_class.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E775C453738C48A43EDA88657EC28BD /* tommath_class.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		33B225E38AB31E1F5135A480CE483916 /* JKBigInteger2-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 05AC5E786300E27449306BC91777FFFB /* JKBigInteger2-dummy.m */; };
-		54A7D2539E5AA653890491DE9FCDFC73 /* JKBigDecimal.h in Headers */ = {isa = PBXBuildFile; fileRef = 002A6B3F80ACD8683AAFDA5706680C63 /* JKBigDecimal.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		7C68FB4E66FD9881073ACC3C41BCE3EC /* JKBigDecimal.m in Sources */ = {isa = PBXBuildFile; fileRef = 49C0B162EDD879559CA4C1D04DF40D74 /* JKBigDecimal.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		A257FE62A33B4D81EE834222FF42FF24 /* JKBigInteger.m in Sources */ = {isa = PBXBuildFile; fileRef = 683278DE891DED568DF195FB1624BE0A /* JKBigInteger.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		C7E5830D1B1E77F96633B50F2F7C8B23 /* tommath.h in Headers */ = {isa = PBXBuildFile; fileRef = 8C9E0D27D31B20C7BE0E614A266C9BEB /* tommath.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		DD778A2E0BD58402A8F4D03DADFB57AE /* tommath.c in Sources */ = {isa = PBXBuildFile; fileRef = 3848539A1ECF9CDE185A9BA55B2DCC2B /* tommath.c */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		E877EF25154AA725B2D19508F934CD81 /* tommath_superclass.h in Headers */ = {isa = PBXBuildFile; fileRef = D097C46608B71B5226D1068EF0EAD708 /* tommath_superclass.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		EB814AD51C56032B654B676A16E88C39 /* JKBigInteger.h in Headers */ = {isa = PBXBuildFile; fileRef = 275E25097A4842313FD39EF082AE5EFF /* JKBigInteger.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		68EB844638A4D6BECF5C1214D7757379 /* JKBigInteger.m in Sources */ = {isa = PBXBuildFile; fileRef = 410CF1B23A267590A5829EC5B927C6E2 /* JKBigInteger.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		7525A55CC602A4AEE209C48FBDFE45E5 /* tommath.h in Headers */ = {isa = PBXBuildFile; fileRef = DCE5FCA259952E9C385B35DE1AD68811 /* tommath.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		9F043A9BF3C87C95F061C529A40A2902 /* JKBigInteger2-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = D5784C9AC8715937208CD29452DCE1EB /* JKBigInteger2-dummy.m */; };
+		A68E7079A7B11CE36E2A11CF743B7CD7 /* tommath.c in Sources */ = {isa = PBXBuildFile; fileRef = 11D98DCE29F7A4CAAA8079A4212FDC0F /* tommath.c */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		B33D7A82AB51FAFD1E813218974F5074 /* tommath_class.h in Headers */ = {isa = PBXBuildFile; fileRef = E2E5214B6BA5C4296F46D89E5792C948 /* tommath_class.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B70E0152D7FC4F6A7F56DECDDAB56E4A /* JKBigInteger2-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 18975A43275744E617E7E98DD4D38F61 /* JKBigInteger2-umbrella.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D29B4A7E88AF5BBA1916D47A6CE98E65 /* tommath_superclass.h in Headers */ = {isa = PBXBuildFile; fileRef = F7B9D6C1AB2297427F02B93FA66D0C47 /* tommath_superclass.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		E70FD137FA44103A0DD4DA12B189830C /* JKBigInteger.h in Headers */ = {isa = PBXBuildFile; fileRef = D2A7A05638F29E25DBA2E3F966A91482 /* JKBigInteger.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		E7C31E906B1FAFE8746B67DA9A4F32B1 /* JKBigDecimal.h in Headers */ = {isa = PBXBuildFile; fileRef = DB2885E860CC1E8E80E526850717801B /* JKBigDecimal.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		FE84915180403E37089B4DFBE8BC9B8B /* JKBigDecimal.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E1DC70B7705AD447A295D54328542CC /* JKBigDecimal.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		002A6B3F80ACD8683AAFDA5706680C63 /* JKBigDecimal.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = JKBigDecimal.h; path = JKBigInteger/JKBigDecimal.h; sourceTree = "<group>"; };
-		05AC5E786300E27449306BC91777FFFB /* JKBigInteger2-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "JKBigInteger2-dummy.m"; sourceTree = "<group>"; };
-		0E775C453738C48A43EDA88657EC28BD /* tommath_class.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = tommath_class.h; path = JKBigInteger/LibTomMath/tommath_class.h; sourceTree = "<group>"; };
-		275E25097A4842313FD39EF082AE5EFF /* JKBigInteger.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = JKBigInteger.h; path = JKBigInteger/JKBigInteger.h; sourceTree = "<group>"; };
-		3848539A1ECF9CDE185A9BA55B2DCC2B /* tommath.c */ = {isa = PBXFileReference; includeInIndex = 1; name = tommath.c; path = JKBigInteger/LibTomMath/tommath.c; sourceTree = "<group>"; };
-		3ECE6C1577E4C9FA9CE1127EA72357F3 /* JKBigInteger2.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = JKBigInteger2.release.xcconfig; sourceTree = "<group>"; };
-		49C0B162EDD879559CA4C1D04DF40D74 /* JKBigDecimal.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = JKBigDecimal.m; path = JKBigInteger/JKBigDecimal.m; sourceTree = "<group>"; };
-		683278DE891DED568DF195FB1624BE0A /* JKBigInteger.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = JKBigInteger.m; path = JKBigInteger/JKBigInteger.m; sourceTree = "<group>"; };
+		11D98DCE29F7A4CAAA8079A4212FDC0F /* tommath.c */ = {isa = PBXFileReference; includeInIndex = 1; name = tommath.c; path = JKBigInteger/LibTomMath/tommath.c; sourceTree = "<group>"; };
+		18975A43275744E617E7E98DD4D38F61 /* JKBigInteger2-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "JKBigInteger2-umbrella.h"; sourceTree = "<group>"; };
+		410CF1B23A267590A5829EC5B927C6E2 /* JKBigInteger.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = JKBigInteger.m; path = JKBigInteger/JKBigInteger.m; sourceTree = "<group>"; };
+		4E1DC70B7705AD447A295D54328542CC /* JKBigDecimal.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = JKBigDecimal.m; path = JKBigInteger/JKBigDecimal.m; sourceTree = "<group>"; };
+		6B6C60DAE3A00E4EC3F61941C2DEA557 /* JKBigInteger2-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "JKBigInteger2-prefix.pch"; sourceTree = "<group>"; };
+		7612925972741A40ECBE862D0F757908 /* JKBigInteger2.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = JKBigInteger2.release.xcconfig; sourceTree = "<group>"; };
 		7BECA1F0CC246AF8D2DD12A550E4D465 /* libJKBigInteger2.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libJKBigInteger2.a; path = libJKBigInteger2.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		8C9E0D27D31B20C7BE0E614A266C9BEB /* tommath.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = tommath.h; path = JKBigInteger/LibTomMath/tommath.h; sourceTree = "<group>"; };
-		96B9075D051964F44061F966A4BEA935 /* JKBigInteger2.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = JKBigInteger2.debug.xcconfig; sourceTree = "<group>"; };
-		C68E644415064200AA4EF13D60C14C7C /* JKBigInteger2-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "JKBigInteger2-prefix.pch"; sourceTree = "<group>"; };
-		D097C46608B71B5226D1068EF0EAD708 /* tommath_superclass.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = tommath_superclass.h; path = JKBigInteger/LibTomMath/tommath_superclass.h; sourceTree = "<group>"; };
+		9B76DCBC43B5744C5E5473C869FEDE09 /* JKBigInteger2.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = JKBigInteger2.modulemap; sourceTree = "<group>"; };
+		B3C4744C557EE5D285A54AD7E2F93B45 /* JKBigInteger2.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = JKBigInteger2.debug.xcconfig; sourceTree = "<group>"; };
+		D2A7A05638F29E25DBA2E3F966A91482 /* JKBigInteger.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = JKBigInteger.h; path = JKBigInteger/JKBigInteger.h; sourceTree = "<group>"; };
+		D5784C9AC8715937208CD29452DCE1EB /* JKBigInteger2-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "JKBigInteger2-dummy.m"; sourceTree = "<group>"; };
+		DB2885E860CC1E8E80E526850717801B /* JKBigDecimal.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = JKBigDecimal.h; path = JKBigInteger/JKBigDecimal.h; sourceTree = "<group>"; };
+		DCE5FCA259952E9C385B35DE1AD68811 /* tommath.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = tommath.h; path = JKBigInteger/LibTomMath/tommath.h; sourceTree = "<group>"; };
+		E2E5214B6BA5C4296F46D89E5792C948 /* tommath_class.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = tommath_class.h; path = JKBigInteger/LibTomMath/tommath_class.h; sourceTree = "<group>"; };
+		F7B9D6C1AB2297427F02B93FA66D0C47 /* tommath_superclass.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = tommath_superclass.h; path = JKBigInteger/LibTomMath/tommath_superclass.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		7A0C2BA3A472B5B03217D573545B66CC /* Frameworks */ = {
+		8D193EB477FBAEE354613345525A9599 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -45,18 +48,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		102D610FDB72631CF5554D681DD6226B /* JKBigInteger2 */ = {
+		1650F242FB732E3D92B998F72303F959 /* JKBigInteger2 */ = {
 			isa = PBXGroup;
 			children = (
-				002A6B3F80ACD8683AAFDA5706680C63 /* JKBigDecimal.h */,
-				49C0B162EDD879559CA4C1D04DF40D74 /* JKBigDecimal.m */,
-				275E25097A4842313FD39EF082AE5EFF /* JKBigInteger.h */,
-				683278DE891DED568DF195FB1624BE0A /* JKBigInteger.m */,
-				3848539A1ECF9CDE185A9BA55B2DCC2B /* tommath.c */,
-				8C9E0D27D31B20C7BE0E614A266C9BEB /* tommath.h */,
-				0E775C453738C48A43EDA88657EC28BD /* tommath_class.h */,
-				D097C46608B71B5226D1068EF0EAD708 /* tommath_superclass.h */,
-				C066A0F3FEBBC5E1E00D9AE0FE10F078 /* Support Files */,
+				DB2885E860CC1E8E80E526850717801B /* JKBigDecimal.h */,
+				4E1DC70B7705AD447A295D54328542CC /* JKBigDecimal.m */,
+				D2A7A05638F29E25DBA2E3F966A91482 /* JKBigInteger.h */,
+				410CF1B23A267590A5829EC5B927C6E2 /* JKBigInteger.m */,
+				11D98DCE29F7A4CAAA8079A4212FDC0F /* tommath.c */,
+				DCE5FCA259952E9C385B35DE1AD68811 /* tommath.h */,
+				E2E5214B6BA5C4296F46D89E5792C948 /* tommath_class.h */,
+				F7B9D6C1AB2297427F02B93FA66D0C47 /* tommath_superclass.h */,
+				CD459F54AB5B5A74D4E1E065F3C349B8 /* Support Files */,
 			);
 			name = JKBigInteger2;
 			path = JKBigInteger2;
@@ -70,25 +73,27 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		C066A0F3FEBBC5E1E00D9AE0FE10F078 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				05AC5E786300E27449306BC91777FFFB /* JKBigInteger2-dummy.m */,
-				C68E644415064200AA4EF13D60C14C7C /* JKBigInteger2-prefix.pch */,
-				96B9075D051964F44061F966A4BEA935 /* JKBigInteger2.debug.xcconfig */,
-				3ECE6C1577E4C9FA9CE1127EA72357F3 /* JKBigInteger2.release.xcconfig */,
-			);
-			name = "Support Files";
-			path = "../Target Support Files/JKBigInteger2";
-			sourceTree = "<group>";
-		};
 		C351098E5D6953FEC91CABC220ED4AD3 = {
 			isa = PBXGroup;
 			children = (
 				D8E7C2AB6070DFB02B54AC550D8D3C1E /* Frameworks */,
-				102D610FDB72631CF5554D681DD6226B /* JKBigInteger2 */,
+				1650F242FB732E3D92B998F72303F959 /* JKBigInteger2 */,
 				39FE3E4959704A76C4702D069491DE15 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		CD459F54AB5B5A74D4E1E065F3C349B8 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				9B76DCBC43B5744C5E5473C869FEDE09 /* JKBigInteger2.modulemap */,
+				D5784C9AC8715937208CD29452DCE1EB /* JKBigInteger2-dummy.m */,
+				6B6C60DAE3A00E4EC3F61941C2DEA557 /* JKBigInteger2-prefix.pch */,
+				18975A43275744E617E7E98DD4D38F61 /* JKBigInteger2-umbrella.h */,
+				B3C4744C557EE5D285A54AD7E2F93B45 /* JKBigInteger2.debug.xcconfig */,
+				7612925972741A40ECBE862D0F757908 /* JKBigInteger2.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../Target Support Files/JKBigInteger2";
 			sourceTree = "<group>";
 		};
 		D8E7C2AB6070DFB02B54AC550D8D3C1E /* Frameworks */ = {
@@ -101,15 +106,16 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		23CE088BC06776B0FEC2F0EE1FEA824F /* Headers */ = {
+		F2FBDF59E7B7E4C89746D632A632F2D9 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				54A7D2539E5AA653890491DE9FCDFC73 /* JKBigDecimal.h in Headers */,
-				EB814AD51C56032B654B676A16E88C39 /* JKBigInteger.h in Headers */,
-				C7E5830D1B1E77F96633B50F2F7C8B23 /* tommath.h in Headers */,
-				071843436321C7B78EAE12E2D836A903 /* tommath_class.h in Headers */,
-				E877EF25154AA725B2D19508F934CD81 /* tommath_superclass.h in Headers */,
+				E7C31E906B1FAFE8746B67DA9A4F32B1 /* JKBigDecimal.h in Headers */,
+				E70FD137FA44103A0DD4DA12B189830C /* JKBigInteger.h in Headers */,
+				B70E0152D7FC4F6A7F56DECDDAB56E4A /* JKBigInteger2-umbrella.h in Headers */,
+				7525A55CC602A4AEE209C48FBDFE45E5 /* tommath.h in Headers */,
+				B33D7A82AB51FAFD1E813218974F5074 /* tommath_class.h in Headers */,
+				D29B4A7E88AF5BBA1916D47A6CE98E65 /* tommath_superclass.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -118,11 +124,11 @@
 /* Begin PBXNativeTarget section */
 		55B5B69CD0128658056242174A61815A /* JKBigInteger2 */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2A72C1768B65340C24B2CAB66F463C4B /* Build configuration list for PBXNativeTarget "JKBigInteger2" */;
+			buildConfigurationList = 6CAADACC895E7B17895F8CF6C1AACC75 /* Build configuration list for PBXNativeTarget "JKBigInteger2" */;
 			buildPhases = (
-				23CE088BC06776B0FEC2F0EE1FEA824F /* Headers */,
-				8A5CDBEBC5046F8CD70CF6F05C551E6C /* Sources */,
-				7A0C2BA3A472B5B03217D573545B66CC /* Frameworks */,
+				F2FBDF59E7B7E4C89746D632A632F2D9 /* Headers */,
+				0979CFE3C7D43DC91C10546FC4C0012E /* Sources */,
+				8D193EB477FBAEE354613345525A9599 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -161,21 +167,81 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		8A5CDBEBC5046F8CD70CF6F05C551E6C /* Sources */ = {
+		0979CFE3C7D43DC91C10546FC4C0012E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7C68FB4E66FD9881073ACC3C41BCE3EC /* JKBigDecimal.m in Sources */,
-				A257FE62A33B4D81EE834222FF42FF24 /* JKBigInteger.m in Sources */,
-				33B225E38AB31E1F5135A480CE483916 /* JKBigInteger2-dummy.m in Sources */,
-				DD778A2E0BD58402A8F4D03DADFB57AE /* tommath.c in Sources */,
+				FE84915180403E37089B4DFBE8BC9B8B /* JKBigDecimal.m in Sources */,
+				68EB844638A4D6BECF5C1214D7757379 /* JKBigInteger.m in Sources */,
+				9F043A9BF3C87C95F061C529A40A2902 /* JKBigInteger2-dummy.m in Sources */,
+				A68E7079A7B11CE36E2A11CF743B7CD7 /* tommath.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		CA3680222C1FB15EA1AF8F2EDFEE0435 /* Debug */ = {
+		2CEDF439604B4FFA83E026489439571F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		36ED01E8E79CA799F4D0FB7E73B110A3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -226,7 +292,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -239,16 +305,18 @@
 			};
 			name = Debug;
 		};
-		D67DC4A546C000F08A9C9E3813F25976 /* Release */ = {
+		4E66ADF7463349D8D275DFB3F507FD08 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3ECE6C1577E4C9FA9CE1127EA72357F3 /* JKBigInteger2.release.xcconfig */;
+			baseConfigurationReference = 7612925972741A40ECBE862D0F757908 /* JKBigInteger2.release.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				GCC_PREFIX_HEADER = "Target Support Files/JKBigInteger2/JKBigInteger2-prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MODULEMAP_FILE = Headers/Public/JKBigInteger2/JKBigInteger2.modulemap;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -264,76 +332,18 @@
 			};
 			name = Release;
 		};
-		D907E9C4EDE7C13A78DA440EA84FEEB8 /* Release */ = {
+		848421048EFEBDC233AFEE2741B11EFD /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = B3C4744C557EE5D285A54AD7E2F93B45 /* JKBigInteger2.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"POD_CONFIGURATION_RELEASE=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.0;
-				SYMROOT = "${SRCROOT}/../build";
-			};
-			name = Release;
-		};
-		EDFEC159F216F2700BEF5DE1E8D58803 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 96B9075D051964F44061F966A4BEA935 /* JKBigInteger2.debug.xcconfig */;
-			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				GCC_PREFIX_HEADER = "Target Support Files/JKBigInteger2/JKBigInteger2-prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MODULEMAP_FILE = Headers/Public/JKBigInteger2/JKBigInteger2.modulemap;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -351,11 +361,11 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		2A72C1768B65340C24B2CAB66F463C4B /* Build configuration list for PBXNativeTarget "JKBigInteger2" */ = {
+		6CAADACC895E7B17895F8CF6C1AACC75 /* Build configuration list for PBXNativeTarget "JKBigInteger2" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				EDFEC159F216F2700BEF5DE1E8D58803 /* Debug */,
-				D67DC4A546C000F08A9C9E3813F25976 /* Release */,
+				848421048EFEBDC233AFEE2741B11EFD /* Debug */,
+				4E66ADF7463349D8D275DFB3F507FD08 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -363,8 +373,8 @@
 		8CEFE0C00875C1AC3F6AB2D2C02F0CAA /* Build configuration list for PBXProject "JKBigInteger2" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				CA3680222C1FB15EA1AF8F2EDFEE0435 /* Debug */,
-				D907E9C4EDE7C13A78DA440EA84FEEB8 /* Release */,
+				36ED01E8E79CA799F4D0FB7E73B110A3 /* Debug */,
+				2CEDF439604B4FFA83E026489439571F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -1,0 +1,6 @@
+module Google_Maps_iOS_Utils {
+  umbrella header "Google-Maps-iOS-Utils-umbrella.h"
+
+  export *
+  module * { export * }
+}

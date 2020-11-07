@@ -1,0 +1,6 @@
+module EXSensors {
+  umbrella header "EXSensors-umbrella.h"
+
+  export *
+  module * { export * }
+}

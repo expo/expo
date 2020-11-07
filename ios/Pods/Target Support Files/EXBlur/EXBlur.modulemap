@@ -1,0 +1,6 @@
+module EXBlur {
+  umbrella header "EXBlur-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -1,0 +1,6 @@
+module Analytics {
+  umbrella header "Analytics-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -1,0 +1,6 @@
+module UMCore {
+  umbrella header "UMCore-umbrella.h"
+
+  export *
+  module * { export * }
+}

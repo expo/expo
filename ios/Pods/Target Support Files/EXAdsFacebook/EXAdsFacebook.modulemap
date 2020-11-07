@@ -1,0 +1,6 @@
+module EXAdsFacebook {
+  umbrella header "EXAdsFacebook-umbrella.h"
+
+  export *
+  module * { export * }
+}

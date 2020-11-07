@@ -1,0 +1,6 @@
+module ABI37_0_0RCTVibration {
+  umbrella header "ABI37_0_0React-RCTVibration-umbrella.h"
+
+  export *
+  module * { export * }
+}

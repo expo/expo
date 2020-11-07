@@ -1,0 +1,1 @@
+../../../Target Support Files/ABI38_0_0EXImageManipulator/ABI38_0_0EXImageManipulator-umbrella.h

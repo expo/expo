@@ -7,67 +7,70 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		050808D4FF5E6B165EA83E03A0642127 /* EXGeofencingTaskConsumer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E3A81D0B3519823F1EF38B592C248F1 /* EXGeofencingTaskConsumer.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		32406F39949F9AB6F49F7B95044EEE32 /* EXLocationDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = B53ABEAC6C6186F126E45B304C1BE2C7 /* EXLocationDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		6532A28F7633F277909B1595D27253E6 /* EXLocationTaskConsumer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CA3B8835817BE62DD698443FAB4570E /* EXLocationTaskConsumer.m */; };
-		AD6016CB91141E9D9D9A6D1ABF9A0423 /* EXLocationPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = DD570AAFF3295A820542F86DC5E4EFA2 /* EXLocationPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		B241E4CD47D777097927A9FDCDCC3EB7 /* EXLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 284B1557CF28C3CBF7B771A5DB967E79 /* EXLocation.m */; };
-		B39D19DD7A3C76B97EA6884730C920B8 /* EXGeofencingTaskConsumer.m in Sources */ = {isa = PBXBuildFile; fileRef = 84DC97B5E352EE79EB3112B125AE728C /* EXGeofencingTaskConsumer.m */; };
-		B6F097B03355AD549B91B6EC064C858B /* EXLocation.h in Headers */ = {isa = PBXBuildFile; fileRef = F2A60F838F5B4696B9FE24EA336A7088 /* EXLocation.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		D0CDA7C9B026DB526362D3429F59DFF2 /* EXLocation-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F0AA49434094AF72FA58743870BFB941 /* EXLocation-dummy.m */; };
-		DC70FC8294AFEA3739383841FD9F5C2A /* EXLocationDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 56266C4620E961B16E44D57B62D7EF7D /* EXLocationDelegate.m */; };
-		E264AFB22F011169145B2FCD95639FE3 /* EXLocationTaskConsumer.h in Headers */ = {isa = PBXBuildFile; fileRef = 47903F48E02C767D32EC8AD29872373E /* EXLocationTaskConsumer.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		F13AC32A44EE27CE769C8B09E53D4FAE /* EXLocationPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = D0EEDB17C8D30B43AA5A708CD31C4294 /* EXLocationPermissionRequester.m */; };
+		1DFDFE4016DE093C206E3C9F11FC8B9E /* EXLocationDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 40A210DFC216759EB034C567C646CDD5 /* EXLocationDelegate.m */; };
+		393EF51CBAC55D02D60EB9A37F47CA14 /* EXLocation-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 12664220B8D4006D335937849F6232C8 /* EXLocation-dummy.m */; };
+		3E6B83BD7C0E8CD4D482BC94AAEF0564 /* EXLocationTaskConsumer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6178E2E0F2C047ADA7D80E4AFA1FC761 /* EXLocationTaskConsumer.m */; };
+		5AF5C1197A004482B0698B529F1C9E04 /* EXLocationPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 0FEFF961F5AFDF7A83BB0C0D7E3F470D /* EXLocationPermissionRequester.m */; };
+		641BF834722153C0C10448AD16342FD6 /* EXGeofencingTaskConsumer.m in Sources */ = {isa = PBXBuildFile; fileRef = 56D36D60D87D1B89FEF7BBE995884445 /* EXGeofencingTaskConsumer.m */; };
+		A58672997AC4C537D2D2A44E223F0D3C /* EXLocation.h in Headers */ = {isa = PBXBuildFile; fileRef = D6F7E91CECDEFC96FE0C4580B50CA4B6 /* EXLocation.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		AA58D3FAA9BD22AA1C33C2B8580F834F /* EXGeofencingTaskConsumer.h in Headers */ = {isa = PBXBuildFile; fileRef = 90E0328535847B1C90ECBC9215C86E04 /* EXGeofencingTaskConsumer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		CC9D9CB2BD8A301582654415DB8DA87E /* EXLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 80FCDBA5D21511D38818D8DE1AE604AD /* EXLocation.m */; };
+		D54141EC790D13B05E6E5E7B0501FD4B /* EXLocationTaskConsumer.h in Headers */ = {isa = PBXBuildFile; fileRef = 1D0F97EE0CE808853C1F6F26A27641BA /* EXLocationTaskConsumer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D5A7FBAC0B2DC860E41952400B228E72 /* EXLocationDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 5442185C31389E47254C6DF5D06F51F4 /* EXLocationDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		E32373EA5FD482A7E532036BD083FFA3 /* EXLocationPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 71F403CB9F33B04D633EC0CB08D2BF9E /* EXLocationPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		E70DAF772B4B9BFC15AEABD370900ADC /* EXLocation-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 9DD884C50B333C04573B34BB701454A9 /* EXLocation-umbrella.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		40EEC3FFB0050D47BEED309816FA52DB /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 701BE052E27254611783186AB115FF40 /* UMPermissionsInterface.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 12FF61416C5E794E9DEAC78D381D9726;
-			remoteInfo = UMPermissionsInterface;
-		};
-		84CDAC9144F4E679F8527D7CA461A9F4 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9489415B04168ED86D11C1D13373B453 /* UMTaskManagerInterface.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = A565C99DEFBAFA44A1B5C3B49ADD8A84;
-			remoteInfo = UMTaskManagerInterface;
-		};
-		AC6CA902E02A3C748110F3AFDEB7834E /* PBXContainerItemProxy */ = {
+		138F5017CC9EF9C35D691EBF76C86F44 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B209ED9EAE6F3782DB7ACABD6135075 /* UMCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
 		};
+		658BE80E0D0E461320C7B210BC39B918 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9489415B04168ED86D11C1D13373B453 /* UMTaskManagerInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A565C99DEFBAFA44A1B5C3B49ADD8A84;
+			remoteInfo = UMTaskManagerInterface;
+		};
+		9DC0156AAA3E561CE3BB68BA1E02B11C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 701BE052E27254611783186AB115FF40 /* UMPermissionsInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 12FF61416C5E794E9DEAC78D381D9726;
+			remoteInfo = UMPermissionsInterface;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		16767C590A3ACBF7FFDD8C785735F781 /* EXLocation.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXLocation.debug.xcconfig; sourceTree = "<group>"; };
-		1AD8845F7CDAF6DE4C4FB41B8D1EC95A /* EXLocation-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXLocation-prefix.pch"; sourceTree = "<group>"; };
-		284B1557CF28C3CBF7B771A5DB967E79 /* EXLocation.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXLocation.m; path = EXLocation/EXLocation.m; sourceTree = "<group>"; };
+		0FEFF961F5AFDF7A83BB0C0D7E3F470D /* EXLocationPermissionRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXLocationPermissionRequester.m; path = EXLocation/EXLocationPermissionRequester.m; sourceTree = "<group>"; };
+		104FBCA1574C56A822C4922CBFC86AEF /* EXLocation.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXLocation.debug.xcconfig; sourceTree = "<group>"; };
+		12664220B8D4006D335937849F6232C8 /* EXLocation-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXLocation-dummy.m"; sourceTree = "<group>"; };
+		1D0F97EE0CE808853C1F6F26A27641BA /* EXLocationTaskConsumer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXLocationTaskConsumer.h; sourceTree = "<group>"; };
 		39C55233200E5597BBE97D77C9FD1468 /* libEXLocation.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXLocation.a; path = libEXLocation.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		47903F48E02C767D32EC8AD29872373E /* EXLocationTaskConsumer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXLocationTaskConsumer.h; sourceTree = "<group>"; };
+		40A210DFC216759EB034C567C646CDD5 /* EXLocationDelegate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXLocationDelegate.m; path = EXLocation/EXLocationDelegate.m; sourceTree = "<group>"; };
+		46539AAE46C49701C51D30E6712D14CC /* EXLocation.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = EXLocation.modulemap; sourceTree = "<group>"; };
 		4B209ED9EAE6F3782DB7ACABD6135075 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		56266C4620E961B16E44D57B62D7EF7D /* EXLocationDelegate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXLocationDelegate.m; path = EXLocation/EXLocationDelegate.m; sourceTree = "<group>"; };
-		5AD795AC6225F8271FC0D9762C17615A /* EXLocation.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXLocation.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		5E3A81D0B3519823F1EF38B592C248F1 /* EXGeofencingTaskConsumer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXGeofencingTaskConsumer.h; sourceTree = "<group>"; };
+		5442185C31389E47254C6DF5D06F51F4 /* EXLocationDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXLocationDelegate.h; path = EXLocation/EXLocationDelegate.h; sourceTree = "<group>"; };
+		56D36D60D87D1B89FEF7BBE995884445 /* EXGeofencingTaskConsumer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXGeofencingTaskConsumer.m; sourceTree = "<group>"; };
+		6178E2E0F2C047ADA7D80E4AFA1FC761 /* EXLocationTaskConsumer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXLocationTaskConsumer.m; sourceTree = "<group>"; };
 		701BE052E27254611783186AB115FF40 /* UMPermissionsInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMPermissionsInterface; path = UMPermissionsInterface.xcodeproj; sourceTree = "<group>"; };
-		7F732DF5AF512A58850B1183B9959C56 /* EXLocation.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXLocation.release.xcconfig; sourceTree = "<group>"; };
-		84DC97B5E352EE79EB3112B125AE728C /* EXGeofencingTaskConsumer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXGeofencingTaskConsumer.m; sourceTree = "<group>"; };
+		718875D7FB6D6A00056FDD624F168A4F /* EXLocation.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXLocation.release.xcconfig; sourceTree = "<group>"; };
+		71F403CB9F33B04D633EC0CB08D2BF9E /* EXLocationPermissionRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXLocationPermissionRequester.h; path = EXLocation/EXLocationPermissionRequester.h; sourceTree = "<group>"; };
+		80FCDBA5D21511D38818D8DE1AE604AD /* EXLocation.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXLocation.m; path = EXLocation/EXLocation.m; sourceTree = "<group>"; };
+		90E0328535847B1C90ECBC9215C86E04 /* EXGeofencingTaskConsumer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXGeofencingTaskConsumer.h; sourceTree = "<group>"; };
 		9489415B04168ED86D11C1D13373B453 /* UMTaskManagerInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMTaskManagerInterface; path = UMTaskManagerInterface.xcodeproj; sourceTree = "<group>"; };
-		9CA3B8835817BE62DD698443FAB4570E /* EXLocationTaskConsumer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXLocationTaskConsumer.m; sourceTree = "<group>"; };
-		B53ABEAC6C6186F126E45B304C1BE2C7 /* EXLocationDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXLocationDelegate.h; path = EXLocation/EXLocationDelegate.h; sourceTree = "<group>"; };
-		D0EEDB17C8D30B43AA5A708CD31C4294 /* EXLocationPermissionRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXLocationPermissionRequester.m; path = EXLocation/EXLocationPermissionRequester.m; sourceTree = "<group>"; };
-		DD570AAFF3295A820542F86DC5E4EFA2 /* EXLocationPermissionRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXLocationPermissionRequester.h; path = EXLocation/EXLocationPermissionRequester.h; sourceTree = "<group>"; };
-		F0AA49434094AF72FA58743870BFB941 /* EXLocation-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXLocation-dummy.m"; sourceTree = "<group>"; };
-		F2A60F838F5B4696B9FE24EA336A7088 /* EXLocation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXLocation.h; path = EXLocation/EXLocation.h; sourceTree = "<group>"; };
+		9DCD1FF6A4EFC6424E633F13AA5C17C3 /* EXLocation-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXLocation-prefix.pch"; sourceTree = "<group>"; };
+		9DD884C50B333C04573B34BB701454A9 /* EXLocation-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXLocation-umbrella.h"; sourceTree = "<group>"; };
+		D6F7E91CECDEFC96FE0C4580B50CA4B6 /* EXLocation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXLocation.h; path = EXLocation/EXLocation.h; sourceTree = "<group>"; };
+		DAF05D8816F52A25FB501E2453B466A3 /* EXLocation.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXLocation.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		C37C5F273090A4CDB2985492DD9DD441 /* Frameworks */ = {
+		4DCA48F1D9EE0D664DF0E59792C26A2B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -77,18 +80,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		4603F23FAB174BA0E5C660A479DDF5DC /* TaskConsumers */ = {
-			isa = PBXGroup;
-			children = (
-				5E3A81D0B3519823F1EF38B592C248F1 /* EXGeofencingTaskConsumer.h */,
-				84DC97B5E352EE79EB3112B125AE728C /* EXGeofencingTaskConsumer.m */,
-				47903F48E02C767D32EC8AD29872373E /* EXLocationTaskConsumer.h */,
-				9CA3B8835817BE62DD698443FAB4570E /* EXLocationTaskConsumer.m */,
-			);
-			name = TaskConsumers;
-			path = EXLocation/TaskConsumers;
-			sourceTree = "<group>";
-		};
 		5B730AD5786EE14FDA77C2F5BAA8FB20 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -97,12 +88,55 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		9ADDCD925B4435FF6B19CC4F5E24565B /* Pod */ = {
+		6C3A6BE913A807ED2FA03BE333A82ED8 /* TaskConsumers */ = {
 			isa = PBXGroup;
 			children = (
-				5AD795AC6225F8271FC0D9762C17615A /* EXLocation.podspec */,
+				90E0328535847B1C90ECBC9215C86E04 /* EXGeofencingTaskConsumer.h */,
+				56D36D60D87D1B89FEF7BBE995884445 /* EXGeofencingTaskConsumer.m */,
+				1D0F97EE0CE808853C1F6F26A27641BA /* EXLocationTaskConsumer.h */,
+				6178E2E0F2C047ADA7D80E4AFA1FC761 /* EXLocationTaskConsumer.m */,
+			);
+			name = TaskConsumers;
+			path = EXLocation/TaskConsumers;
+			sourceTree = "<group>";
+		};
+		75122172726DB1FF8A6B4045DC1712FF /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				46539AAE46C49701C51D30E6712D14CC /* EXLocation.modulemap */,
+				12664220B8D4006D335937849F6232C8 /* EXLocation-dummy.m */,
+				9DCD1FF6A4EFC6424E633F13AA5C17C3 /* EXLocation-prefix.pch */,
+				9DD884C50B333C04573B34BB701454A9 /* EXLocation-umbrella.h */,
+				104FBCA1574C56A822C4922CBFC86AEF /* EXLocation.debug.xcconfig */,
+				718875D7FB6D6A00056FDD624F168A4F /* EXLocation.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../../../ios/Pods/Target Support Files/EXLocation";
+			sourceTree = "<group>";
+		};
+		A15BB05AC00B8DC6169620EDAEBE74F3 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				DAF05D8816F52A25FB501E2453B466A3 /* EXLocation.podspec */,
 			);
 			name = Pod;
+			sourceTree = "<group>";
+		};
+		A67834908B69E10196E2E8768434B803 /* EXLocation */ = {
+			isa = PBXGroup;
+			children = (
+				D6F7E91CECDEFC96FE0C4580B50CA4B6 /* EXLocation.h */,
+				80FCDBA5D21511D38818D8DE1AE604AD /* EXLocation.m */,
+				5442185C31389E47254C6DF5D06F51F4 /* EXLocationDelegate.h */,
+				40A210DFC216759EB034C567C646CDD5 /* EXLocationDelegate.m */,
+				71F403CB9F33B04D633EC0CB08D2BF9E /* EXLocationPermissionRequester.h */,
+				0FEFF961F5AFDF7A83BB0C0D7E3F470D /* EXLocationPermissionRequester.m */,
+				A15BB05AC00B8DC6169620EDAEBE74F3 /* Pod */,
+				75122172726DB1FF8A6B4045DC1712FF /* Support Files */,
+				6C3A6BE913A807ED2FA03BE333A82ED8 /* TaskConsumers */,
+			);
+			name = EXLocation;
+			path = "../../packages/expo-location/ios";
 			sourceTree = "<group>";
 		};
 		AC3E691A41172A970032D037ECA7229B /* Frameworks */ = {
@@ -112,40 +146,11 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		BC860247F6CC8EAF32EDBEE3F788CB78 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				F0AA49434094AF72FA58743870BFB941 /* EXLocation-dummy.m */,
-				1AD8845F7CDAF6DE4C4FB41B8D1EC95A /* EXLocation-prefix.pch */,
-				16767C590A3ACBF7FFDD8C785735F781 /* EXLocation.debug.xcconfig */,
-				7F732DF5AF512A58850B1183B9959C56 /* EXLocation.release.xcconfig */,
-			);
-			name = "Support Files";
-			path = "../../../ios/Pods/Target Support Files/EXLocation";
-			sourceTree = "<group>";
-		};
-		BDE484FCF40046C564EEEA569547B2C0 /* EXLocation */ = {
-			isa = PBXGroup;
-			children = (
-				F2A60F838F5B4696B9FE24EA336A7088 /* EXLocation.h */,
-				284B1557CF28C3CBF7B771A5DB967E79 /* EXLocation.m */,
-				B53ABEAC6C6186F126E45B304C1BE2C7 /* EXLocationDelegate.h */,
-				56266C4620E961B16E44D57B62D7EF7D /* EXLocationDelegate.m */,
-				DD570AAFF3295A820542F86DC5E4EFA2 /* EXLocationPermissionRequester.h */,
-				D0EEDB17C8D30B43AA5A708CD31C4294 /* EXLocationPermissionRequester.m */,
-				9ADDCD925B4435FF6B19CC4F5E24565B /* Pod */,
-				BC860247F6CC8EAF32EDBEE3F788CB78 /* Support Files */,
-				4603F23FAB174BA0E5C660A479DDF5DC /* TaskConsumers */,
-			);
-			name = EXLocation;
-			path = "../../packages/expo-location/ios";
-			sourceTree = "<group>";
-		};
 		BF4B53092E4CF6ECCD845AC6FB2E5684 = {
 			isa = PBXGroup;
 			children = (
 				F9369E320FE5D98C9800AD271568922E /* Dependencies */,
-				BDE484FCF40046C564EEEA569547B2C0 /* EXLocation */,
+				A67834908B69E10196E2E8768434B803 /* EXLocation */,
 				AC3E691A41172A970032D037ECA7229B /* Frameworks */,
 				5B730AD5786EE14FDA77C2F5BAA8FB20 /* Products */,
 			);
@@ -164,15 +169,16 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		60A8777BABF7506D9E9D036D8B33D344 /* Headers */ = {
+		C1145753A3B2E9B9B1CC5D71C3613396 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				050808D4FF5E6B165EA83E03A0642127 /* EXGeofencingTaskConsumer.h in Headers */,
-				B6F097B03355AD549B91B6EC064C858B /* EXLocation.h in Headers */,
-				32406F39949F9AB6F49F7B95044EEE32 /* EXLocationDelegate.h in Headers */,
-				AD6016CB91141E9D9D9A6D1ABF9A0423 /* EXLocationPermissionRequester.h in Headers */,
-				E264AFB22F011169145B2FCD95639FE3 /* EXLocationTaskConsumer.h in Headers */,
+				AA58D3FAA9BD22AA1C33C2B8580F834F /* EXGeofencingTaskConsumer.h in Headers */,
+				E70DAF772B4B9BFC15AEABD370900ADC /* EXLocation-umbrella.h in Headers */,
+				A58672997AC4C537D2D2A44E223F0D3C /* EXLocation.h in Headers */,
+				D5A7FBAC0B2DC860E41952400B228E72 /* EXLocationDelegate.h in Headers */,
+				E32373EA5FD482A7E532036BD083FFA3 /* EXLocationPermissionRequester.h in Headers */,
+				D54141EC790D13B05E6E5E7B0501FD4B /* EXLocationTaskConsumer.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -181,18 +187,18 @@
 /* Begin PBXNativeTarget section */
 		9448EAC8D0286D37F065B24667BFBB8F /* EXLocation */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8C76EB7491B96B79E4CE618E531AB7D5 /* Build configuration list for PBXNativeTarget "EXLocation" */;
+			buildConfigurationList = 078AF13D7EE767AEA6B41B12B9972975 /* Build configuration list for PBXNativeTarget "EXLocation" */;
 			buildPhases = (
-				60A8777BABF7506D9E9D036D8B33D344 /* Headers */,
-				9B9621E7E7AB4DD37DFFB706F8C33E74 /* Sources */,
-				C37C5F273090A4CDB2985492DD9DD441 /* Frameworks */,
+				C1145753A3B2E9B9B1CC5D71C3613396 /* Headers */,
+				CFD7A519CFE296C3649AEDD198B250FA /* Sources */,
+				4DCA48F1D9EE0D664DF0E59792C26A2B /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				B2F90AE354323C9DDAAADF06E1F98302 /* PBXTargetDependency */,
-				A1F616DDA06EB41DBF65F863D6F77BDE /* PBXTargetDependency */,
-				6BBC30F15BD03D8085290BC9297AC5EC /* PBXTargetDependency */,
+				F9BF66747CBCD9677835417CAC45BE21 /* PBXTargetDependency */,
+				5901DF827A1513E18897F294CE191326 /* PBXTargetDependency */,
+				7D33B5FAC2C54D6F448C502CA74E02AC /* PBXTargetDependency */,
 			);
 			name = EXLocation;
 			productName = EXLocation;
@@ -238,36 +244,36 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		9B9621E7E7AB4DD37DFFB706F8C33E74 /* Sources */ = {
+		CFD7A519CFE296C3649AEDD198B250FA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B39D19DD7A3C76B97EA6884730C920B8 /* EXGeofencingTaskConsumer.m in Sources */,
-				D0CDA7C9B026DB526362D3429F59DFF2 /* EXLocation-dummy.m in Sources */,
-				B241E4CD47D777097927A9FDCDCC3EB7 /* EXLocation.m in Sources */,
-				DC70FC8294AFEA3739383841FD9F5C2A /* EXLocationDelegate.m in Sources */,
-				F13AC32A44EE27CE769C8B09E53D4FAE /* EXLocationPermissionRequester.m in Sources */,
-				6532A28F7633F277909B1595D27253E6 /* EXLocationTaskConsumer.m in Sources */,
+				641BF834722153C0C10448AD16342FD6 /* EXGeofencingTaskConsumer.m in Sources */,
+				393EF51CBAC55D02D60EB9A37F47CA14 /* EXLocation-dummy.m in Sources */,
+				CC9D9CB2BD8A301582654415DB8DA87E /* EXLocation.m in Sources */,
+				1DFDFE4016DE093C206E3C9F11FC8B9E /* EXLocationDelegate.m in Sources */,
+				5AF5C1197A004482B0698B529F1C9E04 /* EXLocationPermissionRequester.m in Sources */,
+				3E6B83BD7C0E8CD4D482BC94AAEF0564 /* EXLocationTaskConsumer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		6BBC30F15BD03D8085290BC9297AC5EC /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMTaskManagerInterface;
-			targetProxy = 84CDAC9144F4E679F8527D7CA461A9F4 /* PBXContainerItemProxy */;
-		};
-		A1F616DDA06EB41DBF65F863D6F77BDE /* PBXTargetDependency */ = {
+		5901DF827A1513E18897F294CE191326 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMPermissionsInterface;
-			targetProxy = 40EEC3FFB0050D47BEED309816FA52DB /* PBXContainerItemProxy */;
+			targetProxy = 9DC0156AAA3E561CE3BB68BA1E02B11C /* PBXContainerItemProxy */;
 		};
-		B2F90AE354323C9DDAAADF06E1F98302 /* PBXTargetDependency */ = {
+		7D33B5FAC2C54D6F448C502CA74E02AC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMTaskManagerInterface;
+			targetProxy = 658BE80E0D0E461320C7B210BC39B918 /* PBXContainerItemProxy */;
+		};
+		F9BF66747CBCD9677835417CAC45BE21 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = AC6CA902E02A3C748110F3AFDEB7834E /* PBXContainerItemProxy */;
+			targetProxy = 138F5017CC9EF9C35D691EBF76C86F44 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -332,9 +338,9 @@
 			};
 			name = Release;
 		};
-		45F44EE3C7F5162B9F997F905CF657E4 /* Release */ = {
+		59855D42815FE9B6667BC5B2EF0C4C7D /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7F732DF5AF512A58850B1183B9959C56 /* EXLocation.release.xcconfig */;
+			baseConfigurationReference = 718875D7FB6D6A00056FDD624F168A4F /* EXLocation.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -343,6 +349,7 @@
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				GCC_PREFIX_HEADER = "Target Support Files/EXLocation/EXLocation-prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MODULEMAP_FILE = Headers/Public/EXLocation/EXLocation.modulemap;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -422,9 +429,9 @@
 			};
 			name = Debug;
 		};
-		8B564B81BB5AB07363C898D6BAEB454D /* Debug */ = {
+		9C62F3B4F19F1390476A0E18FC155320 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 16767C590A3ACBF7FFDD8C785735F781 /* EXLocation.debug.xcconfig */;
+			baseConfigurationReference = 104FBCA1574C56A822C4922CBFC86AEF /* EXLocation.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -433,6 +440,7 @@
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				GCC_PREFIX_HEADER = "Target Support Files/EXLocation/EXLocation-prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MODULEMAP_FILE = Headers/Public/EXLocation/EXLocation.modulemap;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -450,20 +458,20 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		078AF13D7EE767AEA6B41B12B9972975 /* Build configuration list for PBXNativeTarget "EXLocation" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9C62F3B4F19F1390476A0E18FC155320 /* Debug */,
+				59855D42815FE9B6667BC5B2EF0C4C7D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		2D73E5825BA2E016E5DB08302D097BE3 /* Build configuration list for PBXProject "EXLocation" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6852A131E24329BFE5C12DEAA650235D /* Debug */,
 				4328BC05CC40C31AACBDEA6382B5A9E9 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		8C76EB7491B96B79E4CE618E531AB7D5 /* Build configuration list for PBXNativeTarget "EXLocation" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				8B564B81BB5AB07363C898D6BAEB454D /* Debug */,
-				45F44EE3C7F5162B9F997F905CF657E4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -1,0 +1,6 @@
+module ABI38_0_0CoreModules {
+  umbrella header "ABI38_0_0React-CoreModules-umbrella.h"
+
+  export *
+  module * { export * }
+}

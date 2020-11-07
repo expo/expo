@@ -1,0 +1,1 @@
+../../../Target Support Files/ABI39_0_0EXAdsAdMob/ABI39_0_0EXAdsAdMob-umbrella.h

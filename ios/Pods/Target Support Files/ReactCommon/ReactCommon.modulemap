@@ -1,0 +1,6 @@
+module ReactCommon {
+  umbrella header "ReactCommon-umbrella.h"
+
+  export *
+  module * { export * }
+}

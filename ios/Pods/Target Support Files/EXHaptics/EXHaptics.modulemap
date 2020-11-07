@@ -1,0 +1,6 @@
+module EXHaptics {
+  umbrella header "EXHaptics-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -1,0 +1,6 @@
+module GoogleAPIClientForREST {
+  umbrella header "GoogleAPIClientForREST-umbrella.h"
+
+  export *
+  module * { export * }
+}

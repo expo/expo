@@ -1,0 +1,6 @@
+module EXMediaLibrary {
+  umbrella header "EXMediaLibrary-umbrella.h"
+
+  export *
+  module * { export * }
+}

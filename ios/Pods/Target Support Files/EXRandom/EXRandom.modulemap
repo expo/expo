@@ -1,0 +1,6 @@
+module EXRandom {
+  umbrella header "EXRandom-umbrella.h"
+
+  export *
+  module * { export * }
+}

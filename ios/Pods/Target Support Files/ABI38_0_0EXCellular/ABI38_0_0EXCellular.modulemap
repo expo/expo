@@ -1,0 +1,6 @@
+module ABI38_0_0EXCellular {
+  umbrella header "ABI38_0_0EXCellular-umbrella.h"
+
+  export *
+  module * { export * }
+}

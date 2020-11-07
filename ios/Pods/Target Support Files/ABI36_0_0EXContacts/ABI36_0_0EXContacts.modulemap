@@ -1,0 +1,6 @@
+module ABI36_0_0EXContacts {
+  umbrella header "ABI36_0_0EXContacts-umbrella.h"
+
+  export *
+  module * { export * }
+}

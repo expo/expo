@@ -1,0 +1,6 @@
+module ABI37_0_0EXPrint {
+  umbrella header "ABI37_0_0EXPrint-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -1,0 +1,6 @@
+module ABI37_0_0ReactCommon {
+  umbrella header "ABI37_0_0ReactCommon-umbrella.h"
+
+  export *
+  module * { export * }
+}

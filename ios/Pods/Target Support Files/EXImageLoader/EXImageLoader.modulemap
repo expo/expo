@@ -1,0 +1,6 @@
+module EXImageLoader {
+  umbrella header "EXImageLoader-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -1,0 +1,1 @@
+../../../Target Support Files/ABI36_0_0React-RCTLinking/ABI36_0_0React-RCTLinking-umbrella.h
