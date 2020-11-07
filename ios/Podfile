@@ -9,9 +9,7 @@ platform :ios, '10.0'
 inhibit_all_warnings!
 
 target 'Exponent' do
-  use_frameworks!
-  $swift_libraries = ['lottie-ios']
-  
+  use_modular_headers!  
   # Expo Client dependencies
   pod 'Amplitude'
   pod 'CocoaLumberjack', '~> 3.5.3'
@@ -42,18 +40,6 @@ target 'Exponent' do
   # Evaluate all files matching `versioned-react-native/ABI*/dependencies.rb` glob pattern
   # and install ReactABIXX_0_0 pods with all versioned unimodules.
   use_versioned_abis!
-
-  # Since we add use_frameworks!, we need to explicitly 
-  # say that any non-Swift library is static
-  pre_install do |installer|
-    installer.pod_targets.each do |pod|
-      if !$swift_libraries.include? pod.name
-        def pod.build_type;
-          Pod::BuildType.static_library
-        end
-      end
-    end
-  end
 
   # Build React Native with RCT_DEV enabled and RCT_ENABLE_INSPECTOR and
   # RCT_ENABLE_PACKAGER_CONNECTION disabled
