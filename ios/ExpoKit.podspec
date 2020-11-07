@@ -25,8 +25,8 @@ Pod::Spec.new do |s|
   }
 
   s.subspec "Core" do |ss|
-    ss.source_files = "Exponent/**/*.{h,m,mm,cpp}", "../template-files/keys.json"
-    ss.preserve_paths = "Exponent/**/*.{h,m,mm,cpp}"
+    ss.source_files = "Exponent/**/*.{h,m,mm,cpp,swift}", "../template-files/keys.json"
+    ss.preserve_paths = "Exponent/**/*.{h,m,mm,cpp,swift}"
     ss.exclude_files = "Exponent/Supporting/**", "Exponent/Versioned/Optional/**/*.{h,m}"
 
     ss.dependency 'Amplitude', '~> 6.0.0'
