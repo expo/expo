@@ -49,7 +49,6 @@ const STYLES_DEFAULT = css`
 const STYLES_ACTIVE_CONTAINER = css`
   display: flex;
   margin-bottom: 12px;
-  cursor: pointer;
 `;
 
 const STYLES_ACTIVE_BULLET = css`
@@ -109,18 +108,19 @@ export default class DocumentationSidebarLink extends React.Component<Props> {
       : {};
 
     return (
-      <NextLink
-        href={this.props.info.href as string}
-        as={this.props.info.as || this.props.info.href}>
-        <div css={STYLES_ACTIVE_CONTAINER}>
-          {this.isSelected() && <div css={STYLES_ACTIVE_BULLET} />}
+      <div css={STYLES_ACTIVE_CONTAINER}>
+        {this.isSelected() && <div css={STYLES_ACTIVE_BULLET} />}
+        <NextLink
+          href={this.props.info.href as string}
+          as={this.props.info.as || this.props.info.href}
+          passHref>
           <a
             {...customDataAttributes}
             css={[STYLES_LINK, this.isSelected() ? STYLES_ACTIVE : STYLES_DEFAULT]}>
             {this.props.children}
           </a>
-        </div>
-      </NextLink>
+        </NextLink>
+      </div>
     );
   }
 }
