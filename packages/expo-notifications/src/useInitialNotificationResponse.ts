@@ -58,7 +58,7 @@ AppState.addEventListener('change', dispatchSetInitialResponseAndClear);
  * Returns an initial notification response if the app
  * was opened as a result of tapping on a notification,
  * null if the app doesn't seem to be opened as a result
- * of tapping on a notification, undefined until we are sure
+ * of tapping on a notification, or undefined until we are sure
  * of which to return.
  */
 export default function useInitialNotificationResponse() {

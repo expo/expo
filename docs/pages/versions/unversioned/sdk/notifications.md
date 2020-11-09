@@ -397,11 +397,11 @@ Removes all push token subscriptions that may have been registered with `addPush
 
 ### `useInitialNotificationResponse(): undefined | NotificationResponse | null`
 
-A React hook returning an initial notification response, i.e. a notification response responsible for opening the application (eg. tapping on a notification, triggering a notification action).
+A React hook returning an initial notification response, i.e. a notification response responsible for opening the application (eg. tapping on or interacting with a notification).
 
 #### Returns
 
-The hook may return values of three types/values:
+The hook may return one of these three types/values:
 
 - `undefined` -- until we're sure that the application was or wasn't opened as a result of responding to a notification by the user
 - `null` -- if the application wasn't opened as a result of responding to a notification
@@ -409,7 +409,7 @@ The hook may return values of three types/values:
 
 #### Examples
 
-Responding to a notification tap by opening the URL that could be put into notification data (this is your, developer's responsibility and is not a part of Expo API)
+Responding to a notification tap by opening a URL that could be put into the notification's `data` (opening the URL is your responsibility and is not a part of the `expo-notifications` API):
 
 ```ts
 import * as Notifications from 'expo-notifications';
@@ -435,7 +435,7 @@ export default function App() {
 }
 ```
 
-Rendering the application only once we know whether the application was opened as an effect of interacting with a notification (rendering `null` is a good way to keep the splash screen present only if you have `expo-splash-screen` integrated)
+Rendering the application _only_ once we know whether the application was opened as an effect of interacting with a notification (rendering `null` is a good way to keep the splash screen present only if you have `expo-splash-screen` integrated):
 
 ```tsx
 import * as Notifications from 'expo-notifications';
