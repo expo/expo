@@ -128,6 +128,55 @@ If you would like to send notifications with Expo servers, the servers will need
 
 # Common gotchas / known issues
 
+### Fetching a push token takes a long time on iOS
+
+`getDevicePushTokenAsync` and  `getExpoPushTokenAsync` can sometimes take a long time to resolve on iOS. This is outside of `expo-notifications`'s control, as stated in Apple's [“Troubleshooting Push Notifications” technical note](https://developer.apple.com/library/archive/technotes/tn2265/_index.html):
+
+> This is not necessarily an error condition. The system may not have Internet connectivity at all because it is out of range of any cell towers or Wi-Fi access points, or it may be in airplane mode. Instead of treating this as an error, your app should continue normally, disabling only that functionality that relies on push notifications.
+
+As mentioned, the most common reasons for this this are either an invalid Internet connection (fetching a push token requires an Internet connection to register the device with the service provider) or an invalid configuration of your App ID or Provisioning Profile.
+
+Here are a few ways people claim to have solved this problem, maybe one of these will help you solve it, too!
+
+<details><summary><strong>Read the Apple's <a href="https://developer.apple.com/library/archive/technotes/tn2265/_index.html">Technical Note on troubleshooting push notifications</a></strong></summary> <p>
+
+Go read the Apple's [Technical Note on troubleshooting push notifications](https://developer.apple.com/library/archive/technotes/tn2265/_index.html)! This the single most reliable source of information on this problem. To help you grasp what they're suggesting:
+- Make sure the device has a reliable connection to the Internet (try turning off Wi-Fi or switching to another network, and disabling firewall block on port 5223, as suggested in [this SO answer](https://stackoverflow.com/a/34332047/1123156)).
+- Make sure your app configuration is set properly for registering for push notifications (for bare workflow check out [this guide](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/AddingCapabilities/AddingCapabilities.html#//apple_ref/doc/uid/TP40012582-CH26-SW6), for managed workflow this is done automatically for you by `expo-cli`) as also suggested by [this StackOverflow answer](https://stackoverflow.com/a/10791240/1123156).
+- If you're in bare workflow you may want to try to debug this even further by logging persistent connection debug information as outlined by [this StackOverflow answer](https://stackoverflow.com/a/8036052/1123156).
+
+</p>
+</details>
+
+<details><summary><strong>Try again in a little while</strong></summary> <p>
+
+- APNS servers near the device may be down as indicated by [this forum thread](https://developer.apple.com/forums/thread/52224). Take a walk and try again later!
+- Try again in a few days time as suggested by [this GitHub comment](https://github.com/expo/expo/issues/10369#issuecomment-717872956).
+
+</p>
+</details>
+
+<details><summary><strong>Disable network sharing on your device</strong></summary> <p>
+
+You may need to disable network sharing as this may impact the registration as suggested by [this StackOverflow answer](https://stackoverflow.com/a/59156989/1123156).
+
+</p>
+</details>
+
+<details><summary><strong>Restart your device</strong></summary> <p>
+
+If you just changed the APNS servers where the app should be registering (by installing a TestFlight build over an Xcode build on the same device) you may need to restart your device as suggested by [this StackOverflow answer](https://stackoverflow.com/a/59864028/1123156).
+
+</p>
+</details>
+
+<details><summary><strong>Setup your device with a SIM card</strong></summary> <p>
+
+If the device you're experiencing this on hasn't been setup with a SIM card it looks like configuring it may help mitigate this bug as suggested by [this StackOverflow answer](https://stackoverflow.com/a/19432504/1123156).
+
+</p>
+</details>
+
 ### Setting custom notification sounds on Android
 
 On Androids 8.0+, playing a custom sound for a notification requires more than setting the `sound` property on the `NotificationContentInput`. You will _also_ need to configure the `NotificationChannel` with the appropriate `sound`, and use it when sending/scheduling the notification.
@@ -243,6 +292,8 @@ Returns an Expo token that can be used to send a push notification to this devic
 
 > **Note:** For Expo's backend to be able to send notifications to your app, you will need to provide it with push notification keys. This can be done using `expo-cli` (`expo credentials:manager`). [Read more in the “Upload notifications credentials” guide](https://docs.expo.io/push-notifications/push-notifications-setup/#credentials).
 
+> **Note:** Especially on iOS, `Promise`s returned by this method may take longer periods of time to fulfill. For more information see [Fetching a push token takes a long time on iOS](#fetching-a-push-token-takes-a-long-time-on-ios).
+
 #### Arguments
 
 This function accepts an optional object allowing you to pass in configuration, consisting of fields (all are optional, but some may have to be defined if configuration cannot be inferred):
@@ -292,6 +343,8 @@ export async function registerForPushNotificationsAsync(userId: string) {
 ### `getDevicePushTokenAsync(): DevicePushToken`
 
 Returns a native APNS, FCM token or a [`PushSubscription` data](https://developer.mozilla.org/en-US/docs/Web/API/PushSubscription) that can be used with another push notification service.
+
+> **Note:** Especially on iOS, `Promise`s returned by this method may take longer periods of time to fulfill. For more information see [Fetching a push token takes a long time on iOS](#fetching-a-push-token-takes-a-long-time-on-ios) section of the documentation.
 
 #### Returns
 
