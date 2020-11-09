@@ -130,7 +130,6 @@ If you would like to send notifications with Expo servers, the servers will need
 
 ### Fetching a push token takes a long time on iOS
 
-
 `getDevicePushTokenAsync` and  `getExpoPushTokenAsync` can sometimes take a long time to resolve on iOS. This is outside of `expo-notifications`'s control, as stated in Apple's [“Troubleshooting Push Notifications” technical note](https://developer.apple.com/library/archive/technotes/tn2265/_index.html):
 
 > This is not necessarily an error condition. The system may not have Internet connectivity at all because it is out of range of any cell towers or Wi-Fi access points, or it may be in airplane mode. Instead of treating this as an error, your app should continue normally, disabling only that functionality that relies on push notifications.
