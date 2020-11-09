@@ -172,7 +172,7 @@ If you just changed the APNS servers where the app should be registering (by ins
 
 <details><summary><strong>Setup your device with a SIM card</strong></summary> <p>
 
-If the device you're experiencing this on hasn't been setup with a SIM card it looks like configuring it may help mitigate this bug as suggested by [this StackOverflow answer](https://stackoverflow.com/a/19432504/1123156)..
+If the device you're experiencing this on hasn't been setup with a SIM card it looks like configuring it may help mitigate this bug as suggested by [this StackOverflow answer](https://stackoverflow.com/a/19432504/1123156).
 
 </p>
 </details>
