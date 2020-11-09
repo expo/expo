@@ -38,7 +38,7 @@ You also need to install the library directly with npm or yarn rather than using
 
 ```
 # This exact version is supported:
-npm install react-native-reanimated@2.0.0-alpha.6.1
+npm install react-native-reanimated@2.0.0-alpha.7
 ```
 
 Finally, you'll need to add the babel plugin to `babel.config.js`:
@@ -57,61 +57,58 @@ Note that when you run the project you will get a warning about an incompatible 
 
 ```
 Some of your project's dependencies are not compatible with currently installed expo package version:
- - react-native-reanimated - expected version range: ~1.13.0 - actual version installed: 2.0.0-alpha.6.1
+ - react-native-reanimated - expected version range: ~1.13.0 - actual version installed: 2.0.0-alpha.7
 ```
 
 You can ignore this, as you are intentionally opting in to an experimental feature.
 
 ## API Usage
 
-You should refer to the [react-native-reanimated docs](https://docs.swmansion.com/react-native-reanimated/docs/2.0.0-alpha.7/) for more information on the API and its usage. But the following example (courtesy of that repo) is a quick way to get started.
+You should refer to the [react-native-reanimated docs](https://docs.swmansion.com/react-native-reanimated/docs/2.0.0-alpha.7/) for more information on the API and its usage. But the following example [(courtesy of that repo)](https://github.com/software-mansion/react-native-reanimated/blob/master/Example/src/AnimatedStyleUpdateExample.js) is a quick way to get started.
 
 ```js
+import Animated, {
+  useSharedValue,
+  withTiming,
+  useAnimatedStyle,
+  Easing,
+} from 'react-native-reanimated';
+import { View, Button } from 'react-native';
 import React from 'react';
-import { StyleSheet, Text, View, Button } from 'react-native';
 
-import Animated, { Easing } from 'react-native-reanimated';
+export default function AnimatedStyleUpdateExample(props) {
+  const randomWidth = useSharedValue(10);
 
-const { Value, timing } = Animated;
+  const config = {
+    duration: 500,
+    easing: Easing.bezier(0.5, 0.01, 0, 1),
+  };
 
-export default class Example extends React.Component {
-  constructor(props) {
-    super(props);
-    this._transX = new Value(0);
-    this._config = {
-      duration: 5000,
-      toValue: 180,
-      easing: Easing.inOut(Easing.ease),
+  const style = useAnimatedStyle(() => {
+    return {
+      width: withTiming(randomWidth.value, config),
     };
-    this._anim = timing(this._transX, this._config);
-  }
+  });
 
-  render() {
-    return (
-      <View style={styles.container}>
-        <Animated.View style={[styles.box, { transform: [{ translateX: this._transX }] }]} />
-        <Button
-          onPress={() => {
-            this._anim.start();
-          }}
-          title="Start"
-        />
-      </View>
-    );
-  }
+  return (
+    <View
+      style={{
+        flex: 1,
+        flexDirection: 'column',
+      }}>
+      <Animated.View
+        style={[
+          { width: 100, height: 80, backgroundColor: 'black', margin: 30 },
+          style,
+        ]}
+      />
+      <Button
+        title="toggle"
+        onPress={() => {
+          randomWidth.value = Math.random() * 350;
+        }}
+      />
+    </View>
+  );
 }
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    backgroundColor: '#ecf0f1',
-    padding: 8,
-  },
-  box: {
-    width: 50,
-    height: 50,
-    backgroundColor: 'purple',
-    borderRadius: 5,
-  },
-});
 ```
