@@ -60,5 +60,5 @@ dependencies {
   unimodule "unimodules-core"
   unimodule "unimodules-constants-interface"
   api 'com.segment.analytics.android:analytics:4.8.2'
-  api 'com.segment.analytics.android.integrations:firebase:1.2.0'
+  api 'com.segment.analytics.android.integrations:firebase:2.+@aar'
 }
