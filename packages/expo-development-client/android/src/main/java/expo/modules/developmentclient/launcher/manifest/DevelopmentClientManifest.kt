@@ -1,10 +1,10 @@
 package expo.modules.developmentclient.launcher.manifest
 
-data class DevelopmentClientAndroidManifestSection (
+data class DevelopmentClientAndroidManifestSection(
   val userInterfaceStyle: String?
 )
 
-data class DevelopmentClientManifest (
+data class DevelopmentClientManifest(
   val name: String,
   val slug: String,
   val bundleUrl: String,

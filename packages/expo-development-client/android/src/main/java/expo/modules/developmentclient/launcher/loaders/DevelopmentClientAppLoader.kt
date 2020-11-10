@@ -41,7 +41,7 @@ abstract class DevelopmentClientAppLoader(
   private var continuation: Continuation<Boolean>? = null
 
   fun createOnDelegateWillBeCreatedListener(): (ReactActivity) -> Unit {
-    return {activity ->
+    return { activity ->
       onDelegateWillBeCreated(activity)
 
       require(appHost.reactInstanceManager.currentReactContext == null) { "App react context shouldn't be created before." }

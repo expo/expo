@@ -51,7 +51,7 @@ class DevelopmentClientActivity : ReactActivity() {
         }
       }
 
-      private fun isDevClientIntent(intent: Intent?) : Boolean {
+      private fun isDevClientIntent(intent: Intent?): Boolean {
         return intent?.data?.scheme == "dev-client"
       }
     }
@@ -62,4 +62,3 @@ class DevelopmentClientActivity : ReactActivity() {
     overridePendingTransition(0, 0)
   }
 }
-

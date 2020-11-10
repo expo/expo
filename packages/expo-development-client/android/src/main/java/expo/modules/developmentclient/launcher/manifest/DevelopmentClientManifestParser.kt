@@ -10,7 +10,7 @@ class DevelopmentClientManifestParser(
   private val httpClient: OkHttpClient,
   private val url: String
 ) {
-  suspend fun isManifestUrl() : Boolean {
+  suspend fun isManifestUrl(): Boolean {
     val response = fetch(url, "HEAD").await(httpClient)
     require(response.isSuccessful) { "Make sure that the metro bundler is running." }
     return response.header("Exponent-Server", null) != null
