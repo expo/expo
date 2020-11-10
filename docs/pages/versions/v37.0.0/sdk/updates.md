@@ -18,7 +18,7 @@ Since extra setup is required to use this module in bare React Native apps, for 
 
 ### Legacy API
 
-In previous Expo SDK versions, the Updates module was imported from the `expo` package. It has now moved to its own separate package, `expo-updates`. The new module has a similar but slightly different JS API from the Updates module included with the `expo` package. You can still import the old Updates module from the `expo` package with the old API, which is identical to the [SDK 36 Updates API](../../../v36.0.0/sdk/updates/), though it will log a deprecation warning when imported in development. The Updates module export will be removed from the `expo` package in SDK 39, and we recommend you switch to the new `expo-updates` module soon.
+In previous Expo SDK versions, the Updates module was imported from the `expo` package. It has now moved to its own separate package, `expo-updates`. The new module has a similar but slightly different JS API from the Updates module included with the `expo` package. You can still import the old Updates module from the `expo` package with the old API, which is identical to the [SDK 36 Updates API](../../v36.0.0/sdk/updates.md), though it will log a deprecation warning when imported in development. The Updates module export will be removed from the `expo` package in SDK 39, and we recommend you switch to the new `expo-updates` module soon.
 
 The changes in the new API are as follows:
 
@@ -43,7 +43,7 @@ import * as Updates from 'expo-updates';
 
 ### `Updates.manifest`
 
-(_object_) If `expo-updates` is enabled, this is the [manifest](../../workflow/how-expo-works/#expo-development-server) object for the update that's currently running.
+(_object_) If `expo-updates` is enabled, this is the [manifest](../../../workflow/how-expo-works.md#expo-development-server) object for the update that's currently running.
 
 In development mode, or any other environment in which `expo-updates` is disabled, this object is empty.
 

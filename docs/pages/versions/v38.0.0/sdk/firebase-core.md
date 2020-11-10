@@ -18,7 +18,7 @@ of the native Firebase App.
 ## Configuration
 
 To use this package, Firebase needs to be configured for your app.
-[Please follow this guide on how to configure native Firebase.](../../guides/setup-native-firebase)
+[Please follow this guide on how to configure native Firebase.](../../../guides/setup-native-firebase.md)
 
 > No explicit calls to `expo-firebase-core` are required to initialize Firebase. This library will auto-initialize the Firebase app when a valid configuration exists.
 
@@ -26,7 +26,7 @@ To use this package, Firebase needs to be configured for your app.
 
 At the moment, only Firebase Analytics is supported natively. We are working on bringing more native Firebase packages to Expo, stay tuned :)
 
-- [expo-firebase-analytics](../firebase-analytics)
+- [expo-firebase-analytics](firebase-analytics.md)
 
 ## API
 

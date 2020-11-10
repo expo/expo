@@ -24,7 +24,7 @@ import * as SQLite from 'expo-sqlite';
 
 ### `SQLite.openDatabase(name, version, description, size)`
 
-Open a database, creating it if it doesn't exist, and return a `Database` object. On disk, the database will be created under the app's [documents directory](../filesystem), i.e. `${FileSystem.documentDirectory}/SQLite/${name}`.
+Open a database, creating it if it doesn't exist, and return a `Database` object. On disk, the database will be created under the app's [documents directory](filesystem.md), i.e. `${FileSystem.documentDirectory}/SQLite/${name}`.
 
 #### Arguments
 
@@ -98,7 +98,7 @@ A `Transaction` object is passed in as a parameter to the `callback` parameter f
 In order to open a new SQLite database using an existing `.db` file you already have, you need to do three things:
 
 - `expo install expo-file-system expo-asset @expo/metro-config`
-- create a `metro.config.js` file in the root of your project with the following contents ([curious why? read here](/guides/customizing-metro/#adding-more-file-extensions-to--assetexts)):
+- create a `metro.config.js` file in the root of your project with the following contents ([curious why? read here](../../../guides/customizing-metro.md#adding-more-file-extensions-to--assetexts)):
 
 ```ts
 const { getDefaultConfig } = require('@expo/metro-config');

@@ -4,7 +4,7 @@ title: Glossary of terms
 
 ### app.json
 
-`app.json` is a file that exists for every Expo project and it is used to configure your project, for example the name, icon, and splash screen. [Read more in "Configuration with app.json / app.config.js"](../configuration/)
+`app.json` is a file that exists for every Expo project and it is used to configure your project, for example the name, icon, and splash screen. [Read more in "Configuration with app.json / app.config.js"](configuration.md)
 
 ### create-react-native-app
 
@@ -18,7 +18,7 @@ The term "detach" was previously used in Expo to mean [ejecting](#eject) your ap
 
 The term "eject" was popularized by [create-react-app](https://github.com/facebookincubator/create-react-app), and it is used in Expo to describe leaving the cozy comfort of the standard Expo development environment, where you do not have to deal with build configuration or native code. When you "eject" from Expo, you have two choices:
 
-- _Eject to bare workflow_, where you jump between [workflows](../../introduction/managed-vs-bare/) and move into the bare workflow, where you can continue to use Expo APIs but have access and full control over your native iOS and Android projects.
+- _Eject to bare workflow_, where you jump between [workflows](../introduction/managed-vs-bare.md) and move into the bare workflow, where you can continue to use Expo APIs but have access and full control over your native iOS and Android projects.
 - _Eject to ExpoKit_, where you get the native projects along with [ExpoKit](#expokit). This option is deprecated and support for ExpoKit will be removed after SDK 38. We recommend ejecting to the bare workflow instead.
 
 ### Emulator
@@ -31,7 +31,7 @@ A synonym for app that usually implies something more single-use and smaller in 
 
 ### Expo CLI
 
-The command-line tool for working with Expo. [Read more](../expo-cli/).
+The command-line tool for working with Expo. [Read more](expo-cli.md).
 
 ### Expo client
 
@@ -47,7 +47,7 @@ The Expo SDK provides access to device/system functionality such as camera, push
 
 ### ExpoKit
 
-ExpoKit is an Objective-C and Java library that allows you to use the [Expo SDK](#expo-sdk) and platform and your existing Expo project as part of a larger standard native project — one that you would normally create using Xcode, Android Studio, or `react-native init`. [Read more](../../expokit/eject/).
+ExpoKit is an Objective-C and Java library that allows you to use the [Expo SDK](#expo-sdk) and platform and your existing Expo project as part of a larger standard native project — one that you would normally create using Xcode, Android Studio, or `react-native init`. [Read more](../expokit/eject.md).
 
 **ExpoKit is deprecated and support for ExpoKit will be removed after SDK 38. We recommend ejecting to the bare workflow instead.**
 
@@ -57,11 +57,11 @@ The operating system used on iPhone, iPad, and Apple TV. Expo currently runs on 
 
 ### Linking
 
-Linking can mean [deep linking into apps similar to how you link to websites on the web](../linking/) or [linking native libraries into your ejected ExpoKit app](../../expokit/expokit/#changing-native-dependencies).
+Linking can mean [deep linking into apps similar to how you link to websites on the web](linking.md) or [linking native libraries into your ejected ExpoKit app](../expokit/expokit.md#changing-native-dependencies).
 
 ### Manifest
 
-An Expo app manifest is similar to a [web app manifest](https://developer.mozilla.org/en-US/docs/Web/Manifest) - it provides information that Expo needs to know how to run the app and other relevant data. [Read more in "How Expo Works"](../how-expo-works/#expo-manifest).
+An Expo app manifest is similar to a [web app manifest](https://developer.mozilla.org/en-US/docs/Web/Manifest) - it provides information that Expo needs to know how to run the app and other relevant data. [Read more in "How Expo Works"](how-expo-works.md#expo-manifest).
 
 ### Native Directory
 
@@ -73,7 +73,7 @@ The React Native ecosystem has thousands of libraries. Without a purpose-built t
 
 ### Over the Air updates
 
-Traditionally, apps for iOS and Android are updated by submitting an updated binary to the App and Play stores. Over the Air (OTA) updates allow you to push an update to your app without the overhead of submitting a new release to the stores. [Read more in "Publishing"](../publishing/).
+Traditionally, apps for iOS and Android are updated by submitting an updated binary to the App and Play stores. Over the Air (OTA) updates allow you to push an update to your app without the overhead of submitting a new release to the stores. [Read more in "Publishing"](publishing.md).
 
 ### Package Manager
 
@@ -105,7 +105,7 @@ We use the word "slug" in [app.json](#appjson) to refer to the name to use for y
 
 ### Standalone app
 
-An application binary that can be submitted to the iOS App Store or Android Play Store. [Read more in "Building Standalone Apps"](../../distribution/building-standalone-apps/).
+An application binary that can be submitted to the iOS App Store or Android Play Store. [Read more in "Building Standalone Apps"](../distribution/building-standalone-apps.md).
 
 ### XDE
 

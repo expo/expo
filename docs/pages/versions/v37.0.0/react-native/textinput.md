@@ -75,7 +75,7 @@ Note that on Android performing text selection in input can change app's activit
 
 ## Props
 
-Inherits [View Props](../view/#props).
+Inherits [View Props](view.md#props).
 
 ### `allowFontScaling`
 
@@ -301,7 +301,7 @@ Padding between the inline image, if any, and the text input itself.
 
 ### `inputAccessoryViewID`
 
-An optional identifier which links a custom [InputAccessoryView](../inputaccessoryview/) to this text input. The InputAccessoryView is rendered above the keyboard when this text input is focused.
+An optional identifier which links a custom [InputAccessoryView](inputaccessoryview.md) to this text input. The InputAccessoryView is rendered above the keyboard when this text input is focused.
 
 | Type   | Required | Platform |
 | ------ | -------- | -------- |
@@ -539,7 +539,7 @@ The text color of the placeholder string.
 
 | Type                | Required |
 | ------------------- | -------- |
-| [color](../colors/) | No       |
+| [color](colors.md) | No       |
 
 ---
 
@@ -637,7 +637,7 @@ The highlight and cursor color of the text input.
 
 | Type                | Required |
 | ------------------- | -------- |
-| [color](../colors/) | No       |
+| [color](colors.md) | No       |
 
 ---
 
@@ -751,11 +751,11 @@ Note that not all Text styles are supported, an incomplete list of what is not s
 
 see [Issue#7070](https://github.com/facebook/react-native/issues/7070) for more detail.
 
-[Styles](../style/)
+[Styles](style.md)
 
 | Type                   | Required |
 | ---------------------- | -------- |
-| [Text](../text/#style) | No       |
+| [Text](text.md#style) | No       |
 
 ---
 
@@ -777,7 +777,7 @@ The color of the `TextInput` underline.
 
 | Type                | Required | Platform |
 | ------------------- | -------- | -------- |
-| [color](../colors/) | No       | Android  |
+| [color](colors.md) | No       | Android  |
 
 ---
 

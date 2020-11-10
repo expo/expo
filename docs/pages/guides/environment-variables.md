@@ -8,13 +8,13 @@ Because they are defined globally, these variables are useful to change the beha
 
 ### The app manifest `.env`
 
-If you have installed the [`expo-constants`](../../versions/latest/sdk/constants/) module in your managed workflow project, you can access the app manifest's properties. One of these properties is the `.env` property, a property that is **only** available when running `expo start`. As the name suggests, it contains some of your system-defined environment variables. For security reasons, only the variables that [starts with `REACT_NATIVE_` or `EXPO_` are available](https://github.com/expo/expo-cli/blob/62b296498100ad28a655a119a85b4d78fe9acd58/packages/xdl/src/Project.ts#L1929).
+If you have installed the [`expo-constants`](../versions/latest/sdk/constants.md) module in your managed workflow project, you can access the app manifest's properties. One of these properties is the `.env` property, a property that is **only** available when running `expo start`. As the name suggests, it contains some of your system-defined environment variables. For security reasons, only the variables that [starts with `REACT_NATIVE_` or `EXPO_` are available](https://github.com/expo/expo-cli/blob/62b296498100ad28a655a119a85b4d78fe9acd58/packages/xdl/src/Project.ts#L1929).
 
 > While the `.env` property can be useful during development, this property is not available when running `expo publish` or `expo build`. It should not be used for feature flagging or other app-specific configuration because of this.
 
 ### Using app manifest `.extra`
 
-In the app manifest, there is also a `.extra` property. Unlike `.env`, this property is included when you publish your project with `expo publish` or `expo build`. The contents of the `.extra` property are taken from your app manifest. By default, this does not add any environment variables, but we can make that happen with the [dynamic app manifest configuration](../../workflow/configuration/#app-config).
+In the app manifest, there is also a `.extra` property. Unlike `.env`, this property is included when you publish your project with `expo publish` or `expo build`. The contents of the `.extra` property are taken from your app manifest. By default, this does not add any environment variables, but we can make that happen with the [dynamic app manifest configuration](../workflow/configuration.md#app-config).
 
 Below you can see an example of the dynamic `app.config.js` manifest. It's similar to the `app.json`, but written in JavaScript instead of JSON. The manifest is loaded when starting or publishing your app and has access to the environment variables using [`process.env`](https://nodejs.org/dist/latest/docs/api/process.html#process_process_env). With this we can configure the `.extra.enableComments` property without having to change the code itself, like `COOLAPP_COMMENTS=true; expo start`.
 
@@ -28,7 +28,7 @@ export default {
 };
 ```
 
-To use these `.extra` properties in your Expo app, you have to use the [`expo-constants`](../../versions/latest/sdk/constants/) module. Here you can see a simple component rendering the comments component, only when these are enabled.
+To use these `.extra` properties in your Expo app, you have to use the [`expo-constants`](../versions/latest/sdk/constants.md) module. Here you can see a simple component rendering the comments component, only when these are enabled.
 
 ```js
 import Constants from 'expo-constants';
@@ -49,7 +49,7 @@ Post.defaultProps = {
 
 ### Using Babel to "replace" variables
 
-In the bare workflow, you don't have access to the manifest via the [`expo-constants`](../../versions/latest/sdk/constants/) module. You can still use environment variables using another method, a Babel plugin. This approach replaces all references to `process.env.VARNAME` with the variable contents, and works in both Bare and Managed Workflows.
+In the bare workflow, you don't have access to the manifest via the [`expo-constants`](../versions/latest/sdk/constants.md) module. You can still use environment variables using another method, a Babel plugin. This approach replaces all references to `process.env.VARNAME` with the variable contents, and works in both Bare and Managed Workflows.
 
 To set this up, we need to install the [`babel-plugin-transform-inline-environment-variables`](https://github.com/babel/website/blob/master/docs/plugin-transform-inline-environment-variables.md) plugin. After adding this to your dev dependencies, we need to tell Babel to use this plugin. Below you can see a modifed `babel.config.js` with this plugin enabled.
 

@@ -5,7 +5,7 @@ title: App Signing
 Expo automates the process of signing your app for iOS and Android, but in both cases you can choose to provide your own overrides. Both `expo build:ios` and
 `expo build:android` commands generate signed applications ready to be uploaded into respective stores.
 
-On this page, we'll talk about the credentials that each platform requires. If you're curious about how we store your credentials on our end, take a look at our [security documentation](../security/).
+On this page, we'll talk about the credentials that each platform requires. If you're curious about how we store your credentials on our end, take a look at our [security documentation](security.md).
 
 ## iOS
 
@@ -24,9 +24,9 @@ This certificate will be used for all of your apps. If this certificate expires,
 
 ### Push Notification Keys
 
-Apple Push Notification Keys (often abbreviated as APN keys) allow the associated apps to send and receive push notifications. By default, any app built with Expo will require an APN key. This is so that you can enable push notifications for your app through a quick [OTA update](../../guides/configuring-ota-updates/), rather than needing to submit an entirely new binary.
+Apple Push Notification Keys (often abbreviated as APN keys) allow the associated apps to send and receive push notifications. By default, any app built with Expo will require an APN key. This is so that you can enable push notifications for your app through a quick [OTA update](../guides/configuring-ota-updates.md), rather than needing to submit an entirely new binary.
 
-You can have a maximum of 2 APN keys associated with your Apple Developer account, and a single key can be used with any number of apps. If you revoke an APN key, all apps that rely on that key will no longer be able to send or receive push notifications until you upload a new key to replace it. Uploading a new APN key **will not** change your users' [Expo Push Tokens](/versions/latest/sdk/notifications/#notificationsgetexpopushtokenasync). Push notification keys do not expire. You can clear the APN key Expo currently has stored for your app the next time you build by running `expo build:ios --clear-push-key`.
+You can have a maximum of 2 APN keys associated with your Apple Developer account, and a single key can be used with any number of apps. If you revoke an APN key, all apps that rely on that key will no longer be able to send or receive push notifications until you upload a new key to replace it. Uploading a new APN key **will not** change your users' [Expo Push Tokens](../versions/latest/sdk/notifications.md#notificationsgetexpopushtokenasync). Push notification keys do not expire. You can clear the APN key Expo currently has stored for your app the next time you build by running `expo build:ios --clear-push-key`.
 
 ### Provisioning Profiles
 

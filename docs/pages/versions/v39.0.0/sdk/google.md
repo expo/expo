@@ -16,7 +16,7 @@ You'll get an access token after a successful login. Once you have the token, if
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-google-app-auth`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, you will need to run `npx pod-install` and do a new build after installing the package because this library pulls in [**`expo-app-auth`**][expo-app-auth] as a dependency.
+For [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps, you'll need to run `expo install expo-google-app-auth`. To use it in a [bare](../../../introduction/managed-vs-bare.md#bare-workflow) React Native app, you will need to run `npx pod-install` and do a new build after installing the package because this library pulls in [**`expo-app-auth`**][expo-app-auth] as a dependency.
 
 ## API
 
@@ -70,7 +70,7 @@ The difference between this method and native authentication are very sparce. Go
 | redirectUrl                             | <InlineCode>string \| undefined</InlineCode> | Defaults to `${AppAuth.OAuthRedirect}:/oauth2redirect/google`. Optionally you can define your own redirect URL, just make sure to see the note below.               |
 
 **Note on `redirectUrl`**:
-If you choose to provide your own `redirectUrl`, it should start with the value returned by [`AppAuth.OAuthRedirect`](../../sdk/app-auth/#appauthoauthredirect). This way, the method will function correctly and consistently whether you are testing in the Expo client or as a standalone app.
+If you choose to provide your own `redirectUrl`, it should start with the value returned by [`AppAuth.OAuthRedirect`](../sdk/app-auth.md#appauthoauthredirect). This way, the method will function correctly and consistently whether you are testing in the Expo client or as a standalone app.
 
 **Returns**
 

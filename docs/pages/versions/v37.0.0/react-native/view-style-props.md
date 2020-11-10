@@ -11,7 +11,7 @@ title: View Style Props
 
 | Type                | Required |
 | ------------------- | -------- |
-| [color](../colors/) | No       |
+| [color](colors.md) | No       |
 
 ---
 
@@ -27,7 +27,7 @@ title: View Style Props
 
 | Type                | Required |
 | ------------------- | -------- |
-| [color](../colors/) | No       |
+| [color](colors.md) | No       |
 
 ---
 
@@ -75,7 +75,7 @@ title: View Style Props
 
 | Type                | Required |
 | ------------------- | -------- |
-| [color](../colors/) | No       |
+| [color](colors.md) | No       |
 
 ---
 
@@ -83,7 +83,7 @@ title: View Style Props
 
 | Type                | Required |
 | ------------------- | -------- |
-| [color](../colors/) | No       |
+| [color](colors.md) | No       |
 
 ---
 
@@ -91,7 +91,7 @@ title: View Style Props
 
 | Type                | Required |
 | ------------------- | -------- |
-| [color](../colors/) | No       |
+| [color](colors.md) | No       |
 
 ---
 
@@ -117,7 +117,7 @@ If the rounded border is not visible, try applying `overflow: 'hidden'` as well.
 
 | Type                | Required |
 | ------------------- | -------- |
-| [color](../colors/) | No       |
+| [color](colors.md) | No       |
 
 ---
 
@@ -133,7 +133,7 @@ If the rounded border is not visible, try applying `overflow: 'hidden'` as well.
 
 | Type                | Required |
 | ------------------- | -------- |
-| [color](../colors/) | No       |
+| [color](colors.md) | No       |
 
 ---
 
@@ -149,7 +149,7 @@ If the rounded border is not visible, try applying `overflow: 'hidden'` as well.
 
 | Type                | Required |
 | ------------------- | -------- |
-| [color](../colors/) | No       |
+| [color](colors.md) | No       |
 
 ---
 

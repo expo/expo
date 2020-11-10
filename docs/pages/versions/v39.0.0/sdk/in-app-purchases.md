@@ -11,7 +11,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-This module is currently only available in the [bare](../../introduction/managed-vs-bare/#bare-workflow) workflow.
+This module is currently only available in the [bare](../../../introduction/managed-vs-bare.md#bare-workflow) workflow.
 
 You must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/expo/expo/tree/master/packages/react-native-unimodules) before continuing.
 

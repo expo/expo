@@ -99,7 +99,7 @@ export default App;
 
 # Reference
 
-These properties are iOS only - for similar functionality on Android, use the [`elevation` property](../view-style-props/#elevation).
+These properties are iOS only - for similar functionality on Android, use the [`elevation` property](view-style-props.md#elevation).
 
 ## Props
 

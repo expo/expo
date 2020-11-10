@@ -18,7 +18,7 @@ This guide is intended to help you know what tools are at your disposal to confi
 
 > This type of configuration is currently only available on Android. On iOS, it is not possible in the Expo managed workflow to customize the status bar before the app has loaded, while the splash screen is presented.
 
-The configuration for configuring the status bar while the splash screen is visible on Android is available through the `androidStatusBar` object in `app.json`. The options available are similar to those provided by [expo-status-bar](/versions/latest/sdk/status-bar).
+The configuration for configuring the status bar while the splash screen is visible on Android is available through the `androidStatusBar` object in `app.json`. The options available are similar to those provided by [expo-status-bar](../versions/latest/sdk/status-bar.md).
 
 <div style={{marginTop: -10}} />
 
@@ -67,7 +67,7 @@ Defaults to `false`.
 
 ## Updating the status bar while your app is running
 
-The `StatusBar` component provided by [expo-status-bar](/versions/latest/sdk/status-bar/) allows you to control the appearance of the status bar while your app is running. expo-status-bar also provides imperative methods such as `setStatusBarStyle(style)` to control the style through function calls rather than the `StatusBar` component, if you find that to be helpful for your use case.
+The `StatusBar` component provided by [expo-status-bar](../versions/latest/sdk/status-bar.md) allows you to control the appearance of the status bar while your app is running. expo-status-bar also provides imperative methods such as `setStatusBarStyle(style)` to control the style through function calls rather than the `StatusBar` component, if you find that to be helpful for your use case.
 
 To fix the contrast issue from the screenshot at the top of this guide, we could use the following code:
 
@@ -106,7 +106,7 @@ If you use `expo-status-bar` to control your status bar style, the `style="auto"
 
 When you have a translucent status bar, it's important to remember that content can be rendered underneath it (if it couldn't, what would be the point of it being translucent? there would be nothing for you to see through it!).
 
-Libraries like [React Navigation](../../guides/routing-and-navigation/) will handle this for you when the UI that they provide overlap with the status bar. You are likely to encounter cases where you will need to manually adjust your layout to prevent some content (such as text) from being rendered underneath it. To do this, we recommend using [react-native-safe-area-context](/versions/latest/sdk/safe-area-context/) to find the safe area insets and add padding or margins to your layout accordingly.
+Libraries like [React Navigation](../guides/routing-and-navigation.md) will handle this for you when the UI that they provide overlap with the status bar. You are likely to encounter cases where you will need to manually adjust your layout to prevent some content (such as text) from being rendered underneath it. To do this, we recommend using [react-native-safe-area-context](../versions/latest/sdk/safe-area-context.md) to find the safe area insets and add padding or margins to your layout accordingly.
 
 ## Working with misbehaving 3rd-party Libraries
 
@@ -133,4 +133,4 @@ Example:
 
 ### Place an empty `View` on top of your screen
 
-You can place an empty `View` on top of your screen with a background color to act as a status bar, or set a top padding. You can get the height of the status bar (and notch, if there is one) by using the top inset value provided by [react-native-safe-area-context](/versions/latest/sdk/safe-area-context/).
+You can place an empty `View` on top of your screen with a background color to act as a status bar, or set a top padding. You can get the height of the status bar (and notch, if there is one) by using the top inset value provided by [react-native-safe-area-context](../versions/latest/sdk/safe-area-context.md).

@@ -143,4 +143,4 @@ const styles = StyleSheet.create({
 
 You might notice that we also added some new styles here to make things look a bit prettier. We used `marginBottom` on the logo to space things out between the logo and the instructions, and we added `marginHorizontal` to give our instructions some spacing around the edges of the screen.
 
-Time to make things interactive. [Let's move on to creating a button](../../tutorial/button/).
+Time to make things interactive. [Let's move on to creating a button](../tutorial/button.md).

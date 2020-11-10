@@ -13,7 +13,7 @@ A component used to select a single value from a range of values.
 
 ## Props
 
-Inherits [View Props](../view/#props).
+Inherits [View Props](view.md#props).
 
 ### `style`
 
@@ -51,7 +51,7 @@ The color used for the track to the left of the button. Overrides the default bl
 
 | Type                | Required |
 | ------------------- | -------- |
-| [color](../colors/) | No       |
+| [color](colors.md) | No       |
 
 ---
 
@@ -101,7 +101,7 @@ The color used for the track to the right of the button. Overrides the default g
 
 | Type                | Required |
 | ------------------- | -------- |
-| [color](../colors/) | No       |
+| [color](colors.md) | No       |
 
 ---
 
@@ -133,7 +133,7 @@ The color used to tint the default thumb images on iOS, or the color of the fore
 
 | Type                | Required |
 | ------------------- | -------- |
-| [color](../colors/) | No       |
+| [color](colors.md) | No       |
 
 ---
 

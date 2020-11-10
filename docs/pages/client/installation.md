@@ -7,7 +7,7 @@ import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
 
 **Expo Dev Client** is an open source project to improve your development experience while working on your Expo and React Native projects. It allows your team to focus on the JavaScript portion of your project, only needing to interact with XCode or Android Studio when you need to make changes to the native code used in your project.
 
-> ⚠️ **Managed Expo projects are not yet supported**, but we are working on bringing it to EAS Build! If you want to build a managed Expo project with the Development Client, you'll have to eject it first. See the [Ejecting to Bare Workflow](../../workflow/customizing/) page to learn how.
+> ⚠️ **Managed Expo projects are not yet supported**, but we are working on bringing it to EAS Build! If you want to build a managed Expo project with the Development Client, you'll have to eject it first. See the [Ejecting to Bare Workflow](../workflow/customizing.md) page to learn how.
 
 <!-- ## Dream Instructions
 
@@ -31,7 +31,7 @@ If you're installing this in a bare React Native app, you should also follow [th
 
 ## 1. Ensure your project meets prerequisites
 
-You should have an Expo bare workflow project - you can create it with `expo init` or by running `expo eject` on a managed project. If you have an existing React Native project, you will need to [install react-native-unimodules](/bare/installing-unimodules/) and [install expo-updates](/bare/installing-updates/) before proceeding.
+You should have an Expo bare workflow project - you can create it with `expo init` or by running `expo eject` on a managed project. If you have an existing React Native project, you will need to [install react-native-unimodules](../bare/installing-unimodules.md) and [install expo-updates](../bare/installing-updates.md) before proceeding.
 
 ## 2. Install expo-dev-menu
 

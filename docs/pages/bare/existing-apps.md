@@ -11,14 +11,14 @@ The reason react-native-unimodules exists is so that we can reuse native code ac
 
 ## Setting up react-native-unimodules
 
-Follow the the [installing react-native-unimodules guide](/bare/installing-unimodules/). It should take about five minutes to configure in an existing app.
+Follow the the [installing react-native-unimodules guide](../bare/installing-unimodules.md). It should take about five minutes to configure in an existing app.
 
 ## Install libraries from the Expo SDK
 
-The short version: find an Expo package that you would like to use in the API reference or by searching this documentation, eg: [expo-web-browser](/versions/latest/sdk/webbrowser/),install it with npm, then run `npx pod-install` and re-build your app.
+The short version: find an Expo package that you would like to use in the API reference or by searching this documentation, eg: [expo-web-browser](../versions/latest/sdk/webbrowser.md),install it with npm, then run `npx pod-install` and re-build your app.
 
-The longer, more detailed version: check out [Install an Expo SDK package](../hello-world/#install-an-expo-sdk-package) in the "Up and Running" guide.
+The longer, more detailed version: check out [Install an Expo SDK package](hello-world.md#install-an-expo-sdk-package) in the "Up and Running" guide.
 
 ## That's it!
 
-You're ready to go. You may also want to install expo-updates in your app to add support for over-the-air-updates. If so, follow the [installing expo-updates guide](/bare/installing-updates/) guide once you have installed react-native-unimodules.
+You're ready to go. You may also want to install expo-updates in your app to add support for over-the-air-updates. If so, follow the [installing expo-updates guide](../bare/installing-updates.md) guide once you have installed react-native-unimodules.

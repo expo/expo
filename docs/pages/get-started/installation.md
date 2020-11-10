@@ -35,8 +35,8 @@ The fastest way to get up and running is to use the Expo client app on your iOS 
 
 When the Expo client is finished installing, open it up. If you created an account with `expo-cli` then you can sign in here on the "Profile" tab. This will make it easier for you to open projects in the client when you have them open in development &mdash; they will appear automatically in the "Projects" tab of the client app.
 
-> 👉 It's often useful to be able to run your app directly on your computer instead of on a separate physical device. If you would like to set this up, you can learn more about [installing the iOS Simulator (macOS only)](../../workflow/ios-simulator/) and [installing an Android emulator](../../workflow/android-studio-emulator/).
+> 👉 It's often useful to be able to run your app directly on your computer instead of on a separate physical device. If you would like to set this up, you can learn more about [installing the iOS Simulator (macOS only)](../workflow/ios-simulator.md) and [installing an Android emulator](../workflow/android-studio-emulator.md).
 
 ## Up next
 
-Now that `expo-cli` and the Expo client are installed, [let's create a new app and write some code](../../get-started/create-a-new-app/).
+Now that `expo-cli` and the Expo client are installed, [let's create a new app and write some code](../get-started/create-a-new-app.md).

@@ -44,7 +44,7 @@ Let's make our app support English and Japanese.
 - You may want to refrain from localizing text for certain things, like names. In this case you can define them _once_ in your default language and reuse them with `i18n.fallbacks = true;`.
 - When a user changes the device's language, your app will reset. This means you can set the language once, and don't need to update any of your React components to account for the language changes.
 - On iOS, you can add `"CFBundleAllowMixedLocalizations": true` to your `ios.infoPlist` property [in your app.json](https://docs.expo.io/workflow/configuration/#ios) so that your app supports the retrieval of localized strings from frameworks.
-  - This will allow you to translate app metadata, including the homescreen display name! Read [here](../../distribution/app-stores#localizing-your-ios-app) for details.
+  - This will allow you to translate app metadata, including the homescreen display name! Read [here](../../../distribution/app-stores.md#localizing-your-ios-app) for details.
 
 ### Full Demo
 

@@ -75,7 +75,7 @@ Asks the user to grant permissions for accessing contacts data. Alias for `Permi
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
 ### `Contacts.getPermissionsAsync()`
 
@@ -83,7 +83,7 @@ Checks user's permissions for accessing contacts data. Alias for `Permissions.ge
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
 ### `Contacts.getContactsAsync(contactQuery)`
 
@@ -157,7 +157,7 @@ Contacts.addContactAsync(contact: Contact, containerId: string): Promise<string>
 
 Creates a new contact and adds it to the system.
 
-> **Note**: For Android users, the Expo client App does not have the required `WRITE_CONTACTS` permission to write to Contacts. In order to do this, you must build a [standalone app](../../distribution/building-standalone-apps/) and add permission through there.
+> **Note**: For Android users, the Expo client App does not have the required `WRITE_CONTACTS` permission to write to Contacts. In order to do this, you must build a [standalone app](../../../distribution/building-standalone-apps.md) and add permission through there.
 
 **Parameters**
 
