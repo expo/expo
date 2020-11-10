@@ -80,7 +80,7 @@ jobs:
           echo "You can deploy this by updating https://github.com/expo/turtle/tree/master/shellTarballs/ios/client"
           echo "Then follow the deployment instructions: https://github.com/expo/turtle-deploy"
       - uses: 8398a7/action-slack@v3
-        if: always()
+        if: always() && (github.event.ref == 'refs/heads/master')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_ios }}
