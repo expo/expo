@@ -147,7 +147,6 @@ The following methods are exported by the `expo-notifications` module:
   - [`removePushTokenSubscription`](#removepushtokensubscriptionsubscription-subscription-void) -- removes the listener registered with `addPushTokenListener`
   - [`removeAllPushTokenListeners`](#removeallpushtokenlisteners-void) -- removes all listeners registered with `addPushTokenListener`
 - **listening to notification events**
-  - [`useInitialNotificationResponse`](#useinitialnotificationresponse-undefined--notificationresponse--null) -- a React hook returning a notification response responsible for opening the application
   - [`useLastNotificationResponse`](#uselastnotificationresponse-undefined--notificationresponse--null) -- a React hook returning notification response that has been received most recently
   - [`addNotificationReceivedListener`](#addnotificationreceivedlistenerlistener-event-notification--void-void) -- adds a listener called whenever a new notification is received
   - [`addNotificationsDroppedListener`](#addnotificationsdroppedlistenerlistener---void-void) -- adds a listener called whenever some notifications have been dropped
@@ -445,49 +444,6 @@ Removes all push token subscriptions that may have been registered with `addPush
 
 ## Listening to notification events
 
-### `useInitialNotificationResponse(): undefined | NotificationResponse | null`
-
-A React hook returning an initial notification response, i.e. a notification response responsible for opening the application (eg. tapping on or interacting with a notification).
-
-#### Returns
-
-The hook may return one of these three types/values:
-
-- `undefined` -- until we're sure that the application was or wasn't opened as a result of responding to a notification by the user
-- `null` -- if the application wasn't opened as a result of responding to a notification
-- an object of [`NotificationResponse`](#notificationresponse) type -- if the application was opened as a result of responding to a notification
-
-#### Examples
-
-Rendering the application _only_ once we know whether the application was opened as an effect of interacting with a notification (rendering `null` is a good way to keep the splash screen present only if you have `expo-splash-screen` integrated):
-
-```tsx
-import * as Notifications from 'expo-notifications';
-import { Linking, View, ActivityIndicator } from 'react-native';
-
-export default function App() {
-  const initialNotificationResponse = Notifications.useInitialNotificationResponse();
-
-  if (initialNotificationResponse === undefined) {
-    // if you're using expo-splash-screen's autohiding mechanism
-    return null;
-    // otherwise - a simple (not the prettiest) placeholder
-    return (
-      <View style={/* styles */}>
-        <ActivityIndicator />
-      </View>
-    );
-  }
-
-  // Use the initialNotificationResponse when setting up initial navigation state
-  return (
-    /*
-     * your app
-     */
-  );
-}
-```
-
 ### `useLastNotificationResponse(): undefined | NotificationResponse | null`
 
 A React hook always returning the notification response that was received the most recently (notification response designates an interaction with a notification, eg. tapping on it).
@@ -496,7 +452,7 @@ A React hook always returning the notification response that was received the mo
 
 The hook may return values of three types/values:
 
-- `undefined` -- until we're sure that we haven't missed any notification responses (situation equivalent to `undefined` returned from [`useInitialNotificationResponse`](#useinitialnotificationresponse-undefined--notificationresponse--null))
+- `undefined` -- until we're sure of what to return
 - `null` -- if no notification response has been received yet
 - an object of [`NotificationResponse`](#notificationresponse) type -- notification response received the most recently
 
