@@ -924,6 +924,8 @@ CACHE_KEYS:
       - "../../../../packages/expo-development-client/ios/EXDevelopmentClientController.h"
       - "../../../../packages/expo-development-client/ios/EXDevelopmentClientController.m"
       - "../../../../packages/expo-development-client/ios/EXDevelopmentClientDevMenuExtensions.m"
+      - "../../../../packages/expo-development-client/ios/EXDevelopmentClientManifestParser.h"
+      - "../../../../packages/expo-development-client/ios/EXDevelopmentClientManifestParser.m"
       - "../../../../packages/expo-development-client/ios/EXDevelopmentClientRCTBridge.h"
       - "../../../../packages/expo-development-client/ios/EXDevelopmentClientRCTBridge.m"
       - "../../../../packages/expo-development-client/README.md"
