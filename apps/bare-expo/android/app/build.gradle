@@ -135,7 +135,8 @@ android {
         versionName "1.0"
         manifestPlaceholders = [
             // [Custom]: Required for expo-app-auth
-            appAuthRedirectScheme: "dev.expo.payments"
+            appAuthRedirectScheme: "dev.expo.payments",
+            developmentClientSchema: "dev-client"
         ]
     }
     splits {

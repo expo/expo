@@ -17,48 +17,16 @@ import {
 
 const DevelopmentClient = NativeModules.EXDevelopmentClient;
 
-const getReactNativeBundleURL = (baseURL: URL) => {
-  if (baseURL.pathname !== '/') {
-    return baseURL;
-  }
-
-  return new URL(`index.bundle?platform=${Platform.OS}&dev=true&minify=false`, baseURL);
-};
-
 // Use development client native module to load app at given URL, notifying of
 // errors
 
 const loadAppFromUrl = async (urlString: string, setLoading: (boolean) => void) => {
-  if (Platform.OS === 'ios') {
-    try {
-      setLoading(true);
-      await DevelopmentClient.loadApp(urlString);
-    } catch (e) {
-      setLoading(false);
-      Alert.alert('Error loading app', e.toString());
-    }
-  } else {
-    try {
-      urlString = urlString.trim().replace(/^exp:\/\//, 'http://');
-
-      setLoading(true);
-      const url = new URL(urlString);
-      const headResponse = await fetch(url.toString(), { method: 'HEAD' });
-      if (headResponse.headers.get('Exponent-Server')) {
-        // It's an Expo manifest
-        const getResponse = await fetch(url.toString(), { method: 'GET' });
-        const manifest = JSON.parse(await getResponse.text());
-        await DevelopmentClient.loadApp(manifest.bundleUrl, {
-          orientation: manifest.orientation || 'default',
-        });
-      } else {
-        // It's (maybe) a raw React Native bundle
-        await DevelopmentClient.loadApp(getReactNativeBundleURL(url).toString(), {});
-      }
-    } catch (e) {
-      setLoading(false);
-      Alert.alert('Error loading app', e.toString());
-    }
+  try {
+    setLoading(true);
+    await DevelopmentClient.loadApp(urlString);
+  } catch (e) {
+    setLoading(false);
+    Alert.alert('Error loading app', e.toString());
   }
 };
 
