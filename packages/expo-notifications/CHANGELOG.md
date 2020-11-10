@@ -12,9 +12,13 @@
 - Changed how you can override ways in which a notification is reinterpreted from a [`StatusBarNotification`](https://developer.android.com/reference/android/service/notification/StatusBarNotification) and in which a [`Notification`](https://developer.android.com/reference/android/app/Notification.html?hl=en) is built from defining an `expo.modules.notifications#NotificationsScoper` meta-data value in `AndroidManifest.xml` to implementing a `BroadcastReceiver` subclassing `NotificationsService` delegating those responsibilities to your custom `PresentationDelegate` instance. ([#10558](https://github.com/expo/expo/pull/10558) by [@sjchmiela](https://github.com/sjchmiela))
 
   > Note that this change most probably will not affect you — it only affects projects that override those methods to implement some custom handling logic.
+- Added a peer dependency on `react-native@>=0.20.0`. ([#10811](https://github.com/expo/expo/pull/10811) by [@sjchmiela](https://github.com/sjchmiela))
+
+  > Note that this change most probably will not affect you — it only affects projects that use unimodules and this library without React Native which is not possible without some serious gymnastics.
 
 ### 🎉 New features
 
+- Added `useInitialNotificationResponse` React hook that allows you to fetch initial notification response reliably in any of your components in any point in time. ([#10811](https://github.com/expo/expo/pull/10811) by [@sjchmiela](https://github.com/sjchmiela))
 - Added `WeeklyTriggerInput` that allows scheduling a weekly recurring notification for a specific day of week, hour and minute. It is supported on both iOS and Android. ([#9973](https://github.com/expo/expo/pull/9973) by [@RikTheunis](https://github.com/riktheunis))
 - Added `getNextTriggerDateAsync` method allowing you to verify manually when would the next trigger date for a particular notification trigger be. ([#10455](https://github.com/expo/expo/pull/10455) by [@sjchmiela](https://github.com/sjchmiela))
 - Added support for restoring scheduled notifications alarms on Android after an app is updated. ([#10708](https://github.com/expo/expo/pull/10708) by [@sjchmiela](https://github.com/sjchmiela))

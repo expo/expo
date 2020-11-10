@@ -22,6 +22,7 @@ export { default as getNotificationCategoriesAsync } from './getNotificationCate
 export { default as setNotificationCategoryAsync } from './setNotificationCategoryAsync';
 export { default as deleteNotificationCategoryAsync } from './deleteNotificationCategoryAsync';
 export { default as getNextTriggerDateAsync } from './getNextTriggerDateAsync';
+export { default as useInitialNotificationResponse } from './useInitialNotificationResponse';
 export * from './TokenEmitter';
 export * from './NotificationsEmitter';
 export * from './NotificationsHandler';
