@@ -1,5 +1,6 @@
-import { useLayoutEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { addNotificationResponseReceivedListener } from './NotificationsEmitter';
+import NotificationsEmitterModule from './NotificationsEmitterModule';
 /**
  * Return value of this hook may be one of three types:
  * - `undefined` until we know what to return
@@ -17,6 +18,17 @@ export default function useLastNotificationResponse() {
         return () => {
             subscription.remove();
         };
+    }, []);
+    // On each mount of this hook we fetch last notification response
+    // from the native module which is an "always active listener"
+    // and always returns the most recent response.
+    useEffect(() => {
+        NotificationsEmitterModule.getLastNotificationResponseAsync?.().then(response => {
+            // We only update the state with the resolved value if it's empty,
+            // because if it's not empty it must have been populated by the `useLayoutEffect`
+            // listener which returns "live" values.
+            setLastNotificationResponse(currentResponse => currentResponse ?? response);
+        });
     }, []);
     return lastNotificationResponse;
 }

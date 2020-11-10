@@ -10,10 +10,9 @@
 
 @property (nonatomic, weak) id<EXNotificationCenterDelegate> notificationCenterDelegate;
 
-@property (nonatomic, assign) BOOL isListening;
-@property (nonatomic, assign) BOOL isBeingObserved;
-
 @property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
+
+@property (nonatomic, strong) UNNotificationResponse *lastNotificationResponse;
 
 @end
 
@@ -21,12 +20,20 @@
 
 UM_EXPORT_MODULE(ExpoNotificationsEmitter);
 
+UM_EXPORT_METHOD_AS(getLastNotificationResponseAsync,
+                    getLastNotificationResponseAsyncWithResolver:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject)
+{
+  resolve(_lastNotificationResponse ? [EXNotificationSerializer serializedNotificationResponse:_lastNotificationResponse] : [NSNull null]);
+}
+
 # pragma mark - UMModuleRegistryConsumer
 
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
+
   _notificationCenterDelegate = [moduleRegistry getSingletonModuleForName:@"NotificationCenterDelegate"];
+  [_notificationCenterDelegate addDelegate:self];
 }
 
 # pragma mark - UMEventEmitter
@@ -38,25 +45,10 @@ UM_EXPORT_MODULE(ExpoNotificationsEmitter);
 
 - (void)startObserving
 {
-  [self setIsBeingObserved:YES];
 }
 
 - (void)stopObserving
 {
-  [self setIsBeingObserved:NO];
-}
-
-- (void)setIsBeingObserved:(BOOL)isBeingObserved
-{
-  _isBeingObserved = isBeingObserved;
-  BOOL shouldListen = _isBeingObserved;
-  if (shouldListen && !_isListening) {
-    [_notificationCenterDelegate addDelegate:self];
-    _isListening = YES;
-  } else if (!shouldListen && _isListening) {
-    [_notificationCenterDelegate removeDelegate:self];
-    _isListening = NO;
-  }
 }
 
 # pragma mark - EXNotificationsDelegate
@@ -69,6 +61,7 @@ UM_EXPORT_MODULE(ExpoNotificationsEmitter);
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler
 {
+  _lastNotificationResponse = response;
   [_eventEmitter sendEventWithName:onDidReceiveNotificationResponse body:[EXNotificationSerializer serializedNotificationResponse:response]];
   completionHandler();
 }
