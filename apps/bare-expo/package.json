@@ -79,7 +79,7 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@react-native-community/async-storage": "~1.12.0",
-    "@react-native-community/datetimepicker": "3.0.0",
+    "@react-native-community/datetimepicker": "3.0.4",
     "@react-native-community/masked-view": "^0.1.10",
     "@react-native-community/netinfo": "5.9.6",
     "@react-native-community/picker": "1.6.6",

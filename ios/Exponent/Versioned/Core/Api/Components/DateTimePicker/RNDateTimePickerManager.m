@@ -86,6 +86,10 @@ RCT_REMAP_VIEW_PROPERTY(timeZoneOffsetInMinutes, timeZone, NSTimeZone)
 
 RCT_CUSTOM_VIEW_PROPERTY(textColor, UIColor, RNDateTimePicker)
 {
+  if (@available(iOS 14.0, *) && view.datePickerStyle != UIDatePickerStyleWheels) {
+    // prevents #247
+    return;
+  }
   if (json) {
     [view setValue:[RCTConvert UIColor:json] forKey:@"textColor"];
     [view setValue:@(NO) forKey:@"highlightsToday"];
