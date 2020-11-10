@@ -55,6 +55,8 @@ jobs:
             docs-next-
       - run: yarn export
         timeout-minutes: 15
+      - name: lint links --quiet
+        run: yarn lint-links
       - name: test links
         run: |
           yarn export-server &
