@@ -17,14 +17,10 @@
 {
   return nil;
 }
-
-
 - (RCTDevMenu *)devMenu
 {
   return nil;
 }
-
-
 @end
 
 @implementation DevMenuRCTBridge
@@ -35,6 +31,3 @@
 }
 
 @end
-
-
-
