@@ -4,7 +4,6 @@ const merge = require('lodash/merge');
 const { join } = require('path');
 const semver = require('semver');
 
-const headings = require('./common/headingsMdPlugin');
 const navigation = require('./constants/navigation-data');
 const versions = require('./constants/versions');
 const { version } = require('./package.json');
@@ -45,7 +44,12 @@ module.exports = {
         options.defaultLoaders.babel,
         {
           loader: '@mdx-js/loader',
-          options: { remarkPlugins: [headings] },
+          options: {
+            remarkPlugins: [
+              require('./mdx-plugins/remark-heading-meta'),
+              require('./mdx-plugins/remark-link-rewrite'),
+            ],
+          },
         },
         join(__dirname, './common/md-loader'),
       ],
