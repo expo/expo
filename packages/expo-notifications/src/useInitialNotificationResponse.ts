@@ -79,7 +79,7 @@ export default function useInitialNotificationResponse() {
 
     return () => {
       clearTimeout(timeoutId);
-    }
+    };
   }, []);
 
   return initialNotificationResponse;
