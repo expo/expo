@@ -38,13 +38,17 @@ if (ExponentConstants && ExponentConstants.manifest) {
   if (typeof manifest === 'string') {
     manifest = JSON.parse(manifest);
   }
-} else if (NativeModulesProxy.ExpoUpdates) {
-  // in the bare workflow, manifest is not defined on ExponentConstants, but we can try to get it
-  // from expo-updates
+}
+// If expo-updates defines a non-empty manifest, use that one instead
+if (NativeModulesProxy.ExpoUpdates) {
+  let updatesManifest;
   if (NativeModulesProxy.ExpoUpdates.manifest) {
-    manifest = NativeModulesProxy.ExpoUpdates.manifest;
+    updatesManifest = NativeModulesProxy.ExpoUpdates.manifest;
   } else if (NativeModulesProxy.ExpoUpdates.manifestString) {
-    manifest = JSON.parse(NativeModulesProxy.ExpoUpdates.manifestString);
+    updatesManifest = JSON.parse(NativeModulesProxy.ExpoUpdates.manifestString);
+  }
+  if (updatesManifest && Object.keys(updatesManifest).length > 0) {
+    manifest = updatesManifest;
   }
 }
 

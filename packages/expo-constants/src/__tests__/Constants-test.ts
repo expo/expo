@@ -12,6 +12,7 @@ it(`defines a linking URI and URL`, () => {
 
 describe(`manifest`, () => {
   const fakeManifest = { id: '@jester/manifest' };
+  const fakeManifest2 = { id: '@jester/manifest2' };
 
   beforeEach(() => {
     jest.resetModules();
@@ -99,5 +100,19 @@ describe(`manifest`, () => {
     mockNativeModulesProxy({ ExpoUpdates: undefined });
     const ConstantsWithMock = require('../Constants').default;
     expect(ConstantsWithMock.manifest).toBeNull();
+  });
+
+  it(`is overridden by expo-updates if both are defined`, () => {
+    mockExponentConstants({ manifest: fakeManifest });
+    mockExpoUpdates({ manifest: fakeManifest2 });
+    const ConstantsWithMock = require('../Constants').default;
+    expect(ConstantsWithMock.manifest).toEqual(fakeManifest2);
+  });
+
+  it(`is not overridden if expo-updates exports an empty manifest`, () => {
+    mockExponentConstants({ manifest: fakeManifest });
+    mockExpoUpdates({ manifest: {} });
+    const ConstantsWithMock = require('../Constants').default;
+    expect(ConstantsWithMock.manifest).toEqual(fakeManifest);
   });
 });
