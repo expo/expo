@@ -12,7 +12,7 @@ class DevMenuAppInstance: NSObject, RCTBridgeDelegate {
 
     super.init()
 
-    self.bridge = RCTBridge.init(delegate: self, launchOptions: nil)
+    self.bridge = DevMenuRCTBridge.init(delegate: self, launchOptions: nil)
   }
 
   /**

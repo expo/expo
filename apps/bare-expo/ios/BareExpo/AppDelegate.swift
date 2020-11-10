@@ -20,7 +20,7 @@ import FlipperKit
 class AppDelegate: UMAppDelegateWrapper {
   var moduleRegistryAdapter: UMModuleRegistryAdapter!
   var bridge: RCTBridge?
-  var launchOptions: [UIApplication.LaunchOptionsKey: Any]?;
+  var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
 
   let useDevClient: Bool = false
   
@@ -57,6 +57,7 @@ class AppDelegate: UMAppDelegateWrapper {
       #if canImport(EXDevMenu)
       DevMenuManager.configure(withBridge: bridge)
       #endif
+      return bridge;
     }
     return nil;
   }
