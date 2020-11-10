@@ -13,7 +13,7 @@ To automatically configure your native project for building with EAS Build on An
 expo eas:build:init
 ```
 
-See [EAS Build from scratch in 5 minutes](../eas-build-in-5-minutes/) for a detailed explanation and examples of what this does.
+See [EAS Build from scratch in 5 minutes](eas-build-in-5-minutes.md) for a detailed explanation and examples of what this does.
 
 ## Triggering builds
 

@@ -21,7 +21,7 @@ Renders the native picker component on Android and iOS. Example:
 
 ## Props
 
-Inherits [View Props](../view/#props).
+Inherits [View Props](view.md#props).
 
 ### `onValueChange`
 
@@ -103,4 +103,4 @@ Style to apply to each of the item labels.
 
 | Type                                | Required | Platform |
 | ----------------------------------- | -------- | -------- |
-| [text styles](../text-style-props/) | No       | iOS      |
+| [text styles](text-style-props.md) | No       | iOS      |

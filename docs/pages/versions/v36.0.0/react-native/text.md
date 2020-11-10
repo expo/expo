@@ -226,7 +226,7 @@ Possible values for `AccessibilityRole` is one of:
 - `'imagebutton'` - The element has the role of both an image and also a button.
 - `'adjustable'` - The element allows adjustment over a range of values.
 
-On iOS, these roles map to corresponding Accessibility Traits. Image button has the same functionality as if the trait was set to both 'image' and 'button'. See the [Accessibility guide](../accessibility/#accessibilitytraits-ios) for more information.
+On iOS, these roles map to corresponding Accessibility Traits. Image button has the same functionality as if the trait was set to both 'image' and 'button'. See the [Accessibility guide](accessibility.md#accessibilitytraits-ios) for more information.
 
 On Android, these roles have similar functionality on TalkBack as adding Accessibility Traits does on Voiceover in iOS
 
@@ -257,7 +257,7 @@ Possible values for `AccessibilityState` are:
 
 When set to `true`, indicates that the view is an accessibility element. The default value for a `Text` element is `true`.
 
-See the [Accessibility guide](../accessibility/#accessible-ios-android) for more information.
+See the [Accessibility guide](accessibility.md#accessible-ios-android) for more information.
 
 | Type | Required |
 | ---- | -------- |
@@ -530,7 +530,7 @@ The highlight color of the text.
 
 | Type                | Required | Platform |
 | ------------------- | -------- | -------- |
-| [color](../colors/) | No       | Android  |
+| [color](colors.md) | No       | Android  |
 
 ---
 
@@ -540,11 +540,11 @@ The highlight color of the text.
 | ----- | -------- |
 | style | No       |
 
-- [View Style Props...](../view-style-props/#style)
+- [View Style Props...](view-style-props.md#style)
 
 - **`textShadowOffset`**: object: {width: number,height: number}
 
-- **`color`**: [color](../colors/)
+- **`color`**: [color](colors.md)
 
 - **`fontSize`**: number
 
@@ -562,7 +562,7 @@ The highlight color of the text.
 
 - **`textDecorationLine`**: enum('none', 'underline', 'line-through', 'underline line-through')
 
-- **`textShadowColor`**: [color](../colors/)
+- **`textShadowColor`**: [color](colors.md)
 
 - **`fontFamily`**: string
 
@@ -584,7 +584,7 @@ The highlight color of the text.
 
   Android: Only supported since Android 5.0 - older versions will ignore this attribute. Please note that additional space will be added _around_ the glyphs (half on each side), which differs from the iOS rendering. It is possible to emulate the iOS rendering by using layout attributes, e.g. negative margins, as appropriate for your situation.
 
-* **`textDecorationColor`**: [color](../colors/) (_iOS_)
+* **`textDecorationColor`**: [color](colors.md) (_iOS_)
 
 * **`textDecorationStyle`**: enum('solid', 'double', 'dotted', 'dashed') (_iOS_)
 

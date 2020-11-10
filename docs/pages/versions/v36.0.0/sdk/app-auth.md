@@ -14,7 +14,7 @@ import { InlineCode } from '~/components/base/code';
 
 Many services that let you authenticate with them or login with them, like GitHub, Google use the OAuth 2.0 protocol. It's the industry standard.
 
-If you are trying to implement sign in with [Google](../google-sign-in) or [Facebook](../facebook), there are special modules in the Expo SDK for those (though this module will work).
+If you are trying to implement sign in with [Google](google-sign-in.md) or [Facebook](facebook.md), there are special modules in the Expo SDK for those (though this module will work).
 
 <PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/6883' }} />
 
@@ -50,7 +50,7 @@ const prefix = Linking.makeUrl('/');
 // Standalone: `myapp://`
 ```
 
-For more info on [Linking in Expo](../../workflow/linking).
+For more info on [Linking in Expo](../../../workflow/linking.md).
 
 ## Bare Workflow
 
@@ -179,7 +179,7 @@ There are a couple different methods for authenticating your app in React Native
 
 ### AuthSession
 
-The [`AuthSession`](../auth-session/) API is built on top of [`expo-web-browser`](../webbrowser/) and cuts out a lot of the tricky steps involved with web authentication. Both `AppAuth` and `AuthSession` use `SFAuthenticationSession` and `ChromeCustomTabs` to authenticate natively, but AppAuth has built in support for [OpenID](https://github.com/openid). AuthSession uses an extra Expo service that makes development easier (especially across teams) but this can have some extra [security considerations](../auth-session#security-considerations).
+The [`AuthSession`](auth-session.md) API is built on top of [`expo-web-browser`](webbrowser.md) and cuts out a lot of the tricky steps involved with web authentication. Both `AppAuth` and `AuthSession` use `SFAuthenticationSession` and `ChromeCustomTabs` to authenticate natively, but AppAuth has built in support for [OpenID](https://github.com/openid). AuthSession uses an extra Expo service that makes development easier (especially across teams) but this can have some extra [security considerations](auth-session.md#security-considerations).
 
 ### react-native-app-auth
 

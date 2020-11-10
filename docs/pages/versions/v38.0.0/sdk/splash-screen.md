@@ -8,7 +8,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 The `SplashScreen` module tells the splash screen to remain visible until it has been explicitly told to hide. This is useful to do some work behind the scenes before displaying your app (eg: make API calls) and to animated your splash screen (eg: fade out or slide away, or switch from a static splash screen to an animated splash screen).
 
-Read more about [creating a splash screen image](../../guides/splash-screens/), or [quickly generate an icon and splash screen on the web](https://buildicon.netlify.app/)
+Read more about [creating a splash screen image](../../../guides/splash-screens.md), or [quickly generate an icon and splash screen on the web](https://buildicon.netlify.app/)
 
 <PlatformsSection android emulator ios simulator web />
 

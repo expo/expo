@@ -16,7 +16,7 @@ The `Notifications` API from **`expo`** provides access to remote notifications 
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. See the [expo-notifications README](https://github.com/expo/expo/tree/master/packages/expo-notifications) for information on how to integrate notifications into bare React Native apps.
+This API is pre-installed in [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps. See the [expo-notifications README](https://github.com/expo/expo/tree/master/packages/expo-notifications) for information on how to integrate notifications into bare React Native apps.
 
 > 💡 Please note that the [expo-notifications library for bare workflow](https://github.com/expo/expo/tree/master/packages/expo-notifications) has a different API from the Notifications API explained on this page, which is for the managed workflow. These APIs will be unified in an upcoming SDK release.
 
@@ -148,7 +148,7 @@ The `origin` will vary based on the app's state at the time the notification was
 
 #### Returns
 
-Returns a Promise that resolves to a token string. This token can be provided to the Expo notifications backend to send a push notification to this device. [Read more in the Push Notifications guide](/push-notifications/overview/).
+Returns a Promise that resolves to a token string. This token can be provided to the Expo notifications backend to send a push notification to this device. [Read more in the Push Notifications guide](../../../push-notifications/overview.md).
 
 The Promise will be rejected if the app does not have permission to send notifications. Be sure to check the result of `Permissions.askAsync(Permissions.NOTIFICATIONS)` before attempting to get an Expo push token.
 
@@ -313,7 +313,7 @@ Sets the number displayed in the app icon's badge to the given number. Setting t
 
 Note: **This method is only available in standalone apps.** Most people do not need to use this. It is easier to use `getExpoPushTokenAsync` unless you have a specific reason to need the actual device tokens. We also don't guarantee that the iOS and Android clients will continue expecting the same push notification payload format.
 
-Returns a native APNS, FCM or GCM token that can be used with another push notification service. If firebase cloud messaging is configured on your standalone Android app ([see guide here](../../push-notifications/using-fcm/)), it will return an FCM token, otherwise it will return a GCM token.
+Returns a native APNS, FCM or GCM token that can be used with another push notification service. If firebase cloud messaging is configured on your standalone Android app ([see guide here](../../../push-notifications/using-fcm.md)), it will return an FCM token, otherwise it will return a GCM token.
 
 #### Arguments
 

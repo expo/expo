@@ -8,7 +8,7 @@ import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
 
 Now that you've installed the Expo Dev Client, you are ready to share builds with your team.
 
-> ⚠️ **Managed Expo projects are not yet supported**, but we are working on bringing it to EAS Build! If you want to build a managed Expo project with the Development Client, you'll have to eject it first. See the [Ejecting to Bare Workflow](../../workflow/customizing/) page to learn how.
+> ⚠️ **Managed Expo projects are not yet supported**, but we are working on bringing it to EAS Build! If you want to build a managed Expo project with the Development Client, you'll have to eject it first. See the [Ejecting to Bare Workflow](../workflow/customizing.md) page to learn how.
 
 ## 1. Generate a Development APK
 

@@ -2,7 +2,7 @@
 title: Universal Modules and ExpoKit
 ---
 
-> **ExpoKit is deprecated and will no longer be supported after SDK 38. If you need to make customizations to your Expo project, we recommend using the [bare workflow](../../bare/customizing/) instead.**
+> **ExpoKit is deprecated and will no longer be supported after SDK 38. If you need to make customizations to your Expo project, we recommend using the [bare workflow](../bare/customizing.md) instead.**
 
 Universal Modules are pieces of the Expo SDK with some special properties:
 
@@ -13,9 +13,9 @@ Not all Expo SDK modules are Universal Modules. Right now, only a small part of 
 
 # Omitting Unneeded Modules
 
-When you [create an ExpoKit project](../eject/), we automatically add most of the same native APIs that are available in the Expo client app. Each of these APIs is supported by some native code which increases the size of your native binary.
+When you [create an ExpoKit project](eject.md), we automatically add most of the same native APIs that are available in the Expo client app. Each of these APIs is supported by some native code which increases the size of your native binary.
 
-You can remove any Expo Universal Module from your ExpoKit project if you don't think you need it. This means it will no longer be available in your native binary; if you write some JS which tries to import this API, you might cause a fatal error in your app. If you send an [OTA update](../../guides/configuring-ota-updates/) to your app which contains API calls that aren't present in your native binary, you might cause a fatal error.
+You can remove any Expo Universal Module from your ExpoKit project if you don't think you need it. This means it will no longer be available in your native binary; if you write some JS which tries to import this API, you might cause a fatal error in your app. If you send an [OTA update](../guides/configuring-ota-updates.md) to your app which contains API calls that aren't present in your native binary, you might cause a fatal error.
 
 Omitting Universal Modules is currently supported on iOS but not Android.
 

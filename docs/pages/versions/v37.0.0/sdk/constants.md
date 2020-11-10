@@ -24,7 +24,7 @@ import Constants from 'expo-constants';
 
 ### `Constants.appOwnership`
 
-Returns `expo`, `standalone`, or `guest`. If `expo`, the experience is running inside of the Expo client. If `standalone`, it is a [standalone app](../../distribution/building-standalone-apps/#building-standalone-apps). If `guest`, it has been opened through a link from a standalone app.
+Returns `expo`, `standalone`, or `guest`. If `expo`, the experience is running inside of the Expo client. If `standalone`, it is a [standalone app](../../../distribution/building-standalone-apps.md#building-standalone-apps). If `guest`, it has been opened through a link from a standalone app.
 
 ### `Constants.expoVersion`
 
@@ -107,4 +107,4 @@ A list of the system font names available on the current device.
 
 ### `Constants.manifest`
 
-The [manifest](../../workflow/how-expo-works/#expo-manifest) object for the app.
+The [manifest](../../../workflow/how-expo-works.md#expo-manifest) object for the app.

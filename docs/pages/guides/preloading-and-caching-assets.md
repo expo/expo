@@ -8,7 +8,7 @@ This section covers all things related to handling assets with Expo here includi
 
 Bundling assets into your binary will provide for the best user experience as your assets will be available immediately. Instead of having to make a network request to the CDN to fetch your published assets, your app will fetch them from the local disk resulting in a faster, more efficient loading experience. Bundling assets also allows offline functionality.
 
-To bundle assets in your binary, use the [assetBundlePatterns](../../workflow/configuration/) key in `app.json` to provide a list of paths in your project directory:
+To bundle assets in your binary, use the [assetBundlePatterns](../workflow/configuration.md) key in `app.json` to provide a list of paths in your project directory:
 
 ```
 "assetBundlePatterns": [
@@ -22,9 +22,9 @@ Images with paths matching the given patterns will be bundled into your native b
 
 ### Pre-loading and Caching Assets
 
-Assets are cached differently depending on where they're stored and how they're used. This guide offers best practices for making sure you only download assets when you need to. In order to keep the loading screen visible while caching assets, it's also a good idea to render [AppLoading](/versions/latest/sdk/app-loading/#app-loading) and only that component until everything is ready.
+Assets are cached differently depending on where they're stored and how they're used. This guide offers best practices for making sure you only download assets when you need to. In order to keep the loading screen visible while caching assets, it's also a good idea to render [AppLoading](../versions/latest/sdk/app-loading.md#app-loading) and only that component until everything is ready.
 
-For images that saved to the local filesytem, use [`Asset.fromModule(image).downloadAsync()`](/versions/latest/sdk/asset/) to download and cache the image. There is also a [loadAsync()](/versions/latest/sdk/asset/#expoassetloadasyncmodules) helper method to cache a batch of assets.
+For images that saved to the local filesytem, use [`Asset.fromModule(image).downloadAsync()`](../versions/latest/sdk/asset.md) to download and cache the image. There is also a [loadAsync()](../versions/latest/sdk/asset.md#expoassetloadasyncmodules) helper method to cache a batch of assets.
 
 For web images, use `Image.prefetch(image)`. Continue referencing the image normally, e.g. with `<Image source={require('path/to/image.png')} />`.
 
