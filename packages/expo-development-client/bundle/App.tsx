@@ -1,3 +1,5 @@
+import 'react-native-url-polyfill/auto';
+
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import React from 'react';
 import {
@@ -10,30 +12,43 @@ import {
   StyleSheet,
   Button,
   TextInput,
+  Platform,
 } from 'react-native';
 
 const DevelopmentClient = NativeModules.EXDevelopmentClient;
 
+const getReactNativeBundleURL = (baseURL: URL) => {
+  if (baseURL.pathname !== '/') {
+    return baseURL;
+  }
+
+  return new URL(`index.bundle?platform=${Platform.OS}&dev=true&minify=false`, baseURL);
+};
+
 // Use development client native module to load app at given URL, notifying of
 // errors
 
-const loadAppFromUrl = async (url: string) => {
-  url = url.replace(/^exp:\/\//, 'http://');
+const loadAppFromUrl = async (urlString: string, setLoading: (boolean) => void) => {
+  urlString = urlString.trim().replace(/^exp:\/\//, 'http://');
+
   try {
-    const headResponse = await fetch(url, { method: 'HEAD' });
+    setLoading(true);
+    const url = new URL(urlString);
+    const headResponse = await fetch(url.toString(), { method: 'HEAD' });
     if (headResponse.headers.get('Exponent-Server')) {
       // It's an Expo manifest
-      const getResponse = await fetch(url, { method: 'GET' });
+      const getResponse = await fetch(url.toString(), { method: 'GET' });
       const manifest = JSON.parse(await getResponse.text());
       await DevelopmentClient.loadApp(manifest.bundleUrl, {
         orientation: manifest.orientation || 'default',
       });
     } else {
       // It's (maybe) a raw React Native bundle
-      await DevelopmentClient.loadApp(url, {});
+      await DevelopmentClient.loadApp(getReactNativeBundleURL(url).toString(), {});
     }
   } catch (e) {
     Alert.alert('Error loading app', e.toString());
+    setLoading(false);
   }
 };
 
@@ -49,8 +64,7 @@ const App = () => {
   const [textInputUrl, setTextInputUrl] = React.useState('');
 
   const onBarCodeScanned = ({ data }: { data: string }) => {
-    loadAppFromUrl(data);
-    setLoading(true);
+    loadAppFromUrl(data, setLoading);
   };
 
   const onPressScan = () => {
@@ -62,8 +76,7 @@ const App = () => {
   };
 
   const onPressGoToUrl = () => {
-    loadAppFromUrl(textInputUrl);
-    setLoading(true);
+    loadAppFromUrl(textInputUrl, setLoading);
   };
 
   return (

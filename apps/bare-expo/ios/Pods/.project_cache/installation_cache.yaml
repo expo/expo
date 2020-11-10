@@ -315,6 +315,8 @@ CACHE_KEYS:
       - "../../../../packages/expo-dev-menu/ios/DevMenuAppInstance.swift"
       - "../../../../packages/expo-dev-menu/ios/DevMenuGestureRecognizer.swift"
       - "../../../../packages/expo-dev-menu/ios/DevMenuManager.swift"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuRCTBridge.h"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuRCTBridge.m"
       - "../../../../packages/expo-dev-menu/ios/DevMenuRootView.h"
       - "../../../../packages/expo-dev-menu/ios/DevMenuRootView.m"
       - "../../../../packages/expo-dev-menu/ios/DevMenuSession.swift"
@@ -920,6 +922,8 @@ CACHE_KEYS:
       - "../../../../packages/expo-development-client/ios/EXDevelopmentClientController.h"
       - "../../../../packages/expo-development-client/ios/EXDevelopmentClientController.m"
       - "../../../../packages/expo-development-client/ios/EXDevelopmentClientDevMenuExtensions.m"
+      - "../../../../packages/expo-development-client/ios/EXDevelopmentClientRCTBridge.h"
+      - "../../../../packages/expo-development-client/ios/EXDevelopmentClientRCTBridge.m"
       - "../../../../packages/expo-development-client/README.md"
     PROJECT_NAME: expo-development-client
     SPECS:

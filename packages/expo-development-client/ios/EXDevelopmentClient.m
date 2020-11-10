@@ -1,6 +1,7 @@
 #import "EXDevelopmentClient.h"
 
 #import "EXDevelopmentClientController+Private.h"
+#import <React/RCTBridge.h>
 
 
 @implementation EXDevelopmentClient
@@ -40,7 +41,7 @@ RCT_EXPORT_METHOD(loadApp:(NSURL *)url
   dispatch_async(dispatch_get_main_queue(), ^{
     [[UIDevice currentDevice] setValue:@(orientation) forKey:@"orientation"];
     [UIViewController attemptRotationToDeviceOrientation];
-
+    
     EXDevelopmentClientController *controller = [EXDevelopmentClientController sharedInstance];
     controller.sourceUrl = url;
     [controller.delegate developmentClientController:controller didStartWithSuccess:YES];
