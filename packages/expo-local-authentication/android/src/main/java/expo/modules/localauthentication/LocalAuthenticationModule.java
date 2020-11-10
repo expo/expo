@@ -197,7 +197,11 @@ public class LocalAuthenticationModule extends ExportedModule {
           promptInfoBuilder.setNegativeButtonText(cancelLabel);
         }
         BiometricPrompt.PromptInfo promptInfo = promptInfoBuilder.build();
-        mBiometricPrompt.authenticate(promptInfo);
+        try {
+          mBiometricPrompt.authenticate(promptInfo);
+        } catch (NullPointerException ex) {
+          promise.reject("E_INTERNAL_ERRROR", "Canceled authentication due to an internal error");
+        }
       }
     });
   }
