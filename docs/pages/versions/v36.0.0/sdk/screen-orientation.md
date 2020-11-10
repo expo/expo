@@ -3,7 +3,7 @@ title: ScreenOrientation
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo/src/ScreenOrientation'
 ---
 
-Screen Orientation is defined as the orientation in which graphics are painted on the device. For example, the figure below has a device in a vertical and horizontal physical orientation, but a portrait screen orientation. For physical device orientation, see the orientation section of [Device Motion](../devicemotion/).
+Screen Orientation is defined as the orientation in which graphics are painted on the device. For example, the figure below has a device in a vertical and horizontal physical orientation, but a portrait screen orientation. For physical device orientation, see the orientation section of [Device Motion](devicemotion.md).
 
 ![Portrait orientation in different physical orientations](/static/images/screen-orientation-portrait.png)
 
@@ -11,7 +11,7 @@ Screen Orientation is defined as the orientation in which graphics are painted o
 
 On both iOS and Android platforms, changes to the screen orientation will override any system settings or user preferences. On Android, it is possible to change the screen orientation while taking the user's preferred orientation into account. On iOS, user and system settings are not accessible by the application and any changes to the screen orientation will override existing settings.
 
-> Web support has [limited support](https://caniuse.com/#feat=deviceorientation). For improved resize detection on mobile Safari, check out the docs on using [Resize Observer in Expo web](../../guides/customizing-webpack/#resizeobserver).
+> Web support has [limited support](https://caniuse.com/#feat=deviceorientation). For improved resize detection on mobile Safari, check out the docs on using [Resize Observer in Expo web](../../../guides/customizing-webpack.md#resizeobserver).
 
 #### Platform Compatibility
 
@@ -21,7 +21,7 @@ On both iOS and Android platforms, changes to the screen orientation will overri
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not yet available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps.
+This API is pre-installed in [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps. It is not yet available for [bare](../../../introduction/managed-vs-bare.md#bare-workflow) React Native apps.
 
 ## API
 

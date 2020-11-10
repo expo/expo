@@ -52,7 +52,7 @@ The command will create an `eas.json` file in the root directory, and then you'l
 
 This is a minimal example configuration for Android and iOS builds. It defines a single build profile named `release` (you can have multiple build profiles like `release`, `debug`, `testing`, etc.) for each platform. Each profile declares that the project is a generic React Native project (unlike a managed Expo project which doesn't contain native code in the project tree).
 
-If you want to learn more about `eas.json` see the [Configuration with eas.json](../eas-json/) page.
+If you want to learn more about `eas.json` see the [Configuration with eas.json](eas-json.md) page.
 
 Once you've created `eas.json`, new Expo CLI commands should become available for you:
 

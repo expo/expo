@@ -106,7 +106,7 @@ Apple Maps will work with no extra configuration. For Google Maps:
 9.  Press `Save` and then rebuild the app.
 10. In your code, import `{ PROVIDER_GOOGLE }` from `react-native-maps` and add the property `provider=PROVIDER_GOOGLE` to your `<MapView>`. This property works on both iOS and Android.
 
-**Note:** This can also be accessed through your app's [Constants](../../sdk/constants#constantsmanifest) (via `Constants.manifest.ios.config.googleMapsApiKey`) if you'd prefer not to have the API key in your code.
+**Note:** This can also be accessed through your app's [Constants](../sdk/constants.md#constantsmanifest) (via `Constants.manifest.ios.config.googleMapsApiKey`) if you'd prefer not to have the API key in your code.
 
 ### Deploying Google Maps to bare for iOS
 

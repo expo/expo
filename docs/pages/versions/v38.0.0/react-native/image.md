@@ -125,13 +125,13 @@ dependencies {
 | ----- | -------- |
 | style | No       |
 
-- [Image Style Props...](../image-style-props/#props)
+- [Image Style Props...](image-style-props.md#props)
 
-- [Layout Props...](../layout-props/#props)
+- [Layout Props...](layout-props.md#props)
 
-- [Shadow Props...](../shadow-props/#props)
+- [Shadow Props...](shadow-props.md#props)
 
-- [Transforms...](../transforms/#props)
+- [Transforms...](transforms.md#props)
 
 - **`borderTopRightRadius`**: number
 

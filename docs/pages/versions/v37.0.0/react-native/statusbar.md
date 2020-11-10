@@ -49,7 +49,7 @@ The background color of the status bar.
 
 | Type                | Required | Platform |
 | ------------------- | -------- | -------- |
-| [color](../colors/) | No       | Android  |
+| [color](colors.md) | No       | Android  |
 
 ---
 
@@ -191,7 +191,7 @@ Set the status bar style
 
 | Name     | Type                                           | Required | Description               |
 | -------- | ---------------------------------------------- | -------- | ------------------------- |
-| style    | [StatusBarStyle](../statusbar/#statusbarstyle) | Yes      | Status bar style to set   |
+| style    | [StatusBarStyle](statusbar.md#statusbarstyle) | Yes      | Status bar style to set   |
 | animated | boolean                                        | No       | Animate the style change. |
 
 ---
@@ -211,7 +211,7 @@ Show or hide the status bar
 | Name      | Type                                                   | Required | Description                                                      |
 | --------- | ------------------------------------------------------ | -------- | ---------------------------------------------------------------- |
 | hidden    | boolean                                                | Yes      | Hide the status bar.                                             |
-| animation | [StatusBarAnimation](../statusbar/#statusbaranimation) | No       | Optional animation when changing the status bar hidden property. |
+| animation | [StatusBarAnimation](statusbar.md#statusbaranimation) | No       | Optional animation when changing the status bar hidden property. |
 
 ---
 

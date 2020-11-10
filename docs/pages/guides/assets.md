@@ -20,7 +20,7 @@ Each time you publish your app, Expo will upload your assets to Amazon CloudFron
 
 ## Customizing supported asset extensions
 
-Sometimes you will want to use a file type that is not supported out of the box in Expo apps. For example, you may want to use the `.db` to import a database into your app. Read more about how to customize the asset extensions supported by Metro for iOS and Android in [Customizing Metro](../../guides/customizing-metro/) and learn about how you can customize Webpack for Web in [Customizing Webpack](../../guides/customizing-webpack/).
+Sometimes you will want to use a file type that is not supported out of the box in Expo apps. For example, you may want to use the `.db` to import a database into your app. Read more about how to customize the asset extensions supported by Metro for iOS and Android in [Customizing Metro](../guides/customizing-metro.md) and learn about how you can customize Webpack for Web in [Customizing Webpack](../guides/customizing-webpack.md).
 
 ## Optimization
 
@@ -37,4 +37,4 @@ Note: glob patterns are always relative to the project root regardless of where 
 
 ### Fonts
 
-Some assets are too important to start your app without. Fonts often fall into this category. On the web the font loading problem is known by several acronyms: FOUT, FOIT, and FOFT, which stand for Flash of Unstyled Text, Flash of Invisible Text, and Flash of Faux Text ([read more here](https://css-tricks.com/fout-foit-foft/)). The default behaviour with the icon-font-powered [@expo/vector-icons](../icons/#icons) icons is a FOIT on first load, and on subsequent loads the font will be automatically cached. Users have higher standards for mobile than web, so you might want to take it a step further by preloading and caching the font and important images during the initial loading screen.
+Some assets are too important to start your app without. Fonts often fall into this category. On the web the font loading problem is known by several acronyms: FOUT, FOIT, and FOFT, which stand for Flash of Unstyled Text, Flash of Invisible Text, and Flash of Faux Text ([read more here](https://css-tricks.com/fout-foit-foft/)). The default behaviour with the icon-font-powered [@expo/vector-icons](icons.md#icons) icons is a FOIT on first load, and on subsequent loads the font will be automatically cached. Users have higher standards for mobile than web, so you might want to take it a step further by preloading and caching the font and important images during the initial loading screen.

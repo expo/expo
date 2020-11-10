@@ -5,7 +5,7 @@ sidebar_title: Walkthrough
 
 import Video from '~/components/plugins/Video'
 
-If you're a top-down learner and you would like to get a high-level understanding of what it looks like to build an app with the bare workflow, this is the right place for you. **Feel free to skip this if you just want to write code as quickly as possible** &mdash; [Up and Running](../hello-world) is for you.
+If you're a top-down learner and you would like to get a high-level understanding of what it looks like to build an app with the bare workflow, this is the right place for you. **Feel free to skip this if you just want to write code as quickly as possible** &mdash; [Up and Running](hello-world.md) is for you.
 
 ## Initialize a project
 
@@ -69,6 +69,6 @@ This is entirely up to you! The Expo build service does not yet support builds f
 
 ## That's it!
 
-You are now, at a very high level, familiar with the steps you would go through to get started on building an app with the bare workflow. Continue on to [Up and Running](../hello-world/) to get started coding!
+You are now, at a very high level, familiar with the steps you would go through to get started on building an app with the bare workflow. Continue on to [Up and Running](hello-world.md) to get started coding!
 
-Are you feeling intimidated? It might be better for you to start out with the managed workflow if you're new to this. Check out the [managed workflow walkthrough](../../introduction/walkthrough/) for more information.
+Are you feeling intimidated? It might be better for you to start out with the managed workflow if you're new to this. Check out the [managed workflow walkthrough](../introduction/walkthrough.md) for more information.

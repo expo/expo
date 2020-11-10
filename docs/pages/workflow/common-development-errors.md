@@ -8,13 +8,13 @@ Here you will find a list of errors that are commonly encountered by developers 
 
 - Either you do not have `expo-cli` installed or it is not properly configured in your `$PATH`.
 
-- [Install expo-cli](../../get-started/installation/) if you have not already. Otherwise, check how to set your `$PATH` based on your OS.
+- [Install expo-cli](../get-started/installation.md) if you have not already. Otherwise, check how to set your `$PATH` based on your OS.
 
 ### Metro bundler ECONNREFUSED 127.0.0.1:19001
 
 - An error is preventing the connection to your local development server.
 
-- Run `rm -rf .expo` to clear your local state. Check for firewalls or [proxies](../../guides/troubleshooting-proxies/) affecting the network you are currently connected to.
+- Run `rm -rf .expo` to clear your local state. Check for firewalls or [proxies](../guides/troubleshooting-proxies.md) affecting the network you are currently connected to.
 
 ### Module AppRegistry is not a registered callable module (calling runApplication)
 
@@ -32,4 +32,4 @@ Here you will find a list of errors that are commonly encountered by developers 
 
 - The SDK version you are running has been deprecated and is no longer supported.
 
-- [Upgrade your project](../../workflow/upgrading-expo-sdk-walkthrough/) to a supported SDK version. If you are using a supported version and see this message, you'll need to update your Expo client app. If you experience this error in a standalone app, make sure you have published a JS bundle for the specific SDK version and release channel for the given binary via `expo publish`.
+- [Upgrade your project](../workflow/upgrading-expo-sdk-walkthrough.md) to a supported SDK version. If you are using a supported version and see this message, you'll need to update your Expo client app. If you experience this error in a standalone app, make sure you have published a JS bundle for the specific SDK version and release channel for the given binary via `expo publish`.

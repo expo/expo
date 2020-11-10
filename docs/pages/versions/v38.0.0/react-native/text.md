@@ -545,7 +545,7 @@ The highlight color of the text.
 | ----- | -------- |
 | style | No       |
 
-- [View Style Props...](../view-style-props/#style)
+- [View Style Props...](view-style-props.md#style)
 
 - **`textShadowOffset`**: object: {width: number,height: number}
 

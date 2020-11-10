@@ -86,8 +86,8 @@ Refer to the [Animations](https://reactnative.dev/docs/animations#animated-api) 
 
 There are two value types you can use with `Animated`:
 
-- [`Animated.Value()`](../animated/#value) for single values
-- [`Animated.ValueXY()`](../animated/#valuexy) for vectors
+- [`Animated.Value()`](animated.md#value) for single values
+- [`Animated.ValueXY()`](animated.md#valuexy) for vectors
 
 `Animated.Value` can bind to style properties or other props, and can be interpolated as well. A single `Animated.Value` can drive any number of properties.
 
@@ -95,9 +95,9 @@ There are two value types you can use with `Animated`:
 
 `Animated` provides three types of animation types. Each animation type provides a particular animation curve that controls how your values animate from their initial value to the final value:
 
-- [`Animated.decay()`](../animated/#decay) starts with an initial velocity and gradually slows to a stop.
-- [`Animated.spring()`](../animated/#spring) provides a basic spring physics model.
-- [`Animated.timing()`](../animated/#timing) animates a value over time using [easing functions](../easing/).
+- [`Animated.decay()`](animated.md#decay) starts with an initial velocity and gradually slows to a stop.
+- [`Animated.spring()`](animated.md#spring) provides a basic spring physics model.
+- [`Animated.timing()`](animated.md#timing) animates a value over time using [easing functions](easing.md).
 
 In most cases, you will be using `timing()`. By default, it uses a symmetric easeInOut curve that conveys the gradual acceleration of an object to full speed and concludes by gradually decelerating to a stop.
 
@@ -121,7 +121,7 @@ You can use the native driver by specifying `useNativeDriver: true` in your anim
 
 Only animatable components can be animated. These unique components do the magic of binding the animated values to the properties, and do targeted native updates to avoid the cost of the react render and reconciliation process on every frame. They also handle cleanup on unmount so they are safe by default.
 
-- [`createAnimatedComponent()`](../animated/#createanimatedcomponent) can be used to make a component animatable.
+- [`createAnimatedComponent()`](animated.md#createanimatedcomponent) can be used to make a component animatable.
 
 `Animated` exports the following animatable components using the above wrapper:
 
@@ -136,10 +136,10 @@ Only animatable components can be animated. These unique components do the magic
 
 Animations can also be combined in complex ways using composition functions:
 
-- [`Animated.delay()`](../animated/#delay) starts an animation after a given delay.
-- [`Animated.parallel()`](../animated/#parallel) starts a number of animations at the same time.
-- [`Animated.sequence()`](../animated/#sequence) starts the animations in order, waiting for each to complete before starting the next.
-- [`Animated.stagger()`](../animated/#stagger) starts animations in order and in parallel, but with successive delays.
+- [`Animated.delay()`](animated.md#delay) starts an animation after a given delay.
+- [`Animated.parallel()`](animated.md#parallel) starts a number of animations at the same time.
+- [`Animated.sequence()`](animated.md#sequence) starts the animations in order, waiting for each to complete before starting the next.
+- [`Animated.stagger()`](animated.md#stagger) starts animations in order and in parallel, but with successive delays.
 
 Animations can also be chained together by setting the `toValue` of one animation to be another `Animated.Value`. See [Tracking dynamic values](https://reactnative.dev/docs/animations#tracking-dynamic-values) in the Animations guide.
 
@@ -149,17 +149,17 @@ By default, if one animation is stopped or interrupted, then all other animation
 
 You can combine two animated values via addition, subtraction, multiplication, division, or modulo to make a new animated value:
 
-- [`Animated.add()`](../animated/#add)
-- [`Animated.subtract()`](../animated/#subtract)
-- [`Animated.divide()`](../animated/#divide)
-- [`Animated.modulo()`](../animated/#modulo)
-- [`Animated.multiply()`](../animated/#multiply)
+- [`Animated.add()`](animated.md#add)
+- [`Animated.subtract()`](animated.md#subtract)
+- [`Animated.divide()`](animated.md#divide)
+- [`Animated.modulo()`](animated.md#modulo)
+- [`Animated.multiply()`](animated.md#multiply)
 
 ### Interpolation
 
 The `interpolate()` function allows input ranges to map to different output ranges. By default, it will extrapolate the curve beyond the ranges given, but you can also have it clamp the output value. It uses linear interpolation by default but also supports easing functions.
 
-- [`interpolate()`](../animated/#interpolate)
+- [`interpolate()`](animated.md#interpolate)
 
 Read more about interpolation in the [Animation](https://reactnative.dev/docs/animations#interpolation) guide.
 
@@ -167,7 +167,7 @@ Read more about interpolation in the [Animation](https://reactnative.dev/docs/an
 
 Gestures, like panning or scrolling, and other events can map directly to animated values using `Animated.event()`. This is done with a structured map syntax so that values can be extracted from complex event objects. The first level is an array to allow mapping across multiple args, and that array contains nested objects.
 
-- [`Animated.event()`](../animated/#event)
+- [`Animated.event()`](animated.md#event)
 
 For example, when working with horizontal scrolling gestures, you would do the following in order to map `event.nativeEvent.contentOffset.x` to `scrollX` (an `Animated.Value`):
 
@@ -220,7 +220,7 @@ static timing(value, config)
 
 ```
 
-Animates a value along a timed easing curve. The [`Easing`](../easing/) module has tons of predefined curves, or you can use your own function.
+Animates a value along a timed easing curve. The [`Easing`](easing.md) module has tons of predefined curves, or you can use your own function.
 
 Config is an object that may have the following options:
 
@@ -512,7 +512,7 @@ Stops any running animation and resets the value to its original.
 
 Standard value class for driving animations. Typically initialized with `new Animated.Value(0);`
 
-You can read more about `Animated.Value` API on the separate [page](../animatedvalue/).
+You can read more about `Animated.Value` API on the separate [page](animatedvalue.md).
 
 ---
 
@@ -520,7 +520,7 @@ You can read more about `Animated.Value` API on the separate [page](../animatedv
 
 2D value class for driving 2D animations, such as pan gestures.
 
-+You can read more about `Animated.ValueXY` API on the separate [page](../animatedvaluexy/).
++You can read more about `Animated.ValueXY` API on the separate [page](animatedvaluexy.md).
 
 ---
 

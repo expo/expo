@@ -16,7 +16,7 @@ A performant interface for rendering basic, flat lists, supporting the most hand
 - ScrollToIndex support.
 - Multiple column support.
 
-If you need section support, use [`<SectionList>`](../sectionlist/).
+If you need section support, use [`<SectionList>`](sectionlist.md).
 
 ### Basic Example:
 
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-To render multiple columns, use the [`numColumns`](../flatlist/#numcolumns) prop. Using this approach instead of a `flexWrap` layout can prevent conflicts with the item height logic.
+To render multiple columns, use the [`numColumns`](flatlist.md#numcolumns) prop. Using this approach instead of a `flexWrap` layout can prevent conflicts with the item height logic.
 
 ````
 
@@ -249,7 +249,7 @@ Example usage:
 
 ### `data`
 
-For simplicity, data is a plain array. If you want to use something else, like an immutable list, use the underlying [`VirtualizedList`](../virtualizedlist/) directly.
+For simplicity, data is a plain array. If you want to use something else, like an immutable list, use the underlying [`VirtualizedList`](virtualizedlist.md) directly.
 
 | Type  | Required |
 | ----- | -------- |

@@ -3,7 +3,7 @@ id: view
 title: View
 ---
 
-The most fundamental component for building a UI, `View` is a container that supports layout with [flexbox](../flexbox/), [style](../style/), [some touch handling](../handling-touches/), and [accessibility](../accessibility/) controls. `View` maps directly to the native view equivalent on whatever platform React Native is running on, whether that is a `UIView`, `<div>`, `android.view`, etc.
+The most fundamental component for building a UI, `View` is a container that supports layout with [flexbox](flexbox.md), [style](style.md), [some touch handling](handling-touches.md), and [accessibility](accessibility.md) controls. `View` maps directly to the native view equivalent on whatever platform React Native is running on, whether that is a `UIView`, `<div>`, `android.view`, etc.
 
 `View` is designed to be nested inside other views and can have 0 to many children of any type.
 
@@ -28,7 +28,7 @@ class ViewBoxesWithColorAndText extends Component {
 }
 ```
 
-> `View`s are designed to be used with [`StyleSheet`](../style/) for clarity and performance, although inline styles are also supported.
+> `View`s are designed to be used with [`StyleSheet`](style.md) for clarity and performance, although inline styles are also supported.
 
 ### Synthetic Touch Events
 
@@ -137,7 +137,7 @@ An accessibility hint helps users understand what will happen when they perform 
 
 Describes the current state of a component to the user of an assistive technology.
 
-See the [Accessibility guide](../accessibility/#accessibilitystate-ios-android) for more information.
+See the [Accessibility guide](accessibility.md#accessibilitystate-ios-android) for more information.
 
 | Type                                                                                           | Required |
 | ---------------------------------------------------------------------------------------------- | -------- |
@@ -149,7 +149,7 @@ See the [Accessibility guide](../accessibility/#accessibilitystate-ios-android) 
 
 Represents the current value of a component. It can be a textual description of a component's value, or for range-based components, such as sliders and progress bars, it contains range information (minimum, current, and maximum).
 
-See the [Accessibility guide](../accessibility/#accessibilityvalue-ios-android) for more information.
+See the [Accessibility guide](accessibility.md#accessibilityvalue-ios-android) for more information.
 
 | Type                                                          | Required |
 | ------------------------------------------------------------- | -------- |
@@ -161,7 +161,7 @@ See the [Accessibility guide](../accessibility/#accessibilityvalue-ios-android) 
 
 Accessibility actions allow an assistive technology to programmatically invoke the actions of a component. The `accessibilityActions` property should contain a list of action objects. Each action object should contain the field name and label.
 
-See the [Accessibility guide](../accessibility/#accessibility-actions) for more information.
+See the [Accessibility guide](accessibility.md#accessibility-actions) for more information.
 
 | Type  | Required |
 | ----- | -------- |
@@ -173,7 +173,7 @@ See the [Accessibility guide](../accessibility/#accessibility-actions) for more 
 
 Invoked when the user performs the accessibility actions. The only argument to this function is an event containing the name of the action to perform.
 
-See the [Accessibility guide](../accessibility/#accessibility-actions) for more information.
+See the [Accessibility guide](accessibility.md#accessibility-actions) for more information.
 
 | Type     | Required |
 | -------- | -------- |
@@ -215,7 +215,7 @@ When `accessible` is `true`, the system will invoke this function when the user 
 
 A value indicating whether VoiceOver should ignore the elements within views that are siblings of the receiver. Default is `false`.
 
-See the [Accessibility guide](../accessibility/#accessibilityviewismodal-ios) for more information.
+See the [Accessibility guide](accessibility.md#accessibilityviewismodal-ios) for more information.
 
 | Type | Required | Platform |
 | ---- | -------- | -------- |
@@ -227,7 +227,7 @@ See the [Accessibility guide](../accessibility/#accessibilityviewismodal-ios) fo
 
 A value indicating whether the accessibility elements contained within this accessibility element are hidden. Default is `false`.
 
-See the [Accessibility guide](../accessibility/#accessibilityelementshidden-ios) for more information.
+See the [Accessibility guide](accessibility.md#accessibilityelementshidden-ios) for more information.
 
 | Type | Required | Platform |
 | ---- | -------- | -------- |
@@ -239,7 +239,7 @@ See the [Accessibility guide](../accessibility/#accessibilityelementshidden-ios)
 
 A value indicating this view should or should not be inverted when color inversion is turned on. A value of `true` will tell the view to not be inverted even if color inversion is turned on.
 
-See the [Accessibility guide](../accessibility/#accessibilityignoresinvertcolors) for more information.
+See the [Accessibility guide](accessibility.md#accessibilityignoresinvertcolors) for more information.
 
 | Type | Required | Platform |
 | ---- | -------- | -------- |
@@ -484,7 +484,7 @@ This is a reserved performance property exposed by `RCTView` and is useful for s
 
 | Type                                | Required |
 | ----------------------------------- | -------- |
-| [view styles](../view-style-props/) | No       |
+| [view styles](view-style-props.md) | No       |
 
 ---
 

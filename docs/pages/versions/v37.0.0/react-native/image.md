@@ -105,11 +105,11 @@ dependencies {
 | ----- | -------- |
 | style | No       |
 
-- [Layout Props...](../layout-props/#props)
+- [Layout Props...](layout-props.md#props)
 
-- [Shadow Props...](../shadow-props/#props)
+- [Shadow Props...](shadow-props.md#props)
 
-- [Transforms...](../transforms/#props)
+- [Transforms...](transforms.md#props)
 
 - **`borderTopRightRadius`**: number
 
@@ -119,13 +119,13 @@ dependencies {
 
 - **`borderBottomRightRadius`**: number
 
-- **`borderColor`**: [color](../colors/)
+- **`borderColor`**: [color](colors.md)
 
 - **`borderRadius`**: number
 
 - **`borderTopLeftRadius`**: number
 
-- **`backgroundColor`**: [color](../colors/)
+- **`backgroundColor`**: [color](colors.md)
 
 - **`borderWidth`**: number
 
@@ -135,7 +135,7 @@ dependencies {
 
 - **`resizeMode`**: Object.keys(ImageResizeMode)
 
-- **`tintColor`**: [color](../colors/)
+- **`tintColor`**: [color](colors.md)
 
   Changes the color of all the non-transparent pixels to the tintColor.
 
@@ -228,7 +228,7 @@ Determines how to resize the image when the frame doesn't match the raw image di
 
 The image source (either a remote URL or a local file resource).
 
-This prop can also contain several remote URLs, specified together with their width and height and potentially with scale/other URI arguments. The native side will then choose the best `uri` to display based on the measured size of the image container. A `cache` property can be added to control how networked request interacts with the local cache. (For more information see [Cache Control for Images](../images/#cache-control-ios-only)).
+This prop can also contain several remote URLs, specified together with their width and height and potentially with scale/other URI arguments. The native side will then choose the best `uri` to display based on the measured size of the image container. A `cache` property can be added to control how networked request interacts with the local cache. (For more information see [Cache Control for Images](images.md#cache-control-ios-only)).
 
 The currently supported formats are `png`, `jpg`, `jpeg`, `bmp`, `gif`, `webp` (Android only), `psd` (iOS only). In addition, iOS supports several RAW image formats. Refer to Apple's documentation for the current list of supported camera models (for iOS 12, see https://support.apple.com/en-ca/HT208967).
 
