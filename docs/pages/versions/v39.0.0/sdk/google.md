@@ -16,7 +16,7 @@ You'll get an access token after a successful login. Once you have the token, if
 
 ## Installation
 
-For [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps, you'll need to run `expo install expo-google-app-auth`. To use it in a [bare](../../../introduction/managed-vs-bare.md#bare-workflow) React Native app, you will need to run `npx pod-install` and do a new build after installing the package because this library pulls in [**`expo-app-auth`**][expo-app-auth] as a dependency.
+For [managed][managed-workflow] apps, you'll need to run `expo install expo-google-app-auth`. To use it in a [bare][bare-workflow] React Native app, you will need to run `npx pod-install` and do a new build after installing the package because this library pulls in [**`expo-app-auth`**][expo-app-auth] as a dependency.
 
 ## API
 
@@ -286,10 +286,10 @@ let result = await AuthSession.startAsync({
 
 [rn-fetch]: https://reactnative.dev/docs/network.html#fetch
 [google-api-explorer]: https://developers.google.com/apis-explorer/
-[managed-workflow]: ../../introduction/managed-vs-bare/#managed-workflow
-[bare-workflow]: ../../introduction/managed-vs-bare/#bare-workflow
-[expo-app-auth]: ../app-auth
-[expo-app-session]: ../auth-session
+[managed-workflow]: ../../../introduction/managed-vs-bare.md#managed-workflow
+[bare-workflow]: ../../../introduction/managed-vs-bare.md#bare-workflow
+[expo-app-auth]: app-auth.md
+[expo-app-session]: auth-session.md
 [auth-loginhint]: https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
 [g-using-apis]: https://gsuite-developers.googleblog.com/2012/01/tips-on-using-apis-discovery-service.html
 [g-creds]: https://console.developers.google.com/apis/credentials

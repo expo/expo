@@ -15,7 +15,7 @@ Let's go through some of our recommended practices when it comes to each of thes
 
 These are way more common, and we won't delve too much into how to approach these. Usually, debugging when running your app locally with `expo-cli` is pretty easy, thanks to [all the tools available in the Expo client app](#developer-menu).
 
-Sometimes you'll be able to tell exactly what's wrong just by the [stacktrace](../../tutorial/errors/#redbox-errors-and-stack-traces), but other times the error message is a little more cryptic. For errors that aren't as intuitive to solve, here's a good list of steps to take:
+Sometimes you'll be able to tell exactly what's wrong just by the [stacktrace](../get-started/errors.md#redbox-errors-and-stack-traces), but other times the error message is a little more cryptic. For errors that aren't as intuitive to solve, here's a good list of steps to take:
 
 - Search for the error message in Google and [Stack Overflow](https://stackoverflow.com/questions), it's likely you're not the first person to ever run into this
 - **Isolate the code that's throwing the error**. This step is _vital_ in fixing obscure errors. To do this:
