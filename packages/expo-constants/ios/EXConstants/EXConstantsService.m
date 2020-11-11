@@ -8,7 +8,10 @@
 #import <EXConstants/EXConstantsService.h>
 
 static NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
-static NSString * const kEXConstantsExecutionEnvironmentBare = @"bare";
+
+NSString * const EXConstantsExecutionEnvironmentBare = @"bare";
+NSString * const EXConstantsExecutionEnvironmentStandalone = @"standalone";
+NSString * const EXConstantsExecutionEnvironmentStoreClient = @"storeClient";
 
 @interface EXConstantsService ()
 
@@ -38,7 +41,7 @@ UM_REGISTER_MODULE();
 
   return @{
            @"sessionId": _sessionId,
-           @"executionEnvironment": kEXConstantsExecutionEnvironmentBare,
+           @"executionEnvironment": EXConstantsExecutionEnvironmentBare,
            @"statusBarHeight": @([self statusBarHeight]),
            @"deviceYearClass": [[self class] deviceYear],
            @"deviceName": [[self class] deviceName],

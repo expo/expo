@@ -16,6 +16,7 @@
 #import "EXVersions.h"
 #import "EXAppViewController.h"
 #import <UMCore/UMModuleRegistryProvider.h>
+#import <EXConstants/EXConstantsService.h>
 #import <EXSplashScreen/EXSplashScreenService.h>
 
 #import <React/RCTBridge.h>
@@ -721,9 +722,9 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 - (NSString *)_executionEnvironment
 {
   if ([EXEnvironment sharedEnvironment].isDetached) {
-    return @"standalone";
+    return EXConstantsExecutionEnvironmentStandalone;
   } else {
-    return @"storeClient";
+    return EXConstantsExecutionEnvironmentStoreClient;
   }
 }
 

@@ -31,7 +31,22 @@ public class ConstantsService implements InternalModule, ConstantsInterface {
   private SharedPreferences sharedPref;
   private static final String PREFERENCES_FILE_NAME = "host.exp.exponent.SharedPreferences";
   private static final String UUID_KEY = "uuid";
-  private static final String EXECUTION_ENVIRONMENT_BARE = "bare";
+
+  public enum ExecutionEnvironment {
+    BARE("bare"),
+    STANDALONE("standalone"),
+    STORE_CLIENT("storeClient");
+
+    private final String mString;
+
+    ExecutionEnvironment(String string) {
+      mString = string;
+    }
+
+    public String getString() {
+      return mString;
+    }
+  }
 
   private static int convertPixelsToDp(float px, Context context) {
     Resources resources = context.getResources();
@@ -65,7 +80,7 @@ public class ConstantsService implements InternalModule, ConstantsInterface {
     Map<String, Object> constants = new HashMap<>();
 
     constants.put("sessionId", mSessionId);
-    constants.put("executionEnvironment", EXECUTION_ENVIRONMENT_BARE);
+    constants.put("executionEnvironment", ExecutionEnvironment.BARE.getString());
     constants.put("statusBarHeight", getStatusBarHeight());
     constants.put("deviceYearClass", getDeviceYearClass());
     constants.put("deviceName", getDeviceName());
