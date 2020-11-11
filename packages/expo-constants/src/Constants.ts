@@ -31,15 +31,8 @@ if (!ExponentConstants) {
   );
 }
 
-// On Android we pass the manifest in JSON form so this step is necessary
 let manifest = null;
-if (ExponentConstants && ExponentConstants.manifest) {
-  manifest = ExponentConstants.manifest;
-  if (typeof manifest === 'string') {
-    manifest = JSON.parse(manifest);
-  }
-}
-// If expo-updates defines a non-empty manifest, use that one instead
+// If expo-updates defines a non-empty manifest, prefer that one
 if (NativeModulesProxy.ExpoUpdates) {
   let updatesManifest;
   if (NativeModulesProxy.ExpoUpdates.manifest) {
@@ -49,6 +42,15 @@ if (NativeModulesProxy.ExpoUpdates) {
   }
   if (updatesManifest && Object.keys(updatesManifest).length > 0) {
     manifest = updatesManifest;
+  }
+}
+
+// Fall back to ExponentConstants.manifest if we don't have one from Updates
+if (!manifest && ExponentConstants && ExponentConstants.manifest) {
+  manifest = ExponentConstants.manifest;
+  // On Android we pass the manifest in JSON form so this step is necessary
+  if (typeof manifest === 'string') {
+    manifest = JSON.parse(manifest);
   }
 }
 

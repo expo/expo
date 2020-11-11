@@ -11,7 +11,7 @@
 
 ### 🐛 Bug fixes
 
-- If `manifest` is undefined, try to grab it from `expo-updates` ([#10668](https://github.com/expo/expo/pull/10668) by [@esamelson](https://github.com/esamelson))
+- If `manifest` is defined on `expo-updates` then use it instead of `ExponentConstants.manifest` ([#10668](https://github.com/expo/expo/pull/10668) by [@esamelson](https://github.com/esamelson))
 
 ## 9.2.0 — 2020-08-18
 
