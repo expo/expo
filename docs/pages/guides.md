@@ -34,4 +34,4 @@ The bare workflow section provides less guides than are available in the managed
 
 ## Looking for something else?
 
-The [API Reference](../versions/latest/) includes comprehensive documentation around the built-in APIs in the Expo SDK and how to use them.
+The [API Reference](versions/latest/index.md) includes comprehensive documentation around the built-in APIs in the Expo SDK and how to use them.
