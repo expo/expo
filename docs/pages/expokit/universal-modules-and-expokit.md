@@ -60,4 +60,4 @@ To add FaceDetector:
 2.  Add `pod 'EXFaceDetector', path: '../node_modules/expo-face-detector/ios'` to your `Podfile`.
 3.  Re-run `npx pod-install`.
 
-To add `Payments` or `AR`, add the [respective subspec](https://github.com/expo/expo/blob/master/ExpoKit.podspec) to your `ExpoKit` dependency in your `Podfile`, and re-run `npx pod-install`.
+To add `Payments` or `AR`, add the [respective subspec](https://github.com/expo/expo/blob/sdk-38/ExpoKit.podspec) to your `ExpoKit` dependency in your `Podfile`, and re-run `npx pod-install`.
