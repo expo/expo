@@ -1,4 +1,4 @@
-// Gradle script for downloading assets that make up an OTA update and bundling them into the APK
+// Gradle script for generating serialized public app config (from app.config.js/ts or app.json) and bundling it into the APK 
 
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.util.GradleVersion
@@ -47,7 +47,7 @@ afterEvaluate {
       inputs.files fileTree(dir: projectRoot, excludes: inputExcludes)
       outputs.dir assetsDir
 
-      // Set up the call to exp
+      // Switch to project root and generate the app config
       workingDir projectRoot
 
       if (Os.isFamily(Os.FAMILY_WINDOWS)) {
