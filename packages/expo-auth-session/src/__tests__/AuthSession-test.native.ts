@@ -11,10 +11,10 @@ function mockConstants(constants: { [key: string]: any } = {}): void {
   });
 }
 
-function eraseConstants(): void {
+function mockBareExecutionEnvironment(): void {
   jest.doMock('expo-constants', () => {
     return {
-      manifest: null,
+      executionEnvironment: 'bare',
     };
   });
 }
@@ -31,13 +31,13 @@ describe('Bare', () => {
   afterEach(() => (console.warn = originalWarn));
 
   it(`Cannot create a URI automatically`, () => {
-    eraseConstants();
+    mockBareExecutionEnvironment();
     const { makeRedirectUri } = require('../AuthSession');
     expect(makeRedirectUri()).toBe('');
     expect(console.warn).toHaveBeenCalled();
   });
   it(`Use native value`, () => {
-    eraseConstants();
+    mockBareExecutionEnvironment();
 
     const { makeRedirectUri } = require('../AuthSession');
     // Test that the path is omitted
@@ -57,6 +57,7 @@ describe('Managed', () => {
           scheme: 'demo',
         },
         appOwnership: 'standalone',
+        executionEnvironment: 'standalone',
       });
       const { makeRedirectUri } = require('../AuthSession');
       expect(makeRedirectUri()).toBe('demo://');
@@ -68,6 +69,7 @@ describe('Managed', () => {
           scheme: 'demo',
         },
         appOwnership: 'standalone',
+        executionEnvironment: 'standalone',
       });
       const { makeRedirectUri } = require('../AuthSession');
       expect(makeRedirectUri({ path: 'bacon' })).toBe('demo:///bacon');
@@ -80,6 +82,7 @@ describe('Managed', () => {
           scheme: 'demo',
         },
         appOwnership: 'standalone',
+        executionEnvironment: 'standalone',
       });
       const { makeRedirectUri } = require('../AuthSession');
       expect(
@@ -102,6 +105,7 @@ describe('Managed', () => {
           scheme: 'demo',
         },
         appOwnership: 'expo',
+        executionEnvironment: 'storeClient',
       });
       const { makeRedirectUri } = require('../AuthSession');
 
@@ -114,6 +118,7 @@ describe('Managed', () => {
           scheme: 'demo',
         },
         appOwnership: 'expo',
+        executionEnvironment: 'storeClient',
       });
 
       const { makeRedirectUri } = require('../AuthSession');
@@ -127,6 +132,7 @@ describe('Managed', () => {
       linkingUri: 'exp://192.168.1.4:19000/',
       experienceUrl: 'exp://192.168.1.4:19000',
       appOwnership: 'expo',
+      executionEnvironment: 'storeClient',
       manifest: {
         scheme: 'demo',
         hostUri: '192.168.1.4:19000',
