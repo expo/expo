@@ -186,10 +186,8 @@ public class ConstantsService implements InternalModule, ConstantsInterface {
   private @Nullable String getAppConfig() {
     try (InputStream stream = mContext.getAssets().open(CONFIG_FILE_NAME)) {
       return IOUtils.toString(stream, StandardCharsets.UTF_8);
-    } catch (FileNotFoundException e) {
-      // do nothing, expected in managed apps
     } catch (Exception e) {
-      Log.e(TAG, "Error serializing JSON app config", e);
+      Log.e(TAG, "Error reading embedded app config", e);
     }
     return null;
   }
