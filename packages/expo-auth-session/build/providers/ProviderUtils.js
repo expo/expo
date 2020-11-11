@@ -11,7 +11,7 @@ export function shouldUseProxy() {
     return Platform.select({
         web: false,
         // Use the proxy in the Expo client.
-        default: !!Constants.manifest && Constants.appOwnership !== 'standalone',
+        default: Constants.executionEnvironment === 'storeClient',
     });
 }
 export function invariantClientId(idName, value, providerName) {

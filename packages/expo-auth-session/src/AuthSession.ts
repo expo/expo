@@ -124,7 +124,7 @@ export function makeRedirectUri({
 }: AuthSessionRedirectUriOptions = {}): string {
   if (Platform.OS !== 'web') {
     // Bare workflow
-    if (!Constants.manifest) {
+    if (Constants.executionEnvironment === 'bare') {
       if (!native) {
         // TODO(Bacon): Link to docs or fyi
         console.warn(
@@ -136,7 +136,7 @@ export function makeRedirectUri({
       return native || '';
     }
     // Should use the user-defined native scheme in standalone builds
-    if (Constants.appOwnership === 'standalone' && native) {
+    if (Constants.executionEnvironment === 'standalone' && native) {
       return native;
     }
   }

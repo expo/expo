@@ -11,7 +11,11 @@ export interface SessionUrlProvider {
 }
 
 export function getSessionUrlProvider(): SessionUrlProvider {
-  if (Constants.manifest && Platform.OS !== 'web') {
+  if (
+    (Constants.executionEnvironment === 'standalone' ||
+      Constants.executionEnvironment === 'storeClient') &&
+    Platform.OS !== 'web'
+  ) {
     return new ManagedSessionUrlProvider();
   }
   return new BareSessionUrlProvider();
