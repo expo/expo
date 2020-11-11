@@ -16,11 +16,9 @@ If you don't have an Android device available to test with, we recommend using t
 
 ![Android SDK location](/static/images/android-studio-sdk-location.png)
 
-- If you are on macOS or Linux, add the Android SDK location to your PATH in `~/.bash_profile` or `~/.bashrc` by running this command: `echo "export ANDROID_SDK=$HOME/Library/Android/sdk" >> ~/.bash_profile`
+- If you are on macOS or Linux, add the Android SDK location to your PATH in `~/.bash_profile` or `~/.zshrc` by running this command: ``echo "export ANDROID_SDK=$HOME/Library/Android/sdk" >> ~/`[[ $SHELL == *"zsh" ]] && echo '.zshrc' || echo '.bash_profile'` ``
 
-- On macOS, you will also need to add `platform-tools` to your `~/.bash_profile` or `~/.bashrc.` by running this command: `echo "export PATH=$HOME/Library/Android/sdk/platform-tools:\$PATH" >> ~/.bash_profile`
-
-> Note that later versions of macOS, such as Catalina, use `zsh` instead of `bash`, so you will update `.zprofile` or `.zshrc` instead.
+- On macOS, you will also need to add `platform-tools` to your `~/.bash_profile` or `~/.zshrc` by running this command: ``echo "export PATH=$HOME/Library/Android/sdk/platform-tools:\$PATH" >> ~/`[[ $SHELL == *"zsh" ]] && echo '.zshrc' || echo '.bash_profile'` ``
 
 - Make sure that you can run `adb` from your terminal.
 
