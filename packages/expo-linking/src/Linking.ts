@@ -111,7 +111,7 @@ export function makeUrl(path: string = '', queryParams: QueryParams = {}): strin
   }
 
   // We don't have a manifest in bare workflow except after publishing, so warn people in development.
-  if (!Constants.manifest) {
+  if (Constants.executionEnvironment === 'bare') {
     console.warn(
       'Linking.makeUrl is not supported in bare workflow. Switch to using your scheme string directly.'
     );

@@ -1,4 +1,5 @@
 import Constants from 'expo-constants';
+import { ExecutionEnvironment } from 'expo-constants/build/Constants.types';
 import { Platform } from 'react-native';
 
 import * as Linking from '../Linking';
@@ -56,17 +57,16 @@ describe('makeUrl queries', () => {
 if (Platform.OS !== 'web') {
   describe('makeUrl in bare workflow', () => {
     const consoleWarn = console.warn;
-    const constantsManifest = Constants.manifest;
+    const executionEnvironment = Constants.executionEnvironment;
 
     beforeEach(() => {
       console.warn = jest.fn();
-      // @ts-ignore:  Constants.manifest type is not currently nullable
-      Constants.manifest = null;
+      Constants.executionEnvironment = ExecutionEnvironment.Bare;
     });
 
     afterEach(() => {
       console.warn = consoleWarn;
-      Constants.manifest = constantsManifest;
+      Constants.executionEnvironment = executionEnvironment;
     });
 
     it('should return empty string and warn', () => {
