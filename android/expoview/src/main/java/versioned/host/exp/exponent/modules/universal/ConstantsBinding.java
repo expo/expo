@@ -28,6 +28,9 @@ public class ConstantsBinding extends ConstantsService implements ConstantsInter
   @Inject
   ExponentSharedPreferences mExponentSharedPreferences;
 
+  private static final String EXECUTION_ENVIRONMENT_STORE_CLIENT = "storeClient";
+  private static final String EXECUTION_ENVIRONMENT_STANDALONE = "standalone";
+
   private final Map<String, Object> mExperienceProperties;
   private JSONObject mManifest;
 
@@ -65,6 +68,7 @@ public class ConstantsBinding extends ConstantsService implements ConstantsInter
     String appOwnership = getAppOwnership();
 
     constants.put("appOwnership", appOwnership);
+    constants.put("executionEnvironment", getExecutionEnvironment());
     constants.putAll(mExperienceProperties);
 
     Map<String, Object> platform = new HashMap<>();
@@ -101,6 +105,14 @@ public class ConstantsBinding extends ConstantsService implements ConstantsInter
       }
     } else {
       return "expo";
+    }
+  }
+
+  private String getExecutionEnvironment() {
+    if (Constants.isStandaloneApp()) {
+      return EXECUTION_ENVIRONMENT_STANDALONE;
+    } else {
+      return EXECUTION_ENVIRONMENT_STORE_CLIENT;
     }
   }
 }

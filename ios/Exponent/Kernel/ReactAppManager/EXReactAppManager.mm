@@ -154,6 +154,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
         @"experienceUrl": RCTNullIfNil(_appRecord.appLoader.manifestUrl? _appRecord.appLoader.manifestUrl.absoluteString: nil),
         @"expoRuntimeVersion": [EXBuildConstants sharedInstance].expoRuntimeVersion,
         @"manifest": _appRecord.appLoader.manifest,
+        @"executionEnvironment": [self _executionEnvironment],
         @"appOwnership": [self _appOwnership],
         @"isHeadless": @(_isHeadless),
         @"supportedExpoSdks": [EXVersions sharedInstance].versions[@"sdkVersions"],
@@ -715,6 +716,15 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     return @"standalone";
   }
   return @"expo";
+}
+
+- (NSString *)_executionEnvironment
+{
+  if ([EXEnvironment sharedEnvironment].isDetached) {
+    return @"standalone";
+  } else {
+    return @"storeClient";
+  }
 }
 
 - (NSString *)scopedDocumentDirectory
