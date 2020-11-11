@@ -186,6 +186,8 @@ public class ConstantsService implements InternalModule, ConstantsInterface {
   private @Nullable String getAppConfig() {
     try (InputStream stream = mContext.getAssets().open(CONFIG_FILE_NAME)) {
       return IOUtils.toString(stream, StandardCharsets.UTF_8);
+    } catch (FileNotFoundException e) {
+      Log.e(TAG, "Error reading embedded app config: app.config does not exist. Make sure you have installed the expo-constants module properly.", e);
     } catch (Exception e) {
       Log.e(TAG, "Error reading embedded app config", e);
     }
