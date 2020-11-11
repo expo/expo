@@ -89,7 +89,7 @@ export default class AppContainer extends React.Component {
 }
 ```
 
-See a full working example in [this Expo template project](https://github.com/expo/expo/blob/master/templates/expo-template-tabs/App.js). You can also run `expo init --template tabs`, which will set you up locally with the same template.
+See a full working example in [this Expo template project](https://github.com/expo/expo/blob/sdk-36/templates/expo-template-tabs/App.js). You can also run `expo init --template tabs`, which will set you up locally with the same template.
 
 ### Publishing Assets
 
