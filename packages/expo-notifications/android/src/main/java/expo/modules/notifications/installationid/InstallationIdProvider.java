@@ -23,6 +23,6 @@ public class InstallationIdProvider extends ExportedModule {
 
   @ExpoMethod
   public void getInstallationIdAsync(Promise promise) {
-    promise.resolve(mInstallationId.getId());
+    promise.resolve(mInstallationId.getOrCreateUUID());
   }
 }
