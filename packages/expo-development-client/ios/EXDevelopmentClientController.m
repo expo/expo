@@ -104,7 +104,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://exdevelopmentclient/dummy";
 }
 
 - (BOOL)onDeepLink:(NSURL *)url options:(NSDictionary *)options {
-  if (![url.host isEqual:@"open-app"]) {
+  if (![url.host isEqual:@"expo-development-client"]) {
     return false;
   }
   
