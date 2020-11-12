@@ -160,8 +160,9 @@ class ProjectsView extends React.Component<Props, State> {
           {this._renderRecentHistory()}
           {this._renderConstants()}
           {/*
+           TODO: remove once support for Android 5.1 is dropped
            Fix for Android 5.1 that has problems with opening sites in WebView in separate activities.
-           See for more info:
+           See for more info: https://github.com/expo/expo/pull/10999
           */}
           {Platform.OS === 'android' && (Device.platformApiLevel ?? 23) < 23 && (
             <WebView style={styles.invisibleWebview} source={{ uri: 'https://expo.io' }} />

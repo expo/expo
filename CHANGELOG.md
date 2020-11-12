@@ -33,6 +33,7 @@ Package-specific changes not released in any SDK will be added here just before 
   - `Updates.reloadAsync` not supported in development ([#10310](https://github.com/expo/expo/pull/10310) by [@esamelson](https://github.com/esamelson))
   - Support absolute `assetUrlOverride` ([#10337](https://github.com/expo/expo/pull/10337) by [@esamelson](https://github.com/esamelson))
   - Handle `./` in `assetUrlOverride` ([#10342](https://github.com/expo/expo/pull/10342) by [@esamelson](https://github.com/esamelson))
+- Fix `react-native-webview` not working in managed apps on Android 5.1. ([#10999](https://github.com/expo/expo/pull/10999) by [@bbarthec](https://github.com/bbarthec))
 
 ## 39.0.0 — 2020-08-18
 
