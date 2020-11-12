@@ -4,11 +4,11 @@
 
 ### 🛠 Breaking changes
 
-- Renamed `MediaLibrary.MediaLibraryAssetChangeEvent` type to `MediaLibrary.MediaLibraryAssetChangeEvent`.
+- Renamed `MediaLibrary.MediaLibraryAssetChangeEvent` type to `MediaLibrary.MediaLibraryAssetsChangeEvent`.
 
 ### 🎉 New features
 
-- Added the `MediaLibrary.presentLimitedLibraryPickerAsync` function, which will display the system prompt allowing the users to change the selected permitted assets` on iOS.
+- Added the `MediaLibrary.presentPermissionsPickerAsync` method that displays the system prompt allowing the user to change the selected permitted assets` on iOS.
 
 ### 🐛 Bug fixes
 
