@@ -64,6 +64,7 @@
     "react-native-reanimated": "~1.13.0",
     "react-native-safe-area-context": "3.1.4",
     "react-native-screens": "~2.10.1",
+    "react-native-webview": "10.7.0",
     "react-redux": "^7.2.0",
     "react-string-replace": "^0.4.4",
     "reanimated-bottom-sheet": "^1.0.0-alpha.18",

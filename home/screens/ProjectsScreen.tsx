@@ -1,8 +1,10 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import Constants from 'expo-constants';
+import * as Device from 'expo-device';
 import { AllStackRoutes } from 'navigation/Navigation.types';
 import * as React from 'react';
 import { Alert, AppState, Clipboard, Platform, StyleSheet, View } from 'react-native';
+import { WebView } from 'react-native-webview';
 
 import ApiV2HttpClient from '../api/ApiV2HttpClient';
 import Config from '../api/Config';
@@ -157,6 +159,13 @@ class ProjectsView extends React.Component<Props, State> {
           />
           {this._renderRecentHistory()}
           {this._renderConstants()}
+          {/*
+           Fix for Android 5.1 that has problems with opening sites in WebView in separate activities.
+           See for more info:
+          */}
+          {Platform.OS === 'android' && (Device.platformApiLevel ?? 23) < 23 && (
+            <WebView style={styles.invisibleWebview} source={{ uri: 'https://expo.io' }} />
+          )}
         </ScrollView>
         <ThemedStatusBar />
       </View>
@@ -407,5 +416,8 @@ const styles = StyleSheet.create({
   },
   supportSdksText: {
     fontSize: 11,
+  },
+  invisibleWebview: {
+    height: 0,
   },
 });
