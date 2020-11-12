@@ -3,6 +3,7 @@ import { EventEmitter, EventSubscription } from 'fbemitter';
 import invariant from 'invariant';
 import uuidv4 from 'uuid/v4';
 
+import getInstallationIdAsync from '../environment/getInstallationIdAsync';
 import LogSerialization from './LogSerialization';
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
@@ -109,7 +110,7 @@ async function _sendNextLogBatchAsync(batch: LogEntry[], logUrl: string): Promis
     Connection: 'keep-alive',
     'Proxy-Connection': 'keep-alive',
     Accept: 'application/json',
-    'Device-Id': Constants.installationId,
+    'Device-Id': await getInstallationIdAsync(),
     'Session-Id': _sessionId,
   };
   if (Constants.deviceName) {
