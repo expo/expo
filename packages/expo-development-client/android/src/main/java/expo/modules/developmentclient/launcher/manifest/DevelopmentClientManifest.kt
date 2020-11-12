@@ -1,7 +1,8 @@
 package expo.modules.developmentclient.launcher.manifest
 
 data class DevelopmentClientAndroidManifestSection(
-  val userInterfaceStyle: String?
+  val userInterfaceStyle: String?,
+  val backgroundColor: String?
 )
 
 data class DevelopmentClientManifest(
@@ -12,5 +13,6 @@ data class DevelopmentClientManifest(
   val mainModuleName: String,
   val logUrl: String,
   val orientation: String?,
-  val android: DevelopmentClientAndroidManifestSection?
+  val android: DevelopmentClientAndroidManifestSection?,
+  val backgroundColor: String?
 )
