@@ -2853,10 +2853,10 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/slider/-/slider-3.0.3.tgz#830167fd757ba70ac638747ba3169b2dbae60330"
   integrity sha512-8IeHfDwJ9/CTUwFs6x90VlobV3BfuPgNLjTgC6dRZovfCWigaZwVNIFFJnHBakK3pW2xErAPwhdvNR4JeNoYbw==
 
-"@react-native-community/viewpager@4.1.6":
-  version "4.1.6"
-  resolved "https://registry.yarnpkg.com/@react-native-community/viewpager/-/viewpager-4.1.6.tgz#788f401f883929e8ac3698e328caef40b146f36e"
-  integrity sha512-zNPQlgrPSB4JHT7w+kB7tTNsbP8H+Tqg1m+AszSArHCwSK+4dl1mgUt7hDd6XX3TTXpH2CdDsRx2cmJTTAweXw==
+"@react-native-community/viewpager@4.2.0":
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/viewpager/-/viewpager-4.2.0.tgz#11a4453715eb45cb0f732c98666ce168b800dfa4"
+  integrity sha512-tptvkyStulE9Jv/LVYSldvydAq3DVOwsfqmy3mTh3NWl1LZwE4gZwZ455jiRmW5StsJ3Q/Od/GGsN0FI8gHAXQ==
 
 "@react-navigation/bottom-tabs@~5.8.0":
   version "5.8.0"

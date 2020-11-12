@@ -85,7 +85,7 @@
     "@react-native-community/picker": "1.6.6",
     "@react-native-community/segmented-control": "2.1.1",
     "@react-native-community/slider": "3.0.3",
-    "@react-native-community/viewpager": "4.1.6",
+    "@react-native-community/viewpager": "4.2.0",
     "expo": "~39.0.1",
     "expo-dev-menu": "0.0.3",
     "expo-dev-menu-interface": "0.0.3",
