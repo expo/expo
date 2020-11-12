@@ -1,6 +1,7 @@
 import { CodedError } from '@unimodules/core';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
+import getInstallationIdAsync from '../environment/getInstallationIdAsync';
 export function guardPermission() {
     if (!('Notification' in window)) {
         throw new Error('The Notification API is not available on this device.');
@@ -19,7 +20,7 @@ export async function getExponentPushTokenAsync() {
     const data = await _subscribeUserToPushAsync();
     const experienceId = `@${Constants.manifest.owner}/${Constants.manifest.slug}`;
     const tokenArguments = {
-        deviceId: Constants.installationId,
+        deviceId: await getInstallationIdAsync(),
         experienceId,
         // Also uses `experienceId` for `appId` because there's no `appId` for web.
         appId: experienceId,
