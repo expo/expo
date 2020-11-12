@@ -17,7 +17,7 @@ import org.unimodules.interfaces.permissions.PermissionsStatus
 
 class LocationRequester(val includeBackgroundPermission: Boolean = false) : PermissionRequester {
   override fun getAndroidPermissions(): List<String> {
-    var list = mutableListOf(
+    val list = mutableListOf(
       Manifest.permission.ACCESS_FINE_LOCATION,
       Manifest.permission.ACCESS_COARSE_LOCATION
     )
