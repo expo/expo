@@ -111,7 +111,7 @@ const App = () => {
 
             <Text style={styles.infoText}>Start a local server with:</Text>
             <View style={styles.codeBox}>
-              <Text style={styles.codeText}>expo start --bare</Text>
+              <Text style={styles.codeText}>EXPO_USE_DEV_SERVER=true EXPO_TARGET=bare expo start</Text>
             </View>
 
             <Text style={styles.connectText}>Connect this client</Text>
