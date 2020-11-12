@@ -219,7 +219,7 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
     React.useCallback(() => {
       // When new media is added or removed, update the library
       const subscription = MediaLibrary.addListener(event => {
-        if ('assetPermissionsChanged' in event && event.assetPermissionsChanged) {
+        if (!event.hasIncrementalChanges) {
           dispatch({ type: 'reset', refreshing: false });
           return;
         }
@@ -277,7 +277,7 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
               title="Change permissions"
               onPress={async () => {
                 try {
-                  await MediaLibrary.presentLimitedLibraryPickerAsync();
+                  await MediaLibrary.presentPermissionsPickerAsync();
                 } catch (e) {
                   Alert.alert(JSON.stringify(e));
                 }

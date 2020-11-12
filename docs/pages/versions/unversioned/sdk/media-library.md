@@ -42,9 +42,9 @@ Checks user's permissions for accessing media library. Alias for `Permissions.ge
 
 A promise that resolves to an object of type [CameraRollPermissionResponse](#medialibrarycamerarollpermissionresponse).
 
-### `MediaLibrary.presentLimitedLibraryPickerAsync()`
+### `MediaLibrary.presentPermissionsPickerAsync()`
 
-**Available only on iOS >= 14.** Allows the user to update the assets which your app will have access to. This method will display a system prompt only if permissions were `granted` and the `accessPrivileges` is equal to `limited`.
+**Available only on iOS >= 14.** Allows the user to update the assets which your app has access to. It displays a system modal only if permissions were `granted` and the `accessPrivileges` is equal to `limited`.
 
 #### Returns
 
@@ -233,7 +233,11 @@ Subscribes for updates in user's media library.
 #### Arguments
 
 - **listener (_function_)** -- A callback that is fired when any assets have been inserted or deleted from the library, or when the user changes which assets they're allowing access to. **On Android** it's invoked with an empty object. **On iOS** it's invoked with an object containing following keys:
-  - **assetPermissionsChanged (_boolean_)** -- Flag indicating a permissions change occurred in the user's limited library selection. If `true`, the user has changed access to individual assets in their library, and you should reload all used assets to comply with the new permissions.
+
+  - **hasIncrementalChanges (_boolean_)** -- Whether the changes could be described by the incremental changes. `true` if the changes are described by the removed/inserted/changed details. `false` indicates that the scope of changes were too large and UI clients should do a full reload, incremental changes could not be provided (for example, if the user has changed access to individual assets in their library).
+
+  Presents only if `hasIncrementalChanges` is `true`:
+
   - **insertedAssets (_array_)** -- Array of [assets](#assets) that have been inserted to the library.
   - **deletedAssets (_array_)** -- Array of [assets](#assets) that have been deleted from the library.
   - **updatedAssets (_array_)** -- Array of [assets](#assets) that have been updated or completed downloading from network storage (iCloud in iOS).

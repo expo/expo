@@ -15,6 +15,10 @@
   "source_files": "EXMediaLibrary/**/*.{h,m}",
   "preserve_paths": "EXMediaLibrary/**/*.{h,m}",
   "requires_arc": true,
+  "frameworks": [
+    "Photos",
+    "PhotosUI"
+  ],
   "dependencies": {
     "UMCore": [
 

@@ -129,8 +129,8 @@ UM_EXPORT_METHOD_AS(requestPermissionsAsync,
                                                                 reject:reject];
 }
 
-UM_EXPORT_METHOD_AS(presentLimitedLibraryPickerAsync,
-                    presentLimitedLibraryPickerAsync:(UMPromiseResolveBlock)resolve
+UM_EXPORT_METHOD_AS(presentPermissionsPickerAsync,
+                    presentPermissionsPickerAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
 #ifdef __IPHONE_14_0
@@ -569,7 +569,7 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
         NSMutableArray *deletedAssets = [NSMutableArray new];
         NSMutableArray *updatedAssets = [NSMutableArray new];
         NSDictionary *body = @{
-                               @"assetPermissionsChanged": @(false),
+                               @"hasIncrementalChanges": @(true),
                                @"insertedAssets": insertedAssets,
                                @"deletedAssets": deletedAssets,
                                @"updatedAssets": updatedAssets
@@ -589,16 +589,12 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
         return;
       }
       
-      if (@available(ios 14, *)) {
-        // Emit event when the user changed the limited permissions.
-        if (!changeDetails.hasIncrementalChanges) {
-          [_eventEmitter sendEventWithName:EXMediaLibraryDidChangeEvent body:@{
-            @"assetPermissionsChanged": @(true),
-            @"insertedAssets": @[],
-            @"deletedAssets": @[],
-            @"updatedAssets": @[]
-          }];
-        }
+      // Emit event when the scope of changes were too large and incremental changes could not be provided.
+      // For example, when the user changed the limited permissions.
+      if (!changeDetails.hasIncrementalChanges) {
+        [_eventEmitter sendEventWithName:EXMediaLibraryDidChangeEvent body:@{
+          @"hasIncrementalChanges": @(false)
+        }];
       }
     }
   }
