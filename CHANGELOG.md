@@ -7,6 +7,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
+- Updated `@react-native-community/datetimepicker` from `3.0.0` to `3.0.4`. ([#10980](https://github.com/expo/expo/pull/10980) by [@cruzach](https://github.com/cruzach))
+
 ### 🛠 Breaking changes
 
 - Removed “info”, “save” and “pin” functionalities from persistent notification shown in notification tray while developing an experience via Expo client on Android. ([#10333](https://github.com/expo/expo/pull/10333), [#10334](https://github.com/expo/expo/pull/10334) by [@sjchmiela](https://github.com/sjchmiela))
