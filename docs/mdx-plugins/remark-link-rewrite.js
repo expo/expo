@@ -19,7 +19,7 @@ const DEFAULT_OPTIONS = {
  * @returns {function} remark plugin
  */
 module.exports = function remarkLinkRewrite(options) {
-  const settings = Object.assign({}, DEFAULT_OPTIONS, options);
+  const settings = { ...DEFAULT_OPTIONS, ...options };
 
   return (tree, file) => {
     // we can't rewrite files without knowing where the file exists
