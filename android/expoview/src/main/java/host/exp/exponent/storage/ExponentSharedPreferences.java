@@ -47,7 +47,6 @@ public class ExponentSharedPreferences {
 
   // Other
   public static final String IS_FIRST_KERNEL_RUN_KEY = "is_first_kernel_run";
-  public static final String LEGACY_UUID_KEY = "uuid";
   public static final String FCM_TOKEN_KEY = "fcm_token";
   public static final String REFERRER_KEY = "referrer";
   public static final String NUX_HAS_FINISHED_FIRST_RUN_KEY = "nux_has_finished_first_run";
@@ -68,8 +67,6 @@ public class ExponentSharedPreferences {
   public static final String EXPERIENCE_METADATA_PERMISSIONS = "permissions";
   public static final String EXPERIENCE_METADATA_NOTIFICATION_CHANNELS = "notificationChannels";
 
-  public static final String UUID_FILE_NAME = "expo_installation_uuid.txt";
-
   private static final Map<String, Boolean> DEFAULT_VALUES = new HashMap<>();
 
   static {
@@ -82,12 +79,13 @@ public class ExponentSharedPreferences {
 
   private SharedPreferences mSharedPreferences;
   private Context mContext;
-  private String mUuid;
+  private ExponentInstallationId mExponentInstallationId;
 
   @Inject
   public ExponentSharedPreferences(Context context) {
     mSharedPreferences = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
     mContext = context;
+    mExponentInstallationId = new ExponentInstallationId(context, mSharedPreferences);
 
     // We renamed `nux` to `onboarding` in January 2020 - the old preference key can be removed from here after some time,
     // but since then we need to rewrite nux setting to the new key.
@@ -132,76 +130,12 @@ public class ExponentSharedPreferences {
     return getBoolean(USE_INTERNET_KERNEL_KEY);
   }
 
-  private File getNonBackedUpUuidFile() {
-    return new File(getContext().getNoBackupFilesDir(), UUID_FILE_NAME);
-  }
-
   public String getUUID() {
-    // If it has already been cached, return the value.
-    if (mUuid != null) {
-      return mUuid;
-    }
-
-    // Read from non-backed-up storage
-    File uuidFile = getNonBackedUpUuidFile();
-    try (FileReader fileReader = new FileReader(uuidFile);
-         BufferedReader bufferedReader = new BufferedReader(fileReader)) {
-      // Cache for future calls
-      mUuid = UUID.fromString(bufferedReader.readLine()).toString();
-    } catch (IOException | IllegalArgumentException e) {
-      // do nothing, try other sources
-    }
-
-    // We could have returned inside try clause,
-    // but putting it like this here makes it immediately
-    // visible.
-    if (mUuid != null) {
-      return mUuid;
-    }
-
-    // In November 2020 we decided to move installationID (backed by LEGACY_UUID_KEY value) from backed-up SharedPreferences
-    // to non-backed text file to fix issues where devices restored from backups have the same installation IDs
-    // as the devices where the backup was created.
-    String legacyUuid = mSharedPreferences.getString(LEGACY_UUID_KEY, null);
-    if (legacyUuid != null) {
-      mUuid = legacyUuid;
-
-      boolean uuidHasBeenSuccessfullyMigrated = true;
-
-      try (FileWriter writer = new FileWriter(uuidFile)) {
-        writer.write(legacyUuid);
-      } catch (IOException e) {
-        uuidHasBeenSuccessfullyMigrated = false;
-        EXL.e(TAG, "Error while migrating UUID from legacy storage. " + e);
-      }
-
-      // We only remove the value from old storage once it's set and saved in the new storage.
-      if (uuidHasBeenSuccessfullyMigrated) {
-        mSharedPreferences.edit().remove(LEGACY_UUID_KEY).apply();
-      }
-    }
-
-    // Return either value from legacy storage or null
-    return mUuid;
+    return mExponentInstallationId.getUUID();
   }
 
   public String getOrCreateUUID() {
-    String uuid = getUUID();
-    if (uuid != null) {
-      return uuid;
-    }
-
-    // We persist the new UUID in "session storage"
-    // so that if writing to persistent storage
-    // fails subsequent calls to get(orCreate)UUID
-    // return the same value.
-    mUuid = UUID.randomUUID().toString();
-    try (FileWriter writer = new FileWriter(getNonBackedUpUuidFile())) {
-      writer.write(mUuid);
-    } catch (IOException e) {
-      EXL.e(TAG, "Error while writing new UUID. " + e);
-    }
-    return mUuid;
+    return mExponentInstallationId.getOrCreateUUID();
   }
 
   public void updateSession(JSONObject session) {
