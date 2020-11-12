@@ -46,7 +46,6 @@ const loadAppFromUrl = async (urlString: string, setLoading: (boolean) => void) 
       // It's (maybe) a raw React Native bundle
       await DevelopmentClient.loadApp(getReactNativeBundleURL(url).toString(), {});
     }
-    return true;
   } catch (e) {
     Alert.alert('Error loading app', e.toString());
     setLoading(false);
@@ -111,7 +110,9 @@ const App = () => {
 
             <Text style={styles.infoText}>Start a local server with:</Text>
             <View style={styles.codeBox}>
-              <Text style={styles.codeText}>EXPO_USE_DEV_SERVER=true EXPO_TARGET=bare expo start</Text>
+              <Text style={styles.codeText}>
+                EXPO_USE_DEV_SERVER=true EXPO_TARGET=bare expo start
+              </Text>
             </View>
 
             <Text style={styles.connectText}>Connect this client</Text>
@@ -120,15 +121,13 @@ const App = () => {
             <Text style={[styles.infoText, { marginTop: 12 }]}>
               Or, enter the URL of a local bundler manually:
             </Text>
-            <View style={styles.urlTextInputContainer}>
-              <TextInput
-                style={styles.urlTextInput}
-                placeholder="exp://192..."
-                placeholderTextColor="#b0b0ba"
-                value={textInputUrl}
-                onChangeText={text => setTextInputUrl(text)}
-              />
-            </View>
+            <TextInput
+              style={styles.urlTextInput}
+              placeholder="exp://192..."
+              placeholderTextColor="#b0b0ba"
+              value={textInputUrl}
+              onChangeText={text => setTextInputUrl(text)}
+            />
             <Button onPress={onPressGoToUrl} label="Connect to URL" />
           </React.Fragment>
         )}
