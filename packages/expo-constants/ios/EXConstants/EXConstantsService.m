@@ -433,7 +433,7 @@ UM_REGISTER_MODULE();
       NSError *error;
       NSDictionary *configObject = [NSJSONSerialization JSONObjectWithData:configData options:kNilOptions error:&error];
       if (!configObject || ![configObject isKindOfClass:[NSDictionary class]]) {
-        NSLog(@"Error serializing JSON app config: %@", error.localizedDescription ?: @"config is not an object");
+        NSLog(@"Error reading embedded app config: %@", error.localizedDescription ?: @"config is not an object");
         return nil;
       }
       return configObject;

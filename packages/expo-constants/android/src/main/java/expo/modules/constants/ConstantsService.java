@@ -189,7 +189,7 @@ public class ConstantsService implements InternalModule, ConstantsInterface {
     } catch (FileNotFoundException e) {
       // do nothing, expected in managed apps
     } catch (Exception e) {
-      Log.e(TAG, "Error serializing JSON app config", e);
+      Log.e(TAG, "Error reading embedded app config", e);
     }
     return null;
   }
