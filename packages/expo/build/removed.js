@@ -421,6 +421,13 @@ Object.defineProperties(module.exports, {
         },
     },
     /** @deprecated */
+    Pedometer: {
+        enumerable: true,
+        get() {
+            removedModule(`import { Pedometer } from 'expo' -> import { Pedometer } from 'expo-sensors'`, 'Pedometer', 'expo-sensors');
+        },
+    },
+    /** @deprecated */
     Sensors: {
         enumerable: true,
         get() {
