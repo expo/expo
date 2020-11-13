@@ -29,6 +29,7 @@
 #import "EXScopedNotificationSchedulerModule.h"
 #import "EXScopedNotificationPresentationModule.h"
 #import "EXScopedNotificationCategoriesModule.h"
+#import "EXScopedInstallationIdProvider.h"
 
 #if __has_include(<EXTaskManager/EXTaskManager.h>)
 #import <EXTaskManager/EXTaskManager.h>
@@ -171,6 +172,11 @@
 #if __has_include(<EXNotifications/EXNotificationCategoriesModule.h>)
   EXScopedNotificationCategoriesModule *categoriesModule = [[EXScopedNotificationCategoriesModule alloc] initWithExperienceId:experienceId];
   [moduleRegistry registerExportedModule:categoriesModule];
+#endif
+  
+#if __has_include(<EXNotifications/EXInstallationIdProvider.h>)
+  EXScopedInstallationIdProvider *installationIdProviderBinding = [[EXScopedInstallationIdProvider alloc] initWithDeviceInstallUUIDManager:kernelServices[EX_UNVERSIONED(@"EXDeviceInstallUUIDService")]];
+  [moduleRegistry registerExportedModule:installationIdProviderBinding];
 #endif
   return moduleRegistry;
 }
