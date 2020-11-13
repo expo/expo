@@ -7,7 +7,10 @@ export default function ViewPagerScreen() {
     <ViewPager
       style={styles.container}
       initialPage={0}
-      transitionStyle={Platform.OS === 'ios' ? 'curl' : 'scroll'}>
+      transitionStyle={Platform.OS === 'ios' ? 'curl' : 'scroll'}
+      onPageSelected={_ => {
+        console.log('New page!');
+      }}>
       <View key="1" style={styles.page}>
         <Text style={styles.text}>First page</Text>
         <Text style={styles.description}>Swipe this to scroll to the next page</Text>
