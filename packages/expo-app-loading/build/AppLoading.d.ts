@@ -19,19 +19,21 @@ declare type Props = {
      * This should be used to set state and unmount the `AppLoading` component.
      * @deprecated
      */
-    onFinish?: () => void;
+    onFinish: () => void;
     /**
      * Whether to hide the native splash screen as soon as you unmount the `AppLoading` component.
+     * Auto-hiding is enabled by default.
      */
-    autoHideAsync?: boolean;
+    autoHideSplash?: boolean;
 } | {
     /**
      * Whether to hide the native splash screen as soon as you unmount the `AppLoading` component.
+     * Auto-hiding is enabled by default.
      */
     autoHideSplash?: boolean;
 };
 export default class AppLoading extends React.Component<Props> {
-    isMounted: boolean;
+    _isMounted: boolean;
     componentDidMount(): void;
     componentWillUnmount(): void;
     private startLoadingAppResourcesAsync;

@@ -42,10 +42,10 @@ type Props =
     };
 
 export default class AppLoading extends React.Component<Props> {
-  isMounted: boolean = false;
+  _isMounted: boolean = false;
 
   componentDidMount() {
-    this.isMounted = true;
+    this._isMounted = true;
     emitEvent('componentDidMount');
 
     this.startLoadingAppResourcesAsync().catch(error => {
@@ -54,7 +54,7 @@ export default class AppLoading extends React.Component<Props> {
   }
 
   componentWillUnmount() {
-    this.isMounted = false;
+    this._isMounted = false;
     emitEvent('componentWillUnmount');
   }
 
@@ -74,12 +74,12 @@ export default class AppLoading extends React.Component<Props> {
     try {
       await this.props.startAsync();
     } catch (e) {
-      if (!this.isMounted) {
+      if (!this._isMounted) {
         return;
       }
       this.props.onError(e);
     } finally {
-      if (!this.isMounted) {
+      if (!this._isMounted) {
         return;
       }
       // If we get to this point then we know that either there was no error, or the error was handled.
