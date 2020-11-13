@@ -69,11 +69,16 @@ export type MediaLibraryAssetInfoQueryOptions = {
   shouldDownloadFromNetwork?: boolean;
 };
 
-export type MediaLibraryAssetChangeEvent = {
-  insertedAssets: Asset[];
-  deletedAssets: Asset[];
-  updatedAssets: Asset[];
-};
+export type MediaLibraryAssetsChangeEvent =
+  | {
+      hasIncrementalChanges: false;
+    }
+  | {
+      hasIncrementalChanges: true;
+      insertedAssets: Asset[];
+      deletedAssets: Asset[];
+      updatedAssets: Asset[];
+    };
 
 export type Location = {
   latitude: number;
@@ -192,6 +197,17 @@ export async function getPermissionsAsync(writeOnly: boolean = false): Promise<P
     throw new UnavailabilityError('MediaLibrary', 'getPermissionsAsync');
   }
   return await MediaLibrary.getPermissionsAsync(writeOnly);
+}
+
+/**
+ * @iOS-only
+ * @throws Will throw an error if called on platform that doesn't support this functionality (eg. iOS < 14, Android, etc.).
+ */
+export async function presentPermissionsPickerAsync(): Promise<void> {
+  if (!MediaLibrary.presentPermissionsPickerAsync) {
+    throw new UnavailabilityError('MediaLibrary', 'presentPermissionsPickerAsync');
+  }
+  return await MediaLibrary.presentPermissionsPickerAsync();
 }
 
 export async function createAssetAsync(localUri: string): Promise<Asset> {
@@ -391,7 +407,9 @@ export async function getAssetsAsync(assetsOptions: AssetsOptions = {}): Promise
   return await MediaLibrary.getAssetsAsync(options);
 }
 
-export function addListener(listener: (event: MediaLibraryAssetChangeEvent) => void): Subscription {
+export function addListener(
+  listener: (event: MediaLibraryAssetsChangeEvent) => void
+): Subscription {
   const subscription = eventEmitter.addListener(MediaLibrary.CHANGE_LISTENER_NAME, listener);
   return subscription;
 }

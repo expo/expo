@@ -55,10 +55,10 @@ PODS:
     - UMCore
   - EXDevice (2.3.0):
     - UMCore
-  - EXDevMenu (0.0.2):
+  - EXDevMenu (0.0.3):
     - EXDevMenuInterface
     - React
-  - EXDevMenuInterface (0.0.2):
+  - EXDevMenuInterface (0.0.3):
     - React
   - EXDocumentPicker (8.4.1):
     - UMCore
@@ -1061,8 +1061,8 @@ SPEC CHECKSUMS:
   EXContacts: dbc32dd1e2798cce1beeced230da989931b47890
   EXCrypto: 80ee65669a5466a7ce9426a8ae985a50be7f3a5d
   EXDevice: 95a3bdf4b5f6c844c62a617eb42c60ee8c7e1ef3
-  EXDevMenu: 088b7b4d4205a648878ea530ae60150cc3170d52
-  EXDevMenuInterface: d0345b75a3e382389087e82121e2692b038f3255
+  EXDevMenu: 71665cb84c56dbb975890585cfbf179531e2af05
+  EXDevMenuInterface: d4d450da8df80ae6f27a7ad4a1cc0da4055a3f0b
   EXDocumentPicker: 66695681f7bfae2813abe8840f9e0b8742829ee6
   EXErrorRecovery: 16696fe023fb46a32c3b09033abc361cfcf150a7
   EXFacebook: dd5352a2a74f825922131abf1ed438cf51d116a7
@@ -1085,7 +1085,7 @@ SPEC CHECKSUMS:
   EXLocalization: 8621f60b37c3d3ad8c8e27c2cb3b05ebc7b484a2
   EXLocation: 90232c6f2773b04a3c146bfda9f181035722c10a
   EXMailComposer: 7436a0388652ee26b11b74d3c23180cadc000a45
-  EXMediaLibrary: 876e417918fbb1a3a521b3465b8034ef41d5d16a
+  EXMediaLibrary: 3405a3c4e211f8a7e781da29f8c33017a616bcea
   EXNetwork: 6e8985339002bec4a64d15c0a7dcdd52e1bd06fd
   EXNotifications: 5a3455826efe22e8292e0c530c19ff24aff2ea64
   EXPermissions: 30cbe5b72bd209b65c00884180ad058a60bb413d

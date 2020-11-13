@@ -306,7 +306,7 @@ CACHE_KEYS:
       EXDevMenu:
         :debug: b1eba0b1d6e2b892cedf4546f1284ac1
         :release: b1eba0b1d6e2b892cedf4546f1284ac1
-    CHECKSUM: 088b7b4d4205a648878ea530ae60150cc3170d52
+    CHECKSUM: 71665cb84c56dbb975890585cfbf179531e2af05
     FILES:
       - "../../../../packages/expo-dev-menu/assets/dev-menu-packager-host"
       - "../../../../packages/expo-dev-menu/assets/EXDevMenuApp.ios.js"
@@ -430,13 +430,13 @@ CACHE_KEYS:
       - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/RCTConvert+DevMenuREATransition.m"
     PROJECT_NAME: EXDevMenu
     SPECS:
-      - EXDevMenu (0.0.2)
+      - EXDevMenu (0.0.3)
   EXDevMenuInterface:
     BUILD_SETTINGS_CHECKSUM:
       EXDevMenuInterface:
         :debug: 6088830fd6859a94b46d7ffbe993b1aa
         :release: 6088830fd6859a94b46d7ffbe993b1aa
-    CHECKSUM: d0345b75a3e382389087e82121e2692b038f3255
+    CHECKSUM: d4d450da8df80ae6f27a7ad4a1cc0da4055a3f0b
     FILES:
       - "../../../../packages/expo-dev-menu-interface/ios/DevMenuBridgeProtocol.swift"
       - "../../../../packages/expo-dev-menu-interface/ios/DevMenuDelegateProtocol.swift"
@@ -449,7 +449,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-dev-menu-interface/README.md"
     PROJECT_NAME: EXDevMenuInterface
     SPECS:
-      - EXDevMenuInterface (0.0.2)
+      - EXDevMenuInterface (0.0.3)
   EXDocumentPicker:
     BUILD_SETTINGS_CHECKSUM:
       EXDocumentPicker:
@@ -816,7 +816,7 @@ CACHE_KEYS:
       EXMediaLibrary:
         :debug: cc36485bbe4780e0bf7381237eb7412a
         :release: cc36485bbe4780e0bf7381237eb7412a
-    CHECKSUM: 876e417918fbb1a3a521b3465b8034ef41d5d16a
+    CHECKSUM: 3405a3c4e211f8a7e781da29f8c33017a616bcea
     FILES:
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.h"
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.m"
@@ -1454,8 +1454,8 @@ CACHE_KEYS:
       - OpenSSL-Universal/Static (1.0.2.20)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: bbcc1a081e5bd166bbe82a17985df4ea
-      Release: 3a766ebcc08a18175de8cd63b339cac3
+      Debug: d8e48174bad7192b915572f134b906ca
+      Release: dbed9ed83455218dbba710c451448429
     FILES:
       - "${PODS_CONFIGURATION_BUILD_DIR}/EXDevMenu/EXDevMenu.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle"
@@ -1464,8 +1464,8 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: aa407e7d08b8c25b6fc71140511ff9bb
-      Release: f2b44b0864091fa402338a3530e915ae
+      Debug: 2aeab6d2083fb9dfb7ad03418fd40866
+      Release: 96a2f220343c00e8a476f5f613d25ea9
   PromisesObjC:
     BUILD_SETTINGS_CHECKSUM:
       PromisesObjC:

@@ -44,7 +44,10 @@ export declare type AssetInfo = Asset & {
 export declare type MediaLibraryAssetInfoQueryOptions = {
     shouldDownloadFromNetwork?: boolean;
 };
-export declare type MediaLibraryAssetChangeEvent = {
+export declare type MediaLibraryAssetsChangeEvent = {
+    hasIncrementalChanges: false;
+} | {
+    hasIncrementalChanges: true;
     insertedAssets: Asset[];
     deletedAssets: Asset[];
     updatedAssets: Asset[];
@@ -88,6 +91,11 @@ export declare const MediaType: MediaTypeObject;
 export declare const SortBy: SortByObject;
 export declare function requestPermissionsAsync(writeOnly?: boolean): Promise<PermissionResponse>;
 export declare function getPermissionsAsync(writeOnly?: boolean): Promise<PermissionResponse>;
+/**
+ * @iOS-only
+ * @throws Will throw an error if called on platform that doesn't support this functionality (eg. iOS < 14, Android, etc.).
+ */
+export declare function presentPermissionsPickerAsync(): Promise<void>;
 export declare function createAssetAsync(localUri: string): Promise<Asset>;
 export declare function saveToLibraryAsync(localUri: string): Promise<void>;
 export declare function addAssetsToAlbumAsync(assets: AssetRef[] | AssetRef, album: AlbumRef, copy?: boolean): Promise<any>;
@@ -99,7 +107,7 @@ export declare function getAlbumAsync(title: string): Promise<Album>;
 export declare function createAlbumAsync(albumName: string, asset?: AssetRef, copyAsset?: boolean): Promise<Album>;
 export declare function deleteAlbumsAsync(albums: AlbumRef[] | AlbumRef, assetRemove?: boolean): Promise<any>;
 export declare function getAssetsAsync(assetsOptions?: AssetsOptions): Promise<PagedInfo<Asset>>;
-export declare function addListener(listener: (event: MediaLibraryAssetChangeEvent) => void): Subscription;
+export declare function addListener(listener: (event: MediaLibraryAssetsChangeEvent) => void): Subscription;
 export declare function removeSubscription(subscription: Subscription): void;
 export declare function removeAllListeners(): void;
 export declare function getMomentsAsync(): Promise<any>;
