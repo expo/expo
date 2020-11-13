@@ -15,18 +15,17 @@ import org.unimodules.interfaces.permissions.PermissionsResponse.Companion.SCOPE
 import org.unimodules.interfaces.permissions.PermissionsResponse.Companion.STATUS_KEY
 import org.unimodules.interfaces.permissions.PermissionsStatus
 
-class LocationRequester : PermissionRequester {
-  override fun getAndroidPermissions(): List<String> =
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-      listOf(
-        Manifest.permission.ACCESS_BACKGROUND_LOCATION,
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACCESS_COARSE_LOCATION)
-    } else {
-      listOf(
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACCESS_COARSE_LOCATION)
+class LocationRequester(val includeBackgroundPermission: Boolean = false) : PermissionRequester {
+  override fun getAndroidPermissions(): List<String> {
+    val list = mutableListOf(
+      Manifest.permission.ACCESS_FINE_LOCATION,
+      Manifest.permission.ACCESS_COARSE_LOCATION
+    )
+    if (includeBackgroundPermission && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      list.add(0, Manifest.permission.ACCESS_BACKGROUND_LOCATION)
     }
+    return list
+  }
 
   override fun parseAndroidPermissions(permissionsResponse: Map<String, PermissionsResponse>): Bundle {
     return Bundle().apply {
@@ -54,7 +53,7 @@ class LocationRequester : PermissionRequester {
         }
       })
       scope =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (includeBackgroundPermission && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
           val accessBackgroundLocation = permissionsResponse.getValue(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
           if (accessBackgroundLocation.status == PermissionsStatus.GRANTED) {
             SCOPE_ALWAYS

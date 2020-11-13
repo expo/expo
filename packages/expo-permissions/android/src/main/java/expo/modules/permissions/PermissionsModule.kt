@@ -34,7 +34,7 @@ class PermissionsModule(context: Context) : ExportedModule(context) {
       SimpleRequester(Manifest.permission.READ_CONTACTS)
     }
     mRequesters = mapOf(
-      PermissionsTypes.LOCATION.type to LocationRequester(),
+      PermissionsTypes.LOCATION.type to LocationRequester(mPermissions.isPermissionPresentInManifest(Manifest.permission.ACCESS_BACKGROUND_LOCATION)),
       PermissionsTypes.CAMERA.type to SimpleRequester(Manifest.permission.CAMERA),
       PermissionsTypes.CONTACTS.type to contactsRequester,
       PermissionsTypes.AUDIO_RECORDING.type to SimpleRequester(Manifest.permission.RECORD_AUDIO),

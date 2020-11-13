@@ -274,6 +274,8 @@ Polyfills `navigator.geolocation` for interop with the core React Native and Web
 
 The Background Location API can notify your app about new locations while your app is backgrounded. Make sure you've followed the required steps detailed [here](#configuration).
 
+> **Note:** on Android, you have to [submit your app for review and request access to use the background location permission](https://support.google.com/googleplay/android-developer/answer/9799150?hl=en).
+
 ### `Location.startLocationUpdatesAsync(taskName, options)`
 
 Registers for receiving location updates that can also come when the app is in the background.
@@ -345,6 +347,8 @@ A promise resolving to boolean value indicating whether the location task is sta
 
 Geofencing API notifies your app when the device enters or leaves geographical regions you set up.
 To make it work in the background, it uses [TaskManager](../task-manager/) Native API under the hood. Make sure you've followed the required steps detailed [here](#configuration).
+
+> **Note:** on Android, you have to [submit your app for review and request access to use the background location permission](https://support.google.com/googleplay/android-developer/answer/9799150?hl=en).
 
 ### `Location.startGeofencingAsync(taskName, regions)`
 

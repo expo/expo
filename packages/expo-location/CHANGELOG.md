@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Make background location an opt-in permission on Android. ([#10989](https://github.com/expo/expo/pull/10989) by [@bycedric](https://github.com/bycedric))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
