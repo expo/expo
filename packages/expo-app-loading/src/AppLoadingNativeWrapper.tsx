@@ -7,7 +7,7 @@ type Props = {
 
 export default class AppLoading extends React.Component<Props> {
   static defaultProps = {
-    autoHideAsync: true,
+    autoHideSplash: true,
   };
 
   constructor(props: Props) {
