@@ -1,7 +1,10 @@
 package expo.modules.developmentclient.launcher.configurators
 
 import android.app.Activity
+import android.app.ActivityManager
+import android.content.Context
 import android.content.pm.ActivityInfo
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Build
 import android.view.View
@@ -18,7 +21,24 @@ import expo.modules.developmentclient.launcher.manifest.DevelopmentClientOrienta
 import expo.modules.developmentclient.launcher.manifest.DevelopmentClientStatusBarStyle
 import expo.modules.developmentclient.launcher.manifest.DevelopmentClientUserInterface
 
-class DevelopmentClientExpoActivityConfigurator(private var manifest: DevelopmentClientManifest) {
+class DevelopmentClientExpoActivityConfigurator(
+  private var manifest: DevelopmentClientManifest,
+  private val context: Context
+) {
+  fun applyTaskDescription(activity: Activity) {
+    if (!isValidColor(manifest.primaryColor)) {
+      return
+    }
+    val color = Color.parseColor(manifest.primaryColor)
+    val icon = BitmapFactory.decodeResource(context.resources, context.applicationInfo.icon)
+
+    activity.setTaskDescription(ActivityManager.TaskDescription(
+      manifest.name,
+      icon,
+      color
+    ))
+  }
+
   fun applyOrientation(activity: ReactActivity) {
     when (manifest.orientation) {
       DevelopmentClientOrientation.DEFAULT -> activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED

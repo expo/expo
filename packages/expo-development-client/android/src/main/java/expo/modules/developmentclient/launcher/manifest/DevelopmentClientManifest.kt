@@ -38,6 +38,7 @@ data class DevelopmentClientManifest(
 
   val userInterfaceStyle: DevelopmentClientUserInterface?,
   val backgroundColor: String?,
+  val primaryColor: String?,
 
   val androidStatusBar: DevelopmentClientStatusBarSection?
 ) {
