@@ -152,7 +152,6 @@ The following methods are exported by the `expo-notifications` module:
   - [`addNotificationsDroppedListener`](#addnotificationsdroppedlistenerlistener---void-void) -- adds a listener called whenever some notifications have been dropped
   - [`addNotificationResponseReceivedListener`](#addnotificationresponsereceivedlistenerlistener-event-notificationresponse--void-void) -- adds a listener called whenever user interacts with a notification
   - [`removeNotificationSubscription`](#removenotificationsubscriptionsubscription-subscription-void) -- removes the listener registered with `addNotification*Listener()`
-  - [`removeAllNotificationListeners`](#removeallnotificationlisteners-void) -- removes all listeners registered with `addNotification*Listener()`
 - **handling incoming notifications when the app is in foreground**
   - [`setNotificationHandler`](#setnotificationhandlerhandler-notificationhandler--null-void) -- sets the handler function responsible for deciding what to do with a notification that is received when the app is in foreground
 - **fetching permissions information**
@@ -622,10 +621,6 @@ Removes a notification subscription returned by a `addNotification*Listener` cal
 #### Arguments
 
 A single and required argument is a subscription returned by `addNotification*Listener`.
-
-### `removeAllNotificationListeners(): void`
-
-Removes all notification subscriptions that may have been registered with `addNotification*Listener`.
 
 ## Handling incoming notifications when the app is in foreground
 
