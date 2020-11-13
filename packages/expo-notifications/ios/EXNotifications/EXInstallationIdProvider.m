@@ -15,12 +15,98 @@ UM_EXPORT_METHOD_AS(getInstallationIdAsync, getInstallationIdAsyncWithResolver:(
 
 - (NSString *)getInstallationId
 {
-  NSString *uuid = [[NSUserDefaults standardUserDefaults] stringForKey:kEXDeviceInstallUUIDKey];
-  if (!uuid) {
-    uuid = [[NSUUID UUID] UUIDString];
-    [[NSUserDefaults standardUserDefaults] setObject:uuid forKey:kEXDeviceInstallUUIDKey];
+  NSString *installationId = [self fetchInstallationId];
+  if (installationId) {
+    return installationId;
   }
-  return uuid;
+  
+  installationId = [[NSUUID UUID] UUIDString];
+  [self setInstallationId:installationId];
+  return installationId;
+}
+
+- (nullable NSString *)fetchInstallationId
+{
+  NSString *installationId;
+  CFTypeRef foundDict = NULL;
+  
+  if (SecItemCopyMatching((__bridge CFDictionaryRef)[self installationIdGetQuery], &foundDict) == noErr) {
+    NSData *result = (__bridge_transfer NSData *)foundDict;
+    NSString *value = [[NSString alloc] initWithData:result
+                                            encoding:NSUTF8StringEncoding];
+    // `initWithUUIDString` returns nil if string is not a valid UUID
+    if ([[NSUUID alloc] initWithUUIDString:value]) {
+      installationId = value;
+    }
+  }
+  
+  if (installationId) {
+    return installationId;
+  }
+  
+  NSString *legacyUUID = [[NSUserDefaults standardUserDefaults] stringForKey:kEXDeviceInstallUUIDKey];
+  if (legacyUUID) {
+    installationId = legacyUUID;
+    
+    NSError *error = [self setInstallationId:installationId];
+    if (error) {
+      NSLog(@"Could not migrate device install UUID from legacy storage: %@", error.description);
+    } else {
+      // We only remove the value from old storage once it's set and saved in the new storage.
+      [[NSUserDefaults standardUserDefaults] removeObjectForKey:kEXDeviceInstallUUIDKey];
+    }
+  }
+  
+  return installationId;
+}
+
+- (nullable NSError *)setInstallationId:(NSString *)installationId
+{
+  // Delete existing UUID so we don't need to handle "duplicate item" error
+  SecItemDelete((__bridge CFDictionaryRef)[self installationIdSearchQuery]);
+  
+  OSStatus status = SecItemAdd((__bridge CFDictionaryRef)[self installationIdSetQuery:installationId], NULL);
+  if (status == errSecSuccess) {
+    return nil;
+  } else {
+    return [NSError errorWithDomain:NSOSStatusErrorDomain code:status userInfo:nil];
+  }
+}
+
+# pragma mark - Keychain dictionaries
+
+- (NSDictionary *)installationIdSearchQueryMerging:(NSDictionary *)dictionaryToMerge
+{
+  NSData *encodedKey = [kEXDeviceInstallUUIDKey dataUsingEncoding:NSUTF8StringEncoding];
+  NSMutableDictionary *query = [NSMutableDictionary dictionaryWithDictionary:@{
+    (__bridge id)kSecClass:(__bridge id)kSecClassGenericPassword,
+    (__bridge id)kSecAttrService:[NSBundle mainBundle].bundleIdentifier,
+    (__bridge id)kSecAttrGeneric:encodedKey,
+    (__bridge id)kSecAttrAccount:encodedKey
+  }];
+  [query addEntriesFromDictionary:dictionaryToMerge];
+  return query;
+}
+
+- (NSDictionary *)installationIdSearchQuery
+{
+  return [self installationIdSearchQueryMerging:@{}];
+}
+
+- (NSDictionary *)installationIdGetQuery
+{
+  return [self installationIdSearchQueryMerging:@{
+    (__bridge id)kSecMatchLimit:(__bridge id)kSecMatchLimitOne,
+    (__bridge id)kSecReturnData:(__bridge id)kCFBooleanTrue
+  }];
+}
+
+- (NSDictionary *)installationIdSetQuery:(NSString *)deviceInstallUUID
+{
+  return [self installationIdSearchQueryMerging:@{
+    (__bridge id)kSecValueData:[deviceInstallUUID dataUsingEncoding:NSUTF8StringEncoding],
+    (__bridge id)kSecAttrAccessible:(__bridge id)kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+  }];
 }
 
 @end
