@@ -53,6 +53,7 @@ import org.unimodules.interfaces.permissions.PermissionsResponse;
 import org.unimodules.interfaces.permissions.PermissionsStatus;
 import org.unimodules.interfaces.taskManager.TaskManagerInterface;
 
+import expo.modules.location.exceptions.LocationBackgroundUnauthorizedException;
 import expo.modules.location.exceptions.LocationRequestRejectedException;
 import expo.modules.location.exceptions.LocationSettingsUnsatisfiedException;
 import expo.modules.location.exceptions.LocationUnauthorizedException;
@@ -383,6 +384,11 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   @ExpoMethod
   public void startLocationUpdatesAsync(String taskName, Map<String, Object> options, final Promise promise) {
+    if (isMissingBackgroundPermissions()) {
+      promise.reject(new LocationBackgroundUnauthorizedException());
+      return;
+    }
+
     try {
       mTaskManager.registerTask(taskName, LocationTaskConsumer.class, options);
       promise.resolve(null);
@@ -393,6 +399,11 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   @ExpoMethod
   public void stopLocationUpdatesAsync(String taskName, final Promise promise) {
+    if (isMissingBackgroundPermissions()) {
+      promise.reject(new LocationBackgroundUnauthorizedException());
+      return;
+    }
+
     try {
       mTaskManager.unregisterTask(taskName, LocationTaskConsumer.class);
       promise.resolve(null);
@@ -403,6 +414,11 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   @ExpoMethod
   public void hasStartedLocationUpdatesAsync(String taskName, final Promise promise) {
+    if (isMissingBackgroundPermissions()) {
+      promise.reject(new LocationBackgroundUnauthorizedException());
+      return;
+    }
+
     promise.resolve(mTaskManager.taskHasConsumerOfClass(taskName, LocationTaskConsumer.class));
   }
 
@@ -411,6 +427,11 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   @ExpoMethod
   public void startGeofencingAsync(String taskName, Map<String, Object> options, final Promise promise) {
+    if (isMissingBackgroundPermissions()) {
+      promise.reject(new LocationBackgroundUnauthorizedException());
+      return;
+    }
+
     try {
       mTaskManager.registerTask(taskName, GeofencingTaskConsumer.class, options);
       promise.resolve(null);
@@ -421,6 +442,11 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   @ExpoMethod
   public void stopGeofencingAsync(String taskName, final Promise promise) {
+    if (isMissingBackgroundPermissions()) {
+      promise.reject(new LocationBackgroundUnauthorizedException());
+      return;
+    }
+
     try {
       mTaskManager.unregisterTask(taskName, GeofencingTaskConsumer.class);
       promise.resolve(null);
@@ -431,6 +457,11 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   @ExpoMethod
   public void hasStartedGeofencingAsync(String taskName, final Promise promise) {
+    if (isMissingBackgroundPermissions()) {
+      promise.reject(new LocationBackgroundUnauthorizedException());
+      return;
+    }
+
     promise.resolve(mTaskManager.taskHasConsumerOfClass(taskName, GeofencingTaskConsumer.class));
   }
 
@@ -480,6 +511,13 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
    */
   private boolean isMissingPermissions() {
     return mPermissionsManager == null || !mPermissionsManager.hasGrantedPermissions(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION);
+  }
+
+  /**
+   * Checks if the background location permission is granted by the user.
+   */
+  private boolean isMissingBackgroundPermissions() {
+    return mPermissionsManager == null || !mPermissionsManager.hasGrantedPermissions(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
   }
 
   /**
