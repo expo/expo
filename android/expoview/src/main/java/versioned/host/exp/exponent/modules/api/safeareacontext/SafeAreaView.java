@@ -56,8 +56,7 @@ public class SafeAreaView extends ReactViewGroup implements ViewTreeObserver.OnP
     }
   }
 
-  // 5 seconds
-  private static final long MAX_WAIT_TIME_NANO = 5000000000L;
+  private static final long MAX_WAIT_TIME_NANO = 500000000L; // 500ms
 
   private void waitForReactLayout() {
     // Block the main thread until the native module thread is finished with
@@ -72,8 +71,9 @@ public class SafeAreaView extends ReactViewGroup implements ViewTreeObserver.OnP
       @Override
       public void run() {
         synchronized (done) {
-          done.set(true);
-          done.notify();
+          if (done.compareAndSet(false, true)) {
+            done.notify();
+          }
         }
       }
     });
@@ -82,9 +82,10 @@ public class SafeAreaView extends ReactViewGroup implements ViewTreeObserver.OnP
         try {
           done.wait(MAX_WAIT_TIME_NANO / 1000000L);
         } catch (InterruptedException e) {
-          e.printStackTrace();
+          // In case of an interrupt just give up waiting.
+          done.set(true);
         }
-        waitTime = System.nanoTime() - startTime;
+        waitTime += System.nanoTime() - startTime;
       }
       // Timed out waiting.
       if (waitTime >= MAX_WAIT_TIME_NANO) {

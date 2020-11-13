@@ -21,9 +21,10 @@ import androidx.annotation.Nullable;
           insets.getSystemWindowInsetRight(),
           // System insets are more reliable to account for notches but the
           // system inset for bottom includes the soft keyboard which we don't
-          // want to be consistent with iOS. In practice it should always be
-          // correct since there cannot be a notch on this edge.
-          insets.getStableInsetBottom(),
+          // want to be consistent with iOS. Using the min value makes sure we
+          // never get the keyboard offset while still working with devices that
+          // hide the navigation bar.
+          Math.min(insets.getSystemWindowInsetBottom(), insets.getStableInsetBottom()),
           insets.getSystemWindowInsetLeft());
     } else {
       Rect visibleRect = new Rect();
