@@ -22,7 +22,7 @@ class LocationRequester(val includeBackgroundPermission: Boolean = false) : Perm
       Manifest.permission.ACCESS_COARSE_LOCATION
     )
     if (includeBackgroundPermission && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-      list.add(0, Manifest.permissions.ACCESS_BACKGROUND_LOCATION)
+      list.add(0, Manifest.permission.ACCESS_BACKGROUND_LOCATION)
     }
     return list
   }
