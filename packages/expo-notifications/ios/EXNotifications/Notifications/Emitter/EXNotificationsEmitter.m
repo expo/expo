@@ -10,6 +10,8 @@
 
 @property (nonatomic, weak) id<EXNotificationCenterDelegate> notificationCenterDelegate;
 
+@property (nonatomic, assign) BOOL isBeingObserved;
+
 @property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
 
 @property (nonatomic, strong) UNNotificationResponse *lastNotificationResponse;
@@ -45,10 +47,12 @@ UM_EXPORT_METHOD_AS(getLastNotificationResponseAsync,
 
 - (void)startObserving
 {
+  _isBeingObserved = YES;
 }
 
 - (void)stopObserving
 {
+  _isBeingObserved = NO;
 }
 
 # pragma mark - EXNotificationsDelegate
@@ -62,14 +66,23 @@ UM_EXPORT_METHOD_AS(getLastNotificationResponseAsync,
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler
 {
   _lastNotificationResponse = response;
-  [_eventEmitter sendEventWithName:onDidReceiveNotificationResponse body:[EXNotificationSerializer serializedNotificationResponse:response]];
+  [self sendEventWithName:onDidReceiveNotificationResponse body:[EXNotificationSerializer serializedNotificationResponse:response]];
   completionHandler();
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler
 {
-  [_eventEmitter sendEventWithName:onDidReceiveNotification body:[EXNotificationSerializer serializedNotification:notification]];
+  [self sendEventWithName:onDidReceiveNotification body:[EXNotificationSerializer serializedNotification:notification]];
   completionHandler(UNNotificationPresentationOptionNone);
+}
+
+- (void)sendEventWithName:(NSString *)eventName body:(id)body
+{
+  // Silence React Native warning: "Sending ... with no listeners registered."
+  // See: https://github.com/expo/expo/pull/10883#pullrequestreview-529183413
+  if (_isBeingObserved) {
+    [_eventEmitter sendEventWithName:eventName body:body];
+  }
 }
 
 @end
