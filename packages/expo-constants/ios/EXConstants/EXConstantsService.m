@@ -427,25 +427,19 @@ UM_REGISTER_MODULE();
 + (NSDictionary *)appConfig
 {
   NSString *path = [[NSBundle mainBundle] pathForResource:@"app" ofType:@"config"];
-  if (!path) {
-    NSLog(@"Error reading embedded app config: app.config does not exist. Make sure you have installed the expo-constants module properly.");
-    return nil;
+  if (path) {
+    NSData *configData = [NSData dataWithContentsOfFile:path];
+    if (configData) {
+      NSError *error;
+      NSDictionary *configObject = [NSJSONSerialization JSONObjectWithData:configData options:kNilOptions error:&error];
+      if (!configObject || ![configObject isKindOfClass:[NSDictionary class]]) {
+        NSLog(@"Error serializing JSON app config: %@", error.localizedDescription ?: @"config is not an object");
+        return nil;
+      }
+      return configObject;
+    }
   }
-
-  NSData *configData = [NSData dataWithContentsOfFile:path];
-  if (!configData) {
-    NSLog(@"Error reading embedded app config: data is empty. Make sure you have installed the expo-constants module properly.");
-    return nil;
-  }
-
-  NSError *error;
-  NSDictionary *configObject = [NSJSONSerialization JSONObjectWithData:configData options:kNilOptions error:&error];
-  if (!configObject || ![configObject isKindOfClass:[NSDictionary class]]) {
-    NSLog(@"Error reading embedded app config: %@", error.localizedDescription ?: @"config is not an object");
-    return nil;
-  }
-
-  return configObject;
+  return nil;
 }
 
 
