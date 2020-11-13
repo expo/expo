@@ -14,6 +14,7 @@
 #import "EXUpdatesManager.h"
 #import "EXUserNotificationManager.h"
 #import "EXUserNotificationCenter.h"
+#import "EXDeviceInstallUUIDService.h"
 
 #import <UMCore/UMModuleRegistryProvider.h>
 
@@ -30,6 +31,7 @@
 @property (nonatomic, strong) EXUpdatesManager *updatesManager;
 @property (nonatomic, strong) EXUserNotificationManager *notificationsManager;
 @property (nonatomic, strong) EXUserNotificationCenter *notificationCenter;
+@property (nonatomic, strong) EXDeviceInstallUUIDService *deviceInstallUUIDService;
 @property (nonatomic, strong) NSDictionary<NSString *, id> *allServices;
 
 @end
@@ -51,8 +53,17 @@
     [self updatesManager];
     [self notificationsManager];
     [self notificationCenter];
+    [self deviceInstallUUIDService];
   }
   return self;
+}
+
+- (EXDeviceInstallUUIDService *)deviceInstallUUIDService
+{
+  if (!_deviceInstallUUIDService) {
+    _deviceInstallUUIDService = [[EXDeviceInstallUUIDService alloc] init];
+  }
+  return _deviceInstallUUIDService;
 }
 
 - (EXCachedResourceManager *)cachedResourceManager
@@ -164,7 +175,8 @@
                                   self.updatesDatabaseManager,
                                   self.updatesManager,
                                   self.notificationsManager,
-                                  self.notificationCenter
+                                  self.notificationCenter,
+                                  self.deviceInstallUUIDService
                                   ];
     NSArray *allServices = [registryServices arrayByAddingObjectsFromArray:[[UMModuleRegistryProvider singletonModules] allObjects]];
     for (id service in allServices) {
