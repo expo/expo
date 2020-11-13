@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXApiV2Client+EXRemoteNotifications.h"
-#import "EXKernel.h"
+#import "EXKernel+DeviceInstallUUID.h"
 #import "NSData+EXRemoteNotifications.h"
 #if __has_include(<EXApplication/EXProvisioningProfile.h>)
 #import <EXApplication/EXProvisioningProfile.h>
