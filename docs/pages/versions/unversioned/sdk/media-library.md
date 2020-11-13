@@ -44,13 +44,13 @@ A promise that resolves to an object of type [CameraRollPermissionResponse](#med
 
 ### `MediaLibrary.presentPermissionsPickerAsync()`
 
-**Available only on iOS >= 14.** Allows the user to update the assets which your app has access to. The system modal is displayed only if a user originally selected the `limited` access to the media library.
+**Available only on iOS >= 14.** Allows the user to update the assets that your app has access to. The system modal is only displayed if the user originally allowed only `limited` access to their media library, otherwise this method is a no-op.
 
 #### Returns
 
-A promise that resolves to void if prompt will be displayed correctly.
+A promise that either rejects if the method is unavailable (meaning the device is not running iOS >= 14), or resolves to void.
 
-> **Note:** This method doesn't inform you if the user changes permitted assets. To check this you need to subscribe for updates in the user's media library using [MediaLibrary.addListener(listener)](#medialibraryaddlistenerlistener). If `shouldFullyReload` is set to true, the user changed the permissions.
+> **Note:** This method doesn't inform you if the user changes which assets your app has access to. For that information, you need to subscribe for updates to the user's media library using [MediaLibrary.addListener(listener)](#medialibraryaddlistenerlistener). If `hasIncrementalChanges` is `false`, the user changed their permissions.
 
 ### `MediaLibrary.createAssetAsync(localUri)`
 
@@ -233,7 +233,7 @@ Subscribes for updates in user's media library.
 #### Arguments
 
 - **listener (_function_)** -- A callback that is fired when any assets have been inserted or deleted from the library, or when the user changes which assets they're allowing access to. **On Android** it's invoked with an empty object. **On iOS** it's invoked with an object containing following keys:
-  - **hasIncrementalChanges (_boolean_)** -- Whether the media library's changes could be described by the `incremental changes`. `true` indicates the changes are described by the `insertedAssets`, `deletedAssets` and `updatedAssets` values. `false` indicates that the scope of changes is too large and a full assets reload should be performed by the application, `incremental changes` could not be provided in this case (eg. a user has changed the access to the individual assets in the media library).
+  - **hasIncrementalChanges (_boolean_)** -- Whether the media library's changes could be described as "incremental changes". `true` indicates the changes are described by the `insertedAssets`, `deletedAssets` and `updatedAssets` values. `false` indicates that the scope of changes is too large and you should perform a full assets reload (eg. a user has changed access to individual assets in the media library).
 
   Available only if `hasIncrementalChanges` is `true`:
 
