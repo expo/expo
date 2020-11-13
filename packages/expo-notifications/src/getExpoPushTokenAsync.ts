@@ -49,8 +49,8 @@ export default async function getExpoPushTokenAsync(options: Options = {}): Prom
   const type = options.type || getTypeOfToken(devicePushToken);
   const development = options.development || (await shouldUseDevelopmentNotificationService());
 
-  const baseUrl = options.baseUrl || productionBaseUrl;
-  const url = options.url || `${baseUrl}push/getExpoPushToken`;
+  const baseUrl = options.baseUrl ?? productionBaseUrl;
+  const url = options.url ?? `${baseUrl}push/getExpoPushToken`;
 
   const body = {
     type,
@@ -93,7 +93,7 @@ export default async function getExpoPushTokenAsync(options: Options = {}): Prom
   try {
     if (options.url) {
       console.debug(
-        `[expo-notifications] Since a custom URL endpoint has been provided ("${options.url}"), expo-notifications won't try to autoupdate the device push token on the server (not knowing the specific endpoint). If you want to enable autoupdating, use setAutoServerRegistrationAsync method directly.`
+        `[expo-notifications] Since a custom URL endpoint has been provided ("${options.url}"), expo-notifications won't try to auto-update the device push token on the server.`
       );
     } else {
       await setAutoServerRegistrationAsync({
@@ -103,7 +103,7 @@ export default async function getExpoPushTokenAsync(options: Options = {}): Prom
           // 1. If it cannot be inferred from `expo-application` and has been provided
           //    in `getExpoPushTokenAsync` options, we want to use the same argument
           //    when updating the device push token.
-          // 2. If the application identifier changes the backing store of server registration
+          // 2. If the application identifier changes, the backing store of server registration
           //    module clears, so this `applicationId` will always be valid if the developer
           //    doesn't provide an invalid value to this method.
           // 3. We don't have to pass it explicitly in request body
@@ -124,7 +124,7 @@ export default async function getExpoPushTokenAsync(options: Options = {}): Prom
     }
   } catch (e) {
     console.warn(
-      '[expo-notifications] Could not have set Expo server registration for automatic token updates.',
+      '[expo-notifications] Could not enable automatically registering device tokens with the Expo notification service',
       e
     );
   }

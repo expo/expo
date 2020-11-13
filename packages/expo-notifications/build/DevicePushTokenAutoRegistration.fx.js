@@ -2,8 +2,8 @@ import ServerRegistrationModule from './ServerRegistrationModule';
 import { addPushTokenListener } from './TokenEmitter';
 import { updatePushTokenAsync, hasPushTokenBeenUpdated, interruptPushTokenUpdates, } from './utils/updatePushTokenAsync';
 /**
- * Sets the last registration information so that the device push token
- * gets pushed to the given registration endpoint
+ * Sets the last registration information so that the device push token gets
+ * pushed to the given registration endpoint
  * @param registration Registration endpoint to inform of new tokens
  */
 export async function setAutoServerRegistrationAsync(registration) {
@@ -24,6 +24,9 @@ export async function removeAutoServerRegistrationAsync() {
     // Do not consider any registration when token updates.
     await ServerRegistrationModule.setLastRegistrationInfoAsync?.(null);
 }
+/**
+ * This function is exported only for testing purposes.
+ */
 export async function __handlePersistedRegistrationInfoAsync(lastRegistrationInfo) {
     if (!lastRegistrationInfo) {
         // No last registration info, nothing to do

@@ -40,11 +40,11 @@ export default function makeInterruptible(func) {
         // Interrupt any existing calls
         interrupt();
         // eslint-disable-next-line no-new-object
-        globalNonce = new Object();
+        globalNonce = {};
         const localNonce = globalNonce;
         const iterator = func(...args);
         let resumeValue;
-        for (;;) {
+        while (true) {
             // Guard before .next() await
             if (localNonce !== globalNonce) {
                 return; // a new call was made

@@ -11,7 +11,9 @@ static NSString * const kEXLastRegistrationInfoKey = @"EXLastRegistrationInfoKey
 
 UM_EXPORT_MODULE(NotificationsServerRegistrationModule)
 
-UM_EXPORT_METHOD_AS(getInstallationIdAsync, getInstallationIdAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(getInstallationIdAsync,
+                    getInstallationIdAsyncWithResolver:(UMPromiseResolveBlock)resolve
+                                              rejecter:(UMPromiseRejectBlock)reject)
 {
   resolve([self getInstallationId]);
 }
@@ -111,12 +113,17 @@ UM_EXPORT_METHOD_AS(getInstallationIdAsync, getInstallationIdAsyncWithResolver:(
   }];
 }
 
-UM_EXPORT_METHOD_AS(getLastRegistrationInfoAsync, getLastRegistrationInfoAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(getLastRegistrationInfoAsync,
+                    getLastRegistrationInfoAsyncWithResolver:(UMPromiseResolveBlock)resolve 
+                                                    rejecter:(UMPromiseRejectBlock)reject)
 {
   resolve([[NSUserDefaults standardUserDefaults] stringForKey:kEXLastRegistrationInfoKey]);
 }
 
-UM_EXPORT_METHOD_AS(setLastRegistrationInfoAsync, setLastRegistrationInfoAsync:(NSString *)lastRegistrationInfo resolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(setLastRegistrationInfoAsync,
+                    setLastRegistrationInfoAsync:(NSString *)lastRegistrationInfo
+                                        resolver:(UMPromiseResolveBlock)resolve
+                                        rejecter:(UMPromiseRejectBlock)reject)
 {
   [[NSUserDefaults standardUserDefaults] setObject:lastRegistrationInfo forKey:kEXLastRegistrationInfoKey];
   resolve(nil);

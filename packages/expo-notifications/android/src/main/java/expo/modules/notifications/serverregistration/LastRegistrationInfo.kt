@@ -10,16 +10,16 @@ class LastRegistrationInfo(context: Context) {
     private const val LAST_REGISTRATION_INFO_KEY = "lastRegistrationInfo"
   }
 
-  private val sharedPreferences: SharedPreferences? = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
+  private val sharedPreferences: SharedPreferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
 
   fun get() =
-    sharedPreferences?.getString(LAST_REGISTRATION_INFO_KEY, null)
+    sharedPreferences.getString(LAST_REGISTRATION_INFO_KEY, null)
 
   fun set(lastRegistrationInfo: String?) {
     lastRegistrationInfo?.let {
-      sharedPreferences?.edit()?.putString(LAST_REGISTRATION_INFO_KEY, it)?.apply()
+      sharedPreferences.edit().putString(LAST_REGISTRATION_INFO_KEY, it).apply()
       return
     }
-    sharedPreferences?.edit()?.remove(LAST_REGISTRATION_INFO_KEY)?.apply()
+    sharedPreferences.edit().remove(LAST_REGISTRATION_INFO_KEY).apply()
   }
 }

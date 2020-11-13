@@ -21,13 +21,16 @@ static NSString * const kEXLastRegistrationsInfosKey = EX_UNVERSIONED(@"EXLastRe
   return self;
 }
 
-- (void)getLastRegistrationInfoAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
+- (void)getLastRegistrationInfoAsyncWithResolver:(UMPromiseResolveBlock)resolve
+                                        rejecter:(UMPromiseRejectBlock)reject
 {
   NSDictionary *lastRegistrationsInfos = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kEXLastRegistrationsInfosKey] ?: @{};
   resolve(lastRegistrationsInfos[_experienceId]);
 }
 
-- (void)setLastRegistrationInfoAsync:(NSString *)lastRegistrationInfo resolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
+- (void)setLastRegistrationInfoAsync:(NSString *)lastRegistrationInfo
+                            resolver:(UMPromiseResolveBlock)resolve
+                            rejecter:(UMPromiseRejectBlock)reject
 {
   NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
   NSDictionary *lastRegistrationsInfos = [defaults dictionaryForKey:kEXLastRegistrationsInfosKey] ?: @{};

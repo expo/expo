@@ -10,19 +10,19 @@ import {
 /**
  * Encapsulates device server registration data
  */
-export type Registration = {
+export type DevicePushTokenRegistration = {
   url: string;
   body: Record<string, any>;
   pendingDevicePushToken?: DevicePushToken | null;
 };
 
 /**
- * Sets the last registration information so that the device push token
- * gets pushed to the given registration endpoint
+ * Sets the last registration information so that the device push token gets
+ * pushed to the given registration endpoint
  * @param registration Registration endpoint to inform of new tokens
  */
 export async function setAutoServerRegistrationAsync(
-  registration: Omit<Registration, 'pendingDevicePushToken'>
+  registration: Omit<DevicePushTokenRegistration, 'pendingDevicePushToken'>
 ) {
   // We are overwriting registration, so we shouldn't let
   // any pending request complete.
@@ -43,6 +43,9 @@ export async function removeAutoServerRegistrationAsync() {
   await ServerRegistrationModule.setLastRegistrationInfoAsync?.(null);
 }
 
+/**
+ * This function is exported only for testing purposes.
+ */
 export async function __handlePersistedRegistrationInfoAsync(
   lastRegistrationInfo: string | null | undefined
 ) {
@@ -51,7 +54,7 @@ export async function __handlePersistedRegistrationInfoAsync(
     return;
   }
   try {
-    const lastRegistration: Registration = JSON.parse(lastRegistrationInfo);
+    const lastRegistration: DevicePushTokenRegistration = JSON.parse(lastRegistrationInfo);
     // We only want to retry if `hasPushTokenBeenUpdated` is false.
     // If it were true it means that another call to `updatePushTokenAsync`
     // has already occured which could only happen from the listener

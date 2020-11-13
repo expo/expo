@@ -1,7 +1,7 @@
 import { CodedError, Platform } from '@unimodules/core';
 import * as Application from 'expo-application';
 
-import { Registration } from '../DevicePushTokenAutoRegistration.fx';
+import { DevicePushTokenRegistration } from '../DevicePushTokenAutoRegistration.fx';
 import ServerRegistrationModule from '../ServerRegistrationModule';
 import { DevicePushToken } from '../Tokens.types';
 import generateRetries from './generateRetries';
@@ -22,7 +22,7 @@ async function* updatePushTokenAsyncGenerator(token: DevicePushToken) {
   }
 
   // Prepare request body
-  const lastRegistration: Registration = JSON.parse(lastRegistrationInfo);
+  const lastRegistration: DevicePushTokenRegistration = JSON.parse(lastRegistrationInfo);
   // Persist `pendingDevicePushToken` in case the app gets killed
   // before we finish registering to server.
   await ServerRegistrationModule.setLastRegistrationInfoAsync?.(

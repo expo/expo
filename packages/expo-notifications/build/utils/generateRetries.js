@@ -11,7 +11,7 @@ const EXPONENTIAL_FACTOR = 2;
  * of network request updating the push token on server.
  * If we were to use a regular asynchronous we wouldn't
  * be able to interrupt the execution between retries
- * (we would be only be able to await the whole retry call).
+ * (we would only be able to await the whole retry call).
  *
  * @param func The function to generate the retries of.
  * Receives a function as a single argument which it is expected
@@ -40,7 +40,6 @@ export default async function* generateRetries(func, options) {
         }
     }
     // Unreachable code, appease TypeScript
-    // Appease TypeScript
-    return undefined;
+    return;
 }
 //# sourceMappingURL=generateRetries.js.map
