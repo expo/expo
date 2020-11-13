@@ -1166,7 +1166,7 @@ Calling one of the following methods is a no-op on Web.
   - `allowInCarPlay`: A boolean indicating whether to allow CarPlay to display notifications of this type. **Apps must be approved for CarPlay to make use of this feature.** Defaults to `false`.
   - `showTitle`: A boolean indicating whether to show the notification's title, even if the user has disabled notification previews for the app. Defaults to `false`.
   - `showSubtitle`: A boolean indicating whether to show the notification's subtitle, even if the user has disabled notification previews for the app. Defaults to `false`.
-  - `allowAnnouncment`: A boolean indicating whether to allow notifications to be automatically read by Siri when the user is using AirPods. Defaults to `false`.
+  - `allowAnnouncement`: A boolean indicating whether to allow notifications to be automatically read by Siri when the user is using AirPods. Defaults to `false`.
 
 #### Returns
 
