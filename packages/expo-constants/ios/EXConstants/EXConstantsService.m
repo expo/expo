@@ -6,8 +6,7 @@
 
 #import <UMCore/UMUtilities.h>
 #import <EXConstants/EXConstantsService.h>
-
-static NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
+#import <EXConstants/EXConstantsService+InstallationId.h>
 
 NSString * const EXConstantsExecutionEnvironmentBare = @"bare";
 NSString * const EXConstantsExecutionEnvironmentStandalone = @"standalone";
@@ -412,16 +411,6 @@ UM_REGISTER_MODULE();
 + (NSString *)deviceName
 {
   return [UIDevice currentDevice].name;
-}
-
-+ (NSString *)installationId
-{
-  NSString *uuid = [[NSUserDefaults standardUserDefaults] stringForKey:kEXDeviceInstallUUIDKey];
-  if (!uuid) {
-    uuid = [[NSUUID UUID] UUIDString];
-    [[NSUserDefaults standardUserDefaults] setObject:uuid forKey:kEXDeviceInstallUUIDKey];
-  }
-  return uuid;
 }
 
 + (NSDictionary *)appConfig
