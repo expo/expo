@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <Photos/Photos.h>
+#import <PhotosUI/PhotosUI.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 
 #import <EXMediaLibrary/EXMediaLibrary.h>
@@ -126,6 +127,24 @@ UM_EXPORT_METHOD_AS(requestPermissionsAsync,
                                                          withRequester:[self requesterClass:writeOnly]
                                                                resolve:resolve
                                                                 reject:reject];
+}
+
+UM_EXPORT_METHOD_AS(presentPermissionsPickerAsync,
+                    presentPermissionsPickerAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+#ifdef __IPHONE_14_0
+  if (@available(iOS 14, *)) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [[PHPhotoLibrary sharedPhotoLibrary] presentLimitedLibraryPickerFromViewController:[[[[UIApplication sharedApplication] delegate] window] rootViewController]];
+      resolve(nil);
+    });
+  } else {
+#endif
+    reject(@"ERR_METHOD_UNAVAILABLE", @"presentLimitedLibraryPickerAsync is only available on iOS >= 14.", nil);
+#ifdef __IPHONE_14_0 
+  }
+#endif
 }
 
 UM_EXPORT_METHOD_AS(createAssetAsync,
@@ -544,12 +563,13 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
       _allAssetsFetchResult = changeDetails.fetchResultAfterChanges;
       
       // PHPhotoLibraryChangeObserver is calling this method too often, so we need to filter out some calls before they are sent to JS.
-      // Ultimately, we emit an event only when something has been inserted or removed from the library.
+      // Ultimately, we emit an event when something has been inserted or removed from the library, or the user changed the permissions.
       if (changeDetails.hasIncrementalChanges && (changeDetails.insertedObjects.count > 0 || changeDetails.removedObjects.count > 0)) {
         NSMutableArray *insertedAssets = [NSMutableArray new];
         NSMutableArray *deletedAssets = [NSMutableArray new];
         NSMutableArray *updatedAssets = [NSMutableArray new];
         NSDictionary *body = @{
+                               @"hasIncrementalChanges": @(true),
                                @"insertedAssets": insertedAssets,
                                @"deletedAssets": deletedAssets,
                                @"updatedAssets": updatedAssets
@@ -566,6 +586,15 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
         }
         
         [_eventEmitter sendEventWithName:EXMediaLibraryDidChangeEvent body:body];
+        return;
+      }
+      
+      // Emit event when the scope of changes were too large and incremental changes could not be provided.
+      // For example, when the user changed the limited permissions.
+      if (!changeDetails.hasIncrementalChanges) {
+        [_eventEmitter sendEventWithName:EXMediaLibraryDidChangeEvent body:@{
+          @"hasIncrementalChanges": @(false)
+        }];
       }
     }
   }
