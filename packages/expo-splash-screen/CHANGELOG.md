@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Upgrade `androidx.appcompat` to `1.2.0`. ([#11018](https://github.com/expo/expo/pull/11018) by [@bbarthec](https://github.com/bbarthec))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
@@ -18,8 +20,8 @@
 
 - On Android fixed `SplashScreen` methods not working in managed workflow. Scoped the `SplashScreen` native object to the separate `singletons` sub-package to work with versioned code. ([#10294](https://github.com/expo/expo/pull/10294) by [@bbarthec](https://github.com/bbarthec))
 - Updated `@expo/configure-splash-screen` to `v0.2.0`.
-  - this version fixes the problem with the wrong `SplashScreen.show` method singnature on Android. It propoerly adds the `ReactRootView` parameter now. 
-  - additionally it properly imports the `SplashScreen` object from the `singletons` sub-packagae on Android.
+  - This version fixes the problem with the wrong `SplashScreen.show` method signature on Android. It properly adds the `ReactRootView` parameter now.
+  - Additionally it properly imports the `SplashScreen` object from the `singletons` sub-packagae on Android.
 - `yarn run expo-splash-screen` changed its parameters layout. Run `yarn run expo-splash-screen --help` to see the new options layout. Every parameter has to provided via the `--[option name]` syntax now.
 
 ## 0.6.1 - 2020-09-17
