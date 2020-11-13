@@ -174,7 +174,7 @@ Object.defineProperties(module.exports, {
     enumerable: true,
     get() {
       removedModule(
-        `import { AppLoading } from 'expo' -> import { AppLoading } from 'expo-app-loading'`,
+        `import { AppLoading } from 'expo' -> import AppLoading from 'expo-app-loading'`,
         'AppLoading',
         'expo-app-loading'
       );

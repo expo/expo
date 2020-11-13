@@ -1,8 +1,8 @@
+import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
 import { Platform, StatusBar } from 'react-native';
 import { AppearanceProvider } from 'react-native-appearance';
 import { enableScreens } from 'react-native-screens';
-import * as SplashScreen from 'expo-splash-screen';
 
 import RootNavigation from './src/navigation/RootNavigation';
 import loadAssetsAsync from './src/utilities/loadAssetsAsync';
@@ -34,7 +34,6 @@ function useSplashScreen(loadingFunction: () => void | Promise<void>) {
 
   return isLoadingCompleted;
 }
-
 
 export default function App(props: any) {
   const isLoadingCompleted = useSplashScreen(async () => {
