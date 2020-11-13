@@ -222,7 +222,7 @@ The following methods are exported by the `expo-notifications` module:
   - [`removePushTokenSubscription`](#removepushtokensubscriptionsubscription-subscription-void) -- removes the listener registered with `addPushTokenListener`
   - [`removeAllPushTokenListeners`](#removeallpushtokenlisteners-void) -- removes all listeners registered with `addPushTokenListener`
 - **listening to notification events**
-  - [`useLastNotificationResponse`](#uselastnotificationresponse-undefined--notificationresponse--null) -- a React hook returning notification response that has been received most recently
+  - [`useLastNotificationResponse`](#uselastnotificationresponse-undefined--notificationresponse--null) -- a React hook returning the most recently received notification response
   - [`addNotificationReceivedListener`](#addnotificationreceivedlistenerlistener-event-notification--void-void) -- adds a listener called whenever a new notification is received
   - [`addNotificationsDroppedListener`](#addnotificationsdroppedlistenerlistener---void-void) -- adds a listener called whenever some notifications have been dropped
   - [`addNotificationResponseReceivedListener`](#addnotificationresponsereceivedlistenerlistener-event-notificationresponse--void-void) -- adds a listener called whenever user interacts with a notification
@@ -412,15 +412,15 @@ Removes all push token subscriptions that may have been registered with `addPush
 
 ### `useLastNotificationResponse(): undefined | NotificationResponse | null`
 
-A React hook always returning the notification response that was received the most recently (notification response designates an interaction with a notification, eg. tapping on it).
+A React hook always returning the notification response that was received most recently (a notification response designates an interaction with a notification, such as tapping on it).
 
 #### Returns
 
-The hook may return values of three types/values:
+The hook may return one of these three types/values:
 
 - `undefined` -- until we're sure of what to return
 - `null` -- if no notification response has been received yet
-- an object of [`NotificationResponse`](#notificationresponse) type -- notification response received the most recently
+- a [`NotificationResponse`](#notificationresponse) object -- if a notification response was received 
 
 #### Examples
 
