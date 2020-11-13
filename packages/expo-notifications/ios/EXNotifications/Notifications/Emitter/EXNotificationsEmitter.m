@@ -25,7 +25,7 @@ UM_EXPORT_MODULE(ExpoNotificationsEmitter);
 UM_EXPORT_METHOD_AS(getLastNotificationResponseAsync,
                     getLastNotificationResponseAsyncWithResolver:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject)
 {
-  resolve(_lastNotificationResponse ? [EXNotificationSerializer serializedNotificationResponse:_lastNotificationResponse] : [NSNull null]);
+  resolve(_lastNotificationResponse ? [self serializedNotificationResponse:_lastNotificationResponse] : [NSNull null]);
 }
 
 # pragma mark - UMModuleRegistryConsumer
@@ -66,13 +66,13 @@ UM_EXPORT_METHOD_AS(getLastNotificationResponseAsync,
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler
 {
   _lastNotificationResponse = response;
-  [self sendEventWithName:onDidReceiveNotificationResponse body:[EXNotificationSerializer serializedNotificationResponse:response]];
+  [self sendEventWithName:onDidReceiveNotificationResponse body:[self serializedNotificationResponse:response]];
   completionHandler();
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler
 {
-  [self sendEventWithName:onDidReceiveNotification body:[EXNotificationSerializer serializedNotification:notification]];
+  [self sendEventWithName:onDidReceiveNotification body:[self serializedNotification:notification]];
   completionHandler(UNNotificationPresentationOptionNone);
 }
 
@@ -83,6 +83,16 @@ UM_EXPORT_METHOD_AS(getLastNotificationResponseAsync,
   if (_isBeingObserved) {
     [_eventEmitter sendEventWithName:eventName body:body];
   }
+}
+
+- (NSDictionary *)serializedNotification:(UNNotification *)notification
+{
+  return [EXNotificationSerializer serializedNotification:notification];
+}
+
+- (NSDictionary *)serializedNotificationResponse:(UNNotificationResponse *)notificationResponse
+{
+  return [EXNotificationSerializer serializedNotificationResponse:notificationResponse];
 }
 
 @end
