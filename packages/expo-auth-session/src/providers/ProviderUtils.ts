@@ -1,4 +1,4 @@
-import Constants from 'expo-constants';
+import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { useMemo } from 'react';
 import { Platform } from 'react-native';
 
@@ -15,7 +15,7 @@ export function shouldUseProxy(): boolean {
   return Platform.select({
     web: false,
     // Use the proxy in the Expo client.
-    default: !!Constants.manifest && Constants.appOwnership !== 'standalone',
+    default: Constants.executionEnvironment === ExecutionEnvironment.StoreClient,
   });
 }
 
