@@ -43,6 +43,7 @@
     "unimodules-permissions-interface": "*"
   },
   "dependencies": {
+    "abort-controller": "^3.0.0",
     "badgin": "^1.1.5",
     "expo-application": "~2.4.0",
     "expo-constants": "9.3.0",
