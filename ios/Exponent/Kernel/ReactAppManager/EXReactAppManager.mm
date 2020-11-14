@@ -16,6 +16,7 @@
 #import "EXVersions.h"
 #import "EXAppViewController.h"
 #import <UMCore/UMModuleRegistryProvider.h>
+#import <EXConstants/EXConstantsService.h>
 #import <EXSplashScreen/EXSplashScreenService.h>
 
 #import <React/RCTBridge.h>
@@ -154,6 +155,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
         @"experienceUrl": RCTNullIfNil(_appRecord.appLoader.manifestUrl? _appRecord.appLoader.manifestUrl.absoluteString: nil),
         @"expoRuntimeVersion": [EXBuildConstants sharedInstance].expoRuntimeVersion,
         @"manifest": _appRecord.appLoader.manifest,
+        @"executionEnvironment": [self _executionEnvironment],
         @"appOwnership": [self _appOwnership],
         @"isHeadless": @(_isHeadless),
         @"supportedExpoSdks": [EXVersions sharedInstance].versions[@"sdkVersions"],
@@ -715,6 +717,15 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     return @"standalone";
   }
   return @"expo";
+}
+
+- (NSString *)_executionEnvironment
+{
+  if ([EXEnvironment sharedEnvironment].isDetached) {
+    return EXConstantsExecutionEnvironmentStandalone;
+  } else {
+    return EXConstantsExecutionEnvironmentStoreClient;
+  }
 }
 
 - (NSString *)scopedDocumentDirectory

@@ -14,6 +14,8 @@
 #import "EXVersionManager.h"
 #import "EXVersions.h"
 
+#import <EXConstants/EXConstantsService.h>
+
 #import <React/RCTUtils.h>
 #import <React/RCTBridge.h>
 
@@ -34,6 +36,7 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
         @"linkingUri": @"exp://",
         @"experienceUrl": [@"exp://" stringByAppendingString:self.appRecord.appLoader.manifest[@"hostUri"]],
         @"manifest": self.appRecord.appLoader.manifest,
+        @"executionEnvironment": EXConstantsExecutionEnvironmentStoreClient,
         @"appOwnership": @"expo",
         @"supportedExpoSdks": [EXVersions sharedInstance].versions[@"sdkVersions"],
     },

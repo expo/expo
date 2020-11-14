@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `Constants.executionEnvironment` to distinguish between apps running in a bare, managed standalone, or App/Play Store development client environment.
+
 ### 🐛 Bug fixes
 
 ## 9.2.0 — 2020-08-18
