@@ -511,8 +511,8 @@ PODS:
   - React-jsinspector (0.63.2)
   - react-native-appearance (0.3.4):
     - React
-  - react-native-netinfo (5.9.6):
-    - React
+  - react-native-netinfo (5.9.7):
+    - React-Core
   - react-native-safe-area-context (3.1.9):
     - React-Core
   - react-native-segmented-control (2.2.1):
@@ -1146,7 +1146,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 8ca588cc921e70590820ce72b8789b02c67cce38
   React-jsinspector: b14e62ebe7a66e9231e9581279909f2fc3db6606
   react-native-appearance: 0f0e5fc2fcef70e03d48c8fe6b00b9158c2ba8aa
-  react-native-netinfo: 38a1e0b3e89b48e4b5833ed475d8df5f049f6f90
+  react-native-netinfo: 250dc0ca126512f618a8a2ca6a936577e1f66586
   react-native-safe-area-context: b6e0e284002381d2ff29fa4fff42b4d8282e3c94
   react-native-segmented-control: eb9e25fbfbce226ecf66d643428fbe97601e691a
   react-native-slider: e99fc201cefe81270fc9d81714a7a0f5e566b168
