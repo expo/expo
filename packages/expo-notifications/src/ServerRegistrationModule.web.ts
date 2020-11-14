@@ -1,3 +1,4 @@
+import { CodedError } from '@unimodules/core';
 import uuidv4 from 'uuid/v4';
 
 import { ServerRegistrationModule } from './ServerRegistrationModule.types';
@@ -31,10 +32,17 @@ export default {
     return localStorage.getItem(REGISTRATION_INFO_KEY);
   },
   setRegistrationInfoAsync: async (registrationInfo: string | null) => {
-    if (registrationInfo) {
-      localStorage.setItem(REGISTRATION_INFO_KEY, registrationInfo);
-    } else {
-      localStorage.removeItem(REGISTRATION_INFO_KEY);
+    try {
+      if (registrationInfo) {
+        localStorage.setItem(REGISTRATION_INFO_KEY, registrationInfo);
+      } else {
+        localStorage.removeItem(REGISTRATION_INFO_KEY);
+      }
+    } catch (error) {
+      throw new CodedError(
+        'ERR_NOTIFICATIONS_STORAGE_ERROR',
+        `Could not modify localStorage to persist auto-registration information: ${error}`
+      );
     }
   },
   // mock implementations

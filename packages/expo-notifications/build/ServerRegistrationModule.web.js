@@ -1,3 +1,4 @@
+import { CodedError } from '@unimodules/core';
 import uuidv4 from 'uuid/v4';
 const INSTALLATION_ID_KEY = 'EXPO_NOTIFICATIONS_INSTALLATION_ID';
 const REGISTRATION_INFO_KEY = 'EXPO_NOTIFICATIONS_REGISTRATION_INFO';
@@ -25,11 +26,16 @@ export default {
         return localStorage.getItem(REGISTRATION_INFO_KEY);
     },
     setRegistrationInfoAsync: async (registrationInfo) => {
-        if (registrationInfo) {
-            localStorage.setItem(REGISTRATION_INFO_KEY, registrationInfo);
+        try {
+            if (registrationInfo) {
+                localStorage.setItem(REGISTRATION_INFO_KEY, registrationInfo);
+            }
+            else {
+                localStorage.removeItem(REGISTRATION_INFO_KEY);
+            }
         }
-        else {
-            localStorage.removeItem(REGISTRATION_INFO_KEY);
+        catch (error) {
+            throw new CodedError('ERR_NOTIFICATIONS_STORAGE_ERROR', `Could not modify localStorage to persist auto-registration information: ${error}`);
         }
     },
     // mock implementations
