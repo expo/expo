@@ -65,6 +65,7 @@ public class ConstantsBinding extends ConstantsService implements ConstantsInter
     String appOwnership = getAppOwnership();
 
     constants.put("appOwnership", appOwnership);
+    constants.put("executionEnvironment", getExecutionEnvironment().getString());
     constants.putAll(mExperienceProperties);
 
     Map<String, Object> platform = new HashMap<>();
@@ -101,6 +102,14 @@ public class ConstantsBinding extends ConstantsService implements ConstantsInter
       }
     } else {
       return "expo";
+    }
+  }
+
+  private ExecutionEnvironment getExecutionEnvironment() {
+    if (Constants.isStandaloneApp()) {
+      return ExecutionEnvironment.STANDALONE;
+    } else {
+      return ExecutionEnvironment.STORE_CLIENT;
     }
   }
 }

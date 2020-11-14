@@ -1,6 +1,6 @@
-import { AppOwnership, UserInterfaceIdiom, } from './Constants.types';
+import { AppOwnership, ExecutionEnvironment, UserInterfaceIdiom, } from './Constants.types';
 import ExponentConstants from './ExponentConstants';
-export { AppOwnership, UserInterfaceIdiom, };
+export { AppOwnership, ExecutionEnvironment, UserInterfaceIdiom, };
 if (!ExponentConstants) {
     console.warn("No native ExponentConstants module found, are you sure the expo-constants's module is linked properly?");
 }

@@ -3,6 +3,11 @@ export declare enum AppOwnership {
     Expo = "expo",
     Guest = "guest"
 }
+export declare enum ExecutionEnvironment {
+    Bare = "bare",
+    Standalone = "standalone",
+    StoreClient = "storeClient"
+}
 export declare enum UserInterfaceIdiom {
     Handset = "handset",
     Tablet = "tablet",
@@ -87,6 +92,7 @@ export interface NativeConstants {
     debugMode: boolean;
     deviceName?: string;
     deviceYearClass: number | null;
+    executionEnvironment: ExecutionEnvironment;
     experienceUrl: string;
     expoRuntimeVersion: string | null;
     /**
