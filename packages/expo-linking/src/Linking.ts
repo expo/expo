@@ -1,5 +1,5 @@
 import { UnavailabilityError } from '@unimodules/core';
-import Constants from 'expo-constants';
+import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import invariant from 'fbjs/lib/invariant';
 import qs from 'qs';
@@ -111,7 +111,7 @@ export function makeUrl(path: string = '', queryParams: QueryParams = {}): strin
   }
 
   // We don't have a manifest in bare workflow except after publishing, so warn people in development.
-  if (!Constants.manifest) {
+  if (Constants.executionEnvironment === ExecutionEnvironment.Bare) {
     console.warn(
       'Linking.makeUrl is not supported in bare workflow. Switch to using your scheme string directly.'
     );
