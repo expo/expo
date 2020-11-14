@@ -1,6 +1,6 @@
 ---
 title: Picker
-sourceCodeUrl: 'https://github.com/react-native-community/react-native-picker'
+sourceCodeUrl: 'https://github.com/react-native-picker/picker'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
@@ -11,12 +11,14 @@ import Video from '~/components/plugins/Video'
 
 A component that provides access to the system UI for picking between several options.
 
+> 💡 This library was formerly known as `@react-native-community/picker`. If you have that library in your SDK 40+ project, you can uninstall it and install this one instead.
+
 <PlatformsSection android emulator ios simulator />
 
 ## Installation
 
-<InstallSection packageName="@react-native-community/picker" href="https://github.com/react-native-community/react-native-picker#getting-started" />
+<InstallSection packageName="@react-native-picker/picker" href="https://github.com/react-native-picker/picker#getting-started" />
 
 ## Usage
 
-See full documentation at [react-native-community/react-native-picker](https://github.com/react-native-community/react-native-picker).
+See full documentation at [react-native-picker/picker](https://github.com/react-native-picker/picker).

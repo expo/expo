@@ -1,6 +1,6 @@
 {
   "@expo/vector-icons": "^10.0.0",
-  "@react-native-community/netinfo": "5.9.6",
+  "@react-native-community/netinfo": "5.9.7",
   "@react-native-community/async-storage": "~1.12.0",
   "@unimodules/core": "~5.5.0",
   "@unimodules/react-native-adapter": "~5.6.0",
@@ -58,7 +58,7 @@
   "expo-web-browser": "~8.5.0",
   "lottie-react-native": "~2.6.1",
   "react-native-branch": "5.0.0",
-  "react-native-gesture-handler": "~1.7.0",
+  "react-native-gesture-handler": "~1.8.0",
   "react-native-maps": "0.27.1",
   "react-native-reanimated": "~1.13.0",
   "react-native-screens": "~2.10.1",
@@ -79,7 +79,7 @@
   "expo-in-app-purchases": "~9.1.0",
   "expo-branch": "~2.3.1",
   "react-native-appearance": "~0.3.3",
-  "react-native-safe-area-context": "3.1.8",
+  "react-native-safe-area-context": "3.1.9",
   "react-native-shared-element": "0.7.0",
   "expo-application": "~2.3.0",
   "expo-battery": "~3.0.0",
@@ -91,7 +91,7 @@
   "@react-native-community/datetimepicker": "3.0.4",
   "@react-native-community/masked-view": "0.1.10",
   "@react-native-community/viewpager": "4.2.0",
-  "@react-native-community/segmented-control": "2.1.1",
+  "@react-native-community/segmented-control": "2.2.1",
   "expo-error-recovery": "~1.3.0",
   "expo-module-template": "~8.4.0",
   "expo-image-loader": "~1.2.0",
@@ -100,7 +100,7 @@
   "expo-notifications": "~0.7.1",
   "expo-splash-screen": "~0.7.1",
   "firebase": "7.9.0",
-  "@react-native-community/picker": "1.6.6",
   "@react-native-community/slider": "3.0.3",
-  "expo-status-bar": "~1.0.2"
+  "expo-status-bar": "~1.0.2",
+  "@react-native-picker/picker": "1.9.2"
 }

@@ -7,41 +7,41 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4423A63BA1A6EFFD06BD40503DABF722 /* RNCPickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 522D4EA96D44A06FE4DA1C19174EF377 /* RNCPickerManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		495916D8D6EE5F00530E15ABF8BA464F /* RNCPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 825D5DA7FA532F9FAF94736114C28936 /* RNCPicker.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		707BACB1DD7239156EA29962E4602C95 /* RNCPicker-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = B7CD962CDF471F5E9882FBAA9CFC8ED0 /* RNCPicker-dummy.m */; };
-		76F33F8EFE3C774DC6FAB11AF7E0A892 /* RNCPickerManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 1401437ECD68C82E4014B97A85F0248B /* RNCPickerManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		EE85DBDBCFE7487AC000C683B2EE5689 /* RNCPicker.h in Headers */ = {isa = PBXBuildFile; fileRef = D6B7B73F1642329C8EBE46452DEDE8DE /* RNCPicker.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		69A847CBB364E4B6C99DF98F7786BF91 /* RNCPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 2999D0B967266637106A37D5A68380EC /* RNCPicker.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		74AA683F0E768490379C3EACEEE258E6 /* RNCPickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 341861D8E88F660364BB685E33ED0EA5 /* RNCPickerManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		A1A7FF53DBA7D247FB010619C8F307E6 /* RNCPickerManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 1173803B28407CA15104466BDF640FEB /* RNCPickerManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D9550011F53EB94B86F6BDA9FB711C84 /* RNCPicker.h in Headers */ = {isa = PBXBuildFile; fileRef = D54918BB2668C23DB8211E5C702F6DD6 /* RNCPicker.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		EC0C64534101D111588E30D8AC91164F /* RNCPicker-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 6907860DF7F1046A3CA9AD1897973353 /* RNCPicker-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		77791A09DD4891567FE3FCF6DCA4884E /* PBXContainerItemProxy */ = {
+		57D3829B1605FFA25347B9F3B48A73B8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 473CAB28524EBE11E0E325CDA8F25E3E /* React.xcodeproj */;
+			containerPortal = 8C117E96A5B4744CCBEB989F2096DAD5 /* React-Core.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 94DA87F24FB4B93E5D08FE961D5E5A3E;
-			remoteInfo = React;
+			remoteGlobalIDString = 5DA1A74647F652AE8E4DE074AFC4C6B7;
+			remoteInfo = "React-Core";
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0AED8C0102F15C03233953D4C5098DDB /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
-		1401437ECD68C82E4014B97A85F0248B /* RNCPickerManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNCPickerManager.h; path = ios/RNCPickerManager.h; sourceTree = "<group>"; };
-		26C80A2E5F6F90764D65499CE9A0A953 /* RNCPicker.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = RNCPicker.release.xcconfig; sourceTree = "<group>"; };
-		31A9CA1FED22EDBE5A5F223635659C49 /* RNCPicker.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = RNCPicker.debug.xcconfig; sourceTree = "<group>"; };
+		07841D204B200DB8C37AF0FF82572D63 /* RNCPicker.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = RNCPicker.debug.xcconfig; sourceTree = "<group>"; };
+		1173803B28407CA15104466BDF640FEB /* RNCPickerManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNCPickerManager.h; path = ios/RNCPickerManager.h; sourceTree = "<group>"; };
+		2999D0B967266637106A37D5A68380EC /* RNCPicker.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNCPicker.m; path = ios/RNCPicker.m; sourceTree = "<group>"; };
+		341861D8E88F660364BB685E33ED0EA5 /* RNCPickerManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNCPickerManager.m; path = ios/RNCPickerManager.m; sourceTree = "<group>"; };
 		38F06AE70E8F2365AB7822F83BA69FD1 /* libRNCPicker.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libRNCPicker.a; path = libRNCPicker.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		473CAB28524EBE11E0E325CDA8F25E3E /* React */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React; path = React.xcodeproj; sourceTree = "<group>"; };
-		522D4EA96D44A06FE4DA1C19174EF377 /* RNCPickerManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNCPickerManager.m; path = ios/RNCPickerManager.m; sourceTree = "<group>"; };
-		5F8C27265CC9F8FF1FA2E4D0B5A44999 /* RNCPicker-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "RNCPicker-prefix.pch"; sourceTree = "<group>"; };
-		825D5DA7FA532F9FAF94736114C28936 /* RNCPicker.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNCPicker.m; path = ios/RNCPicker.m; sourceTree = "<group>"; };
-		89834D52FF87440B20F7724683325E51 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
-		B7CD962CDF471F5E9882FBAA9CFC8ED0 /* RNCPicker-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "RNCPicker-dummy.m"; sourceTree = "<group>"; };
-		D6B7B73F1642329C8EBE46452DEDE8DE /* RNCPicker.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNCPicker.h; path = ios/RNCPicker.h; sourceTree = "<group>"; };
-		E7FED862C2FAC091A293A14BC3439000 /* RNCPicker.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = RNCPicker.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		50FEAF421F54B2AFD1DBC497B2D47C05 /* RNCPicker.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = RNCPicker.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		6907860DF7F1046A3CA9AD1897973353 /* RNCPicker-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "RNCPicker-dummy.m"; sourceTree = "<group>"; };
+		7ED5C10D30DD5FE4A562C6B0FA1E46B4 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		8C117E96A5B4744CCBEB989F2096DAD5 /* React-Core */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-Core"; path = "React-Core.xcodeproj"; sourceTree = "<group>"; };
+		9875237842A5BD8467D9ED100206F6E6 /* RNCPicker.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = RNCPicker.release.xcconfig; sourceTree = "<group>"; };
+		C8FEB6987E365B6743EAA507D32C4098 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		D2004FEB7E3D715D82B8206A725AB976 /* RNCPicker-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "RNCPicker-prefix.pch"; sourceTree = "<group>"; };
+		D54918BB2668C23DB8211E5C702F6DD6 /* RNCPicker.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNCPicker.h; path = ios/RNCPicker.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		E1FDE6687A4C430B2AB97C31EC57577E /* Frameworks */ = {
+		F66366660BCE5A438A98DE4BA651316F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -51,12 +51,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		5A1AA3FACCA44D2BFCAE0B2E1F64EE3F /* Dependencies */ = {
+		251AA3F9F589A179592C67E98DFB9B68 /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
-				473CAB28524EBE11E0E325CDA8F25E3E /* React */,
+				8C117E96A5B4744CCBEB989F2096DAD5 /* React-Core */,
 			);
 			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		73DE3EED21F20C7176914EA8DD650B7D /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				6907860DF7F1046A3CA9AD1897973353 /* RNCPicker-dummy.m */,
+				D2004FEB7E3D715D82B8206A725AB976 /* RNCPicker-prefix.pch */,
+				07841D204B200DB8C37AF0FF82572D63 /* RNCPicker.debug.xcconfig */,
+				9875237842A5BD8467D9ED100206F6E6 /* RNCPicker.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/RNCPicker";
 			sourceTree = "<group>";
 		};
 		74546273D5295BDCBD75199FDB723544 /* Frameworks */ = {
@@ -74,48 +86,36 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		B7CFAC1336FE553DEA270770152FFE0A /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				B7CD962CDF471F5E9882FBAA9CFC8ED0 /* RNCPicker-dummy.m */,
-				5F8C27265CC9F8FF1FA2E4D0B5A44999 /* RNCPicker-prefix.pch */,
-				31A9CA1FED22EDBE5A5F223635659C49 /* RNCPicker.debug.xcconfig */,
-				26C80A2E5F6F90764D65499CE9A0A953 /* RNCPicker.release.xcconfig */,
-			);
-			name = "Support Files";
-			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/RNCPicker";
-			sourceTree = "<group>";
-		};
-		CAA3D82DE39D2129EDE7D07C6298DA67 /* RNCPicker */ = {
-			isa = PBXGroup;
-			children = (
-				D6B7B73F1642329C8EBE46452DEDE8DE /* RNCPicker.h */,
-				825D5DA7FA532F9FAF94736114C28936 /* RNCPicker.m */,
-				1401437ECD68C82E4014B97A85F0248B /* RNCPickerManager.h */,
-				522D4EA96D44A06FE4DA1C19174EF377 /* RNCPickerManager.m */,
-				D8DFB3E43C0BBA2DF1FF809A89003B78 /* Pod */,
-				B7CFAC1336FE553DEA270770152FFE0A /* Support Files */,
-			);
-			name = RNCPicker;
-			path = "../../../../node_modules/@react-native-community/picker";
-			sourceTree = "<group>";
-		};
 		CAA708935127DC832DC82F4E62200C05 = {
 			isa = PBXGroup;
 			children = (
-				5A1AA3FACCA44D2BFCAE0B2E1F64EE3F /* Dependencies */,
+				251AA3F9F589A179592C67E98DFB9B68 /* Dependencies */,
 				74546273D5295BDCBD75199FDB723544 /* Frameworks */,
 				894A441172A5376FB80851D34C5601D6 /* Products */,
-				CAA3D82DE39D2129EDE7D07C6298DA67 /* RNCPicker */,
+				DCF719AA6C303F5D5F8EB1173FA89CF5 /* RNCPicker */,
 			);
 			sourceTree = "<group>";
 		};
-		D8DFB3E43C0BBA2DF1FF809A89003B78 /* Pod */ = {
+		DCF719AA6C303F5D5F8EB1173FA89CF5 /* RNCPicker */ = {
 			isa = PBXGroup;
 			children = (
-				0AED8C0102F15C03233953D4C5098DDB /* LICENSE */,
-				89834D52FF87440B20F7724683325E51 /* README.md */,
-				E7FED862C2FAC091A293A14BC3439000 /* RNCPicker.podspec */,
+				D54918BB2668C23DB8211E5C702F6DD6 /* RNCPicker.h */,
+				2999D0B967266637106A37D5A68380EC /* RNCPicker.m */,
+				1173803B28407CA15104466BDF640FEB /* RNCPickerManager.h */,
+				341861D8E88F660364BB685E33ED0EA5 /* RNCPickerManager.m */,
+				DEC620DEB2CD829C6C7AAB87D52D731B /* Pod */,
+				73DE3EED21F20C7176914EA8DD650B7D /* Support Files */,
+			);
+			name = RNCPicker;
+			path = "../../../../node_modules/@react-native-picker/picker";
+			sourceTree = "<group>";
+		};
+		DEC620DEB2CD829C6C7AAB87D52D731B /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				C8FEB6987E365B6743EAA507D32C4098 /* LICENSE */,
+				7ED5C10D30DD5FE4A562C6B0FA1E46B4 /* README.md */,
+				50FEAF421F54B2AFD1DBC497B2D47C05 /* RNCPicker.podspec */,
 			);
 			name = Pod;
 			sourceTree = "<group>";
@@ -123,12 +123,12 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		FC6B25CF656C9C2A71233B3207D3C0BA /* Headers */ = {
+		2BE2CA889AE1B1475936A59770BB309A /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EE85DBDBCFE7487AC000C683B2EE5689 /* RNCPicker.h in Headers */,
-				76F33F8EFE3C774DC6FAB11AF7E0A892 /* RNCPickerManager.h in Headers */,
+				D9550011F53EB94B86F6BDA9FB711C84 /* RNCPicker.h in Headers */,
+				A1A7FF53DBA7D247FB010619C8F307E6 /* RNCPickerManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -137,16 +137,16 @@
 /* Begin PBXNativeTarget section */
 		379A5889161D6AB9EB39C236491A579D /* RNCPicker */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F3B1525DECE7341B4DD99CA2FF9B1035 /* Build configuration list for PBXNativeTarget "RNCPicker" */;
+			buildConfigurationList = 1F4CDE21356A678AD3CF547E691D0970 /* Build configuration list for PBXNativeTarget "RNCPicker" */;
 			buildPhases = (
-				FC6B25CF656C9C2A71233B3207D3C0BA /* Headers */,
-				D1EE1BB64F1FFCE7978D587D8B3D0500 /* Sources */,
-				E1FDE6687A4C430B2AB97C31EC57577E /* Frameworks */,
+				2BE2CA889AE1B1475936A59770BB309A /* Headers */,
+				8FA033191630E9747569F4DC52396789 /* Sources */,
+				F66366660BCE5A438A98DE4BA651316F /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				C2DD5B05147896E20F2DC5DCD0BC2759 /* PBXTargetDependency */,
+				ADB7277464210003D7D11FD19A8DC131 /* PBXTargetDependency */,
 			);
 			name = RNCPicker;
 			productName = RNCPicker;
@@ -175,7 +175,7 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProjectRef = 473CAB28524EBE11E0E325CDA8F25E3E /* React */;
+					ProjectRef = 8C117E96A5B4744CCBEB989F2096DAD5 /* React-Core */;
 				},
 			);
 			projectRoot = "";
@@ -186,23 +186,23 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		D1EE1BB64F1FFCE7978D587D8B3D0500 /* Sources */ = {
+		8FA033191630E9747569F4DC52396789 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				707BACB1DD7239156EA29962E4602C95 /* RNCPicker-dummy.m in Sources */,
-				495916D8D6EE5F00530E15ABF8BA464F /* RNCPicker.m in Sources */,
-				4423A63BA1A6EFFD06BD40503DABF722 /* RNCPickerManager.m in Sources */,
+				EC0C64534101D111588E30D8AC91164F /* RNCPicker-dummy.m in Sources */,
+				69A847CBB364E4B6C99DF98F7786BF91 /* RNCPicker.m in Sources */,
+				74AA683F0E768490379C3EACEEE258E6 /* RNCPickerManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		C2DD5B05147896E20F2DC5DCD0BC2759 /* PBXTargetDependency */ = {
+		ADB7277464210003D7D11FD19A8DC131 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = React;
-			targetProxy = 77791A09DD4891567FE3FCF6DCA4884E /* PBXContainerItemProxy */;
+			name = "React-Core";
+			targetProxy = 57D3829B1605FFA25347B9F3B48A73B8 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -271,14 +271,15 @@
 			};
 			name = Debug;
 		};
-		797479DF48BC447E432C666408BFB314 /* Release */ = {
+		288F0F8F5191DCFD083AC496BD4225BC /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 26C80A2E5F6F90764D65499CE9A0A953 /* RNCPicker.release.xcconfig */;
+			baseConfigurationReference = 9875237842A5BD8467D9ED100206F6E6 /* RNCPicker.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/RNCPicker/RNCPicker-prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				OTHER_LDFLAGS = "";
@@ -295,6 +296,31 @@
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
+		};
+		77AC5EF62DA8B63BE1998629AB4EF598 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 07841D204B200DB8C37AF0FF82572D63 /* RNCPicker.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/RNCPicker/RNCPicker-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RNCPicker;
+				PRODUCT_NAME = RNCPicker;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
 		};
 		B9E5857F89A1310E039174BCA2350D44 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -356,47 +382,23 @@
 			};
 			name = Release;
 		};
-		EC7E7B2700D6BC1FB1154BCC10C83A67 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 31A9CA1FED22EDBE5A5F223635659C49 /* RNCPicker.debug.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/RNCPicker/RNCPicker-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = RNCPicker;
-				PRODUCT_NAME = RNCPicker;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		1F4CDE21356A678AD3CF547E691D0970 /* Build configuration list for PBXNativeTarget "RNCPicker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				77AC5EF62DA8B63BE1998629AB4EF598 /* Debug */,
+				288F0F8F5191DCFD083AC496BD4225BC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		9ECE824CBF01542B645FD5DCCA2DA394 /* Build configuration list for PBXProject "RNCPicker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				26B52EA76951B64477302299342326EA /* Debug */,
 				B9E5857F89A1310E039174BCA2350D44 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		F3B1525DECE7341B4DD99CA2FF9B1035 /* Build configuration list for PBXNativeTarget "RNCPicker" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				EC7E7B2700D6BC1FB1154BCC10C83A67 /* Debug */,
-				797479DF48BC447E432C666408BFB314 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

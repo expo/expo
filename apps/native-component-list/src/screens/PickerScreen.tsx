@@ -1,6 +1,7 @@
-import { Picker } from '@react-native-community/picker';
+import { Picker } from '@react-native-picker/picker';
 import { Platform } from '@unimodules/core';
 import * as React from 'react';
+import { Text } from 'react-native';
 
 import { Page, Section } from '../components/Page';
 
@@ -31,13 +32,15 @@ PickerScreen.navigationOptions = {
 
 function GenericPicker(props: Partial<React.ComponentProps<typeof Picker>>) {
   const [value, setValue] = React.useState<any>('java');
-
   return (
-    <Picker {...props} selectedValue={value} onValueChange={item => setValue(item)}>
-      <Picker.Item label="Java" value="java" />
-      <Picker.Item label="JavaScript" value="js" />
-      <Picker.Item label="Objective C" value="objc" />
-      <Picker.Item label="Swift" value="swift" />
-    </Picker>
+    <>
+      <Picker {...props} selectedValue={value} onValueChange={item => setValue(item)}>
+        <Picker.Item label="Java" value="java" />
+        <Picker.Item label="JavaScript" value="js" />
+        <Picker.Item label="Objective C" value="objc" />
+        <Picker.Item label="Swift" value="swift" />
+      </Picker>
+      <Text>Selected: {value}</Text>
+    </>
   );
 }
