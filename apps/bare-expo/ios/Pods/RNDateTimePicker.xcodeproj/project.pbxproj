@@ -7,20 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0F3CA4C3E63D4C00A6D0F4A4CC9D3899 /* RNDateTimePickerManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F4D68803792265FF2DD72BA0FAD757DF /* RNDateTimePickerManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		29E3A455E5EA62C9C52C11030F692D10 /* RNDateTimePickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C3158A5A15632761B916AFEB31ED1CC8 /* RNDateTimePickerManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		4478092CC34F7806191E93897E1713E7 /* RNDateTimePicker-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A08BB61514D901E1B159AB5FC6357C9 /* RNDateTimePicker-dummy.m */; };
-		5C6EFF402249B9A48D9EBB632EFF5EC4 /* RNDateTimePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 84A900D00ED58E9FF91A2C4407572E90 /* RNDateTimePicker.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		F046E14F0FF9A5933CE78B237D0FCFA5 /* RNDateTimePicker.h in Headers */ = {isa = PBXBuildFile; fileRef = 27612B8C1661EA10C2EFC99332246CCF /* RNDateTimePicker.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		002D88A44FF2CF46891743B9E9A9E199 /* RNDateTimePickerManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F4D68803792265FF2DD72BA0FAD757DF /* RNDateTimePickerManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		116D5188C7D64BD9F21BAD50B13CAD54 /* RNDateTimePicker.h in Headers */ = {isa = PBXBuildFile; fileRef = 27612B8C1661EA10C2EFC99332246CCF /* RNDateTimePicker.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3D85A30293D494B06AF0138A3162D6E3 /* RNDateTimePicker-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A08BB61514D901E1B159AB5FC6357C9 /* RNDateTimePicker-dummy.m */; };
+		57D3D2C71127BC5974446A3257379974 /* RNDateTimePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 84A900D00ED58E9FF91A2C4407572E90 /* RNDateTimePicker.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		747CE74B68172710303E77BC3FAA63C1 /* RNDateTimePickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C3158A5A15632761B916AFEB31ED1CC8 /* RNDateTimePickerManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		CE93EA489DC9402CE01808002B4D2FB4 /* PBXContainerItemProxy */ = {
+		1F5EF195E910F641ED89EF3893E521D9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 24E2C5DAB8DB64F4E67E24CA3B079C3C /* React.xcodeproj */;
+			containerPortal = 5F431D98F400C6FEC3CE7F0B231574BD /* React-Core.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 94DA87F24FB4B93E5D08FE961D5E5A3E;
-			remoteInfo = React;
+			remoteGlobalIDString = 5DA1A74647F652AE8E4DE074AFC4C6B7;
+			remoteInfo = "React-Core";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -29,10 +29,10 @@
 		1A08BB61514D901E1B159AB5FC6357C9 /* RNDateTimePicker-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "RNDateTimePicker-dummy.m"; sourceTree = "<group>"; };
 		1F08FB07BD3411B15A0A369FB8DD49CD /* LICENSE.md */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE.md; sourceTree = "<group>"; };
 		23B5C36808DCAD44DDD77286AB50A96B /* RNDateTimePicker.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = RNDateTimePicker.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		24E2C5DAB8DB64F4E67E24CA3B079C3C /* React */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React; path = React.xcodeproj; sourceTree = "<group>"; };
 		27612B8C1661EA10C2EFC99332246CCF /* RNDateTimePicker.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNDateTimePicker.h; path = ios/RNDateTimePicker.h; sourceTree = "<group>"; };
 		282CB33110240740B27CFE8B54B9CA21 /* RNDateTimePicker.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = RNDateTimePicker.debug.xcconfig; sourceTree = "<group>"; };
 		371211F09ACA4D4ECE90299195CC1317 /* libRNDateTimePicker.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libRNDateTimePicker.a; path = libRNDateTimePicker.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		5F431D98F400C6FEC3CE7F0B231574BD /* React-Core */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-Core"; path = "React-Core.xcodeproj"; sourceTree = "<group>"; };
 		84A900D00ED58E9FF91A2C4407572E90 /* RNDateTimePicker.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNDateTimePicker.m; path = ios/RNDateTimePicker.m; sourceTree = "<group>"; };
 		C3158A5A15632761B916AFEB31ED1CC8 /* RNDateTimePickerManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNDateTimePickerManager.m; path = ios/RNDateTimePickerManager.m; sourceTree = "<group>"; };
 		C3C918DBC25AE303D56CD79C55808C7F /* RNDateTimePicker-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "RNDateTimePicker-prefix.pch"; sourceTree = "<group>"; };
@@ -41,7 +41,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		94AA7A410B7C1E4D9349A49BC4BA3FA0 /* Frameworks */ = {
+		917C3B5DC6A90CDE4BF045CF34CD573E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -51,10 +51,10 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		684BB9F43B4A95CE3A47083CD40D134F /* Dependencies */ = {
+		B47730B476F2CD90DF075785D2490F3E /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
-				24E2C5DAB8DB64F4E67E24CA3B079C3C /* React */,
+				5F431D98F400C6FEC3CE7F0B231574BD /* React-Core */,
 			);
 			name = Dependencies;
 			sourceTree = "<group>";
@@ -94,7 +94,7 @@
 		D2EE608B21AEFA608FD22D28D2179002 = {
 			isa = PBXGroup;
 			children = (
-				684BB9F43B4A95CE3A47083CD40D134F /* Dependencies */,
+				B47730B476F2CD90DF075785D2490F3E /* Dependencies */,
 				D4199F9499CAC7A02987F39DEA60D197 /* Frameworks */,
 				C9861A9210245130D06AC897D046FF91 /* Products */,
 				C937AF051FB87DC1C49AE8D813A15E47 /* RNDateTimePicker */,
@@ -123,12 +123,12 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		CE66748B24109890B59F89A5F7072D77 /* Headers */ = {
+		DF4367B23D5E2256B0DC826E3965BEA9 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F046E14F0FF9A5933CE78B237D0FCFA5 /* RNDateTimePicker.h in Headers */,
-				0F3CA4C3E63D4C00A6D0F4A4CC9D3899 /* RNDateTimePickerManager.h in Headers */,
+				116D5188C7D64BD9F21BAD50B13CAD54 /* RNDateTimePicker.h in Headers */,
+				002D88A44FF2CF46891743B9E9A9E199 /* RNDateTimePickerManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -137,16 +137,16 @@
 /* Begin PBXNativeTarget section */
 		862E1DA0F45BF8C82AA7330F871534CF /* RNDateTimePicker */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 5DBFA33D7486B1268468B31C169B01FA /* Build configuration list for PBXNativeTarget "RNDateTimePicker" */;
+			buildConfigurationList = 4C45DE54AA079F8BFB3822AD3CED76A5 /* Build configuration list for PBXNativeTarget "RNDateTimePicker" */;
 			buildPhases = (
-				CE66748B24109890B59F89A5F7072D77 /* Headers */,
-				5D3F1F316F4725A70D6B0EB1E5767866 /* Sources */,
-				94AA7A410B7C1E4D9349A49BC4BA3FA0 /* Frameworks */,
+				DF4367B23D5E2256B0DC826E3965BEA9 /* Headers */,
+				27B8A851D30C671B73CD9E8EDF54D101 /* Sources */,
+				917C3B5DC6A90CDE4BF045CF34CD573E /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				8836965562CA6A96F5D139FCCD300BF0 /* PBXTargetDependency */,
+				28C1F7BEB9C7D6CC834F8AA51CD16B5F /* PBXTargetDependency */,
 			);
 			name = RNDateTimePicker;
 			productName = RNDateTimePicker;
@@ -175,7 +175,7 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProjectRef = 24E2C5DAB8DB64F4E67E24CA3B079C3C /* React */;
+					ProjectRef = 5F431D98F400C6FEC3CE7F0B231574BD /* React-Core */;
 				},
 			);
 			projectRoot = "";
@@ -186,27 +186,78 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		5D3F1F316F4725A70D6B0EB1E5767866 /* Sources */ = {
+		27B8A851D30C671B73CD9E8EDF54D101 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4478092CC34F7806191E93897E1713E7 /* RNDateTimePicker-dummy.m in Sources */,
-				5C6EFF402249B9A48D9EBB632EFF5EC4 /* RNDateTimePicker.m in Sources */,
-				29E3A455E5EA62C9C52C11030F692D10 /* RNDateTimePickerManager.m in Sources */,
+				3D85A30293D494B06AF0138A3162D6E3 /* RNDateTimePicker-dummy.m in Sources */,
+				57D3D2C71127BC5974446A3257379974 /* RNDateTimePicker.m in Sources */,
+				747CE74B68172710303E77BC3FAA63C1 /* RNDateTimePickerManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		8836965562CA6A96F5D139FCCD300BF0 /* PBXTargetDependency */ = {
+		28C1F7BEB9C7D6CC834F8AA51CD16B5F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = React;
-			targetProxy = CE93EA489DC9402CE01808002B4D2FB4 /* PBXContainerItemProxy */;
+			name = "React-Core";
+			targetProxy = 1F5EF195E910F641ED89EF3893E521D9 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		063B7DD10B2AFAB9F6C4C4A635E72CB5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 056C10410C6328704DE08EA3B950FE9F /* RNDateTimePicker.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/RNDateTimePicker/RNDateTimePicker-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RNDateTimePicker;
+				PRODUCT_NAME = RNDateTimePicker;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		274FC006679F0B8D9B1C6692A1308147 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 282CB33110240740B27CFE8B54B9CA21 /* RNDateTimePicker.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/RNDateTimePicker/RNDateTimePicker-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RNDateTimePicker;
+				PRODUCT_NAME = RNDateTimePicker;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		57A649E99CC170BE4C322E36D7E61874 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -271,55 +322,6 @@
 			};
 			name = Debug;
 		};
-		A65B51BBBCC1D58779A696823D801BF4 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 282CB33110240740B27CFE8B54B9CA21 /* RNDateTimePicker.debug.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/RNDateTimePicker/RNDateTimePicker-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = RNDateTimePicker;
-				PRODUCT_NAME = RNDateTimePicker;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		AA6A07FD6DED964A46CD615B28DAE342 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 056C10410C6328704DE08EA3B950FE9F /* RNDateTimePicker.release.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/RNDateTimePicker/RNDateTimePicker-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = RNDateTimePicker;
-				PRODUCT_NAME = RNDateTimePicker;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 		F6A7469FD4BE3C3790183AB9F039812E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -383,11 +385,11 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		5DBFA33D7486B1268468B31C169B01FA /* Build configuration list for PBXNativeTarget "RNDateTimePicker" */ = {
+		4C45DE54AA079F8BFB3822AD3CED76A5 /* Build configuration list for PBXNativeTarget "RNDateTimePicker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				A65B51BBBCC1D58779A696823D801BF4 /* Debug */,
-				AA6A07FD6DED964A46CD615B28DAE342 /* Release */,
+				274FC006679F0B8D9B1C6692A1308147 /* Debug */,
+				063B7DD10B2AFAB9F6C4C4A635E72CB5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

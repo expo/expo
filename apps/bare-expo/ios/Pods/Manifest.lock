@@ -513,8 +513,8 @@ PODS:
     - React
   - react-native-netinfo (5.9.6):
     - React
-  - react-native-safe-area-context (3.1.4):
-    - React
+  - react-native-safe-area-context (3.1.8):
+    - React-Core
   - react-native-segmented-control (2.1.1):
     - React
   - react-native-slider (3.0.3):
@@ -591,8 +591,8 @@ PODS:
     - React
   - RNCPicker (1.6.6):
     - React
-  - RNDateTimePicker (3.0.0):
-    - React
+  - RNDateTimePicker (3.0.4):
+    - React-Core
   - RNGestureHandler (1.7.0):
     - React
   - RNReanimated (1.13.1):
@@ -1147,7 +1147,7 @@ SPEC CHECKSUMS:
   React-jsinspector: b14e62ebe7a66e9231e9581279909f2fc3db6606
   react-native-appearance: 0f0e5fc2fcef70e03d48c8fe6b00b9158c2ba8aa
   react-native-netinfo: 38a1e0b3e89b48e4b5833ed475d8df5f049f6f90
-  react-native-safe-area-context: eb91fe1fb3f7b87d9c30a7f0808407d8569d539d
+  react-native-safe-area-context: 79fea126c6830c85f65947c223a5e3058a666937
   react-native-segmented-control: 05d93c1c7576b53189720012a3e8a3c23608d849
   react-native-slider: e99fc201cefe81270fc9d81714a7a0f5e566b168
   react-native-view-shot: 4475fde003fe8a210053d1f98fb9e06c1d834e1c
@@ -1166,7 +1166,7 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: 2a692bcb9b69b76a2f1a95f33db057129700af64
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
   RNCPicker: 494015f2b7ec4bee5484b6f235aa19691426dcdb
-  RNDateTimePicker: f47a6309133c6d013ad6942fc83b753b3f6e41d6
+  RNDateTimePicker: 3d1931e387248cb8f1d1d33740d4a1a82dfe622a
   RNGestureHandler: b6b359bb800ae399a9c8b27032bdbf7c18f08a08
   RNReanimated: dd8c286ab5dd4ba36d3a7fef8bff7e08711b5476
   RNScreens: b748efec66e095134c7166ca333b628cd7e6f3e2
