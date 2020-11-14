@@ -1,3 +1,4 @@
+import { UnavailabilityError } from '@unimodules/core';
 import ServerRegistrationModule from './ServerRegistrationModule';
 import { addPushTokenListener } from './TokenEmitter';
 import getDevicePushTokenAsync from './getDevicePushTokenAsync';
@@ -11,6 +12,9 @@ export async function setAutoServerRegistrationEnabledAsync(enabled) {
     // We are overwriting registration, so we shouldn't let
     // any pending request complete.
     interruptPushTokenUpdates();
+    if (!ServerRegistrationModule.setRegistrationInfoAsync) {
+        throw new UnavailabilityError('ServerRegistrationModule', 'setRegistrationInfoAsync');
+    }
     await ServerRegistrationModule.setRegistrationInfoAsync?.(enabled ? JSON.stringify({ isEnabled: enabled }) : null);
 }
 /**
@@ -42,10 +46,15 @@ export async function __handlePersistedRegistrationInfoAsync(registrationInfo) {
         console.warn('[expo-notifications] Error encountered while updating server registration with latest device push token.', e);
     }
 }
-// Verify if persisted registration
-// has successfully uploaded last known
-// device push token. If not, retry.
-ServerRegistrationModule.getRegistrationInfoAsync?.().then(__handlePersistedRegistrationInfoAsync);
+if (ServerRegistrationModule.getRegistrationInfoAsync) {
+    // Verify if persisted registration
+    // has successfully uploaded last known
+    // device push token. If not, retry.
+    ServerRegistrationModule.getRegistrationInfoAsync().then(__handlePersistedRegistrationInfoAsync);
+}
+else {
+    console.warn(`[expo-notifications] Error encountered while fetching auto-registration state, new tokens may not be automatically registered on server.`, new UnavailabilityError('ServerRegistrationModule', 'getRegistrationInfoAsync'));
+}
 // A global scope (to get all the updates) device push token
 // subscription, never cleared.
 addPushTokenListener(token => {
