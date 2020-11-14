@@ -1,19 +1,13 @@
 import ServerRegistrationModule from './ServerRegistrationModule';
 import { addPushTokenListener } from './TokenEmitter';
-import { DevicePushToken } from './Tokens.types';
-import {
-  updatePushTokenAsync,
-  hasPushTokenBeenUpdated,
-  interruptPushTokenUpdates,
-} from './utils/updatePushTokenAsync';
+import getDevicePushTokenAsync from './getDevicePushTokenAsync';
+import { updatePushTokenAsync, interruptPushTokenUpdates } from './utils/updatePushTokenAsync';
 
 /**
  * Encapsulates device server registration data
  */
 export type DevicePushTokenRegistration = {
-  url: string;
-  body: Record<string, any>;
-  pendingDevicePushToken?: DevicePushToken | null;
+  isEnabled: boolean;
 };
 
 /**
@@ -21,26 +15,14 @@ export type DevicePushTokenRegistration = {
  * to the given registration endpoint
  * @param registration Registration endpoint to inform of new tokens
  */
-export async function setAutoServerRegistrationAsync(
-  registration: Omit<DevicePushTokenRegistration, 'pendingDevicePushToken'>
-) {
+export async function setAutoServerRegistrationEnabledAsync(enabled: boolean) {
   // We are overwriting registration, so we shouldn't let
   // any pending request complete.
   interruptPushTokenUpdates();
-  // Remember the registration information for future token updates.
-  await ServerRegistrationModule.setRegistrationInfoAsync?.(JSON.stringify(registration));
-}
 
-/**
- * Removes last Expo server registration, future device push token
- * updates won't get sent there anymore.
- */
-export async function removeAutoServerRegistrationAsync() {
-  // We are removing registration, so we shouldn't let
-  // any pending request complete.
-  interruptPushTokenUpdates();
-  // Do not consider any registration when token updates.
-  await ServerRegistrationModule.setRegistrationInfoAsync?.(null);
+  await ServerRegistrationModule.setRegistrationInfoAsync?.(
+    enabled ? JSON.stringify({ isEnabled: enabled }) : null
+  );
 }
 
 /**
@@ -53,18 +35,30 @@ export async function __handlePersistedRegistrationInfoAsync(
     // No registration info, nothing to do
     return;
   }
+
+  let registration: DevicePushTokenRegistration | null = null;
   try {
-    const registration: DevicePushTokenRegistration = JSON.parse(registrationInfo);
-    // We only want to retry if `hasPushTokenBeenUpdated` is false.
-    // If it were true it means that another call to `updatePushTokenAsync`
-    // has already occured which could only happen from the listener
-    // which has newer information than persisted storage.
-    if (registration?.pendingDevicePushToken && !hasPushTokenBeenUpdated()) {
-      updatePushTokenAsync(registration.pendingDevicePushToken);
-    }
+    registration = JSON.parse(registrationInfo);
   } catch (e) {
     console.warn(
       '[expo-notifications] Error encountered while fetching registration information for auto token updates.',
+      e
+    );
+  }
+
+  if (!registration?.isEnabled) {
+    // Registration is invalid or not enabled, nothing more to do
+    return;
+  }
+
+  try {
+    // Since the registration is enabled, fetching a "new" device token
+    // shouldn't be a problem.
+    const latestDevicePushToken = await getDevicePushTokenAsync();
+    await updatePushTokenAsync(latestDevicePushToken);
+  } catch (e) {
+    console.warn(
+      '[expo-notifications] Error encountered while updating server registration with latest device push token.',
       e
     );
   }

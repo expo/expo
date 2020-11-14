@@ -1,7 +1,6 @@
-import { CodedError, Platform } from '@unimodules/core';
+import { CodedError, Platform, UnavailabilityError } from '@unimodules/core';
 import * as Application from 'expo-application';
 
-import { DevicePushTokenRegistration } from '../DevicePushTokenAutoRegistration.fx';
 import ServerRegistrationModule from '../ServerRegistrationModule';
 import { DevicePushToken } from '../Tokens.types';
 import generateRetries from './generateRetries';
@@ -13,41 +12,20 @@ export const [
   interruptPushTokenUpdates,
 ] = makeInterruptible<[DevicePushToken]>(updatePushTokenAsyncGenerator);
 
+const updatePushTokenUrl = 'https://exp.host/--/api/v2/push/updateDeviceToken';
+
 async function* updatePushTokenAsyncGenerator(token: DevicePushToken) {
-  // Fetch the latest registration info from the persisted storage
-  const registrationInfo = yield ServerRegistrationModule.getRegistrationInfoAsync?.();
-  // If there is none, do not do anything.
-  if (!registrationInfo) {
-    return;
-  }
-
-  // Prepare request body
-  const registration: DevicePushTokenRegistration = JSON.parse(registrationInfo);
-  // Persist `pendingDevicePushToken` in case the app gets killed
-  // before we finish registering to server.
-  await ServerRegistrationModule.setRegistrationInfoAsync?.(
-    JSON.stringify({
-      ...registration,
-      pendingDevicePushToken: token,
-    })
-  );
-
-  const body = {
-    ...registration.body,
-    // Information whether a token is applicable
-    // to development or production notification service
-    // should never be persisted as it can change between
-    // Xcode development and TestFlight/AppStore without
-    // backing store being resetted (development registration
-    // remains in production environment).
-    development: await shouldUseDevelopmentNotificationService(),
-    deviceToken: token.data,
-    type: getTypeOfToken(token),
-  };
-
   const retriesIterator = generateRetries(async retry => {
     try {
-      const response = await fetch(registration.url, {
+      const body = {
+        development: await shouldUseDevelopmentNotificationService(),
+        deviceToken: token.data,
+        appId: Application.applicationId,
+        deviceId: await getDeviceIdAsync(),
+        type: getTypeOfToken(token),
+      };
+
+      const response = await fetch(updatePushTokenUrl, {
         method: 'POST',
         headers: {
           'content-type': 'application/json',
@@ -96,16 +74,22 @@ async function* updatePushTokenAsyncGenerator(token: DevicePushToken) {
     // may be interrupted between retries.
     result = (yield retriesIterator.next()) as IteratorResult<void, void>;
   }
+}
 
-  // We uploaded the token successfully, let's clear the `pendingDevicePushToken`
-  // from the registration so that we don't try to upload the same token
-  // again.
-  yield ServerRegistrationModule.setRegistrationInfoAsync?.(
-    JSON.stringify({
-      ...registration,
-      pendingDevicePushToken: null,
-    })
-  );
+// Same as in getExpoPushTokenAsync
+async function getDeviceIdAsync() {
+  try {
+    if (!ServerRegistrationModule.getInstallationIdAsync) {
+      throw new UnavailabilityError('ExpoServerRegistrationModule', 'getInstallationIdAsync');
+    }
+
+    return await ServerRegistrationModule.getInstallationIdAsync();
+  } catch (e) {
+    throw new CodedError(
+      'ERR_NOTIFICATIONS_DEVICE_ID',
+      `Could not have fetched installation ID of the application: ${e}.`
+    );
+  }
 }
 
 // Same as in getExpoPushTokenAsync

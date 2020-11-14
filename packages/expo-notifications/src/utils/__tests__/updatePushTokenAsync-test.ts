@@ -1,8 +1,5 @@
-import { mocked } from 'ts-jest/utils';
-
-import ServerRegistrationModule from '../../ServerRegistrationModule';
 import { DevicePushToken } from '../../Tokens.types';
-import { interruptPushTokenUpdates, updatePushTokenAsync } from '../updatePushTokenAsync';
+import { updatePushTokenAsync } from '../updatePushTokenAsync';
 
 const TOKEN: DevicePushToken = { type: 'ios', data: 'i-am-token' };
 
@@ -10,34 +7,9 @@ jest.mock('../../ServerRegistrationModule');
 
 declare const global: any;
 
-describe('given empty registration info', () => {
-  beforeAll(() => {
-    mocked(ServerRegistrationModule.getRegistrationInfoAsync!).mockResolvedValue(null);
-  });
-
-  it(`doesn't throw`, async () => {
-    await expect(updatePushTokenAsync(TOKEN)).resolves.toBeUndefined();
-  });
-});
-
-describe('given invalid registration info', () => {
-  beforeAll(() => {
-    mocked(ServerRegistrationModule.getRegistrationInfoAsync!).mockResolvedValue(
-      '{i-am-invalid-json'
-    );
-  });
-
-  it(`does throw`, async () => {
-    await expect(updatePushTokenAsync(TOKEN)).rejects.toBeDefined();
-  });
-});
+const expoEndpointUrl = 'https://exp.host/--/api/v2/push/updateDeviceToken';
 
 describe('given valid registration info', () => {
-  const mockUrl = 'https://example.com/';
-  const mockBody = {
-    customArgument: '@tester',
-  };
-
   const successResponse = {
     status: 200,
     ok: true,
@@ -54,48 +26,18 @@ describe('given valid registration info', () => {
   beforeAll(() => {
     originalFetch = global.fetch;
     global.fetch = jest.fn();
-
-    mocked(ServerRegistrationModule.getRegistrationInfoAsync!).mockResolvedValue(
-      JSON.stringify({
-        url: mockUrl,
-        body: mockBody,
-      })
-    );
   });
 
   afterAll(() => {
     global.fetch = originalFetch;
   });
 
-  it('submits the request with custom body to proper URL', async () => {
+  it('submits the request to proper URL', async () => {
+    global.fetch.mockResolvedValue(successResponse);
     const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
-    try {
-      await updatePushTokenAsync(TOKEN);
-    } catch (e) {}
-    warnSpy.mockRestore();
-    expect(global.fetch).toHaveBeenCalledWith(
-      mockUrl,
-      expect.objectContaining({
-        body:
-          '{"customArgument":"@tester","development":false,"deviceToken":"i-am-token","type":"apns"}',
-      })
-    );
-  });
-
-  it('ensures that if registration is killed while sending the request, the pending token is persisted for future resume', async () => {
-    global.fetch.mockImplementation(async () => {
-      interruptPushTokenUpdates();
-      return successResponse;
-    });
     await updatePushTokenAsync(TOKEN);
-
-    expect(
-      JSON.parse(
-        mocked(ServerRegistrationModule.setRegistrationInfoAsync!).mock.calls[
-          mocked(ServerRegistrationModule.setRegistrationInfoAsync!).mock.calls.length - 1
-        ][0]!
-      )
-    ).toEqual(expect.objectContaining({ pendingDevicePushToken: TOKEN }));
+    warnSpy.mockRestore();
+    expect(global.fetch).toHaveBeenCalledWith(expoEndpointUrl, expect.anything());
   });
 
   describe('when server responds with an ok status', () => {
@@ -106,17 +48,6 @@ describe('given valid registration info', () => {
     it('submits the request only once', async () => {
       await updatePushTokenAsync(TOKEN);
       expect(global.fetch).toHaveBeenCalledTimes(1);
-    });
-
-    it('ensures that if registration succeeds, the pending token is cleared', async () => {
-      await updatePushTokenAsync(TOKEN);
-      expect(
-        JSON.parse(
-          mocked(ServerRegistrationModule.setRegistrationInfoAsync!).mock.calls[
-            mocked(ServerRegistrationModule.setRegistrationInfoAsync!).mock.calls.length - 1
-          ][0]!
-        )
-      ).toEqual(expect.objectContaining({ pendingDevicePushToken: null }));
     });
   });
 
