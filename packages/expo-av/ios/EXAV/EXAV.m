@@ -779,7 +779,7 @@ UM_EXPORT_METHOD_AS(requestPermissionsAsync,
 }
 
 UM_EXPORT_METHOD_AS(prepareAudioRecorder,
-                    prepareAudioRecorder:(NSDictionary *)options withMeteringState:(BOOL)isMeteringEnabled
+                    prepareAudioRecorder:(NSDictionary *)options
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
@@ -804,7 +804,9 @@ UM_EXPORT_METHOD_AS(prepareAudioRecorder,
       reject(@"E_AUDIO_RECORDERNOTCREATED", [NSString stringWithFormat:@"Prepare encountered an error: %@", error.description], error);
       return;
     } else if ([_audioRecorder prepareToRecord]) {
-        _audioRecorder.meteringEnabled = isMeteringEnabled;
+        if([options isMeteringEnabled]) {
+        _audioRecorder.meteringEnabled = true;
+        }
       resolve(@{@"uri": [[_audioRecorder url] absoluteString],
                 @"status": [self _getAudioRecorderStatus]});
     } else {

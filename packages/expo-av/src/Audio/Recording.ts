@@ -11,6 +11,7 @@ import { isAudioEnabled, throwIfAudioIsDisabled } from './AudioAvailability';
 import { Sound } from './Sound';
 
 export type RecordingOptions = {
+  isMeteringEnabled?: boolean;
   android: {
     extension: string;
     outputFormat: number;
@@ -103,6 +104,7 @@ export const RECORDING_OPTION_IOS_BIT_RATE_STRATEGY_VARIABLE = 3;
 // TODO : maybe make presets for music and speech, or lossy / lossless.
 
 export const RECORDING_OPTIONS_PRESET_HIGH_QUALITY: RecordingOptions = {
+  isMeteringEnabled: true,
   android: {
     extension: '.m4a',
     outputFormat: RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG_4,
@@ -124,6 +126,7 @@ export const RECORDING_OPTIONS_PRESET_HIGH_QUALITY: RecordingOptions = {
 };
 
 export const RECORDING_OPTIONS_PRESET_LOW_QUALITY: RecordingOptions = {
+  isMeteringEnabled: true,
   android: {
     extension: '.3gp',
     outputFormat: RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_THREE_GPP,
@@ -279,8 +282,7 @@ export class Recording {
   // Record API
 
   async prepareToRecordAsync(
-    options: RecordingOptions = RECORDING_OPTIONS_PRESET_LOW_QUALITY,
-    isMeteringEnabled = false
+    options: RecordingOptions = RECORDING_OPTIONS_PRESET_LOW_QUALITY
   ): Promise<RecordingStatus> {
     throwIfAudioIsDisabled();
 
@@ -323,7 +325,7 @@ export class Recording {
         uri: string;
         // status is of type RecordingStatus, but without the canRecord field populated
         status: Pick<RecordingStatus, Exclude<keyof RecordingStatus, 'canRecord'>>;
-      } = await ExponentAV.prepareAudioRecorder(options, isMeteringEnabled);
+      } = await ExponentAV.prepareAudioRecorder(options);
       _recorderExists = true;
       this._uri = uri;
       this._options = options;

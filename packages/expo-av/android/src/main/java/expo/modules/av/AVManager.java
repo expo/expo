@@ -545,6 +545,10 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
     int result;
     int amplitude = mAudioRecorder.getMaxAmplitude();
+    /**
+     * amplitude to decibel conversion
+     * 
+     */
     if(amplitude == 0) {
       result = -160;
     } else {
@@ -609,13 +613,13 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   }
 
   @Override
-  public void prepareAudioRecorder(final ReadableArguments options, final boolean isMeteringEnabled, final Promise promise) {
+  public void prepareAudioRecorder(final ReadableArguments options, final Promise promise) {
     if (isMissingAudioRecordingPermissions()) {
       promise.reject("E_MISSING_PERMISSION", "Missing audio recording permissions.");
       return;
     }
 
-    if(isMeteringEnabled) {
+    if(options.isMeteringEnabled) {
       mAudioRecorderIsMeteringEnabled = true;
     } else {
       mAudioRecorderIsMeteringEnabled = false;
