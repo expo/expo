@@ -147,12 +147,11 @@ The following methods are exported by the `expo-notifications` module:
   - [`removePushTokenSubscription`](#removepushtokensubscriptionsubscription-subscription-void) -- removes the listener registered with `addPushTokenListener`
   - [`removeAllPushTokenListeners`](#removeallpushtokenlisteners-void) -- removes all listeners registered with `addPushTokenListener`
 - **listening to notification events**
-  - [`useInitialNotificationResponse`](#useinitialnotificationresponse-undefined--notificationresponse--null) -- a React hook returning a notification response responsible for opening the application
+  - [`useLastNotificationResponse`](#uselastnotificationresponse-undefined--notificationresponse--null) -- a React hook returning the most recently received notification response
   - [`addNotificationReceivedListener`](#addnotificationreceivedlistenerlistener-event-notification--void-void) -- adds a listener called whenever a new notification is received
   - [`addNotificationsDroppedListener`](#addnotificationsdroppedlistenerlistener---void-void) -- adds a listener called whenever some notifications have been dropped
   - [`addNotificationResponseReceivedListener`](#addnotificationresponsereceivedlistenerlistener-event-notificationresponse--void-void) -- adds a listener called whenever user interacts with a notification
   - [`removeNotificationSubscription`](#removenotificationsubscriptionsubscription-subscription-void) -- removes the listener registered with `addNotification*Listener()`
-  - [`removeAllNotificationListeners`](#removeallnotificationlisteners-void) -- removes all listeners registered with `addNotification*Listener()`
 - **handling incoming notifications when the app is in foreground**
   - [`setNotificationHandler`](#setnotificationhandlerhandler-notificationhandler--null-void) -- sets the handler function responsible for deciding what to do with a notification that is received when the app is in foreground
 - **fetching permissions information**
@@ -444,17 +443,17 @@ Removes all push token subscriptions that may have been registered with `addPush
 
 ## Listening to notification events
 
-### `useInitialNotificationResponse(): undefined | NotificationResponse | null`
+### `useLastNotificationResponse(): undefined | NotificationResponse | null`
 
-A React hook returning an initial notification response, i.e. a notification response responsible for opening the application (eg. tapping on or interacting with a notification).
+A React hook always returning the notification response that was received most recently (a notification response designates an interaction with a notification, such as tapping on it).
 
 #### Returns
 
 The hook may return one of these three types/values:
 
-- `undefined` -- until we're sure that the application was or wasn't opened as a result of responding to a notification by the user
-- `null` -- if the application wasn't opened as a result of responding to a notification
-- an object of [`NotificationResponse`](#notificationresponse) type -- if the application was opened as a result of responding to a notification
+- `undefined` -- until we're sure of what to return
+- `null` -- if no notification response has been received yet
+- a [`NotificationResponse`](#notificationresponse) object -- if a notification response was received 
 
 #### Examples
 
@@ -465,46 +464,17 @@ import * as Notifications from 'expo-notifications';
 import { Linking } from 'react-native';
 
 export default function App() {
-  const initialNotificationResponse = Notifications.useInitialNotificationResponse();
+  const lastNotificationResponse = Notifications.useLastNotificationResponse();
   React.useEffect(() => {
     if (
-      initialNotificationResponse &&
-      initialNotificationResponse.notification.data.url &&
-      initialNotificationResponse.actionIdentifier === Notifications.DEFAULT_ACTION_IDENTIFIER
+      lastNotificationResponse &&
+      lastNotificationResponse.notification.data.url &&
+      lastNotificationResponse.actionIdentifier === Notifications.DEFAULT_ACTION_IDENTIFIER
     ) {
-      Linking.openURL(initialNotificationResponse.notification.data.url);
+      Linking.openURL(lastNotificationResponse.notification.data.url);
     }
-  }, [initialNotificationResponse]);
+  }, [lastNotificationResponse]);
 
-  return (
-    /*
-     * your app
-     */
-  );
-}
-```
-
-Rendering the application _only_ once we know whether the application was opened as an effect of interacting with a notification (rendering `null` is a good way to keep the splash screen present only if you have `expo-splash-screen` integrated):
-
-```tsx
-import * as Notifications from 'expo-notifications';
-import { Linking, View, ActivityIndicator } from 'react-native';
-
-export default function App() {
-  const initialNotificationResponse = Notifications.useInitialNotificationResponse();
-
-  if (initialNotificationResponse === undefined) {
-    // if you're using expo-splash-screen's autohiding mechanism
-    return null;
-    // otherwise - a simple (not the prettiest) placeholder
-    return (
-      <View style={/* styles */}>
-        <ActivityIndicator />
-      </View>
-    );
-  }
-
-  // Use the initialNotificationResponse when setting up initial navigation state
   return (
     /*
      * your app
@@ -651,10 +621,6 @@ Removes a notification subscription returned by a `addNotification*Listener` cal
 #### Arguments
 
 A single and required argument is a subscription returned by `addNotification*Listener`.
-
-### `removeAllNotificationListeners(): void`
-
-Removes all notification subscriptions that may have been registered with `addNotification*Listener`.
 
 ## Handling incoming notifications when the app is in foreground
 
