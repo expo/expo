@@ -2095,7 +2095,7 @@ CACHE_KEYS:
       react-native-safe-area-context:
         :debug: a41ea1d113ba1aab7796154f75313977
         :release: a41ea1d113ba1aab7796154f75313977
-    CHECKSUM: 79fea126c6830c85f65947c223a5e3058a666937
+    CHECKSUM: b6e0e284002381d2ff29fa4fff42b4d8282e3c94
     FILES:
       - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RCTView+SafeAreaCompat.h"
       - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RCTView+SafeAreaCompat.m"
@@ -2119,13 +2119,13 @@ CACHE_KEYS:
       - "../../../../node_modules/react-native-safe-area-context/README.md"
     PROJECT_NAME: react-native-safe-area-context
     SPECS:
-      - react-native-safe-area-context (3.1.8)
+      - react-native-safe-area-context (3.1.9)
   react-native-segmented-control:
     BUILD_SETTINGS_CHECKSUM:
       react-native-segmented-control:
-        :debug: 63e07c1c925aea44a06efcdc374ac6bb
-        :release: 63e07c1c925aea44a06efcdc374ac6bb
-    CHECKSUM: 05d93c1c7576b53189720012a3e8a3c23608d849
+        :debug: c879b2b321e407146c2b009303a9a5e1
+        :release: c879b2b321e407146c2b009303a9a5e1
+    CHECKSUM: eb9e25fbfbce226ecf66d643428fbe97601e691a
     FILES:
       - "../../../../node_modules/@react-native-community/segmented-control/ios/RNCSegmentedControl.h"
       - "../../../../node_modules/@react-native-community/segmented-control/ios/RNCSegmentedControl.m"
@@ -2135,7 +2135,7 @@ CACHE_KEYS:
       - "../../../../node_modules/@react-native-community/segmented-control/README.md"
     PROJECT_NAME: react-native-segmented-control
     SPECS:
-      - react-native-segmented-control (2.1.1)
+      - react-native-segmented-control (2.2.1)
   react-native-slider:
     BUILD_SETTINGS_CHECKSUM:
       react-native-slider:
@@ -2167,9 +2167,9 @@ CACHE_KEYS:
   react-native-viewpager:
     BUILD_SETTINGS_CHECKSUM:
       react-native-viewpager:
-        :debug: d3352407ac52c1492fdce06184ddce70
-        :release: d3352407ac52c1492fdce06184ddce70
-    CHECKSUM: f44c9e21c37d4cb76d38841c8a450e3891923461
+        :debug: 82fcb84d21449422987162e678b235c9
+        :release: 82fcb84d21449422987162e678b235c9
+    CHECKSUM: c1a686e7b5e164a52387f1522358623c4f52070f
     FILES:
       - "../../../../node_modules/@react-native-community/viewpager/ios/RCTConvert+UIPageViewControllerNavigationOrientation.h"
       - "../../../../node_modules/@react-native-community/viewpager/ios/RCTConvert+UIPageViewControllerNavigationOrientation.m"
@@ -2191,7 +2191,7 @@ CACHE_KEYS:
       - "../../../../node_modules/@react-native-community/viewpager/README.md"
     PROJECT_NAME: react-native-viewpager
     SPECS:
-      - react-native-viewpager (4.1.6)
+      - react-native-viewpager (4.2.0)
   react-native-webview:
     BUILD_SETTINGS_CHECKSUM:
       react-native-webview:

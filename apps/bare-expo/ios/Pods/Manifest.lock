@@ -513,16 +513,16 @@ PODS:
     - React
   - react-native-netinfo (5.9.6):
     - React
-  - react-native-safe-area-context (3.1.8):
+  - react-native-safe-area-context (3.1.9):
     - React-Core
-  - react-native-segmented-control (2.1.1):
-    - React
+  - react-native-segmented-control (2.2.1):
+    - React-Core
   - react-native-slider (3.0.3):
     - React
   - react-native-view-shot (3.1.2):
     - React
-  - react-native-viewpager (4.1.6):
-    - React
+  - react-native-viewpager (4.2.0):
+    - React-Core
   - react-native-webview (10.7.0):
     - React
   - React-RCTActionSheet (0.63.2):
@@ -1147,11 +1147,11 @@ SPEC CHECKSUMS:
   React-jsinspector: b14e62ebe7a66e9231e9581279909f2fc3db6606
   react-native-appearance: 0f0e5fc2fcef70e03d48c8fe6b00b9158c2ba8aa
   react-native-netinfo: 38a1e0b3e89b48e4b5833ed475d8df5f049f6f90
-  react-native-safe-area-context: 79fea126c6830c85f65947c223a5e3058a666937
-  react-native-segmented-control: 05d93c1c7576b53189720012a3e8a3c23608d849
+  react-native-safe-area-context: b6e0e284002381d2ff29fa4fff42b4d8282e3c94
+  react-native-segmented-control: eb9e25fbfbce226ecf66d643428fbe97601e691a
   react-native-slider: e99fc201cefe81270fc9d81714a7a0f5e566b168
   react-native-view-shot: 4475fde003fe8a210053d1f98fb9e06c1d834e1c
-  react-native-viewpager: f44c9e21c37d4cb76d38841c8a450e3891923461
+  react-native-viewpager: c1a686e7b5e164a52387f1522358623c4f52070f
   react-native-webview: 6edf4d6f71b9161fc3e96083726a538ee395304d
   React-RCTActionSheet: 910163b6b09685a35c4ebbc52b66d1bfbbe39fc5
   React-RCTAnimation: 9a883bbe1e9d2e158d4fb53765ed64c8dc2200c6
