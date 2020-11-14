@@ -1,4 +1,4 @@
-import { Picker } from '@react-native-community/picker';
+import { Picker } from '@react-native-picker/picker';
 import * as Localization from 'expo-localization';
 import i18n from 'i18n-js';
 import chunk from 'lodash/chunk';
