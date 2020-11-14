@@ -1,3 +1,4 @@
+import { ExecutionEnvironment } from 'expo-constants';
 import { mockLinking, mockProperty, unmockAllProperties } from 'jest-expo';
 
 function applyMocks() {
@@ -10,7 +11,7 @@ function applyMocks() {
       __esModule: true,
       default: {
         ...Constants,
-        executionEnvironment: 'standalone',
+        executionEnvironment: ExecutionEnvironment.Standalone,
         manifest: { ...Constants.manifest, id: '@example/abc' },
       },
     };
