@@ -1,7 +1,7 @@
 import { Picker } from '@react-native-picker/picker';
 import { Platform } from '@unimodules/core';
-import { Text } from 'react-native';
 import * as React from 'react';
+import { Text } from 'react-native';
 
 import { Page, Section } from '../components/Page';
 

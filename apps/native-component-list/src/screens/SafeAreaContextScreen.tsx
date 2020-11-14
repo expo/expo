@@ -1,7 +1,11 @@
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as React from 'react';
 import { Button, Platform, ScrollView, Text, View } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets, SafeAreaInsetsContext } from 'react-native-safe-area-context';
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+  SafeAreaInsetsContext,
+} from 'react-native-safe-area-context';
 
 import HeadingText from '../components/HeadingText';
 
