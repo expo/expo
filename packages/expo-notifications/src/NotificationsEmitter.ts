@@ -34,9 +34,3 @@ export function addNotificationResponseReceivedListener(
 export function removeNotificationSubscription(subscription: Subscription) {
   emitter.removeSubscription(subscription);
 }
-
-export function removeAllNotificationListeners() {
-  emitter.removeAllListeners(didReceiveNotificationEventName);
-  emitter.removeAllListeners(didDropNotificationsEventName);
-  emitter.removeAllListeners(didReceiveNotificationResponseEventName);
-}

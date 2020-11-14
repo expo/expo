@@ -4,9 +4,6 @@
   "description": "Notifications module",
   "main": "build/index.js",
   "types": "build/index.d.ts",
-  "sideEffects": [
-    "./build/useInitialNotificationResponse.js"
-  ],
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
