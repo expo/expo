@@ -1,3 +1,6 @@
+import { AbortSignal } from 'abort-controller';
+import fetch from 'node-fetch';
+
 import makeInterruptible from '../makeInterruptible';
 
 it(`caller calls the generator function`, async () => {
@@ -74,4 +77,20 @@ it(`interrupts the call automatically if another call occurs`, async () => {
   await new Promise(resolve => setTimeout(resolve, 500));
   expect(startTimes.length).toBe(2); // Two callers start
   expect(finishTimes.length).toBe(1); // but only one finishes
+});
+
+it(`allows fetch interruption`, async () => {
+  const [caller, , interrupt] = makeInterruptible(function*(signal: AbortSignal) {
+    yield fetch('https://expo.io/', {
+      signal,
+    });
+  });
+  let error: Error | null = null;
+  try {
+    setTimeout(interrupt, 5);
+    await caller();
+  } catch (e) {
+    error = e;
+  }
+  expect(error).not.toBeNull();
 });

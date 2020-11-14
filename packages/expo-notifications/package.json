@@ -50,7 +50,9 @@
     "uuid": "^3.4.0"
   },
   "devDependencies": {
+    "@types/node-fetch": "^2.5.7",
     "@types/uuid": "^3.4.7",
-    "expo-module-scripts": "~1.2.0"
+    "expo-module-scripts": "~1.2.0",
+    "node-fetch": "^2.6.1"
   }
 }

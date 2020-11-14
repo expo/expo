@@ -14,7 +14,7 @@ export const [
 
 const updatePushTokenUrl = 'https://exp.host/--/api/v2/push/updateDeviceToken';
 
-function* updatePushTokenAsyncGenerator(token: DevicePushToken) {
+function* updatePushTokenAsyncGenerator(signal: AbortSignal, token: DevicePushToken) {
   const retriesIterator = generateRetries(async retry => {
     try {
       const body = {
@@ -31,11 +31,22 @@ function* updatePushTokenAsyncGenerator(token: DevicePushToken) {
           'content-type': 'application/json',
         },
         body: JSON.stringify(body),
+        signal,
       }).catch(error => {
-        throw new CodedError(
-          'ERR_NOTIFICATIONS_NETWORK_ERROR',
-          `Error encountered while updating device push token in server: ${error}.`
-        );
+        // Error returned if the request is aborted should have 'AbortError'. In
+        // React Native fetch is polyfilled using `whatwg-fetch` which:
+        // - creates `AbortError`s like this
+        //   https://github.com/github/fetch/blob/75d9455d380f365701151f3ac85c5bda4bbbde76/fetch.js#L505
+        // - which creates exceptions like
+        //   https://github.com/github/fetch/blob/75d9455d380f365701151f3ac85c5bda4bbbde76/fetch.js#L490-L494
+        if (error.name === 'AbortError') {
+          throw error;
+        } else {
+          throw new CodedError(
+            'ERR_NOTIFICATIONS_NETWORK_ERROR',
+            `Error encountered while updating device push token in server: ${error}.`
+          );
+        }
       });
 
       // Help debug erroring servers

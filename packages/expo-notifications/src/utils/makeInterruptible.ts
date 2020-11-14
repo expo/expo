@@ -1,4 +1,4 @@
-import AbortController from 'abort-controller';
+import AbortController, { AbortSignal } from 'abort-controller';
 
 /**
  * Takes in a generator function and creates a regular function
@@ -24,7 +24,7 @@ import AbortController from 'abort-controller';
  * 3. A function interrupting processing of the generator.
  */
 export default function makeInterruptible<Arguments extends any[] = any[], Result = void>(
-  func: (...args: Arguments) => Generator<unknown, Result, unknown>
+  func: (signal: AbortSignal, ...args: Arguments) => Generator<unknown, Result, unknown>
 ): [(...args: Arguments) => Promise<Result | undefined>, () => boolean, () => void] {
   let globalAbortController: null | AbortController = null;
   let hasBeenCalled = false;
@@ -45,7 +45,7 @@ export default function makeInterruptible<Arguments extends any[] = any[], Resul
     globalAbortController = new AbortController();
     const localAbortController = globalAbortController;
 
-    const iterator = func(...args);
+    const iterator = func(localAbortController.signal, ...args);
     let resumeValue: any;
     while (true) {
       // Guard before .next() await

@@ -38,7 +38,7 @@ export default function makeInterruptible(func) {
         interrupt();
         globalAbortController = new AbortController();
         const localAbortController = globalAbortController;
-        const iterator = func(...args);
+        const iterator = func(localAbortController.signal, ...args);
         let resumeValue;
         while (true) {
             // Guard before .next() await
