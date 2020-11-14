@@ -1,5 +1,4 @@
-import Constants from 'expo-constants';
-import { ExecutionEnvironment } from 'expo-constants/build/Constants.types';
+import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { Platform } from 'react-native';
 
 import * as Linking from '../Linking';
