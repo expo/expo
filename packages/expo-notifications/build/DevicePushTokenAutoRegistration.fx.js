@@ -47,19 +47,35 @@ export async function __handlePersistedRegistrationInfoAsync(registrationInfo) {
     }
 }
 if (ServerRegistrationModule.getRegistrationInfoAsync) {
+    // A global scope (to get all the updates) device push token
+    // subscription, never cleared.
+    addPushTokenListener(async (token) => {
+        try {
+            // Before updating the push token on server we always check if we should
+            // Since modules can't change their method availability while running, we
+            // can assert it's defined.
+            const registrationInfo = await ServerRegistrationModule.getRegistrationInfoAsync();
+            if (!registrationInfo) {
+                // Registration is not enabled
+                return;
+            }
+            const registration = JSON.parse(registrationInfo);
+            if (registration?.isEnabled) {
+                // Dispatch an abortable task to update
+                // registration with new token.
+                await updatePushTokenAsync(token);
+            }
+        }
+        catch (e) {
+            console.warn('[expo-notifications] Error encountered while updating server registration with latest device push token.', e);
+        }
+    });
     // Verify if persisted registration
     // has successfully uploaded last known
     // device push token. If not, retry.
     ServerRegistrationModule.getRegistrationInfoAsync().then(__handlePersistedRegistrationInfoAsync);
 }
 else {
-    console.warn(`[expo-notifications] Error encountered while fetching auto-registration state, new tokens may not be automatically registered on server.`, new UnavailabilityError('ServerRegistrationModule', 'getRegistrationInfoAsync'));
+    console.warn(`[expo-notifications] Error encountered while fetching auto-registration state, new tokens will not be automatically registered on server.`, new UnavailabilityError('ServerRegistrationModule', 'getRegistrationInfoAsync'));
 }
-// A global scope (to get all the updates) device push token
-// subscription, never cleared.
-addPushTokenListener(token => {
-    // Dispatch an abortable task to update
-    // registration with new token.
-    updatePushTokenAsync(token);
-});
 //# sourceMappingURL=DevicePushTokenAutoRegistration.fx.js.map
