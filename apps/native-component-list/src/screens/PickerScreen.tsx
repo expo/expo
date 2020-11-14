@@ -1,4 +1,4 @@
-import { Picker } from '@react-native-community/picker';
+import { Picker } from '@react-native-picker/picker';
 import { Platform } from '@unimodules/core';
 import { Text } from 'react-native';
 import * as React from 'react';

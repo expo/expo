@@ -1,4 +1,4 @@
-import { Picker } from '@react-native-community/picker';
+import { Picker } from '@react-native-picker/picker';
 import Slider from '@react-native-community/slider';
 import Animation from 'lottie-react-native';
 import React from 'react';

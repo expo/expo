@@ -1,5 +1,5 @@
 import { B } from '@expo/html-elements';
-import { Picker } from '@react-native-community/picker';
+import { Picker } from '@react-native-picker/picker';
 import * as React from 'react';
 import { StyleSheet, View, TextStyle, ViewStyle } from 'react-native';
 

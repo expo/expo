@@ -449,8 +449,8 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
-  '@react-native-community/picker': {
-    repoUrl: 'https://github.com/react-native-community/react-native-picker',
+  '@react-native-picker/picker': {
+    repoUrl: 'https://github.com/react-native-picker/picker',
     installableInManagedApps: true,
     steps: [
       {
