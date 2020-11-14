@@ -52,6 +52,7 @@ UM_REGISTER_MODULE();
            @"nativeAppVersion": [self appVersion],
            @"nativeBuildVersion": [self buildVersion],
            @"installationId": [[self class] installationId],
+           @"manifest": UMNullIfNil([[self class] appConfig]),
            @"platform": @{
                @"ios": @{
                    @"buildNumber": [self buildVersion],
@@ -421,6 +422,24 @@ UM_REGISTER_MODULE();
     [[NSUserDefaults standardUserDefaults] setObject:uuid forKey:kEXDeviceInstallUUIDKey];
   }
   return uuid;
+}
+
++ (NSDictionary *)appConfig
+{
+  NSString *path = [[NSBundle mainBundle] pathForResource:@"app" ofType:@"config"];
+  if (path) {
+    NSData *configData = [NSData dataWithContentsOfFile:path];
+    if (configData) {
+      NSError *error;
+      NSDictionary *configObject = [NSJSONSerialization JSONObjectWithData:configData options:kNilOptions error:&error];
+      if (!configObject || ![configObject isKindOfClass:[NSDictionary class]]) {
+        NSLog(@"Error reading embedded app config: %@", error.localizedDescription ?: @"config is not an object");
+        return nil;
+      }
+      return configObject;
+    }
+  }
+  return nil;
 }
 
 

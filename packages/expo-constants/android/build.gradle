@@ -66,4 +66,5 @@ dependencies {
 
   api 'com.facebook.device.yearclass:yearclass:2.1.0'
   api "androidx.annotation:annotation:1.0.0"
+  implementation "commons-io:commons-io:2.6"
 }
