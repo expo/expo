@@ -12,6 +12,9 @@ import android.util.Log;
 
 import com.facebook.device.yearclass.YearClass;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.commons.io.IOUtils;
 import org.unimodules.core.interfaces.InternalModule;
 import org.unimodules.interfaces.constants.ConstantsInterface;
 
@@ -31,6 +35,7 @@ public class ConstantsService implements InternalModule, ConstantsInterface {
   private SharedPreferences sharedPref;
   private static final String PREFERENCES_FILE_NAME = "host.exp.exponent.SharedPreferences";
   private static final String UUID_KEY = "uuid";
+  private static final String CONFIG_FILE_NAME = "app.config";
 
   public enum ExecutionEnvironment {
     BARE("bare"),
@@ -88,6 +93,7 @@ public class ConstantsService implements InternalModule, ConstantsInterface {
     constants.put("systemFonts", getSystemFonts());
     constants.put("systemVersion", getSystemVersion());
     constants.put("installationId", getOrCreateInstallationId());
+    constants.put("manifest", getAppConfig());
 
     PackageManager packageManager = mContext.getPackageManager();
     try {
@@ -175,5 +181,16 @@ public class ConstantsService implements InternalModule, ConstantsInterface {
       return info.getLongVersionCode();
     }
     return info.versionCode;
+  }
+
+  private @Nullable String getAppConfig() {
+    try (InputStream stream = mContext.getAssets().open(CONFIG_FILE_NAME)) {
+      return IOUtils.toString(stream, StandardCharsets.UTF_8);
+    } catch (FileNotFoundException e) {
+      // do nothing, expected in managed apps
+    } catch (Exception e) {
+      Log.e(TAG, "Error reading embedded app config", e);
+    }
+    return null;
   }
 }
