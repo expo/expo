@@ -2,7 +2,7 @@ import makeInterruptible from '../makeInterruptible';
 
 it(`caller calls the generator function`, async () => {
   let hasBeenCalled = false;
-  const [caller] = makeInterruptible(async function*() {
+  const [caller] = makeInterruptible(function*() {
     hasBeenCalled = true;
   });
   await caller();
@@ -10,32 +10,24 @@ it(`caller calls the generator function`, async () => {
 });
 
 it(`hasBeenCalled returns true if caller has been called`, async () => {
-  const [caller, hasBeenCalled] = makeInterruptible(async function*() {});
+  const [caller, hasBeenCalled] = makeInterruptible(function*() {});
   caller();
   expect(hasBeenCalled()).toBe(true);
 });
 
 it(`hasBeenCalled returns false if caller has not been called`, async () => {
-  const [, hasBeenCalled] = makeInterruptible(async function*() {});
+  const [, hasBeenCalled] = makeInterruptible(function*() {});
   expect(hasBeenCalled()).toBe(false);
 });
 
 it(`awaits the result of the generator func`, async () => {
   let hasFinished = false;
-  const [caller] = makeInterruptible(async function*() {
-    await new Promise(resolve => setTimeout(resolve, 100));
+  const [caller] = makeInterruptible(function*() {
+    yield new Promise(resolve => setTimeout(resolve, 100));
     hasFinished = true;
   });
   await caller();
   expect(hasFinished).toBe(true);
-});
-
-it(`returns the result of an asynchronous generator func`, async () => {
-  const expectedResultValue = 42;
-  const [caller] = makeInterruptible(async function*() {
-    return expectedResultValue;
-  });
-  expect(await caller()).toBe(expectedResultValue);
 });
 
 it(`returns the result of a synchronous generator func`, async () => {
@@ -49,7 +41,7 @@ it(`returns the result of a synchronous generator func`, async () => {
 it(`interrupts the call if interrupt is called`, async () => {
   let hasStarted = false;
   let hasFinished = false;
-  const [caller, , interrupt] = makeInterruptible(async function*() {
+  const [caller, , interrupt] = makeInterruptible(function*() {
     hasStarted = true;
     yield new Promise(resolve => setTimeout(resolve, 200));
     hasFinished = true;
@@ -68,7 +60,7 @@ it(`interrupts the call if interrupt is called`, async () => {
 it(`interrupts the call automatically if another call occurs`, async () => {
   const startTimes: Date[] = [];
   const finishTimes: Date[] = [];
-  const [caller] = makeInterruptible(async function*() {
+  const [caller] = makeInterruptible(function*() {
     startTimes.push(new Date());
     yield new Promise(resolve => setTimeout(resolve, 100));
     finishTimes.push(new Date());
@@ -82,26 +74,4 @@ it(`interrupts the call automatically if another call occurs`, async () => {
   await new Promise(resolve => setTimeout(resolve, 500));
   expect(startTimes.length).toBe(2); // Two callers start
   expect(finishTimes.length).toBe(1); // but only one finishes
-});
-
-it(`interrupts the call only on yields`, async () => {
-  const startTimes: Date[] = [];
-  const middleTimes: Date[] = [];
-  const finishTimes: Date[] = [];
-  const [caller] = makeInterruptible(async function*() {
-    startTimes.push(new Date());
-    await new Promise(resolve => setTimeout(resolve, 100));
-    middleTimes.push(new Date());
-    yield new Promise(resolve => setTimeout(resolve, 100));
-    finishTimes.push(new Date());
-  });
-  // We start the call
-  caller();
-  // and another one
-  caller();
-  // Wait for calls to finish naturally
-  await new Promise(resolve => setTimeout(resolve, 400));
-  expect(startTimes.length).toBe(2); // Two callers start
-  expect(middleTimes.length).toBe(2); // we can't abort without a yield
-  expect(finishTimes.length).toBe(1); // only one finishes
 });

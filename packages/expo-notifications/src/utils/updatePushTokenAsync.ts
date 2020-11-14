@@ -14,7 +14,7 @@ export const [
 
 const updatePushTokenUrl = 'https://exp.host/--/api/v2/push/updateDeviceToken';
 
-async function* updatePushTokenAsyncGenerator(token: DevicePushToken) {
+function* updatePushTokenAsyncGenerator(token: DevicePushToken) {
   const retriesIterator = generateRetries(async retry => {
     try {
       const body = {

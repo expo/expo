@@ -5,7 +5,7 @@ import generateRetries from './generateRetries';
 import makeInterruptible from './makeInterruptible';
 export const [updatePushTokenAsync, hasPushTokenBeenUpdated, interruptPushTokenUpdates,] = makeInterruptible(updatePushTokenAsyncGenerator);
 const updatePushTokenUrl = 'https://exp.host/--/api/v2/push/updateDeviceToken';
-async function* updatePushTokenAsyncGenerator(token) {
+function* updatePushTokenAsyncGenerator(token) {
     const retriesIterator = generateRetries(async (retry) => {
         try {
             const body = {

@@ -21,4 +21,4 @@
  *    to the generator.
  * 3. A function interrupting processing of the generator.
  */
-export default function makeInterruptible<Arguments extends any[] = any[], Result = void>(func: (...args: Arguments) => AsyncGenerator<unknown, Result, unknown> | Generator<unknown, Result, unknown>): [(...args: Arguments) => Promise<Result | undefined>, () => boolean, () => void];
+export default function makeInterruptible<Arguments extends any[] = any[], Result = void>(func: (...args: Arguments) => Generator<unknown, Result, unknown>): [(...args: Arguments) => Promise<Result | undefined>, () => boolean, () => void];

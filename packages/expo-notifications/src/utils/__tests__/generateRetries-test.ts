@@ -141,7 +141,7 @@ it(`returns what retried function returns`, async () => {
 
 it(`is interruptible by makeInterruptible`, async () => {
   const retryingFunctionCallTimes: Date[] = [];
-  const [caller, , abort] = makeInterruptible(async function*() {
+  const [caller, , abort] = makeInterruptible(function*() {
     const retryingIterator = generateRetries(
       async retry => {
         retryingFunctionCallTimes.push(new Date());

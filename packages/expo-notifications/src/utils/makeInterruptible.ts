@@ -24,9 +24,7 @@ import AbortController from 'abort-controller';
  * 3. A function interrupting processing of the generator.
  */
 export default function makeInterruptible<Arguments extends any[] = any[], Result = void>(
-  func: (
-    ...args: Arguments
-  ) => AsyncGenerator<unknown, Result, unknown> | Generator<unknown, Result, unknown>
+  func: (...args: Arguments) => Generator<unknown, Result, unknown>
 ): [(...args: Arguments) => Promise<Result | undefined>, () => boolean, () => void] {
   let globalAbortController: null | AbortController = null;
   let hasBeenCalled = false;
@@ -56,7 +54,7 @@ export default function makeInterruptible<Arguments extends any[] = any[], Resul
       }
       // We can use a mix of function generator and asynchronous function
       // as per https://www.pluralsight.com/guides/using-asyncawait-with-generator-functions.
-      const element = await iterator.next(resumeValue);
+      const element = iterator.next(resumeValue);
       if (element.done) {
         return element.value; // final return value of passed generator
       }

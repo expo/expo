@@ -47,7 +47,7 @@ export default function makeInterruptible(func) {
             }
             // We can use a mix of function generator and asynchronous function
             // as per https://www.pluralsight.com/guides/using-asyncawait-with-generator-functions.
-            const element = await iterator.next(resumeValue);
+            const element = iterator.next(resumeValue);
             if (element.done) {
                 return element.value; // final return value of passed generator
             }
