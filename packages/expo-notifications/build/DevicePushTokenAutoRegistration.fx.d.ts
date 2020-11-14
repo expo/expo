@@ -8,8 +8,8 @@ export declare type DevicePushTokenRegistration = {
     pendingDevicePushToken?: DevicePushToken | null;
 };
 /**
- * Sets the last registration information so that the device push token gets
- * pushed to the given registration endpoint
+ * Sets the registration information so that the device push token gets pushed
+ * to the given registration endpoint
  * @param registration Registration endpoint to inform of new tokens
  */
 export declare function setAutoServerRegistrationAsync(registration: Omit<DevicePushTokenRegistration, 'pendingDevicePushToken'>): Promise<void>;
@@ -21,4 +21,4 @@ export declare function removeAutoServerRegistrationAsync(): Promise<void>;
 /**
  * This function is exported only for testing purposes.
  */
-export declare function __handlePersistedRegistrationInfoAsync(lastRegistrationInfo: string | null | undefined): Promise<void>;
+export declare function __handlePersistedRegistrationInfoAsync(registrationInfo: string | null | undefined): Promise<void>;

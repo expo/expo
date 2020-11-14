@@ -6,21 +6,21 @@ import makeInterruptible from './makeInterruptible';
 export const [updatePushTokenAsync, hasPushTokenBeenUpdated, interruptPushTokenUpdates,] = makeInterruptible(updatePushTokenAsyncGenerator);
 async function* updatePushTokenAsyncGenerator(token) {
     // Fetch the latest registration info from the persisted storage
-    const lastRegistrationInfo = yield ServerRegistrationModule.getLastRegistrationInfoAsync?.();
+    const registrationInfo = yield ServerRegistrationModule.getRegistrationInfoAsync?.();
     // If there is none, do not do anything.
-    if (!lastRegistrationInfo) {
+    if (!registrationInfo) {
         return;
     }
     // Prepare request body
-    const lastRegistration = JSON.parse(lastRegistrationInfo);
+    const registration = JSON.parse(registrationInfo);
     // Persist `pendingDevicePushToken` in case the app gets killed
     // before we finish registering to server.
-    await ServerRegistrationModule.setLastRegistrationInfoAsync?.(JSON.stringify({
-        ...lastRegistration,
+    await ServerRegistrationModule.setRegistrationInfoAsync?.(JSON.stringify({
+        ...registration,
         pendingDevicePushToken: token,
     }));
     const body = {
-        ...lastRegistration.body,
+        ...registration.body,
         // Information whether a token is applicable
         // to development or production notification service
         // should never be persisted as it can change between
@@ -33,7 +33,7 @@ async function* updatePushTokenAsyncGenerator(token) {
     };
     const retriesIterator = generateRetries(async (retry) => {
         try {
-            const response = await fetch(lastRegistration.url, {
+            const response = await fetch(registration.url, {
                 method: 'POST',
                 headers: {
                     'content-type': 'application/json',
@@ -74,8 +74,8 @@ async function* updatePushTokenAsyncGenerator(token) {
     // We uploaded the token successfully, let's clear the `pendingDevicePushToken`
     // from the registration so that we don't try to upload the same token
     // again.
-    yield ServerRegistrationModule.setLastRegistrationInfoAsync?.(JSON.stringify({
-        ...lastRegistration,
+    yield ServerRegistrationModule.setRegistrationInfoAsync?.(JSON.stringify({
+        ...registration,
         pendingDevicePushToken: null,
     }));
 }

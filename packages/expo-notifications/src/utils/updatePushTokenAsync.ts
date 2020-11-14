@@ -15,25 +15,25 @@ export const [
 
 async function* updatePushTokenAsyncGenerator(token: DevicePushToken) {
   // Fetch the latest registration info from the persisted storage
-  const lastRegistrationInfo = yield ServerRegistrationModule.getLastRegistrationInfoAsync?.();
+  const registrationInfo = yield ServerRegistrationModule.getRegistrationInfoAsync?.();
   // If there is none, do not do anything.
-  if (!lastRegistrationInfo) {
+  if (!registrationInfo) {
     return;
   }
 
   // Prepare request body
-  const lastRegistration: DevicePushTokenRegistration = JSON.parse(lastRegistrationInfo);
+  const registration: DevicePushTokenRegistration = JSON.parse(registrationInfo);
   // Persist `pendingDevicePushToken` in case the app gets killed
   // before we finish registering to server.
-  await ServerRegistrationModule.setLastRegistrationInfoAsync?.(
+  await ServerRegistrationModule.setRegistrationInfoAsync?.(
     JSON.stringify({
-      ...lastRegistration,
+      ...registration,
       pendingDevicePushToken: token,
     })
   );
 
   const body = {
-    ...lastRegistration.body,
+    ...registration.body,
     // Information whether a token is applicable
     // to development or production notification service
     // should never be persisted as it can change between
@@ -47,7 +47,7 @@ async function* updatePushTokenAsyncGenerator(token: DevicePushToken) {
 
   const retriesIterator = generateRetries(async retry => {
     try {
-      const response = await fetch(lastRegistration.url, {
+      const response = await fetch(registration.url, {
         method: 'POST',
         headers: {
           'content-type': 'application/json',
@@ -100,9 +100,9 @@ async function* updatePushTokenAsyncGenerator(token: DevicePushToken) {
   // We uploaded the token successfully, let's clear the `pendingDevicePushToken`
   // from the registration so that we don't try to upload the same token
   // again.
-  yield ServerRegistrationModule.setLastRegistrationInfoAsync?.(
+  yield ServerRegistrationModule.setRegistrationInfoAsync?.(
     JSON.stringify({
-      ...lastRegistration,
+      ...registration,
       pendingDevicePushToken: null,
     })
   );

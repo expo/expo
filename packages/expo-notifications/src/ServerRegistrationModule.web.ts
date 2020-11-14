@@ -3,7 +3,7 @@ import uuidv4 from 'uuid/v4';
 import { ServerRegistrationModule } from './ServerRegistrationModule.types';
 
 const INSTALLATION_ID_KEY = 'EXPO_NOTIFICATIONS_INSTALLATION_ID';
-const LAST_REGISTRATION_INFO_KEY = 'EXPO_NOTIFICATIONS_LAST_REGISTRATION_INFO';
+const REGISTRATION_INFO_KEY = 'EXPO_NOTIFICATIONS_REGISTRATION_INFO';
 
 // Lazy fallback installationId per session initializer
 let getFallbackInstallationId = () => {
@@ -27,14 +27,14 @@ export default {
 
     return installationId;
   },
-  getLastRegistrationInfoAsync: async () => {
-    return localStorage.getItem(LAST_REGISTRATION_INFO_KEY);
+  getRegistrationInfoAsync: async () => {
+    return localStorage.getItem(REGISTRATION_INFO_KEY);
   },
-  setLastRegistrationInfoAsync: async (lastRegistrationInfo: string | null) => {
-    if (lastRegistrationInfo) {
-      localStorage.setItem(LAST_REGISTRATION_INFO_KEY, lastRegistrationInfo);
+  setRegistrationInfoAsync: async (registrationInfo: string | null) => {
+    if (registrationInfo) {
+      localStorage.setItem(REGISTRATION_INFO_KEY, registrationInfo);
     } else {
-      localStorage.removeItem(LAST_REGISTRATION_INFO_KEY);
+      localStorage.removeItem(REGISTRATION_INFO_KEY);
     }
   },
   // mock implementations

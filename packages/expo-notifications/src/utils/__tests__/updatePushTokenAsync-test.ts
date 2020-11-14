@@ -10,9 +10,9 @@ jest.mock('../../ServerRegistrationModule');
 
 declare const global: any;
 
-describe('given empty last registration info', () => {
+describe('given empty registration info', () => {
   beforeAll(() => {
-    mocked(ServerRegistrationModule.getLastRegistrationInfoAsync!).mockResolvedValue(null);
+    mocked(ServerRegistrationModule.getRegistrationInfoAsync!).mockResolvedValue(null);
   });
 
   it(`doesn't throw`, async () => {
@@ -20,9 +20,9 @@ describe('given empty last registration info', () => {
   });
 });
 
-describe('given invalid last registration info', () => {
+describe('given invalid registration info', () => {
   beforeAll(() => {
-    mocked(ServerRegistrationModule.getLastRegistrationInfoAsync!).mockResolvedValue(
+    mocked(ServerRegistrationModule.getRegistrationInfoAsync!).mockResolvedValue(
       '{i-am-invalid-json'
     );
   });
@@ -32,7 +32,7 @@ describe('given invalid last registration info', () => {
   });
 });
 
-describe('given valid last registration info', () => {
+describe('given valid registration info', () => {
   const mockUrl = 'https://example.com/';
   const mockBody = {
     customArgument: '@tester',
@@ -55,7 +55,7 @@ describe('given valid last registration info', () => {
     originalFetch = global.fetch;
     global.fetch = jest.fn();
 
-    mocked(ServerRegistrationModule.getLastRegistrationInfoAsync!).mockResolvedValue(
+    mocked(ServerRegistrationModule.getRegistrationInfoAsync!).mockResolvedValue(
       JSON.stringify({
         url: mockUrl,
         body: mockBody,
@@ -91,8 +91,8 @@ describe('given valid last registration info', () => {
 
     expect(
       JSON.parse(
-        mocked(ServerRegistrationModule.setLastRegistrationInfoAsync!).mock.calls[
-          mocked(ServerRegistrationModule.setLastRegistrationInfoAsync!).mock.calls.length - 1
+        mocked(ServerRegistrationModule.setRegistrationInfoAsync!).mock.calls[
+          mocked(ServerRegistrationModule.setRegistrationInfoAsync!).mock.calls.length - 1
         ][0]!
       )
     ).toEqual(expect.objectContaining({ pendingDevicePushToken: TOKEN }));
@@ -112,8 +112,8 @@ describe('given valid last registration info', () => {
       await updatePushTokenAsync(TOKEN);
       expect(
         JSON.parse(
-          mocked(ServerRegistrationModule.setLastRegistrationInfoAsync!).mock.calls[
-            mocked(ServerRegistrationModule.setLastRegistrationInfoAsync!).mock.calls.length - 1
+          mocked(ServerRegistrationModule.setRegistrationInfoAsync!).mock.calls[
+            mocked(ServerRegistrationModule.setRegistrationInfoAsync!).mock.calls.length - 1
           ][0]!
         )
       ).toEqual(expect.objectContaining({ pendingDevicePushToken: null }));

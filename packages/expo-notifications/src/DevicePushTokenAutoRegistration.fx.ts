@@ -17,8 +17,8 @@ export type DevicePushTokenRegistration = {
 };
 
 /**
- * Sets the last registration information so that the device push token gets
- * pushed to the given registration endpoint
+ * Sets the registration information so that the device push token gets pushed
+ * to the given registration endpoint
  * @param registration Registration endpoint to inform of new tokens
  */
 export async function setAutoServerRegistrationAsync(
@@ -28,7 +28,7 @@ export async function setAutoServerRegistrationAsync(
   // any pending request complete.
   interruptPushTokenUpdates();
   // Remember the registration information for future token updates.
-  await ServerRegistrationModule.setLastRegistrationInfoAsync?.(JSON.stringify(registration));
+  await ServerRegistrationModule.setRegistrationInfoAsync?.(JSON.stringify(registration));
 }
 
 /**
@@ -40,47 +40,45 @@ export async function removeAutoServerRegistrationAsync() {
   // any pending request complete.
   interruptPushTokenUpdates();
   // Do not consider any registration when token updates.
-  await ServerRegistrationModule.setLastRegistrationInfoAsync?.(null);
+  await ServerRegistrationModule.setRegistrationInfoAsync?.(null);
 }
 
 /**
  * This function is exported only for testing purposes.
  */
 export async function __handlePersistedRegistrationInfoAsync(
-  lastRegistrationInfo: string | null | undefined
+  registrationInfo: string | null | undefined
 ) {
-  if (!lastRegistrationInfo) {
-    // No last registration info, nothing to do
+  if (!registrationInfo) {
+    // No registration info, nothing to do
     return;
   }
   try {
-    const lastRegistration: DevicePushTokenRegistration = JSON.parse(lastRegistrationInfo);
+    const registration: DevicePushTokenRegistration = JSON.parse(registrationInfo);
     // We only want to retry if `hasPushTokenBeenUpdated` is false.
     // If it were true it means that another call to `updatePushTokenAsync`
     // has already occured which could only happen from the listener
     // which has newer information than persisted storage.
-    if (lastRegistration?.pendingDevicePushToken && !hasPushTokenBeenUpdated()) {
-      updatePushTokenAsync(lastRegistration.pendingDevicePushToken);
+    if (registration?.pendingDevicePushToken && !hasPushTokenBeenUpdated()) {
+      updatePushTokenAsync(registration.pendingDevicePushToken);
     }
   } catch (e) {
     console.warn(
-      '[expo-notifications] Error encountered while fetching last registration information for auto token updates.',
+      '[expo-notifications] Error encountered while fetching registration information for auto token updates.',
       e
     );
   }
 }
 
-// Verify if last persisted registration
+// Verify if persisted registration
 // has successfully uploaded last known
 // device push token. If not, retry.
-ServerRegistrationModule.getLastRegistrationInfoAsync?.().then(
-  __handlePersistedRegistrationInfoAsync
-);
+ServerRegistrationModule.getRegistrationInfoAsync?.().then(__handlePersistedRegistrationInfoAsync);
 
 // A global scope (to get all the updates) device push token
 // subscription, never cleared.
 addPushTokenListener(token => {
   // Dispatch an abortable task to update
-  // last registration with new token.
+  // registration with new token.
   updatePushTokenAsync(token);
 });

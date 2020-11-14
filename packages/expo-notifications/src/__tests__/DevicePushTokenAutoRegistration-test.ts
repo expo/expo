@@ -6,7 +6,7 @@ import generateRetries from '../utils/generateRetries';
 import makeInterruptible from '../utils/makeInterruptible';
 import { interruptPushTokenUpdates, updatePushTokenAsync } from '../utils/updatePushTokenAsync';
 
-const REGISTRATION_FIXTURE: DevicePushTokenAutoRegistration.Registration = {
+const REGISTRATION_FIXTURE: DevicePushTokenAutoRegistration.DevicePushTokenRegistration = {
   url: 'https://example.com/',
   body: {},
 };
@@ -51,13 +51,13 @@ describe('__handlePersistedRegistrationInfoAsync', () => {
 describe('setAutoServerRegistrationAsync', () => {
   it('ensures that the registration will be persisted even if other calls modifying storage are in progress', async () => {
     // An ever-repeating "nasty" meddler which, if aborting wouldn't
-    // work properly, would overwrite `lastRegistrationInfo` *after*
+    // work properly, would overwrite `registrationInfo` *after*
     // `setAutoServerRegistrationAsync` sets it.
     const [startMeddler, , stopMeddler] = makeInterruptible(async function*() {
       const retriesIterator = generateRetries(
         async retry => {
-          // Nasty call - erasing last registration information
-          await ServerRegistrationModule.setLastRegistrationInfoAsync?.(null);
+          // Nasty call - erasing registration information
+          await ServerRegistrationModule.setRegistrationInfoAsync?.(null);
           // Always repeat
           retry();
         },
@@ -86,9 +86,9 @@ describe('setAutoServerRegistrationAsync', () => {
     // it would run
     await new Promise(resolve => setTimeout(resolve, 100));
 
-    // Verify that last registration info has been set,
+    // Verify that registration info has been set,
     // as per user's request.
-    expect(ServerRegistrationModule.setLastRegistrationInfoAsync).toHaveBeenLastCalledWith(
+    expect(ServerRegistrationModule.setRegistrationInfoAsync).toHaveBeenLastCalledWith(
       JSON.stringify(REGISTRATION_FIXTURE)
     );
   });
@@ -97,13 +97,13 @@ describe('setAutoServerRegistrationAsync', () => {
 describe('removeAutoServerRegistrationAsync', () => {
   it('ensures that the registration will be erased even if other calls modifying storage are in progress', async () => {
     // An ever-repeating "nasty" meddler which, if aborting wouldn't
-    // work properly, would overwrite `lastRegistrationInfo` *after*
+    // work properly, would overwrite `registrationInfo` *after*
     // `setAutoServerRegistrationAsync` sets it.
     const [startMeddler, , stopMeddler] = makeInterruptible(async function*() {
       const retriesIterator = generateRetries(
         async retry => {
-          // Nasty call - erasing last registration information
-          await ServerRegistrationModule.setLastRegistrationInfoAsync?.('{}');
+          // Nasty call - erasing registration information
+          await ServerRegistrationModule.setRegistrationInfoAsync?.('{}');
           // Always repeat
           retry();
         },
@@ -132,8 +132,8 @@ describe('removeAutoServerRegistrationAsync', () => {
     // it would run
     await new Promise(resolve => setTimeout(resolve, 100));
 
-    // Verify that last registration info has been cleared,
+    // Verify that registration info has been cleared,
     // as per user's request.
-    expect(ServerRegistrationModule.setLastRegistrationInfoAsync).toHaveBeenLastCalledWith(null);
+    expect(ServerRegistrationModule.setRegistrationInfoAsync).toHaveBeenLastCalledWith(null);
   });
 });

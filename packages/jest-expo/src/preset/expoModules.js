@@ -579,8 +579,8 @@ module.exports = {
         ],
         MediaViewManager: [],
         NotificationsServerRegistrationModule: [
-          { key: 0, argumentsCount: 0, name: 'getLastRegistrationInfoAsync' },
-          { key: 1, argumentsCount: 1, name: 'setLastRegistrationInfoAsync' },
+          { key: 0, argumentsCount: 0, name: 'getRegistrationInfoAsync' },
+          { key: 1, argumentsCount: 1, name: 'setRegistrationInfoAsync' },
           { key: 2, argumentsCount: 0, name: 'getInstallationIdAsync' },
         ],
       },

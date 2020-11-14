@@ -3,7 +3,7 @@
 #import "EXScopedServerRegistrationModule.h"
 #import "EXUnversioned.h"
 
-static NSString * const kEXLastRegistrationsInfosKey = EX_UNVERSIONED(@"EXLastRegistrationsInfosKey");
+static NSString * const kEXRegistrationsInfosKey = EX_UNVERSIONED(@"EXNotificationsRegistrationsInfosKey");
 
 @interface EXScopedServerRegistrationModule ()
 
@@ -21,26 +21,26 @@ static NSString * const kEXLastRegistrationsInfosKey = EX_UNVERSIONED(@"EXLastRe
   return self;
 }
 
-- (void)getLastRegistrationInfoAsyncWithResolver:(UMPromiseResolveBlock)resolve
-                                        rejecter:(UMPromiseRejectBlock)reject
+- (void)getRegistrationInfoAsyncWithResolver:(UMPromiseResolveBlock)resolve
+                                    rejecter:(UMPromiseRejectBlock)reject
 {
-  NSDictionary *lastRegistrationsInfos = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kEXLastRegistrationsInfosKey] ?: @{};
-  resolve(lastRegistrationsInfos[_experienceId]);
+  NSDictionary *registrationsInfos = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kEXRegistrationsInfosKey] ?: @{};
+  resolve(registrationsInfos[_experienceId]);
 }
 
-- (void)setLastRegistrationInfoAsync:(NSString *)lastRegistrationInfo
-                            resolver:(UMPromiseResolveBlock)resolve
-                            rejecter:(UMPromiseRejectBlock)reject
+- (void)setRegistrationInfoAsync:(NSString *)registrationInfo
+                        resolver:(UMPromiseResolveBlock)resolve
+                        rejecter:(UMPromiseRejectBlock)reject
 {
   NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-  NSDictionary *lastRegistrationsInfos = [defaults dictionaryForKey:kEXLastRegistrationsInfosKey] ?: @{};
-  NSMutableDictionary *mutableLastRegistrationInfos = [NSMutableDictionary dictionaryWithDictionary:lastRegistrationsInfos];
-  if (lastRegistrationInfo) {
-    mutableLastRegistrationInfos[_experienceId] = lastRegistrationInfo;
+  NSDictionary *registrationsInfos = [defaults dictionaryForKey:kEXRegistrationsInfosKey] ?: @{};
+  NSMutableDictionary *mutableRegistrationInfos = [NSMutableDictionary dictionaryWithDictionary:registrationsInfos];
+  if (registrationInfo) {
+    mutableRegistrationInfos[_experienceId] = registrationInfo;
   } else {
-    [mutableLastRegistrationInfos removeObjectForKey:_experienceId];
+    [mutableRegistrationInfos removeObjectForKey:_experienceId];
   }
-  [defaults setObject:mutableLastRegistrationInfos forKey:kEXLastRegistrationsInfosKey];
+  [defaults setObject:mutableRegistrationInfos forKey:kEXRegistrationsInfosKey];
   resolve(nil);
 }
 
