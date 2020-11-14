@@ -2,11 +2,17 @@ import { mockLinking, mockProperty, unmockAllProperties } from 'jest-expo';
 
 function applyMocks() {
   jest.doMock('expo-constants', () => {
-    const Constants = jest.requireActual('expo-constants').default;
+    const ConstantsModule = jest.requireActual('expo-constants');
+    const { default: Constants } = ConstantsModule;
     return {
-      ...Constants,
-      executionEnvironment: 'standalone',
-      manifest: { ...Constants.manifest, id: '@example/abc' },
+      ...ConstantsModule,
+      // must explicitly include this in order to mock both default and named exports
+      __esModule: true,
+      default: {
+        ...Constants,
+        executionEnvironment: 'standalone',
+        manifest: { ...Constants.manifest, id: '@example/abc' },
+      },
     };
   });
 }
@@ -155,7 +161,7 @@ it(`lets us call AuthSession.startAsync after param validation throws`, async ()
 });
 
 it(`warns if user is @anonymous in getRedirectUrl`, () => {
-  const Constants = require('expo-constants');
+  const Constants = require('expo-constants').default;
   mockProperty(Constants.manifest, 'id', '@anonymous/abc');
   mockProperty(console, 'warn', jest.fn());
   const { getRedirectUrl } = require('../AuthSession');

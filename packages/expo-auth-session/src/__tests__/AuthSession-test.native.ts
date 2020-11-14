@@ -2,19 +2,31 @@
 
 function mockConstants(constants: { [key: string]: any } = {}): void {
   jest.doMock('expo-constants', () => {
-    const Constants = jest.requireActual('expo-constants').default;
+    const ConstantsModule = jest.requireActual('expo-constants');
+    const { default: Constants } = ConstantsModule;
     return {
-      ...Constants,
-      ...constants,
-      manifest: { ...Constants.manifest, ...(constants.manifest || {}) },
+      ...ConstantsModule,
+      // must explicitly include this in order to mock both default and named exports
+      __esModule: true,
+      default: {
+        ...Constants,
+        ...constants,
+        manifest: { ...Constants.manifest, ...(constants.manifest || {}) },
+      },
     };
   });
 }
 
 function mockBareExecutionEnvironment(): void {
   jest.doMock('expo-constants', () => {
+    const ConstantsModule = jest.requireActual('expo-constants');
     return {
-      executionEnvironment: 'bare',
+      ...ConstantsModule,
+      // must explicitly include this in order to mock both default and named exports
+      __esModule: true,
+      default: {
+        executionEnvironment: 'bare',
+      },
     };
   });
 }
