@@ -1,1 +1,0 @@
-../../../../../versioned-react-native/ABI36_0_0/ReactNative/Libraries/Network/ABI36_0_0RCTHTTPRequestHandler.h

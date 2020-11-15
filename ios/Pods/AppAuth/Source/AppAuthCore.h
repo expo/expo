@@ -40,4 +40,5 @@
 #import "OIDTokenResponse.h"
 #import "OIDTokenUtilities.h"
 #import "OIDURLSessionProvider.h"
-
+#import "OIDEndSessionRequest.h"
+#import "OIDEndSessionResponse.h"

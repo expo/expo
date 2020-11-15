@@ -4,7 +4,6 @@
 <dict>
 	<key>sdkVersions</key>
 	<array>
-		<string>36.0.0</string>
 		<string>37.0.0</string>
 		<string>38.0.0</string>
 		<string>39.0.0</string>
