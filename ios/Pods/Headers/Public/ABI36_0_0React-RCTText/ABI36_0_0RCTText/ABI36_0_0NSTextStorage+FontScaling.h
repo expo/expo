@@ -1,1 +1,0 @@
-../../../../../versioned-react-native/ABI36_0_0/ReactNative/Libraries/Text/Text/ABI36_0_0NSTextStorage+FontScaling.h

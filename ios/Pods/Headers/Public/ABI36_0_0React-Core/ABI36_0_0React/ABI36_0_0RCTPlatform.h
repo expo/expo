@@ -1,1 +1,0 @@
-../../../../../versioned-react-native/ABI36_0_0/ReactNative/React/CoreModules/ABI36_0_0RCTPlatform.h

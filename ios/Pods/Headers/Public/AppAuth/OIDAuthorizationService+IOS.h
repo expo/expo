@@ -1,1 +1,1 @@
-../../../AppAuth/Source/iOS/OIDAuthorizationService+IOS.h
+../../../AppAuth/Source/AppAuth/iOS/OIDAuthorizationService+IOS.h

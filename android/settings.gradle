@@ -16,7 +16,6 @@ project(":expo-random").projectDir = new File("../packages/expo-random/android")
     "abi39_0_0",
     "abi38_0_0",
     "abi37_0_0",
-    "abi36_0_0",
 ].forEach({ abiVariant ->
   include ":expoview-$abiVariant"
   project(":expoview-$abiVariant").projectDir = new File(rootDir, "versioned-abis/expoview-$abiVariant")
