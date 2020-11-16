@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 static NSString * const EXUpdatesDatabaseErrorDomain = @"EXUpdatesDatabase";
-static NSString * const EXUpdatesDatabaseFilename = @"expo-v3.db";
+static NSString * const EXUpdatesDatabaseFilename = @"expo-v4.db";
 
 @implementation EXUpdatesDatabase
 
@@ -123,6 +123,13 @@ static NSString * const EXUpdatesDatabaseFilename = @"expo-v3.db";
    \"asset_id\" INTEGER NOT NULL,\
    FOREIGN KEY(\"update_id\") REFERENCES \"updates\"(\"id\") ON DELETE CASCADE,\
    FOREIGN KEY(\"asset_id\") REFERENCES \"assets\"(\"id\") ON DELETE CASCADE\
+   );\
+   CREATE TABLE \"json_data\" (\
+   \"key\" TEXT NOT NULL,\
+   \"value\" TEXT NOT NULL,\
+   \"last_updated\" INTEGER NOT NULL,\
+   \"scope_key\" TEXT NOT NULL,\
+   PRIMARY KEY(\"key\", \"scope_key\")\
    );\
    CREATE UNIQUE INDEX \"index_updates_scope_key_commit_time\" ON \"updates\" (\"scope_key\", \"commit_time\");\
    CREATE INDEX \"index_updates_launch_asset_id\" ON \"updates\" (\"launch_asset_id\");\
