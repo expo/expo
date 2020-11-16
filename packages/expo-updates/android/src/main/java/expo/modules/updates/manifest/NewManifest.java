@@ -31,6 +31,8 @@ public class NewManifest implements Manifest {
   private JSONArray mAssets;
 
   private JSONObject mManifestJson;
+  private JSONObject mServerDefinedHeaders;
+  private JSONObject mManifestFilters;
 
   private NewManifest(JSONObject manifestJson,
                       UUID id,
@@ -38,7 +40,9 @@ public class NewManifest implements Manifest {
                       Date commitTime,
                       String runtimeVersion,
                       JSONObject launchAsset,
-                      JSONArray assets) {
+                      JSONArray assets,
+                      JSONObject serverDefinedHeaders,
+                      JSONObject manifestFilters) {
     mManifestJson = manifestJson;
     mId = id;
     mScopeKey = scopeKey;
@@ -46,12 +50,18 @@ public class NewManifest implements Manifest {
     mRuntimeVersion = runtimeVersion;
     mLaunchAsset = launchAsset;
     mAssets = assets;
+    mServerDefinedHeaders = serverDefinedHeaders;
+    mManifestFilters = manifestFilters;
   }
 
   public static NewManifest fromManifestJson(JSONObject rootManifestJson, UpdatesConfiguration configuration) throws JSONException {
     JSONObject manifestJson = rootManifestJson;
-    if (manifestJson.has("manifest")) {
-      manifestJson = manifestJson.getJSONObject("manifest");
+    JSONObject serverDefinedHeaders = null;
+    JSONObject manifestFilters = null;
+    if (rootManifestJson.has("manifest")) {
+      manifestJson = rootManifestJson.getJSONObject("manifest");
+      serverDefinedHeaders = rootManifestJson.optJSONObject(ManifestServerData.MANIFEST_SERVER_DEFINED_HEADERS_KEY);
+      manifestFilters = rootManifestJson.optJSONObject(ManifestServerData.MANIFEST_FILTERS_KEY);
     }
 
     UUID id = UUID.fromString(manifestJson.getString("id"));
@@ -67,7 +77,15 @@ public class NewManifest implements Manifest {
       commitTime = new Date();
     }
 
-    return new NewManifest(manifestJson, id, configuration.getScopeKey(), commitTime, runtimeVersion, launchAsset, assets);
+    return new NewManifest(manifestJson, id, configuration.getScopeKey(), commitTime, runtimeVersion, launchAsset, assets, serverDefinedHeaders, manifestFilters);
+  }
+
+  public JSONObject getServerDefinedHeaders() {
+    return mServerDefinedHeaders;
+  }
+
+  public JSONObject getManifestFilters() {
+    return mManifestFilters;
   }
 
   public JSONObject getRawManifestJson() {

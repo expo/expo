@@ -17,12 +17,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Map;
 
+import expo.modules.updates.db.UpdatesDatabase;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.launcher.NoDatabaseLauncher;
 import expo.modules.updates.manifest.Manifest;
 import expo.modules.updates.manifest.ManifestFactory;
+import expo.modules.updates.manifest.ManifestServerData;
+import expo.modules.updates.manifest.NewManifest;
 import okhttp3.CacheControl;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -78,9 +82,9 @@ public class FileDownloader {
     });
   }
 
-  public static void downloadManifest(final UpdatesConfiguration configuration, final Context context, final ManifestDownloadCallback callback) {
+  public static void downloadManifest(final UpdatesConfiguration configuration, UpdatesDatabase database, final Context context, final ManifestDownloadCallback callback) {
     try {
-      downloadData(setHeadersForManifestUrl(configuration, context), new Callback() {
+      downloadData(setHeadersForManifestUrl(configuration, database, context), new Callback() {
         @Override
         public void onFailure(Call call, IOException e) {
           callback.onFailure("Failed to download manifest from URL: " + configuration.getUpdateUrl(), e);
@@ -243,7 +247,7 @@ public class FileDownloader {
     return requestBuilder.build();
   }
 
-  private static Request setHeadersForManifestUrl(UpdatesConfiguration configuration, Context context) {
+  private static Request setHeadersForManifestUrl(UpdatesConfiguration configuration, UpdatesDatabase database, Context context) {
     Request.Builder requestBuilder = new Request.Builder()
             .url(configuration.getUpdateUrl().toString())
             .header("Accept", "application/expo+json,application/json")
@@ -275,6 +279,15 @@ public class FileDownloader {
         "Expo-Fatal-Error",
         previousFatalError.substring(0, Math.min(1024, previousFatalError.length()))
       );
+    }
+
+    JSONObject serverDefinedHeaders = ManifestServerData.getServerDefinedHeaders(database, configuration);
+    if (serverDefinedHeaders != null) {
+      Iterator<String> keySet = serverDefinedHeaders.keys();
+      while (keySet.hasNext()) {
+        String key = keySet.next();
+        requestBuilder.header(key, serverDefinedHeaders.optString(key, ""));
+      }
     }
 
     for (Map.Entry<String, String> entry : configuration.getRequestHeaders().entrySet()) {

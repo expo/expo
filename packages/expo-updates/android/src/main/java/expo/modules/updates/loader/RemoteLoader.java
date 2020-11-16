@@ -13,6 +13,8 @@ import expo.modules.updates.db.UpdatesDatabase;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.manifest.Manifest;
+import expo.modules.updates.manifest.ManifestServerData;
+import expo.modules.updates.manifest.NewManifest;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -27,6 +29,7 @@ public class RemoteLoader {
   private UpdatesDatabase mDatabase;
   private File mUpdatesDirectory;
 
+  private Manifest mManifest;
   private UpdateEntity mUpdateEntity;
   private LoaderCallback mCallback;
   private int mAssetTotal = 0;
@@ -67,7 +70,7 @@ public class RemoteLoader {
 
     mCallback = callback;
 
-    FileDownloader.downloadManifest(mConfiguration, mContext, new FileDownloader.ManifestDownloadCallback() {
+    FileDownloader.downloadManifest(mConfiguration, mDatabase, mContext, new FileDownloader.ManifestDownloadCallback() {
       @Override
       public void onFailure(String message, Exception e) {
         finishWithError(message, e);
@@ -75,10 +78,12 @@ public class RemoteLoader {
 
       @Override
       public void onSuccess(Manifest manifest) {
+        mManifest = manifest;
         if (mCallback.onManifestLoaded(manifest)) {
           processManifest(manifest);
         } else {
-          mCallback.onSuccess(null);
+          mUpdateEntity = null;
+          finishWithSuccess();
         }
       }
     });
@@ -97,6 +102,10 @@ public class RemoteLoader {
     if (mCallback == null) {
       Log.e(TAG, "RemoteLoader tried to finish but it already finished or was never initialized.");
       return;
+    }
+
+    if (mManifest instanceof NewManifest) {
+      ManifestServerData.saveServerData((NewManifest) mManifest, mDatabase, mConfiguration);
     }
 
     mCallback.onSuccess(mUpdateEntity);

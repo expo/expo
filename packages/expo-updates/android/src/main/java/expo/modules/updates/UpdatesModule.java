@@ -130,15 +130,18 @@ public class UpdatesModule extends ExportedModule {
         return;
       }
 
-      FileDownloader.downloadManifest(updatesService.getConfiguration(), getContext(), new FileDownloader.ManifestDownloadCallback() {
+      final DatabaseHolder databaseHolder = updatesService.getDatabaseHolder();
+      FileDownloader.downloadManifest(updatesService.getConfiguration(), databaseHolder.getDatabase(), getContext(), new FileDownloader.ManifestDownloadCallback() {
         @Override
         public void onFailure(String message, Exception e) {
+          databaseHolder.releaseDatabase();
           promise.reject("ERR_UPDATES_CHECK", message, e);
           Log.e(TAG, message, e);
         }
 
         @Override
         public void onSuccess(Manifest manifest) {
+          databaseHolder.releaseDatabase();
           UpdateEntity launchedUpdate = updatesService.getLaunchedUpdate();
           Bundle updateInfo = new Bundle();
           if (launchedUpdate == null) {

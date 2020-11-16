@@ -3,10 +3,13 @@ package expo.modules.updates.launcher;
 import android.content.Context;
 import android.util.Log;
 
+import org.json.JSONObject;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +22,7 @@ import expo.modules.updates.db.enums.UpdateStatus;
 import expo.modules.updates.loader.EmbeddedLoader;
 import expo.modules.updates.loader.FileDownloader;
 import expo.modules.updates.manifest.Manifest;
+import expo.modules.updates.manifest.ManifestServerData;
 
 public class DatabaseLauncher implements Launcher {
 
@@ -129,6 +133,8 @@ public class DatabaseLauncher implements Launcher {
   public UpdateEntity getLaunchableUpdate(UpdatesDatabase database, Context context) {
     List<UpdateEntity> launchableUpdates = database.updateDao().loadLaunchableUpdatesForScope(mConfiguration.getScopeKey());
 
+    JSONObject serverManifestFilters = ManifestServerData.getManifestFilters(database, mConfiguration);
+
     // We can only run an update marked as embedded if it's actually the update embedded in the
     // current binary. We might have an older update from a previous binary still listed as
     // "EMBEDDED" in the database so we need to do this check.
@@ -139,11 +145,53 @@ public class DatabaseLauncher implements Launcher {
         if (embeddedManifest != null && !embeddedManifest.getUpdateEntity().id.equals(update.id)) {
           continue;
         }
+        // TODO: exclude embedded manifests?
+        if (serverManifestFilters != null && isUpdateManifestFiltered(update, serverManifestFilters)) {
+          continue;
+        }
       }
       filteredLaunchableUpdates.add(update);
     }
 
     return mSelectionPolicy.selectUpdateToLaunch(filteredLaunchableUpdates);
+  }
+
+  private boolean isUpdateManifestFiltered(UpdateEntity update, JSONObject manifestFilters) {
+    if (update.metadata == null || !update.metadata.has("updateMetadata")) {
+      return false;
+    }
+    try {
+      Iterator<String> keySet = manifestFilters.keys();
+      while (keySet.hasNext()) {
+        boolean passes = true;
+        String key = keySet.next();
+        JSONObject updateMetadata = update.metadata.getJSONObject("updateMetadata");
+        if (updateMetadata.has(key)) {
+          passes = manifestFilters.get(key).equals(updateMetadata.get(key));
+        } else if (key.indexOf('.') > -1) {
+          String[] nestedKeys = key.split(".");
+          JSONObject nestedObject = updateMetadata;
+          for (int i = 0; i < nestedKeys.length; i++) {
+            String nestedKey = nestedKeys[i];
+            if (!nestedObject.has(nestedKey) || !(nestedObject.get(nestedKey) instanceof JSONObject)) {
+              passes = true;
+            } else if (i + 1 == nestedKeys.length) {
+              passes = manifestFilters.get(key).equals(nestedObject.get(nestedKey));
+            } else {
+              nestedObject = nestedObject.getJSONObject(nestedKey);
+            }
+          }
+        }
+
+        if (!passes) {
+          return true;
+        }
+      }
+    } catch (Exception e) {
+      Log.e(TAG, "Error filtering manifest using server data", e);
+      return false;
+    }
+    return false;
   }
 
   private File ensureAssetExists(AssetEntity asset, UpdatesDatabase database, Context context) {
