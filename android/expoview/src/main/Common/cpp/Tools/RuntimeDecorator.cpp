@@ -9,7 +9,8 @@ void RuntimeDecorator::addNativeObjects(jsi::Runtime &rt,
                                         UpdaterFunction updater,
                                         RequestFrameFunction requestFrame,
                                         ScrollToFunction scrollTo,
-                                        MeasuringFunction measure) {
+                                        MeasuringFunction measure,
+                                        TimeProviderFunction getCurrentTime) {
   rt.global().setProperty(rt, "_WORKLET", jsi::Value(true));
   
   jsi::Object dummyGlobal(rt);
@@ -57,8 +58,9 @@ void RuntimeDecorator::addNativeObjects(jsi::Runtime &rt,
       size_t count
       ) -> jsi::Value {
     const auto viewTag = args[0].asNumber();
-    const auto params = args[1].asObject(rt);
-    updater(rt, viewTag, params);
+    const jsi::Value* viewName = &args[1];
+    const auto params = args[2].asObject(rt);
+    updater(rt, viewTag, *viewName, params);
     return jsi::Value::undefined();
   };
   jsi::Value updateProps = jsi::Function::createFromHostFunction(rt, jsi::PropNameID::forAscii(rt, "_updateProps"), 2, clb);
@@ -113,6 +115,31 @@ void RuntimeDecorator::addNativeObjects(jsi::Runtime &rt,
   jsi::Value measureFunction = jsi::Function::createFromHostFunction(rt, jsi::PropNameID::forAscii(rt, "_measure"), 1, clb4);
   rt.global().setProperty(rt, "_measure", measureFunction);
   
+  auto clb5 = [](
+      jsi::Runtime &rt,
+      const jsi::Value &thisValue,
+      const jsi::Value *args,
+      size_t count
+      ) -> jsi::Value {
+    rt.global().setProperty(rt, args[0].asString(rt), args[1]);
+    return jsi::Value::undefined();
+  };
+  jsi::Value globalSetter = jsi::Function::createFromHostFunction(rt, jsi::PropNameID::forAscii(rt, "_globalSetter"), 1, clb5);
+  rt.global().setProperty(rt, "_globalSetter", globalSetter);
+  
+  auto clb6 = [getCurrentTime](
+      jsi::Runtime &rt,
+      const jsi::Value &thisValue,
+      const jsi::Value *args,
+      size_t count
+      ) -> jsi::Value {
+    return getCurrentTime();
+  };
+  jsi::Value timeFun = jsi::Function::createFromHostFunction(rt, jsi::PropNameID::forAscii(rt, "_getCurrentTime"), 0, clb6);
+  rt.global().setProperty(rt, "_getCurrentTime", timeFun);
+
+  rt.global().setProperty(rt, "_frameTimestamp", jsi::Value::undefined());
+  rt.global().setProperty(rt, "_eventTimestamp", jsi::Value::undefined());
 }
 
 }

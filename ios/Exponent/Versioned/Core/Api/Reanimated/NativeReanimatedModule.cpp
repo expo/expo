@@ -11,6 +11,7 @@
 #include <functional>
 #include <thread>
 #include <memory>
+#include "JSIStoreValueUser.h"
 
 using namespace facebook;
 
@@ -79,7 +80,8 @@ NativeReanimatedModule::NativeReanimatedModule(std::shared_ptr<CallInvoker> jsIn
                                      platformDepMethodsHolder.updaterFunction,
                                      requestAnimationFrame,
                                      platformDepMethodsHolder.scrollToFunction,
-                                     platformDepMethodsHolder.measuringFunction);
+                                     platformDepMethodsHolder.measuringFunction,
+                                     platformDepMethodsHolder.getCurrentTime);
 }
 
 bool NativeReanimatedModule::isUIRuntime(jsi::Runtime &rt)
@@ -188,8 +190,28 @@ jsi::Value NativeReanimatedModule::getViewProp(jsi::Runtime &rt, const jsi::Valu
 
 void NativeReanimatedModule::onEvent(std::string eventName, std::string eventAsString)
 {
-  eventHandlerRegistry->processEvent(*runtime, eventName, eventAsString);
+   try
+    {
+      eventHandlerRegistry->processEvent(*runtime, eventName, eventAsString);
+      mapperRegistry->execute(*runtime);
+      if (mapperRegistry->needRunOnRender())
+      {
+        maybeRequestRender();
+      }
+    }
+    catch (...)
+    {
+      if (!errorHandler->raise())
+      {
+        throw;
+      }
+    }
 }
+
+bool NativeReanimatedModule::isAnyHandlerWaitingForEvent(std::string eventName) {
+  return eventHandlerRegistry->isAnyHandlerWaitingForEvent(eventName);
+}
+
 
 void NativeReanimatedModule::maybeRequestRender()
 {
@@ -199,7 +221,7 @@ void NativeReanimatedModule::maybeRequestRender()
     requestRender([this](double timestampMs) {
       this->renderRequested = false;
       this->onRender(timestampMs);
-    });
+    }, *this->runtime);
   }
 }
 
@@ -207,14 +229,13 @@ void NativeReanimatedModule::onRender(double timestampMs)
 {
   try
   {
-    mapperRegistry->execute(*runtime);
-
     std::vector<FrameCallback> callbacks = frameCallbacks;
     frameCallbacks.clear();
     for (auto callback : callbacks)
     {
       callback(timestampMs);
     }
+    mapperRegistry->execute(*runtime);
 
     if (mapperRegistry->needRunOnRender())
     {
@@ -232,7 +253,7 @@ void NativeReanimatedModule::onRender(double timestampMs)
 
 NativeReanimatedModule::~NativeReanimatedModule()
 {
-  // noop
+  StoreUser::clearStore();
 }
 
 } // namespace reanimated

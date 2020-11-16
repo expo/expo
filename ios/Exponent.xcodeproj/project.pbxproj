@@ -382,6 +382,9 @@
 		FA526593B78C87A7E1C34561 /* libPods-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D8BAB8D6102FB06BE5BE10B /* libPods-Tests.a */; };
 		FC756CC924CB537400665AE6 /* EXScopedNotificationSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = FC756CC824CB537400665AE6 /* EXScopedNotificationSerializer.m */; };
 		FCA11CA724C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = FCA11CA524C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m */; };
+		2FD7B13470EA4C9DBCBBB5F5 /* JSIStoreValueUser.cpp in Resources */ = {isa = PBXBuildFile; fileRef = D07868FABE35482F83FAFAC9 /* JSIStoreValueUser.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
+		0828801E28BE470987B3A938 /* REAEventDispatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C039FFE04B04F26B993374C /* REAEventDispatcher.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		2A5493FFBD094550B07CAC3B /* UIResponder+Reanimated.mm in Resources */ = {isa = PBXBuildFile; fileRef = 784891CE1ECA4DEC969E1815 /* UIResponder+Reanimated.mm */; settings = {COMPILER_FLAGS = "-w"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1173,6 +1176,12 @@
 		FCA11CA524C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationCategoriesModule.m; sourceTree = "<group>"; };
 		FCA11CA624C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationCategoriesModule.h; sourceTree = "<group>"; };
 		FE89956BF2504EB0A76B89AD /* MutableValueSetterProxy.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = MutableValueSetterProxy.h; sourceTree = "<group>"; };
+		D07868FABE35482F83FAFAC9 /* JSIStoreValueUser.cpp */ = {isa = PBXFileReference; name = "JSIStoreValueUser.cpp"; path = "JSIStoreValueUser.cpp"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		CF2DFD13EEB941549FFA24CB /* JSIStoreValueUser.h */ = {isa = PBXFileReference; name = "JSIStoreValueUser.h"; path = "JSIStoreValueUser.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		29771E21A44A4045BA173B4E /* REAEventDispatcher.h */ = {isa = PBXFileReference; name = "REAEventDispatcher.h"; path = "REAEventDispatcher.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		0C039FFE04B04F26B993374C /* REAEventDispatcher.m */ = {isa = PBXFileReference; name = "REAEventDispatcher.m"; path = "REAEventDispatcher.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		3C41C47401484EF6BB13BC86 /* UIResponder+Reanimated.h */ = {isa = PBXFileReference; name = "UIResponder+Reanimated.h"; path = "UIResponder+Reanimated.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		784891CE1ECA4DEC969E1815 /* UIResponder+Reanimated.mm */ = {isa = PBXFileReference; name = "UIResponder+Reanimated.mm"; path = "UIResponder+Reanimated.mm"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1653,6 +1662,12 @@
 				4C5C373454924AC9902484F0 /* SpeedChecker.h */,
 				1751D9D7893A4EB69D79DDB2 /* WorkletsCache.cpp */,
 				9AD0DBC830AF42E8BC6EAE6E /* WorkletsCache.h */,
+				D07868FABE35482F83FAFAC9 /* JSIStoreValueUser.cpp */,
+				CF2DFD13EEB941549FFA24CB /* JSIStoreValueUser.h */,
+				29771E21A44A4045BA173B4E /* REAEventDispatcher.h */,
+				0C039FFE04B04F26B993374C /* REAEventDispatcher.m */,
+				3C41C47401484EF6BB13BC86 /* UIResponder+Reanimated.h */,
+				784891CE1ECA4DEC969E1815 /* UIResponder+Reanimated.mm */,
 			);
 			path = Reanimated;
 			sourceTree = "<group>";
@@ -3237,6 +3252,9 @@
 				7F8A284434844347B0714FC3 /* Scheduler.cpp in Sources */,
 				CDD9BBD2CB3E4DAFB174D08C /* ShareableValue.cpp in Sources */,
 				CAE7F8A3DDF74E7AB8BB06B6 /* WorkletsCache.cpp in Sources */,
+				2FD7B13470EA4C9DBCBBB5F5 /* JSIStoreValueUser.cpp in Resources */,
+				0828801E28BE470987B3A938 /* REAEventDispatcher.m in Sources */,
+				2A5493FFBD094550B07CAC3B /* UIResponder+Reanimated.mm in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
