@@ -71,7 +71,8 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
     } else if (shouldPlayDefaultSound) {
       builder.setDefaults(NotificationCompat.DEFAULT_SOUND);
     } else {
-      builder.setNotificationSilent();
+      // Notification will not vibrate or play sound, regardless of channel
+      builder.setSilent();
     }
 
     if (shouldPlaySound() && content.getSound() != null) {
