@@ -14,7 +14,6 @@ import '../i-also-have-side-effects.fx';
 import InlineFuncFromFileWithSideEffects from '../inline-func-with-side-effects.fx.ts';
 import InlineFuncFromFile from './inline-func';
 
-@connect()
 class Lazy extends React.Component {
   componentDidMount() {
     console.log('Calling InlineFuncFromPackage()');
@@ -44,4 +43,4 @@ class Lazy extends React.Component {
   }
 }
 
-export default Lazy;
+export default connect()(Lazy);

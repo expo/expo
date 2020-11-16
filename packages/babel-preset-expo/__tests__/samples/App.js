@@ -5,7 +5,6 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { connect } from 'react-redux';
 
-@connect()
 class App extends React.Component {
   state = { assetsAreLoaded: false };
 
@@ -41,7 +40,7 @@ class App extends React.Component {
   };
 }
 
-export default App;
+export default connect()(App);
 
 const styles = StyleSheet.create({
   container: {
