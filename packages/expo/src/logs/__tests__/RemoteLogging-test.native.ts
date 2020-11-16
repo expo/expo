@@ -1,6 +1,14 @@
 import LogSerialization from '../LogSerialization';
 import RemoteLogging, { __waitForEmptyLogQueueAsync } from '../RemoteLogging';
 
+jest.mock('uuid', () => {
+  const originalModule = jest.requireActual('uuid');
+  return {
+    ...originalModule,
+    v4: () => 'c0d50576-7ddc-4196-8b1d-01c2d1786631',
+  };
+});
+
 jest.mock('../LogSerialization', () => ({
   serializeLogDataAsync: jest.fn(async data => {
     return {
@@ -11,6 +19,11 @@ jest.mock('../LogSerialization', () => ({
 }));
 
 jest.mock('expo-constants', () => require('../../__mocks__/Constants-development'));
+jest.mock('expo-application', () => ({
+  androidId: 'i-am-unique',
+  applicationId: 'me-too',
+  getIosIdForVendorAsync: async () => 'me-too!',
+}));
 
 let originalFetch;
 
