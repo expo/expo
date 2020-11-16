@@ -48,8 +48,11 @@ public class NewManifest implements Manifest {
 
   public static NewManifest fromManifestJson(JSONObject rootManifestJson, UpdatesConfiguration configuration) throws JSONException {
     JSONObject manifestJson = rootManifestJson;
-    if (rootManifestJson.has("manifest")) {
-      manifestJson = rootManifestJson.getJSONObject("manifest");
+    if (rootManifestJson.has("data") && manifestJson.getJSONObject("data").has("publicManifest")) {
+      manifestJson = rootManifestJson.getJSONObject("data").getJSONObject("publicManifest");
+    }
+    if (manifestJson.has("manifest")) {
+      manifestJson = manifestJson.getJSONObject("manifest");
     }
 
     UUID id = UUID.fromString(manifestJson.getString("id"));

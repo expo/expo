@@ -84,7 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                 database:database];
     }
   } else {
-    if (manifest[@"runtimeVersion"]) {
+    if (manifest[@"data"] || manifest[@"manifest"]) {
       return [EXUpdatesNewUpdate updateWithNewManifest:manifest
                                                 config:config
                                               database:database];

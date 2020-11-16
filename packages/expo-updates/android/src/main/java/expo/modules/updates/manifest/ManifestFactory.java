@@ -44,7 +44,7 @@ public class ManifestFactory {
         return BareManifest.fromManifestJson(manifestJson, configuration);
       }
     } else {
-      if (manifestJson.has("runtimeVersion")) {
+      if (manifestJson.has("data") || manifestJson.has("manifest")) {
         return NewManifest.fromManifestJson(manifestJson, configuration);
       } else {
         return BareManifest.fromManifestJson(manifestJson, configuration);
