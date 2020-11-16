@@ -22,23 +22,11 @@ The second major version of this library offers a much easier API, along with si
 
 > ⏩ If you want to play with v2-alpha in a new project before adding it to an existing project, run `npx crna --template with-reanimated2` to create a project with it configured and ready to use.
 
-To opt in to using TurboModules for react-native-reanimated, add the `experiments.turboModules` key to your `app.json`:
-
-```json
-{
-  "expo": {
-    "experiments": {
-      "turboModules": true
-    }
-  }
-}
-```
-
 You also need to install the library directly with npm or yarn rather than using `expo install` because we still default to installing the stable react-native-reanimated v1.
 
 ```
 # This exact version is supported:
-npm install react-native-reanimated@2.0.0-alpha.6.1
+npm install react-native-reanimated@2.0.0-alpha.9
 ```
 
 Finally, you'll need to add the babel plugin to `babel.config.js`:
@@ -57,14 +45,14 @@ Note that when you run the project you will get a warning about an incompatible 
 
 ```
 Some of your project's dependencies are not compatible with currently installed expo package version:
- - react-native-reanimated - expected version range: ~1.13.0 - actual version installed: 2.0.0-alpha.6.1
+ - react-native-reanimated - expected version range: ~1.13.0 - actual version installed: 2.0.0-alpha.9
 ```
 
 You can ignore this, as you are intentionally opting in to an experimental feature.
 
 ## API Usage
 
-You should refer to the [react-native-reanimated docs](https://docs.swmansion.com/react-native-reanimated/docs/2.0.0-alpha.7/) for more information on the API and its usage. But the following example (courtesy of that repo) is a quick way to get started.
+You should refer to the [react-native-reanimated docs](https://docs.swmansion.com/react-native-reanimated/docs/2.0.0-alpha.8/) for more information on the API and its usage. But the following example (courtesy of that repo) is a quick way to get started.
 
 ```js
 import React from 'react';
