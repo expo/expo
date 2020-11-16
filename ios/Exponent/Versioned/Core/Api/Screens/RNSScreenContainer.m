@@ -21,8 +21,39 @@
 
 @end
 
+@implementation RNScreensViewController
+
+- (UIViewController *)childViewControllerForStatusBarStyle
+{
+  return [self findActiveChildVC];
+}
+
+- (UIStatusBarAnimation)preferredStatusBarUpdateAnimation
+{
+  return [self findActiveChildVC].preferredStatusBarUpdateAnimation;
+}
+
+- (UIViewController *)childViewControllerForStatusBarHidden
+{
+  return [self findActiveChildVC];
+
+}
+
+- (UIViewController *)findActiveChildVC
+{
+  for (UIViewController *childVC in self.childViewControllers) {
+    if ([childVC isKindOfClass:[RNSScreen class]] && ((RNSScreenView *)((RNSScreen *)childVC.view)).activityState == RNSActivityStateOnTop) {
+      return childVC;
+    }
+  }
+  return [[self childViewControllers] lastObject];
+}
+
+@end
+
 @implementation RNSScreenContainerView {
   BOOL _needUpdate;
+  BOOL _invalidated;
   __weak RNSScreenContainerManager *_manager;
 }
 
@@ -31,8 +62,9 @@
   if (self = [super init]) {
     _activeScreens = [NSMutableSet new];
     _reactSubviews = [NSMutableArray new];
-    _controller = [[UIViewController alloc] init];
+    _controller = [[RNScreensViewController alloc] init];
     _needUpdate = NO;
+    _invalidated = NO;
     _manager = manager;
     [self addSubview:_controller.view];
   }
@@ -115,42 +147,39 @@
 - (void)updateContainer
 {
   _needUpdate = NO;
-  BOOL activeScreenRemoved = NO;
+  BOOL screenRemoved = NO;
   // remove screens that are no longer active
   NSMutableSet *orphaned = [NSMutableSet setWithSet:_activeScreens];
   for (RNSScreenView *screen in _reactSubviews) {
-    if (!screen.active && [_activeScreens containsObject:screen]) {
-      activeScreenRemoved = YES;
+    if (screen.activityState == RNSActivityStateInactive && [_activeScreens containsObject:screen]) {
+      screenRemoved = YES;
       [self detachScreen:screen];
     }
     [orphaned removeObject:screen];
   }
   for (RNSScreenView *screen in orphaned) {
-    activeScreenRemoved = YES;
+    screenRemoved = YES;
     [self detachScreen:screen];
   }
 
   // detect if new screen is going to be activated
-  BOOL activeScreenAdded = NO;
+  BOOL screenAdded = NO;
   for (RNSScreenView *screen in _reactSubviews) {
-    if (screen.active && ![_activeScreens containsObject:screen]) {
-      activeScreenAdded = YES;
+    if (screen.activityState != RNSActivityStateInactive && ![_activeScreens containsObject:screen]) {
+      screenAdded = YES;
     }
   }
 
-
-  if (activeScreenAdded) {
+  if (screenAdded) {
     // add new screens in order they are placed in subviews array
     NSInteger index = 0;
     for (RNSScreenView *screen in _reactSubviews) {
-      if (screen.active) {
-        if ([_activeScreens containsObject:screen]) {
+      if (screen.activityState != RNSActivityStateInactive) {
+        if ([_activeScreens containsObject:screen] && screen.activityState == RNSActivityStateTransitioningOrBelowTop) {
           // for screens that were already active we want to mimick the effect UINavigationController
           // has when willMoveToWindow:nil is triggered before the animation starts
           [self prepareDetach:screen];
-          // disable interactions for the duration of transition
-          screen.userInteractionEnabled = NO;
-        } else {
+        } else if (![_activeScreens containsObject:screen]) {
           [self attachScreen:screen atIndex:index];
         }
         index += 1;
@@ -158,16 +187,20 @@
     }
   }
 
-  // if we are down to one active screen it means the transitioning is over and we want to notify
-  // the transition has finished
-  if ((activeScreenRemoved || activeScreenAdded) && _activeScreens.count == 1) {
-    RNSScreenView *singleActiveScreen = [_activeScreens anyObject];
-    // restore interactions
-    singleActiveScreen.userInteractionEnabled = YES;
-    [singleActiveScreen notifyFinishTransitioning];
+  if (screenRemoved || screenAdded) {
+    // we disable interaction for the duration of the transition until one of the screens changes its state to "onTop"
+    self.userInteractionEnabled = NO;
+    
+    for (RNSScreenView *screen in _reactSubviews) {
+      if (screen.activityState == RNSActivityStateOnTop) {
+        // if there is an "onTop" screen it means the transition has ended so we restore interactions
+        self.userInteractionEnabled = YES;
+        [screen notifyFinishTransitioning];
+      }
+    }
   }
 
-  if ((activeScreenRemoved || activeScreenAdded) && _controller.presentedViewController == nil) {
+  if ((screenRemoved || screenAdded) && _controller.presentedViewController == nil && _controller.presentingViewController == nil) {
     // if user has reachability enabled (one hand use) and the window is slided down the below
     // method will force it to slide back up as it is expected to happen with UINavController when
     // we push or pop views.
@@ -185,13 +218,17 @@
 
 - (void)didMoveToWindow
 {
-  if (self.window) {
+  if (self.window && !_invalidated) {
+    // We check whether the view has been invalidated before running side-effects in didMoveToWindow
+    // This is needed because when LayoutAnimations are used it is possible for view to be re-attached
+    // to a window despite the fact it has been removed from the React Native view hierarchy.
     [self reactAddControllerToClosestParent:_controller];
   }
 }
 
 - (void)invalidate
 {
+  _invalidated = YES;
   [_controller willMoveToParentViewController:nil];
   [_controller removeFromParentViewController];
 }
