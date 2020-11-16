@@ -13,9 +13,6 @@
 
   > Note that this change most probably will not affect you — it only affects projects that override those methods to implement some custom handling logic.
 - Removed `removeAllNotificationListeners` method. You can (and should) still remove listeners using `remove` method on `Subscription` objects returned by `addNotification…Listener`. ([#10883](https://github.com/expo/expo/pull/10883) by [@sjchmiela](https://github.com/sjchmiela))
-- Added a peer dependency on `react-native@>=0.20.0`. ([#10811](https://github.com/expo/expo/pull/10811) by [@sjchmiela](https://github.com/sjchmiela))
-
-  > Note that this change most probably will not affect you — it only affects projects that use unimodules and this library without React Native which is not possible without some serious gymnastics.
 
 ### 🎉 New features
 
