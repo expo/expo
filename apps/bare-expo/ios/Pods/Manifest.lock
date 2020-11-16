@@ -129,7 +129,7 @@ PODS:
     - UMCore
     - UMFileSystemInterface
   - EXMediaLibrary (9.2.1):
-    - React
+    - React-Core
     - UMCore
     - UMFileSystemInterface
     - UMPermissionsInterface
@@ -145,13 +145,13 @@ PODS:
     - EXDevMenuInterface
     - React
   - expo-image (1.0.0-alpha.0):
-    - React
+    - React-Core
     - SDWebImage (~> 5.0)
   - EXPrint (9.1.0):
     - UMCore
     - UMFileSystemInterface
   - EXRandom (9.0.1):
-    - React
+    - React-Core
   - EXScreenCapture (1.1.1):
     - UMCore
   - EXScreenOrientation (2.0.0):
@@ -1085,14 +1085,14 @@ SPEC CHECKSUMS:
   EXLocalization: 8621f60b37c3d3ad8c8e27c2cb3b05ebc7b484a2
   EXLocation: 90232c6f2773b04a3c146bfda9f181035722c10a
   EXMailComposer: 7436a0388652ee26b11b74d3c23180cadc000a45
-  EXMediaLibrary: 3405a3c4e211f8a7e781da29f8c33017a616bcea
+  EXMediaLibrary: bff66d1821aeb1423b4562481256c295a77e9a6e
   EXNetwork: 6e8985339002bec4a64d15c0a7dcdd52e1bd06fd
   EXNotifications: 5a3455826efe22e8292e0c530c19ff24aff2ea64
   EXPermissions: 30cbe5b72bd209b65c00884180ad058a60bb413d
   expo-development-client: 5fb69bff52bfa142fce610a6917e22f610bc12f7
-  expo-image: 36f53fe2845e4bb74021f69192a752db29766897
+  expo-image: dc52ebb150b98a54d6023cd7448141e7366598d0
   EXPrint: 969e4d8514319a74405b015cd0bf6023dcdf4b00
-  EXRandom: 10419e13e311477711fa4bfc5e560e690ff6667b
+  EXRandom: a1b22f907689a3e837590ac5e16ea36584995789
   EXScreenCapture: cb33de21768c77375ec37ab744a0f4ba4c9caec2
   EXScreenOrientation: ef41f872118aadb548fa20b8ad3c867c38c4d0a4
   EXSecureStore: 579cbccd9cd093e6f4336aba073b059008bd78e0

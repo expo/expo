@@ -30,7 +30,7 @@ Pod::Spec.new do |s|
     ss.exclude_files = "Exponent/Supporting/**", "Exponent/Versioned/Optional/**/*.{h,m}"
 
 ${IOS_EXPOKIT_DEPS}
-    ss.dependency 'React' # explicit dependency required for CocoaPods >= 1.5.0
+    ss.dependency 'React-Core' # explicit dependency required for CocoaPods >= 1.5.0
 
     # Universal modules required by ExpoKit so the code compiles
     ss.dependency 'UMCore'
