@@ -5,9 +5,11 @@
 #include <react/jni/CxxModuleWrapper.h>
 #include <react/jni/JMessageQueueThread.h>
 #include <react/jni/WritableNativeMap.h>
+#include "NativeReanimatedModule.h"
 #include <ReactCommon/CallInvokerHolder.h>
 #include <memory>
 #include <unordered_map>
+
 
 #include "Scheduler.h"
 #include "AndroidScheduler.h"
@@ -89,9 +91,11 @@ class NativeProxy : public jni::HybridClass<NativeProxy> {
   jni::global_ref<NativeProxy::javaobject> javaPart_;
   jsi::Runtime *runtime_;
   std::shared_ptr<facebook::react::CallInvoker> jsCallInvoker_;
+  std::shared_ptr<NativeReanimatedModule> _nativeReanimatedModule;
   std::shared_ptr<Scheduler> scheduler_;
 
   void installJSIBindings();
+  bool isAnyHandlerWaitingForEvent(std::string);
   void requestRender(std::function<void(double)> onRender);
   void registerEventHandler(std::function<void(std::string,std::string)> handler);
   void updateProps(jsi::Runtime &rt, int viewTag, const jsi::Object &props);
