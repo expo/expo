@@ -638,7 +638,7 @@ Client code which works with this service:
 
 ```js
 const authServiceUrl = encodeURIComponent(YOUR_AUTH_URL); // we encode this, because it will be send as a query parameter
-const authServiceUrlParameter = `authServiceUrl=${authUrl}`;
+const authServiceUrlParameter = `authServiceUrl=${authServiceUrl}`;
 const authUrl = `YOUR_PROXY_SERVICE_URL?${authServiceUrlParameter}`;
 const result = await AuthSession.startAsync({
   authUrl,
