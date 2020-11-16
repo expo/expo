@@ -1,4 +1,3 @@
-import { EventEmitter } from 'fbemitter';
 import React from 'react';
 
 import NativeAppLoading from './AppLoadingNativeWrapper';
@@ -46,7 +45,6 @@ export default class AppLoading extends React.Component<Props> {
 
   componentDidMount() {
     this._isMounted = true;
-    emitEvent('componentDidMount');
 
     this.startLoadingAppResourcesAsync().catch(error => {
       console.error(`AppLoading threw an unexpected error when loading:\n${error.stack}`);
@@ -55,7 +53,6 @@ export default class AppLoading extends React.Component<Props> {
 
   componentWillUnmount() {
     this._isMounted = false;
-    emitEvent('componentWillUnmount');
   }
 
   private async startLoadingAppResourcesAsync() {
@@ -90,19 +87,4 @@ export default class AppLoading extends React.Component<Props> {
   render() {
     return <NativeAppLoading {...this.props} />;
   }
-}
-
-let lifecycleEmitter: EventEmitter | null = null;
-
-function emitEvent(event: string) {
-  if (lifecycleEmitter) {
-    lifecycleEmitter.emit(event);
-  }
-}
-
-export function getAppLoadingLifecycleEmitter(): EventEmitter {
-  if (!lifecycleEmitter) {
-    lifecycleEmitter = new EventEmitter();
-  }
-  return lifecycleEmitter;
 }
