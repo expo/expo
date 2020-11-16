@@ -1,5 +1,5 @@
 import * as SecureStore from 'expo-secure-store';
-import uuidv4 from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 const INSTALLATION_ID_KEY = 'installationId';
 export default async function getInstallationIdAsync() {
     const existingInstallationId = await SecureStore.getItemAsync(INSTALLATION_ID_KEY);
