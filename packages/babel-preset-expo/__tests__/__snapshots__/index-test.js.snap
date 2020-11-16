@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`"lazyImports" option accepts ["inline-comp", "./inline-func", "../inline-func-with-side-effects.fx.ts"] 1`] = `
-"var _interopRequireDefault=require(\\"@babel/runtime/helpers/interopRequireDefault\\");var _interopRequireWildcard=require(\\"@babel/runtime/helpers/interopRequireWildcard\\");Object.defineProperty(exports,\\"__esModule\\",{value:true});exports.default=void 0;var _classCallCheck2=_interopRequireDefault(require(\\"@babel/runtime/helpers/classCallCheck\\"));var _createClass2=_interopRequireDefault(require(\\"@babel/runtime/helpers/createClass\\"));var _inherits2=_interopRequireDefault(require(\\"@babel/runtime/helpers/inherits\\"));var _possibleConstructorReturn2=_interopRequireDefault(require(\\"@babel/runtime/helpers/possibleConstructorReturn\\"));var _getPrototypeOf2=_interopRequireDefault(require(\\"@babel/runtime/helpers/getPrototypeOf\\"));var _vectorIcons=require(\\"@expo/vector-icons\\");
+"var _interopRequireWildcard=require(\\"@babel/runtime/helpers/interopRequireWildcard\\");var _interopRequireDefault=require(\\"@babel/runtime/helpers/interopRequireDefault\\");Object.defineProperty(exports,\\"__esModule\\",{value:true});exports.default=void 0;var _classCallCheck2=_interopRequireDefault(require(\\"@babel/runtime/helpers/classCallCheck\\"));var _createClass2=_interopRequireDefault(require(\\"@babel/runtime/helpers/createClass\\"));var _inherits2=_interopRequireDefault(require(\\"@babel/runtime/helpers/inherits\\"));var _possibleConstructorReturn2=_interopRequireDefault(require(\\"@babel/runtime/helpers/possibleConstructorReturn\\"));var _getPrototypeOf2=_interopRequireDefault(require(\\"@babel/runtime/helpers/getPrototypeOf\\"));var _vectorIcons=require(\\"@expo/vector-icons\\");
 var Boo=_interopRequireWildcard(require(\\"Boo\\"));
-var _expo=require(\\"expo\\");
+var _expoAppLoading=_interopRequireDefault(require(\\"expo-app-loading\\"));
 var _expoAsset=require(\\"expo-asset\\");
 var _fooView=_interopRequireDefault(require(\\"foo-view\\"));
 function _inlineComp(){var data=_interopRequireDefault(require(\\"inline-comp\\"));_inlineComp=function _inlineComp(){return data;};return data;}
@@ -15,10 +15,9 @@ require(\\"Foo\\");
 require(\\"./local-file/i-have-side-effects.fx.js\\");
 require(\\"../i-also-have-side-effects.fx\\");
 function _inlineFuncWithSideEffectsFx(){var data=_interopRequireDefault(require(\\"../inline-func-with-side-effects.fx.ts\\"));_inlineFuncWithSideEffectsFx=function _inlineFuncWithSideEffectsFx(){return data;};return data;}
-function _inlineFunc(){var data=_interopRequireDefault(require(\\"./inline-func\\"));_inlineFunc=function _inlineFunc(){return data;};return data;}var _dec,_class;function _createSuper(Derived){var hasNativeReflectConstruct=_isNativeReflectConstruct();return function _createSuperInternal(){var Super=(0,_getPrototypeOf2.default)(Derived),result;if(hasNativeReflectConstruct){var NewTarget=(0,_getPrototypeOf2.default)(this).constructor;result=Reflect.construct(Super,arguments,NewTarget);}else{result=Super.apply(this,arguments);}return(0,_possibleConstructorReturn2.default)(this,result);};}function _isNativeReflectConstruct(){if(typeof Reflect===\\"undefined\\"||!Reflect.construct)return false;if(Reflect.construct.sham)return false;if(typeof Proxy===\\"function\\")return true;try{Date.prototype.toString.call(Reflect.construct(Date,[],function(){}));return true;}catch(e){return false;}}var
+function _inlineFunc(){var data=_interopRequireDefault(require(\\"./inline-func\\"));_inlineFunc=function _inlineFunc(){return data;};return data;}function _createSuper(Derived){var hasNativeReflectConstruct=_isNativeReflectConstruct();return function _createSuperInternal(){var Super=(0,_getPrototypeOf2.default)(Derived),result;if(hasNativeReflectConstruct){var NewTarget=(0,_getPrototypeOf2.default)(this).constructor;result=Reflect.construct(Super,arguments,NewTarget);}else{result=Super.apply(this,arguments);}return(0,_possibleConstructorReturn2.default)(this,result);};}function _isNativeReflectConstruct(){if(typeof Reflect===\\"undefined\\"||!Reflect.construct)return false;if(Reflect.construct.sham)return false;if(typeof Proxy===\\"function\\")return true;try{Date.prototype.toString.call(Reflect.construct(Date,[],function(){}));return true;}catch(e){return false;}}var
 
-
-Lazy=(_dec=(0,_reactRedux.connect)(),_dec(_class=function(_React$Component){(0,_inherits2.default)(Lazy,_React$Component);var _super=_createSuper(Lazy);function Lazy(){(0,_classCallCheck2.default)(this,Lazy);return _super.apply(this,arguments);}(0,_createClass2.default)(Lazy,[{key:\\"componentDidMount\\",value:function componentDidMount()
+Lazy=function(_React$Component){(0,_inherits2.default)(Lazy,_React$Component);var _super=_createSuper(Lazy);function Lazy(){(0,_classCallCheck2.default)(this,Lazy);return _super.apply(this,arguments);}(0,_createClass2.default)(Lazy,[{key:\\"componentDidMount\\",value:function componentDidMount()
 {
 console.log('Calling InlineFuncFromPackage()');
 (0,_inlineComp().default)();
@@ -35,7 +34,7 @@ _expoAsset.Asset.loadAsync([require(\\"./assets/icon.png\\")]);
 {
 return(
 _react.default.createElement(_reactNative.View,null,
-_react.default.createElement(_expo.AppLoading,null),
+_react.default.createElement(_expoAppLoading.default,null),
 _react.default.createElement(_vectorIcons.Ionicons,{name:\\"md-options\\",size:28}),
 _react.default.createElement(_fooView.default,null)));
 
@@ -44,16 +43,16 @@ _react.default.createElement(_fooView.default,null)));
 
 {
 (0,_inlineFuncWithSideEffectsFx().default)();
-}}]);return Lazy;}(_react.default.Component))||_class);var _default=
+}}]);return Lazy;}(_react.default.Component);var _default=
 
 
-Lazy;exports.default=_default;"
+(0,_reactRedux.connect)()(Lazy);exports.default=_default;"
 `;
 
 exports[`"lazyImports" option accepts [Function anonymous] 1`] = `
-"var _interopRequireDefault=require(\\"@babel/runtime/helpers/interopRequireDefault\\");var _interopRequireWildcard=require(\\"@babel/runtime/helpers/interopRequireWildcard\\");Object.defineProperty(exports,\\"__esModule\\",{value:true});exports.default=void 0;function _classCallCheck2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/classCallCheck\\"));_classCallCheck2=function _classCallCheck2(){return data;};return data;}function _createClass2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/createClass\\"));_createClass2=function _createClass2(){return data;};return data;}function _inherits2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/inherits\\"));_inherits2=function _inherits2(){return data;};return data;}function _possibleConstructorReturn2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/possibleConstructorReturn\\"));_possibleConstructorReturn2=function _possibleConstructorReturn2(){return data;};return data;}function _getPrototypeOf2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/getPrototypeOf\\"));_getPrototypeOf2=function _getPrototypeOf2(){return data;};return data;}function _vectorIcons(){var data=require(\\"@expo/vector-icons\\");_vectorIcons=function _vectorIcons(){return data;};return data;}
+"var _interopRequireWildcard=require(\\"@babel/runtime/helpers/interopRequireWildcard\\");var _interopRequireDefault=require(\\"@babel/runtime/helpers/interopRequireDefault\\");Object.defineProperty(exports,\\"__esModule\\",{value:true});exports.default=void 0;function _classCallCheck2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/classCallCheck\\"));_classCallCheck2=function _classCallCheck2(){return data;};return data;}function _createClass2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/createClass\\"));_createClass2=function _createClass2(){return data;};return data;}function _inherits2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/inherits\\"));_inherits2=function _inherits2(){return data;};return data;}function _possibleConstructorReturn2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/possibleConstructorReturn\\"));_possibleConstructorReturn2=function _possibleConstructorReturn2(){return data;};return data;}function _getPrototypeOf2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/getPrototypeOf\\"));_getPrototypeOf2=function _getPrototypeOf2(){return data;};return data;}function _vectorIcons(){var data=require(\\"@expo/vector-icons\\");_vectorIcons=function _vectorIcons(){return data;};return data;}
 function Boo(){var data=_interopRequireWildcard(require(\\"Boo\\"));Boo=function Boo(){return data;};return data;}
-function _expo(){var data=require(\\"expo\\");_expo=function _expo(){return data;};return data;}
+function _expoAppLoading(){var data=_interopRequireDefault(require(\\"expo-app-loading\\"));_expoAppLoading=function _expoAppLoading(){return data;};return data;}
 function _expoAsset(){var data=require(\\"expo-asset\\");_expoAsset=function _expoAsset(){return data;};return data;}
 function _fooView(){var data=_interopRequireDefault(require(\\"foo-view\\"));_fooView=function _fooView(){return data;};return data;}
 function _inlineComp(){var data=_interopRequireDefault(require(\\"inline-comp\\"));_inlineComp=function _inlineComp(){return data;};return data;}
@@ -65,10 +64,9 @@ require(\\"Foo\\");
 require(\\"./local-file/i-have-side-effects.fx.js\\");
 require(\\"../i-also-have-side-effects.fx\\");
 var _inlineFuncWithSideEffectsFx=_interopRequireDefault(require(\\"../inline-func-with-side-effects.fx.ts\\"));
-function _inlineFunc(){var data=_interopRequireDefault(require(\\"./inline-func\\"));_inlineFunc=function _inlineFunc(){return data;};return data;}var _dec,_class;function _createSuper(Derived){var hasNativeReflectConstruct=_isNativeReflectConstruct();return function _createSuperInternal(){var Super=(0,_getPrototypeOf2().default)(Derived),result;if(hasNativeReflectConstruct){var NewTarget=(0,_getPrototypeOf2().default)(this).constructor;result=Reflect.construct(Super,arguments,NewTarget);}else{result=Super.apply(this,arguments);}return(0,_possibleConstructorReturn2().default)(this,result);};}function _isNativeReflectConstruct(){if(typeof Reflect===\\"undefined\\"||!Reflect.construct)return false;if(Reflect.construct.sham)return false;if(typeof Proxy===\\"function\\")return true;try{Date.prototype.toString.call(Reflect.construct(Date,[],function(){}));return true;}catch(e){return false;}}var
+function _inlineFunc(){var data=_interopRequireDefault(require(\\"./inline-func\\"));_inlineFunc=function _inlineFunc(){return data;};return data;}function _createSuper(Derived){var hasNativeReflectConstruct=_isNativeReflectConstruct();return function _createSuperInternal(){var Super=(0,_getPrototypeOf2().default)(Derived),result;if(hasNativeReflectConstruct){var NewTarget=(0,_getPrototypeOf2().default)(this).constructor;result=Reflect.construct(Super,arguments,NewTarget);}else{result=Super.apply(this,arguments);}return(0,_possibleConstructorReturn2().default)(this,result);};}function _isNativeReflectConstruct(){if(typeof Reflect===\\"undefined\\"||!Reflect.construct)return false;if(Reflect.construct.sham)return false;if(typeof Proxy===\\"function\\")return true;try{Date.prototype.toString.call(Reflect.construct(Date,[],function(){}));return true;}catch(e){return false;}}var
 
-
-Lazy=(_dec=(0,_reactRedux().connect)(),_dec(_class=function(_React$Component){(0,_inherits2().default)(Lazy,_React$Component);var _super=_createSuper(Lazy);function Lazy(){(0,_classCallCheck2().default)(this,Lazy);return _super.apply(this,arguments);}(0,_createClass2().default)(Lazy,[{key:\\"componentDidMount\\",value:function componentDidMount()
+Lazy=function(_React$Component){(0,_inherits2().default)(Lazy,_React$Component);var _super=_createSuper(Lazy);function Lazy(){(0,_classCallCheck2().default)(this,Lazy);return _super.apply(this,arguments);}(0,_createClass2().default)(Lazy,[{key:\\"componentDidMount\\",value:function componentDidMount()
 {
 console.log('Calling InlineFuncFromPackage()');
 (0,_inlineComp().default)();
@@ -85,7 +83,7 @@ _expoAsset().Asset.loadAsync([require(\\"./assets/icon.png\\")]);
 {
 return(
 _react().default.createElement(_reactNative().View,null,
-_react().default.createElement(_expo().AppLoading,null),
+_react().default.createElement(_expoAppLoading().default,null),
 _react().default.createElement(_vectorIcons().Ionicons,{name:\\"md-options\\",size:28}),
 _react().default.createElement(_fooView().default,null)));
 
@@ -94,16 +92,16 @@ _react().default.createElement(_fooView().default,null)));
 
 {
 (0,_inlineFuncWithSideEffectsFx.default)();
-}}]);return Lazy;}(_react().default.Component))||_class);var _default=
+}}]);return Lazy;}(_react().default.Component);var _default=
 
 
-Lazy;exports.default=_default;"
+(0,_reactRedux().connect)()(Lazy);exports.default=_default;"
 `;
 
 exports[`"lazyImports" option accepts false 1`] = `
-"var _interopRequireDefault=require(\\"@babel/runtime/helpers/interopRequireDefault\\");var _interopRequireWildcard=require(\\"@babel/runtime/helpers/interopRequireWildcard\\");Object.defineProperty(exports,\\"__esModule\\",{value:true});exports.default=void 0;var _classCallCheck2=_interopRequireDefault(require(\\"@babel/runtime/helpers/classCallCheck\\"));var _createClass2=_interopRequireDefault(require(\\"@babel/runtime/helpers/createClass\\"));var _inherits2=_interopRequireDefault(require(\\"@babel/runtime/helpers/inherits\\"));var _possibleConstructorReturn2=_interopRequireDefault(require(\\"@babel/runtime/helpers/possibleConstructorReturn\\"));var _getPrototypeOf2=_interopRequireDefault(require(\\"@babel/runtime/helpers/getPrototypeOf\\"));var _vectorIcons=require(\\"@expo/vector-icons\\");
+"var _interopRequireWildcard=require(\\"@babel/runtime/helpers/interopRequireWildcard\\");var _interopRequireDefault=require(\\"@babel/runtime/helpers/interopRequireDefault\\");Object.defineProperty(exports,\\"__esModule\\",{value:true});exports.default=void 0;var _classCallCheck2=_interopRequireDefault(require(\\"@babel/runtime/helpers/classCallCheck\\"));var _createClass2=_interopRequireDefault(require(\\"@babel/runtime/helpers/createClass\\"));var _inherits2=_interopRequireDefault(require(\\"@babel/runtime/helpers/inherits\\"));var _possibleConstructorReturn2=_interopRequireDefault(require(\\"@babel/runtime/helpers/possibleConstructorReturn\\"));var _getPrototypeOf2=_interopRequireDefault(require(\\"@babel/runtime/helpers/getPrototypeOf\\"));var _vectorIcons=require(\\"@expo/vector-icons\\");
 var Boo=_interopRequireWildcard(require(\\"Boo\\"));
-var _expo=require(\\"expo\\");
+var _expoAppLoading=_interopRequireDefault(require(\\"expo-app-loading\\"));
 var _expoAsset=require(\\"expo-asset\\");
 var _fooView=_interopRequireDefault(require(\\"foo-view\\"));
 var _inlineComp=_interopRequireDefault(require(\\"inline-comp\\"));
@@ -115,10 +113,9 @@ require(\\"Foo\\");
 require(\\"./local-file/i-have-side-effects.fx.js\\");
 require(\\"../i-also-have-side-effects.fx\\");
 var _inlineFuncWithSideEffectsFx=_interopRequireDefault(require(\\"../inline-func-with-side-effects.fx.ts\\"));
-var _inlineFunc=_interopRequireDefault(require(\\"./inline-func\\"));var _dec,_class;function _createSuper(Derived){var hasNativeReflectConstruct=_isNativeReflectConstruct();return function _createSuperInternal(){var Super=(0,_getPrototypeOf2.default)(Derived),result;if(hasNativeReflectConstruct){var NewTarget=(0,_getPrototypeOf2.default)(this).constructor;result=Reflect.construct(Super,arguments,NewTarget);}else{result=Super.apply(this,arguments);}return(0,_possibleConstructorReturn2.default)(this,result);};}function _isNativeReflectConstruct(){if(typeof Reflect===\\"undefined\\"||!Reflect.construct)return false;if(Reflect.construct.sham)return false;if(typeof Proxy===\\"function\\")return true;try{Date.prototype.toString.call(Reflect.construct(Date,[],function(){}));return true;}catch(e){return false;}}var
+var _inlineFunc=_interopRequireDefault(require(\\"./inline-func\\"));function _createSuper(Derived){var hasNativeReflectConstruct=_isNativeReflectConstruct();return function _createSuperInternal(){var Super=(0,_getPrototypeOf2.default)(Derived),result;if(hasNativeReflectConstruct){var NewTarget=(0,_getPrototypeOf2.default)(this).constructor;result=Reflect.construct(Super,arguments,NewTarget);}else{result=Super.apply(this,arguments);}return(0,_possibleConstructorReturn2.default)(this,result);};}function _isNativeReflectConstruct(){if(typeof Reflect===\\"undefined\\"||!Reflect.construct)return false;if(Reflect.construct.sham)return false;if(typeof Proxy===\\"function\\")return true;try{Date.prototype.toString.call(Reflect.construct(Date,[],function(){}));return true;}catch(e){return false;}}var
 
-
-Lazy=(_dec=(0,_reactRedux.connect)(),_dec(_class=function(_React$Component){(0,_inherits2.default)(Lazy,_React$Component);var _super=_createSuper(Lazy);function Lazy(){(0,_classCallCheck2.default)(this,Lazy);return _super.apply(this,arguments);}(0,_createClass2.default)(Lazy,[{key:\\"componentDidMount\\",value:function componentDidMount()
+Lazy=function(_React$Component){(0,_inherits2.default)(Lazy,_React$Component);var _super=_createSuper(Lazy);function Lazy(){(0,_classCallCheck2.default)(this,Lazy);return _super.apply(this,arguments);}(0,_createClass2.default)(Lazy,[{key:\\"componentDidMount\\",value:function componentDidMount()
 {
 console.log('Calling InlineFuncFromPackage()');
 (0,_inlineComp.default)();
@@ -135,7 +132,7 @@ _expoAsset.Asset.loadAsync([require(\\"./assets/icon.png\\")]);
 {
 return(
 _react.default.createElement(_reactNative.View,null,
-_react.default.createElement(_expo.AppLoading,null),
+_react.default.createElement(_expoAppLoading.default,null),
 _react.default.createElement(_vectorIcons.Ionicons,{name:\\"md-options\\",size:28}),
 _react.default.createElement(_fooView.default,null)));
 
@@ -144,16 +141,16 @@ _react.default.createElement(_fooView.default,null)));
 
 {
 (0,_inlineFuncWithSideEffectsFx.default)();
-}}]);return Lazy;}(_react.default.Component))||_class);var _default=
+}}]);return Lazy;}(_react.default.Component);var _default=
 
 
-Lazy;exports.default=_default;"
+(0,_reactRedux.connect)()(Lazy);exports.default=_default;"
 `;
 
 exports[`"lazyImports" option accepts null 1`] = `
-"var _interopRequireDefault=require(\\"@babel/runtime/helpers/interopRequireDefault\\");var _interopRequireWildcard=require(\\"@babel/runtime/helpers/interopRequireWildcard\\");Object.defineProperty(exports,\\"__esModule\\",{value:true});exports.default=void 0;var _classCallCheck2=_interopRequireDefault(require(\\"@babel/runtime/helpers/classCallCheck\\"));var _createClass2=_interopRequireDefault(require(\\"@babel/runtime/helpers/createClass\\"));var _inherits2=_interopRequireDefault(require(\\"@babel/runtime/helpers/inherits\\"));var _possibleConstructorReturn2=_interopRequireDefault(require(\\"@babel/runtime/helpers/possibleConstructorReturn\\"));var _getPrototypeOf2=_interopRequireDefault(require(\\"@babel/runtime/helpers/getPrototypeOf\\"));var _vectorIcons=require(\\"@expo/vector-icons\\");
+"var _interopRequireWildcard=require(\\"@babel/runtime/helpers/interopRequireWildcard\\");var _interopRequireDefault=require(\\"@babel/runtime/helpers/interopRequireDefault\\");Object.defineProperty(exports,\\"__esModule\\",{value:true});exports.default=void 0;var _classCallCheck2=_interopRequireDefault(require(\\"@babel/runtime/helpers/classCallCheck\\"));var _createClass2=_interopRequireDefault(require(\\"@babel/runtime/helpers/createClass\\"));var _inherits2=_interopRequireDefault(require(\\"@babel/runtime/helpers/inherits\\"));var _possibleConstructorReturn2=_interopRequireDefault(require(\\"@babel/runtime/helpers/possibleConstructorReturn\\"));var _getPrototypeOf2=_interopRequireDefault(require(\\"@babel/runtime/helpers/getPrototypeOf\\"));var _vectorIcons=require(\\"@expo/vector-icons\\");
 var Boo=_interopRequireWildcard(require(\\"Boo\\"));
-var _expo=require(\\"expo\\");
+var _expoAppLoading=_interopRequireDefault(require(\\"expo-app-loading\\"));
 var _expoAsset=require(\\"expo-asset\\");
 var _fooView=_interopRequireDefault(require(\\"foo-view\\"));
 var _inlineComp=_interopRequireDefault(require(\\"inline-comp\\"));
@@ -165,10 +162,9 @@ require(\\"Foo\\");
 require(\\"./local-file/i-have-side-effects.fx.js\\");
 require(\\"../i-also-have-side-effects.fx\\");
 var _inlineFuncWithSideEffectsFx=_interopRequireDefault(require(\\"../inline-func-with-side-effects.fx.ts\\"));
-var _inlineFunc=_interopRequireDefault(require(\\"./inline-func\\"));var _dec,_class;function _createSuper(Derived){var hasNativeReflectConstruct=_isNativeReflectConstruct();return function _createSuperInternal(){var Super=(0,_getPrototypeOf2.default)(Derived),result;if(hasNativeReflectConstruct){var NewTarget=(0,_getPrototypeOf2.default)(this).constructor;result=Reflect.construct(Super,arguments,NewTarget);}else{result=Super.apply(this,arguments);}return(0,_possibleConstructorReturn2.default)(this,result);};}function _isNativeReflectConstruct(){if(typeof Reflect===\\"undefined\\"||!Reflect.construct)return false;if(Reflect.construct.sham)return false;if(typeof Proxy===\\"function\\")return true;try{Date.prototype.toString.call(Reflect.construct(Date,[],function(){}));return true;}catch(e){return false;}}var
+var _inlineFunc=_interopRequireDefault(require(\\"./inline-func\\"));function _createSuper(Derived){var hasNativeReflectConstruct=_isNativeReflectConstruct();return function _createSuperInternal(){var Super=(0,_getPrototypeOf2.default)(Derived),result;if(hasNativeReflectConstruct){var NewTarget=(0,_getPrototypeOf2.default)(this).constructor;result=Reflect.construct(Super,arguments,NewTarget);}else{result=Super.apply(this,arguments);}return(0,_possibleConstructorReturn2.default)(this,result);};}function _isNativeReflectConstruct(){if(typeof Reflect===\\"undefined\\"||!Reflect.construct)return false;if(Reflect.construct.sham)return false;if(typeof Proxy===\\"function\\")return true;try{Date.prototype.toString.call(Reflect.construct(Date,[],function(){}));return true;}catch(e){return false;}}var
 
-
-Lazy=(_dec=(0,_reactRedux.connect)(),_dec(_class=function(_React$Component){(0,_inherits2.default)(Lazy,_React$Component);var _super=_createSuper(Lazy);function Lazy(){(0,_classCallCheck2.default)(this,Lazy);return _super.apply(this,arguments);}(0,_createClass2.default)(Lazy,[{key:\\"componentDidMount\\",value:function componentDidMount()
+Lazy=function(_React$Component){(0,_inherits2.default)(Lazy,_React$Component);var _super=_createSuper(Lazy);function Lazy(){(0,_classCallCheck2.default)(this,Lazy);return _super.apply(this,arguments);}(0,_createClass2.default)(Lazy,[{key:\\"componentDidMount\\",value:function componentDidMount()
 {
 console.log('Calling InlineFuncFromPackage()');
 (0,_inlineComp.default)();
@@ -185,7 +181,7 @@ _expoAsset.Asset.loadAsync([require(\\"./assets/icon.png\\")]);
 {
 return(
 _react.default.createElement(_reactNative.View,null,
-_react.default.createElement(_expo.AppLoading,null),
+_react.default.createElement(_expoAppLoading.default,null),
 _react.default.createElement(_vectorIcons.Ionicons,{name:\\"md-options\\",size:28}),
 _react.default.createElement(_fooView.default,null)));
 
@@ -194,16 +190,16 @@ _react.default.createElement(_fooView.default,null)));
 
 {
 (0,_inlineFuncWithSideEffectsFx.default)();
-}}]);return Lazy;}(_react.default.Component))||_class);var _default=
+}}]);return Lazy;}(_react.default.Component);var _default=
 
 
-Lazy;exports.default=_default;"
+(0,_reactRedux.connect)()(Lazy);exports.default=_default;"
 `;
 
 exports[`"lazyImports" option accepts true 1`] = `
-"var _interopRequireDefault=require(\\"@babel/runtime/helpers/interopRequireDefault\\");var _interopRequireWildcard=require(\\"@babel/runtime/helpers/interopRequireWildcard\\");Object.defineProperty(exports,\\"__esModule\\",{value:true});exports.default=void 0;function _classCallCheck2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/classCallCheck\\"));_classCallCheck2=function _classCallCheck2(){return data;};return data;}function _createClass2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/createClass\\"));_createClass2=function _createClass2(){return data;};return data;}function _inherits2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/inherits\\"));_inherits2=function _inherits2(){return data;};return data;}function _possibleConstructorReturn2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/possibleConstructorReturn\\"));_possibleConstructorReturn2=function _possibleConstructorReturn2(){return data;};return data;}function _getPrototypeOf2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/getPrototypeOf\\"));_getPrototypeOf2=function _getPrototypeOf2(){return data;};return data;}function _vectorIcons(){var data=require(\\"@expo/vector-icons\\");_vectorIcons=function _vectorIcons(){return data;};return data;}
+"var _interopRequireWildcard=require(\\"@babel/runtime/helpers/interopRequireWildcard\\");var _interopRequireDefault=require(\\"@babel/runtime/helpers/interopRequireDefault\\");Object.defineProperty(exports,\\"__esModule\\",{value:true});exports.default=void 0;function _classCallCheck2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/classCallCheck\\"));_classCallCheck2=function _classCallCheck2(){return data;};return data;}function _createClass2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/createClass\\"));_createClass2=function _createClass2(){return data;};return data;}function _inherits2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/inherits\\"));_inherits2=function _inherits2(){return data;};return data;}function _possibleConstructorReturn2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/possibleConstructorReturn\\"));_possibleConstructorReturn2=function _possibleConstructorReturn2(){return data;};return data;}function _getPrototypeOf2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/getPrototypeOf\\"));_getPrototypeOf2=function _getPrototypeOf2(){return data;};return data;}function _vectorIcons(){var data=require(\\"@expo/vector-icons\\");_vectorIcons=function _vectorIcons(){return data;};return data;}
 function Boo(){var data=_interopRequireWildcard(require(\\"Boo\\"));Boo=function Boo(){return data;};return data;}
-var _expo=require(\\"expo\\");
+function _expoAppLoading(){var data=_interopRequireDefault(require(\\"expo-app-loading\\"));_expoAppLoading=function _expoAppLoading(){return data;};return data;}
 var _expoAsset=require(\\"expo-asset\\");
 function _fooView(){var data=_interopRequireDefault(require(\\"foo-view\\"));_fooView=function _fooView(){return data;};return data;}
 function _inlineComp(){var data=_interopRequireDefault(require(\\"inline-comp\\"));_inlineComp=function _inlineComp(){return data;};return data;}
@@ -215,10 +211,9 @@ require(\\"Foo\\");
 require(\\"./local-file/i-have-side-effects.fx.js\\");
 require(\\"../i-also-have-side-effects.fx\\");
 var _inlineFuncWithSideEffectsFx=_interopRequireDefault(require(\\"../inline-func-with-side-effects.fx.ts\\"));
-var _inlineFunc=_interopRequireDefault(require(\\"./inline-func\\"));var _dec,_class;function _createSuper(Derived){var hasNativeReflectConstruct=_isNativeReflectConstruct();return function _createSuperInternal(){var Super=(0,_getPrototypeOf2().default)(Derived),result;if(hasNativeReflectConstruct){var NewTarget=(0,_getPrototypeOf2().default)(this).constructor;result=Reflect.construct(Super,arguments,NewTarget);}else{result=Super.apply(this,arguments);}return(0,_possibleConstructorReturn2().default)(this,result);};}function _isNativeReflectConstruct(){if(typeof Reflect===\\"undefined\\"||!Reflect.construct)return false;if(Reflect.construct.sham)return false;if(typeof Proxy===\\"function\\")return true;try{Date.prototype.toString.call(Reflect.construct(Date,[],function(){}));return true;}catch(e){return false;}}var
+var _inlineFunc=_interopRequireDefault(require(\\"./inline-func\\"));function _createSuper(Derived){var hasNativeReflectConstruct=_isNativeReflectConstruct();return function _createSuperInternal(){var Super=(0,_getPrototypeOf2().default)(Derived),result;if(hasNativeReflectConstruct){var NewTarget=(0,_getPrototypeOf2().default)(this).constructor;result=Reflect.construct(Super,arguments,NewTarget);}else{result=Super.apply(this,arguments);}return(0,_possibleConstructorReturn2().default)(this,result);};}function _isNativeReflectConstruct(){if(typeof Reflect===\\"undefined\\"||!Reflect.construct)return false;if(Reflect.construct.sham)return false;if(typeof Proxy===\\"function\\")return true;try{Date.prototype.toString.call(Reflect.construct(Date,[],function(){}));return true;}catch(e){return false;}}var
 
-
-Lazy=(_dec=(0,_reactRedux().connect)(),_dec(_class=function(_React$Component){(0,_inherits2().default)(Lazy,_React$Component);var _super=_createSuper(Lazy);function Lazy(){(0,_classCallCheck2().default)(this,Lazy);return _super.apply(this,arguments);}(0,_createClass2().default)(Lazy,[{key:\\"componentDidMount\\",value:function componentDidMount()
+Lazy=function(_React$Component){(0,_inherits2().default)(Lazy,_React$Component);var _super=_createSuper(Lazy);function Lazy(){(0,_classCallCheck2().default)(this,Lazy);return _super.apply(this,arguments);}(0,_createClass2().default)(Lazy,[{key:\\"componentDidMount\\",value:function componentDidMount()
 {
 console.log('Calling InlineFuncFromPackage()');
 (0,_inlineComp().default)();
@@ -235,7 +230,7 @@ _expoAsset.Asset.loadAsync([require(\\"./assets/icon.png\\")]);
 {
 return(
 _react().default.createElement(_reactNative().View,null,
-_react().default.createElement(_expo.AppLoading,null),
+_react().default.createElement(_expoAppLoading().default,null),
 _react().default.createElement(_vectorIcons().Ionicons,{name:\\"md-options\\",size:28}),
 _react().default.createElement(_fooView().default,null)));
 
@@ -244,10 +239,10 @@ _react().default.createElement(_fooView().default,null)));
 
 {
 (0,_inlineFuncWithSideEffectsFx.default)();
-}}]);return Lazy;}(_react().default.Component))||_class);var _default=
+}}]);return Lazy;}(_react().default.Component);var _default=
 
 
-Lazy;exports.default=_default;"
+(0,_reactRedux().connect)()(Lazy);exports.default=_default;"
 `;
 
 exports[`metro aliases @expo/vector-icons 1`] = `
