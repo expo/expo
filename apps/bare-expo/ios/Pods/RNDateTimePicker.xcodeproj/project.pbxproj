@@ -7,15 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		002D88A44FF2CF46891743B9E9A9E199 /* RNDateTimePickerManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F4D68803792265FF2DD72BA0FAD757DF /* RNDateTimePickerManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		116D5188C7D64BD9F21BAD50B13CAD54 /* RNDateTimePicker.h in Headers */ = {isa = PBXBuildFile; fileRef = 27612B8C1661EA10C2EFC99332246CCF /* RNDateTimePicker.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		3D85A30293D494B06AF0138A3162D6E3 /* RNDateTimePicker-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A08BB61514D901E1B159AB5FC6357C9 /* RNDateTimePicker-dummy.m */; };
-		57D3D2C71127BC5974446A3257379974 /* RNDateTimePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 84A900D00ED58E9FF91A2C4407572E90 /* RNDateTimePicker.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		747CE74B68172710303E77BC3FAA63C1 /* RNDateTimePickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C3158A5A15632761B916AFEB31ED1CC8 /* RNDateTimePickerManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		ABEC5979AAAA13F359DE968FFA0A6635 /* RNDateTimePickerManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F4D68803792265FF2DD72BA0FAD757DF /* RNDateTimePickerManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		ACC59BEB9F6A399B48598560B3350037 /* RNDateTimePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 84A900D00ED58E9FF91A2C4407572E90 /* RNDateTimePicker.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		C7AB77757E234B6346B5154FEDBFA019 /* RNDateTimePickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C3158A5A15632761B916AFEB31ED1CC8 /* RNDateTimePickerManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		C7BEB74BEC2A44B8FEA559C6CB470855 /* RNDateTimePicker.h in Headers */ = {isa = PBXBuildFile; fileRef = 27612B8C1661EA10C2EFC99332246CCF /* RNDateTimePicker.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		E872F9D3066B5A8D521CAF01DC4AEB2F /* RNDateTimePicker-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A08BB61514D901E1B159AB5FC6357C9 /* RNDateTimePicker-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		1F5EF195E910F641ED89EF3893E521D9 /* PBXContainerItemProxy */ = {
+		D97B8CA7F7600FEC96EC9B72663358C6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5F431D98F400C6FEC3CE7F0B231574BD /* React-Core.xcodeproj */;
 			proxyType = 1;
@@ -41,7 +41,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		917C3B5DC6A90CDE4BF045CF34CD573E /* Frameworks */ = {
+		05BAFFC5A28F13EEC85E79B97C625224 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -123,12 +123,12 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		DF4367B23D5E2256B0DC826E3965BEA9 /* Headers */ = {
+		9C9897AB818F271C752EC22A53C4D406 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				116D5188C7D64BD9F21BAD50B13CAD54 /* RNDateTimePicker.h in Headers */,
-				002D88A44FF2CF46891743B9E9A9E199 /* RNDateTimePickerManager.h in Headers */,
+				C7BEB74BEC2A44B8FEA559C6CB470855 /* RNDateTimePicker.h in Headers */,
+				ABEC5979AAAA13F359DE968FFA0A6635 /* RNDateTimePickerManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -137,16 +137,16 @@
 /* Begin PBXNativeTarget section */
 		862E1DA0F45BF8C82AA7330F871534CF /* RNDateTimePicker */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 4C45DE54AA079F8BFB3822AD3CED76A5 /* Build configuration list for PBXNativeTarget "RNDateTimePicker" */;
+			buildConfigurationList = FA07F8F06395D4C44C414931F270FB52 /* Build configuration list for PBXNativeTarget "RNDateTimePicker" */;
 			buildPhases = (
-				DF4367B23D5E2256B0DC826E3965BEA9 /* Headers */,
-				27B8A851D30C671B73CD9E8EDF54D101 /* Sources */,
-				917C3B5DC6A90CDE4BF045CF34CD573E /* Frameworks */,
+				9C9897AB818F271C752EC22A53C4D406 /* Headers */,
+				F72CAFD16D10E4AA9BE20E2802A52332 /* Sources */,
+				05BAFFC5A28F13EEC85E79B97C625224 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				28C1F7BEB9C7D6CC834F8AA51CD16B5F /* PBXTargetDependency */,
+				BA8A0DF7241D2C64B93385B34318BA7B /* PBXTargetDependency */,
 			);
 			name = RNDateTimePicker;
 			productName = RNDateTimePicker;
@@ -186,82 +186,32 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		27B8A851D30C671B73CD9E8EDF54D101 /* Sources */ = {
+		F72CAFD16D10E4AA9BE20E2802A52332 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3D85A30293D494B06AF0138A3162D6E3 /* RNDateTimePicker-dummy.m in Sources */,
-				57D3D2C71127BC5974446A3257379974 /* RNDateTimePicker.m in Sources */,
-				747CE74B68172710303E77BC3FAA63C1 /* RNDateTimePickerManager.m in Sources */,
+				E872F9D3066B5A8D521CAF01DC4AEB2F /* RNDateTimePicker-dummy.m in Sources */,
+				ACC59BEB9F6A399B48598560B3350037 /* RNDateTimePicker.m in Sources */,
+				C7AB77757E234B6346B5154FEDBFA019 /* RNDateTimePickerManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		28C1F7BEB9C7D6CC834F8AA51CD16B5F /* PBXTargetDependency */ = {
+		BA8A0DF7241D2C64B93385B34318BA7B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-Core";
-			targetProxy = 1F5EF195E910F641ED89EF3893E521D9 /* PBXContainerItemProxy */;
+			targetProxy = D97B8CA7F7600FEC96EC9B72663358C6 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		063B7DD10B2AFAB9F6C4C4A635E72CB5 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 056C10410C6328704DE08EA3B950FE9F /* RNDateTimePicker.release.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/RNDateTimePicker/RNDateTimePicker-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = RNDateTimePicker;
-				PRODUCT_NAME = RNDateTimePicker;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		274FC006679F0B8D9B1C6692A1308147 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 282CB33110240740B27CFE8B54B9CA21 /* RNDateTimePicker.debug.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/RNDateTimePicker/RNDateTimePicker-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = RNDateTimePicker;
-				PRODUCT_NAME = RNDateTimePicker;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		57A649E99CC170BE4C322E36D7E61874 /* Debug */ = {
+		137BF11B91D69E30094E2624E519C02E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -284,6 +234,69 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		953D0CB70E56B7B479410CF959A70EE2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -322,83 +335,72 @@
 			};
 			name = Debug;
 		};
-		F6A7469FD4BE3C3790183AB9F039812E /* Release */ = {
+		AA8DC199E7258A235EEFA4AAF233EFFF /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 282CB33110240740B27CFE8B54B9CA21 /* RNDateTimePicker.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"POD_CONFIGURATION_RELEASE=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/RNDateTimePicker/RNDateTimePicker-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RNDateTimePicker;
+				PRODUCT_NAME = RNDateTimePicker;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
-				SYMROOT = "${SRCROOT}/../build";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		DE377586500E37A6C97B50C3AFF49C5F /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 056C10410C6328704DE08EA3B950FE9F /* RNDateTimePicker.release.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/RNDateTimePicker/RNDateTimePicker-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RNDateTimePicker;
+				PRODUCT_NAME = RNDateTimePicker;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		4C45DE54AA079F8BFB3822AD3CED76A5 /* Build configuration list for PBXNativeTarget "RNDateTimePicker" */ = {
+		7BE22E92DA15A4B4533529482010FE38 /* Build configuration list for PBXProject "RNDateTimePicker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				274FC006679F0B8D9B1C6692A1308147 /* Debug */,
-				063B7DD10B2AFAB9F6C4C4A635E72CB5 /* Release */,
+				953D0CB70E56B7B479410CF959A70EE2 /* Debug */,
+				137BF11B91D69E30094E2624E519C02E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		7BE22E92DA15A4B4533529482010FE38 /* Build configuration list for PBXProject "RNDateTimePicker" */ = {
+		FA07F8F06395D4C44C414931F270FB52 /* Build configuration list for PBXNativeTarget "RNDateTimePicker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				57A649E99CC170BE4C322E36D7E61874 /* Debug */,
-				F6A7469FD4BE3C3790183AB9F039812E /* Release */,
+				AA8DC199E7258A235EEFA4AAF233EFFF /* Debug */,
+				DE377586500E37A6C97B50C3AFF49C5F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

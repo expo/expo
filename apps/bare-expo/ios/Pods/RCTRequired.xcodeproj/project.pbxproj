@@ -106,24 +106,27 @@
 /* End PBXProject section */
 
 /* Begin XCBuildConfiguration section */
-		362F539B5F70AF6BC956F12A691DBFD1 /* Debug */ = {
+		043B2BF3BBE00C80E0BAB209240F44AF /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3784930CCE8C2252C2F3F59B18CB696A /* RCTRequired.debug.xcconfig */;
+			baseConfigurationReference = 41828298124BD8E4446789B83DBD2F99 /* RCTRequired.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
-		6AFD94D50F9788D25E20EE2A9CEB8A36 /* Release */ = {
+		605B2B08196C10E19BD735F40B9254AE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -146,6 +149,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -180,10 +184,26 @@
 			};
 			name = Release;
 		};
-		B1CB7FE931A3DC65024C5F624EB43ECC /* Debug */ = {
+		D5A0BD5C955B1A36AD76B582A07E3500 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3784930CCE8C2252C2F3F59B18CB696A /* RCTRequired.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		F6D410D21986A8588B9CC9BFA501A282 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -206,6 +226,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -244,29 +265,14 @@
 			};
 			name = Debug;
 		};
-		F4229578D72FB1B88E4CABF2B2FBA6AF /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 41828298124BD8E4446789B83DBD2F99 /* RCTRequired.release.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		33A1A1040DF6CBB6EDED2DDE122D4072 /* Build configuration list for PBXProject "RCTRequired" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B1CB7FE931A3DC65024C5F624EB43ECC /* Debug */,
-				6AFD94D50F9788D25E20EE2A9CEB8A36 /* Release */,
+				F6D410D21986A8588B9CC9BFA501A282 /* Debug */,
+				605B2B08196C10E19BD735F40B9254AE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -274,8 +280,8 @@
 		825D4F966905EB9281D5DCEB44C60465 /* Build configuration list for PBXAggregateTarget "RCTRequired" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				362F539B5F70AF6BC956F12A691DBFD1 /* Debug */,
-				F4229578D72FB1B88E4CABF2B2FBA6AF /* Release */,
+				D5A0BD5C955B1A36AD76B582A07E3500 /* Debug */,
+				043B2BF3BBE00C80E0BAB209240F44AF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

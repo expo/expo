@@ -7,15 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		78D5DA2F905E25DDF86627A12A69F8FE /* RNCSegmentedControlManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 10D20B1798A9A6EF9591A68925BC4151 /* RNCSegmentedControlManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		C152E0098A0FDE2A2C99838284BC3330 /* RNCSegmentedControl.h in Headers */ = {isa = PBXBuildFile; fileRef = B2FC69E3FB976DD223BFACBB4FFB1A80 /* RNCSegmentedControl.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		DCA41A1BA4730DC7E1583D7562EEC10E /* react-native-segmented-control-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B5AD92F25D5545A3C02FE6A1E4F96F /* react-native-segmented-control-dummy.m */; };
-		F970BFE196635718671E8F8FFF74F02C /* RNCSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C0F250859FECA86922FEF9AF88F1B0C /* RNCSegmentedControl.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		FBEFBA7487F6F56151337ADD63CD18CA /* RNCSegmentedControlManager.h in Headers */ = {isa = PBXBuildFile; fileRef = EDE398C8EBC4753F034F7527A33D607E /* RNCSegmentedControlManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A67C8AB3238BBFF5F346D2B35D37867A /* RNCSegmentedControl.h in Headers */ = {isa = PBXBuildFile; fileRef = B2FC69E3FB976DD223BFACBB4FFB1A80 /* RNCSegmentedControl.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C63AB8F02E1B989F09FCB5879C79EB64 /* RNCSegmentedControlManager.h in Headers */ = {isa = PBXBuildFile; fileRef = EDE398C8EBC4753F034F7527A33D607E /* RNCSegmentedControlManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D84930ECB67C5437D99AC1E7097A48A0 /* RNCSegmentedControlManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 10D20B1798A9A6EF9591A68925BC4151 /* RNCSegmentedControlManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		EC6D090D5C2EB1220F9A639A4163D4C3 /* RNCSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C0F250859FECA86922FEF9AF88F1B0C /* RNCSegmentedControl.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		EF79BCE324CB36D733D728684B6E3F24 /* react-native-segmented-control-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B5AD92F25D5545A3C02FE6A1E4F96F /* react-native-segmented-control-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		B6B7D34A80CFB4073D806BEF7BE9FE2C /* PBXContainerItemProxy */ = {
+		2809C09F9E2E42C86A9F8B8453A9B030 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 56A627801D8EFE177E4795947870B99C /* React-Core.xcodeproj */;
 			proxyType = 1;
@@ -41,7 +41,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		BE3BDBC074449F96296F35E11A442F8A /* Frameworks */ = {
+		8D23C1DCC82B0E53032363AA747E2B22 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -123,12 +123,12 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		53ED128E5921559C607DEA1545B4BF8A /* Headers */ = {
+		0C2B49A179118903D851C4842B1A8652 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C152E0098A0FDE2A2C99838284BC3330 /* RNCSegmentedControl.h in Headers */,
-				FBEFBA7487F6F56151337ADD63CD18CA /* RNCSegmentedControlManager.h in Headers */,
+				A67C8AB3238BBFF5F346D2B35D37867A /* RNCSegmentedControl.h in Headers */,
+				C63AB8F02E1B989F09FCB5879C79EB64 /* RNCSegmentedControlManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -137,16 +137,16 @@
 /* Begin PBXNativeTarget section */
 		16ABF49F17747086945AFC5E30F90858 /* react-native-segmented-control */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = BA7C3B73551475C0BC463B88820B3785 /* Build configuration list for PBXNativeTarget "react-native-segmented-control" */;
+			buildConfigurationList = D02E276FAC9255B3DF739148F39E649C /* Build configuration list for PBXNativeTarget "react-native-segmented-control" */;
 			buildPhases = (
-				53ED128E5921559C607DEA1545B4BF8A /* Headers */,
-				F6DCA933B9C0067A7D5BB7957CFBEAB9 /* Sources */,
-				BE3BDBC074449F96296F35E11A442F8A /* Frameworks */,
+				0C2B49A179118903D851C4842B1A8652 /* Headers */,
+				A0C34977CB26F3EE27DCB86DEB7650A0 /* Sources */,
+				8D23C1DCC82B0E53032363AA747E2B22 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				90E988C3B5A0A5997F3B0425AB20CCB7 /* PBXTargetDependency */,
+				4CDF6A35C241C7EABC54EF31D798E1F0 /* PBXTargetDependency */,
 			);
 			name = "react-native-segmented-control";
 			productName = "react-native-segmented-control";
@@ -186,32 +186,55 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		F6DCA933B9C0067A7D5BB7957CFBEAB9 /* Sources */ = {
+		A0C34977CB26F3EE27DCB86DEB7650A0 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DCA41A1BA4730DC7E1583D7562EEC10E /* react-native-segmented-control-dummy.m in Sources */,
-				F970BFE196635718671E8F8FFF74F02C /* RNCSegmentedControl.m in Sources */,
-				78D5DA2F905E25DDF86627A12A69F8FE /* RNCSegmentedControlManager.m in Sources */,
+				EF79BCE324CB36D733D728684B6E3F24 /* react-native-segmented-control-dummy.m in Sources */,
+				EC6D090D5C2EB1220F9A639A4163D4C3 /* RNCSegmentedControl.m in Sources */,
+				D84930ECB67C5437D99AC1E7097A48A0 /* RNCSegmentedControlManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		90E988C3B5A0A5997F3B0425AB20CCB7 /* PBXTargetDependency */ = {
+		4CDF6A35C241C7EABC54EF31D798E1F0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-Core";
-			targetProxy = B6B7D34A80CFB4073D806BEF7BE9FE2C /* PBXContainerItemProxy */;
+			targetProxy = 2809C09F9E2E42C86A9F8B8453A9B030 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		05EE6915ECCAA2F0601E718AC3EC69FF /* Release */ = {
+		0800D75FAB88D26CF5EE62F39BAFA337 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F9DC762710CA3BFDA5F7AE0A9CCE8B21 /* react-native-segmented-control.debug.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/react-native-segmented-control/react-native-segmented-control-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = react_native_segmented_control;
+				PRODUCT_NAME = "react-native-segmented-control";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		3A625F596F402B6B70105C311C88F9DD /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 93056CF4EC6B77A9B92930372FE898E0 /* react-native-segmented-control.release.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
@@ -233,35 +256,11 @@
 			};
 			name = Release;
 		};
-		AF2938920E86D1B8F503D17A62EAE0C9 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = F9DC762710CA3BFDA5F7AE0A9CCE8B21 /* react-native-segmented-control.debug.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/react-native-segmented-control/react-native-segmented-control-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = react_native_segmented_control;
-				PRODUCT_NAME = "react-native-segmented-control";
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		D838DFD3A11CDE62B4D50805221D3F7A /* Release */ = {
+		A1A7CA65DF9020647281F57D1BB06EEE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -284,66 +283,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"POD_CONFIGURATION_RELEASE=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.0;
-				SYMROOT = "${SRCROOT}/../build";
-			};
-			name = Release;
-		};
-		F4021E3911759F987F95C1B79C1D844E /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -382,14 +322,76 @@
 			};
 			name = Debug;
 		};
+		ADAC99B41698C114BF41D2BBFAD0ED4B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		BA7C3B73551475C0BC463B88820B3785 /* Build configuration list for PBXNativeTarget "react-native-segmented-control" */ = {
+		D02E276FAC9255B3DF739148F39E649C /* Build configuration list for PBXNativeTarget "react-native-segmented-control" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				AF2938920E86D1B8F503D17A62EAE0C9 /* Debug */,
-				05EE6915ECCAA2F0601E718AC3EC69FF /* Release */,
+				0800D75FAB88D26CF5EE62F39BAFA337 /* Debug */,
+				3A625F596F402B6B70105C311C88F9DD /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -397,8 +399,8 @@
 		D9EEABEE63FA6F7B2C6FB2B3E0B51783 /* Build configuration list for PBXProject "react-native-segmented-control" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				F4021E3911759F987F95C1B79C1D844E /* Debug */,
-				D838DFD3A11CDE62B4D50805221D3F7A /* Release */,
+				A1A7CA65DF9020647281F57D1BB06EEE /* Debug */,
+				ADAC99B41698C114BF41D2BBFAD0ED4B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

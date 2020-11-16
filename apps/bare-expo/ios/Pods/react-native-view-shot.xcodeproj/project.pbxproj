@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8A0790726D9CA458674E59EC8BF70095 /* RNViewShot.h in Headers */ = {isa = PBXBuildFile; fileRef = B0BF9571336AF788F4C7E342CDF16161 /* RNViewShot.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		A5E30490850B16C7C547A6E585B98489 /* RNViewShot.m in Sources */ = {isa = PBXBuildFile; fileRef = 95BA0BACB7375D1CAB43C9EAD1546E5D /* RNViewShot.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		B08C10F1802ACBDDA7BDB4E39B474A87 /* react-native-view-shot-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 684A56A29BC6EF675B7C8919C391D61B /* react-native-view-shot-dummy.m */; };
+		2D61636483B561BF86C677608F0EFA0C /* react-native-view-shot-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 684A56A29BC6EF675B7C8919C391D61B /* react-native-view-shot-dummy.m */; };
+		448B47B295A2B98AB1E13EE8B4908339 /* RNViewShot.h in Headers */ = {isa = PBXBuildFile; fileRef = B0BF9571336AF788F4C7E342CDF16161 /* RNViewShot.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		FC3B942862DC0CDF93F9018D1DC06D03 /* RNViewShot.m in Sources */ = {isa = PBXBuildFile; fileRef = 95BA0BACB7375D1CAB43C9EAD1546E5D /* RNViewShot.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		2B6F9668D7334457F4506A361EC4F1F2 /* PBXContainerItemProxy */ = {
+		398E705B177678155F9F06AABC249B6E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5F8E786E81FDD31F0976C93E5936F4F6 /* React.xcodeproj */;
 			proxyType = 1;
@@ -37,7 +37,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		3239D596354A3F5687B633B481D83B19 /* Frameworks */ = {
+		4AC4A950A6CDA4A54DAFEAACDD4CFD41 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -117,11 +117,11 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		FAC0837D2E0B6A757569B3908B64BC5F /* Headers */ = {
+		789553FF66E218CEBEBC0B631831A8C2 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8A0790726D9CA458674E59EC8BF70095 /* RNViewShot.h in Headers */,
+				448B47B295A2B98AB1E13EE8B4908339 /* RNViewShot.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -130,16 +130,16 @@
 /* Begin PBXNativeTarget section */
 		E2467C029EBD31A567D815A97DFFBB51 /* react-native-view-shot */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 48767B779E099A4E8DEFFEF1DF43B920 /* Build configuration list for PBXNativeTarget "react-native-view-shot" */;
+			buildConfigurationList = 5E957A285262288C77CDE6B97578A4DE /* Build configuration list for PBXNativeTarget "react-native-view-shot" */;
 			buildPhases = (
-				FAC0837D2E0B6A757569B3908B64BC5F /* Headers */,
-				BD49BAE2A7124565EA61718E8847A898 /* Sources */,
-				3239D596354A3F5687B633B481D83B19 /* Frameworks */,
+				789553FF66E218CEBEBC0B631831A8C2 /* Headers */,
+				0CEE33DC210226F358313A300D3DE6AD /* Sources */,
+				4AC4A950A6CDA4A54DAFEAACDD4CFD41 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				D4D94939A4848BB709146D989512AC72 /* PBXTargetDependency */,
+				746FDBF5CAC42493B38F73FB18B07177 /* PBXTargetDependency */,
 			);
 			name = "react-native-view-shot";
 			productName = "react-native-view-shot";
@@ -179,34 +179,34 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		BD49BAE2A7124565EA61718E8847A898 /* Sources */ = {
+		0CEE33DC210226F358313A300D3DE6AD /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B08C10F1802ACBDDA7BDB4E39B474A87 /* react-native-view-shot-dummy.m in Sources */,
-				A5E30490850B16C7C547A6E585B98489 /* RNViewShot.m in Sources */,
+				2D61636483B561BF86C677608F0EFA0C /* react-native-view-shot-dummy.m in Sources */,
+				FC3B942862DC0CDF93F9018D1DC06D03 /* RNViewShot.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		D4D94939A4848BB709146D989512AC72 /* PBXTargetDependency */ = {
+		746FDBF5CAC42493B38F73FB18B07177 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = React;
-			targetProxy = 2B6F9668D7334457F4506A361EC4F1F2 /* PBXContainerItemProxy */;
+			targetProxy = 398E705B177678155F9F06AABC249B6E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		04657E9FF2706FA2CD542267A5B23ABE /* Release */ = {
+		1C332E63786E2C68323D080E7CC795DC /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 23AC13F1A14F70FEF5B917A4711D658C /* react-native-view-shot.release.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/react-native-view-shot/react-native-view-shot-prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				OTHER_LDFLAGS = "";
@@ -224,34 +224,11 @@
 			};
 			name = Release;
 		};
-		7FE9091A3944F861159AB977B326B0E3 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0C300C52D5307246D60845E57B077320 /* react-native-view-shot.debug.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/react-native-view-shot/react-native-view-shot-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = react_native_view_shot;
-				PRODUCT_NAME = "react-native-view-shot";
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		A341A2F20604BF42D6EEAF93C780827E /* Release */ = {
+		4B2193967CD1098A65C27547A9883039 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -274,66 +251,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"POD_CONFIGURATION_RELEASE=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.0;
-				SYMROOT = "${SRCROOT}/../build";
-			};
-			name = Release;
-		};
-		B2FD6F87174ECD678C658006DB83EEFC /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -372,14 +290,100 @@
 			};
 			name = Debug;
 		};
+		7E38B22532A6ED9A8B9E884025B5D897 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0C300C52D5307246D60845E57B077320 /* react-native-view-shot.debug.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/react-native-view-shot/react-native-view-shot-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = react_native_view_shot;
+				PRODUCT_NAME = "react-native-view-shot";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		FD025F3ADC27ECC02DF6585F0E144DC6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		48767B779E099A4E8DEFFEF1DF43B920 /* Build configuration list for PBXNativeTarget "react-native-view-shot" */ = {
+		5E957A285262288C77CDE6B97578A4DE /* Build configuration list for PBXNativeTarget "react-native-view-shot" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				7FE9091A3944F861159AB977B326B0E3 /* Debug */,
-				04657E9FF2706FA2CD542267A5B23ABE /* Release */,
+				7E38B22532A6ED9A8B9E884025B5D897 /* Debug */,
+				1C332E63786E2C68323D080E7CC795DC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -387,8 +391,8 @@
 		88848C9A3A4FD9FB0A515ED403578A58 /* Build configuration list for PBXProject "react-native-view-shot" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B2FD6F87174ECD678C658006DB83EEFC /* Debug */,
-				A341A2F20604BF42D6EEAF93C780827E /* Release */,
+				4B2193967CD1098A65C27547A9883039 /* Debug */,
+				FD025F3ADC27ECC02DF6585F0E144DC6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

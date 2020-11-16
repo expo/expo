@@ -7,17 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		04A74EE23864F09A58A9CA41FE2DA4AE /* RNCNetInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = C863AAF57D7F0A9FEC86C5C25B3FFCAC /* RNCNetInfo.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		29699B21CFA973F417626C9D3E34CE6E /* RNCNetInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = B38DF4279B28ECC06E2CBA22CD5036DA /* RNCNetInfo.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		48AEE73A2E5CB5761126247DB87B8569 /* RNCConnectionState.m in Sources */ = {isa = PBXBuildFile; fileRef = 226912A383E7C9ED3C415BDCE37DB67B /* RNCConnectionState.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		4EC9ACCCE724100F30C0AC8802D9470F /* RNCConnectionStateWatcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 14F441826D74D45191474E2F0A6F8913 /* RNCConnectionStateWatcher.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		573123DDF7BB939713472AFEDB093AF6 /* RNCConnectionStateWatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = A44379DE72E9B07970954D7FA142BF01 /* RNCConnectionStateWatcher.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		63E424B2427DF96BB62628059BB2DAFC /* react-native-netinfo-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 5983E6980D1F08CEBFECAEB1E224196F /* react-native-netinfo-dummy.m */; };
-		9E9BF7F1F4A9925F3DA3146013C16349 /* RNCConnectionState.h in Headers */ = {isa = PBXBuildFile; fileRef = C0FCCEDAAF3D3C0E7B04065BC5119C44 /* RNCConnectionState.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		2820D43912E312EE61616F891F505E62 /* RNCConnectionStateWatcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 14F441826D74D45191474E2F0A6F8913 /* RNCConnectionStateWatcher.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		65EF456959762629B2FE7A93E4D96446 /* RNCNetInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = B38DF4279B28ECC06E2CBA22CD5036DA /* RNCNetInfo.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		67587E776380A4BA14D75460FF1BE331 /* RNCConnectionState.h in Headers */ = {isa = PBXBuildFile; fileRef = C0FCCEDAAF3D3C0E7B04065BC5119C44 /* RNCConnectionState.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		68B2D102B87357DDA24690E8F5CF8475 /* RNCConnectionStateWatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = A44379DE72E9B07970954D7FA142BF01 /* RNCConnectionStateWatcher.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		6DF33518415EC6D5F3854BFDA30F7DDC /* RNCConnectionState.m in Sources */ = {isa = PBXBuildFile; fileRef = 226912A383E7C9ED3C415BDCE37DB67B /* RNCConnectionState.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		C4FB532A3E7239360855BB65A7000643 /* react-native-netinfo-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 5983E6980D1F08CEBFECAEB1E224196F /* react-native-netinfo-dummy.m */; };
+		C70FDF28AD74A372DF95D593AE8A9A6E /* RNCNetInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = C863AAF57D7F0A9FEC86C5C25B3FFCAC /* RNCNetInfo.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		6764F0E1905F66D5EEC39D60CE685446 /* PBXContainerItemProxy */ = {
+		59EBAF0BACED125E25D79E77ED93F908 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 00D23B44D33610106C81E2BE2A9F70B0 /* React-Core.xcodeproj */;
 			proxyType = 1;
@@ -45,7 +45,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		04850CE6ACE728D81EEA76A14AB3007A /* Frameworks */ = {
+		852792B0273DEDEEBC295A8806A25C83 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -129,13 +129,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		80A688E2623E47B20E30E9DDD0857FFB /* Headers */ = {
+		9F0D1CC048F3966051EE8B51E1E04D3B /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9E9BF7F1F4A9925F3DA3146013C16349 /* RNCConnectionState.h in Headers */,
-				4EC9ACCCE724100F30C0AC8802D9470F /* RNCConnectionStateWatcher.h in Headers */,
-				29699B21CFA973F417626C9D3E34CE6E /* RNCNetInfo.h in Headers */,
+				67587E776380A4BA14D75460FF1BE331 /* RNCConnectionState.h in Headers */,
+				2820D43912E312EE61616F891F505E62 /* RNCConnectionStateWatcher.h in Headers */,
+				65EF456959762629B2FE7A93E4D96446 /* RNCNetInfo.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -144,16 +144,16 @@
 /* Begin PBXNativeTarget section */
 		0C0919986EFBF5011021A24B7EA0C60C /* react-native-netinfo */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 6D79B434494EEBC2BD41A71CAEEA6492 /* Build configuration list for PBXNativeTarget "react-native-netinfo" */;
+			buildConfigurationList = 79ED376C4B8581424B8598D1F55AC3D2 /* Build configuration list for PBXNativeTarget "react-native-netinfo" */;
 			buildPhases = (
-				80A688E2623E47B20E30E9DDD0857FFB /* Headers */,
-				6FC8A01451B4E27A67696D43A21F5BAB /* Sources */,
-				04850CE6ACE728D81EEA76A14AB3007A /* Frameworks */,
+				9F0D1CC048F3966051EE8B51E1E04D3B /* Headers */,
+				4F8549D0F27C5CAE3D284DCEB972FCC5 /* Sources */,
+				852792B0273DEDEEBC295A8806A25C83 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				9EB1B436B812F507595E7BCC2E609484 /* PBXTargetDependency */,
+				36CF03BB7F984359EC3955946A441E2F /* PBXTargetDependency */,
 			);
 			name = "react-native-netinfo";
 			productName = "react-native-netinfo";
@@ -193,33 +193,32 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		6FC8A01451B4E27A67696D43A21F5BAB /* Sources */ = {
+		4F8549D0F27C5CAE3D284DCEB972FCC5 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				63E424B2427DF96BB62628059BB2DAFC /* react-native-netinfo-dummy.m in Sources */,
-				48AEE73A2E5CB5761126247DB87B8569 /* RNCConnectionState.m in Sources */,
-				573123DDF7BB939713472AFEDB093AF6 /* RNCConnectionStateWatcher.m in Sources */,
-				04A74EE23864F09A58A9CA41FE2DA4AE /* RNCNetInfo.m in Sources */,
+				C4FB532A3E7239360855BB65A7000643 /* react-native-netinfo-dummy.m in Sources */,
+				6DF33518415EC6D5F3854BFDA30F7DDC /* RNCConnectionState.m in Sources */,
+				68B2D102B87357DDA24690E8F5CF8475 /* RNCConnectionStateWatcher.m in Sources */,
+				C70FDF28AD74A372DF95D593AE8A9A6E /* RNCNetInfo.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		9EB1B436B812F507595E7BCC2E609484 /* PBXTargetDependency */ = {
+		36CF03BB7F984359EC3955946A441E2F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-Core";
-			targetProxy = 6764F0E1905F66D5EEC39D60CE685446 /* PBXContainerItemProxy */;
+			targetProxy = 59EBAF0BACED125E25D79E77ED93F908 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		187E6CFC624B6F3679D53E17B400FD17 /* Release */ = {
+		027B009F3A28CB6504A417BF4196EFC2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C1BE596E51D6FD694A2FEF168973AD43 /* react-native-netinfo.release.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
@@ -241,11 +240,10 @@
 			};
 			name = Release;
 		};
-		A7AE192839A96263D3AE6CE5025967ED /* Debug */ = {
+		0B5BC269754485EA5FC7232A9B4BD31D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BAE622F607C7EDAB3E841172A5C21266 /* react-native-netinfo.debug.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
@@ -266,10 +264,11 @@
 			};
 			name = Debug;
 		};
-		C31E21666A7B829A40667C6966C9717B /* Release */ = {
+		567EE0CC2AA34D08335A31E9835BECCA /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -292,6 +291,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -326,10 +326,11 @@
 			};
 			name = Release;
 		};
-		F00870D56EB9856B85CC36F6EAEF48C7 /* Debug */ = {
+		7E906B03DC93A1C5D5CBE9BB12A57387 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -352,6 +353,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -396,17 +398,17 @@
 		1FD9C584106A492B00BBEF90843F7FDF /* Build configuration list for PBXProject "react-native-netinfo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				F00870D56EB9856B85CC36F6EAEF48C7 /* Debug */,
-				C31E21666A7B829A40667C6966C9717B /* Release */,
+				7E906B03DC93A1C5D5CBE9BB12A57387 /* Debug */,
+				567EE0CC2AA34D08335A31E9835BECCA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		6D79B434494EEBC2BD41A71CAEEA6492 /* Build configuration list for PBXNativeTarget "react-native-netinfo" */ = {
+		79ED376C4B8581424B8598D1F55AC3D2 /* Build configuration list for PBXNativeTarget "react-native-netinfo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				A7AE192839A96263D3AE6CE5025967ED /* Debug */,
-				187E6CFC624B6F3679D53E17B400FD17 /* Release */,
+				0B5BC269754485EA5FC7232A9B4BD31D /* Debug */,
+				027B009F3A28CB6504A417BF4196EFC2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -175,10 +175,35 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		121D74C4EB741309BC8EA85D4E2410CA /* Debug */ = {
+		028A9F7D7C8CD3689F9D5BB78442D461 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 49CE6095B029B2650326DE89167FF93E /* Flipper-PeerTalk.debug.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/Flipper-PeerTalk/Flipper-PeerTalk-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = peertalk;
+				PRODUCT_NAME = "Flipper-PeerTalk";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		0CE57DC30EDEEDA02434E46182F9A5D8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -201,6 +226,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -239,35 +265,11 @@
 			};
 			name = Debug;
 		};
-		65AC98D1D99CF219B59E7E96B305A840 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 49CE6095B029B2650326DE89167FF93E /* Flipper-PeerTalk.debug.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/Flipper-PeerTalk/Flipper-PeerTalk-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = peertalk;
-				PRODUCT_NAME = "Flipper-PeerTalk";
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		D025A6A8D9A19EC3A73A73E93689933E /* Release */ = {
+		7E5DD6EA65EF6CBC986E8A5340517B94 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -290,6 +292,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -324,11 +327,10 @@
 			};
 			name = Release;
 		};
-		DE6E3D86E2491DF490A838664907B8DC /* Release */ = {
+		87789EFBB9FE8E724A143FD4B668169F /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 653453BDBE97966A88ED37465337241B /* Flipper-PeerTalk.release.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
@@ -356,8 +358,8 @@
 		0B913237A95B847D8102A4812CE268BB /* Build configuration list for PBXNativeTarget "Flipper-PeerTalk" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				65AC98D1D99CF219B59E7E96B305A840 /* Debug */,
-				DE6E3D86E2491DF490A838664907B8DC /* Release */,
+				028A9F7D7C8CD3689F9D5BB78442D461 /* Debug */,
+				87789EFBB9FE8E724A143FD4B668169F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -365,8 +367,8 @@
 		BF5DC8B75AC89B80ED91E7A82611FDA9 /* Build configuration list for PBXProject "Flipper-PeerTalk" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				121D74C4EB741309BC8EA85D4E2410CA /* Debug */,
-				D025A6A8D9A19EC3A73A73E93689933E /* Release */,
+				0CE57DC30EDEEDA02434E46182F9A5D8 /* Debug */,
+				7E5DD6EA65EF6CBC986E8A5340517B94 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
