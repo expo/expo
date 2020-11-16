@@ -1,15 +1,23 @@
-import * as SecureStore from 'expo-secure-store';
-import { v4 as uuidv4 } from 'uuid';
-const INSTALLATION_ID_KEY = 'installationId';
+import * as Application from 'expo-application';
+import { v5 as uuidv5 } from 'uuid';
+let installationId;
+const UUID_NAMESPACE = '29cc8a0d-747c-5f85-9ff9-f2f16636d963'; // uuidv5(0, "expo")
 export default async function getInstallationIdAsync() {
-    const existingInstallationId = await SecureStore.getItemAsync(INSTALLATION_ID_KEY);
-    if (existingInstallationId) {
-        return existingInstallationId;
+    if (installationId) {
+        return installationId;
     }
-    const newInstallationId = uuidv4();
-    await SecureStore.setItemAsync(INSTALLATION_ID_KEY, newInstallationId, {
-        keychainAccessible: SecureStore.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY,
-    });
-    return newInstallationId;
+    const identifierForVendor = await Application.getIosIdForVendorAsync();
+    const bundleIdentifier = Application.applicationId;
+    // It's unlikely identifierForVendor will be null (it returns null if the
+    // device has been restarted but not yet unlocked), but let's handle this
+    // case.
+    if (identifierForVendor) {
+        installationId = uuidv5(`${bundleIdentifier}-${identifierForVendor}`, UUID_NAMESPACE);
+    }
+    else {
+        const installationTime = await Application.getInstallationTimeAsync();
+        installationId = uuidv5(`${bundleIdentifier}-${installationTime.getTime()}`, UUID_NAMESPACE);
+    }
+    return installationId;
 }
 //# sourceMappingURL=getInstallationIdAsync.js.map
