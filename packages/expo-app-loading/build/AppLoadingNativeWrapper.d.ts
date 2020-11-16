@@ -4,7 +4,7 @@ declare type Props = {
 };
 export default class AppLoading extends React.Component<Props> {
     static defaultProps: {
-        autoHideAsync: boolean;
+        autoHideSplash: boolean;
     };
     constructor(props: Props);
     componentWillUnmount(): void;

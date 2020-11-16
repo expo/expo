@@ -23,6 +23,6 @@ export default class AppLoading extends React.Component {
     }
 }
 AppLoading.defaultProps = {
-    autoHideAsync: true,
+    autoHideSplash: true,
 };
 //# sourceMappingURL=AppLoadingNativeWrapper.js.map
