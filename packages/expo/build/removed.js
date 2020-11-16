@@ -106,6 +106,13 @@ Object.defineProperties(module.exports, {
         },
     },
     /** @deprecated */
+    AppLoading: {
+        enumerable: true,
+        get() {
+            removedModule(`import { AppLoading } from 'expo' -> import AppLoading from 'expo-app-loading'`, 'AppLoading', 'expo-app-loading');
+        },
+    },
+    /** @deprecated */
     Asset: {
         enumerable: true,
         get() {

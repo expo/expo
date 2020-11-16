@@ -11,6 +11,7 @@
 /packages/expo-analytics-segment                @sjchmiela
 /packages/expo-app-auth                         @EvanBacon
 /packages/expo-app-loader-provider              @tsapeta
+/packages/expo-app-loading                      @bbarthec
 /packages/expo-apple-authentication             @esamelson @tsapeta
 /packages/expo-application                      @ide
 /packages/expo-asset                            @tsapeta

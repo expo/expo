@@ -8,6 +8,7 @@ export const AdMobRewarded = null;
 export const Amplitude = null;
 export const Animated = null;
 export const AppAuth = null;
+export const AppLoading = null;
 export const Asset = null;
 export const Audio = null;
 export const AuthSession = null;
