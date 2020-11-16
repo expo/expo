@@ -7,54 +7,54 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		24FDCC1C8312C36D14C373E62C4456A8 /* RNBranchEventEmitter.h in Headers */ = {isa = PBXBuildFile; fileRef = BB2C821DE21EFF1135F05D62BC3DC69D /* RNBranchEventEmitter.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		256D2E8D0D546622F246D9B320217CE4 /* BranchUniversalObject+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = A49284DB92623A95BDD6838C29A2E08C /* BranchUniversalObject+RNBranch.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
-		3310B6B1FDDEEB68A1F6FCD00A91C23E /* BranchLinkProperties+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = CCDBD391513D3E9717B5B069D05EE3A0 /* BranchLinkProperties+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		55F8A28F7A395FBE11E4FA9E78A447EC /* RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = 6D8BA527861562FD3003030F829EFFE8 /* RNBranch.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
-		5FBBC29D9C72CC3FDCE9166E781A9D42 /* NSObject+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = DD502BA9AF259EC1668F3E383D87096A /* NSObject+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		63A43DD75339EBA49BAF556D8F546678 /* BranchEvent+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = 6A75C5B4B99FEAB6C6289934237847CF /* BranchEvent+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		68B45CFD29E0D0FE27CC3FEEB28500BC /* RNBranchAgingItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B0378C3F77CE743C8F1F667A29BD3A1 /* RNBranchAgingItem.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
-		6C78FF106A9C7C97B8B668D5879639B7 /* RNBranchProperty.h in Headers */ = {isa = PBXBuildFile; fileRef = B61B1240DCB86E3918226FA2AA3C445D /* RNBranchProperty.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		725C9081229837BF1F2D3A406A122C7D /* NSObject+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = 785144F632D5590E1708B2ACABF843D9 /* NSObject+RNBranch.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
-		77C287A99195DCDC98A08FA1D9A44C2A /* RNBranchProperty.m in Sources */ = {isa = PBXBuildFile; fileRef = 5869FC31C05162BFE86A176FD168D47A /* RNBranchProperty.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
-		87E5B432BD739AAE1412949C950EBE65 /* BranchLinkProperties+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = 227F8EDD965DCEFF8169B44991E2BDB4 /* BranchLinkProperties+RNBranch.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
-		9B840DD6B5D899F43EB086BCD71C64CA /* BranchContentMetadata+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = 59FEE6B483C9899C1CFC712FE3075054 /* BranchContentMetadata+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		A39247272A871F8E420CCB6DC38E9F88 /* BranchEvent+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = F578E53307D55899C5B0DC4A90599CE7 /* BranchEvent+RNBranch.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
-		AB7C6C8C21FE22BC51404ACE4E29D60F /* RNBranchAgingDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 0408EAEDD8C5F2C7DE13186FEA9780AC /* RNBranchAgingDictionary.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
-		ACE94A41EB874E791C0E3E20DC11A3A1 /* EXBranchManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E4CCD85FEDD116B2A028E006059981B /* EXBranchManager.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
-		AE061D4849E1C4A353461B0D028093B0 /* BranchUniversalObject+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = A186CB1DF0BB2E97AAB84C6B5CC44A5A /* BranchUniversalObject+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		C49701EADB0FD29BB102FA6881C0E245 /* EXBranch-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = AF1568ABF3083F98AF93A71BFFA06E14 /* EXBranch-dummy.m */; };
-		CB624AEFFFD24C18E2C8CAA1C92B564C /* RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = 1913AB56E9E15DA715C2FAD6EC38A608 /* RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		D3B44D3DC005919313F0847A16C2C7FC /* RNBranchConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = FC846CED7112AD22B456B6872FDCB5B0 /* RNBranchConfig.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
-		D64C6F1B27DCF1AE70199D2548485526 /* RNBranchConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = FBB8820BC4BA6354D1A539497EB3878D /* RNBranchConfig.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		DE0DE3CA4EC556321EE1F79F8FE15540 /* RNBranchEventEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = F71FA1790B3FD346FD9936D7B3C40848 /* RNBranchEventEmitter.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
-		E615FD077E2264FA19FCAD2CA427A710 /* RNBranchAgingDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = F29C1448B1E8FBA0ACB593BED739CCA7 /* RNBranchAgingDictionary.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		E94393BF3D81B226DE01616DD10C16BF /* BranchContentMetadata+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = ABE20E48C163D720F1D480164BCC9531 /* BranchContentMetadata+RNBranch.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
-		EACAAA2644DE7C2B387262AFEE15238A /* RNBranchAgingItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 3B7DA9F1B5F4265545BF0CDD29E9368E /* RNBranchAgingItem.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		F3174C3AD57673478F5FE96A1058B3D9 /* EXBranchManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F58E871A9E1A906784D9326F5DB39481 /* EXBranchManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		0FF61BBE3C1D0A1FA4766F45BFC926FD /* RNBranchAgingDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = F29C1448B1E8FBA0ACB593BED739CCA7 /* RNBranchAgingDictionary.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		1A7926FA6395F2B8517687208DD7969A /* RNBranchAgingItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B0378C3F77CE743C8F1F667A29BD3A1 /* RNBranchAgingItem.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
+		1A9E40DBA4BB36A4AB6428A139FDA715 /* RNBranchConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = FC846CED7112AD22B456B6872FDCB5B0 /* RNBranchConfig.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
+		1B4DA313ED767CE270EB4D0A430F896B /* BranchLinkProperties+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = CCDBD391513D3E9717B5B069D05EE3A0 /* BranchLinkProperties+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		2957EA6BA30C4FAE28C28F50247356A6 /* BranchLinkProperties+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = 227F8EDD965DCEFF8169B44991E2BDB4 /* BranchLinkProperties+RNBranch.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
+		2E2CE5BA2B0D2A09374BE054B12D357C /* BranchEvent+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = 6A75C5B4B99FEAB6C6289934237847CF /* BranchEvent+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		2F21EC6D9E99D370535CD2CB632F8100 /* BranchUniversalObject+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = A186CB1DF0BB2E97AAB84C6B5CC44A5A /* BranchUniversalObject+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		564DF7EAB4D83B8079DB29809AC075F3 /* BranchContentMetadata+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = ABE20E48C163D720F1D480164BCC9531 /* BranchContentMetadata+RNBranch.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
+		59C08062712AD57F027468FC7B7C9D28 /* RNBranchProperty.m in Sources */ = {isa = PBXBuildFile; fileRef = 5869FC31C05162BFE86A176FD168D47A /* RNBranchProperty.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
+		5FD65DF7B9282333AFAA126D652420A2 /* EXBranchManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F58E871A9E1A906784D9326F5DB39481 /* EXBranchManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		6909192BAF3C92480E91BF44EAA6A7FC /* RNBranchEventEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = F71FA1790B3FD346FD9936D7B3C40848 /* RNBranchEventEmitter.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
+		7225B2EE2E404F885607F040451C41A2 /* RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = 6D8BA527861562FD3003030F829EFFE8 /* RNBranch.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
+		7B032DC4E7F54786CAF57D5D145B3E57 /* RNBranchProperty.h in Headers */ = {isa = PBXBuildFile; fileRef = B61B1240DCB86E3918226FA2AA3C445D /* RNBranchProperty.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7B192E5EAE59F4B4CB07A8B4289D5AF4 /* BranchContentMetadata+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = 59FEE6B483C9899C1CFC712FE3075054 /* BranchContentMetadata+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7C22802354F4A7220A52EC0F31A088F4 /* NSObject+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = DD502BA9AF259EC1668F3E383D87096A /* NSObject+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7DFFC7FD65E7E9115562A9791C2D2DC9 /* NSObject+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = 785144F632D5590E1708B2ACABF843D9 /* NSObject+RNBranch.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
+		88939D7175C7260390ACF5AB4EE47432 /* RNBranchAgingItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 3B7DA9F1B5F4265545BF0CDD29E9368E /* RNBranchAgingItem.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8ED7D5069F2D3DB94F9FC9D6ED75DADB /* RNBranchConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = FBB8820BC4BA6354D1A539497EB3878D /* RNBranchConfig.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A71CDB6E0976C0C3EE9EED851B6F6EB6 /* RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = 1913AB56E9E15DA715C2FAD6EC38A608 /* RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		AB884B5ABBAC5EBCDE9E8605992F1942 /* EXBranch-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = AF1568ABF3083F98AF93A71BFFA06E14 /* EXBranch-dummy.m */; };
+		B2F729A05363742B499425B6D33163DD /* BranchEvent+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = F578E53307D55899C5B0DC4A90599CE7 /* BranchEvent+RNBranch.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
+		B9AED33070AC952C9FDC63748D0BBDCB /* RNBranchAgingDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 0408EAEDD8C5F2C7DE13186FEA9780AC /* RNBranchAgingDictionary.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
+		D476F6641EBECE6CDDB512D69C4455C9 /* BranchUniversalObject+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = A49284DB92623A95BDD6838C29A2E08C /* BranchUniversalObject+RNBranch.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
+		E5160E95D7442A788A1F2F0216C7E8E3 /* EXBranchManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E4CCD85FEDD116B2A028E006059981B /* EXBranchManager.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
+		E97EFEF1E8E3511289E78FF687EE8434 /* RNBranchEventEmitter.h in Headers */ = {isa = PBXBuildFile; fileRef = BB2C821DE21EFF1135F05D62BC3DC69D /* RNBranchEventEmitter.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		21A463C491F52E4EE02A822BE98FC258 /* PBXContainerItemProxy */ = {
+		4C5FCFCC36A43B86790C4D26160E37C1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A0160E0E485AF7DD3E4EAC1994CFEB81 /* Branch.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 32AB2597F26D238AAF12A9F8A95B992E;
+			remoteInfo = Branch;
+		};
+		4D61907930648935ADD72224B45204DD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D59B76833E1193B71DFE585C78867FCF /* UMCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
 		};
-		AEB040B30B45D4D2E8C837859AD8B18E /* PBXContainerItemProxy */ = {
+		A132556D132C416B3CEA7A6189F5F587 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 197B4E92A220828AB7FD641903EB8BEE /* React-Core.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 5DA1A74647F652AE8E4DE074AFC4C6B7;
 			remoteInfo = "React-Core";
-		};
-		F31B763A1861470604BD787797510975 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A0160E0E485AF7DD3E4EAC1994CFEB81 /* Branch.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 32AB2597F26D238AAF12A9F8A95B992E;
-			remoteInfo = Branch;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -95,7 +95,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		7D6D2BB76B55AAC99E82A36FF235737E /* Frameworks */ = {
+		C835D6A4A9C4A7E4C09755A10CCF551A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -206,22 +206,22 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		EC99EA48513E6CD0F8F959CA441EB5CB /* Headers */ = {
+		C22BE59B20FFB845D50D0AEF09F620AC /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9B840DD6B5D899F43EB086BCD71C64CA /* BranchContentMetadata+RNBranch.h in Headers */,
-				63A43DD75339EBA49BAF556D8F546678 /* BranchEvent+RNBranch.h in Headers */,
-				3310B6B1FDDEEB68A1F6FCD00A91C23E /* BranchLinkProperties+RNBranch.h in Headers */,
-				AE061D4849E1C4A353461B0D028093B0 /* BranchUniversalObject+RNBranch.h in Headers */,
-				F3174C3AD57673478F5FE96A1058B3D9 /* EXBranchManager.h in Headers */,
-				5FBBC29D9C72CC3FDCE9166E781A9D42 /* NSObject+RNBranch.h in Headers */,
-				CB624AEFFFD24C18E2C8CAA1C92B564C /* RNBranch.h in Headers */,
-				E615FD077E2264FA19FCAD2CA427A710 /* RNBranchAgingDictionary.h in Headers */,
-				EACAAA2644DE7C2B387262AFEE15238A /* RNBranchAgingItem.h in Headers */,
-				D64C6F1B27DCF1AE70199D2548485526 /* RNBranchConfig.h in Headers */,
-				24FDCC1C8312C36D14C373E62C4456A8 /* RNBranchEventEmitter.h in Headers */,
-				6C78FF106A9C7C97B8B668D5879639B7 /* RNBranchProperty.h in Headers */,
+				7B192E5EAE59F4B4CB07A8B4289D5AF4 /* BranchContentMetadata+RNBranch.h in Headers */,
+				2E2CE5BA2B0D2A09374BE054B12D357C /* BranchEvent+RNBranch.h in Headers */,
+				1B4DA313ED767CE270EB4D0A430F896B /* BranchLinkProperties+RNBranch.h in Headers */,
+				2F21EC6D9E99D370535CD2CB632F8100 /* BranchUniversalObject+RNBranch.h in Headers */,
+				5FD65DF7B9282333AFAA126D652420A2 /* EXBranchManager.h in Headers */,
+				7C22802354F4A7220A52EC0F31A088F4 /* NSObject+RNBranch.h in Headers */,
+				A71CDB6E0976C0C3EE9EED851B6F6EB6 /* RNBranch.h in Headers */,
+				0FF61BBE3C1D0A1FA4766F45BFC926FD /* RNBranchAgingDictionary.h in Headers */,
+				88939D7175C7260390ACF5AB4EE47432 /* RNBranchAgingItem.h in Headers */,
+				8ED7D5069F2D3DB94F9FC9D6ED75DADB /* RNBranchConfig.h in Headers */,
+				E97EFEF1E8E3511289E78FF687EE8434 /* RNBranchEventEmitter.h in Headers */,
+				7B032DC4E7F54786CAF57D5D145B3E57 /* RNBranchProperty.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -230,18 +230,18 @@
 /* Begin PBXNativeTarget section */
 		6B47FA6D658B6D4521D692AE24630902 /* EXBranch */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C7DA5EEC3DC2D6B379237C980D465643 /* Build configuration list for PBXNativeTarget "EXBranch" */;
+			buildConfigurationList = 0BCB7321F98C295BBF3658B0647FBFAA /* Build configuration list for PBXNativeTarget "EXBranch" */;
 			buildPhases = (
-				EC99EA48513E6CD0F8F959CA441EB5CB /* Headers */,
-				4C99A3DFCFA5E272EF4BDBE4005DA89C /* Sources */,
-				7D6D2BB76B55AAC99E82A36FF235737E /* Frameworks */,
+				C22BE59B20FFB845D50D0AEF09F620AC /* Headers */,
+				053007568C917E53E5334FCABF9AA78A /* Sources */,
+				C835D6A4A9C4A7E4C09755A10CCF551A /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				D6151C351680564B91A45D02C933B352 /* PBXTargetDependency */,
-				8137D686ADCE600C82BC3FACDD04ED90 /* PBXTargetDependency */,
-				69F2F956859AD6FFA77D3DF96F15DA07 /* PBXTargetDependency */,
+				F3BCFBC59740394E184922D9B857DF1A /* PBXTargetDependency */,
+				0C8265626AB7626C9C7AC06B01D3D165 /* PBXTargetDependency */,
+				CA32AAC33DF5AFDFBDDA9EE1BB5BCA0B /* PBXTargetDependency */,
 			);
 			name = EXBranch;
 			productName = EXBranch;
@@ -287,53 +287,52 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		4C99A3DFCFA5E272EF4BDBE4005DA89C /* Sources */ = {
+		053007568C917E53E5334FCABF9AA78A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E94393BF3D81B226DE01616DD10C16BF /* BranchContentMetadata+RNBranch.m in Sources */,
-				A39247272A871F8E420CCB6DC38E9F88 /* BranchEvent+RNBranch.m in Sources */,
-				87E5B432BD739AAE1412949C950EBE65 /* BranchLinkProperties+RNBranch.m in Sources */,
-				256D2E8D0D546622F246D9B320217CE4 /* BranchUniversalObject+RNBranch.m in Sources */,
-				C49701EADB0FD29BB102FA6881C0E245 /* EXBranch-dummy.m in Sources */,
-				ACE94A41EB874E791C0E3E20DC11A3A1 /* EXBranchManager.m in Sources */,
-				725C9081229837BF1F2D3A406A122C7D /* NSObject+RNBranch.m in Sources */,
-				55F8A28F7A395FBE11E4FA9E78A447EC /* RNBranch.m in Sources */,
-				AB7C6C8C21FE22BC51404ACE4E29D60F /* RNBranchAgingDictionary.m in Sources */,
-				68B45CFD29E0D0FE27CC3FEEB28500BC /* RNBranchAgingItem.m in Sources */,
-				D3B44D3DC005919313F0847A16C2C7FC /* RNBranchConfig.m in Sources */,
-				DE0DE3CA4EC556321EE1F79F8FE15540 /* RNBranchEventEmitter.m in Sources */,
-				77C287A99195DCDC98A08FA1D9A44C2A /* RNBranchProperty.m in Sources */,
+				564DF7EAB4D83B8079DB29809AC075F3 /* BranchContentMetadata+RNBranch.m in Sources */,
+				B2F729A05363742B499425B6D33163DD /* BranchEvent+RNBranch.m in Sources */,
+				2957EA6BA30C4FAE28C28F50247356A6 /* BranchLinkProperties+RNBranch.m in Sources */,
+				D476F6641EBECE6CDDB512D69C4455C9 /* BranchUniversalObject+RNBranch.m in Sources */,
+				AB884B5ABBAC5EBCDE9E8605992F1942 /* EXBranch-dummy.m in Sources */,
+				E5160E95D7442A788A1F2F0216C7E8E3 /* EXBranchManager.m in Sources */,
+				7DFFC7FD65E7E9115562A9791C2D2DC9 /* NSObject+RNBranch.m in Sources */,
+				7225B2EE2E404F885607F040451C41A2 /* RNBranch.m in Sources */,
+				B9AED33070AC952C9FDC63748D0BBDCB /* RNBranchAgingDictionary.m in Sources */,
+				1A7926FA6395F2B8517687208DD7969A /* RNBranchAgingItem.m in Sources */,
+				1A9E40DBA4BB36A4AB6428A139FDA715 /* RNBranchConfig.m in Sources */,
+				6909192BAF3C92480E91BF44EAA6A7FC /* RNBranchEventEmitter.m in Sources */,
+				59C08062712AD57F027468FC7B7C9D28 /* RNBranchProperty.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		69F2F956859AD6FFA77D3DF96F15DA07 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMCore;
-			targetProxy = 21A463C491F52E4EE02A822BE98FC258 /* PBXContainerItemProxy */;
-		};
-		8137D686ADCE600C82BC3FACDD04ED90 /* PBXTargetDependency */ = {
+		0C8265626AB7626C9C7AC06B01D3D165 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-Core";
-			targetProxy = AEB040B30B45D4D2E8C837859AD8B18E /* PBXContainerItemProxy */;
+			targetProxy = A132556D132C416B3CEA7A6189F5F587 /* PBXContainerItemProxy */;
 		};
-		D6151C351680564B91A45D02C933B352 /* PBXTargetDependency */ = {
+		CA32AAC33DF5AFDFBDDA9EE1BB5BCA0B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = 4D61907930648935ADD72224B45204DD /* PBXContainerItemProxy */;
+		};
+		F3BCFBC59740394E184922D9B857DF1A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Branch;
-			targetProxy = F31B763A1861470604BD787797510975 /* PBXContainerItemProxy */;
+			targetProxy = 4C5FCFCC36A43B86790C4D26160E37C1 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		087E257A7C21747C5F187583FD0DFDC7 /* Debug */ = {
+		10D5733CC1D7B353B0AFC5D6A1B5DFCC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 0B89DF68BE8B6B7A1549FD48149F8EEA /* EXBranch.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
@@ -353,12 +352,11 @@
 			};
 			name = Debug;
 		};
-		119C2503C921785766D8E6BF2B1A0866 /* Release */ = {
+		57C185F3D46CAE4C8412F31A154B5C33 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = DBB2F64B9DCCE60CDC3BCFED51E77660 /* EXBranch.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
@@ -379,10 +377,11 @@
 			};
 			name = Release;
 		};
-		1C953CCCD44E091E8BAB66E7631F0807 /* Debug */ = {
+		BCB87E857FDBB7BF8844C96F27D6927B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -405,6 +404,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -443,10 +443,11 @@
 			};
 			name = Debug;
 		};
-		229E807A69E64EDBB923FB5B09FB46B7 /* Release */ = {
+		F1D1379FE5CDCCD95C1A2C56B87884E9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -469,6 +470,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -506,11 +508,11 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C7DA5EEC3DC2D6B379237C980D465643 /* Build configuration list for PBXNativeTarget "EXBranch" */ = {
+		0BCB7321F98C295BBF3658B0647FBFAA /* Build configuration list for PBXNativeTarget "EXBranch" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				087E257A7C21747C5F187583FD0DFDC7 /* Debug */,
-				119C2503C921785766D8E6BF2B1A0866 /* Release */,
+				10D5733CC1D7B353B0AFC5D6A1B5DFCC /* Debug */,
+				57C185F3D46CAE4C8412F31A154B5C33 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -518,8 +520,8 @@
 		E901A317E44A39EB3160CB734483361C /* Build configuration list for PBXProject "EXBranch" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1C953CCCD44E091E8BAB66E7631F0807 /* Debug */,
-				229E807A69E64EDBB923FB5B09FB46B7 /* Release */,
+				BCB87E857FDBB7BF8844C96F27D6927B /* Debug */,
+				F1D1379FE5CDCCD95C1A2C56B87884E9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

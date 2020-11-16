@@ -7,26 +7,26 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		19CAFBDCF8B7CD2666B238CB7CAFB3E2 /* EXScreenOrientationUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = B988F9ABE64E8DB7E2C064C6B3C32706 /* EXScreenOrientationUtilities.m */; };
-		1B590F5D6A45AB38DF834D45C85F256E /* EXScreenOrientationViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = AAEE5D5ABC38838B597EDA9B29EA8EF1 /* EXScreenOrientationViewController.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		23CFAEC4F405D3CE37AA86B749E742EE /* EXScreenOrientationUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 5FB4D7F6B6D3A2EA5A435C2282D1E9CB /* EXScreenOrientationUtilities.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		3187B090CF1138A54301CD73570C27FB /* EXScreenOrientationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D2CF0E2E7C38352BB4ED453ED8B53A30 /* EXScreenOrientationViewController.m */; };
-		C191EA115F52E13F0FF3818B3C4FED18 /* EXScreenOrientation-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 6D17A022526D1338D7F4044465BD39E1 /* EXScreenOrientation-dummy.m */; };
-		C1FCBC9417B5E34ECF6E9EF15F25160D /* EXScreenOrientationModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 9262C0BE28698C7DFE206771F70321AA /* EXScreenOrientationModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		D8B1B14168CED6835393FBFDB1733A68 /* EXScreenOrientationRegistry.h in Headers */ = {isa = PBXBuildFile; fileRef = 9BBB0E3C690A249B8A26E685940FE245 /* EXScreenOrientationRegistry.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		DB3027FF6DF15395646C4B8CC9A4B198 /* EXScreenOrientationRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = 2727D579FCF021A7C242105EEA37B05B /* EXScreenOrientationRegistry.m */; };
-		E03747FA90434991DBFCD30353E17691 /* EXScreenOrientationModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 27EC4D5396844586C124F5DA54410A5E /* EXScreenOrientationModule.m */; };
+		1AAD2F35AD200D7139A7DBE6F1A11E55 /* EXScreenOrientationUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = B988F9ABE64E8DB7E2C064C6B3C32706 /* EXScreenOrientationUtilities.m */; };
+		27BF5920DD4FD71BFEC121149ACA9732 /* EXScreenOrientationModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 9262C0BE28698C7DFE206771F70321AA /* EXScreenOrientationModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		45BE20B8EF5CABBE78865EF08A02083F /* EXScreenOrientationRegistry.h in Headers */ = {isa = PBXBuildFile; fileRef = 9BBB0E3C690A249B8A26E685940FE245 /* EXScreenOrientationRegistry.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7591A9D7BAA7ED961965A845E4879A30 /* EXScreenOrientationUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 5FB4D7F6B6D3A2EA5A435C2282D1E9CB /* EXScreenOrientationUtilities.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7DE589CFA195DF3E353C1104D51403BD /* EXScreenOrientation-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 6D17A022526D1338D7F4044465BD39E1 /* EXScreenOrientation-dummy.m */; };
+		A5DAEAC484A3A809019014F7DD12828E /* EXScreenOrientationViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = AAEE5D5ABC38838B597EDA9B29EA8EF1 /* EXScreenOrientationViewController.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C01A011D7B74C150C86E26369973829D /* EXScreenOrientationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D2CF0E2E7C38352BB4ED453ED8B53A30 /* EXScreenOrientationViewController.m */; };
+		D14DB62FEF1E676F897174F7541A71B1 /* EXScreenOrientationRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = 2727D579FCF021A7C242105EEA37B05B /* EXScreenOrientationRegistry.m */; };
+		E8DD046D503758DAD3176D125E9DE625 /* EXScreenOrientationModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 27EC4D5396844586C124F5DA54410A5E /* EXScreenOrientationModule.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		448D91DE668BF54552F1DB8D7F246254 /* PBXContainerItemProxy */ = {
+		4762CA170DE8D9D07AF6B3A9548E85C8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F29A965EC49A315CBE08E61FD04A6F54 /* UMCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
 		};
-		85298C9B9F09110815780427D2C4B5CD /* PBXContainerItemProxy */ = {
+		545E02A8D00688A3D354FFA06B1DDB88 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D8E3B542AC88C7CF2991D44EC4E50F7F /* React-Core.xcodeproj */;
 			proxyType = 1;
@@ -55,7 +55,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		5D8935E9B00A421D65E309A0A534194F /* Frameworks */ = {
+		9625FA48D464BAEB29B3A3A00434A6E1 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -140,14 +140,14 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		5AA5B378186F50F2DA16C45D0C380E15 /* Headers */ = {
+		FDC5814CD4699900B1C6D9BDAE54862D /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C1FCBC9417B5E34ECF6E9EF15F25160D /* EXScreenOrientationModule.h in Headers */,
-				D8B1B14168CED6835393FBFDB1733A68 /* EXScreenOrientationRegistry.h in Headers */,
-				23CFAEC4F405D3CE37AA86B749E742EE /* EXScreenOrientationUtilities.h in Headers */,
-				1B590F5D6A45AB38DF834D45C85F256E /* EXScreenOrientationViewController.h in Headers */,
+				27BF5920DD4FD71BFEC121149ACA9732 /* EXScreenOrientationModule.h in Headers */,
+				45BE20B8EF5CABBE78865EF08A02083F /* EXScreenOrientationRegistry.h in Headers */,
+				7591A9D7BAA7ED961965A845E4879A30 /* EXScreenOrientationUtilities.h in Headers */,
+				A5DAEAC484A3A809019014F7DD12828E /* EXScreenOrientationViewController.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -156,17 +156,17 @@
 /* Begin PBXNativeTarget section */
 		AA651E1AC215FDCE87E218058A342349 /* EXScreenOrientation */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 121CCAA931E12AC4CCD2FBB67C4EDE0C /* Build configuration list for PBXNativeTarget "EXScreenOrientation" */;
+			buildConfigurationList = BA63C0E2F16FF4A07D94025B1BC5FD14 /* Build configuration list for PBXNativeTarget "EXScreenOrientation" */;
 			buildPhases = (
-				5AA5B378186F50F2DA16C45D0C380E15 /* Headers */,
-				A0CE658EB127B56C73C2E4AD4C24BBDF /* Sources */,
-				5D8935E9B00A421D65E309A0A534194F /* Frameworks */,
+				FDC5814CD4699900B1C6D9BDAE54862D /* Headers */,
+				8DAC35AD6BCE18251BAE8CF3654B17B7 /* Sources */,
+				9625FA48D464BAEB29B3A3A00434A6E1 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				13CC68D73752DE5304590B2AC56AD35D /* PBXTargetDependency */,
-				72F0A3D6F576A916C653804E9DDFB9FA /* PBXTargetDependency */,
+				F68B4BDF65DEDDEADD9C0943A76350D9 /* PBXTargetDependency */,
+				86367B6BC3C2864F9DD66491B016440B /* PBXTargetDependency */,
 			);
 			name = EXScreenOrientation;
 			productName = EXScreenOrientation;
@@ -209,40 +209,39 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		A0CE658EB127B56C73C2E4AD4C24BBDF /* Sources */ = {
+		8DAC35AD6BCE18251BAE8CF3654B17B7 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C191EA115F52E13F0FF3818B3C4FED18 /* EXScreenOrientation-dummy.m in Sources */,
-				E03747FA90434991DBFCD30353E17691 /* EXScreenOrientationModule.m in Sources */,
-				DB3027FF6DF15395646C4B8CC9A4B198 /* EXScreenOrientationRegistry.m in Sources */,
-				19CAFBDCF8B7CD2666B238CB7CAFB3E2 /* EXScreenOrientationUtilities.m in Sources */,
-				3187B090CF1138A54301CD73570C27FB /* EXScreenOrientationViewController.m in Sources */,
+				7DE589CFA195DF3E353C1104D51403BD /* EXScreenOrientation-dummy.m in Sources */,
+				E8DD046D503758DAD3176D125E9DE625 /* EXScreenOrientationModule.m in Sources */,
+				D14DB62FEF1E676F897174F7541A71B1 /* EXScreenOrientationRegistry.m in Sources */,
+				1AAD2F35AD200D7139A7DBE6F1A11E55 /* EXScreenOrientationUtilities.m in Sources */,
+				C01A011D7B74C150C86E26369973829D /* EXScreenOrientationViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		13CC68D73752DE5304590B2AC56AD35D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "React-Core";
-			targetProxy = 85298C9B9F09110815780427D2C4B5CD /* PBXContainerItemProxy */;
-		};
-		72F0A3D6F576A916C653804E9DDFB9FA /* PBXTargetDependency */ = {
+		86367B6BC3C2864F9DD66491B016440B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 448D91DE668BF54552F1DB8D7F246254 /* PBXContainerItemProxy */;
+			targetProxy = 4762CA170DE8D9D07AF6B3A9548E85C8 /* PBXContainerItemProxy */;
+		};
+		F68B4BDF65DEDDEADD9C0943A76350D9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "React-Core";
+			targetProxy = 545E02A8D00688A3D354FFA06B1DDB88 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		22B1A828AB81F5B6AFCC3F10C1D65381 /* Debug */ = {
+		21BE5529FAE42367DAC68BC43ADAD498 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = B15FB0C6841456E5068505897E38ABB4 /* EXScreenOrientation.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
@@ -262,10 +261,11 @@
 			};
 			name = Debug;
 		};
-		9EC46603FB8DD5B527FD88F23AD6A495 /* Debug */ = {
+		724F9DD4EA5342885A2125B89E0B0365 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -288,6 +288,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -326,10 +327,36 @@
 			};
 			name = Debug;
 		};
-		A5326715CB4BC9955D3177FC4DAD9A8F /* Release */ = {
+		91B50711165510B54D6C6F2334745866 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 034F9A0AE662DAD2DCA489427BF3B55D /* EXScreenOrientation.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXScreenOrientation/EXScreenOrientation-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXScreenOrientation;
+				PRODUCT_NAME = EXScreenOrientation;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		FE0E2D173FA4E9ADB995D8AE9C0406CB /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -352,6 +379,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -386,49 +414,23 @@
 			};
 			name = Release;
 		};
-		BB4EDF6C65F1566DE993F61D80A8C820 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 034F9A0AE662DAD2DCA489427BF3B55D /* EXScreenOrientation.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXScreenOrientation/EXScreenOrientation-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXScreenOrientation;
-				PRODUCT_NAME = EXScreenOrientation;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		121CCAA931E12AC4CCD2FBB67C4EDE0C /* Build configuration list for PBXNativeTarget "EXScreenOrientation" */ = {
+		5EB446D8747D58C8AE18C4B8D7E65A20 /* Build configuration list for PBXProject "EXScreenOrientation" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				22B1A828AB81F5B6AFCC3F10C1D65381 /* Debug */,
-				BB4EDF6C65F1566DE993F61D80A8C820 /* Release */,
+				724F9DD4EA5342885A2125B89E0B0365 /* Debug */,
+				FE0E2D173FA4E9ADB995D8AE9C0406CB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		5EB446D8747D58C8AE18C4B8D7E65A20 /* Build configuration list for PBXProject "EXScreenOrientation" */ = {
+		BA63C0E2F16FF4A07D94025B1BC5FD14 /* Build configuration list for PBXNativeTarget "EXScreenOrientation" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				9EC46603FB8DD5B527FD88F23AD6A495 /* Debug */,
-				A5326715CB4BC9955D3177FC4DAD9A8F /* Release */,
+				21BE5529FAE42367DAC68BC43ADAD498 /* Debug */,
+				91B50711165510B54D6C6F2334745866 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

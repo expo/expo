@@ -7,47 +7,47 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		05771507DD355BC105919EABF8054A1E /* EXSaveToLibraryDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = DFA70A9965DF96DEB325423085943BF2 /* EXSaveToLibraryDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		189A702DDA4FD9BEE07413C19EA4A4CC /* EXMediaLibraryMediaLibraryWriteOnlyPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 27673D9824298DACF36857488715BDFC /* EXMediaLibraryMediaLibraryWriteOnlyPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		211FBAD36A30BE02D4ADD41CE1A45D3E /* EXMediaLibraryMediaLibraryWriteOnlyPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E55644659E2430155213690DA64BA17 /* EXMediaLibraryMediaLibraryWriteOnlyPermissionRequester.m */; };
-		2FD855BC17664CA7A97E0D8887C2B815 /* EXMediaLibrary.h in Headers */ = {isa = PBXBuildFile; fileRef = BC945B9B93C81E0D845630723A7A77A1 /* EXMediaLibrary.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		388F0B1C91CC7350E1AAD95CB769F538 /* EXMediaLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = 92A0F34A4AFB4801207D7D17ABCEAC45 /* EXMediaLibrary.m */; };
-		48F17A85091C30458CC0AE9DC26136C2 /* EXMediaLibraryMediaLibraryPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = BBFD9298A86C10FCAF6ED95ACDCE439B /* EXMediaLibraryMediaLibraryPermissionRequester.m */; };
-		5370E65601705AF51D77ABA505A9E4EE /* EXMediaLibraryImageLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A826948EA7C07AB92C70719FF6F5BBA /* EXMediaLibraryImageLoader.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		69268E090A518E24B5211DBFBE771AAA /* EXSaveToLibraryDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F9A010796AB917365117B03CEE59E986 /* EXSaveToLibraryDelegate.m */; };
-		6BBB410308E7AE5FF26642796737247A /* EXMediaLibraryMediaLibraryPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = EAF9C7DFC18956B64417DBC755AD77D1 /* EXMediaLibraryMediaLibraryPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		9E5F1DDF482FD2527A066A11B0496F78 /* EXMediaLibrary-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DAD3B6748C3F61A8A41F64240742D29 /* EXMediaLibrary-dummy.m */; };
-		DB02284A7752C9C9EE0E414D9F9F16BD /* EXMediaLibraryImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = BDD3407C6373F53078A757D3EA4A4E17 /* EXMediaLibraryImageLoader.m */; };
+		041DB91ECC92CC7301CD88D1DFFB3587 /* EXSaveToLibraryDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F9A010796AB917365117B03CEE59E986 /* EXSaveToLibraryDelegate.m */; };
+		3F3DFA46B120ABFEA6FF44CBCF98C861 /* EXMediaLibraryMediaLibraryPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = BBFD9298A86C10FCAF6ED95ACDCE439B /* EXMediaLibraryMediaLibraryPermissionRequester.m */; };
+		4B61F9F03F6DAE7A4BABF1436C2DBC74 /* EXMediaLibraryMediaLibraryPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = EAF9C7DFC18956B64417DBC755AD77D1 /* EXMediaLibraryMediaLibraryPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		94B6FE07963A3E0DB30C545706306F30 /* EXMediaLibraryImageLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A826948EA7C07AB92C70719FF6F5BBA /* EXMediaLibraryImageLoader.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		95598BE73C9F2DEFD46A7F8919A5002D /* EXMediaLibraryImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = BDD3407C6373F53078A757D3EA4A4E17 /* EXMediaLibraryImageLoader.m */; };
+		C22D343E3439742C596C0DBB5D5F6485 /* EXMediaLibraryMediaLibraryWriteOnlyPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 27673D9824298DACF36857488715BDFC /* EXMediaLibraryMediaLibraryWriteOnlyPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C912E3642F58965925FAE33441C48EA2 /* EXMediaLibraryMediaLibraryWriteOnlyPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E55644659E2430155213690DA64BA17 /* EXMediaLibraryMediaLibraryWriteOnlyPermissionRequester.m */; };
+		CFDC7A62ECC97BAB8E39CA4128F75D8F /* EXMediaLibrary.h in Headers */ = {isa = PBXBuildFile; fileRef = BC945B9B93C81E0D845630723A7A77A1 /* EXMediaLibrary.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		E2A4B5D3E264ECEE561A52FD11F146F7 /* EXMediaLibrary-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DAD3B6748C3F61A8A41F64240742D29 /* EXMediaLibrary-dummy.m */; };
+		FC26FD66930034AA5A08FB4BD87F90B3 /* EXMediaLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = 92A0F34A4AFB4801207D7D17ABCEAC45 /* EXMediaLibrary.m */; };
+		FF120E0B5EAD03475C013658BDF14CC1 /* EXSaveToLibraryDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = DFA70A9965DF96DEB325423085943BF2 /* EXSaveToLibraryDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		00ECC7F1E70AFD4929A25CB483B8FEB5 /* PBXContainerItemProxy */ = {
+		89DBBD6D51341939F36D9160236EBD5D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DD8FE9B2AD039ACDE9AC99F46AA369F4 /* UMPermissionsInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 12FF61416C5E794E9DEAC78D381D9726;
 			remoteInfo = UMPermissionsInterface;
 		};
-		6C76EA1C684DAD3A5FA89C08E681A047 /* PBXContainerItemProxy */ = {
+		AB4343840CA9C782C2B51C8551107E26 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7723D2334F2341264CE5E50BCAF01347 /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
+		B287093424A9DC25BA3602866744E9F8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 8D781B1A63954C2C00515B355326EB4D /* React-Core.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 5DA1A74647F652AE8E4DE074AFC4C6B7;
 			remoteInfo = "React-Core";
 		};
-		BA6E2A16DA1D827087AAD14B795D0C01 /* PBXContainerItemProxy */ = {
+		F0518424A2BA8F1E000EA87E54EF1BFE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B2A27E3F17E34F5365D52D9AECA74888 /* UMFileSystemInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
 			remoteInfo = UMFileSystemInterface;
-		};
-		E20ED2C4178B921F1907B6A4A471F7C4 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7723D2334F2341264CE5E50BCAF01347 /* UMCore.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
-			remoteInfo = UMCore;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -75,7 +75,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		623EC660D66FC007EAFFE29C6874556D /* Frameworks */ = {
+		5B545C20AD75D6EBE0F7D7DC0C25E16D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -173,15 +173,15 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		944CC5623197A2B494608C9AC329599B /* Headers */ = {
+		AC2D4B609A4922AAF206B58D2B539870 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2FD855BC17664CA7A97E0D8887C2B815 /* EXMediaLibrary.h in Headers */,
-				5370E65601705AF51D77ABA505A9E4EE /* EXMediaLibraryImageLoader.h in Headers */,
-				6BBB410308E7AE5FF26642796737247A /* EXMediaLibraryMediaLibraryPermissionRequester.h in Headers */,
-				189A702DDA4FD9BEE07413C19EA4A4CC /* EXMediaLibraryMediaLibraryWriteOnlyPermissionRequester.h in Headers */,
-				05771507DD355BC105919EABF8054A1E /* EXSaveToLibraryDelegate.h in Headers */,
+				CFDC7A62ECC97BAB8E39CA4128F75D8F /* EXMediaLibrary.h in Headers */,
+				94B6FE07963A3E0DB30C545706306F30 /* EXMediaLibraryImageLoader.h in Headers */,
+				4B61F9F03F6DAE7A4BABF1436C2DBC74 /* EXMediaLibraryMediaLibraryPermissionRequester.h in Headers */,
+				C22D343E3439742C596C0DBB5D5F6485 /* EXMediaLibraryMediaLibraryWriteOnlyPermissionRequester.h in Headers */,
+				FF120E0B5EAD03475C013658BDF14CC1 /* EXSaveToLibraryDelegate.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -190,19 +190,19 @@
 /* Begin PBXNativeTarget section */
 		422CF65902B3ABF0E6A47527F9209CC8 /* EXMediaLibrary */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F10738BDA13F304D6BE1F406B24FBA2E /* Build configuration list for PBXNativeTarget "EXMediaLibrary" */;
+			buildConfigurationList = 4D428884EDA32B17C7C7E631701931F6 /* Build configuration list for PBXNativeTarget "EXMediaLibrary" */;
 			buildPhases = (
-				944CC5623197A2B494608C9AC329599B /* Headers */,
-				4F92C7642AF3F80D3411C0FA18B03436 /* Sources */,
-				623EC660D66FC007EAFFE29C6874556D /* Frameworks */,
+				AC2D4B609A4922AAF206B58D2B539870 /* Headers */,
+				46A6573C28523BFEFBAE82744F0FA45B /* Sources */,
+				5B545C20AD75D6EBE0F7D7DC0C25E16D /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				84098FC450CEF466C54943F6ED8602B9 /* PBXTargetDependency */,
-				6FBFA479E06D71D020E8CCACEEE1CB0A /* PBXTargetDependency */,
-				2FA6A72B182CD17F7EA084BD3A54C681 /* PBXTargetDependency */,
-				984E61570399E71FBFA2340A99ECF63D /* PBXTargetDependency */,
+				C361FD65167ABE9F5DD6AF4B00BEC1A2 /* PBXTargetDependency */,
+				86C319D6D9B1F49082F25967DC282D90 /* PBXTargetDependency */,
+				368D9D3AE7FF94CE4B96D3D1C019B838 /* PBXTargetDependency */,
+				FC473397EADA744CCB2DC20CD6F27118 /* PBXTargetDependency */,
 			);
 			name = EXMediaLibrary;
 			productName = EXMediaLibrary;
@@ -251,49 +251,50 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		4F92C7642AF3F80D3411C0FA18B03436 /* Sources */ = {
+		46A6573C28523BFEFBAE82744F0FA45B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9E5F1DDF482FD2527A066A11B0496F78 /* EXMediaLibrary-dummy.m in Sources */,
-				388F0B1C91CC7350E1AAD95CB769F538 /* EXMediaLibrary.m in Sources */,
-				DB02284A7752C9C9EE0E414D9F9F16BD /* EXMediaLibraryImageLoader.m in Sources */,
-				48F17A85091C30458CC0AE9DC26136C2 /* EXMediaLibraryMediaLibraryPermissionRequester.m in Sources */,
-				211FBAD36A30BE02D4ADD41CE1A45D3E /* EXMediaLibraryMediaLibraryWriteOnlyPermissionRequester.m in Sources */,
-				69268E090A518E24B5211DBFBE771AAA /* EXSaveToLibraryDelegate.m in Sources */,
+				E2A4B5D3E264ECEE561A52FD11F146F7 /* EXMediaLibrary-dummy.m in Sources */,
+				FC26FD66930034AA5A08FB4BD87F90B3 /* EXMediaLibrary.m in Sources */,
+				95598BE73C9F2DEFD46A7F8919A5002D /* EXMediaLibraryImageLoader.m in Sources */,
+				3F3DFA46B120ABFEA6FF44CBCF98C861 /* EXMediaLibraryMediaLibraryPermissionRequester.m in Sources */,
+				C912E3642F58965925FAE33441C48EA2 /* EXMediaLibraryMediaLibraryWriteOnlyPermissionRequester.m in Sources */,
+				041DB91ECC92CC7301CD88D1DFFB3587 /* EXSaveToLibraryDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		2FA6A72B182CD17F7EA084BD3A54C681 /* PBXTargetDependency */ = {
+		368D9D3AE7FF94CE4B96D3D1C019B838 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMFileSystemInterface;
-			targetProxy = BA6E2A16DA1D827087AAD14B795D0C01 /* PBXContainerItemProxy */;
+			targetProxy = F0518424A2BA8F1E000EA87E54EF1BFE /* PBXContainerItemProxy */;
 		};
-		6FBFA479E06D71D020E8CCACEEE1CB0A /* PBXTargetDependency */ = {
+		86C319D6D9B1F49082F25967DC282D90 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = E20ED2C4178B921F1907B6A4A471F7C4 /* PBXContainerItemProxy */;
+			targetProxy = AB4343840CA9C782C2B51C8551107E26 /* PBXContainerItemProxy */;
 		};
-		84098FC450CEF466C54943F6ED8602B9 /* PBXTargetDependency */ = {
+		C361FD65167ABE9F5DD6AF4B00BEC1A2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-Core";
-			targetProxy = 6C76EA1C684DAD3A5FA89C08E681A047 /* PBXContainerItemProxy */;
+			targetProxy = B287093424A9DC25BA3602866744E9F8 /* PBXContainerItemProxy */;
 		};
-		984E61570399E71FBFA2340A99ECF63D /* PBXTargetDependency */ = {
+		FC473397EADA744CCB2DC20CD6F27118 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMPermissionsInterface;
-			targetProxy = 00ECC7F1E70AFD4929A25CB483B8FEB5 /* PBXContainerItemProxy */;
+			targetProxy = 89DBBD6D51341939F36D9160236EBD5D /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		070D12D7B9757560348E560EC65201E5 /* Debug */ = {
+		12868AC3B0E87A3D1413013CCC2A0D17 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -316,6 +317,69 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		7FD2C6BE1F1197D457DC5D994EB548EC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -354,12 +418,11 @@
 			};
 			name = Debug;
 		};
-		9BE2E73C7183B08DDBE508807027F6E0 /* Release */ = {
+		9F077F643F14EF0D7DF4B9D52EF3BDDF /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 29779233CC384FBB18E42A0CA19BEA8F /* EXMediaLibrary.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
@@ -380,72 +443,11 @@
 			};
 			name = Release;
 		};
-		9FA469A992EC764969B635ACD1B86F2C /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"POD_CONFIGURATION_RELEASE=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.0;
-				SYMROOT = "${SRCROOT}/../build";
-			};
-			name = Release;
-		};
-		FFE6CAB8524E36BB5FCB23C044E12745 /* Debug */ = {
+		D7BE073247A1C5A772F1699792620402 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2F3338ED8D60CFFDFBAB85A728B0731A /* EXMediaLibrary.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
@@ -468,20 +470,20 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		92C1512F651AB8F0999D49559B9E07CB /* Build configuration list for PBXProject "EXMediaLibrary" */ = {
+		4D428884EDA32B17C7C7E631701931F6 /* Build configuration list for PBXNativeTarget "EXMediaLibrary" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				070D12D7B9757560348E560EC65201E5 /* Debug */,
-				9FA469A992EC764969B635ACD1B86F2C /* Release */,
+				D7BE073247A1C5A772F1699792620402 /* Debug */,
+				9F077F643F14EF0D7DF4B9D52EF3BDDF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F10738BDA13F304D6BE1F406B24FBA2E /* Build configuration list for PBXNativeTarget "EXMediaLibrary" */ = {
+		92C1512F651AB8F0999D49559B9E07CB /* Build configuration list for PBXProject "EXMediaLibrary" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				FFE6CAB8524E36BB5FCB23C044E12745 /* Debug */,
-				9BE2E73C7183B08DDBE508807027F6E0 /* Release */,
+				7FD2C6BE1F1197D457DC5D994EB548EC /* Debug */,
+				12868AC3B0E87A3D1413013CCC2A0D17 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

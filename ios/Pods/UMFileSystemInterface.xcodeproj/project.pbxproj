@@ -108,24 +108,26 @@
 /* End PBXProject section */
 
 /* Begin XCBuildConfiguration section */
-		68BBDCB6120A375FFD3D102F1D71F286 /* Debug */ = {
+		38995E8C5A9CA50F33449C5999DA34A9 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C71D54B2ADCEC1E59C54E231C6E47E37 /* UMFileSystemInterface.debug.xcconfig */;
+			baseConfigurationReference = 8206C5F8AAA6ACDF38C646694ACE6E36 /* UMFileSystemInterface.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
-		8A401A4113B85808496B564502C3B420 /* Debug */ = {
+		718E30137EA8E098161F62D4289DAD00 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -148,6 +150,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -186,25 +189,25 @@
 			};
 			name = Debug;
 		};
-		D717CBABAD6FFD084968FA2B7AF82532 /* Release */ = {
+		980EB4FDD646B0A13C48456D4B8826F3 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8206C5F8AAA6ACDF38C646694ACE6E36 /* UMFileSystemInterface.release.xcconfig */;
+			baseConfigurationReference = C71D54B2ADCEC1E59C54E231C6E47E37 /* UMFileSystemInterface.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
-		E2552E9CC20E91B677C675FDB7A736C5 /* Release */ = {
+		EA9583C9F7E34F7A76F7BD3120D446A1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -227,6 +230,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -267,8 +271,8 @@
 		04A0A54FB1394BEA78D7494C17B4D2F2 /* Build configuration list for PBXProject "UMFileSystemInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8A401A4113B85808496B564502C3B420 /* Debug */,
-				E2552E9CC20E91B677C675FDB7A736C5 /* Release */,
+				718E30137EA8E098161F62D4289DAD00 /* Debug */,
+				EA9583C9F7E34F7A76F7BD3120D446A1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -276,8 +280,8 @@
 		5A5EA4FBBE7CD0F4A941C19E64580979 /* Build configuration list for PBXAggregateTarget "UMFileSystemInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				68BBDCB6120A375FFD3D102F1D71F286 /* Debug */,
-				D717CBABAD6FFD084968FA2B7AF82532 /* Release */,
+				980EB4FDD646B0A13C48456D4B8826F3 /* Debug */,
+				38995E8C5A9CA50F33449C5999DA34A9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

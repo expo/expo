@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		13B2EF16F23D5D318D4272A091A1DEEB /* EXScreenCaptureModule.h in Headers */ = {isa = PBXBuildFile; fileRef = DBD0676AAD85BC6BA82FE789D58B8ADD /* EXScreenCaptureModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		76CB3FB7EA0873905AF2977D7EC663C7 /* EXScreenCaptureModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 85BCAEE9934470CA6BC605236624F961 /* EXScreenCaptureModule.m */; };
-		9B4498649EBE37BDC286EACBB5FBD2B6 /* EXScreenCapture-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 567CD695713FF6D90AFAE990CD8B2450 /* EXScreenCapture-dummy.m */; };
+		1DB000B7007290B009A8F0A4ED3DE9F4 /* EXScreenCapture-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 567CD695713FF6D90AFAE990CD8B2450 /* EXScreenCapture-dummy.m */; };
+		241B6E7EEACE71E6598C1DFDC6F05BE6 /* EXScreenCaptureModule.h in Headers */ = {isa = PBXBuildFile; fileRef = DBD0676AAD85BC6BA82FE789D58B8ADD /* EXScreenCaptureModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		CCA64D5C37C13EAB56189136C952A5A0 /* EXScreenCaptureModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 85BCAEE9934470CA6BC605236624F961 /* EXScreenCaptureModule.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		440C43D4700AAED026B7E5B3D4ADA776 /* PBXContainerItemProxy */ = {
+		AEB087EBE3164A74134CAE2AB1EE5873 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 366BC1FED57CB9DA5667253219D52344 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -35,7 +35,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		847A45C7B0886CFF788D46CF030D8E93 /* Frameworks */ = {
+		D6E7E826B51A5F90AD799414502990C3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -113,11 +113,11 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		5772A878E64659452369D3E2E5104527 /* Headers */ = {
+		A25FEAB4C628F2D2448B4404A8FBEDC5 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				13B2EF16F23D5D318D4272A091A1DEEB /* EXScreenCaptureModule.h in Headers */,
+				241B6E7EEACE71E6598C1DFDC6F05BE6 /* EXScreenCaptureModule.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -126,16 +126,16 @@
 /* Begin PBXNativeTarget section */
 		41748256BF35CA80D3CE24FFC0C6012B /* EXScreenCapture */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C83C739E6FCF22B84B8EF5C8179FE42B /* Build configuration list for PBXNativeTarget "EXScreenCapture" */;
+			buildConfigurationList = DCD3F4891766FF69F8079C33B03CF3E8 /* Build configuration list for PBXNativeTarget "EXScreenCapture" */;
 			buildPhases = (
-				5772A878E64659452369D3E2E5104527 /* Headers */,
-				EFBE6C18E8A7693A6149F95B4E939AEC /* Sources */,
-				847A45C7B0886CFF788D46CF030D8E93 /* Frameworks */,
+				A25FEAB4C628F2D2448B4404A8FBEDC5 /* Headers */,
+				14F1FCD424ADA34A0F2EB587AFF07176 /* Sources */,
+				D6E7E826B51A5F90AD799414502990C3 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				3E9284B9DAC32887CF8D1285C547AB81 /* PBXTargetDependency */,
+				D9FC83B0CB914DB6272D280C4B1D5142 /* PBXTargetDependency */,
 			);
 			name = EXScreenCapture;
 			productName = EXScreenCapture;
@@ -175,30 +175,31 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		EFBE6C18E8A7693A6149F95B4E939AEC /* Sources */ = {
+		14F1FCD424ADA34A0F2EB587AFF07176 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9B4498649EBE37BDC286EACBB5FBD2B6 /* EXScreenCapture-dummy.m in Sources */,
-				76CB3FB7EA0873905AF2977D7EC663C7 /* EXScreenCaptureModule.m in Sources */,
+				1DB000B7007290B009A8F0A4ED3DE9F4 /* EXScreenCapture-dummy.m in Sources */,
+				CCA64D5C37C13EAB56189136C952A5A0 /* EXScreenCaptureModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		3E9284B9DAC32887CF8D1285C547AB81 /* PBXTargetDependency */ = {
+		D9FC83B0CB914DB6272D280C4B1D5142 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 440C43D4700AAED026B7E5B3D4ADA776 /* PBXContainerItemProxy */;
+			targetProxy = AEB087EBE3164A74134CAE2AB1EE5873 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		3E7202DD51F9D5E1ADABFEAAAC845B20 /* Debug */ = {
+		20D60F6BE228DEE290E1EE4980318A2F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -221,6 +222,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -259,10 +261,11 @@
 			};
 			name = Debug;
 		};
-		48CCA6D34DA9D1E56FD16BAF0AABF927 /* Release */ = {
+		9041404710734202C0A818CFB3E1FA91 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -285,6 +288,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -319,12 +323,11 @@
 			};
 			name = Release;
 		};
-		9CB3A72213B65D7641F5CF3C88CFB149 /* Debug */ = {
+		96F6AC78D8A29B3C258D8F7A350E1244 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C170970DECAACBC33C40A5D82F6CE552 /* EXScreenCapture.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
@@ -344,12 +347,11 @@
 			};
 			name = Debug;
 		};
-		BA1B86DB718543F31BE4281AC840B0A2 /* Release */ = {
+		CA539C8F5F5BAD7C44FF452113F64ADF /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 951FB58A42C0EB3C0AFFE09B4A6CDCAB /* EXScreenCapture.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
@@ -376,17 +378,17 @@
 		1B101987503504736FA9C53B79FC837A /* Build configuration list for PBXProject "EXScreenCapture" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				3E7202DD51F9D5E1ADABFEAAAC845B20 /* Debug */,
-				48CCA6D34DA9D1E56FD16BAF0AABF927 /* Release */,
+				20D60F6BE228DEE290E1EE4980318A2F /* Debug */,
+				9041404710734202C0A818CFB3E1FA91 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C83C739E6FCF22B84B8EF5C8179FE42B /* Build configuration list for PBXNativeTarget "EXScreenCapture" */ = {
+		DCD3F4891766FF69F8079C33B03CF3E8 /* Build configuration list for PBXNativeTarget "EXScreenCapture" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				9CB3A72213B65D7641F5CF3C88CFB149 /* Debug */,
-				BA1B86DB718543F31BE4281AC840B0A2 /* Release */,
+				96F6AC78D8A29B3C258D8F7A350E1244 /* Debug */,
+				CA539C8F5F5BAD7C44FF452113F64ADF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

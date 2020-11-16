@@ -106,25 +106,11 @@
 /* End PBXProject section */
 
 /* Begin XCBuildConfiguration section */
-		1150F028DF0436DE37C1D501817A7011 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = DA514CBBF11CF946E0260451D777B1DE /* UMCameraInterface.release.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		153E90E26CD871F2FA0ABBEA5CB92648 /* Release */ = {
+		39D3F37044F3B28751FDEFB70717396F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -147,6 +133,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -181,10 +168,26 @@
 			};
 			name = Release;
 		};
-		4FF35DD86ED449BAA09598EF345406CB /* Debug */ = {
+		BEC8EF76B94F7FCE1886B2343593C746 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = DA514CBBF11CF946E0260451D777B1DE /* UMCameraInterface.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		E7285C65C6D56FB5C6348A03A345F8FF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -207,6 +210,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -245,13 +249,13 @@
 			};
 			name = Debug;
 		};
-		C6E15C9F7F0B2A693760580A84BD2ED7 /* Debug */ = {
+		ED6B8F6F92A3202E79D37362ED8F0C9D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D355EFC1D9D963B553118AB4783694BC /* UMCameraInterface.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				SDKROOT = iphoneos;
@@ -265,8 +269,8 @@
 		8DBF6E740A062E8F3FD8A6133956258B /* Build configuration list for PBXProject "UMCameraInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				4FF35DD86ED449BAA09598EF345406CB /* Debug */,
-				153E90E26CD871F2FA0ABBEA5CB92648 /* Release */,
+				E7285C65C6D56FB5C6348A03A345F8FF /* Debug */,
+				39D3F37044F3B28751FDEFB70717396F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -274,8 +278,8 @@
 		A0D4BF1EC36A7EB9632B445111810A55 /* Build configuration list for PBXAggregateTarget "UMCameraInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C6E15C9F7F0B2A693760580A84BD2ED7 /* Debug */,
-				1150F028DF0436DE37C1D501817A7011 /* Release */,
+				ED6B8F6F92A3202E79D37362ED8F0C9D /* Debug */,
+				BEC8EF76B94F7FCE1886B2343593C746 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
