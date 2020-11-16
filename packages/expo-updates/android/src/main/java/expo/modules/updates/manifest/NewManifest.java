@@ -25,8 +25,7 @@ public class NewManifest implements Manifest {
   private String mScopeKey;
   private Date mCommitTime;
   private String mRuntimeVersion;
-  private JSONObject mMetadata;
-  private Uri mBundleUrl;
+  private JSONObject mLaunchAsset;
   private JSONArray mAssets;
 
   private JSONObject mManifestJson;
@@ -36,28 +35,30 @@ public class NewManifest implements Manifest {
                       String scopeKey,
                       Date commitTime,
                       String runtimeVersion,
-                      JSONObject metadata,
-                      Uri bundleUrl,
+                      JSONObject launchAsset,
                       JSONArray assets) {
     mManifestJson = manifestJson;
     mId = id;
     mScopeKey = scopeKey;
     mCommitTime = commitTime;
     mRuntimeVersion = runtimeVersion;
-    mMetadata = metadata;
-    mBundleUrl = bundleUrl;
+    mLaunchAsset = launchAsset;
     mAssets = assets;
   }
 
-  public static NewManifest fromManifestJson(JSONObject manifestJson, UpdatesConfiguration configuration) throws JSONException {
+  public static NewManifest fromManifestJson(JSONObject rootManifestJson, UpdatesConfiguration configuration) throws JSONException {
+    JSONObject manifestJson = rootManifestJson;
+    if (rootManifestJson.has("manifest")) {
+      manifestJson = rootManifestJson.getJSONObject("manifest");
+    }
+
     UUID id = UUID.fromString(manifestJson.getString("id"));
-    Date commitTime = new Date(manifestJson.getLong("commitTime"));
-    String runtimeVersion = manifestJson.getString("runtimeVersion");
-    JSONObject metadata = manifestJson.optJSONObject("metadata");
-    Uri bundleUrl = Uri.parse(manifestJson.getString("bundleUrl"));
+    Date commitTime = new Date(manifestJson.getLong("createdAt"));
+    String runtimeVersion = manifestJson.getString("nativeRuntimeVersion");
+    JSONObject launchAsset = manifestJson.getJSONObject("launchAsset");
     JSONArray assets = manifestJson.optJSONArray("assets");
 
-    return new NewManifest(manifestJson, id, configuration.getScopeKey(), commitTime, runtimeVersion, metadata, bundleUrl, assets);
+    return new NewManifest(manifestJson, id, configuration.getScopeKey(), commitTime, runtimeVersion, launchAsset, assets);
   }
 
   public JSONObject getRawManifestJson() {
@@ -66,9 +67,7 @@ public class NewManifest implements Manifest {
 
   public UpdateEntity getUpdateEntity() {
     UpdateEntity updateEntity = new UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey);
-    if (mMetadata != null) {
-      updateEntity.metadata = mMetadata;
-    }
+    updateEntity.metadata = mManifestJson;
 
     return updateEntity;
   }
@@ -76,11 +75,15 @@ public class NewManifest implements Manifest {
   public ArrayList<AssetEntity> getAssetEntityList() {
     ArrayList<AssetEntity> assetList = new ArrayList<>();
 
-    AssetEntity bundleAssetEntity = new AssetEntity("bundle-" + mCommitTime.getTime(), "js");
-    bundleAssetEntity.url = mBundleUrl;
-    bundleAssetEntity.isLaunchAsset = true;
-    bundleAssetEntity.embeddedAssetFilename = BUNDLE_FILENAME;
-    assetList.add(bundleAssetEntity);
+    try {
+      AssetEntity bundleAssetEntity = new AssetEntity("bundle-" + mCommitTime.getTime(), mLaunchAsset.getString("type"));
+      bundleAssetEntity.url = Uri.parse(mLaunchAsset.getString("url"));
+      bundleAssetEntity.isLaunchAsset = true;
+      bundleAssetEntity.embeddedAssetFilename = BUNDLE_FILENAME;
+      assetList.add(bundleAssetEntity);
+    } catch (JSONException e) {
+      Log.e(TAG, "Could not read launch asset from manifest", e);
+    }
 
     if (mAssets != null && mAssets.length() > 0) {
       for (int i = 0; i < mAssets.length(); i++) {
