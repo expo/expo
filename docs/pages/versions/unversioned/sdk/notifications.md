@@ -1647,7 +1647,7 @@ export interface NotificationResponse {
 
 ### `NotificationBehavior`
 
-An object representing behavior that should be applied to the incoming notification.
+An object representing behavior that should be applied to incoming notifications when the app is foregrounded.
 
 ```ts
 export interface NotificationBehavior {
@@ -1657,6 +1657,8 @@ export interface NotificationBehavior {
   priority?: AndroidNotificationPriority;
 }
 ```
+
+> On Android, setting `shouldPlaySound: false` will result in the drop-down notification alert **not** showing, no matter what the priority is. This setting will also override any channel-specific sounds you may have configured.
 
 ### `NotificationChannel`
 
