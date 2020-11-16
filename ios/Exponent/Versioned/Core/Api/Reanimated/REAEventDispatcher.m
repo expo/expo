@@ -1,7 +1,7 @@
 #import "REAEventDispatcher.h"
 #import <React/RCTDefines.h>
 #import <React/RCTBridge+Private.h>
-#import <RNReanimated/REAModule.h>
+#import "REAModule.h"
 
 @implementation REAEventDispatcher
 

@@ -7,7 +7,7 @@
 #include <mutex>
 #include <unordered_map>
 #include <jsi/jsi.h>
-#include <JSIStoreValueUser.h>
+#include "JSIStoreValueUser.h"
 
 using namespace facebook;
 

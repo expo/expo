@@ -45,7 +45,6 @@
 #import "EXScopedModuleRegistryAdapter.h"
 #import "EXScopedModuleRegistryDelegate.h"
 
-#import "REATurboModuleProvider.h"
 #import "REAModule.h"
 
 #import <React/RCTCxxBridgeDelegate.h>
@@ -394,7 +393,7 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                       jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
-  return facebook::react::REATurboModuleProvider(name, jsInvoker);
+  return nullptr;
 }
 
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass

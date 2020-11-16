@@ -2,7 +2,7 @@
 
 #import "REANodesManager.h"
 #import "Transitioning/REATransitionManager.h"
-#import "native/NativeProxy.h"
+#import "NativeProxy.h"
 
 typedef void (^AnimatedOperation)(REANodesManager *nodesManager);
 

@@ -1,16 +1,12 @@
 #import "UIResponder+Reanimated.h"
 #import <React/RCTCxxBridgeDelegate.h>
-#import <RNReanimated/NativeProxy.h>
-#import <RNReanimated/REAModule.h>
+#import "NativeProxy.h"
+#import "REAModule.h"
 #import <React/JSCExecutorFactory.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTCxxBridgeDelegate.h>
-#import <RNReanimated/REAEventDispatcher.h>
-
-#if RNVERSION == 62
-#import <ReactCommon/BridgeJSCallInvoker.h>
-#endif
+#import "REAEventDispatcher.h"
 
 #ifndef DONT_AUTOINSTALL_REANIMATED
 
@@ -35,12 +31,7 @@
     }
     __typeof(self) strongSelf = weakSelf;
     if (strongSelf) {
-      #if RNVERSION == 62
-        auto callInvoker = std::make_shared<react::BridgeJSCallInvoker>(bridge.reactInstance);
-        auto reanimatedModule = reanimated::createReanimatedModule(callInvoker);
-      #elif RNVERSION == 63
-        auto reanimatedModule = reanimated::createReanimatedModule(bridge.jsCallInvoker);
-      #endif
+      auto reanimatedModule = reanimated::createReanimatedModule(bridge.jsCallInvoker);
       runtime.global().setProperty(runtime,
                                    jsi::PropNameID::forAscii(runtime, "__reanimatedModuleProxy"),
                                    jsi::Object::createFromHostObject(runtime, reanimatedModule)
