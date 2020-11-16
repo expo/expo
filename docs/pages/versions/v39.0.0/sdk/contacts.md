@@ -528,40 +528,42 @@ const allContainers = await Contacts.getContainersAsync({
 
 A set of fields that define information about a single entity.
 
-| Name                    | Type                      | Description                                                    | iOS | Android |
-| ----------------------- | ------------------------- | -------------------------------------------------------------- | --- | ------- |
-| id                      | `string`                  | Immutable identifier used for querying and indexing.           | ✅  | ✅      |
-| name                    | `string`                  | Full name with proper format.                                  | ✅  | ✅      |
-| firstName               | `string`                  | Given name.                                                    | ✅  | ✅      |
-| middleName              | `string`                  | Middle name.                                                   | ✅  | ✅      |
-| lastName                | `string`                  | Family name.                                                   | ✅  | ✅      |
-| maidenName              | `string`                  | Maiden name.                                                   | ✅  | ✅      |
-| namePrefix              | `string`                  | Dr. Mr. Mrs. Ect...                                            | ✅  | ✅      |
-| nameSuffix              | `string`                  | Jr. Sr. Ect...                                                 | ✅  | ✅      |
-| nickname                | `string`                  | An alias to the proper name.                                   | ✅  | ✅      |
-| phoneticFirstName       | `string`                  | Pronunciation of the first name.                               | ✅  | ✅      |
-| phoneticMiddleName      | `string`                  | Pronunciation of the middle name.                              | ✅  | ✅      |
-| phoneticLastName        | `string`                  | Pronunciation of the last name.                                | ✅  | ✅      |
-| company                 | `string`                  | Organization the entity belongs to.                            | ✅  | ✅      |
-| jobTitle                | `string`                  | Job description.                                               | ✅  | ✅      |
-| department              | `string`                  | Job department.                                                | ✅  | ✅      |
-| note                    | `string`                  | Additional information.                                        | ✅  | ✅      |
-| imageAvailable          | `boolean`                 | Used for efficient retrieval of images.                        | ✅  | ✅      |
-| image                   | `Image`                   | Thumbnail image (ios: 320x320)                                 | ✅  | ✅      |
-| rawImage                | `Image`                   | Raw image without cropping, usually large.                     | ✅  | ✅      |
-| contactType             | `ContactType`             | Denoting a person or company.                                  | ✅  | ✅      |
-| birthday                | `Date`                    | Birthday information in JS format.                             | ✅  | ✅      |
-| dates                   | `Date[]`                  | A list of other relevant user dates.                           | ✅  | ✅      |
-| relationships           | `Relationship[]`          | Names of other relevant user connections                       | ✅  | ✅      |
-| emails                  | `Email[]`                 | Email addresses                                                | ✅  | ✅      |
-| phoneNumbers            | `PhoneNumber[]`           | Phone numbers                                                  | ✅  | ✅      |
-| addresses               | `Address[]`               | Locations                                                      | ✅  | ✅      |
-| instantMessageAddresses | `InstantMessageAddress[]` | IM connections                                                 | ✅  | ✅      |
-| urlAddresses            | `UrlAddress[]`            | Web Urls                                                       | ✅  | ✅      |
-| nonGregorianBirthday    | `Date`                    | Birthday that doesn't conform to the Gregorian calendar format | ✅  | ❌      |
-| socialProfiles          | `SocialProfile[]`         | Social networks                                                | ✅  | ❌      |
-| thumbnail               | `Image`                   | Deprecated: Use `image`                                        | ❌  | ❌      |
-| previousLastName        | `string`                  | Deprecated: Use `maidenName`                                   | ❌  | ❌      |
+| Name                    | Type                      | Description                                                    | iOS  | Android |
+| ----------------------- | ------------------------- | -------------------------------------------------------------- | ---- | ------- |
+| id                      | `string`                  | Immutable identifier used for querying and indexing.           | ✅   | ✅      |
+| name                    | `string`                  | Full name with proper format.                                  | ✅   | ✅      |
+| firstName               | `string`                  | Given name.                                                    | ✅   | ✅      |
+| middleName              | `string`                  | Middle name.                                                   | ✅   | ✅      |
+| lastName                | `string`                  | Family name.                                                   | ✅   | ✅      |
+| maidenName              | `string`                  | Maiden name.                                                   | ✅   | ✅      |
+| namePrefix              | `string`                  | Dr. Mr. Mrs. Ect...                                            | ✅   | ✅      |
+| nameSuffix              | `string`                  | Jr. Sr. Ect...                                                 | ✅   | ✅      |
+| nickname                | `string`                  | An alias to the proper name.                                   | ✅   | ✅      |
+| phoneticFirstName       | `string`                  | Pronunciation of the first name.                               | ✅   | ✅      |
+| phoneticMiddleName      | `string`                  | Pronunciation of the middle name.                              | ✅   | ✅      |
+| phoneticLastName        | `string`                  | Pronunciation of the last name.                                | ✅   | ✅      |
+| company                 | `string`                  | Organization the entity belongs to.                            | ✅   | ✅      |
+| jobTitle                | `string`                  | Job description.                                               | ✅   | ✅      |
+| department              | `string`                  | Job department.                                                | ✅   | ✅      |
+| note                    | `string`                  | Additional information.                                        | ✅\* | ✅      |
+| imageAvailable          | `boolean`                 | Used for efficient retrieval of images.                        | ✅   | ✅      |
+| image                   | `Image`                   | Thumbnail image (ios: 320x320)                                 | ✅   | ✅      |
+| rawImage                | `Image`                   | Raw image without cropping, usually large.                     | ✅   | ✅      |
+| contactType             | `ContactType`             | Denoting a person or company.                                  | ✅   | ✅      |
+| birthday                | `Date`                    | Birthday information in JS format.                             | ✅   | ✅      |
+| dates                   | `Date[]`                  | A list of other relevant user dates.                           | ✅   | ✅      |
+| relationships           | `Relationship[]`          | Names of other relevant user connections                       | ✅   | ✅      |
+| emails                  | `Email[]`                 | Email addresses                                                | ✅   | ✅      |
+| phoneNumbers            | `PhoneNumber[]`           | Phone numbers                                                  | ✅   | ✅      |
+| addresses               | `Address[]`               | Locations                                                      | ✅   | ✅      |
+| instantMessageAddresses | `InstantMessageAddress[]` | IM connections                                                 | ✅   | ✅      |
+| urlAddresses            | `UrlAddress[]`            | Web Urls                                                       | ✅   | ✅      |
+| nonGregorianBirthday    | `Date`                    | Birthday that doesn't conform to the Gregorian calendar format | ✅   | ❌      |
+| socialProfiles          | `SocialProfile[]`         | Social networks                                                | ✅   | ❌      |
+| thumbnail               | `Image`                   | Deprecated: Use `image`                                        | ❌   | ❌      |
+| previousLastName        | `string`                  | Deprecated: Use `maidenName`                                   | ❌   | ❌      |
+
+> \*On iOS 13 and up, the `note` field [requires your app to request additional entitlements](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes). The Expo client app does not contain those entitlements, so in order to test this feature you will need to [request the entitlement from Apple here](https://developer.apple.com/contact/request/contact-note-field), set the [`ios.accessesContactNotes`](../../config/app/#accessescontactnotes) field in app.json to `true`, and [build your app as a standalone app](/distribution/building-standalone-apps/).
 
 ### Group
 
