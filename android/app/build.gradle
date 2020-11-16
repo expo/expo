@@ -96,11 +96,11 @@ dependencies {
   implementation 'androidx.multidex:multidex:2.0.0'
 
   // Our dependencies
-  implementation 'androidx.appcompat:appcompat:1.1.0'
+  implementation 'androidx.appcompat:appcompat:1.2.0'
 
   // Our dependencies from ExpoView
   // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPOVIEW. ONLY COPY THINGS FROM EXPOVIEW TO HERE.
-  implementation 'androidx.appcompat:appcompat:1.1.0'
+  implementation 'androidx.appcompat:appcompat:1.2.0'
   implementation('com.facebook.android:audience-network-sdk:5.1.1') {
     exclude module: 'play-services-ads'
   }
