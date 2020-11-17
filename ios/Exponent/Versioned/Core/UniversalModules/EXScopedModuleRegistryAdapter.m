@@ -47,7 +47,7 @@
 #endif
 
 #if __has_include(<EXConstants/EXConstantsService.h>)
-  EXConstantsBinding *constantsBinding = [[EXConstantsBinding alloc] initWithExperienceId:experienceId andParams:params];
+  EXConstantsBinding *constantsBinding = [[EXConstantsBinding alloc] initWithExperienceId:experienceId andParams:params deviceInstallUUIDManager:kernelServices[EX_UNVERSIONED(@"EXDeviceInstallUUIDService")]];
   [moduleRegistry registerInternalModule:constantsBinding];
 #endif
 
