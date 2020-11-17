@@ -12,8 +12,6 @@
 
 ### 🐛 Bug fixes
 
-- If `manifest` is defined on `expo-updates` then use it instead of `ExponentConstants.manifest` ([#10668](https://github.com/expo/expo/pull/10668) by [@esamelson](https://github.com/esamelson))
-
 ## 9.2.0 — 2020-08-18
 
 _This version does not introduce any user-facing changes._
