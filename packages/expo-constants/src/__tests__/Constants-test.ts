@@ -1,4 +1,4 @@
-import Constants from '../Constants';
+import Constants, { ExecutionEnvironment } from '../Constants';
 
 it(`defines a manifest`, () => {
   expect(Constants.manifest).toBeTruthy();
@@ -22,6 +22,13 @@ describe(`manifest`, () => {
     jest.dontMock('../ExponentConstants');
     jest.dontMock('@unimodules/core');
   });
+
+  // mock console.warn
+  const originalWarn = console.warn;
+  beforeEach(() => {
+    console.warn = jest.fn();
+  });
+  afterEach(() => (console.warn = originalWarn));
 
   function mockExponentConstants(mockValues: object) {
     jest.doMock('../ExponentConstants', () => {
@@ -66,12 +73,14 @@ describe(`manifest`, () => {
     mockExponentConstants({ manifest: fakeManifest });
     const ConstantsWithMock = require('../Constants').default;
     expect(ConstantsWithMock.manifest).toEqual(fakeManifest);
+    expect(console.warn).not.toHaveBeenCalled();
   });
 
   it(`exists if defined as a string in ExponentConstants`, () => {
     mockExponentConstants({ manifest: JSON.stringify(fakeManifest) });
     const ConstantsWithMock = require('../Constants').default;
     expect(ConstantsWithMock.manifest).toEqual(fakeManifest);
+    expect(console.warn).not.toHaveBeenCalled();
   });
 
   it(`exists if defined as an object by expo-updates`, () => {
@@ -79,6 +88,7 @@ describe(`manifest`, () => {
     mockExpoUpdates({ manifest: fakeManifest, manifestString: undefined });
     const ConstantsWithMock = require('../Constants').default;
     expect(ConstantsWithMock.manifest).toEqual(fakeManifest);
+    expect(console.warn).not.toHaveBeenCalled();
   });
 
   it(`exists if defined as a string by expo-updates`, () => {
@@ -86,20 +96,23 @@ describe(`manifest`, () => {
     mockExpoUpdates({ manifest: undefined, manifestString: JSON.stringify(fakeManifest) });
     const ConstantsWithMock = require('../Constants').default;
     expect(ConstantsWithMock.manifest).toEqual(fakeManifest);
+    expect(console.warn).not.toHaveBeenCalled();
   });
 
-  it(`is null if undefined in ExponentConstants and expo-updates`, () => {
-    mockExponentConstants({ manifest: undefined });
+  it(`is null if undefined in ExponentConstants and expo-updates with bare execution environment`, () => {
+    mockExponentConstants({ manifest: undefined, executionEnvironment: ExecutionEnvironment.Bare });
     mockExpoUpdates({ manifest: undefined, manifestString: undefined });
     const ConstantsWithMock = require('../Constants').default;
     expect(ConstantsWithMock.manifest).toBeNull();
+    expect(console.warn).toHaveBeenCalled();
   });
 
-  it(`is null if undefined in ExponentConstants, and expo-updates does not exist`, () => {
-    mockExponentConstants({ manifest: undefined });
+  it(`is null if undefined in ExponentConstants, and expo-updates does not exist with bare execution environment`, () => {
+    mockExponentConstants({ manifest: undefined, executionEnvironment: ExecutionEnvironment.Bare });
     mockNativeModulesProxy({ ExpoUpdates: undefined });
     const ConstantsWithMock = require('../Constants').default;
     expect(ConstantsWithMock.manifest).toBeNull();
+    expect(console.warn).toHaveBeenCalled();
   });
 
   it(`is overridden by expo-updates if both are defined`, () => {
@@ -107,6 +120,7 @@ describe(`manifest`, () => {
     mockExpoUpdates({ manifest: fakeManifest2 });
     const ConstantsWithMock = require('../Constants').default;
     expect(ConstantsWithMock.manifest).toEqual(fakeManifest2);
+    expect(console.warn).not.toHaveBeenCalled();
   });
 
   it(`is not overridden if expo-updates exports an empty manifest`, () => {
@@ -114,5 +128,17 @@ describe(`manifest`, () => {
     mockExpoUpdates({ manifest: {} });
     const ConstantsWithMock = require('../Constants').default;
     expect(ConstantsWithMock.manifest).toEqual(fakeManifest);
+    expect(console.warn).not.toHaveBeenCalled();
+  });
+
+  [ExecutionEnvironment.Standalone, ExecutionEnvironment.StoreClient].forEach(env => {
+    it(`throws an error if manifest is falsey when Constants.executionEnvironment is ${env}`, () => {
+      mockExponentConstants({
+        manifest: null,
+        executionEnvironment: env,
+      });
+      const ConstantsWithMock = require('../Constants').default;
+      expect(() => ConstantsWithMock.manifest).toThrowErrorMatchingSnapshot();
+    });
   });
 });
