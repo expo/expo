@@ -801,7 +801,7 @@ module.exports = {
           debugMode: { type: 'boolean', mock: true },
           deviceName: { type: 'string' },
           deviceYearClass: { type: 'number', mock: 2019 },
-          executionEnvironment: { type: 'string' },
+          executionEnvironment: { type: 'string', mock: 'standalone' },
           experienceUrl: { type: 'string' },
           expoRuntimeVersion: { type: 'string' },
           expoVersion: { type: 'string' },
