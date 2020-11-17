@@ -16,9 +16,18 @@ If you don't have an Android device available to test with, we recommend using t
 
 ![Android SDK location](/static/images/android-studio-sdk-location.png)
 
-- If you are on macOS or Linux, add the Android SDK location to your PATH in `~/.bash_profile` or `~/.zshrc` by running this command: ``echo "export ANDROID_SDK=$HOME/Library/Android/sdk" >> ~/`[[ $SHELL == *"zsh" ]] && echo '.zshrc' || echo '.bash_profile'` ``
+- If you are on macOS or Linux, add a new line with an environment variable for the Android SDK location in `~/.bash_profile` (or `~/.zshenv` if you use Zsh) - eg. `export ANDROID_SDK=/your/path/here`. Copy and paste these two lines to do this automatically for Bash and Zsh:
 
-- On macOS, you will also need to add `platform-tools` to your `~/.bash_profile` or `~/.zshrc` by running this command: ``echo "export PATH=$HOME/Library/Android/sdk/platform-tools:\$PATH" >> ~/`[[ $SHELL == *"zsh" ]] && echo '.zshrc' || echo '.bash_profile'` ``
+```bash
+[ -d "$HOME/Library/Android/sdk" ] && ANDROID_SDK=$HOME/Library/Android/sdk || ANDROID_SDK=$HOME/Android/Sdk
+echo "export ANDROID_SDK=$ANDROID_SDK" >> ~/`[[ $SHELL == *"zsh" ]] && echo '.zshenv' || echo '.bash_profile'`
+```
+
+- On macOS, you will also need to add `platform-tools` to your `~/.bash_profile` (or `~/.zshenv` if you use Zsh) by running this command - eg. `export PATH=/your/path/here:$PATH`. Copy and paste this line to do this automatically for Bash and Zsh:
+
+```bash
+echo "export ANDROID_SDK=$HOME/Library/Android/sdk" >> ~/`[[ $SHELL == *"zsh" ]] && echo '.zshenv' || echo '.bash_profile'`
+```
 
 - Make sure that you can run `adb` from your terminal.
 
