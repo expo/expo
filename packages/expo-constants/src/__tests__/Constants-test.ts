@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 import Constants, { ExecutionEnvironment } from '../Constants';
 
 it(`defines a manifest`, () => {
@@ -104,7 +106,13 @@ describe(`manifest`, () => {
     mockExpoUpdates({ manifest: undefined, manifestString: undefined });
     const ConstantsWithMock = require('../Constants').default;
     expect(ConstantsWithMock.manifest).toBeNull();
-    expect(console.warn).toHaveBeenCalled();
+
+    // Skip warnings on web
+    if (Platform.OS === 'web') {
+      expect(console.warn).not.toHaveBeenCalled();
+    } else {
+      expect(console.warn).toHaveBeenCalled();
+    }
   });
 
   it(`is null if undefined in ExponentConstants, and expo-updates does not exist with bare execution environment`, () => {
@@ -112,7 +120,13 @@ describe(`manifest`, () => {
     mockNativeModulesProxy({ ExpoUpdates: undefined });
     const ConstantsWithMock = require('../Constants').default;
     expect(ConstantsWithMock.manifest).toBeNull();
-    expect(console.warn).toHaveBeenCalled();
+
+    // Skip warnings on web
+    if (Platform.OS === 'web') {
+      expect(console.warn).not.toHaveBeenCalled();
+    } else {
+      expect(console.warn).toHaveBeenCalled();
+    }
   });
 
   it(`is overridden by expo-updates if both are defined`, () => {
@@ -131,14 +145,17 @@ describe(`manifest`, () => {
     expect(console.warn).not.toHaveBeenCalled();
   });
 
-  [ExecutionEnvironment.Standalone, ExecutionEnvironment.StoreClient].forEach(env => {
-    it(`throws an error if manifest is falsey when Constants.executionEnvironment is ${env}`, () => {
-      mockExponentConstants({
-        manifest: null,
-        executionEnvironment: env,
+  // web will only ever be in bare environment
+  if (Platform.OS !== 'web') {
+    [ExecutionEnvironment.Standalone, ExecutionEnvironment.StoreClient].forEach(env => {
+      it(`throws an error if manifest is falsey when Constants.executionEnvironment is ${env}`, () => {
+        mockExponentConstants({
+          manifest: null,
+          executionEnvironment: env,
+        });
+        const ConstantsWithMock = require('../Constants').default;
+        expect(() => ConstantsWithMock.manifest).toThrowErrorMatchingSnapshot();
       });
-      const ConstantsWithMock = require('../Constants').default;
-      expect(() => ConstantsWithMock.manifest).toThrowErrorMatchingSnapshot();
     });
-  });
+  }
 });
