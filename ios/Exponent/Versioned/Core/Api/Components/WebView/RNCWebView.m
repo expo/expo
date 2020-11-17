@@ -223,8 +223,9 @@ static NSDictionary* customCertificatesForHost;
     wkWebViewConfig.websiteDataStore = [WKWebsiteDataStore defaultDataStore];
   }
   if(self.useSharedProcessPool) {
-    wkWebViewConfig.processPool = [[RNCWKProcessPoolManager sharedManager] sharedProcessPool];
+    wkWebViewConfig.processPool = [[RNCWKProcessPoolManager sharedManager] sharedProcessPoolForExperienceId:self.experienceId];
   }
+
   wkWebViewConfig.userContentController = [WKUserContentController new];
 
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 /* iOS 13 */
