@@ -1,4 +1,5 @@
 import { CodedError, NativeModulesProxy } from '@unimodules/core';
+import { Platform } from 'react-native';
 
 import {
   AndroidManifest,
@@ -71,7 +72,10 @@ Object.defineProperties(constants, {
     get() {
       if (!manifest) {
         const invalidManifestType = manifest === null ? 'null' : 'undefined';
-        if (nativeConstants.executionEnvironment === ExecutionEnvironment.Bare) {
+        if (
+          nativeConstants.executionEnvironment === ExecutionEnvironment.Bare &&
+          Platform.OS !== 'web'
+        ) {
           console.warn(
             `Constants.manifest is ${invalidManifestType} because the embedded app.config could not be read. Ensure that you have installed the expo-constants build scripts if you need to read from Constants.manifest.`
           );

@@ -1,5 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`manifest throws an error if manifest is falsey when Constants.executionEnvironment is standalone 1`] = `"Constants.manifest is null, must be an object."`;
-
-exports[`manifest throws an error if manifest is falsey when Constants.executionEnvironment is storeClient 1`] = `"Constants.manifest is null, must be an object."`;
