@@ -351,7 +351,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       ),
       chalk.bold.yellow(
         `See commit ${chalk.cyan(
-          'https://github.com/expo/expo/commit/0e7d25bd9facba74828a0af971293d30f9ba22fc'
+          'https://github.com/expo/expo/commit/3aeb66e33dc391399ea1c90fd166425130d17a12'
         )}.\n`
       ),
     ],
