@@ -11,8 +11,6 @@
 #import <React/RCTDefines.h>
 #import "RNCWebView.h"
 
-#import "EXScopedModuleRegistry.h"
-
 @interface RNCWebViewManager () <RNCWebViewDelegate>
 @end
 
@@ -30,20 +28,9 @@ RCT_ENUM_CONVERTER(WKContentMode, (@{
 {
   NSConditionLock *_shouldStartLoadLock;
   BOOL _shouldStartLoad;
-  NSString *_experienceId;
 }
 
-EX_EXPORT_SCOPED_MODULE(RNCWebViewManager, EXKernelServiceNone)
-
-- (instancetype)initWithExperienceId:(NSString *)experienceId
-               kernelServiceDelegate:(id)kernelServiceInstance
-                              params:(NSDictionary *)params
-{
-  if (self = [super init]) {
-    _experienceId = experienceId;
-  }
-  return self;
-}
+RCT_EXPORT_MODULE()
 
 #if !TARGET_OS_OSX
 - (UIView *)view
@@ -52,7 +39,6 @@ EX_EXPORT_SCOPED_MODULE(RNCWebViewManager, EXKernelServiceNone)
 #endif // !TARGET_OS_OSX
 {
   RNCWebView *webView = [RNCWebView new];
-  webView.experienceId = _experienceId;
   webView.delegate = self;
   return webView;
 }
@@ -80,6 +66,7 @@ RCT_EXPORT_VIEW_PROPERTY(dataDetectorTypes, WKDataDetectorTypes)
 #endif
 RCT_EXPORT_VIEW_PROPERTY(contentInset, UIEdgeInsets)
 RCT_EXPORT_VIEW_PROPERTY(automaticallyAdjustContentInsets, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(autoManageStatusBarEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(hideKeyboardAccessoryView, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(allowsBackForwardNavigationGestures, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(incognito, BOOL)
