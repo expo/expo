@@ -22,6 +22,7 @@ import versioned.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter;
 import versioned.host.exp.exponent.modules.universal.ScopedFileSystemModule;
 import versioned.host.exp.exponent.modules.universal.ScopedUIManagerModuleWrapper;
 import versioned.host.exp.exponent.modules.universal.UpdatesBinding;
+import versioned.host.exp.exponent.modules.universal.notifications.ScopedInstallationIdProvider;
 
 public class DetachedModuleRegistryAdapter extends ExpoModuleRegistryAdapter {
   public DetachedModuleRegistryAdapter(ReactModuleRegistryProvider moduleRegistryProvider) {
@@ -56,6 +57,10 @@ public class DetachedModuleRegistryAdapter extends ExpoModuleRegistryAdapter {
     moduleRegistry.registerExportedModule(new NotificationScheduler(scopedContext.getBaseContext()));
     moduleRegistry.registerExportedModule(new ExpoNotificationCategoriesModule(scopedContext.getBaseContext()));
     moduleRegistry.registerExportedModule(new NotificationsHandler(scopedContext.getBaseContext()));
+    // We consciously pass scoped context to ScopedInstallationIdProvider
+    // so it can access legacy scoped backed-up storage and migrates
+    // the legacy UUID to scoped non-backed-up storage.
+    moduleRegistry.registerExportedModule(new ScopedInstallationIdProvider(scopedContext));
 
     // Adding other modules (not universal) to module registry as consumers.
     // It allows these modules to refer to universal modules.
