@@ -4,9 +4,7 @@ import * as path from 'path';
 
 import { ModuleConfiguration } from './ModuleConfiguration';
 
-// TODO (barthap): If ever updated to TS 4.0, change this to:
-// type PreparedPrefixes = [nameWithExpoPrefix: string, nameWithoutExpoPrefix: string];
-type PreparedPrefixes = [string, string];
+type PreparedPrefixes = [nameWithExpoPrefix: string, nameWithoutExpoPrefix: string];
 
 /**
  * prepares _Expo_ prefixes for specified name
