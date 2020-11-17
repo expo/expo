@@ -27,14 +27,25 @@ if (!manifest && ExponentConstants && ExponentConstants.manifest) {
         manifest = JSON.parse(manifest);
     }
 }
-const { name, appOwnership, ...constants } = (ExponentConstants || {});
-export default {
-    ...constants,
+const { name, appOwnership, ...nativeConstants } = (ExponentConstants || {});
+const constants = {
+    ...nativeConstants,
     // Ensure this is null in bare workflow
     appOwnership: appOwnership ?? null,
-    manifest,
     // Legacy aliases
-    deviceId: constants.installationId,
-    linkingUrl: constants.linkingUri,
+    deviceId: nativeConstants.installationId,
+    linkingUrl: nativeConstants.linkingUri,
 };
+Object.defineProperties(constants, {
+    manifest: {
+        enumerable: true,
+        get() {
+            if (!manifest) {
+                console.warn("Constants.manifest is null or undefined. If you're using the bare workflow, this means the embedded config could not be read. Make sure you have installed the expo-constants build scripts.");
+            }
+            return manifest;
+        },
+    },
+});
+export default constants;
 //# sourceMappingURL=Constants.js.map
