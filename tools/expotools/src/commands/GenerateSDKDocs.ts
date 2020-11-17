@@ -10,7 +10,7 @@ import { Directories } from '../expotools';
 const EXPO_DIR = Directories.getExpoRepositoryRootDir();
 const DOCS_DIR = path.join(EXPO_DIR, 'docs');
 const SDK_DOCS_DIR = path.join(DOCS_DIR, 'pages', 'versions');
-const STATIC_EXAMPLES_DIR = path.join(DOCS_DIR, 'static', 'examples');
+const STATIC_EXAMPLES_DIR = path.join(DOCS_DIR, 'public', 'static', 'examples');
 
 async function action(options) {
   const { sdk, updateReactNativeDocs } = options;
