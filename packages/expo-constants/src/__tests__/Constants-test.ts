@@ -1,5 +1,6 @@
-import Constants, { ExecutionEnvironment } from '../Constants';
 import { Platform } from 'react-native';
+
+import Constants, { ExecutionEnvironment } from '../Constants';
 
 it(`defines a manifest`, () => {
   expect(Constants.manifest).toBeTruthy();
