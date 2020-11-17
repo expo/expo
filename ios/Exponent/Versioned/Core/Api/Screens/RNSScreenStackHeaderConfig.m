@@ -122,11 +122,11 @@
   // It is workaround for loading custom back icon when transitioning from a screen without header to the screen which has one.
   // This action fails when navigating to the screen with header for the second time and loads default back button.
   // It looks like changing the tint color of navbar triggers an update of the items belonging to it and it seems to load the custom back image
-  // so we change the tint color's alpha by a very small amount and then set it to the one it should have.  
+  // so we change the tint color's alpha by a very small amount and then set it to the one it should have.
   [navbar setTintColor:[config.color colorWithAlphaComponent:CGColorGetAlpha(config.color.CGColor) - 0.01]];
   [navbar setTintColor:config.color];
 
-#ifdef __IPHONE_13_0
+#if defined(__IPHONE_13_0) && TARGET_OS_IOS
   if (@available(iOS 13.0, *)) {
     // font customized on the navigation item level, so nothing to do here
   } else
@@ -161,6 +161,7 @@
       [navbar setTitleTextAttributes:attrs];
     }
 
+#if (TARGET_OS_IOS)
     if (@available(iOS 11.0, *)) {
       if (config.largeTitle && (config.largeTitleFontFamily || config.largeTitleFontSize || config.largeTitleColor || config.titleColor)) {
         NSMutableDictionary *largeAttrs = [NSMutableDictionary new];
@@ -171,11 +172,12 @@
         if (config.largeTitleFontFamily) {
           largeAttrs[NSFontAttributeName] = [RCTFont updateFont:nil withFamily:config.largeTitleFontFamily size:largeSize weight:nil style:nil variant:nil scaleMultiplier:1.0];
         } else {
-          largeAttrs[NSFontAttributeName] = [UIFont boldSystemFontOfSize:[largeSize floatValue]];
+          largeAttrs[NSFontAttributeName] = [UIFont systemFontOfSize:[largeSize floatValue] weight:UIFontWeightBold];
         }
         [navbar setLargeTitleTextAttributes:largeAttrs];
       }
     }
+#endif
   }
 }
 
@@ -244,7 +246,9 @@
             // in order for new back button image to be loaded we need to trigger another change
             // in back button props that'd make UIKit redraw the button. Otherwise the changes are
             // not reflected. Here we change back button visibility which is then immediately restored
+#if (TARGET_OS_IOS)
             vc.navigationItem.hidesBackButton = YES;
+#endif
             [config updateViewControllerIfNeeded];
           }];
         }
@@ -262,7 +266,7 @@
   [self updateViewController:vc withConfig:config animated:animated];
 }
 
-#ifdef __IPHONE_13_0
+#if defined(__IPHONE_13_0) && TARGET_OS_IOS
 + (UINavigationBarAppearance*)buildAppearance:(UIViewController *)vc withConfig:(RNSScreenStackHeaderConfig *)config
 {
   UINavigationBarAppearance *appearance = [UINavigationBarAppearance new];
@@ -273,7 +277,7 @@
   } else {
     [appearance configureWithOpaqueBackground];
   }
-  
+
   // set background color if specified
   if (config.backgroundColor) {
     appearance.backgroundColor = config.backgroundColor;
@@ -314,7 +318,7 @@
     if (config.largeTitleFontFamily) {
       largeAttrs[NSFontAttributeName] = [RCTFont updateFont:nil withFamily:config.largeTitleFontFamily size:largeSize weight:nil style:nil variant:nil scaleMultiplier:1.0];
     } else {
-      largeAttrs[NSFontAttributeName] = [UIFont boldSystemFontOfSize:[largeSize floatValue]];
+      largeAttrs[NSFontAttributeName] = [UIFont systemFontOfSize:[largeSize floatValue] weight:UIFontWeightBold];
     }
 
     appearance.largeTitleTextAttributes = largeAttrs;
@@ -352,11 +356,29 @@
 
   [navctr setNavigationBarHidden:shouldHide animated:animated];
 
+#if (TARGET_OS_IOS)
+  // we put it before check with return because we want to apply changes to status bar even if the header is hidden
+  if (config != nil) {
+    if (config.statusBarStyle || config.statusBarAnimation || config.statusBarHidden) {
+      [RNSScreenStackHeaderConfig assertViewControllerBasedStatusBarAppearenceSet];
+      if ([vc isKindOfClass:[RNSScreen class]]) {
+        [RNSScreenStackHeaderConfig updateStatusBarAppearance];
+      }
+    }
+  }
+#endif
+
   if (shouldHide) {
     return;
   }
 
+  if (config.direction == UISemanticContentAttributeForceLeftToRight || config.direction == UISemanticContentAttributeForceRightToLeft) {
+    navctr.view.semanticContentAttribute = config.direction;
+    navctr.navigationBar.semanticContentAttribute = config.direction;
+  }
+
   navitem.title = config.title;
+#if (TARGET_OS_IOS)
   if (config.backTitle != nil || config.backTitleFontFamily || config.backTitleFontSize) {
     prevItem.backBarButtonItem = [[UIBarButtonItem alloc]
                                   initWithTitle:config.backTitle ?: prevItem.title
@@ -383,7 +405,9 @@
     }
     navitem.largeTitleDisplayMode = config.largeTitle ? UINavigationItemLargeTitleDisplayModeAlways : UINavigationItemLargeTitleDisplayModeNever;
   }
-#ifdef __IPHONE_13_0
+#endif
+
+#if defined(__IPHONE_13_0) && TARGET_OS_IOS
   if (@available(iOS 13.0, *)) {
     UINavigationBarAppearance *appearance = [self buildAppearance:vc withConfig:config];
     navitem.standardAppearance = appearance;
@@ -400,6 +424,7 @@
   } else
 #endif
   {
+#if (TARGET_OS_IOS)
     // updating backIndicatotImage does not work when called during transition. On iOS pre 13 we need
     // to update it before the navigation starts.
     UIImage *backButtonImage = [self loadBackButtonImageInViewController:vc withConfig:config];
@@ -410,15 +435,20 @@
       navctr.navigationBar.backIndicatorImage = nil;
       navctr.navigationBar.backIndicatorTransitionMaskImage = nil;
     }
+#endif
   }
+#if (TARGET_OS_IOS)
   navitem.hidesBackButton = config.hideBackButton;
+#endif
   navitem.leftBarButtonItem = nil;
   navitem.rightBarButtonItem = nil;
   navitem.titleView = nil;
   for (RNSScreenStackHeaderSubview *subview in config.reactSubviews) {
     switch (subview.type) {
       case RNSScreenStackHeaderSubviewTypeLeft: {
+#if (TARGET_OS_IOS)
         navitem.leftItemsSupplementBackButton = config.backButtonInCustomView;
+#endif
         UIBarButtonItem *buttonItem = [[UIBarButtonItem alloc] initWithCustomView:subview];
         navitem.leftBarButtonItem = buttonItem;
         break;
@@ -467,6 +497,54 @@
   }
 }
 
++ (void)assertViewControllerBasedStatusBarAppearenceSet
+{
+  static dispatch_once_t once;
+  static bool viewControllerBasedAppearence;
+  dispatch_once(&once, ^{
+    viewControllerBasedAppearence = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIViewControllerBasedStatusBarAppearance"] boolValue];
+  });
+  if (!viewControllerBasedAppearence) {
+    RCTLogError(@"If you want to change the appearance of status bar, you have to change \
+    UIViewControllerBasedStatusBarAppearance key in the Info.plist to YES");
+  }
+}
+
++ (void)updateStatusBarAppearance
+{
+  [UIView animateWithDuration:0.4 animations:^{ // duration based on "Programming iOS 13" p. 311 implementation
+    if (@available(iOS 13, *)) {
+      UIWindow *firstWindow = [[[UIApplication sharedApplication] windows] firstObject];
+      if (firstWindow != nil) {
+        [[firstWindow rootViewController] setNeedsStatusBarAppearanceUpdate];
+      }
+    } else {
+      [UIApplication.sharedApplication.keyWindow.rootViewController setNeedsStatusBarAppearanceUpdate];
+    }
+  }];
+}
+
++ (UIStatusBarStyle)statusBarStyleForRNSStatusBarStyle:(RNSStatusBarStyle)statusBarStyle
+{
+#ifdef __IPHONE_13_0
+  if (@available(iOS 13.0, *)) {
+    switch (statusBarStyle) {
+      case RNSStatusBarStyleAuto:
+          return [UITraitCollection.currentTraitCollection userInterfaceStyle] == UIUserInterfaceStyleDark ? UIStatusBarStyleLightContent : UIStatusBarStyleDarkContent;
+      case RNSStatusBarStyleInverted:
+          return [UITraitCollection.currentTraitCollection userInterfaceStyle] == UIUserInterfaceStyleDark ? UIStatusBarStyleDarkContent : UIStatusBarStyleLightContent;
+      case RNSStatusBarStyleLight:
+          return UIStatusBarStyleLightContent;
+      case RNSStatusBarStyleDark:
+          return UIStatusBarStyleDarkContent;
+      default:
+        return UIStatusBarStyleLightContent;
+    }
+  }
+#endif
+  return UIStatusBarStyleLightContent;
+}
+
 @end
 
 @implementation RNSScreenStackHeaderConfigManager
@@ -488,6 +566,7 @@ RCT_EXPORT_VIEW_PROPERTY(backTitleFontSize, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(backgroundColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(blurEffect, UIBlurEffectStyle)
 RCT_EXPORT_VIEW_PROPERTY(color, UIColor)
+RCT_EXPORT_VIEW_PROPERTY(direction, UISemanticContentAttribute)
 RCT_EXPORT_VIEW_PROPERTY(largeTitle, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(largeTitleFontFamily, NSString)
 RCT_EXPORT_VIEW_PROPERTY(largeTitleFontSize, NSNumber)
@@ -500,6 +579,9 @@ RCT_EXPORT_VIEW_PROPERTY(backButtonInCustomView, BOOL)
 // `hidden` is an UIView property, we need to use different name internally
 RCT_REMAP_VIEW_PROPERTY(hidden, hide, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(translucent, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(statusBarStyle, RNSStatusBarStyle)
+RCT_EXPORT_VIEW_PROPERTY(statusBarAnimation, UIStatusBarAnimation)
+RCT_EXPORT_VIEW_PROPERTY(statusBarHidden, BOOL)
 
 @end
 
@@ -513,15 +595,14 @@ RCT_EXPORT_VIEW_PROPERTY(translucent, BOOL)
     @"light": @(UIBlurEffectStyleLight),
     @"dark": @(UIBlurEffectStyleDark),
   }];
-  
+
   if (@available(iOS 10.0, *)) {
     [blurEffects addEntriesFromDictionary:@{
       @"regular": @(UIBlurEffectStyleRegular),
       @"prominent": @(UIBlurEffectStyleProminent),
-
     }];
   }
-#ifdef __IPHONE_13_0
+#if defined(__IPHONE_13_0) && TARGET_OS_IOS
   if (@available(iOS 13.0, *)) {
     [blurEffects addEntriesFromDictionary:@{
       @"systemUltraThinMaterial": @(UIBlurEffectStyleSystemUltraThinMaterial),
@@ -546,15 +627,27 @@ RCT_EXPORT_VIEW_PROPERTY(translucent, BOOL)
 }
 
 RCT_ENUM_CONVERTER(RNSScreenStackHeaderSubviewType, (@{
-   @"back": @(RNSScreenStackHeaderSubviewTypeBackButton),
-   @"left": @(RNSScreenStackHeaderSubviewTypeLeft),
-   @"right": @(RNSScreenStackHeaderSubviewTypeRight),
-   @"title": @(RNSScreenStackHeaderSubviewTypeTitle),
-   @"center": @(RNSScreenStackHeaderSubviewTypeCenter),
-   }), RNSScreenStackHeaderSubviewTypeTitle, integerValue)
+  @"back": @(RNSScreenStackHeaderSubviewTypeBackButton),
+  @"left": @(RNSScreenStackHeaderSubviewTypeLeft),
+  @"right": @(RNSScreenStackHeaderSubviewTypeRight),
+  @"title": @(RNSScreenStackHeaderSubviewTypeTitle),
+  @"center": @(RNSScreenStackHeaderSubviewTypeCenter),
+  }), RNSScreenStackHeaderSubviewTypeTitle, integerValue)
+
+RCT_ENUM_CONVERTER(UISemanticContentAttribute, (@{
+  @"ltr": @(UISemanticContentAttributeForceLeftToRight),
+  @"rtl": @(UISemanticContentAttributeForceRightToLeft),
+  }), UISemanticContentAttributeUnspecified, integerValue)
 
 RCT_ENUM_CONVERTER(UIBlurEffectStyle, ([self blurEffectsForIOSVersion]), UIBlurEffectStyleExtraLight, integerValue)
-  
+
+RCT_ENUM_CONVERTER(RNSStatusBarStyle, (@{
+  @"auto": @(RNSStatusBarStyleAuto),
+  @"inverted": @(RNSStatusBarStyleInverted),
+  @"light": @(RNSStatusBarStyleLight),
+  @"dark": @(RNSStatusBarStyleDark),
+  }), RNSStatusBarStyleAuto, integerValue)
+
 @end
 
 @implementation RNSScreenStackHeaderSubviewManager

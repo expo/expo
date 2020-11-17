@@ -26,9 +26,15 @@ public class ScreenViewManager extends ViewGroupManager<Screen> {
     return new Screen(reactContext);
   }
 
-  @ReactProp(name = "active", defaultFloat = 0)
-  public void setActive(Screen view, float active) {
-    view.setActive(active != 0);
+  @ReactProp(name = "activityState")
+  public void setActivityState(Screen view, int activityState) {
+    if (activityState == 0) {
+      view.setActivityState(Screen.ActivityState.INACTIVE);
+    } else if (activityState == 1) {
+      view.setActivityState(Screen.ActivityState.TRANSITIONING_OR_BELOW_TOP);
+    } else if (activityState == 2) {
+      view.setActivityState(Screen.ActivityState.ON_TOP);
+    }
   }
 
   @ReactProp(name = "stackPresentation")

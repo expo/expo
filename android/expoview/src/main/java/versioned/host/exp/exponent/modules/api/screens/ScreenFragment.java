@@ -41,7 +41,7 @@ public class ScreenFragment extends Fragment {
   private List<ScreenContainer> mChildScreenContainers = new ArrayList<>();
 
   public ScreenFragment() {
-    throw new IllegalStateException("Screen fragments should never be restored");
+    throw new IllegalStateException("Screen fragments should never be restored. Follow instructions from https://github.com/software-mansion/react-native-screens/issues/17#issuecomment-424704067 to properly configure your main activity.");
   }
 
   @SuppressLint("ValidFragment")
@@ -60,24 +60,6 @@ public class ScreenFragment extends Fragment {
     mScreenView.setLayoutParams(params);
     wrapper.addView(recycleView(mScreenView));
     return wrapper;
-  }
-
-  @Override
-  public void onDetach() {
-    super.onDetach();
-    // The below line is a workaround for an issue with keyboard handling within fragments. Despite
-    // Android handles input focus on the fragments that leave the screen, the keyboard stays open
-    // in a number of cases. The issue can be best reproduced on Android 5 devices, before some changes
-    // in Android's InputMethodManager have been introduced (specifically around dismissing the
-    // keyboard in onDetachedFromWindow). However, we also noticed the keyboard issue happen
-    // intermittently on recent versions of Android as well. The issue hasn't been previously noticed
-    // as in React Native <= 0.61 there was a logic that'd trigger keyboard dismiss upon a blur event
-    // (the blur even gets dispatched properly, the keyboard just stays open despite that) – note
-    // the change in RN core here: https://github.com/facebook/react-native/commit/e9b4928311513d3cbbd9d875827694eab6cfa932
-    // The workaround is to force-hide keyboard passing the fragment's view token when the given fragment
-    // is detached. It is safe to call this method regardless of whether the keyboard was open or not.
-    ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
-            .hideSoftInputFromWindow(mScreenView.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
   }
 
   public Screen getScreen() {

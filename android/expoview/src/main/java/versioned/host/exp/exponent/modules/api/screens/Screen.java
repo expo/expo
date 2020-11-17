@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.WebView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -35,6 +36,12 @@ public class Screen extends ViewGroup {
     POP
   }
 
+  public enum ActivityState {
+    INACTIVE,
+    TRANSITIONING_OR_BELOW_TOP,
+    ON_TOP
+  }
+
   private static OnAttachStateChangeListener sShowSoftKeyboardOnAttach = new OnAttachStateChangeListener() {
 
     @Override
@@ -53,7 +60,7 @@ public class Screen extends ViewGroup {
 
   private @Nullable ScreenFragment mFragment;
   private @Nullable ScreenContainer mContainer;
-  private boolean mActive;
+  private ActivityState mActivityState;
   private boolean mTransitioning;
   private StackPresentation mStackPresentation = StackPresentation.PUSH;
   private ReplaceAnimation mReplaceAnimation = ReplaceAnimation.POP;
@@ -151,7 +158,25 @@ public class Screen extends ViewGroup {
       return;
     }
     mTransitioning = transitioning;
-    super.setLayerType(transitioning ? View.LAYER_TYPE_HARDWARE : View.LAYER_TYPE_NONE, null);
+    boolean isWebViewInScreen = hasWebView(this);
+    if (isWebViewInScreen && getLayerType() != View.LAYER_TYPE_HARDWARE) {
+      return;
+    }
+    super.setLayerType(transitioning && !isWebViewInScreen ? View.LAYER_TYPE_HARDWARE : View.LAYER_TYPE_NONE, null);
+  }
+
+  private boolean hasWebView(ViewGroup viewGroup) {
+    for(int i = 0; i < viewGroup.getChildCount(); i++) {
+      View child = viewGroup.getChildAt(i);
+      if (child instanceof WebView) {
+        return true;
+      } else if (child instanceof ViewGroup) {
+         if (hasWebView((ViewGroup) child)) {
+           return true;
+         }
+      }
+    }
+    return false;
   }
 
   public void setStackPresentation(StackPresentation stackPresentation) {
@@ -203,18 +228,18 @@ public class Screen extends ViewGroup {
     return mContainer;
   }
 
-  public void setActive(boolean active) {
-    if (active == mActive) {
+  public void setActivityState(ActivityState activityState) {
+    if (activityState == mActivityState) {
       return;
     }
-    mActive = active;
+    mActivityState = activityState;
     if (mContainer != null) {
       mContainer.notifyChildUpdate();
     }
   }
 
-  public boolean isActive() {
-    return mActive;
+  public ActivityState getActivityState() {
+    return mActivityState;
   }
 
   public boolean isGestureEnabled() {
