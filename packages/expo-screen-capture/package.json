@@ -1,6 +1,6 @@
 {
   "name": "expo-screen-capture",
-  "version": "1.1.1",
+  "version": "2.0.0",
   "description": "ExpoScreenCapture standalone module",
   "main": "build/ScreenCapture.js",
   "types": "build/ScreenCapture.d.ts",
@@ -30,7 +30,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/screen-capture",
   "dependencies": {
-    "@unimodules/core": "~5.5.0"
+    "@unimodules/core": "~6.0.0"
   },
   "devDependencies": {
     "expo-module-scripts": "~1.2.0"

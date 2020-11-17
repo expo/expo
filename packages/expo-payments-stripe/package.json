@@ -1,6 +1,6 @@
 {
   "name": "expo-payments-stripe",
-  "version": "8.3.0",
+  "version": "8.4.0",
   "description": "Provides support for payments through Stripe and Apple Pay on iOS (in bare apps), and Stripe on Android (plus Android Pay with bare apps).",
   "main": "build/index.js",
   "types": "build/index.d.ts",

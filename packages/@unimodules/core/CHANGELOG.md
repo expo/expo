@@ -4,9 +4,15 @@
 
 ### 🛠 Breaking changes
 
-- Removed `org.unimodules.core.InvalidArgumentException`. Please use its coded version, `org.unimodules.core.errors.InvalidArgumentException`, instead. ([#9961](https://github.com/expo/expo/pull/9961) by [@sjchmiela](https://github.com/sjchmiela))
-
 ### 🎉 New features
+
+### 🐛 Bug fixes
+
+## 6.0.0 — 2020-11-17
+
+### 🛠 Breaking changes
+
+- Removed `org.unimodules.core.InvalidArgumentException`. Please use its coded version, `org.unimodules.core.errors.InvalidArgumentException`, instead. ([#9961](https://github.com/expo/expo/pull/9961) by [@sjchmiela](https://github.com/sjchmiela))
 
 ### 🐛 Bug fixes
 

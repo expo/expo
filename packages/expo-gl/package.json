@@ -1,6 +1,6 @@
 {
   "name": "expo-gl",
-  "version": "9.1.1",
+  "version": "9.2.0",
   "description": "Provides GLView that acts as OpenGL ES render target and gives GL context object implementing WebGL 2.0 specification.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -44,7 +44,7 @@
     "unimodules-file-system-interface": "*"
   },
   "dependencies": {
-    "expo-gl-cpp": "~9.1.2",
+    "expo-gl-cpp": "~9.2.0",
     "invariant": "^2.2.4",
     "fbjs": "1.0.0"
   },

@@ -3,7 +3,7 @@ apply plugin: 'maven'
 apply plugin: 'kotlin-android'
 
 group = 'host.exp.exponent'
-version = '8.5.0'
+version = '8.6.0'
 
 
 buildscript {
@@ -52,8 +52,8 @@ android {
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 29)
-    versionCode 16
-    versionName '8.5.0'
+    versionCode 17
+    versionName '8.6.0'
   }
   lintOptions {
     abortOnError false

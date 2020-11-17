@@ -1,6 +1,6 @@
 {
   "name": "expo-module-template",
-  "version": "8.4.0",
+  "version": "8.5.0",
   "description": "ExpoModuleTemplate standalone module",
   "main": "build/ModuleTemplate.js",
   "types": "build/ModuleTemplate.d.ts",

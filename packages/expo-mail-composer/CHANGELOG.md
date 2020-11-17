@@ -4,11 +4,15 @@
 
 ### 🛠 Breaking changes
 
-- Upgrade `androidx.appcompat` to `1.2.0`. ([#11018](https://github.com/expo/expo/pull/11018) by [@bbarthec](https://github.com/bbarthec))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+## 9.0.0 — 2020-11-17
+
+### 🛠 Breaking changes
+
+- Upgrade `androidx.appcompat` to `1.2.0`. ([#11018](https://github.com/expo/expo/pull/11018) by [@bbarthec](https://github.com/bbarthec))
 
 ## 8.4.0 — 2020-08-18
 

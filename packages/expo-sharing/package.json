@@ -1,6 +1,6 @@
 {
   "name": "expo-sharing",
-  "version": "8.4.0",
+  "version": "8.5.0",
   "description": "ExpoSharing standalone module",
   "main": "build/Sharing.js",
   "types": "build/Sharing.d.ts",
