@@ -7,15 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		15D5210DC79E5FB1B24F2FF76B96992B /* RNCMaskedViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F05D47202D44ACFE90C4DB3288C85EB3 /* RNCMaskedViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		33B89FF7AE9CA24A79729CF23DD87AF3 /* RNCMaskedView.h in Headers */ = {isa = PBXBuildFile; fileRef = A14CB57C4944C977997E89C369112DD2 /* RNCMaskedView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		3547C90461E6DC6D452D6385AF801D7A /* RNCMaskedView.m in Sources */ = {isa = PBXBuildFile; fileRef = CFE90E216DA0921164D32020D8F2B4E2 /* RNCMaskedView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		66BFC844B8644436F6C34F6D708A6644 /* RNCMaskedView-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 05DEC45A532B34466C3699AD054325BD /* RNCMaskedView-dummy.m */; };
-		C793A05C3A9A91CB13837965C66A6C3C /* RNCMaskedViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A827474A1DD39B45EFAC2A2E451D0BAA /* RNCMaskedViewManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		243515E0F57C46B94B27112F06E203EA /* RNCMaskedViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A827474A1DD39B45EFAC2A2E451D0BAA /* RNCMaskedViewManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		7717EEAD5F993B3E17EB7B62E2B567F0 /* RNCMaskedView-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 05DEC45A532B34466C3699AD054325BD /* RNCMaskedView-dummy.m */; };
+		80DDD6A311778CB8AFFBA288DAA4E68E /* RNCMaskedView.m in Sources */ = {isa = PBXBuildFile; fileRef = CFE90E216DA0921164D32020D8F2B4E2 /* RNCMaskedView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		86FDD1E3D64BE08B695581A145D8720A /* RNCMaskedView.h in Headers */ = {isa = PBXBuildFile; fileRef = A14CB57C4944C977997E89C369112DD2 /* RNCMaskedView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		EDAD800EA194DCE7D5C258105CC06C4F /* RNCMaskedViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F05D47202D44ACFE90C4DB3288C85EB3 /* RNCMaskedViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		6E246C054E4240C69C107DD63E43FFAF /* PBXContainerItemProxy */ = {
+		3B06875C980F6A28505B5B4905E95A27 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = CA9511A4431A77EF0DCFA6B5BE8F3AB6 /* React.xcodeproj */;
 			proxyType = 1;
@@ -40,7 +40,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		FA8AAE6B999E310B82A516A85B2720D7 /* Frameworks */ = {
+		E997DD686C60BCD4775E1000A08FB84A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -121,12 +121,12 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		D910A63F739D411D8D55A5D1EB1F66D2 /* Headers */ = {
+		7077358591D55949D234F2643E70B93D /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				33B89FF7AE9CA24A79729CF23DD87AF3 /* RNCMaskedView.h in Headers */,
-				15D5210DC79E5FB1B24F2FF76B96992B /* RNCMaskedViewManager.h in Headers */,
+				86FDD1E3D64BE08B695581A145D8720A /* RNCMaskedView.h in Headers */,
+				EDAD800EA194DCE7D5C258105CC06C4F /* RNCMaskedViewManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -135,16 +135,16 @@
 /* Begin PBXNativeTarget section */
 		3A3AC6D68A9DF5A1C1346B6F2C044396 /* RNCMaskedView */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 368346E449839945B5F57BE8E201B89D /* Build configuration list for PBXNativeTarget "RNCMaskedView" */;
+			buildConfigurationList = B73A42DA96D614AD6D159BDDF8135003 /* Build configuration list for PBXNativeTarget "RNCMaskedView" */;
 			buildPhases = (
-				D910A63F739D411D8D55A5D1EB1F66D2 /* Headers */,
-				7174D52171860EFF78C4AF5E14A1E1A7 /* Sources */,
-				FA8AAE6B999E310B82A516A85B2720D7 /* Frameworks */,
+				7077358591D55949D234F2643E70B93D /* Headers */,
+				59392262FF4F7B200A2A745C8780D4AB /* Sources */,
+				E997DD686C60BCD4775E1000A08FB84A /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				536CB78D526EF6181D83CC97955539D3 /* PBXTargetDependency */,
+				E3E648B4959E24ECBBCC3251DCF7EE6D /* PBXTargetDependency */,
 			);
 			name = RNCMaskedView;
 			productName = RNCMaskedView;
@@ -184,56 +184,32 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		7174D52171860EFF78C4AF5E14A1E1A7 /* Sources */ = {
+		59392262FF4F7B200A2A745C8780D4AB /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				66BFC844B8644436F6C34F6D708A6644 /* RNCMaskedView-dummy.m in Sources */,
-				3547C90461E6DC6D452D6385AF801D7A /* RNCMaskedView.m in Sources */,
-				C793A05C3A9A91CB13837965C66A6C3C /* RNCMaskedViewManager.m in Sources */,
+				7717EEAD5F993B3E17EB7B62E2B567F0 /* RNCMaskedView-dummy.m in Sources */,
+				80DDD6A311778CB8AFFBA288DAA4E68E /* RNCMaskedView.m in Sources */,
+				243515E0F57C46B94B27112F06E203EA /* RNCMaskedViewManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		536CB78D526EF6181D83CC97955539D3 /* PBXTargetDependency */ = {
+		E3E648B4959E24ECBBCC3251DCF7EE6D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = React;
-			targetProxy = 6E246C054E4240C69C107DD63E43FFAF /* PBXContainerItemProxy */;
+			targetProxy = 3B06875C980F6A28505B5B4905E95A27 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		65CA28F1941811D347DFB217892C09F2 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = C200635281327E246596634703CABE95 /* RNCMaskedView.release.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/RNCMaskedView/RNCMaskedView-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = RNCMaskedView;
-				PRODUCT_NAME = RNCMaskedView;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		7D6F4936A36047795396110FFF16381A /* Debug */ = {
+		581E0FC9BFE7C8CE6BF7366B2C4B3189 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -256,6 +232,93 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		5D178DEBF900B434B2F17BD7131A5589 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0F9E87BBFF09D436658D02A49E7C1E56 /* RNCMaskedView.debug.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/RNCMaskedView/RNCMaskedView-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RNCMaskedView;
+				PRODUCT_NAME = RNCMaskedView;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		8E58E846D066DEF8E2298812FA65CCDA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -294,14 +357,14 @@
 			};
 			name = Debug;
 		};
-		D2F5ADEC5D22645B0E5D87A2B3FF658E /* Debug */ = {
+		D310A8E925EBE42C2567D69358533BF2 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0F9E87BBFF09D436658D02A49E7C1E56 /* RNCMaskedView.debug.xcconfig */;
+			baseConfigurationReference = C200635281327E246596634703CABE95 /* RNCMaskedView.release.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/RNCMaskedView/RNCMaskedView-prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				OTHER_LDFLAGS = "";
@@ -315,86 +378,27 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		D46ACA6A75238EFB4AB54DCEA936012B /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"POD_CONFIGURATION_RELEASE=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.0;
-				SYMROOT = "${SRCROOT}/../build";
+				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		368346E449839945B5F57BE8E201B89D /* Build configuration list for PBXNativeTarget "RNCMaskedView" */ = {
+		83CD1C2896C6A7A917DC1080990FA8F2 /* Build configuration list for PBXProject "RNCMaskedView" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D2F5ADEC5D22645B0E5D87A2B3FF658E /* Debug */,
-				65CA28F1941811D347DFB217892C09F2 /* Release */,
+				8E58E846D066DEF8E2298812FA65CCDA /* Debug */,
+				581E0FC9BFE7C8CE6BF7366B2C4B3189 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		83CD1C2896C6A7A917DC1080990FA8F2 /* Build configuration list for PBXProject "RNCMaskedView" */ = {
+		B73A42DA96D614AD6D159BDDF8135003 /* Build configuration list for PBXNativeTarget "RNCMaskedView" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				7D6F4936A36047795396110FFF16381A /* Debug */,
-				D46ACA6A75238EFB4AB54DCEA936012B /* Release */,
+				5D178DEBF900B434B2F17BD7131A5589 /* Debug */,
+				D310A8E925EBE42C2567D69358533BF2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

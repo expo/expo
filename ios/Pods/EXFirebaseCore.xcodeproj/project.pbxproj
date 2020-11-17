@@ -7,23 +7,23 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		10366EDD0BEEA1116DFE154F7C9327C2 /* UMFirebaseCoreInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 9B4B046F7F30023D0E6F3C5207948E71 /* UMFirebaseCoreInterface.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		49E23CE3E5C97F161666535C00DC39DB /* EXFirebaseCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F49FDB04F639719DC50566E22AED9A1 /* EXFirebaseCore.m */; };
-		73156D5796CB40A63D497CCAD053D13E /* EXFirebaseCore-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F66EA56A354B4D1D9F50595E26357E2E /* EXFirebaseCore-dummy.m */; };
-		7B9D48D6FB46DB955FEFDFE0B605A68E /* EXFirebaseCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 186E0EE19ECD7E7578D65E7FDFD9733B /* EXFirebaseCore.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		9E7B49A98CEEDEE7B8F92EFD561A5A4B /* EXFirebaseCore+FIROptions.h in Headers */ = {isa = PBXBuildFile; fileRef = 5DD893F27EB5A4B98FD49F5C8EC6EBB8 /* EXFirebaseCore+FIROptions.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		B5A1C31A26DF92DFEDA92FCDF7938FD5 /* EXFirebaseCore+FIROptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C3BEE2CDC619ACA2A1D33EF6BFB3A32 /* EXFirebaseCore+FIROptions.m */; };
+		268ADDC6263474FB80C7B7600BF0C6E9 /* EXFirebaseCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F49FDB04F639719DC50566E22AED9A1 /* EXFirebaseCore.m */; };
+		270DAB6F60A62B6934E2039313021D6F /* UMFirebaseCoreInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 9B4B046F7F30023D0E6F3C5207948E71 /* UMFirebaseCoreInterface.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		586FF3793E099E195BEDB99763B41701 /* EXFirebaseCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 186E0EE19ECD7E7578D65E7FDFD9733B /* EXFirebaseCore.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		9395E12183FCBEED6F2C03D28995175C /* EXFirebaseCore-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F66EA56A354B4D1D9F50595E26357E2E /* EXFirebaseCore-dummy.m */; };
+		A2A59287DAB7D8B278138D7D7B36E3B3 /* EXFirebaseCore+FIROptions.h in Headers */ = {isa = PBXBuildFile; fileRef = 5DD893F27EB5A4B98FD49F5C8EC6EBB8 /* EXFirebaseCore+FIROptions.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		E67BE266D35D8F01B511848D21C6F3AA /* EXFirebaseCore+FIROptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C3BEE2CDC619ACA2A1D33EF6BFB3A32 /* EXFirebaseCore+FIROptions.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		74D30F36A750A860491671A556B9C3CE /* PBXContainerItemProxy */ = {
+		8ECC1CA4762FAF5B25B60E3FE741368A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B53CDD009FA913CFF50104926B465EAB /* UMCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
 		};
-		CFA24C6C0AE3E6F7287B91817974934C /* PBXContainerItemProxy */ = {
+		FACF6CAB1639AB934CE6537E691FFC11 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 6D7BDFAFD7CB44FAC83E19F637A6B6B4 /* Firebase.xcodeproj */;
 			proxyType = 1;
@@ -49,7 +49,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		E7E25804B797574F732AF41A054F35C9 /* Frameworks */ = {
+		38107A502E691389224685D992FA872E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -131,13 +131,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		05E89C154D5CE79E5BBC7EA80FA827B0 /* Headers */ = {
+		0958D788C4C019D52CE3556D1B3BF233 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9E7B49A98CEEDEE7B8F92EFD561A5A4B /* EXFirebaseCore+FIROptions.h in Headers */,
-				7B9D48D6FB46DB955FEFDFE0B605A68E /* EXFirebaseCore.h in Headers */,
-				10366EDD0BEEA1116DFE154F7C9327C2 /* UMFirebaseCoreInterface.h in Headers */,
+				A2A59287DAB7D8B278138D7D7B36E3B3 /* EXFirebaseCore+FIROptions.h in Headers */,
+				586FF3793E099E195BEDB99763B41701 /* EXFirebaseCore.h in Headers */,
+				270DAB6F60A62B6934E2039313021D6F /* UMFirebaseCoreInterface.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -146,17 +146,17 @@
 /* Begin PBXNativeTarget section */
 		DCC8E69A56EE37BAFC3269F2C48FBBF8 /* EXFirebaseCore */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C649305474112FF3F9EC8DB2CD80D8E5 /* Build configuration list for PBXNativeTarget "EXFirebaseCore" */;
+			buildConfigurationList = 5140C7426C7CE892163D356B371BC4EA /* Build configuration list for PBXNativeTarget "EXFirebaseCore" */;
 			buildPhases = (
-				05E89C154D5CE79E5BBC7EA80FA827B0 /* Headers */,
-				0B6B82522B7DD69076743BB4B3DE29A9 /* Sources */,
-				E7E25804B797574F732AF41A054F35C9 /* Frameworks */,
+				0958D788C4C019D52CE3556D1B3BF233 /* Headers */,
+				DB523C0F6FD0E757840B2A532393BCD3 /* Sources */,
+				38107A502E691389224685D992FA872E /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				EAEF9208FFCC9D9C187F33345F16B66F /* PBXTargetDependency */,
-				A0F2B1A447D78ECA4025F07976450C0E /* PBXTargetDependency */,
+				7E84A6AEB60CACC81B771A8C4668B919 /* PBXTargetDependency */,
+				73232EB7B9D3C9AD52BED55A8B4B8C93 /* PBXTargetDependency */,
 			);
 			name = EXFirebaseCore;
 			productName = EXFirebaseCore;
@@ -199,38 +199,37 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		0B6B82522B7DD69076743BB4B3DE29A9 /* Sources */ = {
+		DB523C0F6FD0E757840B2A532393BCD3 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B5A1C31A26DF92DFEDA92FCDF7938FD5 /* EXFirebaseCore+FIROptions.m in Sources */,
-				73156D5796CB40A63D497CCAD053D13E /* EXFirebaseCore-dummy.m in Sources */,
-				49E23CE3E5C97F161666535C00DC39DB /* EXFirebaseCore.m in Sources */,
+				E67BE266D35D8F01B511848D21C6F3AA /* EXFirebaseCore+FIROptions.m in Sources */,
+				9395E12183FCBEED6F2C03D28995175C /* EXFirebaseCore-dummy.m in Sources */,
+				268ADDC6263474FB80C7B7600BF0C6E9 /* EXFirebaseCore.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		A0F2B1A447D78ECA4025F07976450C0E /* PBXTargetDependency */ = {
+		73232EB7B9D3C9AD52BED55A8B4B8C93 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 74D30F36A750A860491671A556B9C3CE /* PBXContainerItemProxy */;
+			targetProxy = 8ECC1CA4762FAF5B25B60E3FE741368A /* PBXContainerItemProxy */;
 		};
-		EAEF9208FFCC9D9C187F33345F16B66F /* PBXTargetDependency */ = {
+		7E84A6AEB60CACC81B771A8C4668B919 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Firebase;
-			targetProxy = CFA24C6C0AE3E6F7287B91817974934C /* PBXContainerItemProxy */;
+			targetProxy = FACF6CAB1639AB934CE6537E691FFC11 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		9DBFB4DB3728CF76E9D1EC66A2A1ADA8 /* Debug */ = {
+		4A75F51527D03F0D25631E7F7AD7FA04 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9A9223A96120659843C90BF08A4C5FA2 /* EXFirebaseCore.debug.xcconfig */;
+			baseConfigurationReference = 79E70E1EFFADAB9202216FE2C562F23F /* EXFirebaseCore.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
@@ -247,73 +246,15 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		A7F60851ACEEFBC86FA6C9887F36F4BA /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"POD_CONFIGURATION_RELEASE=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.0;
-				SYMROOT = "${SRCROOT}/../build";
+				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
-		ADA1BBC565C2D2C4E8875356B388DD00 /* Debug */ = {
+		5D55BE920044B96DE19BA18B263AAD63 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -336,6 +277,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -374,12 +316,73 @@
 			};
 			name = Debug;
 		};
-		D4E16F185B42E868E38137DD4C7E5362 /* Release */ = {
+		87544F7B8579B4B3ABBC3B9CB082B2A7 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 79E70E1EFFADAB9202216FE2C562F23F /* EXFirebaseCore.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		F7502A10C4F739E377206F82422DFCBD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9A9223A96120659843C90BF08A4C5FA2 /* EXFirebaseCore.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
@@ -396,9 +399,8 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
 /* End XCBuildConfiguration section */
 
@@ -406,17 +408,17 @@
 		4698A7079FB741213EA9D3C91BD091C8 /* Build configuration list for PBXProject "EXFirebaseCore" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				ADA1BBC565C2D2C4E8875356B388DD00 /* Debug */,
-				A7F60851ACEEFBC86FA6C9887F36F4BA /* Release */,
+				5D55BE920044B96DE19BA18B263AAD63 /* Debug */,
+				87544F7B8579B4B3ABBC3B9CB082B2A7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C649305474112FF3F9EC8DB2CD80D8E5 /* Build configuration list for PBXNativeTarget "EXFirebaseCore" */ = {
+		5140C7426C7CE892163D356B371BC4EA /* Build configuration list for PBXNativeTarget "EXFirebaseCore" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				9DBFB4DB3728CF76E9D1EC66A2A1ADA8 /* Debug */,
-				D4E16F185B42E868E38137DD4C7E5362 /* Release */,
+				F7502A10C4F739E377206F82422DFCBD /* Debug */,
+				4A75F51527D03F0D25631E7F7AD7FA04 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

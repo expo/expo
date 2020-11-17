@@ -9,18 +9,18 @@
 /* Begin PBXAggregateTarget section */
 		51D72679DE0FCD549F01BCDBBF19E2B0 /* FBAudienceNetwork */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = D2DC89F8BDAE71081231B77C84B73E1A /* Build configuration list for PBXAggregateTarget "FBAudienceNetwork" */;
+			buildConfigurationList = 3CC4616D793648968C54B1A24809C600 /* Build configuration list for PBXAggregateTarget "FBAudienceNetwork" */;
 			buildPhases = (
 			);
 			dependencies = (
-				3B5BD9E59657E0CE0AC862A44724F929 /* PBXTargetDependency */,
+				F2EBBD71E4BE4EA46CEF66EF8A74CEEE /* PBXTargetDependency */,
 			);
 			name = FBAudienceNetwork;
 		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXContainerItemProxy section */
-		3EA39A0939B069616EE7B78C900F4F3D /* PBXContainerItemProxy */ = {
+		4088BFA1441EC5D3D98B47283CD12B59 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 64C1FCB9106EBE521AB1CA52A513AAD9 /* FBSDKCoreKit.xcodeproj */;
 			proxyType = 1;
@@ -206,33 +206,20 @@
 /* End PBXProject section */
 
 /* Begin PBXTargetDependency section */
-		3B5BD9E59657E0CE0AC862A44724F929 /* PBXTargetDependency */ = {
+		F2EBBD71E4BE4EA46CEF66EF8A74CEEE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = FBSDKCoreKit;
-			targetProxy = 3EA39A0939B069616EE7B78C900F4F3D /* PBXContainerItemProxy */;
+			targetProxy = 4088BFA1441EC5D3D98B47283CD12B59 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		05756D703AE99A0F94ED24C7BF4DBAB1 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 810E9ECCC4EFB84148525BF20ED69000 /* FBAudienceNetwork.debug.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		15359ABB41E2D54D7BCFFAC3FA1B7568 /* Release */ = {
+		09D454920F1BE92C9302B67FFA111A02 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BCC27F79FB3D1AAD2D28CF1DBC6DB24A /* FBAudienceNetwork.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				SDKROOT = iphoneos;
@@ -241,10 +228,24 @@
 			};
 			name = Release;
 		};
-		510DC5D90BEB0F97838C460B9A9E7667 /* Debug */ = {
+		240295AC213D15811DA9DB32AF84ED7E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 810E9ECCC4EFB84148525BF20ED69000 /* FBAudienceNetwork.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		83FA40315A808AE90EB54D77DF6643F8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -267,6 +268,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -305,10 +307,11 @@
 			};
 			name = Debug;
 		};
-		56F89CE9909FF622E0FB5379AB4D15D2 /* Release */ = {
+		F15F40B5D746F9499DA4146A4383EF7A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -331,6 +334,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -368,11 +372,11 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D2DC89F8BDAE71081231B77C84B73E1A /* Build configuration list for PBXAggregateTarget "FBAudienceNetwork" */ = {
+		3CC4616D793648968C54B1A24809C600 /* Build configuration list for PBXAggregateTarget "FBAudienceNetwork" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				05756D703AE99A0F94ED24C7BF4DBAB1 /* Debug */,
-				15359ABB41E2D54D7BCFFAC3FA1B7568 /* Release */,
+				240295AC213D15811DA9DB32AF84ED7E /* Debug */,
+				09D454920F1BE92C9302B67FFA111A02 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -380,8 +384,8 @@
 		E0D08DA550B848FD4FBE60E0DD0AD8A2 /* Build configuration list for PBXProject "FBAudienceNetwork" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				510DC5D90BEB0F97838C460B9A9E7667 /* Debug */,
-				56F89CE9909FF622E0FB5379AB4D15D2 /* Release */,
+				83FA40315A808AE90EB54D77DF6643F8 /* Debug */,
+				F15F40B5D746F9499DA4146A4383EF7A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

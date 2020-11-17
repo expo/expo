@@ -7,46 +7,46 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		01DEB96BE06560E85C5814EA61EAAF16 /* FlipperResponder.h in Headers */ = {isa = PBXBuildFile; fileRef = EEAEC6F63D01348D489876F43281E6D9 /* FlipperResponder.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		0A3920CF1A1F861DA17C0268EA120487 /* ConnectionContextStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A3CA9209EAC70550EF317F506D84F87 /* ConnectionContextStore.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		0CB60BB08F68CCADAFD83521258CCED6 /* FlipperConnectionManagerImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6476725422A9058E3F908C5D82371AC /* FlipperConnectionManagerImpl.cpp */; settings = {COMPILER_FLAGS = "-DFLIPPER_OSS=1 -DFB_SONARKIT_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0 -Wall\n    -std=c++14\n    -Wno-global-constructors -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		0DB470272AE9A6101B76483F8858056D /* Flipper-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 74C83A31E84DE94CD27E8C1C4A4B05BF /* Flipper-dummy.m */; };
-		14CAA03BC3EC34D4940348AA40BC3E6F /* FlipperState.h in Headers */ = {isa = PBXBuildFile; fileRef = 55D9EA9BDE79D5D021E3DDFE5D2C2316 /* FlipperState.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		18DAA8E04B5EEE9895F4AE88F20A8A51 /* FlipperClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCE40EBB8F6BE9FA26F3E6A0F7F47E92 /* FlipperClient.cpp */; settings = {COMPILER_FLAGS = "-DFLIPPER_OSS=1 -DFB_SONARKIT_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0 -Wall\n    -std=c++14\n    -Wno-global-constructors -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		195EB1248BB25D22D9B2D4E58ABE0CD5 /* FlipperStep.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8E7022A1197E81C221FD2984E7C6388 /* FlipperStep.cpp */; settings = {COMPILER_FLAGS = "-DFLIPPER_OSS=1 -DFB_SONARKIT_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0 -Wall\n    -std=c++14\n    -Wno-global-constructors -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		21357DA2D5BBBF7D71109806B4C7CB06 /* Log.h in Headers */ = {isa = PBXBuildFile; fileRef = 9B5DE38E2463F9A03B8D3C692CE0B75F /* Log.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		2484A7207EF479FA0A4DF44E8C9AE63A /* FlipperConnectionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = C4F85AEC4CB365F191E6626BA1609936 /* FlipperConnectionManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		42029A66B7A23EF93938784A70FAD62F /* FlipperPlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = 609E283CEC72B42357AF4A4C60263DC3 /* FlipperPlugin.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		42E68254819BF0A33AA9E21DFC16A179 /* FlipperRSocketResponder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46FD7EADA78DF53DABBE03062E8A807F /* FlipperRSocketResponder.cpp */; settings = {COMPILER_FLAGS = "-DFLIPPER_OSS=1 -DFB_SONARKIT_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0 -Wall\n    -std=c++14\n    -Wno-global-constructors -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		48D98CD2145A9FD7119A451D6E47AB18 /* FlipperStep.h in Headers */ = {isa = PBXBuildFile; fileRef = 105477130B6655E5EFE4868FD5917364 /* FlipperStep.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		4F26ECBB83599B15FAC5D9C5F45C4C06 /* FlipperConnectionManagerImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = 017B560F4281739677D97F12159B714F /* FlipperConnectionManagerImpl.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		56BBB7D510920E2DA9674C7526193FF1 /* FlipperResponderImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = CE12115FABA34745F291C8FF89E0AC72 /* FlipperResponderImpl.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		5922092E105CADE7FDB4AB76B4BFAED4 /* FlipperStateUpdateListener.h in Headers */ = {isa = PBXBuildFile; fileRef = F3C4602F639A2A368BCDA0C660AAEACC /* FlipperStateUpdateListener.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		5F544F404B9E6A141A560614CC53FF0E /* FlipperConnectionImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = B4285710D3A050D50E98CD656517AEF6 /* FlipperConnectionImpl.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		7261FB60C918FC8A5A26BEC9447FF9E4 /* FlipperState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43AF94075772BF53449A8E24C2462321 /* FlipperState.cpp */; settings = {COMPILER_FLAGS = "-DFLIPPER_OSS=1 -DFB_SONARKIT_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0 -Wall\n    -std=c++14\n    -Wno-global-constructors -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		74C82F158537D3399C05D7F3360E9EF6 /* CertificateUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBCCEB0F681D0D3957AF29EAC11B1E28 /* CertificateUtils.cpp */; settings = {COMPILER_FLAGS = "-DFLIPPER_OSS=1 -DFB_SONARKIT_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0 -Wall\n    -std=c++14\n    -Wno-global-constructors -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		80922D8F81F2174C7DE8FD5F97C96F86 /* FireAndForgetBasedFlipperResponder.h in Headers */ = {isa = PBXBuildFile; fileRef = BBE3138CC479FBE591148F4FDC38F05D /* FireAndForgetBasedFlipperResponder.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		827B20C63AA355521E76812B84373300 /* CallstackHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 157EA29070206B08E2AFABFE68627AA3 /* CallstackHelper.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		8D146089264CAF76388188353EACDFA9 /* FlipperCertificateProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = 9618CC6D0693B4DADDF6F4C6E0E5DD86 /* FlipperCertificateProvider.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		9B737D7C09A893A221B3F4E315C7D951 /* FlipperRSocketResponder.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F4B5C3DF3D14ED4231655646214121E /* FlipperRSocketResponder.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		A770063D553137E881D7F620E25AE9E1 /* FlipperCertificateExchangeMedium.h in Headers */ = {isa = PBXBuildFile; fileRef = 5DE70EA26469650EE35E1F3D44373DAD /* FlipperCertificateExchangeMedium.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		B277EEBB4183F3DCC2DBD599E5B7C8F1 /* Log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D4E64B110C5F47A4E2F292A17FA9ED0A /* Log.cpp */; settings = {COMPILER_FLAGS = "-DFLIPPER_OSS=1 -DFB_SONARKIT_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0 -Wall\n    -std=c++14\n    -Wno-global-constructors -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		B6099ED9C0AFFFD55AF6C519C3B43138 /* ConnectionContextStore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8FA96212C90D6F9D26C9257DEB66C56 /* ConnectionContextStore.cpp */; settings = {COMPILER_FLAGS = "-DFLIPPER_OSS=1 -DFB_SONARKIT_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0 -Wall\n    -std=c++14\n    -Wno-global-constructors -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		C034D1DDFA42CC4601B77504C6D66D20 /* FlipperInitConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 20E718C68FDE9B2279C8B2BF36320046 /* FlipperInitConfig.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		C3BBB8EE3E80AC04A79B83E32F72211E /* CertificateUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = C7351204D4A62C82F894FA647788B92B /* CertificateUtils.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		C7AF936B569F2B3E728378E6755D13F1 /* FlipperConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E4BCF8C80BFFAE57E8497ED13F46084 /* FlipperConnection.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		DFA36A17D0EB01C2B7AE5D0A81903B3B /* FlipperClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 8D9740019E22AD177045866CD993E942 /* FlipperClient.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		074A80F2199EBCBEED68A11C74F7855C /* Log.h in Headers */ = {isa = PBXBuildFile; fileRef = 0BCCD54C5396799DD9827D2CFB36909C /* Log.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		13458EAC71E0C8FCE91C00BBB682414C /* CertificateUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = F7F5FA64F8737547BEA86ABEB7ACF873 /* CertificateUtils.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		242572918C8D354F2293717A4F9A3DA6 /* FlipperCertificateExchangeMedium.h in Headers */ = {isa = PBXBuildFile; fileRef = B4FE2941A95CAF28A2B16BB6F70BC624 /* FlipperCertificateExchangeMedium.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		371D789FB82C0EC97D02B07855BC2A52 /* FlipperConnectionManagerImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EA23F49307EA64E3154C29E981D7E00 /* FlipperConnectionManagerImpl.cpp */; settings = {COMPILER_FLAGS = "-DFLIPPER_OSS=1 -DFB_SONARKIT_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0 -Wall\n    -std=c++14\n    -Wno-global-constructors -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		3E635C53F2FEFDF2A2A986B421E17D5E /* FlipperRSocketResponder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3063C47A92FF859FF05D261086E6A813 /* FlipperRSocketResponder.cpp */; settings = {COMPILER_FLAGS = "-DFLIPPER_OSS=1 -DFB_SONARKIT_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0 -Wall\n    -std=c++14\n    -Wno-global-constructors -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		4227081150FB39C61B833E4A6925018B /* FireAndForgetBasedFlipperResponder.h in Headers */ = {isa = PBXBuildFile; fileRef = 124D9EAE74A23F12C0F04D9F8FD33F68 /* FireAndForgetBasedFlipperResponder.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		4FF4FA34145A13515250B8B9C0FBFC1C /* CallstackHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = CAC757F27DC62F93525F195D4714D3F3 /* CallstackHelper.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		55BF37A061931F234AC795C208F62DB1 /* FlipperConnectionImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BC69E22E70B187E6E968D044FB5B4DC /* FlipperConnectionImpl.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		5F30A111981C87A89948F2070D4CDBAD /* FlipperConnectionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 3E84C3FC0C1A0C009D6E0579271BAECD /* FlipperConnectionManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		60C56AB32D9CA655BE99A2F8900C8326 /* FlipperInitConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = B38C5EC2B1E7BA0DFC00FAD15A412EBB /* FlipperInitConfig.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		628035CD6C7704A219DB2BE3124FF573 /* FlipperRSocketResponder.h in Headers */ = {isa = PBXBuildFile; fileRef = C058DA8D456373CD5261DB16579BC10C /* FlipperRSocketResponder.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		63B85C4FFBD9BEB1257A6C38EA79C5F5 /* FlipperClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D9B7EFEC6B7E8C8D1FF68BB2A5AA412 /* FlipperClient.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		6EA7D4E91B24F556FFE19176CE94BF89 /* FlipperStep.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3E73C7E5B76DC77189B96BFB9FEB94C6 /* FlipperStep.cpp */; settings = {COMPILER_FLAGS = "-DFLIPPER_OSS=1 -DFB_SONARKIT_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0 -Wall\n    -std=c++14\n    -Wno-global-constructors -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		7F04D985C40D9C27FEE9C186527C410C /* FlipperState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 577E664503D7509CEFF2D41C378B444C /* FlipperState.cpp */; settings = {COMPILER_FLAGS = "-DFLIPPER_OSS=1 -DFB_SONARKIT_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0 -Wall\n    -std=c++14\n    -Wno-global-constructors -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		7FBB60414AEF004241E7928897A7E6D9 /* FlipperResponder.h in Headers */ = {isa = PBXBuildFile; fileRef = 121964394676B5820A992D98322A8DE2 /* FlipperResponder.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8852775E3E0341E3DC813A492063268A /* Flipper-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = BF8CC24BAC37189281A77719B90CCAC0 /* Flipper-dummy.m */; };
+		8CACE32C7CAAFEA4C4EAD4B7CFF609E9 /* FlipperConnectionManagerImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = CEBC92163D4DA308D6537CB9A7B29605 /* FlipperConnectionManagerImpl.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		99CBDC9C3DF0511A1A37C6F37ECA61F2 /* ConnectionContextStore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25D671D58504C34165C8730D74261B76 /* ConnectionContextStore.cpp */; settings = {COMPILER_FLAGS = "-DFLIPPER_OSS=1 -DFB_SONARKIT_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0 -Wall\n    -std=c++14\n    -Wno-global-constructors -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		9EC54416271B5FF7F78E3F4DEF0FD676 /* ConnectionContextStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 9982C55E64F4DC73DA399DE3415FF53F /* ConnectionContextStore.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		9ED4218B354705EC2B18F425F40D613D /* CertificateUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B57D878AFE98A90F78590F3F43C44466 /* CertificateUtils.cpp */; settings = {COMPILER_FLAGS = "-DFLIPPER_OSS=1 -DFB_SONARKIT_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0 -Wall\n    -std=c++14\n    -Wno-global-constructors -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		A34644877C163E8F4F098792B24F0405 /* FlipperStateUpdateListener.h in Headers */ = {isa = PBXBuildFile; fileRef = F5F3BF7923D23CEBAA9D0E88CE888BA7 /* FlipperStateUpdateListener.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		ABB5576A6E6216DABEE149B189EBE2B2 /* FlipperConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = ED8F43ABBAE3968B57AC992EC05E9BA3 /* FlipperConnection.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		AD8CE9FA4C3B27BDBAC5189E076461E3 /* FlipperStep.h in Headers */ = {isa = PBXBuildFile; fileRef = B0778883FAA635235F5739852832B53A /* FlipperStep.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		AF2094D55AADEDEB95BF153530C26CC5 /* FlipperPlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = A84AF5C11761C8175CD8FCC1EB1934FA /* FlipperPlugin.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		BF3F4EC7EC8BCA487D38963587711B80 /* FlipperResponderImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = B4C285A0F0189749CCED62DA6C8307E4 /* FlipperResponderImpl.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C478FC6D82623891CB09B757ABAE56D5 /* Log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDC9B4B6997F4F6B7FB8AAFDE56C132D /* Log.cpp */; settings = {COMPILER_FLAGS = "-DFLIPPER_OSS=1 -DFB_SONARKIT_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0 -Wall\n    -std=c++14\n    -Wno-global-constructors -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		CAEB394114C1D6291AC9D7866D05A826 /* FlipperState.h in Headers */ = {isa = PBXBuildFile; fileRef = C7B02BB92C3448472F567E6C5258EF23 /* FlipperState.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		CEBC1AB8DCC63171FAE0A1F1B1A0DF69 /* FlipperCertificateProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = 501B6A403D47BA26FE9797917383C52F /* FlipperCertificateProvider.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		FD0E587CA8AC8A425F3778FAE9002A23 /* FlipperClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC8F4FB5A468DDBE7A82A1CBBCB05749 /* FlipperClient.cpp */; settings = {COMPILER_FLAGS = "-DFLIPPER_OSS=1 -DFB_SONARKIT_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_LIBGFLAGS=0 -DFOLLY_HAVE_LIBJEMALLOC=0 -DFOLLY_HAVE_PREADV=0 -DFOLLY_HAVE_PWRITEV=0 -DFOLLY_HAVE_TFO=0 -DFOLLY_USE_SYMBOLIZER=0 -Wall\n    -std=c++14\n    -Wno-global-constructors -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		31897A065C1515281C7FD371909C5F4B /* PBXContainerItemProxy */ = {
+		11F5D58796646D4EA207E0872B265B61 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 388B4E8FCAEB727CF72A96FDDFD048C1 /* Flipper-Folly.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = BC71C7B21753292689B3040E2CC24B53;
 			remoteInfo = "Flipper-Folly";
 		};
-		ABCB6CEE2949D8CE5E401CC829364CDA /* PBXContainerItemProxy */ = {
+		2FA6B70E35EAADF3D3C6AE65CB682213 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D806043DA9AA252100A0710FAEE20D1A /* Flipper-RSocket.xcodeproj */;
 			proxyType = 1;
@@ -56,45 +56,45 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		017B560F4281739677D97F12159B714F /* FlipperConnectionManagerImpl.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FlipperConnectionManagerImpl.h; path = xplat/Flipper/FlipperConnectionManagerImpl.h; sourceTree = "<group>"; };
-		105477130B6655E5EFE4868FD5917364 /* FlipperStep.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FlipperStep.h; path = xplat/Flipper/FlipperStep.h; sourceTree = "<group>"; };
-		157EA29070206B08E2AFABFE68627AA3 /* CallstackHelper.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = CallstackHelper.h; path = xplat/Flipper/utils/CallstackHelper.h; sourceTree = "<group>"; };
-		1A3CA9209EAC70550EF317F506D84F87 /* ConnectionContextStore.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ConnectionContextStore.h; path = xplat/Flipper/ConnectionContextStore.h; sourceTree = "<group>"; };
-		20E718C68FDE9B2279C8B2BF36320046 /* FlipperInitConfig.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FlipperInitConfig.h; path = xplat/Flipper/FlipperInitConfig.h; sourceTree = "<group>"; };
-		2E4BCF8C80BFFAE57E8497ED13F46084 /* FlipperConnection.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FlipperConnection.h; path = xplat/Flipper/FlipperConnection.h; sourceTree = "<group>"; };
-		36B0C6700EBD77CAD16C88DEDC6DAE7A /* Flipper.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Flipper.release.xcconfig; sourceTree = "<group>"; };
+		0BCCD54C5396799DD9827D2CFB36909C /* Log.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = Log.h; path = xplat/Flipper/Log.h; sourceTree = "<group>"; };
+		121964394676B5820A992D98322A8DE2 /* FlipperResponder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FlipperResponder.h; path = xplat/Flipper/FlipperResponder.h; sourceTree = "<group>"; };
+		124D9EAE74A23F12C0F04D9F8FD33F68 /* FireAndForgetBasedFlipperResponder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FireAndForgetBasedFlipperResponder.h; path = xplat/Flipper/FireAndForgetBasedFlipperResponder.h; sourceTree = "<group>"; };
+		126B5F176BB1DCCC775B76B746BC358A /* Flipper.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Flipper.debug.xcconfig; sourceTree = "<group>"; };
+		25D671D58504C34165C8730D74261B76 /* ConnectionContextStore.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = ConnectionContextStore.cpp; path = xplat/Flipper/ConnectionContextStore.cpp; sourceTree = "<group>"; };
+		2EA23F49307EA64E3154C29E981D7E00 /* FlipperConnectionManagerImpl.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = FlipperConnectionManagerImpl.cpp; path = xplat/Flipper/FlipperConnectionManagerImpl.cpp; sourceTree = "<group>"; };
+		3063C47A92FF859FF05D261086E6A813 /* FlipperRSocketResponder.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = FlipperRSocketResponder.cpp; path = xplat/Flipper/FlipperRSocketResponder.cpp; sourceTree = "<group>"; };
 		388B4E8FCAEB727CF72A96FDDFD048C1 /* Flipper-Folly */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Flipper-Folly"; path = "Flipper-Folly.xcodeproj"; sourceTree = "<group>"; };
-		3F4B5C3DF3D14ED4231655646214121E /* FlipperRSocketResponder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FlipperRSocketResponder.h; path = xplat/Flipper/FlipperRSocketResponder.h; sourceTree = "<group>"; };
-		43AF94075772BF53449A8E24C2462321 /* FlipperState.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = FlipperState.cpp; path = xplat/Flipper/FlipperState.cpp; sourceTree = "<group>"; };
+		3D9B7EFEC6B7E8C8D1FF68BB2A5AA412 /* FlipperClient.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FlipperClient.h; path = xplat/Flipper/FlipperClient.h; sourceTree = "<group>"; };
+		3DD7DA20B78520204804257E1CFC8DED /* Flipper-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Flipper-prefix.pch"; sourceTree = "<group>"; };
+		3E73C7E5B76DC77189B96BFB9FEB94C6 /* FlipperStep.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = FlipperStep.cpp; path = xplat/Flipper/FlipperStep.cpp; sourceTree = "<group>"; };
+		3E84C3FC0C1A0C009D6E0579271BAECD /* FlipperConnectionManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FlipperConnectionManager.h; path = xplat/Flipper/FlipperConnectionManager.h; sourceTree = "<group>"; };
 		4458354F9B2618533AC351E2B77059D0 /* libFlipper.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libFlipper.a; path = libFlipper.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		46FD7EADA78DF53DABBE03062E8A807F /* FlipperRSocketResponder.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = FlipperRSocketResponder.cpp; path = xplat/Flipper/FlipperRSocketResponder.cpp; sourceTree = "<group>"; };
-		55D9EA9BDE79D5D021E3DDFE5D2C2316 /* FlipperState.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FlipperState.h; path = xplat/Flipper/FlipperState.h; sourceTree = "<group>"; };
-		5D73DAF940F9679F7BC639D02189226F /* Flipper-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Flipper-prefix.pch"; sourceTree = "<group>"; };
-		5DE70EA26469650EE35E1F3D44373DAD /* FlipperCertificateExchangeMedium.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FlipperCertificateExchangeMedium.h; path = xplat/Flipper/FlipperCertificateExchangeMedium.h; sourceTree = "<group>"; };
-		609E283CEC72B42357AF4A4C60263DC3 /* FlipperPlugin.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FlipperPlugin.h; path = xplat/Flipper/FlipperPlugin.h; sourceTree = "<group>"; };
-		74C83A31E84DE94CD27E8C1C4A4B05BF /* Flipper-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Flipper-dummy.m"; sourceTree = "<group>"; };
-		8D9740019E22AD177045866CD993E942 /* FlipperClient.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FlipperClient.h; path = xplat/Flipper/FlipperClient.h; sourceTree = "<group>"; };
-		9618CC6D0693B4DADDF6F4C6E0E5DD86 /* FlipperCertificateProvider.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FlipperCertificateProvider.h; path = xplat/Flipper/FlipperCertificateProvider.h; sourceTree = "<group>"; };
-		9B5DE38E2463F9A03B8D3C692CE0B75F /* Log.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = Log.h; path = xplat/Flipper/Log.h; sourceTree = "<group>"; };
-		A6476725422A9058E3F908C5D82371AC /* FlipperConnectionManagerImpl.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = FlipperConnectionManagerImpl.cpp; path = xplat/Flipper/FlipperConnectionManagerImpl.cpp; sourceTree = "<group>"; };
-		B4285710D3A050D50E98CD656517AEF6 /* FlipperConnectionImpl.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FlipperConnectionImpl.h; path = xplat/Flipper/FlipperConnectionImpl.h; sourceTree = "<group>"; };
-		BBE3138CC479FBE591148F4FDC38F05D /* FireAndForgetBasedFlipperResponder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FireAndForgetBasedFlipperResponder.h; path = xplat/Flipper/FireAndForgetBasedFlipperResponder.h; sourceTree = "<group>"; };
-		C4F85AEC4CB365F191E6626BA1609936 /* FlipperConnectionManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FlipperConnectionManager.h; path = xplat/Flipper/FlipperConnectionManager.h; sourceTree = "<group>"; };
-		C7351204D4A62C82F894FA647788B92B /* CertificateUtils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = CertificateUtils.h; path = xplat/Flipper/CertificateUtils.h; sourceTree = "<group>"; };
-		CE12115FABA34745F291C8FF89E0AC72 /* FlipperResponderImpl.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FlipperResponderImpl.h; path = xplat/Flipper/FlipperResponderImpl.h; sourceTree = "<group>"; };
-		D4E64B110C5F47A4E2F292A17FA9ED0A /* Log.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = Log.cpp; path = xplat/Flipper/Log.cpp; sourceTree = "<group>"; };
+		501B6A403D47BA26FE9797917383C52F /* FlipperCertificateProvider.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FlipperCertificateProvider.h; path = xplat/Flipper/FlipperCertificateProvider.h; sourceTree = "<group>"; };
+		577E664503D7509CEFF2D41C378B444C /* FlipperState.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = FlipperState.cpp; path = xplat/Flipper/FlipperState.cpp; sourceTree = "<group>"; };
+		8BC69E22E70B187E6E968D044FB5B4DC /* FlipperConnectionImpl.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FlipperConnectionImpl.h; path = xplat/Flipper/FlipperConnectionImpl.h; sourceTree = "<group>"; };
+		9982C55E64F4DC73DA399DE3415FF53F /* ConnectionContextStore.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ConnectionContextStore.h; path = xplat/Flipper/ConnectionContextStore.h; sourceTree = "<group>"; };
+		A84AF5C11761C8175CD8FCC1EB1934FA /* FlipperPlugin.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FlipperPlugin.h; path = xplat/Flipper/FlipperPlugin.h; sourceTree = "<group>"; };
+		AC8F4FB5A468DDBE7A82A1CBBCB05749 /* FlipperClient.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = FlipperClient.cpp; path = xplat/Flipper/FlipperClient.cpp; sourceTree = "<group>"; };
+		B0778883FAA635235F5739852832B53A /* FlipperStep.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FlipperStep.h; path = xplat/Flipper/FlipperStep.h; sourceTree = "<group>"; };
+		B38C5EC2B1E7BA0DFC00FAD15A412EBB /* FlipperInitConfig.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FlipperInitConfig.h; path = xplat/Flipper/FlipperInitConfig.h; sourceTree = "<group>"; };
+		B4C285A0F0189749CCED62DA6C8307E4 /* FlipperResponderImpl.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FlipperResponderImpl.h; path = xplat/Flipper/FlipperResponderImpl.h; sourceTree = "<group>"; };
+		B4FE2941A95CAF28A2B16BB6F70BC624 /* FlipperCertificateExchangeMedium.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FlipperCertificateExchangeMedium.h; path = xplat/Flipper/FlipperCertificateExchangeMedium.h; sourceTree = "<group>"; };
+		B57D878AFE98A90F78590F3F43C44466 /* CertificateUtils.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = CertificateUtils.cpp; path = xplat/Flipper/CertificateUtils.cpp; sourceTree = "<group>"; };
+		BBF329C6A380B2C8CB8736C7EF63EFC8 /* Flipper.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Flipper.release.xcconfig; sourceTree = "<group>"; };
+		BDC9B4B6997F4F6B7FB8AAFDE56C132D /* Log.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = Log.cpp; path = xplat/Flipper/Log.cpp; sourceTree = "<group>"; };
+		BF8CC24BAC37189281A77719B90CCAC0 /* Flipper-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Flipper-dummy.m"; sourceTree = "<group>"; };
+		C058DA8D456373CD5261DB16579BC10C /* FlipperRSocketResponder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FlipperRSocketResponder.h; path = xplat/Flipper/FlipperRSocketResponder.h; sourceTree = "<group>"; };
+		C7B02BB92C3448472F567E6C5258EF23 /* FlipperState.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FlipperState.h; path = xplat/Flipper/FlipperState.h; sourceTree = "<group>"; };
+		CAC757F27DC62F93525F195D4714D3F3 /* CallstackHelper.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = CallstackHelper.h; path = xplat/Flipper/utils/CallstackHelper.h; sourceTree = "<group>"; };
+		CEBC92163D4DA308D6537CB9A7B29605 /* FlipperConnectionManagerImpl.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FlipperConnectionManagerImpl.h; path = xplat/Flipper/FlipperConnectionManagerImpl.h; sourceTree = "<group>"; };
 		D806043DA9AA252100A0710FAEE20D1A /* Flipper-RSocket */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Flipper-RSocket"; path = "Flipper-RSocket.xcodeproj"; sourceTree = "<group>"; };
-		EBCCEB0F681D0D3957AF29EAC11B1E28 /* CertificateUtils.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = CertificateUtils.cpp; path = xplat/Flipper/CertificateUtils.cpp; sourceTree = "<group>"; };
-		EEAEC6F63D01348D489876F43281E6D9 /* FlipperResponder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FlipperResponder.h; path = xplat/Flipper/FlipperResponder.h; sourceTree = "<group>"; };
-		EF9B582647F7A8D2E2C52740871D11D2 /* Flipper.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Flipper.debug.xcconfig; sourceTree = "<group>"; };
-		F3C4602F639A2A368BCDA0C660AAEACC /* FlipperStateUpdateListener.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FlipperStateUpdateListener.h; path = xplat/Flipper/FlipperStateUpdateListener.h; sourceTree = "<group>"; };
-		F8E7022A1197E81C221FD2984E7C6388 /* FlipperStep.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = FlipperStep.cpp; path = xplat/Flipper/FlipperStep.cpp; sourceTree = "<group>"; };
-		F8FA96212C90D6F9D26C9257DEB66C56 /* ConnectionContextStore.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = ConnectionContextStore.cpp; path = xplat/Flipper/ConnectionContextStore.cpp; sourceTree = "<group>"; };
-		FCE40EBB8F6BE9FA26F3E6A0F7F47E92 /* FlipperClient.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = FlipperClient.cpp; path = xplat/Flipper/FlipperClient.cpp; sourceTree = "<group>"; };
+		ED8F43ABBAE3968B57AC992EC05E9BA3 /* FlipperConnection.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FlipperConnection.h; path = xplat/Flipper/FlipperConnection.h; sourceTree = "<group>"; };
+		F5F3BF7923D23CEBAA9D0E88CE888BA7 /* FlipperStateUpdateListener.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FlipperStateUpdateListener.h; path = xplat/Flipper/FlipperStateUpdateListener.h; sourceTree = "<group>"; };
+		F7F5FA64F8737547BEA86ABEB7ACF873 /* CertificateUtils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = CertificateUtils.h; path = xplat/Flipper/CertificateUtils.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		CA76CFAC90A544021FE6A916AFEF4CD6 /* Frameworks */ = {
+		3AC135C504EC0DE8965E9B7C37E8E675 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -120,18 +120,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		339507F2F46BCC1428924B1D78C54F62 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				74C83A31E84DE94CD27E8C1C4A4B05BF /* Flipper-dummy.m */,
-				5D73DAF940F9679F7BC639D02189226F /* Flipper-prefix.pch */,
-				EF9B582647F7A8D2E2C52740871D11D2 /* Flipper.debug.xcconfig */,
-				36B0C6700EBD77CAD16C88DEDC6DAE7A /* Flipper.release.xcconfig */,
-			);
-			name = "Support Files";
-			path = "../Target Support Files/Flipper";
-			sourceTree = "<group>";
-		};
 		6D4B53A83D9159E077F36DA616267FEB /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -140,48 +128,60 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		7062905E1B9BE3EAC25B891DBF4F83EA /* Flipper */ = {
+		82AAFCC15EA8C4B8C48D79A47EDB8C51 /* Flipper */ = {
 			isa = PBXGroup;
 			children = (
-				157EA29070206B08E2AFABFE68627AA3 /* CallstackHelper.h */,
-				EBCCEB0F681D0D3957AF29EAC11B1E28 /* CertificateUtils.cpp */,
-				C7351204D4A62C82F894FA647788B92B /* CertificateUtils.h */,
-				F8FA96212C90D6F9D26C9257DEB66C56 /* ConnectionContextStore.cpp */,
-				1A3CA9209EAC70550EF317F506D84F87 /* ConnectionContextStore.h */,
-				BBE3138CC479FBE591148F4FDC38F05D /* FireAndForgetBasedFlipperResponder.h */,
-				5DE70EA26469650EE35E1F3D44373DAD /* FlipperCertificateExchangeMedium.h */,
-				9618CC6D0693B4DADDF6F4C6E0E5DD86 /* FlipperCertificateProvider.h */,
-				FCE40EBB8F6BE9FA26F3E6A0F7F47E92 /* FlipperClient.cpp */,
-				8D9740019E22AD177045866CD993E942 /* FlipperClient.h */,
-				2E4BCF8C80BFFAE57E8497ED13F46084 /* FlipperConnection.h */,
-				B4285710D3A050D50E98CD656517AEF6 /* FlipperConnectionImpl.h */,
-				C4F85AEC4CB365F191E6626BA1609936 /* FlipperConnectionManager.h */,
-				A6476725422A9058E3F908C5D82371AC /* FlipperConnectionManagerImpl.cpp */,
-				017B560F4281739677D97F12159B714F /* FlipperConnectionManagerImpl.h */,
-				20E718C68FDE9B2279C8B2BF36320046 /* FlipperInitConfig.h */,
-				609E283CEC72B42357AF4A4C60263DC3 /* FlipperPlugin.h */,
-				EEAEC6F63D01348D489876F43281E6D9 /* FlipperResponder.h */,
-				CE12115FABA34745F291C8FF89E0AC72 /* FlipperResponderImpl.h */,
-				46FD7EADA78DF53DABBE03062E8A807F /* FlipperRSocketResponder.cpp */,
-				3F4B5C3DF3D14ED4231655646214121E /* FlipperRSocketResponder.h */,
-				43AF94075772BF53449A8E24C2462321 /* FlipperState.cpp */,
-				55D9EA9BDE79D5D021E3DDFE5D2C2316 /* FlipperState.h */,
-				F3C4602F639A2A368BCDA0C660AAEACC /* FlipperStateUpdateListener.h */,
-				F8E7022A1197E81C221FD2984E7C6388 /* FlipperStep.cpp */,
-				105477130B6655E5EFE4868FD5917364 /* FlipperStep.h */,
-				D4E64B110C5F47A4E2F292A17FA9ED0A /* Log.cpp */,
-				9B5DE38E2463F9A03B8D3C692CE0B75F /* Log.h */,
-				339507F2F46BCC1428924B1D78C54F62 /* Support Files */,
+				CAC757F27DC62F93525F195D4714D3F3 /* CallstackHelper.h */,
+				B57D878AFE98A90F78590F3F43C44466 /* CertificateUtils.cpp */,
+				F7F5FA64F8737547BEA86ABEB7ACF873 /* CertificateUtils.h */,
+				25D671D58504C34165C8730D74261B76 /* ConnectionContextStore.cpp */,
+				9982C55E64F4DC73DA399DE3415FF53F /* ConnectionContextStore.h */,
+				124D9EAE74A23F12C0F04D9F8FD33F68 /* FireAndForgetBasedFlipperResponder.h */,
+				B4FE2941A95CAF28A2B16BB6F70BC624 /* FlipperCertificateExchangeMedium.h */,
+				501B6A403D47BA26FE9797917383C52F /* FlipperCertificateProvider.h */,
+				AC8F4FB5A468DDBE7A82A1CBBCB05749 /* FlipperClient.cpp */,
+				3D9B7EFEC6B7E8C8D1FF68BB2A5AA412 /* FlipperClient.h */,
+				ED8F43ABBAE3968B57AC992EC05E9BA3 /* FlipperConnection.h */,
+				8BC69E22E70B187E6E968D044FB5B4DC /* FlipperConnectionImpl.h */,
+				3E84C3FC0C1A0C009D6E0579271BAECD /* FlipperConnectionManager.h */,
+				2EA23F49307EA64E3154C29E981D7E00 /* FlipperConnectionManagerImpl.cpp */,
+				CEBC92163D4DA308D6537CB9A7B29605 /* FlipperConnectionManagerImpl.h */,
+				B38C5EC2B1E7BA0DFC00FAD15A412EBB /* FlipperInitConfig.h */,
+				A84AF5C11761C8175CD8FCC1EB1934FA /* FlipperPlugin.h */,
+				121964394676B5820A992D98322A8DE2 /* FlipperResponder.h */,
+				B4C285A0F0189749CCED62DA6C8307E4 /* FlipperResponderImpl.h */,
+				3063C47A92FF859FF05D261086E6A813 /* FlipperRSocketResponder.cpp */,
+				C058DA8D456373CD5261DB16579BC10C /* FlipperRSocketResponder.h */,
+				577E664503D7509CEFF2D41C378B444C /* FlipperState.cpp */,
+				C7B02BB92C3448472F567E6C5258EF23 /* FlipperState.h */,
+				F5F3BF7923D23CEBAA9D0E88CE888BA7 /* FlipperStateUpdateListener.h */,
+				3E73C7E5B76DC77189B96BFB9FEB94C6 /* FlipperStep.cpp */,
+				B0778883FAA635235F5739852832B53A /* FlipperStep.h */,
+				BDC9B4B6997F4F6B7FB8AAFDE56C132D /* Log.cpp */,
+				0BCCD54C5396799DD9827D2CFB36909C /* Log.h */,
+				9656542DC6132C49C0E7A9344039B9F5 /* Support Files */,
 			);
 			name = Flipper;
 			path = Flipper;
+			sourceTree = "<group>";
+		};
+		9656542DC6132C49C0E7A9344039B9F5 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				BF8CC24BAC37189281A77719B90CCAC0 /* Flipper-dummy.m */,
+				3DD7DA20B78520204804257E1CFC8DED /* Flipper-prefix.pch */,
+				126B5F176BB1DCCC775B76B746BC358A /* Flipper.debug.xcconfig */,
+				BBF329C6A380B2C8CB8736C7EF63EFC8 /* Flipper.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../Target Support Files/Flipper";
 			sourceTree = "<group>";
 		};
 		D3C0057EA09DD1AA08DF3729DD0A7147 = {
 			isa = PBXGroup;
 			children = (
 				0F03B831A96DADEF2BA181DF61C22186 /* Dependencies */,
-				7062905E1B9BE3EAC25B891DBF4F83EA /* Flipper */,
+				82AAFCC15EA8C4B8C48D79A47EDB8C51 /* Flipper */,
 				29495859B7F4BC22025A88431C62C0C2 /* Frameworks */,
 				6D4B53A83D9159E077F36DA616267FEB /* Products */,
 			);
@@ -190,30 +190,30 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		9B5DA07D0AC2DF1FF3D62E20B6A082CB /* Headers */ = {
+		9075272B8C9B19B999CA7F61378114C4 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				827B20C63AA355521E76812B84373300 /* CallstackHelper.h in Headers */,
-				C3BBB8EE3E80AC04A79B83E32F72211E /* CertificateUtils.h in Headers */,
-				0A3920CF1A1F861DA17C0268EA120487 /* ConnectionContextStore.h in Headers */,
-				80922D8F81F2174C7DE8FD5F97C96F86 /* FireAndForgetBasedFlipperResponder.h in Headers */,
-				A770063D553137E881D7F620E25AE9E1 /* FlipperCertificateExchangeMedium.h in Headers */,
-				8D146089264CAF76388188353EACDFA9 /* FlipperCertificateProvider.h in Headers */,
-				DFA36A17D0EB01C2B7AE5D0A81903B3B /* FlipperClient.h in Headers */,
-				C7AF936B569F2B3E728378E6755D13F1 /* FlipperConnection.h in Headers */,
-				5F544F404B9E6A141A560614CC53FF0E /* FlipperConnectionImpl.h in Headers */,
-				2484A7207EF479FA0A4DF44E8C9AE63A /* FlipperConnectionManager.h in Headers */,
-				4F26ECBB83599B15FAC5D9C5F45C4C06 /* FlipperConnectionManagerImpl.h in Headers */,
-				C034D1DDFA42CC4601B77504C6D66D20 /* FlipperInitConfig.h in Headers */,
-				42029A66B7A23EF93938784A70FAD62F /* FlipperPlugin.h in Headers */,
-				01DEB96BE06560E85C5814EA61EAAF16 /* FlipperResponder.h in Headers */,
-				56BBB7D510920E2DA9674C7526193FF1 /* FlipperResponderImpl.h in Headers */,
-				9B737D7C09A893A221B3F4E315C7D951 /* FlipperRSocketResponder.h in Headers */,
-				14CAA03BC3EC34D4940348AA40BC3E6F /* FlipperState.h in Headers */,
-				5922092E105CADE7FDB4AB76B4BFAED4 /* FlipperStateUpdateListener.h in Headers */,
-				48D98CD2145A9FD7119A451D6E47AB18 /* FlipperStep.h in Headers */,
-				21357DA2D5BBBF7D71109806B4C7CB06 /* Log.h in Headers */,
+				4FF4FA34145A13515250B8B9C0FBFC1C /* CallstackHelper.h in Headers */,
+				13458EAC71E0C8FCE91C00BBB682414C /* CertificateUtils.h in Headers */,
+				9EC54416271B5FF7F78E3F4DEF0FD676 /* ConnectionContextStore.h in Headers */,
+				4227081150FB39C61B833E4A6925018B /* FireAndForgetBasedFlipperResponder.h in Headers */,
+				242572918C8D354F2293717A4F9A3DA6 /* FlipperCertificateExchangeMedium.h in Headers */,
+				CEBC1AB8DCC63171FAE0A1F1B1A0DF69 /* FlipperCertificateProvider.h in Headers */,
+				63B85C4FFBD9BEB1257A6C38EA79C5F5 /* FlipperClient.h in Headers */,
+				ABB5576A6E6216DABEE149B189EBE2B2 /* FlipperConnection.h in Headers */,
+				55BF37A061931F234AC795C208F62DB1 /* FlipperConnectionImpl.h in Headers */,
+				5F30A111981C87A89948F2070D4CDBAD /* FlipperConnectionManager.h in Headers */,
+				8CACE32C7CAAFEA4C4EAD4B7CFF609E9 /* FlipperConnectionManagerImpl.h in Headers */,
+				60C56AB32D9CA655BE99A2F8900C8326 /* FlipperInitConfig.h in Headers */,
+				AF2094D55AADEDEB95BF153530C26CC5 /* FlipperPlugin.h in Headers */,
+				7FBB60414AEF004241E7928897A7E6D9 /* FlipperResponder.h in Headers */,
+				BF3F4EC7EC8BCA487D38963587711B80 /* FlipperResponderImpl.h in Headers */,
+				628035CD6C7704A219DB2BE3124FF573 /* FlipperRSocketResponder.h in Headers */,
+				CAEB394114C1D6291AC9D7866D05A826 /* FlipperState.h in Headers */,
+				A34644877C163E8F4F098792B24F0405 /* FlipperStateUpdateListener.h in Headers */,
+				AD8CE9FA4C3B27BDBAC5189E076461E3 /* FlipperStep.h in Headers */,
+				074A80F2199EBCBEED68A11C74F7855C /* Log.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -222,17 +222,17 @@
 /* Begin PBXNativeTarget section */
 		E37FFB87E7DF4D8CB6E3FBD5373DC6D0 /* Flipper */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 403916140DDA3C047413277D792177F6 /* Build configuration list for PBXNativeTarget "Flipper" */;
+			buildConfigurationList = EE2478FCF43BC51613257DDD3DAE09BA /* Build configuration list for PBXNativeTarget "Flipper" */;
 			buildPhases = (
-				9B5DA07D0AC2DF1FF3D62E20B6A082CB /* Headers */,
-				A6C7C1463C69F28CBE2BE8E62EDDE0DB /* Sources */,
-				CA76CFAC90A544021FE6A916AFEF4CD6 /* Frameworks */,
+				9075272B8C9B19B999CA7F61378114C4 /* Headers */,
+				EF6B47D8BCC36837A45CB8F40C0C3604 /* Sources */,
+				3AC135C504EC0DE8965E9B7C37E8E675 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				22ACF2705FDBB77BEEED8E68B1DB6F4D /* PBXTargetDependency */,
-				040BEEE6199E138F8A348E92E4AD3CBA /* PBXTargetDependency */,
+				2686070049FE1B7762C5F29347F922F8 /* PBXTargetDependency */,
+				BFF52EE7BE3674CB85634B9D0C0CB64F /* PBXTargetDependency */,
 			);
 			name = Flipper;
 			productName = Flipper;
@@ -275,93 +275,43 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		A6C7C1463C69F28CBE2BE8E62EDDE0DB /* Sources */ = {
+		EF6B47D8BCC36837A45CB8F40C0C3604 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				74C82F158537D3399C05D7F3360E9EF6 /* CertificateUtils.cpp in Sources */,
-				B6099ED9C0AFFFD55AF6C519C3B43138 /* ConnectionContextStore.cpp in Sources */,
-				0DB470272AE9A6101B76483F8858056D /* Flipper-dummy.m in Sources */,
-				18DAA8E04B5EEE9895F4AE88F20A8A51 /* FlipperClient.cpp in Sources */,
-				0CB60BB08F68CCADAFD83521258CCED6 /* FlipperConnectionManagerImpl.cpp in Sources */,
-				42E68254819BF0A33AA9E21DFC16A179 /* FlipperRSocketResponder.cpp in Sources */,
-				7261FB60C918FC8A5A26BEC9447FF9E4 /* FlipperState.cpp in Sources */,
-				195EB1248BB25D22D9B2D4E58ABE0CD5 /* FlipperStep.cpp in Sources */,
-				B277EEBB4183F3DCC2DBD599E5B7C8F1 /* Log.cpp in Sources */,
+				9ED4218B354705EC2B18F425F40D613D /* CertificateUtils.cpp in Sources */,
+				99CBDC9C3DF0511A1A37C6F37ECA61F2 /* ConnectionContextStore.cpp in Sources */,
+				8852775E3E0341E3DC813A492063268A /* Flipper-dummy.m in Sources */,
+				FD0E587CA8AC8A425F3778FAE9002A23 /* FlipperClient.cpp in Sources */,
+				371D789FB82C0EC97D02B07855BC2A52 /* FlipperConnectionManagerImpl.cpp in Sources */,
+				3E635C53F2FEFDF2A2A986B421E17D5E /* FlipperRSocketResponder.cpp in Sources */,
+				7F04D985C40D9C27FEE9C186527C410C /* FlipperState.cpp in Sources */,
+				6EA7D4E91B24F556FFE19176CE94BF89 /* FlipperStep.cpp in Sources */,
+				C478FC6D82623891CB09B757ABAE56D5 /* Log.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		040BEEE6199E138F8A348E92E4AD3CBA /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "Flipper-RSocket";
-			targetProxy = ABCB6CEE2949D8CE5E401CC829364CDA /* PBXContainerItemProxy */;
-		};
-		22ACF2705FDBB77BEEED8E68B1DB6F4D /* PBXTargetDependency */ = {
+		2686070049FE1B7762C5F29347F922F8 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "Flipper-Folly";
-			targetProxy = 31897A065C1515281C7FD371909C5F4B /* PBXContainerItemProxy */;
+			targetProxy = 11F5D58796646D4EA207E0872B265B61 /* PBXContainerItemProxy */;
+		};
+		BFF52EE7BE3674CB85634B9D0C0CB64F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "Flipper-RSocket";
+			targetProxy = 2FA6B70E35EAADF3D3C6AE65CB682213 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		13FC89D61E86C7CF915B74776A65F141 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 36B0C6700EBD77CAD16C88DEDC6DAE7A /* Flipper.release.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/Flipper/Flipper-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = Flipper;
-				PRODUCT_NAME = Flipper;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		1DA3979FADFCFFDFEF23412A3FBCD49E /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = EF9B582647F7A8D2E2C52740871D11D2 /* Flipper.debug.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/Flipper/Flipper-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = Flipper;
-				PRODUCT_NAME = Flipper;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		8CE44D527799B308297426FB9D906D30 /* Release */ = {
+		50A2045E40A0F3A677137F8FF34113F8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -384,66 +334,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"POD_CONFIGURATION_RELEASE=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.0;
-				SYMROOT = "${SRCROOT}/../build";
-			};
-			name = Release;
-		};
-		B4F72E6C1A13E4EBCE6E88B89645E0AB /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -482,23 +373,134 @@
 			};
 			name = Debug;
 		};
+		A767B739745D55B13FBD82477B84906D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 126B5F176BB1DCCC775B76B746BC358A /* Flipper.debug.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/Flipper/Flipper-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = Flipper;
+				PRODUCT_NAME = Flipper;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		AEA601E0A90954F4F60CC4975B76F5AF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		DFDC2FE8F2773528FDAA691474EB2864 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BBF329C6A380B2C8CB8736C7EF63EFC8 /* Flipper.release.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/Flipper/Flipper-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = Flipper;
+				PRODUCT_NAME = Flipper;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		403916140DDA3C047413277D792177F6 /* Build configuration list for PBXNativeTarget "Flipper" */ = {
+		C49F88AD22393B788312C00D97C35463 /* Build configuration list for PBXProject "Flipper" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1DA3979FADFCFFDFEF23412A3FBCD49E /* Debug */,
-				13FC89D61E86C7CF915B74776A65F141 /* Release */,
+				50A2045E40A0F3A677137F8FF34113F8 /* Debug */,
+				AEA601E0A90954F4F60CC4975B76F5AF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C49F88AD22393B788312C00D97C35463 /* Build configuration list for PBXProject "Flipper" */ = {
+		EE2478FCF43BC51613257DDD3DAE09BA /* Build configuration list for PBXNativeTarget "Flipper" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B4F72E6C1A13E4EBCE6E88B89645E0AB /* Debug */,
-				8CE44D527799B308297426FB9D906D30 /* Release */,
+				A767B739745D55B13FBD82477B84906D /* Debug */,
+				DFDC2FE8F2773528FDAA691474EB2864 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

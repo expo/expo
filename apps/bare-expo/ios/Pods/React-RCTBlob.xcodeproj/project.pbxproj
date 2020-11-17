@@ -7,55 +7,55 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		47A80E5B073186C186A0DA50C75E0BD2 /* RCTFileReaderModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = A8012EDF68AA553E19468B8CE389DE2D /* RCTFileReaderModule.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		4B7A49E6B4A30A343E1853A918EB2423 /* React-RCTBlob-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 990908258F9F97C955BDC2284B98827B /* React-RCTBlob-dummy.m */; };
-		8ADF02E220FDDF21314FFC81B1892628 /* RCTBlobPlugins.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8AC193B0B0A0D71489910B94B3CAC143 /* RCTBlobPlugins.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		C3EEA8BF215C74573A64BAF0795E65A6 /* RCTBlobManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 54FF7F7EBCDFA3CE755DF5BDD32CC4AC /* RCTBlobManager.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		FE7FDBA58C0F91C4AB2C06AAAB8B6C6A /* RCTBlobCollector.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7118E4FA091E48BBCF63385BD688C0BC /* RCTBlobCollector.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		1436E2016B7C045E4DC44ABB93C15FFE /* RCTBlobManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 54FF7F7EBCDFA3CE755DF5BDD32CC4AC /* RCTBlobManager.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		7313F2873DFAB652B040F19F74526040 /* RCTBlobPlugins.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8AC193B0B0A0D71489910B94B3CAC143 /* RCTBlobPlugins.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		B0D3BE55F6E269E959D690D522F90B66 /* React-RCTBlob-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 990908258F9F97C955BDC2284B98827B /* React-RCTBlob-dummy.m */; };
+		BD910262D7B7A3C67C3795511D798A26 /* RCTFileReaderModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = A8012EDF68AA553E19468B8CE389DE2D /* RCTFileReaderModule.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		D18107580686F4CF639FC008A9E793DB /* RCTBlobCollector.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7118E4FA091E48BBCF63385BD688C0BC /* RCTBlobCollector.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		530AC1B4AD9DB4C061BD4E9C61740786 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = EA546C45B55CAC7FB980CB2974314445 /* React-RCTNetwork.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = B42CC4F102742853C37E7C4841756DBE;
-			remoteInfo = "React-RCTNetwork";
-		};
-		8487E19DD613F5487E462534C85A996D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 56894FD16C4F62835F9EDD231F68568A /* React-jsi.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = D0DB82AB65D33935072718EA2468992F;
-			remoteInfo = "React-jsi";
-		};
-		96162F50957AE0FD5B693D647539394D /* PBXContainerItemProxy */ = {
+		0A1E9241807D58EACA3F44E7A6310F84 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C41699E0EA9F8E866BFF05CE6C2A3CDF /* Folly.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 14BB2B7275726942E762F076FA966088;
 			remoteInfo = Folly;
 		};
-		C1DFF3A3A12161BE65822D9C17B2A0BC /* PBXContainerItemProxy */ = {
+		31F70D50F07CAF4EBC248007F256B3F6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 1AD41E0EE009807D0C519D3F5A6F3FBD /* React-Core.xcodeproj */;
+			containerPortal = B9FA3F8A3AD36C2FC09D2C0F322967CE /* ReactCommon.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 5DA1A74647F652AE8E4DE074AFC4C6B7;
-			remoteInfo = "React-Core";
+			remoteGlobalIDString = 2610D146B211EB79FECF83D4FA5AB36D;
+			remoteInfo = ReactCommon;
 		};
-		DDCF56F73F4D88ED8EC7A00A2B384980 /* PBXContainerItemProxy */ = {
+		3390B8499B999C06F367913695027577 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 56894FD16C4F62835F9EDD231F68568A /* React-jsi.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D0DB82AB65D33935072718EA2468992F;
+			remoteInfo = "React-jsi";
+		};
+		7C4F5297CB4413C978C4B6F658BC350B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0AF15CC04846E1E2F99873A8A9422755 /* FBReactNativeSpec.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 5CDFFFDA1BEA16A0D3629FE9F761022A;
 			remoteInfo = FBReactNativeSpec;
 		};
-		DE21F5B26AE13E4612C064E08321E5FF /* PBXContainerItemProxy */ = {
+		8AFDB8B2CA3F33AB571BA2E745EDCECE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B9FA3F8A3AD36C2FC09D2C0F322967CE /* ReactCommon.xcodeproj */;
+			containerPortal = 1AD41E0EE009807D0C519D3F5A6F3FBD /* React-Core.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 2610D146B211EB79FECF83D4FA5AB36D;
-			remoteInfo = ReactCommon;
+			remoteGlobalIDString = 5DA1A74647F652AE8E4DE074AFC4C6B7;
+			remoteInfo = "React-Core";
+		};
+		A82420071AE81926C68830C9B591EA34 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EA546C45B55CAC7FB980CB2974314445 /* React-RCTNetwork.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = B42CC4F102742853C37E7C4841756DBE;
+			remoteInfo = "React-RCTNetwork";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -79,7 +79,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		9730971FA4EFDA4B3128BEE937B6FA5D /* Frameworks */ = {
+		25D17DFFC804BA2350F249ABC089092A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -164,7 +164,7 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		317CF737EBBDFB2937CEA20A4F66278D /* Headers */ = {
+		EE2CA96AD5A2D489353925F1018233B6 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -176,21 +176,21 @@
 /* Begin PBXNativeTarget section */
 		D8D59AAB809693DB02967107370F4619 /* React-RCTBlob */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = FCFF7514A9ACE6FCDF38B8A34683C965 /* Build configuration list for PBXNativeTarget "React-RCTBlob" */;
+			buildConfigurationList = 657045F3C918DB87DF98B4903AB402DA /* Build configuration list for PBXNativeTarget "React-RCTBlob" */;
 			buildPhases = (
-				317CF737EBBDFB2937CEA20A4F66278D /* Headers */,
-				21CE33E8BDD483170422A7BD68F44458 /* Sources */,
-				9730971FA4EFDA4B3128BEE937B6FA5D /* Frameworks */,
+				EE2CA96AD5A2D489353925F1018233B6 /* Headers */,
+				3B6566DF6D270EB49E2E54D0DE648238 /* Sources */,
+				25D17DFFC804BA2350F249ABC089092A /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				45A362EDA76DAD19B6ED8678D257BBA4 /* PBXTargetDependency */,
-				6F631C67332C6BBFA33B9038F0A07C38 /* PBXTargetDependency */,
-				5D02D492967EDFD36243965C134EE3F0 /* PBXTargetDependency */,
-				13E60B397A30E276329E215E3317BDDC /* PBXTargetDependency */,
-				F827AAD7D3CF8899E49ACA070DFAF45C /* PBXTargetDependency */,
-				2F63D96F0F1EF46021AF0911951BD206 /* PBXTargetDependency */,
+				6F5A464DFC04CDF294E40EC5F21C0936 /* PBXTargetDependency */,
+				0151F7B118D80110F1132CBAC08E08C8 /* PBXTargetDependency */,
+				F10675D965E7C84091A6BD204315E866 /* PBXTargetDependency */,
+				C8132DF72865BAC2352733A1F76437A4 /* PBXTargetDependency */,
+				2D618FF96D7BCFC49A61179CD9BAB6D1 /* PBXTargetDependency */,
+				4D0C64F1DA933B4BF6A8D83E79727504 /* PBXTargetDependency */,
 			);
 			name = "React-RCTBlob";
 			productName = "React-RCTBlob";
@@ -245,109 +245,59 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		21CE33E8BDD483170422A7BD68F44458 /* Sources */ = {
+		3B6566DF6D270EB49E2E54D0DE648238 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FE7FDBA58C0F91C4AB2C06AAAB8B6C6A /* RCTBlobCollector.mm in Sources */,
-				C3EEA8BF215C74573A64BAF0795E65A6 /* RCTBlobManager.mm in Sources */,
-				8ADF02E220FDDF21314FFC81B1892628 /* RCTBlobPlugins.mm in Sources */,
-				47A80E5B073186C186A0DA50C75E0BD2 /* RCTFileReaderModule.mm in Sources */,
-				4B7A49E6B4A30A343E1853A918EB2423 /* React-RCTBlob-dummy.m in Sources */,
+				D18107580686F4CF639FC008A9E793DB /* RCTBlobCollector.mm in Sources */,
+				1436E2016B7C045E4DC44ABB93C15FFE /* RCTBlobManager.mm in Sources */,
+				7313F2873DFAB652B040F19F74526040 /* RCTBlobPlugins.mm in Sources */,
+				BD910262D7B7A3C67C3795511D798A26 /* RCTFileReaderModule.mm in Sources */,
+				B0D3BE55F6E269E959D690D522F90B66 /* React-RCTBlob-dummy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		13E60B397A30E276329E215E3317BDDC /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "React-RCTNetwork";
-			targetProxy = 530AC1B4AD9DB4C061BD4E9C61740786 /* PBXContainerItemProxy */;
-		};
-		2F63D96F0F1EF46021AF0911951BD206 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = ReactCommon;
-			targetProxy = DE21F5B26AE13E4612C064E08321E5FF /* PBXContainerItemProxy */;
-		};
-		45A362EDA76DAD19B6ED8678D257BBA4 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = FBReactNativeSpec;
-			targetProxy = DDCF56F73F4D88ED8EC7A00A2B384980 /* PBXContainerItemProxy */;
-		};
-		5D02D492967EDFD36243965C134EE3F0 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "React-Core";
-			targetProxy = C1DFF3A3A12161BE65822D9C17B2A0BC /* PBXContainerItemProxy */;
-		};
-		6F631C67332C6BBFA33B9038F0A07C38 /* PBXTargetDependency */ = {
+		0151F7B118D80110F1132CBAC08E08C8 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Folly;
-			targetProxy = 96162F50957AE0FD5B693D647539394D /* PBXContainerItemProxy */;
+			targetProxy = 0A1E9241807D58EACA3F44E7A6310F84 /* PBXContainerItemProxy */;
 		};
-		F827AAD7D3CF8899E49ACA070DFAF45C /* PBXTargetDependency */ = {
+		2D618FF96D7BCFC49A61179CD9BAB6D1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-jsi";
-			targetProxy = 8487E19DD613F5487E462534C85A996D /* PBXContainerItemProxy */;
+			targetProxy = 3390B8499B999C06F367913695027577 /* PBXContainerItemProxy */;
+		};
+		4D0C64F1DA933B4BF6A8D83E79727504 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ReactCommon;
+			targetProxy = 31F70D50F07CAF4EBC248007F256B3F6 /* PBXContainerItemProxy */;
+		};
+		6F5A464DFC04CDF294E40EC5F21C0936 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = FBReactNativeSpec;
+			targetProxy = 7C4F5297CB4413C978C4B6F658BC350B /* PBXContainerItemProxy */;
+		};
+		C8132DF72865BAC2352733A1F76437A4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "React-RCTNetwork";
+			targetProxy = A82420071AE81926C68830C9B591EA34 /* PBXContainerItemProxy */;
+		};
+		F10675D965E7C84091A6BD204315E866 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "React-Core";
+			targetProxy = 8AFDB8B2CA3F33AB571BA2E745EDCECE /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		333ACCD14A9CA7DE5EC0F3E1F1AAB655 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = A1456E3FA3DD50C79636E9A460DE0D50 /* React-RCTBlob.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/React-RCTBlob/React-RCTBlob-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = RCTBlob;
-				PRODUCT_NAME = "React-RCTBlob";
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		852651B351081FC33BFBFAF79EC04A6C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = CA8015D74320D972224F9CE2F1B658EB /* React-RCTBlob.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/React-RCTBlob/React-RCTBlob-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = RCTBlob;
-				PRODUCT_NAME = "React-RCTBlob";
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		AB07DC7D1C7C15ADEA2F75617F2BD77E /* Release */ = {
+		38D679DBC4B4AC4F9105C6688914A3EB /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -370,6 +320,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -404,10 +355,62 @@
 			};
 			name = Release;
 		};
-		C1B1DD439624862CFE534038250BEBA0 /* Debug */ = {
+		6729AA3361862364027B179D25120F89 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CA8015D74320D972224F9CE2F1B658EB /* React-RCTBlob.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/React-RCTBlob/React-RCTBlob-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RCTBlob;
+				PRODUCT_NAME = "React-RCTBlob";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		CBCB676407B91FCC9B52EC175E9F5290 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A1456E3FA3DD50C79636E9A460DE0D50 /* React-RCTBlob.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/React-RCTBlob/React-RCTBlob-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RCTBlob;
+				PRODUCT_NAME = "React-RCTBlob";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		EAC356044FB0DFA3FEE524FE4CFA5CEA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -430,6 +433,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -474,17 +478,17 @@
 		3F884FDFE5B57A89462A63C0D98BF5DA /* Build configuration list for PBXProject "React-RCTBlob" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C1B1DD439624862CFE534038250BEBA0 /* Debug */,
-				AB07DC7D1C7C15ADEA2F75617F2BD77E /* Release */,
+				EAC356044FB0DFA3FEE524FE4CFA5CEA /* Debug */,
+				38D679DBC4B4AC4F9105C6688914A3EB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		FCFF7514A9ACE6FCDF38B8A34683C965 /* Build configuration list for PBXNativeTarget "React-RCTBlob" */ = {
+		657045F3C918DB87DF98B4903AB402DA /* Build configuration list for PBXNativeTarget "React-RCTBlob" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				852651B351081FC33BFBFAF79EC04A6C /* Debug */,
-				333ACCD14A9CA7DE5EC0F3E1F1AAB655 /* Release */,
+				6729AA3361862364027B179D25120F89 /* Debug */,
+				CBCB676407B91FCC9B52EC175E9F5290 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

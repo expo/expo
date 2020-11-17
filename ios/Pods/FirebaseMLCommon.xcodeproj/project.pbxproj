@@ -9,63 +9,63 @@
 /* Begin PBXAggregateTarget section */
 		655B4D5DC1C1034B3458073E51ECD859 /* FirebaseMLCommon */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = 93B057DF87FC5C644ECEF4FEBED260B1 /* Build configuration list for PBXAggregateTarget "FirebaseMLCommon" */;
+			buildConfigurationList = 1E95883C85F4EF704CCD50E23B0A5017 /* Build configuration list for PBXAggregateTarget "FirebaseMLCommon" */;
 			buildPhases = (
 			);
 			dependencies = (
-				BE395CFF98FDE21CA12A650F7D3B9C27 /* PBXTargetDependency */,
-				E29762B3E89BBA4217F208761D377EAF /* PBXTargetDependency */,
-				4EBD20564A2AC0300886FCA269C47BE0 /* PBXTargetDependency */,
-				FD3AAED01B39DA861F3A791E607B86F0 /* PBXTargetDependency */,
-				B37EB3717D481C6F0540F30BBF10CB15 /* PBXTargetDependency */,
-				16B27B810393F0C750731B6DB6DEF00C /* PBXTargetDependency */,
+				E59A30DBCFD43E08560543131F92C716 /* PBXTargetDependency */,
+				919C3EE7CE5F8B38E9B36889564BF2D0 /* PBXTargetDependency */,
+				97CCA8D47A50C42F6B1408D4A94D4F85 /* PBXTargetDependency */,
+				CE91FFF7EA89874BA06EA31EB43040DD /* PBXTargetDependency */,
+				7EB16EBE078E007B398A6A7126FFEBB5 /* PBXTargetDependency */,
+				22213E896BDFC4F60C4DB3EA75146890 /* PBXTargetDependency */,
 			);
 			name = FirebaseMLCommon;
 		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXContainerItemProxy section */
-		2DD6FE76FEAD0119C42DDAABA182C51B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 6DB5F2C7700A6A8BD737DA0162DDB240 /* GTMSessionFetcher.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = BD7A8A3BC22FD28DCB40568BE43D7C70;
-			remoteInfo = GTMSessionFetcher;
-		};
-		34739D925B1D25E6AC42100EFBE5196A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 72F047E1B4ACC51BDCDAD1E641F251FC /* FirebaseInstanceID.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 828A845A4F63A824ED62A82D61941B85;
-			remoteInfo = FirebaseInstanceID;
-		};
-		4B4821BC6B35E8ED664FF5E0DB80F27E /* PBXContainerItemProxy */ = {
+		2FA87D209E2B5669A3EC7CD978708309 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2E530F5A2FE0D41A194A0028276E2C7D /* GoogleUtilities.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 80B861CBFC18436AFD9A3703F00CEEC4;
 			remoteInfo = GoogleUtilities;
 		};
-		551083AE4E6E291FD14A6820CC4866B0 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9046F13051A9DF618764D318EBD24CEA /* Protobuf.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = BF47F3270E009392526FDEE0C3BA42AD;
-			remoteInfo = Protobuf;
-		};
-		5EB2DFC8B4BE2A8E13C2880DE7220B2B /* PBXContainerItemProxy */ = {
+		82C524E3EEDA6EF886EC528AE98848F1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 406C1DCFCDDC1EAF6AF5C12FC59CDB30 /* FirebaseCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 4BD5DE1E00ED67A59118DB4A3CD5F288;
 			remoteInfo = FirebaseCore;
 		};
-		C29EAE429ED7B6972FA4B2E333553456 /* PBXContainerItemProxy */ = {
+		926CDC3D49A40E614A37C920EAA2769A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9046F13051A9DF618764D318EBD24CEA /* Protobuf.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = BF47F3270E009392526FDEE0C3BA42AD;
+			remoteInfo = Protobuf;
+		};
+		A2291BEC98B0C75D1B82850F3B9BC9AA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A43656C01091DFBE60B400918381DB06 /* GoogleToolboxForMac.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 6A6C31AF5480BB69EDDFCD50D28967CD;
 			remoteInfo = GoogleToolboxForMac;
+		};
+		C18723C1694F0B1CE66978DB7FD1AF8F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6DB5F2C7700A6A8BD737DA0162DDB240 /* GTMSessionFetcher.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = BD7A8A3BC22FD28DCB40568BE43D7C70;
+			remoteInfo = GTMSessionFetcher;
+		};
+		C8B408965253A15CBA70C92C52442A1C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 72F047E1B4ACC51BDCDAD1E641F251FC /* FirebaseInstanceID.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 828A845A4F63A824ED62A82D61941B85;
+			remoteInfo = FirebaseInstanceID;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -195,43 +195,44 @@
 /* End PBXProject section */
 
 /* Begin PBXTargetDependency section */
-		16B27B810393F0C750731B6DB6DEF00C /* PBXTargetDependency */ = {
+		22213E896BDFC4F60C4DB3EA75146890 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Protobuf;
-			targetProxy = 551083AE4E6E291FD14A6820CC4866B0 /* PBXContainerItemProxy */;
+			targetProxy = 926CDC3D49A40E614A37C920EAA2769A /* PBXContainerItemProxy */;
 		};
-		4EBD20564A2AC0300886FCA269C47BE0 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = GoogleToolboxForMac;
-			targetProxy = C29EAE429ED7B6972FA4B2E333553456 /* PBXContainerItemProxy */;
-		};
-		B37EB3717D481C6F0540F30BBF10CB15 /* PBXTargetDependency */ = {
+		7EB16EBE078E007B398A6A7126FFEBB5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = GTMSessionFetcher;
-			targetProxy = 2DD6FE76FEAD0119C42DDAABA182C51B /* PBXContainerItemProxy */;
+			targetProxy = C18723C1694F0B1CE66978DB7FD1AF8F /* PBXContainerItemProxy */;
 		};
-		BE395CFF98FDE21CA12A650F7D3B9C27 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = FirebaseCore;
-			targetProxy = 5EB2DFC8B4BE2A8E13C2880DE7220B2B /* PBXContainerItemProxy */;
-		};
-		E29762B3E89BBA4217F208761D377EAF /* PBXTargetDependency */ = {
+		919C3EE7CE5F8B38E9B36889564BF2D0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = FirebaseInstanceID;
-			targetProxy = 34739D925B1D25E6AC42100EFBE5196A /* PBXContainerItemProxy */;
+			targetProxy = C8B408965253A15CBA70C92C52442A1C /* PBXContainerItemProxy */;
 		};
-		FD3AAED01B39DA861F3A791E607B86F0 /* PBXTargetDependency */ = {
+		97CCA8D47A50C42F6B1408D4A94D4F85 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = GoogleToolboxForMac;
+			targetProxy = A2291BEC98B0C75D1B82850F3B9BC9AA /* PBXContainerItemProxy */;
+		};
+		CE91FFF7EA89874BA06EA31EB43040DD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = GoogleUtilities;
-			targetProxy = 4B4821BC6B35E8ED664FF5E0DB80F27E /* PBXContainerItemProxy */;
+			targetProxy = 2FA87D209E2B5669A3EC7CD978708309 /* PBXContainerItemProxy */;
+		};
+		E59A30DBCFD43E08560543131F92C716 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = FirebaseCore;
+			targetProxy = 82C524E3EEDA6EF886EC528AE98848F1 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		5792AD55F5D5002C3FB8D65CFCEFF049 /* Release */ = {
+		5A193B08FBEC038363AD477992F7CF72 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -254,80 +255,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"POD_CONFIGURATION_RELEASE=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.0;
-				SYMROOT = "${SRCROOT}/../build";
-			};
-			name = Release;
-		};
-		857036232E71FDB1C5AA30C57CDD9FCA /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 44A96582CFEB52D89E9B27740B6CC887 /* FirebaseMLCommon.release.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		958D8CB91AF71D3CC726314E3ED3986A /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -366,12 +294,74 @@
 			};
 			name = Debug;
 		};
-		96AEBD1B2F3D3EE25B8C1933F0012DE8 /* Debug */ = {
+		7A6016EC78675422BA69DA6DFC402F7E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		7CDE7C0DBC125D16499DC660E318D017 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D37D9B4ADF25EC9F2D0EF830380C4DEB /* FirebaseMLCommon.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				SDKROOT = iphoneos;
@@ -379,23 +369,37 @@
 			};
 			name = Debug;
 		};
+		DDF99CBCC4007F04B6FF4AB9CD797399 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 44A96582CFEB52D89E9B27740B6CC887 /* FirebaseMLCommon.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		563261E057016B239B089E1A9A693993 /* Build configuration list for PBXProject "FirebaseMLCommon" */ = {
+		1E95883C85F4EF704CCD50E23B0A5017 /* Build configuration list for PBXAggregateTarget "FirebaseMLCommon" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				958D8CB91AF71D3CC726314E3ED3986A /* Debug */,
-				5792AD55F5D5002C3FB8D65CFCEFF049 /* Release */,
+				7CDE7C0DBC125D16499DC660E318D017 /* Debug */,
+				DDF99CBCC4007F04B6FF4AB9CD797399 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		93B057DF87FC5C644ECEF4FEBED260B1 /* Build configuration list for PBXAggregateTarget "FirebaseMLCommon" */ = {
+		563261E057016B239B089E1A9A693993 /* Build configuration list for PBXProject "FirebaseMLCommon" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				96AEBD1B2F3D3EE25B8C1933F0012DE8 /* Debug */,
-				857036232E71FDB1C5AA30C57CDD9FCA /* Release */,
+				5A193B08FBEC038363AD477992F7CF72 /* Debug */,
+				7A6016EC78675422BA69DA6DFC402F7E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

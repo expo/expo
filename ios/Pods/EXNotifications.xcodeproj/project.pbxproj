@@ -7,61 +7,61 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0263DBD6CC1A56DD4B3B15E17EDE8FDB /* EXNotificationCategoriesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DAEA01CC1B9F5D9030E0D0BF9F2FA5 /* EXNotificationCategoriesModule.m */; };
-		11D3ED5A069208FB4D9C58A8C6E5DC81 /* EXNotificationPresentationModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E4CA51B16AD1E512963D676C4830C95 /* EXNotificationPresentationModule.m */; };
-		1354F07C7B0C6AA7C726971414A4967D /* EXNotifications-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 8995B17A85DC38C5A3D36AF656F3FF7C /* EXNotifications-dummy.m */; };
-		153CA07B31C3BDE4C6279B8C02CBC8F4 /* EXNotificationCenterDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = D22318A2AE91113C67C58DF17E3AD81D /* EXNotificationCenterDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		1F17EE3CC040FFAC7DB1FACB350DEAD4 /* EXNotificationPermissionsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AC3DFF189E2F1673647CA96D1B3CC97 /* EXNotificationPermissionsModule.m */; };
-		35FE658C4208FC303DF630276CBB4E50 /* EXNotificationBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = F40DF79DA91546777D3510BE8D02FCE4 /* EXNotificationBuilder.m */; };
-		3A35B9FDA028F0938EC15371D7E4B557 /* EXNotificationsDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = C568D211D85EC41ACA9334561751843B /* EXNotificationsDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		3B532638D27E2D17F64073BAAF00C587 /* EXNotificationSchedulerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = FA138AE681A597BC59794C5D6E2D174C /* EXNotificationSchedulerModule.m */; };
-		3E01FC0D9119CD45230116466E13D4F9 /* EXLegacyRemoteNotificationPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 9BAC58DD475A7707AA080FAF61640706 /* EXLegacyRemoteNotificationPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		44CA3B3CF8B5BB70B1E79881DEFD35F8 /* EXPushTokenModule.m in Sources */ = {isa = PBXBuildFile; fileRef = FD64C0E09C4AEFD9E12E94EF95946E34 /* EXPushTokenModule.m */; };
-		4F69321A20D9F9930E05D33560F9F7D1 /* EXNotificationsHandlerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = EAB3110A8D39A069E32875A4BA3094C4 /* EXNotificationsHandlerModule.m */; };
-		5C3E2CD87DD62FC3D13DB9C8F044FAC4 /* EXLegacyRemoteNotificationPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = A6F95AB9B660B009E73242621FDAF663 /* EXLegacyRemoteNotificationPermissionRequester.m */; };
-		5F3063C68D0E438F7BF656679C10F2AE /* EXNotificationSchedulerModule.h in Headers */ = {isa = PBXBuildFile; fileRef = DD380FAC685FC34435CADC0E00FCF843 /* EXNotificationSchedulerModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		66BC296518D8B69D6A043231A7CE3952 /* EXNotificationBuilder.h in Headers */ = {isa = PBXBuildFile; fileRef = DF96B5FBA0308048EA036370E43C50A7 /* EXNotificationBuilder.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		67482FF50753B9D3C1505C64FC1F91E6 /* EXPushTokenListener.h in Headers */ = {isa = PBXBuildFile; fileRef = E67966C398BCE2662FD1571FFADC2AF9 /* EXPushTokenListener.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		6954F444BFE3C3C13654CC0F69A6268D /* EXNotificationSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = DE31C566DCD53E92AD0EA4D55CF83ECE /* EXNotificationSerializer.m */; };
-		6A23FB28A5C0E8DE8DC85B7E02C678A7 /* EXUserFacingNotificationsPermissionsRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = B9B6B4E5CDB9027602AC4208A09B35FF /* EXUserFacingNotificationsPermissionsRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		7041FAA1D560C6260BD89EE09FE426A2 /* EXPushTokenModule.h in Headers */ = {isa = PBXBuildFile; fileRef = F3348D733151AE89E8E4756B634CB85F /* EXPushTokenModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		741DCD6C98B065184C87106440A4AA4A /* EXUserFacingNotificationsPermissionsRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E564C4D4736F6FBA9FB170F48E1ADF2 /* EXUserFacingNotificationsPermissionsRequester.m */; };
-		7B44CB980E0675B3CDB705DBF9F2E669 /* EXNotificationsHandlerModule.h in Headers */ = {isa = PBXBuildFile; fileRef = A6344F7DA09855ECCC270318A9BE7C8F /* EXNotificationsHandlerModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		7EB2A31EE5F2425FCAC962A564F603D3 /* EXNotificationCenterDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2479777518597AA93475CC7E347568C1 /* EXNotificationCenterDelegate.m */; };
-		8360DA744D25EE893985837E124B207C /* EXBadgeModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 579606945591588491E776E421A6D7B4 /* EXBadgeModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		9289B8C10BA94BDCB4F8FEC7BBB4E8DE /* EXInstallationIdProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = C9954433AC3FDAA169BCA405C151C927 /* EXInstallationIdProvider.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		935FC2A3DA0DEC7FBC97BE20C525D1DD /* EXNotificationsEmitter.h in Headers */ = {isa = PBXBuildFile; fileRef = ABBDF160898ECED6CF474B08AEFD5FE1 /* EXNotificationsEmitter.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		9683D4D254EF1C4996583F170667BC91 /* EXBadgeModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 8A615FD9E05D01C9C004AD2009B0A4A9 /* EXBadgeModule.m */; };
-		97BF1EC2B353DEF0B4F250D15C23EDE9 /* EXSingleNotificationHandlerTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E98B7AC30CFF60C32561761DBD38226 /* EXSingleNotificationHandlerTask.m */; };
-		993F8BE831EB1A572A14E5EF5585C49E /* EXNotificationPermissionsModule.h in Headers */ = {isa = PBXBuildFile; fileRef = FA1C23F387F12D72E18854317F8E97B4 /* EXNotificationPermissionsModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		9A114DDC4CAD581910997795E6C505CF /* EXNotificationCategoriesModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 58FD9EBCDF586A1D6798CE596EFDCE0B /* EXNotificationCategoriesModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		9CF6DDA4D54D558346872FFCD95C6F60 /* EXSingleNotificationHandlerTask.h in Headers */ = {isa = PBXBuildFile; fileRef = 73095DF71AC9866429578B55E91D1C96 /* EXSingleNotificationHandlerTask.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		9EC6B93E5415CC1B3DC31E7F24D59E86 /* NSDictionary+EXNotificationsVerifyingClass.h in Headers */ = {isa = PBXBuildFile; fileRef = 58A5FEAABE5793B152F2031B967BD6A0 /* NSDictionary+EXNotificationsVerifyingClass.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		A248DB5D1F1B1DE1DF133A522C4F89F1 /* EXInstallationIdProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 47B19BDE3A28737087A864392D94F834 /* EXInstallationIdProvider.m */; };
-		A98BE0E31534E59FBCC1C155345AA6E9 /* EXNotificationsEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = AA2E8B4347745A092A25878391AE2994 /* EXNotificationsEmitter.m */; };
-		AC79B810799822ED2449F66C266103B2 /* EXRemoteNotificationPermissionSingletonModule.m in Sources */ = {isa = PBXBuildFile; fileRef = EA3D7ED1C2C5E25B2E212FE49B3A3189 /* EXRemoteNotificationPermissionSingletonModule.m */; };
-		B5626D7ECBCAC155CB2BE7A46A27CE40 /* NSDictionary+EXNotificationsVerifyingClass.m in Sources */ = {isa = PBXBuildFile; fileRef = 2468674510C7382FCBC646B02D62B5CC /* NSDictionary+EXNotificationsVerifyingClass.m */; };
-		BB58A09C381E44ACCB69A39B508C64B9 /* EXPushTokenManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 149F15E0BCC61D36651604D61A44F909 /* EXPushTokenManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		BD5DA83600C7F0484F8A73769829935A /* EXPushTokenManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A7D2BD781FED50E31A7A68012F2A2341 /* EXPushTokenManager.m */; };
-		CA832E9DECAA66FC4344550A88214581 /* EXNotificationPresentationModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 5FEA741F8DA36114C2AEDD79ECAC7635 /* EXNotificationPresentationModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		E6EC3AE4EB3328FD1A35A4AA11E7CF15 /* EXNotificationSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 002C9BC7D5B6225EFBE2114484B95155 /* EXNotificationSerializer.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		FCF119F25477E48A429DB645A058C391 /* EXRemoteNotificationPermissionSingletonModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 6D444CF2BCBECD4E2FD4261FD95A089B /* EXRemoteNotificationPermissionSingletonModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		00412ABDD17E844FCE2A39B5BDF1FF21 /* EXNotificationPresentationModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 5FEA741F8DA36114C2AEDD79ECAC7635 /* EXNotificationPresentationModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		06B2FB55C03A698AABB8AD64E73815D3 /* EXPushTokenModule.m in Sources */ = {isa = PBXBuildFile; fileRef = FD64C0E09C4AEFD9E12E94EF95946E34 /* EXPushTokenModule.m */; };
+		0767D344A550DC8E6BFB30BD576E2AFA /* NSDictionary+EXNotificationsVerifyingClass.h in Headers */ = {isa = PBXBuildFile; fileRef = 58A5FEAABE5793B152F2031B967BD6A0 /* NSDictionary+EXNotificationsVerifyingClass.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		0990B6B05E099E07628C87077BEBEE82 /* NSDictionary+EXNotificationsVerifyingClass.m in Sources */ = {isa = PBXBuildFile; fileRef = 2468674510C7382FCBC646B02D62B5CC /* NSDictionary+EXNotificationsVerifyingClass.m */; };
+		1C585380CF4D39B40C0AEA578C2A4FF8 /* EXRemoteNotificationPermissionSingletonModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 6D444CF2BCBECD4E2FD4261FD95A089B /* EXRemoteNotificationPermissionSingletonModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		1CBA51DD171864621540266A454CD7FA /* EXPushTokenListener.h in Headers */ = {isa = PBXBuildFile; fileRef = E67966C398BCE2662FD1571FFADC2AF9 /* EXPushTokenListener.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		211A27A0DEC79F2EA3C4BB134483383A /* EXNotificationSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 002C9BC7D5B6225EFBE2114484B95155 /* EXNotificationSerializer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		26F8ABFBF4204F1FCA849E3405DF468D /* EXUserFacingNotificationsPermissionsRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = B9B6B4E5CDB9027602AC4208A09B35FF /* EXUserFacingNotificationsPermissionsRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		423DC4ACF6C099E801E48C8BEECB83EB /* EXNotificationsHandlerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = EAB3110A8D39A069E32875A4BA3094C4 /* EXNotificationsHandlerModule.m */; };
+		55EF77D79A0021D17D83D3741718E849 /* EXNotificationSchedulerModule.h in Headers */ = {isa = PBXBuildFile; fileRef = DD380FAC685FC34435CADC0E00FCF843 /* EXNotificationSchedulerModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		5F36AC6E77DA9F09BCACBDAE1C7790F6 /* EXLegacyRemoteNotificationPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 9BAC58DD475A7707AA080FAF61640706 /* EXLegacyRemoteNotificationPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		6723267062B57860AE1152CC61F7FA4A /* EXNotificationCategoriesModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 58FD9EBCDF586A1D6798CE596EFDCE0B /* EXNotificationCategoriesModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		678E3D3616593C0A588CCDD6864D41D5 /* EXNotificationSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = DE31C566DCD53E92AD0EA4D55CF83ECE /* EXNotificationSerializer.m */; };
+		76D144A9260E5D3C7BD56A7EA74E258E /* EXInstallationIdProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = C9954433AC3FDAA169BCA405C151C927 /* EXInstallationIdProvider.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		834556CF1224C6979304271490E62F13 /* EXSingleNotificationHandlerTask.h in Headers */ = {isa = PBXBuildFile; fileRef = 73095DF71AC9866429578B55E91D1C96 /* EXSingleNotificationHandlerTask.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		83B45DB1856FA348E97F11C866505D9F /* EXNotificationCategoriesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DAEA01CC1B9F5D9030E0D0BF9F2FA5 /* EXNotificationCategoriesModule.m */; };
+		88DB5FA90F4682D61409E3FCFD194A31 /* EXNotificationsDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = C568D211D85EC41ACA9334561751843B /* EXNotificationsDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8E94DAB06DA55FD82B1563C96170A8C0 /* EXRemoteNotificationPermissionSingletonModule.m in Sources */ = {isa = PBXBuildFile; fileRef = EA3D7ED1C2C5E25B2E212FE49B3A3189 /* EXRemoteNotificationPermissionSingletonModule.m */; };
+		A10F167A733D11BCFEBA291DD2D55110 /* EXBadgeModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 8A615FD9E05D01C9C004AD2009B0A4A9 /* EXBadgeModule.m */; };
+		A1FA1AE4C65291F308A91E33BC051F1F /* EXPushTokenManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A7D2BD781FED50E31A7A68012F2A2341 /* EXPushTokenManager.m */; };
+		A2E4CAD222A04CA84E8EB867C2565211 /* EXNotificationsEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = AA2E8B4347745A092A25878391AE2994 /* EXNotificationsEmitter.m */; };
+		A897835B03201D174082B150C0197601 /* EXNotificationPermissionsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AC3DFF189E2F1673647CA96D1B3CC97 /* EXNotificationPermissionsModule.m */; };
+		AC09938415E7B0BBF30556B9890EC4BE /* EXNotifications-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 8995B17A85DC38C5A3D36AF656F3FF7C /* EXNotifications-dummy.m */; };
+		B0E56FB1D84E4569DFECD0D301057AC3 /* EXPushTokenModule.h in Headers */ = {isa = PBXBuildFile; fileRef = F3348D733151AE89E8E4756B634CB85F /* EXPushTokenModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B27612CBF7DC1B3AF5DEAD70C6EEFB78 /* EXNotificationBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = F40DF79DA91546777D3510BE8D02FCE4 /* EXNotificationBuilder.m */; };
+		B58F87E67A4DFFDE7D26BFD180A86E9F /* EXNotificationSchedulerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = FA138AE681A597BC59794C5D6E2D174C /* EXNotificationSchedulerModule.m */; };
+		B6C06B18AF827C92395EBAC0F40A2D4F /* EXSingleNotificationHandlerTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E98B7AC30CFF60C32561761DBD38226 /* EXSingleNotificationHandlerTask.m */; };
+		BB45B1EE379832E345EF46E1F69E3A18 /* EXNotificationsEmitter.h in Headers */ = {isa = PBXBuildFile; fileRef = ABBDF160898ECED6CF474B08AEFD5FE1 /* EXNotificationsEmitter.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C50683499A72E78F9F90AF8EE9DF42C8 /* EXNotificationsHandlerModule.h in Headers */ = {isa = PBXBuildFile; fileRef = A6344F7DA09855ECCC270318A9BE7C8F /* EXNotificationsHandlerModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D1A3A073ECA03CF6245CB094A248BBC9 /* EXNotificationPermissionsModule.h in Headers */ = {isa = PBXBuildFile; fileRef = FA1C23F387F12D72E18854317F8E97B4 /* EXNotificationPermissionsModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D24FAA29806C9116F67084E81D34689C /* EXUserFacingNotificationsPermissionsRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E564C4D4736F6FBA9FB170F48E1ADF2 /* EXUserFacingNotificationsPermissionsRequester.m */; };
+		D4A55D84F3900BD8F2871804799CF9A5 /* EXNotificationBuilder.h in Headers */ = {isa = PBXBuildFile; fileRef = DF96B5FBA0308048EA036370E43C50A7 /* EXNotificationBuilder.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D4C6EC41F12F0F85A5DE03A3EB7649E9 /* EXLegacyRemoteNotificationPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = A6F95AB9B660B009E73242621FDAF663 /* EXLegacyRemoteNotificationPermissionRequester.m */; };
+		E0B4AEF75EDA51A0BA95F8C2EE7ED9E2 /* EXNotificationCenterDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2479777518597AA93475CC7E347568C1 /* EXNotificationCenterDelegate.m */; };
+		E177963F3211FB79E40C8CB4C00422A1 /* EXNotificationCenterDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = D22318A2AE91113C67C58DF17E3AD81D /* EXNotificationCenterDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		E1D5AB8FA3A84754B66E2E30414B89A9 /* EXPushTokenManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 149F15E0BCC61D36651604D61A44F909 /* EXPushTokenManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		E3B719E586FA6A5F28A082A504C2DCB0 /* EXBadgeModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 579606945591588491E776E421A6D7B4 /* EXBadgeModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		F4CC74A0909A62A76A3D44C41D09FC26 /* EXNotificationPresentationModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E4CA51B16AD1E512963D676C4830C95 /* EXNotificationPresentationModule.m */; };
+		F8BF4AF73759051CE7E751538FBF8154 /* EXInstallationIdProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 47B19BDE3A28737087A864392D94F834 /* EXInstallationIdProvider.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		03F13ADCEE03F10F88F40EAEB86EE2B3 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 19E6B0CC1C04663F83B1A0BB7099D0D6 /* UMPermissionsInterface.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 12FF61416C5E794E9DEAC78D381D9726;
-			remoteInfo = UMPermissionsInterface;
-		};
-		C1A8C65E2E2AD012680AB051982B6E74 /* PBXContainerItemProxy */ = {
+		42FE50F1144D54FBB504A8739E8D3ECF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2F5A0DDE9B7BB2A766FEBB787708F208 /* UMCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
+		};
+		F8C254C17D75CEE15F15CA8AEF9D8B5E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 19E6B0CC1C04663F83B1A0BB7099D0D6 /* UMPermissionsInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 12FF61416C5E794E9DEAC78D381D9726;
+			remoteInfo = UMPermissionsInterface;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -115,7 +115,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		0A825C5F64DCA81A61F1D77B1EEE90A1 /* Frameworks */ = {
+		04F74BEB4044D30B768125F1AC003CB8 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -311,30 +311,30 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		69D1B2A84B7627AD60A139B28CB0AF3F /* Headers */ = {
+		A5182F575BA9449F764DEF34F7BF53EF /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8360DA744D25EE893985837E124B207C /* EXBadgeModule.h in Headers */,
-				9289B8C10BA94BDCB4F8FEC7BBB4E8DE /* EXInstallationIdProvider.h in Headers */,
-				3E01FC0D9119CD45230116466E13D4F9 /* EXLegacyRemoteNotificationPermissionRequester.h in Headers */,
-				66BC296518D8B69D6A043231A7CE3952 /* EXNotificationBuilder.h in Headers */,
-				9A114DDC4CAD581910997795E6C505CF /* EXNotificationCategoriesModule.h in Headers */,
-				153CA07B31C3BDE4C6279B8C02CBC8F4 /* EXNotificationCenterDelegate.h in Headers */,
-				993F8BE831EB1A572A14E5EF5585C49E /* EXNotificationPermissionsModule.h in Headers */,
-				CA832E9DECAA66FC4344550A88214581 /* EXNotificationPresentationModule.h in Headers */,
-				5F3063C68D0E438F7BF656679C10F2AE /* EXNotificationSchedulerModule.h in Headers */,
-				3A35B9FDA028F0938EC15371D7E4B557 /* EXNotificationsDelegate.h in Headers */,
-				935FC2A3DA0DEC7FBC97BE20C525D1DD /* EXNotificationsEmitter.h in Headers */,
-				E6EC3AE4EB3328FD1A35A4AA11E7CF15 /* EXNotificationSerializer.h in Headers */,
-				7B44CB980E0675B3CDB705DBF9F2E669 /* EXNotificationsHandlerModule.h in Headers */,
-				67482FF50753B9D3C1505C64FC1F91E6 /* EXPushTokenListener.h in Headers */,
-				BB58A09C381E44ACCB69A39B508C64B9 /* EXPushTokenManager.h in Headers */,
-				7041FAA1D560C6260BD89EE09FE426A2 /* EXPushTokenModule.h in Headers */,
-				FCF119F25477E48A429DB645A058C391 /* EXRemoteNotificationPermissionSingletonModule.h in Headers */,
-				9CF6DDA4D54D558346872FFCD95C6F60 /* EXSingleNotificationHandlerTask.h in Headers */,
-				6A23FB28A5C0E8DE8DC85B7E02C678A7 /* EXUserFacingNotificationsPermissionsRequester.h in Headers */,
-				9EC6B93E5415CC1B3DC31E7F24D59E86 /* NSDictionary+EXNotificationsVerifyingClass.h in Headers */,
+				E3B719E586FA6A5F28A082A504C2DCB0 /* EXBadgeModule.h in Headers */,
+				76D144A9260E5D3C7BD56A7EA74E258E /* EXInstallationIdProvider.h in Headers */,
+				5F36AC6E77DA9F09BCACBDAE1C7790F6 /* EXLegacyRemoteNotificationPermissionRequester.h in Headers */,
+				D4A55D84F3900BD8F2871804799CF9A5 /* EXNotificationBuilder.h in Headers */,
+				6723267062B57860AE1152CC61F7FA4A /* EXNotificationCategoriesModule.h in Headers */,
+				E177963F3211FB79E40C8CB4C00422A1 /* EXNotificationCenterDelegate.h in Headers */,
+				D1A3A073ECA03CF6245CB094A248BBC9 /* EXNotificationPermissionsModule.h in Headers */,
+				00412ABDD17E844FCE2A39B5BDF1FF21 /* EXNotificationPresentationModule.h in Headers */,
+				55EF77D79A0021D17D83D3741718E849 /* EXNotificationSchedulerModule.h in Headers */,
+				88DB5FA90F4682D61409E3FCFD194A31 /* EXNotificationsDelegate.h in Headers */,
+				BB45B1EE379832E345EF46E1F69E3A18 /* EXNotificationsEmitter.h in Headers */,
+				211A27A0DEC79F2EA3C4BB134483383A /* EXNotificationSerializer.h in Headers */,
+				C50683499A72E78F9F90AF8EE9DF42C8 /* EXNotificationsHandlerModule.h in Headers */,
+				1CBA51DD171864621540266A454CD7FA /* EXPushTokenListener.h in Headers */,
+				E1D5AB8FA3A84754B66E2E30414B89A9 /* EXPushTokenManager.h in Headers */,
+				B0E56FB1D84E4569DFECD0D301057AC3 /* EXPushTokenModule.h in Headers */,
+				1C585380CF4D39B40C0AEA578C2A4FF8 /* EXRemoteNotificationPermissionSingletonModule.h in Headers */,
+				834556CF1224C6979304271490E62F13 /* EXSingleNotificationHandlerTask.h in Headers */,
+				26F8ABFBF4204F1FCA849E3405DF468D /* EXUserFacingNotificationsPermissionsRequester.h in Headers */,
+				0767D344A550DC8E6BFB30BD576E2AFA /* NSDictionary+EXNotificationsVerifyingClass.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -343,17 +343,17 @@
 /* Begin PBXNativeTarget section */
 		6C660F81CE4F0EC96D208B20C3E8B154 /* EXNotifications */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0BCCC96C01E86AD48E1768A943EB60EC /* Build configuration list for PBXNativeTarget "EXNotifications" */;
+			buildConfigurationList = 650C3B5495A7A2768DEFD10713297219 /* Build configuration list for PBXNativeTarget "EXNotifications" */;
 			buildPhases = (
-				69D1B2A84B7627AD60A139B28CB0AF3F /* Headers */,
-				D1E07061FCC75E3304C96C0520868D34 /* Sources */,
-				0A825C5F64DCA81A61F1D77B1EEE90A1 /* Frameworks */,
+				A5182F575BA9449F764DEF34F7BF53EF /* Headers */,
+				66E6660B7C78D617C13265F9B4DFC6BD /* Sources */,
+				04F74BEB4044D30B768125F1AC003CB8 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				9B54FCF2C14F03D27AC4ECB5BF9F49D9 /* PBXTargetDependency */,
-				7F3A24A15C9F972458BBACD4A633CC7D /* PBXTargetDependency */,
+				18A789EEA06B378FF3D5053CFE6F6D58 /* PBXTargetDependency */,
+				35E1DE8112601638C72782987007E9B2 /* PBXTargetDependency */,
 			);
 			name = EXNotifications;
 			productName = EXNotifications;
@@ -396,52 +396,53 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		D1E07061FCC75E3304C96C0520868D34 /* Sources */ = {
+		66E6660B7C78D617C13265F9B4DFC6BD /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9683D4D254EF1C4996583F170667BC91 /* EXBadgeModule.m in Sources */,
-				A248DB5D1F1B1DE1DF133A522C4F89F1 /* EXInstallationIdProvider.m in Sources */,
-				5C3E2CD87DD62FC3D13DB9C8F044FAC4 /* EXLegacyRemoteNotificationPermissionRequester.m in Sources */,
-				35FE658C4208FC303DF630276CBB4E50 /* EXNotificationBuilder.m in Sources */,
-				0263DBD6CC1A56DD4B3B15E17EDE8FDB /* EXNotificationCategoriesModule.m in Sources */,
-				7EB2A31EE5F2425FCAC962A564F603D3 /* EXNotificationCenterDelegate.m in Sources */,
-				1F17EE3CC040FFAC7DB1FACB350DEAD4 /* EXNotificationPermissionsModule.m in Sources */,
-				11D3ED5A069208FB4D9C58A8C6E5DC81 /* EXNotificationPresentationModule.m in Sources */,
-				1354F07C7B0C6AA7C726971414A4967D /* EXNotifications-dummy.m in Sources */,
-				3B532638D27E2D17F64073BAAF00C587 /* EXNotificationSchedulerModule.m in Sources */,
-				A98BE0E31534E59FBCC1C155345AA6E9 /* EXNotificationsEmitter.m in Sources */,
-				6954F444BFE3C3C13654CC0F69A6268D /* EXNotificationSerializer.m in Sources */,
-				4F69321A20D9F9930E05D33560F9F7D1 /* EXNotificationsHandlerModule.m in Sources */,
-				BD5DA83600C7F0484F8A73769829935A /* EXPushTokenManager.m in Sources */,
-				44CA3B3CF8B5BB70B1E79881DEFD35F8 /* EXPushTokenModule.m in Sources */,
-				AC79B810799822ED2449F66C266103B2 /* EXRemoteNotificationPermissionSingletonModule.m in Sources */,
-				97BF1EC2B353DEF0B4F250D15C23EDE9 /* EXSingleNotificationHandlerTask.m in Sources */,
-				741DCD6C98B065184C87106440A4AA4A /* EXUserFacingNotificationsPermissionsRequester.m in Sources */,
-				B5626D7ECBCAC155CB2BE7A46A27CE40 /* NSDictionary+EXNotificationsVerifyingClass.m in Sources */,
+				A10F167A733D11BCFEBA291DD2D55110 /* EXBadgeModule.m in Sources */,
+				F8BF4AF73759051CE7E751538FBF8154 /* EXInstallationIdProvider.m in Sources */,
+				D4C6EC41F12F0F85A5DE03A3EB7649E9 /* EXLegacyRemoteNotificationPermissionRequester.m in Sources */,
+				B27612CBF7DC1B3AF5DEAD70C6EEFB78 /* EXNotificationBuilder.m in Sources */,
+				83B45DB1856FA348E97F11C866505D9F /* EXNotificationCategoriesModule.m in Sources */,
+				E0B4AEF75EDA51A0BA95F8C2EE7ED9E2 /* EXNotificationCenterDelegate.m in Sources */,
+				A897835B03201D174082B150C0197601 /* EXNotificationPermissionsModule.m in Sources */,
+				F4CC74A0909A62A76A3D44C41D09FC26 /* EXNotificationPresentationModule.m in Sources */,
+				AC09938415E7B0BBF30556B9890EC4BE /* EXNotifications-dummy.m in Sources */,
+				B58F87E67A4DFFDE7D26BFD180A86E9F /* EXNotificationSchedulerModule.m in Sources */,
+				A2E4CAD222A04CA84E8EB867C2565211 /* EXNotificationsEmitter.m in Sources */,
+				678E3D3616593C0A588CCDD6864D41D5 /* EXNotificationSerializer.m in Sources */,
+				423DC4ACF6C099E801E48C8BEECB83EB /* EXNotificationsHandlerModule.m in Sources */,
+				A1FA1AE4C65291F308A91E33BC051F1F /* EXPushTokenManager.m in Sources */,
+				06B2FB55C03A698AABB8AD64E73815D3 /* EXPushTokenModule.m in Sources */,
+				8E94DAB06DA55FD82B1563C96170A8C0 /* EXRemoteNotificationPermissionSingletonModule.m in Sources */,
+				B6C06B18AF827C92395EBAC0F40A2D4F /* EXSingleNotificationHandlerTask.m in Sources */,
+				D24FAA29806C9116F67084E81D34689C /* EXUserFacingNotificationsPermissionsRequester.m in Sources */,
+				0990B6B05E099E07628C87077BEBEE82 /* NSDictionary+EXNotificationsVerifyingClass.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		7F3A24A15C9F972458BBACD4A633CC7D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMPermissionsInterface;
-			targetProxy = 03F13ADCEE03F10F88F40EAEB86EE2B3 /* PBXContainerItemProxy */;
-		};
-		9B54FCF2C14F03D27AC4ECB5BF9F49D9 /* PBXTargetDependency */ = {
+		18A789EEA06B378FF3D5053CFE6F6D58 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = C1A8C65E2E2AD012680AB051982B6E74 /* PBXContainerItemProxy */;
+			targetProxy = 42FE50F1144D54FBB504A8739E8D3ECF /* PBXContainerItemProxy */;
+		};
+		35E1DE8112601638C72782987007E9B2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMPermissionsInterface;
+			targetProxy = F8C254C17D75CEE15F15CA8AEF9D8B5E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		06A68EB852A48A112EBAB52B72715E0F /* Debug */ = {
+		3396F6D67C77E3D487A91560BB71B675 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -464,6 +465,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -502,12 +504,11 @@
 			};
 			name = Debug;
 		};
-		87E2BC7F9BEA0EBEADEF891A460EC780 /* Debug */ = {
+		77CF9422042C36367B37DDF489CD9838 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 652A256024FEDA329D47D5E4277C2B43 /* EXNotifications.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
@@ -527,10 +528,11 @@
 			};
 			name = Debug;
 		};
-		C713B0E6DDE114F062471662491E7F99 /* Release */ = {
+		8131057E0611EBAD0F1E0914D15301BA /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -553,6 +555,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -587,12 +590,11 @@
 			};
 			name = Release;
 		};
-		E0648026E952A1FCF9269E72385F41B6 /* Release */ = {
+		DFADE52CF1AFBDA23C1243A10790F7E7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = DCC46601122F68C8ACB1F42524A7ED42 /* EXNotifications.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
@@ -616,11 +618,11 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		0BCCC96C01E86AD48E1768A943EB60EC /* Build configuration list for PBXNativeTarget "EXNotifications" */ = {
+		650C3B5495A7A2768DEFD10713297219 /* Build configuration list for PBXNativeTarget "EXNotifications" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				87E2BC7F9BEA0EBEADEF891A460EC780 /* Debug */,
-				E0648026E952A1FCF9269E72385F41B6 /* Release */,
+				77CF9422042C36367B37DDF489CD9838 /* Debug */,
+				DFADE52CF1AFBDA23C1243A10790F7E7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -628,8 +630,8 @@
 		990AC4F59C718B1E37447D25BED3BC0F /* Build configuration list for PBXProject "EXNotifications" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				06A68EB852A48A112EBAB52B72715E0F /* Debug */,
-				C713B0E6DDE114F062471662491E7F99 /* Release */,
+				3396F6D67C77E3D487A91560BB71B675 /* Debug */,
+				8131057E0611EBAD0F1E0914D15301BA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
