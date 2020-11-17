@@ -82,7 +82,7 @@ Object.defineProperties(constants, {
           // If we somehow get here, this is a truly exceptional state to be in.
           // Constants.manifest should *always* be defined in those contexts.
           throw new CodedError(
-            'E_CONSTANTS_MANIFEST_UNAVAILABLE',
+            'ERR_CONSTANTS_MANIFEST_UNAVAILABLE',
             `Constants.manifest is ${invalidManifestType}, must be an object.`
           );
         }

@@ -49,7 +49,7 @@ Object.defineProperties(constants, {
                     nativeConstants.executionEnvironment === ExecutionEnvironment.Standalone) {
                     // If we somehow get here, this is a truly exceptional state to be in.
                     // Constants.manifest should *always* be defined in those contexts.
-                    throw new CodedError('E_CONSTANTS_MANIFEST_UNAVAILABLE', `Constants.manifest is ${invalidManifestType}, must be an object.`);
+                    throw new CodedError('ERR_CONSTANTS_MANIFEST_UNAVAILABLE', `Constants.manifest is ${invalidManifestType}, must be an object.`);
                 }
             }
             return manifest;
