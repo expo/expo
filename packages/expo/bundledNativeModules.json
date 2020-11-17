@@ -61,7 +61,7 @@
   "react-native-gesture-handler": "~1.8.0",
   "react-native-maps": "0.27.1",
   "react-native-reanimated": "~1.13.0",
-  "react-native-screens": "~2.10.1",
+  "react-native-screens": "~2.15.0",
   "react-native-svg": "12.1.0",
   "react-native-view-shot": "3.1.2",
   "react-native-webview": "10.10.2",

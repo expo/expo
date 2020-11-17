@@ -2612,9 +2612,9 @@ CACHE_KEYS:
   RNScreens:
     BUILD_SETTINGS_CHECKSUM:
       RNScreens:
-        :debug: 6ebdf10223b1d4ac13afddf80d913920
-        :release: 6ebdf10223b1d4ac13afddf80d913920
-    CHECKSUM: b748efec66e095134c7166ca333b628cd7e6f3e2
+        :debug: 82b2ba8ae3c9b701b99b257d57dce89c
+        :release: 82b2ba8ae3c9b701b99b257d57dce89c
+    CHECKSUM: 2ad555d4d9fa10b91bb765ca07fe9b29d59573f0
     FILES:
       - "../../../../node_modules/react-native-screens/ios/RNSScreen.h"
       - "../../../../node_modules/react-native-screens/ios/RNSScreen.m"
@@ -2624,11 +2624,13 @@ CACHE_KEYS:
       - "../../../../node_modules/react-native-screens/ios/RNSScreenStack.m"
       - "../../../../node_modules/react-native-screens/ios/RNSScreenStackHeaderConfig.h"
       - "../../../../node_modules/react-native-screens/ios/RNSScreenStackHeaderConfig.m"
+      - "../../../../node_modules/react-native-screens/ios/UIViewController+RNScreens.h"
+      - "../../../../node_modules/react-native-screens/ios/UIViewController+RNScreens.m"
       - "../../../../node_modules/react-native-screens/LICENSE"
       - "../../../../node_modules/react-native-screens/README.md"
     PROJECT_NAME: RNScreens
     SPECS:
-      - RNScreens (2.10.1)
+      - RNScreens (2.15.0)
   RNSharedElement:
     BUILD_SETTINGS_CHECKSUM:
       RNSharedElement:

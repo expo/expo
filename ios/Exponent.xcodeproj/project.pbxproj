@@ -384,6 +384,7 @@
 		FA526593B78C87A7E1C34561 /* libPods-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D8BAB8D6102FB06BE5BE10B /* libPods-Tests.a */; };
 		FC756CC924CB537400665AE6 /* EXScopedNotificationSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = FC756CC824CB537400665AE6 /* EXScopedNotificationSerializer.m */; };
 		FCA11CA724C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = FCA11CA524C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m */; };
+		5DD02E4E9E1F4C42AB09C977 /* UIViewController+RNScreens.m in Sources */ = {isa = PBXBuildFile; fileRef = 8822AC90670243669FDF027B /* UIViewController+RNScreens.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1181,6 +1182,8 @@
 		FCA11CA524C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationCategoriesModule.m; sourceTree = "<group>"; };
 		FCA11CA624C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationCategoriesModule.h; sourceTree = "<group>"; };
 		FE89956BF2504EB0A76B89AD /* MutableValueSetterProxy.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = MutableValueSetterProxy.h; sourceTree = "<group>"; };
+		B576D1FD1D3A4369AF51B0E9 /* UIViewController+RNScreens.h */ = {isa = PBXFileReference; name = "UIViewController+RNScreens.h"; path = "UIViewController+RNScreens.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		8822AC90670243669FDF027B /* UIViewController+RNScreens.m */ = {isa = PBXFileReference; name = "UIViewController+RNScreens.m"; path = "UIViewController+RNScreens.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2505,6 +2508,8 @@
 				E4C5DD7E869E4753BA6319FA /* RNSScreenStack.m */,
 				A7848BD4CFE74709BDC8E8B0 /* RNSScreenStackHeaderConfig.h */,
 				6261E3DAD1C3435E87DCF5DB /* RNSScreenStackHeaderConfig.m */,
+				B576D1FD1D3A4369AF51B0E9 /* UIViewController+RNScreens.h */,
+				8822AC90670243669FDF027B /* UIViewController+RNScreens.m */,
 			);
 			name = Screens;
 			path = Exponent/Versioned/Core/Api/Screens;
@@ -3250,6 +3255,7 @@
 				7F8A284434844347B0714FC3 /* Scheduler.cpp in Sources */,
 				CDD9BBD2CB3E4DAFB174D08C /* ShareableValue.cpp in Sources */,
 				CAE7F8A3DDF74E7AB8BB06B6 /* WorkletsCache.cpp in Sources */,
+				5DD02E4E9E1F4C42AB09C977 /* UIViewController+RNScreens.m in Sources */,
 				2FD7B13470EA4C9DBCBBB5F5 /* JSIStoreValueUser.cpp in Sources */,
 				0828801E28BE470987B3A938 /* REAEventDispatcher.m in Sources */,
 				2A5493FFBD094550B07CAC3B /* UIResponder+Reanimated.mm in Sources */,
