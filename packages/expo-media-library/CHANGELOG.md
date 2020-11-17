@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- On iOS enabled `use_frameworks!` usage by replacing `React` dependency with `React-Core`. ([#11057](https://github.com/expo/expo/pull/11057) by [@bbarthec](https://github.com/bbarthec))
 - Renamed `MediaLibrary.MediaLibraryAssetChangeEvent` type to `MediaLibrary.MediaLibraryAssetsChangeEvent`.
 
 ### 🎉 New features

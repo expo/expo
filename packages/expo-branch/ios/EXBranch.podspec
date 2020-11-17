@@ -18,6 +18,6 @@ Pod::Spec.new do |s|
   s.compiler_flags = %[-DRNBRANCH_VERSION=@\\"#{package["dependencies"]["react-native-branch"]}\\"]
 
   s.dependency 'UMCore'
-  s.dependency 'React'
+  s.dependency 'React-Core'
   s.dependency 'Branch', '0.35.0'
 end
