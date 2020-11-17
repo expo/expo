@@ -5,9 +5,16 @@ import java.util.Date;
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Index;
+import androidx.room.PrimaryKey;
 
-@Entity(tableName = "json_data", primaryKeys = {"key", "scope_key"})
+@Entity(tableName = "json_data",
+        indices = {@Index(value = {"scope_key"})})
 public class JSONDataEntity {
+  @PrimaryKey(autoGenerate = true)
+  // 0 is treated as unset while inserting the entity into the db
+  public long id = 0;
+
   @NonNull
   public String key;
 
