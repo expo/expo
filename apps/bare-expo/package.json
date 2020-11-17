@@ -106,7 +106,7 @@
     "react-native-svg": "12.1.0",
     "react-native-unimodules": "~0.11.0",
     "react-native-view-shot": "3.1.2",
-    "react-native-webview": "10.7.0",
+    "react-native-webview": "10.10.2",
     "test-suite": "*"
   },
   "devDependencies": {

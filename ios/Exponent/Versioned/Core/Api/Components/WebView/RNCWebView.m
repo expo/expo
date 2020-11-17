@@ -125,6 +125,7 @@ static NSDictionary* customCertificatesForHost;
     _showsVerticalScrollIndicator = YES;
     _directionalLockEnabled = YES;
     _automaticallyAdjustContentInsets = YES;
+    _autoManageStatusBarEnabled = YES;
     _contentInset = UIEdgeInsetsZero;
     _savedKeyboardDisplayRequiresUserAction = YES;
     #if !TARGET_OS_OSX
@@ -224,6 +225,7 @@ static NSDictionary* customCertificatesForHost;
   if(self.useSharedProcessPool) {
     wkWebViewConfig.processPool = [[RNCWKProcessPoolManager sharedManager] sharedProcessPoolForExperienceId:self.experienceId];
   }
+
   wkWebViewConfig.userContentController = [WKUserContentController new];
 
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 /* iOS 13 */
@@ -335,9 +337,13 @@ static NSDictionary* customCertificatesForHost;
 -(void)showFullScreenVideoStatusBars
 {
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    if (!_autoManageStatusBarEnabled) {
+      return;
+    }
+
     _isFullScreenVideoOpen = YES;
     RCTUnsafeExecuteOnMainQueueSync(^{
-      [RCTSharedApplication() setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
+      [RCTSharedApplication() setStatusBarStyle:self->_savedStatusBarStyle animated:YES];
     });
 #pragma clang diagnostic pop
 }
@@ -345,6 +351,10 @@ static NSDictionary* customCertificatesForHost;
 -(void)hideFullScreenVideoStatusBars
 {
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    if (!_autoManageStatusBarEnabled) {
+      return;
+    }
+
     _isFullScreenVideoOpen = NO;
     RCTUnsafeExecuteOnMainQueueSync(^{
       [RCTSharedApplication() setStatusBarHidden:self->_savedStatusBarHidden animated:YES];
@@ -880,40 +890,9 @@ static NSDictionary* customCertificatesForHost;
  * topViewController
  */
 -(UIViewController *)topViewController{
-    UIViewController *controller = [self topViewControllerWithRootViewController:[self getCurrentWindow].rootViewController];
-    return controller;
+    return RCTPresentedViewController();
 }
 
-/**
- * topViewControllerWithRootViewController
- */
--(UIViewController *)topViewControllerWithRootViewController:(UIViewController *)viewController{
-  if (viewController==nil) return nil;
-  if (viewController.presentedViewController!=nil && viewController.presentedViewController.isBeingPresented) {
-    return [self topViewControllerWithRootViewController:viewController.presentedViewController];
-  } else if ([viewController isKindOfClass:[UITabBarController class]]){
-    return [self topViewControllerWithRootViewController:[(UITabBarController *)viewController selectedViewController]];
-  } else if ([viewController isKindOfClass:[UINavigationController class]]){
-    return [self topViewControllerWithRootViewController:[(UINavigationController *)viewController visibleViewController]];
-  } else {
-    return viewController;
-  }
-}
-/**
- * getCurrentWindow
- */
--(UIWindow *)getCurrentWindow{
-  UIWindow *window = [UIApplication sharedApplication].keyWindow;
-  if (window.windowLevel!=UIWindowLevelNormal) {
-    for (UIWindow *wid in [UIApplication sharedApplication].windows) {
-      if (window.windowLevel==UIWindowLevelNormal) {
-        window = wid;
-        break;
-      }
-    }
-  }
-  return window;
-}
 #endif // !TARGET_OS_OSX
 
 /**
@@ -1158,7 +1137,7 @@ static NSDictionary* customCertificatesForHost;
     [_webView reload];
   }
 }
-
+#if !TARGET_OS_OSX
 - (void)addPullToRefreshControl
 {
     UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
@@ -1173,7 +1152,7 @@ static NSDictionary* customCertificatesForHost;
     [refreshControl endRefreshing];
 }
 
-#if !TARGET_OS_OSX
+
 - (void)setPullToRefreshEnabled:(BOOL)pullToRefreshEnabled
 {
     _pullToRefreshEnabled = pullToRefreshEnabled;
@@ -1406,4 +1385,3 @@ static NSDictionary* customCertificatesForHost;
 }
 
 @end
-
