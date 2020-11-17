@@ -1,7 +1,7 @@
 # Expo release workflow <!-- omit in toc -->
 
 - [Stage 0 - Infra & Prerelease](#stage-0---infra--prerelease)
-  - [0.1. Dropping old SDKs](#01-dropping-old-sdks)
+  - [0.1. Drop old SDKs](#01-drop-old-sdks)
   - [0.2. Update vendored modules](#02-update-vendored-modules)
   - [0.3. Update schema](#03-update-schema)
   - [0.4. Update versions on staging](#04-update-versions-on-staging)
@@ -9,7 +9,7 @@
   - [0.6. Generate new mocks](#06-generate-new-mocks)
   - [0.7. Publish `next` packages](#07-publish-next-packages)
   - [0.8. Merge and cutoff changelogs](#08-merge-and-cutoff-changelogs)
-  - [0.9. Publish `next` project templates](#09-publish-next-project-templates)
+  - [0.9. Publish `sdk-XX` project templates](#09-publish-sdk-xx-project-templates)
   - [0.10. Generate new SDK docs](#010-generate-new-sdk-docs)
 - [Stage 1 - Unversioned Quality Assurance and Versioning](#stage-1---unversioned-quality-assurance-and-versioning)
   - [1.1. Cut off release branch](#11-cut-off-release-branch)
@@ -55,9 +55,11 @@
   - [7.1. Remove old SDK from Turtle](#71-remove-old-sdk-from-turtle)
   - [7.2. Mark old SDK as deprecated](#72-mark-old-sdk-as-deprecated)
 
+<!-- NOTE: you can update the toc using https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one -->
+
 # Stage 0 - Infra & Prerelease
 
-## 0.1. Dropping old SDKs
+## 0.1. Drop old SDKs
 
 **Why:** We tend to support old SDK versions up to 6 months since they were released. Once we release a new one, it's a good opportunity to drop some old ones that are already older than 6 months.
 
@@ -161,7 +163,7 @@ In the managed workflow, we use our forked `react-native` repository because we 
 - Run `et merge-changelogs --cut-off`.
 - Review the entries, commit and push changes to master.
 
-## 0.9. Publish `next` project templates
+## 0.9. Publish `sdk-XX` project templates
 
 | Prerequisites                                                                               |
 | ------------------------------------------------------------------------------------------- |
@@ -173,9 +175,10 @@ In the managed workflow, we use our forked `react-native` repository because we 
 
 - On master branch, run `et update-project-templates`/`et upt` that checks all `expo-template-*` packages under `templates` directory and bumps dependency versions wherever possible – based on versions stored in `packages/expo/bundledNativeModules.json` for Expo modules and 3rd-party libraries, `react-native` fork with appropriate SDK version and `expo` package itself.
 - Update the native project files in bare templates based on the diffs on https://react-native-community.github.io/upgrade-helper/
-- Test these project templates - you don't have to use `expo init` at this point, just `expo start` them locally.
-- Run `et publish-templates`/`et ppt` and answer to questions it asks. **IMPORTANT:** These versions should be tagged as `next` and not `latest`. (If tagged as `latest` they will be used by default whenever anyone runs `expo init`.)
+- Test these project templates - you don't have to use `expo init` at this point, just `expo start` them locally. You will need to set `"sdkVersion": "UNVERSIONED"` in `app.json` for managed templates to test them at this point.
+- Run `et publish-templates`/`et ppt` and answer to questions it asks. **IMPORTANT:** These versions should be tagged as `sdk-XX` and not `latest`. (If tagged as `latest` they will be used by default whenever anyone runs `expo init`.)
 - If everything works as expected, commit changes to master.
+- You can now `init` from templates by using the package name and tag, for example: `expo init --template expo-template-bare-typescript@sdk-40`.
 
 ## 0.10. Generate new SDK docs
 
@@ -469,7 +472,7 @@ Once everything above is completed and Apple has approved the iOS client for Tes
 
 **Why:** Ensure that the templates include the latest version of packages, so when we release the beta
 
-**How:** Follow [0.9. Publish `next` project templates](#09-publish-next-project-templates) but be sure that the published template has the `sdk-xx` tag on npm in addition to `next`.
+**How:** Follow [0.9. Publish `sdk-XX` project templates](#09-publish-sdk-xx-project-templates) but be sure that the published template has the `sdk-xx` tag on npm in addition to `next`.
 
 ## 5.5. Promote versions to production with new SDK version flagged as beta
 
