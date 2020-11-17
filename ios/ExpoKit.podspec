@@ -35,7 +35,7 @@ Pod::Spec.new do |s|
     ss.dependency 'Google-Maps-iOS-Utils', '~> 2.1.0'
     ss.dependency 'lottie-ios', '~> 2.5.0'
     ss.dependency 'JKBigInteger2', '0.0.5'
-    ss.dependency 'React' # explicit dependency required for CocoaPods >= 1.5.0
+    ss.dependency 'React-Core' # explicit dependency required for CocoaPods >= 1.5.0
 
     # Universal modules required by ExpoKit so the code compiles
     ss.dependency 'UMCore'
