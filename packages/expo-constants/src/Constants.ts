@@ -1,4 +1,4 @@
-import { NativeModulesProxy } from '@unimodules/core';
+import { CodedError, NativeModulesProxy } from '@unimodules/core';
 
 import {
   AndroidManifest,
@@ -70,9 +70,22 @@ Object.defineProperties(constants, {
     enumerable: true,
     get() {
       if (!manifest) {
-        console.warn(
-          "Constants.manifest is null or undefined. If you're using the bare workflow, this means the embedded config could not be read. Make sure you have installed the expo-constants build scripts."
-        );
+        const invalidManifestType = manifest === null ? 'null' : 'undefined';
+        if (nativeConstants.executionEnvironment === ExecutionEnvironment.Bare) {
+          console.warn(
+            `Constants.manifest is ${invalidManifestType} because the embedded app.config could not be read. Ensure that you have installed the expo-constants build scripts if you need to read from Constants.manifest.`
+          );
+        } else if (
+          nativeConstants.executionEnvironment === ExecutionEnvironment.StoreClient ||
+          nativeConstants.executionEnvironment === ExecutionEnvironment.Standalone
+        ) {
+          // If we somehow get here, this is a truly exceptional state to be in.
+          // Constants.manifest should *always* be defined in those contexts.
+          throw new CodedError(
+            'E_CONSTANTS_MANIFEST_UNAVAILABLE',
+            `Constants.manifest is ${invalidManifestType}, must be an object.`
+          );
+        }
       }
       return manifest;
     },

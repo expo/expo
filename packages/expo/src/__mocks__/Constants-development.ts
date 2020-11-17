@@ -8,6 +8,7 @@ const Constants = (require as any).requireActual('expo-constants').default;
 const MockConstants = Object.create(Constants);
 MockConstants.manifest = {
   ...Constants.manifest,
+  executionEnvironment: 'standalone',
   developer: {
     projectRoot: '/home/test/project',
   },

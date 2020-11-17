@@ -1,4 +1,4 @@
-import Constants from '../Constants';
+import Constants, { ExecutionEnvironment } from '../Constants';
 
 it(`defines a manifest`, () => {
   expect(Constants.manifest).toBeTruthy();
@@ -129,5 +129,16 @@ describe(`manifest`, () => {
     const ConstantsWithMock = require('../Constants').default;
     expect(ConstantsWithMock.manifest).toEqual(fakeManifest);
     expect(console.warn).not.toHaveBeenCalled();
+  });
+
+  [ExecutionEnvironment.Standalone, ExecutionEnvironment.StoreClient].forEach(env => {
+    it(`throws an error if manifest is falsey when Constants.executionEnvironment is ${env}`, () => {
+      mockExponentConstants({
+        manifest: null,
+        executionEnvironment: env,
+      });
+      const ConstantsWithMock = require('../Constants').default;
+      expect(ConstantsWithMock).toThrowErrorMatchingSnapshot();
+    });
   });
 });
