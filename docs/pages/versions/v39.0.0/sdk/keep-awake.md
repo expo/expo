@@ -48,23 +48,22 @@ export default class KeepAwakeExample extends React.Component {
   render() {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Button onPress={this._activate}>Activate</Button>
-        <Button onPress={this._deactivate}>Deactivate</Button>
+        <Button onPress={this._activate} title="Activate" />
+        <Button onPress={this._deactivate} title="Deactivate" />
       </View>
     );
   }
 
   _activate = () => {
-    /* @info Screen will remain on after called until <strong>deactivateKeepAwake()</strong> is called. */
+    /* @info Screen will remain on after called until <strong>deactivateKeepAwake()</strong> is called. */activateKeepAwake();/* @end */
 
-    activateKeepAwake();
-    /* @end */
+    alert('Activated!');
   };
 
   _deactivate = () => {
-    /* @info Deactivates KeepAwake, or does nothing if it was never activated. */
-    deactivateKeepAwake();
-    /* @end */
+    /* @info Deactivates KeepAwake, or does nothing if it was never activated. */deactivateKeepAwake();/* @end */
+
+    alert('Deactivated!');
   };
 }
 ```
