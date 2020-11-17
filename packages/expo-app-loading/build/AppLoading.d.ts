@@ -1,4 +1,3 @@
-import { EventEmitter } from 'fbemitter';
 import React from 'react';
 declare type Props = {
     /**
@@ -39,5 +38,4 @@ export default class AppLoading extends React.Component<Props> {
     private startLoadingAppResourcesAsync;
     render(): JSX.Element;
 }
-export declare function getAppLoadingLifecycleEmitter(): EventEmitter;
 export {};

@@ -9,20 +9,72 @@
 
 namespace reanimated {
 
+const char *HIDDEN_HOST_OBJECT_PROP = "__reanimatedHostObjectRef";
+const char *ALREADY_CONVERTED= "__alreadyConverted";
+std::string CALLBACK_ERROR_PREFIX = R"(
+Tried to synchronously call function {)";
+std::string CALLBACK_ERROR_SUFFIX = R"(} from a different thread.
+Solution is:
+a) If you want to synchronously execute this method, mark it as a Worklet
+b) If you want to execute this method on the JS thread, wrap it using runOnJS
+)";
+  
+void addHiddenProperty(jsi::Runtime &rt,
+                       jsi::Value &&value,
+                       jsi::Object &obj,
+                       const char *name) {
+  jsi::Object globalObject = rt.global().getPropertyAsObject(rt, "Object");
+  jsi::Function defineProperty = globalObject.getPropertyAsFunction(rt, "defineProperty");
+  jsi::String internalPropName = jsi::String::createFromUtf8(rt, name);
+  jsi::Object paramForDefineProperty(rt);
+  paramForDefineProperty.setProperty(rt, "enumerable", false);
+  paramForDefineProperty.setProperty(rt, "value", value);
+  defineProperty.call(rt, obj, internalPropName, paramForDefineProperty);
+}
+
+void freeze(jsi::Runtime &rt, jsi::Object &obj) {
+  jsi::Object globalObject = rt.global().getPropertyAsObject(rt, "Object");
+  jsi::Function freeze = globalObject.getPropertyAsFunction(rt, "freeze");
+  freeze.call(rt, obj);
+}
+
 void ShareableValue::adaptCache(jsi::Runtime &rt, const jsi::Value &value) {
   // when adapting from host object we can assign cached value immediately such that we avoid
   // running `toJSValue` in the future when given object is accessed
   if (module->isUIRuntime(rt)) {
-    remoteValue = std::make_unique<jsi::Value>(rt, value);
+    if (remoteValue.expired()) {
+      remoteValue = getWeakRef(rt);
+    }
+    (*remoteValue.lock()) = jsi::Value(rt, value);
   } else {
     hostValue = std::make_unique<jsi::Value>(rt, value);
   }
 }
 
 void ShareableValue::adapt(jsi::Runtime &rt, const jsi::Value &value, ValueType objectType) {
+  bool isRNRuntime = !(module->isUIRuntime(rt));
+  if (value.isObject()) {
+    jsi::Object object = value.asObject(rt);
+    jsi::Value hiddenValue = object.getProperty(rt, HIDDEN_HOST_OBJECT_PROP);
+    if (!(hiddenValue.isUndefined())) {
+      jsi::Object hiddenProperty = hiddenValue.asObject(rt);
+      if (hiddenProperty.isHostObject<FrozenObject>(rt)) {
+        type = ValueType::ObjectType;
+        if (object.hasProperty(rt, "__worklet") && object.isFunction(rt)) {
+          type = ValueType::WorkletFunctionType;
+        }
+        frozenObject = hiddenProperty.getHostObject<FrozenObject>(rt);
+        if (object.hasProperty(rt, ALREADY_CONVERTED)) {
+          adaptCache(rt, value);
+        }
+        return;
+      }
+    }
+  }
+  
   if (objectType == ValueType::MutableValueType) {
     type = ValueType::MutableValueType;
-    mutableValue = std::make_shared<MutableValue>(rt, value, module);
+    mutableValue = std::make_shared<MutableValue>(rt, value, module, module->scheduler);
   } else if (value.isUndefined()) {
     type = ValueType::UndefinedType;
   } else if (value.isNull()) {
@@ -43,11 +95,14 @@ void ShareableValue::adapt(jsi::Runtime &rt, const jsi::Value &value, ValueType 
         // not a worklet, we treat this as a host function
         type = ValueType::HostFunctionType;
         hostRuntime = &rt;
-        hostFunction = std::make_shared<jsi::Function>(object.asFunction(rt));
+        hostFunction = std::make_shared<HostFunctionHandler>(std::make_shared<jsi::Function>(object.asFunction(rt)), rt);
       } else {
         // a worklet
         type = ValueType::WorkletFunctionType;
         frozenObject = std::make_shared<FrozenObject>(rt, object, module);
+        if (isRNRuntime) {
+          addHiddenProperty(rt, createHost(rt, frozenObject), object, HIDDEN_HOST_OBJECT_PROP);
+        }
       }
     } else if (object.isArray(rt)) {
       type = ValueType::ArrayType;
@@ -63,17 +118,17 @@ void ShareableValue::adapt(jsi::Runtime &rt, const jsi::Value &value, ValueType 
       type = ValueType::RemoteObjectType;
       remoteObject = object.getHostObject<RemoteObject>(rt);
       adaptCache(rt, value);
-    } else if (object.isHostObject<FrozenObject>(rt)) {
-      type = ValueType::ObjectType;
-      frozenObject = object.getHostObject<FrozenObject>(rt);
-      adaptCache(rt, value);
     } else if (objectType == ValueType::RemoteObjectType) {
       type = ValueType::RemoteObjectType;
-      remoteObject = std::make_shared<RemoteObject>(rt, object, module);
+      remoteObject = std::make_shared<RemoteObject>(rt, object, module, module->scheduler);
     } else {
       // create frozen object based on a copy of a given object
       type = ValueType::ObjectType;
       frozenObject = std::make_shared<FrozenObject>(rt, object, module);
+      if (isRNRuntime) {
+        addHiddenProperty(rt, createHost(rt, frozenObject), object, HIDDEN_HOST_OBJECT_PROP);
+        freeze(rt, object);
+      }
     }
   } else if (value.isSymbol()) {
     type = ValueType::StringType;
@@ -84,7 +139,7 @@ void ShareableValue::adapt(jsi::Runtime &rt, const jsi::Value &value, ValueType 
 }
 
 std::shared_ptr<ShareableValue> ShareableValue::adapt(jsi::Runtime &rt, const jsi::Value &value, NativeReanimatedModule *module, ValueType valueType) {
-  auto sv = std::shared_ptr<ShareableValue>(new ShareableValue(module));
+  auto sv = std::shared_ptr<ShareableValue>(new ShareableValue(module, module->scheduler));
   sv->adapt(rt, value, valueType);
   return sv;
 }
@@ -92,21 +147,35 @@ std::shared_ptr<ShareableValue> ShareableValue::adapt(jsi::Runtime &rt, const js
 jsi::Value ShareableValue::getValue(jsi::Runtime &rt) {
   // TODO: maybe we can cache toJSValue results on a per-runtime basis, need to avoid ref loops
   if (module->isUIRuntime(rt)) {
-    if (remoteValue.get() == nullptr) {
-      remoteValue = std::make_unique<jsi::Value>(rt, toJSValue(rt));
+    if (remoteValue.expired()) {
+      auto ref = getWeakRef(rt);
+      remoteValue = ref;
     }
-    return jsi::Value(rt, *remoteValue);
+    
+    if (remoteValue.lock()->isUndefined()) {
+      (*remoteValue.lock()) = jsi::Value(rt, toJSValue(rt));
+    }
+    return jsi::Value(rt, *remoteValue.lock());
   } else {
     if (hostValue.get() == nullptr) {
       hostValue = std::make_unique<jsi::Value>(rt, toJSValue(rt));
     }
     return jsi::Value(rt, *hostValue);
   }
-  return toJSValue(rt);
 }
 
 jsi::Object ShareableValue::createHost(jsi::Runtime &rt, std::shared_ptr<jsi::HostObject> host) {
   return jsi::Object::createFromHostObject(rt, host);
+}
+
+jsi::Value createFrozenWrapper(jsi::Runtime &rt, std::shared_ptr<FrozenObject> frozenObject) {
+  jsi::Object __reanimatedHiddenHost = jsi::Object::createFromHostObject(rt, frozenObject);
+  jsi::Object obj = frozenObject->shallowClone(rt);
+  jsi::Object globalObject = rt.global().getPropertyAsObject(rt, "Object");
+  jsi::Function freeze = globalObject.getPropertyAsFunction(rt, "freeze");
+  addHiddenProperty(rt, std::move(__reanimatedHiddenHost), obj, HIDDEN_HOST_OBJECT_PROP);
+  addHiddenProperty(rt, true, obj, ALREADY_CONVERTED);
+  return freeze.call(rt, obj);
 }
 
 jsi::Value ShareableValue::toJSValue(jsi::Runtime &rt) {
@@ -122,7 +191,7 @@ jsi::Value ShareableValue::toJSValue(jsi::Runtime &rt) {
     case ValueType::StringType:
       return jsi::Value(rt, jsi::String::createFromAscii(rt, stringValue));
     case ValueType::ObjectType:
-      return createHost(rt, frozenObject);
+      return createFrozenWrapper(rt, frozenObject);
     case ValueType::ArrayType: {
       jsi::Array array(rt, frozenArray.size());
       for (size_t i = 0; i < frozenArray.size(); i++) {
@@ -131,7 +200,7 @@ jsi::Value ShareableValue::toJSValue(jsi::Runtime &rt) {
       return array;
     }
     case ValueType::RemoteObjectType:
-      if (module->isUIRuntime(rt)) {
+     if (module->isUIRuntime(rt)) {
         remoteObject->maybeInitializeOnUIRuntime(rt);
       }
       return createHost(rt, remoteObject);
@@ -140,12 +209,25 @@ jsi::Value ShareableValue::toJSValue(jsi::Runtime &rt) {
     case ValueType::HostFunctionType:
       if (hostRuntime == &rt) {
         // function is accessed from the same runtime it was crated, we just return same function obj
-        return jsi::Value(rt, *hostFunction);
+        return jsi::Value(rt, *hostFunction->get());
       } else {
         // function is accessed from a different runtme, we wrap function in host func that'd enqueue
         // call on an appropriate thread
+        
         auto module = this->module;
         auto hostFunction = this->hostFunction;
+        
+        auto warnFunction = [module, hostFunction](
+            jsi::Runtime &rt,
+            const jsi::Value &thisValue,
+            const jsi::Value *args,
+            size_t count
+            ) -> jsi::Value {
+          module->errorHandler->setError(CALLBACK_ERROR_PREFIX + hostFunction->functionName + CALLBACK_ERROR_SUFFIX);
+          module->errorHandler->raise();
+          return jsi::Value::undefined();
+        };
+        
         auto hostRuntime = this->hostRuntime;
         auto clb = [module, hostFunction, hostRuntime](
             jsi::Runtime &rt,
@@ -169,7 +251,7 @@ jsi::Value ShareableValue::toJSValue(jsi::Runtime &rt) {
              
             jsi::Value returnedValue;
              
-            returnedValue = hostFunction->call(*hostRuntime,
+            returnedValue = hostFunction->get()->call(*hostRuntime,
                                               static_cast<const jsi::Value*>(args),
                                               (size_t)params.size());
              
@@ -180,7 +262,10 @@ jsi::Value ShareableValue::toJSValue(jsi::Runtime &rt) {
           module->scheduler->scheduleOnJS(job);
           return jsi::Value::undefined();
         };
-        return jsi::Function::createFromHostFunction(rt, jsi::PropNameID::forAscii(rt, "hostFunction"), 0, clb);
+        jsi::Function wrapperFunction = jsi::Function::createFromHostFunction(rt, jsi::PropNameID::forAscii(rt, "hostFunction"), 0, warnFunction);
+        jsi::Function res = jsi::Function::createFromHostFunction(rt, jsi::PropNameID::forAscii(rt, "hostFunction"), 0, clb);
+        addHiddenProperty(rt, std::move(res), wrapperFunction, "__callAsync");
+        return wrapperFunction;
       }
     case ValueType::WorkletFunctionType:
       auto module = this->module;
@@ -188,14 +273,9 @@ jsi::Value ShareableValue::toJSValue(jsi::Runtime &rt) {
       if (module->isUIRuntime(rt)) {
         // when running on UI thread we prep a function
 
-        auto jsThis = frozenObject->shallowClone(*module->runtime);
+        auto jsThis = std::make_shared<jsi::Object>(frozenObject->shallowClone(*module->runtime));
         std::shared_ptr<jsi::Function> funPtr(module->workletsCache->getFunction(rt, frozenObject));
-        
-        // HACK ALERT: there is a special case of "setter" function where we don't want to pass
-        // closure as "this". Here we handle that case separately;
-        if (module->valueSetter.get() == this) {
-          return jsi::Value(rt, *funPtr);
-        }
+        auto name = funPtr->getProperty(rt, "name").asString(rt).utf8(rt);
 
         auto clb = [=](
                    jsi::Runtime &rt,
@@ -222,7 +302,7 @@ jsi::Value ShareableValue::toJSValue(jsi::Runtime &rt) {
            rt.global().setProperty(rt, "jsThis", oldJSThis); //clean jsThis
            return res;
         };
-        return jsi::Function::createFromHostFunction(rt, jsi::PropNameID::forAscii(rt, "workletFunction"), 0, clb);
+        return jsi::Function::createFromHostFunction(rt, jsi::PropNameID::forAscii(rt, name.c_str()), 0, clb);
       } else {
         // when run outside of UI thread we enqueue a call on the UI thread
         auto retain_this = shared_from_this();
@@ -244,7 +324,7 @@ jsi::Value ShareableValue::toJSValue(jsi::Runtime &rt) {
           
           module->scheduler->scheduleOnUI([retain_this, params, &module] {
             jsi::Runtime &rt = *retain_this->module->runtime.get();
-            auto jsThis = retain_this->createHost(rt, retain_this->frozenObject);
+            auto jsThis = createFrozenWrapper(rt, retain_this->frozenObject).getObject(rt);
             auto code = jsThis.getProperty(rt, "asString").asString(rt).utf8(rt);
             std::shared_ptr<jsi::Function> funPtr(retain_this->module->workletsCache->getFunction(rt, retain_this->frozenObject));
             
@@ -274,7 +354,7 @@ jsi::Value ShareableValue::toJSValue(jsi::Runtime &rt) {
           });
           return jsi::Value::undefined();
         };
-        return jsi::Function::createFromHostFunction(rt, jsi::PropNameID::forAscii(rt, "workletFunction"), 0, clb);
+        return jsi::Function::createFromHostFunction(rt, jsi::PropNameID::forAscii(rt, "_workletFunction"), 0, clb);
       }
   }
   throw "convert error";

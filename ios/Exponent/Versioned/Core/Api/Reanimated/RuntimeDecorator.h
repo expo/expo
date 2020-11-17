@@ -16,7 +16,8 @@ public:
                                UpdaterFunction updater,
                                RequestFrameFunction requestFrame,
                                ScrollToFunction scrollTo,
-                               MeasuringFunction measure);
+                               MeasuringFunction measure,
+                               TimeProviderFunction getCurrentTime);
 };
 
 }
