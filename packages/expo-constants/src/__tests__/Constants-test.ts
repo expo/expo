@@ -99,16 +99,16 @@ describe(`manifest`, () => {
     expect(console.warn).not.toHaveBeenCalled();
   });
 
-  it(`is null if undefined in ExponentConstants and expo-updates`, () => {
-    mockExponentConstants({ manifest: undefined });
+  it(`is null if undefined in ExponentConstants and expo-updates with bare execution environment`, () => {
+    mockExponentConstants({ manifest: undefined, executionEnvironment: ExecutionEnvironment.Bare });
     mockExpoUpdates({ manifest: undefined, manifestString: undefined });
     const ConstantsWithMock = require('../Constants').default;
     expect(ConstantsWithMock.manifest).toBeNull();
     expect(console.warn).toHaveBeenCalled();
   });
 
-  it(`is null if undefined in ExponentConstants, and expo-updates does not exist`, () => {
-    mockExponentConstants({ manifest: undefined });
+  it(`is null if undefined in ExponentConstants, and expo-updates does not exist with bare execution environment`, () => {
+    mockExponentConstants({ manifest: undefined, executionEnvironment: ExecutionEnvironment.Bare });
     mockNativeModulesProxy({ ExpoUpdates: undefined });
     const ConstantsWithMock = require('../Constants').default;
     expect(ConstantsWithMock.manifest).toBeNull();
@@ -138,7 +138,7 @@ describe(`manifest`, () => {
         executionEnvironment: env,
       });
       const ConstantsWithMock = require('../Constants').default;
-      expect(ConstantsWithMock).toThrowErrorMatchingSnapshot();
+      expect(() => ConstantsWithMock.manifest).toThrowErrorMatchingSnapshot();
     });
   });
 });
