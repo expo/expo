@@ -45,6 +45,10 @@ Object.defineProperties(constants, {
             }
             return manifest;
         },
+        // This setter is only useful to mock the value for tests
+        set(value) {
+            manifest = value;
+        },
     },
 });
 export default constants;
