@@ -1,6 +1,6 @@
 {
   "name": "EXLocation",
-  "version": "9.0.1",
+  "version": "10.0.0",
   "summary": "Allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.",
   "description": "Allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.",
   "license": "MIT",

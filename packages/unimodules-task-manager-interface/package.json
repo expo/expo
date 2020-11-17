@@ -1,6 +1,6 @@
 {
   "name": "unimodules-task-manager-interface",
-  "version": "5.3.0",
+  "version": "5.4.0",
   "description": "Universal module interface package for TaskManager",
   "main": "index.js",
   "keywords": [

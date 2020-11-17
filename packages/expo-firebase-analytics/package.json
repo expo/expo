@@ -47,6 +47,6 @@
     "expo-module-scripts": "~1.2.0"
   },
   "dependencies": {
-    "expo-firebase-core": "~1.2.0"
+    "expo-firebase-core": "~1.3.0"
   }
 }

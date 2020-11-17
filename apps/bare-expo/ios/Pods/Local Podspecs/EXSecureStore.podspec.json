@@ -1,6 +1,6 @@
 {
   "name": "EXSecureStore",
-  "version": "9.2.0",
+  "version": "9.3.0",
   "summary": "Provides a way to encrypt and securely store key–value pairs locally on the device.",
   "description": "Provides a way to encrypt and securely store key–value pairs locally on the device.",
   "license": "MIT",

@@ -1,6 +1,6 @@
 {
   "name": "EXSensors",
-  "version": "9.1.0",
+  "version": "9.2.0",
   "summary": "Provides access to a hardware device's accelerometer, gyroscope, magnetometer, and pedometer.",
   "description": "Provides access to a hardware device's accelerometer, gyroscope, magnetometer, and pedometer.",
   "license": "MIT",

@@ -1,6 +1,6 @@
 {
   "name": "EXSQLite",
-  "version": "8.4.0",
+  "version": "8.5.0",
   "summary": "Provides access to a database that can be queried through a WebSQL-like API (https://www.w3.org/TR/webdatabase/). The database is persisted across restarts of your app.",
   "description": "Provides access to a database that can be queried through a WebSQL-like API (https://www.w3.org/TR/webdatabase/). The database is persisted across restarts of your app.",
   "license": "MIT",

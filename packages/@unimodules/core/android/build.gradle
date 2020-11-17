@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
 group = 'org.unimodules'
-version = '5.5.0'
+version = '6.0.0'
 
 // Simple helper that allows the root project to override versions declared by this library.
 def safeExtGet(prop, fallback) {
@@ -41,8 +41,8 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 29)
     consumerProguardFiles 'proguard-rules.pro'
-    versionCode 18
-    versionName "5.5.0"
+    versionCode 19
+    versionName "6.0.0"
   }
   lintOptions {
     abortOnError false

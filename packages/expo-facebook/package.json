@@ -1,6 +1,6 @@
 {
   "name": "expo-facebook",
-  "version": "9.0.0",
+  "version": "9.1.0",
   "description": "Expo universal module for Facebook SDK",
   "main": "build/Facebook.js",
   "types": "build/Facebook.d.ts",

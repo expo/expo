@@ -4,9 +4,15 @@
 
 ### 🛠 Breaking changes
 
-- On iOS enabled `use_frameworks!` usage by replacing `React` dependency with `React-Core`. ([#11057](https://github.com/expo/expo/pull/11057) by [@bbarthec](https://github.com/bbarthec))
-
 ### 🎉 New features
+
+### 🐛 Bug fixes
+
+## 0.4.0 — 2020-11-17
+
+### 🛠 Breaking changes
+
+- On iOS enabled `use_frameworks!` usage by replacing `React` dependency with `React-Core`. ([#11057](https://github.com/expo/expo/pull/11057) by [@bbarthec](https://github.com/bbarthec))
 
 ### 🐛 Bug fixes
 
