@@ -46,7 +46,7 @@ ABI37_0_0UM_REGISTER_MODULE();
            @"isHeadless": @(NO),
            @"nativeAppVersion": [self appVersion],
            @"nativeBuildVersion": [self buildVersion],
-           @"installationId": [[self class] installationId],
+           @"installationId": [self installationId],
            @"platform": @{
                @"ios": @{
                    @"buildNumber": [self buildVersion],
@@ -408,7 +408,7 @@ ABI37_0_0UM_REGISTER_MODULE();
   return [UIDevice currentDevice].name;
 }
 
-+ (NSString *)installationId
+- (NSString *)installationId
 {
   NSString *uuid = [[NSUserDefaults standardUserDefaults] stringForKey:kEXDeviceInstallUUIDKey];
   if (!uuid) {

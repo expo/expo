@@ -50,7 +50,7 @@ UM_REGISTER_MODULE();
            @"isHeadless": @(NO),
            @"nativeAppVersion": [self appVersion],
            @"nativeBuildVersion": [self buildVersion],
-           @"installationId": [[self class] installationId],
+           @"installationId": [self installationId],
            @"manifest": UMNullIfNil([[self class] appConfig]),
            @"platform": @{
                @"ios": @{

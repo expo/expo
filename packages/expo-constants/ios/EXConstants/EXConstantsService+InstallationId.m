@@ -6,7 +6,7 @@ static NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
 
 @implementation EXConstantsService (InstallationId)
 
-+ (NSString *)installationId
+- (NSString *)installationId
 {
   NSString *installationId = [self fetchInstallationId];
   if (installationId) {
@@ -18,7 +18,7 @@ static NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
   return installationId;
 }
 
-+ (nullable NSString *)fetchInstallationId
+- (nullable NSString *)fetchInstallationId
 {
   NSString *installationId;
   CFTypeRef foundDict = NULL;
@@ -53,7 +53,7 @@ static NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
   return installationId;
 }
 
-+ (nullable NSError *)setInstallationId:(NSString *)installationId
+- (nullable NSError *)setInstallationId:(NSString *)installationId
 {
   // Delete existing UUID so we don't need to handle "duplicate item" error
   SecItemDelete((__bridge CFDictionaryRef)[self installationIdSearchQuery]);
@@ -68,7 +68,7 @@ static NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
 
 # pragma mark - Keychain dictionaries
 
-+ (NSDictionary *)installationIdSearchQueryMerging:(NSDictionary *)dictionaryToMerge
+- (NSDictionary *)installationIdSearchQueryMerging:(NSDictionary *)dictionaryToMerge
 {
   NSData *encodedKey = [kEXDeviceInstallUUIDKey dataUsingEncoding:NSUTF8StringEncoding];
   NSMutableDictionary *query = [NSMutableDictionary dictionaryWithDictionary:@{
@@ -81,12 +81,12 @@ static NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
   return query;
 }
 
-+ (NSDictionary *)installationIdSearchQuery
+- (NSDictionary *)installationIdSearchQuery
 {
   return [self installationIdSearchQueryMerging:@{}];
 }
 
-+ (NSDictionary *)installationIdGetQuery
+- (NSDictionary *)installationIdGetQuery
 {
   return [self installationIdSearchQueryMerging:@{
     (__bridge id)kSecMatchLimit:(__bridge id)kSecMatchLimitOne,
@@ -94,7 +94,7 @@ static NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
   }];
 }
 
-+ (NSDictionary *)installationIdSetQuery:(NSString *)deviceInstallUUID
+- (NSDictionary *)installationIdSetQuery:(NSString *)deviceInstallUUID
 {
   return [self installationIdSearchQueryMerging:@{
     (__bridge id)kSecValueData:[deviceInstallUUID dataUsingEncoding:NSUTF8StringEncoding],
