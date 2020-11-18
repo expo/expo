@@ -1147,9 +1147,10 @@ function _getReactNativeTransformRules(versionPrefix, reactPodName) {
       pattern: `s/${versionPrefix}EX${reactPodName}/${versionPrefix}EXReact/g`,
     },
     {
-      // For EXConstants
+      // For EXConstants and EXNotifications so that when their migrators
+      // try to access legacy storage for UUID migration, they access the proper value.
       pattern: `s/${versionPrefix}EXDeviceInstallUUIDKey/EXDeviceInstallUUIDKey/g`,
-      paths: 'Expo/EXConstants',
+      paths: 'Expo',
     },
     {
       // RCTPlatform exports version of React Native
