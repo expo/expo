@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add appVerificationDisabledForTesting prop to enable test mode. ([#10905](https://github.com/expo/expo/pull/10905) by [@IjzerenHein](https://github.com/IjzerenHein))
+
 ### 🐛 Bug fixes
 
 ## 1.2.1 — 2020-11-17
