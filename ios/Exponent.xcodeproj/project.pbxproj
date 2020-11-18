@@ -112,7 +112,6 @@
 		31E6D48020B845830082B09F /* EXSensorsManagerBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E6D47F20B845830082B09F /* EXSensorsManagerBinding.m */; };
 		31E8B2FD23D090E200E6C2BF /* EXClientReleaseType.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E8B2FC23D090E200E6C2BF /* EXClientReleaseType.m */; };
 		31F8E27E255F05D5005AA063 /* EXDeviceInstallationUUIDService.m in Sources */ = {isa = PBXBuildFile; fileRef = 31F8E27D255F05D5005AA063 /* EXDeviceInstallationUUIDService.m */; };
-		31F8E287255F0606005AA063 /* EXScopedInstallationIdProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 31F8E286255F0606005AA063 /* EXScopedInstallationIdProvider.m */; };
 		3792386F0DB44FB690751F16 /* REAIOSLogger.mm in Sources */ = {isa = PBXBuildFile; fileRef = CE32F209D83549EABA4AC64F /* REAIOSLogger.mm */; settings = {COMPILER_FLAGS = "-w"; }; };
 		45239F0699C942D3B533FF75 /* NativeReanimatedModule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B405557B9F0E4EF8B7BF58CA /* NativeReanimatedModule.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		45F1EB3DFB9040A382A8689D /* REAIOSScheduler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7711740A91C24BB68D6DBB1D /* REAIOSScheduler.mm */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -616,8 +615,6 @@
 		31E8B2FC23D090E200E6C2BF /* EXClientReleaseType.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXClientReleaseType.m; sourceTree = "<group>"; };
 		31F8E27C255F05D5005AA063 /* EXDeviceInstallationUUIDService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXDeviceInstallationUUIDService.h; sourceTree = "<group>"; };
 		31F8E27D255F05D5005AA063 /* EXDeviceInstallationUUIDService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXDeviceInstallationUUIDService.m; sourceTree = "<group>"; };
-		31F8E285255F0606005AA063 /* EXScopedInstallationIdProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedInstallationIdProvider.h; sourceTree = "<group>"; };
-		31F8E286255F0606005AA063 /* EXScopedInstallationIdProvider.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedInstallationIdProvider.m; sourceTree = "<group>"; };
 		3260CF60254646AB9984E4AA /* ShareableValue.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = ShareableValue.h; sourceTree = "<group>"; };
 		3451876A2368FE9E008C4171 /* cp-bundle-resources-conditionally.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "cp-bundle-resources-conditionally.sh"; sourceTree = "<group>"; };
 		35005E2F0ED24BB98E4DC990 /* RNCMaskedView.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCMaskedView.m; sourceTree = "<group>"; };
@@ -1903,8 +1900,6 @@
 				B236C4F224740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.m */,
 				B23D9AA124758C6600D09AC8 /* EXScopedNotificationPresentationModule.h */,
 				B23D9AA224758C6600D09AC8 /* EXScopedNotificationPresentationModule.m */,
-				31F8E285255F0606005AA063 /* EXScopedInstallationIdProvider.h */,
-				31F8E286255F0606005AA063 /* EXScopedInstallationIdProvider.m */,
 			);
 			path = EXNotifications;
 			sourceTree = "<group>";
@@ -3261,7 +3256,6 @@
 				EE4681A896274B6C8E39B2CB /* MapperRegistry.cpp in Sources */,
 				74C42DC8C6AA4DF8B74D157D /* MutableValue.cpp in Sources */,
 				14869DBC5F0A448187BE8AAC /* MutableValueSetterProxy.cpp in Sources */,
-				31F8E287255F0606005AA063 /* EXScopedInstallationIdProvider.m in Sources */,
 				A845744006CE4B049D8B3A1F /* NativeMethods.mm in Sources */,
 				7370740FD755433187FCCDC4 /* NativeProxy.mm in Sources */,
 				45239F0699C942D3B533FF75 /* NativeReanimatedModule.cpp in Sources */,
