@@ -19,7 +19,6 @@ Package-specific changes not released in any SDK will be added here just before 
 
 - Updated `@react-native-community/picker@1.6.6` to `@react-native-picker/picker@1.9.2`. ([#11029](https://github.com/expo/expo/pull/11029) by [@brentvatne](https://github.com/brentvatne))
 - Updated `@react-native-community/segmented-control` from `2.1.1` to `2.2.1`. ([#11029](https://github.com/expo/expo/pull/11029) by [@brentvatne](https://github.com/brentvatne))
-- Updated `react-native-gesture-handler` from `1.7.0` to `1.8.0`. ([#11029](https://github.com/expo/expo/pull/11029) by [@brentvatne](https://github.com/brentvatne))
 - Updated `@react-native-community/netinfo` from `5.9.6` to `5.9.7`. ([#11029](https://github.com/expo/expo/pull/11029) by [@brentvatne](https://github.com/brentvatne))
 - Updated `react-native-safe-area-context` from `3.1.4` to `3.1.9`. ([#11029](https://github.com/expo/expo/pull/11029) by [@brentvatne](https://github.com/brentvatne))
 - Updated `@react-native-community/viewpager` from `4.1.6` to `4.2.0`. ([#11009](https://github.com/expo/expo/pull/11009) by [@cruzach](https://github.com/cruzach))
