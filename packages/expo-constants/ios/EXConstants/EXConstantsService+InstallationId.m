@@ -21,10 +21,10 @@ static NSString * const kEXDeviceInstallationUUIDKey = @"EXDeviceInstallUUIDKey"
 - (nullable NSString *)fetchInstallationId
 {
   NSString *installationId;
-  CFTypeRef foundDict = NULL;
+  CFTypeRef keychainResult = NULL;
   
-  if (SecItemCopyMatching((__bridge CFDictionaryRef)[self installationIdGetQuery], &foundDict) == noErr) {
-    NSData *result = (__bridge_transfer NSData *)foundDict;
+  if (SecItemCopyMatching((__bridge CFDictionaryRef)[self installationIdGetQuery], &keychainResult) == noErr) {
+    NSData *result = (__bridge_transfer NSData *)keychainResult;
     NSString *value = [[NSString alloc] initWithData:result
                                             encoding:NSUTF8StringEncoding];
     // `initWithUUIDString` returns nil if string is not a valid UUID
