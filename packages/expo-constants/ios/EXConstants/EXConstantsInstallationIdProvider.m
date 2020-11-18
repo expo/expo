@@ -15,7 +15,7 @@ static NSString * const kEXDeviceInstallationUUIDLegacyKey = @"EXDeviceInstallUU
   }
   
   installationId = [[NSUUID UUID] UUIDString];
-  [self setInstallationId:installationId];
+  [self setInstallationId:installationId error:NULL];
   return installationId;
 }
 
@@ -41,30 +41,29 @@ static NSString * const kEXDeviceInstallationUUIDLegacyKey = @"EXDeviceInstallUU
   NSString *legacyUUID = [[NSUserDefaults standardUserDefaults] stringForKey:kEXDeviceInstallationUUIDLegacyKey];
   if (legacyUUID) {
     installationId = legacyUUID;
-    
-    NSError *error = [self setInstallationId:installationId];
-    if (error) {
-      NSLog(@"Could not migrate device installation UUID from legacy storage: %@", error.description);
-    } else {
+
+    NSError *error = nil;
+    if ([self setInstallationId:installationId error:&error]) {
       // We only remove the value from old storage once it's set and saved in the new storage.
       [[NSUserDefaults standardUserDefaults] removeObjectForKey:kEXDeviceInstallationUUIDLegacyKey];
+    } else {
+      NSLog(@"Could not migrate device installation UUID from legacy storage: %@", error.description);
     }
   }
   
   return installationId;
 }
 
-- (nullable NSError *)setInstallationId:(NSString *)installationId
+- (BOOL)setInstallationId:(NSString *)installationId error:(NSError **)error
 {
   // Delete existing UUID so we don't need to handle "duplicate item" error
   SecItemDelete((__bridge CFDictionaryRef)[self installationIdSearchQuery]);
   
   OSStatus status = SecItemAdd((__bridge CFDictionaryRef)[self installationIdSetQuery:installationId], NULL);
-  if (status == errSecSuccess) {
-    return nil;
-  } else {
-    return [NSError errorWithDomain:NSOSStatusErrorDomain code:status userInfo:nil];
+  if (status != errSecSuccess && error) {
+    *error = [NSError errorWithDomain:NSOSStatusErrorDomain code:status userInfo:nil];
   }
+  return status == errSecSuccess;
 }
 
 # pragma mark - Keychain dictionaries
