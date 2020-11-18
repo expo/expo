@@ -29,14 +29,14 @@ Instead of using the standard `firebase.auth.RecaptchaVerifier` class, we will b
 
 Add the `<FirebaseRecaptchaVerifierModal>` component to your screen and store its ref for later use. Also pass in the Firebase web configuration using the `firebaseConfig` prop.
 
-Optionally you can enable `invisible` reCAPTCHA. When enabled, reCAPTCHA attempts to complete the verification without showing any UI to the user. There is however no guarentee that this will always work. When the user cannot be verified automatically, the full reCATPCHA challenge UI is shown.
-> Google terms apply, use `<FirebaseRecaptchaBanner>` to for instance show the Google terms when using invisible reCAPTCHA.
+> 🚨 Optionally you can turn on **experimental invisible reCAPTCHA** using `attemptInvisibleVerification`. This feature is experimental and attempts to complete the verification process without showing any UI to the user. When invisible verification fails, the full reCATPCHA challenge UI is shown. The Google terms for invisible reCAPTCHA apply - use `<FirebaseRecaptchaBanner>` to show the Google terms when using invisible reCAPTCHA.
 
 ```tsx
 <FirebaseRecaptchaVerifierModal
   ref={/* store ref for later use */}
   firebaseConfig={/* firebase web config */}
-  invisible={true|false} />
+  attemptInvisibleVerification={true | false /* experimental */}
+/>
 ```
 
 Pass in the `recaptchaVerifier` ref to `verifyPhoneNumber`. This will automatically show the reCAPTCHA modal when calling `verifyPhoneNumber`.
@@ -63,7 +63,15 @@ platforms={['ios', 'android']}>
 
 ```js
 import * as React from 'react';
-import { Text, View, TextInput, Button, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import {
+  Text,
+  View,
+  TextInput,
+  Button,
+  StyleSheet,
+  TouchableOpacity,
+  Platform,
+} from 'react-native';
 import { FirebaseRecaptchaVerifierModal, FirebaseRecaptchaBanner } from 'expo-firebase-recaptcha';
 import * as firebase from 'firebase';
 
@@ -83,17 +91,22 @@ export default function App() {
   const [verificationId, setVerificationId] = React.useState();
   const [verificationCode, setVerificationCode] = React.useState();
   const firebaseConfig = firebase.apps.length ? firebase.app().options : undefined;
-  const [message, showMessage] = React.useState((!firebaseConfig || Platform.OS === 'web')
-    ? { text: "To get started, provide a valid firebase config in App.js and open this snack on an iOS or Android device."}
-    : undefined);
-  const invisible = false; // Set to `true` to turn on invisible reCAPTCHA
+  const [message, showMessage] = React.useState(
+    !firebaseConfig || Platform.OS === 'web'
+      ? {
+          text:
+            'To get started, provide a valid firebase config in App.js and open this snack on an iOS or Android device.',
+        }
+      : undefined
+  );
+  const attemptInvisibleVerification = false;
 
   return (
     <View style={{ padding: 20, marginTop: 50 }}>
       <FirebaseRecaptchaModalVerifier
         ref={recaptchaVerifier}
         firebaseConfig={firebaseConfig}
-        invisible={invisible}
+        attemptInvisibleVerification={attemptInvisibleVerification}
       />
       <Text style={{ marginTop: 20 }}>Enter phone number</Text>
       <TextInput
@@ -167,8 +180,10 @@ export default function App() {
             {message.text}
           </Text>
         </TouchableOpacity>
-      ) : undefined}
-      {invisible && <FirebaseRecaptchaBanner />}
+      ) : (
+        undefined
+      )}
+      {attemptInvisibleVerification && <FirebaseRecaptchaBanner />}
     </View>
   );
 }
@@ -186,7 +201,6 @@ Or view the [Full Phone Authentication test snack](https://snack.expo.io/@ijzere
 <FirebaseRecaptchaVerifierModal
   ref={...}
   firebaseConfig={...}
-  invisible={true/false}
   title='Prove you are human!'
   cancelLabel='Close'
 />
@@ -252,7 +266,7 @@ Modal screen that is automatically shown and displays a reCAPTCHA widget. The re
 
 - **firebaseConfig (IFirebaseOptions)** -- Firebase web configuration.
 - **firebaseVersion (string)** -- Optional version of the Firebase JavaScript SDK to load in the web-view. You can use this to load a custom or newer version. For example `version="7.9.0"`.
-- **invisible (boolean)** -- Attempts to verify without showing the reCAPTCHA workflow. The default is `false`. (google terms apply, you can use `FirebaseRecaptchaBanner` to show te Google terms & policy).
+- **attemptInvisibleVerification (boolean)** -- Attempts to verify without showing the reCAPTCHA workflow. The default is `false`. (Google terms apply - use `FirebaseRecaptchaBanner` to show te Google terms & policy).
 - **appVerificationDisabledForTesting (boolean)** -- When set, disables app verification for the purpose of testing phone authentication. When this prop is `true`, a mock reCAPTCHA is rendered. This is useful for manual testing during development or for automated integration tests. See [Firebase Phone Auth](https://firebase.google.com/docs/auth/web/phone-auth#integration-testing) for more info.
 - **title (string)** -- Title that is displayed on the top of the modal. The default is "reCAPTCHA".
 - **cancelLabel (string)** -- Label of the cancel button.
@@ -270,7 +284,7 @@ The reCAPTCHA v3 widget displayed inside a web-view.
 - **onError (function)** -- A callback that is invoked when the widget failed to load.
 - **onVerify (function)** -- A callback that is invoked when reCAPTCHA has verified that the user is not a bot. The callback is provided with the reCAPTCHA token string. Example `onVerify={(recaptchaToken: string) => this.setState({recaptchaToken})}`.
 - **onFullChallenge (function)** -- A callback that is invoked when reCAPTCHA shows the full challange experience.
-- **invisible (boolean)** -- When `true` shows an `invisible` widget. The widget can then be triggered to verify invisibly by setting the `verify` prop to `true`.
+- **invisible (boolean)** -- When `true` renders an `invisible` reCAPTCHA widget. The widget can then be triggered to verify invisibly by setting the `verify` prop to `true`.
 - **verify (boolean)** -- Use this in combination with `invisible=true` so start the verification process.
 
 ### `<FirebaseRecaptchaBanner>`
@@ -288,7 +302,7 @@ Renders a banner referring to the Google [Privacy Policy](https://policies.googl
 <FirebaseRecaptchaBanner
   textStyle={{ fontSize: 14, opacity: 1 }}
   linkStyle={{ fontWeight: 'bold' }}
-  />
+/>
 ```
 
 ### `FirebaseAuthApplicationVerifier`

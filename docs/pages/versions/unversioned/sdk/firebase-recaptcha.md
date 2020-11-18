@@ -29,14 +29,14 @@ Instead of using the standard `firebase.auth.RecaptchaVerifier` class, we will b
 
 Add the `<FirebaseRecaptchaVerifierModal>` component to your screen and store its ref for later use. Also pass in the Firebase web configuration using the `firebaseConfig` prop.
 
-
 > 🚨 Optionally you can turn on **experimental invisible reCAPTCHA** using `attemptInvisibleVerification`. This feature is experimental and attempts to complete the verification process without showing any UI to the user. When invisible verification fails, the full reCATPCHA challenge UI is shown. The Google terms for invisible reCAPTCHA apply - use `<FirebaseRecaptchaBanner>` to show the Google terms when using invisible reCAPTCHA.
 
 ```tsx
 <FirebaseRecaptchaVerifierModal
   ref={/* store ref for later use */}
   firebaseConfig={/* firebase web config */}
-  attemptInvisibleVerification={true|false /* experimental */} />
+  attemptInvisibleVerification={true | false /* experimental */}
+/>
 ```
 
 Pass in the `recaptchaVerifier` ref to `verifyPhoneNumber`. This will automatically show the reCAPTCHA modal when calling `verifyPhoneNumber`.
@@ -63,7 +63,15 @@ platforms={['ios', 'android']}>
 
 ```js
 import * as React from 'react';
-import { Text, View, TextInput, Button, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import {
+  Text,
+  View,
+  TextInput,
+  Button,
+  StyleSheet,
+  TouchableOpacity,
+  Platform,
+} from 'react-native';
 import { FirebaseRecaptchaVerifierModal, FirebaseRecaptchaBanner } from 'expo-firebase-recaptcha';
 import * as firebase from 'firebase';
 
@@ -83,9 +91,14 @@ export default function App() {
   const [verificationId, setVerificationId] = React.useState();
   const [verificationCode, setVerificationCode] = React.useState();
   const firebaseConfig = firebase.apps.length ? firebase.app().options : undefined;
-  const [message, showMessage] = React.useState((!firebaseConfig || Platform.OS === 'web')
-    ? { text: "To get started, provide a valid firebase config in App.js and open this snack on an iOS or Android device."}
-    : undefined);
+  const [message, showMessage] = React.useState(
+    !firebaseConfig || Platform.OS === 'web'
+      ? {
+          text:
+            'To get started, provide a valid firebase config in App.js and open this snack on an iOS or Android device.',
+        }
+      : undefined
+  );
   const attemptInvisibleVerification = false;
 
   return (
@@ -167,7 +180,9 @@ export default function App() {
             {message.text}
           </Text>
         </TouchableOpacity>
-      ) : undefined}
+      ) : (
+        undefined
+      )}
       {attemptInvisibleVerification && <FirebaseRecaptchaBanner />}
     </View>
   );
@@ -287,7 +302,7 @@ Renders a banner referring to the Google [Privacy Policy](https://policies.googl
 <FirebaseRecaptchaBanner
   textStyle={{ fontSize: 14, opacity: 1 }}
   linkStyle={{ fontWeight: 'bold' }}
-  />
+/>
 ```
 
 ### `FirebaseAuthApplicationVerifier`
