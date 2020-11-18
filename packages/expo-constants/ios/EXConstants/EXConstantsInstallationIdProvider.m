@@ -1,15 +1,15 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <EXConstants/EXConstantsService+InstallationId.h>
+#import <EXConstants/EXConstantsInstallationIdProvider.h>
 
 static NSString * const kEXDeviceInstallationUUIDKey = @"EXDeviceInstallationUUIDKey";
 static NSString * const kEXDeviceInstallationUUIDLegacyKey = @"EXDeviceInstallUUIDKey";
 
-@implementation EXConstantsService (InstallationId)
+@implementation EXConstantsInstallationIdProvider
 
-- (NSString *)installationId
+- (NSString *)getOrCreateInstallationId
 {
-  NSString *installationId = [self fetchInstallationId];
+  NSString *installationId = [self getInstallationId];
   if (installationId) {
     return installationId;
   }
@@ -19,7 +19,7 @@ static NSString * const kEXDeviceInstallationUUIDLegacyKey = @"EXDeviceInstallUU
   return installationId;
 }
 
-- (nullable NSString *)fetchInstallationId
+- (nullable NSString *)getInstallationId
 {
   NSString *installationId;
   CFTypeRef keychainResult = NULL;

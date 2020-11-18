@@ -6,7 +6,7 @@
 
 #import <UMCore/UMUtilities.h>
 #import <EXConstants/EXConstantsService.h>
-#import <EXConstants/EXConstantsService+InstallationId.h>
+#import <EXConstants/EXConstantsInstallationIdProvider.h>
 
 NSString * const EXConstantsExecutionEnvironmentBare = @"bare";
 NSString * const EXConstantsExecutionEnvironmentStandalone = @"standalone";
@@ -15,10 +15,24 @@ NSString * const EXConstantsExecutionEnvironmentStoreClient = @"storeClient";
 @interface EXConstantsService ()
 
 @property (nonatomic, strong) NSString *sessionId;
+@property (nonatomic, strong) EXConstantsInstallationIdProvider *installationIdProvider;
 
 @end
 
 @implementation EXConstantsService
+
+- (instancetype)init
+{
+  return [self initWithInstallationIdProvider:[[EXConstantsInstallationIdProvider alloc] init]];
+}
+
+- (instancetype)initWithInstallationIdProvider:(EXConstantsInstallationIdProvider *)installationIdProvider
+{
+  if (self = [super init]) {
+    _installationIdProvider = installationIdProvider;
+  }
+  return self;
+}
 
 UM_REGISTER_MODULE();
 
@@ -50,7 +64,7 @@ UM_REGISTER_MODULE();
            @"isHeadless": @(NO),
            @"nativeAppVersion": [self appVersion],
            @"nativeBuildVersion": [self buildVersion],
-           @"installationId": [self installationId],
+           @"installationId": [_installationIdProvider getOrCreateInstallationId],
            @"manifest": UMNullIfNil([[self class] appConfig]),
            @"platform": @{
                @"ios": @{
