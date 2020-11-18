@@ -13,14 +13,21 @@ import {
 import FirebaseRecaptcha from './FirebaseRecaptcha';
 import { FirebaseAuthApplicationVerifier } from './FirebaseRecaptcha.types';
 
-interface Props extends Omit<React.ComponentProps<typeof FirebaseRecaptcha>, 'onVerify'> {
+interface Props
+  extends Omit<
+    React.ComponentProps<typeof FirebaseRecaptcha>,
+    'onVerify' | 'invisible' | 'verify' | 'onVerify' | 'onLoad' | 'onError' | 'onFullChallenge'
+  > {
   title?: string;
   cancelLabel?: string;
+  attemptInvisibleVerification?: boolean;
 }
 interface State {
-  token: string;
   visible: boolean;
-  loaded: boolean;
+  visibleLoaded: boolean;
+  invisibleLoaded: boolean;
+  invisibleVerify: boolean;
+  invisibleKey: number;
   resolve?: (token: string) => void;
   reject?: (error: Error) => void;
 }
@@ -33,12 +40,24 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component<Prop
   };
 
   state: State = {
-    token: '',
     visible: false,
-    loaded: false,
+    visibleLoaded: false,
+    invisibleLoaded: false,
+    invisibleVerify: false,
+    invisibleKey: 1,
     resolve: undefined,
     reject: undefined,
   };
+
+  static getDerivedStateFromProps(props: Props, state: State) {
+    if (!props.attemptInvisibleVerification && state.invisibleLoaded) {
+      return {
+        invisibleLoaded: false,
+        invisibleVerify: false,
+      };
+    }
+    return null;
+  }
 
   get type(): string {
     return 'recaptcha';
@@ -46,19 +65,39 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component<Prop
 
   async verify(): Promise<string> {
     return new Promise((resolve, reject) => {
-      this.setState({
-        token: '',
-        visible: true,
-        loaded: false,
-        resolve,
-        reject,
-      });
+      if (this.props.attemptInvisibleVerification) {
+        this.setState({
+          invisibleVerify: true,
+          resolve,
+          reject,
+        });
+      } else {
+        this.setState({
+          visible: true,
+          visibleLoaded: false,
+          resolve,
+          reject,
+        });
+      }
     });
   }
 
-  private onLoad = () => {
+  private onVisibleLoad = () => {
     this.setState({
-      loaded: true,
+      visibleLoaded: true,
+    });
+  };
+
+  private onInvisibleLoad = () => {
+    this.setState({
+      invisibleLoaded: true,
+    });
+  };
+
+  private onFullChallenge = async () => {
+    this.setState({
+      invisibleVerify: false,
+      visible: true,
     });
   };
 
@@ -69,6 +108,7 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component<Prop
     }
     this.setState({
       visible: false,
+      invisibleVerify: false,
     });
   };
 
@@ -77,9 +117,12 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component<Prop
     if (resolve) {
       resolve(token);
     }
-    this.setState({
+    this.setState(state => ({
       visible: false,
-    });
+      invisibleVerify: false,
+      invisibleLoaded: false,
+      invisibleKey: state.invisibleKey + 1,
+    }));
   };
 
   cancel = () => {
@@ -103,49 +146,72 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component<Prop
   };
 
   render() {
-    const { title, cancelLabel, ...otherProps } = this.props;
-    const { visible, loaded } = this.state;
+    const { title, cancelLabel, attemptInvisibleVerification, ...otherProps } = this.props;
+    const { visible, visibleLoaded, invisibleLoaded, invisibleVerify, invisibleKey } = this.state;
     return (
-      <Modal
-        visible={visible}
-        animationType="slide"
-        presentationStyle="pageSheet"
-        onRequestClose={this.cancel}
-        onDismiss={this.onDismiss}>
-        <SafeAreaView style={styles.container}>
-          <View style={styles.header}>
-            <Text style={styles.title}>{title}</Text>
-            <View style={styles.cancel}>
-              <Button
-                title={cancelLabel || FirebaseRecaptchaVerifierModal.defaultProps.cancelLabel}
-                onPress={this.cancel}
-              />
-            </View>
-          </View>
-          <View style={styles.content}>
-            <FirebaseRecaptcha
-              style={styles.content}
-              onLoad={this.onLoad}
-              onError={this.onError}
-              onVerify={this.onVerify}
-              {...otherProps}
-            />
-            {!loaded ? (
-              <View style={styles.loader}>
-                <ActivityIndicator size="large" />
+      <View style={styles.container}>
+        {attemptInvisibleVerification && (
+          <FirebaseRecaptcha
+            {...otherProps}
+            key={`invisible${invisibleKey}`}
+            style={styles.invisible}
+            onLoad={this.onInvisibleLoad}
+            onError={this.onError}
+            onVerify={this.onVerify}
+            onFullChallenge={this.onFullChallenge}
+            invisible
+            verify={invisibleLoaded && invisibleVerify}
+          />
+        )}
+        <Modal
+          visible={visible}
+          animationType="slide"
+          presentationStyle="pageSheet"
+          onRequestClose={this.cancel}
+          onDismiss={this.onDismiss}>
+          <SafeAreaView style={styles.modalContainer}>
+            <View style={styles.header}>
+              <Text style={styles.title}>{title}</Text>
+              <View style={styles.cancel}>
+                <Button
+                  title={cancelLabel || FirebaseRecaptchaVerifierModal.defaultProps.cancelLabel}
+                  onPress={this.cancel}
+                />
               </View>
-            ) : (
-              undefined
-            )}
-          </View>
-        </SafeAreaView>
-      </Modal>
+            </View>
+            <View style={styles.content}>
+              <FirebaseRecaptcha
+                {...otherProps}
+                style={styles.content}
+                onLoad={this.onVisibleLoad}
+                onError={this.onError}
+                onVerify={this.onVerify}
+              />
+              {!visibleLoaded ? (
+                <View style={styles.loader}>
+                  <ActivityIndicator size="large" />
+                </View>
+              ) : (
+                undefined
+              )}
+            </View>
+          </SafeAreaView>
+        </Modal>
+      </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
+    width: 0,
+    height: 0,
+  },
+  invisible: {
+    width: 300,
+    height: 300,
+  },
+  modalContainer: {
     flex: 1,
   },
   header: {
