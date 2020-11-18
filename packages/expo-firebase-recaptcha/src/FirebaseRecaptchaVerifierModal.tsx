@@ -16,7 +16,7 @@ import { FirebaseAuthApplicationVerifier } from './FirebaseRecaptcha.types';
 interface Props extends Omit<React.ComponentProps<typeof FirebaseRecaptcha>, 'onVerify'> {
   title?: string;
   cancelLabel?: string;
-  invisible?: boolean;
+  attemptInvisibleVerification?: boolean;
 }
 interface State {
   visible: boolean;
@@ -142,11 +142,11 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component<Prop
   };
 
   render() {
-    const { title, cancelLabel, invisible, ...otherProps } = this.props;
+    const { title, cancelLabel, attemptInvisibleVerification, ...otherProps } = this.props;
     const { visible, visibleLoaded, invisibleLoaded, invisibleVerify, invisibleKey } = this.state;
     return (
       <View style={styles.container}>
-        {invisible && (
+        {attemptInvisibleVerification && (
           <FirebaseRecaptcha
             {...otherProps}
             key={`invisible${invisibleKey}`}

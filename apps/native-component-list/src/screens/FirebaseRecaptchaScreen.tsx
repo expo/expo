@@ -23,7 +23,7 @@ const firebaseConfig = {
 interface State {
   title?: string;
   cancelLabel?: string;
-  invisible: boolean;
+  attemptInvisibleVerification: boolean;
   firebaseConfig?: any;
   inProgress: boolean;
   textStyle?: StyleProp<TextStyle>;
@@ -40,7 +40,7 @@ export default class FirebaseRecaptchaScreen extends React.Component<{}, State> 
 
   state: State = {
     firebaseConfig,
-    invisible: false,
+    attemptInvisibleVerification: false,
     inProgress: false,
     textStyle: undefined,
     linkStyle: undefined,
@@ -53,7 +53,7 @@ export default class FirebaseRecaptchaScreen extends React.Component<{}, State> 
     const {
       title,
       cancelLabel,
-      invisible,
+      attemptInvisibleVerification,
       firebaseConfig,
       inProgress,
       appVerificationDisabledForTesting,
@@ -72,8 +72,14 @@ export default class FirebaseRecaptchaScreen extends React.Component<{}, State> 
           title={inProgress ? 'Requesting reCAPTCHA token...' : 'Request reCAPTCHA token'}
         />
         <ListButton
-          onPress={() => this.setState(state => ({ invisible: !state.invisible }))}
-          title={`Toggle invisible reCAPTCHA (${invisible ? 'On' : 'Off'})`}
+          onPress={() =>
+            this.setState(state => ({
+              attemptInvisibleVerification: !state.attemptInvisibleVerification,
+            }))
+          }
+          title={`Toggle attemptInvisibleVerification (${
+            attemptInvisibleVerification ? 'On' : 'Off'
+          })`}
         />
         <ListButton
           onPress={() =>
@@ -100,7 +106,7 @@ export default class FirebaseRecaptchaScreen extends React.Component<{}, State> 
         <FirebaseRecaptchaVerifierModal
           ref={ref => (this.recaptchaVerifier = ref)}
           appVerificationDisabledForTesting={appVerificationDisabledForTesting}
-          invisible={invisible}
+          attemptInvisibleVerification={attemptInvisibleVerification}
           {...modalProps}
         />
 
