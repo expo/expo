@@ -4,7 +4,7 @@ import { FirebaseAuthApplicationVerifier } from './FirebaseRecaptcha.types';
 interface Props extends Omit<React.ComponentProps<typeof FirebaseRecaptcha>, 'onVerify'> {
     title?: string;
     cancelLabel?: string;
-    invisible?: boolean;
+    attemptInvisibleVerification?: boolean;
 }
 interface State {
     visible: boolean;

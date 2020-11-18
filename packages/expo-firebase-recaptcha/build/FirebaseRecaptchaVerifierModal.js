@@ -103,10 +103,10 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component {
         });
     }
     render() {
-        const { title, cancelLabel, invisible, ...otherProps } = this.props;
+        const { title, cancelLabel, attemptInvisibleVerification, ...otherProps } = this.props;
         const { visible, visibleLoaded, invisibleLoaded, invisibleVerify, invisibleKey } = this.state;
         return (React.createElement(View, { style: styles.container },
-            invisible && (React.createElement(FirebaseRecaptcha, Object.assign({}, otherProps, { key: `invisible${invisibleKey}`, style: styles.invisible, onLoad: this.onInvisibleLoad, onError: this.onError, onVerify: this.onVerify, onFullChallenge: this.onFullChallenge, invisible: true, verify: invisibleLoaded && invisibleVerify }))),
+            attemptInvisibleVerification && (React.createElement(FirebaseRecaptcha, Object.assign({}, otherProps, { key: `invisible${invisibleKey}`, style: styles.invisible, onLoad: this.onInvisibleLoad, onError: this.onError, onVerify: this.onVerify, onFullChallenge: this.onFullChallenge, invisible: true, verify: invisibleLoaded && invisibleVerify }))),
             React.createElement(Modal, { visible: visible, animationType: "slide", presentationStyle: "pageSheet", onRequestClose: this.cancel, onDismiss: this.onDismiss },
                 React.createElement(SafeAreaView, { style: styles.modalContainer },
                     React.createElement(View, { style: styles.header },
