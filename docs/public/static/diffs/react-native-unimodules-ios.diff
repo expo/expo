@@ -76,7 +76,6 @@ index 9f2ede1..c3e09a4 100644
 +}
 +
  - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
-+
  {
  #if DEBUG
    return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
