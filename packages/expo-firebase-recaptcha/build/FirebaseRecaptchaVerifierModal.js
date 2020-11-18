@@ -72,7 +72,7 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component {
         };
     }
     static getDerivedStateFromProps(props, state) {
-        if (!props.invisible && state.invisibleLoaded) {
+        if (!props.attemptInvisibleVerification && state.invisibleLoaded) {
             return {
                 invisibleLoaded: false,
                 invisibleVerify: false,
@@ -85,7 +85,7 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component {
     }
     async verify() {
         return new Promise((resolve, reject) => {
-            if (this.props.invisible) {
+            if (this.props.attemptInvisibleVerification) {
                 this.setState({
                     invisibleVerify: true,
                     resolve,
