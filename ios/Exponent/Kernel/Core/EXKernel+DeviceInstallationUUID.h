@@ -7,7 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EXKernel (DeviceInstallationUUID)
 
 /**
- *  An id that uniquely identifies this installation of Exponent.
+ *  An ID that uniquely identifies this installation of Expo Go
  */
 + (NSString *)deviceInstallationUUID;
 
