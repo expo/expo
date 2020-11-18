@@ -47,9 +47,8 @@
     "react-native": ">=0.62.0"
   },
   "devDependencies": {
-    "@react-navigation/core": "^5.12.3",
-    "@react-navigation/native": "^5.7.3",
-    "@react-navigation/stack": "^5.9.0",
+    "@react-navigation/native": "~5.8.9",
+    "@react-navigation/stack": "~5.12.6",
     "babel-plugin-module-resolver": "^4.0.0",
     "expo-module-scripts": "~1.2.0",
     "react": "16.13.1",
