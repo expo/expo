@@ -8162,8 +8162,8 @@ CACHE_KEYS:
     FILES:
       - "../../packages/expo-constants/ios/EXConstants/EXConstants.h"
       - "../../packages/expo-constants/ios/EXConstants/EXConstants.m"
-      - "../../packages/expo-constants/ios/EXConstants/EXConstantsService+InstallationId.h"
-      - "../../packages/expo-constants/ios/EXConstants/EXConstantsService+InstallationId.m"
+      - "../../packages/expo-constants/ios/EXConstants/EXConstantsInstallationIdProvider.h"
+      - "../../packages/expo-constants/ios/EXConstants/EXConstantsInstallationIdProvider.m"
       - "../../packages/expo-constants/ios/EXConstants/EXConstantsService.h"
       - "../../packages/expo-constants/ios/EXConstants/EXConstantsService.m"
     PROJECT_NAME: EXConstants
