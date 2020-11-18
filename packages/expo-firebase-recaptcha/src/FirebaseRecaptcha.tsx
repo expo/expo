@@ -7,12 +7,17 @@ import { WebView } from './WebView';
 interface Props extends React.ComponentProps<typeof WebView> {
   firebaseConfig?: IFirebaseOptions;
   firebaseVersion?: string;
+  appVerificationDisabledForTesting?: boolean;
   onLoad?: () => any;
   onError?: () => any;
   onVerify: (token: string) => any;
 }
 
-function getWebviewSource(firebaseConfig: IFirebaseOptions, firebaseVersion?: string) {
+function getWebviewSource(
+  firebaseConfig: IFirebaseOptions,
+  firebaseVersion?: string,
+  appVerificationDisabledForTesting: boolean = false
+) {
   firebaseVersion = firebaseVersion || '7.12.0';
   return {
     baseUrl: `https://${firebaseConfig.authDomain}`,
@@ -33,6 +38,7 @@ function getWebviewSource(firebaseConfig: IFirebaseOptions, firebaseVersion?: st
       window.ReactNativeWebView.postMessage(JSON.stringify({
         type: 'load'
       }));
+      firebase.auth().settings.appVerificationDisabledForTesting = ${appVerificationDisabledForTesting};
       window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier("recaptcha-cont", {
         size: "normal",
         callback: function(response) {
@@ -72,7 +78,15 @@ function validateFirebaseConfig(firebaseConfig?: IFirebaseOptions) {
 }
 
 export default function FirebaseRecaptcha(props: Props) {
-  const { firebaseConfig, firebaseVersion, onVerify, onLoad, onError, ...otherProps } = props;
+  const {
+    firebaseConfig,
+    firebaseVersion,
+    appVerificationDisabledForTesting,
+    onVerify,
+    onLoad,
+    onError,
+    ...otherProps
+  } = props;
   validateFirebaseConfig(firebaseConfig);
   if (!firebaseConfig) {
     console.error(
@@ -86,7 +100,7 @@ export default function FirebaseRecaptcha(props: Props) {
       automaticallyAdjustContentInsets
       scalesPageToFit
       mixedContentMode="always"
-      source={getWebviewSource(firebaseConfig, firebaseVersion)}
+      source={getWebviewSource(firebaseConfig, firebaseVersion, appVerificationDisabledForTesting)}
       onError={onError}
       onMessage={event => {
         const data = JSON.parse(event.nativeEvent.data);
