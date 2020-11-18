@@ -21,7 +21,7 @@ type Props = {
 const TouchableOpacity = Platform.OS === 'android' ? TouchableOpacityGH : TouchableOpacityRN;
 
 const KEYBOARD_CODES = {
-  ios: '\u2318D',
+  ios: '^\u2318Z',
   android: '\u2318M on MacOS or Ctrl+M on other platforms',
 };
 
