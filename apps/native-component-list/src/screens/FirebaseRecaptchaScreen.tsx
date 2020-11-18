@@ -1,10 +1,12 @@
 import {
   FirebaseAuthApplicationVerifier,
   FirebaseRecaptchaVerifierModal,
+  FirebaseRecaptchaBanner,
 } from 'expo-firebase-recaptcha';
 import * as React from 'react';
-import { Alert, ScrollView, StyleProp, TextStyle } from 'react-native';
+import { Alert, ScrollView, StyleSheet, StyleProp, TextStyle } from 'react-native';
 
+import HeadingText from '../components/HeadingText';
 import ListButton from '../components/ListButton';
 
 const firebaseConfig = {
@@ -21,6 +23,7 @@ const firebaseConfig = {
 interface State {
   title?: string;
   cancelLabel?: string;
+  attemptInvisibleVerification: boolean;
   firebaseConfig?: any;
   inProgress: boolean;
   textStyle?: StyleProp<TextStyle>;
@@ -37,6 +40,7 @@ export default class FirebaseRecaptchaScreen extends React.Component<{}, State> 
 
   state: State = {
     firebaseConfig,
+    attemptInvisibleVerification: false,
     inProgress: false,
     textStyle: undefined,
     linkStyle: undefined,
@@ -49,9 +53,12 @@ export default class FirebaseRecaptchaScreen extends React.Component<{}, State> 
     const {
       title,
       cancelLabel,
+      attemptInvisibleVerification,
       firebaseConfig,
       inProgress,
       appVerificationDisabledForTesting,
+      textStyle,
+      linkStyle,
     } = this.state;
     const modalProps: any = {
       ...(title && { title }),
@@ -63,6 +70,16 @@ export default class FirebaseRecaptchaScreen extends React.Component<{}, State> 
         <ListButton
           onPress={this.requestRecaptchaToken}
           title={inProgress ? 'Requesting reCAPTCHA token...' : 'Request reCAPTCHA token'}
+        />
+        <ListButton
+          onPress={() =>
+            this.setState(state => ({
+              attemptInvisibleVerification: !state.attemptInvisibleVerification,
+            }))
+          }
+          title={`Toggle attemptInvisibleVerification (${
+            attemptInvisibleVerification ? 'On' : 'Off'
+          })`}
         />
         <ListButton
           onPress={() =>
@@ -89,7 +106,31 @@ export default class FirebaseRecaptchaScreen extends React.Component<{}, State> 
         <FirebaseRecaptchaVerifierModal
           ref={ref => (this.recaptchaVerifier = ref)}
           appVerificationDisabledForTesting={appVerificationDisabledForTesting}
+          attemptInvisibleVerification={attemptInvisibleVerification}
           {...modalProps}
+        />
+
+        <HeadingText>reCAPTCHA banner</HeadingText>
+        <ListButton
+          onPress={() =>
+            this.setState(state => ({
+              textStyle: state.textStyle ? undefined : styles.invisibleRecaptchaText,
+            }))
+          }
+          title={`Toggle custom banner text-style" (${textStyle ? 'On' : 'Off'})`}
+        />
+        <ListButton
+          onPress={() =>
+            this.setState(state => ({
+              linkStyle: state.linkStyle ? undefined : styles.invisibleRecaptchaLink,
+            }))
+          }
+          title={`Toggle custom banner link-style" (${linkStyle ? 'On' : 'Off'})`}
+        />
+        <FirebaseRecaptchaBanner
+          style={styles.banner}
+          textStyle={textStyle}
+          linkStyle={linkStyle}
         />
       </ScrollView>
     );
@@ -111,3 +152,17 @@ export default class FirebaseRecaptchaScreen extends React.Component<{}, State> 
     setTimeout(() => this.setState({ inProgress: false }), 1000);
   };
 }
+
+const styles = StyleSheet.create({
+  banner: {
+    marginVertical: 10,
+  },
+  invisibleRecaptchaText: {
+    opacity: 1,
+    fontSize: 14,
+  },
+  invisibleRecaptchaLink: {
+    fontWeight: 'bold',
+    color: 'purple',
+  },
+});
