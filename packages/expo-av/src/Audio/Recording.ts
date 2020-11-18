@@ -154,9 +154,7 @@ export type RecordingStatus = {
   isRecording: boolean;
   isDoneRecording: boolean;
   durationMillis: number;
-  meter?: {
-    value: number;
-  };
+  metering?: number;
 };
 
 export { PermissionResponse, PermissionStatus };

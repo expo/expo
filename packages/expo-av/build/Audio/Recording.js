@@ -66,6 +66,7 @@ export const RECORDING_OPTION_IOS_BIT_RATE_STRATEGY_VARIABLE_CONSTRAINED = 2;
 export const RECORDING_OPTION_IOS_BIT_RATE_STRATEGY_VARIABLE = 3;
 // TODO : maybe make presets for music and speech, or lossy / lossless.
 export const RECORDING_OPTIONS_PRESET_HIGH_QUALITY = {
+    isMeteringEnabled: true,
     android: {
         extension: '.m4a',
         outputFormat: RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG_4,
@@ -86,6 +87,7 @@ export const RECORDING_OPTIONS_PRESET_HIGH_QUALITY = {
     },
 };
 export const RECORDING_OPTIONS_PRESET_LOW_QUALITY = {
+    isMeteringEnabled: true,
     android: {
         extension: '.3gp',
         outputFormat: RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_THREE_GPP,
@@ -209,7 +211,7 @@ export class Recording {
         this.getStatusAsync();
     }
     // Record API
-    async prepareToRecordAsync(options = RECORDING_OPTIONS_PRESET_LOW_QUALITY, isMeteringEnabled = false) {
+    async prepareToRecordAsync(options = RECORDING_OPTIONS_PRESET_LOW_QUALITY) {
         throwIfAudioIsDisabled();
         if (_recorderExists) {
             throw new Error('Only one Recording object can be prepared at a given time.');
@@ -231,7 +233,7 @@ export class Recording {
             if (eventEmitter) {
                 this._subscription = eventEmitter.addListener('Expo.Recording.recorderUnloaded', this._cleanupForUnloadedRecorder);
             }
-            const { uri, status, } = await ExponentAV.prepareAudioRecorder(options, isMeteringEnabled);
+            const { uri, status, } = await ExponentAV.prepareAudioRecorder(options);
             _recorderExists = true;
             this._uri = uri;
             this._options = options;

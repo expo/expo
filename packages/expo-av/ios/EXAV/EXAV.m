@@ -14,6 +14,7 @@
 #import <EXAV/EXVideoView.h>
 #import <EXAV/EXAudioRecordingPermissionRequester.h>
 
+NSString *const EXAudioRecordingOptionsIsMeteringEnabledKey = @"isMeteringEnabled";
 NSString *const EXAudioRecordingOptionsKey = @"ios";
 NSString *const EXAudioRecordingOptionExtensionKey = @"extension";
 NSString *const EXAudioRecordingOptionOutputFormatKey = @"outputFormat";
@@ -536,7 +537,7 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
       return @{@"canRecord": @(YES),
              @"isRecording": @([_audioRecorder isRecording]),
              @"durationMillis": @(durationMillis),
-             @"metering": @{@"value": @(_currentLevel)}};
+             @"metering": @(_currentLevel)};
     }
     return @{@"canRecord": @(YES),
              @"isRecording": @([_audioRecorder isRecording]),
@@ -804,7 +805,7 @@ UM_EXPORT_METHOD_AS(prepareAudioRecorder,
       reject(@"E_AUDIO_RECORDERNOTCREATED", [NSString stringWithFormat:@"Prepare encountered an error: %@", error.description], error);
       return;
     } else if ([_audioRecorder prepareToRecord]) {
-        if([options isMeteringEnabled]) {
+        if(options[EXAudioRecordingOptionsIsMeteringEnabledKey]) {
         _audioRecorder.meteringEnabled = true;
         }
       resolve(@{@"uri": [[_audioRecorder url] absoluteString],

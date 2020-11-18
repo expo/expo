@@ -47,6 +47,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   private static final String AUDIO_MODE_PLAY_THROUGH_EARPIECE = "playThroughEarpieceAndroid";
   private static final String AUDIO_MODE_STAYS_ACTIVE_IN_BACKGROUND = "staysActiveInBackground";
 
+  private static final String RECORDING_OPTION_IS_METERING_ENABLED_KEY = "isMeteringEnabled";
   private static final String RECORDING_OPTIONS_KEY = "android";
   private static final String RECORDING_OPTION_EXTENSION_KEY = "extension";
   private static final String RECORDING_OPTION_OUTPUT_FORMAT_KEY = "outputFormat";
@@ -536,22 +537,26 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   }
 
   private int getAudioRecorderLevels() {
+    /**
+     * -160 is to match the value when there's 
+     * no sound on iOS
+     */
     if (mAudioRecorder == null) {
-      return 0;
+      return -160;
     }
     if(!mAudioRecorderIsMeteringEnabled) {
-      return 0;
+      return -160;
     }
 
     int result;
     int amplitude = mAudioRecorder.getMaxAmplitude();
-    /**
-     * amplitude to decibel conversion
-     * 
-     */
     if(amplitude == 0) {
       result = -160;
     } else {
+      /**
+       * amplitude to decibel conversion
+       * 
+       */
       result = (int) (20 * Math.log(((double) amplitude) / 32767d));
     }
 
@@ -562,12 +567,10 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
     final Bundle map = new Bundle();
     if (mAudioRecorder != null) {
       if(mAudioRecorderIsMeteringEnabled) {
-        final Bundle meteringMap = new Bundle();
-        meteringMap.putInt("value",  (int) getAudioRecorderLevels());
         map.putBoolean("canRecord", true);
         map.putBoolean("isRecording", mAudioRecorderIsRecording);
         map.putInt("durationMillis", (int) getAudioRecorderDurationMillis());
-        map.putBundle("metering", meteringMap);
+        map.putInt("metering", (int) getAudioRecorderLevels());
       } else {
         map.putBoolean("canRecord", true);
         map.putBoolean("isRecording", mAudioRecorderIsRecording);
@@ -619,7 +622,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
       return;
     }
 
-    if(options.isMeteringEnabled) {
+    if(options.getBoolean(RECORDING_OPTION_IS_METERING_ENABLED_KEY)) {
       mAudioRecorderIsMeteringEnabled = true;
     } else {
       mAudioRecorderIsMeteringEnabled = false;

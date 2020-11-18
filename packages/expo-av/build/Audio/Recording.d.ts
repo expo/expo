@@ -3,6 +3,7 @@ import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-int
 import { AVPlaybackStatus, AVPlaybackStatusToSet } from '../AV';
 import { Sound } from './Sound';
 export declare type RecordingOptions = {
+    isMeteringEnabled?: boolean;
     android: {
         extension: string;
         outputFormat: number;
@@ -92,9 +93,7 @@ export declare type RecordingStatus = {
     isRecording: boolean;
     isDoneRecording: boolean;
     durationMillis: number;
-    meter?: {
-        value: number;
-    };
+    metering?: number;
 };
 export { PermissionResponse, PermissionStatus };
 export declare function getPermissionsAsync(): Promise<PermissionResponse>;
@@ -118,7 +117,7 @@ export declare class Recording {
     getStatusAsync: () => Promise<RecordingStatus>;
     setOnRecordingStatusUpdate(onRecordingStatusUpdate: ((status: RecordingStatus) => void) | null): void;
     setProgressUpdateInterval(progressUpdateIntervalMillis: number): void;
-    prepareToRecordAsync(options?: RecordingOptions, isMeteringEnabled?: boolean): Promise<RecordingStatus>;
+    prepareToRecordAsync(options?: RecordingOptions): Promise<RecordingStatus>;
     startAsync(): Promise<RecordingStatus>;
     pauseAsync(): Promise<RecordingStatus>;
     stopAndUnloadAsync(): Promise<RecordingStatus>;
