@@ -1,9 +1,10 @@
 import { Command } from '@expo/commander';
 import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
-import path from 'path';
+import * as path from 'path';
 
 import { PACKAGES_DIR, EXPO_DIR } from '../Constants';
+import generateModuleAsync from '../generate-module/generateModuleAsync';
 import { spawnAsync } from '../Utils';
 
 type ActionOptions = {
@@ -11,37 +12,6 @@ type ActionOptions = {
   template?: string;
   useLocalTemplate?: boolean;
 };
-
-const TEMPLATE_PACKAGE_NAME = 'expo-module-template';
-
-async function generateModuleWithExpoCLI(
-  unimoduleDirectory: string,
- { template, useLocalTemplate }: Pick<ActionOptions, 'template' | 'useLocalTemplate'>
-) {
-  console.log(
-    `Creating new unimodule under ${chalk.magenta(path.relative(EXPO_DIR, unimoduleDirectory))}...`
-  );
-
-  const templateParams: string[] = [];
-
-  if (template) {
-    console.log(`Using custom module template: ${chalk.blue(template)}`);
-
-    templateParams.push('--template', template);
-  } else if (useLocalTemplate) {
-    const templatePath = path.join(PACKAGES_DIR, TEMPLATE_PACKAGE_NAME);
-
-    console.log(
-      `Using local module template from ${chalk.blue(path.relative(EXPO_DIR, templatePath))}`
-    );
-
-    templateParams.push('--template', templatePath);
-  }
-
-  await spawnAsync('expo', ['generate-module', ...templateParams, unimoduleDirectory], {
-    stdio: 'inherit',
-  });
-}
 
 async function setupExpoModuleScripts(unimoduleDirectory) {
   const packageJsonPath = path.join(unimoduleDirectory, 'package.json');
@@ -96,7 +66,7 @@ async function action(options: ActionOptions) {
 
   const unimoduleDirectory = path.join(PACKAGES_DIR, options.name);
 
-  await generateModuleWithExpoCLI(unimoduleDirectory, options);
+  await generateModuleAsync(unimoduleDirectory, options);
 
   await setupExpoModuleScripts(unimoduleDirectory);
 }
