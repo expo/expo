@@ -13,7 +13,11 @@ import {
 import FirebaseRecaptcha from './FirebaseRecaptcha';
 import { FirebaseAuthApplicationVerifier } from './FirebaseRecaptcha.types';
 
-interface Props extends Omit<React.ComponentProps<typeof FirebaseRecaptcha>, 'onVerify'> {
+interface Props
+  extends Omit<
+    React.ComponentProps<typeof FirebaseRecaptcha>,
+    'onVerify' | 'invisible' | 'verify' | 'onVerify' | 'onLoad' | 'onError' | 'onFullChallenge'
+  > {
   title?: string;
   cancelLabel?: string;
   attemptInvisibleVerification?: boolean;
@@ -46,7 +50,7 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component<Prop
   };
 
   static getDerivedStateFromProps(props: Props, state: State) {
-    if (!props.invisible && state.invisibleLoaded) {
+    if (!props.attemptInvisibleVerification && state.invisibleLoaded) {
       return {
         invisibleLoaded: false,
         invisibleVerify: false,
@@ -61,7 +65,7 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component<Prop
 
   async verify(): Promise<string> {
     return new Promise((resolve, reject) => {
-      if (this.props.invisible) {
+      if (this.props.attemptInvisibleVerification) {
         this.setState({
           invisibleVerify: true,
           resolve,
