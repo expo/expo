@@ -1153,6 +1153,12 @@ function _getReactNativeTransformRules(versionPrefix, reactPodName) {
       paths: 'Expo',
     },
     {
+      // For EXConstants and EXNotifications so that the installation ID
+      // stays the same between different SDK versions. (https://github.com/expo/expo/issues/11008#issuecomment-726370187)
+      pattern: `s/${versionPrefix}EXDeviceInstallationUUIDKey/EXDeviceInstallationUUIDKey/g`,
+      paths: 'Expo',
+    },
+    {
       // RCTPlatform exports version of React Native
       pattern: `s/${reactPodName}NativeVersion/reactNativeVersion/g`,
     },
