@@ -3,9 +3,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol ABI38_0_0EXConstantsDeviceInstallUUIDManager <NSObject>
+@protocol ABI38_0_0EXConstantsDeviceInstallationUUIDManager <NSObject>
 
-- (NSString *)deviceInstallUUID;
+- (NSString *)deviceInstallationUUID;
 
 @end
 
@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) NSString *appOwnership;
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId andParams:(NSDictionary *)params deviceInstallUUIDManager:(id<ABI38_0_0EXConstantsDeviceInstallUUIDManager>)deviceInstallUUIDManager;
+- (instancetype)initWithExperienceId:(NSString *)experienceId andParams:(NSDictionary *)params deviceInstallationUUIDManager:(id<ABI38_0_0EXConstantsDeviceInstallationUUIDManager>)deviceInstallationUUIDManager;
 
 @end
 

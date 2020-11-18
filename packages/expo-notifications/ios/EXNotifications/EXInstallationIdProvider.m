@@ -2,7 +2,7 @@
 
 #import <EXNotifications/EXInstallationIdProvider.h>
 
-static NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
+static NSString * const kEXDeviceInstallationUUIDKey = @"EXDeviceInstallUUIDKey";
 
 @implementation EXInstallationIdProvider
 
@@ -44,16 +44,16 @@ UM_EXPORT_METHOD_AS(getInstallationIdAsync, getInstallationIdAsyncWithResolver:(
     return installationId;
   }
   
-  NSString *legacyUUID = [[NSUserDefaults standardUserDefaults] stringForKey:kEXDeviceInstallUUIDKey];
+  NSString *legacyUUID = [[NSUserDefaults standardUserDefaults] stringForKey:kEXDeviceInstallationUUIDKey];
   if (legacyUUID) {
     installationId = legacyUUID;
     
     NSError *error = [self setInstallationId:installationId];
     if (error) {
-      NSLog(@"Could not migrate device install UUID from legacy storage: %@", error.description);
+      NSLog(@"Could not migrate device installation UUID from legacy storage: %@", error.description);
     } else {
       // We only remove the value from old storage once it's set and saved in the new storage.
-      [[NSUserDefaults standardUserDefaults] removeObjectForKey:kEXDeviceInstallUUIDKey];
+      [[NSUserDefaults standardUserDefaults] removeObjectForKey:kEXDeviceInstallationUUIDKey];
     }
   }
   
@@ -77,7 +77,7 @@ UM_EXPORT_METHOD_AS(getInstallationIdAsync, getInstallationIdAsyncWithResolver:(
 
 - (NSDictionary *)installationIdSearchQueryMerging:(NSDictionary *)dictionaryToMerge
 {
-  NSData *encodedKey = [kEXDeviceInstallUUIDKey dataUsingEncoding:NSUTF8StringEncoding];
+  NSData *encodedKey = [kEXDeviceInstallationUUIDKey dataUsingEncoding:NSUTF8StringEncoding];
   NSMutableDictionary *query = [NSMutableDictionary dictionaryWithDictionary:@{
     (__bridge id)kSecClass:(__bridge id)kSecClassGenericPassword,
     (__bridge id)kSecAttrService:[NSBundle mainBundle].bundleIdentifier,
@@ -101,10 +101,10 @@ UM_EXPORT_METHOD_AS(getInstallationIdAsync, getInstallationIdAsyncWithResolver:(
   }];
 }
 
-- (NSDictionary *)installationIdSetQuery:(NSString *)deviceInstallUUID
+- (NSDictionary *)installationIdSetQuery:(NSString *)deviceInstallationUUID
 {
   return [self installationIdSearchQueryMerging:@{
-    (__bridge id)kSecValueData:[deviceInstallUUID dataUsingEncoding:NSUTF8StringEncoding],
+    (__bridge id)kSecValueData:[deviceInstallationUUID dataUsingEncoding:NSUTF8StringEncoding],
     (__bridge id)kSecAttrAccessible:(__bridge id)kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
   }];
 }

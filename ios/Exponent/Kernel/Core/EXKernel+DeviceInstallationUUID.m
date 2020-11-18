@@ -1,64 +1,64 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <EXConstants/EXConstantsService+InstallationId.h>
+#import "EXKernel+DeviceInstallationUUID.h"
 
 static NSString * const kEXDeviceInstallationUUIDKey = @"EXDeviceInstallUUIDKey";
 
-@implementation EXConstantsService (InstallationId)
+@implementation EXKernel (DeviceInstallationUUID)
 
-- (NSString *)installationId
++ (NSString *)deviceInstallationUUID
 {
-  NSString *installationId = [self fetchInstallationId];
-  if (installationId) {
-    return installationId;
+  NSString *deviceInstallationUUID = [self fetchDeviceInstallationUUID];
+  if (deviceInstallationUUID) {
+    return deviceInstallationUUID;
   }
   
-  installationId = [[NSUUID UUID] UUIDString];
-  [self setInstallationId:installationId];
-  return installationId;
+  deviceInstallationUUID = [[NSUUID UUID] UUIDString];
+  [self setDeviceInstallationUUID:deviceInstallationUUID];
+  return deviceInstallationUUID;
 }
 
-- (nullable NSString *)fetchInstallationId
++ (nullable NSString *)fetchDeviceInstallationUUID
 {
-  NSString *installationId;
+  NSString *deviceInstallationUUID;
   CFTypeRef foundDict = NULL;
   
-  if (SecItemCopyMatching((__bridge CFDictionaryRef)[self installationIdGetQuery], &foundDict) == noErr) {
+  if (SecItemCopyMatching((__bridge CFDictionaryRef)[self deviceInstallationUUIDGetQuery], &foundDict) == noErr) {
     NSData *result = (__bridge_transfer NSData *)foundDict;
     NSString *value = [[NSString alloc] initWithData:result
                                             encoding:NSUTF8StringEncoding];
     // `initWithUUIDString` returns nil if string is not a valid UUID
     if ([[NSUUID alloc] initWithUUIDString:value]) {
-      installationId = value;
+      deviceInstallationUUID = value;
     }
   }
   
-  if (installationId) {
-    return installationId;
+  if (deviceInstallationUUID) {
+    return deviceInstallationUUID;
   }
   
   NSString *legacyUUID = [[NSUserDefaults standardUserDefaults] stringForKey:kEXDeviceInstallationUUIDKey];
   if (legacyUUID) {
-    installationId = legacyUUID;
+    deviceInstallationUUID = legacyUUID;
     
-    NSError *error = [self setInstallationId:installationId];
+    NSError *error = [self setDeviceInstallationUUID:legacyUUID];
     if (error) {
-      NSLog(@"Could not migrate device installation UUID from legacy storage: %@", error.description);
+      DDLogError(@"Could not migrate device installation UUID from legacy storage: %@", error.description);
     } else {
       // We only remove the value from old storage once it's set and saved in the new storage.
       [[NSUserDefaults standardUserDefaults] removeObjectForKey:kEXDeviceInstallationUUIDKey];
     }
   }
   
-  return installationId;
+  return deviceInstallationUUID;
 }
 
-- (nullable NSError *)setInstallationId:(NSString *)installationId
++ (nullable NSError *)setDeviceInstallationUUID:(NSString *)deviceInstallationUUID
 {
-  // Delete existing UUID so we don't need to handle "duplicate item" error
-  SecItemDelete((__bridge CFDictionaryRef)[self installationIdSearchQuery]);
+  // Delete existing UUID
+  SecItemDelete((__bridge CFDictionaryRef)[self deviceInstallationUUIDSearchQuery]);
   
-  OSStatus status = SecItemAdd((__bridge CFDictionaryRef)[self installationIdSetQuery:installationId], NULL);
+  OSStatus status = SecItemAdd((__bridge CFDictionaryRef)[self deviceInstallationUUIDSetQuery:deviceInstallationUUID], NULL);
   if (status == errSecSuccess) {
     return nil;
   } else {
@@ -68,7 +68,7 @@ static NSString * const kEXDeviceInstallationUUIDKey = @"EXDeviceInstallUUIDKey"
 
 # pragma mark - Keychain dictionaries
 
-- (NSDictionary *)installationIdSearchQueryMerging:(NSDictionary *)dictionaryToMerge
++ (NSDictionary *)deviceInstallationUUIDSearchQueryMerging:(NSDictionary *)dictionaryToMerge
 {
   NSData *encodedKey = [kEXDeviceInstallationUUIDKey dataUsingEncoding:NSUTF8StringEncoding];
   NSMutableDictionary *query = [NSMutableDictionary dictionaryWithDictionary:@{
@@ -81,22 +81,22 @@ static NSString * const kEXDeviceInstallationUUIDKey = @"EXDeviceInstallUUIDKey"
   return query;
 }
 
-- (NSDictionary *)installationIdSearchQuery
++ (NSDictionary *)deviceInstallationUUIDSearchQuery
 {
-  return [self installationIdSearchQueryMerging:@{}];
+  return [self deviceInstallationUUIDSearchQueryMerging:@{}];
 }
 
-- (NSDictionary *)installationIdGetQuery
++ (NSDictionary *)deviceInstallationUUIDGetQuery
 {
-  return [self installationIdSearchQueryMerging:@{
+  return [self deviceInstallationUUIDSearchQueryMerging:@{
     (__bridge id)kSecMatchLimit:(__bridge id)kSecMatchLimitOne,
     (__bridge id)kSecReturnData:(__bridge id)kCFBooleanTrue
   }];
 }
 
-- (NSDictionary *)installationIdSetQuery:(NSString *)deviceInstallationUUID
++ (NSDictionary *)deviceInstallationUUIDSetQuery:(NSString *)deviceInstallationUUID
 {
-  return [self installationIdSearchQueryMerging:@{
+  return [self deviceInstallationUUIDSearchQueryMerging:@{
     (__bridge id)kSecValueData:[deviceInstallationUUID dataUsingEncoding:NSUTF8StringEncoding],
     (__bridge id)kSecAttrAccessible:(__bridge id)kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
   }];

@@ -6,23 +6,23 @@
 
 @interface EXScopedInstallationIdProvider ()
 
-@property (nonatomic, weak) id<EXDeviceInstallUUIDManager> deviceInstallUUIDManager;
+@property (nonatomic, weak) id<EXDeviceInstallationUUIDManager> deviceInstallationUUIDManager;
 
 @end
 
 @implementation EXScopedInstallationIdProvider
 
-- (instancetype)initWithDeviceInstallUUIDManager:(id<EXDeviceInstallUUIDManager>)deviceInstallUUIDManager
+- (instancetype)initWithDeviceInstallationUUIDManager:(id<EXDeviceInstallationUUIDManager>)deviceInstallationUUIDManager
 {
   if (self = [super init]) {
-    _deviceInstallUUIDManager = deviceInstallUUIDManager;
+    _deviceInstallationUUIDManager = deviceInstallationUUIDManager;
   }
   return self;
 }
 
 - (NSString *)getInstallationId
 {
-  return [_deviceInstallUUIDManager deviceInstallUUID];
+  return [_deviceInstallationUUIDManager deviceInstallationUUID];
 }
 
 @end

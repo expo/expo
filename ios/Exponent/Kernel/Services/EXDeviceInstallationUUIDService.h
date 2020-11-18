@@ -6,8 +6,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// A kernel service allowing modules to access device install UUID
-@interface EXDeviceInstallUUIDService : NSObject <EXDeviceInstallUUIDManager, EXConstantsDeviceInstallUUIDManager>
+// A kernel service allowing modules to access device installation UUID
+@interface EXDeviceInstallationUUIDService : NSObject <EXDeviceInstallationUUIDManager, EXConstantsDeviceInstallationUUIDManager>
 
 @end
 

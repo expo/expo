@@ -47,7 +47,7 @@
 #endif
 
 #if __has_include(<EXConstants/EXConstantsService.h>)
-  EXConstantsBinding *constantsBinding = [[EXConstantsBinding alloc] initWithExperienceId:experienceId andParams:params deviceInstallUUIDManager:kernelServices[EX_UNVERSIONED(@"EXDeviceInstallUUIDService")]];
+  EXConstantsBinding *constantsBinding = [[EXConstantsBinding alloc] initWithExperienceId:experienceId andParams:params deviceInstallationUUIDManager:kernelServices[EX_UNVERSIONED(@"EXDeviceInstallationUUIDService")]];
   [moduleRegistry registerInternalModule:constantsBinding];
 #endif
 
@@ -175,7 +175,7 @@
 #endif
   
 #if __has_include(<EXNotifications/EXInstallationIdProvider.h>)
-  EXScopedInstallationIdProvider *installationIdProviderBinding = [[EXScopedInstallationIdProvider alloc] initWithDeviceInstallUUIDManager:kernelServices[EX_UNVERSIONED(@"EXDeviceInstallUUIDService")]];
+  EXScopedInstallationIdProvider *installationIdProviderBinding = [[EXScopedInstallationIdProvider alloc] initWithDeviceInstallationUUIDManager:kernelServices[EX_UNVERSIONED(@"EXDeviceInstallationUUIDService")]];
   [moduleRegistry registerExportedModule:installationIdProviderBinding];
 #endif
   return moduleRegistry;

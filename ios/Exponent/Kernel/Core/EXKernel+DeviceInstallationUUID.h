@@ -4,12 +4,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXKernel (DeviceInstallUUID)
+@interface EXKernel (DeviceInstallationUUID)
 
 /**
  *  An id that uniquely identifies this installation of Exponent.
  */
-+ (NSString *)deviceInstallUUID;
++ (NSString *)deviceInstallationUUID;
 
 @end
 

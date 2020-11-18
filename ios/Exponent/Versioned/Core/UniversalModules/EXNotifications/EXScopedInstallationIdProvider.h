@@ -4,9 +4,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol EXDeviceInstallUUIDManager <NSObject>
+@protocol EXDeviceInstallationUUIDManager <NSObject>
 
-- (NSString *)deviceInstallUUID;
+- (NSString *)deviceInstallationUUID;
 
 @end
 
@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXScopedInstallationIdProvider : EXInstallationIdProvider
 
-- (instancetype)initWithDeviceInstallUUIDManager:(id<EXDeviceInstallUUIDManager>)deviceInstallUUIDManager;
+- (instancetype)initWithDeviceInstallationUUIDManager:(id<EXDeviceInstallationUUIDManager>)deviceInstallationUUIDManager;
 
 @end
 

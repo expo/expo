@@ -7,7 +7,7 @@
 #import <ABI38_0_0UMCore/ABI38_0_0UMUtilities.h>
 #import <ABI38_0_0EXConstants/ABI38_0_0EXConstantsService.h>
 
-static NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
+static NSString * const kEXDeviceInstallationUUIDKey = @"EXDeviceInstallUUIDKey";
 
 @interface ABI38_0_0EXConstantsService ()
 
@@ -410,10 +410,10 @@ ABI38_0_0UM_REGISTER_MODULE();
 
 - (NSString *)installationId
 {
-  NSString *uuid = [[NSUserDefaults standardUserDefaults] stringForKey:kEXDeviceInstallUUIDKey];
+  NSString *uuid = [[NSUserDefaults standardUserDefaults] stringForKey:kEXDeviceInstallationUUIDKey];
   if (!uuid) {
     uuid = [[NSUUID UUID] UUIDString];
-    [[NSUserDefaults standardUserDefaults] setObject:uuid forKey:kEXDeviceInstallUUIDKey];
+    [[NSUserDefaults standardUserDefaults] setObject:uuid forKey:kEXDeviceInstallationUUIDKey];
   }
   return uuid;
 }
