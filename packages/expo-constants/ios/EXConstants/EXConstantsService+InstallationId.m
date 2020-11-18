@@ -2,7 +2,8 @@
 
 #import <EXConstants/EXConstantsService+InstallationId.h>
 
-static NSString * const kEXDeviceInstallationUUIDKey = @"EXDeviceInstallUUIDKey";
+static NSString * const kEXDeviceInstallationUUIDKey = @"EXDeviceInstallationUUIDKey";
+static NSString * const kEXDeviceInstallationUUIDLegacyKey = @"EXDeviceInstallUUIDKey";
 
 @implementation EXConstantsService (InstallationId)
 
@@ -37,7 +38,7 @@ static NSString * const kEXDeviceInstallationUUIDKey = @"EXDeviceInstallUUIDKey"
     return installationId;
   }
   
-  NSString *legacyUUID = [[NSUserDefaults standardUserDefaults] stringForKey:kEXDeviceInstallationUUIDKey];
+  NSString *legacyUUID = [[NSUserDefaults standardUserDefaults] stringForKey:kEXDeviceInstallationUUIDLegacyKey];
   if (legacyUUID) {
     installationId = legacyUUID;
     
@@ -46,7 +47,7 @@ static NSString * const kEXDeviceInstallationUUIDKey = @"EXDeviceInstallUUIDKey"
       NSLog(@"Could not migrate device installation UUID from legacy storage: %@", error.description);
     } else {
       // We only remove the value from old storage once it's set and saved in the new storage.
-      [[NSUserDefaults standardUserDefaults] removeObjectForKey:kEXDeviceInstallationUUIDKey];
+      [[NSUserDefaults standardUserDefaults] removeObjectForKey:kEXDeviceInstallationUUIDLegacyKey];
     }
   }
   
