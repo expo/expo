@@ -188,10 +188,10 @@ A static convenience method to construct and load a sound is also provided:
 
   ```javascript
   try {
-    const { sound: soundObject, status } = await Audio.Sound.createAsync(
-      require('./assets/sounds/hello.mp3'),
-      { shouldPlay: true }
-    );
+    const {
+      sound: soundObject,
+      status,
+    } = await Audio.Sound.createAsync(require('./assets/sounds/hello.mp3'), { shouldPlay: true });
     // Your sound is playing!
   } catch (error) {
     // An error occurred!
@@ -273,6 +273,7 @@ try {
   - `canRecord` : a boolean set to `true`.
   - `isRecording` : a boolean describing if the `Recording` is currently recording.
   - `durationMillis` : the current duration of the recorded audio.
+  - `metering` : a number that's the most recent reading of the loudness in dB. Present or not based on Recording options. See `RecordingOptions` for more information.
 
   After `stopAndUnloadAsync()` is called, the `status` will be as follows:
 
@@ -382,6 +383,8 @@ We provide the following preset options for convenience, as used in the example 
 We also provide the ability to define your own custom recording options, but **we recommend you use the presets, as not all combinations of options will allow you to successfully `prepareToRecordAsync()`.** You will have to test your custom options on iOS and Android to make sure it's working. In the future, we will enumerate all possible valid combinations, but at this time, our goal is to make the basic use-case easy (with presets) and the advanced use-case possible (by exposing all the functionality available in native). As always, feel free to ping us on the forums or Slack with any questions.
 
 In order to define your own custom recording options, you must provide a dictionary of the following key value pairs.
+
+- `isMeteringEnabled` : a boolean that determines whether audio level information will be part of the status object under the "metering" key.
 
 - `android` : a dictionary of key-value pairs for the Android platform. This key is required.
 
@@ -569,6 +572,7 @@ For reference, following are the definitions of the two preset examples of `Reco
 
 ```javascript
 export const RECORDING_OPTIONS_PRESET_HIGH_QUALITY: RecordingOptions = {
+  isMeteringEnabled: true,
   android: {
     extension: '.m4a',
     outputFormat: RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG_4,
@@ -590,6 +594,7 @@ export const RECORDING_OPTIONS_PRESET_HIGH_QUALITY: RecordingOptions = {
 };
 
 export const RECORDING_OPTIONS_PRESET_LOW_QUALITY: RecordingOptions = {
+  isMeteringEnabled: false,
   android: {
     extension: '.3gp',
     outputFormat: RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_THREE_GPP,
