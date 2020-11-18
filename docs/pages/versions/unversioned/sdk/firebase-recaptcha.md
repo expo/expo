@@ -199,7 +199,7 @@ dependencies={['expo-firebase-recaptcha', 'firebase', 'react-native-webview']}
 platforms={['ios', 'android']}>
 
 ```tsx
-import * as React from "react";
+import * as React from 'react';
 import {
   Text,
   View,
@@ -208,10 +208,10 @@ import {
   Button,
   Alert,
   ActivityIndicator,
-  Platform
-} from "react-native";
-import * as FirebaseRecaptcha from "expo-firebase-recaptcha";
-import * as firebase from "firebase";
+  Platform,
+} from 'react-native';
+import * as FirebaseRecaptcha from 'expo-firebase-recaptcha';
+import * as firebase from 'firebase';
 
 // PROVIDE VALID FIREBASE CONFIG HERE
 // https://firebase.google.com/docs/web/setup
@@ -237,11 +237,11 @@ try {
 export default function PhoneAuthScreen() {
   const recaptchaVerifier = React.useRef(null);
   const verificationCodeTextInput = React.useRef(null);
-  const [phoneNumber, setPhoneNumber] = React.useState("");
-  const [verificationId, setVerificationId] = React.useState("");
+  const [phoneNumber, setPhoneNumber] = React.useState('');
+  const [verificationId, setVerificationId] = React.useState('');
   const [verifyError, setVerifyError] = React.useState();
   const [verifyInProgress, setVerifyInProgress] = React.useState(false);
-  const [verificationCode, setVerificationCode] = React.useState("");
+  const [verificationCode, setVerificationCode] = React.useState('');
   const [confirmError, setConfirmError] = React.useState();
   const [confirmInProgress, setConfirmInProgress] = React.useState(false);
   const isConfigValid = !!FIREBASE_CONFIG.apiKey;
@@ -267,14 +267,14 @@ export default function PhoneAuthScreen() {
           onChangeText={(phoneNumber: string) => setPhoneNumber(phoneNumber)}
         />
         <Button
-          title={`${verificationId ? "Resend" : "Send"} Verification Code`}
+          title={`${verificationId ? 'Resend' : 'Send'} Verification Code`}
           disabled={!phoneNumber}
           onPress={async () => {
             const phoneProvider = new firebase.auth.PhoneAuthProvider();
             try {
               setVerifyError(undefined);
               setVerifyInProgress(true);
-              setVerificationId("");
+              setVerificationId('');
               const verificationId = await phoneProvider.verifyPhoneNumber(
                 phoneNumber,
                 // @ts-ignore
@@ -289,24 +289,20 @@ export default function PhoneAuthScreen() {
             }
           }}
         />
-        {verifyError && (
-          <Text style={styles.error}>{`Error: ${verifyError.message}`}</Text>
-        )}
+        {verifyError && <Text style={styles.error}>{`Error: ${verifyError.message}`}</Text>}
         {verifyInProgress && <ActivityIndicator style={styles.loader} />}
         {verificationId ? (
-          <Text style={styles.success}>
-            A verification code has been sent to your phone
-          </Text>
-        ) : undefined}
+          <Text style={styles.success}>A verification code has been sent to your phone</Text>
+        ) : (
+          undefined
+        )}
         <Text style={styles.text}>Enter verification code</Text>
         <TextInput
           ref={verificationCodeTextInput}
           style={styles.textInput}
           editable={!!verificationId}
           placeholder="123456"
-          onChangeText={(verificationCode: string) =>
-            setVerificationCode(verificationCode)
-          }
+          onChangeText={(verificationCode: string) => setVerificationCode(verificationCode)}
         />
         <Button
           title="Confirm Verification Code"
@@ -319,23 +315,19 @@ export default function PhoneAuthScreen() {
                 verificationId,
                 verificationCode
               );
-              const authResult = await firebase
-                .auth()
-                .signInWithCredential(credential);
+              const authResult = await firebase.auth().signInWithCredential(credential);
               setConfirmInProgress(false);
-              setVerificationId("");
-              setVerificationCode("");
+              setVerificationId('');
+              setVerificationCode('');
               verificationCodeTextInput.current?.clear();
-              Alert.alert("Phone authentication successful!");
+              Alert.alert('Phone authentication successful!');
             } catch (err) {
               setConfirmError(err);
               setConfirmInProgress(false);
             }
           }}
         />
-        {confirmError && (
-          <Text style={styles.error}>{`Error: ${confirmError.message}`}</Text>
-        )}
+        {confirmError && <Text style={styles.error}>{`Error: ${confirmError.message}`}</Text>}
         {confirmInProgress && <ActivityIndicator style={styles.loader} />}
       </View>
       {!isConfigValid && (
@@ -355,17 +347,17 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   content: {
-    marginTop: 50,  
+    marginTop: 50,
   },
   title: {
     marginBottom: 2,
     fontSize: 29,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   subtitle: {
     marginBottom: 10,
     opacity: 0.35,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   text: {
     marginTop: 30,
@@ -374,35 +366,34 @@ const styles = StyleSheet.create({
   textInput: {
     marginBottom: 8,
     fontSize: 17,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   error: {
     marginTop: 10,
-    fontWeight: "bold",
-    color: "red",
+    fontWeight: 'bold',
+    color: 'red',
   },
   success: {
     marginTop: 10,
-    fontWeight: "bold",
-    color: "blue",
+    fontWeight: 'bold',
+    color: 'blue',
   },
   loader: {
     marginTop: 10,
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "#FFFFFFC0",
+    backgroundColor: '#FFFFFFC0',
     justifyContent: 'center',
-    alignItems: "center",
+    alignItems: 'center',
   },
   overlayText: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
 });
 ```
 
 </SnackInline>
-
 
 ## Customizing the appearance
 
