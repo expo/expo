@@ -172,6 +172,7 @@
   EXScopedNotificationCategoriesModule *categoriesModule = [[EXScopedNotificationCategoriesModule alloc] initWithExperienceId:experienceId];
   [moduleRegistry registerExportedModule:categoriesModule];
 #endif
+
   return moduleRegistry;
 }
 

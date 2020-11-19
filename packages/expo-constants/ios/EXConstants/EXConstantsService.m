@@ -6,8 +6,7 @@
 
 #import <UMCore/UMUtilities.h>
 #import <EXConstants/EXConstantsService.h>
-
-static NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
+#import <EXConstants/EXConstantsInstallationIdProvider.h>
 
 NSString * const EXConstantsExecutionEnvironmentBare = @"bare";
 NSString * const EXConstantsExecutionEnvironmentStandalone = @"standalone";
@@ -16,10 +15,24 @@ NSString * const EXConstantsExecutionEnvironmentStoreClient = @"storeClient";
 @interface EXConstantsService ()
 
 @property (nonatomic, strong) NSString *sessionId;
+@property (nonatomic, strong) EXConstantsInstallationIdProvider *installationIdProvider;
 
 @end
 
 @implementation EXConstantsService
+
+- (instancetype)init
+{
+  return [self initWithInstallationIdProvider:[[EXConstantsInstallationIdProvider alloc] init]];
+}
+
+- (instancetype)initWithInstallationIdProvider:(EXConstantsInstallationIdProvider *)installationIdProvider
+{
+  if (self = [super init]) {
+    _installationIdProvider = installationIdProvider;
+  }
+  return self;
+}
 
 UM_REGISTER_MODULE();
 
@@ -51,7 +64,7 @@ UM_REGISTER_MODULE();
            @"isHeadless": @(NO),
            @"nativeAppVersion": [self appVersion],
            @"nativeBuildVersion": [self buildVersion],
-           @"installationId": [[self class] installationId],
+           @"installationId": [_installationIdProvider getOrCreateInstallationId],
            @"manifest": UMNullIfNil([[self class] appConfig]),
            @"platform": @{
                @"ios": @{
@@ -412,16 +425,6 @@ UM_REGISTER_MODULE();
 + (NSString *)deviceName
 {
   return [UIDevice currentDevice].name;
-}
-
-+ (NSString *)installationId
-{
-  NSString *uuid = [[NSUserDefaults standardUserDefaults] stringForKey:kEXDeviceInstallUUIDKey];
-  if (!uuid) {
-    uuid = [[NSUUID UUID] UUIDString];
-    [[NSUserDefaults standardUserDefaults] setObject:uuid forKey:kEXDeviceInstallUUIDKey];
-  }
-  return uuid;
 }
 
 + (NSDictionary *)appConfig
