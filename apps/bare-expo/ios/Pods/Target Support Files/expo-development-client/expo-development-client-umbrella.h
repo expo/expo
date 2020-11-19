@@ -15,6 +15,7 @@
 #import "EXDevelopmentClientBundleSource.h"
 #import "EXDevelopmentClientController+Private.h"
 #import "EXDevelopmentClientController.h"
+#import "EXDevelopmentClientLoadingView.h"
 #import "EXDevelopmentClientRCTBridge.h"
 #import "expo-development-client-Bridging-Header.h"
 #import "EXDevelopmentClientPendingDeepLinkListener.h"

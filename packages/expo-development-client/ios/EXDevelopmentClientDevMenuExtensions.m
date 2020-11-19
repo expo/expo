@@ -10,6 +10,7 @@
 
 // Need to explicitly define `moduleName` here for dev menu to pick it up
 RCT_EXTERN void RCTRegisterModule(Class);
+
 +(NSString *)moduleName
 {
   return @"ExpoDevelopmentClientDevMenuExtensions";
