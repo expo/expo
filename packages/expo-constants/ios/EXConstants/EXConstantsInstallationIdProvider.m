@@ -1,22 +1,15 @@
-// Copyright 2018-present 650 Industries. All rights reserved.
+// Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <EXNotifications/EXInstallationIdProvider.h>
+#import <EXConstants/EXConstantsInstallationIdProvider.h>
 
 static NSString * const kEXDeviceInstallationUUIDKey = @"EXDeviceInstallationUUIDKey";
 static NSString * const kEXDeviceInstallationUUIDLegacyKey = @"EXDeviceInstallUUIDKey";
 
-@implementation EXInstallationIdProvider
+@implementation EXConstantsInstallationIdProvider
 
-UM_EXPORT_MODULE(NotificationsInstallationIdProvider)
-
-UM_EXPORT_METHOD_AS(getInstallationIdAsync, getInstallationIdAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
+- (NSString *)getOrCreateInstallationId
 {
-  resolve([self getInstallationId]);
-}
-
-- (NSString *)getInstallationId
-{
-  NSString *installationId = [self fetchInstallationId];
+  NSString *installationId = [self getInstallationId];
   if (installationId) {
     return installationId;
   }
@@ -26,7 +19,7 @@ UM_EXPORT_METHOD_AS(getInstallationIdAsync, getInstallationIdAsyncWithResolver:(
   return installationId;
 }
 
-- (nullable NSString *)fetchInstallationId
+- (nullable NSString *)getInstallationId
 {
   NSString *installationId;
   CFTypeRef keychainResult = NULL;

@@ -23,7 +23,6 @@ FOUNDATION_EXPORT NSString * const EXConstantsExecutionEnvironmentStoreClient;
 + (NSString *)deviceModel;
 + (NSNumber *)deviceYear;
 + (NSString *)deviceName;
-+ (NSString *)installationId;
 
 @end
 

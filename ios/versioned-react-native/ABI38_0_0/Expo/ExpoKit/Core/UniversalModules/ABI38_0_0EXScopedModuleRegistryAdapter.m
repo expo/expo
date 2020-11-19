@@ -39,7 +39,7 @@
   ABI38_0_0UMModuleRegistry *moduleRegistry = [self.moduleRegistryProvider moduleRegistry];
 
 #if __has_include(<ABI38_0_0EXConstants/ABI38_0_0EXConstantsService.h>)
-  ABI38_0_0EXConstantsBinding *constantsBinding = [[ABI38_0_0EXConstantsBinding alloc] initWithExperienceId:experienceId andParams:params];
+  ABI38_0_0EXConstantsBinding *constantsBinding = [[ABI38_0_0EXConstantsBinding alloc] initWithExperienceId:experienceId andParams:params deviceInstallationUUIDManager:kernelServices[@"EXDeviceInstallationUUIDManager"]];
   [moduleRegistry registerInternalModule:constantsBinding];
 #endif
 
