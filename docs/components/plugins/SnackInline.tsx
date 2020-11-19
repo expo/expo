@@ -15,6 +15,8 @@ type Props = {
   templateId?: string;
   files?: Record<string, string>;
   platforms?: string[];
+  buttonTitle?: string;
+  contentHidden?: boolean;
 };
 
 export default class SnackInline extends React.Component<Props> {
@@ -70,7 +72,11 @@ export default class SnackInline extends React.Component<Props> {
   render() {
     return (
       <div>
-        <div ref={this.contentRef}>{this.props.children}</div>
+        <div
+          ref={this.contentRef}
+          style={this.props.contentHidden ? { display: 'none' } : undefined}>
+          {this.props.children}
+        </div>
         <form action={SNACK_URL} method="POST" target="_blank">
           <input
             type="hidden"
@@ -98,7 +104,7 @@ export default class SnackInline extends React.Component<Props> {
             />
           )}
           <button className="snack-inline-example-button" disabled={!this.state.ready}>
-            <ExternalLink size={16} /> Try this example on Snack
+            <ExternalLink size={16} /> {this.props.buttonTitle || 'Try this example on Snack'}
           </button>
         </form>
       </div>
