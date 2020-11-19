@@ -60,7 +60,7 @@ public class InstallationId {
     }
 
     // In November 2020 we decided to move installationID (backed by LEGACY_UUID_KEY value) from backed-up SharedPreferences
-    // to non-backed text file to fix issues where devices restored from backups have the same installation IDs
+    // to a non-backed-up text file to fix issues where devices restored from backups have the same installation IDs
     // as the devices where the backup was created.
     String legacyUuid = mSharedPreferences.getString(LEGACY_UUID_KEY, null);
     if (legacyUuid != null) {
