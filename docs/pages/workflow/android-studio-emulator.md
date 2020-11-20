@@ -16,7 +16,7 @@ If you don't have an Android device available to test with, we recommend using t
 
 ![Android SDK location](/static/images/android-studio-sdk-location.png)
 
-- If you are on macOS or Linux, add a new line with an environment variable for the Android SDK location in `~/.bash_profile` (or `~/.zshenv` if you use Zsh) - eg. `export ANDROID_SDK=/your/path/here`. Copy and paste these two lines to do this automatically for Bash and Zsh:
+- If you are on macOS or Linux, add an environment variable pointing to the Android SDK location in `~/.bash_profile` (or `~/.zshenv` if you use Zsh) - eg. `export ANDROID_SDK=/your/path/here`. Copy and paste these two lines to do this automatically for Bash and Zsh:
 
 ```bash
 [ -d "$HOME/Library/Android/sdk" ] && ANDROID_SDK=$HOME/Library/Android/sdk || ANDROID_SDK=$HOME/Android/Sdk
