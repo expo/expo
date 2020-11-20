@@ -13,7 +13,7 @@
     "test-links": "node --async-stack-traces --unhandled-rejections=strict ./scripts/test-links.js",
     "prettier": "prettier --write '**/*.{js,ts,tsx,md}'",
     "lint": "tsc --noEmit && eslint .",
-    "lint-links": "remark -u validate-links ./pages",
+    "lint-links": "remark -u validate-links ./pages --ignore-pattern 'pages/versions/*/react-native'",
     "watch": "tsc --noEmit -w",
     "test": "jest",
     "schema-sync": "node --async-stack-traces --unhandled-rejections=strict ./scripts/schema-sync.js"
