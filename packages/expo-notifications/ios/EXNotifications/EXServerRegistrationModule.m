@@ -79,9 +79,9 @@ UM_EXPORT_METHOD_AS(getInstallationIdAsync,
 
 # pragma mark - Keychain dictionaries
 
-- (NSDictionary *)installationIdSearchQueryMerging:(NSDictionary *)dictionaryToMerge
+- (NSDictionary *)keychainSearchQueryFor:(NSString *)key merging:(NSDictionary *)dictionaryToMerge
 {
-  NSData *encodedKey = [kEXDeviceInstallationUUIDKey dataUsingEncoding:NSUTF8StringEncoding];
+  NSData *encodedKey = [key dataUsingEncoding:NSUTF8StringEncoding];
   NSMutableDictionary *query = [NSMutableDictionary dictionaryWithDictionary:@{
     (__bridge id)kSecClass:(__bridge id)kSecClassGenericPassword,
     (__bridge id)kSecAttrService:[NSBundle mainBundle].bundleIdentifier,
@@ -90,6 +90,13 @@ UM_EXPORT_METHOD_AS(getInstallationIdAsync,
   }];
   [query addEntriesFromDictionary:dictionaryToMerge];
   return query;
+}
+
+# pragma mark Installation ID
+
+- (NSDictionary *)installationIdSearchQueryMerging:(NSDictionary *)dictionaryToMerge
+{
+  return [self keychainSearchQueryFor:kEXDeviceInstallationUUIDKey merging:dictionaryToMerge];
 }
 
 - (NSDictionary *)installationIdSearchQuery
