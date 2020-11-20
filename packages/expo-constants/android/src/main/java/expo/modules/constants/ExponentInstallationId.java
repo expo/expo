@@ -1,4 +1,4 @@
-package expo.modules.notifications.installationid;
+package expo.modules.constants;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -18,10 +18,10 @@ import java.util.UUID;
  *   migrates the UUID from there to a non-backed-up file,
  * - provides/creates a UUID unique per an installation.
  *
- * Similar class exists in expoview and expo-constants.
+ * Similar class exists in expoview and expo-notifications.
  */
-public class InstallationId {
-  private static final String TAG = InstallationId.class.getSimpleName();
+public class ExponentInstallationId {
+  private static final String TAG = ExponentInstallationId.class.getSimpleName();
 
   public static final String LEGACY_UUID_KEY = "uuid";
   public static final String UUID_FILE_NAME = "expo_installation_uuid.txt";
@@ -31,7 +31,7 @@ public class InstallationId {
   private Context mContext;
   private SharedPreferences mSharedPreferences;
 
-  public InstallationId(Context context) {
+  /* package */ ExponentInstallationId(Context context) {
     mContext = context;
     mSharedPreferences = context.getSharedPreferences(PREFERENCES_FILE_NAME, Context.MODE_PRIVATE);
   }

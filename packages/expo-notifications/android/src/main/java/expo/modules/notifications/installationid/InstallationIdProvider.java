@@ -9,7 +9,7 @@ import org.unimodules.core.interfaces.ExpoMethod;
 public class InstallationIdProvider extends ExportedModule {
   private static final String EXPORTED_NAME = "NotificationsInstallationIdProvider";
 
-  private InstallationId mInstallationId;
+  protected InstallationId mInstallationId;
 
   public InstallationIdProvider(Context context) {
     super(context);
@@ -23,6 +23,6 @@ public class InstallationIdProvider extends ExportedModule {
 
   @ExpoMethod
   public void getInstallationIdAsync(Promise promise) {
-    promise.resolve(mInstallationId.getId());
+    promise.resolve(mInstallationId.getOrCreateUUID());
   }
 }
