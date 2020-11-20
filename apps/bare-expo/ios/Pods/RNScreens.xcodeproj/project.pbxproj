@@ -21,7 +21,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		FDD5E59482DDC7DEFC1ADF9AAA745279 /* PBXContainerItemProxy */ = {
+		9922294BD1C922D6EDBABF87CF151CE2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 840C8BA93AA8C668309541566C1103A5 /* React-Core.xcodeproj */;
 			proxyType = 1;
@@ -167,7 +167,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				555B710765E6325AC68638D2625A5B8A /* PBXTargetDependency */,
+				EE682BC7FB43EC94A5885634DB985508 /* PBXTargetDependency */,
 			);
 			name = RNScreens;
 			productName = RNScreens;
@@ -223,10 +223,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		555B710765E6325AC68638D2625A5B8A /* PBXTargetDependency */ = {
+		EE682BC7FB43EC94A5885634DB985508 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-Core";
-			targetProxy = FDD5E59482DDC7DEFC1ADF9AAA745279 /* PBXContainerItemProxy */;
+			targetProxy = 9922294BD1C922D6EDBABF87CF151CE2 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
