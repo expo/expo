@@ -1,8 +1,16 @@
 import { UnavailabilityError } from '@unimodules/core';
+import { AbortController } from 'abort-controller';
 import ServerRegistrationModule from './ServerRegistrationModule';
 import { addPushTokenListener } from './TokenEmitter';
 import getDevicePushTokenAsync from './getDevicePushTokenAsync';
-import { updatePushTokenAsync, interruptPushTokenUpdates } from './utils/updatePushTokenAsync';
+import { updatePushTokenAsync as updatePushTokenAsyncWithSignal } from './utils/updatePushTokenAsync';
+let lastAbortController = null;
+async function updatePushTokenAsync(token) {
+    // Abort current update process
+    lastAbortController?.abort();
+    lastAbortController = new AbortController();
+    return await updatePushTokenAsyncWithSignal(lastAbortController.signal, token);
+}
 /**
  * Sets the registration information so that the device push token gets pushed
  * to the given registration endpoint
@@ -11,7 +19,7 @@ import { updatePushTokenAsync, interruptPushTokenUpdates } from './utils/updateP
 export async function setAutoServerRegistrationEnabledAsync(enabled) {
     // We are overwriting registration, so we shouldn't let
     // any pending request complete.
-    interruptPushTokenUpdates();
+    lastAbortController?.abort();
     if (!ServerRegistrationModule.setRegistrationInfoAsync) {
         throw new UnavailabilityError('ServerRegistrationModule', 'setRegistrationInfoAsync');
     }

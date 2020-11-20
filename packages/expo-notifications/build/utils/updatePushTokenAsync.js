@@ -1,12 +1,10 @@
+import { computeNextBackoffInterval } from '@ide/backoff';
 import { CodedError, Platform, UnavailabilityError } from '@unimodules/core';
 import * as Application from 'expo-application';
 import ServerRegistrationModule from '../ServerRegistrationModule';
-import generateRetries from './generateRetries';
-import makeInterruptible from './makeInterruptible';
-export const [updatePushTokenAsync, hasPushTokenBeenUpdated, interruptPushTokenUpdates,] = makeInterruptible(updatePushTokenAsyncGenerator);
 const updatePushTokenUrl = 'https://exp.host/--/api/v2/push/updateDeviceToken';
-function* updatePushTokenAsyncGenerator(signal, token) {
-    const retriesIterator = generateRetries(async (retry) => {
+export async function updatePushTokenAsync(signal, token) {
+    const doUpdatePushTokenAsync = async (retry) => {
         try {
             const body = {
                 development: await shouldUseDevelopmentNotificationService(),
@@ -57,13 +55,27 @@ function* updatePushTokenAsyncGenerator(signal, token) {
                 throw e;
             }
         }
-    });
-    let result = (yield retriesIterator.next());
-    while (!result.done) {
-        // We specifically want to yield the result here
-        // to the calling function so that call to this generator
-        // may be interrupted between retries.
-        result = (yield retriesIterator.next());
+    };
+    let shouldTry = true;
+    const retry = () => {
+        shouldTry = true;
+    };
+    let retriesCount = 0;
+    const initialBackoff = 500; // 0.5 s
+    const backoffOptions = {
+        maxBackoff: 2 * 60 * 1000,
+    };
+    let nextBackoffInterval = computeNextBackoffInterval(initialBackoff, retriesCount, backoffOptions);
+    while (shouldTry && !signal.aborted) {
+        // Will be set to true by `retry` if it's called
+        shouldTry = false;
+        await doUpdatePushTokenAsync(retry);
+        // Do not wait if we won't retry
+        if (shouldTry && !signal.aborted) {
+            nextBackoffInterval = computeNextBackoffInterval(initialBackoff, retriesCount, backoffOptions);
+            retriesCount += 1;
+            await new Promise(resolve => setTimeout(resolve, nextBackoffInterval));
+        }
     }
 }
 // Same as in getExpoPushTokenAsync

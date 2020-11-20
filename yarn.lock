@@ -1813,6 +1813,11 @@
   dependencies:
     "@hapi/hoek" "^9.0.0"
 
+"@ide/backoff@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@ide/backoff/-/backoff-1.0.0.tgz#466842c25bd4a4833e0642fab41ccff064010176"
+  integrity sha512-F0YfUDjvT+Mtt/R4xdl2X0EYCHMMiJqNLdxHD++jDT5ydEFIyqbCHh51Qx2E211dgZprPKhV7sHmnXKpLuvc5g==
+
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@istanbuljs/load-nyc-config/-/load-nyc-config-1.1.0.tgz#fd3db1d59ecf7cf121e80650bb86712f9b55eced"

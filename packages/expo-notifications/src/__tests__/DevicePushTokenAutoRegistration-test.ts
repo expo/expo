@@ -1,3 +1,4 @@
+import { AbortSignal } from 'abort-controller';
 import { mocked } from 'ts-jest/utils';
 
 import * as DevicePushTokenAutoRegistration from '../DevicePushTokenAutoRegistration.fx';
@@ -48,6 +49,9 @@ describe('__handlePersistedRegistrationInfoAsync', () => {
     await DevicePushTokenAutoRegistration.__handlePersistedRegistrationInfoAsync(
       JSON.stringify(ENABLED_REGISTRATION_FIXTURE)
     );
-    expect(updatePushTokenAsync).toBeCalledWith(mockPendingDevicePushToken);
+    expect(updatePushTokenAsync).toBeCalledWith(
+      expect.any(AbortSignal),
+      mockPendingDevicePushToken
+    );
   });
 });

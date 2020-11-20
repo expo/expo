@@ -1,3 +1,5 @@
+import { AbortController } from 'abort-controller';
+
 import { DevicePushToken } from '../../Tokens.types';
 import { updatePushTokenAsync } from '../updatePushTokenAsync';
 
@@ -35,7 +37,8 @@ describe('given valid registration info', () => {
   it('submits the request to proper URL', async () => {
     global.fetch.mockResolvedValue(successResponse);
     const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
-    await updatePushTokenAsync(TOKEN);
+    const abortController = new AbortController();
+    await updatePushTokenAsync(abortController.signal, TOKEN);
     warnSpy.mockRestore();
     expect(global.fetch).toHaveBeenCalledWith(expoEndpointUrl, expect.anything());
   });
@@ -46,7 +49,8 @@ describe('given valid registration info', () => {
     });
 
     it('submits the request only once', async () => {
-      await updatePushTokenAsync(TOKEN);
+      const abortController = new AbortController();
+      await updatePushTokenAsync(abortController.signal, TOKEN);
       expect(global.fetch).toHaveBeenCalledTimes(1);
     });
   });
@@ -57,7 +61,8 @@ describe('given valid registration info', () => {
       .mockResolvedValueOnce(failureResponse)
       .mockResolvedValueOnce(failureResponse)
       .mockResolvedValueOnce(successResponse);
-    await updatePushTokenAsync(TOKEN);
+    const abortController = new AbortController();
+    await updatePushTokenAsync(abortController.signal, TOKEN);
     expect(global.fetch).toHaveBeenCalledTimes(3);
     spy.mockRestore();
   });
@@ -66,7 +71,20 @@ describe('given valid registration info', () => {
     const debugSpy = jest.spyOn(console, 'debug').mockImplementation();
     const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
     global.fetch.mockRejectedValueOnce(new TypeError()).mockResolvedValueOnce(successResponse);
-    await updatePushTokenAsync(TOKEN);
+    const abortController = new AbortController();
+    await updatePushTokenAsync(abortController.signal, TOKEN);
+    expect(global.fetch).toHaveBeenCalledTimes(2);
+    warnSpy.mockRestore();
+    debugSpy.mockRestore();
+  });
+
+  it('does not retry if signal has been aborted', async () => {
+    const debugSpy = jest.spyOn(console, 'debug').mockImplementation();
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
+    global.fetch.mockRejectedValue(new TypeError());
+    const abortController = new AbortController();
+    setTimeout(() => abortController.abort(), 1000);
+    await updatePushTokenAsync(abortController.signal, TOKEN);
     expect(global.fetch).toHaveBeenCalledTimes(2);
     warnSpy.mockRestore();
     debugSpy.mockRestore();

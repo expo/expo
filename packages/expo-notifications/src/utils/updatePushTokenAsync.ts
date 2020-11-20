@@ -1,21 +1,15 @@
+import { computeNextBackoffInterval } from '@ide/backoff';
 import { CodedError, Platform, UnavailabilityError } from '@unimodules/core';
+import { AbortSignal } from 'abort-controller';
 import * as Application from 'expo-application';
 
 import ServerRegistrationModule from '../ServerRegistrationModule';
 import { DevicePushToken } from '../Tokens.types';
-import generateRetries from './generateRetries';
-import makeInterruptible from './makeInterruptible';
-
-export const [
-  updatePushTokenAsync,
-  hasPushTokenBeenUpdated,
-  interruptPushTokenUpdates,
-] = makeInterruptible<[DevicePushToken]>(updatePushTokenAsyncGenerator);
 
 const updatePushTokenUrl = 'https://exp.host/--/api/v2/push/updateDeviceToken';
 
-function* updatePushTokenAsyncGenerator(signal: AbortSignal, token: DevicePushToken) {
-  const retriesIterator = generateRetries(async retry => {
+export async function updatePushTokenAsync(signal: AbortSignal, token: DevicePushToken) {
+  const doUpdatePushTokenAsync = async (retry: () => void) => {
     try {
       const body = {
         development: await shouldUseDevelopmentNotificationService(),
@@ -76,14 +70,39 @@ function* updatePushTokenAsyncGenerator(signal: AbortSignal, token: DevicePushTo
         throw e;
       }
     }
-  });
+  };
 
-  let result = (yield retriesIterator.next()) as IteratorResult<void, void>;
-  while (!result.done) {
-    // We specifically want to yield the result here
-    // to the calling function so that call to this generator
-    // may be interrupted between retries.
-    result = (yield retriesIterator.next()) as IteratorResult<void, void>;
+  let shouldTry = true;
+  const retry = () => {
+    shouldTry = true;
+  };
+
+  let retriesCount = 0;
+  const initialBackoff = 500; // 0.5 s
+  const backoffOptions = {
+    maxBackoff: 2 * 60 * 1000, // 2 minutes
+  };
+  let nextBackoffInterval = computeNextBackoffInterval(
+    initialBackoff,
+    retriesCount,
+    backoffOptions
+  );
+
+  while (shouldTry && !signal.aborted) {
+    // Will be set to true by `retry` if it's called
+    shouldTry = false;
+    await doUpdatePushTokenAsync(retry);
+
+    // Do not wait if we won't retry
+    if (shouldTry && !signal.aborted) {
+      nextBackoffInterval = computeNextBackoffInterval(
+        initialBackoff,
+        retriesCount,
+        backoffOptions
+      );
+      retriesCount += 1;
+      await new Promise(resolve => setTimeout(resolve, nextBackoffInterval));
+    }
   }
 }
 
