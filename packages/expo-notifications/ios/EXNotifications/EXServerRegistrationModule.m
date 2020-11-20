@@ -159,6 +159,8 @@ UM_EXPORT_METHOD_AS(getRegistrationInfoAsync,
     NSString *value = [[NSString alloc] initWithData:result
                                             encoding:NSUTF8StringEncoding];
     resolve(value);
+  } else if (status == errSecItemNotFound) {
+    resolve(nil);
   } else {
     NSError *error = [NSError errorWithDomain:NSOSStatusErrorDomain code:status userInfo:nil];
     reject(@"ERR_NOTIFICATIONS_KEYCHAIN_ACCESS", @"Could not fetch registration information from keychain.", error);

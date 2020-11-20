@@ -1,9 +1,18 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
+#if __has_include(<EXNotifications/EXServerRegistrationModule.h>)
+
 #import "EXScopedServerRegistrationModule.h"
 #import "EXUnversioned.h"
 
-static NSString * const kEXRegistrationsInfosKey = EX_UNVERSIONED(@"EXNotificationsRegistrationsInfosKey");
+static NSString * const kEXRegistrationInfoKey = EX_UNVERSIONED(@"EXNotificationRegistrationInfoKey");
+
+@interface EXServerRegistrationModule (Protected)
+
+- (NSDictionary *)registrationSearchQueryMerging:(NSDictionary *)dictionaryToMerge;
+- (NSDictionary *)keychainSearchQueryFor:(NSString *)key merging:(NSDictionary *)dictionaryToMerge;
+
+@end
 
 @interface EXScopedServerRegistrationModule ()
 
@@ -21,27 +30,12 @@ static NSString * const kEXRegistrationsInfosKey = EX_UNVERSIONED(@"EXNotificati
   return self;
 }
 
-- (void)getRegistrationInfoAsyncWithResolver:(UMPromiseResolveBlock)resolve
-                                    rejecter:(UMPromiseRejectBlock)reject
+- (NSDictionary *)registrationSearchQueryMerging:(NSDictionary *)dictionaryToMerge
 {
-  NSDictionary *registrationsInfos = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kEXRegistrationsInfosKey] ?: @{};
-  resolve(registrationsInfos[_experienceId]);
-}
-
-- (void)setRegistrationInfoAsync:(NSString *)registrationInfo
-                        resolver:(UMPromiseResolveBlock)resolve
-                        rejecter:(UMPromiseRejectBlock)reject
-{
-  NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-  NSDictionary *registrationsInfos = [defaults dictionaryForKey:kEXRegistrationsInfosKey] ?: @{};
-  NSMutableDictionary *mutableRegistrationInfos = [NSMutableDictionary dictionaryWithDictionary:registrationsInfos];
-  if (registrationInfo) {
-    mutableRegistrationInfos[_experienceId] = registrationInfo;
-  } else {
-    [mutableRegistrationInfos removeObjectForKey:_experienceId];
-  }
-  [defaults setObject:mutableRegistrationInfos forKey:kEXRegistrationsInfosKey];
-  resolve(nil);
+  NSString *scopedKey = [kEXRegistrationInfoKey stringByAppendingFormat:@"-%@", _experienceId];
+  return [self keychainSearchQueryFor:scopedKey merging:dictionaryToMerge];
 }
 
 @end
+
+#endif
