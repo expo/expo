@@ -53,6 +53,7 @@ public class ScopedContext extends ContextWrapper {
   
   private String mScope;
   private File mFilesDir;
+  private File mNoBackupDir;
   private File mCacheDir;
   private ScopedApplicationContext mScopedApplicationContext;
 
@@ -63,6 +64,7 @@ public class ScopedContext extends ContextWrapper {
     File scopedFilesDir = new File(getBaseContext().getFilesDir() + "/ExperienceData/" + scope);
     mFilesDir = scopedFilesDir;
     mCacheDir = new File(getBaseContext().getCacheDir() + "/ExperienceData/" + scope);
+    mNoBackupDir = new File(getBaseContext().getNoBackupFilesDir() + "/ExperienceData/" + scope);
 
     if (Constants.isStandaloneApp()) {
       File scopedFilesMigrationMarker = new File(scopedFilesDir, ".expo-migration");
@@ -71,6 +73,7 @@ public class ScopedContext extends ContextWrapper {
       }
       mFilesDir = getBaseContext().getFilesDir();
       mCacheDir = getBaseContext().getCacheDir();
+      mNoBackupDir = getBaseContext().getNoBackupFilesDir();
     }
   }
 
@@ -167,6 +170,16 @@ public class ScopedContext extends ContextWrapper {
   @Override
   public File getCacheDir() {
     return mCacheDir;
+  }
+
+  @Override
+  public File getNoBackupFilesDir() {
+    // We only need to create the directory if someone
+    // asks for it - that's why .mkdirs() is not
+    // in the constructor.
+    //noinspection ResultOfMethodCallIgnored
+    mNoBackupDir.mkdirs();
+    return mNoBackupDir;
   }
 
   @Override
