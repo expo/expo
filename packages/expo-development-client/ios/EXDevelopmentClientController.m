@@ -9,6 +9,7 @@
 #import "EXDevelopmentClientBundle.h"
 #import "EXDevelopmentClientBundleSource.h"
 #import "EXDevelopmentClientRCTBridge.m"
+#import "EXDevelopmentClientManifestParser.h"
 
 #import <UIKit/UIKit.h>
 
@@ -102,6 +103,71 @@ NSString *fakeLauncherBundleUrl = @"embedded://exdevelopmentclient/dummy";
   [_window makeKeyAndVisible];
 }
 
+- (BOOL)onDeepLink:(NSURL *)url options:(NSDictionary *)options {
+  if (![url.host isEqual:@"expo-development-client"]) {
+    return false;
+  }
+  
+  [self loadApp:[url.path substringFromIndex:1] onSuccess:nil onError:^(NSError *error) {
+    NSLog(error.description);
+  }];
+  
+  return true;
+}
+
+- (void)loadApp:(NSString *)expoUrl onSuccess:(void (^)())onSuccess onError:(void (^)(NSError *error))onError
+{
+  __block NSString *url = [expoUrl stringByReplacingOccurrencesOfString:@"exp" withString:@"http"];
+  EXDevelopmentClientManifestParser *manifestParser = [[EXDevelopmentClientManifestParser alloc] initWithURL:url session:[NSURLSession sharedSession]];
+  [manifestParser tryToParseManifest:^(NSDictionary * _Nonnull manifest) {
+    NSURL *bundleUrl = [NSURL URLWithString:manifest[@"bundleUrl"]];
+    [self _initApp:bundleUrl manifest:manifest];
+    if (onSuccess) {
+      onSuccess();
+    }
+  } onInalidURL:^{
+    if (![[NSURL URLWithString:url].path isEqual:@"/"]) {
+      [self _initApp:[NSURL URLWithString:url] manifest:nil];
+    } else {
+      [self _initApp:[NSURL URLWithString:url relativeToURL:@"index.bundle?platform=ios&dev=true&minify=false"] manifest:nil];
+    }
+    
+    if (onSuccess) {
+      onSuccess();
+    }
+  } onError:onError];
+}
+
+- (void)_initApp:(NSURL *)bundleUrl manifest:(NSDictionary * _Nullable)manifest
+{
+  UIInterfaceOrientationMask orientationMask = UIInterfaceOrientationMaskAll;
+  if ([@"portrait" isEqualToString:manifest[@"orientation"]]) {
+    orientationMask = UIInterfaceOrientationMaskPortrait;
+  } else if ([@"landscape" isEqualToString:manifest[@"orientation"]]) {
+    orientationMask = UIInterfaceOrientationMaskLandscape;
+  }
+  __block UIInterfaceOrientation orientation = [EXDevelopmentClientController defaultOrientationForOrientationMask:orientationMask];
+  
+  dispatch_async(dispatch_get_main_queue(), ^{
+    self.sourceUrl = bundleUrl;
+    [self.delegate developmentClientController:self didStartWithSuccess:YES];
+    [[UIDevice currentDevice] setValue:@(orientation) forKey:@"orientation"];
+    [UIViewController attemptRotationToDeviceOrientation];
+  });
+}
+
++ (UIInterfaceOrientation)defaultOrientationForOrientationMask:(UIInterfaceOrientationMask)orientationMask
+{
+  if (UIInterfaceOrientationMaskPortrait & orientationMask) {
+    return UIInterfaceOrientationPortrait;
+  } else if (UIInterfaceOrientationMaskLandscapeLeft & orientationMask) {
+    return UIInterfaceOrientationLandscapeLeft;
+  } else if (UIInterfaceOrientationMaskLandscapeRight & orientationMask) {
+    return UIInterfaceOrientationLandscapeRight;
+  } else if (UIInterfaceOrientationMaskPortraitUpsideDown & orientationMask) {
+    return UIInterfaceOrientationPortraitUpsideDown;
+  }
+  return UIInterfaceOrientationUnknown;
+}
+
 @end
-
-

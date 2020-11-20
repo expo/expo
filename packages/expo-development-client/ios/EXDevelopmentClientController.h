@@ -25,4 +25,8 @@
 
 - (void)navigateToLauncher;
 
+- (BOOL)onDeepLink:(NSURL *)url options:(NSDictionary *)options;
+
+- (void)loadApp:(NSString *)url onSuccess:(void (^)())onSuccess onError:(void (^)(NSError *error))onError;
+
 @end

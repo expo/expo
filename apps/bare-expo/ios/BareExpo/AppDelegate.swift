@@ -69,6 +69,10 @@ class AppDelegate: UMAppDelegateWrapper {
   #endif
   
   override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+    if (useDevClient && EXDevelopmentClientController.sharedInstance()!.onDeepLink(url, options: options)) {
+      return true;
+    }
+    
     return RCTLinkingManager.application(app, open: url, options: options)
   }
   
