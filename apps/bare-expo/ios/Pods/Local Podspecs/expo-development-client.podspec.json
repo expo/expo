@@ -2,21 +2,24 @@
   "name": "expo-development-client",
   "version": "0.0.10",
   "summary": "Pre-release version of the Expo development client package for testing.",
-  "description": "expo-development-client",
-  "homepage": "https://github.com/github_account/expo-development-client",
+  "description": "Pre-release version of the Expo development client package for testing.",
   "license": "MIT",
-  "authors": {
-    "Your Name": "yourname@email.com"
-  },
+  "authors": "650 Industries, Inc.",
+  "homepage": "https://docs.expo.io",
   "platforms": {
-    "ios": "9.0"
+    "ios": "10.0"
   },
+  "swift_versions": "5.2",
   "source": {
     "git": "https://github.com/github_account/expo-development-client.git",
-    "tag": "0.0.10"
+    "tag": "#{s.version}"
   },
   "source_files": "ios/**/*.{h,m,swift,cpp}",
+  "preserve_paths": "ios/**/*.{h,m,swift}",
   "requires_arc": true,
+  "pod_target_xcconfig": {
+    "DEFINES_MODULE": "YES"
+  },
   "dependencies": {
     "React": [
 
@@ -24,5 +27,6 @@
     "EXDevMenuInterface": [
 
     ]
-  }
+  },
+  "swift_version": "5.2"
 }

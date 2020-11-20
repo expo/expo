@@ -1,0 +1,6 @@
+module expo_development_client {
+  umbrella header "expo-development-client-umbrella.h"
+
+  export *
+  module * { export * }
+}

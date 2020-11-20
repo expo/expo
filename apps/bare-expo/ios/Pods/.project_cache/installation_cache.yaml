@@ -910,9 +910,9 @@ CACHE_KEYS:
   expo-development-client:
     BUILD_SETTINGS_CHECKSUM:
       expo-development-client:
-        :debug: d6a92e391cd5acc1e2fbed76166d762d
-        :release: d6a92e391cd5acc1e2fbed76166d762d
-    CHECKSUM: e224dc78c88f0c3d1de720d92754f6f518eae164
+        :debug: 62b2b34a2c4222ee4f0bc54aaee168c0
+        :release: 62b2b34a2c4222ee4f0bc54aaee168c0
+    CHECKSUM: 91a70e0b936a710d968ebd471dab5ff1a6b8d215
     FILES:
       - "../../../../packages/expo-development-client/ios/EXDevelopmentClient.h"
       - "../../../../packages/expo-development-client/ios/EXDevelopmentClient.m"
@@ -924,10 +924,13 @@ CACHE_KEYS:
       - "../../../../packages/expo-development-client/ios/EXDevelopmentClientController.h"
       - "../../../../packages/expo-development-client/ios/EXDevelopmentClientController.m"
       - "../../../../packages/expo-development-client/ios/EXDevelopmentClientDevMenuExtensions.m"
-      - "../../../../packages/expo-development-client/ios/EXDevelopmentClientManifestParser.h"
-      - "../../../../packages/expo-development-client/ios/EXDevelopmentClientManifestParser.m"
       - "../../../../packages/expo-development-client/ios/EXDevelopmentClientRCTBridge.h"
       - "../../../../packages/expo-development-client/ios/EXDevelopmentClientRCTBridge.m"
+      - "../../../../packages/expo-development-client/ios/expo-development-client-Bridging-Header.h"
+      - "../../../../packages/expo-development-client/ios/Manifest/EXDevelopmentClientManifest.swift"
+      - "../../../../packages/expo-development-client/ios/Manifest/EXDevelopmentClientManifestHelper.swift"
+      - "../../../../packages/expo-development-client/ios/Manifest/EXDevelopmentClientManifestParser.h"
+      - "../../../../packages/expo-development-client/ios/Manifest/EXDevelopmentClientManifestParser.m"
       - "../../../../packages/expo-development-client/README.md"
     PROJECT_NAME: expo-development-client
     SPECS:
@@ -1458,8 +1461,8 @@ CACHE_KEYS:
       - OpenSSL-Universal/Static (1.0.2.20)
   Pods-BareExpoMain-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 806dc0c1e7d7f905e119f079192de50a
-      Release: d8f725df6d006338738577b3101ab906
+      Debug: 19f5935e7750bd56715d8cb9a51fec3b
+      Release: 7a59dd9a27eb283a9c57454f5574874c
     FILES:
       - "${PODS_CONFIGURATION_BUILD_DIR}/EXDevMenu/EXDevMenu.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle"
@@ -1468,8 +1471,8 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoMain-BareExpoDetox:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 2c6348d227e12af3d601d9753e9f38d5
-      Release: 1fbd6e2b1ca60c9a59bb94291637801e
+      Debug: 6f7794bf750bb31b081362cf74fd0825
+      Release: 25e2f9926764c09b23c80586c8843756
     FILES:
       - "${PODS_CONFIGURATION_BUILD_DIR}/EXDevMenu/EXDevMenu.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle"
