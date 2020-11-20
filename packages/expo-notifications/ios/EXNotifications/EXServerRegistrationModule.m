@@ -120,11 +120,49 @@ UM_EXPORT_METHOD_AS(getInstallationIdAsync,
   }];
 }
 
+# pragma mark Registration information
+
+- (NSDictionary *)registrationSearchQueryMerging:(NSDictionary *)dictionaryToMerge
+{
+  return [self keychainSearchQueryFor:kEXRegistrationInfoKey merging:dictionaryToMerge];
+}
+
+- (NSDictionary *)registrationSearchQuery
+{
+  return [self registrationSearchQueryMerging:@{}];
+}
+
+- (NSDictionary *)registrationGetQuery
+{
+  return [self registrationSearchQueryMerging:@{
+    (__bridge id)kSecMatchLimit:(__bridge id)kSecMatchLimitOne,
+    (__bridge id)kSecReturnData:(__bridge id)kCFBooleanTrue
+  }];
+}
+
+- (NSDictionary *)registrationSetQuery:(NSString *)registration
+{
+  return [self registrationSearchQueryMerging:@{
+    (__bridge id)kSecValueData:[registration dataUsingEncoding:NSUTF8StringEncoding],
+    (__bridge id)kSecAttrAccessible:(__bridge id)kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+  }];
+}
+
 UM_EXPORT_METHOD_AS(getRegistrationInfoAsync,
                     getRegistrationInfoAsyncWithResolver:(UMPromiseResolveBlock)resolve
                                                 rejecter:(UMPromiseRejectBlock)reject)
 {
-  resolve([[NSUserDefaults standardUserDefaults] stringForKey:kEXRegistrationInfoKey]);
+  CFTypeRef keychainResult = NULL;
+  OSStatus status = SecItemCopyMatching((__bridge CFDictionaryRef)[self registrationGetQuery], &keychainResult);
+  if (status == noErr) {
+    NSData *result = (__bridge_transfer NSData *)keychainResult;
+    NSString *value = [[NSString alloc] initWithData:result
+                                            encoding:NSUTF8StringEncoding];
+    resolve(value);
+  } else {
+    NSError *error = [NSError errorWithDomain:NSOSStatusErrorDomain code:status userInfo:nil];
+    reject(@"ERR_NOTIFICATIONS_KEYCHAIN_ACCESS", @"Could not fetch registration information from keychain.", error);
+  }
 }
 
 UM_EXPORT_METHOD_AS(setRegistrationInfoAsync,
@@ -132,8 +170,20 @@ UM_EXPORT_METHOD_AS(setRegistrationInfoAsync,
                                     resolver:(UMPromiseResolveBlock)resolve
                                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [[NSUserDefaults standardUserDefaults] setObject:registrationInfo forKey:kEXRegistrationInfoKey];
-  resolve(nil);
+  // Delete existing registration so we don't need to handle "duplicate item" error
+  SecItemDelete((__bridge CFDictionaryRef)[self registrationSearchQuery]);
+  
+  if (registrationInfo) {
+    OSStatus status = SecItemAdd((__bridge CFDictionaryRef)[self registrationSetQuery:registrationInfo], NULL);
+    if (status == errSecSuccess) {
+      resolve(nil);
+    } else {
+      NSError *error = [NSError errorWithDomain:NSOSStatusErrorDomain code:status userInfo:nil];
+      reject(@"ERR_NOTIFICATIONS_KEYCHAIN_ACCESS", @"Could not save registration information into keychain.", error);
+    }
+  } else {
+    resolve(nil);
+  }
 }
 
 @end

@@ -1,25 +1,25 @@
 package expo.modules.notifications.serverregistration
 
 import android.content.Context
-import android.content.SharedPreferences
+import java.io.File
 
-class RegistrationInfo(context: Context) {
+open class RegistrationInfo(private val context: Context) {
   companion object {
-    private const val PREFERENCES_NAME = "expo.modules.notifications.RegistrationInfo"
-
-    private const val REGISTRATION_INFO_KEY = "registrationInfo"
+    const val REGISTRATION_INFO_FILE_NAME = "expo_notifications_registration_info.txt"
   }
 
-  private val sharedPreferences: SharedPreferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
+  protected val nonBackedUpRegistrationInfoFile: File
+    get() = File(context.noBackupFilesDir, REGISTRATION_INFO_FILE_NAME)
 
-  fun get() =
-    sharedPreferences.getString(REGISTRATION_INFO_KEY, null)
+  fun get(): String? = if (nonBackedUpRegistrationInfoFile.exists()) {
+    nonBackedUpRegistrationInfoFile.readText();
+  } else null
+
 
   fun set(registrationInfo: String?) {
+    nonBackedUpRegistrationInfoFile.delete()
     registrationInfo?.let {
-      sharedPreferences.edit().putString(REGISTRATION_INFO_KEY, it).apply()
-      return
+      nonBackedUpRegistrationInfoFile.writeText(it)
     }
-    sharedPreferences.edit().remove(REGISTRATION_INFO_KEY).apply()
   }
 }
