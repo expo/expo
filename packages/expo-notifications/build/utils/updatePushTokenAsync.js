@@ -44,6 +44,12 @@ export async function updatePushTokenAsync(signal, token) {
             }
         }
         catch (e) {
+            // We don't consider AbortError a failure, it's a sign somewhere else the
+            // request is expected to succeed and we don't need this one, so let's
+            // just return.
+            if (e.name === 'AbortError') {
+                return;
+            }
             console.warn('[expo-notifications] Error thrown while updating device push token in server:', e);
             // We only want to retry if it was a network error.
             // Other error may be JSON.parse error which we can do nothing about.

@@ -56,6 +56,13 @@ export async function updatePushTokenAsync(signal: AbortSignal, token: DevicePus
         retry();
       }
     } catch (e) {
+      // We don't consider AbortError a failure, it's a sign somewhere else the
+      // request is expected to succeed and we don't need this one, so let's
+      // just return.
+      if (e.name === 'AbortError') {
+        return;
+      }
+
       console.warn(
         '[expo-notifications] Error thrown while updating device push token in server:',
         e
