@@ -4,6 +4,7 @@
 #import <EXUpdates/EXUpdatesNewUpdate.h>
 #import <EXUpdates/EXUpdatesUpdate+Private.h>
 #import <EXUpdates/EXUpdatesUtils.h>
+#import <React/RCTConvert.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -32,8 +33,8 @@ NS_ASSUME_NONNULL_BEGIN
   id assets = manifest[@"assets"];
 
   NSAssert([updateId isKindOfClass:[NSString class]], @"update ID should be a string");
-  NSAssert([commitTime isKindOfClass:[NSNumber class]], @"commitTime should be a number");
-  NSAssert([runtimeVersion isKindOfClass:[NSString class]], @"runtimeVersion should be a string");
+  NSAssert([commitTime isKindOfClass:[NSString class]], @"createdAt should be a string");
+  NSAssert([runtimeVersion isKindOfClass:[NSString class]], @"nativeRuntimeVersion should be a string");
   NSAssert([launchAsset isKindOfClass:[NSDictionary class]], @"launchAsset should be a dictionary");
   NSAssert(assets && [assets isKindOfClass:[NSArray class]], @"assets should be a nonnull array");
 
@@ -84,7 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
   }
 
   update.updateId = uuid;
-  update.commitTime = [NSDate dateWithTimeIntervalSince1970:[(NSNumber *)commitTime doubleValue] / 1000];
+  update.commitTime = [RCTConvert NSDate:(NSString *)commitTime];
   update.runtimeVersion = (NSString *)runtimeVersion;
   update.status = EXUpdatesUpdateStatusPending;
   update.keep = YES;

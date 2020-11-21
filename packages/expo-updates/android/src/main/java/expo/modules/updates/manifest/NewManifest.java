@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.util.Log;
 
 import expo.modules.updates.UpdatesConfiguration;
+import expo.modules.updates.UpdatesUtils;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 
@@ -56,10 +57,17 @@ public class NewManifest implements Manifest {
     }
 
     UUID id = UUID.fromString(manifestJson.getString("id"));
-    Date commitTime = new Date(manifestJson.getLong("createdAt"));
     String runtimeVersion = manifestJson.getString("nativeRuntimeVersion");
     JSONObject launchAsset = manifestJson.getJSONObject("launchAsset");
     JSONArray assets = manifestJson.optJSONArray("assets");
+
+    Date commitTime;
+    try {
+      commitTime = UpdatesUtils.parseDateString(manifestJson.getString("createdAt"));
+    } catch (Exception e) {
+      Log.e(TAG, "Could not parse manifest createdAt string; falling back to current time", e);
+      commitTime = new Date();
+    }
 
     return new NewManifest(manifestJson, id, configuration.getScopeKey(), commitTime, runtimeVersion, launchAsset, assets);
   }
