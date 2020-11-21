@@ -2,7 +2,6 @@ package expo.modules.updates;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -29,7 +28,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.TimeZone;
 
 import androidx.annotation.Nullable;
 import expo.modules.updates.db.entity.AssetEntity;
