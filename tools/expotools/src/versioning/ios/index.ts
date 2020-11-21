@@ -441,6 +441,7 @@ async function generateExpoKitPodspecAsync(
 
     ss.dependency         "${versionedReactPodName}-Core"
     ss.dependency         "${versionedReactPodName}-Core/DevSupport"
+    ss.dependency         "${versionedReactPodName}Common"
     ${universalModulesDependencies}
     ${externalDependencies}
   end
