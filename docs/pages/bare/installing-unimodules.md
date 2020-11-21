@@ -59,7 +59,7 @@ If you need to customize the path to node_modules, for example because you are u
 <details><summary><h4>💡 Need to exclude some unimodules that are being automatically linked?</h4></summary>
 <p>
 
-If you need to exclude some of the unimodules that you are not using but they got installed by your other dependencies (like `expo`), then you can pass in `exclude` param for this. For example, if you want to exclude `expo-face-detector`, you may want to use this: `addUnimodulesDependencies([exclude: ['expo-face-detector']])`
+If you need to exclude some of the unimodules that you are not using but they got installed by your other dependencies (like `expo`), then you can pass in `exclude` param for this. For example, if you don't need `expo-face-detector`, you may exclude it using `addUnimodulesDependencies([exclude: ['expo-face-detector']])` and `includeUnimodulesProjects([exclude: ['expo-face-detector']])`.
 
 </p>
 </details>
