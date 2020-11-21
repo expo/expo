@@ -76,9 +76,7 @@ public class LegacyManifest implements Manifest {
       id = UUID.fromString(manifestJson.getString("releaseId"));
       String commitTimeString = manifestJson.getString("commitTime");
       try {
-        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
-        formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
-        commitTime = formatter.parse(commitTimeString);
+        commitTime = UpdatesUtils.parseDateString(commitTimeString);
       } catch (ParseException e) {
         Log.e(TAG, "Could not parse commitTime", e);
         commitTime = new Date();
