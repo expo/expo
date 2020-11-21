@@ -87,7 +87,7 @@ public class NewManifest implements Manifest {
     ArrayList<AssetEntity> assetList = new ArrayList<>();
 
     try {
-      AssetEntity bundleAssetEntity = new AssetEntity("bundle-" + mCommitTime.getTime(), mLaunchAsset.getString("type"));
+      AssetEntity bundleAssetEntity = new AssetEntity("bundle-" + mCommitTime.getTime(), mLaunchAsset.getString("contentType"));
       bundleAssetEntity.url = Uri.parse(mLaunchAsset.getString("url"));
       bundleAssetEntity.isLaunchAsset = true;
       bundleAssetEntity.embeddedAssetFilename = BUNDLE_FILENAME;
@@ -102,7 +102,7 @@ public class NewManifest implements Manifest {
           JSONObject assetObject = mAssets.getJSONObject(i);
           AssetEntity assetEntity = new AssetEntity(
             assetObject.getString("key"),
-            assetObject.getString("type")
+            assetObject.getString("contentType")
           );
           assetEntity.url = Uri.parse(assetObject.getString("url"));
           assetEntity.embeddedAssetFilename = assetObject.optString("embeddedAssetFilename");
