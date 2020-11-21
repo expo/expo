@@ -60,7 +60,7 @@ public class NewManifest implements Manifest {
     }
 
     UUID id = UUID.fromString(manifestJson.getString("id"));
-    String runtimeVersion = manifestJson.getString("nativeRuntimeVersion");
+    String runtimeVersion = manifestJson.getString("runtimeVersion");
     JSONObject launchAsset = manifestJson.getJSONObject("launchAsset");
     JSONArray assets = manifestJson.optJSONArray("assets");
 

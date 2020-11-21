@@ -31,13 +31,13 @@ NS_ASSUME_NONNULL_BEGIN
 
   id updateId = manifest[@"id"];
   id commitTime = manifest[@"createdAt"];
-  id runtimeVersion = manifest[@"nativeRuntimeVersion"];
+  id runtimeVersion = manifest[@"runtimeVersion"];
   id launchAsset = manifest[@"launchAsset"];
   id assets = manifest[@"assets"];
 
   NSAssert([updateId isKindOfClass:[NSString class]], @"update ID should be a string");
   NSAssert([commitTime isKindOfClass:[NSString class]], @"createdAt should be a string");
-  NSAssert([runtimeVersion isKindOfClass:[NSString class]], @"nativeRuntimeVersion should be a string");
+  NSAssert([runtimeVersion isKindOfClass:[NSString class]], @"runtimeVersion should be a string");
   NSAssert([launchAsset isKindOfClass:[NSDictionary class]], @"launchAsset should be a dictionary");
   NSAssert(assets && [assets isKindOfClass:[NSArray class]], @"assets should be a nonnull array");
 
