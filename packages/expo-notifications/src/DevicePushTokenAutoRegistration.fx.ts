@@ -1,5 +1,5 @@
+import 'abort-controller/polyfill';
 import { UnavailabilityError } from '@unimodules/core';
-import { AbortController } from 'abort-controller';
 
 import ServerRegistrationModule from './ServerRegistrationModule';
 import { addPushTokenListener } from './TokenEmitter';

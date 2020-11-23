@@ -1,3 +1,4 @@
+import 'abort-controller/polyfill';
 /**
  * Encapsulates device server registration data
  */

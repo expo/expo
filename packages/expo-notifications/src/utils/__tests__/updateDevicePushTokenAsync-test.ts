@@ -1,4 +1,4 @@
-import { AbortController } from 'abort-controller';
+import 'abort-controller/polyfill';
 
 import { DevicePushToken } from '../../Tokens.types';
 import { updateDevicePushTokenAsync } from '../updateDevicePushTokenAsync';

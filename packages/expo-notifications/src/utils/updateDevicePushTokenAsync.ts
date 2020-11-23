@@ -1,6 +1,5 @@
 import { computeNextBackoffInterval } from '@ide/backoff';
 import { CodedError, Platform, UnavailabilityError } from '@unimodules/core';
-import { AbortSignal } from 'abort-controller';
 import * as Application from 'expo-application';
 
 import ServerRegistrationModule from '../ServerRegistrationModule';
