@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
 
 ## Props
 
-Inherits [View Props](view.md#props).
+Inherits [View Props](../view/#props).
 
 ### `emulateUnlessSupported`
 

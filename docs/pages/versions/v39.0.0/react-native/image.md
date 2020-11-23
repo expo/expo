@@ -114,13 +114,13 @@ dependencies {
 | ----- | -------- |
 | style | No       |
 
-- [Image Style Props...](image-style-props.md#props)
+- [Image Style Props...](../image-style-props/#props)
 
-- [Layout Props...](layout-props.md#props)
+- [Layout Props...](../layout-props/#props)
 
-- [Shadow Props...](shadow-props.md#props)
+- [Shadow Props...](../shadow-props/#props)
 
-- [Transforms...](transforms.md#props)
+- [Transforms...](../transforms/#props)
 
 ---
 

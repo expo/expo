@@ -58,7 +58,7 @@ export default App;
 
 ## Props
 
-Inherits [TouchableWithoutFeedback Props](touchablewithoutfeedback.md#props).
+Inherits [TouchableWithoutFeedback Props](../touchablewithoutfeedback/#props).
 
 ### `style`
 

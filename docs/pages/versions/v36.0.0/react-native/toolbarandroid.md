@@ -38,7 +38,7 @@ onActionSelected: function(position) {
 
 ## Props
 
-Inherits [View Props](view.md#props).
+Inherits [View Props](../view/#props).
 
 ### `actions`
 
@@ -161,7 +161,7 @@ Sets the toolbar subtitle color.
 
 | Type                | Required |
 | ------------------- | -------- |
-| [color](colors.md) | No       |
+| [color](../colors/) | No       |
 
 ---
 
@@ -191,4 +191,4 @@ Sets the toolbar title color.
 
 | Type                | Required |
 | ------------------- | -------- |
-| [color](colors.md) | No       |
+| [color](../colors/) | No       |

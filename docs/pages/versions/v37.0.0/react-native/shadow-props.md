@@ -13,7 +13,7 @@ Sets the drop shadow color
 
 | Type                | Required | Platform |
 | ------------------- | -------- | -------- |
-| [color](colors.md) | No       | iOS      |
+| [color](../colors/) | No       | iOS      |
 
 ---
 

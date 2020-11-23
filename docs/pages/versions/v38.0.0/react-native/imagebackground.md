@@ -51,19 +51,19 @@ export default App;
 
 ## Props
 
-Inherits [Image Props](image.md#props).
+Inherits [Image Props](../image/#props).
 
 ### `style`
 
 | Type                               | Required |
 | ---------------------------------- | -------- |
-| [view styles](view-style-props.md) | No       |
+| [view styles](../view-style-props/) | No       |
 
 ### `imageStyle`
 
 | Type                                 | Required |
 | ------------------------------------ | -------- |
-| [image styles](image-style-props.md) | No       |
+| [image styles](../image-style-props/) | No       |
 
 ### `imageRef`
 

@@ -25,7 +25,7 @@ import { KeyboardAvoidingView } from 'react-native';
 
 ## Props
 
-Inherits [View Props](view.md#props).
+Inherits [View Props](../view/#props).
 
 ### `behavior`
 
