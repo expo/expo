@@ -88,7 +88,7 @@
     "unimodules-permissions-interface": "~5.4.0",
     "unimodules-sensors-interface": "~5.4.0",
     "unimodules-task-manager-interface": "~5.4.0",
-    "uuid": "^8.3.1"
+    "uuid": "^3.4.0"
   },
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.1.0",
@@ -97,7 +97,7 @@
     "@types/react": "^16.9.0",
     "@types/react-native": "~0.63.2",
     "@types/react-test-renderer": "16.9.0",
-    "@types/uuid": "^8.3.0",
+    "@types/uuid": "^3.4.7",
     "expo-module-scripts": "~1.2.0",
     "react": "16.13.1",
     "react-dom": "16.13.1",
