@@ -25,7 +25,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `@react-native-community/viewpager` from `4.1.6` to `4.2.0`. ([#11009](https://github.com/expo/expo/pull/11009) by [@cruzach](https://github.com/cruzach))
 - Updated `@react-native-community/datetimepicker` from `3.0.0` to `3.0.4`. ([#10980](https://github.com/expo/expo/pull/10980) by [@cruzach](https://github.com/cruzach))
 - Updated `react-native-screens` from `2.10.1` to `2.15.0`. ([#10980](https://github.com/expo/expo/pull/10980) by [@bbarthec](https://github.com/bbarthec))
-- Upgraded `react-native-reanimated` v2 support from `2.0.0-alpha.6` to `2.0.0-alpha.9`. ([#11048](https://github.com/expo/expo/pull/11048) by [@sjchmiela](https://github.com/sjchmiela))
+- Upgraded `react-native-reanimated` v2 support from `2.0.0-alpha.6` to `2.0.0-alpha.9.2`. ([#11048](https://github.com/expo/expo/pull/11048), [#11095](https://github.com/expo/expo/pull/11095) by [@sjchmiela](https://github.com/sjchmiela))
 
 ### 🛠 Breaking changes
 
