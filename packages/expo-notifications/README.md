@@ -220,7 +220,6 @@ The following methods are exported by the `expo-notifications` module:
   - [`getDevicePushTokenAsync`](#getdevicepushtokenasync-devicepushtoken) -- resolves with a device push token
   - [`addPushTokenListener`](#addpushtokenlistenerlistener-pushtokenlistener-subscription) -- adds a listener called when a new push token is issued
   - [`removePushTokenSubscription`](#removepushtokensubscriptionsubscription-subscription-void) -- removes the listener registered with `addPushTokenListener`
-  - [`removeAllPushTokenListeners`](#removeallpushtokenlisteners-void) -- removes all listeners registered with `addPushTokenListener`
 - **listening to notification events**
   - [`useLastNotificationResponse`](#uselastnotificationresponse-undefined--notificationresponse--null) -- a React hook returning the most recently received notification response
   - [`addNotificationReceivedListener`](#addnotificationreceivedlistenerlistener-event-notification--void-void) -- adds a listener called whenever a new notification is received
@@ -403,10 +402,6 @@ Removes a push token subscription returned by a `addPushTokenListener` call.
 #### Arguments
 
 A single and required argument is a subscription returned by `addPushTokenListener`.
-
-### `removeAllPushTokenListeners(): void`
-
-Removes all push token subscriptions that may have been registered with `addPushTokenListener`.
 
 ## Listening to notification events
 

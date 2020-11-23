@@ -23,6 +23,7 @@
 - Removed `removeAllNotificationListeners` method. You can (and should) still remove listeners using `remove` method on `Subscription` objects returned by `addNotification…Listener`. ([#10883](https://github.com/expo/expo/pull/10883) by [@sjchmiela](https://github.com/sjchmiela))
 - Fixed device identifier being used to fetch Expo push token being backed up on Android which resulted in multiple devices having the same `deviceId` (and eventually, Expo push token). ([#11005](https://github.com/expo/expo/pull/11005) by [@sjchmiela](https://github.com/sjchmiela))
 - Fixed device identifier used when fetching Expo push token being different than `Constants.installationId` in managed workflow apps which resulted in different Expo push tokens returned for the same experience across old and new Expo API and the device push token not being automatically updated on Expo push servers which lead to Expo push tokens corresponding to outdated Firebase tokens. ([#11005](https://github.com/expo/expo/pull/11005) by [@sjchmiela](https://github.com/sjchmiela))
+- Removed `removeAllPushTokenListeners` method. You can (and should) still remove listeners using `remove` method on `Subscription` objects returned by `addPushTokenListener`. ([#11106](https://github.com/expo/expo/pull/11106) by [@sjchmiela](https://github.com/sjchmiela))
 
 ### 🎉 New features
 
