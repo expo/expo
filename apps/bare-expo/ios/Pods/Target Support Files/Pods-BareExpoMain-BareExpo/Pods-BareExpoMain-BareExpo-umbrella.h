@@ -11,6 +11,6 @@
 #endif
 
 
-FOUNDATION_EXPORT double Pods_BareExpoVersionNumber;
-FOUNDATION_EXPORT const unsigned char Pods_BareExpoVersionString[];
+FOUNDATION_EXPORT double Pods_BareExpoMain_BareExpoVersionNumber;
+FOUNDATION_EXPORT const unsigned char Pods_BareExpoMain_BareExpoVersionString[];
 
