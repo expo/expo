@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI40_0_0/Expo/ExpoKit/Core/Internal/ABI40_0_0EXResourceLoader.h

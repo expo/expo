@@ -1,0 +1,322 @@
+{
+  "name": "ABI40_0_0ExpoKit",
+  "version": "40.0.0",
+  "summary": "ExpoKit",
+  "description": "ExpoKit allows native projects to integrate with the Expo SDK.",
+  "homepage": "http://docs.expo.io",
+  "license": "MIT",
+  "authors": "650 Industries, Inc.",
+  "requires_arc": true,
+  "platforms": {
+    "ios": "10.0"
+  },
+  "default_subspecs": "Core",
+  "source": {
+    "git": "http://github.com/expo/expo.git"
+  },
+  "xcconfig": {
+    "HEADER_SEARCH_PATHS": "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/glog\" \"$(PODS_ROOT)/Folly\" \"$(PODS_ROOT)/Headers/Private/ABI40_0_0React-Core\"",
+    "OTHER_CFLAGS": "$(inherited) -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1"
+  },
+  "pod_target_xcconfig": {
+    "USE_HEADERMAP": "YES",
+    "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/Folly\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/Headers/Private/React-Core\" "
+  },
+  "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation",
+  "subspecs": [
+    {
+      "name": "Expo",
+      "source_files": "Core/**/*.{h,m,mm,cpp}",
+      "dependencies": {
+        "ABI40_0_0React-Core": [
+
+        ],
+        "ABI40_0_0React-Core/DevSupport": [
+
+        ],
+        "ABI40_0_0ReactCommon": [
+
+        ],
+        "ABI40_0_0UMCore": [
+
+        ],
+        "ABI40_0_0UMReactNativeAdapter": [
+
+        ],
+        "ABI40_0_0EXAdsAdMob": [
+
+        ],
+        "ABI40_0_0EXAdsFacebook": [
+
+        ],
+        "ABI40_0_0EXAmplitude": [
+
+        ],
+        "ABI40_0_0EXSegment": [
+
+        ],
+        "ABI40_0_0EXAppAuth": [
+
+        ],
+        "ABI40_0_0EXAppleAuthentication": [
+
+        ],
+        "ABI40_0_0EXApplication": [
+
+        ],
+        "ABI40_0_0EXAV": [
+
+        ],
+        "ABI40_0_0EXBackgroundFetch": [
+
+        ],
+        "ABI40_0_0EXBarCodeScanner": [
+
+        ],
+        "ABI40_0_0EXBattery": [
+
+        ],
+        "ABI40_0_0EXBlur": [
+
+        ],
+        "EXBranch": [
+
+        ],
+        "ABI40_0_0EXBrightness": [
+
+        ],
+        "ABI40_0_0EXCalendar": [
+
+        ],
+        "ABI40_0_0EXCamera": [
+
+        ],
+        "ABI40_0_0EXCellular": [
+
+        ],
+        "ABI40_0_0EXConstants": [
+
+        ],
+        "ABI40_0_0EXContacts": [
+
+        ],
+        "ABI40_0_0EXCrypto": [
+
+        ],
+        "ABI40_0_0EXDevice": [
+
+        ],
+        "ABI40_0_0EXDocumentPicker": [
+
+        ],
+        "ABI40_0_0EXErrorRecovery": [
+
+        ],
+        "ABI40_0_0EXFaceDetector": [
+
+        ],
+        "ABI40_0_0EXFacebook": [
+
+        ],
+        "ABI40_0_0EXFileSystem": [
+
+        ],
+        "ABI40_0_0EXFirebaseAnalytics": [
+
+        ],
+        "ABI40_0_0EXFirebaseCore": [
+
+        ],
+        "ABI40_0_0EXFont": [
+
+        ],
+        "EXGL_CPP_LEGACY": [
+
+        ],
+        "EXGL_CPP": [
+
+        ],
+        "ABI40_0_0EXGL": [
+
+        ],
+        "ABI40_0_0EXGoogleSignIn": [
+
+        ],
+        "ABI40_0_0EXHaptics": [
+
+        ],
+        "ABI40_0_0EXImageLoader": [
+
+        ],
+        "ABI40_0_0EXImageManipulator": [
+
+        ],
+        "ABI40_0_0EXImagePicker": [
+
+        ],
+        "ABI40_0_0EXKeepAwake": [
+
+        ],
+        "ABI40_0_0EXLinearGradient": [
+
+        ],
+        "ABI40_0_0EXLocalAuthentication": [
+
+        ],
+        "ABI40_0_0EXLocalization": [
+
+        ],
+        "ABI40_0_0EXLocation": [
+
+        ],
+        "ABI40_0_0EXMailComposer": [
+
+        ],
+        "ABI40_0_0EXMediaLibrary": [
+
+        ],
+        "ABI40_0_0EXNetwork": [
+
+        ],
+        "ABI40_0_0EXNotifications": [
+
+        ],
+        "ABI40_0_0EXPermissions": [
+
+        ],
+        "ABI40_0_0EXPrint": [
+
+        ],
+        "ABI40_0_0EXRandom": [
+
+        ],
+        "ABI40_0_0EXScreenCapture": [
+
+        ],
+        "ABI40_0_0EXScreenOrientation": [
+
+        ],
+        "ABI40_0_0EXSecureStore": [
+
+        ],
+        "ABI40_0_0EXSensors": [
+
+        ],
+        "ABI40_0_0EXSharing": [
+
+        ],
+        "ABI40_0_0EXSMS": [
+
+        ],
+        "ABI40_0_0EXSpeech": [
+
+        ],
+        "ABI40_0_0EXSplashScreen": [
+
+        ],
+        "ABI40_0_0EXSQLite": [
+
+        ],
+        "ABI40_0_0EXStoreReview": [
+
+        ],
+        "ABI40_0_0EXTaskManager": [
+
+        ],
+        "ABI40_0_0EXUpdates": [
+
+        ],
+        "ABI40_0_0EXVideoThumbnails": [
+
+        ],
+        "ABI40_0_0EXWebBrowser": [
+
+        ],
+        "ABI40_0_0UMAppLoader": [
+
+        ],
+        "ABI40_0_0UMBarCodeScannerInterface": [
+
+        ],
+        "ABI40_0_0UMCameraInterface": [
+
+        ],
+        "ABI40_0_0UMConstantsInterface": [
+
+        ],
+        "ABI40_0_0UMFaceDetectorInterface": [
+
+        ],
+        "ABI40_0_0UMFileSystemInterface": [
+
+        ],
+        "ABI40_0_0UMFontInterface": [
+
+        ],
+        "ABI40_0_0UMImageLoaderInterface": [
+
+        ],
+        "ABI40_0_0UMPermissionsInterface": [
+
+        ],
+        "ABI40_0_0UMSensorsInterface": [
+
+        ],
+        "ABI40_0_0UMTaskManagerInterface": [
+
+        ],
+        "Amplitude": [
+
+        ],
+        "Analytics": [
+
+        ],
+        "AppAuth": [
+
+        ],
+        "FBAudienceNetwork": [
+
+        ],
+        "FBSDKCoreKit": [
+
+        ],
+        "FBSDKLoginKit": [
+
+        ],
+        "GoogleSignIn": [
+
+        ],
+        "GoogleMaps": [
+
+        ],
+        "Google-Maps-iOS-Utils": [
+
+        ],
+        "lottie-ios": [
+
+        ],
+        "JKBigInteger2": [
+
+        ],
+        "Branch": [
+
+        ],
+        "Google-Mobile-Ads-SDK": [
+
+        ],
+        "Folly": [
+
+        ]
+      }
+    },
+    {
+      "name": "ExpoOptional",
+      "dependencies": {
+        "ABI40_0_0ExpoKit/Expo": [
+
+        ]
+      },
+      "source_files": "Optional/**/*.{h,m,mm}"
+    }
+  ]
+}
