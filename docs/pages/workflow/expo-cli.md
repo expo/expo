@@ -1,5 +1,6 @@
 ---
 title: Expo CLI
+maxHeadingDepth: 4
 ---
 
 Expo CLI is a command line app that is the main interface between a developer and Expo tools. You'll use it for a variety of tasks, such as:
