@@ -1,6 +1,5 @@
 package expo.modules.developmentclient.launcher.manifest
 
-import com.google.gson.Gson
 import expo.modules.developmentclient.helpers.await
 import expo.modules.developmentclient.helpers.fetch
 import okhttp3.OkHttpClient
@@ -24,6 +23,6 @@ class DevelopmentClientManifestParser(
 
   suspend fun parseManifest(): DevelopmentClientManifest {
     val manifestReader = downloadManifest()
-    return Gson().fromJson(manifestReader, DevelopmentClientManifest::class.java)
+    return DevelopmentClientManifest.fromJson(manifestReader)
   }
 }

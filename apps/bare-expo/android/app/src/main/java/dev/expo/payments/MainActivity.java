@@ -6,8 +6,6 @@ import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
 import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import expo.modules.developmentclient.DevelopmentClientController;
 import expo.modules.devmenu.react.DevMenuAwareReactActivity;
 
