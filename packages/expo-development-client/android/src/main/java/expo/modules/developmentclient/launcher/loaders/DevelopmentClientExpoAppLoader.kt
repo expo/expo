@@ -14,7 +14,8 @@ class DevelopmentClientExpoAppLoader(
   private val manifest: DevelopmentClientManifest,
   appHost: ReactNativeHost,
   context: Context,
-  private val activityConfigurator: DevelopmentClientExpoActivityConfigurator = DevelopmentClientExpoActivityConfigurator(manifest)
+  private val activityConfigurator: DevelopmentClientExpoActivityConfigurator =
+    DevelopmentClientExpoActivityConfigurator(manifest, context)
 ) : DevelopmentClientAppLoader(appHost, context) {
   override fun getBundleUrl(): String {
     return manifest.bundleUrl
@@ -24,6 +25,7 @@ class DevelopmentClientExpoAppLoader(
     applyOrientation(activity)
     applyUiMode(activity)
     applyStatusBarConfiguration(activity)
+    applyTaskDescription(activity)
   }
 
   override fun onReactContext(context: ReactContext) {
