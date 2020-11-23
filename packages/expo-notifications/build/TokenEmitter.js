@@ -12,7 +12,4 @@ export function addPushTokenListener(listener) {
 export function removePushTokenSubscription(subscription) {
     tokenEmitter.removeSubscription(subscription);
 }
-export function removeAllPushTokenListeners() {
-    tokenEmitter.removeAllListeners(newTokenEventName);
-}
 //# sourceMappingURL=TokenEmitter.js.map
