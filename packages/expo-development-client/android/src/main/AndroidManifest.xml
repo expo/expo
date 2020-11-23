@@ -4,6 +4,14 @@
   <application>
     <activity
       android:name=".launcher.DevelopmentClientActivity"
-      android:screenOrientation="portrait" />
+      android:screenOrientation="portrait"
+      android:theme="@style/Theme.DevelopmentClient" >
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="${developmentClientSchema}"  />
+      </intent-filter>
+    </activity>
   </application>
 </manifest>
