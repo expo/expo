@@ -12,7 +12,7 @@ import java.util.List;
 
 import expo.modules.notifications.badge.BadgeModule;
 import expo.modules.notifications.badge.ExpoBadgeManager;
-import expo.modules.notifications.installationid.InstallationIdProvider;
+import expo.modules.notifications.serverregistration.ServerRegistrationModule;
 import expo.modules.notifications.notifications.NotificationManager;
 import expo.modules.notifications.notifications.categories.ExpoNotificationCategoriesModule;
 import expo.modules.notifications.notifications.categories.serializers.ExpoNotificationsCategoriesSerializer;
@@ -36,7 +36,7 @@ public class NotificationsPackage extends BasePackage {
       new NotificationsEmitter(context),
       new NotificationsHandler(context),
       new NotificationScheduler(context),
-      new InstallationIdProvider(context),
+      new ServerRegistrationModule(context),
       new NotificationPermissionsModule(context),
       new NotificationChannelManagerModule(context),
       new ExpoNotificationPresentationModule(context),

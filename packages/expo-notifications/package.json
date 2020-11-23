@@ -4,6 +4,9 @@
   "description": "Notifications module",
   "main": "build/index.js",
   "types": "build/index.d.ts",
+  "sideEffects": [
+    "./build/DevicePushTokenAutoRegistration.fx.js"
+  ],
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
@@ -40,13 +43,17 @@
     "unimodules-permissions-interface": "*"
   },
   "dependencies": {
+    "@ide/backoff": "^1.0.0",
+    "abort-controller": "^3.0.0",
     "badgin": "^1.1.5",
     "expo-application": "~2.4.0",
     "expo-constants": "9.3.0",
     "uuid": "^3.4.0"
   },
   "devDependencies": {
+    "@types/node-fetch": "^2.5.7",
     "@types/uuid": "^3.4.7",
-    "expo-module-scripts": "~1.2.0"
+    "expo-module-scripts": "~1.2.0",
+    "node-fetch": "^2.6.1"
   }
 }
