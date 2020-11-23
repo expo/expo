@@ -44,6 +44,8 @@ Gets the user agent string which would be included in requests sent by a web vie
 
 ### `Constants.installationId`
 
+> ⚠️ **This property is deprecated and will be removed in SDK 43. Please implement it on your own using `expo-application`'s [`androidId`](../application/#applicationandroidid) on Android and a storage API such as [`expo-secure-store`](../securestore/) on iOS and `localStorage` on Web.**
+
 An identifier that is unique to this particular device and installation of the Expo client.
 
 ### `Constants.isDevice`
