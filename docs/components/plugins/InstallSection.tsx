@@ -44,7 +44,7 @@ const InstallSection: React.FC<Props> = ({
     {hideBareInstructions ? null : (
       <p css={STYLES_P}>
         If you're installing this in a{' '}
-        <a css={STYLES_LINK} href="../../introduction/managed-vs-bare/#bare-workflow">
+        <a css={STYLES_LINK} href="/introduction/managed-vs-bare/#bare-workflow">
           bare React Native app
         </a>
         , you should also follow{' '}
