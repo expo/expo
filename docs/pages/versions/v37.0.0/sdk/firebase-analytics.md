@@ -24,7 +24,7 @@ When using the web-platform, you'll also need to run `expo install firebase`, wh
 ## Configuration
 
 To use this package, the native Firebase configurations needs to be added to your app.
-[Please follow this guide on how to set up Native Firebase.](../../guides/setup-native-firebase)
+[Please follow this guide on how to set up Native Firebase.](../../../guides/setup-native-firebase.md)
 
 ## Expo client: Limitations & configuration
 

@@ -17,17 +17,14 @@ const STYLES_EXTERNAL_LINK = css`
   }
 `;
 
-// TODO: figure out internal linking, especially relative links like:
-//   - from: /build/page, link: ../another -> should be /build/another, currently is /another
-//
-// function isLinkAbsolute(href?: string) {
-//   return href?.includes('://');
-// }
-//
-// const Link: React.FC<LinkProps> = props =>
-//   isLinkAbsolute(props.href) ? <ExternalLink {...props} /> : <InternalLink {...props} />;
-//
-// export default Link;
+function isLinkAbsolute(href?: string) {
+  return href?.includes('://');
+}
+
+const Link: React.FC<LinkProps> = props =>
+  isLinkAbsolute(props.href) ? <ExternalLink {...props} /> : <InternalLink {...props} />;
+
+export default Link;
 
 export const InternalLink: React.FC<LinkProps> = ({ href, children }) => (
   <NextLink href={href || ''} passHref>
@@ -40,5 +37,3 @@ export const ExternalLink: React.FC<LinkProps> = ({ href, children }) => (
     {children}
   </a>
 );
-
-export default ExternalLink;

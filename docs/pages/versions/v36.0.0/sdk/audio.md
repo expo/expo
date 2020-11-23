@@ -32,7 +32,7 @@ Asks the user to grant permissions for audio recording. Alias for `Permissions.a
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
 ### `Audio.getPermissionsAsync()`
 
@@ -40,7 +40,7 @@ Checks user's permissions for audio recording. Alias for `Permissions.getAsync(P
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
 ## Enabling Audio and customizing Audio Mode
 
@@ -165,11 +165,11 @@ A static convenience method to construct and load a sound is also provided:
     - A dictionary of the form `{ uri: string, headers?: { [string]: string }, overrideFileExtensionAndroid?: string }` with a network URL pointing to a media file on the web, an optional headers object passed in a network request to the `uri` and an optional Android-specific `overrideFileExtensionAndroid` string overriding extension inferred from the URL.
       The `overrideFileExtensionAndroid` property may come in handy if the player receives an URL like `example.com/play` which redirects to `example.com/player.m3u8`. Setting this property to `m3u8` would allow the Android player to properly infer the content type of the media and use proper media file reader.
     - `require('path/to/file')` for an audio file asset in the source code directory.
-    - An [`Asset`](../asset/) object for an audio file asset.
+    - An [`Asset`](asset.md) object for an audio file asset.
 
-  - **initialStatus (_PlaybackStatusToSet_)** -- The initial intended `PlaybackStatusToSet` of the sound, whose values will override the default initial playback status. This value defaults to `{}` if no parameter is passed. See the [AV documentation](../av/) for details on `PlaybackStatusToSet` and the default initial playback status.
+  - **initialStatus (_PlaybackStatusToSet_)** -- The initial intended `PlaybackStatusToSet` of the sound, whose values will override the default initial playback status. This value defaults to `{}` if no parameter is passed. See the [AV documentation](av.md) for details on `PlaybackStatusToSet` and the default initial playback status.
 
-  - **onPlaybackStatusUpdate (_function_)** -- A function taking a single parameter `PlaybackStatus`. This value defaults to `null` if no parameter is passed. See the [AV documentation](../av/) for details on the functionality provided by `onPlaybackStatusUpdate`
+  - **onPlaybackStatusUpdate (_function_)** -- A function taking a single parameter `PlaybackStatus`. This value defaults to `null` if no parameter is passed. See the [AV documentation](av.md) for details on the functionality provided by `onPlaybackStatusUpdate`
 
   - **downloadFirst (_boolean_)** -- If set to true, the system will attempt to download the resource to the device before loading. This value defaults to `true`. Note that at the moment, this will only work for `source`s of the form `require('path/to/file')` or `Asset` objects.
 
@@ -178,7 +178,7 @@ A static convenience method to construct and load a sound is also provided:
   A `Promise` that is rejected if creation failed, or fulfilled with the following dictionary if creation succeeded:
 
   - `sound` : the newly created and loaded `Sound` object.
-  - `status` : the `PlaybackStatus` of the `Sound` object. See the [AV documentation](../av/) for further information.
+  - `status` : the `PlaybackStatus` of the `Sound` object. See the [AV documentation](av.md) for further information.
 
   #### Example
 
@@ -194,7 +194,7 @@ A static convenience method to construct and load a sound is also provided:
   }
   ```
 
-The rest of the API for `Audio.Sound` is the same as the imperative playback API for `Video`-- see the [AV documentation](../av/) for further information:
+The rest of the API for `Audio.Sound` is the same as the imperative playback API for `Video`-- see the [AV documentation](av.md) for further information:
 
 - `soundObject.loadAsync(source, initialStatus = {}, downloadFirst = true)`
 
@@ -232,7 +232,7 @@ The rest of the API for `Audio.Sound` is the same as the imperative playback API
 
 This class represents an audio recording. After creating an instance of this class, `prepareToRecordAsync` must be called in order to record audio. Once recording is finished, call `stopAndUnloadAsync`. Note that only one recorder is allowed to exist in the state between `prepareToRecordAsync` and `stopAndUnloadAsync` at any given time.
 
-Note that your experience must request audio recording permissions in order for recording to function. See the [`Permissions` module](../permissions/) for more details. Additionally, audio recording is [not supported in the iOS Simulator](../../workflow/ios-simulator/#limitations).
+Note that your experience must request audio recording permissions in order for recording to function. See the [`Permissions` module](permissions.md) for more details. Additionally, audio recording is [not supported in the iOS Simulator](../../../workflow/ios-simulator.md#limitations).
 
 #### Returns
 
@@ -352,16 +352,16 @@ try {
 
   #### Parameters
 
-  - **initialStatus (_PlaybackStatusToSet_)** -- The initial intended `PlaybackStatusToSet` of the sound, whose values will override the default initial playback status. This value defaults to `{}` if no parameter is passed. See the [AV documentation](../av/) for details on `PlaybackStatusToSet` and the default initial playback status.
+  - **initialStatus (_PlaybackStatusToSet_)** -- The initial intended `PlaybackStatusToSet` of the sound, whose values will override the default initial playback status. This value defaults to `{}` if no parameter is passed. See the [AV documentation](av.md) for details on `PlaybackStatusToSet` and the default initial playback status.
 
-  - **onPlaybackStatusUpdate (_function_)** -- A function taking a single parameter `PlaybackStatus`. This value defaults to `null` if no parameter is passed. See the [AV documentation](../av/) for details on the functionality provided by `onPlaybackStatusUpdate`
+  - **onPlaybackStatusUpdate (_function_)** -- A function taking a single parameter `PlaybackStatus`. This value defaults to `null` if no parameter is passed. See the [AV documentation](av.md) for details on the functionality provided by `onPlaybackStatusUpdate`
 
   #### Returns
 
   A `Promise` that is rejected if creation failed, or fulfilled with the following dictionary if creation succeeded:
 
   - `sound` : the newly created and loaded `Sound` object.
-  - `status` : the `PlaybackStatus` of the `Sound` object. See the [AV documentation](../av/) for further information.
+  - `status` : the `PlaybackStatus` of the `Sound` object. See the [AV documentation](av.md) for further information.
 
 ### `RecordingOptions`
 

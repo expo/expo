@@ -9,7 +9,7 @@ This module allows your app to interact with other apps via deep links. It provi
 
 This module is an extension of the React Native [Linking module](https://reactnative.dev/docs/linking.html), meaning that all methods in the RN module can be accessed via `Linking`, on top of the extra methods provided by Expo (detailed here). **These methods only apply to the managed workflow, you cannot use them in a bare React Native app**.
 
-For information and examples on how to use this API and the `react-native` Linking API in your app, take a look at [this guide](../../workflow/linking/).
+For information and examples on how to use this API and the `react-native` Linking API in your app, take a look at [this guide](../../../workflow/linking.md).
 
 <PlatformsSection android emulator ios simulator web />
 

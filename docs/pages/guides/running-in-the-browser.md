@@ -39,7 +39,7 @@ Here is how to use the web portion of the modules in a project bootstrapped with
 - Install the latest version of the Expo CLI: `npm i -g expo-cli`
 - Add web dependencies: `yarn add react-native-web@~0.11 react-dom expo`
   - On web all of the unused Expo, and React Native modules will be tree-shaken during the production build.
-- Modify (or create) your project's [`app.json`](../../workflow/configuration/):
+- Modify (or create) your project's [`app.json`](../workflow/configuration.md):
 
   ```diff
   {

@@ -9,7 +9,7 @@ An Apple Developer account is needed to build an iOS standalone app, but a Googl
 account is not needed to build the Android standalone app. If you'd like to submit to either app
 store, you will need a developer account on that store.
 
-It's a good idea to read the best practices about [Deploying to App Stores](../app-stores/) to
+It's a good idea to read the best practices about [Deploying to App Stores](app-stores.md) to
 ensure your app is in good shape to get accepted into the Apple and Google marketplaces. We can
 generate builds for you, but it's up to you to make your app awesome.
 
@@ -51,20 +51,20 @@ to launch Ubuntu at least once. After that, use an Admin powershell to run:
 
 There are other options you might want to add to `app.json`. We have only covered what is
 required. For example, some people like to configure their own build number, linking scheme, and
-more. We highly recommend you read through [Configuration with app.json / app.config.js](../../workflow/configuration/) for the
-full spec. This is also your last chance to double check our [recommendations](../app-stores/)
+more. We highly recommend you read through [Configuration with app.json / app.config.js](../workflow/configuration.md) for the
+full spec. This is also your last chance to double check our [recommendations](app-stores.md)
 for App Store metadata.
 
 ## 3. Start the build
 
 Run `expo build:android` or `expo build:ios`. If you don't already have a packager running for this project, `expo` will start one for you.
 
-**Please note:** When you run `expo build`, Expo automatically publishes your app (with `expo publish`). In order to avoid accidentally publishing changes to your production app, you may want to use [release channels](../release-channels/).
+**Please note:** When you run `expo build`, Expo automatically publishes your app (with `expo publish`). In order to avoid accidentally publishing changes to your production app, you may want to use [release channels](release-channels.md).
 
 ### If you choose to build for Android
 
 When building for android you can choose to build APK (`expo build:android -t apk`) or Android App Bundle (`expo build:android -t app-bundle`).
-App bundles are recommended, but you have to make sure the [Google Play App Signing](../app-signing) is enabled for your project,
+App bundles are recommended, but you have to make sure the [Google Play App Signing](app-signing.md) is enabled for your project,
 you can read more about it [here](https://developer.android.com/guide/app-bundle).
 
 The first time you build the project you will be asked whether you'd like to upload a keystore or
@@ -120,7 +120,7 @@ Note: Expo does not keep your Apple ID or your Apple ID password.
   I will provide all the credentials and files needed, Expo does limited validation
 ```
 
-Unless you're very familiar with iOS credentials already, it's best to let Expo handle the creation & management of all your credentials for you. If you'd like to know more about iOS credentials, we've written a guide with everything you need to know [here](../app-signing/).
+Unless you're very familiar with iOS credentials already, it's best to let Expo handle the creation & management of all your credentials for you. If you'd like to know more about iOS credentials, we've written a guide with everything you need to know [here](app-signing.md).
 
 If you plan on providing your own certificates, we recommend creating them in the [Apple Developer Portal](https://developer.apple.com/account/resources/certificates/list).
 
@@ -151,7 +151,7 @@ to start the build with `--clear-push-cert`. We will remove the legacy certifica
 
 When one of our building machines is free, it'll start building your app. You can check how long you'll wait on the [Turtle status](https://expo.io/turtle-status) site. We'll print a url you can visit (such as `expo.io/builds/some-unique-id`) to watch your build progress and access the build logs. Alternatively, you can check up on it by running `expo build:status`. When it's done, you'll see the url to your app file - an `.apk`, `.aab` (both Android), or `.ipa` (iOS) file. Copy and paste the link into your browser to download the file.
 
-> Want to be notified programmatically as soon as your build is done? [Here's how you can set that up with webhooks](../webhooks/).
+> Want to be notified programmatically as soon as your build is done? [Here's how you can set that up with webhooks](webhooks.md).
 
 ## 5. Test it on your device or simulator
 
@@ -168,17 +168,17 @@ When one of our building machines is free, it'll start building your app. You ca
 
 ## 6. Submit it to the appropriate store
 
-Read the guide on [Uploading Apps to the Apple App Store and Google Play](../uploading-apps/).
+Read the guide on [Uploading Apps to the Apple App Store and Google Play](uploading-apps.md).
 
 ## 7. Update your app
 
-For the most part, when you want to update your app, just Publish again from Expo CLI. Your users will download the new JS the next time they open the app. To ensure your users have a seamless experience downloading JS updates, you may want to enable [background JS downloads](../../guides/offline-support/). However, there are a couple reasons why you might want to rebuild and resubmit the native binaries:
+For the most part, when you want to update your app, just Publish again from Expo CLI. Your users will download the new JS the next time they open the app. To ensure your users have a seamless experience downloading JS updates, you may want to enable [background JS downloads](../guides/offline-support.md). However, there are a couple reasons why you might want to rebuild and resubmit the native binaries:
 
 - If you want to change native metadata like the app's name or icon
 - If you upgrade to a newer SDK version of your app (which requires new native code)
 
-To keep track of this, you'll need to update your app's `versionCode` and `buildNumber` in app.json (see [here](../../distribution/app-stores/#versioning-your-app) for details).
+To keep track of this, you'll need to update your app's `versionCode` and `buildNumber` in app.json (see [here](../distribution/app-stores.md#versioning-your-app) for details).
 
-It is a good idea to glance through the [app.json documentation](../../workflow/configuration/) to get an idea of all the properties you can change, e.g. the icons, deep linking url scheme, handset/tablet support, and a lot more.
+It is a good idea to glance through the [app.json documentation](../workflow/configuration.md) to get an idea of all the properties you can change, e.g. the icons, deep linking url scheme, handset/tablet support, and a lot more.
 
 If you run into problems during this process, we're more than happy to help out! [Join our Forums](https://forums.expo.io/) and let us know if you have any questions.
