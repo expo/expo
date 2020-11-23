@@ -1,52 +1,45 @@
 package expo.modules.developmentclient.launcher.loaders
 
 import android.content.Context
-import android.content.pm.ActivityInfo
-import android.os.Build
-import androidx.appcompat.app.AppCompatDelegate
+import android.graphics.Color
+import android.view.View
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactNativeHost
+import com.facebook.react.bridge.ReactContext
+import expo.modules.developmentclient.helpers.isValidColor
+import expo.modules.developmentclient.launcher.configurators.DevelopmentClientExpoActivityConfigurator
 import expo.modules.developmentclient.launcher.manifest.DevelopmentClientManifest
 
 class DevelopmentClientExpoAppLoader(
   private val manifest: DevelopmentClientManifest,
   appHost: ReactNativeHost,
-  context: Context
+  context: Context,
+  private val activityConfigurator: DevelopmentClientExpoActivityConfigurator =
+    DevelopmentClientExpoActivityConfigurator(manifest, context)
 ) : DevelopmentClientAppLoader(appHost, context) {
   override fun getBundleUrl(): String {
     return manifest.bundleUrl
   }
 
-  override fun onCreate(activity: ReactActivity) {
+  override fun onCreate(activity: ReactActivity) = with(activityConfigurator) {
     applyOrientation(activity)
     applyUiMode(activity)
+    applyStatusBarConfiguration(activity)
+    applyTaskDescription(activity)
   }
 
-  private fun applyOrientation(activity: ReactActivity) {
-    when (manifest.orientation) {
-      "default" -> activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-      "portrait" -> activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-      "landscape" -> activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-      else -> activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+  override fun onReactContext(context: ReactContext) {
+    context.currentActivity?.run {
+      val rootView = findViewById<View>(android.R.id.content).rootView
+      applyBackgroundColor(rootView)
     }
   }
 
-  private fun applyUiMode(activity: ReactActivity) {
-    val uiMode = manifest
-      .android
-      ?.userInterfaceStyle
-      ?.let {
-        when (it) {
-          "automatic" -> {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-              AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
-            } else AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-          }
-          "dark" -> AppCompatDelegate.MODE_NIGHT_YES
-          "light" -> AppCompatDelegate.MODE_NIGHT_NO
-          else -> AppCompatDelegate.MODE_NIGHT_NO
-        }
-      } ?: AppCompatDelegate.MODE_NIGHT_NO
-    activity.delegate.localNightMode = uiMode
+  private fun applyBackgroundColor(view: View) {
+    val backgroundColor = manifest.backgroundColor ?: return
+    if (!isValidColor(backgroundColor)) {
+      return
+    }
+    view.setBackgroundColor(Color.parseColor(backgroundColor))
   }
 }
