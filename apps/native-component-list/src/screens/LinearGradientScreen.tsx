@@ -5,7 +5,7 @@ import { Image, Platform, Animated, ScrollView, StyleSheet, Text, View } from 'r
 import MonoText from '../components/MonoText';
 
 // https://github.com/expo/expo/issues/10599
-const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient); 
+const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
 function incrementColor(color: string, step: number) {
   const intColor = parseInt(color.substr(1), 16);
@@ -59,7 +59,10 @@ export default class LinearGradientScreen extends React.Component<{}, State> {
           alignItems: 'stretch',
           paddingVertical: 10,
         }}>
-        <AnimatedLinearGradient style={{display: 'none'}} colors={[this.state.colorTop, this.state.colorBottom]}/>
+        <AnimatedLinearGradient
+          style={{ display: 'none' }}
+          colors={[this.state.colorTop, this.state.colorBottom]}
+        />
         <ColorsTest colors={[this.state.colorTop, this.state.colorBottom]} />
         <LocationsTest locations={[location, 1.0 - location]} />
         <ControlPointTest start={[position, 0]} />
