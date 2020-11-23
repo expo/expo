@@ -15,7 +15,7 @@ class DevelopmentClientModule(reactContext: ReactApplicationContext?) : ReactCon
   }
 
   @ReactMethod
-  fun loadApp(url: String, options: ReadableMap?, promise: Promise) {
+  fun loadApp(url: String, promise: Promise) {
     runBlocking {
       try {
         instance.loadApp(url)

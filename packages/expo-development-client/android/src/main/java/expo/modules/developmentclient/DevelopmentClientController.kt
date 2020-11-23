@@ -14,6 +14,8 @@ import expo.modules.developmentclient.launcher.loaders.DevelopmentClientExpoAppL
 import expo.modules.developmentclient.launcher.loaders.DevelopmentClientReactNativeAppLoader
 import expo.modules.developmentclient.launcher.manifest.DevelopmentClientManifestParser
 import expo.modules.developmentclient.react.DevelopmentClientReactActivityRedirectDelegate
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 
 // Use this to load from a development server for the development client launcher UI
@@ -37,7 +39,7 @@ class DevelopmentClientController private constructor(
   var mode = Mode.LAUNCHER
 
   suspend fun loadApp(url: String) {
-    ensureAppHostWasClear()
+    ensureAppHostWasCleared()
 
     val parsedUrl = url.replace("exp", "http")
     val manifestParser = DevelopmentClientManifestParser(httpClient, parsedUrl)
@@ -66,15 +68,17 @@ class DevelopmentClientController private constructor(
   }
 
   fun navigateToLauncher() {
-    ensureAppHostWasClear()
+    ensureAppHostWasCleared()
 
     mode = Mode.LAUNCHER
     mContext.applicationContext.startActivity(createLauncherIntent())
   }
 
-  private fun ensureAppHostWasClear() {
+  private fun ensureAppHostWasCleared() {
     if (mAppHost.hasInstance()) {
-      mAppHost.reactInstanceManager.destroy()
+      runBlocking(Dispatchers.Main) {
+        mAppHost.reactInstanceManager.destroy()
+      }
     }
   }
 
