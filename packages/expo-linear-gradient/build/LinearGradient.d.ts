@@ -45,6 +45,6 @@ export declare type LinearGradientProps = {
 /**
  * Renders a native view that transitions between multiple colors in a linear direction.
  */
-export default class LinearGradient extends React.Component<LinearGradientProps> {
+export declare class LinearGradient extends React.Component<LinearGradientProps> {
     render(): JSX.Element;
 }

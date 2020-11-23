@@ -4,7 +4,7 @@ import NativeLinearGradient from './NativeLinearGradient';
 /**
  * Renders a native view that transitions between multiple colors in a linear direction.
  */
-export default class LinearGradient extends React.Component {
+export class LinearGradient extends React.Component {
     render() {
         const { colors, locations, start, end, ...props } = this.props;
         let resolvedLocations = locations;

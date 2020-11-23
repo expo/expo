@@ -47,7 +47,7 @@ export type LinearGradientProps = {
 /**
  * Renders a native view that transitions between multiple colors in a linear direction.
  */
-export default class LinearGradient extends React.Component<LinearGradientProps> {
+export class LinearGradient extends React.Component<LinearGradientProps> {
   render() {
     const { colors, locations, start, end, ...props } = this.props;
     let resolvedLocations = locations;
