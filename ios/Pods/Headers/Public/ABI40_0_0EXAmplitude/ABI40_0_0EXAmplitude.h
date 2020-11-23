@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI40_0_0/Expo/EXAmplitude/ABI40_0_0EXAmplitude/ABI40_0_0EXAmplitude.h

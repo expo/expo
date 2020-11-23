@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI40_0_0/Expo/UMFontInterface/ABI40_0_0UMFontInterface/ABI40_0_0UMFontProcessorInterface.h

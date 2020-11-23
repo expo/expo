@@ -1,0 +1,28 @@
+{
+  "name": "ABI40_0_0React-RCTActionSheet",
+  "version": "0.63.2",
+  "summary": "An API for displaying iOS action sheets and share sheets.",
+  "homepage": "https://reactnative.dev/",
+  "documentation_url": "https://reactnative.dev/docs/actionsheetios",
+  "license": "MIT",
+  "authors": "Facebook, Inc. and its affiliates",
+  "platforms": {
+    "ios": "10.0",
+    "tvos": "10.0"
+  },
+  "source": {
+    "path": "."
+  },
+  "source_files": "*.{m}",
+  "preserve_paths": [
+    "package.json",
+    "LICENSE",
+    "LICENSE-docs"
+  ],
+  "header_dir": "ABI40_0_0RCTActionSheet",
+  "dependencies": {
+    "ABI40_0_0React-Core/RCTActionSheetHeaders": [
+      "0.63.2"
+    ]
+  }
+}

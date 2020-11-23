@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI40_0_0/Expo/ExpoKit/Core/ABI40_0_0EXVersionManager.h

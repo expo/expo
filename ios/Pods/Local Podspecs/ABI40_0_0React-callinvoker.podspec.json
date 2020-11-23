@@ -1,0 +1,17 @@
+{
+  "name": "ABI40_0_0React-callinvoker",
+  "version": "0.63.2",
+  "summary": "-",
+  "homepage": "https://reactnative.dev/",
+  "license": "MIT",
+  "authors": "Facebook, Inc. and its affiliates",
+  "platforms": {
+    "ios": "10.0",
+    "tvos": "10.0"
+  },
+  "source": {
+    "path": "."
+  },
+  "source_files": "**/*.{cpp,h}",
+  "header_dir": "ABI40_0_0ReactCommon"
+}
