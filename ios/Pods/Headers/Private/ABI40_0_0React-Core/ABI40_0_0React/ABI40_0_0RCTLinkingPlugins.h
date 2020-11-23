@@ -1,0 +1,1 @@
+../../../../../versioned-react-native/ABI40_0_0/ReactNative/Libraries/LinkingIOS/ABI40_0_0RCTLinkingPlugins.h

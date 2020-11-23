@@ -1,0 +1,23 @@
+{
+  "name": "ABI40_0_0EXBattery",
+  "version": "3.1.0",
+  "summary": "Provides battery information for the physical device, as well as corresponding event listeners.",
+  "description": "Provides battery information for the physical device, as well as corresponding event listeners.",
+  "license": "MIT",
+  "authors": "650 Industries, Inc.",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/battery/",
+  "platforms": {
+    "ios": "10.0"
+  },
+  "source": {
+    "git": "https://github.com/expo/expo.git"
+  },
+  "source_files": "ABI40_0_0EXBattery/**/*.{h,m}",
+  "preserve_paths": "ABI40_0_0EXBattery/**/*.{h,m}",
+  "requires_arc": true,
+  "dependencies": {
+    "ABI40_0_0UMCore": [
+
+    ]
+  }
+}

@@ -1,0 +1,1 @@
+../../../../../versioned-react-native/ABI40_0_0/ReactNative/React/Modules/ABI40_0_0RCTUIManagerObserverCoordinator.h
