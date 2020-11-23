@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed TS types of `getIosIdForVendorAsync` method as it may return `null` in non-iOS environments. ([#10997](https://github.com/expo/expo/pull/10997) by [@sjchmiela](https://github.com/sjchmiela))
+
 ## 2.4.0 — 2020-11-17
 
 _This version does not introduce any user-facing changes._
