@@ -36,7 +36,7 @@ export async function setAutoServerRegistrationEnabledAsync(enabled: boolean) {
     throw new UnavailabilityError('ServerRegistrationModule', 'setRegistrationInfoAsync');
   }
 
-  await ServerRegistrationModule.setRegistrationInfoAsync?.(
+  await ServerRegistrationModule.setRegistrationInfoAsync(
     enabled ? JSON.stringify({ isEnabled: enabled }) : null
   );
 }

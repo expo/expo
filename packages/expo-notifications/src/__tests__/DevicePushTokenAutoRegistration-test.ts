@@ -4,7 +4,7 @@ import { mocked } from 'ts-jest/utils';
 import * as DevicePushTokenAutoRegistration from '../DevicePushTokenAutoRegistration.fx';
 import { DevicePushToken } from '../Tokens.types';
 import getDevicePushTokenAsync from '../getDevicePushTokenAsync';
-import { updatePushTokenAsync } from '../utils/updatePushTokenAsync';
+import { updateDevicePushTokenAsync } from '../utils/updateDevicePushTokenAsync';
 
 const ENABLED_REGISTRATION_FIXTURE: DevicePushTokenAutoRegistration.DevicePushTokenRegistration = {
   isEnabled: true,
@@ -13,7 +13,7 @@ const DISABLED_REGISTRATION_FIXTURE: DevicePushTokenAutoRegistration.DevicePushT
   isEnabled: false,
 };
 
-jest.mock('../utils/updatePushTokenAsync');
+jest.mock('../utils/updateDevicePushTokenAsync');
 jest.mock('../ServerRegistrationModule');
 jest.mock('../getDevicePushTokenAsync');
 
@@ -37,7 +37,7 @@ describe('__handlePersistedRegistrationInfoAsync', () => {
       JSON.stringify(DISABLED_REGISTRATION_FIXTURE)
     );
     expect(getDevicePushTokenAsync).not.toBeCalled();
-    expect(updatePushTokenAsync).not.toBeCalled();
+    expect(updateDevicePushTokenAsync).not.toBeCalled();
   });
 
   it(`does try to update registration if it's enabled`, async () => {
@@ -49,7 +49,7 @@ describe('__handlePersistedRegistrationInfoAsync', () => {
     await DevicePushTokenAutoRegistration.__handlePersistedRegistrationInfoAsync(
       JSON.stringify(ENABLED_REGISTRATION_FIXTURE)
     );
-    expect(updatePushTokenAsync).toBeCalledWith(
+    expect(updateDevicePushTokenAsync).toBeCalledWith(
       expect.any(AbortSignal),
       mockPendingDevicePushToken
     );

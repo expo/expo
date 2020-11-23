@@ -10,15 +10,19 @@ const updateDevicePushTokenUrl = 'https://exp.host/--/api/v2/push/updateDeviceTo
 
 export async function updateDevicePushTokenAsync(signal: AbortSignal, token: DevicePushToken) {
   const doUpdateDevicePushTokenAsync = async (retry: () => void) => {
-    try {
-      const body = {
-        development: await shouldUseDevelopmentNotificationService(),
-        deviceToken: token.data,
-        appId: Application.applicationId,
-        deviceId: await getDeviceIdAsync(),
-        type: getTypeOfToken(token),
-      };
+    const [development, deviceId] = await Promise.all([
+      shouldUseDevelopmentNotificationService(),
+      getDeviceIdAsync(),
+    ]);
+    const body = {
+      deviceId,
+      development,
+      deviceToken: token.data,
+      appId: Application.applicationId,
+      type: getTypeOfToken(token),
+    };
 
+    try {
       const response = await fetch(updateDevicePushTokenUrl, {
         method: 'POST',
         headers: {
@@ -26,27 +30,12 @@ export async function updateDevicePushTokenAsync(signal: AbortSignal, token: Dev
         },
         body: JSON.stringify(body),
         signal,
-      }).catch(error => {
-        // Error returned if the request is aborted should have 'AbortError'. In
-        // React Native fetch is polyfilled using `whatwg-fetch` which:
-        // - creates `AbortError`s like this
-        //   https://github.com/github/fetch/blob/75d9455d380f365701151f3ac85c5bda4bbbde76/fetch.js#L505
-        // - which creates exceptions like
-        //   https://github.com/github/fetch/blob/75d9455d380f365701151f3ac85c5bda4bbbde76/fetch.js#L490-L494
-        if (error.name === 'AbortError') {
-          throw error;
-        } else {
-          throw new CodedError(
-            'ERR_NOTIFICATIONS_NETWORK_ERROR',
-            `Error encountered while updating device push token in server: ${error}.`
-          );
-        }
       });
 
       // Help debug erroring servers
       if (!response.ok) {
         console.debug(
-          '[expo-notifications] Error encountered while updating device push token in server:',
+          '[expo-notifications] Error encountered while updating the device push token with the server:',
           await response.text()
         );
       }
@@ -56,26 +45,25 @@ export async function updateDevicePushTokenAsync(signal: AbortSignal, token: Dev
         retry();
       }
     } catch (e) {
-      // We don't consider AbortError a failure, it's a sign somewhere else the
-      // request is expected to succeed and we don't need this one, so let's
-      // just return.
+      // Error returned if the request is aborted should be an 'AbortError'. In
+      // React Native fetch is polyfilled using `whatwg-fetch` which:
+      // - creates `AbortError`s like this
+      //   https://github.com/github/fetch/blob/75d9455d380f365701151f3ac85c5bda4bbbde76/fetch.js#L505
+      // - which creates exceptions like
+      //   https://github.com/github/fetch/blob/75d9455d380f365701151f3ac85c5bda4bbbde76/fetch.js#L490-L494
       if (e.name === 'AbortError') {
+        // We don't consider AbortError a failure, it's a sign somewhere else the
+        // request is expected to succeed and we don't need this one, so let's
+        // just return.
         return;
       }
 
       console.warn(
-        '[expo-notifications] Error thrown while updating device push token in server:',
+        '[expo-notifications] Error thrown while updating the device push token with the server:',
         e
       );
 
-      // We only want to retry if it was a network error.
-      // Other error may be JSON.parse error which we can do nothing about.
-      if (e instanceof CodedError && (e as CodedError).code === 'ERR_NOTIFICATIONS_NETWORK_ERROR') {
-        retry();
-      } else {
-        // If we aren't going to try again, throw the error
-        throw e;
-      }
+      retry();
     }
   };
 
@@ -124,7 +112,7 @@ async function getDeviceIdAsync() {
   } catch (e) {
     throw new CodedError(
       'ERR_NOTIFICATIONS_DEVICE_ID',
-      `Could not have fetched installation ID of the application: ${e}.`
+      `Could not fetch the installation ID of the application: ${e}.`
     );
   }
 }
