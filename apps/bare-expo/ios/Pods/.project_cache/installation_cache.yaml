@@ -1456,10 +1456,20 @@ CACHE_KEYS:
     SPECS:
       - OpenSSL-Universal (1.0.2.20)
       - OpenSSL-Universal/Static (1.0.2.20)
-  Pods-BareExpo:
+  Pods-BareExpoMain-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 9656236397148a45097f16aae1124f2d
-      Release: e19cea2ea9a200ef52cdf331c23ad3f9
+      Debug: 806dc0c1e7d7f905e119f079192de50a
+      Release: d8f725df6d006338738577b3101ab906
+    FILES:
+      - "${PODS_CONFIGURATION_BUILD_DIR}/EXDevMenu/EXDevMenu.bundle"
+      - "${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle"
+      - "${PODS_ROOT}/Amplitude/Sources/Amplitude/ComodoRsaDomainValidationCA.der"
+      - "${PODS_ROOT}/FBSDKCoreKit/FacebookSDKStrings.bundle"
+      - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
+  Pods-BareExpoMain-BareExpoDetox:
+    BUILD_SETTINGS_CHECKSUM:
+      Debug: 2c6348d227e12af3d601d9753e9f38d5
+      Release: 1fbd6e2b1ca60c9a59bb94291637801e
     FILES:
       - "${PODS_CONFIGURATION_BUILD_DIR}/EXDevMenu/EXDevMenu.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle"
@@ -1468,8 +1478,8 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 51fc1c25a0ae571f582b303098c9ed38
-      Release: 9a6ca75a2a8b2389b47459913420d009
+      Debug: 353980e500f1416ef4f48f8bd07311fa
+      Release: 353980e500f1416ef4f48f8bd07311fa
   PromisesObjC:
     BUILD_SETTINGS_CHECKSUM:
       PromisesObjC:

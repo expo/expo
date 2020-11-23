@@ -382,6 +382,22 @@ Pods-BareExpo:
   LABEL: Pods-BareExpo
   PROJECT_PATH: Pods.xcodeproj
   UUID: C616BB9F650D110E835D02A3250F302E
+Pods-BareExpo-BareExpoDetox:
+  LABEL: Pods-BareExpo-BareExpoDetox
+  PROJECT_PATH: Pods.xcodeproj
+  UUID: 3073489CFE29413CFF52BC8FA82CA34B
+Pods-BareExpoDetox:
+  LABEL: Pods-BareExpoDetox
+  PROJECT_PATH: Pods.xcodeproj
+  UUID: 8486B2A5C2EC037965B3C875451C8BBC
+Pods-BareExpoMain-BareExpo:
+  LABEL: Pods-BareExpoMain-BareExpo
+  PROJECT_PATH: Pods.xcodeproj
+  UUID: 91A6EDFEF92AA22797652479C672593B
+Pods-BareExpoMain-BareExpoDetox:
+  LABEL: Pods-BareExpoMain-BareExpoDetox
+  PROJECT_PATH: Pods.xcodeproj
+  UUID: CAEFB414F90EEAE55DD079ADD8D21C4B
 Pods-BareExpoTests:
   LABEL: Pods-BareExpoTests
   PROJECT_PATH: Pods.xcodeproj

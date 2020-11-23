@@ -21,8 +21,7 @@ require_relative "#{modules_path}/react-native-unimodules/cocoapods.rb"
 require_relative "#{modules_path}/@react-native-community/cli-platform-ios/native_modules"
 require_relative "#{rnPrefix}/scripts/react_native_pods"
 
-target 'BareExpo' do
-
+abstract_target 'BareExpoMain' do
   # react-native-cli auto-linking
   config = use_native_modules!
 
@@ -42,12 +41,6 @@ target 'BareExpo' do
   pod 'EXRandom', path: '../../../packages/expo-random/ios'
   pod 'expo-development-client', path: '../../../packages/expo-development-client'
 
-  # Enables Flipper.
-  # Note that if you have use_frameworks! enabled, Flipper will not work and
-  use_flipper!('Flipper' => '~> 0.62.0') # should match the version of your Flipper client app
-  # Note that we don't call `flipper_post_install`. 
-  # It causes problems with cocoapods. We add the FB_SONARKIT_ENABLED manually instead.
- 
   # Fix Google Sign-in and Flipper
   post_install do |installer|
     installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
@@ -64,7 +57,18 @@ target 'BareExpo' do
       end
     end
   end
-
+  
+  target 'BareExpo' do
+    # Enables Flipper.
+    # Note that if you have use_frameworks! enabled, Flipper will not work and
+    use_flipper!('Flipper' => '~> 0.62.0') # should match the version of your Flipper client app
+    # Note that we don't call `flipper_post_install`.
+    # It causes problems with cocoapods. We add the FB_SONARKIT_ENABLED manually instead.
+  end
+  
+  target 'BareExpoDetox' do
+  end
+  
   target 'BareExpoTests' do
     inherit! :search_paths
   end
