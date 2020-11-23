@@ -5,7 +5,7 @@ title: Sharing the image
 import SnackInline from '~/components/plugins/SnackInline';
 import Video from '~/components/plugins/Video'
 
-Similar to expo-image-picker, the functionality that we need to share is available in an Expo library &mdash; this one is called [expo-sharing](/versions/latest/sdk/sharing/).
+Similar to expo-image-picker, the functionality that we need to share is available in an Expo library &mdash; this one is called [expo-sharing](../versions/latest/sdk/sharing.md).
 
 ## Installing expo-sharing
 
@@ -93,7 +93,7 @@ Sharing didn't work here because the desktop Chrome browser doesn't yet implemen
 
 ## Working with what we have available
 
-In the next section we are going to look at how we can handle this and another important platform difference. [Continue to "Handling platform differences"](../../tutorial/platform-differences/).
+In the next section we are going to look at how we can handle this and another important platform difference. [Continue to "Handling platform differences"](../tutorial/platform-differences.md).
 
 <!-- TODO(brentvatne): when we have a better workflow for https in expo-cli and a way to open Snack web on mobile we should revisit this -->
 

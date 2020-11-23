@@ -5,13 +5,13 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-google-si
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-**`expo-google-sign-in`** provides native Google authentication for **standalone** Expo apps or bare React Native apps. It cannot be used in the Expo client as the native `GoogleSignIn` library expects your `REVERSE_CLIENT_ID` in the `info.plist` at build-time. To use Google authentication in the Expo client, check out [`expo-google-app-auth`](../google) or [expo-app-auth](../app-auth).
+**`expo-google-sign-in`** provides native Google authentication for **standalone** Expo apps or bare React Native apps. It cannot be used in the Expo client as the native `GoogleSignIn` library expects your `REVERSE_CLIENT_ID` in the `info.plist` at build-time. To use Google authentication in the Expo client, check out [`expo-google-app-auth`](google.md) or [expo-app-auth](app-auth.md).
 
 <PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/6884' }} />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-google-sign-in`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-google-sign-in).
+For [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps, you'll need to run `expo install expo-google-sign-in`. To use it in a [bare](../../../introduction/managed-vs-bare.md#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-google-sign-in).
 
 ## Configuration
 

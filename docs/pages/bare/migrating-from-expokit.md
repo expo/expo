@@ -2,7 +2,7 @@
 title: Migrating from ExpoKit
 ---
 
-Historically when you have run `expo eject`, you'd end up with an [ExpoKit](../../expokit/overview) project. ExpoKit is a large library that includes the entire Expo SDK, and it leaves you in this place where you're not quite writing a vanilla React Native project and you're not quite using the Expo managed workflow. At Expo we decided to move away from the ExpoKit architecture towards the "bare workflow" model, where your project is a "bare" or "vanilla" React Native project with only the pieces of the Expo SDK that you need for your project, no more.
+Historically when you have run `expo eject`, you'd end up with an [ExpoKit](../expokit/overview.md) project. ExpoKit is a large library that includes the entire Expo SDK, and it leaves you in this place where you're not quite writing a vanilla React Native project and you're not quite using the Expo managed workflow. At Expo we decided to move away from the ExpoKit architecture towards the "bare workflow" model, where your project is a "bare" or "vanilla" React Native project with only the pieces of the Expo SDK that you need for your project, no more.
 
 Now that the bare worfklow has reached (or exceeded) feature parity with ExpoKit, we have deprecated ExpoKit with SDK 38. After SDK 38, your ExpoKit apps in the App Store and Play Store will continue to run indefinitely, but you'll need to migrate to the bare or managed workflows in order to get bugfixes and new features in Expo modules.
 

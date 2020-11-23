@@ -42,7 +42,7 @@ This is the way you position and size the components on your screen. Learn more 
 
 ## Configuring your app with app.json
 
-We covered the basic minimal configuration, but you learn more about about customizing your [app icon](../../guides/app-icons/) and [splash screen](../../guides/splash-screens/) in their respective guides. Learn more about other properties you can configure in [app.json property reference](../../workflow/configuration/)
+We covered the basic minimal configuration, but you learn more about about customizing your [app icon](../guides/app-icons.md) and [splash screen](../guides/splash-screens.md) in their respective guides. Learn more about other properties you can configure in [app.json property reference](../workflow/configuration.md)
 
 ### How to verify your Learning
 
@@ -54,7 +54,7 @@ We covered the basic minimal configuration, but you learn more about about custo
 
 ## Standalone apps & deployment
 
-How can you take what you have built and turn it into an app that you ship to the App Store and Play Store. Learn more about [distributing your app to stores](../../distribution/introduction/) and [deploying websites](../../distribution/publishing-websites/).
+How can you take what you have built and turn it into an app that you ship to the App Store and Play Store. Learn more about [distributing your app to stores](../distribution/introduction.md) and [deploying websites](../distribution/publishing-websites.md).
 
 ## Navigation
 
@@ -62,8 +62,8 @@ Most apps have multiple screens, we just have one here! Learn more about how to 
 
 ## Debugging
 
-Sometimes things go wrong, and when they do you need to use debugging tools to figure out where your code is having trouble. [Read more about debugging](../../workflow/debugging/).
+Sometimes things go wrong, and when they do you need to use debugging tools to figure out where your code is having trouble. [Read more about debugging](../workflow/debugging.md).
 
 ## Using the documentation
 
-[Read more about how you can navigate this documentation and use it effectively](../../next-steps/using-the-documentation/).
+[Read more about how you can navigate this documentation and use it effectively](../next-steps/using-the-documentation.md).

@@ -8,7 +8,7 @@ You can grant other users access to the projects belonging to your Personal Acco
 
 You can invite new members to your Personal Account, or any account you administrate, from the [Members page](https://expo.io/settings/members) in your dashboard. You can only add users with Expo accounts as members; you can direct them to [https://expo.io/signup](https://expo.io/signup) if they don't have an account yet.
 
-> When adding new developers to your projects, who are publishing updates or create new builds, make sure to add the [`owner`](../../versions/latest/config/app/#owner) property to your project app manifest.
+> When adding new developers to your projects, who are publishing updates or create new builds, make sure to add the [`owner`](../versions/latest/config/app.md#owner) property to your project app manifest.
 
 ## Managing Access
 

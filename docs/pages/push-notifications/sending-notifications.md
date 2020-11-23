@@ -7,9 +7,9 @@ import { InlineCode } from '~/components/base/code';
 
 > If you're just getting started and want to focus on the front-end for now, you can skip this step and just use [Expo's push notification tool](https://expo.io/notifications) to send notifications with the click of a button.
 
-Along with the [`expo-notifications`](../../versions/latest/sdk/notifications/) module, which provides all the client-side functionality for push notifications, Expo can also handle sending these notifications off to APNs and FCM for you! All you need to do is send the request to our servers with the ExpoPushToken you grabbed in the last step.
+Along with the [`expo-notifications`](../versions/latest/sdk/notifications.md) module, which provides all the client-side functionality for push notifications, Expo can also handle sending these notifications off to APNs and FCM for you! All you need to do is send the request to our servers with the ExpoPushToken you grabbed in the last step.
 
-> If you'd rather build a server that communicates with APNs and FCM directly, check out [this guide](../sending-notifications-custom/) (this is more complicated than using Expo's push notification service).
+> If you'd rather build a server that communicates with APNs and FCM directly, check out [this guide](sending-notifications-custom.md) (this is more complicated than using Expo's push notification service).
 
 ![Diagram explaining sending a push from your server to device](/static/images/sending-notification.png)
 
@@ -30,7 +30,7 @@ Check out the source if you would like to implement it in another language.
 
 > **Note:**
 >
-> If you're **not** testing in the Expo client app, make sure you've [generated the proper push credentials](../push-notifications-setup/#credentials) before proceeding! If you haven't, push notifications will not work.
+> If you're **not** testing in the Expo client app, make sure you've [generated the proper push credentials](push-notifications-setup.md#credentials) before proceeding! If you haven't, push notifications will not work.
 
 ## HTTP/2 API
 
@@ -182,7 +182,7 @@ Inside both push tickets and push receipts, look for a `details` object with an 
 - `InvalidCredentials`: your push notification credentials for your standalone app are invalid (ex: you may have revoked them). Run `expo build:ios -c` to regenerate new push notification credentials for iOS. If you revoke an APN key, all apps that rely on that key will no longer be able to send or receive push notifications until you upload a new key to replace it. Uploading a new APN key will **not** change your users' Expo Push Tokens.
   - Sometimes, these errors will contain further details claiming an `InvalidProviderToken` error. This is actually tied to both your APN key **and** your provisioning profile. To resolve this error, you should rebuild the app and regenerate a new push key and provisioning profile.
 
-> Note: For a better understanding of iOS credentials, including push notification credentials, read our [App Signing docs](../../distribution/app-signing/#ios)
+> Note: For a better understanding of iOS credentials, including push notification credentials, read our [App Signing docs](../distribution/app-signing.md#ios)
 
 ### Request errors
 

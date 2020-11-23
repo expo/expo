@@ -123,7 +123,7 @@ Sends a request to the operating system to initiate the Apple authentication flo
 
 You can request access to the user's full name and email address in this method, which allows you to personalize your UI for signed in users. However, users can deny access to either or both of these options at runtime.
 
-Additionally, you will only receive Apple Authentication Credentials the first time users sign into your app, so **you must store it for later use**. It's best to store this information either server-side, or using [SecureStore](../securestore/), so that the data persists across app installs. You can use [`AppleAuthenticationCredential.user`](#appleauthenticationappleauthenticationcredential) to identify the user, since this remains the same for apps released by the same developer.
+Additionally, you will only receive Apple Authentication Credentials the first time users sign into your app, so **you must store it for later use**. It's best to store this information either server-side, or using [SecureStore](securestore.md), so that the data persists across app installs. You can use [`AppleAuthenticationCredential.user`](#appleauthenticationappleauthenticationcredential) to identify the user, since this remains the same for apps released by the same developer.
 
 #### Arguments
 

@@ -96,7 +96,7 @@ If you have both OTF and TTF versions of a font, prefer OTF. OTF is a newer form
 
 ### Beyond OTF and TTF
 
-If you need to use another format, you may need to [customize the Metro bundler configuration](../../guides/customizing-metro/) to get anything other than TTF and OTF to work. In general, just don't do that unless you are really sure you want to. Trying to render a font format that a platform doesn't support may in some cases cause your app to crash.
+If you need to use another format, you may need to [customize the Metro bundler configuration](../guides/customizing-metro.md) to get anything other than TTF and OTF to work. In general, just don't do that unless you are really sure you want to. Trying to render a font format that a platform doesn't support may in some cases cause your app to crash.
 
 But, for reference, here is a table of which formats work on which platforms.
 
@@ -134,7 +134,7 @@ In general, your safest bets are just to use the system default which will usual
 
 Since your fonts won't be ready right away, it is generally a good practice to not render anything until the font is ready.
 
-A great way we can do that is to use the [`<AppLoading />`](/versions/latest/sdk/app-loading) component. In its simplest form, you can just render it while you're waiting for your app to load.
+A great way we can do that is to use the [`<AppLoading />`](../versions/latest/sdk/app-loading.md) component. In its simplest form, you can just render it while you're waiting for your app to load.
 
 Sometimes -- particularly on the web -- people choose to render their content in a platform default font while their custom font is loading. Or, alternatively, to render the rest of their content, that doesn't depend on the custom font while the font is loading.
 
@@ -189,7 +189,7 @@ export default props => {
 
 ### Using `Font.loadAsync` instead of the `useFonts` hook
 
-If you don't want to use the `useFonts` hook (for example, maybe you prefer class components), you can use `Font.loadAsync` directly. What is happening under the hood is that your fonts are being loaded using `Font.loadAsync` from the [`expo-font` library](/versions/latest/sdk/font). You can use that directly if you prefer, or if you want to have more fine-grained control over when your fonts are loaded before rendering.
+If you don't want to use the `useFonts` hook (for example, maybe you prefer class components), you can use `Font.loadAsync` directly. What is happening under the hood is that your fonts are being loaded using `Font.loadAsync` from the [`expo-font` library](../versions/latest/sdk/font.md). You can use that directly if you prefer, or if you want to have more fine-grained control over when your fonts are loaded before rendering.
 
 <SnackInline
 label="Font loadAsync"

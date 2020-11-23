@@ -16,7 +16,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Configuration
 
-In managed apps, the permission to access images or videos ([`Permissions.CAMERA_ROLL`](../permissions/#permissionscamera_roll)) is added automatically.
+In managed apps, the permission to access images or videos ([`Permissions.CAMERA_ROLL`](permissions.md#permissionscamera_roll)) is added automatically.
 
 ## API
 
@@ -54,7 +54,7 @@ A promise that either rejects if the method is unavailable (meaning the device i
 
 ### `MediaLibrary.createAssetAsync(localUri)`
 
-Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](../camera/). This method requires `CAMERA_ROLL` permission.
+Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](camera.md). This method requires `CAMERA_ROLL` permission.
 
 ```js
 const { uri } = await Camera.takePictureAsync();
@@ -253,7 +253,7 @@ Removes all listeners.
 
 ### `MediaLibrary.CameraRollPermissionResponse`
 
-`MediaLibrary.CameraRollPermissionResponse` extends [PermissionResponse](../permissions/#permissionresponse) type exported by `unimodules-permission-interface` and contains additional iOS-specific field:
+`MediaLibrary.CameraRollPermissionResponse` extends [PermissionResponse](permissions.md#permissionresponse) type exported by `unimodules-permission-interface` and contains additional iOS-specific field:
 
 - `accessPrivileges` **(string)** - Indicates if your app has access to the whole or only part of the photo library. Possible values are:
   - `all` if the user granted your app access to the whole photo library

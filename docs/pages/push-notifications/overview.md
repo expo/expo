@@ -12,8 +12,8 @@ Whether you just want to be able to let users know when a relevant event happens
 There are three main steps to setting up push notifications, and we provide a guide for each part of the process:
 
 - [Setup: getting a user's Expo Push Token](push-notifications-setup.md)
-- [Sending: calling Expo's Push API with the token when you want to send a notification](./sending-notifications.md)
-- [Receiving: responding to the notification in your app](../receiving-notifications/) (maybe upon opening, you want to jump to a particular screen that the notification refers to)
+- [Sending: calling Expo's Push API with the token when you want to send a notification](sending-notifications.md)
+- [Receiving: responding to the notification in your app](receiving-notifications.md) (maybe upon opening, you want to jump to a particular screen that the notification refers to)
 
 ## Usage
 
