@@ -3,13 +3,13 @@ import { AbortController } from 'abort-controller';
 import ServerRegistrationModule from './ServerRegistrationModule';
 import { addPushTokenListener } from './TokenEmitter';
 import getDevicePushTokenAsync from './getDevicePushTokenAsync';
-import { updatePushTokenAsync as updatePushTokenAsyncWithSignal } from './utils/updatePushTokenAsync';
+import { updateDevicePushTokenAsync as updateDevicePushTokenAsyncWithSignal } from './utils/updateDevicePushTokenAsync';
 let lastAbortController = null;
 async function updatePushTokenAsync(token) {
     // Abort current update process
     lastAbortController?.abort();
     lastAbortController = new AbortController();
-    return await updatePushTokenAsyncWithSignal(lastAbortController.signal, token);
+    return await updateDevicePushTokenAsyncWithSignal(lastAbortController.signal, token);
 }
 /**
  * Sets the registration information so that the device push token gets pushed

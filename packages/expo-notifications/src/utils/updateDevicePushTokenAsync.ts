@@ -6,10 +6,10 @@ import * as Application from 'expo-application';
 import ServerRegistrationModule from '../ServerRegistrationModule';
 import { DevicePushToken } from '../Tokens.types';
 
-const updatePushTokenUrl = 'https://exp.host/--/api/v2/push/updateDeviceToken';
+const updateDevicePushTokenUrl = 'https://exp.host/--/api/v2/push/updateDeviceToken';
 
-export async function updatePushTokenAsync(signal: AbortSignal, token: DevicePushToken) {
-  const doUpdatePushTokenAsync = async (retry: () => void) => {
+export async function updateDevicePushTokenAsync(signal: AbortSignal, token: DevicePushToken) {
+  const doUpdateDevicePushTokenAsync = async (retry: () => void) => {
     try {
       const body = {
         development: await shouldUseDevelopmentNotificationService(),
@@ -19,7 +19,7 @@ export async function updatePushTokenAsync(signal: AbortSignal, token: DevicePus
         type: getTypeOfToken(token),
       };
 
-      const response = await fetch(updatePushTokenUrl, {
+      const response = await fetch(updateDevicePushTokenUrl, {
         method: 'POST',
         headers: {
           'content-type': 'application/json',
@@ -98,7 +98,7 @@ export async function updatePushTokenAsync(signal: AbortSignal, token: DevicePus
   while (shouldTry && !signal.aborted) {
     // Will be set to true by `retry` if it's called
     shouldTry = false;
-    await doUpdatePushTokenAsync(retry);
+    await doUpdateDevicePushTokenAsync(retry);
 
     // Do not wait if we won't retry
     if (shouldTry && !signal.aborted) {

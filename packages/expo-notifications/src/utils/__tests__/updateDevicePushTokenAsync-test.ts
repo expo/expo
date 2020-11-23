@@ -1,7 +1,7 @@
 import { AbortController } from 'abort-controller';
 
 import { DevicePushToken } from '../../Tokens.types';
-import { updatePushTokenAsync } from '../updatePushTokenAsync';
+import { updateDevicePushTokenAsync } from '../updateDevicePushTokenAsync';
 
 const TOKEN: DevicePushToken = { type: 'ios', data: 'i-am-token' };
 
@@ -38,7 +38,7 @@ describe('given valid registration info', () => {
     global.fetch.mockResolvedValue(successResponse);
     const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
     const abortController = new AbortController();
-    await updatePushTokenAsync(abortController.signal, TOKEN);
+    await updateDevicePushTokenAsync(abortController.signal, TOKEN);
     warnSpy.mockRestore();
     expect(global.fetch).toHaveBeenCalledWith(expoEndpointUrl, expect.anything());
   });
@@ -50,7 +50,7 @@ describe('given valid registration info', () => {
 
     it('submits the request only once', async () => {
       const abortController = new AbortController();
-      await updatePushTokenAsync(abortController.signal, TOKEN);
+      await updateDevicePushTokenAsync(abortController.signal, TOKEN);
       expect(global.fetch).toHaveBeenCalledTimes(1);
     });
   });
@@ -62,7 +62,7 @@ describe('given valid registration info', () => {
       .mockResolvedValueOnce(failureResponse)
       .mockResolvedValueOnce(successResponse);
     const abortController = new AbortController();
-    await updatePushTokenAsync(abortController.signal, TOKEN);
+    await updateDevicePushTokenAsync(abortController.signal, TOKEN);
     expect(global.fetch).toHaveBeenCalledTimes(3);
     spy.mockRestore();
   });
@@ -72,7 +72,7 @@ describe('given valid registration info', () => {
     const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
     global.fetch.mockRejectedValueOnce(new TypeError()).mockResolvedValueOnce(successResponse);
     const abortController = new AbortController();
-    await updatePushTokenAsync(abortController.signal, TOKEN);
+    await updateDevicePushTokenAsync(abortController.signal, TOKEN);
     expect(global.fetch).toHaveBeenCalledTimes(2);
     warnSpy.mockRestore();
     debugSpy.mockRestore();
@@ -84,7 +84,7 @@ describe('given valid registration info', () => {
     global.fetch.mockRejectedValue(new TypeError());
     const abortController = new AbortController();
     setTimeout(() => abortController.abort(), 1000);
-    await updatePushTokenAsync(abortController.signal, TOKEN);
+    await updateDevicePushTokenAsync(abortController.signal, TOKEN);
     expect(global.fetch).toHaveBeenCalledTimes(2);
     warnSpy.mockRestore();
     debugSpy.mockRestore();
