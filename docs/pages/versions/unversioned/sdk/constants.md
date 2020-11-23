@@ -24,7 +24,7 @@ import Constants from 'expo-constants';
 
 ### `Constants.appOwnership`
 
-Returns `expo`, `standalone`, or `guest`. If `expo`, the experience is running inside of the Expo client. If `standalone`, it is a [standalone app](../../distribution/building-standalone-apps/#building-standalone-apps). If `guest`, it has been opened through a link from a standalone app.
+Returns `expo`, `standalone`, or `guest`. If `expo`, the experience is running inside of the Expo client. If `standalone`, it is a [standalone app](../../../distribution/building-standalone-apps.md#building-standalone-apps). If `guest`, it has been opened through a link from a standalone app.
 
 ### `Constants.deviceName`
 
@@ -44,7 +44,7 @@ Gets the user agent string which would be included in requests sent by a web vie
 
 ### `Constants.installationId`
 
-> ⚠️ **This property is deprecated and will be removed in SDK 43. Please implement it on your own using `expo-application`'s [`androidId`](../application/#applicationandroidid) on Android and a storage API such as [`expo-secure-store`](../securestore/) on iOS and `localStorage` on Web.**
+> ⚠️ **This property is deprecated and will be removed in SDK 43. Please implement it on your own using `expo-application`'s [`androidId`](application.md#applicationandroidid) on Android and a storage API such as [`expo-secure-store`](securestore.md) on iOS and `localStorage` on Web.**
 
 An identifier that is unique to this particular device and installation of the Expo client.
 
@@ -54,7 +54,7 @@ An identifier that is unique to this particular device and installation of the E
 
 ### `Constants.manifest`
 
-The [manifest](../../workflow/how-expo-works/#expo-manifest) object for the app.
+The [manifest](../../../workflow/how-expo-works.md#expo-manifest) object for the app.
 
 ### `Constants.nativeAppVersion`
 

@@ -97,7 +97,7 @@ expo start --ios
 expo start --android
 ```
 
-For more information, see [Expo CLI](../../workflow/expo-cli/).
+For more information, see [Expo CLI](../workflow/expo-cli.md).
 
 ## 4. Publish your app
 
@@ -114,7 +114,7 @@ This will publish your app to a persistent URL on Expo, for example: <https://ex
 
 ### How do I add custom native modules?
 
-See [How do I add custom native code to my Expo project?](../../introduction/faq/#faq).
+See [How do I add custom native code to my Expo project?](../introduction/faq.md#faq).
 
 ### Does it support Google Closure advanced compilation?
 

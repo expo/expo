@@ -20,7 +20,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Configuration
 
-In managed apps, the permissions to pick images, from camera ([`Permissions.CAMERA`](../permissions/#permissionscamera)) or camera roll ([`Permissions.MEDIA_LIBRARY`](../permissions/#permissionsmedia_library)), are added automatically.
+In managed apps, the permissions to pick images, from camera ([`Permissions.CAMERA`](permissions.md#permissionscamera)) or camera roll ([`Permissions.MEDIA_LIBRARY`](permissions.md#permissionsmedia_library)), are added automatically.
 
 ## Usage
 
@@ -263,7 +263,7 @@ Android system sometimes kills the `MainActivity` after the `ImagePicker` finish
 
 ### `ImagePicker.MediaLibraryPermissionResponse`
 
-`ImagePicker.MediaLibraryPermissionResponse` extends [PermissionResponse](../permissions/#permissionresponse) type exported by `unimodules-permission-interface` and contains additional iOS-specific field:
+`ImagePicker.MediaLibraryPermissionResponse` extends [PermissionResponse](permissions.md#permissionresponse) type exported by `unimodules-permission-interface` and contains additional iOS-specific field:
 
 - `accessPrivileges` **(string)** - Indicates if your app has access to the whole or only part of the photo library. Possible values are:
   - `all` if the user granted your app access to the whole photo library
@@ -272,7 +272,7 @@ Android system sometimes kills the `MainActivity` after the `ImagePicker` finish
 
 ### `ImagePicker.CameraPermissionResponse`
 
-`ImagePicker.CameraPermissionResponse` alias for [PermissionResponse](../permissions/#permissionresponse) type exported by `unimodules-permission-interface`.
+`ImagePicker.CameraPermissionResponse` alias for [PermissionResponse](permissions.md#permissionresponse) type exported by `unimodules-permission-interface`.
 
 ### `ImagePicker.ImagePickerErrorResult`
 

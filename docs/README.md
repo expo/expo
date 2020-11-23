@@ -55,6 +55,16 @@ yarn test
 yarn lint
 ```
 
+### Internal linking
+
+If you need to link from one MDX file to another, please use the path-reference to this file including extension.
+This allows us to automatically validate these links and see if the file and/or headers still exists.
+
+- from: `tutorial/button.md`, to: `/workflow/guides/` -> `../workflow/guides.md`
+- from: `index.md`, to: `/guides/errors/#tracking-js-errors` -> `./guides/errors.md#tracking-js-errors` (or without `./`)
+
+You can validate all current links by running `$ yarn lint-links`.
+
 ### Redirects
 
 #### Server-side redirects
