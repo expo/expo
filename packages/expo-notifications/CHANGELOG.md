@@ -30,6 +30,7 @@
 - Added `WeeklyTriggerInput` that allows scheduling a weekly recurring notification for a specific day of week, hour and minute. It is supported on both iOS and Android. ([#9973](https://github.com/expo/expo/pull/9973) by [@RikTheunis](https://github.com/riktheunis))
 - Added `getNextTriggerDateAsync` method allowing you to verify manually when would the next trigger date for a particular notification trigger be. ([#10455](https://github.com/expo/expo/pull/10455) by [@sjchmiela](https://github.com/sjchmiela))
 - Added support for restoring scheduled notifications alarms on Android after an app is updated. ([#10708](https://github.com/expo/expo/pull/10708) by [@sjchmiela](https://github.com/sjchmiela))
+- Added support for auto server reregistration for Expo push tokens (keeping Expo push token always valid) and auto server registration customizations. ([#10908](https://github.com/expo/expo/pull/10908) by [@sjchmiela](https://github.com/sjchmiela))
 
 ### 🐛 Bug fixes
 
