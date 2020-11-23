@@ -20,7 +20,7 @@ import versioned.host.exp.exponent.modules.api.notifications.ScopedNotifications
 import versioned.host.exp.exponent.modules.universal.av.SharedCookiesDataSourceFactoryProvider;
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedExpoNotificationCategoriesModule;
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedExpoNotificationPresentationModule;
-import versioned.host.exp.exponent.modules.universal.notifications.ScopedInstallationIdProvider;
+import versioned.host.exp.exponent.modules.universal.notifications.ScopedServerRegistrationModule;
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedNotificationScheduler;
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedNotificationsEmitter;
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedNotificationsHandler;
@@ -83,7 +83,7 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     moduleRegistry.registerExportedModule(new ScopedNotificationScheduler(scopedContext, experienceId));
     moduleRegistry.registerExportedModule(new ScopedExpoNotificationCategoriesModule(scopedContext, experienceId));
     moduleRegistry.registerExportedModule(new ScopedExpoNotificationPresentationModule(scopedContext, experienceId));
-    moduleRegistry.registerExportedModule(new ScopedInstallationIdProvider(scopedContext));
+    moduleRegistry.registerExportedModule(new ScopedServerRegistrationModule(scopedContext));
     moduleRegistry.registerInternalModule(new ScopedNotificationsChannelsProvider(scopedContext, experienceId));
     moduleRegistry.registerInternalModule(new ScopedNotificationsCategoriesSerializer());
 

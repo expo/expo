@@ -6,17 +6,17 @@ import org.unimodules.core.Promise;
 
 import javax.inject.Inject;
 
-import expo.modules.notifications.installationid.InstallationIdProvider;
+import expo.modules.notifications.serverregistration.ServerRegistrationModule;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 
-public class ScopedInstallationIdProvider extends InstallationIdProvider {
+public class ScopedServerRegistrationModule extends ServerRegistrationModule {
   @Inject
   ExponentSharedPreferences mExponentSharedPreferences;
 
-  public ScopedInstallationIdProvider(Context context) {
+  public ScopedServerRegistrationModule(Context context) {
     super(context);
-    NativeModuleDepsProvider.getInstance().inject(ScopedInstallationIdProvider.class, this);
+    NativeModuleDepsProvider.getInstance().inject(ScopedServerRegistrationModule.class, this);
   }
 
   @Override

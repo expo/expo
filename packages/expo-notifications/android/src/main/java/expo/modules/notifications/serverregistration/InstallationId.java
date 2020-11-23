@@ -1,4 +1,4 @@
-package expo.modules.notifications.installationid;
+package expo.modules.notifications.serverregistration;
 
 import android.content.Context;
 import android.content.SharedPreferences;
