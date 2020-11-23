@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI40_0_0/Expo/EXSensors/ABI40_0_0EXSensors/Modules/SensorModules/ABI40_0_0EXAccelerometer.h
