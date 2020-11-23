@@ -1,5 +1,6 @@
 ---
 title: Expo CLI
+maxHeadingDepth: 4
 ---
 
 Expo CLI is a command line app that is the main interface between a developer and Expo tools. You'll use it for a variety of tasks, such as:
@@ -35,7 +36,7 @@ Usage: expo [command] [options]
 
 <details>
 <summary>
-<h3>expo login</h3>
+<h4>expo login</h4>
 <p>Login to an Expo account</p>
 </summary>
 <p>
@@ -53,7 +54,7 @@ Alias: `expo signin`
 
 <details>
 <summary>
-<h3>expo logout</h3>
+<h4>expo logout</h4>
 <p>Logout of an Expo account</p>
 </summary>
 <p>
@@ -65,7 +66,7 @@ This command does not take any options.
 
 <details>
 <summary>
-<h3>expo register</h3>
+<h4>expo register</h4>
 <p>Sign up for a new Expo account</p>
 </summary>
 <p>
@@ -77,7 +78,7 @@ This command does not take any options.
 
 <details>
 <summary>
-<h3>expo whoami</h3>
+<h4>expo whoami</h4>
 <p>Return the currently authenticated account</p>
 </summary>
 <p>
@@ -89,11 +90,13 @@ This command does not take any options.
 </p>
 </details>
 
+---
+
 ### Core
 
 <details>
 <summary>
-<h3>expo export</h3>
+<h4>expo export</h4>
 <p>Export the static files of the app for hosting it on a web server</p>
 </summary>
 <p>
@@ -119,7 +122,7 @@ This command does not take any options.
 
 <details>
 <summary>
-<h3>expo init</h3>
+<h4>expo init</h4>
 <p>Create a new Expo project</p>
 </summary>
 <p>
@@ -140,7 +143,7 @@ Alias: `expo i`
 
 <details>
 <summary>
-<h3>expo install</h3>
+<h4>expo install</h4>
 <p>Install a unimodule or other package to a project</p>
 </summary>
 <p>
@@ -157,7 +160,7 @@ Alias: `expo add`
 
 <details>
 <summary>
-<h3>expo publish</h3>
+<h4>expo publish</h4>
 <p>Deploy a project to Expo hosting</p>
 </summary>
 <p>
@@ -179,7 +182,7 @@ Alias: `expo p`
 
 <details>
 <summary>
-<h3>expo send</h3>
+<h4>expo send</h4>
 <p>Share the project's URL to an email address</p>
 </summary>
 <p>
@@ -203,7 +206,7 @@ Alias: `expo p`
 
 <details>
 <summary>
-<h3>expo start</h3>
+<h4>expo start</h4>
 <p>Start a local dev server for the app</p>
 </summary>
 <p>
@@ -238,7 +241,7 @@ Alias: `expo r`
 
 <details>
 <summary>
-<h3>expo start:web</h3>
+<h4>expo start:web</h4>
 <p>Start a Webpack dev server for the web app</p>
 </summary>
 <p>
@@ -268,11 +271,13 @@ Alias: `expo web`
 </p>
 </details>
 
+---
+
 ### Client
 
 <details>
 <summary>
-<h3>expo client:install:ios</h3>
+<h4>expo client:install:ios</h4>
 <p>Install the Expo client for iOS on the simulator</p>
 </summary>
 <p>
@@ -286,7 +291,7 @@ Alias: `expo web`
 
 <details>
 <summary>
-<h3>expo client:install:android</h3>
+<h4>expo client:install:android</h4>
 <p>Install the Expo client for Android on a connected device or emulator</p>
 </summary>
 <p>
@@ -298,11 +303,13 @@ Alias: `expo web`
 </p>
 </details>
 
+---
+
 ### Info
 
 <details>
 <summary>
-<h3>expo diagnostics</h3>
+<h4>expo diagnostics</h4>
 <p>Log environment info to the console</p>
 </summary>
 <p>
@@ -314,7 +321,7 @@ This command does not take any options.
 
 <details>
 <summary>
-<h3>expo doctor</h3>
+<h4>expo doctor</h4>
 <p>Diagnose issues with the project</p>
 </summary>
 <p>
@@ -328,7 +335,7 @@ This command does not take any options.
 
 <details>
 <summary>
-<h3>expo upgrade</h3>
+<h4>expo upgrade</h4>
 <p>Upgrade the project packages and config for the given SDK version</p>
 </summary>
 <p>
@@ -343,11 +350,13 @@ Alias: `expo update`
 </p>
 </details>
 
+---
+
 ### Publish
 
 <details>
 <summary>
-<h3>expo publish:history</h3>
+<h4>expo publish:history</h4>
 <p>Log the project's releases</p>
 </summary>
 <p>
@@ -368,7 +377,7 @@ Alias: `expo ph`
 
 <details>
 <summary>
-<h3>expo publish:details</h3>
+<h4>expo publish:details</h4>
 <p>Log details of a published release</p>
 </summary>
 <p>
@@ -386,7 +395,7 @@ Alias: `expo pd`
 
 <details>
 <summary>
-<h3>expo publish:set</h3>
+<h4>expo publish:set</h4>
 <p>Specify the channel to serve a published release</p>
 </summary>
 <p>
@@ -404,7 +413,7 @@ Alias: `expo ps`
 
 <details>
 <summary>
-<h3>expo publish:rollback</h3>
+<h4>expo publish:rollback</h4>
 <p>Undo an update to a channel</p>
 </summary>
 <p>
@@ -422,11 +431,13 @@ Alias: `expo pr`
 </p>
 </details>
 
+---
+
 ### Build
 
 <details>
 <summary>
-<h3>expo build:ios</h3>
+<h4>expo build:ios</h4>
 <p>Build and sign a standalone IPA for the Apple App Store</p>
 </summary>
 <p>
@@ -461,7 +472,7 @@ Alias: `expo bi`
 
 <details>
 <summary>
-<h3>expo build:android</h3>
+<h4>expo build:android</h4>
 <p>Build and sign a standalone APK or App Bundle for the Google Play Store</p>
 </summary>
 <p>
@@ -487,7 +498,7 @@ Alias: `expo ba`
 
 <details>
 <summary>
-<h3>expo build:web</h3>
+<h4>expo build:web</h4>
 <p>Build the web app for production</p>
 </summary>
 <p>
@@ -504,7 +515,7 @@ Alias: `expo ba`
 
 <details>
 <summary>
-<h3>expo build:status</h3>
+<h4>expo build:status</h4>
 <p>Get the status of the latest build for the project</p>
 </summary>
 <p>
@@ -519,11 +530,13 @@ Alias: `expo bs`
 </p>
 </details>
 
+---
+
 ### Credentials
 
 <details>
 <summary>
-<h3>expo credentials:manager</h3>
+<h4>expo credentials:manager</h4>
 <p>Manage your credentials</p>
 </summary>
 <p>
@@ -538,7 +551,7 @@ Alias: `expo bs`
 
 <details>
 <summary>
-<h3>expo fetch:ios:certs</h3>
+<h4>expo fetch:ios:certs</h4>
 <p>Download the project's iOS standalone app signing credentials</p>
 </summary>
 <p>
@@ -552,7 +565,7 @@ Alias: `expo bs`
 
 <details>
 <summary>
-<h3>expo fetch:android:keystore</h3>
+<h4>expo fetch:android:keystore</h4>
 <p>Download the project's Android keystore</p>
 </summary>
 <p>
@@ -566,7 +579,7 @@ Alias: `expo bs`
 
 <details>
 <summary>
-<h3>expo fetch:android:hashes</h3>
+<h4>expo fetch:android:hashes</h4>
 <p>Compute and log the project's Android key hashes</p>
 </summary>
 <p>
@@ -580,7 +593,7 @@ Alias: `expo bs`
 
 <details>
 <summary>
-<h3>expo fetch:android:upload-cert</h3>
+<h4>expo fetch:android:upload-cert</h4>
 <p>Download the project's Android keystore</p>
 </summary>
 <p>
@@ -592,11 +605,13 @@ Alias: `expo bs`
 </p>
 </details>
 
+---
+
 ### Notifications
 
 <details>
 <summary>
-<h3>expo push:android:upload</h3>
+<h4>expo push:android:upload</h4>
 <p>Upload an FCM key for Android push notifications</p>
 </summary>
 <p>
@@ -611,7 +626,7 @@ Alias: `expo bs`
 
 <details>
 <summary>
-<h3>expo push:android:show</h3>
+<h4>expo push:android:show</h4>
 <p>Log the value currently in use for FCM notifications for this project</p>
 </summary>
 <p>
@@ -625,7 +640,7 @@ Alias: `expo bs`
 
 <details>
 <summary>
-<h3>expo push:android:clear</h3>
+<h4>expo push:android:clear</h4>
 <p>Delete a previously uploaded FCM credential</p>
 </summary>
 <p>
@@ -637,11 +652,13 @@ Alias: `expo bs`
 </p>
 </details>
 
+---
+
 ### Url
 
 <details>
 <summary>
-<h3>expo url</h3>
+<h4>expo url</h4>
 <p>Log a URL for opening the project in the Expo client</p>
 </summary>
 <p>
@@ -668,7 +685,7 @@ Alias: `expo u`
 
 <details>
 <summary>
-<h3>expo url:ipa</h3>
+<h4>expo url:ipa</h4>
 <p>Log the download URL for the standalone iOS binary</p>
 </summary>
 <p>
@@ -683,7 +700,7 @@ Alias: `expo u`
 
 <details>
 <summary>
-<h3>expo url:apk</h3>
+<h4>expo url:apk</h4>
 <p>Log the download URL for the standalone Android binary</p>
 </summary>
 <p>
@@ -696,11 +713,13 @@ Alias: `expo u`
 </p>
 </details>
 
+---
+
 ### Webhooks
 
 <details>
 <summary>
-<h3>expo webhooks</h3>
+<h4>expo webhooks</h4>
 <p>List all webhooks for a project</p>
 </summary>
 <p>
@@ -714,7 +733,7 @@ Alias: `expo u`
 
 <details>
 <summary>
-<h3>expo webhooks:add</h3>
+<h4>expo webhooks:add</h4>
 <p>Add a webhook to a project</p>
 </summary>
 <p>
@@ -722,7 +741,7 @@ Alias: `expo u`
 | Option                 | Description                                                                                             |
 | ---------------------- | ------------------------------------------------------------------------------------------------------- |
 | `--url [url]`          | URL to request. (Required)                                                                              |
-| `--event [event-type]` | Event type that triggers the webhook. [build] (Required)                                                |
+| `--event [event-type]` | Event type that triggers the webhook. [build](Required)                                                 |
 | `--secret [secret]`    | Secret used to create a hash signature of the request payload, provided in the 'Expo-Signature' header. |
 | `--config [file]`      | Specify a path to app.json or app.config.js                                                             |
 
@@ -731,7 +750,7 @@ Alias: `expo u`
 
 <details>
 <summary>
-<h3>expo webhooks:remove</h3>
+<h4>expo webhooks:remove</h4>
 <p>Delete a webhook</p>
 </summary>
 <p>
@@ -746,7 +765,7 @@ Alias: `expo u`
 
 <details>
 <summary>
-<h3>expo webhooks:update</h3>
+<h4>expo webhooks:update</h4>
 <p>Update an existing webhook</p>
 </summary>
 <p>
@@ -762,11 +781,13 @@ Alias: `expo u`
 </p>
 </details>
 
+---
+
 ### Upload
 
 <details>
 <summary>
-<h3>expo upload:android</h3>
+<h4>expo upload:android</h4>
 <p>Upload an Android binary to the Google Play Store</p>
 </summary>
 <p>
@@ -793,7 +814,7 @@ Alias: `expo ua`
 
 <details>
 <summary>
-<h3>expo upload:ios</h3>
+<h4>expo upload:ios</h4>
 <p>macOS only: Upload an iOS binary to Apple. An alternative to Transporter.app</p>
 </summary>
 <p>
@@ -819,11 +840,13 @@ Alias: `expo ui`
 </p>
 </details>
 
+---
+
 ### Eject
 
 <details>
 <summary>
-<h3>expo customize:web</h3>
+<h4>expo customize:web</h4>
 <p>Eject the default web files for customization</p>
 </summary>
 <p>
@@ -838,7 +861,7 @@ Alias: `expo ui`
 
 <details>
 <summary>
-<h3>expo eject</h3>
+<h4>expo eject</h4>
 <p>Create native iOS and Android project files. Learn more: https://docs.expo.io/bare/customizing/</p>
 </summary>
 <p>
@@ -853,11 +876,13 @@ Alias: `expo ui`
 </p>
 </details>
 
+---
+
 ### Experimental
 
 <details>
 <summary>
-<h3>expo client:ios</h3>
+<h4>expo client:ios</h4>
 <p>Experimental: build a custom version of the Expo client for iOS using your own Apple credentials</p>
 </summary>
 <p>
