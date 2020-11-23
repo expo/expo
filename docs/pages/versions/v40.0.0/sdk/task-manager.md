@@ -8,20 +8,20 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 **`expo-task-manager`** provides an API that allows you to manage long-running tasks, in particular those tasks that can run while your app is in the background.
 Some features of this module are used by other modules under the hood. Here is a list of Expo modules that use TaskManager:
 
-- [Location](../location)
-- [BackgroundFetch](../background-fetch)
+- [Location](location.md)
+- [BackgroundFetch](background-fetch.md)
 
 <PlatformsSection android emulator ios simulator />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-task-manager`. To use it in [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-task-manager);
+For [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps, you'll need to run `expo install expo-task-manager`. To use it in [bare](../../../introduction/managed-vs-bare.md#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-task-manager);
 
 ## Configuration for standalone apps
 
 ### Background modes on iOS
 
-`TaskManager` works out of the box in the Expo client on Android, but on iOS you'll need to test using [a custom Expo client](../../guides/adhoc-builds/).
+`TaskManager` works out of the box in the Expo client on Android, but on iOS you'll need to test using [a custom Expo client](../../../guides/adhoc-builds.md).
 
 Standalone apps need some extra configuration: on iOS, each background feature requires a special key in `UIBackgroundModes` array in your `Info.plist` file. In standalone apps this array is empty by default, so in order to use background features you will need to add appropriate keys to your `app.json` configuration.
 Here is an example of an `app.json` configuration that enables background location and background fetch:
@@ -139,7 +139,7 @@ Example:
 ### `TaskManager.unregisterTaskAsync(taskName)`
 
 Unregisters task from the app, so the app will not be receiving updates for that task anymore.
-_It is recommended to use methods specialized by modules that registered the task, eg. [Location.stopLocationUpdatesAsync](../location#expolocationstoplocationupdatesasynctaskname)._
+_It is recommended to use methods specialized by modules that registered the task, eg. [Location.stopLocationUpdatesAsync](location.md#expolocationstoplocationupdatesasynctaskname)._
 
 #### Arguments
 

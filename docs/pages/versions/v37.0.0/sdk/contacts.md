@@ -555,7 +555,7 @@ A set of fields that define information about a single entity.
 | thumbnail               | `Image`                   | Deprecated: Use `image`                                        | ❌   | ❌      |
 | previousLastName        | `string`                  | Deprecated: Use `maidenName`                                   | ❌   | ❌      |
 
-> \*On iOS 13 and up, the `note` field [requires your app to request additional entitlements](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes). The Expo client app does not contain those entitlements, so in order to test this feature you will need to [request the entitlement from Apple here](https://developer.apple.com/contact/request/contact-note-field), set the [`ios.accessesContactNotes`](../../config/app/#accessescontactnotes) field in app.json to `true`, and [build your app as a standalone app](/distribution/building-standalone-apps/).
+> \*On iOS 13 and up, the `note` field [requires your app to request additional entitlements](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes). The Expo client app does not contain those entitlements, so in order to test this feature you will need to [request the entitlement from Apple here](https://developer.apple.com/contact/request/contact-note-field), set the [`ios.accessesContactNotes`](../../latest/config/app.md#accessescontactnotes) field in app.json to `true`, and [build your app as a standalone app](../../../distribution/building-standalone-apps.md).
 
 ### Group
 

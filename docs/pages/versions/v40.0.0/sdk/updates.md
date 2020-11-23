@@ -32,7 +32,7 @@ import * as Updates from 'expo-updates';
 
 ### `Updates.manifest`
 
-(_object_) If `expo-updates` is enabled, this is the [manifest](../../workflow/how-expo-works/#expo-development-server) object for the update that's currently running.
+(_object_) If `expo-updates` is enabled, this is the [manifest](../../../workflow/how-expo-works.md#expo-development-server) object for the update that's currently running.
 
 In development mode, or any other environment in which `expo-updates` is disabled, this object is empty.
 
