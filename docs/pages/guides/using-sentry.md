@@ -148,6 +148,31 @@ With the `postPublish` hook in place, now all you need to do is run `expo publis
 
 > This hook can also be used as a `postExport` hook if you're [self-hosting your OTA Updates](../distribution/hosting-your-app.md).
 
+### Self-hosting OTA?
+
+If you're self-hosting your Over the Air Updates (this means you run `expo export` instead of `expo publish`), you need to:
+
+- replace `hooks.postPublish` in your `app.json` file with `hooks.postExport` (everything else stays the same)
+- add the `RewriteFrames` integration to your `Sentry.init` call like so:
+
+```js
+Sentry.init({
+  dsn: SENTRY_DSN,
+  enableInExpoDevelopment: true,
+  integrations: [
+    new RewriteFrames({
+      iteratee: (frame) => {
+        if (frame.filename) {
+          // the values depend on what names you give the bundle files you are uploading to Sentry
+          frame.filename =  Platform.OS === 'android' ? 'app:///index.android.bundle' : 'app:///main.jsbundle';
+        }
+        return frame
+      },
+    }),
+  ],
+})
+```
+
 ### Testing Sentry
 
 If you're using `Jest`, make sure to add `@sentry/.*` and `sentry-expo` to your `transformIgnorePatterns`.
