@@ -212,6 +212,9 @@ dependencies {
   // Versioned react native
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
+  // BEGIN_SDK_40
+  api 'host.exp:reactandroid-abi40_0_0:1.0.0'
+  // END_SDK_40
   // BEGIN_SDK_39
   api 'host.exp:reactandroid-abi39_0_0:1.0.0'
   // END_SDK_39
