@@ -4,6 +4,12 @@ about: You want to report a reproducible bug or regression in Expo SDK.
 labels: 'Issue needs review'
 
 ---
+<!-- ATTENTION:
+The US Thanksgiving holiday is this week, so responses from the Expo team will slow down from Nov. 25th to Dec. 1st. We’ll still be monitoring all of our services (i.e. builds, hosting, notifications) as usual.
+If you’re celebrating Thanksgiving this week, enjoy your holiday! Stay safe and we’ll see you after the holidays
+Thanks!
+The Expo team
+-->
 
 ## 🐛 Bug Report
 
