@@ -14,6 +14,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <expo_development_client-Swift.h>
+
 // Uncomment the below and set it to a React Native bundler URL to develop the launcher JS
 //#define DEV_LAUNCHER_URL "http://10.0.0.176:8090/index.bundle?platform=ios&dev=true&minify=false"
 
@@ -37,6 +39,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://exdevelopmentclient/dummy";
 - (instancetype)init {
   if (self = [super init]) {
     self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[UMModuleRegistryProvider alloc] init]];
+    self.recentlyOpenedAppsRegistry = [EXDevelopmentClientRecentlyOpenedAppsRegistry new];
   }
   return self;
 }
@@ -76,6 +79,11 @@ NSString *fakeLauncherBundleUrl = @"embedded://exdevelopmentclient/dummy";
 }
 
 #endif
+
+- (NSDictionary *)recentlyOpenedApps
+{
+  return [_recentlyOpenedAppsRegistry recentlyOpenedApps];
+}
 
 - (void)startWithWindow:(UIWindow *)window delegate:(id<EXDevelopmentClientControllerDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
 {
@@ -125,19 +133,23 @@ NSString *fakeLauncherBundleUrl = @"embedded://exdevelopmentclient/dummy";
 
 - (void)loadApp:(NSString *)expoUrl onSuccess:(void (^)())onSuccess onError:(void (^)(NSError *error))onError
 {
-  __block NSString *url = [expoUrl stringByReplacingOccurrencesOfString:@"exp" withString:@"http"];
+  __block NSString *url = [[expoUrl stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] stringByReplacingOccurrencesOfString:@"exp" withString:@"http"];
   EXDevelopmentClientManifestParser *manifestParser = [[EXDevelopmentClientManifestParser alloc] initWithURL:url session:[NSURLSession sharedSession]];
-  [manifestParser tryToParseManifest:^(EXDevelopmentClientManifest * _Nonnull manifest) {
+  [manifestParser tryToParseManifest:^(EXDevelopmentClientManifest * _Nullable manifest) {
     NSURL *bundleUrl = [NSURL URLWithString:manifest.bundleUrl];
+    
+    [_recentlyOpenedAppsRegistry appWasOpened:url name:manifest.name];
     [self _initApp:bundleUrl manifest:manifest];
     if (onSuccess) {
       onSuccess();
     }
-  } onInalidURL:^{
-    if (![[NSURL URLWithString:url].path isEqual:@"/"]) {
-      [self _initApp:[NSURL URLWithString:url] manifest:nil];
+  } onInvalidManifestURL:^{
+    [_recentlyOpenedAppsRegistry appWasOpened:url name:nil];
+    NSURL *parsedUrl = [NSURL URLWithString:url];
+    if ([parsedUrl.path isEqual:@"/"] || [parsedUrl.path isEqual:@""]) {
+      [self _initApp:[NSURL URLWithString:@"index.bundle?platform=ios&dev=true&minify=false" relativeToURL:[NSURL URLWithString:url]] manifest:nil];
     } else {
-      [self _initApp:[NSURL URLWithString:url relativeToURL:@"index.bundle?platform=ios&dev=true&minify=false"] manifest:nil];
+      [self _initApp:[NSURL URLWithString:url] manifest:nil];
     }
     
     if (onSuccess) {

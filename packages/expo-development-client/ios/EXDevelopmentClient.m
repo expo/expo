@@ -25,4 +25,10 @@ RCT_EXPORT_METHOD(loadApp:(NSString *)url
   }];
 }
 
+RCT_EXPORT_METHOD(getRecentlyOpenedApps:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  resolve([[EXDevelopmentClientController sharedInstance] recentlyOpenedApps]);
+}
+
 @end

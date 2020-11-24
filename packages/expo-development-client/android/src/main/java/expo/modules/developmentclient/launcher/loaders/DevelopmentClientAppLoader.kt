@@ -80,6 +80,10 @@ abstract class DevelopmentClientAppLoader(
   protected open fun onCreate(activity: ReactActivity) = Unit
   protected open fun onReactContext(context: ReactContext) = Unit
 
+  open fun getAppName(): String? {
+    return null
+  }
+
   private fun setAppUrl(url: String): Boolean {
     val uri = Uri.parse(url)
     val debugServerHost = uri.host + ":" + uri.port

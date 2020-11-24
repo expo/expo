@@ -14,6 +14,7 @@ import expo.modules.developmentclient.launcher.DevelopmentClientActivity
 import expo.modules.developmentclient.launcher.DevelopmentClientHost
 import expo.modules.developmentclient.launcher.DevelopmentClientLifecycle
 import expo.modules.developmentclient.launcher.ReactActivityDelegateSupplier
+import expo.modules.developmentclient.launcher.DevelopmentClientRecentlyOpenedAppsRegistry
 import expo.modules.developmentclient.launcher.loaders.DevelopmentClientExpoAppLoader
 import expo.modules.developmentclient.launcher.loaders.DevelopmentClientReactNativeAppLoader
 import expo.modules.developmentclient.launcher.manifest.DevelopmentClientManifestParser
@@ -40,6 +41,7 @@ class DevelopmentClientController private constructor(
   val devClientHost = DevelopmentClientHost((mContext as Application), DEV_LAUNCHER_HOST)
   private val httpClient = OkHttpClient()
   private val lifecycle = DevelopmentClientLifecycle()
+  private val recentlyOpedAppsRegistry = DevelopmentClientRecentlyOpenedAppsRegistry(mContext)
 
   enum class Mode {
     LAUNCHER, APP
@@ -69,6 +71,7 @@ class DevelopmentClientController private constructor(
 
     // Note that `launch` method is a suspend one. So the execution will be stopped here until the method doesn't finish.
     if (appLoader.launch(appIntent)) {
+      recentlyOpedAppsRegistry.appWasOpened(url, appLoader.getAppName())
       // Here the app will be loaded - we can remove listener here.
       lifecycle.removeListener(appLoaderListener)
     } else {
@@ -76,6 +79,8 @@ class DevelopmentClientController private constructor(
       mode = Mode.LAUNCHER
     }
   }
+
+  fun getRecentlyOpenedApps(): Map<String, String?> = recentlyOpedAppsRegistry.getRecentlyOpenedApps()
 
   fun navigateToLauncher() {
     ensureHostWasCleared(mAppHost)

@@ -19,7 +19,7 @@ Pod::Spec.new do |s|
   
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = { "DEFINES_MODULE" => "YES" }
-
-  s.dependency 'React'
-  s.dependency 'EXDevMenuInterface'
+  
+  s.dependency "React"
+  s.dependency "EXDevMenuInterface"
 end
