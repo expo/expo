@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Revert to class component. ([#11111](https://github.com/expo/expo/pull/11111) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 8.3.1 — 2020-09-23
 
 ### 🐛 Bug fixes
