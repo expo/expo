@@ -26,7 +26,7 @@ const DIR_MAPPING = {
   preview: 'Preview',
   build: 'EAS Build',
   accounts: 'Expo Accounts',
-  client: 'Dev Client',
+  client: 'Development Clients',
 };
 
 const processUrl = path => {
