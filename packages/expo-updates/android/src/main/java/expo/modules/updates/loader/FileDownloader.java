@@ -123,7 +123,7 @@ public class FileDownloader {
                         try {
                           JSONObject manifestJson = new JSONObject(innerManifestString);
                           manifestJson.put("isVerified", true);
-                          Manifest manifest = ManifestFactory.getManifest(manifestJson, configuration, context);
+                          Manifest manifest = ManifestFactory.getManifest(manifestJson, configuration);
                           callback.onSuccess(manifest);
                         } catch (JSONException e) {
                           callback.onFailure("Failed to parse manifest data", e);
@@ -135,7 +135,7 @@ public class FileDownloader {
                   }
               );
             } else {
-              Manifest manifest = ManifestFactory.getManifest(manifestJson, configuration, context);
+              Manifest manifest = ManifestFactory.getManifest(manifestJson, configuration);
               callback.onSuccess(manifest);
             }
           } catch (Exception e) {
@@ -251,7 +251,8 @@ public class FileDownloader {
             .header("Expo-Api-Version", "1")
             .header("Expo-Updates-Environment", "BARE")
             .header("Expo-JSON-Error", "true")
-            .header("Expo-Accept-Signature", "true")
+            // as of 11-25-20, the EAS Update alpha returns an error if Expo-Accept-Signature: true is included in the request
+            .header("Expo-Accept-Signature", String.valueOf(configuration.usesLegacyManifest()))
             .cacheControl(CacheControl.FORCE_NETWORK);
 
     String runtimeVersion = configuration.getRuntimeVersion();
