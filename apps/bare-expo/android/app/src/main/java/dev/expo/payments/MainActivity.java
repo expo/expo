@@ -1,5 +1,6 @@
 package dev.expo.payments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.facebook.react.ReactActivityDelegate;
@@ -39,5 +40,13 @@ public class MainActivity extends DevMenuAwareReactActivity {
     }
 
     return delegate;
+  }
+
+  @Override
+  public void onNewIntent(Intent intent) {
+    if (DevelopmentClientController.tryToHandleIntent(this, intent)) {
+      return;
+    }
+    super.onNewIntent(intent);
   }
 }

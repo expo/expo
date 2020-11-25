@@ -1,17 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="expo.modules.developmentclient">
+  package="expo.modules.developmentclient">
 
   <application>
     <activity
       android:name=".launcher.DevelopmentClientActivity"
       android:screenOrientation="portrait"
-      android:theme="@style/Theme.DevelopmentClient" >
-      <intent-filter>
-        <action android:name="android.intent.action.VIEW" />
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
-        <data android:scheme="${developmentClientSchema}"  />
-      </intent-filter>
-    </activity>
+      android:theme="@style/Theme.DevelopmentClient" />
   </application>
 </manifest>
