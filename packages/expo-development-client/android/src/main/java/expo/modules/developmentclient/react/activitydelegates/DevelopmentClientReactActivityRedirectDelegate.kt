@@ -1,4 +1,4 @@
-package expo.modules.developmentclient.react
+package expo.modules.developmentclient.react.activitydelegates
 
 import android.content.Intent
 import android.os.Bundle

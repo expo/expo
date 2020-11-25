@@ -34,7 +34,7 @@ class AppDelegate: UMAppDelegateWrapper {
       let controller = EXDevelopmentClientController.sharedInstance()
       controller?.start(with: window, delegate: self, launchOptions: launchOptions);
     } else {
-      initializeReactNativeBridge();
+      initializeReactNativeBridge(launchOptions);
     }
 
     super.application(application, didFinishLaunchingWithOptions: launchOptions)
@@ -43,8 +43,8 @@ class AppDelegate: UMAppDelegateWrapper {
   }
 
   @discardableResult
-  func initializeReactNativeBridge() -> RCTBridge? {
-    if let bridge = RCTBridge(delegate: self, launchOptions: self.launchOptions) {
+  func initializeReactNativeBridge(_ launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> RCTBridge? {
+    if let bridge = RCTBridge(delegate: self, launchOptions: launchOptions) {
       let rootView = RCTRootView(bridge: bridge, moduleName: "BareExpo", initialProperties: nil)
       let rootViewController = UIViewController()
       rootView.backgroundColor = UIColor.white
@@ -128,6 +128,6 @@ extension AppDelegate: RCTBridgeDelegate {
 
 extension AppDelegate:  EXDevelopmentClientControllerDelegate {
   func developmentClientController(_ developmentClientController: EXDevelopmentClientController!, didStartWithSuccess success: Bool) {
-    developmentClientController.appBridge = initializeReactNativeBridge()
+    developmentClientController.appBridge = initializeReactNativeBridge(developmentClientController.getLaunchOptions())
   }
 }

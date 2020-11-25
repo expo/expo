@@ -17,7 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		0E6723533E1959FE429D3C015A2A0B76 /* PBXContainerItemProxy */ = {
+		D04B7654FCB6A3CB4980BFECB0878E7A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 8EB2AC4A45EDDFADE7549C8363A22B18 /* React-Core.xcodeproj */;
 			proxyType = 1;
@@ -153,7 +153,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				73992390B05669418B2DF7B834AE9DA5 /* PBXTargetDependency */,
+				4CB131BF8B370BCE22DEEAAF21BA5428 /* PBXTargetDependency */,
 			);
 			name = "react-native-webview";
 			productName = "react-native-webview";
@@ -207,10 +207,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		73992390B05669418B2DF7B834AE9DA5 /* PBXTargetDependency */ = {
+		4CB131BF8B370BCE22DEEAAF21BA5428 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-Core";
-			targetProxy = 0E6723533E1959FE429D3C015A2A0B76 /* PBXContainerItemProxy */;
+			targetProxy = D04B7654FCB6A3CB4980BFECB0878E7A /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
