@@ -1,4 +1,4 @@
-import Application from 'expo-application';
+import * as Application from 'expo-application';
 
 export default function getInstallationIdAsync() {
   return Application.androidId!;
