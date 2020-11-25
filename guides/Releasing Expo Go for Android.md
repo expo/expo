@@ -1,10 +1,10 @@
-# Releasing Android Expo Client
+# Releasing Expo Go for Android
 
-This document will guide you through the process of releasing a new version of Expo client for Android.
+This document will guide you through the process of releasing a new version of Expo Go for Android.
 
 1. **Bump versions of Android project**
 
-    **Why:** Every new version of Expo client has to have another version and version code.
+    **Why:** Every new version of Expo Go has to have another version and version code.
 
     **How:** Edit `/android/app/build.gradle` and bump versions in that file.
 
@@ -28,7 +28,7 @@ This document will guide you through the process of releasing a new version of E
 
 4. **Upload the application to backend for website and `expo-cli` to download**
 
-    **Why:** So that developers who used `expo-cli` to download Expo client to their devices can download the update.
+    **Why:** So that developers who used `expo-cli` to download Expo Go to their devices can download the update.
 
     **How:**
     - Open CircleCI on the release branch and go to the `client` workflow. Once `client_android` job is finished, approve `client_android_apk_release_approve` job and follow the next job `client_android_apk_release` which takes and uploads the artifact archive from `client_android` job to staging.
@@ -37,6 +37,6 @@ This document will guide you through the process of releasing a new version of E
 
 5. **Submit the application to Play Store**
 
-    **Why:** So that our users that downloaded Expo client from Play Store can update easily.
+    **Why:** So that our users that downloaded Expo Go from Play Store can update easily.
 
     **How:** Open the `client` workflow from which you downloaded `app-release.apk` in step 3. and approve the `client_android_approve_google_play` job. About 45 minutes later the update should be downloadable via Play Store.

@@ -1,4 +1,4 @@
-# Developing the Client
+# Developing Expo Go
 
 - [Introduction](#introduction)
 - [External Contributions](#external-contributions)
@@ -18,25 +18,25 @@
 
 ## Introduction
 
-This is the source code for the Expo client app used to view projects published to the Expo service. If you want to build and install the Expo client directly onto a device, you're in the right place. Note that if you just want to install the Expo client app on a simulator, you do not need to build it from source. Instead, you should [follow the instructions here](https://docs.expo.io/versions/latest/introduction/installation.html).
+This is the source code for the Expo Go app used to view projects published to the Expo service. If you want to build and install Expo Go directly onto a device, you're in the right place. Note that if you just want to install Expo Go on a simulator, you do not need to build it from source. Instead, you should [follow the instructions here](https://docs.expo.io/versions/latest/introduction/installation.html).
 
-To build the Expo client app, follow the instructions in the [Setup](#setup) section below. Use the [Expo CLI](https://docs.expo.io/versions/latest/workflow/expo-cli) to use Expo's infrastructure to build your app.
+To build Expo Go, follow the instructions in the [Setup](#setup) section below. Use the [Expo CLI](https://docs.expo.io/versions/latest/workflow/expo-cli) to use Expo's infrastructure to build your app.
 
 Please ask us on the [forums](https://forums.expo.io/) if you get stuck.
 
 ## External Contributions
 
-Please check with us before putting work into a Pull Request! We don't yet have a good guide available that covers the nuances of how to work with the Expo client and the types of PRs that we accept so you will want a direct line of communication with someone on the team to ask us questions. The best place to talk to us is either on Slack at https://slack.expo.io or the forums at https://forums.expo.io.
+Please check with us before putting work into a Pull Request! We don't yet have a good guide available that covers the nuances of how to work with Expo Go and the types of PRs that we accept so you will want a direct line of communication with someone on the team to ask us questions. The best place to talk to us is either on Slack at https://slack.expo.io or the forums at https://forums.expo.io.
 
 **Disclaimers:**
 
-If you want to build a standalone app that has a custom icon and name, see [our documentation here](https://docs.expo.io/versions/latest/distribution/building-standalone-apps/). You're in the wrong place and you shouldn't need to build the Expo clients from source.
+If you want to build a standalone app that has a custom icon and name, see [our documentation here](https://docs.expo.io/versions/latest/distribution/building-standalone-apps/). You're in the wrong place and you shouldn't need to build Expo Go from source.
 
-If you need to make native code changes to your Expo project, such as adding custom native modules, we can [generate a native project for you](https://docs.expo.io/versions/latest/expokit/eject). You're in the wrong place and you shouldn't need to build the Expo clients from source.
+If you need to make native code changes to your Expo project, such as adding custom native modules, we can [generate a native project for you](https://docs.expo.io/versions/latest/expokit/eject). You're in the wrong place and you shouldn't need to build Expo Go from source.
 
 ## Configuring your environment
 
-Note: We support building the clients only on macOS.
+Note: We support building Expo Go only on macOS.
 
 - Install [direnv](http://direnv.net/) (to do this with nix, run `nix-env -iA nixpkgs.direnv`)
 - Clone this repo; we recommend cloning it to a directory whose full path does not include any spaces (you should clone all the submodules with `git clone --recurse-submodules`)
@@ -69,11 +69,11 @@ Note: We support building the clients only on macOS.
 
 ### Android
 
-- If the Play Store version of the Expo Client App is installed on your test device, uninstall it.
+- If the Play Store version of the Expo Go is installed on your test device, uninstall it.
 - Connect your test device to your computer with a USB cable.
 - Run `fastlane android start`, or alternately open the `android` directory in Android Studio, start it, and in the **Select Deployment Target** dialog, select your device.
   - You can also run `./gradlew installDebug` from the `android` directory. 
-  - If you're having trouble building the Android client, trying clearing your gradle cache with `./gradlew clean` and rebuilding.
+  - If you're having trouble building the Android app, trying clearing your gradle cache with `./gradlew clean` and rebuilding.
 
 ## Standalone Apps
 
@@ -96,7 +96,7 @@ Here are the steps to build a standalone Android app:
 
 ### iOS
 
-The iOS standalone app script has two actions, `build` and `configure`. `build` creates an archive or a simulator build of the Expo iOS workspace. `configure` accepts a path to an existing archive and modifies all its configuration files so that it will run as a standalone Expo experience rather than as the Expo client app.
+The iOS standalone app script has two actions, `build` and `configure`. `build` creates an archive or a simulator build of the Expo iOS workspace. `configure` accepts a path to an existing archive and modifies all its configuration files so that it will run as a standalone Expo project rather than in Expo Go.
 
 Here are the steps to build a standalone iOS app:
 
@@ -110,11 +110,11 @@ Here are the steps to build a standalone iOS app:
 
 ## Modifying JS Code
 
-The Expo client apps run a root Expo project in addition to native code. By default this will use a published version of the project, so any changes made in the `home` directory will not show up without some extra work.
+The Expo Go apps run a root Expo project in addition to native code. By default this will use a published version of the project, so any changes made in the `home` directory will not show up without some extra work.
 
 Serve this project locally by running `expo start` from the `home` directory. On iOS, you'll additionally need to set `DEV_KERNEL_SOURCE` to `LOCAL` in `EXBuildConstants.plist` (the default is `PUBLISHED`).
 
-The native Android Studio and XCode projects have a build hook which will find this if `expo start` is running. Keep this running and rebuild the app on each platform.
+The native Android Studio and Xcode projects have a build hook which will find this if `expo start` is running. Keep this running and rebuild the app on each platform.
 
 ## Tests
 
