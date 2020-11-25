@@ -17,7 +17,7 @@ PODS:
   - EXAppAuth (9.3.0):
     - AppAuth (~> 1.2)
     - UMCore
-  - EXApplication (2.4.0):
+  - EXApplication (2.4.1):
     - UMCore
   - EXAV (8.7.0):
     - UMCore
@@ -44,7 +44,7 @@ PODS:
     - UMPermissionsInterface
   - EXCellular (2.4.0):
     - UMCore
-  - EXConstants (9.3.0):
+  - EXConstants (9.3.1):
     - UMConstantsInterface
     - UMCore
   - EXContacts (8.6.0):
@@ -114,7 +114,7 @@ PODS:
     - UMCore
   - EXKeepAwake (8.4.0):
     - UMCore
-  - EXLinearGradient (8.3.1):
+  - EXLinearGradient (8.4.0):
     - UMCore
   - EXLocalAuthentication (9.5.0):
     - UMConstantsInterface
@@ -135,13 +135,13 @@ PODS:
     - UMPermissionsInterface
   - EXNetwork (2.4.0):
     - UMCore
-  - EXNotifications (0.8.0):
+  - EXNotifications (0.8.1):
     - UMCore
     - UMPermissionsInterface
   - EXPermissions (10.0.0):
     - UMCore
     - UMPermissionsInterface
-  - expo-development-client (0.0.6):
+  - expo-development-client (0.0.10):
     - EXDevMenuInterface
     - React
   - expo-image (1.0.0-alpha.0):
@@ -1048,7 +1048,7 @@ SPEC CHECKSUMS:
   DoubleConversion: cde416483dac037923206447da6e1454df403714
   EXAmplitude: d0adb393cd13c743d9609fdb44379df03f7a1ff2
   EXAppAuth: 9709f199b78e50b6ac0b2c8683519670c1918378
-  EXApplication: ea94f7c0cb6a488a89e18fa4bd5d153e8f9ed360
+  EXApplication: e3c201e7b913d081bbd37bd3c5d0e2cdc21733b4
   EXAV: e32adf44c10a82f723172d5b01d5693890888dd6
   EXBackgroundFetch: 57170d013a58413d81b0a54b97b30e1fcc1dccbd
   EXBarCodeScanner: aa1eda7595b8258471ff733acdb18f62cfd85813
@@ -1057,7 +1057,7 @@ SPEC CHECKSUMS:
   EXBrightness: 42f80704aa91706f4230c218789e32b798ab2fae
   EXCalendar: 4b0612281905d869518383d860cde2d206de4743
   EXCellular: 1653bd3affaaaf6fee19ce9da76067b658e00109
-  EXConstants: 73af09d9fe69618428139e27e71f1633a32a7628
+  EXConstants: 2e488b6e2631b6fd4e2911d9fe9213b0a1dacb9f
   EXContacts: dbc32dd1e2798cce1beeced230da989931b47890
   EXCrypto: 81948191c3d2caf18fb32f18ee88d87d42532d62
   EXDevice: 01f54314f618aa4098893f66cd8f2a8a411f33ee
@@ -1080,16 +1080,16 @@ SPEC CHECKSUMS:
   EXImagePicker: e1bee07ea1cb36366eff8a9ec23e85d6fd1860cd
   EXInAppPurchases: c647953e5e1dad71bbda2e3bb92966dac440ede4
   EXKeepAwake: 615c5a6fca5c2afedf611bb6f7f2ca323246de94
-  EXLinearGradient: c7ca1c2933ac240ffbc805c014a72947e227ac75
+  EXLinearGradient: c803fbd1aa974be038177b1e45524bc35759fe9c
   EXLocalAuthentication: acb740dcb15753d8f0ce90d93609322a2545cd41
   EXLocalization: 8b9463c81843da214476b541a27811dd885c9a76
   EXLocation: d55e2a37f61bcfb4eba9c813b3f4621d896c4c00
   EXMailComposer: b736d3ef1073c7d6b7116bd2fa8eb8ba067f7185
   EXMediaLibrary: 580c097a85f9253deaaf7aaa75a8a2e692e9d8b9
   EXNetwork: 6efac2968418772829f979a78c555900267ce231
-  EXNotifications: 3992453112f1f3bd878b2921563f6dfe2dd0c7d6
+  EXNotifications: d5983c43c0fdd92697b9339d3e5022e1d6bdfe64
   EXPermissions: 17d4846ad1880f6891c74ae58ca1acb43e47ed47
-  expo-development-client: 5fb69bff52bfa142fce610a6917e22f610bc12f7
+  expo-development-client: e224dc78c88f0c3d1de720d92754f6f518eae164
   expo-image: dc52ebb150b98a54d6023cd7448141e7366598d0
   EXPrint: 84791aa4c239b4743950e98902feec6487ad064f
   EXRandom: d7e0f3dd64810aabd27d59f8ecffee359177e2c3
@@ -1189,6 +1189,6 @@ SPEC CHECKSUMS:
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: b1437f6a283cf5bd7a71ac220561e61db1ccc948
+PODFILE CHECKSUM: e41eb10518755f265e9835a6010d63e705dc7082
 
 COCOAPODS: 1.10.0
