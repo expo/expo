@@ -25,19 +25,19 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		7638E61DFF6D235781A89595DC6B8BEB /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 049D5563BD553F693AAB909D41CC83A5 /* EXDevMenuInterface.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 4D3A2802599AB5CFD5DCC16429ABBF2C;
-			remoteInfo = EXDevMenuInterface;
-		};
-		D0805C7AEC2C7B79A8B7612EEF34FFFE /* PBXContainerItemProxy */ = {
+		6395608B5A2D86A943F3A035CEB74156 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9ACF32F0E3793FAA043BAA0161C67E9E /* React.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 94DA87F24FB4B93E5D08FE961D5E5A3E;
 			remoteInfo = React;
+		};
+		759BD947F1BD90A0E331F7A41C0041F1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 049D5563BD553F693AAB909D41CC83A5 /* EXDevMenuInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 4D3A2802599AB5CFD5DCC16429ABBF2C;
+			remoteInfo = EXDevMenuInterface;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -188,8 +188,8 @@
 			buildRules = (
 			);
 			dependencies = (
-				A104DBBCCCAB59514F4A08704E4EEEE3 /* PBXTargetDependency */,
-				52A5325C6EBBC012FF7AEE9FAFD1668E /* PBXTargetDependency */,
+				C527979FE8AB15A42BCCDE2A935D0101 /* PBXTargetDependency */,
+				AA95A26959C9A06CB39B5415775D375C /* PBXTargetDependency */,
 			);
 			name = "expo-development-client";
 			productName = "expo-development-client";
@@ -250,15 +250,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		52A5325C6EBBC012FF7AEE9FAFD1668E /* PBXTargetDependency */ = {
+		AA95A26959C9A06CB39B5415775D375C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = React;
-			targetProxy = D0805C7AEC2C7B79A8B7612EEF34FFFE /* PBXContainerItemProxy */;
+			targetProxy = 6395608B5A2D86A943F3A035CEB74156 /* PBXContainerItemProxy */;
 		};
-		A104DBBCCCAB59514F4A08704E4EEEE3 /* PBXTargetDependency */ = {
+		C527979FE8AB15A42BCCDE2A935D0101 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = EXDevMenuInterface;
-			targetProxy = 7638E61DFF6D235781A89595DC6B8BEB /* PBXContainerItemProxy */;
+			targetProxy = 759BD947F1BD90A0E331F7A41C0041F1 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

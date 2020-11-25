@@ -57,14 +57,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		39A3071F834FF05895C560F434834D49 /* PBXContainerItemProxy */ = {
+		365CBAC19B40416DF9B60F4634FE0804 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0F763A044DF5AFE04810D0675E73927F /* React-Core.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 5DA1A74647F652AE8E4DE074AFC4C6B7;
 			remoteInfo = "React-Core";
 		};
-		8F3E062E9930AAEA639D469F9533CFAA /* PBXContainerItemProxy */ = {
+		B1A30BBCF675D53F8D3451989990A241 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 340A08C1DE68BCFBBB140990F5A5DE2D /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -336,8 +336,8 @@
 			buildRules = (
 			);
 			dependencies = (
-				60A036B525AA66EE869E16C2B8721ADA /* PBXTargetDependency */,
-				49F4B2FFE81F8336775FFC91359285C0 /* PBXTargetDependency */,
+				AE27E68B8EA6E824D95438FB7E35B0F8 /* PBXTargetDependency */,
+				21B5506FB22014B7CDC39C22956D9A64 /* PBXTargetDependency */,
 			);
 			name = EXUpdates;
 			productName = EXUpdates;
@@ -412,15 +412,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		49F4B2FFE81F8336775FFC91359285C0 /* PBXTargetDependency */ = {
+		21B5506FB22014B7CDC39C22956D9A64 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 8F3E062E9930AAEA639D469F9533CFAA /* PBXContainerItemProxy */;
+			targetProxy = B1A30BBCF675D53F8D3451989990A241 /* PBXContainerItemProxy */;
 		};
-		60A036B525AA66EE869E16C2B8721ADA /* PBXTargetDependency */ = {
+		AE27E68B8EA6E824D95438FB7E35B0F8 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-Core";
-			targetProxy = 39A3071F834FF05895C560F434834D49 /* PBXContainerItemProxy */;
+			targetProxy = 365CBAC19B40416DF9B60F4634FE0804 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

@@ -38,8 +38,8 @@ android {
   defaultConfig {
     minSdkVersion safeExtGet('minSdkVersion', 21)
     targetSdkVersion safeExtGet('targetSdkVersion', 29)
-    versionCode 3
-    versionName "0.0.3"
+    versionCode 4
+    versionName "0.0.10"
   }
   lintOptions {
     abortOnError false

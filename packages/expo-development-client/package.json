@@ -1,7 +1,7 @@
 {
   "name": "expo-development-client",
   "title": "Expo Development Client",
-  "version": "0.0.6",
+  "version": "0.0.10",
   "description": "Pre-release version of the Expo development client package for testing.",
   "main": "build/DevelopementClient.js",
   "types": "build/DevelopementClient.d.ts",
