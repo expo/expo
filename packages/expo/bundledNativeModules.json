@@ -64,7 +64,7 @@
   "react-native-screens": "~2.15.0",
   "react-native-svg": "12.1.0",
   "react-native-view-shot": "3.1.2",
-  "react-native-webview": "10.10.2",
+  "react-native-webview": "11.0.0",
   "unimodules-barcode-scanner-interface": "~5.4.0",
   "unimodules-camera-interface": "~5.4.0",
   "unimodules-constants-interface": "~5.4.0",
