@@ -10709,7 +10709,7 @@ CACHE_KEYS:
       EXApplication:
         :debug: 04888b43d2d81fe81b05cbd04c5fd1bb
         :release: 04888b43d2d81fe81b05cbd04c5fd1bb
-    CHECKSUM: ea94f7c0cb6a488a89e18fa4bd5d153e8f9ed360
+    CHECKSUM: e3c201e7b913d081bbd37bd3c5d0e2cdc21733b4
     FILES:
       - "../../packages/expo-application/ios/EXApplication/EXApplication.h"
       - "../../packages/expo-application/ios/EXApplication/EXApplication.m"
@@ -10717,7 +10717,7 @@ CACHE_KEYS:
       - "../../packages/expo-application/ios/EXApplication/EXProvisioningProfile.m"
     PROJECT_NAME: EXApplication
     SPECS:
-      - EXApplication (2.4.0)
+      - EXApplication (2.4.1)
   EXAV:
     BUILD_SETTINGS_CHECKSUM:
       EXAV:
@@ -10909,7 +10909,7 @@ CACHE_KEYS:
       EXConstants:
         :debug: c174df6c443d3e5f3c35fab733a2a50a
         :release: c174df6c443d3e5f3c35fab733a2a50a
-    CHECKSUM: 73af09d9fe69618428139e27e71f1633a32a7628
+    CHECKSUM: 2e488b6e2631b6fd4e2911d9fe9213b0a1dacb9f
     FILES:
       - "../../packages/expo-constants/ios/EXConstants/EXConstants.h"
       - "../../packages/expo-constants/ios/EXConstants/EXConstants.m"
@@ -10919,7 +10919,7 @@ CACHE_KEYS:
       - "../../packages/expo-constants/ios/EXConstants/EXConstantsService.m"
     PROJECT_NAME: EXConstants
     SPECS:
-      - EXConstants (9.3.0)
+      - EXConstants (9.3.1)
   EXContacts:
     BUILD_SETTINGS_CHECKSUM:
       EXContacts:
@@ -11270,7 +11270,7 @@ CACHE_KEYS:
       EXLinearGradient:
         :debug: 7ebc6536adf47998df3f5f47cbc400cc
         :release: 7ebc6536adf47998df3f5f47cbc400cc
-    CHECKSUM: c7ca1c2933ac240ffbc805c014a72947e227ac75
+    CHECKSUM: c803fbd1aa974be038177b1e45524bc35759fe9c
     FILES:
       - "../../packages/expo-linear-gradient/ios/EXLinearGradient/EXLinearGradient.h"
       - "../../packages/expo-linear-gradient/ios/EXLinearGradient/EXLinearGradient.m"
@@ -11280,7 +11280,7 @@ CACHE_KEYS:
       - "../../packages/expo-linear-gradient/ios/EXLinearGradient/EXLinearGradientManager.m"
     PROJECT_NAME: EXLinearGradient
     SPECS:
-      - EXLinearGradient (8.3.1)
+      - EXLinearGradient (8.4.0)
   EXLocalAuthentication:
     BUILD_SETTINGS_CHECKSUM:
       EXLocalAuthentication:
@@ -11374,7 +11374,7 @@ CACHE_KEYS:
       EXNotifications:
         :debug: 4226bb97c761e7685878537693ceb31e
         :release: 4226bb97c761e7685878537693ceb31e
-    CHECKSUM: 3992453112f1f3bd878b2921563f6dfe2dd0c7d6
+    CHECKSUM: d5983c43c0fdd92697b9339d3e5022e1d6bdfe64
     FILES:
       - "../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.h"
       - "../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.m"
@@ -11416,7 +11416,7 @@ CACHE_KEYS:
       - "../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenModule.m"
     PROJECT_NAME: EXNotifications
     SPECS:
-      - EXNotifications (0.8.0)
+      - EXNotifications (0.8.1)
   EXPermissions:
     BUILD_SETTINGS_CHECKSUM:
       EXPermissions:
@@ -11647,7 +11647,7 @@ CACHE_KEYS:
       EXUpdates:
         :debug: 14a46dece9389c0241fc237561314e4d
         :release: 14a46dece9389c0241fc237561314e4d
-    CHECKSUM: b8290fe61978e9c832ff79e18c24ce151ce5e757
+    CHECKSUM: 28368049118dbe4ceaf4422ec72e0ad5f770df1f
     FILES:
       - "../../packages/expo-updates/ios/EXUpdates/AppLauncher/EXUpdatesAppLauncher.h"
       - "../../packages/expo-updates/ios/EXUpdates/AppLauncher/EXUpdatesAppLauncherNoDatabase.h"
@@ -11697,7 +11697,7 @@ CACHE_KEYS:
       - "../../packages/expo-updates/ios/EXUpdates/Update/EXUpdatesUpdate.m"
     PROJECT_NAME: EXUpdates
     SPECS:
-      - EXUpdates (0.4.0)
+      - EXUpdates (0.4.1)
   EXVideoThumbnails:
     BUILD_SETTINGS_CHECKSUM:
       EXVideoThumbnails:

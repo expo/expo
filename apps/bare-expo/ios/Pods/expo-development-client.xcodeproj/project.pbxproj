@@ -23,19 +23,19 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		172D354135A9FE69FCE070DED599E64C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9ACF32F0E3793FAA043BAA0161C67E9E /* React.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 94DA87F24FB4B93E5D08FE961D5E5A3E;
-			remoteInfo = React;
-		};
-		380BF59E0AD36AF4985ABD698BABA0EF /* PBXContainerItemProxy */ = {
+		B4A1BE6D54DA46E507B08EEF7C208D15 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 049D5563BD553F693AAB909D41CC83A5 /* EXDevMenuInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 4D3A2802599AB5CFD5DCC16429ABBF2C;
 			remoteInfo = EXDevMenuInterface;
+		};
+		C3807745FF91B772FD52AB9EF43DDC27 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9ACF32F0E3793FAA043BAA0161C67E9E /* React.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 94DA87F24FB4B93E5D08FE961D5E5A3E;
+			remoteInfo = React;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -181,8 +181,8 @@
 			buildRules = (
 			);
 			dependencies = (
-				9D261188F8306EC6D263C461671EA223 /* PBXTargetDependency */,
-				011CB548CF859E3005BA0A94939C305E /* PBXTargetDependency */,
+				B9BAFBA02E0714F66EEFC5672E9E0F09 /* PBXTargetDependency */,
+				C423B7AEBBFF29CC0C0CBB789224731E /* PBXTargetDependency */,
 			);
 			name = "expo-development-client";
 			productName = "expo-development-client";
@@ -242,15 +242,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		011CB548CF859E3005BA0A94939C305E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = React;
-			targetProxy = 172D354135A9FE69FCE070DED599E64C /* PBXContainerItemProxy */;
-		};
-		9D261188F8306EC6D263C461671EA223 /* PBXTargetDependency */ = {
+		B9BAFBA02E0714F66EEFC5672E9E0F09 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = EXDevMenuInterface;
-			targetProxy = 380BF59E0AD36AF4985ABD698BABA0EF /* PBXContainerItemProxy */;
+			targetProxy = B4A1BE6D54DA46E507B08EEF7C208D15 /* PBXContainerItemProxy */;
+		};
+		C423B7AEBBFF29CC0C0CBB789224731E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = React;
+			targetProxy = C3807745FF91B772FD52AB9EF43DDC27 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
