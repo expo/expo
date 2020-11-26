@@ -7,7 +7,7 @@ import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
 
 **Expo Dev Client** is an open source project to improve your development experience while working on your Expo and React Native projects. It allows your team to focus on the JavaScript portion of your project, only needing to interact with XCode or Android Studio when you need to make changes to the native code used in your project.
 
-> ⚠️ **Managed Expo projects are not yet supported**, but we are working on bringing the Development Client to the Managed Workflow! If you want to build a managed Expo project with the Development Client, you'll have to eject it first. See the [Ejecting to Bare Workflow](../../workflow/customizing/) page to learn how.
+> ⚠️ **Managed Expo projects are not yet supported**, but we are working on bringing the Development Client to the Managed Workflow! If you want to build a managed Expo project with the Development Client, you'll have to eject it first. See the [Ejecting to Bare Workflow](../workflow/customizing.md) page to learn how.
 
 <!-- ## Dream Instructions
 
@@ -40,7 +40,8 @@ Add the Expo Development Client packages to your package.json.
 
 <InstallSection packageName="expo-dev-client" cmd={["npm install expo-dev-menu expo-dev-menu-interface expo-development-client"]} hideBareInstructions />
 
-[Want to learn more about how these modules work?](/client/submodules/)
+<!-- note: `/client/submodules` doesn't exists, commenting this out for now -->
+<!-- [Want to learn more about how these modules work?](/client/submodules/) -->
 
 ### IOS
 
@@ -80,9 +81,9 @@ You're now ready to start developing your project with the Development Client.
 
 ## Next Steps
 
-- [EAS Build](../eas-build/) - the easiest way to generate Development builds of your application
+- [EAS Build](eas-build.md) - the easiest way to generate Development builds of your application
 
-- [Building Locally for iOS](../distribution-for-ios/) - if you need to run your own builds for any reason
-- [Building Locally for Android](../distribution-for-ios/) - if you need to run your own builds for any reason
-- [Troubleshooting](../troubleshooting) - Solutions for common issues you might encounter with the development client
-- [Extending the Development Menu](../extending-the-development-menu/) - Add functionality to the Development Menu.
+- [Building Locally for iOS](distribution-for-ios.md) - if you need to run your own builds for any reason
+- [Building Locally for Android](distribution-for-ios.md) - if you need to run your own builds for any reason
+- [Troubleshooting](troubleshooting.md) - Solutions for common issues you might encounter with the development client
+- [Extending the Development Menu](extending-the-development-menu.md) - Add functionality to the Development Menu.

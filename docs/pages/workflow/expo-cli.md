@@ -738,7 +738,7 @@ Alias: `expo u`
 | Option                 | Description                                                                                             |
 | ---------------------- | ------------------------------------------------------------------------------------------------------- |
 | `--url [url]`          | URL to request. (Required)                                                                              |
-| `--event [event-type]` | Event type that triggers the webhook. [build](Required)                                                 |
+| `--event [event-type]` | Event type that triggers the webhook. [build] (Required)                                                |
 | `--secret [secret]`    | Secret used to create a hash signature of the request payload, provided in the 'Expo-Signature' header. |
 | `--config [file]`      | Specify a path to app.json or app.config.js                                                             |
 
