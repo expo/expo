@@ -2313,7 +2313,7 @@ PODS:
     - UMPermissionsInterface
   - EXSpeech (8.5.0):
     - UMCore
-  - EXSplashScreen (0.8.0):
+  - EXSplashScreen (0.8.1):
     - React-Core
     - UMCore
   - EXSQLite (8.5.0):
@@ -4756,7 +4756,7 @@ SPEC CHECKSUMS:
   EXSharing: 6b3b821c930a68e4c37b1afede6b558d4f00cf39
   EXSMS: 0c79c6d59756f75617e7c09ea003ecc3781d16c2
   EXSpeech: f0d827b8629681edf784858d92f12c041987afcd
-  EXSplashScreen: 6ea1e68346ba78616fb0271160e6cc72769edca6
+  EXSplashScreen: 8c7c1112ce7611a853486af4737fe2298eda7657
   EXSQLite: bda6a286dded0637bb312ee781239dcca163ff4b
   EXStoreReview: 9b161bd86c172a9755c787982bfc32c7193cf803
   EXTaskManager: fb4d7765fe20ba6ad3d304b40b6f1bebca4889cd

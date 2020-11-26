@@ -20,14 +20,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		B05BB9F6BE0A05E2426A13AB2E86CF7B /* PBXContainerItemProxy */ = {
+		10F314D229B67F722B5A407828B284E1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A628F6F62782F0505F3BF4A059B1CCA8 /* UMCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
 		};
-		DA3C1CA90F072729B747D5E61B07383E /* PBXContainerItemProxy */ = {
+		E18864F712532ADD198EAF0C3E62E6FC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = CF1F4A4540EFDAA226452BC78A803DED /* React-Core.xcodeproj */;
 			proxyType = 1;
@@ -169,8 +169,8 @@
 			buildRules = (
 			);
 			dependencies = (
-				53C1D6AD61E58EEAB94CCA311B8508B6 /* PBXTargetDependency */,
-				B12FD847C6B7B4C3E96498BC6C261A14 /* PBXTargetDependency */,
+				45EE9E5E062BB0BA5D602A0C0F7A8B7A /* PBXTargetDependency */,
+				90E4FDC90D3353E3612D2EF84544C7EF /* PBXTargetDependency */,
 			);
 			name = EXSplashScreen;
 			productName = EXSplashScreen;
@@ -228,15 +228,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		53C1D6AD61E58EEAB94CCA311B8508B6 /* PBXTargetDependency */ = {
+		45EE9E5E062BB0BA5D602A0C0F7A8B7A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-Core";
-			targetProxy = DA3C1CA90F072729B747D5E61B07383E /* PBXContainerItemProxy */;
+			targetProxy = E18864F712532ADD198EAF0C3E62E6FC /* PBXContainerItemProxy */;
 		};
-		B12FD847C6B7B4C3E96498BC6C261A14 /* PBXTargetDependency */ = {
+		90E4FDC90D3353E3612D2EF84544C7EF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = B05BB9F6BE0A05E2426A13AB2E86CF7B /* PBXContainerItemProxy */;
+			targetProxy = 10F314D229B67F722B5A407828B284E1 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
