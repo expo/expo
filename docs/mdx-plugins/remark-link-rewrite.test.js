@@ -118,3 +118,15 @@ describe('from pages/versions/latest/sdk/app-auth.md', () => {
     expect(rewrite(file, '../../../workflow/debugging.md')).toBe('/workflow/debugging/');
   });
 });
+
+describe('from pages/workflow/debugging.md', () => {
+  const file = makeFile('workflow/debugging.md');
+
+  it('resolves hash only to same file', () => {
+    expect(rewrite(file, '#some-header')).toBe('/workflow/debugging/#some-header');
+  });
+
+  it('resolves hash with ./ to same file', () => {
+    expect(rewrite(file, './#some-header')).toBe('/workflow/debugging/#some-header');
+  });
+});
