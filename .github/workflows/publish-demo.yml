@@ -67,9 +67,13 @@ jobs:
       - name: Set deploy url to env variable
         run: echo "ZEIT_DEPLOY=$(cat deploy-url.txt)" >> $GITHUB_ENV
       # Alias the now deployment URL
-      - name: Alias with PR number
-        working-directory: ./apps/native-component-list
-        env:
-          ZEIT_TOKEN: ${{ secrets.ZEIT_TOKEN }}
-          SITE_ALIAS: expo-web.now.sh
-        run: npx now alias --token=${ZEIT_TOKEN} `cat deploy-url.txt` $SITE_ALIAS
+      #
+      # NOTE(brentvatne): this is currently disabled because aliasing is failing with:
+      #   "Error! The alias expo-web.now.sh is a deployment URL or it's in use by a different team."
+      #
+      # - name: Alias with PR number
+      #   working-directory: ./apps/native-component-list
+      #   env:
+      #     ZEIT_TOKEN: ${{ secrets.ZEIT_TOKEN }}
+      #     SITE_ALIAS: expo-web.now.sh
+      #   run: npx now alias --token=${ZEIT_TOKEN} `cat deploy-url.txt` $SITE_ALIAS
