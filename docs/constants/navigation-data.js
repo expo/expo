@@ -4,6 +4,8 @@ const fm = require('front-matter');
 const fs = require('fs-extra');
 const path = require('path');
 
+const { isEasReleased } = require('./FeatureFlags');
+
 // TODO(brentvatne): move this to navigation.js so it's all in one place!
 // Map directories in a version directory to a section name
 const DIR_MAPPING = {
@@ -121,8 +123,14 @@ const referenceDirectories = fs
 // A manual list of directories to pull in to the getting started tutorial
 const startingDirectories = ['introduction', 'get-started', 'tutorial', 'next-steps'];
 
-// A manual list of directories to pull in to the preview section
-const previewDirectories = ['preview', 'build', 'client'];
+let previewDirectories, easDirectories;
+if (isEasReleased) {
+  easDirectories = ['build'];
+  previewDirectories = ['preview', 'client'];
+} else {
+  easDirectories = [];
+  previewDirectories = ['preview', 'build', 'client'];
+}
 
 // Find any directories that aren't reference or starting directories. Also exclude the api
 // directory, which is just a shortcut.
@@ -135,13 +143,14 @@ const generalDirectories = fs
     name =>
       name !== 'api' &&
       name !== 'versions' &&
-      ![...startingDirectories, ...previewDirectories].includes(name)
+      ![...startingDirectories, ...previewDirectories, ...easDirectories].includes(name)
   );
 
 module.exports = {
   startingDirectories,
   generalDirectories,
   previewDirectories,
+  easDirectories,
   starting: startingDirectories.map(directory =>
     generateGeneralNavLinks(`${ROOT_PATH_PREFIX}/${directory}`)
   ),
@@ -151,6 +160,7 @@ module.exports = {
   preview: previewDirectories.map(directory =>
     generateGeneralNavLinks(`${ROOT_PATH_PREFIX}/${directory}`)
   ),
+  eas: easDirectories.map(directory => generateGeneralNavLinks(`${ROOT_PATH_PREFIX}/${directory}`)),
   reference: referenceDirectories.reduce(
     (obj, version) => ({
       ...obj,
