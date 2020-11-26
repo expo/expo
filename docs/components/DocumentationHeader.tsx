@@ -3,8 +3,8 @@ import Link from 'next/link';
 import * as React from 'react';
 
 import AlgoliaSearch from '~/components/plugins/AlgoliaSearch';
-import * as Constants from '~/constants/theme';
 import { isEasReleased } from '~/constants/FeatureFlags';
+import * as Constants from '~/constants/theme';
 
 const STYLES_LOGO = css`
   display: flex;
