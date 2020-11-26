@@ -43,7 +43,7 @@ title: Image Style Props
 
 | Type                | Required |
 | ------------------- | -------- |
-| [color](../colors/) | No       |
+| [color](colors.md) | No       |
 
 ---
 
@@ -67,7 +67,7 @@ title: Image Style Props
 
 | Type                | Required |
 | ------------------- | -------- |
-| [color](../colors/) | No       |
+| [color](colors.md) | No       |
 
 ---
 
@@ -109,7 +109,7 @@ Changes the color of all the non-transparent pixels to the tintColor.
 
 | Type                | Required |
 | ------------------- | -------- |
-| [color](../colors/) | No       |
+| [color](colors.md) | No       |
 
 ---
 
