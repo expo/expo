@@ -213,12 +213,12 @@ npm install --save-dev babel-plugin-module-resolver
 [ts]: https://www.typescriptlang.org/
 [flow]: https://flow.org
 [ts-template]: https://github.com/react-native-community/react-native-template-typescript
-[babel]: ../javascript-environment/#javascript-syntax-transformers
+[babel]: javascript-environment.md#javascript-syntax-transformers
 [babel-7-caveats]: https://babeljs.io/docs/en/next/babel-plugin-transform-typescript
 [cheat]: https://github.com/typescript-cheatsheets/react-typescript-cheatsheet#reacttypescript-cheatsheets
 [ts-handbook]: http://www.typescriptlang.org/docs/home.html
-[props]: ../props/
-[state]: ../state/
+[props]: props.md
+[state]: state.md
 [path-map]: https://www.typescriptlang.org/docs/handbook/module-resolution.html#path-mapping
 [bpmr]: https://github.com/tleunen/babel-plugin-module-resolver
 [expo]: https://expo.io

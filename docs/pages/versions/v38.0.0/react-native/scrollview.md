@@ -9,7 +9,7 @@ Keep in mind that ScrollViews must have a bounded height in order to work, since
 
 Doesn't yet support other contained responders from blocking this scroll view from becoming the responder.
 
-`<ScrollView>` vs [`<FlatList>`](../flatlist/) - which one to use?
+`<ScrollView>` vs [`<FlatList>`](flatlist.md) - which one to use?
 
 `ScrollView` renders all its react child components at once, but this has a performance downside.
 
@@ -67,7 +67,7 @@ export default App;
 
 ## Props
 
-Inherits [View Props](../view/#props).
+Inherits [View Props](view.md#props).
 
 ### `alwaysBounceHorizontal`
 
@@ -510,7 +510,7 @@ When true, ScrollView allows use of pinch gestures to zoom in and out. The defau
 
 A RefreshControl component, used to provide pull-to-refresh functionality for the ScrollView. Only works for vertical ScrollViews (`horizontal` prop must be `false`).
 
-See [RefreshControl](../refreshcontrol/).
+See [RefreshControl](refreshcontrol.md).
 
 | Type    | Required |
 | ------- | -------- |
