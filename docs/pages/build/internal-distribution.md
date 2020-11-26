@@ -63,11 +63,11 @@ If you do have an Apple enterprise account, this makes internal distribution muc
 
 Apps signed with an adhoc provisioning profile can be installed by any iOS device whose unique identifier (UDID) is registered with the provisioning profile.
 
-Setting up adhoc provisioning consists of two steps. In the first step, you'll register all devices you want to run your app on. Simply run the following command and you'll see the URL you have to open on all those devices (the command will also print a QR code for convenience).
+Setting up adhoc provisioning consists of two steps. In the first step, you'll register all devices you want to run your app on. Run the following command to generate a URL (and QR code, for convenience) that you can open on your devices to register them to be eligible for internal distribution.
 
 <TerminalBlock cmd={['# Register Apple Devices for internal distribution', 'eas device:create']} />
 
-When all your devices are registered the next step is just running a build. The build command will guide you through the credentials (provisioning profile) generation process.
+When all of your devices are registered, the next step is to run a build. The build command will guide you through the credentials (provisioning profile) generation process.
 
 #### Advanced flow: Using credentials.json
 
