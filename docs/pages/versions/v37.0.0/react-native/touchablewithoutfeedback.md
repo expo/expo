@@ -111,7 +111,7 @@ An accessibility hint helps users understand what will happen when they perform 
 
 Describes the current state of a component to the user of an assistive technology.
 
-See the [Accessibility guide](../accessibility/#accessibilitystate-ios-android) for more information.
+See the [Accessibility guide](accessibility.md#accessibilitystate-ios-android) for more information.
 
 | Type                                                                                           | Required |
 | ---------------------------------------------------------------------------------------------- | -------- |
@@ -123,7 +123,7 @@ See the [Accessibility guide](../accessibility/#accessibilitystate-ios-android) 
 
 Accessibility actions allow an assistive technology to programmatically invoke the actions of a component. The `accessibilityActions` property should contain a list of action objects. Each action object should contain the field name and label.
 
-See the [Accessibility guide](../accessibility/#accessibility-actions) for more information.
+See the [Accessibility guide](accessibility.md#accessibility-actions) for more information.
 
 | Type  | Required |
 | ----- | -------- |
@@ -135,7 +135,7 @@ See the [Accessibility guide](../accessibility/#accessibility-actions) for more 
 
 Invoked when the user performs the accessibility actions. The only argument to this function is an event containing the name of the action to perform.
 
-See the [Accessibility guide](../accessibility/#accessibility-actions) for more information.
+See the [Accessibility guide](accessibility.md#accessibility-actions) for more information.
 
 | Type     | Required |
 | -------- | -------- |
@@ -147,7 +147,7 @@ See the [Accessibility guide](../accessibility/#accessibility-actions) for more 
 
 Represents the current value of a component. It can be a textual description of a component's value, or for range-based components, such as sliders and progress bars, it contains range information (minimum, current, and maximum).
 
-See the [Accessibility guide](../accessibility/#accessibilityvalue-ios-android) for more information.
+See the [Accessibility guide](accessibility.md#accessibilityvalue-ios-android) for more information.
 
 | Type                                                          | Required |
 | ------------------------------------------------------------- | -------- |

@@ -9,7 +9,7 @@ title: Transforms
 
 ### `decomposedMatrix`
 
-> **Deprecated.** Use the [`transform`](../transforms/#transform) prop instead.
+> **Deprecated.** Use the [`transform`](transforms.md#transform) prop instead.
 
 | Type                     | Required |
 | ------------------------ | -------- |
@@ -61,7 +61,7 @@ The skew transformations require a string so that the transform may be expressed
 
 ### `transformMatrix`
 
-> **Deprecated.** Use the [`transform`](../transforms/#transform) prop instead.
+> **Deprecated.** Use the [`transform`](transforms.md#transform) prop instead.
 
 | Type                    | Required |
 | ----------------------- | -------- |

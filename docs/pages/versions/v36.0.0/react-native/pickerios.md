@@ -3,7 +3,7 @@ id: pickerios
 title: PickerIOS
 ---
 
-> **Deprecated.** Use [Picker](../picker/) instead.
+> **Deprecated.** Use [Picker](picker.md) instead.
 
 ---
 
@@ -11,13 +11,13 @@ title: PickerIOS
 
 ## Props
 
-Inherits [View Props](../view/#props).
+Inherits [View Props](view.md#props).
 
 ### `itemStyle`
 
 | Type                                | Required |
 | ----------------------------------- | -------- |
-| [text styles](../text-style-props/) | No       |
+| [text styles](text-style-props.md) | No       |
 
 ---
 
