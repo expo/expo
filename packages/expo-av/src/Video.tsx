@@ -29,6 +29,7 @@ import {
   VideoState,
 } from './Video.types';
 
+console.log('HEUJ');
 export {
   ExponentVideoComponent,
   VideoFullscreenUpdateEvent,
