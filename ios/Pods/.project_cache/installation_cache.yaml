@@ -8833,7 +8833,7 @@ CACHE_KEYS:
       EXSplashScreen:
         :debug: c00f49555169dcc47a1124f02e3bc457
         :release: c00f49555169dcc47a1124f02e3bc457
-    CHECKSUM: 6ea1e68346ba78616fb0271160e6cc72769edca6
+    CHECKSUM: 8c7c1112ce7611a853486af4737fe2298eda7657
     FILES:
       - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenController.h"
       - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenController.m"
@@ -8846,7 +8846,7 @@ CACHE_KEYS:
       - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenViewProvider.h"
     PROJECT_NAME: EXSplashScreen
     SPECS:
-      - EXSplashScreen (0.8.0)
+      - EXSplashScreen (0.8.1)
   EXSQLite:
     BUILD_SETTINGS_CHECKSUM:
       EXSQLite:
