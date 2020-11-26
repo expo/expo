@@ -3,6 +3,7 @@ import Link from 'next/link';
 import * as React from 'react';
 
 import AlgoliaSearch from '~/components/plugins/AlgoliaSearch';
+import { isEasReleased } from '~/constants/FeatureFlags';
 import * as Constants from '~/constants/theme';
 
 const STYLES_LOGO = css`
@@ -282,6 +283,15 @@ export default class DocumentationHeader extends React.PureComponent<Props> {
               <span css={SECTION_LINK_TEXT}>Guides</span>
             </a>
           </Link>
+          {isEasReleased ? (
+            <Link href="/build/introduction" passHref>
+              <a css={[SECTION_LINK, this.props.activeSection === 'eas' && SECTION_LINK_ACTIVE]}>
+                <span css={SECTION_LINK_TEXT}>EAS Preview</span>
+              </a>
+            </Link>
+          ) : (
+            <span />
+          )}
           <Link href="/versions/latest/" passHref>
             <a
               css={[SECTION_LINK, this.props.activeSection === 'reference' && SECTION_LINK_ACTIVE]}>
