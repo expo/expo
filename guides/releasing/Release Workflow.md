@@ -425,6 +425,7 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 - Follow the instructions in the [`turtle-deploy` README](https://github.com/expo/turtle-deploy/). (Note that it refers to CI jobs in the `turtle` repo, not its own repo.)
 - Deploy both iOS and Android turtle to staging (not production!). Deployments generally take 15-75 minutes and ping #tmnt when finished.
 - Run a quick smoke test for each platform once the deployments finish - ensure you can build an app and that it runs on the simulator/emulator.
+- If you would like to test more broadly using your own apps, you can run `EXPO_BETA=1 expo upgrade <target-sdk-version>` to upgrade your app automatically. Note that you must provide the target SDK version argument at this point because we have not publicly rolled out the beta release yet.
 
 # Stage 5 - Beta release
 
