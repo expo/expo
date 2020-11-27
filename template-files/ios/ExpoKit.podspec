@@ -31,6 +31,7 @@ Pod::Spec.new do |s|
 
 ${IOS_EXPOKIT_DEPS}
     ss.dependency 'React-Core' # explicit dependency required for CocoaPods >= 1.5.0
+    ss.dependency 'ReactCommon' # needed for react-native-reanimated, see https://github.com/expo/expo/pull/11096#how
 
     # Universal modules required by ExpoKit so the code compiles
     ss.dependency 'UMCore'
