@@ -463,6 +463,7 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
   - `@types/react-native`
   - `react-native-web`
   - `babel-preset-expo`
+  - `@babel/core`
   - `@expo/webpack-config`
   - `react-native-unimodules`
 - One way to get the right version numbers is to run `yarn why <package-name>` to see which version is used by apps in the expo/expo repo. Generally the version numbers should have a carat (`^`) except for `react-native-unimodules`, which should have a tilde (`~`).
