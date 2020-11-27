@@ -48,8 +48,6 @@ When you use the `expo credentials:manager` or `expo build:ios --clear-credentia
 
 ## Android
 
-#### How it works
-
 Google requires all Android apps to be digitally signed with a certificate before they are installed on a device or updated. Usually
 a private key and its public certificate are stored in a keystore. In the past, APKs uploaded to the store were required to be signed with
 the **app signing certificate** (certificate that will be attached to the app in the Play Store), and if the keystore was lost there was no way to
@@ -59,7 +57,7 @@ From the Expo build process's perspective, there is no difference whether an app
 
 See [here](https://developer.android.com/studio/publish/app-signing) to find more information about this process.
 
-#### App signing by Google Play
+### App signing by Google Play
 
 When you [upload your first release to Google Play](https://github.com/expo/fyi/blob/master/first-android-submission.md) you will see a notice about "App signing by Google Play" and "Google is protecting your app signing key". This is the default behavior and requires no action on your behalf except to press "Continue".
 
