@@ -63,4 +63,6 @@ See [here](https://developer.android.com/studio/publish/app-signing) to find mor
 
 When you [upload your first release to Google Play](https://github.com/expo/fyi/blob/master/first-android-submission.md) you will see a notice about "App signing by Google Play" and "Google is protecting your app signing key". This is the default behavior and requires no action on your behalf except to press "Continue".
 
+> If you lose your upload keystore (or it's compromised), you must ask the Google Support Team to reset your upload key.
+
 If you currently manage your app signing key and want Google to manage it for you, read ["Use app signing by Google Play"](https://support.google.com/googleplay/android-developer/answer/9842756).
