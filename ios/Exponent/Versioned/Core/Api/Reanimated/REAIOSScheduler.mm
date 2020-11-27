@@ -10,6 +10,10 @@ REAIOSScheduler::REAIOSScheduler(std::shared_ptr<CallInvoker> jsInvoker) {
 }
 
 void REAIOSScheduler::scheduleOnUI(std::function<void()> job) {
+  if (module.lock() == nullptr) {
+    return;
+  }
+  
   if([NSThread isMainThread]) {
     if (module.lock()) job();
     return;
@@ -20,8 +24,11 @@ void REAIOSScheduler::scheduleOnUI(std::function<void()> job) {
     if (module.lock()) triggerUI();
     return;
   }
+  
+  __block std::weak_ptr<NativeReanimatedModule> blockModule = module;
+  
   dispatch_async(dispatch_get_main_queue(), ^{
-    if (module.lock()) triggerUI();
+    if (blockModule.lock()) triggerUI();
   });
 }
 
