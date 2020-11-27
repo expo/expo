@@ -180,7 +180,7 @@ static jni::local_ref<PropsMap> ConvertToPropsMap(jsi::Runtime &rt, const jsi::O
     }
     else if (value.isBool())
     {
-      map->put(key, jni::autobox(value.getBool()));
+      map->put(key, JBoolean::valueOf(value.getBool()));
     }
     else if (value.isNumber())
     {
