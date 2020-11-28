@@ -5,6 +5,7 @@
 #import <EXGoogleSignIn/EXGoogleSignIn+Serialization.h>
 #import <UMCore/UMUtilitiesInterface.h>
 #import <UMCore/UMUtilities.h>
+#import <GoogleSignIn/GIDSignIn.h>
 
 @interface EXGoogleSignIn ()
 

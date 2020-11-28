@@ -6,6 +6,7 @@
 //  Copyright © 2017 650 Industries. All rights reserved.
 //
 
+#import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
 
