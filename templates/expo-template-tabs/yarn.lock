@@ -3596,6 +3596,11 @@ expect@^25.5.0:
     jest-message-util "^25.5.0"
     jest-regex-util "^25.2.6"
 
+expo-application@~2.4.1:
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/expo-application/-/expo-application-2.4.1.tgz#f8eb4a3a05a0b8a8f38f2e981f587a815945b685"
+  integrity sha512-VHDvXz55LIYdLoE1aR0AFycB1jz4ggbMToUbKAbCEjro+PdUNm/Gj8gQeFgH6wL2oAztQH4qJ+uiOwrw8SFK+Q==
+
 expo-asset@~8.2.1:
   version "8.2.1"
   resolved "https://registry.yarnpkg.com/expo-asset/-/expo-asset-8.2.1.tgz#1b69724f29ca4260805f2e6368c4428d8ad90cc6"
@@ -3619,6 +3624,14 @@ expo-constants@~9.3.0:
   version "9.3.0"
   resolved "https://registry.yarnpkg.com/expo-constants/-/expo-constants-9.3.0.tgz#40f4447862e1ebdd8872c9f3a49cc2ae4ece4f7b"
   integrity sha512-q35XG65zavgw2E2ULOi5DXmPj6qYL0jAmIbXf/vEqeMVNGnNDZO1Xi6eAE9jpJ4Tj4O5ev4CNvzdDYt6OBAtjQ==
+  dependencies:
+    fbjs "1.0.0"
+    uuid "^3.3.2"
+
+expo-constants@~9.3.1:
+  version "9.3.1"
+  resolved "https://registry.yarnpkg.com/expo-constants/-/expo-constants-9.3.1.tgz#1cab4896ea5e626fc7f19f49893526c94b481443"
+  integrity sha512-58ENdEeVxZ29INv87IqZf5ZD4+NjvxzrHOCFha8iW3TbTL8GXY/6QjlIZ/yGHu4TwBoatozeJQ+9WCCz/hXM0A==
   dependencies:
     fbjs "1.0.0"
     uuid "^3.3.2"
@@ -3650,10 +3663,10 @@ expo-keep-awake@~8.4.0:
   resolved "https://registry.yarnpkg.com/expo-keep-awake/-/expo-keep-awake-8.4.0.tgz#346d0988e6364c46050fef4b7829f302ef3e603d"
   integrity sha512-gozpL5Azfaht/YIMFOHRHjHuJ9KT6hJH4y71Al+/YfQSwHS5sqhoKGPgSxaktqbxRrWVUH9q7wSl3EXRK9bYjA==
 
-expo-linear-gradient@~8.3.1:
-  version "8.3.1"
-  resolved "https://registry.yarnpkg.com/expo-linear-gradient/-/expo-linear-gradient-8.3.1.tgz#5dd3878c0700035d55241a4a453c5e224acc60ff"
-  integrity sha512-zlWGua8vm7+af4otaSpJlzu0SYIr0aWbL0qICySCDUEKkqig6MqfuI69NYHC0w9ocWZuh2xyj6Rbfy01UqcVSg==
+expo-linear-gradient@~8.4.0:
+  version "8.4.0"
+  resolved "https://registry.yarnpkg.com/expo-linear-gradient/-/expo-linear-gradient-8.4.0.tgz#34e6f960b1971c57dacf7211c747ba490a76bf63"
+  integrity sha512-f9JOXaIl0MR8RBYRIud5UAsEi52oz81XhQs73VUpujemHjOyHmrZa6dqwf399YOwI/WBwbpcINcUIw/mCYE1mA==
 
 expo-linking@^1.0.1:
   version "1.0.5"
@@ -3683,6 +3696,11 @@ expo-permissions@~10.0.0:
   resolved "https://registry.yarnpkg.com/expo-permissions/-/expo-permissions-10.0.0.tgz#5b31c54d561d00c7e46cd02321bc3704c51c584b"
   integrity sha512-b6oitd4JmFdQ7DxczZ2WRS9aDyqgVM7lEhy3JyKZ2dbU19C6NyHyLCcwssZgfzOfGnp2owoaWn3KU4zdrF5MIA==
 
+expo-secure-store@~9.3.0:
+  version "9.3.0"
+  resolved "https://registry.yarnpkg.com/expo-secure-store/-/expo-secure-store-9.3.0.tgz#b716d5d115cc50a34037d1afef84fe4b8ea0745c"
+  integrity sha512-dNhKcoUUn+1kmEfFVxSU7h+YsqODqlExZQJcQgxgeiuCeeDvJWkE10t3jjrO6aNfrdM5i/X2l3oh401EDslWsQ==
+
 expo-splash-screen@~0.8.0:
   version "0.8.0"
   resolved "https://registry.yarnpkg.com/expo-splash-screen/-/expo-splash-screen-0.8.0.tgz#3fa78325bcf3e601b615063a70d103da7319aa5a"
@@ -3710,10 +3728,10 @@ expo-web-browser@~8.6.0:
   dependencies:
     compare-urls "^2.0.0"
 
-expo@~40.0.0-beta.0:
-  version "40.0.0-beta.0"
-  resolved "https://registry.yarnpkg.com/expo/-/expo-40.0.0-beta.0.tgz#4df0957fc8ee5346884a4379e9dedee007400f2b"
-  integrity sha512-Ql6PkhB2SGCZwmehWRgtDiF/MWYjVEQfAqRoFWbmtJQ0LVSiCjKKUu781lRg4IFbWmepyKsrbG587DXKIkUsig==
+expo@~40.0.0-beta.2:
+  version "40.0.0-beta.2"
+  resolved "https://registry.yarnpkg.com/expo/-/expo-40.0.0-beta.2.tgz#524a3ab67358970c017c73106eb6a06169a60b20"
+  integrity sha512-ORxOas8xxgBr9myqwH2iZYzJAEjbfuOtg3k4RmJx70LD3e37czU4I822IJsOXZEzRiyO4xWHixr8gDHKMAuO8w==
   dependencies:
     "@babel/runtime" "^7.1.2"
     "@expo/vector-icons" "^10.0.2"
@@ -3722,16 +3740,18 @@ expo@~40.0.0-beta.0:
     babel-preset-expo "~8.3.0"
     badgin "^1.1.2"
     cross-spawn "^6.0.5"
+    expo-application "~2.4.1"
     expo-asset "~8.2.1"
-    expo-constants "~9.3.0"
+    expo-constants "~9.3.1"
     expo-error-recovery "~1.4.0"
     expo-file-system "~9.3.0"
     expo-font "~8.4.0"
     expo-keep-awake "~8.4.0"
-    expo-linear-gradient "~8.3.1"
+    expo-linear-gradient "~8.4.0"
     expo-linking "~1.0.6"
     expo-location "~10.0.0"
     expo-permissions "~10.0.0"
+    expo-secure-store "~9.3.0"
     expo-sqlite "~8.5.0"
     fbemitter "^2.1.1"
     invariant "^2.2.2"
@@ -4867,10 +4887,10 @@ jest-environment-node@^25.5.0:
     jest-util "^25.5.0"
     semver "^6.3.0"
 
-jest-expo@~40.0.0:
-  version "40.0.0-beta.0"
-  resolved "https://registry.yarnpkg.com/jest-expo/-/jest-expo-40.0.0-beta.0.tgz#1bc18682c33f27d3edf13c5b016b0b943e935f6a"
-  integrity sha512-oOQSymJ/QgFX2x9Z0GHva6ac64zQXmAMQtYY+WpXQFIE4C+B+e0ji0F583UkR6m43vDm0/xJb52eB2j+IpHXvA==
+jest-expo@~40.0.0-beta:
+  version "40.0.0-beta.1"
+  resolved "https://registry.yarnpkg.com/jest-expo/-/jest-expo-40.0.0-beta.1.tgz#1a4b8804f2f59409a6c1a239abf114fe3c767f04"
+  integrity sha512-38/7CqO8veTpHfFYXTogKOT4q8bTH6QAxImH1hO4a82h7mblwgaF/3DAJlkO3jTV/DL7VIyTKYPMGSFAyydWgg==
   dependencies:
     "@expo/config" "^3.2.3"
     babel-jest "^25.2.0"
