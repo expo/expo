@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Added `assert` as a package dependency. ([#11171](https://github.com/expo/expo/pull/11171) by [@cruzach](https://github.com/cruzach))
+
 ## 0.8.1 — 2020-11-25
 
 _This version does not introduce any user-facing changes._
