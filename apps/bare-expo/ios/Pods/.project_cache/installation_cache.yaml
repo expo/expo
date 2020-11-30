@@ -850,7 +850,7 @@ CACHE_KEYS:
       EXNotifications:
         :debug: 85bbec8baa9d46b6dc06709027c20187
         :release: 85bbec8baa9d46b6dc06709027c20187
-    CHECKSUM: d5983c43c0fdd92697b9339d3e5022e1d6bdfe64
+    CHECKSUM: fba3319b1555961b99ddd185021b4c7ff978d5dd
     FILES:
       - "../../../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.h"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.m"
@@ -892,7 +892,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenModule.m"
     PROJECT_NAME: EXNotifications
     SPECS:
-      - EXNotifications (0.8.1)
+      - EXNotifications (0.8.2)
   EXPermissions:
     BUILD_SETTINGS_CHECKSUM:
       EXPermissions:
@@ -2211,7 +2211,7 @@ CACHE_KEYS:
       react-native-webview:
         :debug: 2beec27a205ee04f2afb849cdbbd1bcf
         :release: 2beec27a205ee04f2afb849cdbbd1bcf
-    CHECKSUM: 0aa2cde4ee7e3e1c5fffdf64dbce9c709aa18155
+    CHECKSUM: 6b7950628616679d81bdd75747e50cf6de9b5a5f
     FILES:
       - "../../../../node_modules/react-native-webview/apple/RNCWebView.h"
       - "../../../../node_modules/react-native-webview/apple/RNCWebView.m"
@@ -2223,7 +2223,7 @@ CACHE_KEYS:
       - "../../../../node_modules/react-native-webview/README.md"
     PROJECT_NAME: react-native-webview
     SPECS:
-      - react-native-webview (10.10.2)
+      - react-native-webview (11.0.0)
   React-RCTActionSheet:
     BUILD_SETTINGS_CHECKSUM:
       React-RCTActionSheet:
