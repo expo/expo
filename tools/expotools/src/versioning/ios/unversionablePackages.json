@@ -1,6 +1,8 @@
 [
   "expo-branch",
   "expo-dev-menu",
+  "expo-dev-menu-interface",
+  "expo-development-client",
   "expo-gl-cpp",
   "expo-gl-cpp-legacy",
   "expo-image",
