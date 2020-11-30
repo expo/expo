@@ -108,6 +108,11 @@ public class LocalAuthenticationModule extends ExportedModule {
       }
     }
 
+    // check for face recognition support on some samsung devices
+    if (mPackageManager.hasSystemFeature("com.samsung.android.bio.face") && !results.contains(AUTHENTICATION_TYPE_FACIAL_RECOGNITION)) {
+      results.add(AUTHENTICATION_TYPE_FACIAL_RECOGNITION);
+    }
+
     promise.resolve(results);
   }
 
