@@ -5,15 +5,15 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-40/packages/expo/src/launc
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-A React component that tells Expo to keep the app loading screen open if it is the first and only component rendered in your app. Unless `autoHideSplash` prop is set to `false`, the loading screen will disappear and your app will be visible when the component is removed.
+**`expo-app-loading`** tells `expo-splash-screen` to keep the splash screen visible while the AppLoading component is mounted.
 
-This is incredibly useful to let you download and cache fonts, logos, icon images and other assets that you want to be sure the user has on their device for an optimal experience before rendering and they start using the app.
+This is useful to download and cache fonts, logos, icon images and other assets that you want to be sure the user has on their device for an optimal experience.
 
 <PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
-This API is pre-installed in [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps. It is not available for [bare](../../../introduction/managed-vs-bare.md#bare-workflow) React Native apps.
+<InstallSection packageName="expo-app-loading" />
 
 ## Usage
 
@@ -22,7 +22,7 @@ This API is pre-installed in [managed](../../../introduction/managed-vs-bare.md#
 import React from 'react';
 import { Image, Text, View } from 'react-native';
 import { Asset } from 'expo-asset';
-import { AppLoading } from 'expo';
+import AppLoading from 'expo-app-loading';
 
 export default class App extends React.Component {
   state = {
@@ -64,12 +64,12 @@ export default class App extends React.Component {
 ## API
 
 ```js
-import { AppLoading } from 'expo';
+import AppLoading from 'expo-app-loading';
 ```
 
 ### props
 
-The following props are recommended, but optional for the sake of backwards compatibility (they were introduced in SDK21). If you do not provide any props, you are responsible for coordinating loading assets, handling errors, and updating state to unmount the `AppLoading` component.
+The following props are recommended, but optional. If you do not provide any props, you are responsible for coordinating loading assets, handling errors, and updating state to unmount the `AppLoading` component.
 
 - **startAsync (_function_)** -- A `function` that returns a `Promise`, and the `Promise` should resolve when the app is done loading required data and assets.
 - **onError (_function_)** -- If `startAsync` throws an error, it is caught and passed into the function provided to `onError`.
