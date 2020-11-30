@@ -11374,7 +11374,7 @@ CACHE_KEYS:
       EXNotifications:
         :debug: 4226bb97c761e7685878537693ceb31e
         :release: 4226bb97c761e7685878537693ceb31e
-    CHECKSUM: d5983c43c0fdd92697b9339d3e5022e1d6bdfe64
+    CHECKSUM: fba3319b1555961b99ddd185021b4c7ff978d5dd
     FILES:
       - "../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.h"
       - "../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.m"
@@ -11416,7 +11416,7 @@ CACHE_KEYS:
       - "../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenModule.m"
     PROJECT_NAME: EXNotifications
     SPECS:
-      - EXNotifications (0.8.1)
+      - EXNotifications (0.8.2)
   EXPermissions:
     BUILD_SETTINGS_CHECKSUM:
       EXPermissions:
