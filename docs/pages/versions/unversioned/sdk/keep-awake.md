@@ -42,7 +42,6 @@ export default function KeepAwakeExample() {
 
 ### Example: functions
 
-
 <SnackInline label='Keep Awake functions' dependencies={['expo-keep-awake']}>
 
 ```javascript
@@ -61,13 +60,13 @@ export default class KeepAwakeExample extends React.Component {
   }
 
   _activate = () => {
-    /* @info Screen will remain on after called until <strong>deactivateKeepAwake()</strong> is called. */activateKeepAwake();/* @end */
+    /* @info Screen will remain on after called until <strong>deactivateKeepAwake()</strong> is called. */ activateKeepAwake(); /* @end */
 
     alert('Activated!');
   };
 
   _deactivate = () => {
-    /* @info Deactivates KeepAwake, or does nothing if it was never activated. */deactivateKeepAwake();/* @end */
+    /* @info Deactivates KeepAwake, or does nothing if it was never activated. */ deactivateKeepAwake(); /* @end */
 
     alert('Deactivated!');
   };
