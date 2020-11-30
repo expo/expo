@@ -135,7 +135,7 @@ PODS:
     - UMPermissionsInterface
   - EXNetwork (2.4.0):
     - UMCore
-  - EXNotifications (0.8.1):
+  - EXNotifications (0.8.2):
     - UMCore
     - UMPermissionsInterface
   - EXPermissions (10.0.0):
@@ -523,7 +523,7 @@ PODS:
     - React
   - react-native-viewpager (4.2.0):
     - React-Core
-  - react-native-webview (10.10.2):
+  - react-native-webview (11.0.0):
     - React-Core
   - React-RCTActionSheet (0.63.2):
     - React-Core/RCTActionSheetHeaders (= 0.63.2)
@@ -1087,7 +1087,7 @@ SPEC CHECKSUMS:
   EXMailComposer: b736d3ef1073c7d6b7116bd2fa8eb8ba067f7185
   EXMediaLibrary: 580c097a85f9253deaaf7aaa75a8a2e692e9d8b9
   EXNetwork: 6efac2968418772829f979a78c555900267ce231
-  EXNotifications: d5983c43c0fdd92697b9339d3e5022e1d6bdfe64
+  EXNotifications: fba3319b1555961b99ddd185021b4c7ff978d5dd
   EXPermissions: 17d4846ad1880f6891c74ae58ca1acb43e47ed47
   expo-development-client: e224dc78c88f0c3d1de720d92754f6f518eae164
   expo-image: dc52ebb150b98a54d6023cd7448141e7366598d0
@@ -1152,7 +1152,7 @@ SPEC CHECKSUMS:
   react-native-slider: e99fc201cefe81270fc9d81714a7a0f5e566b168
   react-native-view-shot: 4475fde003fe8a210053d1f98fb9e06c1d834e1c
   react-native-viewpager: c1a686e7b5e164a52387f1522358623c4f52070f
-  react-native-webview: 0aa2cde4ee7e3e1c5fffdf64dbce9c709aa18155
+  react-native-webview: 6b7950628616679d81bdd75747e50cf6de9b5a5f
   React-RCTActionSheet: 910163b6b09685a35c4ebbc52b66d1bfbbe39fc5
   React-RCTAnimation: 9a883bbe1e9d2e158d4fb53765ed64c8dc2200c6
   React-RCTBlob: 39cf0ece1927996c4466510e25d2105f67010e13

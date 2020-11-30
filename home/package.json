@@ -31,7 +31,7 @@
     "apollo-cache-inmemory": "^1.6.3",
     "dedent": "^0.7.0",
     "es6-error": "^4.0.1",
-    "expo": "~40.0.0-beta.1",
+    "expo": "~40.0.0-beta.2",
     "expo-analytics-amplitude": "~9.0.0",
     "expo-asset": "~8.2.1",
     "expo-barcode-scanner": "~9.1.0",
