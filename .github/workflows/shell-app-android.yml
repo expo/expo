@@ -54,7 +54,7 @@ jobs:
         env:
           ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/19.2.5345600/
         run: expotools android-build-packages --packages all
-      - name: Clean unneeded Android build artifacts
+      - name: Clean Android build artifacts that would needlessly bloat the shell app
         env:
           ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/19.2.5345600/
         run: ./gradlew clean
