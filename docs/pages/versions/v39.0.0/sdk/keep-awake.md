@@ -5,6 +5,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-39/packages/expo-keep-awak
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-keep-awake`** provides a React hook that prevents the screen from sleeping and a pair of functions to enable this behavior imperatively.
 
@@ -18,13 +19,14 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ### Example: hook
 
-<!-- prettier-ignore -->
+<SnackInline label='Keep Awake hook' dependencies={['expo-keep-awake']}>
+
 ```javascript
 import { useKeepAwake } from 'expo-keep-awake';
 import React from 'react';
 import { Text, View } from 'react-native';
 
-export default function KeepAwakeExample {
+export default function KeepAwakeExample() {
   /* @info As long as this component is mounted, the screen will not turn off from being idle. */
   useKeepAwake();
   /* @end */
@@ -36,9 +38,13 @@ export default function KeepAwakeExample {
 }
 ```
 
+</SnackInline>
+
 ### Example: functions
 
-<!-- prettier-ignore -->
+
+<SnackInline label='Keep Awake functions' dependencies={['expo-keep-awake']}>
+
 ```javascript
 import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
 import React from 'react';
@@ -67,6 +73,8 @@ export default class KeepAwakeExample extends React.Component {
   };
 }
 ```
+
+</SnackInline>
 
 ## API
 
