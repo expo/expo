@@ -1,8 +1,6 @@
-ifdef $(CI)
-APP_ABI := x86
-else
-APP_ABI := all
-endif
+# [expo] We don't want the CI to build only for x86
+# because we build release versions of expoview on CI.
+APP_ABI := armeabi-v7a x86 arm64-v8a x86_64
 
 APP_BUILD_SCRIPT := Android.mk
 APP_PLATFORM := android-18
