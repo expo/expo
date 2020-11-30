@@ -220,19 +220,22 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
     await fs.remove(path.join(pkg.sourceDir, 'build'));
   }
 
+  // hacky workaround for weird issue where some packages need to be built twice after cleaning
+  // in order to have .so libs included in the aar
+  const reactAndroidIndex = packages.findIndex(pkg => pkg.name === REACT_ANDROID_PKG.name);
+  if (reactAndroidIndex > -1) {
+    packages.splice(reactAndroidIndex, 0, REACT_ANDROID_PKG);
+  }
+  const expoviewIndex = packages.findIndex(pkg => pkg.name === EXPOVIEW_PKG.name);
+  if (expoviewIndex > -1) {
+    packages.splice(expoviewIndex, 0, EXPOVIEW_PKG);
+  }
+
   let failedPackages: string[] = [];
   for (const pkg of packages) {
     process.stdout.write(` 🛠   Building ${pkg.name}...`);
     try {
-      // hacky workaround for weird issue where some packages need to be built twice after cleaning
-      // in order to have .so libs included in the aar
-      await spawnAsync('./gradlew', [`:${pkg.name}:uploadArchives`], {
-        cwd: ANDROID_DIR,
-      });
-      await spawnAsync('./gradlew', [`:${pkg.name}:uploadArchives`], {
-        cwd: ANDROID_DIR,
-      });
-      await spawnAsync('./gradlew', [`:${pkg.name}:clean`], {
+      await spawnAsync('./gradlew', [`:${pkg.name}:uploadArchives`, `:${pkg.name}:clean`], {
         cwd: ANDROID_DIR,
       });
       readline.clearLine(process.stdout, 0);
