@@ -8,9 +8,11 @@ If you don't have an Android device available to test with, we recommend using t
 
 - [Download](https://developer.android.com/studio) and install Android Studio 3.0+.
 
-- Go to Preferences -> Appearance & Behavior -> System Settings -> Android SDK. Click on the "SDK Tools" tab and make sure you have at least one version of the "Android SDK Build-Tools" installed.
+- Select "Standard" for the "Install Type" inside the wizard.
 
-![Android SDK location](/static/images/android-studio-build-tools.png)
+- Inside Android Studio, go to Preferences > Appearance & Behavior > System Settings > Android SDK. Click on the "SDK Tools" tab and make sure you have at least one version of the "Android SDK Build-Tools" installed.
+
+![Android SDK build tools](/static/images/android-studio-build-tools.png)
 
 - Copy or remember the path listed in the box that says "Android SDK Location."
 
@@ -33,11 +35,13 @@ echo "export PATH=$HOME/Library/Android/sdk/platform-tools:\$PATH" >> ~/`[[ $SHE
 
 ## Step 2: Set up a virtual device
 
-- From the Android Studio main screen, go to `Tools -> AVD Manager`.
+- On the Android Studio main screen, click "Configure", then "AVD Manager" in the dropdown.
+
+![Android Studio configure](/static/images/android-studio-configure.png)
 
 - Press the "+ Create Virtual Device" button.
 
-![Android SDK location](/static/images/android-studio-avd-manager.png)
+![Android Studio create virtual device](/static/images/android-studio-avd-manager.png)
 
 - Choose the type of hardware you'd like to emulate. We recommend testing against a variety of devices, but if you're unsure where to start, the newest device in the Pixel line could be a good choice.
 
