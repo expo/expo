@@ -1600,6 +1600,21 @@ export interface DailyTriggerInput {
 }
 ```
 
+### `WeeklyTriggerInput`
+
+A trigger that will cause the notification to be delivered once every week.
+
+> **Note:** Weekdays are specified with a number from 1 through 7, with 1 indicating Sunday.
+```ts
+export interface WeeklyTriggerInput {
+  channelId?: string;
+  weekday: number;
+  hour: number;
+  minute: number;
+  repeats: true;
+}
+```
+
 ### `CalendarTriggerInput`
 
 A trigger that will cause the notification to be delivered once or many times when the date components match the specified values. Corresponds to native [`UNCalendarNotificationTrigger`](https://developer.apple.com/documentation/usernotifications/uncalendarnotificationtrigger?language=objc).
