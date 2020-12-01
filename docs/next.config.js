@@ -6,7 +6,7 @@ const semver = require('semver');
 
 const navigation = require('./constants/navigation-data');
 const versions = require('./constants/versions');
-const { version } = require('./package.json');
+const { version, betaVersion } = require('./package.json');
 
 // To generate a sitemap, we need context about the supported versions and navigational data
 const createSitemap = require('./scripts/create-sitemap');
@@ -74,7 +74,11 @@ module.exports = {
         } else {
           // hide versions greater than the package.json version number
           const versionMatch = pathname.match(/\/v(\d\d\.\d\.\d)\//);
-          if (versionMatch && versionMatch[1] && semver.gt(versionMatch[1], version)) {
+          if (
+            versionMatch &&
+            versionMatch[1] &&
+            semver.gt(versionMatch[1], betaVersion || version)
+          ) {
             return {};
           }
           return { [pathname]: page };
