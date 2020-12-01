@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed the `getAppConfig.js` script to work with the latest version of `@expo/config`.
+
 ## 9.3.1 — 2020-11-25
 
 ### 🛠 Breaking changes
