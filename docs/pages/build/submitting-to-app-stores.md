@@ -2,15 +2,15 @@
 title: Submitting builds to App Stores
 ---
 
-This guide outlines how to submit your app to Apple App Store or Google Play Store. A paid developer account is required for each platform for which you wishy to submit an app. You can create an Apple Developer account on [Apple's developer site](https://developer.apple.com/account/) and a Google Play Developer account on the [Google Play Console sign-up page](https://play.google.com/apps/publish/signup/).
+This guide outlines how to submit your app to the Apple App Store or Google Play Store. A paid developer account is required for each platform for which you wish to submit an app. You can create an Apple Developer account on [Apple's developer site](https://developer.apple.com/account/) and a Google Play Developer account on the [Google Play Console sign-up page](https://play.google.com/apps/publish/signup/).
 
 ## 1. Build a standalone app
 
-You'll need a built native app binary. You can either use [EAS Build](introduction.md) service or do it on your own.
+You'll need a built native app binary. You can either use the [EAS Build](introduction.md) service or do it on your own.
 
 ## 2. Start the submission
 
-To submit the previously built app to the appropriate app store, you simply run `eas submit -p ios` or `eas submit -p android` from inside of your project directory. Except specifying platform, no other flags are required, the command will lead you step by step. To see all possible options along with example usages, run `eas submit --help`.
+To submit the previously built app to the appropriate app store, run `eas submit -p ios` or `eas submit -p android` from inside of your project directory. The command will lead you step by step through the process of submitting the app. To see all possible options along with example usages, run `eas submit --help`.
 
 > Although it's possible to upload any binary to the store, each submission is assigned to an Expo project. That's why it's important to start submission from inside your project's directory - that's where your [app configuration](../workflow/configuration.md) is defined.
 
@@ -27,23 +27,24 @@ See [expo.fyi/creating-google-service-account](https://expo.fyi/creating-google-
 
 #### Manually uploading your app for the first time
 
-Before using `eas submit -p android` for uploading your standalone app builds, you have to upload your app manually at least once.<br />
+Before using `eas submit -p android` for uploading your builds, you have to upload your app manually at least once. This is a limitation of the Google Play Store API.
+
 See [expo.fyi/first-android-submission](https://expo.fyi/first-android-submission) to learn more.
 
 #### Using EAS CLI to upload the further builds of your app
 
-To upload your iOS app to App store, run `eas submit --platform android` and follow the instructions on the screen. The command will do the following steps respectively:
+To upload your Android app to the Google Play Store, run `eas submit --platform android` and follow the instructions on the screen. The command will perform the following steps:
 
-1. Log in to EAS account and ensure that your app project exists on EAS servers
-2. Prompt for Android package name unless `expo.android.package` in app configuration or `--android-package` param is provided.
-3. Ask for binary to submit. You can select one of the following:
+1. Log in to your Expo account and ensure that your app project exists on EAS servers
+2. Prompt for the Android package name unless `expo.android.package` is set in app configuration or the `--android-package` param is provided.
+3. Ask for a binary to submit. You can select one of the following:
 
-   - The latest finished iOS build for the project on EAS servers
+   - The latest finished Android build for the project on EAS servers
    - Specific build ID. The ID can be found on your EAS Account under _Builds v2_ section
    - Path to an APK or AAB archive on your local filesystem
    - URL to the app archive
 
-   > This step can be skipped, if one of the following parameters is provided: `--latest`, `--id`, `--path` or `--url`.
+   > This step can be skipped if one of the following parameters is provided: `--latest`, `--id`, `--path` or `--url`.
 
 4. When you chose local path or URL as your binary location, the command will try to autodetect archive type basing on file extension. If it's unable to do so, it may prompt you to specify if it's APK or AAB archive. You can also use a `--type` parameter.
 5. Unless a `--key` param is provided, you will be prompted for path to your Google Services JSON key.
@@ -54,13 +55,13 @@ To upload your iOS app to App store, run `eas submit --platform android` and fol
 
 **Important**: You'll have to generate an [Apple app-specific-password](https://expo.fyi/apple-app-specific-password) before uploading an app using EAS CLI.
 
-To upload your iOS app to App store, run `eas submit --platform ios` and follow the instructions on the screen. The command will do the following steps respectively:
+To upload your iOS app to the Apple App Store, run `eas submit --platform ios` and follow the instructions on the screen. The command will perform the following steps:
 
-1. Log in to EAS account and ensure that your app project exists on EAS servers
+1. Log in to Expo account and ensure that your app project exists on EAS servers
 2. Ensure that your app exists on App Store Connect and its [Bundle Identifier](https://expo.fyi/bundle-identifier) is registered on Apple Dev Center:
 
-   - You will be asked to sign into your Apple Developer account and select your team. You can also provide these information by using `--apple-id`, `--apple-team-id` params and `EXPO_APPLE_PASSWORD` environment variable.
-   - The command will look for `expo.ios.bundleIdentifier` in your app configuration, or you can provide it directly using `--bundle-identifier` command param
+   - You will be asked to sign into your Apple Developer account and select your team. You can also provide these information by using `--apple-id`, `--apple-team-id` params and the `EXPO_APPLE_PASSWORD` environment variable.
+   - The command will look for `expo.ios.bundleIdentifier` in your app configuration, or you can provide it directly using the `--bundle-identifier` flag.
    - If you are submitting your app for the first time, it will be automatically created.
      Unless `expo.name` in your app configuration is found or `--app-name` param is provided, you will be prompted for app name.
      You can also specify your app's language and SKU using `--language` and `--sku` params respectively. If you have never submitted any app before, you may also have to specify your company name using `--company-name` parameter.
@@ -70,14 +71,14 @@ To upload your iOS app to App store, run `eas submit --platform ios` and follow 
 3. Ask for your Apple ID (if not provided earlier) and for your Apple app-specific password. They can be also provided using `--apple-id` param and `EXPO_APPLE_APP_SPECIFIC_PASSWORD` environment variable, respectively.
 4. Ask for binary to submit. You can select one of the following:
 
-   - The latest finished iOS build for the project on EAS servers
+   - The latest successful iOS build for the project on EAS servers
    - Specific build ID. The ID can be found on your EAS Account under _Builds v2_ section
    - Path to an `.ipa` archive on your local filesystem
    - URL to the app archive
 
    > This step can be skipped, if one of the following parameters is provided: `--latest`, `--id`, `--path` or `--url`.
 
-5. The summary of provided configuration is displayed and the submission process begins. The submission progress is displayed on the screen.
+5. A summary of the provided configuration is displayed and the submission process begins. The submission progress is displayed on the screen.
 6. Your build should now be visible on [App Store Connect](https://appstoreconnect.apple.com). If something goes wrong, an appropriate message is displayed on the screen.
 
 ## Submitting your app using CI
