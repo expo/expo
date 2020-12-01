@@ -38,7 +38,7 @@
     "expo-application": "~2.2.1"
   },
   "dependencies": {
-    "expo-constants": "^9.3.1",
+    "expo-constants": "^9.3.2",
     "expo-crypto": "^8.4.0",
     "expo-linking": "~1.0.6",
     "expo-random": "^10.0.0",
