@@ -1,8 +1,10 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-NS_ASSUME_NONNULL_BEGIN
 
-typedef void (^OnManifestParsed)(NSDictionary *manifest);
+NS_ASSUME_NONNULL_BEGIN
+@class EXDevelopmentClientManifest;
+
+typedef void (^OnManifestParsed)(EXDevelopmentClientManifest *manifest);
 typedef void (^OnInvalidManifestURL)();
 typedef void (^OnManifestError)(NSError *error);
 
