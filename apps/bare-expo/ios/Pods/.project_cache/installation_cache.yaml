@@ -926,6 +926,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-development-client/ios/EXDevelopmentClientDevMenuExtensions.m"
       - "../../../../packages/expo-development-client/ios/EXDevelopmentClientRCTBridge.h"
       - "../../../../packages/expo-development-client/ios/EXDevelopmentClientRCTBridge.m"
+      - "../../../../packages/expo-development-client/ios/EXDevelopmentClientRecentlyOpenedAppsRegistry.swift"
       - "../../../../packages/expo-development-client/ios/expo-development-client-Bridging-Header.h"
       - "../../../../packages/expo-development-client/ios/Manifest/EXDevelopmentClientManifest.swift"
       - "../../../../packages/expo-development-client/ios/Manifest/EXDevelopmentClientManifestHelper.swift"

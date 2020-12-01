@@ -37,7 +37,12 @@ class DevelopmentClientHost(
     ModuleRegistryAdapter(mModuleRegistryProvider)
   )
 
+  override fun getJSMainModuleName() = "index"
+
   override fun getJSBundleFile(): String? {
+    if (useDeveloperSupport) {
+      return null
+    }
     // React Native needs an actual file path, while the embedded bundle is a 'raw resource' which
     // doesn't have a true file path. So we write it out to a temporary file then return a path
     // to that file.

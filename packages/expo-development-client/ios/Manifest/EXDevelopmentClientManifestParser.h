@@ -12,7 +12,7 @@ typedef void (^OnManifestError)(NSError *error);
 
 - (instancetype)initWithURL:(NSURL *)url session:(NSURLSession *)session;
 
-- (void)tryToParseManifest:(OnManifestParsed)onParsed onInalidURL:(OnInvalidManifestURL)onInalidURL onError:(OnManifestError)onError;
+- (void)tryToParseManifest:(OnManifestParsed)onParsed onInvalidManifestURL:(OnInvalidManifestURL)onInalidURL onError:(OnManifestError)onError;
 
 @end
 

@@ -42,4 +42,8 @@ class DevelopmentClientExpoAppLoader(
     }
     view.setBackgroundColor(Color.parseColor(backgroundColor))
   }
+
+  override fun getAppName(): String? {
+    return manifest.name
+  }
 }
