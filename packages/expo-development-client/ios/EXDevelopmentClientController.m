@@ -109,10 +109,17 @@ NSString *fakeLauncherBundleUrl = @"embedded://exdevelopmentclient/dummy";
     return false;
   }
   
-  [self loadApp:[url.path substringFromIndex:1] onSuccess:nil onError:^(NSError *error) {
-    NSLog(error.description);
-  }];
+  NSURLComponents *urlComponets = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:NO];
+  for (NSURLQueryItem *parameter in urlComponets.queryItems) {
+    if ([parameter.name isEqual:@"url"]) {
+      [self loadApp:[parameter.value stringByRemovingPercentEncoding] onSuccess:nil onError:^(NSError *error) {
+        NSLog(error.description);
+      }];
+      return true;
+    }
+  }
   
+  [self navigateToLauncher];
   return true;
 }
 
