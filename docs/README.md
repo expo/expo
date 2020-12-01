@@ -20,13 +20,13 @@ Then `cd` into the `docs` directory and install dependencies with:
 yarn
 ```
 
-Then you can run the app with (make sure you have no server running on port `3000`):
+Then you can run the app with (make sure you have no server running on port `3002`):
 
 ```sh
 yarn run dev
 ```
 
-Now the documentation is running at http://localhost:3000
+Now the documentation is running at http://localhost:3002
 
 ### Running in production mode
 
