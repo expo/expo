@@ -16,3 +16,7 @@
 - Update its `sdkVersion` in `app.json`.
 - Update versions of the dependencies in `package.json`.
 - Run `expo start` and check every example, including React Native components.
+
+## 4. Smoke test Expo Go against all supported SDK versions
+
+- Run `expo init -t blank@sdk-x` for each supported SDK version and ensure the project loads without crashing.
