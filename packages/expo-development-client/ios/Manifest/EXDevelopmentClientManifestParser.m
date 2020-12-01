@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXDevelopmentClientManifestParser.h"
+#import <expo_development_client-Swift.h>
 
 typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
 
@@ -36,14 +37,12 @@ typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
     }
 
     [self _fetch:@"GET" onError:onError completionHandler:^(NSData *data, NSURLResponse *response) {
-      NSError *error;
-      NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
-      if (error) {
-        onError(error);
+      EXDevelopmentClientManifest *manifest = [EXDevelopmentClientManifest fromJsonData:data];
+      if (!manifest) {
+        onError([[NSError alloc] initWithDomain:@"DevelopemntClient" code:@1 userInfo:@"Couldn't parse the manifest."]);
         return;
       }
-      
-      onParsed(jsonDict);
+      onParsed(manifest);
     }];
   }];
 }

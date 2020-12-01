@@ -10,6 +10,7 @@
 #import "EXDevelopmentClientBundleSource.h"
 #import "EXDevelopmentClientRCTBridge.m"
 #import "EXDevelopmentClientManifestParser.h"
+#import <expo_development_client-Swift.h>
 
 #import <UIKit/UIKit.h>
 
@@ -119,8 +120,8 @@ NSString *fakeLauncherBundleUrl = @"embedded://exdevelopmentclient/dummy";
 {
   __block NSString *url = [expoUrl stringByReplacingOccurrencesOfString:@"exp" withString:@"http"];
   EXDevelopmentClientManifestParser *manifestParser = [[EXDevelopmentClientManifestParser alloc] initWithURL:url session:[NSURLSession sharedSession]];
-  [manifestParser tryToParseManifest:^(NSDictionary * _Nonnull manifest) {
-    NSURL *bundleUrl = [NSURL URLWithString:manifest[@"bundleUrl"]];
+  [manifestParser tryToParseManifest:^(EXDevelopmentClientManifest * _Nonnull manifest) {
+    NSURL *bundleUrl = [NSURL URLWithString:manifest.bundleUrl];
     [self _initApp:bundleUrl manifest:manifest];
     if (onSuccess) {
       onSuccess();
@@ -138,36 +139,23 @@ NSString *fakeLauncherBundleUrl = @"embedded://exdevelopmentclient/dummy";
   } onError:onError];
 }
 
-- (void)_initApp:(NSURL *)bundleUrl manifest:(NSDictionary * _Nullable)manifest
+- (void)_initApp:(NSURL *)bundleUrl manifest:(EXDevelopmentClientManifest * _Nullable)manifest
 {
-  UIInterfaceOrientationMask orientationMask = UIInterfaceOrientationMaskAll;
-  if ([@"portrait" isEqualToString:manifest[@"orientation"]]) {
-    orientationMask = UIInterfaceOrientationMaskPortrait;
-  } else if ([@"landscape" isEqualToString:manifest[@"orientation"]]) {
-    orientationMask = UIInterfaceOrientationMaskLandscape;
-  }
-  __block UIInterfaceOrientation orientation = [EXDevelopmentClientController defaultOrientationForOrientationMask:orientationMask];
+  __block UIInterfaceOrientation orientation = manifest.orientation;
+  __block UIColor *backgroundColor = manifest.backgroundColor;
   
   dispatch_async(dispatch_get_main_queue(), ^{
     self.sourceUrl = bundleUrl;
     [self.delegate developmentClientController:self didStartWithSuccess:YES];
     [[UIDevice currentDevice] setValue:@(orientation) forKey:@"orientation"];
     [UIViewController attemptRotationToDeviceOrientation];
+    
+    if (backgroundColor) {
+      _window.rootViewController.view.backgroundColor = backgroundColor;
+      _window.backgroundColor = backgroundColor;
+    }
   });
 }
 
-+ (UIInterfaceOrientation)defaultOrientationForOrientationMask:(UIInterfaceOrientationMask)orientationMask
-{
-  if (UIInterfaceOrientationMaskPortrait & orientationMask) {
-    return UIInterfaceOrientationPortrait;
-  } else if (UIInterfaceOrientationMaskLandscapeLeft & orientationMask) {
-    return UIInterfaceOrientationLandscapeLeft;
-  } else if (UIInterfaceOrientationMaskLandscapeRight & orientationMask) {
-    return UIInterfaceOrientationLandscapeRight;
-  } else if (UIInterfaceOrientationMaskPortraitUpsideDown & orientationMask) {
-    return UIInterfaceOrientationPortraitUpsideDown;
-  }
-  return UIInterfaceOrientationUnknown;
-}
 
 @end
