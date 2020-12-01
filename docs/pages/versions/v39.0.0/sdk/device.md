@@ -297,7 +297,9 @@ await Device.isRootedExperimentalAsync();
 
 ### `Device.isSideLoadingEnabledAsync()`
 
-**Android only.** Returns whether applications can be installed for this user via the system's [Intent#ACTION_INSTALL_PACKAGE](https://developer.android.com/reference/android/content/Intent.html#ACTION_INSTALL_PACKAGE) mechanism rather than through the OS's default app store, like Google Play.
+**Android only. Using this method requires you to [add the `REQUEST_INSTALL_PACKAGES` permission](../config/app.md#permissions).**
+
+Returns whether applications can be installed for this user via the system's [Intent#ACTION_INSTALL_PACKAGE](https://developer.android.com/reference/android/content/Intent.html#ACTION_INSTALL_PACKAGE) mechanism rather than through the OS's default app store, like Google Play.
 
 #### Returns
 
@@ -309,8 +311,6 @@ Returns a promise that resolves to a `boolean` that represents whether the calli
 await Device.isSideLoadingEnabledAsync();
 // true or false
 ```
-
-> This method requires the [`REQUEST_INSTALL_PACKAGES`](https://developer.android.com/reference/android/Manifest.permission#REQUEST_INSTALL_PACKAGES) permission to detect if sideloading is possible on the user's device.
 
 ### `Device.getPlatformFeaturesAsync()`
 
