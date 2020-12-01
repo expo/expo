@@ -12,9 +12,6 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXPrint/**/*.{h,m}",
-  "preserve_paths": "EXPrint/**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "UMCore": [
 
@@ -22,5 +19,6 @@
     "UMFileSystemInterface": [
 
     ]
-  }
+  },
+  "source_files": "EXPrint/**/*.{h,m}"
 }

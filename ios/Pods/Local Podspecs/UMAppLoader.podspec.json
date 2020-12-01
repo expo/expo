@@ -12,7 +12,5 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "UMAppLoader/**/*.{h,m}",
-  "preserve_paths": "UMAppLoader/**/*.{h,m}",
-  "requires_arc": true
+  "source_files": "UMAppLoader/**/*.{h,m}"
 }

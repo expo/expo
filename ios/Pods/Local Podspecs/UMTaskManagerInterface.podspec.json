@@ -12,7 +12,10 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "UMTaskManagerInterface/**/*.{h,m}",
-  "preserve_paths": "UMTaskManagerInterface/**/*.{h,m}",
-  "requires_arc": true
+  "dependencies": {
+    "UMCore": [
+
+    ]
+  },
+  "source_files": "UMTaskManagerInterface/**/*.{h,m}"
 }

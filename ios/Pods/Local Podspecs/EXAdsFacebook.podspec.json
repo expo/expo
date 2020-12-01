@@ -12,9 +12,6 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXAdsFacebook/**/*.{h,m}",
-  "preserve_paths": "EXAdsFacebook/**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "UMCore": [
 
@@ -22,5 +19,6 @@
     "FBAudienceNetwork": [
       "~> 5.9.0"
     ]
-  }
+  },
+  "source_files": "EXAdsFacebook/**/*.{h,m}"
 }

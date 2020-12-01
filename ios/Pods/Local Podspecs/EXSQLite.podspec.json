@@ -12,9 +12,6 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXSQLite/**/*.{h,m}",
-  "preserve_paths": "EXSQLite/**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "UMCore": [
 
@@ -22,5 +19,6 @@
     "UMFileSystemInterface": [
 
     ]
-  }
+  },
+  "source_files": "EXSQLite/**/*.{h,m}"
 }

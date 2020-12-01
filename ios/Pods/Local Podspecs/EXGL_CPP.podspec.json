@@ -12,17 +12,17 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "**/*.{h,c,cpp,mm}",
-  "preserve_paths": "**/*.{h,c,cpp,mm}",
+  "frameworks": "OpenGLES",
   "compiler_flags": "-x objective-c++ -std=c++1z -fno-aligned-allocation",
-  "requires_arc": true,
   "pod_target_xcconfig": {
     "CLANG_WARN_COMMA": "NO",
-    "CLANG_WARN_UNGUARDED_AVAILABILITY": "NO"
+    "CLANG_WARN_UNGUARDED_AVAILABILITY": "NO",
+    "GCC_PREPROCESSOR_DEFINITIONS": "$(inherited) GLES_SILENCE_DEPRECATION=1"
   },
   "dependencies": {
     "React-jsi": [
 
     ]
-  }
+  },
+  "source_files": "**/*.{h,m,c,cpp,mm}"
 }

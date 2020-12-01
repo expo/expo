@@ -12,9 +12,6 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXContacts/**/*.{h,m}",
-  "preserve_paths": "EXContacts/**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "UMCore": [
 
@@ -25,5 +22,6 @@
     "UMPermissionsInterface": [
 
     ]
-  }
+  },
+  "source_files": "EXContacts/**/*.{h,m}"
 }
