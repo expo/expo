@@ -2,7 +2,8 @@
 
 #import <Photos/Photos.h>
 #import <PhotosUI/PhotosUI.h>
-#import <MobileCoreServices/MobileCoreServices.h>
+#import <AVFoundation/AVFoundation.h>
+#import <CoreServices/CoreServices.h>
 
 #import <EXMediaLibrary/EXMediaLibrary.h>
 #import <EXMediaLibrary/EXSaveToLibraryDelegate.h>

@@ -5,7 +5,6 @@
 #import "EXDisabledDevLoadingView.h"
 #import "EXDisabledDevMenu.h"
 #import "EXDisabledRedBox.h"
-#import "EXFileSystem.h"
 #import "EXVersionManager.h"
 #import "EXScopedBridgeModule.h"
 #import "EXStatusBarManager.h"
@@ -41,6 +40,7 @@
 #import <UMCore/UMModuleRegistryDelegate.h>
 #import <UMReactNativeAdapter/UMNativeModulesProxy.h>
 #import <EXMediaLibrary/EXMediaLibraryImageLoader.h>
+#import <EXFileSystem/EXFileSystem.h>
 #import "EXScopedModuleRegistry.h"
 #import "EXScopedModuleRegistryAdapter.h"
 #import "EXScopedModuleRegistryDelegate.h"
