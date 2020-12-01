@@ -12,8 +12,8 @@ import expo.modules.devmenu.DevMenuManager
  * It dispatches key events and touch event.
  */
 abstract class DevMenuAwareReactActivity : ReactActivity() {
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
+  override fun onPostCreate(savedInstanceState: Bundle?) {
+    super.onPostCreate(savedInstanceState)
     if (currentReactNative == null || currentReactNative != reactNativeHost) {
       currentReactNative = reactNativeHost
       DevMenuManager.initializeWithReactNativeHost(reactNativeHost)
