@@ -48,7 +48,7 @@
     "assert": "^2.0.0",
     "badgin": "^1.1.5",
     "expo-application": "~2.4.1",
-    "expo-constants": "9.3.1",
+    "expo-constants": "9.3.2",
     "uuid": "^3.4.0"
   },
   "devDependencies": {

@@ -44,7 +44,7 @@ PODS:
     - UMPermissionsInterface
   - EXCellular (2.4.0):
     - UMCore
-  - EXConstants (9.3.1):
+  - EXConstants (9.3.2):
     - UMConstantsInterface
     - UMCore
   - EXContacts (8.6.0):
@@ -523,7 +523,7 @@ PODS:
     - React
   - react-native-viewpager (4.2.0):
     - React-Core
-  - react-native-webview (11.0.0):
+  - react-native-webview (10.10.2):
     - React-Core
   - React-RCTActionSheet (0.63.2):
     - React-Core/RCTActionSheetHeaders (= 0.63.2)
@@ -1057,7 +1057,7 @@ SPEC CHECKSUMS:
   EXBrightness: 42f80704aa91706f4230c218789e32b798ab2fae
   EXCalendar: 4b0612281905d869518383d860cde2d206de4743
   EXCellular: 1653bd3affaaaf6fee19ce9da76067b658e00109
-  EXConstants: 2e488b6e2631b6fd4e2911d9fe9213b0a1dacb9f
+  EXConstants: 9d5b53f0afe49f11776e207a68835f4607ae59db
   EXContacts: dbc32dd1e2798cce1beeced230da989931b47890
   EXCrypto: 81948191c3d2caf18fb32f18ee88d87d42532d62
   EXDevice: 01f54314f618aa4098893f66cd8f2a8a411f33ee
@@ -1152,7 +1152,7 @@ SPEC CHECKSUMS:
   react-native-slider: e99fc201cefe81270fc9d81714a7a0f5e566b168
   react-native-view-shot: 4475fde003fe8a210053d1f98fb9e06c1d834e1c
   react-native-viewpager: c1a686e7b5e164a52387f1522358623c4f52070f
-  react-native-webview: 6b7950628616679d81bdd75747e50cf6de9b5a5f
+  react-native-webview: 0aa2cde4ee7e3e1c5fffdf64dbce9c709aa18155
   React-RCTActionSheet: 910163b6b09685a35c4ebbc52b66d1bfbbe39fc5
   React-RCTAnimation: 9a883bbe1e9d2e158d4fb53765ed64c8dc2200c6
   React-RCTBlob: 39cf0ece1927996c4466510e25d2105f67010e13
