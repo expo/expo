@@ -461,6 +461,7 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
 - For each of the following packages, run `et update-versions -k 'relatedPackages.<package-name>' -v '^X.Y.Z'`
   - `typescript`
   - `@types/react`
+  - `@types/react-dom`
   - `@types/react-native`
   - `react-native-web`
   - `babel-preset-expo`
