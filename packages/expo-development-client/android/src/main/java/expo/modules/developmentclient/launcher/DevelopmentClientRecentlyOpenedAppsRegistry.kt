@@ -13,7 +13,7 @@ data class DevelopmentClientAppEntry(
   val name: String?
 )
 
-class DevelopmentClientRecentlyOpenedAppsRegistry(private val context: Context) {
+class DevelopmentClientRecentlyOpenedAppsRegistry(context: Context) {
   private val sharedPreferences: SharedPreferences = context.getSharedPreferences(RECENTLY_OPENED_APPS_SHARED_PREFERENCES, Context.MODE_PRIVATE)
 
   fun appWasOpened(url: String, name: String?) {

@@ -10,7 +10,6 @@
 #import "EXDevelopmentClientBundleSource.h"
 #import "EXDevelopmentClientRCTBridge.m"
 #import "EXDevelopmentClientManifestParser.h"
-#import <expo_development_client-Swift.h>
 
 #import <UIKit/UIKit.h>
 
@@ -38,7 +37,6 @@ NSString *fakeLauncherBundleUrl = @"embedded://exdevelopmentclient/dummy";
 
 - (instancetype)init {
   if (self = [super init]) {
-    self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[UMModuleRegistryProvider alloc] init]];
     self.recentlyOpenedAppsRegistry = [EXDevelopmentClientRecentlyOpenedAppsRegistry new];
   }
   return self;
@@ -46,11 +44,10 @@ NSString *fakeLauncherBundleUrl = @"embedded://exdevelopmentclient/dummy";
 
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
 {
-  NSArray<id<RCTBridgeModule>> *extraModules = [_moduleRegistryAdapter extraModulesForBridge:bridge];
-  return [extraModules arrayByAddingObjectsFromArray:@[
+  return @[
     [[RCTDevMenu alloc] init],
-    [[RCTAsyncLocalStorage alloc] init],
-  ]];
+    [[RCTAsyncLocalStorage alloc] init]
+  ];
 }
 
 #ifdef DEV_LAUNCHER_URL
@@ -175,6 +172,5 @@ NSString *fakeLauncherBundleUrl = @"embedded://exdevelopmentclient/dummy";
     }
   });
 }
-
 
 @end

@@ -3,13 +3,10 @@ package expo.modules.developmentclient.launcher
 import android.app.Application
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.shell.MainReactPackage
-import expo.modules.barcodescanner.BarCodeScannerPackage
 import expo.modules.developmentclient.DevelopmentClientPackage
 import expo.modules.developmentclient.R
 import expo.modules.developmentclient.react.injectDebugServerHost
 import org.apache.commons.io.IOUtils
-import org.unimodules.adapters.react.ModuleRegistryAdapter
-import org.unimodules.adapters.react.ReactModuleRegistryProvider
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -25,16 +22,11 @@ class DevelopmentClientHost(
     }
   }
 
-  private val mModuleRegistryProvider = ReactModuleRegistryProvider(
-    listOf(BarCodeScannerPackage())
-  )
-
   override fun getUseDeveloperSupport() = launcherIp != null
 
   override fun getPackages() = listOf(
     MainReactPackage(null),
-    DevelopmentClientPackage(),
-    ModuleRegistryAdapter(mModuleRegistryProvider)
+    DevelopmentClientPackage()
   )
 
   override fun getJSMainModuleName() = "index"

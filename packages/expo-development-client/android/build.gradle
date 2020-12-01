@@ -74,17 +74,12 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 }
 
 dependencies {
-  unimodule 'unimodules-core'
-  unimodule 'unimodules-react-native-adapter'
-  unimodule 'expo-barcode-scanner'
-
   implementation project(":expo-dev-menu-interface")
 
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'  // From node_modules
 
   implementation 'commons-io:commons-io:2.6'
-  api 'com.google.android.gms:play-services-vision:19.0.0'
 
   implementation("com.squareup.okhttp3:okhttp:4.9.0")
   implementation 'com.google.code.gson:gson:2.8.5'

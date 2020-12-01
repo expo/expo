@@ -11,5 +11,6 @@ class DevelopmentClientReactActivityRedirectDelegate(
 
   override fun onCreate(savedInstanceState: Bundle?) {
     redirect(plainActivity.intent)
+    plainActivity.finish()
   }
 }

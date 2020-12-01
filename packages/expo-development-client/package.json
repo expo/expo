@@ -33,7 +33,6 @@
   },
   "devDependencies": {
     "babel-preset-expo": "~8.3.0",
-    "expo-barcode-scanner": "^9.1.0",
     "expo-module-scripts": "~1.2.0",
     "react": "16.13.1",
     "react-native": "0.63.2",
