@@ -1,10 +1,11 @@
 import 'react-native-url-polyfill/auto';
 
 import { BarCodeScanner } from 'expo-barcode-scanner';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Text,
   View,
+  ScrollView,
   NativeModules,
   Alert,
   SafeAreaView,
@@ -15,6 +16,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
+import ListItem from './ListItem';
 const DevelopmentClient = NativeModules.EXDevelopmentClient;
 
 // Use development client native module to load app at given URL, notifying of
@@ -47,9 +49,18 @@ const Button = ({ label, onPress }) => (
 //
 
 const App = () => {
-  const [scanning, setScanning] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
-  const [textInputUrl, setTextInputUrl] = React.useState('');
+  const [scanning, setScanning] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [textInputUrl, setTextInputUrl] = useState('');
+  const [recentlyOpenedApps, setRecentlyOpenedApps] = useState({});
+
+  useEffect(() => {
+    const getRecentlyOpenedApps = async () => {
+      setRecentlyOpenedApps(await DevelopmentClient.getRecentlyOpenedApps());
+    };
+
+    getRecentlyOpenedApps();
+  }, []);
 
   const onBarCodeScanned = ({ data }: { data: string }) => {
     loadAppFromUrl(data, setLoading);
@@ -67,15 +78,27 @@ const App = () => {
     loadAppFromUrl(textInputUrl, setLoading);
   };
 
+  const recentlyProjects = Object.entries(recentlyOpenedApps).map(([url, name]) => {
+    const title = name ?? url;
+    return <ListItem key={url} title={title} onPress={() => loadAppFromUrl(url, setLoading)} />;
+  });
+
+  if (loading) {
+    return (
+      <>
+        <StatusBar barStyle="dark-content" />
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Loading...</Text>
+        </View>
+      </>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" />
-      <View style={styles.container}>
-        {loading ? (
-          <View style={styles.loadingContainer}>
-            <Text style={styles.loadingText}>Loading...</Text>
-          </View>
-        ) : scanning ? (
+      <ScrollView style={styles.container}>
+        {scanning ? (
           <React.Fragment>
             <View style={styles.barCodeScannerContainer}>
               <BarCodeScanner onBarCodeScanned={onBarCodeScanned} style={styles.barCodeScanner} />
@@ -107,9 +130,15 @@ const App = () => {
               onChangeText={text => setTextInputUrl(text)}
             />
             <Button onPress={onPressGoToUrl} label="Connect to URL" />
+            {recentlyProjects.length > 0 && (
+              <>
+                <Text style={[styles.infoText, { marginTop: 12 }]}>Recently opened projects:</Text>
+                {recentlyProjects}
+              </>
+            )}
           </React.Fragment>
         )}
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -121,7 +150,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingTop: 24,
     paddingHorizontal: 24,
   },
 
@@ -161,6 +189,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: '600',
     marginBottom: 20,
+    paddingTop: 24,
   },
   infoText: {
     fontSize: 16,
