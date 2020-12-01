@@ -3,9 +3,13 @@ package expo.modules.developmentclient
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.os.Looper
+import androidx.annotation.UiThread
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactNativeHost
+import expo.modules.developmentclient.helpers.getFieldInClassHierarchy
+import expo.modules.developmentclient.helpers.runBlockingOnMainThread
 import expo.modules.developmentclient.launcher.DevelopmentClientActivity
 import expo.modules.developmentclient.launcher.DevelopmentClientHost
 import expo.modules.developmentclient.launcher.DevelopmentClientLifecycle
@@ -13,16 +17,21 @@ import expo.modules.developmentclient.launcher.ReactActivityDelegateSupplier
 import expo.modules.developmentclient.launcher.loaders.DevelopmentClientExpoAppLoader
 import expo.modules.developmentclient.launcher.loaders.DevelopmentClientReactNativeAppLoader
 import expo.modules.developmentclient.launcher.manifest.DevelopmentClientManifestParser
+import expo.modules.developmentclient.react.DevelopmentClientReactActivityNOPDelegate
 import expo.modules.developmentclient.react.DevelopmentClientReactActivityRedirectDelegate
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
+import java.net.URLDecoder
 
 // Use this to load from a development server for the development client launcher UI
 //  private final String DEV_LAUNCHER_HOST = "10.0.0.175:8090";
 private val DEV_LAUNCHER_HOST: String? = null
 
-private const val NEW_ACTIVITY_FLAGS = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+private const val NEW_ACTIVITY_FLAGS =
+  Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NO_ANIMATION
 
 class DevelopmentClientController private constructor(
   private val mContext: Context,
@@ -38,13 +47,14 @@ class DevelopmentClientController private constructor(
 
   var mode = Mode.LAUNCHER
 
-  suspend fun loadApp(url: String) {
-    ensureAppHostWasCleared()
+  suspend fun loadApp(url: String, mainActivity: ReactActivity? = null) {
+    ensureHostWasCleared(mAppHost, activityToBeInvalidated = mainActivity)
 
-    val parsedUrl = url.replace("exp", "http")
+    val parsedUrl = url
+      .trim()
+      .replace("exp", "http")
     val manifestParser = DevelopmentClientManifestParser(httpClient, parsedUrl)
     val appIntent = createAppIntent()
-
 
     val appLoader = if (!manifestParser.isManifestUrl()) {
       // It's (maybe) a raw React Native bundle
@@ -68,28 +78,75 @@ class DevelopmentClientController private constructor(
   }
 
   fun navigateToLauncher() {
-    ensureAppHostWasCleared()
+    ensureHostWasCleared(mAppHost)
 
     mode = Mode.LAUNCHER
     mContext.applicationContext.startActivity(createLauncherIntent())
   }
 
-  private fun ensureAppHostWasCleared() {
-    if (mAppHost.hasInstance()) {
-      runBlocking(Dispatchers.Main) {
-        mAppHost.reactInstanceManager.destroy()
+  fun handleIntent(intent: Intent?, activityToBeInvalidated: ReactActivity?): Boolean {
+    intent
+      ?.data
+      ?.let { uri ->
+        if ("expo-development-client" != uri.host) {
+          return false
+        }
+
+        if (uri.getQueryParameter("url") == null) {
+          navigateToLauncher()
+          return true
+        }
+
+        val appUrl = URLDecoder.decode(uri.getQueryParameter("url"), "UTF-8")
+        GlobalScope.launch {
+          loadApp(appUrl, activityToBeInvalidated)
+        }
+        return true
+      }
+    return false
+  }
+
+  private fun ensureHostWasCleared(host: ReactNativeHost, activityToBeInvalidated: ReactActivity? = null) {
+    if (host.hasInstance()) {
+      runBlockingOnMainThread {
+        clearHost(host, activityToBeInvalidated)
       }
     }
   }
 
-  fun getCurrentReactActivityDelegate(activity: ReactActivity, delegateSupplier: ReactActivityDelegateSupplier): ReactActivityDelegate {
+  @UiThread
+  private fun clearHost(host: ReactNativeHost, activityToBeInvalidated: ReactActivity?) {
+    host.clear()
+    activityToBeInvalidated?.let {
+      invalidateActivity(it)
+    }
+  }
+
+  private fun getCurrentReactActivityDelegate(activity: ReactActivity, delegateSupplier: ReactActivityDelegateSupplier): ReactActivityDelegate {
     return if (mode == Mode.LAUNCHER) {
-      DevelopmentClientReactActivityRedirectDelegate(activity) {
-        navigateToLauncher()
-      }
+      DevelopmentClientReactActivityRedirectDelegate(activity, this::redirectFromStartActivity)
     } else {
       delegateSupplier.get()
     }
+  }
+
+  private fun redirectFromStartActivity(intent: Intent?) {
+    if (!handleIntent(intent, null)) {
+      navigateToLauncher()
+    }
+  }
+
+  /**
+   * If we try to launch a different app when the `MainActivity` is active, the app will crash
+   * (NPE caused by missing activity reference in the [ReactActivityDelegate]).
+   * To prevent such behavior, we need to invalidate active activity. To do it we switch
+   * the inner [ReactActivityDelegate] to be a NOP object.
+   */
+  private fun invalidateActivity(activity: ReactActivity) {
+    val field = activity::class.java.getFieldInClassHierarchy("mDelegate")
+    requireNotNull(field) { "Cannot find mDelegate field in activity." }
+    field.isAccessible = true
+    field.set(activity, DevelopmentClientReactActivityNOPDelegate(activity))
   }
 
   private fun createLauncherIntent() =
@@ -107,15 +164,14 @@ class DevelopmentClientController private constructor(
       Intent(mContext, sLauncherClass!!)
     }.apply { addFlags(NEW_ACTIVITY_FLAGS) }
 
-
   companion object {
     private var sInstance: DevelopmentClientController? = null
     private var sLauncherClass: Class<*>? = null
 
     @JvmStatic
     val instance: DevelopmentClientController
-      get() {
-        return checkNotNull(sInstance) { "DevelopmentClientController.getInstance() was called before the module was initialized" }
+      get() = checkNotNull(sInstance) {
+        "DevelopmentClientController.getInstance() was called before the module was initialized"
       }
 
     @JvmStatic
@@ -134,6 +190,11 @@ class DevelopmentClientController private constructor(
     fun wrapReactActivityDelegate(activity: ReactActivity, reactActivityDelegateSupplier: ReactActivityDelegateSupplier): ReactActivityDelegate {
       instance.lifecycle.delegateWillBeCreated(activity)
       return instance.getCurrentReactActivityDelegate(activity, reactActivityDelegateSupplier)
+    }
+
+    @JvmStatic
+    fun tryToHandleIntent(activity: ReactActivity, intent: Intent): Boolean {
+      return instance.handleIntent(intent, activityToBeInvalidated = activity)
     }
   }
 }
