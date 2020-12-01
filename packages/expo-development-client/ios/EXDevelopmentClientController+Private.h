@@ -1,5 +1,7 @@
 #import "EXDevelopmentClientController.h"
 
+@class EXDevelopmentClientRecentlyOpenedAppsRegistry;
+
 @interface EXDevelopmentClientController ()
 
 @property (nonatomic, weak) UIWindow *window;
