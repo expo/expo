@@ -87,7 +87,7 @@ The `eas submit` command is able to perform submissions from a CI environment. A
 
 #### iOS submissions
 
-For iOS submissions you have to provide `EXPO_APPLE_APP_SPECIFIC_PASSWORD` environment variable along with Apple ID (`--apple-id`) and ASC App Id (`--asc-app-id`) parameters. The last one is required to skip Apple developer login with potential prompt for 2FA authentication.
+For iOS submissions you have to provide `EXPO_APPLE_APP_SPECIFIC_PASSWORD` environment variable along with Apple ID (`--apple-id`) and ASC App ID (`--asc-app-id`) parameters. The `--asc-app-id` is required to skip Apple developer login with potential prompt for 2FA authentication.
 
 Example usage:
 
