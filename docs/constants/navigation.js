@@ -37,6 +37,7 @@ const sections = [
       'EAS Build from scratch in 5 minutes',
       'Set up your project and environment',
       'Configuration with eas.json',
+      'Internal distribution',
       'Android build process',
       'iOS build process',
       'Advanced credentials configuration',
