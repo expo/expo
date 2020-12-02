@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "40.0.0-beta.2",
+  "version": "40.0.0-beta.3",
   "description": "The Expo SDK",
   "main": "build/ExpoLazy.js",
   "module": "build/Expo.js",
@@ -58,7 +58,7 @@
     "cross-spawn": "^6.0.5",
     "expo-application": "~2.4.1",
     "expo-asset": "~8.2.1",
-    "expo-constants": "~9.3.2",
+    "expo-constants": "~9.3.3",
     "expo-error-recovery": "~1.4.0",
     "expo-file-system": "~9.3.0",
     "expo-font": "~8.4.0",
