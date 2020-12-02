@@ -1,6 +1,6 @@
 {
   "name": "EXConstants",
-  "version": "9.3.2",
+  "version": "9.3.3",
   "summary": "Provides system information that remains constant throughout the lifetime of your app.",
   "description": "Provides system information that remains constant throughout the lifetime of your app.",
   "license": "MIT",
