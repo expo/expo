@@ -19,7 +19,7 @@ Pod::Spec.new do |s|
   s.dependency 'UMFileSystemInterface'
   s.dependency 'React-Core'
 
-  if !$ExpoUseSources&.include?(package['name']) && ENV['EXPO_USE_SOURCES'].to_i == 0 && File.exist?("#{s.name}.xcframework")
+  if !$ExpoUseSources&.include?(package['name']) && ENV['EXPO_USE_SOURCE'].to_i == 0 && File.exist?("#{s.name}.xcframework")
     s.source_files = "#{s.name}/**/*.h"
     s.vendored_frameworks = "#{s.name}.xcframework"
   else
