@@ -8,9 +8,6 @@ install! 'cocoapods',
 platform :ios, '10.0'
 inhibit_all_warnings!
 
-# Force all Expo modules to be compiled from source
-ENV['EXPO_USE_SOURCE'] = '1'
-
 target 'Exponent' do
   # Expo Client dependencies
   pod 'Amplitude'
