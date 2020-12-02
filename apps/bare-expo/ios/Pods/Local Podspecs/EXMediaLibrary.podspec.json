@@ -12,9 +12,6 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXMediaLibrary/**/*.{h,m}",
-  "preserve_paths": "EXMediaLibrary/**/*.{h,m}",
-  "requires_arc": true,
   "frameworks": [
     "Photos",
     "PhotosUI"
@@ -32,5 +29,6 @@
     "React-Core": [
 
     ]
-  }
+  },
+  "source_files": "EXMediaLibrary/**/*.{h,m}"
 }

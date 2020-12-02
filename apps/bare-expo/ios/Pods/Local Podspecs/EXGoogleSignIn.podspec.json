@@ -12,9 +12,6 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXGoogleSignIn/**/*.{h,m}",
-  "preserve_paths": "EXGoogleSignIn/**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "UMCore": [
 
@@ -22,5 +19,6 @@
     "GoogleSignIn": [
       "~> 5.0.2"
     ]
-  }
+  },
+  "source_files": "EXGoogleSignIn/**/*.{h,m}"
 }

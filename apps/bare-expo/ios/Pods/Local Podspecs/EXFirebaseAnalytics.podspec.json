@@ -12,9 +12,6 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXFirebaseAnalytics/**/*.{h,m}",
-  "preserve_paths": "EXFirebaseAnalytics/**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "UMCore": [
 
@@ -25,5 +22,6 @@
     "EXFirebaseCore": [
 
     ]
-  }
+  },
+  "source_files": "EXFirebaseAnalytics/**/*.{h,m}"
 }

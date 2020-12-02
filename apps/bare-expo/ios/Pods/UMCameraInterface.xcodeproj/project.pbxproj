@@ -9,23 +9,43 @@
 /* Begin PBXAggregateTarget section */
 		86372E925D4E10D72894E239CC18BCD9 /* UMCameraInterface */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = A0D4BF1EC36A7EB9632B445111810A55 /* Build configuration list for PBXAggregateTarget "UMCameraInterface" */;
+			buildConfigurationList = DF7FD37847E72ED7DD762970B5C19EDB /* Build configuration list for PBXAggregateTarget "UMCameraInterface" */;
 			buildPhases = (
 			);
 			dependencies = (
+				F6A04149065B3B46D55EB8F9E38CFE96 /* PBXTargetDependency */,
 			);
 			name = UMCameraInterface;
 		};
 /* End PBXAggregateTarget section */
 
+/* Begin PBXContainerItemProxy section */
+		E743CF923212E7244112C3900ADBC9B5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F450A8205F4D3F4F57983B0F75FDF265 /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		429194027E15FD9D7D13254F915B0D99 /* UMCameraInterface.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = UMCameraInterface.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		D3D5E3E3C10E3343EFD5D703AD02575F /* UMCameraInterface.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = UMCameraInterface.debug.xcconfig; sourceTree = "<group>"; };
 		E0C4EF714903A2544D15ED1321DFAAA1 /* UMCameraInterface.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = UMCameraInterface.release.xcconfig; sourceTree = "<group>"; };
+		F450A8205F4D3F4F57983B0F75FDF265 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
 		F86BCEB0D923CE54D56063784351B8D9 /* UMCameraInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMCameraInterface.h; path = UMCameraInterface/UMCameraInterface.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		1D961CB8794A340B6AEA07CE2208C27C /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				F450A8205F4D3F4F57983B0F75FDF265 /* UMCore */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
 		2412B8B6375E1043322569ED3DAFF1A5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -36,6 +56,7 @@
 		3D54B5DB3A82D46B72E1E9272441411B = {
 			isa = PBXGroup;
 			children = (
+				1D961CB8794A340B6AEA07CE2208C27C /* Dependencies */,
 				2412B8B6375E1043322569ED3DAFF1A5 /* Frameworks */,
 				940AFEEAF2F312D6EE2BF115BF4D7064 /* Products */,
 				3F3F599C07684EC8C581CC638569CAF9 /* UMCameraInterface */,
@@ -98,12 +119,25 @@
 			mainGroup = 3D54B5DB3A82D46B72E1E9272441411B;
 			productRefGroup = 940AFEEAF2F312D6EE2BF115BF4D7064 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProjectRef = F450A8205F4D3F4F57983B0F75FDF265 /* UMCore */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				86372E925D4E10D72894E239CC18BCD9 /* UMCameraInterface */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXTargetDependency section */
+		F6A04149065B3B46D55EB8F9E38CFE96 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = E743CF923212E7244112C3900ADBC9B5 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		39D3F37044F3B28751FDEFB70717396F /* Release */ = {
@@ -165,22 +199,6 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
-			};
-			name = Release;
-		};
-		BEC8EF76B94F7FCE1886B2343593C746 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = E0C4EF714903A2544D15ED1321DFAAA1 /* UMCameraInterface.release.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
@@ -250,7 +268,23 @@
 			};
 			name = Debug;
 		};
-		ED6B8F6F92A3202E79D37362ED8F0C9D /* Debug */ = {
+		EA90C120DD3F75A7914208B26E23B1EC /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E0C4EF714903A2544D15ED1321DFAAA1 /* UMCameraInterface.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		FCB450618799F583DA03AF62C4ECB87D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D3D5E3E3C10E3343EFD5D703AD02575F /* UMCameraInterface.debug.xcconfig */;
 			buildSettings = {
@@ -277,11 +311,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A0D4BF1EC36A7EB9632B445111810A55 /* Build configuration list for PBXAggregateTarget "UMCameraInterface" */ = {
+		DF7FD37847E72ED7DD762970B5C19EDB /* Build configuration list for PBXAggregateTarget "UMCameraInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				ED6B8F6F92A3202E79D37362ED8F0C9D /* Debug */,
-				BEC8EF76B94F7FCE1886B2343593C746 /* Release */,
+				FCB450618799F583DA03AF62C4ECB87D /* Debug */,
+				EA90C120DD3F75A7914208B26E23B1EC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

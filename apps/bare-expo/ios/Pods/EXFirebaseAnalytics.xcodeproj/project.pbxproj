@@ -13,7 +13,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		0EE88A426E101CFCB3B1EB5C80E7DBFB /* PBXContainerItemProxy */ = {
+		2A8C9C4FD62E645E2814E72C839EAE70 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 246263F9ABA741672441EABF1B006F05 /* Firebase.xcodeproj */;
 			proxyType = 1;
@@ -154,7 +154,7 @@
 			);
 			dependencies = (
 				00EAE305207808EBFFBE65D6E0C0870F /* PBXTargetDependency */,
-				034C0D6CCAE8BB692B4750ADF363DF96 /* PBXTargetDependency */,
+				125D48B65095569E437CF6F091251F42 /* PBXTargetDependency */,
 				52971B11E0BD8AABAB2B123AF0C61D51 /* PBXTargetDependency */,
 			);
 			name = EXFirebaseAnalytics;
@@ -218,10 +218,10 @@
 			name = EXFirebaseCore;
 			targetProxy = BD85332C4695A0AC0132FF9D38AEC364 /* PBXContainerItemProxy */;
 		};
-		034C0D6CCAE8BB692B4750ADF363DF96 /* PBXTargetDependency */ = {
+		125D48B65095569E437CF6F091251F42 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Firebase;
-			targetProxy = 0EE88A426E101CFCB3B1EB5C80E7DBFB /* PBXContainerItemProxy */;
+			targetProxy = 2A8C9C4FD62E645E2814E72C839EAE70 /* PBXContainerItemProxy */;
 		};
 		52971B11E0BD8AABAB2B123AF0C61D51 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

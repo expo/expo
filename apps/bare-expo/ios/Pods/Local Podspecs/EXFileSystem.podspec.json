@@ -12,9 +12,6 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXFileSystem/**/*.{h,m}",
-  "preserve_paths": "EXFileSystem/**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "UMCore": [
 
@@ -22,5 +19,6 @@
     "UMFileSystemInterface": [
 
     ]
-  }
+  },
+  "source_files": "EXFileSystem/**/*.{h,m}"
 }

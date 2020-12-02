@@ -12,12 +12,10 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXStoreReview/**/*.{h,m}",
-  "preserve_paths": "EXStoreReview/**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "UMCore": [
 
     ]
-  }
+  },
+  "source_files": "EXStoreReview/**/*.{h,m}"
 }

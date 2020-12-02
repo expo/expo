@@ -26,7 +26,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		A7D35A705FC1D4056D572B9A1E3688B6 /* PBXContainerItemProxy */ = {
+		76932126E526CDD4F22C44F9A8FC75DC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 852D0C10AB220DBE12201557C7E42BF4 /* React-jsi.xcodeproj */;
 			proxyType = 1;
@@ -182,7 +182,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				020079F3D82D2328C251B08DD4DA7E96 /* PBXTargetDependency */,
+				62734443E69F6FB5985FC4EB2B996E74 /* PBXTargetDependency */,
 			);
 			name = EXGL_CPP;
 			productName = EXGL_CPP;
@@ -239,10 +239,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		020079F3D82D2328C251B08DD4DA7E96 /* PBXTargetDependency */ = {
+		62734443E69F6FB5985FC4EB2B996E74 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-jsi";
-			targetProxy = A7D35A705FC1D4056D572B9A1E3688B6 /* PBXContainerItemProxy */;
+			targetProxy = 76932126E526CDD4F22C44F9A8FC75DC /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

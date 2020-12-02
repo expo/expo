@@ -16,19 +16,19 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		7DCF50EAD8B39A3AD42CC1BA2367325F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6D7BDFAFD7CB44FAC83E19F637A6B6B4 /* Firebase.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 15B99218A87324F316F0E937B3DAAC8B;
+			remoteInfo = Firebase;
+		};
 		8ECC1CA4762FAF5B25B60E3FE741368A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B53CDD009FA913CFF50104926B465EAB /* UMCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
-		};
-		FACF6CAB1639AB934CE6537E691FFC11 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 6D7BDFAFD7CB44FAC83E19F637A6B6B4 /* Firebase.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 15B99218A87324F316F0E937B3DAAC8B;
-			remoteInfo = Firebase;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -155,7 +155,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				7E84A6AEB60CACC81B771A8C4668B919 /* PBXTargetDependency */,
+				5F6F913C9AFFC53B3E1C84631EDBC6E7 /* PBXTargetDependency */,
 				73232EB7B9D3C9AD52BED55A8B4B8C93 /* PBXTargetDependency */,
 			);
 			name = EXFirebaseCore;
@@ -212,15 +212,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		5F6F913C9AFFC53B3E1C84631EDBC6E7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Firebase;
+			targetProxy = 7DCF50EAD8B39A3AD42CC1BA2367325F /* PBXContainerItemProxy */;
+		};
 		73232EB7B9D3C9AD52BED55A8B4B8C93 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
 			targetProxy = 8ECC1CA4762FAF5B25B60E3FE741368A /* PBXContainerItemProxy */;
-		};
-		7E84A6AEB60CACC81B771A8C4668B919 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Firebase;
-			targetProxy = FACF6CAB1639AB934CE6537E691FFC11 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

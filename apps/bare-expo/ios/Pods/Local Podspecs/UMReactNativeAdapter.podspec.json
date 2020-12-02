@@ -12,9 +12,6 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "UMReactNativeAdapter/**/*.{h,m}",
-  "preserve_paths": "UMReactNativeAdapter/**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "React-Core": [
 
@@ -25,5 +22,6 @@
     "UMFontInterface": [
 
     ]
-  }
+  },
+  "source_files": "UMReactNativeAdapter/**/*.{h,m}"
 }
