@@ -62,6 +62,7 @@ export default function ScrollViewScreen() {
           onScroll={() => {
             console.log('onScroll!');
           }}
+          nestedScrollEnabled={true}
           scrollEventThrottle={200}
           scrollEnabled={isEnabled}
           horizontal={isHorizontal}
