@@ -24,7 +24,6 @@ function throwError() {
     instructions += `.\n\n`;
     instructions += `1. Add correct versions of these packages to your project using:\n\n`;
     instructions += `   expo install ${packages.join(' ')}\n\n`;
-    instructions += `   If "install" is not recognized as an expo command, update your expo-cli installation.\n\n`;
     instructions += `2. Change your imports so they use specific packages instead of the "expo" package:\n\n`;
     messages.forEach(message => {
         instructions += ` - ${message}\n`;
