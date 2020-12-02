@@ -10,8 +10,7 @@
 #import "EXDevelopmentClientBundleSource.h"
 #import "EXDevelopmentClientRCTBridge.m"
 #import "EXDevelopmentClientManifestParser.h"
-
-#import <expo_development_client-Swift.h>
+#import "EXDevelopmentClientLoadingView.h"
 
 #import <expo_development_client-Swift.h>
 
@@ -19,7 +18,6 @@
 //#define DEV_LAUNCHER_URL "http://10.0.0.176:8090/index.bundle?platform=ios&dev=true&minify=false"
 
 NSString *fakeLauncherBundleUrl = @"embedded://exdevelopmentclient/dummy";
-
 
 @implementation EXDevelopmentClientController
 
@@ -47,7 +45,8 @@ NSString *fakeLauncherBundleUrl = @"embedded://exdevelopmentclient/dummy";
 {
   return @[
     [[RCTDevMenu alloc] init],
-    [[RCTAsyncLocalStorage alloc] init]
+    [[RCTAsyncLocalStorage alloc] init],
+    [[EXDevelopmentClientLoadingView alloc] init]
   ];
 }
 

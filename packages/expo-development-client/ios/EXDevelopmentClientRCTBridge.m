@@ -29,6 +29,8 @@
   return [EXDevelopmentClientRCTCxxBridge class];
 }
 
+- (void)reloadWithReason:(NSString *)reason {}
+
 @end
 
 
