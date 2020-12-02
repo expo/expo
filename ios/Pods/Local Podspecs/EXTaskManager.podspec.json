@@ -12,9 +12,6 @@
   "source": {
     "git": "https://github.com/expo/expo-task-manager.git"
   },
-  "source_files": "EXTaskManager/**/*.{h,m}",
-  "preserve_paths": "EXTaskManager/**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "UMCore": [
 
@@ -28,5 +25,6 @@
     "UMAppLoader": [
 
     ]
-  }
+  },
+  "source_files": "EXTaskManager/**/*.{h,m}"
 }

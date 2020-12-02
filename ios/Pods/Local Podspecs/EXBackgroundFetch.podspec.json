@@ -12,9 +12,6 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXBackgroundFetch/**/*.{h,m}",
-  "preserve_paths": "EXBackgroundFetch/**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "UMCore": [
 
@@ -22,5 +19,6 @@
     "UMTaskManagerInterface": [
 
     ]
-  }
+  },
+  "source_files": "EXBackgroundFetch/**/*.{h,m}"
 }

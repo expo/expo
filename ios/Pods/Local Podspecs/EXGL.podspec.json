@@ -12,9 +12,6 @@
   "source": {
     "git": "https://github.com/expo/expo-gl.git"
   },
-  "source_files": "**/*.{h,m}",
-  "preserve_paths": "**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "UMCore": [
 
@@ -28,5 +25,6 @@
     "EXGL_CPP": [
 
     ]
-  }
+  },
+  "source_files": "EXGL/**/*.{h,m}"
 }

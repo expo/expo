@@ -12,9 +12,6 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXUpdates/**/*.{h,m}",
-  "preserve_paths": "EXUpdates/**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "UMCore": [
 
@@ -23,6 +20,7 @@
 
     ]
   },
+  "source_files": "EXUpdates/**/*.{h,m}",
   "testspecs": [
     {
       "name": "Tests",

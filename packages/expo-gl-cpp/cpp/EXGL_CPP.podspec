@@ -12,16 +12,23 @@ Pod::Spec.new do |s|
   s.homepage       = package['homepage']
   s.platform       = :ios, '10.0'
   s.source         = { git: 'https://github.com/expo/expo.git' }
-  s.source_files   = '**/*.{h,c,cpp,mm}'
-  s.preserve_paths = '**/*.{h,c,cpp,mm}'
+  s.frameworks = 'OpenGLES'
+
   s.compiler_flags = '-x objective-c++ -std=c++1z -fno-aligned-allocation'
   # aligned-allocation can be enabled when support for iOS 10 is dropped
-  s.requires_arc   = true
 
   s.pod_target_xcconfig = {
     'CLANG_WARN_COMMA' => 'NO',
-    'CLANG_WARN_UNGUARDED_AVAILABILITY' => 'NO'
+    'CLANG_WARN_UNGUARDED_AVAILABILITY' => 'NO',
+    'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) GLES_SILENCE_DEPRECATION=1'
   }
 
   s.dependency 'React-jsi'
+
+  if !$ExpoUseSources&.include?(package['name']) && ENV['EXPO_USE_SOURCE'].to_i == 0 && File.exist?("#{s.name}.xcframework")
+    s.source_files = '**/*.h'
+    s.vendored_frameworks = "#{s.name}.xcframework"
+  else
+    s.source_files = '**/*.{h,m,c,cpp,mm}'
+  end
 end

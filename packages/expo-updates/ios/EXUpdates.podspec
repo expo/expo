@@ -12,12 +12,16 @@ Pod::Spec.new do |s|
   s.homepage       = package['homepage']
   s.platform       = :ios, '10.0'
   s.source         = { git: 'https://github.com/expo/expo.git' }
-  s.source_files   = 'EXUpdates/**/*.{h,m}'
-  s.preserve_paths = 'EXUpdates/**/*.{h,m}'
-  s.requires_arc   = true
 
   s.dependency 'UMCore'
   s.dependency 'React-Core'
+
+  if !$ExpoUseSources&.include?(package['name']) && ENV['EXPO_USE_SOURCE'].to_i == 0 && File.exist?("#{s.name}.xcframework")
+    s.source_files = "#{s.name}/**/*.h"
+    s.vendored_frameworks = "#{s.name}.xcframework"
+  else
+    s.source_files = "#{s.name}/**/*.{h,m}"
+  end
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.source_files = 'Tests/*.{h,m}'

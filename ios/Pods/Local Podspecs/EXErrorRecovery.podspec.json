@@ -12,12 +12,10 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXErrorRecovery/**/*.{h,m}",
-  "preserve_paths": "EXErrorRecovery/**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "UMCore": [
 
     ]
-  }
+  },
+  "source_files": "EXErrorRecovery/**/*.{h,m}"
 }

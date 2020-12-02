@@ -12,9 +12,6 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXAdsAdMob/**/*.{h,m}",
-  "preserve_paths": "EXAdsAdMob/**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "UMCore": [
 
@@ -22,5 +19,6 @@
     "Google-Mobile-Ads-SDK": [
       "7.55.1"
     ]
-  }
+  },
+  "source_files": "EXAdsAdMob/**/*.{h,m}"
 }

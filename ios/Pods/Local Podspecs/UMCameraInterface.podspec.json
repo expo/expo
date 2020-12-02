@@ -12,7 +12,10 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "**/*.{h,m}",
-  "preserve_paths": "**/*.{h,m}",
-  "requires_arc": true
+  "dependencies": {
+    "UMCore": [
+
+    ]
+  },
+  "source_files": "UMCameraInterface/**/*.{h,m}"
 }

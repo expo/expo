@@ -12,9 +12,6 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXNotifications/**/*.{h,m}",
-  "preserve_paths": "EXNotifications/**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "UMCore": [
 
@@ -22,5 +19,6 @@
     "UMPermissionsInterface": [
 
     ]
-  }
+  },
+  "source_files": "EXNotifications/**/*.{h,m}"
 }

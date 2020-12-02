@@ -12,7 +12,10 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "UMSensorsInterface/**/*.{h,m}",
-  "preserve_paths": "UMSensorsInterface/**/*.{h,m}",
-  "requires_arc": true
+  "dependencies": {
+    "UMCore": [
+
+    ]
+  },
+  "source_files": "UMSensorsInterface/**/*.{h,m}"
 }
