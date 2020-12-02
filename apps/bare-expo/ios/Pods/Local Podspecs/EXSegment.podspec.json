@@ -12,9 +12,6 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXSegment/**/*.{h,m}",
-  "preserve_paths": "EXSegment/**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "UMCore": [
 
@@ -25,5 +22,6 @@
     "Analytics": [
       "~> 4.0"
     ]
-  }
+  },
+  "source_files": "EXSegment/**/*.{h,m}"
 }

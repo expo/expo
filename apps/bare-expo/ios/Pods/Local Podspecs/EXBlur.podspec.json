@@ -12,12 +12,10 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXBlur/**/*.{h,m}",
-  "preserve_paths": "EXBlur/**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "UMCore": [
 
     ]
-  }
+  },
+  "source_files": "EXBlur/**/*.{h,m}"
 }
