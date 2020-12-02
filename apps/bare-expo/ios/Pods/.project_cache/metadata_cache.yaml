@@ -378,18 +378,6 @@ OpenSSL-Universal:
   LABEL: OpenSSL-Universal
   PROJECT_PATH: OpenSSL-Universal.xcodeproj
   UUID: 6F68E8F1AF30EB52FE60841D139BAC02
-Pods-BareExpo:
-  LABEL: Pods-BareExpo
-  PROJECT_PATH: Pods.xcodeproj
-  UUID: C616BB9F650D110E835D02A3250F302E
-Pods-BareExpo-BareExpoDetox:
-  LABEL: Pods-BareExpo-BareExpoDetox
-  PROJECT_PATH: Pods.xcodeproj
-  UUID: 3073489CFE29413CFF52BC8FA82CA34B
-Pods-BareExpoDetox:
-  LABEL: Pods-BareExpoDetox
-  PROJECT_PATH: Pods.xcodeproj
-  UUID: 8486B2A5C2EC037965B3C875451C8BBC
 Pods-BareExpoMain-BareExpo:
   LABEL: Pods-BareExpoMain-BareExpo
   PROJECT_PATH: Pods.xcodeproj

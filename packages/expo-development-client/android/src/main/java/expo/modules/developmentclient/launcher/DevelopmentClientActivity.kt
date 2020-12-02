@@ -6,17 +6,20 @@ import expo.modules.developmentclient.DevelopmentClientController
 
 class DevelopmentClientActivity : ReactActivity() {
   override fun getMainComponentName() = "main"
-  lateinit var activityDelegate: ReactActivityDelegate
 
   override fun createReactActivityDelegate(): ReactActivityDelegate {
-    activityDelegate = object : ReactActivityDelegate(this, mainComponentName) {
+    return object : ReactActivityDelegate(this, mainComponentName) {
       override fun getReactNativeHost() = DevelopmentClientController.instance.devClientHost
     }
-    return activityDelegate
+  }
+
+  override fun onStart() {
+    overridePendingTransition(0, 0)
+    super.onStart()
   }
 
   override fun onPause() {
-    super.onPause()
     overridePendingTransition(0, 0)
+    super.onPause()
   }
 }

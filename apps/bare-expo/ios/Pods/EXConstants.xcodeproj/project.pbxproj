@@ -17,19 +17,19 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		1171C5A687ED510984DB9F108CAB7564 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 6D5E7F2B56664D6D18561E66865DF25B /* UMConstantsInterface.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 46F82E84687582F366B907E2BD5F1EA2;
-			remoteInfo = UMConstantsInterface;
-		};
-		B35CFA70D8DF802DE730210D49472313 /* PBXContainerItemProxy */ = {
+		13973B80CF3C7871B5F02585F3A70F75 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F0ED445550D24F900F94F09FC6ABB7FD /* UMCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
+		};
+		900BCF607B12E4EE30F6F86503DA4996 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6D5E7F2B56664D6D18561E66865DF25B /* UMConstantsInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 46F82E84687582F366B907E2BD5F1EA2;
+			remoteInfo = UMConstantsInterface;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -158,8 +158,8 @@
 			buildRules = (
 			);
 			dependencies = (
-				D7AB1F4CEBE284D23075462EFE6D4EDC /* PBXTargetDependency */,
-				45F6E94BC7083EB775F773119224C9CC /* PBXTargetDependency */,
+				9741C09DEBCDD9400BA13D9B8E1BFB30 /* PBXTargetDependency */,
+				3AD6335E288B1E65965466C85AE83DE8 /* PBXTargetDependency */,
 			);
 			name = EXConstants;
 			productName = EXConstants;
@@ -216,15 +216,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		45F6E94BC7083EB775F773119224C9CC /* PBXTargetDependency */ = {
+		3AD6335E288B1E65965466C85AE83DE8 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = B35CFA70D8DF802DE730210D49472313 /* PBXContainerItemProxy */;
+			targetProxy = 13973B80CF3C7871B5F02585F3A70F75 /* PBXContainerItemProxy */;
 		};
-		D7AB1F4CEBE284D23075462EFE6D4EDC /* PBXTargetDependency */ = {
+		9741C09DEBCDD9400BA13D9B8E1BFB30 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMConstantsInterface;
-			targetProxy = 1171C5A687ED510984DB9F108CAB7564 /* PBXContainerItemProxy */;
+			targetProxy = 900BCF607B12E4EE30F6F86503DA4996 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

@@ -1,6 +1,7 @@
 package expo.modules.devmenu.react
 
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.view.KeyEvent
 import android.view.MotionEvent
 import com.facebook.react.ReactActivity
