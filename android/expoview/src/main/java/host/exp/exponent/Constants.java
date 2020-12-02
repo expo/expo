@@ -71,7 +71,7 @@ public class Constants {
   }
 
   static {
-    Set<String> abiVersions = new HashSet<>();
+    List<String> abiVersions = new ArrayList<>();
     // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
     // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
     // ADD ABI VERSIONS HERE DO NOT MODIFY
@@ -91,7 +91,7 @@ public class Constants {
       abiVersions.add(TEMPORARY_ABI_VERSION);
     }
 
-    setSdkVersions(new ArrayList<>(abiVersions));
+    setSdkVersions(abiVersions);
 
     List<EmbeddedResponse> embeddedResponses = new ArrayList<>();
     // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
