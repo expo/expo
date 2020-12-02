@@ -7,6 +7,8 @@
  * running and get the warning about the AppLoading module being removed
  * top, without an extraneous red screen that would appear from attempting to
  * render an undefined AppLoading component.
+ *
+ * Remove this in SDK 42.
  */
 import React from 'react';
 declare type Props = {
