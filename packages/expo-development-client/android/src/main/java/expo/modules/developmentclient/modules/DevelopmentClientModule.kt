@@ -7,6 +7,7 @@ import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter
 import expo.modules.developmentclient.DevelopmentClientController.Companion.instance
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -29,7 +30,19 @@ private val cameraPackages = listOf(
   "com.samsung.android.camera"
 )
 
+private const val ON_NEW_DEEP_LINK_EVENT = "expo.modules.developmentclient.onnewdeeplink"
+
 class DevelopmentClientModule(reactContext: ReactApplicationContext?) : ReactContextBaseJavaModule(reactContext) {
+  override fun initialize() {
+    super.initialize()
+    instance.pendingIntentRegistry.subscribe(this::onNewPendingIntent)
+  }
+
+  override fun invalidate() {
+    super.invalidate()
+    instance.pendingIntentRegistry.unsubscribe(this::onNewPendingIntent)
+  }
+
   override fun getName(): String {
     return "EXDevelopmentClient"
   }
@@ -70,16 +83,16 @@ class DevelopmentClientModule(reactContext: ReactApplicationContext?) : ReactCon
     Intent(MediaStore.ACTION_IMAGE_CAPTURE)
       .resolveActivity(packageManager)
       ?.let { componentName ->
-      // ...then we search for the launcher intent.
-      // However, this approach might fail...
-      packageManager
-        .getLaunchIntentForPackage(componentName.packageName)
-        ?.let {
-          reactApplicationContext.startActivity(it)
-          promise.resolve(null)
-          return
-        }
-    }
+        // ...then we search for the launcher intent.
+        // However, this approach might fail...
+        packageManager
+          .getLaunchIntentForPackage(componentName.packageName)
+          ?.let {
+            reactApplicationContext.startActivity(it)
+            promise.resolve(null)
+            return
+          }
+      }
 
     // ...if so, we can fallback to the hardcoded packages list.
     // A lot of custom ROMs do it in the same way.
@@ -94,5 +107,18 @@ class DevelopmentClientModule(reactContext: ReactApplicationContext?) : ReactCon
         }
     }
     promise.reject("ERR_DEVELOPMENT_CLIENT_CANNOT_OPEN_CAMERA", "Couldn't find the camera app.")
+  }
+
+  @ReactMethod
+  fun getPendingDeepLink(promise: Promise) {
+    promise.resolve(instance.pendingIntentRegistry.intent?.data?.toString())
+  }
+
+  private fun onNewPendingIntent(intent: Intent) {
+    intent.data?.toString()?.let {
+      reactApplicationContext
+        .getJSModule(RCTDeviceEventEmitter::class.java)
+        .emit(ON_NEW_DEEP_LINK_EVENT, it)
+    }
   }
 }

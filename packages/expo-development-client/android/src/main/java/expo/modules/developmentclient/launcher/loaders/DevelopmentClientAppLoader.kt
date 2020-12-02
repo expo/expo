@@ -3,6 +3,7 @@ package expo.modules.developmentclient.launcher.loaders
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.annotation.CallSuper
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
@@ -10,6 +11,7 @@ import com.facebook.react.ReactActivity
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.ReactContext
+import expo.modules.developmentclient.launcher.DevelopmentClientIntentRegistry
 import expo.modules.developmentclient.react.injectDebugServerHost
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
@@ -39,7 +41,6 @@ abstract class DevelopmentClientAppLoader(
   private val context: Context
 ) {
   private var continuation: Continuation<Boolean>? = null
-
   fun createOnDelegateWillBeCreatedListener(): (ReactActivity) -> Unit {
     return { activity ->
       onDelegateWillBeCreated(activity)

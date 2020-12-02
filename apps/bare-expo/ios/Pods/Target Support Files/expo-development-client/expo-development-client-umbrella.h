@@ -17,6 +17,7 @@
 #import "EXDevelopmentClientController.h"
 #import "EXDevelopmentClientRCTBridge.h"
 #import "expo-development-client-Bridging-Header.h"
+#import "EXDevelopmentClientPendingDeepLinkListener.h"
 #import "EXDevelopmentClientManifestParser.h"
 
 FOUNDATION_EXPORT double expo_development_clientVersionNumber;

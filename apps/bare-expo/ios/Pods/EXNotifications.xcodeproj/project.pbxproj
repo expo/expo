@@ -49,19 +49,19 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		B4F9F1CC0D677B786D41314B8CD17CF2 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 19E6B0CC1C04663F83B1A0BB7099D0D6 /* UMPermissionsInterface.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 12FF61416C5E794E9DEAC78D381D9726;
-			remoteInfo = UMPermissionsInterface;
-		};
-		BDC15F19B9D55AD89FB5712C80ABEC7D /* PBXContainerItemProxy */ = {
+		42FE50F1144D54FBB504A8739E8D3ECF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2F5A0DDE9B7BB2A766FEBB787708F208 /* UMCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
+		};
+		F8C254C17D75CEE15F15CA8AEF9D8B5E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 19E6B0CC1C04663F83B1A0BB7099D0D6 /* UMPermissionsInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 12FF61416C5E794E9DEAC78D381D9726;
+			remoteInfo = UMPermissionsInterface;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -352,8 +352,8 @@
 			buildRules = (
 			);
 			dependencies = (
-				3AF73BAE6F040AFB78AD59D16B1071DF /* PBXTargetDependency */,
-				CF9193031851E38732FA8285EBC2FDA1 /* PBXTargetDependency */,
+				18A789EEA06B378FF3D5053CFE6F6D58 /* PBXTargetDependency */,
+				35E1DE8112601638C72782987007E9B2 /* PBXTargetDependency */,
 			);
 			name = EXNotifications;
 			productName = EXNotifications;
@@ -425,15 +425,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		3AF73BAE6F040AFB78AD59D16B1071DF /* PBXTargetDependency */ = {
+		18A789EEA06B378FF3D5053CFE6F6D58 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = BDC15F19B9D55AD89FB5712C80ABEC7D /* PBXContainerItemProxy */;
+			targetProxy = 42FE50F1144D54FBB504A8739E8D3ECF /* PBXContainerItemProxy */;
 		};
-		CF9193031851E38732FA8285EBC2FDA1 /* PBXTargetDependency */ = {
+		35E1DE8112601638C72782987007E9B2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMPermissionsInterface;
-			targetProxy = B4F9F1CC0D677B786D41314B8CD17CF2 /* PBXContainerItemProxy */;
+			targetProxy = F8C254C17D75CEE15F15CA8AEF9D8B5E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
