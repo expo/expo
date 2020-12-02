@@ -50,7 +50,7 @@
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo",
   "dependencies": {
     "@babel/runtime": "^7.1.2",
-    "@expo/vector-icons": "^10.0.2",
+    "@expo/vector-icons": "^12.0.0",
     "@unimodules/core": "~6.0.0",
     "@unimodules/react-native-adapter": "~5.7.0",
     "babel-preset-expo": "~8.3.0",
