@@ -1,6 +1,7 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Switch, Text, View, Platform } from 'react-native';
 import MapView from 'react-native-maps';
+import Constants from 'expo-constants';
 
 import ListButton from '../components/ListButton';
 import Layout from '../constants/Layout';
@@ -34,6 +35,8 @@ export default class MapsScreen extends React.Component<{}, State> {
   _mapView?: MapView | null;
 
   render() {
+    const isAndroidStandalone =
+      Constants.appOwnership === 'standalone' && Platform.OS === 'android';
     const provider: 'google' | undefined = this.state.isGoogleMap ? 'google' : undefined;
     return (
       <ScrollView style={StyleSheet.absoluteFill}>
@@ -45,11 +48,20 @@ export default class MapsScreen extends React.Component<{}, State> {
           initialRegion={REGION}
           provider={provider}
         />
+        {this._renderAndroidStandaloneWarning()}
         {this._renderGoogleMapsSwitch()}
         {this._renderJumpToCoordButton()}
       </ScrollView>
     );
   }
+
+  _renderAndroidStandaloneWarning = () => {
+    return (
+      <Text style={{ marginVertical: 10, fontSize: 16, textAlign: 'center' }}>
+        The map is not expected to render when running as an Android standalone app.
+      </Text>
+    );
+  };
 
   _renderGoogleMapsSwitch = () => {
     return (
