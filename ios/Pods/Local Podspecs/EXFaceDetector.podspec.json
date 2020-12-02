@@ -12,14 +12,14 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXFaceDetector/**/*.{h,m}",
-  "preserve_paths": "EXFaceDetector/**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "UMCore": [
 
     ],
     "UMFaceDetectorInterface": [
+
+    ],
+    "UMFileSystemInterface": [
 
     ],
     "Firebase/Core": [
@@ -31,5 +31,6 @@
     "Firebase/MLVisionFaceModel": [
       "6.14.0"
     ]
-  }
+  },
+  "source_files": "EXFaceDetector/**/*.{h,m}"
 }

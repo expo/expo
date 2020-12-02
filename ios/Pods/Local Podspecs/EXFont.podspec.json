@@ -12,9 +12,6 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXFont/**/*.{h,m}",
-  "preserve_paths": "EXFont/**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "UMCore": [
 
@@ -22,5 +19,6 @@
     "UMFontInterface": [
 
     ]
-  }
+  },
+  "source_files": "EXFont/**/*.{h,m}"
 }

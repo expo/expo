@@ -12,9 +12,6 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXAmplitude/**/*.{h,m}",
-  "preserve_paths": "EXAmplitude/**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "UMCore": [
 
@@ -25,5 +22,6 @@
     "Amplitude": [
       "~> 6.0.0"
     ]
-  }
+  },
+  "source_files": "EXAmplitude/**/*.{h,m}"
 }

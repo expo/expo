@@ -12,9 +12,6 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXFacebook/**/*.{h,m}",
-  "preserve_paths": "EXFacebook/**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "UMCore": [
 
@@ -28,5 +25,6 @@
     "FBSDKLoginKit": [
       "~> 5.8.0"
     ]
-  }
+  },
+  "source_files": "EXFacebook/**/*.{h,m}"
 }
