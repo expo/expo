@@ -1,7 +1,8 @@
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as StoreReview from 'expo-store-review';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Platform } from 'react-native';
+import Constants from 'expo-constants';
 
 import Button from '../components/Button';
 import Colors from '../constants/Colors';
@@ -41,7 +42,12 @@ function StoreReviewScreen({ navigation }: Props) {
       </View>
 
       <Button
-        onPress={StoreReview.requestReview}
+        onPress={() => {
+          if (Constants.appOwnership === 'standalone' && Platform.OS === 'android') {
+            alert('This is expected to do nothing in an Android standalone app.');
+          }
+          StoreReview.requestReview();
+        }}
         style={styles.button}
         buttonStyle={!StoreReview.hasAction() ? styles.disabled : undefined}
         title="Request a Review!"
