@@ -30,4 +30,6 @@
   return [DevMenuRCTCxxBridge class];
 }
 
+- (void)reloadWithReason:(NSString *)reason {}
+
 @end
