@@ -110,6 +110,8 @@ Object.defineProperties(module.exports, {
         enumerable: true,
         get() {
             removedModule(`import { AppLoading } from 'expo' -> import AppLoading from 'expo-app-loading'`, 'AppLoading', 'expo-app-loading');
+            const AppLoadingPlaceholder = require('./launch/AppLoadingPlaceholder');
+            return AppLoadingPlaceholder.default;
         },
     },
     /** @deprecated */

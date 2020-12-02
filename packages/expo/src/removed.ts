@@ -178,6 +178,9 @@ Object.defineProperties(module.exports, {
         'AppLoading',
         'expo-app-loading'
       );
+
+      const AppLoadingPlaceholder = require('./launch/AppLoadingPlaceholder');
+      return AppLoadingPlaceholder.default;
     },
   },
 
