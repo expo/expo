@@ -215,7 +215,7 @@ NS_ASSUME_NONNULL_BEGIN
   }
 
   NSString *domain = (error && error.domain) ? error.domain : @"";
-  BOOL isNetworkError = ([domain isEqualToString:(NSString *)kCFErrorDomainCFNetwork] || [domain isEqualToString:EXNetworkErrorDomain]);
+  BOOL isNetworkError = ([domain isEqualToString:(NSString *)kCFErrorDomainCFNetwork] || [domain isEqualToString:NSURLErrorDomain] || [domain isEqualToString:EXNetworkErrorDomain]);
 
   if (isNetworkError) {
     // show a human-readable reachability error
