@@ -233,6 +233,7 @@ Subscribes for updates in user's media library.
 #### Arguments
 
 - **listener (_function_)** -- A callback that is fired when any assets have been inserted or deleted from the library, or when the user changes which assets they're allowing access to. **On Android** it's invoked with an empty object. **On iOS** it's invoked with an object containing following keys:
+
   - **hasIncrementalChanges (_boolean_)** -- Whether the media library's changes could be described as "incremental changes". `true` indicates the changes are described by the `insertedAssets`, `deletedAssets` and `updatedAssets` values. `false` indicates that the scope of changes is too large and you should perform a full assets reload (eg. a user has changed access to individual assets in the media library).
 
   Available only if `hasIncrementalChanges` is `true`:

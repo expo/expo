@@ -30,11 +30,11 @@ import { Notifications } from 'expo';
 
 Check out the Snack below to see Notifications in action, but be sure to use a physical device! Push notifications don't work on simulators/emulators.
 
-<SnackInline label='Push Notifications' templateId='pushnotifications' dependencies={['expo-constants', 'expo-permissions']}>
+<SnackInline label='Push Notifications' dependencies={['expo-constants', 'expo-permissions']}>
 
-```js
+```jsx
 import React from 'react';
-import { Text, View, Button, Vibration, Platform } from 'react-native';
+import { StyleSheet, Text, View, Button, Vibration, Platform } from 'react-native';
 import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
 import Constants from 'expo-constants';
@@ -57,7 +57,7 @@ export default class AppContainer extends React.Component {
         alert('Failed to get push token for push notification!');
         return;
       }
-      token = await Notifications.getExpoPushTokenAsync();
+      const token = await Notifications.getExpoPushTokenAsync();
       console.log(token);
       this.setState({ expoPushToken: token });
     } else {
@@ -81,27 +81,56 @@ export default class AppContainer extends React.Component {
 
   _handleNotification = notification => {
     Vibration.vibrate();
-    console.log(notification);
     this.setState({ notification: notification });
+    console.log(notification);
+  };
+
+  sendNotification = async () => {
+    const message = {
+      to: this.state.expoPushToken,
+      sound: 'default',
+      title: 'Original Title',
+      body: 'And here is the body!',
+      data: { data: 'goes here' },
+    };
+
+    await fetch('https://exp.host/--/api/v2/push/send', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Accept-encoding': 'gzip, deflate',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(message),
+    });
   };
 
   render() {
     return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'space-around',
-        }}>
-        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+      <View style={styles.container}>
+        <View style={styles.message}>
           <Text>Origin: {this.state.notification.origin}</Text>
           <Text>Data: {JSON.stringify(this.state.notification.data)}</Text>
         </View>
-        <Button title={'Press to Send Notification'} onPress={() => this.sendPushNotification()} />
+        <Button title={'Press to Send Notification'} onPress={this.sendNotification} />
       </View>
     );
   }
 }
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+  message: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+/* @end */
 ```
 
 </SnackInline>

@@ -19,11 +19,11 @@ On Android, there is a global system-wide brightness setting, and each app has i
 
 ## Usage
 
-<SnackInline label='Basic Brightness Usage' templateId='brightness' dependencies={['expo-brightness']}>
+<SnackInline label='Basic Brightness Usage' dependencies={['expo-brightness']}>
 
-```js
+```jsx
 import React, { useEffect } from 'react';
-import { View, Text } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import * as Brightness from 'expo-brightness';
 
 export default function App() {
@@ -37,17 +37,22 @@ export default function App() {
   }, []);
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}>
+    <View style={styles.container}>
       <Text>Brightness Module Example</Text>
     </View>
   );
 }
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+/* @end */
 ```
 
 </SnackInline>

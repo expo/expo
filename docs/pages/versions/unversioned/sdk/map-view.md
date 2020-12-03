@@ -21,19 +21,17 @@ See full documentation at [react-native-community/react-native-maps](https://git
 
 <SnackInline label='MapView' dependencies={['react-native-maps']}>
 
-```js
-import React from 'react';
+```jsx
+import * as React from 'react';
 import MapView from 'react-native-maps';
 import { StyleSheet, Text, View, Dimensions } from 'react-native';
 
-export default class App extends React.Component {
-  render() {
-    return (
-      <View style={styles.container}>
-        <MapView style={styles.mapStyle} />
-      </View>
-    );
-  }
+export default function App() {
+  return (
+    <View style={styles.container}>
+      <MapView style={styles.map} />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -43,7 +41,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  mapStyle: {
+  map: {
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height,
   },
