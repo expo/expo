@@ -1,0 +1,10 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  package="expo.modules.devlauncher">
+
+  <application>
+    <activity
+      android:name="expo.modules.devlauncher.launcher.DevLauncherActivity"
+      android:screenOrientation="portrait"
+      android:theme="@style/Theme.DevelopmentClient" />
+  </application>
+</manifest>

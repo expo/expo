@@ -89,7 +89,7 @@
     "expo": "~40.0.0-beta.4",
     "expo-dev-menu": "0.0.4",
     "expo-dev-menu-interface": "0.0.3",
-    "expo-development-client": "0.0.11",
+    "expo-dev-launcher": "0.0.11",
     "expo-image": "~1.0.0-alpha.0",
     "expo-notifications": "~0.8.2",
     "expo-yarn-workspaces": "^1.2.1",
