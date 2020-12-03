@@ -19,15 +19,15 @@ NS_ASSUME_NONNULL_BEGIN
 /*
  * Bitmask for all types of possible updates performing during mounting.
  */
-typedef NS_OPTIONS(NSInteger, ABI40_0_0RNComponentViewUpdateMask) {
-  ABI40_0_0RNComponentViewUpdateMaskNone = 0,
-  ABI40_0_0RNComponentViewUpdateMaskProps = 1 << 0,
-  ABI40_0_0RNComponentViewUpdateMaskEventEmitter = 1 << 1,
-  ABI40_0_0RNComponentViewUpdateMaskState = 1 << 3,
-  ABI40_0_0RNComponentViewUpdateMaskLayoutMetrics = 1 << 4,
+typedef NS_OPTIONS(NSInteger, RNComponentViewUpdateMask) {
+  RNComponentViewUpdateMaskNone = 0,
+  RNComponentViewUpdateMaskProps = 1 << 0,
+  RNComponentViewUpdateMaskEventEmitter = 1 << 1,
+  RNComponentViewUpdateMaskState = 1 << 3,
+  RNComponentViewUpdateMaskLayoutMetrics = 1 << 4,
 
-  ABI40_0_0RNComponentViewUpdateMaskAll = ABI40_0_0RNComponentViewUpdateMaskProps | ABI40_0_0RNComponentViewUpdateMaskEventEmitter |
-      ABI40_0_0RNComponentViewUpdateMaskState | ABI40_0_0RNComponentViewUpdateMaskLayoutMetrics
+  RNComponentViewUpdateMaskAll = RNComponentViewUpdateMaskProps | RNComponentViewUpdateMaskEventEmitter |
+      RNComponentViewUpdateMaskState | RNComponentViewUpdateMaskLayoutMetrics
 };
 
 /*
@@ -103,7 +103,7 @@ typedef NS_OPTIONS(NSInteger, ABI40_0_0RNComponentViewUpdateMask) {
  * Useful for performing updates that require knowledge of several independent aspects of the compound mounting change
  * (e.g. props *and* layout constraints).
  */
-- (void)finalizeUpdates:(ABI40_0_0RNComponentViewUpdateMask)updateMask;
+- (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask;
 
 /*
  * Called right after the component view is moved to a recycle pool.

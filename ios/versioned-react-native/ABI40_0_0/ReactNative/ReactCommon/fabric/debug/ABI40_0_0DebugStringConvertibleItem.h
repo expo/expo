@@ -14,7 +14,7 @@
 namespace ABI40_0_0facebook {
 namespace ABI40_0_0React {
 
-#if RN_DEBUG_STRING_CONVERTIBLE
+#if ABI40_0_0RN_DEBUG_STRING_CONVERTIBLE
 
 // Trivial implementation of `DebugStringConvertible` abstract class
 // with a stored output; useful for assembling `DebugStringConvertible` values

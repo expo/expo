@@ -18,7 +18,7 @@
 namespace ABI40_0_0facebook {
 namespace ABI40_0_0React {
 
-#if ABI40_0_0RN_DEBUG_STRING_CONVERTIBLE
+#if RN_DEBUG_STRING_CONVERTIBLE
 
 template <typename T>
 inline SharedDebugStringConvertible

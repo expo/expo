@@ -30,7 +30,7 @@ class RawTextProps : public Props {
 
 #pragma mark - DebugStringConvertible
 
-#if RN_DEBUG_STRING_CONVERTIBLE
+#if ABI40_0_0RN_DEBUG_STRING_CONVERTIBLE
   SharedDebugStringConvertibleList getDebugProps() const override;
 #endif
 };

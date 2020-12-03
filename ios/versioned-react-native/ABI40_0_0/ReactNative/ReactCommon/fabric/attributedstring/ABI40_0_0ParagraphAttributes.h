@@ -61,7 +61,7 @@ class ParagraphAttributes : public DebugStringConvertible {
 
 #pragma mark - DebugStringConvertible
 
-#if ABI40_0_0RN_DEBUG_STRING_CONVERTIBLE
+#if RN_DEBUG_STRING_CONVERTIBLE
   SharedDebugStringConvertibleList getDebugProps() const override;
 #endif
 };
