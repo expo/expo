@@ -1,7 +1,7 @@
 import { Platform } from '@unimodules/core';
+import Constants, { ExecutionEnvironment } from 'expo-constants';
 import * as Notifications from 'expo-notifications';
 import React from 'react';
-import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { Alert } from 'react-native';
 
 import ExpoAPIIcon from '../components/ExpoAPIIcon';
