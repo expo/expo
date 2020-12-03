@@ -10,7 +10,7 @@
     "postinstall": "expo-yarn-workspaces postinstall"
   },
   "dependencies": {
-    "expo": "~40.0.0-beta.4",
+    "expo": "~40.0.0-beta.5",
     "react": "16.13.1",
     "react-native": "0.63.2"
   },
