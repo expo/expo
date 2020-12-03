@@ -166,7 +166,9 @@ ABI40_0_0RCT_EXPORT_METHOD(close : (double)code reason : (NSString *)reason sock
   NSNumber *socketID = [webSocket ABI40_0_0ReactTag];
   _contentHandlers[socketID] = nil;
   _sockets[socketID] = nil;
-  [self sendEventWithName:@"websocketFailed" body:@{@"message" : error.localizedDescription, @"id" : socketID}];
+  NSDictionary *body =
+    @{@"message" : error.localizedDescription ?: @"Undefined, error is nil", @"id" : socketID ?: @(-1)};
+  [self sendEventWithName:@"websocketFailed" body:body];
 }
 
 - (void)webSocket:(ABI40_0_0RCTSRWebSocket *)webSocket
