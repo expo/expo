@@ -65,6 +65,22 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
       // if Home is present and running, open a new app with this url.
       // if home isn't running yet, we'll handle the LaunchOptions url after home finishes launching.
 
+      if (@available(iOS 14, *)) {
+        // Try to detect if we're trying to open a local network URL so we can preemptively show the
+        // Local Network permission prompt -- otherwise the network request will fail before the user
+        // has time to accept or reject the permission.
+        NSString *host = urlToRoute.host;
+        if ([host hasPrefix:@"192.168."] || [host hasPrefix:@"172."] || [host hasPrefix:@"10."]) {
+          // We want to trigger the local network permission dialog. However, the iOS API doesn't expose a way to do it.
+          // But we can use system functionality that needs this permission to trigger prompt.
+          // See https://stackoverflow.com/questions/63940427/ios-14-how-to-trigger-local-network-dialog-and-check-user-answer
+          static dispatch_once_t once;
+          dispatch_once(&once, ^{
+            [[NSProcessInfo processInfo] hostName];
+          });
+        }
+      }
+
       // Since this method might have been called on any thread,
       // let's make sure we create a new app on the main queue.
       RCTExecuteOnMainQueue(^{
