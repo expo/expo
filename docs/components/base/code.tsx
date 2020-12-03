@@ -33,6 +33,14 @@ const STYLES_CODE_BLOCK = css`
     animation: none;
     opacity: 0.8;
   }
+
+  .code-hidden {
+    display: none;
+  }
+
+  .code-placeholder {
+    opacity: 0.5;
+  }
 `;
 
 const STYLES_INLINE_CODE = css`
@@ -105,7 +113,12 @@ export class Code extends React.Component<Props> {
       .replace(/<span class="token comment">\/\* @info (.*?)\*\/<\/span>\s*/g, (match, content) => {
         return `<span class="code-annotation" title="${this.escapeHtml(content)}">`;
       })
-      .replace(/<span class="token comment">\/\* @end \*\/<\/span>(\n *)?/g, '</span>');
+      .replace(/<span class="token comment">\/\* @hide (.*?)\*\/<\/span>\s*/g, (match, content) => {
+        return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${this.escapeHtml(
+          content
+        )}</span><span class="code-hidden">%%placeholder-end%%</span><span class="code-hidden">`;
+      })
+      .replace(/<span class="token comment">\/\* @end \*\/<\/span>(\n *)?/g, '</span></span>');
   }
 
   render() {
