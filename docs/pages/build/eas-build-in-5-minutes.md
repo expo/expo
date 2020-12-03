@@ -6,7 +6,8 @@ Let's get started by building Android and iOS app binaries for a fresh bare proj
 
 ## Prerequisites
 
-- Install Expo CLI by running `npm install -g expo-cli` (or `yarn global add expo-cli`). _If you already have it, make sure you're using the latest version._ EAS Build is in alpha and it's changing rapidly, so the only way to ensure that you will have the best experience is to use the latest expo-cli version. **This tutorial assumes you're using `expo-cli@3.25.0` or newer.**
+- Install Expo CLI by running `npm install -g expo-cli` (or `yarn global add expo-cli`). This is needed for initialing a new project.
+- Install EAS CLI by running `npm install -g eas-cli` (or `yarn global add eas-cli`). _If you already have it, make sure you're using the latest version._ EAS Build is in alpha and it's changing rapidly, so the only way to ensure that you will have the best experience is to use the latest eas-cli version.
 - Sign in with `expo login`, or sign up with `expo register` if you don't have an Expo account yet. You can check if you're logged in by running `expo whoami`.
 
 ## Initialize a New Project
@@ -19,97 +20,146 @@ Initializing the project can take a few minutes. Once it's all set, you should s
 
 <center><img src="/static/images/eas-builds/5-minute-tutorial/02-init-complete.png" /></center>
 
-## Set a bundle identifier for iOS
+## Set application identifiers
 
-Before configuring the project for EAS Build, you'll need to set the bundle identifier (`expo.ios.bundleIdentifer`) that will be used to identify your application on the Apple App Store.
+Before configuring the project for EAS Build, you'll need to set identifiers that will be used to identify your application on the Apple App Store and Google Play.
 
-An excerpt from Apple's docs:
+### Set an application ID for Android:
+
+An excerpt from [Android docs](https://developer.android.com/studio/build/application-id):
+
+> The application ID looks like a traditional Java package name, the naming rules for the application ID are a bit more restrictive:
+>
+> - It must have at least two segments (one or more dots).
+> - Each segment must start with a letter.
+> - All characters must be alphanumeric or an underscore [a-zA-Z0-9_].
+
+To set the application ID, open `app.json`, and add a `package` property under the `expo.android` key.
+
+### Set a bundle identifier for iOS
+
+An excerpt from [Apple docs](https://developer.apple.com/library/archive/documentation/CoreFoundation/Conceptual/CFBundles/BundleTypes/BundleTypes.html#//apple_ref/doc/uid/10000123i-CH101-SW1):
 
 > The bundle identifier string identifies your application to the system. This string must be a uniform type identifier (UTI) that contains only alphanumeric (A-Z,a-z,0-9), hyphen (-), and period (.) characters. The string should also be in reverse-DNS format. For example, if your company’s domain is Ajax.com and you create an application named Hello, you could assign the string com.Ajax.Hello as your application’s bundle identifier.
 
-To set the bundle identifier, open `app.json`, and add a `bundleIdentifier` property under the `expo.ios` key, then commit the change:
+To set the bundle identifier, open `app.json`, and add a `bundleIdentifier` property under the `expo.ios` key.
+
+### Make a commit
+
+Commit those changes:
 
 - `git add app.json`
-- `git commit -m "Set bundle identifier"`
+- `git commit -m "Set android.package and ios.bundleIdentifier"`
 
-<center><img src="/static/images/eas-builds/5-minute-tutorial/03-set-bundle-id.png" /></center>
+<center><img src="/static/images/eas-builds/5-minute-tutorial/03-set-application-ids.png" /></center>
 
 ## Configure your project for EAS Build
 
 To automatically configure your native project for building with EAS Build on Android and iOS, you will need to run the following command:
 
-```sh
-expo eas:build:init
+```
+$ eas build:configure
 ```
 
-It will automatically perform the following steps:
+EAS CLI will automatically perform the following steps:
 
-### Create `eas.json`
+#### 1. Ask you about the platform(s) to configure
 
-The command will create an `eas.json` file in the root directory, and then you'll be asked to commit it. This file contains your EAS Build configuration.
+It's recommended to configure both Android and iOS.
 
-<center><img src="/static/images/eas-builds/5-minute-tutorial/04-eas-json.png" /></center>
+<center><img src="/static/images/eas-builds/5-minute-tutorial/04-configure-platform.png" /></center>
 
-This is a minimal example configuration for Android and iOS builds. It defines a single build profile named `release` (you can have multiple build profiles like `release`, `debug`, `testing`, etc.) for each platform. Each profile declares that the project is a generic React Native project (unlike a managed Expo project which doesn't contain native code in the project tree).
+#### 2. Create eas.json
 
-If you want to learn more about `eas.json` see the [Configuration with eas.json](eas-json.md) page.
+The command will create an `eas.json` file in the root directory with the following contents:
 
-Once you've created `eas.json`, new Expo CLI commands should become available for you:
+```json
+{
+  "builds": {
+    "android": {
+      "release": {
+        "workflow": "generic"
+      }
+    },
+    "ios": {
+      "release": {
+        "workflow": "generic"
+      }
+    }
+  }
+}
+```
 
-- `expo eas:build` - manages the whole build process, which consists of: credentials management, project auto-configuration, running the build, and waiting for it to finish
-- `expo eas:build:status` - displays the status of your latest build for this project
-- `expo eas:credentials:sync` - synchronizes your local credentials.json file and your credentials that Expo has stored on our servers
+This is your EAS Build configuration. It defines a single build profile named `release` (you can have multiple build profiles like `release`, `debug`, `testing`, etc.) for each platform. In the generated configuration, each profile declares that the project is a generic React Native project (unlike a managed Expo project which doesn't contain native code in the project tree). If you want to learn more about `eas.json` see the [Configuration with eas.json](eas-json.md) page.
 
-### Configuring Android
+#### 3. Configure the Android project
 
-You will be guided through generating or providing your own keystore. For the sake of simplicity in this tutorial, select `Generate new keystore` and hit `ENTER`.
+EAS CLI performs two steps:
 
-**Warning: If you've previously set up credentials for an app with the same slug, Expo CLI will try to reuse them.**
+- It resolves the application ID and updates `build.gradle` with it.
 
-<center><img src="/static/images/eas-builds/5-minute-tutorial/05-generate-keystore.png" /></center>
+  > Because we previously set the Android application ID in app.json, you'll be asked to choose between that and the application ID defined in the native project (this is the default that comes from `expo init`).
+  >
+  > It's important that you choose the application ID defined in app.json because this is how your application will be identified on the Google Play Store.
 
-Next, Expo CLI will auto-configure you Gradle project so we could build it on our servers. You'll be offered to commit the changes to your repository.
+- It auto-configures your Gradle project so we could build it on our servers.
 
-<center><img src="/static/images/eas-builds/5-minute-tutorial/06-configure-gradle.png" /></center>
+  > This step also patches `build.gradle` by including there our custom signing configuration. The configuration itself is saved to a separate file: `eas-build.gradle`.
 
-In addition, if `expo-updates` is installed, Expo CLI will also configure the relevant values such as the `sdkVersion`, `updateUrl` etc. You'll be offered to commit the changes to your repository.
+<center><img src="/static/images/eas-builds/5-minute-tutorial/05-configure-android.png" /></center>
 
-<center><img src="/static/images/eas-builds/5-minute-tutorial/07-configure-updates-android.png" /></center>
+#### 4. Configure the iOS project
 
-### Configuring iOS
+Similar configuration step is performed for the iOS project. EAS Build resolved the bundle identifier and updates the `project.pbxproj` file.
 
-First, you'll be asked which bundle identifier to use. Choose the one defined in `app.json`:
+Make sure to choose the bundle identifier defined in app.json because it'll be used to identify you app on the Apple App Store.
 
-<center><img src="/static/images/eas-builds/5-minute-tutorial/08-choose-bundle-id.png" /></center>
+<center><img src="/static/images/eas-builds/5-minute-tutorial/06-configure-xcode.png" /></center>
 
-Next, you'll be guided through generating the app's credentials and configuring your iOS project, then you'll be asked to commit the changes.
+#### 5. Ask you to commit the configuration changes
 
-**Warning: If you've previously set up credentials for an app with the same slug, Expo CLI will try to reuse them.**
+Next, choose to commit the changes we made. You can customize the message if you want.
 
-<center><img src="/static/images/eas-builds/5-minute-tutorial/09-configure-ios.png" /></center>
+<center><img src="/static/images/eas-builds/5-minute-tutorial/07-configure-commit.png" /></center>
 
-In addition, if `expo-updates` is installed, Expo CLI will also configure the relevant values such as the `sdkVersion`, `updateUrl` etc. You'll be offered to commit the changes to your repository.
+#### 6. Inform you about next steps
 
-<center><img src="/static/images/eas-builds/5-minute-tutorial/10-configure-updates-ios.png" /></center>
+Once it's all set, you should see `🎉 Your iOS and Android projects are ready to build.` in logs.
+
+<center><img src="/static/images/eas-builds/5-minute-tutorial/08-configure-complete.png" /></center>
 
 ## Building for Android
 
-Run `expo eas:build --platform android` and Expo CLI will print a URL to the page where you can monitor the build (and view logs). Open the URL in a browser and you should see a page like this:
+To start an Android build of your app, run `eas build --platform android`.
 
-<center><img src="/static/images/eas-builds/5-minute-tutorial/11-android-build-progress-website.png" /></center>
-<center><img src="/static/images/eas-builds/5-minute-tutorial/12-android-build-logs.png" /></center>
+You will be guided through generating or providing your own keystore. For the sake of simplicity in this tutorial, select `Generate new keystore` and hit enter.
 
-Once the build completes you can download the app binary by either visiting the build status page (and clicking the download button), or by opening the URL printed by Expo CLI:
+**Warning: If you've previously set up credentials for an app with the same slug, Expo CLI will try to reuse them.**
 
-<center><img src="/static/images/eas-builds/5-minute-tutorial/13-android-build-completed-website.png" /></center>
-<center><img src="/static/images/eas-builds/5-minute-tutorial/14-android-build-completed-cli.png" /></center>
+<center><img src="/static/images/eas-builds/5-minute-tutorial/09-build-android-keystore.png" /></center>
+
+The build should start short after the keystore is generated (and securely stored on Expo servers). EAS CLI will print a URL where you can monitor the progress of your build.
+
+<center><img src="/static/images/eas-builds/5-minute-tutorial/10-build-android-queued.png" /></center>
+
+The build logs page looks like this:
+
+<center><img src="/static/images/eas-builds/5-minute-tutorial/11-build-android-logs.png" /></center>
+
+Once the build completes you can download the app binary by either visiting the build details page (and clicking the download button), or by opening the URL printed by EAS CLI:
+
+<center><img src="/static/images/eas-builds/5-minute-tutorial/12-build-android-finished-web.png" /></center>
+<center><img src="/static/images/eas-builds/5-minute-tutorial/13-build-android-finished-terminal.png" /></center>
 
 ## Building for iOS
 
-Run `expo eas:build --platform ios` and you'll be asked to login to the Apple Developer Portal and choose your team for the iOS project. Then you'll be provided with the URL to the build logs page.
+To start an iOS build of your app, run `eas build --platform ios`.
 
-<center><img src="/static/images/eas-builds/5-minute-tutorial/15-ios-build-completed-cli.png" /></center>
+Next, you'll be guided through generating the app's credentials. You'll be asked to login to the Apple Developer Portal and choose your team for the iOS project.
 
-Once the build completes you can download the app binary the same way you did with the Android counterpart - either via the build status page or opening the URL that's printed to your console.
+**Warning: If you've previously set up credentials for an app with the same slug, Expo CLI will try to reuse them.**
 
-<center><img src="/static/images/eas-builds/5-minute-tutorial/16-ios-build-completed-website.png" /></center>
+The build should start short after than. Once it completes you can download the app binary the same way you did with the Android counterpart - either via the build status page or opening the URL that's printed to your console.
+
+<center><img src="/static/images/eas-builds/5-minute-tutorial/14-build-ios-finished-terminal.png" /></center>
+<center><img src="/static/images/eas-builds/5-minute-tutorial/15-build-ios-finished-web.png" /></center>
