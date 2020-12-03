@@ -17,9 +17,9 @@ A React component that blurs everything underneath the view. On iOS, it renders 
 
 ## Usage
 
-<SnackInline label='Basic BlurView usage' templateId="blur-view" dependencies={['expo-blur']}>
+<SnackInline label='Basic BlurView usage' dependencies={['expo-blur']}>
 
-```js
+```jsx
 import React from 'react';
 import { Image, Text, StyleSheet, View } from 'react-native';
 import { BlurView } from 'expo-blur';
@@ -40,6 +40,24 @@ export default function App() {
     </View>
   );
 }
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  blurredImage: {
+    width: 192,
+    height: 192,
+  },
+  nonBlurredContent: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+/* @end */
 ```
 
 </SnackInline>

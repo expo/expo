@@ -17,32 +17,42 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Usage
 
-<SnackInline label="Basic WebBrowser usage" templateId="web-browser" dependencies={["expo-web-browser", "expo-constants"]}>
+<SnackInline label="Basic WebBrowser usage" dependencies={["expo-web-browser", "expo-constants"]}>
 
-```js
-import React, { Component } from 'react';
-import { Button, Text, View } from 'react-native';
+```jsx
+import React, { useState } from 'react';
+import { Button, Text, View, StyleSheet } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
+/* @hide */
+import Constants from 'expo-constants';
+/* @end */
 
-export default class App extends Component {
-  state = {
-    result: null,
-  };
+export default function App() {
+  const [result, setResult] = useState(null);
 
-  render() {
-    return (
-      <View>
-        <Button title="Open WebBrowser" onPress={this._handlePressButtonAsync} />
-        <Text>{this.state.result && JSON.stringify(this.state.result)}</Text>
-      </View>
-    );
-  }
-
-  _handlePressButtonAsync = async () => {
+  const _handlePressButtonAsync = async () => {
     let result = await WebBrowser.openBrowserAsync('https://expo.io');
-    this.setState({ result });
+    setResult(result);
   };
+  return (
+    <View style={styles.container}>
+      <Button title="Open WebBrowser" onPress={_handlePressButtonAsync} />
+      <Text>{result && JSON.stringify(result)}</Text>
+    </View>
+  );
 }
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: Constants.statusBarHeight,
+    backgroundColor: '#ecf0f1',
+  },
+});
+/* @end */
 ```
 
 </SnackInline>

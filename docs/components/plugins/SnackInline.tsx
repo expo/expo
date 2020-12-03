@@ -66,7 +66,8 @@ export default class SnackInline extends React.Component<Props> {
   };
 
   private getCode = () => {
-    return this.contentRef.current ? this.contentRef.current.textContent : '';
+    const code = this.contentRef.current ? this.contentRef.current.textContent || '' : '';
+    return code.replace(/%%placeholder-start%%.*%%placeholder-end%%/g, '');
   };
 
   render() {
