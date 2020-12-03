@@ -128,7 +128,7 @@ bool AttributedString::operator!=(const AttributedString &rhs) const {
 
 #pragma mark - DebugStringConvertible
 
-#if RN_DEBUG_STRING_CONVERTIBLE
+#if ABI40_0_0RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList AttributedString::getDebugChildren() const {
   auto list = SharedDebugStringConvertibleList{};
 

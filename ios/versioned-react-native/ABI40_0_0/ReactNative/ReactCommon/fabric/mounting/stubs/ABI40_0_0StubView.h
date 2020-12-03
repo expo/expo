@@ -40,7 +40,7 @@ class StubView final {
 bool operator==(StubView const &lhs, StubView const &rhs);
 bool operator!=(StubView const &lhs, StubView const &rhs);
 
-#if ABI40_0_0RN_DEBUG_STRING_CONVERTIBLE
+#if RN_DEBUG_STRING_CONVERTIBLE
 
 std::string getDebugName(StubView const &stubView);
 

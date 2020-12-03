@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateLayoutMetrics:(ABI40_0_0facebook::ABI40_0_0React::LayoutMetrics const &)layoutMetrics
            oldLayoutMetrics:(ABI40_0_0facebook::ABI40_0_0React::LayoutMetrics const &)oldLayoutMetrics;
 
-- (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask;
+- (void)finalizeUpdates:(ABI40_0_0RNComponentViewUpdateMask)updateMask;
 
 - (void)prepareForRecycle;
 
