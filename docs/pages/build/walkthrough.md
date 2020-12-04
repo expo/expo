@@ -1,5 +1,5 @@
 ---
-title: EAS Build from scratch in 5 minutes
+title: EAS Build Walkthrough
 ---
 
 Let's get started by building Android and iOS app binaries for a fresh bare project initialized with Expo CLI.
@@ -14,11 +14,11 @@ Let's get started by building Android and iOS app binaries for a fresh bare proj
 
 Run `expo init PROJECT_NAME` (let's assume `PROJECT_NAME` is `abcd`) and choose a bare workflow template (either `minimal` or `minimal (TypeScript)`).
 
-<center><img src="/static/images/eas-builds/5-minute-tutorial/01-init.png" /></center>
+<center><img src="/static/images/eas-build/walkthrough/01-init.png" /></center>
 
 Initializing the project can take a few minutes. Once it's all set, you should see `✅ Your project is ready!` in logs.
 
-<center><img src="/static/images/eas-builds/5-minute-tutorial/02-init-complete.png" /></center>
+<center><img src="/static/images/eas-build/walkthrough/02-init-complete.png" /></center>
 
 ## Set application identifiers
 
@@ -51,7 +51,7 @@ Commit those changes:
 - `git add app.json`
 - `git commit -m "Set android.package and ios.bundleIdentifier"`
 
-<center><img src="/static/images/eas-builds/5-minute-tutorial/03-set-application-ids.png" /></center>
+<center><img src="/static/images/eas-build/walkthrough/03-set-application-ids.png" /></center>
 
 ## Configure your project for EAS Build
 
@@ -67,7 +67,7 @@ EAS CLI will automatically perform the following steps:
 
 It's recommended to configure both Android and iOS.
 
-<center><img src="/static/images/eas-builds/5-minute-tutorial/04-configure-platform.png" /></center>
+<center><img src="/static/images/eas-build/walkthrough/04-configure-platform.png" /></center>
 
 #### 2. Create eas.json
 
@@ -106,7 +106,7 @@ EAS CLI performs two steps:
 
   > This step also patches `build.gradle` by including there our custom signing configuration. The configuration itself is saved to a separate file: `eas-build.gradle`.
 
-<center><img src="/static/images/eas-builds/5-minute-tutorial/05-configure-android.png" /></center>
+<center><img src="/static/images/eas-build/walkthrough/05-configure-android.png" /></center>
 
 #### 4. Configure the iOS project
 
@@ -114,19 +114,19 @@ Similar configuration step is performed for the iOS project. EAS Build resolved 
 
 Make sure to choose the bundle identifier defined in app.json because it'll be used to identify you app on the Apple App Store.
 
-<center><img src="/static/images/eas-builds/5-minute-tutorial/06-configure-xcode.png" /></center>
+<center><img src="/static/images/eas-build/walkthrough/06-configure-xcode.png" /></center>
 
 #### 5. Ask you to commit the configuration changes
 
 Next, choose to commit the changes we made. You can customize the message if you want.
 
-<center><img src="/static/images/eas-builds/5-minute-tutorial/07-configure-commit.png" /></center>
+<center><img src="/static/images/eas-build/walkthrough/07-configure-commit.png" /></center>
 
 #### 6. Inform you about next steps
 
 Once it's all set, you should see `🎉 Your iOS and Android projects are ready to build.` in logs.
 
-<center><img src="/static/images/eas-builds/5-minute-tutorial/08-configure-complete.png" /></center>
+<center><img src="/static/images/eas-build/walkthrough/08-configure-complete.png" /></center>
 
 ## Building for Android
 
@@ -136,20 +136,20 @@ You will be guided through generating or providing your own keystore. For the sa
 
 **Warning: If you've previously set up credentials for an app with the same slug, Expo CLI will try to reuse them.**
 
-<center><img src="/static/images/eas-builds/5-minute-tutorial/09-build-android-keystore.png" /></center>
+<center><img src="/static/images/eas-build/walkthrough/09-build-android-keystore.png" /></center>
 
-The build should start short after the keystore is generated (and securely stored on Expo servers). EAS CLI will print a URL where you can monitor the progress of your build.
+The build should start shortly after the keystore is generated (and securely stored on Expo servers). EAS CLI will print a URL where you can monitor the progress of your build.
 
-<center><img src="/static/images/eas-builds/5-minute-tutorial/10-build-android-queued.png" /></center>
+<center><img src="/static/images/eas-build/walkthrough/10-build-android-queued.png" /></center>
 
 The build logs page looks like this:
 
-<center><img src="/static/images/eas-builds/5-minute-tutorial/11-build-android-logs.png" /></center>
+<center><img src="/static/images/eas-build/walkthrough/11-build-android-logs.png" /></center>
 
-Once the build completes you can download the app binary by either visiting the build details page (and clicking the download button), or by opening the URL printed by EAS CLI:
+Once the build completes, you can download the app binary by either visiting the build details page (and clicking the download button), or by opening the URL printed by EAS CLI:
 
-<center><img src="/static/images/eas-builds/5-minute-tutorial/12-build-android-finished-web.png" /></center>
-<center><img src="/static/images/eas-builds/5-minute-tutorial/13-build-android-finished-terminal.png" /></center>
+<center><img src="/static/images/eas-build/walkthrough/12-build-android-finished-web.png" /></center>
+<center><img src="/static/images/eas-build/walkthrough/13-build-android-finished-terminal.png" /></center>
 
 ## Building for iOS
 
@@ -159,7 +159,7 @@ Next, you'll be guided through generating the app's credentials. You'll be asked
 
 **Warning: If you've previously set up credentials for an app with the same slug, Expo CLI will try to reuse them.**
 
-The build should start short after than. Once it completes you can download the app binary the same way you did with the Android counterpart - either via the build status page or opening the URL that's printed to your console.
+The build should start shortly after that. Once it completes, you can download the app binary the same way you did with the Android counterpart - either via the build status page or opening the URL that's printed to your console.
 
-<center><img src="/static/images/eas-builds/5-minute-tutorial/14-build-ios-finished-terminal.png" /></center>
-<center><img src="/static/images/eas-builds/5-minute-tutorial/15-build-ios-finished-web.png" /></center>
+<center><img src="/static/images/eas-build/walkthrough/14-build-ios-finished-terminal.png" /></center>
+<center><img src="/static/images/eas-build/walkthrough/15-build-ios-finished-web.png" /></center>
