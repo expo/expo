@@ -192,7 +192,7 @@ CACHE_KEYS:
       EXBlur:
         :debug: 6ff742c05d7d0f0190daad6ccee01558
         :release: 6ff742c05d7d0f0190daad6ccee01558
-    CHECKSUM: 86f6fe6ec56588206827dccda3c16a4e2cf814fa
+    CHECKSUM: 569d38c2b0b7b000866d928bc36acadfdc02ea8e
     FILES:
       - "../../../../packages/expo-blur/ios/EXBlur/EXBlurView.h"
       - "../../../../packages/expo-blur/ios/EXBlur/EXBlurView.m"
@@ -200,7 +200,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-blur/ios/EXBlur/EXBlurViewManager.m"
     PROJECT_NAME: EXBlur
     SPECS:
-      - EXBlur (8.2.1)
+      - EXBlur (8.2.2)
   EXBrightness:
     BUILD_SETTINGS_CHECKSUM:
       EXBrightness:

@@ -35,7 +35,7 @@
     "expo-analytics-amplitude": "~9.0.0",
     "expo-asset": "~8.2.1",
     "expo-barcode-scanner": "~9.1.0",
-    "expo-blur": "~8.2.1",
+    "expo-blur": "~8.2.2",
     "expo-camera": "~9.1.0",
     "expo-constants": "~9.3.3",
     "expo-device": "~2.4.0",
