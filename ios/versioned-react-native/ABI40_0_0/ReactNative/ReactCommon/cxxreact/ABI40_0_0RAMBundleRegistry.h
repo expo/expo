@@ -15,14 +15,14 @@
 
 #include <ABI40_0_0cxxreact/ABI40_0_0JSModulesUnbundle.h>
 
-#ifndef ABI40_0_0RN_EXPORT
-#define ABI40_0_0RN_EXPORT __attribute__((visibility("default")))
+#ifndef RN_EXPORT
+#define RN_EXPORT __attribute__((visibility("default")))
 #endif
 
 namespace ABI40_0_0facebook {
 namespace ABI40_0_0React {
 
-class ABI40_0_0RN_EXPORT RAMBundleRegistry {
+class RN_EXPORT RAMBundleRegistry {
  public:
   constexpr static uint32_t MAIN_BUNDLE_ID = 0;
 

@@ -174,7 +174,7 @@ class AndroidTextInputProps final : public ViewProps, public BaseTextProps {
   const bool hasPaddingStart{};
   const bool hasPaddingEnd{};
 
-#if RN_DEBUG_STRING_CONVERTIBLE
+#if ABI40_0_0RN_DEBUG_STRING_CONVERTIBLE
   SharedDebugStringConvertibleList getDebugProps() const;
 #endif
 };
