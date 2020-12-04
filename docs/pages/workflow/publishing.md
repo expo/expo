@@ -1,5 +1,5 @@
 ---
-title: Publishing
+title: Publishing updates
 ---
 
 While you’re developing your project, you’re writing code on your
@@ -24,7 +24,7 @@ opened with the Expo client app. It also uploads all of your app images,
 fonts, and videos to a CDN ([read more
 here](how-expo-works.md#publishingdeploying-an-expo-app-in-production)).
 
-## How to Publish
+## How to publish
 
 To publish a project, click the Publish button in Expo Dev Tools. (It’s in the left side bar.) If you're using command line, run
 `expo publish`. No setup is required, go ahead and create a new project
@@ -111,7 +111,7 @@ These options work similarly to the way they do on YouTube. Unlisted
 project URLs will be secret unless you tell people about them or share
 them. Public projects might be surfaced to other developers.
 
-## How do I remove a Managed Expo project that I published?
+## How do I remove a managed Expo project that I published?
 
 The default [privacy setting](../workflow/configuration.md) for managed apps is `unlisted` so nobody can find your app unless you share the link with them.
 
