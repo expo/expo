@@ -2167,7 +2167,7 @@ PODS:
     - ZXingObjC/PDF417
   - EXBattery (3.1.0):
     - UMCore
-  - EXBlur (8.2.1):
+  - EXBlur (8.2.2):
     - UMCore
   - EXBranch (3.0.0):
     - Branch (= 0.35.0)
@@ -4694,36 +4694,36 @@ SPEC CHECKSUMS:
   Branch: 9a37f707974a128c37829033c49018b79c7e7a2d
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: cde416483dac037923206447da6e1454df403714
-  EXAdsAdMob: 312dc4af8d5568f21240e0baee6ebe1e605a87c5
-  EXAdsFacebook: a20f0ab3da0957442de9c31a1c31c9dee335fca0
-  EXAmplitude: d0adb393cd13c743d9609fdb44379df03f7a1ff2
-  EXAppAuth: 9709f199b78e50b6ac0b2c8683519670c1918378
-  EXAppleAuthentication: 97d5db59f3fb7aefc6cb06e351ba0828c8982232
-  EXApplication: e3c201e7b913d081bbd37bd3c5d0e2cdc21733b4
-  EXAV: e32adf44c10a82f723172d5b01d5693890888dd6
-  EXBackgroundFetch: 57170d013a58413d81b0a54b97b30e1fcc1dccbd
-  EXBarCodeScanner: aa1eda7595b8258471ff733acdb18f62cfd85813
-  EXBattery: 489a67a68d1a43b116cb5d4954ca6d85e489dda2
-  EXBlur: 75f4e5a29cde63f605452de63a326dadae5150d3
-  EXBranch: 88b505590e06a1004ab10acf74c7d94913ca7a3e
-  EXBrightness: 42f80704aa91706f4230c218789e32b798ab2fae
-  EXCalendar: 4b0612281905d869518383d860cde2d206de4743
-  EXCamera: 8355b16db8abc80617f25811fbca6b37dd001fac
-  EXCellular: 1653bd3affaaaf6fee19ce9da76067b658e00109
-  EXConstants: 85e485e8c40500d9de88724bb594641fda43d938
-  EXContacts: dbc32dd1e2798cce1beeced230da989931b47890
-  EXCrypto: 81948191c3d2caf18fb32f18ee88d87d42532d62
-  EXDevice: 01f54314f618aa4098893f66cd8f2a8a411f33ee
-  EXDocumentPicker: 66695681f7bfae2813abe8840f9e0b8742829ee6
-  EXErrorRecovery: b46af4b91e2b4ec598ab1fa51d2cf088aaf5511f
-  EXFacebook: 72bd4ed1d19914318b7e19d4060e14dfe7ca6ba9
-  EXFaceDetector: 6d9b57a4d3e76e6808d448f96c4d9657c216a581
-  EXFileSystem: 0e4974ab77bff04cda68d2886d070cbe64b93a6b
-  EXFirebaseAnalytics: d72f553dc0c0a8ee451714499fac21883c3f7369
-  EXFirebaseCore: f986c71bdd1cb5941c9cfa686b2395fe588a53d0
-  EXFont: 30c64ed8735a180e3f20046e4fdac4ea074d71d3
-  EXGL: aee7cdf7dab9e94d46a3701ac557163f4e82e049
-  EXGL_CPP: 0e622b8251cb739f8fcdfa9abb9944bea0452119
+  EXAdsAdMob: ee030c91686be871b385d083878654e38a1ecd93
+  EXAdsFacebook: 899007436895803c365855406d6fcaa7ea92e80e
+  EXAmplitude: 9ed04d7618ee27b56c25ccdbf81436b9d79a6b6d
+  EXAppAuth: c1fd33abf7c7ce45ba096a67eea78bda2666b400
+  EXAppleAuthentication: ac0ef3d6d2449093524ab576a35e6d4c9eaae97a
+  EXApplication: 39485a1bd2175a68b22cb2a209a7a4b1f4d362cd
+  EXAV: 9a683f5aec5824c7fa375a3b77b71230d301dda9
+  EXBackgroundFetch: 56675cb2aede53a7d1934e58cbbab052a9bbd743
+  EXBarCodeScanner: 6c04525e0f9d91a581a99c9411a8184b0353a63a
+  EXBattery: a1b74b2ce87e65d4e809f632ea2116262222d565
+  EXBlur: 569d38c2b0b7b000866d928bc36acadfdc02ea8e
+  EXBranch: fc3b6dfdf1fdc07d50fe8981ed2093dd71ed8f86
+  EXBrightness: 727cafd6a90578fe82fb968edefc7515d1d4cdcf
+  EXCalendar: fde5f855ffdb7276fd228c51bf9ff725c624ea04
+  EXCamera: 074bee96afdf07064d2ed9383d5240d3b2624bea
+  EXCellular: 38a3df120e149e4ea40e7ebde90144815adf3d53
+  EXConstants: 3323ec371a188dfaf75ec672ac740f2032e99cb6
+  EXContacts: 512bd4a8139e2eb4574a774f9c3cd254f687ca10
+  EXCrypto: d9692bf7aa323f428b924b68601fd2ed98c2e95d
+  EXDevice: 1e9838beb1a0e063422cbdc09aae0cfe2a44420c
+  EXDocumentPicker: 1b5c9bf123bcbf9826790cd1a6c101368d442191
+  EXErrorRecovery: 40cbc98b4db2811fe87e9ac266bbe370f0c44db0
+  EXFacebook: 2716f75a170ef461b0e7f27e082a4878e64773a7
+  EXFaceDetector: bb46cfd3132f359611bee55f95665be6f22c380f
+  EXFileSystem: e3ebe6d3f4f7f03eb73fa7262c1701951e5717f0
+  EXFirebaseAnalytics: 8ae41a5530b7294c858bebd9fef3fbad778d6521
+  EXFirebaseCore: e70a4f2ce5b69e3731933cc445653673f02cdcb0
+  EXFont: bbfcd894ca1d731a5fc3f2f8b6480079340822b1
+  EXGL: 48a092e2ac0951824610acdedbaf020194d4b579
+  EXGL_CPP: 136ac9d6d96d93241770869a3b83a8df7297ae03
   EXGL_CPP_LEGACY: 53e09fa405bf392e3d24b3c4fd62080f340a7429
   EXGoogleSignIn: 38b1f2fce5fdf916dc3441d80a68111aa84ed5be
   EXHaptics: 6d2e09387f0eb4d3c8dc97ae905cbea8afe33651

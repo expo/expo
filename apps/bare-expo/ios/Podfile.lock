@@ -34,7 +34,7 @@ PODS:
     - ZXingObjC/PDF417
   - EXBattery (3.1.0):
     - UMCore
-  - EXBlur (8.2.1):
+  - EXBlur (8.2.2):
     - UMCore
   - EXBrightness (8.4.0):
     - UMCore
@@ -1046,22 +1046,22 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 694058e7c0ed05a9e217d1b3c7ded962f4180845
   CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
   DoubleConversion: cde416483dac037923206447da6e1454df403714
-  EXAmplitude: d0adb393cd13c743d9609fdb44379df03f7a1ff2
-  EXAppAuth: 9709f199b78e50b6ac0b2c8683519670c1918378
-  EXApplication: e3c201e7b913d081bbd37bd3c5d0e2cdc21733b4
-  EXAV: e32adf44c10a82f723172d5b01d5693890888dd6
-  EXBackgroundFetch: 57170d013a58413d81b0a54b97b30e1fcc1dccbd
-  EXBarCodeScanner: aa1eda7595b8258471ff733acdb18f62cfd85813
-  EXBattery: 489a67a68d1a43b116cb5d4954ca6d85e489dda2
-  EXBlur: 75f4e5a29cde63f605452de63a326dadae5150d3
-  EXBrightness: 42f80704aa91706f4230c218789e32b798ab2fae
-  EXCalendar: 4b0612281905d869518383d860cde2d206de4743
-  EXCellular: 1653bd3affaaaf6fee19ce9da76067b658e00109
-  EXConstants: 85e485e8c40500d9de88724bb594641fda43d938
-  EXContacts: dbc32dd1e2798cce1beeced230da989931b47890
-  EXCrypto: 81948191c3d2caf18fb32f18ee88d87d42532d62
-  EXDevice: 01f54314f618aa4098893f66cd8f2a8a411f33ee
-  EXDevMenu: 71665cb84c56dbb975890585cfbf179531e2af05
+  EXAmplitude: 9ed04d7618ee27b56c25ccdbf81436b9d79a6b6d
+  EXAppAuth: c1fd33abf7c7ce45ba096a67eea78bda2666b400
+  EXApplication: 39485a1bd2175a68b22cb2a209a7a4b1f4d362cd
+  EXAV: 9a683f5aec5824c7fa375a3b77b71230d301dda9
+  EXBackgroundFetch: 56675cb2aede53a7d1934e58cbbab052a9bbd743
+  EXBarCodeScanner: 6c04525e0f9d91a581a99c9411a8184b0353a63a
+  EXBattery: a1b74b2ce87e65d4e809f632ea2116262222d565
+  EXBlur: 569d38c2b0b7b000866d928bc36acadfdc02ea8e
+  EXBrightness: 727cafd6a90578fe82fb968edefc7515d1d4cdcf
+  EXCalendar: fde5f855ffdb7276fd228c51bf9ff725c624ea04
+  EXCellular: 38a3df120e149e4ea40e7ebde90144815adf3d53
+  EXConstants: 3323ec371a188dfaf75ec672ac740f2032e99cb6
+  EXContacts: 512bd4a8139e2eb4574a774f9c3cd254f687ca10
+  EXCrypto: d9692bf7aa323f428b924b68601fd2ed98c2e95d
+  EXDevice: 1e9838beb1a0e063422cbdc09aae0cfe2a44420c
+  EXDevMenu: d646c74a8db111dbe272fd0d48b988049eee2da0
   EXDevMenuInterface: d4d450da8df80ae6f27a7ad4a1cc0da4055a3f0b
   EXDocumentPicker: 66695681f7bfae2813abe8840f9e0b8742829ee6
   EXErrorRecovery: b46af4b91e2b4ec598ab1fa51d2cf088aaf5511f
