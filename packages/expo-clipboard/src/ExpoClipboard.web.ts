@@ -1,5 +1,5 @@
 export default {
-  get name(): String {
+  get name(): string {
     return 'ExpoClipboard';
   },
   async getStringAsync(): Promise<string> {
@@ -12,7 +12,7 @@ export default {
         // @ts-ignore
         text = window.clipboardData.getData('Text');
       } catch (e) {
-        Promise.reject('Unable to retrieve item from clipboard.');
+        Promise.reject(new Error('Unable to retrieve item from clipboard.'));
       }
     }
     return text;
