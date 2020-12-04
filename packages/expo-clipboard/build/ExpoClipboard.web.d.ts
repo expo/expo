@@ -1,5 +1,5 @@
 declare const _default: {
-    readonly name: String;
+    readonly name: string;
     getStringAsync(): Promise<string>;
     setString(text: string): boolean;
 };

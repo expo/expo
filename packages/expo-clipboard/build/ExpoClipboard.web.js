@@ -14,7 +14,7 @@ export default {
                 text = window.clipboardData.getData('Text');
             }
             catch (e) {
-                Promise.reject('Unable to retrieve item from clipboard.');
+                Promise.reject(new Error('Unable to retrieve item from clipboard.'));
             }
         }
         return text;
