@@ -29,8 +29,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
-
 NSString *kEXKernelErrorDomain = @"EXKernelErrorDomain";
 NSString *kEXKernelShouldForegroundTaskEvent = @"foregroundTask";
 NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUserDefaultsKey";
@@ -106,17 +104,6 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 }
 
 #pragma mark - Misc
-
-+ (NSString *)deviceInstallUUID
-{
-  NSString *uuid = [[NSUserDefaults standardUserDefaults] stringForKey:kEXDeviceInstallUUIDKey];
-  if (!uuid) {
-    uuid = [[NSUUID UUID] UUIDString];
-    [[NSUserDefaults standardUserDefaults] setObject:uuid forKey:kEXDeviceInstallUUIDKey];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-  }
-  return uuid;
-}
 
 - (void)logAnalyticsEvent:(NSString *)eventId forAppRecord:(EXKernelAppRecord *)appRecord
 {

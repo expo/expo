@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import android.util.Log
 import android.view.KeyEvent
 import com.facebook.react.ReactApplication
 import com.facebook.react.bridge.ReactApplicationContext
@@ -16,22 +17,29 @@ import expo.interfaces.devmenu.items.DevMenuItem
 import expo.interfaces.devmenu.items.DevMenuItemImportance
 import expo.interfaces.devmenu.items.KeyCommand
 import expo.interfaces.devmenu.DevMenuExtensionInterface
+import expo.modules.devmenu.modules.DevMenuManagerProvider
+import expo.modules.devmenu.DEV_MENU_TAG
 
 class DevMenuExtension(reactContext: ReactApplicationContext)
   : ReactContextBaseJavaModule(reactContext), DevMenuExtensionInterface {
   override fun getName() = "ExpoDevMenuExtensions"
 
+  private val devMenuManager by lazy {
+    reactContext
+      .getNativeModule(DevMenuManagerProvider::class.java)
+      .getDevMenuManager()
+  }
+
   private val devSupportManager: DevSupportManager?
-    get() {
-      val reactApplication = currentActivity?.application as ReactApplication?
-      return reactApplication?.reactNativeHost?.reactInstanceManager?.devSupportManager
-    }
+    get() = devMenuManager.getSession()?.reactInstanceManager?.devSupportManager
+
 
   override fun devMenuItems(): List<DevMenuItem>? {
     val reactDevManager = devSupportManager
     val devSettings = reactDevManager?.devSettings
 
     if (reactDevManager == null || devSettings == null) {
+      Log.w(DEV_MENU_TAG, "Couldn't export dev-menu items, because react-native bridge doesn't support dev options.")
       return emptyList()
     }
 

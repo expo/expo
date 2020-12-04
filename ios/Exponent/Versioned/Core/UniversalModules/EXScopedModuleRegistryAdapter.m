@@ -29,6 +29,7 @@
 #import "EXScopedNotificationSchedulerModule.h"
 #import "EXScopedNotificationPresentationModule.h"
 #import "EXScopedNotificationCategoriesModule.h"
+#import "EXScopedServerRegistrationModule.h"
 
 #if __has_include(<EXTaskManager/EXTaskManager.h>)
 #import <EXTaskManager/EXTaskManager.h>
@@ -172,6 +173,12 @@
   EXScopedNotificationCategoriesModule *categoriesModule = [[EXScopedNotificationCategoriesModule alloc] initWithExperienceId:experienceId];
   [moduleRegistry registerExportedModule:categoriesModule];
 #endif
+  
+#if __has_include(<EXNotifications/EXServerRegistrationModule.h>)
+  EXScopedServerRegistrationModule *serverRegistrationModule = [[EXScopedServerRegistrationModule alloc] initWithExperienceId:experienceId];
+  [moduleRegistry registerExportedModule:serverRegistrationModule];
+#endif
+
   return moduleRegistry;
 }
 

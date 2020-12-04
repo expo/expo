@@ -89,6 +89,13 @@ UM_EXPORT_MODULE(ExpoTaskManager);
 
 # pragma mark - Exported methods
 
+UM_EXPORT_METHOD_AS(isAvailableAsync,
+                    isAvailable:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  resolve(@(_taskService != nil));
+}
+
 UM_EXPORT_METHOD_AS(notifyTaskFinishedAsync,
                     notifyTaskFinished:(nonnull NSString *)taskName
                     withResponse:(nonnull NSDictionary *)response

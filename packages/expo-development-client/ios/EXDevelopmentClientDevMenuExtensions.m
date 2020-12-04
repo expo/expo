@@ -1,13 +1,6 @@
 #import "EXDevelopmentClientController.h"
 
-
-//#if __has_include("EXDevMenu.h") // NOTE: Replace with working discovery of `EXDevMenu`
 @import EXDevMenuInterface;
-#define HAVE_EX_DEV_MENU
-//#endif
-
-
-#ifdef HAVE_EX_DEV_MENU
 
 @interface EXDevelopmentClientDevMenuExtensions : NSObject <RCTBridgeModule, DevMenuExtensionProtocol>
 
@@ -17,6 +10,7 @@
 
 // Need to explicitly define `moduleName` here for dev menu to pick it up
 RCT_EXTERN void RCTRegisterModule(Class);
+
 +(NSString *)moduleName
 {
   return @"ExpoDevelopmentClientDevMenuExtensions";
@@ -45,5 +39,3 @@ RCT_EXTERN void RCTRegisterModule(Class);
 }
 
 @end
-
-#endif

@@ -1,6 +1,6 @@
 {
   "name": "EXScreenCapture",
-  "version": "1.1.1",
+  "version": "2.0.0",
   "summary": "ExpoScreenCapture standalone module",
   "description": "ExpoScreenCapture standalone module",
   "license": "MIT",
@@ -12,12 +12,10 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXScreenCapture/**/*.{h,m}",
-  "preserve_paths": "EXScreenCapture/**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "UMCore": [
 
     ]
-  }
+  },
+  "source_files": "EXScreenCapture/**/*.{h,m}"
 }

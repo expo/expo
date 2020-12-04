@@ -34,11 +34,12 @@ class PermissionsModule(context: Context) : ExportedModule(context) {
       SimpleRequester(Manifest.permission.READ_CONTACTS)
     }
     mRequesters = mapOf(
-      PermissionsTypes.LOCATION.type to LocationRequester(),
+      PermissionsTypes.LOCATION.type to LocationRequester(mPermissions.isPermissionPresentInManifest(Manifest.permission.ACCESS_BACKGROUND_LOCATION)),
       PermissionsTypes.CAMERA.type to SimpleRequester(Manifest.permission.CAMERA),
       PermissionsTypes.CONTACTS.type to contactsRequester,
       PermissionsTypes.AUDIO_RECORDING.type to SimpleRequester(Manifest.permission.RECORD_AUDIO),
-      PermissionsTypes.CAMERA_ROLL.type to SimpleRequester(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE),
+      PermissionsTypes.MEDIA_LIBRARY_WRITE_ONLY.type to SimpleRequester(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+      PermissionsTypes.MEDIA_LIBRARY.type to SimpleRequester(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE),
       PermissionsTypes.CALENDAR.type to SimpleRequester(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR),
       PermissionsTypes.SMS.type to SimpleRequester(Manifest.permission.READ_SMS),
       PermissionsTypes.NOTIFICATIONS.type to notificationRequester,

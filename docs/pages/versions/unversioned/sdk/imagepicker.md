@@ -20,9 +20,9 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Configuration
 
-In managed apps, the permissions to pick images, from camera ([`Permissions.CAMERA`](../permissions/#permissionscamera)) or camera roll ([`Permissions.CAMERA_ROLL`](../permissions/#permissionscamera_roll)), are added automatically.
+In managed apps, the permissions to pick images, from camera ([`Permissions.CAMERA`](permissions.md#permissionscamera)) or camera roll ([`Permissions.MEDIA_LIBRARY`](permissions.md#permissionsmedia_library)), are added automatically.
 
-## Example Usage
+## Usage
 
 <SnackInline label='Image Picker' dependencies={['expo-constants', 'expo-permissions', 'expo-image-picker']}>
 
@@ -38,7 +38,7 @@ export default function ImagePickerExample() {
   useEffect(() => {
     (async () => {
       if (Platform.OS !== 'web') {
-        const { status } = await ImagePicker.requestCameraRollPermissionsAsync();
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== 'granted') {
           alert('Sorry, we need camera roll permissions to make this work!');
         }
@@ -97,13 +97,17 @@ Asks the user to grant permissions for accessing camera. Alias for `Permissions.
 
 A promise that resolves to an object of type [CameraPermissionResponse](#imagepickercamerapermissionresponse).
 
-### `ImagePicker.requestCameraRollPermissionsAsync()`
+### `ImagePicker.requestMediaLibraryPermissionsAsync(writeOnly)`
 
-Asks the user to grant permissions for accessing user's photo. Alias for `Permissions.askAsync(Permissions.CAMERA_ROLL)`. This does nothing on web.
+Asks the user to grant permissions for accessing user's photo. Alias for `Permissions.askAsync(Permissions.MEDIA_LIBRARY)`. This does nothing on web.
+
+#### Arguments
+
+- **writeOnly** (_boolean_) - whether to request write or read and write permissions. Defaults to `false`.
 
 #### Returns
 
-A promise that resolves to an object of type [CameraRollPermissionResponse](#imagepickercamerarollpermissionresponse).
+A promise that resolves to an object of type [MediaLibraryPermissionResponse](#imagepickercamerarollpermissionresponse).
 
 ### `ImagePicker.getCameraPermissionsAsync()`
 
@@ -113,17 +117,21 @@ Checks user's permissions for accessing camera. Alias for `Permissions.getAsync(
 
 A promise that resolves to an object of type [CameraPermissionResponse](#imagepickercamerapermissionresponse).
 
-### `ImagePicker.getCameraRollPermissionsAsync()`
+### `ImagePicker.getMediaLibraryPermissionsAsync()`
 
-Checks user's permissions for accessing photos. Alias for `Permissions.getAsync(Permissions.CAMERA_ROLL)`.
+Checks user's permissions for accessing photos. Alias for `Permissions.getAsync(Permissions.MEDIA_LIBRARY)`.
+
+#### Arguments
+
+- **writeOnly** (_boolean_) - whether to get write or read and write permissions. Defaults to `false`.
 
 #### Returns
 
-A promise that resolves to an object of type [CameraRollPermissionResponse](#imagepickercamerarollpermissionresponse).
+A promise that resolves to an object of type [MediaLibraryPermissionResponse](#imagepickermedialibrarypermissionresponse).
 
 ### `ImagePicker.launchImageLibraryAsync(options)`
 
-Display the system UI for choosing an image or a video from the phone's library. Requires `Permissions.CAMERA_ROLL` on iOS 10 only. On mobile web, this must be called immediately in a user interaction like a button press, otherwise the browser will block the request without a warning.
+Display the system UI for choosing an image or a video from the phone's library. Requires `Permissions.MEDIA_LIBRARY` on iOS 10 only. On mobile web, this must be called immediately in a user interaction like a button press, otherwise the browser will block the request without a warning.
 
 #### Arguments
 
@@ -157,7 +165,7 @@ Otherwise, this method returns information about the selected media item. When t
 
 - The `uri` property is a URI to the local image or video file (usable as the source of an `Image` element, in the case of an image) and `width` and `height` specify the dimensions of the media.
 - The `exif` field is included if the `exif` option is truthy, and is an object containing the image's EXIF data. The names of this object's properties are EXIF tags and the values are the respective EXIF values for those tags.
-- The `base64` property is included if the `base64` option is truthy, and is a Base64-encoded string of the selected image's JPEG data. If you prepend this with `'data:image/jpeg;base64,'` to create a data URI, you can use it as the source of an `Image` element; for example: `<Image source={'data:image/jpeg;base64,' + launchCameraResult.base64} style={{width: 200, height: 200}} />`.
+- The `base64` property is included if the `base64` option is truthy, and is a Base64-encoded string of the selected image's JPEG data. If you prepend this with `'data:image/jpeg;base64,'` to create a data URI, you can use it as the source of an `Image` element; for example: `<Image source={{uri: 'data:image/jpeg;base64,' + launchCameraResult.base64}} style={{width: 200, height: 200}} />`.
 - The `duration` property is the length of the video in milliseconds.
 
 > **Note:** Make sure that you handle `MainActivity` destruction on **Android**. See [ImagePicker.getPendingResultAsync](#imagepickergetpendingresultasync).
@@ -199,7 +207,7 @@ Otherwise, this method returns information about the selected media item. When t
 
 - The `uri` property is a URI to the local image or video file (usable as the source of an `Image` element, in the case of an image) and `width` and `height` specify the dimensions of the media.
 - The `exif` field is included if the `exif` option is truthy, and is an object containing the image's EXIF data. The names of this object's properties are EXIF tags and the values are the respective EXIF values for those tags.
-- The `base64` property is included if the `base64` option is truthy, and is a Base64-encoded string of the selected image's JPEG data. If you prepend this with `'data:image/jpeg;base64,'` to create a data URI, you can use it as the source of an `Image` element; for example: `<Image source={'data:image/jpeg;base64,' + launchCameraResult.base64} style={{width: 200, height: 200}} />`.
+- The `base64` property is included if the `base64` option is truthy, and is a Base64-encoded string of the selected image's JPEG data. If you prepend this with `'data:image/jpeg;base64,'` to create a data URI, you can use it as the source of an `Image` element; for example: `<Image source={{uri: 'data:image/jpeg;base64,' + launchCameraResult.base64}} style={{width: 200, height: 200}} />`.
 - The `duration` property is the length of the video in milliseconds.
 
 > **Note:** Make sure that you handle `MainActivity` destruction on **Android**. See [ImagePicker.getPendingResultAsync](#imagepickergetpendingresultasync).
@@ -253,9 +261,9 @@ Android system sometimes kills the `MainActivity` after the `ImagePicker` finish
 
 ## Types
 
-### `ImagePicker.CameraRollPermissionResponse`
+### `ImagePicker.MediaLibraryPermissionResponse`
 
-`ImagePicker.CameraRollPermissionResponse` extends [PermissionResponse](../permissions/#permissionresponse) type exported by `unimodules-permission-interface` and contains additional iOS-specific field:
+`ImagePicker.MediaLibraryPermissionResponse` extends [PermissionResponse](permissions.md#permissionresponse) type exported by `unimodules-permission-interface` and contains additional iOS-specific field:
 
 - `accessPrivileges` **(string)** - Indicates if your app has access to the whole or only part of the photo library. Possible values are:
   - `all` if the user granted your app access to the whole photo library
@@ -264,7 +272,7 @@ Android system sometimes kills the `MainActivity` after the `ImagePicker` finish
 
 ### `ImagePicker.CameraPermissionResponse`
 
-`ImagePicker.CameraPermissionResponse` alias for [PermissionResponse](../permissions/#permissionresponse) type exported by `unimodules-permission-interface`.
+`ImagePicker.CameraPermissionResponse` alias for [PermissionResponse](permissions.md#permissionresponse) type exported by `unimodules-permission-interface`.
 
 ### `ImagePicker.ImagePickerErrorResult`
 

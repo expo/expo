@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
 
 ## 💻 Installation in managed Expo projects
 
-[Managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects use the older `SplashScreen` module within the `expo` package (`import { SplashScreen } from 'expo'`).
+Refer to [the SplashScreen section of the Expo documentation](https://docs.expo.io/versions/latest/sdk/splash-screen/).
 
 ## 🖥 Installation in bare React Native projects
 
@@ -216,7 +216,7 @@ Run `npx pod-install` after installing the package.
 
 ### Automatic configuration
 
-The easiest way to configure the splash screen in bare React Native projects is with the expo-splash-screen command. See the [README](https://github.com/expo/expo-cli/tree/master/packages/configure-splash-screen) for more information, or run `yarn expo-splash-screen --help` in your project.
+The easiest way to configure the splash screen in bare React Native projects is with the expo-splash-screen command. See the [README](https://github.com/expo/expo-cli/tree/master/unlinked-packages/configure-splash-screen) for more information, or run `yarn expo-splash-screen --help` in your project.
 
 ### Manual Configuration
 
@@ -466,7 +466,7 @@ To achieve fully-native splash screen behavior, `expo-splash-screen` needs to be
 
 ### Automatic configuration
 
-The easiest way to configure the splash screen in bare React Native projects is with the expo-splash-screen command. See the [README](https://github.com/expo/expo-cli/tree/master/packages/configure-splash-screen) for more information, or run `yarn expo-splash-screen --help` in your project.
+The easiest way to configure the splash screen in bare React Native projects is with the expo-splash-screen command. See the [README](https://github.com/expo/expo-cli/tree/master/unlinked-packages/configure-splash-screen) for more information, or run `yarn expo-splash-screen --help` in your project.
 
 ### Manual Configuration
 

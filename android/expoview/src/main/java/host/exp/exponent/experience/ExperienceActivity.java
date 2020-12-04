@@ -99,7 +99,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   private static final String TAG = ExperienceActivity.class.getSimpleName();
 
   private static final String KERNEL_STARTED_RUNNING_KEY = "experienceActivityKernelDidLoad";
-  private static final int NOTIFICATION_ID = 10101;
+  public static final int PERSISTENT_EXPONENT_NOTIFICATION_ID = 10101;
   private static String READY_FOR_BUNDLE = "readyForBundle";
 
   private static ExperienceActivity sCurrentActivity;
@@ -759,7 +759,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
     // Build the actual notification
     final NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-    notificationManager.cancel(NOTIFICATION_ID);
+    notificationManager.cancel(PERSISTENT_EXPONENT_NOTIFICATION_ID);
 
     new ExponentNotificationManager(this).maybeCreateExpoPersistentNotificationChannel();
     mNotificationBuilder = new NotificationCompat.Builder(this, NotificationConstants.NOTIFICATION_EXPERIENCE_CHANNEL_ID)
@@ -770,7 +770,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       .setPriority(Notification.PRIORITY_MAX);
 
     mNotificationBuilder.setColor(ContextCompat.getColor(this, R.color.colorPrimary));
-    notificationManager.notify(NOTIFICATION_ID, mNotificationBuilder.build());
+    notificationManager.notify(PERSISTENT_EXPONENT_NOTIFICATION_ID, mNotificationBuilder.build());
   }
 
   private void removeNotification() {
@@ -781,7 +781,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
   public static void removeNotification(Context context) {
     NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
-    notificationManager.cancel(NOTIFICATION_ID);
+    notificationManager.cancel(PERSISTENT_EXPONENT_NOTIFICATION_ID);
   }
 
   public void onNotificationAction() {

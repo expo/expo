@@ -58,7 +58,10 @@ void MutableValue::set(jsi::Runtime &rt, const jsi::PropNameID &name, const jsi:
       .callWithThis(rt, setterProxy, newValue);
   } else if (propName == "_animation") {
     // TODO: assert to allow animation to be set from UI only
-    animation = jsi::Value(rt, newValue);
+    if (animation.expired()) {
+      animation = getWeakRef(rt);
+    }
+    *animation.lock() = jsi::Value(rt, newValue);
   }
 }
 
@@ -74,8 +77,11 @@ jsi::Value MutableValue::get(jsi::Runtime &rt, const jsi::PropNameID &name) {
     if (propName == "_value") {
       return getValue(rt);
     } else if (propName == "_animation") {
-      // TODO: assert to allow animation to be read from UI onlu
-      return jsi::Value(rt, animation);
+      // TODO: assert to allow animation to be read from UI only
+      if (animation.expired()) {
+        animation = getWeakRef(rt);
+      }
+      return jsi::Value(rt, *(animation.lock()));
     }
   }
 
@@ -88,8 +94,8 @@ std::vector<jsi::PropNameID> MutableValue::getPropertyNames(jsi::Runtime &rt) {
   return result;
 }
 
-MutableValue::MutableValue(jsi::Runtime &rt, const jsi::Value &initial, NativeReanimatedModule *module):
-module(module), value(ShareableValue::adapt(rt, initial, module)) {
+MutableValue::MutableValue(jsi::Runtime &rt, const jsi::Value &initial, NativeReanimatedModule *module, std::shared_ptr<Scheduler> s):
+StoreUser(s), module(module), value(ShareableValue::adapt(rt, initial, module)) {
 }
 
 unsigned long int MutableValue::addListener(unsigned long id, std::function<void ()> listener) {

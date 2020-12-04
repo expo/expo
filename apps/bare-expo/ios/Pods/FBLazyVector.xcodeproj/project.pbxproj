@@ -108,10 +108,27 @@
 /* End PBXProject section */
 
 /* Begin XCBuildConfiguration section */
-		0E19B943969CAC0E5887A879ECBE2E5E /* Release */ = {
+		667B8CC9B2417F7DA0E20F8D77C42CC1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B29BA3EF51114B6348980E8C8B55867F /* FBLazyVector.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		777069DEAF4743DBF3E10948F0C79BA3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -134,6 +151,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -168,10 +186,26 @@
 			};
 			name = Release;
 		};
-		840AD430E7E3C5E5A00C3B80DF6C0D3C /* Debug */ = {
+		90CA1D4C4F3EA8BF1898462284018BB6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2DFEA02CF79DD0BDFD2E6EBD6BEF5C6C /* FBLazyVector.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C5B7802E783436C1379FCBC578420248 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -194,6 +228,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -232,43 +267,14 @@
 			};
 			name = Debug;
 		};
-		A8112F8F5A345D4993A889E6830AF2B8 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = B29BA3EF51114B6348980E8C8B55867F /* FBLazyVector.release.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		AB545AD3893E00961A639808523A4796 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2DFEA02CF79DD0BDFD2E6EBD6BEF5C6C /* FBLazyVector.debug.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		08B90F5F4C8B56677E1B2B1C7F1499B3 /* Build configuration list for PBXAggregateTarget "FBLazyVector" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				AB545AD3893E00961A639808523A4796 /* Debug */,
-				A8112F8F5A345D4993A889E6830AF2B8 /* Release */,
+				90CA1D4C4F3EA8BF1898462284018BB6 /* Debug */,
+				667B8CC9B2417F7DA0E20F8D77C42CC1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -276,8 +282,8 @@
 		F96659F9A2139D5A95F23BC09C847111 /* Build configuration list for PBXProject "FBLazyVector" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				840AD430E7E3C5E5A00C3B80DF6C0D3C /* Debug */,
-				0E19B943969CAC0E5887A879ECBE2E5E /* Release */,
+				C5B7802E783436C1379FCBC578420248 /* Debug */,
+				777069DEAF4743DBF3E10948F0C79BA3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

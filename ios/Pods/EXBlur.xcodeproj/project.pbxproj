@@ -7,15 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		32685C930121919A05649FE178CCBD9E /* EXBlurView.h in Headers */ = {isa = PBXBuildFile; fileRef = E2B4D9F25823DA84684A9C1EF83F0412 /* EXBlurView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		45E88F651E1BB3E95A19D98177AB026D /* EXBlur-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = FBC09EC1E62E7AACB8D62B4EBE8248C7 /* EXBlur-dummy.m */; };
-		717BB6D2344614C83273034359CBCC29 /* EXBlurViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E0E8A03CE11359AF6387FDB141F66C6 /* EXBlurViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		941B75994A129AB55455E3E9DC0E9845 /* EXBlurView.m in Sources */ = {isa = PBXBuildFile; fileRef = D52241BD8216A60B3C0B9F7397D7A2CE /* EXBlurView.m */; };
-		A34D23967FF38AADC2508E3AB62044E3 /* EXBlurViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B55362463FDBCC0308B25A68740BFF0 /* EXBlurViewManager.m */; };
+		0759C8391583331C61D153272765BCCE /* EXBlurView.h in Headers */ = {isa = PBXBuildFile; fileRef = E2B4D9F25823DA84684A9C1EF83F0412 /* EXBlurView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		466054D443869B157FC73C0531EDD8DC /* EXBlurViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B55362463FDBCC0308B25A68740BFF0 /* EXBlurViewManager.m */; };
+		75B441AD13BA3A64E53E518A90F56003 /* EXBlurViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E0E8A03CE11359AF6387FDB141F66C6 /* EXBlurViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7693EF8D97284025FFE1DD431393BE0A /* EXBlur-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = FBC09EC1E62E7AACB8D62B4EBE8248C7 /* EXBlur-dummy.m */; };
+		793A3FD4C38155AD5A7F24E079D1E645 /* EXBlurView.m in Sources */ = {isa = PBXBuildFile; fileRef = D52241BD8216A60B3C0B9F7397D7A2CE /* EXBlurView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		880E24A983F34C46B06B2A30499172F9 /* PBXContainerItemProxy */ = {
+		FD3C04B25607D04432C7B13E255E3ED7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AB611175BFE82778132F2B07DE8ED0E3 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -39,7 +39,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		86BB75521371D55B9F010EABB48913CC /* Frameworks */ = {
+		C3079A29EC70AE13DBF4A45ED50C8824 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -119,12 +119,12 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		29E00FF143FA8A8E796D11FEB3613997 /* Headers */ = {
+		9A4D2BBC26A15A0568E0298291C807C4 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				32685C930121919A05649FE178CCBD9E /* EXBlurView.h in Headers */,
-				717BB6D2344614C83273034359CBCC29 /* EXBlurViewManager.h in Headers */,
+				0759C8391583331C61D153272765BCCE /* EXBlurView.h in Headers */,
+				75B441AD13BA3A64E53E518A90F56003 /* EXBlurViewManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -133,16 +133,16 @@
 /* Begin PBXNativeTarget section */
 		D08BCCD5DE12C8EFB6429B9126525E9F /* EXBlur */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = BB9863084968AFE9A8618F770AC76C0F /* Build configuration list for PBXNativeTarget "EXBlur" */;
+			buildConfigurationList = 40A4C9354F2035825E4A00D6B2DD3ABA /* Build configuration list for PBXNativeTarget "EXBlur" */;
 			buildPhases = (
-				29E00FF143FA8A8E796D11FEB3613997 /* Headers */,
-				E39A0CA0E25792CD5D6EB947FC2AA353 /* Sources */,
-				86BB75521371D55B9F010EABB48913CC /* Frameworks */,
+				9A4D2BBC26A15A0568E0298291C807C4 /* Headers */,
+				1536B4BCE2DE25D6FAD19261C9CF7906 /* Sources */,
+				C3079A29EC70AE13DBF4A45ED50C8824 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				947CD2DD56540D1B6123F25CA4123370 /* PBXTargetDependency */,
+				9C5AE71746DE8E010EE7162D5D1E5D31 /* PBXTargetDependency */,
 			);
 			name = EXBlur;
 			productName = EXBlur;
@@ -182,33 +182,32 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		E39A0CA0E25792CD5D6EB947FC2AA353 /* Sources */ = {
+		1536B4BCE2DE25D6FAD19261C9CF7906 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				45E88F651E1BB3E95A19D98177AB026D /* EXBlur-dummy.m in Sources */,
-				941B75994A129AB55455E3E9DC0E9845 /* EXBlurView.m in Sources */,
-				A34D23967FF38AADC2508E3AB62044E3 /* EXBlurViewManager.m in Sources */,
+				7693EF8D97284025FFE1DD431393BE0A /* EXBlur-dummy.m in Sources */,
+				793A3FD4C38155AD5A7F24E079D1E645 /* EXBlurView.m in Sources */,
+				466054D443869B157FC73C0531EDD8DC /* EXBlurViewManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		947CD2DD56540D1B6123F25CA4123370 /* PBXTargetDependency */ = {
+		9C5AE71746DE8E010EE7162D5D1E5D31 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 880E24A983F34C46B06B2A30499172F9 /* PBXContainerItemProxy */;
+			targetProxy = FD3C04B25607D04432C7B13E255E3ED7 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		1620C4E83BD4508D7F0A40EAB9086BC7 /* Debug */ = {
+		28F729B205423678CBA0A0105A9BAE01 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 373ED477460F70544CEE431941EB56E1 /* EXBlur.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
@@ -228,10 +227,11 @@
 			};
 			name = Debug;
 		};
-		16D9BE1CCC33B9DA23196D996A8207AA /* Release */ = {
+		29E3C56ABA3E56CDBE11737956C05558 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -254,6 +254,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -288,10 +289,11 @@
 			};
 			name = Release;
 		};
-		B0271187E4520474D637AB95CC0F25A0 /* Debug */ = {
+		A4BD69312C4637DBBB30E27D02255E90 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -314,6 +316,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -352,12 +355,11 @@
 			};
 			name = Debug;
 		};
-		ED0F723781CFBFAEB7B4CACBA008662B /* Release */ = {
+		B7B211C0FCE26959655475E2F1A467F1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 79A9F13D2079CCA1424C62B4FF67AF96 /* EXBlur.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
@@ -381,20 +383,20 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		B95B1C09917F2F522A96EE522D1FF1DF /* Build configuration list for PBXProject "EXBlur" */ = {
+		40A4C9354F2035825E4A00D6B2DD3ABA /* Build configuration list for PBXNativeTarget "EXBlur" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B0271187E4520474D637AB95CC0F25A0 /* Debug */,
-				16D9BE1CCC33B9DA23196D996A8207AA /* Release */,
+				28F729B205423678CBA0A0105A9BAE01 /* Debug */,
+				B7B211C0FCE26959655475E2F1A467F1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		BB9863084968AFE9A8618F770AC76C0F /* Build configuration list for PBXNativeTarget "EXBlur" */ = {
+		B95B1C09917F2F522A96EE522D1FF1DF /* Build configuration list for PBXProject "EXBlur" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1620C4E83BD4508D7F0A40EAB9086BC7 /* Debug */,
-				ED0F723781CFBFAEB7B4CACBA008662B /* Release */,
+				A4BD69312C4637DBBB30E27D02255E90 /* Debug */,
+				29E3C56ABA3E56CDBE11737956C05558 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

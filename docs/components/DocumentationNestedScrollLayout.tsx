@@ -21,7 +21,7 @@ const STYLES_GLOBAL = css`
 
       /* Track */
       ::-webkit-scrollbar-track {
-        background: ${Constants.expoColors.background};
+        background: ${Constants.expoColors.semantic.background};
       }
 
       /* Handle */
@@ -43,8 +43,8 @@ const STYLES_CONTAINER = css`
   height: 100vh;
   overflow: hidden;
   margin: 0 auto 0 auto;
-  border-left: 1px solid ${Constants.expoColors.gray[250]};
-  border-right: 1px solid ${Constants.expoColors.gray[250]};
+  border-left: 1px solid ${Constants.expoColors.semantic.border};
+  border-right: 1px solid ${Constants.expoColors.semantic.border};
   background: #f9f9f9;
 
   display: flex;
@@ -69,7 +69,7 @@ const STYLES_HEADER = css`
   width: 100%;
 
   @media screen and (min-width: ${Constants.breakpoints.mobile}) {
-    border-bottom: 1px solid ${Constants.expoColors.gray[250]};
+    border-bottom: 1px solid ${Constants.expoColors.semantic.border};
   }
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
@@ -105,7 +105,7 @@ const STYLES_SIDEBAR = css`
   height: 100%;
   overflow: hidden;
   transition: 200ms ease max-width;
-  background: ${Constants.expoColors.background};
+  background: ${Constants.expoColors.semantic.background};
 
   @media screen and (max-width: 1200px) {
     max-width: 280px;
@@ -117,11 +117,11 @@ const STYLES_SIDEBAR = css`
 `;
 
 const STYLES_LEFT = css`
-  border-right: 1px solid ${Constants.expoColors.gray[250]};
+  border-right: 1px solid ${Constants.expoColors.semantic.border};
 `;
 
 const STYLES_RIGHT = css`
-  border-left: 1px solid ${Constants.expoColors.gray[250]};
+  border-left: 1px solid ${Constants.expoColors.semantic.border};
   background-color: ${Constants.expoColors.white};
 `;
 
@@ -156,7 +156,7 @@ const STYLES_SCROLL_CONTAINER = css`
 
   /* Track */
   ::-webkit-scrollbar-track {
-    background: ${Constants.expoColors.background};
+    background: ${Constants.expoColors.semantic.background};
     cursor: pointer;
   }
 

@@ -2,6 +2,7 @@ package expo.modules.notifications.notifications.categories;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.ResultReceiver;
 
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
@@ -16,13 +17,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import expo.modules.notifications.notifications.NotificationSerializer;
 import expo.modules.notifications.notifications.categories.serializers.NotificationsCategoriesSerializer;
-import expo.modules.notifications.notifications.interfaces.NotificationsScoper;
 import expo.modules.notifications.notifications.model.NotificationAction;
 import expo.modules.notifications.notifications.model.NotificationCategory;
 import expo.modules.notifications.notifications.model.TextInputNotificationAction;
-import expo.modules.notifications.notifications.service.NotificationsHelper;
+import expo.modules.notifications.service.NotificationsService;
+
+import static expo.modules.notifications.service.NotificationsService.NOTIFICATION_CATEGORIES_KEY;
+import static expo.modules.notifications.service.NotificationsService.NOTIFICATION_CATEGORY_KEY;
+import static expo.modules.notifications.service.NotificationsService.SUCCEEDED_KEY;
+import static expo.modules.notifications.service.NotificationsService.SUCCESS_CODE;
 
 public class ExpoNotificationCategoriesModule extends ExportedModule {
   private static final String EXPORTED_NAME = "ExpoNotificationCategoriesModule";
@@ -33,12 +37,10 @@ public class ExpoNotificationCategoriesModule extends ExportedModule {
   private static final String TEXT_INPUT_OPTIONS_KEY = "textInput";
   private static final String PLACEHOLDER_KEY = "placeholder";
 
-  private final NotificationsHelper mNotificationsHelper;
   protected NotificationsCategoriesSerializer mSerializer;
 
   public ExpoNotificationCategoriesModule(Context context) {
     super(context);
-    this.mNotificationsHelper = new NotificationsHelper(context, NotificationsScoper.create(context).createReconstructor());
   }
 
   @Override
@@ -53,12 +55,17 @@ public class ExpoNotificationCategoriesModule extends ExportedModule {
 
   @ExpoMethod
   public void getNotificationCategoriesAsync(final Promise promise) {
-    Collection<NotificationCategory> categories = getNotificationsHelper().getCategories();
-    if (categories != null) {
-      promise.resolve(serializeCategories(categories));
-    } else {
-      promise.reject("ERR_CATEGORIES_FETCH_FAILED", "A list of notification categories could not be fetched.");
-    }
+    NotificationsService.Companion.getCategories(getContext(), new ResultReceiver(null) {
+      @Override
+      protected void onReceiveResult(int resultCode, Bundle resultData) {
+        Collection<NotificationCategory> categories = resultData.getParcelableArrayList(NOTIFICATION_CATEGORIES_KEY);
+        if (resultCode == SUCCESS_CODE && categories != null) {
+          promise.resolve(serializeCategories(categories));
+        } else {
+          promise.reject("ERR_CATEGORIES_FETCH_FAILED", "A list of notification categories could not be fetched.");
+        }
+      }
+    });
   }
 
   @ExpoMethod
@@ -79,22 +86,31 @@ public class ExpoNotificationCategoriesModule extends ExportedModule {
     if (actions.isEmpty()) {
       throw new InvalidArgumentException("Invalid arguments provided for notification category. Must provide at least one action.");
     }
-    NotificationCategory newCategory = getNotificationsHelper().setCategory(new NotificationCategory(identifier, actions));
-    if (newCategory != null) {
-      promise.resolve(mSerializer.toBundle(newCategory));
-    } else {
-      promise.reject("ERR_CATEGORY_SET_FAILED", "The provided category could not be set.");
-    }
+    NotificationsService.Companion.setCategory(getContext(), new NotificationCategory(identifier, actions), new ResultReceiver(null) {
+      @Override
+      protected void onReceiveResult(int resultCode, Bundle resultData) {
+        NotificationCategory category = resultData.getParcelable(NOTIFICATION_CATEGORY_KEY);
+        if (resultCode == SUCCESS_CODE && category != null) {
+          promise.resolve(mSerializer.toBundle(category));
+        } else {
+          promise.reject("ERR_CATEGORY_SET_FAILED", "The provided category could not be set.");
+        }
+      }
+    });
   }
 
   @ExpoMethod
   public void deleteNotificationCategoryAsync(String identifier, final Promise promise) {
-    boolean success = getNotificationsHelper().deleteCategory(identifier);
-    promise.resolve(success);
-  }
-
-  protected NotificationsHelper getNotificationsHelper() {
-    return mNotificationsHelper;
+    NotificationsService.Companion.deleteCategory(getContext(), identifier, new ResultReceiver(null) {
+      @Override
+      protected void onReceiveResult(int resultCode, Bundle resultData) {
+        if (resultCode == SUCCESS_CODE) {
+          promise.resolve(resultData.getBoolean(SUCCEEDED_KEY));
+        } else {
+          promise.reject("ERR_CATEGORY_DELETE_FAILED", "The category could not be deleted.");
+        }
+      }
+    });
   }
 
   protected ArrayList<Bundle> serializeCategories(Collection<NotificationCategory> categories) {

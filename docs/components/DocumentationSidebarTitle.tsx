@@ -15,7 +15,7 @@ const STYLES_TITLE = css`
   text-decoration: none;
   border-bottom-color: #ccc;
   font-family: ${Constants.fontFamilies.demi};
-  border-bottom: 1px solid ${Constants.expoColors.gray[250]};
+  border-bottom: 1px solid ${Constants.expoColors.semantic.border};
   padding-bottom: 0.25rem;
 `;
 

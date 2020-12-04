@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		7B3F1683B4EACCB0A10B49A34460F6FC /* EXDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 566E8EAA8D74695F57A8EF2A87E6A8DE /* EXDevice.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		9C4B8D43CCCECD7EB9497E1D92C6F26C /* EXDevice-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B218FA70767AA5E9E51F13683FBDF1 /* EXDevice-dummy.m */; };
-		9DE0609374B0E8083D1FF16038F98B55 /* EXDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = E091F0D8F459DBC0FC09C2ED4C2CE016 /* EXDevice.m */; };
+		7CACDA8CE3B9E0BA7A8913B799C5076A /* EXDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = E091F0D8F459DBC0FC09C2ED4C2CE016 /* EXDevice.m */; };
+		965C133B63CC503AB6FEFE73E6526049 /* EXDevice-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B218FA70767AA5E9E51F13683FBDF1 /* EXDevice-dummy.m */; };
+		AD9D8184AD9F6FC37951E76B95935BED /* EXDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 566E8EAA8D74695F57A8EF2A87E6A8DE /* EXDevice.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		44C63DCC94E144FE10E1B0D148178F78 /* PBXContainerItemProxy */ = {
+		78F3EB2DD19FA5EE97E31DE8D3229ABF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AD5737F3661C0232D9454ECDF764A8FE /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -35,7 +35,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		87CE5D9DE5D43E12AFBDD1B0C9860944 /* Frameworks */ = {
+		A0A56E947C761E18A91F0597AC72B844 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -113,11 +113,11 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		9373702CEF2A106C3C67014FAF6B2109 /* Headers */ = {
+		8B860BAEED3B57225E9BBF51D9AF0FF8 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7B3F1683B4EACCB0A10B49A34460F6FC /* EXDevice.h in Headers */,
+				AD9D8184AD9F6FC37951E76B95935BED /* EXDevice.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -126,16 +126,16 @@
 /* Begin PBXNativeTarget section */
 		61CE878EC16A63D023F23DA6C1B824B9 /* EXDevice */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = BAF279E15649BA88F4031E1BA13D1A40 /* Build configuration list for PBXNativeTarget "EXDevice" */;
+			buildConfigurationList = E29D2B3E3626D2A951347218F0C7156C /* Build configuration list for PBXNativeTarget "EXDevice" */;
 			buildPhases = (
-				9373702CEF2A106C3C67014FAF6B2109 /* Headers */,
-				C646ADB5D0315BEBF4BE90B982B8445E /* Sources */,
-				87CE5D9DE5D43E12AFBDD1B0C9860944 /* Frameworks */,
+				8B860BAEED3B57225E9BBF51D9AF0FF8 /* Headers */,
+				104EFA4E8A01F71FC8858A39F9B89A7B /* Sources */,
+				A0A56E947C761E18A91F0597AC72B844 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				650928108E54B76BA55670F797FE5B87 /* PBXTargetDependency */,
+				36AA7CFEC2D7139B5F47AF5C6BC88118 /* PBXTargetDependency */,
 			);
 			name = EXDevice;
 			productName = EXDevice;
@@ -175,57 +175,31 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		C646ADB5D0315BEBF4BE90B982B8445E /* Sources */ = {
+		104EFA4E8A01F71FC8858A39F9B89A7B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9C4B8D43CCCECD7EB9497E1D92C6F26C /* EXDevice-dummy.m in Sources */,
-				9DE0609374B0E8083D1FF16038F98B55 /* EXDevice.m in Sources */,
+				965C133B63CC503AB6FEFE73E6526049 /* EXDevice-dummy.m in Sources */,
+				7CACDA8CE3B9E0BA7A8913B799C5076A /* EXDevice.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		650928108E54B76BA55670F797FE5B87 /* PBXTargetDependency */ = {
+		36AA7CFEC2D7139B5F47AF5C6BC88118 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 44C63DCC94E144FE10E1B0D148178F78 /* PBXContainerItemProxy */;
+			targetProxy = 78F3EB2DD19FA5EE97E31DE8D3229ABF /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		04DBDFC1BC9D19A3BFBD6F3A2CC9D1D0 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = AB00F0A9E95F14FA49C2176AE081C776 /* EXDevice.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXDevice/EXDevice-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXDevice;
-				PRODUCT_NAME = EXDevice;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		2E273C6275A965AC168AA1CAB3EF5C43 /* Release */ = {
+		5A1C5B7C29DE888EE64D8D1909557100 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2D6ACAA221407789D5BDC78F5E61FB92 /* EXDevice.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
@@ -246,10 +220,11 @@
 			};
 			name = Release;
 		};
-		D9D99A15749FDF009705C3AA2F560564 /* Debug */ = {
+		B5C6D9ADD4A7A12FB7912A04672FEA44 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -272,6 +247,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -310,10 +286,11 @@
 			};
 			name = Debug;
 		};
-		F6BA8DE9C239D0C7B772B7A2975E94E9 /* Release */ = {
+		DEC34EF8DCEE2D6FCF89B801E1F6DF3D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -336,6 +313,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -370,23 +348,47 @@
 			};
 			name = Release;
 		};
+		FEC94E0789106C080EADF0E788384094 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = AB00F0A9E95F14FA49C2176AE081C776 /* EXDevice.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXDevice/EXDevice-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXDevice;
+				PRODUCT_NAME = EXDevice;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		97874E5B683F3D959C975A6CF3BF2B21 /* Build configuration list for PBXProject "EXDevice" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D9D99A15749FDF009705C3AA2F560564 /* Debug */,
-				F6BA8DE9C239D0C7B772B7A2975E94E9 /* Release */,
+				B5C6D9ADD4A7A12FB7912A04672FEA44 /* Debug */,
+				DEC34EF8DCEE2D6FCF89B801E1F6DF3D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		BAF279E15649BA88F4031E1BA13D1A40 /* Build configuration list for PBXNativeTarget "EXDevice" */ = {
+		E29D2B3E3626D2A951347218F0C7156C /* Build configuration list for PBXNativeTarget "EXDevice" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				04DBDFC1BC9D19A3BFBD6F3A2CC9D1D0 /* Debug */,
-				2E273C6275A965AC168AA1CAB3EF5C43 /* Release */,
+				FEC94E0789106C080EADF0E788384094 /* Debug */,
+				5A1C5B7C29DE888EE64D8D1909557100 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

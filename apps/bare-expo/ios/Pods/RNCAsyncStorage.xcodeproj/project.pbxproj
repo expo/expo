@@ -7,14 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		41C5FDF265A595CAFA3D2ADF6D33D3CE /* RNCAsyncStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = 2A44A8F2DAC1FA6D2C0D582B5827D87E /* RNCAsyncStorage.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		4D504EB49380C47FF1FEC1D0E0F47999 /* RNCAsyncStorageDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 8FA61B31854D9267DCD00694F3391F42 /* RNCAsyncStorageDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		DBABBFDA430B0763B706934F853718D8 /* RNCAsyncStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 36947B5F45CBD2EB83C9C83EEA3B3D85 /* RNCAsyncStorage.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		F70EC3FECE09CDA35B5A05F1CCB939D2 /* RNCAsyncStorage-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 24D1CB13F059BB003C7FE945E2F6EE74 /* RNCAsyncStorage-dummy.m */; };
+		76F598E8AD5CEE6705C98CFE00CD9D41 /* RNCAsyncStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 36947B5F45CBD2EB83C9C83EEA3B3D85 /* RNCAsyncStorage.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		82A318F37773A9AD229D49A03D35B876 /* RNCAsyncStorageDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 8FA61B31854D9267DCD00694F3391F42 /* RNCAsyncStorageDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C356D4F958D2B30AF332FDA85D499CBA /* RNCAsyncStorage-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 24D1CB13F059BB003C7FE945E2F6EE74 /* RNCAsyncStorage-dummy.m */; };
+		FEF60AC445CD29AB5A00FD584D01BB7C /* RNCAsyncStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = 2A44A8F2DAC1FA6D2C0D582B5827D87E /* RNCAsyncStorage.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		703B2C87C9CC1498475C007F4FE36F0A /* PBXContainerItemProxy */ = {
+		E724C7A4F170B34C7BD8978D47F64630 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3C855816F121590A1E6E8DFE9353ADEF /* React.xcodeproj */;
 			proxyType = 1;
@@ -39,7 +39,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		CC937976744324355CE18FA8B0BC23BC /* Frameworks */ = {
+		E05FCB7F51F72E3B7752F59954E899D8 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -120,12 +120,12 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		04E04877C579F3AB0D8F4B5849ED13D8 /* Headers */ = {
+		CB094C63B17E2381F8C2C878A6EB9030 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				41C5FDF265A595CAFA3D2ADF6D33D3CE /* RNCAsyncStorage.h in Headers */,
-				4D504EB49380C47FF1FEC1D0E0F47999 /* RNCAsyncStorageDelegate.h in Headers */,
+				FEF60AC445CD29AB5A00FD584D01BB7C /* RNCAsyncStorage.h in Headers */,
+				82A318F37773A9AD229D49A03D35B876 /* RNCAsyncStorageDelegate.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -134,16 +134,16 @@
 /* Begin PBXNativeTarget section */
 		67B87A0A71A334A77129363BDFF7DC94 /* RNCAsyncStorage */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = BDE2A5CA360A0F605C90869594022016 /* Build configuration list for PBXNativeTarget "RNCAsyncStorage" */;
+			buildConfigurationList = 73ED553FF0F13983EAA1502CEF8FCC69 /* Build configuration list for PBXNativeTarget "RNCAsyncStorage" */;
 			buildPhases = (
-				04E04877C579F3AB0D8F4B5849ED13D8 /* Headers */,
-				DC26627746EB577C3CF82A583BD82A44 /* Sources */,
-				CC937976744324355CE18FA8B0BC23BC /* Frameworks */,
+				CB094C63B17E2381F8C2C878A6EB9030 /* Headers */,
+				63D64324C7AC876D50BB000CE8F1A115 /* Sources */,
+				E05FCB7F51F72E3B7752F59954E899D8 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				6E8640CE7E232BF874ED1F772ED7CF9A /* PBXTargetDependency */,
+				8787607F8C5F5C64E8044634DF121340 /* PBXTargetDependency */,
 			);
 			name = RNCAsyncStorage;
 			productName = RNCAsyncStorage;
@@ -183,79 +183,31 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		DC26627746EB577C3CF82A583BD82A44 /* Sources */ = {
+		63D64324C7AC876D50BB000CE8F1A115 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F70EC3FECE09CDA35B5A05F1CCB939D2 /* RNCAsyncStorage-dummy.m in Sources */,
-				DBABBFDA430B0763B706934F853718D8 /* RNCAsyncStorage.m in Sources */,
+				C356D4F958D2B30AF332FDA85D499CBA /* RNCAsyncStorage-dummy.m in Sources */,
+				76F598E8AD5CEE6705C98CFE00CD9D41 /* RNCAsyncStorage.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		6E8640CE7E232BF874ED1F772ED7CF9A /* PBXTargetDependency */ = {
+		8787607F8C5F5C64E8044634DF121340 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = React;
-			targetProxy = 703B2C87C9CC1498475C007F4FE36F0A /* PBXContainerItemProxy */;
+			targetProxy = E724C7A4F170B34C7BD8978D47F64630 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		0F20ED43DF6D5E70ECAB3DAF99C98A06 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = F42B9FBDC8BA4B98C5055EEC37B1E14C /* RNCAsyncStorage.debug.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/RNCAsyncStorage/RNCAsyncStorage-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = RNCAsyncStorage;
-				PRODUCT_NAME = RNCAsyncStorage;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		3F1EFB83AD8EFC18E82B0C6BD98FE316 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = CDA0DB209B02536564AEBA1E8F983B3C /* RNCAsyncStorage.release.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/RNCAsyncStorage/RNCAsyncStorage-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = RNCAsyncStorage;
-				PRODUCT_NAME = RNCAsyncStorage;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		6611C49FA4D6054C1C3E01595B82F314 /* Release */ = {
+		5A194E4C43E3A4BF2FE7EA818B356EA9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -278,66 +230,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"POD_CONFIGURATION_RELEASE=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.0;
-				SYMROOT = "${SRCROOT}/../build";
-			};
-			name = Release;
-		};
-		D19386C0B9DE35648433D14AAF21F52D /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -376,23 +269,134 @@
 			};
 			name = Debug;
 		};
+		6628AE9BBE4B1562D0F58DB841883C60 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		6F0F605FF1F31F71C0B57B37F16D7EB0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CDA0DB209B02536564AEBA1E8F983B3C /* RNCAsyncStorage.release.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/RNCAsyncStorage/RNCAsyncStorage-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RNCAsyncStorage;
+				PRODUCT_NAME = RNCAsyncStorage;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		D500AFD73021A7E2A30CA419B6D19881 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F42B9FBDC8BA4B98C5055EEC37B1E14C /* RNCAsyncStorage.debug.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/RNCAsyncStorage/RNCAsyncStorage-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RNCAsyncStorage;
+				PRODUCT_NAME = RNCAsyncStorage;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		6650DC72647011114BB7A64081611A7D /* Build configuration list for PBXProject "RNCAsyncStorage" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D19386C0B9DE35648433D14AAF21F52D /* Debug */,
-				6611C49FA4D6054C1C3E01595B82F314 /* Release */,
+				5A194E4C43E3A4BF2FE7EA818B356EA9 /* Debug */,
+				6628AE9BBE4B1562D0F58DB841883C60 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		BDE2A5CA360A0F605C90869594022016 /* Build configuration list for PBXNativeTarget "RNCAsyncStorage" */ = {
+		73ED553FF0F13983EAA1502CEF8FCC69 /* Build configuration list for PBXNativeTarget "RNCAsyncStorage" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				0F20ED43DF6D5E70ECAB3DAF99C98A06 /* Debug */,
-				3F1EFB83AD8EFC18E82B0C6BD98FE316 /* Release */,
+				D500AFD73021A7E2A30CA419B6D19881 /* Debug */,
+				6F0F605FF1F31F71C0B57B37F16D7EB0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

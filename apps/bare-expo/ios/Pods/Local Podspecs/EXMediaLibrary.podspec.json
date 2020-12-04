@@ -1,6 +1,6 @@
 {
   "name": "EXMediaLibrary",
-  "version": "9.2.1",
+  "version": "10.0.0",
   "summary": "Provides access to user's media library.",
   "description": "Provides access to user's media library.",
   "license": "MIT",
@@ -12,9 +12,10 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXMediaLibrary/**/*.{h,m}",
-  "preserve_paths": "EXMediaLibrary/**/*.{h,m}",
-  "requires_arc": true,
+  "frameworks": [
+    "Photos",
+    "PhotosUI"
+  ],
   "dependencies": {
     "UMCore": [
 
@@ -25,8 +26,9 @@
     "UMFileSystemInterface": [
 
     ],
-    "React": [
+    "React-Core": [
 
     ]
-  }
+  },
+  "source_files": "EXMediaLibrary/**/*.{h,m}"
 }

@@ -1,5 +1,6 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
+#import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
 #import <EXBarCodeScanner/EXBarCodeScannerUtils.h>
 

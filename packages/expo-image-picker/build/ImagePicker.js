@@ -21,14 +21,28 @@ function validateOptions(options) {
 export async function getCameraPermissionsAsync() {
     return ExponentImagePicker.getCameraPermissionsAsync();
 }
+/**
+ * @deprecated in favor of getMediaLibraryPermissionsAsync()
+ */
 export async function getCameraRollPermissionsAsync() {
-    return ExponentImagePicker.getCameraRollPermissionsAsync();
+    console.warn('ImagePicker.getCameraRollPermissionsAsync() is deprecated in favour of ImagePicker.getMediaLibraryPermissionsAsync()');
+    return getMediaLibraryPermissionsAsync();
+}
+export async function getMediaLibraryPermissionsAsync(writeOnly = false) {
+    return ExponentImagePicker.getMediaLibraryPermissionsAsync(writeOnly);
 }
 export async function requestCameraPermissionsAsync() {
     return ExponentImagePicker.requestCameraPermissionsAsync();
 }
+/**
+ * @deprecated in favor of requestMediaLibraryPermissionsAsync()
+ */
 export async function requestCameraRollPermissionsAsync() {
-    return ExponentImagePicker.requestCameraRollPermissionsAsync();
+    console.warn('ImagePicker.requestCameraRollPermissionsAsync() is deprecated in favour of ImagePicker.requestMediaLibraryPermissionsAsync()');
+    return ExponentImagePicker.requestMediaLibraryPermissionsAsync();
+}
+export async function requestMediaLibraryPermissionsAsync(writeOnly = false) {
+    return ExponentImagePicker.requestMediaLibraryPermissionsAsync(writeOnly);
 }
 export async function getPendingResultAsync() {
     if (ExponentImagePicker.getPendingResultAsync) {

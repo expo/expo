@@ -4,7 +4,7 @@ title: Authentication
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import InstallSection from '~/components/plugins/InstallSection';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
 import { SocialGrid, SocialGridItem, CreateAppButton } from '~/components/plugins/AuthSessionElements';
 import { Tab, Tabs } from '~/components/plugins/Tabs';
 import TerminalBlock from '~/components/plugins/TerminalBlock';
@@ -19,12 +19,6 @@ Here are some **important rules** that apply to all authentication providers:
 - Build requests using `AuthSession.useAuthRequest()`, the hook allows for async setup which means mobile browsers won't block the authentication.
 - Be sure to disable the prompt until `request` is defined.
 - You can only invoke `promptAsync` in a user-interaction on web.
-
-<TableOfContentSection title="Table of contents" contents={[
-"Guides",
-"Redirect URI patterns",
-"Improving User Experience"
-]} />
 
 ## Guides
 
@@ -65,6 +59,7 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
 
 <SnackInline label='IdentityServer 4 Auth' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
+<!-- prettier-ignore -->
 ```tsx
 import * as React from 'react';
 import { Button, Text, View } from 'react-native';
@@ -128,6 +123,7 @@ export default function App() {
 
 <SnackInline label='Azure Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
+<!-- prettier-ignore -->
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -195,6 +191,7 @@ export default function App() {
 
 <SnackInline label='Coinbase Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
+<!-- prettier-ignore -->
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -286,6 +283,7 @@ Auth code responses (`ResponseType.Code`) will only work in native with `useProx
 
 <SnackInline label='Dropbox Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
+<!-- prettier-ignore -->
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -356,6 +354,7 @@ export default function App() {
 
 <SnackInline label='Dropbox Implicit' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
+<!-- prettier-ignore -->
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -452,6 +451,7 @@ export default function App() {
 
 <SnackInline label='Facebook Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
+<!-- prettier-ignore -->
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -503,6 +503,7 @@ export default function App() {
 
 <SnackInline label='Facebook Implicit' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
+<!-- prettier-ignore -->
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -555,6 +556,7 @@ export default function App() {
 
 <SnackInline label='Facebook Firebase' dependencies={['expo-auth-session', 'expo-web-browser', 'firebase']}>
 
+<!-- prettier-ignore -->
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -631,8 +633,8 @@ export default function App() {
 [c-fitbit]: https://dev.fitbit.com/apps/new
 
 - Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
-  - Expo Client: `exp://localhost:19000/--/*`
-  - Expo Client + Proxy: `https://auth.expo.io/@you/your-app`
+  - Expo client: `exp://localhost:19000/--/*`
+  - Expo client + Proxy: `https://auth.expo.io/@you/your-app`
   - Standalone or Bare: `com.your.app://*`
   - Web: `https://yourwebsite.com/*`
 - The `redirectUri` requires 2 slashes (`://`).
@@ -642,6 +644,7 @@ export default function App() {
 
 <SnackInline label='FitBit Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
+<!-- prettier-ignore -->
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -705,6 +708,7 @@ export default function App() {
 
 <SnackInline label='FitBit Implicit' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
+<!-- prettier-ignore -->
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -785,8 +789,8 @@ export default function App() {
 [c-github]: https://github.com/settings/developers
 
 - Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
-  - Expo Client: `exp://localhost:19000/--/*`
-  - Expo Client + Proxy: `https://auth.expo.io/@you/your-app`
+  - Expo client: `exp://localhost:19000/--/*`
+  - Expo client + Proxy: `https://auth.expo.io/@you/your-app`
   - Standalone or Bare: `com.your.app://*`
   - Web: `https://yourwebsite.com/*`
 - The `redirectUri` requires 2 slashes (`://`).
@@ -797,6 +801,7 @@ export default function App() {
 
 <SnackInline label='GitHub Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
+<!-- prettier-ignore -->
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -890,7 +895,7 @@ To create a client ID, go to the [Credentials Page][c-google]:
 - Create an app for your project if you haven't already.
 - Once that's done, click "Create Credentials" and then "OAuth client ID." You will be prompted to set the product name on the consent screen, go ahead and do that.
 
-#### Development in the Expo Client
+#### Development in the Expo client
 
 While developing in the Expo client, you cannot use proper native authentication. Instead you must use web login during development. Be sure to follow the **standalone** guide below for setting up production apps.
 
@@ -899,7 +904,7 @@ First, be sure to login to your Expo account `expo login`. This will be part of 
 [Create a new Google Client ID][c-google] that will be used with `expoClientId`.
 
 - **Application Type**: Web Application
-- Give it a name (e.g. "Expo Client Proxy").
+- Give it a name (e.g. "Expo client Proxy").
 - **URIs** (Authorized JavaScript origins): https://auth.expo.io
 - **Authorized redirect URIs**: https://auth.expo.io/@your-username/your-project-slug
 
@@ -958,6 +963,7 @@ Expo web client ID for use in the browser.
 
 <SnackInline label='Google Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
+<!-- prettier-ignore -->
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1015,15 +1021,16 @@ export default function App() {
   - https://console.developers.google.com/apis/credentials/oauthclient/YOUR_GUID.apps.googleusercontent.com
 - Under "URIs" add your hosts URLs
   - Web dev: https://localhost:19006
-  - Expo Client Proxy: https://auth.expo.io
+  - Expo client Proxy: https://auth.expo.io
 - Under "Authorized redirect URIs"
   - Web dev: https://localhost:19006 -- this is assuming you want to invoke `WebBrowser.maybeCompleteAuthSession();` from the root URL of your app.
-  - Expo Client Proxy: https://auth.expo.io/@yourname/your-app
+  - Expo client Proxy: https://auth.expo.io/@yourname/your-app
 
 <img alt="Google Firebase Console for URIs" src="/static/images/sdk/auth-session/guide/google-firebase-auth-console.png" />
 
 <SnackInline label='Google Firebase' dependencies={['expo-auth-session', 'expo-web-browser', 'firebase']}>
 
+<!-- prettier-ignore -->
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1108,6 +1115,7 @@ export default function App() {
 
 <SnackInline label='Okta Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
+<!-- prettier-ignore -->
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1187,8 +1195,8 @@ export default function App() {
 [c-reddit]: https://www.reddit.com/prefs/apps
 
 - Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
-  - Expo Client: `exp://localhost:19000/--/*`
-  - Expo Client + Proxy: `https://auth.expo.io/@you/your-app`
+  - Expo client: `exp://localhost:19000/--/*`
+  - Expo client + Proxy: `https://auth.expo.io/@you/your-app`
   - Standalone or Bare: `com.your.app://*`
   - Web: `https://yourwebsite.com/*`
 - The `redirectUri` requires 2 slashes (`://`).
@@ -1199,6 +1207,7 @@ export default function App() {
 
 <SnackInline label='Reddit Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
+<!-- prettier-ignore -->
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1263,6 +1272,7 @@ export default function App() {
 
 <SnackInline label='Reddit Implicit' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
+<!-- prettier-ignore -->
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1350,6 +1360,7 @@ export default function App() {
 
 <SnackInline label='Slack Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
+<!-- prettier-ignore -->
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1435,6 +1446,7 @@ export default function App() {
 
 <SnackInline label='Spotify Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
+<!-- prettier-ignore -->
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1500,6 +1512,7 @@ export default function App() {
 
 <SnackInline label='Spotify Implicit' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
+<!-- prettier-ignore -->
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1586,6 +1599,7 @@ export default function App() {
 
 <SnackInline label='Strava Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
+<!-- prettier-ignore -->
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1645,6 +1659,7 @@ export default function App() {
 Strava doesn't provide an implicit auth flow, you should send the code to a server or serverless function to perform the access token exchange.
 For **debugging** purposes, you can perform the exchange client-side using the following method:
 
+<!-- prettier-ignore -->
 ```tsx
 const { accessToken } = await AuthSession.exchangeCodeAsync(
   {
@@ -1688,6 +1703,7 @@ const { accessToken } = await AuthSession.exchangeCodeAsync(
 
 <SnackInline label='Twitch Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
+<!-- prettier-ignore -->
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1751,6 +1767,7 @@ export default function App() {
 
 <SnackInline label='Twitch Implicit' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
+<!-- prettier-ignore -->
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1836,6 +1853,7 @@ export default function App() {
 
 <SnackInline label='Uber Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
+<!-- prettier-ignore -->
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1899,6 +1917,7 @@ export default function App() {
 
 <SnackInline label='Uber Implicit' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
+<!-- prettier-ignore -->
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1980,7 +1999,7 @@ Here are a few examples of some common redirect URI patterns you may end up usin
   - The link is constructed from your Expo username and the Expo app name, which are appended to the proxy website.
 - **Usage:** `promptAsync({ useProxy: true, redirectUri })`
 
-#### Published project in the Expo Client
+#### Published project in the Expo client
 
 > `exp://exp.host/@yourname/your-app`
 
@@ -2028,6 +2047,7 @@ Here are a few tips you can use to make authentication quick, easy, and secure f
 
 On Android you can optionally warm up the web browser before it's used. This allows the browser app to pre-initialize itself in the background. Doing this can significantly speed up prompting the user for authentication.
 
+<!-- prettier-ignore -->
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -2055,6 +2075,7 @@ You should never store your client secret locally in your bundle because there's
 
 Here is an example of logging into Spotify without using a client secret.
 
+<!-- prettier-ignore -->
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -2102,6 +2123,7 @@ On native platforms like iOS, and Android you can secure things like access toke
 
 You can store your authentication results and rehydrate them later to avoid having to prompt the user to login again.
 
+<!-- prettier-ignore -->
 ```tsx
 import * as SecureStore from 'expo-secure-store';
 

@@ -1,5 +1,6 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
+#import <GoogleSignIn/GIDSignIn.h>
 #import <UMCore/UMAppDelegateWrapper.h>
 #import <EXGoogleSignIn/EXGoogleSignInAppDelegate.h>
 #import <UMCore/UMModuleRegistryConsumer.h>

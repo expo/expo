@@ -28,7 +28,7 @@ We put all of the features for Expo web in the plugin [`gatsby-plugin-react-nati
 ### Expo projects with Gatsby
 
 For using the Gatsby tools in a universal app with the Expo SDK.
-  
+
 - Create a new Expo project
   - Install the CLI - `npm install -g expo-cli`
   - Bootstrap - `expo init --template blank`
@@ -110,9 +110,10 @@ You'll want to use the Gatsby CLI to develop the web part of your app now. You s
   - ✅ `yarn gatsby build`
 
 - **Serving your static project**
+
   - 🚫 `serve web-build`
   - ✅ `yarn gatsby serve`
-  
+
 ## 📁 File Structure
 
 Here is the recommended file structure for a Expo project with Gatsby support.

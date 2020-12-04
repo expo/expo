@@ -6,9 +6,13 @@
 
 ### 🎉 New features
 
-- Added support for video poster to show while the camera is loading on web. ([#9930](https://github.com/expo/expo/pull/9930) by [@liorJuice](https://github.com/liorJuice))
-
 ### 🐛 Bug fixes
+
+## 9.1.0 — 2020-11-17
+
+### 🎉 New features
+
+- Added support for video poster to show while the camera is loading on web. ([#9930](https://github.com/expo/expo/pull/9930) by [@liorJuice](https://github.com/liorJuice))
 
 ## 9.0.0 — 2020-08-18
 

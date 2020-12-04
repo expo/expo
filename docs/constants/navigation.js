@@ -21,7 +21,7 @@ const GROUPS = {
   'React Native': ['React Native'],
   Preview: ['Preview'],
   'EAS Build': ['EAS Build'],
-  'Dev Client': ['Dev Client'],
+  'Development Clients': ['Development Clients'],
 };
 
 // This array provides the **ordering** for pages within each section
@@ -34,9 +34,10 @@ const sections = [
     name: 'EAS Build',
     reference: [
       'Introduction',
-      'EAS Build from scratch in 5 minutes',
+      'EAS Build Walkthrough',
       'Set up your project and environment',
       'Configuration with eas.json',
+      'Internal distribution',
       'Android build process',
       'iOS build process',
       'Advanced credentials configuration',
@@ -44,13 +45,13 @@ const sections = [
     ],
   },
   {
-    name: 'Dev Client',
+    name: 'Development Clients',
     reference: [
       'Introduction',
       'Installation',
-      'Coming from React Native',
-      'Distribution for iOS',
-      'Distribution for Android',
+      'Building With EAS',
+      'Building iOS Locally',
+      'Building Android Locally',
       'Extending the Development Menu',
     ],
   },
@@ -411,13 +412,16 @@ const sortedReference = Object.assign(
 const sortedGeneral = groupNav(sortNav(prevaledNavigationData.general));
 const sortedStarting = groupNav(sortNav(prevaledNavigationData.starting));
 const sortedPreview = groupNav(sortNav(prevaledNavigationData.preview));
+const sortedEas = groupNav(sortNav(prevaledNavigationData.eas));
 
 module.exports = {
   generalDirectories: prevaledNavigationData.generalDirectories,
   startingDirectories: prevaledNavigationData.startingDirectories,
   previewDirectories: prevaledNavigationData.previewDirectories,
+  easDirectories: prevaledNavigationData.easDirectories,
   starting: sortedStarting,
   general: sortedGeneral,
   preview: sortedPreview,
+  eas: sortedEas,
   reference: { ...sortedReference, latest: sortedReference['v' + packageVersion] },
 };

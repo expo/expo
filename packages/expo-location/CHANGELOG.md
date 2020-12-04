@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+## 10.0.0 — 2020-11-17
+
+### 🛠 Breaking changes
+
+- Make background location an opt-in permission on Android. ([#10989](https://github.com/expo/expo/pull/10989) by [@bycedric](https://github.com/bycedric))
+
 ## 9.0.1 — 2020-10-02
 
 ### 🐛 Bug fixes

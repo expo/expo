@@ -46,7 +46,7 @@
 #endif
 
 #if __has_include(<ABI39_0_0EXConstants/ABI39_0_0EXConstantsService.h>)
-  ABI39_0_0EXConstantsBinding *constantsBinding = [[ABI39_0_0EXConstantsBinding alloc] initWithExperienceId:experienceId andParams:params];
+  ABI39_0_0EXConstantsBinding *constantsBinding = [[ABI39_0_0EXConstantsBinding alloc] initWithExperienceId:experienceId andParams:params deviceInstallationUUIDManager:kernelServices[@"EXDeviceInstallationUUIDService"]];
   [moduleRegistry registerInternalModule:constantsBinding];
 #endif
 

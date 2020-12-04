@@ -1,0 +1,1 @@
+../../../../../versioned-react-native/ABI40_0_0/ReactNative/Libraries/FBReactNativeSpec/FBReactNativeSpec/ABI40_0_0FBReactNativeSpec.h

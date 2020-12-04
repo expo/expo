@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '9.3.0'
+version = '10.0.0'
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
@@ -51,8 +51,8 @@ android {
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 29)
-    versionCode 29
-    versionName "9.3.0"
+    versionCode 30
+    versionName "10.0.0"
   }
   lintOptions {
     abortOnError false
@@ -76,7 +76,7 @@ dependencies {
   unimodule 'unimodules-permissions-interface'
 
   api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet("kotlinVersion", "1.3.50")}"
-  api "androidx.appcompat:appcompat:1.0.2"
+  api "androidx.appcompat:appcompat:1.2.0"
 
   compileOnly('com.facebook.react:react-native:+') {
     exclude group: 'com.android.support'

@@ -352,6 +352,9 @@ public class ExpoUpdatesAppLoader {
       manifest.put(ExponentManifest.MANIFEST_ID_KEY, sandboxedId);
       manifest.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true);
     }
+    if (Constants.isStandaloneApp()) {
+      manifest.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true);
+    }
     if (!manifest.has(ExponentManifest.MANIFEST_IS_VERIFIED_KEY)) {
       manifest.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, false);
     }
@@ -462,12 +465,16 @@ public class ExpoUpdatesAppLoader {
   private ManifestException formatExceptionForIncompatibleSdk(String sdkVersion) {
     JSONObject errorJson = new JSONObject();
     try {
-      errorJson.put("errorCode", "EXPERIENCE_SDK_VERSION_OUTDATED");
       errorJson.put("message", "Invalid SDK version");
-      errorJson.put("metadata", new JSONObject().put(
-        "availableSDKVersions",
-        new JSONArray().put(sdkVersion))
-      );
+      if (ABIVersion.toNumber(sdkVersion) > ABIVersion.toNumber(Constants.SDK_VERSIONS_LIST.get(0))) {
+        errorJson.put("errorCode", "EXPERIENCE_SDK_VERSION_TOO_NEW");
+      } else {
+        errorJson.put("errorCode", "EXPERIENCE_SDK_VERSION_OUTDATED");
+        errorJson.put("metadata", new JSONObject().put(
+          "availableSDKVersions",
+          new JSONArray().put(sdkVersion))
+        );
+      }
     } catch (Exception e) {
       Log.e(TAG, "Failed to format error message for incompatible SDK version", e);
     }

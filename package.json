@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "jsc-android": "^245459.0.0",
-    "react-native-unimodules": "~0.11.0"
+    "react-native-unimodules": "~0.12.0"
   },
   "devDependencies": {
     "eslint": "^7.9.0",

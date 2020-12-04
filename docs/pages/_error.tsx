@@ -310,4 +310,8 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Redirect to expand Expo Accounts and permissions
   '/guides/account-permissions/': '/accounts/personal/',
+
+  // Redirects based on Sentry (11/26/2020)
+  '/guides/push-notifications/': '/push-notifications/overview/',
+  '/guides/using-fcm/': '/push-notifications/using-fcm/',
 };

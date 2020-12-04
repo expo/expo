@@ -1,6 +1,6 @@
 {
   "name": "UMReactNativeAdapter",
-  "version": "5.6.0",
+  "version": "5.7.0",
   "summary": "The adapter to use universal modules with the React Native bridge",
   "description": "The adapter to use universal modules with the React Native bridge",
   "license": "MIT",
@@ -12,9 +12,6 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "UMReactNativeAdapter/**/*.{h,m}",
-  "preserve_paths": "UMReactNativeAdapter/**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "React-Core": [
 
@@ -25,5 +22,6 @@
     "UMFontInterface": [
 
     ]
-  }
+  },
+  "source_files": "UMReactNativeAdapter/**/*.{h,m}"
 }

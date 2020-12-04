@@ -68,10 +68,10 @@ class LoadedGalleryScreen extends React.Component<
     const photos = this.state.selected;
 
     if (photos.length > 0) {
-      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
 
       if (status !== 'granted') {
-        throw new Error('Denied CAMERA_ROLL permissions!');
+        throw new Error('Denied MEDIA_LIBRARY permissions!');
       }
 
       const promises = photos.map(photoUri => {

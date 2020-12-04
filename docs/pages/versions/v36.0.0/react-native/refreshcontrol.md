@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
 
 ## Props
 
-Inherits [View Props](../view/#props).
+Inherits [View Props](view.md#props).
 
 ### `refreshing`
 
@@ -88,7 +88,7 @@ The colors (at least one) that will be used to draw the refresh indicator.
 
 | Type                         | Required | Platform |
 | ---------------------------- | -------- | -------- |
-| array of [color](../colors/) | No       | Android  |
+| array of [color](colors.md) | No       | Android  |
 
 ---
 
@@ -108,7 +108,7 @@ The background color of the refresh indicator.
 
 | Type                | Required | Platform |
 | ------------------- | -------- | -------- |
-| [color](../colors/) | No       | Android  |
+| [color](colors.md) | No       | Android  |
 
 ---
 
@@ -138,7 +138,7 @@ The color of the refresh indicator.
 
 | Type                | Required | Platform |
 | ------------------- | -------- | -------- |
-| [color](../colors/) | No       | iOS      |
+| [color](colors.md) | No       | iOS      |
 
 ---
 
@@ -158,4 +158,4 @@ Title color.
 
 | Type                | Required | Platform |
 | ------------------- | -------- | -------- |
-| [color](../colors/) | No       | iOS      |
+| [color](colors.md) | No       | iOS      |

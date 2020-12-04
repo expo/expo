@@ -12,7 +12,6 @@ Pod::Spec.new do |s|
   s.homepage       = package['homepage']
   s.platform       = :ios, '10.0'
   s.source         = { git: 'https://github.com/expo/expo.git' }
-  s.source_files   = 'UMFaceDetectorInterface/**/*.{h,m}'
-  s.preserve_paths = 'UMFaceDetectorInterface/**/*.{h,m}'
-  s.requires_arc   = true
+
+  s.source_files = 'UMFaceDetectorInterface/**/*.{h,m}'
 end

@@ -7,26 +7,26 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		45A7FEAAC6586D6BA9CF5CC9C57FE48A /* EXAppAuthAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7317D320D1D83BFA44EF77FD40B30462 /* EXAppAuthAppDelegate.m */; };
-		49CF9B5F6F317BF8DF482E4FC626DF2C /* EXAppAuth.m in Sources */ = {isa = PBXBuildFile; fileRef = BA0B2E7F8979497537344FCAF1E7AEBD /* EXAppAuth.m */; };
-		8613B91A8CABA6616C01C6EB0E3D6893 /* EXAppAuth.h in Headers */ = {isa = PBXBuildFile; fileRef = 54E71E71CA6F3911EC574C10AF97F8CC /* EXAppAuth.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		AD47EC331E0DA701C03F3728A33D08DA /* EXAppAuthAppDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 7007260633EF1CB9DE437477A95144E3 /* EXAppAuthAppDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		AFC2B0CAFB78BDAFC01F087D6A5EE737 /* EXAppAuthSessionsManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2F3532423218F0D29C8D7FE08FDBF88D /* EXAppAuthSessionsManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		BBFA5DACB97894E8C1A6886DE0C21480 /* EXAppAuth+JSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 98BFDFC230B490E99FFC932294B8768A /* EXAppAuth+JSON.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		D5FEA8B472B7DC1BA58454C848DD1D23 /* EXAppAuth-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C734083C7A0E944F245CBB4CB02ED9C /* EXAppAuth-dummy.m */; };
-		DC4DD52E96E0FB5A039F01760A3C8C01 /* EXAppAuth+JSON.m in Sources */ = {isa = PBXBuildFile; fileRef = CB2F507C07A3F3DE86D1B057F0ABDC3C /* EXAppAuth+JSON.m */; };
-		E3C9FD2CFB2CF5BA87034A7BA1B71F32 /* EXAppAuthSessionsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F00D85967C1F82886F3F5D934F84204 /* EXAppAuthSessionsManager.m */; };
+		051D09216E0C15F04657B98B7F830FD7 /* EXAppAuth.m in Sources */ = {isa = PBXBuildFile; fileRef = BA0B2E7F8979497537344FCAF1E7AEBD /* EXAppAuth.m */; };
+		3EF0122E303693F874B27E6511C9334D /* EXAppAuthSessionsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F00D85967C1F82886F3F5D934F84204 /* EXAppAuthSessionsManager.m */; };
+		4D3EEA4F47A5DBA979214F02A73BA737 /* EXAppAuth.h in Headers */ = {isa = PBXBuildFile; fileRef = 54E71E71CA6F3911EC574C10AF97F8CC /* EXAppAuth.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		580E86F20C503740A3E6EBEDC0897C70 /* EXAppAuth-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C734083C7A0E944F245CBB4CB02ED9C /* EXAppAuth-dummy.m */; };
+		8A7E347867A2735D58B3409A3B17093F /* EXAppAuth+JSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 98BFDFC230B490E99FFC932294B8768A /* EXAppAuth+JSON.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		DFC2B9C5C8CDD4809549D850FC70B300 /* EXAppAuth+JSON.m in Sources */ = {isa = PBXBuildFile; fileRef = CB2F507C07A3F3DE86D1B057F0ABDC3C /* EXAppAuth+JSON.m */; };
+		E16709DA1C004E3A7F855ECC2B99E6CC /* EXAppAuthSessionsManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2F3532423218F0D29C8D7FE08FDBF88D /* EXAppAuthSessionsManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		ECC4F53C0DE4A53B7C94952C66000C35 /* EXAppAuthAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7317D320D1D83BFA44EF77FD40B30462 /* EXAppAuthAppDelegate.m */; };
+		F075902E102E4BB515E6384D52F6A50A /* EXAppAuthAppDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 7007260633EF1CB9DE437477A95144E3 /* EXAppAuthAppDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		8D7F59B19F56E3E391705B555230B97B /* PBXContainerItemProxy */ = {
+		9E5DFD85AACB33E7E6A3A357DB78D29D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 93AAEAC3460313DBEA51D918D0B627CC /* AppAuth.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 4EFA7E4CE531453CF475A9A4322A84F8;
 			remoteInfo = AppAuth;
 		};
-		F0A8DCDEAC95C922A9312C22C368EEB1 /* PBXContainerItemProxy */ = {
+		E8C797FDAAB630CC83E88AEA82E9C959 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D88854D1C59679E3B4787C34B2BDCD61 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -55,7 +55,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		4EDCC30AAFD97CC7B73CE4AB10E37A65 /* Frameworks */ = {
+		C63A8DD53DF2CD1D500314BE7CD0C4CA /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -140,14 +140,14 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		DF7B652EBAB0A15C51F36450D3E2097B /* Headers */ = {
+		72781122702922D51E9B97B409315489 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BBFA5DACB97894E8C1A6886DE0C21480 /* EXAppAuth+JSON.h in Headers */,
-				8613B91A8CABA6616C01C6EB0E3D6893 /* EXAppAuth.h in Headers */,
-				AD47EC331E0DA701C03F3728A33D08DA /* EXAppAuthAppDelegate.h in Headers */,
-				AFC2B0CAFB78BDAFC01F087D6A5EE737 /* EXAppAuthSessionsManager.h in Headers */,
+				8A7E347867A2735D58B3409A3B17093F /* EXAppAuth+JSON.h in Headers */,
+				4D3EEA4F47A5DBA979214F02A73BA737 /* EXAppAuth.h in Headers */,
+				F075902E102E4BB515E6384D52F6A50A /* EXAppAuthAppDelegate.h in Headers */,
+				E16709DA1C004E3A7F855ECC2B99E6CC /* EXAppAuthSessionsManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -156,17 +156,17 @@
 /* Begin PBXNativeTarget section */
 		5FB7695B45E2F2A9171D3B6C97B3A1A2 /* EXAppAuth */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 4DAEDC235277BFD5CE3F2D91F40EDE21 /* Build configuration list for PBXNativeTarget "EXAppAuth" */;
+			buildConfigurationList = 23AAB9E22F2BA16006CD543E213A7F0E /* Build configuration list for PBXNativeTarget "EXAppAuth" */;
 			buildPhases = (
-				DF7B652EBAB0A15C51F36450D3E2097B /* Headers */,
-				87B25BF2B11FAE077B0752B03870286D /* Sources */,
-				4EDCC30AAFD97CC7B73CE4AB10E37A65 /* Frameworks */,
+				72781122702922D51E9B97B409315489 /* Headers */,
+				98C0772AAC0765B9A96F0FA71D409C66 /* Sources */,
+				C63A8DD53DF2CD1D500314BE7CD0C4CA /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				DA2170D3A0BE3166C81EB00B48E8DF53 /* PBXTargetDependency */,
-				C1BB730B350238D44F7D50A29A5E570C /* PBXTargetDependency */,
+				5B7CDCFFCA53E9CD70E8F27D5B59FEE8 /* PBXTargetDependency */,
+				4D3127BCE232DF9892754F95C067EAB1 /* PBXTargetDependency */,
 			);
 			name = EXAppAuth;
 			productName = EXAppAuth;
@@ -209,38 +209,88 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		87B25BF2B11FAE077B0752B03870286D /* Sources */ = {
+		98C0772AAC0765B9A96F0FA71D409C66 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DC4DD52E96E0FB5A039F01760A3C8C01 /* EXAppAuth+JSON.m in Sources */,
-				D5FEA8B472B7DC1BA58454C848DD1D23 /* EXAppAuth-dummy.m in Sources */,
-				49CF9B5F6F317BF8DF482E4FC626DF2C /* EXAppAuth.m in Sources */,
-				45A7FEAAC6586D6BA9CF5CC9C57FE48A /* EXAppAuthAppDelegate.m in Sources */,
-				E3C9FD2CFB2CF5BA87034A7BA1B71F32 /* EXAppAuthSessionsManager.m in Sources */,
+				DFC2B9C5C8CDD4809549D850FC70B300 /* EXAppAuth+JSON.m in Sources */,
+				580E86F20C503740A3E6EBEDC0897C70 /* EXAppAuth-dummy.m in Sources */,
+				051D09216E0C15F04657B98B7F830FD7 /* EXAppAuth.m in Sources */,
+				ECC4F53C0DE4A53B7C94952C66000C35 /* EXAppAuthAppDelegate.m in Sources */,
+				3EF0122E303693F874B27E6511C9334D /* EXAppAuthSessionsManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		C1BB730B350238D44F7D50A29A5E570C /* PBXTargetDependency */ = {
+		4D3127BCE232DF9892754F95C067EAB1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = F0A8DCDEAC95C922A9312C22C368EEB1 /* PBXContainerItemProxy */;
+			targetProxy = E8C797FDAAB630CC83E88AEA82E9C959 /* PBXContainerItemProxy */;
 		};
-		DA2170D3A0BE3166C81EB00B48E8DF53 /* PBXTargetDependency */ = {
+		5B7CDCFFCA53E9CD70E8F27D5B59FEE8 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = AppAuth;
-			targetProxy = 8D7F59B19F56E3E391705B555230B97B /* PBXContainerItemProxy */;
+			targetProxy = 9E5DFD85AACB33E7E6A3A357DB78D29D /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		14812FA2B8C473F0D900C221EB6574D0 /* Debug */ = {
+		3DEE333716A3D35A8E763E7CABE1E3BF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1EECDCA63FEFAC518F8BCF0FFDDB0DD8 /* EXAppAuth.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXAppAuth/EXAppAuth-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXAppAuth;
+				PRODUCT_NAME = EXAppAuth;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		AB3DA4263A29F60A4306F3842782694E /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BB37AED009C654E797CCF262639C1F2F /* EXAppAuth.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXAppAuth/EXAppAuth-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXAppAuth;
+				PRODUCT_NAME = EXAppAuth;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		D2DC79B8FA11D1F41BEBC3E0756C5F20 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -263,6 +313,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -301,35 +352,11 @@
 			};
 			name = Debug;
 		};
-		3E0E20170A503B8C551153E0B252D32A /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1EECDCA63FEFAC518F8BCF0FFDDB0DD8 /* EXAppAuth.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXAppAuth/EXAppAuth-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXAppAuth;
-				PRODUCT_NAME = EXAppAuth;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		5C30F58F1450877906628FE66A497904 /* Release */ = {
+		F753715C17CCD3B8C324EB9D48E609D9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -352,6 +379,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -386,49 +414,23 @@
 			};
 			name = Release;
 		};
-		F21500B81AF4395F3A5761CC10A91396 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = BB37AED009C654E797CCF262639C1F2F /* EXAppAuth.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXAppAuth/EXAppAuth-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXAppAuth;
-				PRODUCT_NAME = EXAppAuth;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		4A8C53F60BB747DC2BA837E9BA65B45B /* Build configuration list for PBXProject "EXAppAuth" */ = {
+		23AAB9E22F2BA16006CD543E213A7F0E /* Build configuration list for PBXNativeTarget "EXAppAuth" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				14812FA2B8C473F0D900C221EB6574D0 /* Debug */,
-				5C30F58F1450877906628FE66A497904 /* Release */,
+				3DEE333716A3D35A8E763E7CABE1E3BF /* Debug */,
+				AB3DA4263A29F60A4306F3842782694E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		4DAEDC235277BFD5CE3F2D91F40EDE21 /* Build configuration list for PBXNativeTarget "EXAppAuth" */ = {
+		4A8C53F60BB747DC2BA837E9BA65B45B /* Build configuration list for PBXProject "EXAppAuth" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				3E0E20170A503B8C551153E0B252D32A /* Debug */,
-				F21500B81AF4395F3A5761CC10A91396 /* Release */,
+				D2DC79B8FA11D1F41BEBC3E0756C5F20 /* Debug */,
+				F753715C17CCD3B8C324EB9D48E609D9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

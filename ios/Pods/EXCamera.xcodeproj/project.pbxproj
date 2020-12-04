@@ -7,59 +7,59 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		03BD3A2D389FC143E987341E080D0A14 /* EXCameraManager.h in Headers */ = {isa = PBXBuildFile; fileRef = D734345E1D4C547F02040BAD0B3024E8 /* EXCameraManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		2098CA40385177F17A060323FD83C07A /* EXCamera.h in Headers */ = {isa = PBXBuildFile; fileRef = B9FC2C70A3055A1BEFA535CE8F2615DF /* EXCamera.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		20CF08883ADA08628D3A3B272F83D98F /* EXCameraUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = A5FE4A6509FB087B5363B865BB1F0080 /* EXCameraUtils.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		511062393740652965BBDCE0DE3EC10E /* EXCameraPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 42A827B51B483CA8589F3A61A7D5E5B3 /* EXCameraPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		64C9AA62B3E5194177D8D78E3EE0D4C6 /* EXCameraPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 243EB2B5AF52509A71BA8BD39214D890 /* EXCameraPermissionRequester.m */; };
-		7166FAF9F378E7F967FC66BF840F3241 /* EXCameraManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D2900E034934711256F89F3AA6DB33E4 /* EXCameraManager.m */; };
-		748A030E74FEE3DF669718D9D7FBB265 /* EXCamera-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F702BA261953A978752F127F06C2EB /* EXCamera-dummy.m */; };
-		7BFC60E5778AAF891820C3B5CEFD89A4 /* EXCameraUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 982B56C594A4E2706ECCFC36D75A215C /* EXCameraUtils.m */; };
-		ED71B0BE9D7956E75D28428EE213E3FD /* EXCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = 87AF4210749E0055DDC2261082399C0F /* EXCamera.m */; };
+		0A0A84C2529B41529A33E7FD02F57EF4 /* EXCameraManager.h in Headers */ = {isa = PBXBuildFile; fileRef = D734345E1D4C547F02040BAD0B3024E8 /* EXCameraManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		1BDBF5AA1393526016D8F658678DE830 /* EXCamera.h in Headers */ = {isa = PBXBuildFile; fileRef = B9FC2C70A3055A1BEFA535CE8F2615DF /* EXCamera.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		5A79C869241E5053D7009D336CAC448C /* EXCameraUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = A5FE4A6509FB087B5363B865BB1F0080 /* EXCameraUtils.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7057FF012489BED4355B3DDCD9DA39FE /* EXCamera-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F702BA261953A978752F127F06C2EB /* EXCamera-dummy.m */; };
+		9265CBF4610D8350E08F31A791504E43 /* EXCameraPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 42A827B51B483CA8589F3A61A7D5E5B3 /* EXCameraPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A3079E5139286985BC4281D4A04C636D /* EXCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = 87AF4210749E0055DDC2261082399C0F /* EXCamera.m */; };
+		B04B37A249D7EC0F4BC4CE3300FD86B1 /* EXCameraUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 982B56C594A4E2706ECCFC36D75A215C /* EXCameraUtils.m */; };
+		F74A6FEA7834560CEC5C47F88746CAB0 /* EXCameraPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 243EB2B5AF52509A71BA8BD39214D890 /* EXCameraPermissionRequester.m */; };
+		F950219EB1B9407853E148DDD8661860 /* EXCameraManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D2900E034934711256F89F3AA6DB33E4 /* EXCameraManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		265B1623A98297C77FD69C853FAFA558 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2D94D631128DA7939504D25BFE3EA32D /* UMBarCodeScannerInterface.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 971E60E1AF9163E7E08105622FC91C16;
-			remoteInfo = UMBarCodeScannerInterface;
-		};
-		2D6C2491204289193FAB962E5C235FC2 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 236A85D7FD3A40D579B852A84F2CC5D6 /* UMPermissionsInterface.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 12FF61416C5E794E9DEAC78D381D9726;
-			remoteInfo = UMPermissionsInterface;
-		};
-		39DDF4B2B3D8CEE54D7823AEDBAD6C71 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 42474EF91FF85C22003C5B01555CBB9C /* UMFileSystemInterface.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
-			remoteInfo = UMFileSystemInterface;
-		};
-		67D06E351ED8677926A3BF5CE570CB49 /* PBXContainerItemProxy */ = {
+		0B74A60C0D269E26EFA474888BA12DE5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0AD405795122146FB9C697231E3D1521 /* UMImageLoaderInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = A734124238F83C1FEE81C0FEDC5CDC5C;
 			remoteInfo = UMImageLoaderInterface;
 		};
-		91CF67CE0B1DBCE4C15516C2B82AB0A7 /* PBXContainerItemProxy */ = {
+		5F6D9153C11BB7781D2D30E5DC9F08B3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 86B3D2D8D6194E9C4FCD5CC693DA66C4 /* UMFaceDetectorInterface.xcodeproj */;
+			containerPortal = 236A85D7FD3A40D579B852A84F2CC5D6 /* UMPermissionsInterface.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 8DC606D9CFDD04C553C81728629364B3;
-			remoteInfo = UMFaceDetectorInterface;
+			remoteGlobalIDString = 12FF61416C5E794E9DEAC78D381D9726;
+			remoteInfo = UMPermissionsInterface;
 		};
-		A772F5F7BAE144224929315109B4858D /* PBXContainerItemProxy */ = {
+		664224EB3019956C00BA374A8BA3BE42 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2D94D631128DA7939504D25BFE3EA32D /* UMBarCodeScannerInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 971E60E1AF9163E7E08105622FC91C16;
+			remoteInfo = UMBarCodeScannerInterface;
+		};
+		8FE09826B4A00936711150D6A1DB4456 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 42474EF91FF85C22003C5B01555CBB9C /* UMFileSystemInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
+			remoteInfo = UMFileSystemInterface;
+		};
+		B11B248F567153938A0AD2EF92EF92E1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D13F5A7168964D3EA86E532274286F4B /* UMCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
+		};
+		E4F63DA33C82977C64D9F1490300113B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 86B3D2D8D6194E9C4FCD5CC693DA66C4 /* UMFaceDetectorInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8DC606D9CFDD04C553C81728629364B3;
+			remoteInfo = UMFaceDetectorInterface;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -87,7 +87,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		2C8A31E5D971C0577D6FE3600E1B591F /* Frameworks */ = {
+		AA49AFFA650EE09DAFA5F3AAE01C9EF5 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -185,14 +185,14 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		B48B95912025B8C57B8FF556E96A38F9 /* Headers */ = {
+		3612C77A39528E1397FFFAD552E4058F /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2098CA40385177F17A060323FD83C07A /* EXCamera.h in Headers */,
-				03BD3A2D389FC143E987341E080D0A14 /* EXCameraManager.h in Headers */,
-				511062393740652965BBDCE0DE3EC10E /* EXCameraPermissionRequester.h in Headers */,
-				20CF08883ADA08628D3A3B272F83D98F /* EXCameraUtils.h in Headers */,
+				1BDBF5AA1393526016D8F658678DE830 /* EXCamera.h in Headers */,
+				0A0A84C2529B41529A33E7FD02F57EF4 /* EXCameraManager.h in Headers */,
+				9265CBF4610D8350E08F31A791504E43 /* EXCameraPermissionRequester.h in Headers */,
+				5A79C869241E5053D7009D336CAC448C /* EXCameraUtils.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -201,21 +201,21 @@
 /* Begin PBXNativeTarget section */
 		4B109C23F45DFD6B4CA40B87D733EB11 /* EXCamera */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9DFD55DD272923B75B84CDA3746F6358 /* Build configuration list for PBXNativeTarget "EXCamera" */;
+			buildConfigurationList = CA3395EA9E74FB95DF23D67B32D52310 /* Build configuration list for PBXNativeTarget "EXCamera" */;
 			buildPhases = (
-				B48B95912025B8C57B8FF556E96A38F9 /* Headers */,
-				2E03F29C448FE6F3D6655AD397F27528 /* Sources */,
-				2C8A31E5D971C0577D6FE3600E1B591F /* Frameworks */,
+				3612C77A39528E1397FFFAD552E4058F /* Headers */,
+				93E01E061E111969CDD1EDEC33B407DA /* Sources */,
+				AA49AFFA650EE09DAFA5F3AAE01C9EF5 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				0DF084D155E5EE1192CDDCC6AF696466 /* PBXTargetDependency */,
-				8F5FC4E3265C49F4FEE4F751C683784D /* PBXTargetDependency */,
-				2C1DF79A239C27D0FC369B771C678C64 /* PBXTargetDependency */,
-				81A7711E106C0F5A7C750E2BFD357B20 /* PBXTargetDependency */,
-				EDD4E545B68040C055D8B482DB1F49F0 /* PBXTargetDependency */,
-				1657375968B788824D49A520A18D0692 /* PBXTargetDependency */,
+				0B9174B5432A3164BA1F1884FA0CCDDC /* PBXTargetDependency */,
+				09AA3C3518CEF1C34404E45DA11681F8 /* PBXTargetDependency */,
+				8ABA450A906DDC04444918FEB629D9CD /* PBXTargetDependency */,
+				0F836C37A1EA192841404722763FA184 /* PBXTargetDependency */,
+				833CCFB1C964EBBE968121D444304F9A /* PBXTargetDependency */,
+				E16C02EFF7BF051AC2839ABE516EABB9 /* PBXTargetDependency */,
 			);
 			name = EXCamera;
 			productName = EXCamera;
@@ -270,145 +270,59 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		2E03F29C448FE6F3D6655AD397F27528 /* Sources */ = {
+		93E01E061E111969CDD1EDEC33B407DA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				748A030E74FEE3DF669718D9D7FBB265 /* EXCamera-dummy.m in Sources */,
-				ED71B0BE9D7956E75D28428EE213E3FD /* EXCamera.m in Sources */,
-				7166FAF9F378E7F967FC66BF840F3241 /* EXCameraManager.m in Sources */,
-				64C9AA62B3E5194177D8D78E3EE0D4C6 /* EXCameraPermissionRequester.m in Sources */,
-				7BFC60E5778AAF891820C3B5CEFD89A4 /* EXCameraUtils.m in Sources */,
+				7057FF012489BED4355B3DDCD9DA39FE /* EXCamera-dummy.m in Sources */,
+				A3079E5139286985BC4281D4A04C636D /* EXCamera.m in Sources */,
+				F950219EB1B9407853E148DDD8661860 /* EXCameraManager.m in Sources */,
+				F74A6FEA7834560CEC5C47F88746CAB0 /* EXCameraPermissionRequester.m in Sources */,
+				B04B37A249D7EC0F4BC4CE3300FD86B1 /* EXCameraUtils.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		0DF084D155E5EE1192CDDCC6AF696466 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMBarCodeScannerInterface;
-			targetProxy = 265B1623A98297C77FD69C853FAFA558 /* PBXContainerItemProxy */;
-		};
-		1657375968B788824D49A520A18D0692 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMPermissionsInterface;
-			targetProxy = 2D6C2491204289193FAB962E5C235FC2 /* PBXContainerItemProxy */;
-		};
-		2C1DF79A239C27D0FC369B771C678C64 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMFaceDetectorInterface;
-			targetProxy = 91CF67CE0B1DBCE4C15516C2B82AB0A7 /* PBXContainerItemProxy */;
-		};
-		81A7711E106C0F5A7C750E2BFD357B20 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMFileSystemInterface;
-			targetProxy = 39DDF4B2B3D8CEE54D7823AEDBAD6C71 /* PBXContainerItemProxy */;
-		};
-		8F5FC4E3265C49F4FEE4F751C683784D /* PBXTargetDependency */ = {
+		09AA3C3518CEF1C34404E45DA11681F8 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = A772F5F7BAE144224929315109B4858D /* PBXContainerItemProxy */;
+			targetProxy = B11B248F567153938A0AD2EF92EF92E1 /* PBXContainerItemProxy */;
 		};
-		EDD4E545B68040C055D8B482DB1F49F0 /* PBXTargetDependency */ = {
+		0B9174B5432A3164BA1F1884FA0CCDDC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMBarCodeScannerInterface;
+			targetProxy = 664224EB3019956C00BA374A8BA3BE42 /* PBXContainerItemProxy */;
+		};
+		0F836C37A1EA192841404722763FA184 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMFileSystemInterface;
+			targetProxy = 8FE09826B4A00936711150D6A1DB4456 /* PBXContainerItemProxy */;
+		};
+		833CCFB1C964EBBE968121D444304F9A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMImageLoaderInterface;
-			targetProxy = 67D06E351ED8677926A3BF5CE570CB49 /* PBXContainerItemProxy */;
+			targetProxy = 0B74A60C0D269E26EFA474888BA12DE5 /* PBXContainerItemProxy */;
+		};
+		8ABA450A906DDC04444918FEB629D9CD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMFaceDetectorInterface;
+			targetProxy = E4F63DA33C82977C64D9F1490300113B /* PBXContainerItemProxy */;
+		};
+		E16C02EFF7BF051AC2839ABE516EABB9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMPermissionsInterface;
+			targetProxy = 5F6D9153C11BB7781D2D30E5DC9F08B3 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		6A1D7425BB8AFC117B5CFCEA5EC6687B /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"POD_CONFIGURATION_RELEASE=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.0;
-				SYMROOT = "${SRCROOT}/../build";
-			};
-			name = Release;
-		};
-		6B46607D60FD9EFC0E2B84B0B23F6E35 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0ADC0D329D75B7C789FBE98AB348DC39 /* EXCamera.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXCamera/EXCamera-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXCamera;
-				PRODUCT_NAME = EXCamera;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		7A982E0F88471136AB1E8B4888151D29 /* Release */ = {
+		501E18B8125BE049030B056B9BB96AD4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E588865B62139F316B3ACC8EA47C5461 /* EXCamera.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
@@ -429,10 +343,35 @@
 			};
 			name = Release;
 		};
-		897E3CBA94270AF5AEB873739EC4D39D /* Debug */ = {
+		5792FB14A5FD5836DD943BF7534F69D1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0ADC0D329D75B7C789FBE98AB348DC39 /* EXCamera.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXCamera/EXCamera-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXCamera;
+				PRODUCT_NAME = EXCamera;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		70DB676F11853C908CE8FFC0919CE330 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -455,6 +394,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -493,23 +433,85 @@
 			};
 			name = Debug;
 		};
+		A08786722F0BC83CE67E44F510014AE7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		9546DCCDBD3BF5539859A1A6B099C5EE /* Build configuration list for PBXProject "EXCamera" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				897E3CBA94270AF5AEB873739EC4D39D /* Debug */,
-				6A1D7425BB8AFC117B5CFCEA5EC6687B /* Release */,
+				70DB676F11853C908CE8FFC0919CE330 /* Debug */,
+				A08786722F0BC83CE67E44F510014AE7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		9DFD55DD272923B75B84CDA3746F6358 /* Build configuration list for PBXNativeTarget "EXCamera" */ = {
+		CA3395EA9E74FB95DF23D67B32D52310 /* Build configuration list for PBXNativeTarget "EXCamera" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				6B46607D60FD9EFC0E2B84B0B23F6E35 /* Debug */,
-				7A982E0F88471136AB1E8B4888151D29 /* Release */,
+				5792FB14A5FD5836DD943BF7534F69D1 /* Debug */,
+				501E18B8125BE049030B056B9BB96AD4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

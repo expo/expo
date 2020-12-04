@@ -6,7 +6,7 @@ import Permalink from '~/components/Permalink';
 import { Code, InlineCode } from '~/components/base/code';
 import { ExpoKitDetails, BareWorkflowDetails } from '~/components/base/details';
 import { H2, H3, H4 } from '~/components/base/headings';
-import { ExternalLink } from '~/components/base/link';
+import Link from '~/components/base/link';
 import { UL, OL, LI } from '~/components/base/list';
 import { PDIV, B, Quote } from '~/components/base/paragraph';
 
@@ -45,15 +45,13 @@ export const h3 = createPermalinkedComponent(H3, { baseNestingLevel: 3 });
 export const h4 = createPermalinkedComponent(H4, { baseNestingLevel: 4 });
 export const code = Code;
 export const inlineCode = InlineCode;
-export const a = ExternalLink;
+export const a = Link;
 export const blockquote = Quote;
 export const expokitDetails = ExpoKitDetails;
 export const bareworkflowDetails = BareWorkflowDetails;
 export const propertyAnchor = createPermalinkedComponent(PDIV, {
   baseNestingLevel: 3,
-  customIconStyle: { top: -8 },
 });
 export const subpropertyAnchor = createPermalinkedComponent(PDIV, {
-  customIconStyle: { left: -44, top: -8 },
   baseNestingLevel: 3,
 });

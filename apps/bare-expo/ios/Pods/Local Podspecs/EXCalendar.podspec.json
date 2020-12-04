@@ -1,6 +1,6 @@
 {
   "name": "EXCalendar",
-  "version": "8.5.0",
+  "version": "8.6.0",
   "summary": "Provides an API for interacting with the device's system calendars, events, reminders, and associated records.",
   "description": "Provides an API for interacting with the device's system calendars, events, reminders, and associated records.",
   "license": "MIT",
@@ -12,9 +12,6 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXCalendar/**/*.{h,m}",
-  "preserve_paths": "EXCalendar/**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "UMCore": [
 
@@ -22,5 +19,6 @@
     "UMPermissionsInterface": [
 
     ]
-  }
+  },
+  "source_files": "EXCalendar/**/*.{h,m}"
 }

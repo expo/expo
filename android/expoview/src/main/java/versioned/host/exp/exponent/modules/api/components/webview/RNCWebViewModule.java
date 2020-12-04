@@ -12,9 +12,11 @@ import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.core.util.Pair;
 
 import android.util.Log;
 import android.webkit.MimeTypeMap;
@@ -35,6 +37,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -49,6 +53,35 @@ public class RNCWebViewModule extends ReactContextBaseJavaModule implements Acti
   private File outputImage;
   private File outputVideo;
   private DownloadManager.Request downloadRequest;
+
+  protected static class ShouldOverrideUrlLoadingLock {
+    protected enum ShouldOverrideCallbackState {
+      UNDECIDED,
+      SHOULD_OVERRIDE,
+      DO_NOT_OVERRIDE,
+    }
+
+    private int nextLockIdentifier = 0;
+    private final HashMap<Integer, AtomicReference<ShouldOverrideCallbackState>> shouldOverrideLocks = new HashMap<>();
+
+    public synchronized Pair<Integer, AtomicReference<ShouldOverrideCallbackState>> getNewLock() {
+      final int lockIdentifier = nextLockIdentifier++;
+      final AtomicReference<ShouldOverrideCallbackState> shouldOverride = new AtomicReference<>(ShouldOverrideCallbackState.UNDECIDED);
+      shouldOverrideLocks.put(lockIdentifier, shouldOverride);
+      return new Pair<>(lockIdentifier, shouldOverride);
+    }
+
+    @Nullable
+    public synchronized AtomicReference<ShouldOverrideCallbackState> getLock(Integer lockIdentifier) {
+      return shouldOverrideLocks.get(lockIdentifier);
+    }
+
+    public synchronized void removeLock(Integer lockIdentifier) {
+      shouldOverrideLocks.remove(lockIdentifier);
+    }
+  }
+
+  protected static final ShouldOverrideUrlLoadingLock shouldOverrideUrlLoadingLock = new ShouldOverrideUrlLoadingLock();
 
   private enum MimeType {
     DEFAULT("*/*"),
@@ -103,6 +136,17 @@ public class RNCWebViewModule extends ReactContextBaseJavaModule implements Acti
       result = true;
     }
     promise.resolve(result);
+  }
+
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public void onShouldStartLoadWithRequestCallback(final boolean shouldStart, final int lockIdentifier) {
+    final AtomicReference<ShouldOverrideUrlLoadingLock.ShouldOverrideCallbackState> lockObject = shouldOverrideUrlLoadingLock.getLock(lockIdentifier);
+    if (lockObject != null) {
+      synchronized (lockObject) {
+        lockObject.set(shouldStart ? ShouldOverrideUrlLoadingLock.ShouldOverrideCallbackState.DO_NOT_OVERRIDE : ShouldOverrideUrlLoadingLock.ShouldOverrideCallbackState.SHOULD_OVERRIDE);
+        lockObject.notify();
+      }
+    }
   }
 
   public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {

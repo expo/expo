@@ -5,7 +5,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-media-lib
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-media-library`** provides access to the user's media library, allowing them to access their existing images and videos from your app, as well as save new ones. You can also subscribe to any updates made to the user's media library.
 
@@ -17,19 +16,13 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 ## Configuration
 
-In managed apps, the permission to access images or videos ([`Permissions.CAMERA_ROLL`](../permissions/#permissionscamera_roll)) is added automatically.
+In managed apps, the permission to access images or videos ([`Permissions.CAMERA_ROLL`](permissions.md#permissionscamera_roll)) is added automatically.
 
 ## API
 
 ```js
 import * as MediaLibrary from 'expo-media-library';
 ```
-
-<TableOfContentSection title='Methods' contents={['MediaLibrary.requestPermissionsAsync()', 'MediaLibrary.getPermissionsAsync()', 'MediaLibrary.createAssetAsync(localUri)', 'MediaLibrary.saveToLibraryAsync(localUri)', 'MediaLibrary.getAssetsAsync(options)', 'MediaLibrary.getAssetInfoAsync(asset, options)', 'MediaLibrary.deleteAssetsAsync(assets)', 'MediaLibrary.getAlbumsAsync()', 'MediaLibrary.getAlbumAsync(albumName)', 'MediaLibrary.createAlbumAsync(albumName, asset, copyAsset)', 'MediaLibrary.deleteAlbumsAsync(albums, deleteAssets)', 'MediaLibrary.addAssetsToAlbumAsync(assets, album, copyAssets)', 'MediaLibrary.removeAssetsFromAlbumAsync(assets, album)', 'MediaLibrary.getMomentsAsync()', 'MediaLibrary.addListener(listener)', 'MediaLibrary.removeAllListeners()']} />
-
-<TableOfContentSection title='Types' contents={['Asset', 'Album']} />
-
-<TableOfContentSection title='Constants' contents={['MediaLibrary.MediaType', 'MediaLibrary.SortBy']} />
 
 ## Methods
 
@@ -49,9 +42,19 @@ Checks user's permissions for accessing media library. Alias for `Permissions.ge
 
 A promise that resolves to an object of type [CameraRollPermissionResponse](#medialibrarycamerarollpermissionresponse).
 
+### `MediaLibrary.presentPermissionsPickerAsync()`
+
+**Available only on iOS >= 14.** Allows the user to update the assets that your app has access to. The system modal is only displayed if the user originally allowed only `limited` access to their media library, otherwise this method is a no-op.
+
+#### Returns
+
+A promise that either rejects if the method is unavailable (meaning the device is not running iOS >= 14), or resolves to void.
+
+> **Note:** This method doesn't inform you if the user changes which assets your app has access to. For that information, you need to subscribe for updates to the user's media library using [MediaLibrary.addListener(listener)](#medialibraryaddlistenerlistener). If `hasIncrementalChanges` is `false`, the user changed their permissions.
+
 ### `MediaLibrary.createAssetAsync(localUri)`
 
-Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](../camera/). This method requires `CAMERA_ROLL` permission.
+Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](camera.md). This method requires `CAMERA_ROLL` permission.
 
 ```js
 const { uri } = await Camera.takePictureAsync();
@@ -229,7 +232,11 @@ Subscribes for updates in user's media library.
 
 #### Arguments
 
-- **listener (_function_)** -- A callback that is called when any assets have been inserted or deleted from the library. **On Android** it's invoked with an empty object. **On iOS** it's invoked with an object that contains following keys:
+- **listener (_function_)** -- A callback that is fired when any assets have been inserted or deleted from the library, or when the user changes which assets they're allowing access to. **On Android** it's invoked with an empty object. **On iOS** it's invoked with an object containing following keys:
+  - **hasIncrementalChanges (_boolean_)** -- Whether the media library's changes could be described as "incremental changes". `true` indicates the changes are described by the `insertedAssets`, `deletedAssets` and `updatedAssets` values. `false` indicates that the scope of changes is too large and you should perform a full assets reload (eg. a user has changed access to individual assets in the media library).
+
+  Available only if `hasIncrementalChanges` is `true`:
+
   - **insertedAssets (_array_)** -- Array of [assets](#assets) that have been inserted to the library.
   - **deletedAssets (_array_)** -- Array of [assets](#assets) that have been deleted from the library.
   - **updatedAssets (_array_)** -- Array of [assets](#assets) that have been updated or completed downloading from network storage (iCloud in iOS).
@@ -246,7 +253,7 @@ Removes all listeners.
 
 ### `MediaLibrary.CameraRollPermissionResponse`
 
-`MediaLibrary.CameraRollPermissionResponse` extends [PermissionResponse](../permissions/#permissionresponse) type exported by `unimodules-permission-interface` and contains additional iOS-specific field:
+`MediaLibrary.CameraRollPermissionResponse` extends [PermissionResponse](permissions.md#permissionresponse) type exported by `unimodules-permission-interface` and contains additional iOS-specific field:
 
 - `accessPrivileges` **(string)** - Indicates if your app has access to the whole or only part of the photo library. Possible values are:
   - `all` if the user granted your app access to the whole photo library
@@ -255,25 +262,25 @@ Removes all listeners.
 
 ### `Asset`
 
-| Field name       | Type      | Platforms | Description                                                                                                   | Possible values                                                                                      |
-| ---------------- | --------- | --------- | ------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| id               | _string_  | both      | Internal ID that represents an asset                                                                          |                                                                                                      |
-| filename         | _string_  | both      | Filename of the asset                                                                                         |                                                                                                      |
-| uri              | _string_  | both      | URI that points to the asset                                                                                  | `assets://*` (iOS), `file://*` (Android)                                                             |
-| mediaType        | _string_  | both      | Media type                                                                                                    | `MediaType.audio`, `MediaType.photo`, `MediaType.video`, `MediaType.unknown`                         |
-| width            | _number_  | both      | Width of the image or video                                                                                   |                                                                                                      |
-| height           | _number_  | both      | Height of the image or video                                                                                  |                                                                                                      |
-| creationTime     | _number_  | both      | File creation timestamp                                                                                       |                                                                                                      |
-| modificationTime | _number_  | both      | Last modification timestamp                                                                                   |                                                                                                      |
-| duration         | _number_  | both      | Duration of the video or audio asset in seconds                                                               |                                                                                                      |
-| mediaSubtypes    | _array_   | iOS       | An array of media subtypes                                                                                    | `hdr`, `panorama`, `stream`, `timelapse`, `screenshot`, `highFrameRate`, `livePhoto`, `depthEffect`  |
-| albumId          | _string_  | Android   | Album ID that the asset belongs to                                                                            |                                                                                                      |
-| localUri \*      | _string_  | both      | Local URI for the asset                                                                                       |                                                                                                      |
-| location \*      | _object_  | both      | GPS location if available                                                                                     | `latitude: number, longitude: number` or `null`                                                      |
-| exif \*          | _object_  | both      | EXIF metadata associated with the image                                                                       |                                                                                                      |
-| orientation \*   | _number_  | iOS       | Display orientation of the image. Orientation is available only for assets whose mediaType is MediaType.photo | Numbers 1-8, see [EXIF orientation specification](http://sylvana.net/jpegcrop/exif_orientation.html) |
-| isFavorite \*    | _boolean_ | iOS       | Whether the asset is marked as favorite                                                                       | `true`, `false`                                                                                      |
-| isNetworkAsset \*\*| _boolean_ | iOS       | Whether the asset is stored on the network (iCloud on iOS)| `true`, `false`
+| Field name          | Type      | Platforms | Description                                                                                                   | Possible values                                                                                      |
+| ------------------- | --------- | --------- | ------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| id                  | _string_  | both      | Internal ID that represents an asset                                                                          |                                                                                                      |
+| filename            | _string_  | both      | Filename of the asset                                                                                         |                                                                                                      |
+| uri                 | _string_  | both      | URI that points to the asset                                                                                  | `assets://*` (iOS), `file://*` (Android)                                                             |
+| mediaType           | _string_  | both      | Media type                                                                                                    | `MediaType.audio`, `MediaType.photo`, `MediaType.video`, `MediaType.unknown`                         |
+| width               | _number_  | both      | Width of the image or video                                                                                   |                                                                                                      |
+| height              | _number_  | both      | Height of the image or video                                                                                  |                                                                                                      |
+| creationTime        | _number_  | both      | File creation timestamp                                                                                       |                                                                                                      |
+| modificationTime    | _number_  | both      | Last modification timestamp                                                                                   |                                                                                                      |
+| duration            | _number_  | both      | Duration of the video or audio asset in seconds                                                               |                                                                                                      |
+| mediaSubtypes       | _array_   | iOS       | An array of media subtypes                                                                                    | `hdr`, `panorama`, `stream`, `timelapse`, `screenshot`, `highFrameRate`, `livePhoto`, `depthEffect`  |
+| albumId             | _string_  | Android   | Album ID that the asset belongs to                                                                            |                                                                                                      |
+| localUri \*         | _string_  | both      | Local URI for the asset                                                                                       |                                                                                                      |
+| location \*         | _object_  | both      | GPS location if available                                                                                     | `latitude: number, longitude: number` or `null`                                                      |
+| exif \*             | _object_  | both      | EXIF metadata associated with the image                                                                       |                                                                                                      |
+| orientation \*      | _number_  | iOS       | Display orientation of the image. Orientation is available only for assets whose mediaType is MediaType.photo | Numbers 1-8, see [EXIF orientation specification](http://sylvana.net/jpegcrop/exif_orientation.html) |
+| isFavorite \*       | _boolean_ | iOS       | Whether the asset is marked as favorite                                                                       | `true`, `false`                                                                                      |
+| isNetworkAsset \*\* | _boolean_ | iOS       | Whether the asset is stored on the network (iCloud on iOS)                                                    | `true`, `false`                                                                                      |
 
 > \* These fields can be obtained only by calling `getAssetInfoAsync` method
 

@@ -1,1 +1,1 @@
-../../../../../../../node_modules/@react-native-community/picker/ios/RNCPickerManager.h
+../../../../../../../node_modules/@react-native-picker/picker/ios/RNCPickerManager.h

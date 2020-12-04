@@ -1,51 +1,63 @@
 #import "EXDevelopmentClient.h"
 
 #import "EXDevelopmentClientController+Private.h"
+#import <React/RCTBridge.h>
 
+#import <expo_development_client-Swift.h>
 
 @implementation EXDevelopmentClient
 
 RCT_EXPORT_MODULE()
 
+- (instancetype)init {
+  if (self = [super init]) {
+    [[EXDevelopmentClientController sharedInstance].pendingDeepLinkRegistry subscribe:self];
+  }
+  return self;
+}
+
+- (NSArray<NSString *> *)supportedEvents
+{
+  return @[@"expo.modules.developmentclient.onnewdeeplink"];
+}
+
+
+- (void)invalidate
+{
+  [[EXDevelopmentClientController sharedInstance].pendingDeepLinkRegistry unsubscribe:self];
+}
+
 + (BOOL)requiresMainQueueSetup {
   return NO;
 }
 
-+ (UIInterfaceOrientation)defaultOrientationForOrientationMask:(UIInterfaceOrientationMask)orientationMask
+- (void)onNewPendingDeepLink:(NSURL *)deepLink
 {
-  if (UIInterfaceOrientationMaskPortrait & orientationMask) {
-    return UIInterfaceOrientationPortrait;
-  } else if (UIInterfaceOrientationMaskLandscapeLeft & orientationMask) {
-    return UIInterfaceOrientationLandscapeLeft;
-  } else if (UIInterfaceOrientationMaskLandscapeRight & orientationMask) {
-    return UIInterfaceOrientationLandscapeRight;
-  } else if (UIInterfaceOrientationMaskPortraitUpsideDown & orientationMask) {
-    return UIInterfaceOrientationPortraitUpsideDown;
-  }
-  return UIInterfaceOrientationUnknown;
+  [self sendEventWithName:@"expo.modules.developmentclient.onnewdeeplink" body:deepLink.absoluteString];
 }
 
-RCT_EXPORT_METHOD(loadApp:(NSURL *)url
-                  options:(NSDictionary *)options
+RCT_EXPORT_METHOD(getPendingDeepLink:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  resolve([EXDevelopmentClientController sharedInstance].pendingDeepLinkRegistry.pendingDeepLink.absoluteString);
+}
+
+RCT_EXPORT_METHOD(loadApp:(NSString *)url
                   resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject) {
-  UIInterfaceOrientationMask orientationMask = UIInterfaceOrientationMaskAll;
-  if ([@"portrait" isEqualToString:options[@"orientation"]]) {
-    orientationMask = UIInterfaceOrientationMaskPortrait;
-  } else if ([@"landscape" isEqualToString:options[@"orientation"]]) {
-    orientationMask = UIInterfaceOrientationMaskLandscape;
-  }
-  UIInterfaceOrientation orientation = [EXDevelopmentClient defaultOrientationForOrientationMask:orientationMask];
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  EXDevelopmentClientController *controller = [EXDevelopmentClientController sharedInstance];
+  [controller loadApp:url onSuccess:^{
+    resolve(nil);
+  } onError:^(NSError *error) {
+    reject(@"ERR_DEVELOPMENT_CLIENT_CANNOT_LOAD_APP", error.description, error);
+  }];
+}
 
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [[UIDevice currentDevice] setValue:@(orientation) forKey:@"orientation"];
-    [UIViewController attemptRotationToDeviceOrientation];
-
-    EXDevelopmentClientController *controller = [EXDevelopmentClientController sharedInstance];
-    controller.sourceUrl = url;
-    [controller.delegate developmentClientController:controller didStartWithSuccess:YES];
-  });
-  resolve(nil);
+RCT_EXPORT_METHOD(getRecentlyOpenedApps:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  resolve([[EXDevelopmentClientController sharedInstance] recentlyOpenedApps]);
 }
 
 @end

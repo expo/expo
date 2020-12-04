@@ -170,6 +170,21 @@ Object.defineProperties(module.exports, {
   },
 
   /** @deprecated */
+  AppLoading: {
+    enumerable: true,
+    get() {
+      removedModule(
+        `import { AppLoading } from 'expo' -> import AppLoading from 'expo-app-loading'`,
+        'AppLoading',
+        'expo-app-loading'
+      );
+
+      const AppLoadingPlaceholder = require('./launch/AppLoadingPlaceholder');
+      return AppLoadingPlaceholder.default;
+    },
+  },
+
+  /** @deprecated */
   Asset: {
     enumerable: true,
     get() {
@@ -693,6 +708,17 @@ Object.defineProperties(module.exports, {
       removedModule(
         `import { MagnetometerUncalibrated } from 'expo' -> import { MagnetometerUncalibrated } from 'expo-sensors'`,
         'MagnetometerUncalibrated',
+        'expo-sensors'
+      );
+    },
+  },
+  /** @deprecated */
+  Pedometer: {
+    enumerable: true,
+    get() {
+      removedModule(
+        `import { Pedometer } from 'expo' -> import { Pedometer } from 'expo-sensors'`,
+        'Pedometer',
         'expo-sensors'
       );
     },

@@ -1,5 +1,5 @@
 import { Platform } from '@unimodules/core';
-import Constants from 'expo-constants';
+import Constants, { ExecutionEnvironment } from 'expo-constants';
 import * as Linking from 'expo-linking';
 import { dismissAuthSession, openAuthSessionAsync } from 'expo-web-browser';
 import { AuthRequest } from './AuthRequest';
@@ -84,7 +84,7 @@ export function getRedirectUrl(path) {
 export function makeRedirectUri({ native, path, preferLocalhost, useProxy, } = {}) {
     if (Platform.OS !== 'web') {
         // Bare workflow
-        if (!Constants.manifest) {
+        if (Constants.executionEnvironment === ExecutionEnvironment.Bare) {
             if (!native) {
                 // TODO(Bacon): Link to docs or fyi
                 console.warn("makeRedirectUri requires you define a `native` scheme for bare workflow, and standalone native apps, you'll need to manually define it based on your app's URI schemes.");
@@ -94,7 +94,7 @@ export function makeRedirectUri({ native, path, preferLocalhost, useProxy, } = {
             return native || '';
         }
         // Should use the user-defined native scheme in standalone builds
-        if (Constants.appOwnership === 'standalone' && native) {
+        if (Constants.executionEnvironment === ExecutionEnvironment.Standalone && native) {
             return native;
         }
     }

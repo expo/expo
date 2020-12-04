@@ -27,19 +27,19 @@
 			remoteGlobalIDString = 5CDFFFDA1BEA16A0D3629FE9F761022A;
 			remoteInfo = FBReactNativeSpec;
 		};
+		BB0E93A4C7DAA9795ADAE9BB6768BCF7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 96DA44A1F26FEBD56EE439D3A56AD28B /* React-Core.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 5DA1A74647F652AE8E4DE074AFC4C6B7;
+			remoteInfo = "React-Core";
+		};
 		F1791D584434CD94374E58179E9B8ADB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 226E5FDACFDE70BC6F37CC9704B32FE5 /* ReactCommon.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 2610D146B211EB79FECF83D4FA5AB36D;
 			remoteInfo = ReactCommon;
-		};
-		FA9712C02C9AF88C6851FFC08164BCF1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 96DA44A1F26FEBD56EE439D3A56AD28B /* React-Core.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 5DA1A74647F652AE8E4DE074AFC4C6B7;
-			remoteInfo = "React-Core";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -162,7 +162,7 @@
 			);
 			dependencies = (
 				D9AD0CB89A8D6B6327BB74D9B685E54A /* PBXTargetDependency */,
-				04C00D555323CC25E5EDCB313FFB81CB /* PBXTargetDependency */,
+				FBF4CA92735B6574BD46CCDEA6FA0D42 /* PBXTargetDependency */,
 				6535369D037D8BBCD60303E4E6F1835C /* PBXTargetDependency */,
 				116C37EA31D5CE98D605ED73EB538C78 /* PBXTargetDependency */,
 			);
@@ -226,11 +226,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		04C00D555323CC25E5EDCB313FFB81CB /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "React-Core";
-			targetProxy = FA9712C02C9AF88C6851FFC08164BCF1 /* PBXContainerItemProxy */;
-		};
 		116C37EA31D5CE98D605ED73EB538C78 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = ReactCommon;
@@ -246,18 +241,23 @@
 			name = FBReactNativeSpec;
 			targetProxy = 737BAF6A856DA9FB9A4C295A79C09B9A /* PBXContainerItemProxy */;
 		};
+		FBF4CA92735B6574BD46CCDEA6FA0D42 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "React-Core";
+			targetProxy = BB0E93A4C7DAA9795ADAE9BB6768BCF7 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		5B079865EA9023AB1920F77F09DC965A /* Debug */ = {
+		16D5D12924523A72ACA563E3B3140534 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C74D4FC3FDE59DD9CB3C1D12299B3105 /* React-RCTLinking.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/React-RCTLinking/React-RCTLinking-prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				OTHER_LDFLAGS = "";
@@ -274,10 +274,11 @@
 			};
 			name = Debug;
 		};
-		7E07CDEC57161C8BA870E4796197625E /* Debug */ = {
+		9EAEF2C86F8F77B725179EE6B10A2DDE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -300,6 +301,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -338,10 +340,37 @@
 			};
 			name = Debug;
 		};
-		AD67929E0FE1DBD79860ACDFAC995EA6 /* Release */ = {
+		DFA12413A7E1B0ACFF7AE4F85E420B36 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2F03EDC3820209EB2844F2D316FF2B05 /* React-RCTLinking.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/React-RCTLinking/React-RCTLinking-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RCTLinking;
+				PRODUCT_NAME = "React-RCTLinking";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		EB3F5E2AEE9E64EBA13983F4D6544DC8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -364,6 +393,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -398,40 +428,14 @@
 			};
 			name = Release;
 		};
-		AD8691493496FD114DDFA2E72CB94681 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2F03EDC3820209EB2844F2D316FF2B05 /* React-RCTLinking.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/React-RCTLinking/React-RCTLinking-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = RCTLinking;
-				PRODUCT_NAME = "React-RCTLinking";
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		B53F5C98AE9A6401C6AE7429F249F63C /* Build configuration list for PBXProject "React-RCTLinking" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				7E07CDEC57161C8BA870E4796197625E /* Debug */,
-				AD67929E0FE1DBD79860ACDFAC995EA6 /* Release */,
+				9EAEF2C86F8F77B725179EE6B10A2DDE /* Debug */,
+				EB3F5E2AEE9E64EBA13983F4D6544DC8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -439,8 +443,8 @@
 		C7F74CBA4ED8A7983ABA3E079AAC70B0 /* Build configuration list for PBXNativeTarget "React-RCTLinking" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				5B079865EA9023AB1920F77F09DC965A /* Debug */,
-				AD8691493496FD114DDFA2E72CB94681 /* Release */,
+				16D5D12924523A72ACA563E3B3140534 /* Debug */,
+				DFA12413A7E1B0ACFF7AE4F85E420B36 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -8,7 +8,12 @@
 
 ### 🐛 Bug fixes
 
+## 9.2.0 — 2020-11-17
+
+### 🐛 Bug fixes
+
 - Fixed a bug causing an application crash when enabling remote debugging on Android. ([#10381](https://github.com/expo/expo/pull/10381) by [@sjchmiela](https://github.com/sjchmiela))
+- Fixed support for offset in TypedArray. ([#10692](https://github.com/expo/expo/pull/10692) by [@wkozyra95](https://github.com/wkozyra95))
 
 ## 9.1.1 — 2020-08-26
 

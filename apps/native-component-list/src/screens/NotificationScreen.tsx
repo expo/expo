@@ -1,4 +1,5 @@
 import { Subscription } from '@unimodules/core';
+import Constants from 'expo-constants';
 import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
 import React from 'react';
@@ -39,6 +40,33 @@ export default class NotificationScreen extends React.Component<
       this._onResponseReceivedListener = Notifications.addNotificationResponseReceivedListener(
         this._handelNotificationResponseReceived
       );
+      // Using the same category as in `registerForPushNotificationsAsync`
+      Notifications.setNotificationCategoryAsync(`${Constants.manifest.id}:welcome`, [
+        {
+          buttonTitle: `Don't open app`,
+          identifier: 'first-button',
+          options: {
+            opensAppToForeground: false,
+          },
+        },
+        {
+          buttonTitle: 'Respond with text',
+          identifier: 'second-button-with-text',
+          textInput: {
+            submitButtonTitle: 'Submit button',
+            placeholder: 'Placeholder text',
+          },
+        },
+        {
+          buttonTitle: 'Open app',
+          identifier: 'third-button',
+          options: {
+            opensAppToForeground: true,
+          },
+        },
+      ])
+        .then(category => console.log('Notification category set', category))
+        .catch(error => console.warn('Could not have set notification category', error));
     }
   }
 

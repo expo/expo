@@ -7,64 +7,63 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		05BD3D9B7D344ADAA465D9E74D9B591B /* NSObject+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = 785144F632D5590E1708B2ACABF843D9 /* NSObject+RNBranch.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
-		09E667E700CC4E0254DAA7E46F609B13 /* RNBranchConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = FBB8820BC4BA6354D1A539497EB3878D /* RNBranchConfig.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		1E184D0A9C0255EBFC867B73FCE5F397 /* RNBranchEventEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = F71FA1790B3FD346FD9936D7B3C40848 /* RNBranchEventEmitter.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
-		2C44327C6D014EA37FF4B87DB58BB1B3 /* RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = 1913AB56E9E15DA715C2FAD6EC38A608 /* RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		304DFD7EE9A35BE1E613A2048AC2B13D /* BranchEvent+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = 6A75C5B4B99FEAB6C6289934237847CF /* BranchEvent+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		365C9608A452743CEF36562E0EB31932 /* RNBranchAgingItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B0378C3F77CE743C8F1F667A29BD3A1 /* RNBranchAgingItem.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
-		423B8BB2C15113C8EE9E0F62A6BC6F82 /* RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = 6D8BA527861562FD3003030F829EFFE8 /* RNBranch.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
-		44FC0821869C6D1C5F628D607AE8AC09 /* RNBranchConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = FC846CED7112AD22B456B6872FDCB5B0 /* RNBranchConfig.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
-		56817BD70B4713C713C324F0B6F364C4 /* NSObject+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = DD502BA9AF259EC1668F3E383D87096A /* NSObject+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		60390B7373AB158846A316BDC2C0A9DD /* BranchLinkProperties+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = CCDBD391513D3E9717B5B069D05EE3A0 /* BranchLinkProperties+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		658EB9528FEBA8EB0698E913C29C39A7 /* BranchUniversalObject+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = A49284DB92623A95BDD6838C29A2E08C /* BranchUniversalObject+RNBranch.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
-		6E00DB947C207AE95A20D82831406D29 /* RNBranchAgingDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 0408EAEDD8C5F2C7DE13186FEA9780AC /* RNBranchAgingDictionary.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
-		73BEFF02E2DCDB1C8C9831948FC10BD7 /* EXBranchManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F58E871A9E1A906784D9326F5DB39481 /* EXBranchManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		95F7005372DA811F920CB3DA10E239C4 /* BranchLinkProperties+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = 227F8EDD965DCEFF8169B44991E2BDB4 /* BranchLinkProperties+RNBranch.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
-		9D39BD1FC96F54266A78326DA343EA33 /* RNBranchProperty.h in Headers */ = {isa = PBXBuildFile; fileRef = B61B1240DCB86E3918226FA2AA3C445D /* RNBranchProperty.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		A0630D87A16FA16E4C1D42E24AF2863A /* BranchContentMetadata+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = ABE20E48C163D720F1D480164BCC9531 /* BranchContentMetadata+RNBranch.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
-		B5DAE9C642C0F78D9D7E32B4D9636CDC /* RNBranchProperty.m in Sources */ = {isa = PBXBuildFile; fileRef = 5869FC31C05162BFE86A176FD168D47A /* RNBranchProperty.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
-		B858ED3AF4664819D4AACA66DC905743 /* BranchEvent+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = F578E53307D55899C5B0DC4A90599CE7 /* BranchEvent+RNBranch.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
-		BA63E53BD226249EF078DC065BD6B844 /* BranchUniversalObject+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = A186CB1DF0BB2E97AAB84C6B5CC44A5A /* BranchUniversalObject+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		BFAB2EEFB82D6F2EE60EC14C7DEAAB84 /* RNBranchEventEmitter.h in Headers */ = {isa = PBXBuildFile; fileRef = BB2C821DE21EFF1135F05D62BC3DC69D /* RNBranchEventEmitter.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		E430B8BDFEA03FDE3CDD8A882C604E13 /* EXBranchManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E4CCD85FEDD116B2A028E006059981B /* EXBranchManager.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
-		EE79C0E858A235015FCB9A63701D758C /* EXBranch-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = AF1568ABF3083F98AF93A71BFFA06E14 /* EXBranch-dummy.m */; };
-		F0FD2A188FA0D6CB02B999916C7C8150 /* BranchContentMetadata+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = 59FEE6B483C9899C1CFC712FE3075054 /* BranchContentMetadata+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		F3E3066D4A6D5A6C39713F3E94A9D098 /* RNBranchAgingDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = F29C1448B1E8FBA0ACB593BED739CCA7 /* RNBranchAgingDictionary.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		FA21838512640674BD094549F4F1EF03 /* RNBranchAgingItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 3B7DA9F1B5F4265545BF0CDD29E9368E /* RNBranchAgingItem.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		0FF61BBE3C1D0A1FA4766F45BFC926FD /* RNBranchAgingDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = F29C1448B1E8FBA0ACB593BED739CCA7 /* RNBranchAgingDictionary.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		1A7926FA6395F2B8517687208DD7969A /* RNBranchAgingItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B0378C3F77CE743C8F1F667A29BD3A1 /* RNBranchAgingItem.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
+		1A9E40DBA4BB36A4AB6428A139FDA715 /* RNBranchConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = FC846CED7112AD22B456B6872FDCB5B0 /* RNBranchConfig.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
+		1B4DA313ED767CE270EB4D0A430F896B /* BranchLinkProperties+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = CCDBD391513D3E9717B5B069D05EE3A0 /* BranchLinkProperties+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		2957EA6BA30C4FAE28C28F50247356A6 /* BranchLinkProperties+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = 227F8EDD965DCEFF8169B44991E2BDB4 /* BranchLinkProperties+RNBranch.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
+		2E2CE5BA2B0D2A09374BE054B12D357C /* BranchEvent+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = 6A75C5B4B99FEAB6C6289934237847CF /* BranchEvent+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		2F21EC6D9E99D370535CD2CB632F8100 /* BranchUniversalObject+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = A186CB1DF0BB2E97AAB84C6B5CC44A5A /* BranchUniversalObject+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		564DF7EAB4D83B8079DB29809AC075F3 /* BranchContentMetadata+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = ABE20E48C163D720F1D480164BCC9531 /* BranchContentMetadata+RNBranch.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
+		59C08062712AD57F027468FC7B7C9D28 /* RNBranchProperty.m in Sources */ = {isa = PBXBuildFile; fileRef = 5869FC31C05162BFE86A176FD168D47A /* RNBranchProperty.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
+		5FD65DF7B9282333AFAA126D652420A2 /* EXBranchManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F58E871A9E1A906784D9326F5DB39481 /* EXBranchManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		6909192BAF3C92480E91BF44EAA6A7FC /* RNBranchEventEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = F71FA1790B3FD346FD9936D7B3C40848 /* RNBranchEventEmitter.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
+		7225B2EE2E404F885607F040451C41A2 /* RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = 6D8BA527861562FD3003030F829EFFE8 /* RNBranch.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
+		7B032DC4E7F54786CAF57D5D145B3E57 /* RNBranchProperty.h in Headers */ = {isa = PBXBuildFile; fileRef = B61B1240DCB86E3918226FA2AA3C445D /* RNBranchProperty.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7B192E5EAE59F4B4CB07A8B4289D5AF4 /* BranchContentMetadata+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = 59FEE6B483C9899C1CFC712FE3075054 /* BranchContentMetadata+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7C22802354F4A7220A52EC0F31A088F4 /* NSObject+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = DD502BA9AF259EC1668F3E383D87096A /* NSObject+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7DFFC7FD65E7E9115562A9791C2D2DC9 /* NSObject+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = 785144F632D5590E1708B2ACABF843D9 /* NSObject+RNBranch.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
+		88939D7175C7260390ACF5AB4EE47432 /* RNBranchAgingItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 3B7DA9F1B5F4265545BF0CDD29E9368E /* RNBranchAgingItem.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8ED7D5069F2D3DB94F9FC9D6ED75DADB /* RNBranchConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = FBB8820BC4BA6354D1A539497EB3878D /* RNBranchConfig.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A71CDB6E0976C0C3EE9EED851B6F6EB6 /* RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = 1913AB56E9E15DA715C2FAD6EC38A608 /* RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		AB884B5ABBAC5EBCDE9E8605992F1942 /* EXBranch-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = AF1568ABF3083F98AF93A71BFFA06E14 /* EXBranch-dummy.m */; };
+		B2F729A05363742B499425B6D33163DD /* BranchEvent+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = F578E53307D55899C5B0DC4A90599CE7 /* BranchEvent+RNBranch.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
+		B9AED33070AC952C9FDC63748D0BBDCB /* RNBranchAgingDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 0408EAEDD8C5F2C7DE13186FEA9780AC /* RNBranchAgingDictionary.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
+		D476F6641EBECE6CDDB512D69C4455C9 /* BranchUniversalObject+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = A49284DB92623A95BDD6838C29A2E08C /* BranchUniversalObject+RNBranch.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
+		E5160E95D7442A788A1F2F0216C7E8E3 /* EXBranchManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E4CCD85FEDD116B2A028E006059981B /* EXBranchManager.m */; settings = {COMPILER_FLAGS = "-DRNBRANCH_VERSION=@\\\"5.0.0\\\""; }; };
+		E97EFEF1E8E3511289E78FF687EE8434 /* RNBranchEventEmitter.h in Headers */ = {isa = PBXBuildFile; fileRef = BB2C821DE21EFF1135F05D62BC3DC69D /* RNBranchEventEmitter.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		2E31EF1020B32CF8D0F54B6F6A5CA9B2 /* PBXContainerItemProxy */ = {
+		4C5FCFCC36A43B86790C4D26160E37C1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 2915286AEB5B5F82F28DE26EF32CFDA2 /* UMCore.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
-			remoteInfo = UMCore;
-		};
-		943164786C2AAB9022423F91DFEDA22A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0003D6D5C38B8E601F0EE08C6194C4BF /* React.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 94DA87F24FB4B93E5D08FE961D5E5A3E;
-			remoteInfo = React;
-		};
-		E7878EC0DBF8CA3D7F474C832416D85E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DE01B7F0C4285AEF008819075D695F90 /* Branch.xcodeproj */;
+			containerPortal = A0160E0E485AF7DD3E4EAC1994CFEB81 /* Branch.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 32AB2597F26D238AAF12A9F8A95B992E;
 			remoteInfo = Branch;
 		};
+		4D61907930648935ADD72224B45204DD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D59B76833E1193B71DFE585C78867FCF /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
+		A132556D132C416B3CEA7A6189F5F587 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 197B4E92A220828AB7FD641903EB8BEE /* React-Core.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 5DA1A74647F652AE8E4DE074AFC4C6B7;
+			remoteInfo = "React-Core";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0003D6D5C38B8E601F0EE08C6194C4BF /* React */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React; path = React.xcodeproj; sourceTree = "<group>"; };
 		0408EAEDD8C5F2C7DE13186FEA9780AC /* RNBranchAgingDictionary.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNBranchAgingDictionary.m; sourceTree = "<group>"; };
 		0B89DF68BE8B6B7A1549FD48149F8EEA /* EXBranch.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXBranch.debug.xcconfig; sourceTree = "<group>"; };
 		1913AB56E9E15DA715C2FAD6EC38A608 /* RNBranch.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNBranch.h; sourceTree = "<group>"; };
+		197B4E92A220828AB7FD641903EB8BEE /* React-Core */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-Core"; path = "React-Core.xcodeproj"; sourceTree = "<group>"; };
 		227F8EDD965DCEFF8169B44991E2BDB4 /* BranchLinkProperties+RNBranch.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "BranchLinkProperties+RNBranch.m"; sourceTree = "<group>"; };
-		2915286AEB5B5F82F28DE26EF32CFDA2 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
 		3B7DA9F1B5F4265545BF0CDD29E9368E /* RNBranchAgingItem.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNBranchAgingItem.h; sourceTree = "<group>"; };
 		3E4CCD85FEDD116B2A028E006059981B /* EXBranchManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXBranchManager.m; path = EXBranch/EXBranchManager.m; sourceTree = "<group>"; };
 		4CB44CE5717D2562389987F99C0DA5E5 /* EXBranch-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXBranch-prefix.pch"; sourceTree = "<group>"; };
@@ -75,6 +74,7 @@
 		6A75C5B4B99FEAB6C6289934237847CF /* BranchEvent+RNBranch.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "BranchEvent+RNBranch.h"; sourceTree = "<group>"; };
 		6D8BA527861562FD3003030F829EFFE8 /* RNBranch.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNBranch.m; sourceTree = "<group>"; };
 		785144F632D5590E1708B2ACABF843D9 /* NSObject+RNBranch.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "NSObject+RNBranch.m"; sourceTree = "<group>"; };
+		A0160E0E485AF7DD3E4EAC1994CFEB81 /* Branch */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Branch; path = Branch.xcodeproj; sourceTree = "<group>"; };
 		A186CB1DF0BB2E97AAB84C6B5CC44A5A /* BranchUniversalObject+RNBranch.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "BranchUniversalObject+RNBranch.h"; sourceTree = "<group>"; };
 		A49284DB92623A95BDD6838C29A2E08C /* BranchUniversalObject+RNBranch.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "BranchUniversalObject+RNBranch.m"; sourceTree = "<group>"; };
 		ABE20E48C163D720F1D480164BCC9531 /* BranchContentMetadata+RNBranch.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "BranchContentMetadata+RNBranch.m"; sourceTree = "<group>"; };
@@ -83,9 +83,9 @@
 		BB2C821DE21EFF1135F05D62BC3DC69D /* RNBranchEventEmitter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNBranchEventEmitter.h; sourceTree = "<group>"; };
 		CCDBD391513D3E9717B5B069D05EE3A0 /* BranchLinkProperties+RNBranch.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "BranchLinkProperties+RNBranch.h"; sourceTree = "<group>"; };
 		D52FC4093552C0E67B37AF156F04443F /* EXBranch.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXBranch.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		D59B76833E1193B71DFE585C78867FCF /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
 		DBB2F64B9DCCE60CDC3BCFED51E77660 /* EXBranch.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXBranch.release.xcconfig; sourceTree = "<group>"; };
 		DD502BA9AF259EC1668F3E383D87096A /* NSObject+RNBranch.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "NSObject+RNBranch.h"; sourceTree = "<group>"; };
-		DE01B7F0C4285AEF008819075D695F90 /* Branch */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Branch; path = Branch.xcodeproj; sourceTree = "<group>"; };
 		F29C1448B1E8FBA0ACB593BED739CCA7 /* RNBranchAgingDictionary.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNBranchAgingDictionary.h; sourceTree = "<group>"; };
 		F578E53307D55899C5B0DC4A90599CE7 /* BranchEvent+RNBranch.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "BranchEvent+RNBranch.m"; sourceTree = "<group>"; };
 		F58E871A9E1A906784D9326F5DB39481 /* EXBranchManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXBranchManager.h; path = EXBranch/EXBranchManager.h; sourceTree = "<group>"; };
@@ -95,7 +95,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		0C31E644B50509E759D0DDC72B125336 /* Frameworks */ = {
+		C835D6A4A9C4A7E4C09755A10CCF551A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -163,16 +163,6 @@
 			path = EXBranch/RNBranch;
 			sourceTree = "<group>";
 		};
-		8A2E3531E7D7164D05ACD9AA3F7296CB /* Dependencies */ = {
-			isa = PBXGroup;
-			children = (
-				DE01B7F0C4285AEF008819075D695F90 /* Branch */,
-				0003D6D5C38B8E601F0EE08C6194C4BF /* React */,
-				2915286AEB5B5F82F28DE26EF32CFDA2 /* UMCore */,
-			);
-			name = Dependencies;
-			sourceTree = "<group>";
-		};
 		9BA92EED010C29DCDEC51A76FE7BA0A6 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -193,10 +183,20 @@
 			path = "../../../ios/Pods/Target Support Files/EXBranch";
 			sourceTree = "<group>";
 		};
+		E17BD7F815AFB91B44C6B80D1308ABE5 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				A0160E0E485AF7DD3E4EAC1994CFEB81 /* Branch */,
+				197B4E92A220828AB7FD641903EB8BEE /* React-Core */,
+				D59B76833E1193B71DFE585C78867FCF /* UMCore */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
 		F5A3F95194B10BF869014EC01A852E04 = {
 			isa = PBXGroup;
 			children = (
-				8A2E3531E7D7164D05ACD9AA3F7296CB /* Dependencies */,
+				E17BD7F815AFB91B44C6B80D1308ABE5 /* Dependencies */,
 				5EF76C8A60290A62000E15116FD18526 /* EXBranch */,
 				1955B9CC3F3BDD8FB37786AC3D439ED7 /* Frameworks */,
 				9BA92EED010C29DCDEC51A76FE7BA0A6 /* Products */,
@@ -206,22 +206,22 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		65E7CDFC69D073AC9CDC16DDC3832187 /* Headers */ = {
+		C22BE59B20FFB845D50D0AEF09F620AC /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F0FD2A188FA0D6CB02B999916C7C8150 /* BranchContentMetadata+RNBranch.h in Headers */,
-				304DFD7EE9A35BE1E613A2048AC2B13D /* BranchEvent+RNBranch.h in Headers */,
-				60390B7373AB158846A316BDC2C0A9DD /* BranchLinkProperties+RNBranch.h in Headers */,
-				BA63E53BD226249EF078DC065BD6B844 /* BranchUniversalObject+RNBranch.h in Headers */,
-				73BEFF02E2DCDB1C8C9831948FC10BD7 /* EXBranchManager.h in Headers */,
-				56817BD70B4713C713C324F0B6F364C4 /* NSObject+RNBranch.h in Headers */,
-				2C44327C6D014EA37FF4B87DB58BB1B3 /* RNBranch.h in Headers */,
-				F3E3066D4A6D5A6C39713F3E94A9D098 /* RNBranchAgingDictionary.h in Headers */,
-				FA21838512640674BD094549F4F1EF03 /* RNBranchAgingItem.h in Headers */,
-				09E667E700CC4E0254DAA7E46F609B13 /* RNBranchConfig.h in Headers */,
-				BFAB2EEFB82D6F2EE60EC14C7DEAAB84 /* RNBranchEventEmitter.h in Headers */,
-				9D39BD1FC96F54266A78326DA343EA33 /* RNBranchProperty.h in Headers */,
+				7B192E5EAE59F4B4CB07A8B4289D5AF4 /* BranchContentMetadata+RNBranch.h in Headers */,
+				2E2CE5BA2B0D2A09374BE054B12D357C /* BranchEvent+RNBranch.h in Headers */,
+				1B4DA313ED767CE270EB4D0A430F896B /* BranchLinkProperties+RNBranch.h in Headers */,
+				2F21EC6D9E99D370535CD2CB632F8100 /* BranchUniversalObject+RNBranch.h in Headers */,
+				5FD65DF7B9282333AFAA126D652420A2 /* EXBranchManager.h in Headers */,
+				7C22802354F4A7220A52EC0F31A088F4 /* NSObject+RNBranch.h in Headers */,
+				A71CDB6E0976C0C3EE9EED851B6F6EB6 /* RNBranch.h in Headers */,
+				0FF61BBE3C1D0A1FA4766F45BFC926FD /* RNBranchAgingDictionary.h in Headers */,
+				88939D7175C7260390ACF5AB4EE47432 /* RNBranchAgingItem.h in Headers */,
+				8ED7D5069F2D3DB94F9FC9D6ED75DADB /* RNBranchConfig.h in Headers */,
+				E97EFEF1E8E3511289E78FF687EE8434 /* RNBranchEventEmitter.h in Headers */,
+				7B032DC4E7F54786CAF57D5D145B3E57 /* RNBranchProperty.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -230,18 +230,18 @@
 /* Begin PBXNativeTarget section */
 		6B47FA6D658B6D4521D692AE24630902 /* EXBranch */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2ADEE8F16177995F4C07B8DF2E245485 /* Build configuration list for PBXNativeTarget "EXBranch" */;
+			buildConfigurationList = 0BCB7321F98C295BBF3658B0647FBFAA /* Build configuration list for PBXNativeTarget "EXBranch" */;
 			buildPhases = (
-				65E7CDFC69D073AC9CDC16DDC3832187 /* Headers */,
-				6B3AE2E3E4D85226441928766613B2A8 /* Sources */,
-				0C31E644B50509E759D0DDC72B125336 /* Frameworks */,
+				C22BE59B20FFB845D50D0AEF09F620AC /* Headers */,
+				053007568C917E53E5334FCABF9AA78A /* Sources */,
+				C835D6A4A9C4A7E4C09755A10CCF551A /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				8E4E3CC0C0C50A1F560DEB2DD571CE4B /* PBXTargetDependency */,
-				57707D6BD36530BCE953F1C80016B6B6 /* PBXTargetDependency */,
-				5C840DA16558E1E4E8492057D6D2C0DC /* PBXTargetDependency */,
+				F3BCFBC59740394E184922D9B857DF1A /* PBXTargetDependency */,
+				0C8265626AB7626C9C7AC06B01D3D165 /* PBXTargetDependency */,
+				CA32AAC33DF5AFDFBDDA9EE1BB5BCA0B /* PBXTargetDependency */,
 			);
 			name = EXBranch;
 			productName = EXBranch;
@@ -270,13 +270,13 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProjectRef = 2915286AEB5B5F82F28DE26EF32CFDA2 /* UMCore */;
+					ProjectRef = D59B76833E1193B71DFE585C78867FCF /* UMCore */;
 				},
 				{
-					ProjectRef = 0003D6D5C38B8E601F0EE08C6194C4BF /* React */;
+					ProjectRef = 197B4E92A220828AB7FD641903EB8BEE /* React-Core */;
 				},
 				{
-					ProjectRef = DE01B7F0C4285AEF008819075D695F90 /* Branch */;
+					ProjectRef = A0160E0E485AF7DD3E4EAC1994CFEB81 /* Branch */;
 				},
 			);
 			projectRoot = "";
@@ -287,51 +287,101 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		6B3AE2E3E4D85226441928766613B2A8 /* Sources */ = {
+		053007568C917E53E5334FCABF9AA78A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A0630D87A16FA16E4C1D42E24AF2863A /* BranchContentMetadata+RNBranch.m in Sources */,
-				B858ED3AF4664819D4AACA66DC905743 /* BranchEvent+RNBranch.m in Sources */,
-				95F7005372DA811F920CB3DA10E239C4 /* BranchLinkProperties+RNBranch.m in Sources */,
-				658EB9528FEBA8EB0698E913C29C39A7 /* BranchUniversalObject+RNBranch.m in Sources */,
-				EE79C0E858A235015FCB9A63701D758C /* EXBranch-dummy.m in Sources */,
-				E430B8BDFEA03FDE3CDD8A882C604E13 /* EXBranchManager.m in Sources */,
-				05BD3D9B7D344ADAA465D9E74D9B591B /* NSObject+RNBranch.m in Sources */,
-				423B8BB2C15113C8EE9E0F62A6BC6F82 /* RNBranch.m in Sources */,
-				6E00DB947C207AE95A20D82831406D29 /* RNBranchAgingDictionary.m in Sources */,
-				365C9608A452743CEF36562E0EB31932 /* RNBranchAgingItem.m in Sources */,
-				44FC0821869C6D1C5F628D607AE8AC09 /* RNBranchConfig.m in Sources */,
-				1E184D0A9C0255EBFC867B73FCE5F397 /* RNBranchEventEmitter.m in Sources */,
-				B5DAE9C642C0F78D9D7E32B4D9636CDC /* RNBranchProperty.m in Sources */,
+				564DF7EAB4D83B8079DB29809AC075F3 /* BranchContentMetadata+RNBranch.m in Sources */,
+				B2F729A05363742B499425B6D33163DD /* BranchEvent+RNBranch.m in Sources */,
+				2957EA6BA30C4FAE28C28F50247356A6 /* BranchLinkProperties+RNBranch.m in Sources */,
+				D476F6641EBECE6CDDB512D69C4455C9 /* BranchUniversalObject+RNBranch.m in Sources */,
+				AB884B5ABBAC5EBCDE9E8605992F1942 /* EXBranch-dummy.m in Sources */,
+				E5160E95D7442A788A1F2F0216C7E8E3 /* EXBranchManager.m in Sources */,
+				7DFFC7FD65E7E9115562A9791C2D2DC9 /* NSObject+RNBranch.m in Sources */,
+				7225B2EE2E404F885607F040451C41A2 /* RNBranch.m in Sources */,
+				B9AED33070AC952C9FDC63748D0BBDCB /* RNBranchAgingDictionary.m in Sources */,
+				1A7926FA6395F2B8517687208DD7969A /* RNBranchAgingItem.m in Sources */,
+				1A9E40DBA4BB36A4AB6428A139FDA715 /* RNBranchConfig.m in Sources */,
+				6909192BAF3C92480E91BF44EAA6A7FC /* RNBranchEventEmitter.m in Sources */,
+				59C08062712AD57F027468FC7B7C9D28 /* RNBranchProperty.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		57707D6BD36530BCE953F1C80016B6B6 /* PBXTargetDependency */ = {
+		0C8265626AB7626C9C7AC06B01D3D165 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = React;
-			targetProxy = 943164786C2AAB9022423F91DFEDA22A /* PBXContainerItemProxy */;
+			name = "React-Core";
+			targetProxy = A132556D132C416B3CEA7A6189F5F587 /* PBXContainerItemProxy */;
 		};
-		5C840DA16558E1E4E8492057D6D2C0DC /* PBXTargetDependency */ = {
+		CA32AAC33DF5AFDFBDDA9EE1BB5BCA0B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 2E31EF1020B32CF8D0F54B6F6A5CA9B2 /* PBXContainerItemProxy */;
+			targetProxy = 4D61907930648935ADD72224B45204DD /* PBXContainerItemProxy */;
 		};
-		8E4E3CC0C0C50A1F560DEB2DD571CE4B /* PBXTargetDependency */ = {
+		F3BCFBC59740394E184922D9B857DF1A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Branch;
-			targetProxy = E7878EC0DBF8CA3D7F474C832416D85E /* PBXContainerItemProxy */;
+			targetProxy = 4C5FCFCC36A43B86790C4D26160E37C1 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		1C953CCCD44E091E8BAB66E7631F0807 /* Debug */ = {
+		10D5733CC1D7B353B0AFC5D6A1B5DFCC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0B89DF68BE8B6B7A1549FD48149F8EEA /* EXBranch.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXBranch/EXBranch-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXBranch;
+				PRODUCT_NAME = EXBranch;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		57C185F3D46CAE4C8412F31A154B5C33 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = DBB2F64B9DCCE60CDC3BCFED51E77660 /* EXBranch.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXBranch/EXBranch-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXBranch;
+				PRODUCT_NAME = EXBranch;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		BCB87E857FDBB7BF8844C96F27D6927B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -354,6 +404,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -392,10 +443,11 @@
 			};
 			name = Debug;
 		};
-		229E807A69E64EDBB923FB5B09FB46B7 /* Release */ = {
+		F1D1379FE5CDCCD95C1A2C56B87884E9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -418,6 +470,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -452,65 +505,14 @@
 			};
 			name = Release;
 		};
-		74519617923D5BAE3F17BCB1A43954D4 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0B89DF68BE8B6B7A1549FD48149F8EEA /* EXBranch.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXBranch/EXBranch-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXBranch;
-				PRODUCT_NAME = EXBranch;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		ACA3CF01BEE8128C99925B491120BDD4 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = DBB2F64B9DCCE60CDC3BCFED51E77660 /* EXBranch.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXBranch/EXBranch-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXBranch;
-				PRODUCT_NAME = EXBranch;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		2ADEE8F16177995F4C07B8DF2E245485 /* Build configuration list for PBXNativeTarget "EXBranch" */ = {
+		0BCB7321F98C295BBF3658B0647FBFAA /* Build configuration list for PBXNativeTarget "EXBranch" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				74519617923D5BAE3F17BCB1A43954D4 /* Debug */,
-				ACA3CF01BEE8128C99925B491120BDD4 /* Release */,
+				10D5733CC1D7B353B0AFC5D6A1B5DFCC /* Debug */,
+				57C185F3D46CAE4C8412F31A154B5C33 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -518,8 +520,8 @@
 		E901A317E44A39EB3160CB734483361C /* Build configuration list for PBXProject "EXBranch" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1C953CCCD44E091E8BAB66E7631F0807 /* Debug */,
-				229E807A69E64EDBB923FB5B09FB46B7 /* Release */,
+				BCB87E857FDBB7BF8844C96F27D6927B /* Debug */,
+				F1D1379FE5CDCCD95C1A2C56B87884E9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

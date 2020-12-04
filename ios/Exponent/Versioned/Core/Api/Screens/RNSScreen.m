@@ -1,8 +1,8 @@
 #import <UIKit/UIKit.h>
 
 #import "RNSScreen.h"
-#import "RNSScreenContainer.h"
 #import "RNSScreenStackHeaderConfig.h"
+#import "RNSScreenContainer.h"
 
 #import <React/RCTUIManager.h>
 #import <React/RCTShadowView.h>
@@ -58,10 +58,10 @@
   [_bridge.uiManager setSize:self.bounds.size forView:self];
 }
 
-- (void)setActive:(BOOL)active
+- (void)setActivityState:(int)activityState
 {
-  if (active != _active) {
-    _active = active;
+  if (activityState != _activityState) {
+    _activityState = activityState;
     [_reactSuperview markChildUpdated];
   }
 }
@@ -89,9 +89,11 @@
     case RNSScreenStackPresentationFullScreenModal:
       _controller.modalPresentationStyle = UIModalPresentationFullScreen;
       break;
+#if (TARGET_OS_IOS)
     case RNSScreenStackPresentationFormSheet:
       _controller.modalPresentationStyle = UIModalPresentationFormSheet;
       break;
+#endif
     case RNSScreenStackPresentationTransparentModal:
       _controller.modalPresentationStyle = UIModalPresentationOverFullScreen;
       break;
@@ -128,9 +130,11 @@
     case RNSScreenStackAnimationFade:
       _controller.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
       break;
+#if (TARGET_OS_IOS)
     case RNSScreenStackAnimationFlip:
       _controller.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
       break;
+#endif
     case RNSScreenStackAnimationNone:
     case RNSScreenStackAnimationDefault:
       // Default
@@ -291,6 +295,89 @@
   return self;
 }
 
+- (UIViewController *)childViewControllerForStatusBarStyle
+{
+  UIViewController *vc = [self findChildVCForConfig];
+  return vc == self ? nil : vc;
+}
+
+- (UIStatusBarStyle)preferredStatusBarStyle
+{
+  RNSScreenStackHeaderConfig *config = [self findScreenConfig];
+  return [RNSScreenStackHeaderConfig statusBarStyleForRNSStatusBarStyle:config && config.statusBarStyle ? config.statusBarStyle : RNSStatusBarStyleAuto];
+}
+
+- (UIViewController *)childViewControllerForStatusBarHidden
+{
+  UIViewController *vc = [self findChildVCForConfig];
+  return vc == self ? nil : vc;
+}
+
+- (BOOL)prefersStatusBarHidden
+{
+  RNSScreenStackHeaderConfig *config = [self findScreenConfig];
+  return config && config.statusBarHidden ? config.statusBarHidden : NO;
+}
+
+- (UIStatusBarAnimation)preferredStatusBarUpdateAnimation
+{
+  UIViewController *vc = [self findChildVCForConfig];
+  if (vc != self && vc != nil) {
+    return vc.preferredStatusBarUpdateAnimation;
+  }
+  
+  RNSScreenStackHeaderConfig *config = [self findScreenConfig];
+  return config && config.statusBarAnimation ? config.statusBarAnimation : UIStatusBarAnimationFade;
+}
+
+// if the returned vc is a child, it means that it can provide config;
+// if the returned vc is self, it means that there is no child for config and self has config to provide,
+// so we return self which results in asking self for preferredStatusBarStyle;
+// if the returned vc is nil, it means none of children could provide config and self does not have config either,
+// so if it was asked by parent, it will fallback to parent's option, or use default option if it is the top Screen
+- (UIViewController *)findChildVCForConfig
+{
+  UIViewController *lastViewController = [[self childViewControllers] lastObject];
+  if (self.presentedViewController != nil) {
+    lastViewController = self.presentedViewController;
+    // setting this makes the modal vc being asked for appearance,
+    // so it doesn't matter what we return here since the modal's root screen will be asked
+    lastViewController.modalPresentationCapturesStatusBarAppearance = YES;
+    return nil;
+  }
+  
+  UIViewController *selfOrNil = [self findScreenConfig] != nil ? self : nil;
+  if (lastViewController == nil) {
+    return selfOrNil;
+  } else {
+    if ([lastViewController conformsToProtocol:@protocol(RNScreensViewControllerDelegate)]) {
+      // If there is a child (should be VC of ScreenContainer or ScreenStack), that has a child that could provide config,
+      // we recursively go into its findChildVCForConfig, and if one of the children has the config, we return it,
+      // otherwise we return self if this VC has config, and nil if it doesn't
+      // we use `childViewControllerForStatusBarStyle` for all options since the behavior is the same for all of them
+      UIViewController *childScreen = [lastViewController childViewControllerForStatusBarStyle];
+      if ([childScreen isKindOfClass:[RNSScreen class]]) {
+        return [(RNSScreen *)childScreen findChildVCForConfig] ?: selfOrNil;
+      } else {
+        return selfOrNil;
+      }
+    } else {
+      // child vc is not from this library, so we don't ask it
+      return selfOrNil;
+    }
+  }
+}
+
+- (RNSScreenStackHeaderConfig *)findScreenConfig
+{
+  for (UIView *subview in self.view.reactSubviews) {
+    if ([subview isKindOfClass:[RNSScreenStackHeaderConfig class]]) {
+      return (RNSScreenStackHeaderConfig *)subview;
+    }
+  }
+  return nil;
+}
+
 - (void)viewDidLayoutSubviews
 {
   [super viewDidLayoutSubviews];
@@ -329,7 +416,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
   [super viewWillAppear:animated];
-
+  [RNSScreenStackHeaderConfig updateStatusBarAppearance];
   [((RNSScreenView *)self.view) notifyWillAppear];
 }
 
@@ -355,12 +442,25 @@
     // screen dismissed, send event
     [((RNSScreenView *)self.view) notifyDismissed];
   }
+  [self traverseForScrollView:self.view];
+}
+
+- (void)traverseForScrollView:(UIView*)view
+{
+  if([view isKindOfClass:[UIScrollView class]] && ([[(UIScrollView*)view delegate] respondsToSelector:@selector(scrollViewDidEndDecelerating:)]) ) {
+    [[(UIScrollView*)view delegate] scrollViewDidEndDecelerating:(id)view];
+  }
+  [view.subviews enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [self traverseForScrollView:obj];
+  }];
 }
 
 - (void)notifyFinishTransitioning
 {
   [_previousFirstResponder becomeFirstResponder];
   _previousFirstResponder = nil;
+  // the correct Screen for appearance is set after the transition
+  [RNSScreenStackHeaderConfig updateStatusBarAppearance];
 }
 
 @end
@@ -369,7 +469,7 @@
 
 RCT_EXPORT_MODULE()
 
-RCT_EXPORT_VIEW_PROPERTY(active, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(activityState, int)
 RCT_EXPORT_VIEW_PROPERTY(gestureEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(replaceAnimation, RNSScreenReplaceAnimation)
 RCT_EXPORT_VIEW_PROPERTY(stackPresentation, RNSScreenStackPresentation)
@@ -411,6 +511,4 @@ RCT_ENUM_CONVERTER(RNSScreenReplaceAnimation, (@{
                                                   @"pop": @(RNSScreenReplaceAnimationPop),
                                                   }), RNSScreenReplaceAnimationPop, integerValue)
 
-
 @end
-

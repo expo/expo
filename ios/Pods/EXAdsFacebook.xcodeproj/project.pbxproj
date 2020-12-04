@@ -7,41 +7,41 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		27B0C4B242F4972D2AC5F3AE8A109947 /* EXAdIconViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 310E67DD804C63B4F029B8D0064AB88A /* EXAdIconViewManager.m */; };
-		286221492F92C8FEBCD0BE5BEF6BAD08 /* EXNativeMediaViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A91C7C08DF9A0248D16C79C20F67A2F2 /* EXNativeMediaViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		299B934842C58EEF6346786656F38D0E /* EXNativeAdManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 87800D9AAB32D9F65742B57DA31FDDF2 /* EXNativeAdManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		2B7ECAF96D50D9433627C05F0B2AE205 /* EXNativeMediaViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B59BC3D45D1FF39DE4EC9FB305CA4B95 /* EXNativeMediaViewManager.m */; };
-		2D28D8FE987953AC131747394D919A46 /* EXAdOptionsViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 814C49040201117C09854935F6DAF9FB /* EXAdOptionsViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		3958A7A8DFF5F9E23196C571360914E6 /* EXBannerView.h in Headers */ = {isa = PBXBuildFile; fileRef = FA5AFDFBC5A610C0687E619DA94AE363 /* EXBannerView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		6251841AE87B53403DE90C94D82B85F1 /* EXNativeAdView.h in Headers */ = {isa = PBXBuildFile; fileRef = 7B2681E802068C5FF56B3406D21A2090 /* EXNativeAdView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		65645577AEDCBAE1758F3791D6311B5E /* EXBannerViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 3BDACB75119B6906E4B7763FA19CC778 /* EXBannerViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		659BC578D925FD3E89650C881C246223 /* EXAdSettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 84C2E5E2C497B981055216BD3D6D3AD5 /* EXAdSettingsManager.m */; };
-		72189AB0721A11734754F0C8023CFD56 /* EXInterstitialAdManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 6BD3BC84F95CA0525B20CAF27B30178A /* EXInterstitialAdManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		7F6886C5DC808F90C101335C7AACFD6F /* EXNativeAdView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5AC0CCFA7E4050F59AF47CEEDF1D76D2 /* EXNativeAdView.m */; };
-		86227C8B36F9A0F689C95DB605B7C5A9 /* EXBannerViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C69A20503EA51D3DABB45BD64776EF49 /* EXBannerViewManager.m */; };
-		8B68BCE1AFFFC382C444371A1E8ECA82 /* EXAdOptionsViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C82F1C1FE12A397DEBFCE5DB08B15F8 /* EXAdOptionsViewManager.m */; };
-		9705C6289518B420E1D42B0EB7114965 /* EXAdsFacebook-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = E12B8911C1C51BD48F4BD4B60F8CE047 /* EXAdsFacebook-dummy.m */; };
-		BBC6002F2E82C9C311FE10E73669EFAF /* EXBannerView.m in Sources */ = {isa = PBXBuildFile; fileRef = C88A9D295ED28B13ACF23ED5FDDCF28B /* EXBannerView.m */; };
-		D10338AA0E659459D79AD59E1E7FE853 /* EXAdSettingsManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 392098D21D270A299DBC4B15BE9E50E0 /* EXAdSettingsManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		DE2DBA0276008400BF05B57FC43B4397 /* EXInterstitialAdManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 16B10856914ADF0FFBE82B35E05C9BFB /* EXInterstitialAdManager.m */; };
-		EBB2229F313F83593AD38E3EC71B6E9C /* EXAdIconViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = C44F48A489E377E90CA32198CA636624 /* EXAdIconViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		FB2C84133BB2CE9E7132A60FE56B9475 /* EXNativeAdManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AE947E9CB54AFBCDC1CC6C889231988 /* EXNativeAdManager.m */; };
+		04A668573F0DBA16EE6373A01FF20D8D /* EXNativeAdManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 87800D9AAB32D9F65742B57DA31FDDF2 /* EXNativeAdManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		147DA32A77F0719F0F04699C61C136F7 /* EXNativeAdManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AE947E9CB54AFBCDC1CC6C889231988 /* EXNativeAdManager.m */; };
+		3B285F2F5B7CE88C57F0E4BA96FA1BDB /* EXAdIconViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 310E67DD804C63B4F029B8D0064AB88A /* EXAdIconViewManager.m */; };
+		4348EFAD2FF01A1C79982E68F14E1014 /* EXBannerViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C69A20503EA51D3DABB45BD64776EF49 /* EXBannerViewManager.m */; };
+		4C1F42664F08BC85DBDF7FB6DF6B12CA /* EXBannerView.h in Headers */ = {isa = PBXBuildFile; fileRef = FA5AFDFBC5A610C0687E619DA94AE363 /* EXBannerView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		652AB9E308154C68A21BF2DE145CA069 /* EXAdIconViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = C44F48A489E377E90CA32198CA636624 /* EXAdIconViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		6C5EE80347B8AFA8B43C6E83C55657E3 /* EXAdOptionsViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 814C49040201117C09854935F6DAF9FB /* EXAdOptionsViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8963968776907DF326146E4CB9D73FC4 /* EXNativeAdView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5AC0CCFA7E4050F59AF47CEEDF1D76D2 /* EXNativeAdView.m */; };
+		8F25E9793DA3EAA169CDC3575026BF2A /* EXNativeAdView.h in Headers */ = {isa = PBXBuildFile; fileRef = 7B2681E802068C5FF56B3406D21A2090 /* EXNativeAdView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		943BD1270A6904A977DA83DE7EC703C3 /* EXAdSettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 84C2E5E2C497B981055216BD3D6D3AD5 /* EXAdSettingsManager.m */; };
+		944768AEB19F444C06DA7DFF70635781 /* EXBannerViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 3BDACB75119B6906E4B7763FA19CC778 /* EXBannerViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		990A3AEB53CB8BD2E4DFFE59774BDBAF /* EXNativeMediaViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B59BC3D45D1FF39DE4EC9FB305CA4B95 /* EXNativeMediaViewManager.m */; };
+		9A85824A41A6D28045691DA0A455AE2B /* EXBannerView.m in Sources */ = {isa = PBXBuildFile; fileRef = C88A9D295ED28B13ACF23ED5FDDCF28B /* EXBannerView.m */; };
+		ACE6810D3BD7E83FF3A94657B763CBD6 /* EXAdsFacebook-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = E12B8911C1C51BD48F4BD4B60F8CE047 /* EXAdsFacebook-dummy.m */; };
+		BA6508C84B28D29BF74D8F69E1683ED6 /* EXInterstitialAdManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 16B10856914ADF0FFBE82B35E05C9BFB /* EXInterstitialAdManager.m */; };
+		BBBE018283614E8EAEE7C71C95928E42 /* EXAdOptionsViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C82F1C1FE12A397DEBFCE5DB08B15F8 /* EXAdOptionsViewManager.m */; };
+		D95CFE162CD84333090C934A7B04BC2A /* EXInterstitialAdManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 6BD3BC84F95CA0525B20CAF27B30178A /* EXInterstitialAdManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		E08A57077D945323A48FDDE3F2128E11 /* EXAdSettingsManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 392098D21D270A299DBC4B15BE9E50E0 /* EXAdSettingsManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		F8CEA7899CA86A47E7428AC63433DB30 /* EXNativeMediaViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A91C7C08DF9A0248D16C79C20F67A2F2 /* EXNativeMediaViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		59864280BAA1FF8A66E7F430C1202175 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2E646D36A8FBC620CEC35887639914D6 /* UMCore.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
-			remoteInfo = UMCore;
-		};
-		5A5691A8BE181587F85C7F281A4F6C02 /* PBXContainerItemProxy */ = {
+		29673CAAFCC8383F061D47C2FE1753F0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 30370C30637C5BC8B26AF64A1A750B38 /* FBAudienceNetwork.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 51D72679DE0FCD549F01BCDBBF19E2B0;
 			remoteInfo = FBAudienceNetwork;
+		};
+		EBA1D0F85BD4DAC869AAD6592ADA2DC3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2E646D36A8FBC620CEC35887639914D6 /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -75,7 +75,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		5C3092685CA102AFB2685277F7573996 /* Frameworks */ = {
+		C7BCD29DEC50EF5F38694DE3FD3AEDD5 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -170,19 +170,19 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		D79BF7817ED25C9B1840034852051AB4 /* Headers */ = {
+		E58561B384E3E2DF36E827A265A3AC33 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EBB2229F313F83593AD38E3EC71B6E9C /* EXAdIconViewManager.h in Headers */,
-				2D28D8FE987953AC131747394D919A46 /* EXAdOptionsViewManager.h in Headers */,
-				D10338AA0E659459D79AD59E1E7FE853 /* EXAdSettingsManager.h in Headers */,
-				3958A7A8DFF5F9E23196C571360914E6 /* EXBannerView.h in Headers */,
-				65645577AEDCBAE1758F3791D6311B5E /* EXBannerViewManager.h in Headers */,
-				72189AB0721A11734754F0C8023CFD56 /* EXInterstitialAdManager.h in Headers */,
-				299B934842C58EEF6346786656F38D0E /* EXNativeAdManager.h in Headers */,
-				6251841AE87B53403DE90C94D82B85F1 /* EXNativeAdView.h in Headers */,
-				286221492F92C8FEBCD0BE5BEF6BAD08 /* EXNativeMediaViewManager.h in Headers */,
+				652AB9E308154C68A21BF2DE145CA069 /* EXAdIconViewManager.h in Headers */,
+				6C5EE80347B8AFA8B43C6E83C55657E3 /* EXAdOptionsViewManager.h in Headers */,
+				E08A57077D945323A48FDDE3F2128E11 /* EXAdSettingsManager.h in Headers */,
+				4C1F42664F08BC85DBDF7FB6DF6B12CA /* EXBannerView.h in Headers */,
+				944768AEB19F444C06DA7DFF70635781 /* EXBannerViewManager.h in Headers */,
+				D95CFE162CD84333090C934A7B04BC2A /* EXInterstitialAdManager.h in Headers */,
+				04A668573F0DBA16EE6373A01FF20D8D /* EXNativeAdManager.h in Headers */,
+				8F25E9793DA3EAA169CDC3575026BF2A /* EXNativeAdView.h in Headers */,
+				F8CEA7899CA86A47E7428AC63433DB30 /* EXNativeMediaViewManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -191,17 +191,17 @@
 /* Begin PBXNativeTarget section */
 		E56FBC495C1E2086B744DDCAB25831F3 /* EXAdsFacebook */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E8E1996D52354CEFF0F05B2F9E647C69 /* Build configuration list for PBXNativeTarget "EXAdsFacebook" */;
+			buildConfigurationList = FC0B25F4D357A67793E7769441DF3844 /* Build configuration list for PBXNativeTarget "EXAdsFacebook" */;
 			buildPhases = (
-				D79BF7817ED25C9B1840034852051AB4 /* Headers */,
-				577594ED1930276BE1D5B279FE378A2F /* Sources */,
-				5C3092685CA102AFB2685277F7573996 /* Frameworks */,
+				E58561B384E3E2DF36E827A265A3AC33 /* Headers */,
+				ADD5CD61A1484FBB132CCA739EC27D8E /* Sources */,
+				C7BCD29DEC50EF5F38694DE3FD3AEDD5 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				F479ACA88291E049D87A2EDFA09A4E66 /* PBXTargetDependency */,
-				D6D22678B84FFD33CCEBE9B96C6D4F9C /* PBXTargetDependency */,
+				2993F06CAD050D1D881E73E4162A8F66 /* PBXTargetDependency */,
+				4175BBA1E7C327419900F9014A3268FC /* PBXTargetDependency */,
 			);
 			name = EXAdsFacebook;
 			productName = EXAdsFacebook;
@@ -244,45 +244,44 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		577594ED1930276BE1D5B279FE378A2F /* Sources */ = {
+		ADD5CD61A1484FBB132CCA739EC27D8E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				27B0C4B242F4972D2AC5F3AE8A109947 /* EXAdIconViewManager.m in Sources */,
-				8B68BCE1AFFFC382C444371A1E8ECA82 /* EXAdOptionsViewManager.m in Sources */,
-				659BC578D925FD3E89650C881C246223 /* EXAdSettingsManager.m in Sources */,
-				9705C6289518B420E1D42B0EB7114965 /* EXAdsFacebook-dummy.m in Sources */,
-				BBC6002F2E82C9C311FE10E73669EFAF /* EXBannerView.m in Sources */,
-				86227C8B36F9A0F689C95DB605B7C5A9 /* EXBannerViewManager.m in Sources */,
-				DE2DBA0276008400BF05B57FC43B4397 /* EXInterstitialAdManager.m in Sources */,
-				FB2C84133BB2CE9E7132A60FE56B9475 /* EXNativeAdManager.m in Sources */,
-				7F6886C5DC808F90C101335C7AACFD6F /* EXNativeAdView.m in Sources */,
-				2B7ECAF96D50D9433627C05F0B2AE205 /* EXNativeMediaViewManager.m in Sources */,
+				3B285F2F5B7CE88C57F0E4BA96FA1BDB /* EXAdIconViewManager.m in Sources */,
+				BBBE018283614E8EAEE7C71C95928E42 /* EXAdOptionsViewManager.m in Sources */,
+				943BD1270A6904A977DA83DE7EC703C3 /* EXAdSettingsManager.m in Sources */,
+				ACE6810D3BD7E83FF3A94657B763CBD6 /* EXAdsFacebook-dummy.m in Sources */,
+				9A85824A41A6D28045691DA0A455AE2B /* EXBannerView.m in Sources */,
+				4348EFAD2FF01A1C79982E68F14E1014 /* EXBannerViewManager.m in Sources */,
+				BA6508C84B28D29BF74D8F69E1683ED6 /* EXInterstitialAdManager.m in Sources */,
+				147DA32A77F0719F0F04699C61C136F7 /* EXNativeAdManager.m in Sources */,
+				8963968776907DF326146E4CB9D73FC4 /* EXNativeAdView.m in Sources */,
+				990A3AEB53CB8BD2E4DFFE59774BDBAF /* EXNativeMediaViewManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		D6D22678B84FFD33CCEBE9B96C6D4F9C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMCore;
-			targetProxy = 59864280BAA1FF8A66E7F430C1202175 /* PBXContainerItemProxy */;
-		};
-		F479ACA88291E049D87A2EDFA09A4E66 /* PBXTargetDependency */ = {
+		2993F06CAD050D1D881E73E4162A8F66 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = FBAudienceNetwork;
-			targetProxy = 5A5691A8BE181587F85C7F281A4F6C02 /* PBXContainerItemProxy */;
+			targetProxy = 29673CAAFCC8383F061D47C2FE1753F0 /* PBXContainerItemProxy */;
+		};
+		4175BBA1E7C327419900F9014A3268FC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = EBA1D0F85BD4DAC869AAD6592ADA2DC3 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		0D45CD6245D99BB8FE5386782B117C89 /* Release */ = {
+		38AEA9695B3349DA653645F6268E7D31 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9A5D491EBE5669297439B8B3D5B7B867 /* EXAdsFacebook.release.xcconfig */;
+			baseConfigurationReference = 6C6697032BD1AD9068DF4DAFCB4D562C /* EXAdsFacebook.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
@@ -299,14 +298,14 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
-		28E7C0B54B5088C7294C655AA13522AD /* Release */ = {
+		8920A3910431D726075A4790C115802D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -329,66 +328,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"POD_CONFIGURATION_RELEASE=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.0;
-				SYMROOT = "${SRCROOT}/../build";
-			};
-			name = Release;
-		};
-		3BD9D52722D281FAB6BFD03CD5796678 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -427,12 +367,11 @@
 			};
 			name = Debug;
 		};
-		55DFE12B1DB1C41C3A45E27B8C12A2FF /* Debug */ = {
+		97B4CFA2DDCB1BD4DED3734DB9B112D2 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6C6697032BD1AD9068DF4DAFCB4D562C /* EXAdsFacebook.debug.xcconfig */;
+			baseConfigurationReference = 9A5D491EBE5669297439B8B3D5B7B867 /* EXAdsFacebook.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
@@ -449,8 +388,71 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
+		};
+		F0234C13E10473AE83D329896D63B215 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
@@ -458,17 +460,17 @@
 		A17A6439AE6BCEF67C1512C32B838DBC /* Build configuration list for PBXProject "EXAdsFacebook" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				3BD9D52722D281FAB6BFD03CD5796678 /* Debug */,
-				28E7C0B54B5088C7294C655AA13522AD /* Release */,
+				8920A3910431D726075A4790C115802D /* Debug */,
+				F0234C13E10473AE83D329896D63B215 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E8E1996D52354CEFF0F05B2F9E647C69 /* Build configuration list for PBXNativeTarget "EXAdsFacebook" */ = {
+		FC0B25F4D357A67793E7769441DF3844 /* Build configuration list for PBXNativeTarget "EXAdsFacebook" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				55DFE12B1DB1C41C3A45E27B8C12A2FF /* Debug */,
-				0D45CD6245D99BB8FE5386782B117C89 /* Release */,
+				38AEA9695B3349DA653645F6268E7D31 /* Debug */,
+				97B4CFA2DDCB1BD4DED3734DB9B112D2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

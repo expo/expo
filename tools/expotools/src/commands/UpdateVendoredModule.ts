@@ -351,7 +351,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       ),
       chalk.bold.yellow(
         `See commit ${chalk.cyan(
-          'https://github.com/expo/expo/commit/0e7d25bd9facba74828a0af971293d30f9ba22fc'
+          'https://github.com/expo/expo/commit/3aeb66e33dc391399ea1c90fd166425130d17a12'
         )}.\n`
       ),
     ],
@@ -449,8 +449,8 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
-  '@react-native-community/picker': {
-    repoUrl: 'https://github.com/react-native-community/react-native-picker',
+  '@react-native-picker/picker': {
+    repoUrl: 'https://github.com/react-native-picker/picker',
     installableInManagedApps: true,
     steps: [
       {

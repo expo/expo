@@ -3,6 +3,7 @@ package versioned.host.exp.exponent.modules.api.components.gesturehandler.react;
 import android.util.SparseArray;
 import android.view.View;
 
+import com.facebook.react.bridge.UiThreadUtil;
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.GestureHandler;
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.GestureHandlerRegistry;
 
@@ -50,7 +51,7 @@ public class RNGestureHandlerRegistry implements GestureHandlerRegistry {
     }
   }
 
-  private synchronized void detachHandler(GestureHandler handler) {
+  private synchronized void detachHandler(final GestureHandler handler) {
     Integer attachedToView = mAttachedTo.get(handler.getTag());
     if (attachedToView != null) {
       mAttachedTo.remove(handler.getTag());
@@ -66,7 +67,12 @@ public class RNGestureHandlerRegistry implements GestureHandlerRegistry {
       // Handler is in "prepared" state which means it is registered in the orchestrator and can
       // receive touch events. This means that before we remove it from the registry we need to
       // "cancel" it so that orchestrator does no longer keep a reference to it.
-      handler.cancel();
+      UiThreadUtil.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          handler.cancel();
+        }
+      });
     }
   }
 

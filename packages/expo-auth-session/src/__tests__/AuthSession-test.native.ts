@@ -1,20 +1,34 @@
 // import { makeRedirectUri } from '../AuthSession';
 
+import { ExecutionEnvironment } from 'expo-constants';
+
 function mockConstants(constants: { [key: string]: any } = {}): void {
   jest.doMock('expo-constants', () => {
-    const Constants = jest.requireActual('expo-constants').default;
+    const ConstantsModule = jest.requireActual('expo-constants');
+    const { default: Constants } = ConstantsModule;
     return {
-      ...Constants,
-      ...constants,
-      manifest: { ...Constants.manifest, ...(constants.manifest || {}) },
+      ...ConstantsModule,
+      // must explicitly include this in order to mock both default and named exports
+      __esModule: true,
+      default: {
+        ...Constants,
+        ...constants,
+        manifest: { ...Constants.manifest, ...(constants.manifest || {}) },
+      },
     };
   });
 }
 
-function eraseConstants(): void {
+function mockBareExecutionEnvironment(): void {
   jest.doMock('expo-constants', () => {
+    const ConstantsModule = jest.requireActual('expo-constants');
     return {
-      manifest: null,
+      ...ConstantsModule,
+      // must explicitly include this in order to mock both default and named exports
+      __esModule: true,
+      default: {
+        executionEnvironment: ExecutionEnvironment.Bare,
+      },
     };
   });
 }
@@ -31,13 +45,13 @@ describe('Bare', () => {
   afterEach(() => (console.warn = originalWarn));
 
   it(`Cannot create a URI automatically`, () => {
-    eraseConstants();
+    mockBareExecutionEnvironment();
     const { makeRedirectUri } = require('../AuthSession');
     expect(makeRedirectUri()).toBe('');
     expect(console.warn).toHaveBeenCalled();
   });
   it(`Use native value`, () => {
-    eraseConstants();
+    mockBareExecutionEnvironment();
 
     const { makeRedirectUri } = require('../AuthSession');
     // Test that the path is omitted
@@ -57,6 +71,7 @@ describe('Managed', () => {
           scheme: 'demo',
         },
         appOwnership: 'standalone',
+        executionEnvironment: ExecutionEnvironment.Standalone,
       });
       const { makeRedirectUri } = require('../AuthSession');
       expect(makeRedirectUri()).toBe('demo://');
@@ -68,6 +83,7 @@ describe('Managed', () => {
           scheme: 'demo',
         },
         appOwnership: 'standalone',
+        executionEnvironment: ExecutionEnvironment.Standalone,
       });
       const { makeRedirectUri } = require('../AuthSession');
       expect(makeRedirectUri({ path: 'bacon' })).toBe('demo:///bacon');
@@ -80,6 +96,7 @@ describe('Managed', () => {
           scheme: 'demo',
         },
         appOwnership: 'standalone',
+        executionEnvironment: ExecutionEnvironment.Standalone,
       });
       const { makeRedirectUri } = require('../AuthSession');
       expect(
@@ -102,6 +119,7 @@ describe('Managed', () => {
           scheme: 'demo',
         },
         appOwnership: 'expo',
+        executionEnvironment: ExecutionEnvironment.StoreClient,
       });
       const { makeRedirectUri } = require('../AuthSession');
 
@@ -114,6 +132,7 @@ describe('Managed', () => {
           scheme: 'demo',
         },
         appOwnership: 'expo',
+        executionEnvironment: ExecutionEnvironment.StoreClient,
       });
 
       const { makeRedirectUri } = require('../AuthSession');
@@ -127,6 +146,7 @@ describe('Managed', () => {
       linkingUri: 'exp://192.168.1.4:19000/',
       experienceUrl: 'exp://192.168.1.4:19000',
       appOwnership: 'expo',
+      executionEnvironment: ExecutionEnvironment.StoreClient,
       manifest: {
         scheme: 'demo',
         hostUri: '192.168.1.4:19000',

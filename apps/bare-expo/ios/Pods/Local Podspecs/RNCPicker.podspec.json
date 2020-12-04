@@ -1,20 +1,26 @@
 {
   "name": "RNCPicker",
-  "version": "1.6.6",
+  "version": "1.9.2",
   "summary": "React Native Picker for iOS & Android",
   "license": "MIT",
   "authors": "",
-  "homepage": "https://github.com/react-native-community/react-native-picker#readme",
+  "homepage": "https://github.com/react-native-picker/picker#readme",
   "platforms": {
-    "ios": "9.0"
+    "ios": "9.0",
+    "osx": "10.14"
   },
   "source": {
-    "git": "https://github.com/react-native-community/react-native-picker.git",
-    "tag": "v1.6.6"
+    "git": "https://github.com/react-native-picker/picker.git",
+    "tag": "v1.9.2"
   },
-  "source_files": "ios/**/*.{h,m}",
+  "ios": {
+    "source_files": "ios/**/*.{h,m}"
+  },
+  "osx": {
+    "source_files": "macos/**/*.{h,m}"
+  },
   "dependencies": {
-    "React": [
+    "React-Core": [
 
     ]
   }

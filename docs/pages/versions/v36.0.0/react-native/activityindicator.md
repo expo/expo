@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
 
 ## Props
 
-Inherits [View Props](../view/#props).
+Inherits [View Props](view.md#props).
 
 ### `animating`
 
@@ -61,7 +61,7 @@ The foreground color of the spinner (default is gray on iOS and dark cyan on And
 
 | Type                | Required |
 | ------------------- | -------- |
-| [color](../colors/) | No       |
+| [color](colors.md) | No       |
 
 ---
 

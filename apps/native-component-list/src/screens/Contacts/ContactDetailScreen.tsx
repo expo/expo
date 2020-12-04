@@ -250,7 +250,7 @@ function ContactDetailView({
   };
 
   const _selectPhoto = async () => {
-    const permission = await getPermissionAsync(Permissions.CAMERA_ROLL);
+    const permission = await getPermissionAsync(Permissions.MEDIA_LIBRARY);
     if (!permission) {
       return;
     }

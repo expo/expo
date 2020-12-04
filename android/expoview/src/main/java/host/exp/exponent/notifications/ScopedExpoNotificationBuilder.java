@@ -14,7 +14,7 @@ import expo.modules.notifications.notifications.channels.managers.NotificationsC
 import expo.modules.notifications.notifications.interfaces.NotificationBuilder;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.presentation.builders.CategoryAwareNotificationBuilder;
-import expo.modules.notifications.notifications.service.SharedPreferencesNotificationCategoriesStore;
+import expo.modules.notifications.service.delegates.SharedPreferencesNotificationCategoriesStore;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.di.NativeModuleDepsProvider;

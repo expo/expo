@@ -1,6 +1,6 @@
 {
   "name": "EXAV",
-  "version": "8.6.0",
+  "version": "8.7.0",
   "summary": "Expo universal module for Audio and Video playback",
   "description": "Expo universal module for Audio and Video playback",
   "license": "MIT",
@@ -12,9 +12,6 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXAV/**/*.{h,m}",
-  "preserve_paths": "EXAV/**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "UMCore": [
 
@@ -25,5 +22,6 @@
     "UMFileSystemInterface": [
 
     ]
-  }
+  },
+  "source_files": "EXAV/**/*.{h,m}"
 }

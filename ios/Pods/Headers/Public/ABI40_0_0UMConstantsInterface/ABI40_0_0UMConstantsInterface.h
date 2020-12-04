@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI40_0_0/Expo/UMConstantsInterface/ABI40_0_0UMConstantsInterface/ABI40_0_0UMConstantsInterface.h

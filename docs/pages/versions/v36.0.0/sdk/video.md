@@ -8,7 +8,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 The `Video` component from **`expo-av`** displays a video inline with the other UI elements in your app.
 
-Much of Video and Audio have common APIs that are documented in [AV documentation](../av/). This page covers video-specific props and APIs. We encourage you to skim through this document to get basic video working, and then move on to [AV documentation](../av/) for more advanced functionality. The audio experience of video (such as whether to interrupt music already playing in another app, or whether to play sound while the phone is on silent mode) can be customized using the [Audio API](../audio/).
+Much of Video and Audio have common APIs that are documented in [AV documentation](av.md). This page covers video-specific props and APIs. We encourage you to skim through this document to get basic video working, and then move on to [AV documentation](av.md) for more advanced functionality. The audio experience of video (such as whether to interrupt music already playing in another app, or whether to play sound while the phone is on silent mode) can be customized using the [Audio API](audio.md).
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -49,14 +49,14 @@ The `source` and `posterSource` props customize the source of the video content.
 
   The source of the video data to display. If this prop is `null`, or left blank, the video component will display nothing.
 
-  Note that this can also be set on the `ref` via `loadAsync()`; see below or the [AV documentation](../av/) for further information.
+  Note that this can also be set on the `ref` via `loadAsync()`; see below or the [AV documentation](av.md) for further information.
 
   The following forms for the source are supported:
 
   - A dictionary of the form `{ uri: string, headers?: { [string]: string }, overrideFileExtensionAndroid?: string }` with a network URL pointing to a video file on the web, an optional headers object passed in a network request to the `uri` and an optional Android-specific `overrideFileExtensionAndroid` string overriding extension inferred from the URL.
     The `overrideFileExtensionAndroid` property may come in handy if the player receives an URL like `example.com/play` which redirects to `example.com/player.m3u8`. Setting this property to `m3u8` would allow the Android player to properly infer the content type of the media and use proper media file reader.
   - `require('path/to/file')` for a video file asset in the source code directory.
-  - An [`Asset`](../asset/) object for a video file asset.
+  - An [`Asset`](asset.md) object for a video file asset.
 
   The [iOS developer documentation](https://developer.apple.com/library/ios/documentation/Miscellaneous/Conceptual/iPhoneOSTechOverview/MediaLayer/MediaLayer.html) lists the video formats supported on iOS.
 
@@ -95,7 +95,7 @@ The `onPlaybackStatusUpdate`, `onReadyForDisplay`, and `onIOSFullscreenUpdate` p
 
 - `onPlaybackStatusUpdate`
 
-  A function to be called regularly with the `PlaybackStatus` of the video. You will likely be using this a lot. See the [AV documentation](../av/) for further information on `onPlaybackStatusUpdate`, and the interval at which it is called.
+  A function to be called regularly with the `PlaybackStatus` of the video. You will likely be using this a lot. See the [AV documentation](av.md) for further information on `onPlaybackStatusUpdate`, and the interval at which it is called.
 
 - `onReadyForDisplay`
 
@@ -107,7 +107,7 @@ The `onPlaybackStatusUpdate`, `onReadyForDisplay`, and `onIOSFullscreenUpdate` p
     - `width`: a number describing the width in pixels of the video data
     - `height`: a number describing the height in pixels of the video data
     - `orientation`: a string describing the natural orientation of the video data, either `'portrait'` or `'landscape'`
-  - `status`: the `PlaybackStatus` of the video; see the [AV documentation](../av/) for further information.
+  - `status`: the `PlaybackStatus` of the video; see the [AV documentation](av.md) for further information.
 
 - `onFullscreenUpdate`
 
@@ -120,7 +120,7 @@ The `onPlaybackStatusUpdate`, `onReadyForDisplay`, and `onIOSFullscreenUpdate` p
     - `Video.FULLSCREEN_UPDATE_PLAYER_DID_PRESENT`: describing that the fullscreen player just finished presenting
     - `Video.FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS`: describing that the fullscreen player is about to dismiss
     - `Video.FULLSCREEN_UPDATE_PLAYER_DID_DISMISS`: describing that the fullscreen player just finished dismissing
-  - `status`: the `PlaybackStatus` of the video; see the [AV documentation](../av/) for further information.
+  - `status`: the `PlaybackStatus` of the video; see the [AV documentation](av.md) for further information.
 
 - `onLoadStart`
 
@@ -128,49 +128,49 @@ The `onPlaybackStatusUpdate`, `onReadyForDisplay`, and `onIOSFullscreenUpdate` p
 
 - `onLoad`
 
-  A function to be called once the video has been loaded. The data is streamed so all of it may not have been fetched yet, just enough to render the first frame. The function is called with the `PlaybackStatus` of the video as its parameter; see the [AV documentation](../av/) for further information.
+  A function to be called once the video has been loaded. The data is streamed so all of it may not have been fetched yet, just enough to render the first frame. The function is called with the `PlaybackStatus` of the video as its parameter; see the [AV documentation](av.md) for further information.
 
 - `onError`
 
   A function to be called if load or playback have encountered a fatal error. The function is passed a single error message string as a parameter. Errors sent here are also set on `playbackStatus.error` that are passed into the `onPlaybackStatusUpdate` callback.
 
-Finally, the following props are available to control the playback of the video, but we recommend that you use the methods available on the `ref` (described below and in the [AV documentation](../av/)) for finer control.
+Finally, the following props are available to control the playback of the video, but we recommend that you use the methods available on the `ref` (described below and in the [AV documentation](av.md)) for finer control.
 
 - `status`
 
-  A dictionary setting a new `PlaybackStatusToSet` on the video. See the [AV documentation](../av/) for more information on `PlaybackStatusToSet`.
+  A dictionary setting a new `PlaybackStatusToSet` on the video. See the [AV documentation](av.md) for more information on `PlaybackStatusToSet`.
 
 - `progressUpdateIntervalMillis`
 
-  A number describing the new minimum interval in milliseconds between calls of `onPlaybackStatusUpdate`. See the [AV documentation](../av/) for more information.
+  A number describing the new minimum interval in milliseconds between calls of `onPlaybackStatusUpdate`. See the [AV documentation](av.md) for more information.
 
 - `positionMillis`
 
-  The desired position of playback in milliseconds. See the [AV documentation](../av/) for more information.
+  The desired position of playback in milliseconds. See the [AV documentation](av.md) for more information.
 
 - `shouldPlay`
 
-  A boolean describing if the media is supposed to play. Playback may not start immediately after setting this value for reasons such as buffering. Make sure to update your UI based on the `isPlaying` and `isBuffering` properties of the `PlaybackStatus`. See the [AV documentation](../av/) for more information.
+  A boolean describing if the media is supposed to play. Playback may not start immediately after setting this value for reasons such as buffering. Make sure to update your UI based on the `isPlaying` and `isBuffering` properties of the `PlaybackStatus`. See the [AV documentation](av.md) for more information.
 
 - `rate`
 
-  The desired playback rate of the media. This value must be between `0.0` and `32.0`. Only available on Android API version 23 and later and iOS. See the [AV documentation](../av/) for more information.
+  The desired playback rate of the media. This value must be between `0.0` and `32.0`. Only available on Android API version 23 and later and iOS. See the [AV documentation](av.md) for more information.
 
 - `shouldCorrectPitch`
 
-  A boolean describing if we should correct the pitch for a changed rate. If set to `true`, the pitch of the audio will be corrected (so a rate different than `1.0` will timestretch the audio). See the [AV documentation](../av/) for more information.
+  A boolean describing if we should correct the pitch for a changed rate. If set to `true`, the pitch of the audio will be corrected (so a rate different than `1.0` will timestretch the audio). See the [AV documentation](av.md) for more information.
 
 - `volume`
 
-  The desired volume of the audio for this media. This value must be between `0.0` (silence) and `1.0` (maximum volume). See the [AV documentation](../av/) for more information.
+  The desired volume of the audio for this media. This value must be between `0.0` (silence) and `1.0` (maximum volume). See the [AV documentation](av.md) for more information.
 
 - `isMuted`
 
-  A boolean describing if the audio of this media should be muted. See the [AV documentation](../av/) for more information.
+  A boolean describing if the audio of this media should be muted. See the [AV documentation](av.md) for more information.
 
 - `isLooping`
 
-  A boolean describing if the media should play once (`false`) or loop indefinitely (`true`). See the [AV documentation](../av/) for more information.
+  A boolean describing if the media should play once (`false`) or loop indefinitely (`true`). See the [AV documentation](av.md) for more information.
 
 #### The following methods are available on the component's ref:
 
@@ -190,7 +190,7 @@ This dismisses the fullscreen video view.
 
 A `Promise` that is fulfilled with the `PlaybackStatus` of the video once the fullscreen player has finished dismissing, or rejects if there was an error, or if this was called on an Android device.
 
-The rest of the API on the `Video` component ref is almost the same as the API for `Audio.Sound`. The only exception is the `setOnPlaybackStatusUpdate(onPlaybackStatusUpdate)` method, which is not available for `videoRef` -- see the [AV documentation](../av/) for further information:
+The rest of the API on the `Video` component ref is almost the same as the API for `Audio.Sound`. The only exception is the `setOnPlaybackStatusUpdate(onPlaybackStatusUpdate)` method, which is not available for `videoRef` -- see the [AV documentation](av.md) for further information:
 
 - `videoRef.loadAsync(source, initialStatus = {}, downloadFirst = true)`
 

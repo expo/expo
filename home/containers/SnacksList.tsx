@@ -22,9 +22,10 @@ const MySnacksQuery = gql`
       id
       snacks(limit: $limit, offset: $offset) {
         name
+        description
         fullName
         slug
-        description
+        isDraft
       }
     }
   }
@@ -92,6 +93,7 @@ const OtherSnacksQuery = gql`
           description
           fullName
           slug
+          isDraft
         }
       }
     }

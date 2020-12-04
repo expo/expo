@@ -1,0 +1,1 @@
+../../../Flipper/xplat/Flipper/FlipperConnectionManagerImpl.h

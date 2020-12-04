@@ -57,7 +57,10 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.annotation.Nullable;
 
 public class NodesManager implements EventDispatcherListener {
 
@@ -103,7 +106,7 @@ public class NodesManager implements EventDispatcherListener {
 
   private RCTEventEmitter mCustomEventHandler;
   private List<OnAnimationFrame> mFrameCallbacks = new ArrayList<>();
-  private ConcurrentLinkedQueue<Event> mEventQueue = new ConcurrentLinkedQueue<>();
+  private ConcurrentLinkedQueue<CopiedEvent> mEventQueue = new ConcurrentLinkedQueue<>();
   private boolean mWantRunUpdates;
 
   public double currentFrameTimeMs;
@@ -188,28 +191,11 @@ public class NodesManager implements EventDispatcherListener {
     }
   }
 
-  private void onAnimationFrame(long frameTimeNanos) {
-    currentFrameTimeMs = frameTimeNanos / 1000000.;
-
-    while (!mEventQueue.isEmpty()) {
-      handleEvent(mEventQueue.poll());
-    }
-
-    if (!mFrameCallbacks.isEmpty()) {
-      List<OnAnimationFrame> frameCallbacks = mFrameCallbacks;
-      mFrameCallbacks = new ArrayList<>(frameCallbacks.size());
-      for (int i = 0, size = frameCallbacks.size(); i < size; i++) {
-        frameCallbacks.get(i).onAnimationFrame(currentFrameTimeMs);
-      }
-    }
-
-    if (mWantRunUpdates) {
-      Node.runUpdates(updateContext);
-    }
-
+  private void performOperations() {
     if (!mOperationsInBatch.isEmpty()) {
       final Queue<NativeUpdateOperation> copiedOperationsQueue = mOperationsInBatch;
       mOperationsInBatch = new LinkedList<>();
+      final Semaphore semaphore = new Semaphore(0);
       mContext.runOnNativeModulesQueueThread(
               // FIXME replace `mContext` with `mContext.getExceptionHandler()` after RN 0.59 support is dropped
               new GuardedRunnable(mContext) {
@@ -226,9 +212,40 @@ public class NodesManager implements EventDispatcherListener {
                   if (shouldDispatchUpdates) {
                     mUIImplementation.dispatchViewUpdates(-1); // no associated batchId
                   }
+                  semaphore.release();
                 }
               });
+      while (true) {
+        try {
+          semaphore.acquire();
+          break;
+        } catch (InterruptedException e) {
+          //noop
+        }
+      }
     }
+  }
+
+  private void onAnimationFrame(long frameTimeNanos) {
+    currentFrameTimeMs = frameTimeNanos / 1000000.;
+
+    while (!mEventQueue.isEmpty()) {
+      CopiedEvent copiedEvent = mEventQueue.poll();
+      handleEvent(copiedEvent.getTargetTag(), copiedEvent.getEventName(), copiedEvent.getPayload());
+    }
+
+    if (!mFrameCallbacks.isEmpty()) {
+      List<OnAnimationFrame> frameCallbacks = mFrameCallbacks;
+      mFrameCallbacks = new ArrayList<>(frameCallbacks.size());
+      for (int i = 0, size = frameCallbacks.size(); i < size; i++) {
+        frameCallbacks.get(i).onAnimationFrame(currentFrameTimeMs);
+      }
+    }
+
+    if (mWantRunUpdates) {
+      Node.runUpdates(updateContext);
+    }
+    performOperations();
 
     mCallbackPosted.set(false);
     mWantRunUpdates = false;
@@ -429,8 +446,17 @@ public class NodesManager implements EventDispatcherListener {
     // UI thread.
     if (UiThreadUtil.isOnUiThread()) {
       handleEvent(event);
+      performOperations();
     } else {
-      mEventQueue.offer(event);
+      boolean shouldSaveEvent = false;
+      String eventName = mCustomEventNamesResolver.resolveCustomEventName(event.getEventName());
+      int viewTag = event.getViewTag();
+      String key = viewTag + eventName;
+
+      shouldSaveEvent |= (mCustomEventHandler != null && mNativeProxy.isAnyHandlerWaitingForEvent(key));
+      if (shouldSaveEvent) {
+        mEventQueue.offer(new CopiedEvent(event));
+      }
       startUpdatingOnAnimationFrame();
     }
   }
@@ -449,6 +475,21 @@ public class NodesManager implements EventDispatcherListener {
       EventNode node = mEventMapping.get(key);
       if (node != null) {
         event.dispatch(node);
+      }
+    }
+  }
+
+  private void handleEvent(int targetTag, String eventName, @Nullable WritableMap event) {
+    if (mCustomEventHandler != null) {
+      mCustomEventHandler.receiveEvent(targetTag, eventName, event);
+    }
+
+    String key = targetTag + eventName;
+
+    if (!mEventMapping.isEmpty()) {
+      EventNode node = mEventMapping.get(key);
+      if (node != null) {
+        node.receiveEvent(targetTag, eventName, event);
       }
     }
   }

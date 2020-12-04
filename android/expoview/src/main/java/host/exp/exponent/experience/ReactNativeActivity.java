@@ -429,9 +429,8 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
     RNObject versionedUtils = new RNObject("host.exp.exponent.VersionedUtils").loadVersion(mSDKVersion);
     RNObject builder = versionedUtils.callRecursive("getReactInstanceManagerBuilder", instanceManagerBuilderProperties);
 
-    if (ABIVersion.toNumber(mSDKVersion) >= ABIVersion.toNumber("36.0.0")) {
-      builder.call("setCurrentActivity", this);
-    }
+    // This used to not be called prior to SDK 36
+    builder.call("setCurrentActivity", this);
 
     // ReactNativeInstance is considered to be resumed when it has its activity attached, which is expected to be the case here
     builder.call("setInitialLifecycleState", RNObject.versionedEnum(mSDKVersion, "com.facebook.react.common.LifecycleState", "RESUMED"));

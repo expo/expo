@@ -65,10 +65,15 @@ public class ScreenStackFragment extends ScreenFragment {
   private AppBarLayout mAppBarLayout;
   private Toolbar mToolbar;
   private boolean mShadowHidden;
+  private boolean mIsTranslucent;
 
   @SuppressLint("ValidFragment")
   public ScreenStackFragment(Screen screenView) {
     super(screenView);
+  }
+
+  public ScreenStackFragment() {
+    throw new IllegalStateException("ScreenStack fragments should never be restored. Follow instructions from https://github.com/software-mansion/react-native-screens/issues/17#issuecomment-424704067 to properly configure your main activity.");
   }
 
   public void removeToolbar() {
@@ -93,6 +98,14 @@ public class ScreenStackFragment extends ScreenFragment {
     if (mShadowHidden != hidden) {
       mAppBarLayout.setTargetElevation(hidden ? 0 : TOOLBAR_ELEVATION);
       mShadowHidden = hidden;
+    }
+  }
+
+  public void setToolbarTranslucent(boolean translucent) {
+    if (mIsTranslucent != translucent) {
+      ViewGroup.LayoutParams params = mScreenView.getLayoutParams();
+      ((CoordinatorLayout.LayoutParams) params).setBehavior(translucent ? null : new AppBarLayout.ScrollingViewBehavior());
+      mIsTranslucent = translucent;
     }
   }
 
@@ -141,7 +154,7 @@ public class ScreenStackFragment extends ScreenFragment {
   }
 
   private void notifyViewAppearTransitionEnd() {
-    ViewParent screenStack = getView().getParent();
+    ViewParent screenStack = getView() != null ? getView().getParent() : null;
     if (screenStack instanceof ScreenStack) {
       ((ScreenStack) screenStack).onViewAppearTransitionEnd();
     }
@@ -154,7 +167,7 @@ public class ScreenStackFragment extends ScreenFragment {
     CoordinatorLayout view = new NotifyingCoordinatorLayout(getContext(), this);
     CoordinatorLayout.LayoutParams params = new CoordinatorLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-    params.setBehavior(new AppBarLayout.ScrollingViewBehavior());
+    params.setBehavior(mIsTranslucent ? null : new AppBarLayout.ScrollingViewBehavior());
     mScreenView.setLayoutParams(params);
     view.addView(recycleView(mScreenView));
 

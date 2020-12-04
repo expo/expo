@@ -36,10 +36,10 @@ export default {
      * Camera roll permissions don't need to be requested on web, so we always
      * respond with granted.
      */
-    async getCameraRollPermissionsAsync() {
+    async getMediaLibraryPermissionsAsync(_writeOnly) {
         return permissionGrantedResponse();
     },
-    async requestCameraRollPermissionsAsync() {
+    async requestMediaLibraryPermissionsAsync(_writeOnly) {
         return permissionGrantedResponse();
     },
 };

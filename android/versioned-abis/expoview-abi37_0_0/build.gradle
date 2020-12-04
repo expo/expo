@@ -86,7 +86,7 @@ dependencies {
   api 'javax.inject:javax.inject:1'
 
   // Our dependencies
-  api "androidx.appcompat:appcompat:1.1.0"
+  api "androidx.appcompat:appcompat:1.2.0"
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
   api 'de.greenrobot:eventbus:2.4.0'
 

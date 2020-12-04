@@ -67,7 +67,8 @@ export default class PermissionsScreen extends React.Component<{}, State> {
       ['NOTIFICATIONS', Permissions.NOTIFICATIONS],
       ['CONTACTS', Permissions.CONTACTS],
       ['SYSTEM_BRIGHTNESS', Permissions.SYSTEM_BRIGHTNESS],
-      ['CAMERA_ROLL', Permissions.CAMERA_ROLL],
+      ['MEDIA_LIBRARY_WRITE_ONLY', Permissions.MEDIA_LIBRARY_WRITE_ONLY],
+      ['MEDIA_LIBRARY', Permissions.MEDIA_LIBRARY],
       ['CALENDAR', Permissions.CALENDAR],
       ['REMINDERS', Permissions.REMINDERS],
     ];
@@ -122,7 +123,7 @@ export default class PermissionsScreen extends React.Component<{}, State> {
                     Permissions.NOTIFICATIONS,
                     Permissions.CONTACTS,
                     Permissions.SYSTEM_BRIGHTNESS,
-                    Permissions.CAMERA_ROLL,
+                    Permissions.MEDIA_LIBRARY,
                     Permissions.CALENDAR,
                     Permissions.REMINDERS,
                   ] as Permissions.PermissionType[])
@@ -131,7 +132,7 @@ export default class PermissionsScreen extends React.Component<{}, State> {
               title={
                 'Ask for Permissions: ' +
                 'CAMERA, AUDIO_RECORDING, LOCATION, USER_FACING_NOTIFICATIONS, ' +
-                'NOTIFICATIONS, CONTACTS, SYSTEM_BRIGHTNESS, CAMERA_ROLL, CALENDAR, REMINDERS'
+                'NOTIFICATIONS, CONTACTS, SYSTEM_BRIGHTNESS, MEDIA_LIBRARY, CALENDAR, REMINDERS'
               }
             />
           </View>

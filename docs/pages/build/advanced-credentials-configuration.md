@@ -39,11 +39,11 @@ It specifies credentials for Android and iOS (but you can configure only one of 
 ## Configuring credentials.json
 
 You have two options for handling your app credentials:
+
 - Let Expo generate and manage your credentials for you, and keep them stored securely on Expo's servers, or
 - Create credentials manually, yourself, and provide them to EAS Build via the credentials.json file
 
 No matter which option you choose, you can always sync your credentials by running `expo eas:credentials:sync`, so that the ones you have stored locally match those on Expo's servers.
-
 
 ## Automatic configuration
 
@@ -136,7 +136,7 @@ Create (or edit) `credentials.json` and configure it with the credentials:
 
 ### Auto Mode (Default)
 
-Let's assume we're only building for Android and we're using the following configuration (defined in `eas.json` - [learn more about this file](../eas-json/)):
+Let's assume we're only building for Android and we're using the following configuration (defined in `eas.json` - [learn more about this file](eas-json.md)):
 
 ```json
 {
@@ -163,7 +163,7 @@ The algorithm of the auto mode works like this:
 
 ### Local Mode
 
-You can configure EAS Build so that `expo eas:build` will be reading the credentials only from `credentials.json`. Just set `"credentialsSource": "local"` in one of your [build profiles](../eas-json/) in `eas.json`.
+You can configure EAS Build so that `expo eas:build` will be reading the credentials only from `credentials.json`. Just set `"credentialsSource": "local"` in one of your [build profiles](eas-json.md) in `eas.json`.
 
 Example:
 
@@ -229,7 +229,7 @@ Before you start working on setting up your CI job, make sure you have these two
   }
   ```
 
-- `eas.json` ([learn more](../eas-json/)) with build profiles which enforce using the local `credentials.json` file:
+- `eas.json` ([learn more](eas-json.md)) with build profiles which enforce using the local `credentials.json` file:
 
   ```json
   {

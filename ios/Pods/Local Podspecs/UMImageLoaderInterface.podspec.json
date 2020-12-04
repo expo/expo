@@ -1,6 +1,6 @@
 {
   "name": "UMImageLoaderInterface",
-  "version": "5.3.0",
+  "version": "5.4.0",
   "summary": "Interface for ImageLoader",
   "description": "Interface for ImageLoader",
   "license": "MIT",
@@ -12,7 +12,5 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "UMImageLoaderInterface/**/*.{h,m}",
-  "preserve_paths": "UMImageLoaderInterface/**/*.{h,m}",
-  "requires_arc": true
+  "source_files": "UMImageLoaderInterface/**/*.{h,m}"
 }

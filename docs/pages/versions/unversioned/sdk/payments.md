@@ -6,25 +6,19 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-payments-
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-Expo includes support for payments through [Stripe](https://stripe.com/) and [Apple Pay](https://www.apple.com/apple-pay/) on iOS via the bare workflow, and Stripe on Android (plus Android Pay in bare).
+> 🚨 On iOS, the Payments module is currently only supported the [bare workflow](https://docs.expo.io/bare/customizing/).
+
+Payments uses [Stripe](https://stripe.com/) and [Apple Pay](https://www.apple.com/apple-pay/) on iOS, but the module is only available in bare workflow apps.
+
+Stripe is supported in the managed workflow for Android, and Android Pay is supported in the bare workflow.
 
 Need more help than what's on the page? The Payments module is largely based off [tipsi-stripe](https://github.com/tipsi/tipsi-stripe). The documentation and questions there may prove helpful.
-
-_Note_: (Android only) If you are using Expo client then the setup has already been done for you.
-
-```js
-import { PaymentsStripe } from 'expo-payments-stripe';
-```
 
 <PlatformsSection android ios simulator web={{ pending: 'https://github.com/expo/expo/issues/4046' }} />
 
 ## Installation
 
 <InstallSection packageName="expo-payments-stripe" />
-
-## Compatibility
-
-The Payments module is currently only supported the bare workflow on iOS. If you have a managed workflow project, you'll need to [move to the bare workflow](../../bare/customizing/) in order to use this module on iOS.
 
 ## Setup
 
@@ -37,6 +31,8 @@ If you haven't done payments with Stripe before, create an account with [Stripe]
 For iOS, follow [Stripe instructions](https://stripe.com/docs/mobile/ios/sources#redirecting-your-customer).
 
 For Android, add the following code to your `AndroidManifest.xml`, replacing `your_scheme` with the URI scheme you're going to use when specifying return URL for payment process.
+
+> 💡 If you are using Expo client then the setup has already been done for you.
 
 ```xml
       ...

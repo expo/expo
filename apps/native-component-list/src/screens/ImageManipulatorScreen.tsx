@@ -111,9 +111,9 @@ export default class ImageManipulatorScreen extends React.Component<{}, State> {
   };
 
   _pickPhoto = async () => {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+    const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
     if (status !== 'granted') {
-      alert('Permission to CAMERA_ROLL not granted!');
+      alert('Permission to MEDIA_LIBRARY not granted!');
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({

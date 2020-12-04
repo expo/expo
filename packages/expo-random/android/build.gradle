@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '9.0.0'
+version = '10.0.0'
 
 // Simple helper that allows the root project to override versions declared by this library.
 def safeExtGet(prop, fallback) {
@@ -40,8 +40,8 @@ android {
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 29)
-    versionCode 24
-    versionName "9.0.0"
+    versionCode 26
+    versionName "10.0.0"
   }
   lintOptions {
     abortOnError false

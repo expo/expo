@@ -1,4 +1,5 @@
 import { Platform } from '@unimodules/core';
+import Constants, { ExecutionEnvironment } from 'expo-constants';
 import * as Notifications from 'expo-notifications';
 import React from 'react';
 import { Alert } from 'react-native';
@@ -57,7 +58,6 @@ const screens = [
   'Haptics',
   'ImageManipulator',
   'ImagePicker',
-  'InAppPurchases',
   'IntentLauncher',
   'KeepAwake',
   'Linking',
@@ -88,6 +88,10 @@ const screens = [
   'ViewShot',
   'WebBrowser',
 ];
+
+if (Constants.executionEnvironment !== ExecutionEnvironment.StoreClient) {
+  screens.push('InAppPurchases');
+}
 
 export const ScreenItems = screens.map(name => ({
   name,

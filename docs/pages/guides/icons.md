@@ -14,9 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 export default class IconExample extends React.Component {
   render() {
-    return (
-      <Ionicons name="md-checkmark-circle" size={32} color="green" />
-    );
+    return <Ionicons name="md-checkmark-circle" size={32} color="green" />;
   }
 }
 ```
@@ -25,15 +23,15 @@ This component loads the Ionicons font if it hasn't been loaded already, and ren
 
 `import { Ionicons } from '@expo/vector-icons';` instead of.. `import Ionicons from 'react-native-vector-icons/Ionicons';`.
 
-> **Note:** As with [any custom font](../using-custom-fonts/#using-custom-fonts) in Expo, you may want to preload icon fonts before rendering your app. The font object is available as a static property on the font component, so in the case above it is `Ionicons.font`, which evaluates to `{ionicons: require('path/to/ionicons.ttf')}`. [Read more about preloading assets](../preloading-and-caching-assets/).
+> **Note:** As with [any custom font](using-custom-fonts.md#using-custom-fonts) in Expo, you may want to preload icon fonts before rendering your app. The font object is available as a static property on the font component, so in the case above it is `Ionicons.font`, which evaluates to `{ionicons: require('path/to/ionicons.ttf')}`. [Read more about preloading assets](preloading-and-caching-assets.md).
 
 ## Custom Icon Fonts
 
-First, make sure you import your custom icon font. [Read more about loading custom fonts](../using-custom-fonts/#using-custom-fonts). Once your font has loaded, you'll need to create an Icon Set. `@expo/vector-icons` exposes three methods to help you create an icon set.
+First, make sure you import your custom icon font. [Read more about loading custom fonts](using-custom-fonts.md#using-custom-fonts). Once your font has loaded, you'll need to create an Icon Set. `@expo/vector-icons` exposes three methods to help you create an icon set.
 
 ### createIconSet
 
-Returns your own custom font based on the `glyphMap` where the key is the icon name and the value is either a UTF-8 character or it's character code. `fontFamily` is the name of the font **NOT** the filename. The `expoAssetId` can be anything that you can pass in to [Font.loadAsync](/versions/latest/sdk/font/#fontloadasyncobject). See [react-native-vector-icons](https://github.com/oblador/react-native-vector-icons/blob/master/README.md#custom-fonts) for more details.
+Returns your own custom font based on the `glyphMap` where the key is the icon name and the value is either a UTF-8 character or it's character code. `fontFamily` is the name of the font **NOT** the filename. The `expoAssetId` can be anything that you can pass in to [Font.loadAsync](../versions/latest/sdk/font.md#fontloadasyncobject). See [react-native-vector-icons](https://github.com/oblador/react-native-vector-icons/blob/master/README.md#custom-fonts) for more details.
 
 ```javascript
 import * as React from 'react';
@@ -43,11 +41,9 @@ import { createIconSet } from '@expo/vector-icons';
 const glyphMap = { 'icon-name': 1234, test: '∆' };
 const CustomIcon = createIconSet(glyphMap, 'FontName', 'custom-icon-font.ttf');
 
-export default class CustomIconExample extends React.Component {  
+export default class CustomIconExample extends React.Component {
   render() {
-    return (
-      <CustomIcon name="icon-name" size={32} color="red" />
-    );
+    return <CustomIcon name="icon-name" size={32} color="red" />;
   }
 }
 ```
@@ -89,7 +85,7 @@ export default class SlackIcon extends React.Component {
       <Image
         source={require('../assets/images/slack-icon.png')}
         fadeDuration={0}
-        style={{width: 20, height: 20}}
+        style={{ width: 20, height: 20 }}
       />
     );
   }
@@ -101,7 +97,8 @@ Let's assume that our `SlackIcon` class is located in `my-project/components/Sla
 We also set the `fadeDuration` (an Android specific property) to `0` because we usually want the icon to appear immediately rather than fade in over several hundred milliseconds.
 
 ## Button Component
-A convenience component for creating buttons with an icon on the left side. 
+
+A convenience component for creating buttons with an icon on the left side.
 
 ```js
 import { FontAwesome } from '@expo/vector-icons';
@@ -114,13 +111,14 @@ const myButton = (
 ```
 
 ### Properties
+
 Any [`Text`](http://reactnative.dev/docs/text.html), [`TouchableHighlight`](http://reactnative.dev/docs/touchablehighlight.html) or [`TouchableWithoutFeedback`](http://reactnative.dev/docs/touchablewithoutfeedback.html) property in addition to these:
 
-| Prop | Description | Default |
-|---|---|---|
-|**`color`**|Text and icon color, use `iconStyle` or nest a `Text` component if you need different colors.|`white`|
-|**`size`**|Icon size.|`20`|
-|**`iconStyle`**|Styles applied to the icon only, good for setting margins or a different color. *Note: use `iconStyle` for margins or expect unstable behaviour.*|\`{marginRight: 10}\`|
-|**`backgroundColor`**|Background color of the button.|`#007AFF`|
-|**`borderRadius`**|Border radius of the button, set to `0` to disable. |`5`|
-|**`onPress`**|A function called when the button is pressed. |*None*|
+| Prop                  | Description                                                                                                                                       | Default               |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
+| **`color`**           | Text and icon color, use `iconStyle` or nest a `Text` component if you need different colors.                                                     | `white`               |
+| **`size`**            | Icon size.                                                                                                                                        | `20`                  |
+| **`iconStyle`**       | Styles applied to the icon only, good for setting margins or a different color. _Note: use `iconStyle` for margins or expect unstable behaviour._ | \`{marginRight: 10}\` |
+| **`backgroundColor`** | Background color of the button.                                                                                                                   | `#007AFF`             |
+| **`borderRadius`**    | Border radius of the button, set to `0` to disable.                                                                                               | `5`                   |
+| **`onPress`**         | A function called when the button is pressed.                                                                                                     | _None_                |

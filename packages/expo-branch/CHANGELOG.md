@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+## 3.0.0 — 2020-11-17
+
+### 🛠 Breaking changes
+
+- On iOS enabled `use_frameworks!` usage by replacing `React` dependency with `React-Core`. ([#11057](https://github.com/expo/expo/pull/11057) by [@bbarthec](https://github.com/bbarthec))
+
 ## 2.3.1 — 2020-09-16
 
 ### 🎉 New features

@@ -7,9 +7,11 @@ import androidx.annotation.Nullable;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.NotificationResponse;
-import expo.modules.notifications.notifications.service.NotificationsHelper;
+import expo.modules.notifications.service.delegates.ExpoPresentationDelegate;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.notifications.model.ScopedNotificationRequest;
+
+import static host.exp.exponent.experience.ExperienceActivity.PERSISTENT_EXPONENT_NOTIFICATION_ID;
 
 public class ScopedNotificationsUtils {
   private ExponentNotificationManager mExponentNotificationManager;
@@ -31,14 +33,16 @@ public class ScopedNotificationsUtils {
     }
 
     // legacy or foreign notification
-    Pair<String, Integer> foreignNotification = NotificationsHelper.parseNotificationIdentifier(notificationRequest.getIdentifier());
+    Pair<String, Integer> foreignNotification = ExpoPresentationDelegate.Companion.parseNotificationIdentifier(notificationRequest.getIdentifier());
     if (foreignNotification != null) {
       boolean notificationBelongsToSomeExperience = mExponentNotificationManager.getAllNotificationsIds(foreignNotification.first).contains(foreignNotification.second);
       boolean notificationExperienceIsCurrentExperience = experienceId.get().equals(foreignNotification.first);
+      boolean notificationIsPersistentExponentNotification = foreignNotification.first == null && foreignNotification.second == PERSISTENT_EXPONENT_NOTIFICATION_ID;
       // If notification doesn't belong to any experience it's a foreign notification
       // and we want to deliver it to all the experiences. If it does belong to some experience,
-      // we want to handle it only if it belongs to "current" experience.
-      return !notificationBelongsToSomeExperience || notificationExperienceIsCurrentExperience;
+      // we want to handle it only if it belongs to "current" experience. If it is the persistent
+      // Exponent notification do not pass it to any experience.
+      return !notificationIsPersistentExponentNotification && (!notificationBelongsToSomeExperience || notificationExperienceIsCurrentExperience);
     }
 
     // fallback

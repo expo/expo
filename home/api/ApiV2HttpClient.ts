@@ -30,7 +30,7 @@ export default class ApiV2HttpClient {
   }
 
   async _requestAsync<R>(methodName: string, options: RequestOptions): Promise<R> {
-    let url = `${Config.api.host}/--/api/v2/${encodeURI(methodName)}`;
+    let url = `${Config.api.origin}/--/api/v2/${encodeURI(methodName)}`;
     if (options.queryParameters) {
       url += '?' + querystring.stringify(options.queryParameters);
     }

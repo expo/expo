@@ -5,6 +5,7 @@ import ExponentImagePicker from './ExponentImagePicker';
 import {
   CameraPermissionResponse,
   CameraRollPermissionResponse,
+  MediaLibraryPermissionResponse,
   ImagePickerResult,
   ImagePickerErrorResult,
   MediaTypeOptions,
@@ -48,16 +49,40 @@ export async function getCameraPermissionsAsync(): Promise<CameraPermissionRespo
   return ExponentImagePicker.getCameraPermissionsAsync();
 }
 
-export async function getCameraRollPermissionsAsync(): Promise<CameraRollPermissionResponse> {
-  return ExponentImagePicker.getCameraRollPermissionsAsync();
+/**
+ * @deprecated in favor of getMediaLibraryPermissionsAsync()
+ */
+export async function getCameraRollPermissionsAsync(): Promise<MediaLibraryPermissionResponse> {
+  console.warn(
+    'ImagePicker.getCameraRollPermissionsAsync() is deprecated in favour of ImagePicker.getMediaLibraryPermissionsAsync()'
+  );
+  return getMediaLibraryPermissionsAsync();
+}
+
+export async function getMediaLibraryPermissionsAsync(
+  writeOnly: boolean = false
+): Promise<MediaLibraryPermissionResponse> {
+  return ExponentImagePicker.getMediaLibraryPermissionsAsync(writeOnly);
 }
 
 export async function requestCameraPermissionsAsync(): Promise<CameraPermissionResponse> {
   return ExponentImagePicker.requestCameraPermissionsAsync();
 }
 
-export async function requestCameraRollPermissionsAsync(): Promise<CameraRollPermissionResponse> {
-  return ExponentImagePicker.requestCameraRollPermissionsAsync();
+/**
+ * @deprecated in favor of requestMediaLibraryPermissionsAsync()
+ */
+export async function requestCameraRollPermissionsAsync(): Promise<MediaLibraryPermissionResponse> {
+  console.warn(
+    'ImagePicker.requestCameraRollPermissionsAsync() is deprecated in favour of ImagePicker.requestMediaLibraryPermissionsAsync()'
+  );
+  return ExponentImagePicker.requestMediaLibraryPermissionsAsync();
+}
+
+export async function requestMediaLibraryPermissionsAsync(
+  writeOnly: boolean = false
+): Promise<MediaLibraryPermissionResponse> {
+  return ExponentImagePicker.requestMediaLibraryPermissionsAsync(writeOnly);
 }
 
 export async function getPendingResultAsync(): Promise<
@@ -95,6 +120,7 @@ export {
   VideoExportPreset,
   CameraPermissionResponse,
   CameraRollPermissionResponse,
+  MediaLibraryPermissionResponse,
   PermissionStatus,
   PermissionExpiration,
 };

@@ -285,7 +285,7 @@ NATIVE_METHOD(bufferData) {
   } else if (sizeOrData.isNull() || sizeOrData.isUndefined()) {
     addToNextBatch([=] { glBufferData(target, 0, nullptr, usage); });
   } else if (sizeOrData.isObject()) {
-    auto data = rawArrayBuffer(runtime, sizeOrData.getObject(runtime));
+    auto data = rawTypedArray(runtime, sizeOrData.getObject(runtime));
     addToNextBatch(
         [=, data{std::move(data)}] { glBufferData(target, data.size(), data.data(), usage); });
   }
@@ -298,7 +298,7 @@ NATIVE_METHOD(bufferSubData) {
   if (ARG(2, const jsi::Value &).isNull()) {
     addToNextBatch([=] { glBufferSubData(target, offset, 0, nullptr); });
   } else {
-    auto data = rawArrayBuffer(runtime, ARG(2, jsi::Object));
+    auto data = rawTypedArray(runtime, ARG(2, jsi::Object));
     addToNextBatch(
         [=, data{std::move(data)}] { glBufferSubData(target, offset, data.size(), data.data()); });
   }
@@ -561,7 +561,7 @@ NATIVE_METHOD(texImage2D, 6) {
     auto data = ARG(8, jsi::Object);
 
     if (data.isArrayBuffer(runtime) || isTypedArray(runtime, data)) {
-      std::vector<uint8_t> vec = rawArrayBuffer(runtime, std::move(data));
+      std::vector<uint8_t> vec = rawTypedArray(runtime, std::move(data));
       if (unpackFLipY) {
         flipPixels(vec.data(), width * bytesPerPixel(type, format), height);
       }
@@ -619,7 +619,7 @@ NATIVE_METHOD(texSubImage2D, 6) {
     auto data = ARG(8, jsi::Object);
 
     if (data.isArrayBuffer(runtime) || isTypedArray(runtime, data)) {
-      std::vector<uint8_t> vec = rawArrayBuffer(runtime, std::move(data));
+      std::vector<uint8_t> vec = rawTypedArray(runtime, std::move(data));
       if (unpackFLipY) {
         flipPixels(vec.data(), width * bytesPerPixel(type, format), height);
       }
@@ -694,7 +694,7 @@ NATIVE_METHOD(texImage3D) {
   };
 
   if (data.isArrayBuffer(runtime) || isTypedArray(runtime, data)) {
-    std::vector<uint8_t> vec = rawArrayBuffer(runtime, std::move(data));
+    std::vector<uint8_t> vec = rawTypedArray(runtime, std::move(data));
     if (unpackFLipY) {
       flip(vec.data());
     }
@@ -747,7 +747,7 @@ NATIVE_METHOD(texSubImage3D) {
   };
 
   if (data.isArrayBuffer(runtime) || isTypedArray(runtime, data)) {
-    std::vector<uint8_t> vec = rawArrayBuffer(runtime, std::move(data));
+    std::vector<uint8_t> vec = rawTypedArray(runtime, std::move(data));
     if (unpackFLipY) {
       flip(vec.data());
     }

@@ -71,10 +71,13 @@ public class Constants {
   }
 
   static {
-    Set<String> abiVersions = new HashSet<>();
+    List<String> abiVersions = new ArrayList<>();
     // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
     // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
     // ADD ABI VERSIONS HERE DO NOT MODIFY
+    // BEGIN_SDK_40
+    abiVersions.add("40.0.0");
+    // END_SDK_40
     // BEGIN_SDK_39
     abiVersions.add("39.0.0");
     // END_SDK_39
@@ -84,9 +87,6 @@ public class Constants {
     // BEGIN_SDK_37
     abiVersions.add("37.0.0");
     // END_SDK_37
-    // BEGIN_SDK_36
-    abiVersions.add("36.0.0");
-    // END_SDK_36
     // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
     // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
@@ -94,7 +94,7 @@ public class Constants {
       abiVersions.add(TEMPORARY_ABI_VERSION);
     }
 
-    setSdkVersions(new ArrayList<>(abiVersions));
+    setSdkVersions(abiVersions);
 
     List<EmbeddedResponse> embeddedResponses = new ArrayList<>();
     // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE

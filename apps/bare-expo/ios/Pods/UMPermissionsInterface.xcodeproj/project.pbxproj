@@ -7,15 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		14094174E889887D1F78815287512552 /* UMUserNotificationCenterProxyInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 1DF7CFD609C46F9E745F005F497B3F11 /* UMUserNotificationCenterProxyInterface.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		19346D80E7AE0D0A657F3BF9F8BE5305 /* UMPermissionsMethodsDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 431A01E24FA31E5D15B422C1C938FEF6 /* UMPermissionsMethodsDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		3A639FA21B1EFD59BD204CD4171BEB02 /* UMPermissionsInterface-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = B0DDE3883FCD08E3698B180B44328187 /* UMPermissionsInterface-dummy.m */; };
-		C0EB2515F54EB45C66C44E585CF3B317 /* UMPermissionsMethodsDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3213CCAE816406A9905E0A94C834A92A /* UMPermissionsMethodsDelegate.m */; };
-		C618FF940BEB5A0A8E50216D1DE2B872 /* UMPermissionsInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = CD5F5836CEDC0A42039B4540136DE890 /* UMPermissionsInterface.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		63C502B7E35BE94BD40845A4EB28E955 /* UMPermissionsMethodsDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 431A01E24FA31E5D15B422C1C938FEF6 /* UMPermissionsMethodsDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8ED5200A76F40F98BC96439893C97749 /* UMPermissionsInterface-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = B0DDE3883FCD08E3698B180B44328187 /* UMPermissionsInterface-dummy.m */; };
+		91D2E7B6FC4244C6ABD63D2246170523 /* UMUserNotificationCenterProxyInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 1DF7CFD609C46F9E745F005F497B3F11 /* UMUserNotificationCenterProxyInterface.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B3E240C1E74F817C4B4D70C8709C2B8D /* UMPermissionsMethodsDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3213CCAE816406A9905E0A94C834A92A /* UMPermissionsMethodsDelegate.m */; };
+		E2124F6946F3141C69D3BDB07C9AF023 /* UMPermissionsInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = CD5F5836CEDC0A42039B4540136DE890 /* UMPermissionsInterface.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		EB9B14D8F4DB84FD07B561FDBFA6727E /* PBXContainerItemProxy */ = {
+		DFCEFB92FF136B6E702EB8CCDCF41FAA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 093AF6407C4F406805F73F83B5108CA3 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -39,7 +39,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		DA93715BD5E88A14162E62F84B84423F /* Frameworks */ = {
+		E309A111C0CEFFF72AF60554CBDA7CA2 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -119,13 +119,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		9B057D980BE4154DC8DFC464DDAD7EF6 /* Headers */ = {
+		F27A5FD86FBCC2D74E5771028AE52237 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C618FF940BEB5A0A8E50216D1DE2B872 /* UMPermissionsInterface.h in Headers */,
-				19346D80E7AE0D0A657F3BF9F8BE5305 /* UMPermissionsMethodsDelegate.h in Headers */,
-				14094174E889887D1F78815287512552 /* UMUserNotificationCenterProxyInterface.h in Headers */,
+				E2124F6946F3141C69D3BDB07C9AF023 /* UMPermissionsInterface.h in Headers */,
+				63C502B7E35BE94BD40845A4EB28E955 /* UMPermissionsMethodsDelegate.h in Headers */,
+				91D2E7B6FC4244C6ABD63D2246170523 /* UMUserNotificationCenterProxyInterface.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -134,16 +134,16 @@
 /* Begin PBXNativeTarget section */
 		12FF61416C5E794E9DEAC78D381D9726 /* UMPermissionsInterface */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 504921805372C9562281132D549E1DDB /* Build configuration list for PBXNativeTarget "UMPermissionsInterface" */;
+			buildConfigurationList = 4937D887FC130C903CD3C26732F82C3E /* Build configuration list for PBXNativeTarget "UMPermissionsInterface" */;
 			buildPhases = (
-				9B057D980BE4154DC8DFC464DDAD7EF6 /* Headers */,
-				9DA88099A25B7499E281C4D5418C5F20 /* Sources */,
-				DA93715BD5E88A14162E62F84B84423F /* Frameworks */,
+				F27A5FD86FBCC2D74E5771028AE52237 /* Headers */,
+				C740E010ED68AA2BD1D022917BBF1319 /* Sources */,
+				E309A111C0CEFFF72AF60554CBDA7CA2 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				8BA89E27449C54A285BA2E48D61D5495 /* PBXTargetDependency */,
+				9039EAF7EACDFAD52F4E5B7FC7CC9A4A /* PBXTargetDependency */,
 			);
 			name = UMPermissionsInterface;
 			productName = UMPermissionsInterface;
@@ -183,30 +183,31 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		9DA88099A25B7499E281C4D5418C5F20 /* Sources */ = {
+		C740E010ED68AA2BD1D022917BBF1319 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3A639FA21B1EFD59BD204CD4171BEB02 /* UMPermissionsInterface-dummy.m in Sources */,
-				C0EB2515F54EB45C66C44E585CF3B317 /* UMPermissionsMethodsDelegate.m in Sources */,
+				8ED5200A76F40F98BC96439893C97749 /* UMPermissionsInterface-dummy.m in Sources */,
+				B3E240C1E74F817C4B4D70C8709C2B8D /* UMPermissionsMethodsDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		8BA89E27449C54A285BA2E48D61D5495 /* PBXTargetDependency */ = {
+		9039EAF7EACDFAD52F4E5B7FC7CC9A4A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = EB9B14D8F4DB84FD07B561FDBFA6727E /* PBXContainerItemProxy */;
+			targetProxy = DFCEFB92FF136B6E702EB8CCDCF41FAA /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		39D0AC112C7E1C7E687C14776B45F85C /* Release */ = {
+		0EB1BDAD6B5048CC76EBC645DAE6FD1F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -229,92 +230,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"POD_CONFIGURATION_RELEASE=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.0;
-				SYMROOT = "${SRCROOT}/../build";
-			};
-			name = Release;
-		};
-		A4FFB5D15DCA68E1F7D9467D344A73E0 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 26BC6E4AF3716E14FA7931571545AEFB /* UMPermissionsInterface.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/UMPermissionsInterface/UMPermissionsInterface-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = UMPermissionsInterface;
-				PRODUCT_NAME = UMPermissionsInterface;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		E72B84A7876D739DBADC5CEABA31DE65 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -353,15 +269,15 @@
 			};
 			name = Debug;
 		};
-		E73008B907CA125BB08EB123A1C60712 /* Debug */ = {
+		143296D4C16389FE68E07A5135906717 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = AF0E049933A5593C818178E413DA9406 /* UMPermissionsInterface.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/UMPermissionsInterface/UMPermissionsInterface-prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				OTHER_LDFLAGS = "";
@@ -378,14 +294,102 @@
 			};
 			name = Debug;
 		};
+		29AB29F48D6133148F09A9330C2743F8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		EF45420662A4E0FFBCC8AB9900C85EC3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 26BC6E4AF3716E14FA7931571545AEFB /* UMPermissionsInterface.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/UMPermissionsInterface/UMPermissionsInterface-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = UMPermissionsInterface;
+				PRODUCT_NAME = UMPermissionsInterface;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		504921805372C9562281132D549E1DDB /* Build configuration list for PBXNativeTarget "UMPermissionsInterface" */ = {
+		4937D887FC130C903CD3C26732F82C3E /* Build configuration list for PBXNativeTarget "UMPermissionsInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E73008B907CA125BB08EB123A1C60712 /* Debug */,
-				A4FFB5D15DCA68E1F7D9467D344A73E0 /* Release */,
+				143296D4C16389FE68E07A5135906717 /* Debug */,
+				EF45420662A4E0FFBCC8AB9900C85EC3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -393,8 +397,8 @@
 		6BC62061A0893EEBD0BC4605150AA966 /* Build configuration list for PBXProject "UMPermissionsInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E72B84A7876D739DBADC5CEABA31DE65 /* Debug */,
-				39D0AC112C7E1C7E687C14776B45F85C /* Release */,
+				0EB1BDAD6B5048CC76EBC645DAE6FD1F /* Debug */,
+				29AB29F48D6133148F09A9330C2743F8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
