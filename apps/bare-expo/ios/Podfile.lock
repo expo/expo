@@ -35,7 +35,7 @@ PODS:
     - ZXingObjC/PDF417
   - EXBattery (3.1.0):
     - UMCore
-  - EXBlur (8.2.1):
+  - EXBlur (8.2.2):
     - UMCore
   - EXBrightness (8.4.0):
     - UMCore
@@ -1059,7 +1059,7 @@ SPEC CHECKSUMS:
   EXBackgroundFetch: 56675cb2aede53a7d1934e58cbbab052a9bbd743
   EXBarCodeScanner: 6c04525e0f9d91a581a99c9411a8184b0353a63a
   EXBattery: a1b74b2ce87e65d4e809f632ea2116262222d565
-  EXBlur: 86f6fe6ec56588206827dccda3c16a4e2cf814fa
+  EXBlur: 569d38c2b0b7b000866d928bc36acadfdc02ea8e
   EXBrightness: 727cafd6a90578fe82fb968edefc7515d1d4cdcf
   EXCalendar: fde5f855ffdb7276fd228c51bf9ff725c624ea04
   EXCellular: 38a3df120e149e4ea40e7ebde90144815adf3d53
