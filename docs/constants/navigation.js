@@ -182,7 +182,7 @@ const sections = [
       'Debugging',
       'Common Development Errors',
       'Configuration with app.json / app.config.js',
-      'Publishing',
+      'Publishing updates',
       'Release Channels',
       'Building Standalone Apps',
       'Developing for Web',
