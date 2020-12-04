@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Explicitly pass down only the expected props on iOS. ([#10648](https://github.com/expo/expo/pull/10648) by [@cruzach](https://github.com/cruzach))
+
 ## 8.2.1 — 2020-11-17
 
 _This version does not introduce any user-facing changes._
