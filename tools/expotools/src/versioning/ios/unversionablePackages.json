@@ -4,6 +4,7 @@
   "expo-gl-cpp",
   "expo-gl-cpp-legacy",
   "expo-image",
+  "expo-in-app-purchases",
   "expo-module-scripts",
   "jest-expo",
   "unimodules-test-core"

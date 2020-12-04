@@ -117,9 +117,6 @@ pod 'ABI40_0_0EXImageManipulator',
 pod 'ABI40_0_0EXImagePicker',
   :path => './versioned-react-native/ABI40_0_0/Expo/EXImagePicker',
   :project_name => 'ABI40_0_0'
-pod 'ABI40_0_0EXInAppPurchases',
-  :path => './versioned-react-native/ABI40_0_0/Expo/EXInAppPurchases',
-  :project_name => 'ABI40_0_0'
 pod 'ABI40_0_0EXKeepAwake',
   :path => './versioned-react-native/ABI40_0_0/Expo/EXKeepAwake',
   :project_name => 'ABI40_0_0'
