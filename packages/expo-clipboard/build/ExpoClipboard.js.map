@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoClipboard.js","sourceRoot":"","sources":["../src/ExpoClipboard.ts"],"names":[],"mappings":"AAAA,mEAAmE;AACnE,OAAO,SAAS,MAAM,uDAAuD,CAAC;AAC9E,eAAe,SAAS,CAAC","sourcesContent":["// Temporary for SDK 40 until we make our own native implementation\nimport Clipboard from 'react-native/Libraries/Components/Clipboard/Clipboard';\nexport default Clipboard;\n"]}
