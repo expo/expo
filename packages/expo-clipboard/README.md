@@ -1,6 +1,6 @@
 # expo-clipboard
 
-`expo-clipboard` is a drop-in replacement for React Native's Clipboard (which is now deprecated). This library gives you an interface for getting and setting the content from your user's Clipboard on Android, iOS, and Web.
+**`expo-clipboard`** provides an interface for getting and setting the content from a user's Clipboard on Android, iOS, and Web.
 
 ## API documentation
 
