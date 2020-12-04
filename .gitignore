@@ -128,3 +128,8 @@ docs/pages/versions/*/react-native/*.diff
 
 # Home
 /home/dist
+
+# Prebuilds
+/packages/**/*.xcframework
+/packages/**/*.spec.json
+/packages/**/Info-generated.plist
