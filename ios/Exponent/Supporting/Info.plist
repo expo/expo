@@ -90,6 +90,8 @@
 	<string>Allow Expo to access your camera to take photos</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Allow Expo experiences to access your contacts</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Expo needs access to your local network to load projects from your development server.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Allow Expo experiences to use your location</string>
 	<key>NSLocationAlwaysUsageDescription</key>
