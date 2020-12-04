@@ -5,9 +5,11 @@ import { Task } from '../../TasksRunner';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
 import { checkPackagesIntegrity } from './checkPackagesIntegrity';
 import { checkRepositoryStatus } from './checkRepositoryStatus';
+import { cleanPrebuildsTask } from './cleanPrebuildsTask';
 import { commitStagedChanges } from './commitStagedChanges';
 import { cutOffChangelogs } from './cutOffChangelogs';
 import { grantTeamAccessToPackages } from './grantTeamAccessToPackages';
+import { prebuildPackagesTask } from './prebuildPackagesTask';
 import { prepareParcels } from './prepareParcels';
 import { publishPackages } from './publishPackages';
 import { pushCommittedChanges } from './pushCommittedChanges';
@@ -39,7 +41,9 @@ export const publishPackagesPipeline = new Task<TaskArgs>(
       cutOffChangelogs,
       commitStagedChanges,
       pushCommittedChanges,
+      prebuildPackagesTask,
       publishPackages,
+      cleanPrebuildsTask,
       grantTeamAccessToPackages,
     ],
   },
