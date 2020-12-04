@@ -34,7 +34,7 @@ const sections = [
     name: 'EAS Build',
     reference: [
       'Introduction',
-      'EAS Build from scratch in 5 minutes',
+      'EAS Build Walkthrough',
       'Set up your project and environment',
       'Configuration with eas.json',
       'Internal distribution',
