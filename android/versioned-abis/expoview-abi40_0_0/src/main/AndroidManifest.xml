@@ -113,9 +113,6 @@
             android:exported="false"
             android:launchMode="singleTask"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-        <activity
-            android:name="abi40_0_0.expo.modules.developmentclient.launcher.DevelopmentClientActivity"
-            android:screenOrientation="portrait" />
 
         <meta-data
             android:name="com.google.firebase.ml.vision.DEPENDENCIES"
