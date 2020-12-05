@@ -43,4 +43,4 @@ Sets the content of the user's clipboard.
 
 ## Returns
 
-A boolean value indicating whether or not the string was saved to the user's clipboard.
+On web, this retuns a boolean value indicating whether or not the string was saved to the user's clipboard. On iOS and Android, nothing is returned.

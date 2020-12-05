@@ -46,9 +46,10 @@ function SetStringExample() {
   return (
     <>
       <Button
-        onPress={() => {
+        onPress={async () => {
           console.log('copy to clipboard:', value);
-          Clipboard.setStringAsync(value);
+          const success = await Clipboard.setStringAsync(value);
+          console.log({ success });
         }}
         title="Copy to clipboard"
       />
