@@ -1,6 +1,6 @@
 # expo-clipboard
 
-**`expo-clipboard`** provides an interface for getting and setting the content from a user's Clipboard on Android, iOS, and Web.
+`expo-clipboard` provides an interface for getting and setting Clipboard content on Android, iOS, and Web.
 
 ## API documentation
 

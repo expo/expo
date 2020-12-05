@@ -6,7 +6,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-40/packages/expo-clipboard
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-**`expo-clipboard`** provides an interface for getting and setting the content from a user's Clipboard on Android, iOS, and Web.
+**`expo-clipboard`** provides an interface for getting and setting Clipboard content on Android, iOS, and Web.
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -23,7 +23,7 @@ import Clipboard from 'expo-clipboard';
 ## Methods
 
 - [`Clipboard.getStringAsync()`](#clipboardgetstringasync)
-- [`Clipboard.setString(value: string)`](#clipboardsetstringasync)
+- [`Clipboard.setStringAsync(value: string)`](#clipboardsetstringasync)
 
 ### `Clipboard.getStringAsync()`
 
@@ -33,7 +33,7 @@ Gets the content of the user's clipboard. Please note that calling this method o
 
 A promise that resolves to the content of the clipboard.
 
-### `Clipboard.setString(value: string)`
+### `Clipboard.setStringAsync(value: string)`
 
 Sets the content of the user's clipboard.
 
