@@ -1,2 +1,5 @@
-import Clipboard from 'react-native/Libraries/Components/Clipboard/Clipboard';
-export default Clipboard;
+declare const _default: {
+    getStringAsync(): Promise<string>;
+    setStringAsync(text: string): Promise<boolean>;
+};
+export default _default;
