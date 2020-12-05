@@ -89,7 +89,7 @@ const sections = [
   },
   {
     name: 'Expo Accounts',
-    reference: ['Personal Account', 'Working Together'],
+    reference: ['Account Types', 'Programmatic Access', 'Working Together'],
   },
   {
     name: 'Regulatory Compliance',

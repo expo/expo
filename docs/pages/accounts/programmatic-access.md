@@ -1,20 +1,21 @@
 ---
-title: Personal Account
+title: Programmatic Access
 ---
 
-To fully use Expo, you have to create a Personal Account. With this account, we can safely identify you as the developer or owner of an app. You can use Personal Accounts for all features Expo has to offer.
-
-This account is just for you, **never share access to this account for any reason.**
 
 ## Programmatic Access
 
 When setting up CI or writing a script to help manage your projects, we recommend avoiding using your username and password to authenticate. With these credentials, anyone would be able to log in and use your account.
 
-Instead of providing credentials, you can generate Personal Access Tokens that will allow you to manage each integration point separately. Anyone who has access to these tokens will be able to perform actions against your account. Please treat them with the same care as a user password. In case something is leaked, you can revoke these tokens to block access.
+Instead of providing credentials, you can generate tokens that will allow you to manage each integration point separately. Anyone who has access to these tokens will be able to perform actions against your account. Please treat them with the same care as a user password. In case something is leaked, you can revoke these tokens to block access.
 
-### Personal Access Tokens
+### Personal Account: Personal Access Tokens
 
-You can create Personal Access Tokens from the [Access Tokens page](https://expo.io/settings/access-tokens) on your dashboard. Anyone with this token can perform actions on behalf of your account. That applies to all content within your personal account.
+You can create Personal Access Tokens from the [Access Tokens page](https://expo.io/settings/access-tokens) on your dashboard. Anyone with this token can perform actions on your behalf. That applies to all content on your Personal Account, as well as any Personal Accounts or Organizations that you have been granted access to.
+
+### Organizations: Bot Users & Access Tokens
+
+Organizations can create Bot Users to take actions to take actions on resources owned by the Organization.  Bot Users can be assigned [a role](/working-together) to limit the actions they are authorized to perform.  Bot users cannot sign in to any Expo products, cannot own any projects themselves, and can only authenticate via an access token.
 
 ### Using Access Tokens
 
