@@ -14,3 +14,4 @@ title: Introduction
 - [iOS build process](ios-builds.md) - See how iOS builds work under the hood.
 - [Advanced credentials configuration](advanced-credentials-configuration.md) - Use your existing app's credentials or streamline the CI build process with `credentials.json`.
 - [How to: configuration examples](how-tos.md) - Instructions on how to configure builds in less common cases.
+- [Submitting builds to app stores](submitting-to-app-stores.md) - Submit your build to App Store or Google Play.
