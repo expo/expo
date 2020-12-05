@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Button, Text, TextInput } from 'react-native';
 import Clipboard from 'expo-clipboard';
+import { Button, Text, TextInput } from 'react-native';
 
 import { Page, Section } from '../components/Page';
 
