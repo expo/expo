@@ -1,5 +1,5 @@
-import * as React from 'react';
 import Clipboard from 'expo-clipboard';
+import * as React from 'react';
 import { Button, Text, TextInput } from 'react-native';
 
 import { Page, Section } from '../components/Page';
