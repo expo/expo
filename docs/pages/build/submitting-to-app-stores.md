@@ -1,5 +1,5 @@
 ---
-title: Submitting builds to App Stores
+title: Submitting builds to app stores
 ---
 
 This guide outlines how to submit your app to the Apple App Store or Google Play Store. A paid developer account is required for each platform for which you wish to submit an app. You can create an Apple Developer account on the [Apple Developer Portal](https://developer.apple.com/account/) and a Google Play Developer account on the [Google Play Console sign-up page](https://play.google.com/apps/publish/signup/).
@@ -35,12 +35,12 @@ See [expo.fyi/first-android-submission](https://expo.fyi/first-android-submissio
 
 To upload your Android app to the Google Play Store, run `eas submit --platform android` and follow the instructions on the screen. The command will perform the following steps:
 
-1. Log in to your Expo account and ensure that your app project exists on EAS servers
+1. Log in to your Expo account and ensure that your app project exists on EAS servers.
 2. Prompt for the Android package name unless `android.package` is set in app configuration or the `--android-package` param is provided.
 3. Ask for a binary to submit. You can select one of the following:
 
    - The latest finished Android build for the project on EAS servers
-   - Specific build ID. The ID can be found on your EAS Account under _EAS Builds_ section
+   - Specific build ID. The ID can be found on the [builds dashboard](https://expo.io/builds?type=eas)
    - Path to an APK or AAB archive on your local filesystem
    - URL to the app archive
 
@@ -60,19 +60,19 @@ To upload your iOS app to the Apple App Store, run `eas submit --platform ios` a
 1. Log in to Expo account and ensure that your app project exists on EAS servers
 2. Ensure that your app exists on App Store Connect and its [Bundle Identifier](https://expo.fyi/bundle-identifier) is registered on Apple Developer Portal:
 
-   - You will be asked to sign into your Apple Developer account and select your team. You can also provide these information by using `--apple-id`, `--apple-team-id` params and the `EXPO_APPLE_PASSWORD` environment variable.
+   - You will be asked to sign into your Apple Developer account and select your team. You can also provide this information by using the `--apple-id`, `--apple-team-id` params and the `EXPO_APPLE_PASSWORD` environment variable.
    - The command will look for `ios.bundleIdentifier` in your app configuration, or you can provide it directly using the `--bundle-identifier` flag.
    - If you are submitting your app for the first time, it will be automatically created.
-     Unless `expo.name` in your app configuration is found or `--app-name` param is provided, you will be prompted for app name.
+     Unless `expo.name` in your app configuration is found or an `--app-name` param is provided, you will be prompted for app name.
      You can also specify your app's language and SKU using `--language` and `--sku` params respectively. If you have never submitted any app before, you may also have to specify your company name using `--company-name` parameter.
 
-   > If you already have an App Store Connect app, this step can be skipped by providing the `--app-asc-id` param. The [ASC App Id](https://expo.fyi/asc-app-id) param can be either found on App Store Connect, or later during this command in the _Submission Summary_ table.
+   > If you already have an App Store Connect app, this step can be skipped by providing the `--app-asc-id` param. The [ASC App Id](https://expo.fyi/asc-app-id) param can be found either on App Store Connect, or later during this command in the _Submission Summary_ table.
 
 3. Ask for your Apple ID (if not provided earlier) and for your Apple app-specific password. They can be also provided using `--apple-id` param and `EXPO_APPLE_APP_SPECIFIC_PASSWORD` environment variable, respectively.
 4. Ask for binary to submit. You can select one of the following:
 
    - The latest successful iOS build for the project on EAS servers
-   - Specific build ID. The ID can be found on your EAS Account under _EAS Builds_ section
+   - Specific build ID. The ID can be found on the [builds dashboard](https://expo.io/builds?type=eas)
    - Path to an `.ipa` archive on your local filesystem
    - URL to the app archive
 
