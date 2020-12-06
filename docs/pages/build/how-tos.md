@@ -1,5 +1,5 @@
 ---
-title: 'How to: configuration examples'
+title: Common configuration examples
 ---
 
 This document outlines how to configure EAS Build for some common scenarios, such as monorepos and repositories with private dependencies. The examples described here do not provide step-by-step instructions to set up EAS Build from scratch; instead, they explain the changes from the standard process that are necessary to acommodate the given scenario.
