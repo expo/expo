@@ -1,5 +1,5 @@
 ---
-title: EAS Build Walkthrough
+title: Walkthrough
 ---
 
 Let's get started by building Android and iOS app binaries for a fresh bare project initialized with Expo CLI.

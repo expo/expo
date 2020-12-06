@@ -1,5 +1,5 @@
 ---
-title: Submitting builds to app stores
+title: Submitting to app stores
 ---
 
 This guide outlines how to submit your app to the Apple App Store or Google Play Store. A paid developer account is required for each platform for which you wish to submit an app. You can create an Apple Developer account on the [Apple Developer Portal](https://developer.apple.com/account/) and a Google Play Developer account on the [Google Play Console sign-up page](https://play.google.com/apps/publish/signup/).

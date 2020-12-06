@@ -1,38 +1,38 @@
 ---
-title: EAS builds with CI
+title: Trigger builds from CI
 ---
 
-This document outlines how to trigger builds on EAS for your app from a CI environment.
+This document outlines how to trigger builds on EAS for your app from a CI environment, such as GitHub Actions.
 
-## Configuring the app
+Before building with EAS on CI, we need to install and configure `eas-cli`. Then, we can trigger new builds with the `eas build` command.
 
-To trigger EAS builds from a CI environment, we first need to configure our app with EAS Build and make sure we can trigger builds from our local machine.
-To automatically configure your native project for building with EAS Build on Android and iOS, you will need to run the following command in the root of your project:
+## Prerequisite: run a successful build from your local machine
 
-```sh
-expo eas:build:init
-```
+To trigger EAS builds from a CI environment, we first need to configure our app for EAS Build and successfully run a build from our local machine for each platform that we'd like to support on CI.
 
-See [EAS Build from scratch in 5 minutes](eas-build-in-5-minutes.md) for a detailed explanation and examples of what this does.
+If you have run `eas build -p [all|ios|android]` successfuly before, then you can continue.
 
-## Triggering builds
+If you haven't done this yet, please refer to the [Setup](setup.md) guide and return here when you're ready.
 
-Before building with EAS on CI, we need to install and configure `expo-cli`. Then, we can trigger new builds with the `eas:build` command.
+## Configure your app for CI
 
-### Prepare Expo CLI
+<!-- We can probably leave this out -- users can figure out on their own if they want to do this or use npx -->
+<!-- ### Make EAS CLI available in your CI environment
 
-To interact with the Expo API, we need to install Expo CLI. You can use an environment with this library preinstalled, or you can add it to the project as a development dependency.
+To interact with the EAS API, we need to install EAS CLI. You can use an environment with this library preinstalled, or you can add it to the project as a development dependency.
 
 The latter is the easiest way, but may increase the installation time.
 For vendors that charge you per minute, it might we worth creating a prebuilt environment.
 
-To install Expo CLI in your project, run:
+To install EAS CLI in your project, run:
 
 ```sh
-npm install --save-dev expo-cli
+npm install --save-dev eas-cli
 ```
 
-### Prepare authentication
+> 💡 Make sure to update this dependency frequently to stay up to date with the EAS API interface. -->
+
+### Provide a personal access token to authentiate with your Expo account on CI
 
 Next, we need to authenticate as the owner of the app. This is possible by storing a personal access token in the `EXPO_TOKEN` environment variable in the CI settings.
 
@@ -45,7 +45,7 @@ Now that we're authenticated with Expo CLI, we can create the build step.
 To trigger new builds, we will add this script to our configuration:
 
 ```sh
-npx expo eas:build --platform all --non-interactive
+npx eas-cli build --platform all --non-interactive
 ```
 
 This will trigger a new build on EAS and print the URLs for the built files after the build completes.
@@ -71,7 +71,7 @@ jobs:
       node_js: lts/*
       script:
         - npm ci
-        - npx expo eas:build --platform all --non-interactive
+        - npx eas-cli build --platform all --non-interactive
 ```
 
 > Put this into `.travis.yml` in the root of your repository.
@@ -100,7 +100,7 @@ eas-build:
   stage: build
   script:
     - apk add --no-cache bash
-    - npx expo eas:build --platform all --non-interactive
+    - npx eas-cli build --platform all --non-interactive
 ```
 
 > Put this into `.gitlab-ci.yml` in the root of your repository.
@@ -128,7 +128,7 @@ pipelines:
         script:
           - apk add --no-cache bash
           - npm ci
-          - npx expo eas:build --platform all --non-interactive
+          - npx eas-cli build --platform all --non-interactive
 ```
 
 > Put this into `bitbucket-pipelines.yml` in the root of your repository.
@@ -167,7 +167,7 @@ jobs:
 
       - run:
           name: Trigger build
-          command: npx expo-cli eas:build --platform all --non-interactive
+          command: npx eas-cli build --platform all --non-interactive
 
 workflows:
   build_app:
@@ -218,7 +218,7 @@ jobs:
         run: npm ci
 
       - name: Build on EAS
-        run: expo eas:build --platform all --non-interactive
+        run: eas build --platform all --non-interactive
 ```
 
 > Put this into `.github/workflows/eas-build.yml` in the root of your repository.
