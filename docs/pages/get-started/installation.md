@@ -21,6 +21,7 @@ Expo CLI is a command line app that is the main interface between a developer an
 ### Recommended Tools
 
 - [VSCode Editor](https://code.visualstudio.com/download)
+- [Yarn](https://classic.yarnpkg.com/en/docs/install)
 - Windows users: [PowerShell](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-windows) or Bash via WSL
 
 ### Installing Expo CLI
