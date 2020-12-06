@@ -6,7 +6,7 @@ title: Introduction
 
 ## Discover EAS Build
 
-- [EAS Build Walkthrough](walkthrough.md) - This walkthrough will show you how to initialize a new project and kick off a build in less than 5 mintues. If you want to experiment with EAS Build before integrating it with your existing project, this is a good place to start.
+- [Walkthrough](walkthrough.md) - This walkthrough will show you how to initialize a new project and kick off a build in less than 5 mintues. If you want to experiment with EAS Build before integrating it with your existing project, this is a good place to start.
 - [Set up your project and environment](setup.md) - Get your existing project ready to build.
 - [Configuration with eas.json](eas-json.md) - Learn about configuring your build workflows with the `eas.json` file.
 - [Internal distribution](internal-distribution.md) - Share runnable builds with your team without going through TestFlight or Google Play Beta.
