@@ -23,9 +23,9 @@ Additional configuration may be required for some scenarios:
 
 ## 4. Run the build
 
-- Run `expo eas:build --platform android` to build for Android.
+- Run `eas build --platform android` to build for Android.
 
-- Run `expo eas:build --platform ios` to build for iOS.
+- Run `eas build --platform ios` to build for iOS.
 
 When you first run the build, you will be guided through generating or supplying your app signing credentials.
 
@@ -33,7 +33,7 @@ When you first run the build, you will be guided through generating or supplying
 
 - **iOS**: This requires access to a **paid** [Apple Developer Account](https://developer.apple.com/programs) to configure the credentials required for signing your app. Expo will take care of acquiring the credentials for you, and if you have already built your app in the managed workflow with `expo build:ios`, then the same credentials will be used here. If you would rather manually provide your credentials, refer to the advanced [iOS Credentials](advanced-credentials-configuration.md#ios-credentials) section for more information.
 
-> 💡 You can run `expo eas:build --platform all` to build for Android and iOS at the same time.
+> 💡 You can run `eas build --platform all` to build for Android and iOS at the same time.
 
 ## 5. Check the status of your builds
 

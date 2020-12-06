@@ -56,7 +56,7 @@ Your application's keystore should be kept private. **Under no circumstances sho
 
 ### Configuring Gradle
 
-Let's focus on building a release app binary. Like we previously mentioned, your app binary needs to be signed with the keystore. Because we're building the project on a remote server we had to come up with a way of providing Gradle with the credentials which are not checked in to the repository. When running `expo eas:build:init`, we're writing the `android/app/eas-build.gradle` file with the following contents:
+Let's focus on building a release app binary. Like we previously mentioned, your app binary needs to be signed with the keystore. Because we're building the project on a remote server we had to come up with a way of providing Gradle with the credentials which are not checked in to the repository. When running `eas build:configure`, we're writing the `android/app/eas-build.gradle` file with the following contents:
 
 <!-- prettier-ignore -->
 ```groovy
@@ -129,4 +129,4 @@ This file is imported in `android/app/build.gradle` like this:
 apply from: "./eas-build.gradle"
 ```
 
-All these changes must be committed to the repository. If Expo CLI configured the project in the current run of `expo eas:build --platform android`, you should be asked if the commit should be made automatically.
+All these changes must be committed to the repository. If Expo CLI configured the project in the current run of `eas build --platform android`, you should be asked if the commit should be made automatically.

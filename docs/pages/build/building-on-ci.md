@@ -71,7 +71,7 @@ jobs:
       node_js: lts/*
       script:
         - npm ci
-        - npx expo eas:build --platform all --non-interactive
+        - npx eas-cli build --platform all --non-interactive
 ```
 
 > Put this into `.travis.yml` in the root of your repository.
@@ -100,7 +100,7 @@ eas-build:
   stage: build
   script:
     - apk add --no-cache bash
-    - npx expo eas:build --platform all --non-interactive
+    - npx eas-cli build --platform all --non-interactive
 ```
 
 > Put this into `.gitlab-ci.yml` in the root of your repository.
@@ -128,7 +128,7 @@ pipelines:
         script:
           - apk add --no-cache bash
           - npm ci
-          - npx expo eas:build --platform all --non-interactive
+          - npx eas-cli build --platform all --non-interactive
 ```
 
 > Put this into `bitbucket-pipelines.yml` in the root of your repository.
@@ -218,7 +218,7 @@ jobs:
         run: npm ci
 
       - name: Build on EAS
-        run: expo eas:build --platform all --non-interactive
+        run: eas build --platform all --non-interactive
 ```
 
 > Put this into `.github/workflows/eas-build.yml` in the root of your repository.
