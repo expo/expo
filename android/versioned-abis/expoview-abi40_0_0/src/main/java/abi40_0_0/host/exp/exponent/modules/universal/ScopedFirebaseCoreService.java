@@ -187,7 +187,7 @@ public class ScopedFirebaseCoreService extends FirebaseCoreService implements Re
       addJSONStringToMap(googleServicesFile, json, "project_info.firebase_url", "databaseURL");
       addJSONStringToMap(googleServicesFile, json, "project_info.storage_bucket", "storageBucket");
 
-      // Get the client that matches this app. When the Expo Client package was explicitely
+      // Get the client that matches this app. When the Expo Go package was explicitly
       // configured in google-services.json, then use that app when possible.
       // Otherwise, use the client that matches the package_name specified in app.json.
       // If none of those are found, use first encountered client in google-services.json.
