@@ -10,7 +10,7 @@ Expo has first-class support for [TypeScript](https://www.typescriptlang.org/). 
 
 ## Starting from scratch: using a TypeScript template
 
-<TerminalBlock cmd={['expo init -t expo-template-blank-typescript']} />
+<TerminalBlock cmd={['expo init appName -t expo-template-blank-typescript']} />
 
 The easiest way to get started is to initialize your new project using a TypeScript template. When you run `expo init` choose one of the templates with TypeScript in the name and then run `yarn tsc` or `npx tsc` to typecheck the project.
 
