@@ -136,7 +136,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
 
   private FrameLayout mContainerView;
   /**
-   * This view is optional and available only when the app runs in Expo Client.
+   * This view is optional and available only when the app runs in Expo Go.
    */
   @Nullable private LoadingView mLoadingView;
   private FrameLayout mReactContainerView;
