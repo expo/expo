@@ -43,13 +43,13 @@ You have two options for handling your app credentials:
 - Let Expo generate and manage your credentials for you, and keep them stored securely on Expo's servers, or
 - Create credentials manually, yourself, and provide them to EAS Build via the credentials.json file
 
-No matter which option you choose, you can always sync your credentials by running `expo eas:credentials:sync` (this command requires `expo-cli`), so that the ones you have stored locally match those on Expo's servers.
+No matter which option you choose, you can always sync your credentials by running `eas credentials`, so that the ones you have stored locally match those on Expo's servers.
 
 ## Automatic configuration
 
-If you already have credentials configured for an app with the same `slug`, `owner` (if you are using teams), and `ios.bundleIdentifier` (for iOS only), you can generate the `credentials.json` file from those credentials that are stored on Expo's servers. To generate (or update) that file, run `expo eas:credentials:sync` (this command requires `expo-cli`). In the first prompt, select the option to update `credentials.json`, then in the second one, select which platform(s) you wish to update.
+If you already have credentials configured for an app with the same `slug`, `owner` (if you are using teams), and `ios.bundleIdentifier` (for iOS only), you can generate the `credentials.json` file from those credentials that are stored on Expo's servers. To generate (or update) that file, run `eas credentials`. In the first prompt, select the option to update `credentials.json`, then in the second one, select which platform(s) you wish to update.
 
-If you don't have any credentials yet, you can run `eas build --platform <android|ios|all>` and follow the interactive prompts. After Expo guides you through generating your credentials, you can (if you wish) use the `expo eas:credentials:sync` (this command requires `expo-cli`) command to generate `credentials.json` (this is only if you wish to have a local copy of your credentials).
+If you don't have any credentials yet, you can run `eas build --platform <android|ios|all>` and follow the interactive prompts. After Expo guides you through generating your credentials, you can (if you wish) use the `eas credentials` command to generate `credentials.json` (this is only if you wish to have a local copy of your credentials).
 
 For Android builds, both keystore generation methods require you to have `keytool` installed and in your PATH. If it's not available on your system, you'll need to [install JDK](https://jdk.java.net/) (`keytool` is distributed with it).
 
