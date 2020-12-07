@@ -2448,6 +2448,11 @@
     workbox-webpack-plugin "^3.6.3"
     worker-loader "^2.0.0"
 
+"@expo/xcodegen@2.18.0-patch.1":
+  version "2.18.0-patch.1"
+  resolved "https://registry.yarnpkg.com/@expo/xcodegen/-/xcodegen-2.18.0-patch.1.tgz#40514e973ee6769e5abd5d1c16d40dbe85c1d9aa"
+  integrity sha512-Caz2ChzVe/U3GkaK+DKlXqYorARzLZ1yM6D03LHvasnyA4T+pW6DGXHPy7cfK5AlbsV6Fi5ZtZ9gqW4jGWIFwQ==
+
 "@expo/xdl@58.0.4-alpha.1609":
   version "58.0.4-alpha.1609"
   resolved "https://registry.yarnpkg.com/@expo/xdl/-/xdl-58.0.4-alpha.1609.tgz#60c463d3296abd07562a26e76e54b2cc15a233a7"

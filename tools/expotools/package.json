@@ -26,6 +26,7 @@
     "@expo/commander": "2.21.1",
     "@expo/json-file": "^8.2.6",
     "@expo/spawn-async": "^1.5.0",
+    "@expo/xcodegen": "2.18.0-patch.1",
     "@expo/xdl": "58.0.4-alpha.1609",
     "@octokit/request": "^5.4.7",
     "@octokit/types": "^5.4.0",

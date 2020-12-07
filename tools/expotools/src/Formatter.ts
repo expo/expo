@@ -1,9 +1,10 @@
+import path from 'path';
 import chalk from 'chalk';
 import terminalLink from 'terminal-link';
 
 import { GitLog, GitFileLog } from './Git';
 
-const { green, yellow, blue, gray, dim, reset } = chalk;
+const { white, cyan, red, green, yellow, blue, gray, dim, reset } = chalk;
 
 /**
  * Uses `terminal-link` to create clickable link in the terminal.
@@ -74,4 +75,26 @@ export function formatFileLog(fileLog: GitFileLog): string {
  */
 export function stripNonAsciiChars(str: string): string {
   return str.replace(/[^\x00-\x7F]/gu, '');
+}
+
+/**
+ * Makes Xcode logs pretty as xcpretty :)
+ */
+export function formatXcodeBuildOutput(output: string): string {
+  return output
+    .replace(/^(\/.*)(:\d+:\d+): (error|warning|note)(:.*)$/gm, (_, p1, p2, p3, p4) => {
+      if (p3 === 'note') {
+        return gray.bold(p3) + white.bold(p4);
+      }
+      const relativePath = path.relative(process.cwd(), p1);
+      const logColor = p3 === 'error' ? red.bold : yellow.bold;
+
+      return cyan.bold(relativePath + p2) + ' ' + logColor(p3 + p4);
+    })
+    .replace(/^(In file included from )(\/[^\n]+)(:\d+:[^\n]*)$/gm, (_, p1, p2, p3) => {
+      const relativePath = path.relative(process.cwd(), p2);
+      return gray.italic(p1 + relativePath + p3);
+    })
+    .replace(/\s\^\n(\s[^\n]+)?/g, green.bold('$&\n'))
+    .replace(/\*\* BUILD FAILED \*\*/, red.bold('$&'));
 }
