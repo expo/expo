@@ -8,7 +8,7 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
 
-import expo.modules.developmentclient.DevelopmentClientController;
+import expo.modules.devlauncher.DevLauncherController;
 import expo.modules.random.RandomPackage;
 
 import org.unimodules.adapters.react.ModuleRegistryAdapter;
@@ -57,7 +57,7 @@ public class MainApplication extends Application implements ReactApplication {
     ReactNativeFlipper.initializeFlipper(this);
 
     if (USE_DEV_CLIENT) {
-      DevelopmentClientController.initialize(this, mReactNativeHost);
+      DevLauncherController.initialize(this, mReactNativeHost);
     }
   }
 }
