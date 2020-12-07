@@ -8,16 +8,15 @@ import javax.inject.Inject;
 
 import expo.modules.notifications.serverregistration.ServerRegistrationModule;
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 
 public class ScopedServerRegistrationModule extends ServerRegistrationModule {
   @Inject
   ExponentSharedPreferences mExponentSharedPreferences;
 
-  public ScopedServerRegistrationModule(Context context, ExperienceId experienceId) {
+  public ScopedServerRegistrationModule(Context context) {
     super(context);
-    mInstallationId = new ScopedInstallationId(context, experienceId);
+    mInstallationId = new ScopedInstallationId(context);
     NativeModuleDepsProvider.getInstance().inject(ScopedServerRegistrationModule.class, this);
   }
 

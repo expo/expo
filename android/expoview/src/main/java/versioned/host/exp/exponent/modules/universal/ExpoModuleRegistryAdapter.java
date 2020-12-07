@@ -83,7 +83,7 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     moduleRegistry.registerExportedModule(new ScopedNotificationScheduler(scopedContext, experienceId));
     moduleRegistry.registerExportedModule(new ScopedExpoNotificationCategoriesModule(scopedContext, experienceId));
     moduleRegistry.registerExportedModule(new ScopedExpoNotificationPresentationModule(scopedContext, experienceId));
-    moduleRegistry.registerExportedModule(new ScopedServerRegistrationModule(scopedContext, experienceId));
+    moduleRegistry.registerExportedModule(new ScopedServerRegistrationModule(scopedContext));
     moduleRegistry.registerInternalModule(new ScopedNotificationsChannelsProvider(scopedContext, experienceId));
     moduleRegistry.registerInternalModule(new ScopedNotificationsCategoriesSerializer());
 
