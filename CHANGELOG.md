@@ -73,6 +73,8 @@ Package-specific changes not released in any SDK will be added here just before 
   -   Create built-in `providers/facebook` for easy Facebook auth. ([#9361](https://github.com/expo/expo/pull/9361) by [@EvanBacon](https://github.com/EvanBacon))
 - **`expo-camera`**
   -   Added support for video poster to show while the camera is loading on web. ([#9930](https://github.com/expo/expo/pull/9930) by [@liorJuice](https://github.com/liorJuice))
+- **`expo-clipboard`**
+  -   Publish initial release to provide a migration path off of React Native Clipboard API. ([#11227](https://github.com/expo/expo/pull/11227)) by [@cruzach](https://github.com/cruzach).?
 - **`expo-constants`**
   -   Added `Constants.executionEnvironment` to distinguish between apps running in a bare, managed standalone, or App/Play Store development client environment. ([#10986](https://github.com/expo/expo/pull/10986) by [@esamelson](https://github.com/esamelson))
   -   Added script to embed app configuration into a bare app and export this object as `Constants.manifest`. ([#10948](https://github.com/expo/expo/pull/10948) and [#10949](https://github.com/expo/expo/pull/10949) by [@esamelson](https://github.com/esamelson))
