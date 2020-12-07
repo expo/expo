@@ -60,7 +60,7 @@ public class DetachedModuleRegistryAdapter extends ExpoModuleRegistryAdapter {
     // We consciously pass scoped context to ScopedServerRegistrationModule
     // so it can access legacy scoped backed-up storage and migrates
     // the legacy UUID to scoped non-backed-up storage.
-    moduleRegistry.registerExportedModule(new ScopedServerRegistrationModule(scopedContext));
+    moduleRegistry.registerExportedModule(new ScopedServerRegistrationModule(scopedContext, experienceId));
 
     // Adding other modules (not universal) to module registry as consumers.
     // It allows these modules to refer to universal modules.
