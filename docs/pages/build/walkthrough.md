@@ -134,11 +134,11 @@ To start an Android build of your app, run `eas build --platform android`.
 
 You will be guided through generating or providing your own keystore. For the sake of simplicity in this tutorial, select `Generate new keystore` and hit enter.
 
-**Warning: If you've previously set up credentials for an app with the same slug, Expo CLI will try to reuse them.**
+**Warning: If you've previously set up credentials for an app with the same slug, EAS CLI will try to reuse them.**
 
 <center><img src="/static/images/eas-build/walkthrough/09-build-android-keystore.png" /></center>
 
-The build should start shortly after the keystore is generated (and securely stored on Expo servers). EAS CLI will print a URL where you can monitor the progress of your build.
+The build should start shortly after the keystore is generated (and securely stored on EAS servers). EAS CLI will print a URL where you can monitor the progress of your build.
 
 <center><img src="/static/images/eas-build/walkthrough/10-build-android-queued.png" /></center>
 
@@ -157,7 +157,7 @@ To start an iOS build of your app, run `eas build --platform ios`.
 
 Next, you'll be guided through generating the app's credentials. You'll be asked to login to the Apple Developer Portal and choose your team for the iOS project.
 
-**Warning: If you've previously set up credentials for an app with the same slug, Expo CLI will try to reuse them.**
+**Warning: If you've previously set up credentials for an app with the same slug, EAS CLI will try to reuse them.**
 
 The build should start shortly after that. Once it completes, you can download the app binary the same way you did with the Android counterpart - either via the build status page or opening the URL that's printed to your console.
 
