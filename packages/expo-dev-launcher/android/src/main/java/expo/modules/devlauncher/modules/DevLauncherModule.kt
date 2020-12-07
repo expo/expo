@@ -1,7 +1,8 @@
 package expo.modules.devlauncher.modules
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.provider.MediaStore
+import android.net.Uri
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
@@ -12,25 +13,8 @@ import expo.modules.devlauncher.DevLauncherController.Companion.instance
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-private val cameraPackages = listOf(
-  "com.sec.android.app.camera",
-  "com.android.app.camera",
-  "com.android.camera",
-  "com.mediatek.camera",
-  "com.android.camera2",
-  "com.android.app.camera2",
-  "com.meizu.media.camera",
-  "com.htc.camera",
-  "com.oppo.camera",
-  "com.lge.camera",
-  "com.google.android.GoogleCamera",
-  "com.motorola.Camera",
-  "com.google.android.camera",
-  "com.sonyericsson.android.camera",
-  "com.samsung.android.camera"
-)
-
 private const val ON_NEW_DEEP_LINK_EVENT = "expo.modules.devlauncher.onnewdeeplink"
+private const val CLIENT_PACKAGE_NAME = "host.exp.exponent"
 
 class DevLauncherModule(reactContext: ReactApplicationContext?) : ReactContextBaseJavaModule(reactContext) {
   override fun initialize() {
@@ -78,35 +62,24 @@ class DevLauncherModule(reactContext: ReactApplicationContext?) : ReactContextBa
   fun openCamera(promise: Promise) {
     val packageManager = reactApplicationContext.packageManager
 
-    // We can't just trigger default intent for camera, because we don't have `CAMERA` permissions.
-    // Firstly, we try to get a package that handles the default camera intent...
-    Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-      .resolveActivity(packageManager)
-      ?.let { componentName ->
-        // ...then we search for the launcher intent.
-        // However, this approach might fail...
-        packageManager
-          .getLaunchIntentForPackage(componentName.packageName)
-          ?.let {
-            reactApplicationContext.startActivity(it)
-            promise.resolve(null)
-            return
-          }
+    packageManager.getLaunchIntentForPackage(CLIENT_PACKAGE_NAME)
+      ?.let {
+        reactApplicationContext.startActivity(it)
+        promise.resolve(null)
+        return
       }
 
-    // ...if so, we can fallback to the hardcoded packages list.
-    // A lot of custom ROMs do it in the same way.
-    cameraPackages.forEach { cameraPackage ->
-      reactApplicationContext
-        .packageManager
-        .getLaunchIntentForPackage(cameraPackage)
-        ?.let {
-          reactApplicationContext.startActivity(it)
-          promise.resolve(null)
-          return
-        }
+    // try to open the Play Store app...
+    if (openLink(Uri.parse("market://details?id=$CLIENT_PACKAGE_NAME"))) {
+      return
     }
-    promise.reject("ERR_DEVELOPMENT_CLIENT_CANNOT_OPEN_CAMERA", "Couldn't find the camera app.")
+
+    // ...app isn't installed so fallback to the Play Store website
+    if (openLink(Uri.parse("https://play.google.com/store/apps/details?id=$CLIENT_PACKAGE_NAME"))) {
+      return
+    }
+    
+    promise.reject("ERR_DEVELOPMENT_CLIENT_CANNOT_OPEN_CAMERA", "Couldn't find the Expo Go app.")
   }
 
   @ReactMethod
@@ -119,6 +92,19 @@ class DevLauncherModule(reactContext: ReactApplicationContext?) : ReactContextBa
       reactApplicationContext
         .getJSModule(RCTDeviceEventEmitter::class.java)
         .emit(ON_NEW_DEEP_LINK_EVENT, it)
+    }
+  }
+
+  private fun openLink(uri: Uri): Boolean {
+    return try {
+      reactApplicationContext.startActivity(
+        Intent(Intent.ACTION_VIEW, uri).apply {
+          addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+      )
+      true
+    } catch (_: ActivityNotFoundException) {
+      false
     }
   }
 }
