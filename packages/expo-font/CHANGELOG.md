@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Remove Expo.AppLoading reference in error. ([#11204](https://github.com/expo/expo/pull/11204) by [@brentvatne](https://github.com/brentvatne))
+
 ## 8.4.0 — 2020-11-17
 
 _This version does not introduce any user-facing changes._
