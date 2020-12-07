@@ -53,7 +53,9 @@ module.exports = function(api) {
 };
 ```
 
-Note that when you run the project you will get a warning about an incompatible version:
+Note: If you load other babel plugins, the Reanimated plugin has to be listed last in the plugins array.
+
+When you run the project you will get a warning about an incompatible version:
 
 ```
 Some of your project's dependencies are not compatible with currently installed expo package version:
