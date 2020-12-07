@@ -11,6 +11,7 @@ title: Introduction
 - [Walkthrough](walkthrough.md) - This walkthrough will show you how to initialize a new project and kick off a build in less than 5 mintues. If you want to experiment with EAS Build before integrating it with your existing project, this is a good place to start.
 - [Set up your project and environment](setup.md) - Get your existing project ready to build.
 - [Common configuration examples](how-tos.md) - Instructions on how to configure builds for some common cases that can't be handled automatically.
+- [Configuration with eas.json](eas-json.md) - Learn about configuring your build workflows with the `eas.json` file.
 
 ### Distributing your app
 
@@ -19,7 +20,6 @@ title: Introduction
 
 ### Get a deeper understanding
 
-- [Configuration with eas.json](eas-json.md) - Learn about configuring your build workflows with the `eas.json` file.
 - [Android build process](android-builds.md) - See how Android builds work under the hood.
 - [iOS build process](ios-builds.md) - See how iOS builds work under the hood.
 - [Advanced credentials configuration](advanced-credentials-configuration.md) - Use your existing app's credentials or streamline the CI build process with `credentials.json`.
