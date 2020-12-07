@@ -236,5 +236,3 @@ async function findFrameworkForProjectAsync(projectName: string): Promise<string
   }
   return null;
 }
-
-//#endregion
