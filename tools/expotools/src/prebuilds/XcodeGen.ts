@@ -5,10 +5,16 @@ import semver from 'semver';
 import { spawnAsync } from '../Utils';
 import { EXPOTOOLS_DIR, IOS_DIR } from '../Constants';
 import { Podspec } from '../Packages';
+import {
+  ProjectSpec,
+  ProjectSpecDependency,
+  ProjectSpecPlatform,
+  XcodeConfig,
+} from './XcodeGen.types';
 
 const PODS_DIR = path.join(IOS_DIR, 'Pods');
 const PODS_PUBLIC_HEADERS_DIR = path.join(PODS_DIR, 'Headers', 'Public');
-const PLATFORMS_MAPPING: Record<string, Platform> = {
+const PLATFORMS_MAPPING: Record<string, ProjectSpecPlatform> = {
   ios: 'iOS',
   osx: 'macOS',
   macos: 'macOS',
@@ -17,73 +23,6 @@ const PLATFORMS_MAPPING: Record<string, Platform> = {
 };
 
 export const INFO_PLIST_FILENAME = 'Info-generated.plist';
-
-// More detailed spec schema available here:
-// https://github.com/yonaskolb/XcodeGen/blob/master/Docs/ProjectSpec.md
-export type ProjectSpec = {
-  name: string;
-  projectReferences?: {
-    [key: string]: {
-      path: string;
-    };
-  };
-  targets?: {
-    [targetName: string]: {
-      type: string;
-      platform: Platform[];
-      sources?: ProjectSpecSource[];
-      dependencies?: ProjectSpecDependency[];
-      settings?: ProjectSpecSettings;
-      info?: {
-        path: string;
-        properties: Record<string, string>;
-      };
-    };
-  };
-  options?: ProjectSpecOptions;
-  settings?: ProjectSpecSettings;
-};
-
-type Platform = 'iOS' | 'macOS' | 'tvOS' | 'watchOS';
-
-export type ProjectSpecSource = {
-  path: string;
-  name?: string;
-  createIntermediateGroups?: boolean;
-  includes?: string[];
-  excludes?: string[];
-  compilerFlags?: string;
-};
-
-export type ProjectSpecDependency = {
-  // framework type
-  framework?: string;
-  implicit?: boolean;
-
-  // target/project type
-  target?: string;
-
-  // SDK framework
-  sdk?: string;
-
-  // shared options
-  embed?: boolean;
-  link?: boolean;
-  codeSign?: boolean;
-  removeHeaders?: boolean;
-  weak?: boolean;
-};
-
-export type ProjectSpecOptions = {
-  minimumXcodeGenVersion: string;
-  deploymentTarget: Record<Platform, string>;
-};
-
-export type ProjectSpecSettings = {
-  base: XcodeConfig;
-};
-
-type XcodeConfig = Record<string, string>;
 
 /**
  * Generates `.xcodeproj` from given project spec and saves it at given dir.
@@ -119,7 +58,7 @@ export async function createSpecFromPodspecAsync(
   const deploymentTarget = platforms.reduce((acc, platform) => {
     acc[PLATFORMS_MAPPING[platform]] = podspec.platforms[platform];
     return acc;
-  }, {} as Record<Platform, string>);
+  }, {} as Record<ProjectSpecPlatform, string>);
 
   const dependenciesNames = podspec.dependencies ? Object.keys(podspec.dependencies) : [];
 
