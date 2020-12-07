@@ -23,21 +23,21 @@ import Clipboard from 'expo-clipboard';
 ## Methods
 
 - [`Clipboard.getStringAsync()`](#clipboardgetstringasync)
-- [`Clipboard.setStringAsync(value: string)`](#clipboardsetstringasync)
+- [`Clipboard.setString(value: string)`](#clipboardsetstringvalue-string)
 
 ### `Clipboard.getStringAsync()`
 
 Gets the content of the user's clipboard. Please note that calling this method on web will prompt the user to grant your app permission to "see text and images copied to the clipboard."
 
-## Returns
+#### Returns
 
 A promise that resolves to the content of the clipboard.
 
-### `Clipboard.setStringAsync(value: string)`
+### `Clipboard.setString(value: string)`
 
 Sets the content of the user's clipboard.
 
-## Arguments
+#### Arguments
 
 - **value (_string_)** -- The string to save to the clipboard.
 
