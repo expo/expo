@@ -7,7 +7,7 @@ import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
 import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 
-import expo.modules.developmentclient.DevelopmentClientController;
+import expo.modules.devlauncher.DevLauncherController;
 import expo.modules.devmenu.react.DevMenuAwareReactActivity;
 
 public class MainActivity extends DevMenuAwareReactActivity {
@@ -36,7 +36,7 @@ public class MainActivity extends DevMenuAwareReactActivity {
     };
 
     if (MainApplication.USE_DEV_CLIENT) {
-      return DevelopmentClientController.wrapReactActivityDelegate(this, () -> delegate);
+      return DevLauncherController.wrapReactActivityDelegate(this, () -> delegate);
     }
 
     return delegate;
@@ -44,7 +44,7 @@ public class MainActivity extends DevMenuAwareReactActivity {
 
   @Override
   public void onNewIntent(Intent intent) {
-    if (DevelopmentClientController.tryToHandleIntent(this, intent)) {
+    if (DevLauncherController.tryToHandleIntent(this, intent)) {
       return;
     }
     super.onNewIntent(intent);
