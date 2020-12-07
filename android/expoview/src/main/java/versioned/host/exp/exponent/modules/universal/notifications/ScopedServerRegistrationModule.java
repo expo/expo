@@ -16,6 +16,7 @@ public class ScopedServerRegistrationModule extends ServerRegistrationModule {
 
   public ScopedServerRegistrationModule(Context context) {
     super(context);
+    mInstallationId = new ScopedInstallationId(context);
     NativeModuleDepsProvider.getInstance().inject(ScopedServerRegistrationModule.class, this);
   }
 
