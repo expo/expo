@@ -25,6 +25,7 @@ public class InstallationId {
 
   public static final String LEGACY_UUID_KEY = "uuid";
   public static final String UUID_FILE_NAME = "expo_installation_uuid.txt";
+  public static final String SCOPED_UUID_FILE_NAME = "expo_notifications_installation_uuid.txt";
   private static final String PREFERENCES_FILE_NAME = "host.exp.exponent.SharedPreferences";
 
   private String mUuid;
@@ -42,19 +43,10 @@ public class InstallationId {
       return mUuid;
     }
 
-    // Read from non-backed-up storage
-    File uuidFile = getNonBackedUpUuidFile();
-    try (FileReader fileReader = new FileReader(uuidFile);
-         BufferedReader bufferedReader = new BufferedReader(fileReader)) {
-      // Cache for future calls
-      mUuid = UUID.fromString(bufferedReader.readLine()).toString();
-    } catch (IOException | IllegalArgumentException e) {
-      // do nothing, try other sources
-    }
-
-    // We could have returned inside try clause,
-    // but putting it like this here makes it immediately
-    // visible.
+    // Read from scoped non-backed-up storage in case the ID
+    // has already been migrated by managed code at some point
+    // in the past.
+    mUuid = readUUID(new File(mContext.getNoBackupFilesDir(), SCOPED_UUID_FILE_NAME));
     if (mUuid != null) {
       return mUuid;
     }
@@ -68,8 +60,8 @@ public class InstallationId {
 
       boolean uuidHasBeenSuccessfullyMigrated = true;
 
-      try (FileWriter writer = new FileWriter(uuidFile)) {
-        writer.write(legacyUuid);
+      try {
+        saveUUID(mUuid);
       } catch (IOException e) {
         uuidHasBeenSuccessfullyMigrated = false;
         Log.e(TAG, "Error while migrating UUID from legacy storage. " + e);
@@ -80,8 +72,12 @@ public class InstallationId {
         mSharedPreferences.edit().remove(LEGACY_UUID_KEY).apply();
       }
     }
+    if (mUuid != null) {
+      return mUuid;
+    }
 
-    // Return either value from legacy storage or null
+    // Ready from non-scoped non-backed-up storage
+    mUuid = readUUID(new File(mContext.getNoBackupFilesDir(), UUID_FILE_NAME));
     return mUuid;
   }
 
@@ -96,15 +92,32 @@ public class InstallationId {
     // fails subsequent calls to get(orCreate)UUID
     // return the same value.
     mUuid = UUID.randomUUID().toString();
-    try (FileWriter writer = new FileWriter(getNonBackedUpUuidFile())) {
-      writer.write(mUuid);
+    try {
+      saveUUID(mUuid);
     } catch (IOException e) {
       Log.e(TAG, "Error while writing new UUID. " + e);
     }
     return mUuid;
   }
 
-  protected File getNonBackedUpUuidFile() {
+  protected String readUUID(File file) {
+    try (FileReader fileReader = new FileReader(file);
+         BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+      // Cache for future calls
+      return UUID.fromString(bufferedReader.readLine()).toString();
+    } catch (IOException | IllegalArgumentException e) {
+      // do nothing, try other sources
+    }
+    return null;
+  }
+
+  protected void saveUUID(String uuid) throws IOException {
+    try (FileWriter writer = new FileWriter(getFileToWriteIdTo())) {
+      writer.write(uuid);
+    }
+  }
+
+  protected File getFileToWriteIdTo() {
     return new File(mContext.getNoBackupFilesDir(), UUID_FILE_NAME);
   }
 }

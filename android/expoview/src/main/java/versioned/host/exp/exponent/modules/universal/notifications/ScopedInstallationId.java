@@ -18,8 +18,6 @@ import expo.modules.notifications.serverregistration.InstallationId;
  * or {@link host.exp.exponent.storage.ExponentSharedPreferences}
  */
 public class ScopedInstallationId extends InstallationId {
-  public static final String UUID_FILE_NAME = "expo_notifications_installation_id.txt";
-
   private Context mContext;
 
   public ScopedInstallationId(Context context) {
@@ -28,7 +26,9 @@ public class ScopedInstallationId extends InstallationId {
   }
 
   @Override
-  protected File getNonBackedUpUuidFile() {
-    return new File(mContext.getNoBackupFilesDir(), UUID_FILE_NAME);
+  protected File getFileToWriteIdTo() {
+    // By using a well-known location for ID in standalone managed apps
+    // we let ourselves fetch the same ID in bare apps too.
+    return new File(mContext.getNoBackupFilesDir(), SCOPED_UUID_FILE_NAME);
   }
 }
