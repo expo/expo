@@ -6,7 +6,7 @@ import TerminalBlock from '~/components/plugins/TerminalBlock';
 
 Uploading your app to TestFlight and Google Play beta can be time consuming and can be limiting (e.g. TestFlight can only have one active build at a time). You can skip these services entirely by building binaries that can be downloaded and installed to physical devices directly from a web browser. EAS Build can help you with this by providing sharable URLs for your builds with instructions on how to get them running, so you can just share one URL with a teammate and it'll include all of the information they need to test the app.
 
-> 😅 Installing an app on iOS is a bit trickier than on Android, but it's possible thanks to adhoc and enterprise provisioning profiles. We'll talk more about this later in this doc.
+> 😅 Installing an app on iOS is a bit trickier than on Android, but it's possible thanks to adhoc <!--and enterprise --> provisioning profiles. We'll talk more about this later in this doc.
 
 ## Setting up internal distribution
 
@@ -77,9 +77,9 @@ When all of your devices are registered, the next step is to run a build. The bu
 
 Now that we have set up our build profile and app signing, running a build for internal distribution is just like any other build.
 
-<TerminalBlock cmd={['# Create iOS and Android builds for internal distribution', 'eas build:create --profile preview --platform all']} />
+<TerminalBlock cmd={['# Create iOS and Android builds for internal distribution', 'eas build --profile preview --platform all']} />
 
-If you choose to let Expo manage your adhoc provisioning profile, we will show you the list of all devices registered so far. You will then be prompted to confirm you want to proceed with those devices.
+If you choose to let EAS CLI manage your adhoc provisioning profile, we will show you the list of all devices registered so far. You will then be prompted to confirm you want to proceed with those devices.
 
 When the build completes, you will be given a URL that you can share with your team (provided that they have an Expo account and are part of your organization <!-- (@dsokal) we'll change this requirement so everyone who knows the URL can install the app -->) to download and install the app.
 
