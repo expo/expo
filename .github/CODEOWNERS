@@ -25,6 +25,7 @@
 /packages/expo-calendar                         @tsapeta @lukmccall
 /packages/expo-camera                           @bbarthec @lukmccall
 /packages/expo-cellular                         @ide
+/packages/expo-clipboard                        @cruzach
 /packages/expo-constants                        @tsapeta @bbarthec
 /packages/expo-contacts                         @EvanBacon
 /packages/expo-crypto                           @EvanBacon
