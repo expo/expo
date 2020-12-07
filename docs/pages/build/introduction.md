@@ -14,8 +14,8 @@ title: Introduction
 
 ### Distributing your app
 
-- [Submitting to app stores](submitting-to-app-stores.md) - Submit your build to App Store or Google Play.
 - [Internal distribution](internal-distribution.md) - Share runnable builds with your team without going through TestFlight or Google Play Beta.
+- [Submitting to app stores with EAS Submit](/submit/introduction.md) - Submit your build to Apple App Store and/or Google Play Store.
 
 ### Get a deeper understanding
 

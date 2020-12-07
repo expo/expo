@@ -21,6 +21,7 @@ const GROUPS = {
   'React Native': ['React Native'],
   Preview: ['Preview'],
   'EAS Build': ['EAS Build'],
+  'EAS Submit': ['EAS Submit'],
   'Development Clients': ['Development Clients'],
 };
 
@@ -37,7 +38,6 @@ const sections = [
       'Walkthrough',
       'Set up your project and environment',
       'Common configuration examples',
-      'Submitting to app stores',
       'Internal distribution',
       'Configuration with eas.json',
       'Trigger builds from CI',
@@ -45,6 +45,10 @@ const sections = [
       'Android build process',
       'iOS build process',
     ],
+  },
+  {
+    name: 'EAS Submit',
+    reference: ['Introduction', 'Submit to the Apple App Store', 'Submit to the Google Play Store'],
   },
   {
     name: 'Development Clients',
