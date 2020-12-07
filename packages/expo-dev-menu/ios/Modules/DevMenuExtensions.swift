@@ -28,6 +28,9 @@ open class DevMenuExtensions: NSObject, RCTBridgeModule, DevMenuExtensionProtoco
     }
 
     let reload = DevMenuExtensions.reloadAction {
+      // Without this the `expo-splash-screen` will reject
+      // No native splash screen registered for given view controller. Call 'SplashScreen.show' for given view controller first.
+      DevMenuManager.shared.hideMenu();
       self.bridge?.requestReload()
     }
 
