@@ -310,7 +310,6 @@ CACHE_KEYS:
         :release: c66fa0d2cbb00c3a5517658d5d28a97d
     CHECKSUM: d646c74a8db111dbe272fd0d48b988049eee2da0
     FILES:
-      - "../../../../packages/expo-dev-menu/assets/dev-menu-packager-host"
       - "../../../../packages/expo-dev-menu/assets/EXDevMenuApp.ios.js"
       - "../../../../packages/expo-dev-menu/assets/Ionicons.ttf"
       - "../../../../packages/expo-dev-menu/assets/MaterialCommunityIcons.ttf"
@@ -909,39 +908,39 @@ CACHE_KEYS:
     PROJECT_NAME: EXPermissions
     SPECS:
       - EXPermissions (10.0.0)
-  expo-development-client:
+  expo-dev-launcher:
     BUILD_SETTINGS_CHECKSUM:
-      expo-development-client:
-        :debug: 62b2b34a2c4222ee4f0bc54aaee168c0
-        :release: 62b2b34a2c4222ee4f0bc54aaee168c0
-    CHECKSUM: cda8eaece6d04c9d4a38d102b486923138d2ccf6
+      expo-dev-launcher:
+        :debug: 22367e25b8294f3c1f9c2b5052cb58d8
+        :release: 22367e25b8294f3c1f9c2b5052cb58d8
+    CHECKSUM: f4156bea76a0d9b13b8e07bbf3df272c86eba413
     FILES:
-      - "../../../../packages/expo-development-client/ios/EXDevelopmentClient.h"
-      - "../../../../packages/expo-development-client/ios/EXDevelopmentClient.m"
-      - "../../../../packages/expo-development-client/ios/EXDevelopmentClientBundle.cpp"
-      - "../../../../packages/expo-development-client/ios/EXDevelopmentClientBundle.h"
-      - "../../../../packages/expo-development-client/ios/EXDevelopmentClientBundleSource.h"
-      - "../../../../packages/expo-development-client/ios/EXDevelopmentClientBundleSource.m"
-      - "../../../../packages/expo-development-client/ios/EXDevelopmentClientController+Private.h"
-      - "../../../../packages/expo-development-client/ios/EXDevelopmentClientController.h"
-      - "../../../../packages/expo-development-client/ios/EXDevelopmentClientController.m"
-      - "../../../../packages/expo-development-client/ios/EXDevelopmentClientDevMenuExtensions.m"
-      - "../../../../packages/expo-development-client/ios/EXDevelopmentClientLoadingView.h"
-      - "../../../../packages/expo-development-client/ios/EXDevelopmentClientLoadingView.m"
-      - "../../../../packages/expo-development-client/ios/EXDevelopmentClientPendingDeepLinkRegistry.swift"
-      - "../../../../packages/expo-development-client/ios/EXDevelopmentClientRCTBridge.h"
-      - "../../../../packages/expo-development-client/ios/EXDevelopmentClientRCTBridge.m"
-      - "../../../../packages/expo-development-client/ios/EXDevelopmentClientRecentlyOpenedAppsRegistry.swift"
-      - "../../../../packages/expo-development-client/ios/expo-development-client-Bridging-Header.h"
-      - "../../../../packages/expo-development-client/ios/Headers/EXDevelopmentClientPendingDeepLinkListener.h"
-      - "../../../../packages/expo-development-client/ios/Manifest/EXDevelopmentClientManifest.swift"
-      - "../../../../packages/expo-development-client/ios/Manifest/EXDevelopmentClientManifestHelper.swift"
-      - "../../../../packages/expo-development-client/ios/Manifest/EXDevelopmentClientManifestParser.h"
-      - "../../../../packages/expo-development-client/ios/Manifest/EXDevelopmentClientManifestParser.m"
-      - "../../../../packages/expo-development-client/README.md"
-    PROJECT_NAME: expo-development-client
+      - "../../../../packages/expo-dev-launcher/ios/EXDevLauncher.h"
+      - "../../../../packages/expo-dev-launcher/ios/EXDevLauncher.m"
+      - "../../../../packages/expo-dev-launcher/ios/EXDevLauncherBundle.cpp"
+      - "../../../../packages/expo-dev-launcher/ios/EXDevLauncherBundle.h"
+      - "../../../../packages/expo-dev-launcher/ios/EXDevLauncherBundleSource.h"
+      - "../../../../packages/expo-dev-launcher/ios/EXDevLauncherBundleSource.m"
+      - "../../../../packages/expo-dev-launcher/ios/EXDevLauncherController+Private.h"
+      - "../../../../packages/expo-dev-launcher/ios/EXDevLauncherController.h"
+      - "../../../../packages/expo-dev-launcher/ios/EXDevLauncherController.m"
+      - "../../../../packages/expo-dev-launcher/ios/EXDevLauncherDevMenuExtensions.m"
+      - "../../../../packages/expo-dev-launcher/ios/EXDevLauncherPendingDeepLinkRegistry.swift"
+      - "../../../../packages/expo-dev-launcher/ios/EXDevLauncherRecentlyOpenedAppsRegistry.swift"
+      - "../../../../packages/expo-dev-launcher/ios/expo-dev-launcher-Bridging-Header.h"
+      - "../../../../packages/expo-dev-launcher/ios/Headers/EXDevLauncherPendingDeepLinkListener.h"
+      - "../../../../packages/expo-dev-launcher/ios/Manifest/EXDevLauncherManifest.swift"
+      - "../../../../packages/expo-dev-launcher/ios/Manifest/EXDevLauncherManifestHelper.swift"
+      - "../../../../packages/expo-dev-launcher/ios/Manifest/EXDevLauncherManifestParser.h"
+      - "../../../../packages/expo-dev-launcher/ios/Manifest/EXDevLauncherManifestParser.m"
+      - "../../../../packages/expo-dev-launcher/ios/ReactNative/EXDevLauncherLoadingView.h"
+      - "../../../../packages/expo-dev-launcher/ios/ReactNative/EXDevLauncherLoadingView.m"
+      - "../../../../packages/expo-dev-launcher/ios/ReactNative/EXDevLauncherRCTBridge.h"
+      - "../../../../packages/expo-dev-launcher/ios/ReactNative/EXDevLauncherRCTBridge.m"
+      - "../../../../packages/expo-dev-launcher/README.md"
+    PROJECT_NAME: expo-dev-launcher
     SPECS:
-      - expo-development-client (0.0.11)
+      - expo-dev-launcher (0.0.11)
   expo-image:
     BUILD_SETTINGS_CHECKSUM:
       expo-image:
@@ -1468,8 +1467,8 @@ CACHE_KEYS:
       - OpenSSL-Universal/Static (1.0.2.20)
   Pods-BareExpoMain-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: a8c88f61205dccc7b964193b3db572e6
-      Release: b68fb67198d240265b84b4a58b15e17d
+      Debug: 714aa748f7f959c2aa50406a21150433
+      Release: 3ec4a899588da68b602f2d7f4c151077
     FILES:
       - "${PODS_CONFIGURATION_BUILD_DIR}/EXDevMenu/EXDevMenu.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle"
@@ -1478,8 +1477,8 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoMain-BareExpoDetox:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: fe4ecbd5c1edb03473cb90c20aa02b00
-      Release: 6ae8c43f4a12e2202183c1cad4f91c78
+      Debug: f4389601193a31df9ef2ab694775b670
+      Release: e63f288222a1d91189a0bbb17e2b4d07
     FILES:
       - "${PODS_CONFIGURATION_BUILD_DIR}/EXDevMenu/EXDevMenu.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle"
@@ -1488,8 +1487,8 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 353980e500f1416ef4f48f8bd07311fa
-      Release: 353980e500f1416ef4f48f8bd07311fa
+      Debug: c82c8fe26698bfa8082b2b1de709ff25
+      Release: c82c8fe26698bfa8082b2b1de709ff25
   PromisesObjC:
     BUILD_SETTINGS_CHECKSUM:
       PromisesObjC:

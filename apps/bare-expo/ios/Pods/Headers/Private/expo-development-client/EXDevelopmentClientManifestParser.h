@@ -1,1 +1,0 @@
-../../../../../../../packages/expo-development-client/ios/Manifest/EXDevelopmentClientManifestParser.h
