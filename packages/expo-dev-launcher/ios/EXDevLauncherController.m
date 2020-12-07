@@ -5,6 +5,7 @@
 #import <React/RCTDevMenu.h>
 #import <React/RCTAsyncLocalStorage.h>
 #import <React/RCTDevSettings.h>
+#import <React/RCTRootContentView.h>
 
 #import "EXDevLauncherBundle.h"
 #import "EXDevLauncherBundleSource.h"
@@ -112,6 +113,11 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
                                                    moduleName:@"main"
                                             initialProperties:nil];
 
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(onAppContentDidAppear)
+                                               name:RCTContentDidAppearNotification
+                                             object:rootView];
+
   rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
 
   UIViewController *rootViewController = [UIViewController new];
@@ -217,6 +223,26 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 - (BOOL)_isAppRunning
 {
   return [_appBridge isValid];
+}
+
+/**
+ * Temporary `expo-splash-screen` fix.
+ *
+ * The dev-launcher's bridge doesn't contain unimodules. So the module shows a splash screen but never hides.
+ * For now, we just remove the splash screen view when the launcher is loaded.
+ */
+- (void)onAppContentDidAppear
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+
+  dispatch_async(dispatch_get_main_queue(), ^{
+    NSArray<UIView *> *views = [[[self->_window rootViewController] view] subviews];
+    for (UIView *view in views) {
+      if (![view isKindOfClass:[RCTRootContentView class]]) {
+        [view removeFromSuperview];
+      }
+    }
+  });
 }
 
 @end
