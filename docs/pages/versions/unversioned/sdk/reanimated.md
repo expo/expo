@@ -40,6 +40,7 @@ module.exports = function(api) {
   };
 };
 ```
+
 Note: If you load other babel plugins, the Reanimated plugin has to be listed last in the plugins array.
 
 When you run the project you will get a warning about an incompatible version:
