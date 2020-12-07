@@ -228,10 +228,16 @@ async function generateVersionedReactNativeAsync(versionName: string): Promise<v
 /**
  * There are some kernel files that unfortunately have to call versioned code directly.
  * This function applies the specified changes in the kernel codebase.
+ * The nature of kernel modifications is that they are temporary and at one point these have to be rollbacked.
  * @param versionName SDK version, e.g. 21.0.0, 37.0.0, etc.
+ * @param rollback flag indicating whether to invoke rollbacking modification.
  */
-async function modifyKernelFilesAsync(kernelFilesPath: string, versionName: string): Promise<void> {
-  let filenameQueries = [`${kernelFilesPath}/**/EXAppViewController.m`];
+async function modifyKernelFilesAsync(
+  versionName: string,
+  rollback: boolean = false
+): Promise<void> {
+  const kernelFilesPath = path.join(IOS_DIR, 'Exponent/kernel');
+  const filenameQueries = [`${kernelFilesPath}/**/EXAppViewController.m`];
   let filenames: string[] = [];
   await Promise.all(
     filenameQueries.map(async (query) => {
@@ -246,7 +252,7 @@ async function modifyKernelFilesAsync(kernelFilesPath: string, versionName: stri
       console.log(`Modifying ${chalk.magenta(path.relative(EXPO_DIR, filename))}:`);
       await _transformFileContentsAsync(filename, (fileContents) =>
         runTransformPipelineAsync({
-          pipeline: kernelFilesTransforms(versionName),
+          pipeline: kernelFilesTransforms(versionName, rollback),
           targetPath: filename,
           input: fileContents,
         })
@@ -944,7 +950,7 @@ export async function addVersionAsync(versionNumber: string) {
 
   // Modifying kernel files
   console.log(`Modifying ${chalk.bold('kernel files')} to incorporate new SDK version...`);
-  await modifyKernelFilesAsync(path.join(IOS_DIR, 'Exponent/kernel'), versionName);
+  await modifyKernelFilesAsync(versionName);
 
   console.log('Removing any `filename--` files from the new pod ...');
 
@@ -992,7 +998,9 @@ export async function reinstallPodsAsync(force?: boolean) {
 }
 
 export async function removeVersionAsync(versionNumber: string) {
-  let { newVersionPath, versionedPodNames } = await getConfigsFromArguments(versionNumber);
+  let { newVersionPath, versionedPodNames, versionName } = await getConfigsFromArguments(
+    versionNumber
+  );
   console.log(
     `Removing SDK version ${chalk.cyan(versionNumber)} from ${chalk.magenta(
       path.relative(EXPO_DIR, newVersionPath)
@@ -1033,6 +1041,10 @@ export async function removeVersionAsync(versionNumber: string) {
     path.join(EXPO_DIR, 'exponent-view-template', 'ios', 'exponent-view-template', 'Supporting'),
     (config) => removeVersionFromConfig(config, versionNumber)
   );
+
+  // modify kernel files
+  console.log('Rollbacking SDK modifications from kernel files...');
+  await modifyKernelFilesAsync(versionName, true);
 
   await reinstallPodsAsync();
 
