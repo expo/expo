@@ -9,6 +9,7 @@ import spawnAsync from '@expo/spawn-async';
 import { runTransformPipelineAsync } from './transforms';
 import { injectMacros } from './transforms/injectMacros';
 import { postTransforms } from './transforms/postTransforms';
+import { kernelFilesTransforms } from './transforms/kernelFilesTransforms';
 import { podspecTransforms } from './transforms/podspecTransforms';
 
 import { getListOfPackagesAsync } from '../../Packages';
@@ -224,6 +225,35 @@ async function generateVersionedReactNativeAsync(versionName: string): Promise<v
   await generateReactNativePodspecsAsync(versionedReactNativePath, versionName);
 }
 
+/**
+ * There are some kernel files that unfortunately have to call versioned code directly.
+ * This function applies the specified changes in the kernel codebase.
+ * @param versionName SDK version, e.g. 21.0.0, 37.0.0, etc.
+ */
+async function modifyKernelFilesAsync(kernelFilesPath: string, versionName: string): Promise<void> {
+  let filenameQueries = [`${kernelFilesPath}/**/EXAppViewController.m`];
+  let filenames: string[] = [];
+  await Promise.all(
+    filenameQueries.map(async (query) => {
+      let queryFilenames = (await glob(query)) as string[];
+      if (queryFilenames) {
+        filenames = filenames.concat(queryFilenames);
+      }
+    })
+  );
+  await Promise.all(
+    filenames.map(async (filename) => {
+      console.log(`Modifying ${chalk.magenta(path.relative(EXPO_DIR, filename))}:`);
+      await _transformFileContentsAsync(filename, (fileContents) =>
+        runTransformPipelineAsync({
+          pipeline: kernelFilesTransforms(versionName),
+          targetPath: filename,
+          input: fileContents,
+        })
+      );
+    })
+  );
+}
 /**
  * - Copies `scripts/react_native_pods.rb` script into versioned ReactNative directory.
  * - Removes pods installed from third-party-podspecs (we don't version them).
@@ -911,6 +941,10 @@ export async function addVersionAsync(versionNumber: string) {
     path.join(EXPO_DIR, 'exponent-view-template', 'ios', 'exponent-view-template', 'Supporting'),
     (config) => addVersionToConfig(config, versionNumber)
   );
+
+  // Modifying kernel files
+  console.log(`Modifying ${chalk.bold('kernel files')} to incorporate new SDK version...`);
+  await modifyKernelFilesAsync(path.join(IOS_DIR, 'Exponent/kernel'), versionName);
 
   console.log('Removing any `filename--` files from the new pod ...');
 
