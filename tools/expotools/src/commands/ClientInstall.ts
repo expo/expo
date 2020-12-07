@@ -58,7 +58,11 @@ async function downloadAndInstallOnAndroidAsync(clientUrl: string): Promise<void
       );
     }
 
-    await Android.assertDeviceReadyAsync(device);
+    if (!device.isAuthorized) {
+      throw new Error(
+        `This computer is not authorized for developing on ${device.name}. See https://expo.fyi/authorize-android-device.`
+      );
+    }
 
     console.log('Uninstalling previously installed Expo client...');
 
