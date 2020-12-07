@@ -12,7 +12,16 @@ Install EAS CLI by running `npm install -g eas-cli` (or `yarn global add eas-cli
 
 Log in with `eas login`, or [sign up](https://expo.io/signup) if you don't have an account yet. You can check if you're logged in by running `eas whoami`.
 
-## 3. Configure the project
+## 3. Set application identifiers
+
+These will be used to identify your application on the Apple App Store and Google Play.
+
+- **Android**: Set `expo.android.package` in your [app.json/app.config.js](/workflow/configuration.md).
+- **iOS**: Set `expo.ios.bundleIdentifier` in your [app.json/app.config.js](/workflow/configuration.md).
+
+Learn more about application identifiers in the [Walkthrough](walkthrough.md#set-application-identifiers).
+
+## 4. Configure the project
 
 Run `eas build:configure` to configure your iOS and Android projects to run on EAS Build. This will only take a few seconds, it's automated.
 
@@ -21,7 +30,7 @@ Additional configuration may be required for some scenarios:
 - Is your project inside of a monorepo? [Follow these instructions](how-tos.md#how-to-set-up-eas-build-with).
 - Do you use a private npm registry? [Add your npm token](how-tos.md#how-to-use-private-package-repositories).
 
-## 4. Run the build
+## 5. Run a build
 
 - Run `eas build --platform android` to build for Android.
 
@@ -35,11 +44,13 @@ When you first run the build, you will be guided through generating or supplying
 
 > 💡 You can run `eas build --platform all` to build for Android and iOS at the same time.
 
-## 5. Check the status of your builds
+## 6. Wait for the build to complete
 
 By default, the `eas build` command will wait for your build to complete. However, if you interrupt this command and monitor the progress of your builds by either visiting [the EAS Build dashboard](https://expo.io/builds?type=eas) or running the `eas build:status` command.
 
-## 6. Next steps
+## 7. Next steps
+
+### Distribute your app
 
 - Want to distribute your apps to internal testers? [Learn about internal distribution](internal-distribution.md).
 - Ship your app! [Learn how to submit your app to app stores](submitting-to-app-stores.md).

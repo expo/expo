@@ -2,9 +2,9 @@
 title: Advanced credentials configuration
 ---
 
-In order to build a React Native project for distribution on app stores you will need to provide or generate credentials to sign the app. EAS Build makes managing credentials really easy. When running `eas build` you're guided through the entire credentials management process. Expo CLI will generate both Android and iOS credentials for you, and store them on the Expo servers. This makes it possible to use them for consecutive builds and also speeds up the process of starting new builds of the project for other team members.
+In order to build a React Native project for distribution on app stores you will need to provide or generate credentials to sign the app. EAS Build makes managing credentials really easy. When running `eas build` you're guided through the entire credentials management process. EAS CLI will generate both Android and iOS credentials for you, and store them on the EAS servers. This makes it possible to use them for consecutive builds and also speeds up the process of starting new builds of the project for other team members.
 
-Usually, you can get away with not being an expert on credentials and choose Expo to manage them on their servers. However, there are some cases when you want to manage your keystore, certificates and profiles on your own. The most common case is when you want to build your app on CI and so you want to have the full control over which credentials will be used for your builds. Another common case is when you already have your credentials generated from building your app prior to using Expo services. We've introduced a concept of the `credentials.json` file to solve these and similar cases. **Using `credentials.json` is totally optional.**
+Usually, you can get away with not being an expert on credentials and choose EAS CLI to manage them on their servers. However, there are some cases when you want to manage your keystore, certificates and profiles on your own. The most common case is when you want to build your app on CI and so you want to have the full control over which credentials will be used for your builds. Another common case is when you already have your credentials generated from building your app prior to using EAS services. We've introduced a concept of the `credentials.json` file to solve these and similar cases. **Using `credentials.json` is totally optional.**
 
 ## credentials.json
 
@@ -40,16 +40,16 @@ It specifies credentials for Android and iOS (but you can configure only one of 
 
 You have two options for handling your app credentials:
 
-- Let Expo generate and manage your credentials for you, and keep them stored securely on Expo's servers, or
+- Let EAS generate and manage your credentials for you, and keep them stored securely on EAS's servers, or
 - Create credentials manually, yourself, and provide them to EAS Build via the credentials.json file
 
-No matter which option you choose, you can always sync your credentials by running `eas credentials`, so that the ones you have stored locally match those on Expo's servers.
+No matter which option you choose, you can always sync your credentials using `eas credentials`, so that the ones you have stored locally match those on EAS servers.
 
 ## Automatic configuration
 
-If you already have credentials configured for an app with the same `slug`, `owner` (if you are using teams), and `ios.bundleIdentifier` (for iOS only), you can generate the `credentials.json` file from those credentials that are stored on Expo's servers. To generate (or update) that file, run `eas credentials`. In the first prompt, select the option to update `credentials.json`, then in the second one, select which platform(s) you wish to update.
+If you already have credentials configured for an app with the same `slug`, `owner` (if you are using teams), and `ios.bundleIdentifier` (for iOS only), you can generate the `credentials.json` file from those credentials that are stored on EAS servers. To generate (or update) that file, run `eas credentials`, choose appropriate platfrom, and select "Update credentials.json with values from Expo servers".
 
-If you don't have any credentials yet, you can run `eas build --platform <android|ios|all>` and follow the interactive prompts. After Expo guides you through generating your credentials, you can (if you wish) use the `eas credentials` command to generate `credentials.json` (this is only if you wish to have a local copy of your credentials).
+If you don't have any credentials yet, you can run `eas build --platform <android|ios|all>` and follow the interactive prompts. After EAS guides you through generating your credentials, you can (if you wish) use the `eas credentials` command to generate `credentials.json` (this is only if you wish to have a local copy of your credentials).
 
 For Android builds, both keystore generation methods require you to have `keytool` installed and in your PATH. If it's not available on your system, you'll need to [install JDK](https://jdk.java.net/) (`keytool` is distributed with it).
 
@@ -150,16 +150,16 @@ Let's assume we're only building for Android and we're using the following confi
 }
 ```
 
-Given this configuration, `eas build` will resolve the credentials using the so-called **auto mode**.
+Given this configuration, `eas build --platform android` will resolve the credentials using the so-called **auto mode**.
 
 The algorithm of the auto mode works like this:
 
-- If the entry for a given platform in `credentials.json` is defined and the project's credentials exist on the Expo servers:
+- If the entry for a given platform in `credentials.json` is defined and the project's credentials exist on the EAS servers:
   - Check if the local credentials match the remote credentials, and if so - use the local credentials.
   - Otherwise, display a prompt to ask which credentials should be used.
-- If the entry for a given platform in `credentials.json` is defined but the project's credentials do **not** exist on the Expo servers - use the credentials defined in `credentials.json`.
-- If the entry for a given platform in `credentials.json` is **not** defined but the project's credentials exist on the Expo servers - use the credentials from the Expo servers.
-- If neither the entry for a given platform in `credentials.json` is defined nor remote credentials exist - display a prompt to ask whether new credentials should be generated and stored on the Expo servers.
+- If the entry for a given platform in `credentials.json` is defined but the project's credentials do **not** exist on the EAS servers - use the credentials defined in `credentials.json`.
+- If the entry for a given platform in `credentials.json` is **not** defined but the project's credentials exist on the EAS servers - use the credentials from the EAS servers.
+- If neither the entry for a given platform in `credentials.json` is defined nor remote credentials exist - display a prompt to ask whether new credentials should be generated and stored on the EAS servers.
 
 ### Local Mode
 
@@ -180,7 +180,7 @@ Example:
 }
 ```
 
-This can be particularly useful when running the build on CI. If the `credentialsSource` is set to `local` but the `credentials.json` file doesn't exist Expo CLI will throw an error.
+This can be particularly useful when running the build on CI. If the `credentialsSource` is set to `local` but the `credentials.json` file doesn't exist EAS CLI will throw an error.
 
 ### Remote Mode
 
@@ -269,4 +269,4 @@ Once the restoring steps are in place, you can run the build like this:
 - `eas build --platform ios --non-interactive` to build for iOS,
 - or `eas build --platform all --non-interactive` to build for both platforms.
 
-Note that we passed the `--non-interactive` flag to the build command. This prevents Expo CLI from displaying prompts and throws an error when an interactive action is needed.
+Note that we passed the `--non-interactive` flag to the build command. This prevents EAS CLI from displaying prompts and throws an error when an interactive action is needed.

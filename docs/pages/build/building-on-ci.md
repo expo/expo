@@ -218,7 +218,7 @@ jobs:
         run: npm ci
 
       - name: Build on EAS
-        run: eas build --platform all --non-interactive
+        run: npx eas-cli build --platform all --non-interactive
 ```
 
 > Put this into `.github/workflows/eas-build.yml` in the root of your repository.
