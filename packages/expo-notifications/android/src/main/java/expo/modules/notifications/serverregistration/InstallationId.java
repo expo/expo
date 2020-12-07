@@ -104,7 +104,7 @@ public class InstallationId {
     return mUuid;
   }
 
-  private File getNonBackedUpUuidFile() {
+  protected File getNonBackedUpUuidFile() {
     return new File(mContext.getNoBackupFilesDir(), UUID_FILE_NAME);
   }
 }
