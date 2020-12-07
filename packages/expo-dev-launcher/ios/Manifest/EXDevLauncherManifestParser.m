@@ -8,7 +8,7 @@ typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
 @interface EXDevLauncherManifestParser ()
 
 @property (weak, nonatomic) NSURLSession *session;
-@property (strong, nonatomic) NSString *url;
+@property (strong, nonatomic) NSURL *url;
 
 @end
 
@@ -50,7 +50,7 @@ typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
 
 - (void)_fetch:(NSString *)method onError:(OnManifestError)onError completionHandler:(CompletionHandler)completionHandler
 {
-  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:self.url]];
+  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:self.url];
   [request setHTTPMethod:method];
   NSURLSessionDataTask *dataTask = [self.session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
     if (error) {
