@@ -3,6 +3,7 @@ package expo.modules.devlauncher
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import androidx.annotation.UiThread
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
@@ -51,9 +52,11 @@ class DevLauncherController private constructor(
   suspend fun loadApp(url: String, mainActivity: ReactActivity? = null) {
     ensureHostWasCleared(mAppHost, activityToBeInvalidated = mainActivity)
 
-    val parsedUrl = url
-      .trim()
-      .replace("exp", "http")
+    val parsedUrl = Uri.parse(url.trim())
+      .buildUpon()
+      .scheme("http")
+      .build()
+      .toString()
     val manifestParser = DevLauncherManifestParser(httpClient, parsedUrl)
     val appIntent = createAppIntent()
 

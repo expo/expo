@@ -152,12 +152,16 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 
 - (void)loadApp:(NSString *)expoUrl onSuccess:(void (^)())onSuccess onError:(void (^)(NSError *error))onError
 {
+  NSString *sanitizedUrl = [expoUrl stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+  NSURLComponents *urlComponets = [NSURLComponents componentsWithURL:[NSURL URLWithString:sanitizedUrl] resolvingAgainstBaseURL:YES];
+  urlComponets.scheme = @"http";
+  NSURL *url = urlComponets.URL;
   
   if (@available(iOS 14, *)) {
     // Try to detect if we're trying to open a local network URL so we can preemptively show the
     // Local Network permission prompt -- otherwise the network request will fail before the user
     // has time to accept or reject the permission.
-    NSString *host = [NSURL URLWithString:expoUrl].host;
+    NSString *host = url.host;
     if ([host hasPrefix:@"192.168."] || [host hasPrefix:@"172."] || [host hasPrefix:@"10."]) {
       // We want to trigger the local network permission dialog. However, the iOS API doesn't expose a way to do it.
       // But we can use system functionality that needs this permission to trigger prompt.
@@ -168,24 +172,22 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
       });
     }
   }
-  
-  __block NSString *url = [[expoUrl stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] stringByReplacingOccurrencesOfString:@"exp" withString:@"http"];
+    
   EXDevLauncherManifestParser *manifestParser = [[EXDevLauncherManifestParser alloc] initWithURL:url session:[NSURLSession sharedSession]];
   [manifestParser tryToParseManifest:^(EXDevLauncherManifest * _Nullable manifest) {
     NSURL *bundleUrl = [NSURL URLWithString:manifest.bundleUrl];
     
-    [_recentlyOpenedAppsRegistry appWasOpened:url name:manifest.name];
+    [_recentlyOpenedAppsRegistry appWasOpened:sanitizedUrl name:manifest.name];
     [self _initApp:bundleUrl manifest:manifest];
     if (onSuccess) {
       onSuccess();
     }
   } onInvalidManifestURL:^{
-    [_recentlyOpenedAppsRegistry appWasOpened:url name:nil];
-    NSURL *parsedUrl = [NSURL URLWithString:url];
-    if ([parsedUrl.path isEqual:@"/"] || [parsedUrl.path isEqual:@""]) {
-      [self _initApp:[NSURL URLWithString:@"index.bundle?platform=ios&dev=true&minify=false" relativeToURL:[NSURL URLWithString:url]] manifest:nil];
+    [_recentlyOpenedAppsRegistry appWasOpened:sanitizedUrl name:nil];
+    if ([url.path isEqual:@"/"] || [url.path isEqual:@""]) {
+      [self _initApp:[NSURL URLWithString:@"index.bundle?platform=ios&dev=true&minify=false" relativeToURL:url] manifest:nil];
     } else {
-      [self _initApp:[NSURL URLWithString:url] manifest:nil];
+      [self _initApp:url manifest:nil];
     }
     
     if (onSuccess) {
