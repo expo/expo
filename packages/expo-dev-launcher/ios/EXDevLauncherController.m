@@ -169,14 +169,6 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     }
   }
   
-  // We want to trigger the local network permission dialog. However, the iOS API doesn't expose a way to do it.
-  // But we can use system functionality that needs this permission to trigger prompt.
-  // See https://stackoverflow.com/questions/63940427/ios-14-how-to-trigger-local-network-dialog-and-check-user-answer
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    [[NSProcessInfo processInfo] hostName];
-  });
-  
   __block NSString *url = [[expoUrl stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] stringByReplacingOccurrencesOfString:@"exp" withString:@"http"];
   EXDevLauncherManifestParser *manifestParser = [[EXDevLauncherManifestParser alloc] initWithURL:url session:[NSURLSession sharedSession]];
   [manifestParser tryToParseManifest:^(EXDevLauncherManifest * _Nullable manifest) {
