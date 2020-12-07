@@ -4,9 +4,8 @@ export default {
     async getStringAsync() {
         return await Clipboard.getString();
     },
-    async setStringAsync(text) {
-        const success = Clipboard.setString(text);
-        return success;
+    setString(text) {
+        Clipboard.setString(text);
     },
 };
 //# sourceMappingURL=ExpoClipboard.js.map

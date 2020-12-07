@@ -17,7 +17,7 @@ export default {
     }
     return text;
   },
-  setStringAsync(text: string): boolean {
+  setString(text: string): boolean {
     let success = false;
     const textField = document.createElement('textarea');
     textField.innerText = text;

@@ -5,8 +5,7 @@ export default {
   async getStringAsync(): Promise<string> {
     return await Clipboard.getString();
   },
-  async setStringAsync(text: string): Promise<boolean> {
-    const success = Clipboard.setString(text);
-    return success;
+  setString(text: string): void {
+    Clipboard.setString(text);
   },
 };

@@ -19,7 +19,7 @@ export default {
         }
         return text;
     },
-    setStringAsync(text) {
+    setString(text) {
         let success = false;
         const textField = document.createElement('textarea');
         textField.innerText = text;
