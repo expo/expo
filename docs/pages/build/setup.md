@@ -46,7 +46,7 @@ When you first run the build, you will be guided through generating or supplying
 
 ## 6. Wait for the build to complete
 
-By default, the `eas build` command will wait for your build to complete. However, if you interrupt this command and monitor the progress of your builds by either visiting [the EAS Build dashboard](https://expo.io/builds?type=eas) or running the `eas build:status` command.
+By default, the `eas build` command will wait for your build to complete. However, if you interrupt this command and monitor the progress of your builds by either visiting [the EAS Build dashboard](https://expo.io/builds?type=eas) or running the `eas build:show` command.
 
 ## 7. Next steps
 
