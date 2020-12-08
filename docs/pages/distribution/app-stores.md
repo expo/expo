@@ -57,6 +57,8 @@ To access these values at runtime, you can use the [Expo Constants API](../versi
 
 > **Note**: No data is sent to Branch, Facebook, Segment, or Amplitude from your app unless you explicitly do so using the APIs. For more information on how Expo handles your data, and your end users' data, take a look at our [Privacy Explained page](https://expo.io/privacy-explained).
 
+### App privacy questions
+
 Beginning December 8, 2020, new app submissions and updates are required to provide information about their privacy practices in App Store Connect. See [App privacy details on the App Store](https://developer.apple.com/app-store/app-privacy-details/) for more information.
 
 Apple will ask you a series of questions:
