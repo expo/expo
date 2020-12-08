@@ -1,0 +1,4 @@
+{
+  "name": "expo-checkbox",
+  "platforms": ["android", "web"]
+}
