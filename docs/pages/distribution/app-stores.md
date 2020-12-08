@@ -64,7 +64,7 @@ Beginning December 8, 2020, new app submissions and updates are required to prov
 Apple will ask you a series of questions:
 
 - Select **Yes, we collect data from this app**. Click **Next**.
-- Select **Device Id**
+- Select **Device ID**
     - Managed standalone apps include the Facebook, Facebook Ads, and Google AdMob SDKs, which still access the IDFA.
 - If you use `expo-facebook`, select **Other Usage Data**
 - If you use `expo-updates`, select **Crash Data**
