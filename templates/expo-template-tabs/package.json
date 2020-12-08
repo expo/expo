@@ -24,7 +24,7 @@
     "expo-asset": "~8.2.1",
     "expo-constants": "~9.3.0",
     "expo-font": "~8.4.0",
-    "expo-linking": "^1.0.1",
+    "expo-linking": "^1.0.6",
     "expo-splash-screen": "~0.8.0",
     "expo-status-bar": "~1.0.3",
     "expo-web-browser": "~8.6.0",
