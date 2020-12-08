@@ -53,7 +53,7 @@ In order to access the `ssid` property (available under `state.details.ssid`), t
 
 #### iOS only
 
-- add the `com.apple.developer.networking.wifi-info` entitlement to your app.json file under `ios.entitlements`:
+- Add the `com.apple.developer.networking.wifi-info` entitlement to your app.json file under `ios.entitlements`:
 
 ```json
   "ios": {
