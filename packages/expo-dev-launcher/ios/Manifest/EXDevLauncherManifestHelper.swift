@@ -48,4 +48,16 @@ class EXDevLauncherManifestHelper {
                    blue: CGFloat(rgbValue & 0x0000FF) / 255.0,
                    alpha: 1.0)
   }
+  
+  @available(iOS 12.0, *)
+  static func exportManifestUserInterfaceStyle(_ userInterfaceStyle: EXDevLauncherUserInterfaceStyle?) -> UIUserInterfaceStyle {
+    switch (userInterfaceStyle){
+      case .light:
+        return .light
+      case .dark:
+        return .dark
+      default:
+        return .unspecified
+    }
+  }
 }

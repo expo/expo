@@ -8,6 +8,12 @@ enum EXDevLauncherOrientation: String, Decodable {
   case landscape = "landscape"
 }
 
+enum EXDevLauncherUserInterfaceStyle: String, Decodable {
+  case automatic = "automatic"
+  case light = "light"
+  case dark = "dark"
+}
+
 @propertyWrapper
 public class CanHavePlatformSpecificValue<T> : Decodable where T : Decodable {
   public var wrappedValue: T
@@ -42,7 +48,16 @@ public class EXDevLauncherManifest: NSObject, Decodable {
   public var bundleUrl: String
   
   @CanHavePlatformSpecificValue
-  public var _backgroundColor: String?
+  var _userInterfaceStyle: EXDevLauncherUserInterfaceStyle?
+  
+  @objc
+  @available(iOS 12.0, *)
+  public var userInterfaceStyle: UIUserInterfaceStyle {
+    return EXDevLauncherManifestHelper.exportManifestUserInterfaceStyle(_userInterfaceStyle);
+  }
+  
+  @CanHavePlatformSpecificValue
+  var _backgroundColor: String?
   
   @objc
   public var backgroundColor: UIColor? {
@@ -63,6 +78,7 @@ public class EXDevLauncherManifest: NSObject, Decodable {
     case name, slug, version, ios, bundleUrl
     case _backgroundColor = "backgroundColor"
     case _orientation = "orientation"
+    case _userInterfaceStyle = "userInterfaceStyle"
   }
 
   @objc
