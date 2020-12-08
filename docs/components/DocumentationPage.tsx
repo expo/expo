@@ -175,13 +175,9 @@ export default class DocumentationPage extends React.Component<Props, State> {
 
   private getVersion = () => {
     let version = (this.props.asPath || this.props.url.pathname).split(`/`)[2];
-    if (!version || VERSIONS.indexOf(version) === -1) {
-      version = VERSIONS[0];
-    }
-    if (!version) {
+    if (!version || !VERSIONS.includes(version)) {
       version = 'latest';
     }
-
     return version;
   };
 
