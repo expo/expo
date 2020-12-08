@@ -1,4 +1,0 @@
-{
-  "name": "expo-clipboard",
-  "platforms": ["ios", "android", "web"]
-}
