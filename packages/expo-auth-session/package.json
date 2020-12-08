@@ -40,7 +40,7 @@
   "dependencies": {
     "expo-constants": "^9.3.3",
     "expo-crypto": "^8.4.0",
-    "expo-linking": "~1.0.6",
+    "expo-linking": "~2.0.0",
     "expo-random": "^10.0.0",
     "expo-web-browser": "^8.6.0",
     "invariant": "^2.2.4",
