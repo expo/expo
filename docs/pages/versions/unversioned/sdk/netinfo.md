@@ -43,4 +43,28 @@ const unsubscribe = NetInfo.addEventListener(state => {
 unsubscribe();
 ```
 
+## Accessing the SSID
+
+In order to access the `ssid` property (available under `state.details.ssid`), there are few additional configuration steps:
+
+#### Android & iOS
+
+- Request location permissions with [`Location.requestPermissionsAsync()`](location.md#locationrequestpermissionsasync)
+
+#### iOS only
+
+- add the `com.apple.developer.networking.wifi-info` entitlement to your app.json file under `ios.entitlements`:
+
+```json
+  "ios": {
+    "entitlements": {
+      "com.apple.developer.networking.wifi-info": "true"
+    }
+  }
+```
+
+- Check the **Access WiFi Information** box in your app's App Identifier, [which can be found here](https://developer.apple.com/account/resources/identifiers/list)
+
+- Rebuild your app with `expo build:ios`
+
 Read the [react-native-netinfo docs](https://github.com/react-native-community/react-native-netinfo#react-native-communitynetinfo) for more information on the API and usage.
