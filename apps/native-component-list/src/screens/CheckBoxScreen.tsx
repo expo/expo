@@ -1,29 +1,50 @@
+import Checkbox from 'expo-checkbox';
 import * as React from 'react';
-import { CheckBox, Platform } from 'react-native';
+import { Platform, Text } from 'react-native';
 
 import { Page, Section } from '../components/Page';
+import { useResolvedValue } from '../utilities/useResolvedValue';
 
-// TODO: Upgrade to @react-native-community/checkbox
-export default function CheckBoxScreen() {
+export default function CheckboxScreen() {
+  const [isAvailable] = useResolvedValue(Checkbox.isAvailableAsync);
   const [value, setValue] = React.useState(true);
+
+  if (isAvailable === null) {
+    return (
+      <Page>
+        <Text>Checking if checkbox is available on this platform...</Text>
+      </Page>
+    );
+  }
+
+  if (isAvailable === false) {
+    return (
+      <Page>
+        <Text>CheckBox is not available on this platform.</Text>
+      </Page>
+    );
+  }
 
   return (
     <Page>
+      <Section title="Default">
+        <Checkbox value={value} onValueChange={setValue} />
+      </Section>
       <Section title="Custom Color">
-        <CheckBox value={value} onValueChange={setValue} />
+        <Checkbox value={value} onValueChange={setValue} color="#4630EB" />
       </Section>
       <Section title="Disabled">
-        <CheckBox disabled value={value} />
+        <Checkbox disabled value={value} />
       </Section>
       {Platform.OS === 'web' && (
         <Section title="Larger">
-          <CheckBox value={value} onValueChange={setValue} style={{ height: 32, width: 32 }} />
+          <Checkbox value={value} onValueChange={setValue} style={{ height: 32, width: 32 }} />
         </Section>
       )}
     </Page>
   );
 }
 
-CheckBoxScreen.navigationOptions = {
-  title: 'CheckBox',
+CheckboxScreen.navigationOptions = {
+  title: 'Checkbox',
 };
