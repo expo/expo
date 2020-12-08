@@ -54,8 +54,6 @@ jobs:
         run: echo "::set-output name=filename::ios-shell-builder-sdk-latest-${{ github.sha }}.tar.gz"
       - name: Package release tarball
         run: |
-          # Hotfix for until https://github.com/expo/expo-cli/pull/2608 lands
-          mv ../shellAppBase-builds .
           tar \
             -zcf ${{ steps.tarball.outputs.filename }} \
             package.json \
