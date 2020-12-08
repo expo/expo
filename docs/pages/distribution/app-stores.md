@@ -52,10 +52,28 @@ To access these values at runtime, you can use the [Expo Constants API](../versi
 
 ## iOS-specific guidelines
 
-- All apps in the iTunes Store must abide by the [App Store Review Guidelines](https://developer.apple.com/app-store/review/guidelines/).
-- Apple will ask you whether your app uses the IDFA, the answer is "yes." This is because Expo contains the Facebook and Branch SDKs, which contain code for collecting the IDFA, and you'll need to check a couple boxes on the Apple submission form. See [Branch's Guide](https://blog.branch.io/how-to-submit-an-app-that-uses-an-idfa-to-the-app-store/) for which specific boxes to fill in.
+- All apps in the App Store must abide by the [App Store Review Guidelines](https://developer.apple.com/app-store/review/guidelines/).
+- Apple will ask you whether your app uses the IDFA: the answer is "yes." This is because Expo contains the Facebook and Branch SDKs, which contain code for collecting the IDFA, and you'll need to check a couple boxes on the Apple submission form. See [Branch's Guide](https://blog.branch.io/how-to-submit-an-app-that-uses-an-idfa-to-the-app-store/) for which specific boxes to fill in.
 
 > **Note**: No data is sent to Branch, Facebook, Segment, or Amplitude from your app unless you explicitly do so using the APIs. For more information on how Expo handles your data, and your end users' data, take a look at our [Privacy Explained page](https://expo.io/privacy-explained).
+
+### App privacy questions
+
+Beginning December 8, 2020, new app submissions and updates are required to provide information about their privacy practices in App Store Connect. See [App privacy details on the App Store](https://developer.apple.com/app-store/app-privacy-details/) for more information.
+
+Apple will ask you a series of questions:
+
+- Select **Yes, we collect data from this app**. Click **Next**.
+- Select **Device ID**
+    - Managed standalone apps include the Facebook, Facebook Ads, and Google AdMob SDKs, which still access the IDFA.
+- If you use `expo-notifications` select **Device ID**
+  - Apps that send push notifications collect the device's push notification token. `expo-notifications` also generates a random ID to keep the Expo push notification token consistent even when the Apple push notification token changes.
+- If you use `expo-facebook`, select **Other Usage Data**
+- If you use `expo-updates`, select **Crash Data**
+    - Errors that occur when launching an update are collected when a new update is requested
+- If you use Facebook Ads and/or Google AdMob SDKs, select **Advertising Data**
+
+> **Note**: Supplement the above guidance with additional disclosures based on the data your particular app and the third-party services you use collect.
 
 ## Android Permissions
 
