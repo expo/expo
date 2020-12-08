@@ -53,7 +53,7 @@ To access these values at runtime, you can use the [Expo Constants API](../versi
 ## iOS-specific guidelines
 
 - All apps in the App Store must abide by the [App Store Review Guidelines](https://developer.apple.com/app-store/review/guidelines/).
-- Apple will ask you whether your app uses the IDFA, the answer is "yes." This is because Expo contains the Facebook and Branch SDKs, which contain code for collecting the IDFA, and you'll need to check a couple boxes on the Apple submission form. See [Branch's Guide](https://blog.branch.io/how-to-submit-an-app-that-uses-an-idfa-to-the-app-store/) for which specific boxes to fill in.
+- Apple will ask you whether your app uses the IDFA: the answer is "yes." This is because Expo contains the Facebook and Branch SDKs, which contain code for collecting the IDFA, and you'll need to check a couple boxes on the Apple submission form. See [Branch's Guide](https://blog.branch.io/how-to-submit-an-app-that-uses-an-idfa-to-the-app-store/) for which specific boxes to fill in.
 
 > **Note**: No data is sent to Branch, Facebook, Segment, or Amplitude from your app unless you explicitly do so using the APIs. For more information on how Expo handles your data, and your end users' data, take a look at our [Privacy Explained page](https://expo.io/privacy-explained).
 
