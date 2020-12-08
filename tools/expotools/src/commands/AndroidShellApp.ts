@@ -1,5 +1,8 @@
 import { AndroidShellApp } from '@expo/xdl';
+import fs from 'fs-extra';
+import path from 'path';
 import * as Directories from '../Directories';
+import * as ProjectVersions from '../ProjectVersions';
 
 type ActionOptions = {
   url: string;
@@ -17,6 +20,18 @@ type ActionOptions = {
 async function action(options: ActionOptions) {
   if (!options.url || !options.sdkVersion) {
     throw new Error('Must run with `--url MANIFEST_URL --sdkVersion SDK_VERSION`');
+  }
+
+  if (options.sdkVersion !== (await ProjectVersions.getNewestSDKVersionAsync('android'))) {
+    throw new Error(
+      `In order to build a shell app with SDK version ${options.sdkVersion} you need to check out that SDK's release branch.`
+    );
+  }
+
+  if (!fs.existsSync(path.join(Directories.getAndroidDir(), 'maven'))) {
+    throw new Error(
+      'You need to build the aar packages locally before creating a shell app; run `et android-build-packages` and then rerun this command.'
+    );
   }
 
   AndroidShellApp.createAndroidShellAppAsync({
