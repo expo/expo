@@ -71,7 +71,7 @@ Apple will ask you a series of questions:
     - Errors that occur when launching an update are collected when a new update is requested
 - If you use Facebook Ads and/or Google AdMob SDKs, select **Advertising Data**
 
-> **Note**: Supplement the above guidance with additional disclosures based on the data your particular app and the third party services you use collect.
+> **Note**: Supplement the above guidance with additional disclosures based on the data your particular app and the third-party services you use collect.
 
 ## Android Permissions
 
