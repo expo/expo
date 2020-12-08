@@ -571,7 +571,7 @@ Publish a blog post that includes the following information:
 
 **How:**
 
-- Follow the same workflow as [4.2. Make shell app build](#42-make-shell-app-build), but instead choose the `sdk-XX/client_shell_app` workflow and approve the build.
+- Follow the same workflow as [4.2. Make shell app build](#42-make-shell-app-build), but instead run `et dispatch ad-hoc-client-shell-app-ios-upload`.
 - Copy the URL to the `shellTarballs/ios/client` file in `expo/turtle` and update the CHANGELOG.
 - Deploy to staging, test, and deploy to production.
 
