@@ -19,7 +19,7 @@ export function kernelFilesTransforms(
         paths: ['EXAppViewController.m'],
         ...withRollback(rollback, {
           replace: /(?<=#import <React\/RCTAppearance\.h>)/,
-          with: `\n\n#if __has_include(<${versionName}React/${versionName}RCTAppearance.h>)\n#import <${versionName}React/${versionName}RCTAppearance.h>\n#endif`,
+          with: `\n#if __has_include(<${versionName}React/${versionName}RCTAppearance.h>)\n#import <${versionName}React/${versionName}RCTAppearance.h>\n#endif`,
         }),
       },
       {

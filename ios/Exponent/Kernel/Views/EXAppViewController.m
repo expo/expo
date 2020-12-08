@@ -31,11 +31,9 @@
 #endif
 
 #import <React/RCTAppearance.h>
-
 #if __has_include(<ABI40_0_0React/ABI40_0_0RCTAppearance.h>)
 #import <ABI40_0_0React/ABI40_0_0RCTAppearance.h>
 #endif
-
 #if __has_include(<ABI39_0_0React/ABI39_0_0RCTAppearance.h>)
 #import <ABI39_0_0React/ABI39_0_0RCTAppearance.h>
 #endif
