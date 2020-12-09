@@ -40,6 +40,7 @@
     "expo-camera": "~9.1.0",
     "expo-constants": "~9.3.3",
     "expo-contacts": "~8.6.0",
+    "expo-checkbox": "~1.0.0",
     "expo-device": "~2.4.0",
     "expo-document-picker": "~8.4.1",
     "expo-face-detector": "~8.4.0",
