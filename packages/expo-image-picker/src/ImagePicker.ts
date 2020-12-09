@@ -63,7 +63,7 @@ export async function getMediaLibraryPermissionsAsync(
   writeOnly: boolean = false
 ): Promise<MediaLibraryPermissionResponse> {
   // due to a typo in iOS, we need to check on the typo too
-  // todo: remove this workaround when a new iOS client is submitted
+  // todo: remove this workaround for SDK 41
   const imagePickerMethod =
     typeof ExponentImagePicker.getMediaLibaryPermissionsAsync === 'function'
       ? ExponentImagePicker.getMediaLibaryPermissionsAsync
