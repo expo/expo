@@ -69,6 +69,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  paragraph: {
+    fontSize: 15,
+  },
   checkbox: {
     margin: 8,
   },
