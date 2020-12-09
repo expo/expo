@@ -183,32 +183,32 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
     }
 
     self.picker.mediaTypes = [self convertMediaTypes:self.options[@"mediaTypes"]];
-
+    
     if (@available(iOS 11.0, *)) {
       self.picker.videoExportPreset = [self importVideoExportPreset:self.options[@"videoExportPreset"]];
     }
-
+      
     NSNumber* videoQuality = [self.options valueForKey:@"videoQuality"];
     self.picker.videoQuality = [videoQuality intValue];
 
     NSTimeInterval videoMaxDuration = [[self.options objectForKey:@"videoMaxDuration"] doubleValue];
-
+    
     if ([[self.options objectForKey:@"allowsEditing"] boolValue]) {
       self.picker.allowsEditing = true;
-
+      
       if (videoMaxDuration > 600.0) {
         self.reject(@"ERR_IMAGE_PICKER_MAX_DURATION", @"'videoMaxDuration' limits to 600 when 'allowsEditing=true'", nil);
         return;
       }
-
+      
       // iOS has system-enforced duration limit for edited videos
       if (videoMaxDuration == 0.0) {
         videoMaxDuration = 600.0;
       }
     }
-
+    
     self.picker.videoMaximumDuration = videoMaxDuration;
-
+    
     self.picker.modalPresentationStyle = UIModalPresentationOverCurrentContext;
     self.picker.delegate = self;
 
@@ -257,7 +257,7 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
   image = [self fixOrientation:image];
   if ([[self.options objectForKey:@"allowsEditing"] boolValue]) {
     CGRect rect = ((NSValue *) [info objectForKey:UIImagePickerControllerCropRect]).CGRectValue;
-
+      
     CGImageRef imageRef = CGImageCreateWithImageInRect(image.CGImage, rect);
     image = [UIImage imageWithCGImage:imageRef
                                 scale:image.scale
@@ -354,7 +354,7 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
         UMLogInfo(@"Could not fetch metadata for image %@", [imageURL absoluteString]);
         completionHandler();
       }
-
+      
       PHContentEditingInputRequestOptions *options = [[PHContentEditingInputRequestOptions alloc] init];
       options.networkAccessAllowed = YES; // Download from iCloud if needed
       UM_WEAKIFY(self)
@@ -426,7 +426,7 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
 
   NSURL *fileURL = [NSURL fileURLWithPath:path];
   NSString *filePath = [fileURL absoluteString];
-
+  
   // adding information about asset
   AVURLAsset *asset = [AVURLAsset URLAssetWithURL:fileURL options:nil];
   CGSize size = [[[asset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0] naturalSize];
@@ -438,7 +438,7 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
   }
 
   response[@"uri"] = filePath;
-
+  
   completionHandler();
 }
 
@@ -621,7 +621,7 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
         @10: AVAssetExportPresetHEVC3840x2160
     };
   }
-
+  
   return presetsMap[preset] ?: AVAssetExportPresetPassthrough;
 }
 
