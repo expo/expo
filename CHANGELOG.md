@@ -39,6 +39,8 @@ Package-specific changes not released in any SDK will be added here just before 
   -   Upgraded native Amplitude iOS library from `4.7.1` to `6.0.0`. This removes the IDFA code that was previously included with the Amplitude library. `disableIDFA` option for `Amplitude.setTrackingOptions` is removed. If you would like to collect the IDFA, you must be in the bare workflow. ([#9880](https://github.com/expo/expo/pull/9880) by [@bbarthec](https://github.com/bbarthec))
   -   Renamed all methods to include the 'Async' suffix:
   -   All methods now return a Promise. ([#9212](https://github.com/expo/expo/pull/9212/) by [@cruzach](https://github.com/cruzach))
+- **`expo-auth-session`**
+  -  `expo-random` is now a peer dependency rather than a dependency. ([#11280](https://github.com/expo/expo/pull/11280) by [@brentvatne](https://github.com/brentvatne))
 - **`expo-blur`**
   -   Explicitly pass down only the expected props on iOS. ([#10648](https://github.com/expo/expo/pull/10648) by [@cruzach](https://github.com/cruzach))
 - **`expo-branch`**
