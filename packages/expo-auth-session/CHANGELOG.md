@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Make expo-random a peer dependency. ([#11280](https://github.com/expo/expo/pull/11280) by [@brentvatne](https://github.com/brentvatne))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

@@ -17,7 +17,9 @@ import { InlineCode } from '~/components/base/code';
 
 ## Installation
 
-<InstallSection packageName="expo-auth-session" />
+> `expo-random` is a peer dependency and must be installed alongside `expo-auth-session`.
+
+<InstallSection packageName="expo-auth-session expo-random" />
 
 In **bare-workflow** you can use the [`uri-scheme` package][n-uri-scheme] to easily add, remove, list, and open your URIs.
 
