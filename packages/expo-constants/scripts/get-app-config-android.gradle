@@ -55,8 +55,6 @@ afterEvaluate {
       } else {
         commandLine(*nodeExecutableAndArgs, "$expoConstantsDir/scripts/getAppConfig.js", projectRoot, assetsDir)
       }
-
-      enabled config."bundleIn${targetName}" || targetName.toLowerCase().contains("release")
     }
 
     currentBundleTask.dependsOn("merge${targetName}Resources")
