@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Changed the visibility of Android's `InstallationId#getNonBackedUpUuidFile` method so it's easier to override by custom implementations. ([#11249](https://github.com/expo/expo/pull/11249) by [@sjchmiela](https://github.com/sjchmiela))
+
 ## 0.8.2 — 2020-11-30
 
 ### 🐛 Bug fixes
