@@ -547,7 +547,7 @@ A hook used for opinionated Google authentication that works across platforms.
 
 #### Returns
 
-- **request (_GoogleAuthRequest | null_)** -- An instance of [`GoogleAuthRequest`](#googleauthrequest) that can be used to prompt the user for authorization. This will be `null` until the auth request has finished loading.
+- **request (_GoogleAuthRequest | null_)** -- An instance of [`GoogleAuthRequest`](#useauthrequest) that can be used to prompt the user for authorization. This will be `null` until the auth request has finished loading.
 - **response (_AuthSessionResult | null_)** -- This is `null` until `promptAsync` has been invoked. Once fulfilled it will return information about the authorization.
 - **promptAsync (_function_)** -- When invoked, a web browser will open up and prompt the user for authentication. Accepts an [`AuthRequestPromptOptions`](#authrequestpromptoptions) object with options about how the prompt will execute. This **should not** be used to enable the Expo proxy service `auth.expo.io`, as the proxy will be automatically enabled based on the platform.
 
