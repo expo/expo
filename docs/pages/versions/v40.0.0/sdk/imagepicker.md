@@ -107,7 +107,7 @@ Asks the user to grant permissions for accessing user's photo. Alias for `Permis
 
 #### Returns
 
-A promise that resolves to an object of type [MediaLibraryPermissionResponse](#imagepickercamerapermissionresponse).
+A promise that resolves to an object of type [MediaLibraryPermissionResponse](#imagepickermedialibrarypermissionresponse).
 
 ### `ImagePicker.getCameraPermissionsAsync()`
 
