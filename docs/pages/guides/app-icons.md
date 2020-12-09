@@ -10,6 +10,16 @@ The most straightforward way to provide an icon for your app is to provide the [
 
 ## Icon Best Practices
 
+### Design
+
+Create an app icon and splash image with the [Figma template](https://www.figma.com/file/ddc0glVeILssZl0Dcn1lSS/App-Icon-and-Splash?node-id=0%3A1) and video below:
+
+<object width="100%" height="400">
+  <param name="movie" value="https://youtu.be/mVOFvLSiJ_s" />
+  <param name="wmode" value="transparent" />
+  <embed src="https://youtu.be/mVOFvLSiJ_s" type="application/x-shockwave-flash" wmode="transparent" width="100%" height="400" />
+</object>
+
 ### iOS
 
 - The icon you use for iOS should follow the [Apple Human Interface Guidelines](https://developer.apple.com/ios/human-interface-guidelines/icons-and-images/app-icon/) for iOS Icons.
