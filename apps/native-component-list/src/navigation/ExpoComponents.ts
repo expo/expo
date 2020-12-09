@@ -13,7 +13,7 @@ const BasicMaskScreen = optionalRequire(() => require('../screens/BasicMaskScree
 const BlurView = optionalRequire(() => require('../screens/BlurViewScreen'));
 const Button = optionalRequire(() => require('../screens/ButtonScreen'));
 const Camera = optionalRequire(() => require('../screens/Camera/CameraScreen'));
-const CheckBox = optionalRequire(() => require('../screens/CheckBoxScreen'));
+const Checkbox = optionalRequire(() => require('../screens/CheckboxScreen'));
 const DateTimePicker = optionalRequire(() => require('../screens/DateTimePickerScreen'));
 const DrawerLayoutAndroid = optionalRequire(() => require('../screens/DrawerLayoutAndroidScreen'));
 const FacebookAds = optionalRequire(() => require('../screens/FacebookAdsScreen'));
@@ -84,7 +84,7 @@ const optionalScreens: { [key: string]: React.ComponentType | null } = {
   Slider,
   Pressable,
   Picker,
-  CheckBox,
+  Checkbox,
   Button,
   ActivityIndicator,
   QRCode,
