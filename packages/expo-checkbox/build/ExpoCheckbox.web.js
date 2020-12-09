@@ -8,8 +8,8 @@
  * see: https://github.com/necolas/react-native-web
  */
 import React, { useCallback } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { createElement } from 'react-native-web';
+// @ts-ignore
+import { StyleSheet, View, unstable_createElement as createElement } from 'react-native';
 const ExpoCheckbox = props => {
     const { color, disabled, onChange, onValueChange, style, value, ...other } = props;
     const handleChange = useCallback((event) => {
