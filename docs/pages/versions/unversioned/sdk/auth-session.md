@@ -504,7 +504,7 @@ Access token type [Section 7.1](https://tools.ietf.org/html/rfc6749#section-7.1)
 
 ### `GoogleAuthRequestConfig`
 
-An extension of the [`AuthRequestConfig`][#authrequestconfig] for use with the built-in Google provider.
+An extension of the [`AuthRequestConfig`](#authrequestconfig) for use with the built-in Google provider.
 
 | Name                   | Type       | Description                                                                           |
 | ---------------------- | ---------- | ------------------------------------------------------------------------------------- |
