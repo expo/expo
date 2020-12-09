@@ -14,8 +14,7 @@ function logWarning() {
     packages.sort();
     instructions += packages.join(', ');
     instructions += `.\n\n`;
-    instructions += `If you are not using global.Expo or global.__expo directly in your source code, then they may used in one of your dependencies.\n`;
-    instructions += `Learn more: https://expo.fyi/deprecated-globals\n`;
+    instructions += `The global __expo and Expo objects will be removed in SDK 41. Learn more about how to fix this warning: https://expo.fyi/deprecated-globals\n`;
     console.warn(`Your project is accessing the following APIs from a deprecated global rather than a module import: ${instructions}`);
     packages = [];
 }
