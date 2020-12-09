@@ -11228,7 +11228,7 @@ CACHE_KEYS:
       EXImagePicker:
         :debug: 7a4b2c3379617c21f9ce6591215dd868
         :release: 7a4b2c3379617c21f9ce6591215dd868
-    CHECKSUM: 7f56dee377f276b330f4c691f2e68baadee4f4d6
+    CHECKSUM: 82fb929fb57b38de8d0a2d7fc3ca49726b9b8f78
     FILES:
       - "../../packages/expo-image-picker/ios/EXImagePicker/EXImagePicker.h"
       - "../../packages/expo-image-picker/ios/EXImagePicker/EXImagePicker.m"
@@ -11240,7 +11240,7 @@ CACHE_KEYS:
       - "../../packages/expo-image-picker/ios/EXImagePicker/Permissions/EXImagePickerMediaLibraryWriteOnlyPermissionRequester.m"
     PROJECT_NAME: EXImagePicker
     SPECS:
-      - EXImagePicker (9.2.0)
+      - EXImagePicker (9.2.1)
   EXKeepAwake:
     BUILD_SETTINGS_CHECKSUM:
       EXKeepAwake:

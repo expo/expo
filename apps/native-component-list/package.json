@@ -53,7 +53,7 @@
     "expo-haptics": "~8.4.0",
     "expo-image": "~1.0.0-alpha.0",
     "expo-image-manipulator": "~8.4.0",
-    "expo-image-picker": "~9.2.0",
+    "expo-image-picker": "~9.2.1",
     "expo-intent-launcher": "~8.4.0",
     "expo-keep-awake": "~8.4.0",
     "expo-linear-gradient": "~8.4.0",

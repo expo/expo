@@ -310,6 +310,7 @@ CACHE_KEYS:
         :release: c66fa0d2cbb00c3a5517658d5d28a97d
     CHECKSUM: d646c74a8db111dbe272fd0d48b988049eee2da0
     FILES:
+      - "../../../../packages/expo-dev-menu/assets/dev-menu-packager-host"
       - "../../../../packages/expo-dev-menu/assets/EXDevMenuApp.ios.js"
       - "../../../../packages/expo-dev-menu/assets/Ionicons.ttf"
       - "../../../../packages/expo-dev-menu/assets/MaterialCommunityIcons.ttf"
@@ -705,7 +706,7 @@ CACHE_KEYS:
       EXImagePicker:
         :debug: 7558ff23e83a17afb34ee12d8f9fbeaf
         :release: 7558ff23e83a17afb34ee12d8f9fbeaf
-    CHECKSUM: 7f56dee377f276b330f4c691f2e68baadee4f4d6
+    CHECKSUM: 82fb929fb57b38de8d0a2d7fc3ca49726b9b8f78
     FILES:
       - "../../../../packages/expo-image-picker/ios/EXImagePicker/EXImagePicker.h"
       - "../../../../packages/expo-image-picker/ios/EXImagePicker/EXImagePicker.m"
@@ -717,7 +718,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-image-picker/ios/EXImagePicker/Permissions/EXImagePickerMediaLibraryWriteOnlyPermissionRequester.m"
     PROJECT_NAME: EXImagePicker
     SPECS:
-      - EXImagePicker (9.2.0)
+      - EXImagePicker (9.2.1)
   EXInAppPurchases:
     BUILD_SETTINGS_CHECKSUM:
       EXInAppPurchases:
