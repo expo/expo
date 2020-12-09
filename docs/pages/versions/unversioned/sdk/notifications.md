@@ -465,10 +465,10 @@ export default function App() {
   React.useEffect(() => {
     if (
       lastNotificationResponse &&
-      lastNotificationResponse.notification.data.url &&
+      lastNotificationResponse.notification.request.content.data.url &&
       lastNotificationResponse.actionIdentifier === Notifications.DEFAULT_ACTION_IDENTIFIER
     ) {
-      Linking.openURL(lastNotificationResponse.notification.data.url);
+      Linking.openURL(lastNotificationResponse.notification.request.content.data.url);
     }
   }, [lastNotificationResponse]);
 
