@@ -41,10 +41,12 @@
     "expo-constants": "^9.3.3",
     "expo-crypto": "^8.4.0",
     "expo-linking": "~2.0.0",
-    "expo-random": "^10.0.0",
     "expo-web-browser": "^8.6.0",
     "invariant": "^2.2.4",
     "qs": "6.9.1"
+  },
+  "peerDependencies": {
+    "expo-random": "^10.0.0"
   },
   "devDependencies": {
     "@types/qs": "^6.5.3",
