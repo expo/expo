@@ -4,11 +4,15 @@
 
 ### 🛠 Breaking changes
 
-- Make expo-random a peer dependency. ([#11280](https://github.com/expo/expo/pull/11280) by [@brentvatne](https://github.com/brentvatne))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+## 3.0.0 — 2020-12-09
+
+### 🛠 Breaking changes
+
+- Make expo-random a peer dependency. ([#11280](https://github.com/expo/expo/pull/11280) by [@brentvatne](https://github.com/brentvatne))
 
 ## 2.0.1 — 2020-11-17
 
