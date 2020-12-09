@@ -6,12 +6,15 @@
 // the following RFC has been implemented:
 // https://github.com/react-native-community/discussions-and-proposals/issues/120
 
+import deprecatedGlobal from './deprecatedGlobal';
+
 declare var module: any;
 
 Object.defineProperties(module.exports, {
   Asset: {
     enumerable: true,
     get() {
+      deprecatedGlobal('Asset (expo-asset)');
       return require('expo-asset').Asset;
     },
   },
@@ -19,6 +22,7 @@ Object.defineProperties(module.exports, {
   Constants: {
     enumerable: true,
     get() {
+      deprecatedGlobal('Constants (expo-constants)');
       return require('expo-constants').default;
     },
   },
@@ -26,6 +30,7 @@ Object.defineProperties(module.exports, {
   Font: {
     enumerable: true,
     get() {
+      deprecatedGlobal('Font (expo-font)');
       return require('expo-font');
     },
   },
@@ -33,6 +38,7 @@ Object.defineProperties(module.exports, {
   Icon: {
     enumerable: true,
     get() {
+      deprecatedGlobal('Icon (@expo/vector-icons)');
       return require('@expo/vector-icons');
     },
   },
@@ -40,6 +46,7 @@ Object.defineProperties(module.exports, {
   LinearGradient: {
     enumerable: true,
     get() {
+      deprecatedGlobal('LinearGradient (expo-linear-gradient)');
       return require('expo-linear-gradient').LinearGradient;
     },
   },
@@ -47,6 +54,7 @@ Object.defineProperties(module.exports, {
   SQLite: {
     enumerable: true,
     get() {
+      deprecatedGlobal('SQLite (expo-sqlite)');
       return require('expo-sqlite').SQLite;
     },
   },
