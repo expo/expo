@@ -66,6 +66,8 @@ public class InstallationId {
       } catch (IOException e) {
         Log.e(TAG, "Error while migrating UUID from legacy storage. " + e);
       }
+
+      return mUuid;
     }
 
     // 3. Migrate from legacy file
