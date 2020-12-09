@@ -85,19 +85,26 @@ exports[`Checkbox renders content matching snapshot 1`] = `
       </View>
       <input
         checked={true}
+        data-focusable={true}
         onChange={[Function]}
         style={
           Object {
-            "bottom": 0,
+            "bottom": "0px",
             "cursor": "inherit",
             "height": "100%",
-            "left": 0,
-            "margin": 0,
+            "left": "0px",
+            "marginBottom": "0px",
+            "marginLeft": "0px",
+            "marginRight": "0px",
+            "marginTop": "0px",
             "opacity": 0,
-            "padding": 0,
+            "paddingBottom": "0px",
+            "paddingLeft": "0px",
+            "paddingRight": "0px",
+            "paddingTop": "0px",
             "position": "absolute",
-            "right": 0,
-            "top": 0,
+            "right": "0px",
+            "top": "0px",
             "width": "100%",
           }
         }
