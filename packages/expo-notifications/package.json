@@ -39,7 +39,7 @@
   "unimodulePeerDependencies": {
     "@unimodules/core": "*",
     "expo-application": "^2.1.0",
-    "expo-constants": "<10.0.0",
+    "expo-constants": ">=10.0.0 <11.0.0",
     "unimodules-permissions-interface": "*"
   },
   "dependencies": {
