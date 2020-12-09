@@ -8,8 +8,9 @@
  * see: https://github.com/necolas/react-native-web
  */
 
-import React, { createElement, useCallback } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useCallback } from 'react';
+// @ts-ignore
+import { StyleSheet, View, unstable_createElement as createElement } from 'react-native';
 
 import { CheckboxComponent, CheckboxEvent } from './Checkbox.types';
 
