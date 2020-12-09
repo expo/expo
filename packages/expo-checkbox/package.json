@@ -1,7 +1,7 @@
 {
   "name": "expo-checkbox",
   "version": "1.0.1",
-  "description": "ExpoCheckbox standalone module",
+  "description": "Checkbox for Android and web",
   "main": "build/Checkbox.js",
   "types": "build/Checkbox.d.ts",
   "scripts": {
