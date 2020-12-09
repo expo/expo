@@ -8,6 +8,16 @@ A splash screen, also known as a launch screen, is the first screen that a user 
 
 The default splash screen is a blank white screen. This might work for you, if it does, you're in luck! If not, you're also in luck because it's quite easy to customize using `app.json` and the `splash` key. Let's walk through it.
 
+### Video walkthrough
+
+Create an app icon and splash image with the [Figma template](https://www.figma.com/file/ddc0glVeILssZl0Dcn1lSS/App-Icon-and-Splash?node-id=0%3A1) and video below:
+
+<object width="100%" height="400">
+   <param name="movie" value="https://youtu.be/mVOFvLSiJ_s" />
+   <param name="wmode" value="transparent" />
+   <embed src="https://youtu.be/mVOFvLSiJ_s" type="application/x-shockwave-flash" wmode="transparent" width="100%" height="400" />
+ </object>
+
 ### Make a splash image
 
 The [iOS Human Interface Guidelines](https://developer.apple.com/ios/human-interface-guidelines/icons-and-images/launch-screen/) list the static launch image sizes. I'll go with `1242` pixels wide and `2436` pixels tall -- this is the width of the iPhone 8 Plus (the widest iPhone) and the height of the iPhone X (the tallest iPhone). Expo will resize the image for you depending on the size of the device, and we can specify the strategy used to resize the image with `splash.resizeMode`.
