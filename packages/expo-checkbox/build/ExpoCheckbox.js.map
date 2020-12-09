@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoCheckbox.js","sourceRoot":"","sources":["../src/ExpoCheckbox.tsx"],"names":[],"mappings":"AAAA,OAAO,EAAE,OAAO,EAAE,MAAM,uBAAuB,CAAC","sourcesContent":["export { default } from './CheckboxUnavailable';\n"]}
