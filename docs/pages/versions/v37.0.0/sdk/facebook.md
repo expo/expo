@@ -52,7 +52,7 @@ Then follow these steps based on the platforms you're targetting. This will need
 
 #### Android standalone app
 
-- [Build your standalone app](../../../distribution/building-standalone-apps.md#building-standalone-apps) for Android.
+- [Build your standalone app](../../../distribution/building-standalone-apps.md) for Android.
 - Run `expo fetch:android:hashes`.
 - Copy `Facebook Key Hash` and paste it as a key hash in your Facebook developer page pictured below.
 

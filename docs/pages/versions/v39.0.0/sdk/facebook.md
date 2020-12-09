@@ -52,7 +52,7 @@ The Android Play Store Expo client will use the Facebook App ID that you provide
 
 #### Android standalone app
 
-- [Build your standalone app](../../../distribution/building-standalone-apps.md#building-standalone-apps) for Android.
+- [Build your standalone app](../../../distribution/building-standalone-apps.md) for Android.
 - Run `expo fetch:android:hashes`.
 - Copy `Facebook Key Hash` and paste it as a key hash in your Facebook developer page pictured below.
 
