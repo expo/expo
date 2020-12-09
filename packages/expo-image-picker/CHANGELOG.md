@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 9.2.1 — 2020-12-09
+
+### 🐛 Bug fixes
+
 - Fix typo in media library permission methods. ([#11292](https://github.com/expo/expo/pull/11292) by [@bycedric](https://github.com/bycedric))
 
 ## 9.2.0 — 2020-11-17

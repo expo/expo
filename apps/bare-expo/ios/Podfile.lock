@@ -107,7 +107,7 @@ PODS:
     - UMCore
     - UMFileSystemInterface
     - UMImageLoaderInterface
-  - EXImagePicker (9.2.0):
+  - EXImagePicker (9.2.1):
     - UMCore
     - UMFileSystemInterface
     - UMPermissionsInterface
@@ -1083,7 +1083,7 @@ SPEC CHECKSUMS:
   EXHaptics: 41c1de6e5baea7559b1a3c75b0ed685fc09ef7d4
   EXImageLoader: a7288feb3c46852e980b5f157be7874de79881f6
   EXImageManipulator: 22da66c56a8d9f59b93e82bf449755037ecf3be7
-  EXImagePicker: 7f56dee377f276b330f4c691f2e68baadee4f4d6
+  EXImagePicker: 82fb929fb57b38de8d0a2d7fc3ca49726b9b8f78
   EXInAppPurchases: c647953e5e1dad71bbda2e3bb92966dac440ede4
   EXKeepAwake: 380cd8ee73fba1977e4e55607ff891f8f314d211
   EXLinearGradient: 4d916d62bd37a13e32a69d44a2e307759080dcd4
