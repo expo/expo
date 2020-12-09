@@ -1,1 +1,1 @@
-declare var module: any;
+export {};

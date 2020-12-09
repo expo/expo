@@ -1,11 +1,9 @@
-let messages: string[] = [];
 let packages: string[] = [];
 let namedImports: string[] = [];
 let extraInstructions: string[] = [];
 
-export default function deprecatedGlobal(message, namedImport, packageName, extraInstruction?) {
+export default function deprecatedGlobal(namedImport, packageName, extraInstruction?) {
   if (__DEV__) {
-    messages.push(message);
     packages.push(packageName);
     namedImports.push(namedImport);
     if (extraInstruction) {
@@ -16,13 +14,11 @@ export default function deprecatedGlobal(message, namedImport, packageName, extr
 }
 
 function logWarning() {
-  if (!messages.length) {
+  if (!packages.length) {
     return;
   }
-  let instructions = '';
 
-  messages = Array.from(new Set(messages));
-  messages.sort();
+  let instructions = '';
 
   packages = Array.from(new Set(packages));
   packages.sort();
@@ -35,11 +31,8 @@ function logWarning() {
 
   instructions += namedImports.join(', ');
   instructions += `.\n\n`;
-  instructions += `If you are not using the __expo or Expo globals in your
-  project directly, then they may used from one of your dependencies. Search
-  your node_modules to find which library is using these dependencies and
-  either upgrade the library, open an issue, or use patch-package to work
-  around this.\n\n`;
+  instructions += `If you are not using global.Expo or global.__expo directly in your source code, then they may used in one of your dependencies.\n`;
+  instructions += `Learn more: https://expo.fyi/deprecated-globals`;
 
   if (extraInstructions.length) {
     instructions += `Additional instructions:\n\n`;
@@ -49,10 +42,9 @@ function logWarning() {
   }
 
   instructions += '\n';
-  console.log(
-    `The following APIs that you are using will no longer be exposed globally by the "expo" package in SDK 41: ${instructions}`
+  console.warn(
+    `Your project is accessing the following APIs from a deprecated global rather than a module import: ${instructions}`
   );
-  messages = [];
   packages = [];
   namedImports = [];
 }
