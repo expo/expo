@@ -14,7 +14,7 @@ Object.defineProperties(module.exports, {
   Asset: {
     enumerable: true,
     get() {
-      depreactedGlobal('Asset', 'expo-asset');
+      depreactedGlobal('Asset (expo-asset)');
       return require('expo-asset').Asset;
     },
   },
@@ -22,7 +22,7 @@ Object.defineProperties(module.exports, {
   Constants: {
     enumerable: true,
     get() {
-      depreactedGlobal('Constants', 'expo-constants');
+      depreactedGlobal('Constants (expo-constants)');
       return require('expo-constants').default;
     },
   },
@@ -30,7 +30,7 @@ Object.defineProperties(module.exports, {
   Font: {
     enumerable: true,
     get() {
-      depreactedGlobal('Font', 'expo-font');
+      depreactedGlobal('Font (expo-font)');
       return require('expo-font');
     },
   },
@@ -38,7 +38,7 @@ Object.defineProperties(module.exports, {
   Icon: {
     enumerable: true,
     get() {
-      depreactedGlobal('Icon', '@expo/vector-icons');
+      depreactedGlobal('Icon (@expo/vector-icons)');
       return require('@expo/vector-icons');
     },
   },
@@ -46,7 +46,7 @@ Object.defineProperties(module.exports, {
   LinearGradient: {
     enumerable: true,
     get() {
-      depreactedGlobal('LinearGradient', 'expo-linear-gradient');
+      depreactedGlobal('LinearGradient (expo-linear-gradient)');
       return require('expo-linear-gradient').LinearGradient;
     },
   },
@@ -54,7 +54,7 @@ Object.defineProperties(module.exports, {
   SQLite: {
     enumerable: true,
     get() {
-      depreactedGlobal('SQLite', 'expo-sqlite');
+      depreactedGlobal('SQLite (expo-sqlite)');
       return require('expo-sqlite').SQLite;
     },
   },
