@@ -30,7 +30,7 @@ export async function getCameraRollPermissionsAsync() {
 }
 export async function getMediaLibraryPermissionsAsync(writeOnly = false) {
     // due to a typo in iOS, we need to check on the typo too
-    // todo: remove this workaround when a new iOS client is submitted
+    // todo: remove this workaround for SDK 41
     const imagePickerMethod = typeof ExponentImagePicker.getMediaLibaryPermissionsAsync === 'function'
         ? ExponentImagePicker.getMediaLibaryPermissionsAsync
         : ExponentImagePicker.getMediaLibraryPermissionsAsync;
@@ -48,7 +48,7 @@ export async function requestCameraRollPermissionsAsync() {
 }
 export async function requestMediaLibraryPermissionsAsync(writeOnly = false) {
     // due to a typo in iOS, we need to check on the typo too
-    // todo: remove this workaround when a new iOS client is submitted
+    // todo: remove this workaround for SDK 41
     const imagePickerMethod = typeof ExponentImagePicker.requestMediaLibaryPermissionsAsync === 'function'
         ? ExponentImagePicker.requestMediaLibaryPermissionsAsync
         : ExponentImagePicker.requestMediaLibraryPermissionsAsync;
