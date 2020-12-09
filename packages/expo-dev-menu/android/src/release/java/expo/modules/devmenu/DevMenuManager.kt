@@ -56,4 +56,6 @@ object DevMenuManager : DevMenuManagerInterface {
   override fun getMenuHost(): ReactNativeHost {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
+
+  override fun synchronizeDelegate() = Unit
 }

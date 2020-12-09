@@ -76,4 +76,9 @@ interface DevMenuManagerInterface {
    * @return the dev menu application host.
    */
   fun getMenuHost(): ReactNativeHost
+
+  /**
+   * Synchronizes [ReactInstanceManager] from delegate with one saved in [DevMenuManger].
+   */
+  fun synchronizeDelegate()
 }
