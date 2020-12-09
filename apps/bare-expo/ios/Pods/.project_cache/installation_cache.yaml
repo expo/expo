@@ -250,7 +250,7 @@ CACHE_KEYS:
       EXConstants:
         :debug: 9d9d8728b1b0afc838ae324607eba432
         :release: 9d9d8728b1b0afc838ae324607eba432
-    CHECKSUM: 3323ec371a188dfaf75ec672ac740f2032e99cb6
+    CHECKSUM: f3a9780ed1732b6772f8324d958733d56d0e5909
     FILES:
       - "../../../../packages/expo-constants/ios/EXConstants/EXConstants.h"
       - "../../../../packages/expo-constants/ios/EXConstants/EXConstants.m"
@@ -260,7 +260,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-constants/ios/EXConstants/EXConstantsService.m"
     PROJECT_NAME: EXConstants
     SPECS:
-      - EXConstants (9.3.3)
+      - EXConstants (9.3.4)
   EXContacts:
     BUILD_SETTINGS_CHECKSUM:
       EXContacts:

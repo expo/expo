@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 9.3.4 — 2020-12-09
+
+### 🐛 Bug fixes
+
 - Fixed an issue where `Constants.manifest` was still undefined in debug Android builds in the bare workflow
 
 ## 9.3.3 — 2020-12-02
