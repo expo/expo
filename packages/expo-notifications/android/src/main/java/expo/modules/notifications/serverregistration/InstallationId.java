@@ -63,6 +63,8 @@ public class InstallationId {
     if (mUuid != null) {
       try {
         saveUUID(mUuid);
+        // We only remove the value from old storage once it's set and saved in the new storage.
+        mLegacySharedPreferences.edit().remove(LEGACY_PREFERENCES_UUID_KEY).apply();
       } catch (IOException e) {
         Log.e(TAG, "Error while migrating UUID from legacy storage. " + e);
       }

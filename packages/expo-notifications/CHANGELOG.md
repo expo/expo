@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- When migrating installation identifier (used internally to fetch Expo push token) `expo-notifications` will now remove existing `SharedPreferences` entry, if the migrated identifier comes from there. This may cause issues in bare workflow projects if `expo-constants` is installed in version lower than `10.0.0`. **Please upgrade `expo-constants` in your project to at least `10.0.0` when installing new versions of `expo-notifications`. If you do not upgrade `expo-constants`, its `.installationId` may change.** ([#11283](https://github.com/expo/expo/pull/11283) by [@sjchmiela](https://github.com/sjchmiela))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
