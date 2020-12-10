@@ -178,16 +178,17 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		1620233501A7EAEDD61ECF7ADACD3646 /* Release */ = {
+		32065B1F6BD5E1302A0495DD3B0E926E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6B7F4307938A6E6BFE210220A0C99ED3 /* UMAppLoader.release.xcconfig */;
+			baseConfigurationReference = C494A2F29AE265D897DB385D026CD578 /* UMAppLoader.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				GCC_PREFIX_HEADER = "Target Support Files/UMAppLoader/UMAppLoader-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -199,11 +200,10 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
-		380BADA4AB3D5C5A1736C292AF529547 /* Release */ = {
+		83E0F1A24DF7874BF81E571C14278E3A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -253,7 +253,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -265,7 +265,33 @@
 			};
 			name = Release;
 		};
-		694388F1EDD5D8C495FCAE8C6AD615D0 /* Debug */ = {
+		E7D0A3D554C68C47380746FD1F8FEB99 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6B7F4307938A6E6BFE210220A0C99ED3 /* UMAppLoader.release.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/UMAppLoader/UMAppLoader-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = UMAppLoader;
+				PRODUCT_NAME = UMAppLoader;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		E8FC422EFB3A6E16F18815E01F668D84 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -318,7 +344,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -331,38 +357,14 @@
 			};
 			name = Debug;
 		};
-		D7FFA88DB4B7801A26B4E74DC9874128 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = C494A2F29AE265D897DB385D026CD578 /* UMAppLoader.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/UMAppLoader/UMAppLoader-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = UMAppLoader;
-				PRODUCT_NAME = UMAppLoader;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		756516B5799CECBA620480DB4F897535 /* Build configuration list for PBXProject "UMAppLoader" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				694388F1EDD5D8C495FCAE8C6AD615D0 /* Debug */,
-				380BADA4AB3D5C5A1736C292AF529547 /* Release */,
+				E8FC422EFB3A6E16F18815E01F668D84 /* Debug */,
+				83E0F1A24DF7874BF81E571C14278E3A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -370,8 +372,8 @@
 		ED068C3EB6601017BB9D9F7C2CE8BADE /* Build configuration list for PBXNativeTarget "UMAppLoader" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D7FFA88DB4B7801A26B4E74DC9874128 /* Debug */,
-				1620233501A7EAEDD61ECF7ADACD3646 /* Release */,
+				32065B1F6BD5E1302A0495DD3B0E926E /* Debug */,
+				E7D0A3D554C68C47380746FD1F8FEB99 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -9,16 +9,28 @@
 /* Begin PBXAggregateTarget section */
 		971E60E1AF9163E7E08105622FC91C16 /* UMBarCodeScannerInterface */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = 7C205E32A98105EE3C993844C5BC9040 /* Build configuration list for PBXAggregateTarget "UMBarCodeScannerInterface" */;
+			buildConfigurationList = 1312B3E8C1B15C3796DD24C304C2382E /* Build configuration list for PBXAggregateTarget "UMBarCodeScannerInterface" */;
 			buildPhases = (
 			);
 			dependencies = (
+				CA8ABB98DE8AFAAB20C5D2D571E83516 /* PBXTargetDependency */,
 			);
 			name = UMBarCodeScannerInterface;
 		};
 /* End PBXAggregateTarget section */
 
+/* Begin PBXContainerItemProxy section */
+		DE6AEC2E384670ECF3F86ABFD252A68F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08F7A21521840C04ED96FDB3445F4D1C /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		08F7A21521840C04ED96FDB3445F4D1C /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
 		6FCFADC92F9DE814D6CA6D7BF5EC40CC /* UMBarCodeScannerInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMBarCodeScannerInterface.h; path = UMBarCodeScannerInterface/UMBarCodeScannerInterface.h; sourceTree = "<group>"; };
 		A1FB36D0E0E5F0D22954993B4EC2F7B2 /* UMBarCodeScannerProviderInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMBarCodeScannerProviderInterface.h; path = UMBarCodeScannerInterface/UMBarCodeScannerProviderInterface.h; sourceTree = "<group>"; };
 		CE5407EC197491BB8F834574E81498FB /* UMBarCodeScannerInterface.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = UMBarCodeScannerInterface.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
@@ -57,10 +69,19 @@
 		91A3FCDCCD14362BE8DD15A711990AA3 = {
 			isa = PBXGroup;
 			children = (
+				94D8AD53F712FBC77A1E99CC24C1AB03 /* Dependencies */,
 				5E2465FD55AD16E0C1392E41936C88AA /* Frameworks */,
 				C38048ED365C20450209F925BE0C8F4D /* Products */,
 				05C21D8EC3F20BC555CC0F8DE51AA2C0 /* UMBarCodeScannerInterface */,
 			);
+			sourceTree = "<group>";
+		};
+		94D8AD53F712FBC77A1E99CC24C1AB03 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				08F7A21521840C04ED96FDB3445F4D1C /* UMCore */,
+			);
+			name = Dependencies;
 			sourceTree = "<group>";
 		};
 		C38048ED365C20450209F925BE0C8F4D /* Products */ = {
@@ -100,6 +121,11 @@
 			mainGroup = 91A3FCDCCD14362BE8DD15A711990AA3;
 			productRefGroup = C38048ED365C20450209F925BE0C8F4D /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProjectRef = 08F7A21521840C04ED96FDB3445F4D1C /* UMCore */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				971E60E1AF9163E7E08105622FC91C16 /* UMBarCodeScannerInterface */,
@@ -107,70 +133,16 @@
 		};
 /* End PBXProject section */
 
-/* Begin XCBuildConfiguration section */
-		494B8E30C62C6F9999F011FAD6DDBB86 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"POD_CONFIGURATION_RELEASE=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.0;
-				SYMROOT = "${SRCROOT}/../build";
-			};
-			name = Release;
+/* Begin PBXTargetDependency section */
+		CA8ABB98DE8AFAAB20C5D2D571E83516 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = DE6AEC2E384670ECF3F86ABFD252A68F /* PBXContainerItemProxy */;
 		};
-		AEFAD990B6AFCCAF99986F939556CC3E /* Debug */ = {
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		04108D38582B3C3F300029340880C78A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -223,7 +195,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -236,28 +208,92 @@
 			};
 			name = Debug;
 		};
-		B27B860BFDC0E3607F8E43C58B959AF3 /* Debug */ = {
+		4019D94F59771B069006264F536252B3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E4DA3E63937ED34122F9C6C2177F016D /* UMBarCodeScannerInterface.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		C17D2ABDA91891F080D4696359B44DFD /* Release */ = {
+		42C9E2BE003B13F08F753925F8056378 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		8184C4A47B38C78BE0BB7277BDAFB649 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = FFD96E9F2A5A53774BD9A67E9CB0BE8F /* UMBarCodeScannerInterface.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -268,11 +304,11 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		7C205E32A98105EE3C993844C5BC9040 /* Build configuration list for PBXAggregateTarget "UMBarCodeScannerInterface" */ = {
+		1312B3E8C1B15C3796DD24C304C2382E /* Build configuration list for PBXAggregateTarget "UMBarCodeScannerInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B27B860BFDC0E3607F8E43C58B959AF3 /* Debug */,
-				C17D2ABDA91891F080D4696359B44DFD /* Release */,
+				4019D94F59771B069006264F536252B3 /* Debug */,
+				8184C4A47B38C78BE0BB7277BDAFB649 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -280,8 +316,8 @@
 		CE683490D8C5BE9B180C17619A116A36 /* Build configuration list for PBXProject "UMBarCodeScannerInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				AEFAD990B6AFCCAF99986F939556CC3E /* Debug */,
-				494B8E30C62C6F9999F011FAD6DDBB86 /* Release */,
+				04108D38582B3C3F300029340880C78A /* Debug */,
+				42C9E2BE003B13F08F753925F8056378 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

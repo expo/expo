@@ -221,7 +221,32 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		4DBBCAAC7BE7E5A310DDC8F452F66D61 /* Release */ = {
+		224221EF34C60BA3F3203C5AD19B1C80 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 49A10F1EF6330BA5CC3967FD29837F84 /* EXBrightness.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXBrightness/EXBrightness-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXBrightness;
+				PRODUCT_NAME = EXBrightness;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		6E860CE4EE934A7A930018C16AC29AA4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -271,7 +296,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -283,31 +308,7 @@
 			};
 			name = Release;
 		};
-		5572678667C6FEEFC8DCDA540BE08A8F /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 49A10F1EF6330BA5CC3967FD29837F84 /* EXBrightness.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXBrightness/EXBrightness-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXBrightness;
-				PRODUCT_NAME = EXBrightness;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		915360523177EE97BC8F6632C879B9AE /* Debug */ = {
+		DBFDB6096BD9E9E00E4B804863031EC4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -360,7 +361,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -373,16 +374,17 @@
 			};
 			name = Debug;
 		};
-		9FCB56B3DC1DA2A482E3B6613889048A /* Release */ = {
+		F5731EEF5E8738D49DF66C488E05767A /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 92921C49C4B4F36EAC804FCE81A5DA72 /* EXBrightness.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				GCC_PREFIX_HEADER = "Target Support Files/EXBrightness/EXBrightness-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -404,8 +406,8 @@
 		E35104858FA546B379A9E03C7BB16F67 /* Build configuration list for PBXNativeTarget "EXBrightness" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				5572678667C6FEEFC8DCDA540BE08A8F /* Debug */,
-				9FCB56B3DC1DA2A482E3B6613889048A /* Release */,
+				224221EF34C60BA3F3203C5AD19B1C80 /* Debug */,
+				F5731EEF5E8738D49DF66C488E05767A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -413,8 +415,8 @@
 		F981C7D6F4CE6F67E0221A667D303547 /* Build configuration list for PBXProject "EXBrightness" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				915360523177EE97BC8F6632C879B9AE /* Debug */,
-				4DBBCAAC7BE7E5A310DDC8F452F66D61 /* Release */,
+				DBFDB6096BD9E9E00E4B804863031EC4 /* Debug */,
+				6E860CE4EE934A7A930018C16AC29AA4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

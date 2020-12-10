@@ -9,23 +9,43 @@
 /* Begin PBXAggregateTarget section */
 		86372E925D4E10D72894E239CC18BCD9 /* UMCameraInterface */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = A0D4BF1EC36A7EB9632B445111810A55 /* Build configuration list for PBXAggregateTarget "UMCameraInterface" */;
+			buildConfigurationList = DF7FD37847E72ED7DD762970B5C19EDB /* Build configuration list for PBXAggregateTarget "UMCameraInterface" */;
 			buildPhases = (
 			);
 			dependencies = (
+				F6A04149065B3B46D55EB8F9E38CFE96 /* PBXTargetDependency */,
 			);
 			name = UMCameraInterface;
 		};
 /* End PBXAggregateTarget section */
+
+/* Begin PBXContainerItemProxy section */
+		E743CF923212E7244112C3900ADBC9B5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F450A8205F4D3F4F57983B0F75FDF265 /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		01CDD4FFEED879216E21C6ED74D4921E /* UMCameraInterface.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = UMCameraInterface.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		AE1C16F2DA18346DCFD47D2448B2B948 /* UMCameraInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMCameraInterface.h; path = UMCameraInterface/UMCameraInterface.h; sourceTree = "<group>"; };
 		D355EFC1D9D963B553118AB4783694BC /* UMCameraInterface.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = UMCameraInterface.debug.xcconfig; sourceTree = "<group>"; };
 		DA514CBBF11CF946E0260451D777B1DE /* UMCameraInterface.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = UMCameraInterface.release.xcconfig; sourceTree = "<group>"; };
+		F450A8205F4D3F4F57983B0F75FDF265 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		1D961CB8794A340B6AEA07CE2208C27C /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				F450A8205F4D3F4F57983B0F75FDF265 /* UMCore */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
 		2412B8B6375E1043322569ED3DAFF1A5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -36,6 +56,7 @@
 		3D54B5DB3A82D46B72E1E9272441411B = {
 			isa = PBXGroup;
 			children = (
+				1D961CB8794A340B6AEA07CE2208C27C /* Dependencies */,
 				2412B8B6375E1043322569ED3DAFF1A5 /* Frameworks */,
 				940AFEEAF2F312D6EE2BF115BF4D7064 /* Products */,
 				E0BFC87C3AD33826361AF45362F24A8D /* UMCameraInterface */,
@@ -98,6 +119,11 @@
 			mainGroup = 3D54B5DB3A82D46B72E1E9272441411B;
 			productRefGroup = 940AFEEAF2F312D6EE2BF115BF4D7064 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProjectRef = F450A8205F4D3F4F57983B0F75FDF265 /* UMCore */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				86372E925D4E10D72894E239CC18BCD9 /* UMCameraInterface */,
@@ -105,8 +131,47 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXTargetDependency section */
+		F6A04149065B3B46D55EB8F9E38CFE96 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = E743CF923212E7244112C3900ADBC9B5 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
-		39D3F37044F3B28751FDEFB70717396F /* Release */ = {
+		29F590734B93F91DB20C0C6CCFC5C25B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D355EFC1D9D963B553118AB4783694BC /* UMCameraInterface.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		53E8E4CD8745F8ED5950B38418C08B94 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = DA514CBBF11CF946E0260451D777B1DE /* UMCameraInterface.release.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		66CF4773FBACD7A60F36D5B57F09D4E1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -156,7 +221,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -168,22 +233,7 @@
 			};
 			name = Release;
 		};
-		BEC8EF76B94F7FCE1886B2343593C746 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = DA514CBBF11CF946E0260451D777B1DE /* UMCameraInterface.release.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		E7285C65C6D56FB5C6348A03A345F8FF /* Debug */ = {
+		891E4959ABA1DF94ADDA279C7976D2A8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -236,7 +286,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -249,37 +299,23 @@
 			};
 			name = Debug;
 		};
-		ED6B8F6F92A3202E79D37362ED8F0C9D /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = D355EFC1D9D963B553118AB4783694BC /* UMCameraInterface.debug.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		8DBF6E740A062E8F3FD8A6133956258B /* Build configuration list for PBXProject "UMCameraInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E7285C65C6D56FB5C6348A03A345F8FF /* Debug */,
-				39D3F37044F3B28751FDEFB70717396F /* Release */,
+				891E4959ABA1DF94ADDA279C7976D2A8 /* Debug */,
+				66CF4773FBACD7A60F36D5B57F09D4E1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A0D4BF1EC36A7EB9632B445111810A55 /* Build configuration list for PBXAggregateTarget "UMCameraInterface" */ = {
+		DF7FD37847E72ED7DD762970B5C19EDB /* Build configuration list for PBXAggregateTarget "UMCameraInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				ED6B8F6F92A3202E79D37362ED8F0C9D /* Debug */,
-				BEC8EF76B94F7FCE1886B2343593C746 /* Release */,
+				29F590734B93F91DB20C0C6CCFC5C25B /* Debug */,
+				53E8E4CD8745F8ED5950B38418C08B94 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

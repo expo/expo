@@ -27,7 +27,7 @@
 			remoteGlobalIDString = 46F82E84687582F366B907E2BD5F1EA2;
 			remoteInfo = UMConstantsInterface;
 		};
-		C33F9A31978B88943120411754A8496D /* PBXContainerItemProxy */ = {
+		F71E380FFB52F6173454F2043E1C15E8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = CB33E2D57F3209B959FEE906EB48EF57 /* Amplitude.xcodeproj */;
 			proxyType = 1;
@@ -153,7 +153,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				00F5872AECF6F37A4514BD369C1633B4 /* PBXTargetDependency */,
+				BB070529C107258FF57E76BEE67BC829 /* PBXTargetDependency */,
 				4D2B9B06F1CDE4762963D09243C83E12 /* PBXTargetDependency */,
 				9C21B9F1F18442C81CA9E2B6DD5457CF /* PBXTargetDependency */,
 			);
@@ -213,11 +213,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		00F5872AECF6F37A4514BD369C1633B4 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Amplitude;
-			targetProxy = C33F9A31978B88943120411754A8496D /* PBXContainerItemProxy */;
-		};
 		4D2B9B06F1CDE4762963D09243C83E12 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMConstantsInterface;
@@ -228,34 +223,15 @@
 			name = UMCore;
 			targetProxy = AD5DC0C48B8E773ACE99376708ACEF65 /* PBXContainerItemProxy */;
 		};
+		BB070529C107258FF57E76BEE67BC829 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Amplitude;
+			targetProxy = F71E380FFB52F6173454F2043E1C15E8 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		4BDD60313197BB4976EBD323BB0C81E5 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6A608CF24870EE595A9DD0571BE23D0D /* EXAmplitude.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXAmplitude/EXAmplitude-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXAmplitude;
-				PRODUCT_NAME = EXAmplitude;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		60D8D5D2D97D3695AA08396CCD993387 /* Release */ = {
+		0EF2CDC847C889266CBD661649FA124C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -305,7 +281,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -317,16 +293,42 @@
 			};
 			name = Release;
 		};
-		85AD3C13FDA43C33F585BB00B35446F5 /* Release */ = {
+		6DED6C63A1B42C1B85CF71511E340F91 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 583C214BF27F76F76C20575176670555 /* EXAmplitude.release.xcconfig */;
+			baseConfigurationReference = 6A608CF24870EE595A9DD0571BE23D0D /* EXAmplitude.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				GCC_PREFIX_HEADER = "Target Support Files/EXAmplitude/EXAmplitude-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXAmplitude;
+				PRODUCT_NAME = EXAmplitude;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		8EC66E4ADBAFFB8510C6955986E299F0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 583C214BF27F76F76C20575176670555 /* EXAmplitude.release.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXAmplitude/EXAmplitude-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -342,7 +344,7 @@
 			};
 			name = Release;
 		};
-		9F7FCB46D70455C72D8801988D6C9F64 /* Debug */ = {
+		B35CFBA2D12B8953A231D9E003CE39CB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -395,7 +397,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -414,8 +416,8 @@
 		7E5D40016F8B9874BC6FA6EDB675C8CF /* Build configuration list for PBXNativeTarget "EXAmplitude" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				4BDD60313197BB4976EBD323BB0C81E5 /* Debug */,
-				85AD3C13FDA43C33F585BB00B35446F5 /* Release */,
+				6DED6C63A1B42C1B85CF71511E340F91 /* Debug */,
+				8EC66E4ADBAFFB8510C6955986E299F0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -423,8 +425,8 @@
 		E22E019B6ECC0B93280CE180A039F586 /* Build configuration list for PBXProject "EXAmplitude" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				9F7FCB46D70455C72D8801988D6C9F64 /* Debug */,
-				60D8D5D2D97D3695AA08396CCD993387 /* Release */,
+				B35CFBA2D12B8953A231D9E003CE39CB /* Debug */,
+				0EF2CDC847C889266CBD661649FA124C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -44,7 +44,7 @@
 			remoteGlobalIDString = 7F4112A673122B6D50845D9BC1D9AFDB;
 			remoteInfo = UMFontInterface;
 		};
-		ED00F79A614D19AB762FF49BC0DF2F85 /* PBXContainerItemProxy */ = {
+		52ACA73DFD627B35D174DEB812066480 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EF3636A3E5FBF14071775ED8EBE6DB1A /* React-Core.xcodeproj */;
 			proxyType = 1;
@@ -249,7 +249,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				9EC6AB18870577D36772918681A3A4F7 /* PBXTargetDependency */,
+				043320F8B3BEA73025F90088B8337FCA /* PBXTargetDependency */,
 				4577D62CABAE8D035FB9C1B3DFA1212F /* PBXTargetDependency */,
 				C1670A65057868E18CA5FBB7E9285B9A /* PBXTargetDependency */,
 			);
@@ -317,15 +317,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		043320F8B3BEA73025F90088B8337FCA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "React-Core";
+			targetProxy = 52ACA73DFD627B35D174DEB812066480 /* PBXContainerItemProxy */;
+		};
 		4577D62CABAE8D035FB9C1B3DFA1212F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
 			targetProxy = 0A91B28FAEE89E3F3CFC6482B5ED3400 /* PBXContainerItemProxy */;
-		};
-		9EC6AB18870577D36772918681A3A4F7 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "React-Core";
-			targetProxy = ED00F79A614D19AB762FF49BC0DF2F85 /* PBXContainerItemProxy */;
 		};
 		C1670A65057868E18CA5FBB7E9285B9A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -335,7 +335,32 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		0F911EAAA964A67CC03B4C1F2CC4A883 /* Release */ = {
+		4040746508A700E9C852704D391A2379 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 062C5D1580DA4F652C9A4B6D41D21B02 /* UMReactNativeAdapter.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/UMReactNativeAdapter/UMReactNativeAdapter-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = UMReactNativeAdapter;
+				PRODUCT_NAME = UMReactNativeAdapter;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		7524D5BD00A5B882C9D72C2B78737567 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -385,7 +410,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -397,16 +422,17 @@
 			};
 			name = Release;
 		};
-		1E1B921B727B7D5A22FEFF827F120356 /* Debug */ = {
+		A2E49C9833DE631D0FD2AA24CF306315 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 062C5D1580DA4F652C9A4B6D41D21B02 /* UMReactNativeAdapter.debug.xcconfig */;
+			baseConfigurationReference = 11D89B640DA20D0433C352AC80DBA67F /* UMReactNativeAdapter.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				GCC_PREFIX_HEADER = "Target Support Files/UMReactNativeAdapter/UMReactNativeAdapter-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -418,10 +444,11 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
-		6A5162BD41334A53AA7022FEFB25A705 /* Debug */ = {
+		BC3ED49A455840507068F2B56E4BD7FF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -474,7 +501,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -487,39 +514,14 @@
 			};
 			name = Debug;
 		};
-		97DE98A91F9CABC556570F17BD019E84 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 11D89B640DA20D0433C352AC80DBA67F /* UMReactNativeAdapter.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/UMReactNativeAdapter/UMReactNativeAdapter-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = UMReactNativeAdapter;
-				PRODUCT_NAME = UMReactNativeAdapter;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		046249C55F4435AFAAB988F84C1D1F7A /* Build configuration list for PBXProject "UMReactNativeAdapter" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				6A5162BD41334A53AA7022FEFB25A705 /* Debug */,
-				0F911EAAA964A67CC03B4C1F2CC4A883 /* Release */,
+				BC3ED49A455840507068F2B56E4BD7FF /* Debug */,
+				7524D5BD00A5B882C9D72C2B78737567 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -527,8 +529,8 @@
 		299B4B8425135B7B5F8462DBAAD9BBC2 /* Build configuration list for PBXNativeTarget "UMReactNativeAdapter" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1E1B921B727B7D5A22FEFF827F120356 /* Debug */,
-				97DE98A91F9CABC556570F17BD019E84 /* Release */,
+				4040746508A700E9C852704D391A2379 /* Debug */,
+				A2E49C9833DE631D0FD2AA24CF306315 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

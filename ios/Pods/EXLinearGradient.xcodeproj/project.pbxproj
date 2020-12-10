@@ -17,7 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		9C2284EB1DEA1F6EFD70F812E3F87F45 /* PBXContainerItemProxy */ = {
+		269C125E9E7F223319FED7EBBA3A6284 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C23B7DAF674C172C6F889FB6794E22E0 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -149,7 +149,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				E946E76214B4CE3AF29C1EDDA12923D7 /* PBXTargetDependency */,
+				BC2B5C2416823FE1B5750CA17EB2435D /* PBXTargetDependency */,
 			);
 			name = EXLinearGradient;
 			productName = EXLinearGradient;
@@ -203,24 +203,25 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		E946E76214B4CE3AF29C1EDDA12923D7 /* PBXTargetDependency */ = {
+		BC2B5C2416823FE1B5750CA17EB2435D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 9C2284EB1DEA1F6EFD70F812E3F87F45 /* PBXContainerItemProxy */;
+			targetProxy = 269C125E9E7F223319FED7EBBA3A6284 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		26E3B7A2C9197B22EFF2D9777C04F6A0 /* Debug */ = {
+		1B76BCFB8CE79D19A6639C1732A6832A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = A9050A7CBBC95395B6E80A52935335E0 /* EXLinearGradient.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				GCC_PREFIX_HEADER = "Target Support Files/EXLinearGradient/EXLinearGradient-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -235,16 +236,17 @@
 			};
 			name = Debug;
 		};
-		A2ACFDA5DA047A5F7CC11834B3D58124 /* Release */ = {
+		1F0CF4ADA3CC3BB821BD4364DEA78501 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2A0773ECFBA4949B699E2BA5F4521EA4 /* EXLinearGradient.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				GCC_PREFIX_HEADER = "Target Support Files/EXLinearGradient/EXLinearGradient-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -260,7 +262,7 @@
 			};
 			name = Release;
 		};
-		BB42386B8E27A19EEB7816863AB8777E /* Debug */ = {
+		7F2B166204116220EEF3CA17274BD053 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -313,7 +315,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -326,7 +328,7 @@
 			};
 			name = Debug;
 		};
-		C8DDEC81BA725E6D6B81809D2E376953 /* Release */ = {
+		C4B45B0774D12B0A36052BA4F485368A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -376,7 +378,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -394,8 +396,8 @@
 		49018584EADA0F44CF85D11D5175DE24 /* Build configuration list for PBXProject "EXLinearGradient" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				BB42386B8E27A19EEB7816863AB8777E /* Debug */,
-				C8DDEC81BA725E6D6B81809D2E376953 /* Release */,
+				7F2B166204116220EEF3CA17274BD053 /* Debug */,
+				C4B45B0774D12B0A36052BA4F485368A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -403,8 +405,8 @@
 		EE35D099DEA4AB92CFFD863EBFEAC315 /* Build configuration list for PBXNativeTarget "EXLinearGradient" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				26E3B7A2C9197B22EFF2D9777C04F6A0 /* Debug */,
-				A2ACFDA5DA047A5F7CC11834B3D58124 /* Release */,
+				1B76BCFB8CE79D19A6639C1732A6832A /* Debug */,
+				1F0CF4ADA3CC3BB821BD4364DEA78501 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

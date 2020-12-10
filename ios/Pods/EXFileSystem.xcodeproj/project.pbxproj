@@ -310,7 +310,33 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		189300C152F3B8FB68E8100254F99969 /* Release */ = {
+		CFE2B2E5AB944C5484327E9F65A64FA9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 27A0533347B233340ADF7E0A929A9058 /* EXFileSystem.release.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXFileSystem/EXFileSystem-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXFileSystem;
+				PRODUCT_NAME = EXFileSystem;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		EB5D567D4CC1D323E6D5A2FBACA146E9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -360,7 +386,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -372,32 +398,7 @@
 			};
 			name = Release;
 		};
-		340BF301ADC3774821CF52037F0DA887 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 27A0533347B233340ADF7E0A929A9058 /* EXFileSystem.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXFileSystem/EXFileSystem-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXFileSystem;
-				PRODUCT_NAME = EXFileSystem;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		887099E20A4834E1FDD372391D79CF23 /* Debug */ = {
+		F4097A9B6E77DEBC492436BDFBAA6657 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -450,7 +451,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -463,16 +464,17 @@
 			};
 			name = Debug;
 		};
-		AD8C5F8BE0BB132410A005C675669FF0 /* Debug */ = {
+		F62B116EF6AA43EC9CD815C88E952A31 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C8B92950D0747001C266AE4B2A6CD644 /* EXFileSystem.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				GCC_PREFIX_HEADER = "Target Support Files/EXFileSystem/EXFileSystem-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -493,8 +495,8 @@
 		3445E264FC328593D1FA11E65799C2C8 /* Build configuration list for PBXProject "EXFileSystem" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				887099E20A4834E1FDD372391D79CF23 /* Debug */,
-				189300C152F3B8FB68E8100254F99969 /* Release */,
+				F4097A9B6E77DEBC492436BDFBAA6657 /* Debug */,
+				EB5D567D4CC1D323E6D5A2FBACA146E9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -502,8 +504,8 @@
 		BC8E983339CAA613F5BD473A5A4A07E3 /* Build configuration list for PBXNativeTarget "EXFileSystem" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				AD8C5F8BE0BB132410A005C675669FF0 /* Debug */,
-				340BF301ADC3774821CF52037F0DA887 /* Release */,
+				F62B116EF6AA43EC9CD815C88E952A31 /* Debug */,
+				CFE2B2E5AB944C5484327E9F65A64FA9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

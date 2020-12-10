@@ -26,7 +26,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		A7D35A705FC1D4056D572B9A1E3688B6 /* PBXContainerItemProxy */ = {
+		76932126E526CDD4F22C44F9A8FC75DC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 852D0C10AB220DBE12201557C7E42BF4 /* React-jsi.xcodeproj */;
 			proxyType = 1;
@@ -182,7 +182,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				020079F3D82D2328C251B08DD4DA7E96 /* PBXTargetDependency */,
+				62734443E69F6FB5985FC4EB2B996E74 /* PBXTargetDependency */,
 			);
 			name = EXGL_CPP;
 			productName = EXGL_CPP;
@@ -239,15 +239,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		020079F3D82D2328C251B08DD4DA7E96 /* PBXTargetDependency */ = {
+		62734443E69F6FB5985FC4EB2B996E74 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-jsi";
-			targetProxy = A7D35A705FC1D4056D572B9A1E3688B6 /* PBXContainerItemProxy */;
+			targetProxy = 76932126E526CDD4F22C44F9A8FC75DC /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		150CAE55E45D5876AC617643E03A522C /* Debug */ = {
+		117FA2B73F0920AF0E243E9212439A7D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -300,7 +300,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -313,56 +313,7 @@
 			};
 			name = Debug;
 		};
-		226FAD4B83F0F7AB1F6886BDBCF49BF3 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9052183FA9AC69021D2BCD75B1C77064 /* EXGL_CPP.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXGL_CPP/EXGL_CPP-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXGL_CPP;
-				PRODUCT_NAME = EXGL_CPP;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		32D336852388E955A4EFADD4A825B33B /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = CC477A5D81FEBAFDCD073737CEC03C32 /* EXGL_CPP.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXGL_CPP/EXGL_CPP-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXGL_CPP;
-				PRODUCT_NAME = EXGL_CPP;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		6C2383017C28AEA59561B27BA564ABF1 /* Release */ = {
+		92840DAACEA1443FBD4177639D7F764A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -412,7 +363,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -424,14 +375,65 @@
 			};
 			name = Release;
 		};
+		C7A306A1B51499170ECEC0DC1585798E /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9052183FA9AC69021D2BCD75B1C77064 /* EXGL_CPP.release.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXGL_CPP/EXGL_CPP-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXGL_CPP;
+				PRODUCT_NAME = EXGL_CPP;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		E8D0482C35DA9AFFDC2AA6CC05EC86D9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CC477A5D81FEBAFDCD073737CEC03C32 /* EXGL_CPP.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXGL_CPP/EXGL_CPP-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXGL_CPP;
+				PRODUCT_NAME = EXGL_CPP;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		0CF07FD4D8D728C098E2C2392AEE3936 /* Build configuration list for PBXNativeTarget "EXGL_CPP" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				32D336852388E955A4EFADD4A825B33B /* Debug */,
-				226FAD4B83F0F7AB1F6886BDBCF49BF3 /* Release */,
+				E8D0482C35DA9AFFDC2AA6CC05EC86D9 /* Debug */,
+				C7A306A1B51499170ECEC0DC1585798E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -439,8 +441,8 @@
 		EA11CB75DA680E384DD0949FF1171228 /* Build configuration list for PBXProject "EXGL_CPP" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				150CAE55E45D5876AC617643E03A522C /* Debug */,
-				6C2383017C28AEA59561B27BA564ABF1 /* Release */,
+				117FA2B73F0920AF0E243E9212439A7D /* Debug */,
+				92840DAACEA1443FBD4177639D7F764A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -19,26 +19,26 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		36ECD0FB20BEA7C5BFA8100212159B4B /* PBXContainerItemProxy */ = {
+		504ECB4719C6BF512A61DC35D808F728 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3711B7B53CB96BE7381459CCDAA5FDCA /* UMCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
 		};
-		A837ABF97FE3A3E677F31E60D4D8474B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 06B58C74DC77D0B742F38CACDA15496E /* UMPermissionsInterface.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 12FF61416C5E794E9DEAC78D381D9726;
-			remoteInfo = UMPermissionsInterface;
-		};
-		B073532B72DF52A007F74D3AE96418EF /* PBXContainerItemProxy */ = {
+		B7C15A34A6739142DB6701A2D636B91F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BBAD60C9DE01602879E7CC60F0D2A5D4 /* UMFileSystemInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
 			remoteInfo = UMFileSystemInterface;
+		};
+		CFA8508B366499738A587D8CA8792ECA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 06B58C74DC77D0B742F38CACDA15496E /* UMPermissionsInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 12FF61416C5E794E9DEAC78D381D9726;
+			remoteInfo = UMPermissionsInterface;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -183,9 +183,9 @@
 			buildRules = (
 			);
 			dependencies = (
-				47500AB1A36832385D7946A376C27C37 /* PBXTargetDependency */,
-				E429CEEF8C042E09CF2CE467DCB5006E /* PBXTargetDependency */,
-				0E0062A901051D122510A9CE2FCF6C69 /* PBXTargetDependency */,
+				0311750CCFE4636B9697378BB6F1CAB9 /* PBXTargetDependency */,
+				FDC352C6A5A843F53EDD1885E1283A47 /* PBXTargetDependency */,
+				CB5C152C9DEF86FBE74C0BD594A8BA10 /* PBXTargetDependency */,
 			);
 			name = EXImagePicker;
 			productName = EXImagePicker;
@@ -246,49 +246,25 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		0E0062A901051D122510A9CE2FCF6C69 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMPermissionsInterface;
-			targetProxy = A837ABF97FE3A3E677F31E60D4D8474B /* PBXContainerItemProxy */;
-		};
-		47500AB1A36832385D7946A376C27C37 /* PBXTargetDependency */ = {
+		0311750CCFE4636B9697378BB6F1CAB9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 36ECD0FB20BEA7C5BFA8100212159B4B /* PBXContainerItemProxy */;
+			targetProxy = 504ECB4719C6BF512A61DC35D808F728 /* PBXContainerItemProxy */;
 		};
-		E429CEEF8C042E09CF2CE467DCB5006E /* PBXTargetDependency */ = {
+		CB5C152C9DEF86FBE74C0BD594A8BA10 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMPermissionsInterface;
+			targetProxy = CFA8508B366499738A587D8CA8792ECA /* PBXContainerItemProxy */;
+		};
+		FDC352C6A5A843F53EDD1885E1283A47 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMFileSystemInterface;
-			targetProxy = B073532B72DF52A007F74D3AE96418EF /* PBXContainerItemProxy */;
+			targetProxy = B7C15A34A6739142DB6701A2D636B91F /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		2E3A6ED71FA4311080957E2310D2115E /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 899DE559E1BD151AC20CA0E5E33C29C4 /* EXImagePicker.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXImagePicker/EXImagePicker-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXImagePicker;
-				PRODUCT_NAME = EXImagePicker;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		374598B4906BD1AD12EDF7C6FE2FC53D /* Release */ = {
+		1E7F1AAA176D8185F79CEDF75E156387 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -338,7 +314,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -350,16 +326,17 @@
 			};
 			name = Release;
 		};
-		76B6F77E5B7A8B2A637CE10C65DE5951 /* Release */ = {
+		6C565E0A83C8D20ACBEB5930484EB809 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = B4782EF0C9F038722C48B0AD67F47FDD /* EXImagePicker.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				GCC_PREFIX_HEADER = "Target Support Files/EXImagePicker/EXImagePicker-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -375,7 +352,7 @@
 			};
 			name = Release;
 		};
-		F511C211109BB90EDB063E09FFCE81E5 /* Debug */ = {
+		825BA963E960F5AEC1F4C7BDDBEB2121 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -428,7 +405,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -441,14 +418,39 @@
 			};
 			name = Debug;
 		};
+		ED28703CEEACF389AFAC6E034870359F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 899DE559E1BD151AC20CA0E5E33C29C4 /* EXImagePicker.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXImagePicker/EXImagePicker-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXImagePicker;
+				PRODUCT_NAME = EXImagePicker;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		338E2CABE472E4AB88F37FAB4B039586 /* Build configuration list for PBXProject "EXImagePicker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				F511C211109BB90EDB063E09FFCE81E5 /* Debug */,
-				374598B4906BD1AD12EDF7C6FE2FC53D /* Release */,
+				825BA963E960F5AEC1F4C7BDDBEB2121 /* Debug */,
+				1E7F1AAA176D8185F79CEDF75E156387 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -456,8 +458,8 @@
 		754EC06F624405951136D9248AC07742 /* Build configuration list for PBXNativeTarget "EXImagePicker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				2E3A6ED71FA4311080957E2310D2115E /* Debug */,
-				76B6F77E5B7A8B2A637CE10C65DE5951 /* Release */,
+				ED28703CEEACF389AFAC6E034870359F /* Debug */,
+				6C565E0A83C8D20ACBEB5930484EB809 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
