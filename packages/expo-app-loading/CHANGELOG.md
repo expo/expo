@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 1.0.1 — 2020-12-10
+
+### 🐛 Bug fixes
+
 - No longer swallows error messages of errors that occur in `startLoadingAppResourcesAsync`. ([#11312](https://github.com/expo/expo/pull/11312) by [@cruzach](https://github.com/cruzach))
 
 ## 1.0.0 — 2020-11-17
