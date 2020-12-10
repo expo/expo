@@ -561,15 +561,12 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   private Bundle getAudioRecorderStatus() {
     final Bundle map = new Bundle();
     if (mAudioRecorder != null) {
-      if(mAudioRecorderIsMeteringEnabled) {
-        map.putBoolean("canRecord", true);
-        map.putBoolean("isRecording", mAudioRecorderIsRecording);
-        map.putInt("durationMillis", (int) getAudioRecorderDurationMillis());
+      map.putBoolean("canRecord", true);
+      map.putBoolean("isRecording", mAudioRecorderIsRecording);
+      map.putInt("durationMillis", (int) getAudioRecorderDurationMillis());
+
+      if (mAudioRecorderIsMeteringEnabled) {
         map.putInt("metering", (int) getAudioRecorderLevels());
-      } else {
-        map.putBoolean("canRecord", true);
-        map.putBoolean("isRecording", mAudioRecorderIsRecording);
-        map.putInt("durationMillis", (int) getAudioRecorderDurationMillis());
       }
     }
     return map;
