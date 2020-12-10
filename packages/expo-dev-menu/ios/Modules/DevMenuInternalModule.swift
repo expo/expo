@@ -23,10 +23,10 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
 
   @objc
   func constantsToExport() -> [String : Any] {
-#if TARGET_IPHONE_SIMULATOR
-    let doesDeviceSupportKeyCommands = false
-#else
+#if targetEnvironment(simulator)
     let doesDeviceSupportKeyCommands = true
+#else
+    let doesDeviceSupportKeyCommands = false
 #endif
     return ["doesDeviceSupportKeyCommands": doesDeviceSupportKeyCommands]
   }
