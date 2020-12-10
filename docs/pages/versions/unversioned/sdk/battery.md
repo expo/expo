@@ -17,9 +17,9 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Usage
 
-<SnackInline label='Basic Battery Usage' templateId='battery' dependencies={['expo-battery']}>
+<SnackInline label='Basic Battery Usage' dependencies={['expo-battery']}>
 
-```js
+```jsx
 import * as React from 'react';
 import * as Battery from 'expo-battery';
 import { StyleSheet, Text, View } from 'react-native';
@@ -59,6 +59,17 @@ export default class App extends React.Component {
     );
   }
 }
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+/* @end */
 ```
 
 </SnackInline>
