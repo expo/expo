@@ -544,19 +544,18 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
       return -160;
     }
 
-    int result;
     int amplitude = mAudioRecorder.getMaxAmplitude();
-    if(amplitude == 0) {
-      result = -160;
-    } else {
-      /**
-       * amplitude to decibel conversion
-       * 
-       */
-      result = (int) (20 * Math.log(((double) amplitude) / 32767d));
+    if (amplitude == 0) {
+      return -160;
     }
-
-    return result;
+     
+    // Amplitude to decibel conversion.
+    // Code copied from https://github.com/punarinta/react-native-sound-level
+    // It's supposed to be a ratio between the base sound level and the measured one.
+    // Decibels is a relative measurement.
+	// Value `32767d` gives levels info comparable to iOS's values.
+	// see: https://github.com/punarinta/react-native-sound-level/issues/20
+    return = (int) (20 * Math.log(((double) amplitude) / 32767d));
   }
 
   private Bundle getAudioRecorderStatus() {
