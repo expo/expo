@@ -538,8 +538,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
   private int getAudioRecorderLevels() {
     /**
-     * -160 is to match the value when there's 
-     * no sound on iOS
+     * Defaulting to -160 to match the scenario on iOS platform when there's no sound
      */
     if (mAudioRecorder == null) {
       return -160;
