@@ -8,7 +8,7 @@ export default class AppLoading extends React.Component {
     componentDidMount() {
         this._isMounted = true;
         this.startLoadingAppResourcesAsync().catch(error => {
-            console.error(`AppLoading threw an unexpected error when loading:\n${error.stack}`);
+            console.error(`AppLoading threw an unexpected error when loading:\n${error}`);
         });
     }
     componentWillUnmount() {
