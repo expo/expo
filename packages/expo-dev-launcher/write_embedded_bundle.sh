@@ -33,7 +33,7 @@ npx react-native bundle \
     --platform android \
     --dev false \
     --entry-file index.js \
-    --bundle-output android/src/main/res/raw/expo_dev_launcher_android.bundle
+    --bundle-output android/src/debug/res/raw/expo_dev_launcher_android.bundle
 
 
 
