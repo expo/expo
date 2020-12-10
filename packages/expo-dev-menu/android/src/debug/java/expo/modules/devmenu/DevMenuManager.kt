@@ -25,6 +25,7 @@ import expo.interfaces.devmenu.items.KeyCommand
 import expo.modules.devmenu.detectors.ShakeDetector
 import expo.modules.devmenu.detectors.ThreeFingerLongPressDetector
 import expo.modules.devmenu.modules.DevMenuSettings
+import java.lang.ref.WeakReference
 import java.util.*
 
 object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
@@ -36,6 +37,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   private var shouldLaunchDevMenuOnStart: Boolean = false
   private lateinit var devMenuHost: DevMenuHost
   private val cachedDevMenuItems = WeakHashMap<ReactInstanceManager, List<DevMenuItem>>()
+  private var currentReactInstanceManager: WeakReference<ReactInstanceManager?> = WeakReference(null)
 
   //region helpers
 
@@ -92,7 +94,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   //region init
 
   @Suppress("UNCHECKED_CAST")
-  fun maybeInitDevMenuHost(application: Application) {
+  private fun maybeInitDevMenuHost(application: Application) {
     if (!this::devMenuHost.isInitialized) {
       devMenuHost = DevMenuHost(application)
       UiThreadUtil.runOnUiThread {
@@ -101,12 +103,28 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     }
   }
 
+  private fun setUpReactInstanceManager(reactInstanceManager: ReactInstanceManager) {
+    currentReactInstanceManager = WeakReference(reactInstanceManager)
+    if (reactInstanceManager.currentReactContext == null) {
+      reactInstanceManager.addReactInstanceEventListener(object : ReactInstanceManager.ReactInstanceEventListener {
+        override fun onReactContextInitialized(context: ReactContext) {
+          if (currentReactInstanceManager.get() === reactInstanceManager) {
+            handleLoadedDelegateContext(context)
+          }
+          reactInstanceManager.removeReactInstanceEventListener(this)
+        }
+      })
+    } else {
+      handleLoadedDelegateContext(reactInstanceManager.currentReactContext!!)
+    }
+  }
+
   /**
    * Starts dev menu if wasn't initialized, prepares for opening menu at launch if needed and gets [DevMenuSettings].
    * We can't open dev menu here, cause then the app will crash - two react instance try to render.
    * So we wait until the [reactContext] activity will be ready.
    */
-  private fun handleLoadedDelegate(reactContext: ReactContext) {
+  private fun handleLoadedDelegateContext(reactContext: ReactContext) {
     Log.i(DEV_MENU_TAG, "Delegate's context was loaded.")
 
     maybeInitDevMenuHost(reactContext.currentActivity?.application
@@ -118,7 +136,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     } else {
       DevMenuDefaultSettings()
     }.also {
-      shouldLaunchDevMenuOnStart = it.showsAtLaunch
+      shouldLaunchDevMenuOnStart = it.showsAtLaunch || !it.isOnboardingFinished
       if (shouldLaunchDevMenuOnStart) {
         reactContext.addLifecycleEventListener(this)
       }
@@ -175,8 +193,10 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
     if (shouldLaunchDevMenuOnStart) {
       shouldLaunchDevMenuOnStart = false
-      delegateActivity?.let {
-        openMenu(it)
+      delegateActivity?.let { activity ->
+        activity.runOnUiThread {
+          openMenu(activity)
+        }
       }
     }
   }
@@ -246,13 +266,8 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     // removes event listener for old delegate
     delegateReactContext?.removeLifecycleEventListener(this)
 
-    delegate = newDelegate.run {
-      if (reactInstanceManager().currentReactContext == null) {
-        reactInstanceManager().addReactInstanceEventListener(this@DevMenuManager::handleLoadedDelegate)
-      } else {
-        handleLoadedDelegate(reactInstanceManager().currentReactContext!!)
-      }
-      this
+    delegate = newDelegate.apply {
+      setUpReactInstanceManager(this.reactInstanceManager())
     }
   }
 
@@ -274,6 +289,12 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   override fun getMenuHost() = devMenuHost
 
+  override fun synchronizeDelegate() {
+    val newReactInstanceManager = requireNotNull(delegate).reactInstanceManager()
+    if (newReactInstanceManager != currentReactInstanceManager.get()) {
+      setUpReactInstanceManager(newReactInstanceManager)
+    }
+  }
   //endregion
 }
 

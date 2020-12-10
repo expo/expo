@@ -77,7 +77,7 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
   @objc
   public var delegate: DevMenuDelegateProtocol? {
     didSet {
-      guard DevMenuSettings.showsAtLaunch, let bridge = delegate?.appBridge?(forDevMenuManager: self) as? RCTBridge else {
+      guard DevMenuSettings.showsAtLaunch || !DevMenuSettings.isOnboardingFinished, let bridge = delegate?.appBridge?(forDevMenuManager: self) as? RCTBridge else {
         return
       }
       if bridge.isLoading {
@@ -98,7 +98,9 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
   }
 
   @objc
-  public func autoLaunch() {
+  public func autoLaunch(_ shouldRemoveObserver: Bool = true) {
+    NotificationCenter.default.removeObserver(self)
+  
     DispatchQueue.main.async {
       self.openMenu()
     }
