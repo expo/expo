@@ -35,7 +35,7 @@ In this page, we reference operations on `playbackObject`s. Here is an example o
 ```javascript
 const playbackObject = new Audio.Sound();
 // OR
-const playbackObject = await Audio.Sound.createAsync(
+const { sound: playbackObject } = await Audio.Sound.createAsync(
   { uri: 'http://foo/bar.mp3' },
   { shouldPlay: true }
 );
