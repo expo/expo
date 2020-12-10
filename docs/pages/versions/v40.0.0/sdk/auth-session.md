@@ -21,7 +21,6 @@ import { InlineCode } from '~/components/base/code';
 
 <InstallSection packageName="expo-auth-session expo-random" />
 
-
 In **bare-workflow** you can use the [`uri-scheme` package][n-uri-scheme] to easily add, remove, list, and open your URIs.
 
 [n-uri-scheme]: https://www.npmjs.com/package/uri-scheme

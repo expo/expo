@@ -32,16 +32,16 @@ In the bare workflow the developer has complete control, along with the complexi
 
 ## Workflow comparison
 
-| Feature                                                      | Managed workflow | Bare workflow                                                       |
-| ------------------------------------------------------------ | ---------------- | ------------------------------------------------------------------- |
-| Develop apps with **only** JavaScript/TypeScript             | ✅               |                                                                     |
-| Use Expo build service to create your iOS and Android builds | ✅               | ⏱ (in progress)                                                     |
-| Use Expo's push notification service                         | ✅               | ✅                                                                  |
-| Use Expo's over the air updates features                     | ✅               | ✅                                                                  |
+| Feature                                                      | Managed workflow | Bare workflow                                                      |
+| ------------------------------------------------------------ | ---------------- | ------------------------------------------------------------------ |
+| Develop apps with **only** JavaScript/TypeScript             | ✅               |                                                                    |
+| Use Expo build service to create your iOS and Android builds | ✅               | ⏱ (in progress)                                                    |
+| Use Expo's push notification service                         | ✅               | ✅                                                                 |
+| Use Expo's over the air updates features                     | ✅               | ✅                                                                 |
 | Develop with the Expo client app                             | ✅               | ✅ (if you follow [these guidlines](../bare/using-expo-client.md)) |
-| Access to Expo SDK                                           | ✅               | ✅                                                                  |
-| Add custom native code and manage native dependencies        |                  | ✅                                                                  |
-| Develop in Xcode and Android Studio                          |                  | ✅                                                                  |
+| Access to Expo SDK                                           | ✅               | ✅                                                                 |
+| Add custom native code and manage native dependencies        |                  | ✅                                                                 |
+| Develop in Xcode and Android Studio                          |                  | ✅                                                                 |
 
 ## Which workflow is right for me?
 

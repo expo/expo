@@ -54,7 +54,7 @@ By default, the `eas build` command will wait for your build to complete. Howeve
 
 - Want to distribute your apps to internal testers? [Learn about internal distribution](internal-distribution.md).
 - Ship your app! [Learn how to submit your app to app stores with EAS Submit](/submit/introduction.md).
-<!-- - Add new build profiles, such as simulator builds or build specific for certain release environments. -->
+  <!-- - Add new build profiles, such as simulator builds or build specific for certain release environments. -->
 
 ### Get a deeper understanding
 

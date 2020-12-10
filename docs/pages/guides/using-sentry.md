@@ -161,16 +161,17 @@ Sentry.init({
   enableInExpoDevelopment: true,
   integrations: [
     new RewriteFrames({
-      iteratee: (frame) => {
+      iteratee: frame => {
         if (frame.filename) {
           // the values depend on what names you give the bundle files you are uploading to Sentry
-          frame.filename =  Platform.OS === 'android' ? 'app:///index.android.bundle' : 'app:///main.jsbundle';
+          frame.filename =
+            Platform.OS === 'android' ? 'app:///index.android.bundle' : 'app:///main.jsbundle';
         }
-        return frame
+        return frame;
       },
     }),
   ],
-})
+});
 ```
 
 ### Testing Sentry
