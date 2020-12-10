@@ -614,11 +614,8 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
       return;
     }
 
-    if(options.getBoolean(RECORDING_OPTION_IS_METERING_ENABLED_KEY)) {
-      mAudioRecorderIsMeteringEnabled = true;
-    } else {
-      mAudioRecorderIsMeteringEnabled = false;
-    }
+    mAudioRecorderIsMeteringEnabled
+ = options.getBoolean(RECORDING_OPTION_IS_METERING_ENABLED_KEY);
 
     removeAudioRecorder();
 
