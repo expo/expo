@@ -21,11 +21,11 @@ In Managed apps, `Contacts` requires `Permissions.CONTACTS`.
 
 ## Usage
 
-<SnackInline label='Basic Contacts Usage' templateId='contacts' dependencies={['expo-contacts']}>
+<SnackInline label='Basic Contacts Usage' dependencies={['expo-contacts']}>
 
-```js
+```jsx
 import React, { useEffect } from 'react';
-import { View, Text } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import * as Contacts from 'expo-contacts';
 
 export default function App() {
@@ -46,17 +46,22 @@ export default function App() {
   }, []);
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}>
+    <View style={styles.container}>
       <Text>Contacts Module Example</Text>
     </View>
   );
 }
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+/* @end */
 ```
 
 </SnackInline>

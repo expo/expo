@@ -21,11 +21,11 @@ In managed apps, `Calendar` requires `Permissions.CALENDAR`. Interacting with re
 
 ## Usage
 
-<SnackInline label='Basic Calendar usage' templateId='calendar' dependencies={['expo-calendar']}>
+<SnackInline label='Basic Calendar usage' dependencies={['expo-calendar']}>
 
-```js
+```jsx
 import React, { useEffect } from 'react';
-import { View, Text, Button, Platform } from 'react-native';
+import { StyleSheet, View, Text, Button, Platform } from 'react-native';
 import * as Calendar from 'expo-calendar';
 
 export default function App() {
@@ -41,13 +41,7 @@ export default function App() {
   }, []);
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'space-around',
-      }}>
+    <View style={styles.container}>
       <Text>Calendar Module Example</Text>
       <Button title="Create a new calendar" onPress={createCalendar} />
     </View>
@@ -77,6 +71,17 @@ async function createCalendar() {
   });
   console.log(`Your new calendar ID is: ${newCalendarID}`);
 }
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+});
+/* @end */
 ```
 
 </SnackInline>

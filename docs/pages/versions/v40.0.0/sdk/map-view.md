@@ -21,19 +21,17 @@ See full documentation at [react-native-community/react-native-maps](https://git
 
 <SnackInline label='MapView' dependencies={['react-native-maps']}>
 
-```js
-import React from 'react';
+```jsx
+import * as React from 'react';
 import MapView from 'react-native-maps';
 import { StyleSheet, Text, View, Dimensions } from 'react-native';
 
-export default class App extends React.Component {
-  render() {
-    return (
-      <View style={styles.container}>
-        <MapView style={styles.mapStyle} />
-      </View>
-    );
-  }
+export default function App() {
+  return (
+    <View style={styles.container}>
+      <MapView style={styles.map} />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -43,7 +41,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  mapStyle: {
+  map: {
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height,
   },
@@ -106,7 +104,7 @@ Apple Maps will work with no extra configuration. For Google Maps:
 9.  Press `Save` and then rebuild the app.
 10. In your code, import `{ PROVIDER_GOOGLE }` from `react-native-maps` and add the property `provider=PROVIDER_GOOGLE` to your `<MapView>`. This property works on both iOS and Android.
 
-**Note:** This can also be accessed through your app's [Constants](constants.md#constantsmanifest) (via `Constants.manifest.ios.config.googleMapsApiKey`) if you'd prefer not to have the API key in your code.
+**Note:** This can also be accessed through your app's [Constants](../sdk/constants.md#constantsmanifest) (via `Constants.manifest.ios.config.googleMapsApiKey`) if you'd prefer not to have the API key in your code.
 
 ### Deploying Google Maps to bare for iOS
 
