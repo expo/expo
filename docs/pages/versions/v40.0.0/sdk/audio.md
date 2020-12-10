@@ -24,9 +24,9 @@ Try the [playlist example app](https://expo.io/@documentation/playlist-example) 
 ### Playing sounds
 
 <SnackInline
-  label='Playing sounds'
-  dependencies={['expo-av', 'expo-asset']}
-  files={{
+label='Playing sounds'
+dependencies={['expo-av', 'expo-asset']}
+files={{
     'assets/Hello.mp3': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/c9c43b458d6daa9771a7287cae9f5b47'
   }}>
 
@@ -40,23 +40,27 @@ export default function App() {
 
   async function playSound() {
     console.log('Loading Sound');
-    /* @info */const { sound } = await Audio.Sound.createAsync(/* @end */require('./assets/Hello.mp3'));
+    /* @info */ const { sound } = await Audio.Sound.createAsync(
+      /* @end */ require('./assets/Hello.mp3')
+    );
     setSound(sound);
 
     console.log('Playing Sound');
-    await /* @info */sound.playAsync();/* @end */
+    await /* @info */ sound.playAsync(); /* @end */
   }
 
   React.useEffect(() => {
-    return sound ? () => {
-      console.log('Unloading Sound');
-      /* @info Always unload the Sound after using it to prevent memory leaks.*/sound.unloadAsync();/* @end */
-     } : undefined;
+    return sound
+      ? () => {
+          console.log('Unloading Sound');
+          /* @info Always unload the Sound after using it to prevent memory leaks.*/ sound.unloadAsync(); /* @end */
+        }
+      : undefined;
   }, [sound]);
 
   return (
     <View style={styles.container}>
-      <Button title='Play Sound' onPress={playSound} />
+      <Button title="Play Sound" onPress={playSound} />
     </View>
   );
 }
@@ -90,14 +94,17 @@ export default function App() {
   async function startRecording() {
     try {
       console.log('Requesting permissions..');
-      /* @info */await Audio.requestPermissionsAsync();
-      await Audio.setAudioModeAsync({ allowsRecordingIOS: true, playsInSilentModeIOS: true });/* @end */
+      /* @info */ await Audio.requestPermissionsAsync();
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      }); /* @end */
 
       console.log('Starting recording..');
-      /* @info */const recording = new Audio.Recording();
+      /* @info */ const recording = new Audio.Recording();
       await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
-      await recording.startAsync();/* @end */
-      
+      await recording.startAsync(); /* @end */
+
       setRecording(recording);
       console.log('Recording started');
     } catch (err) {
@@ -108,9 +115,9 @@ export default function App() {
   async function stopRecording() {
     console.log('Stopping recording..');
     setRecording(undefined);
-    /* @info */await recording.stopAndUnloadAsync();
-    const uri = recording.getURI();/* @end */
-    
+    /* @info */ await recording.stopAndUnloadAsync();
+    const uri = recording.getURI(); /* @end */
+
     console.log('Recording stopped and stored at', uri);
   }
 
@@ -118,7 +125,8 @@ export default function App() {
     <View style={styles.container}>
       <Button
         title={recording ? 'Stop Recording' : 'Start Recording'}
-        onPress={recording ? stopRecording : startRecording} />
+        onPress={recording ? stopRecording : startRecording}
+      />
     </View>
   );
 }
@@ -129,14 +137,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     backgroundColor: '#ecf0f1',
-    padding: 10
+    padding: 10,
   },
 });
 /* @end */
 ```
 
 </SnackInline>
-
 
 ## API
 
@@ -275,7 +282,12 @@ A static convenience method to construct and load a sound is also provided:
   Creates and loads a sound from source, with optional `initialStatus`, `onPlaybackStatusUpdate`, and `downloadFirst`.
 
   ```javascript
-  const { sound } = await Audio.Sound.createAsync(source, initialStatus, onPlaybackStatusUpdate, downloadFirst);
+  const { sound } = await Audio.Sound.createAsync(
+    source,
+    initialStatus,
+    onPlaybackStatusUpdate,
+    downloadFirst
+  );
 
   // Which is equivalent to the following:
   const sound = new Audio.Sound();

@@ -30,11 +30,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <View style={styles.section}>
-        <Checkbox
-          style={styles.checkbox}
-          value={isChecked}
-          onValueChange={setChecked}
-        />
+        <Checkbox style={styles.checkbox} value={isChecked} onValueChange={setChecked} />
         <Text style={styles.paragraph}>Normal checkbox</Text>
       </View>
       <View style={styles.section}>
@@ -47,12 +43,7 @@ export default function App() {
         <Text style={styles.paragraph}>Custom colored checkbox</Text>
       </View>
       <View style={styles.section}>
-        <Checkbox
-          style={styles.checkbox}
-          disabled
-          value={isChecked}
-          onValueChange={setChecked}
-        />
+        <Checkbox style={styles.checkbox} disabled value={isChecked} onValueChange={setChecked} />
         <Text style={styles.paragraph}>Disabled checkbox</Text>
       </View>
     </View>
