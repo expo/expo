@@ -253,7 +253,7 @@ To handle action requests, a component must implement an `onAccessibilityAction`
 
 ## Checking if a Screen Reader is Enabled
 
-The `AccessibilityInfo` API allows you to determine whether or not a screen reader is currently active. See the [AccessibilityInfo documentation](../accessibilityinfo/) for details.
+The `AccessibilityInfo` API allows you to determine whether or not a screen reader is currently active. See the [AccessibilityInfo documentation](accessibilityinfo.md) for details.
 
 ## Sending Accessibility Events (Android)
 

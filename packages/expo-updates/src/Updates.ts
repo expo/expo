@@ -1,4 +1,9 @@
-import { RCTDeviceEventEmitter, CodedError, UnavailabilityError } from '@unimodules/core';
+import {
+  RCTDeviceEventEmitter,
+  CodedError,
+  NativeModulesProxy,
+  UnavailabilityError,
+} from '@unimodules/core';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 
 import ExpoUpdates from './ExpoUpdates';
@@ -28,16 +33,22 @@ if (ExpoUpdates.manifestString) {
 }
 export const manifest: Manifest | object = _manifest ?? {};
 
+const isUsingDeveloperTool = !!(manifest as any).developer?.tool;
+const isUsingExpoDevelopmentClient = NativeModulesProxy.ExponentConstants?.appOwnership === 'expo';
+const manualUpdatesInstructions = isUsingExpoDevelopmentClient
+  ? 'To test manual updates, publish your project using `expo publish` and open the published ' +
+    'version in this development client.'
+  : 'To test manual updates, make a release build with `npm run ios --configuration Release` or ' +
+    '`npm run android --variant Release`.';
+
 export async function reloadAsync(): Promise<void> {
   if (!ExpoUpdates.reload) {
     throw new UnavailabilityError('Updates', 'reloadAsync');
   }
-  if (__DEV__) {
+  if (__DEV__ && !isUsingExpoDevelopmentClient) {
     throw new CodedError(
       'ERR_UPDATES_DISABLED',
-      'You cannot use the Updates module in development mode. To test manual updates, make a ' +
-        'release build with `npm run ios --configuration Release` or ' +
-        '`npm run android --variant Release`.'
+      `You cannot use the Updates module in development mode in a production app. ${manualUpdatesInstructions}`
     );
   }
   await ExpoUpdates.reload();
@@ -47,12 +58,10 @@ export async function checkForUpdateAsync(): Promise<UpdateCheckResult> {
   if (!ExpoUpdates.checkForUpdateAsync) {
     throw new UnavailabilityError('Updates', 'checkForUpdateAsync');
   }
-  if (__DEV__) {
+  if (__DEV__ || isUsingDeveloperTool) {
     throw new CodedError(
       'ERR_UPDATES_DISABLED',
-      'You cannot check for updates in development mode. To test manual updates, make a ' +
-        'release build with `npm run ios --configuration Release` or ' +
-        '`npm run android --variant Release`.'
+      `You cannot check for updates in development mode. ${manualUpdatesInstructions}`
     );
   }
 
@@ -69,12 +78,10 @@ export async function fetchUpdateAsync(): Promise<UpdateFetchResult> {
   if (!ExpoUpdates.fetchUpdateAsync) {
     throw new UnavailabilityError('Updates', 'fetchUpdateAsync');
   }
-  if (__DEV__) {
+  if (__DEV__ || isUsingDeveloperTool) {
     throw new CodedError(
       'ERR_UPDATES_DISABLED',
-      'You cannot fetch updates in development mode. To test manual updates, make a ' +
-        'release build with `npm run ios --configuration Release` or ' +
-        '`npm run android --variant Release`.'
+      `You cannot fetch updates in development mode. ${manualUpdatesInstructions}`
     );
   }
 

@@ -14,7 +14,7 @@
 
 using namespace ABI38_0_0facebook::ABI38_0_0React;
 
-@interface ABI38_0_0RCTI18nManager () <NativeI18nManagerSpec>
+@interface ABI38_0_0RCTI18nManager () <ABI38_0_0NativeI18nManagerSpec>
 @end
 
 @implementation ABI38_0_0RCTI18nManager

@@ -25,7 +25,7 @@ static void postNotificationWithURL(NSURL *URL, id sender)
                                                     userInfo:payload];
 }
 
-@interface ABI38_0_0RCTLinkingManager() <NativeLinkingSpec>
+@interface ABI38_0_0RCTLinkingManager() <ABI38_0_0NativeLinkingSpec>
 @end
 
 @implementation ABI38_0_0RCTLinkingManager

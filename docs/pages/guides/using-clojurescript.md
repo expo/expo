@@ -24,21 +24,21 @@ expo start --ios
 
 ## Why ClojureScript?
 
--   First-class immutable data structures
--   Minimizing state and side-effects
--   Practicality and pragmatism are always core values of ClojureScript
--   Lisp!
--   Great JavaScript interoperability
+- First-class immutable data structures
+- Minimizing state and side-effects
+- Practicality and pragmatism are always core values of ClojureScript
+- Lisp!
+- Great JavaScript interoperability
 
 ## Why on Expo?
 
 It all begins with a [Simple Made Easy](https://www.infoq.com/presentations/Simple-Made-Easy) design choice: **you don't write native code**.
 
--   You only write ClojureScript or JavaScript.
--   You don't have to install or use Xcode or Android Studio or deal with any of the platform specific configuration and project files.
--   Much easier to upgrade when there is no native code involved -- React Native JavaScript APIs are relatively stable compared to the native side. Expo will take care of upgrading the native modules and React Native versions, you only need to upgrade your ClojureScript or JavaScript code.
--   You can write iOS apps on Linux or Windows (provided that you have an iPhone to test it with).
--   It's dead simple to continually share your apps. Once you published your app, you got a link. It is up to you to share the link.
+- You only write ClojureScript or JavaScript.
+- You don't have to install or use Xcode or Android Studio or deal with any of the platform specific configuration and project files.
+- Much easier to upgrade when there is no native code involved -- React Native JavaScript APIs are relatively stable compared to the native side. Expo will take care of upgrading the native modules and React Native versions, you only need to upgrade your ClojureScript or JavaScript code.
+- You can write iOS apps on Linux or Windows (provided that you have an iPhone to test it with).
+- It's dead simple to continually share your apps. Once you published your app, you got a link. It is up to you to share the link.
 
 ## 1. Create an Expo project
 
@@ -97,7 +97,7 @@ expo start --ios
 expo start --android
 ```
 
-For more information, see [Expo CLI](../../workflow/expo-cli/).
+For more information, see [Expo CLI](../workflow/expo-cli.md).
 
 ## 4. Publish your app
 
@@ -114,7 +114,7 @@ This will publish your app to a persistent URL on Expo, for example: <https://ex
 
 ### How do I add custom native modules?
 
-See [How do I add custom native code to my Expo project?](../../introduction/faq/#faq).
+See [How do I add custom native code to my Expo project?](../introduction/faq.md#faq).
 
 ### Does it support Google Closure advanced compilation?
 

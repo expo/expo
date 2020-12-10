@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BNCLocalization.h
+../../../Branch/Branch-SDK/BNCLocalization.h

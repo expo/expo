@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BNCJSONUtility.h
+../../../Branch/Branch-SDK/BNCJSONUtility.h

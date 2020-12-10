@@ -1,12 +1,14 @@
 import * as GL from 'expo-gl';
+import { Renderer, TextureLoader, THREE } from 'expo-three';
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Renderer, TextureLoader, THREE } from 'expo-three';
 
 interface State {
   snapshot?: GL.GLSnapshot;
 }
 
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
 export default class GLSnapshotsScreen extends React.PureComponent<{}, State> {
   static title = 'Taking snapshots';
 

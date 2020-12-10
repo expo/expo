@@ -24,6 +24,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)writeToCache;
 
+- (NSError *)verifyManifestSdkVersion:(NSDictionary *)maybeManifest;
+- (NSError *)formatError:(NSError *)error;
+
 @end
 
 NS_ASSUME_NONNULL_END

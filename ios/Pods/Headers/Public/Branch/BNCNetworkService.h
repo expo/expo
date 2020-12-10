@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/Networking/BNCNetworkService.h
+../../../Branch/Branch-SDK/BNCNetworkService.h

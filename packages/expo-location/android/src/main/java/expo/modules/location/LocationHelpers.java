@@ -95,12 +95,15 @@ public class LocationHelpers {
     Bundle map = new Bundle();
 
     map.putString("city", address.getLocality());
+    map.putString("district", address.getSubLocality());
     map.putString("street", address.getThoroughfare());
     map.putString("region", address.getAdminArea());
+    map.putString("subregion", address.getSubAdminArea());
     map.putString("country", address.getCountryName());
     map.putString("postalCode", address.getPostalCode());
     map.putString("name", address.getFeatureName());
     map.putString("isoCountryCode", address.getCountryCode());
+    map.putString("timezone", null);
 
     return map;
   }

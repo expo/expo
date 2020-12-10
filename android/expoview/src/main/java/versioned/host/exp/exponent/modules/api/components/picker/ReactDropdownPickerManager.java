@@ -18,7 +18,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 @ReactModule(name = ReactDropdownPickerManager.REACT_CLASS)
 public class ReactDropdownPickerManager extends ReactPickerManager {
 
-  public static final String REACT_CLASS = "AndroidDropdownPicker";
+  public static final String REACT_CLASS = "RNCAndroidDropdownPicker";
 
   @Override
   public String getName() {

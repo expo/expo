@@ -152,13 +152,6 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
   }
 
   @ReactMethod
-  public void createShortcutAsync(String manifestUrl, ReadableMap manifest, String bundleUrl, Promise promise) {
-    mKernel.installShortcut(manifestUrl, manifest, bundleUrl);
-
-    promise.resolve(true);
-  }
-
-  @ReactMethod
   public void goToHomeFromErrorScreen() {
     ErrorActivity visibleActivity = ErrorActivity.getVisibleActivity();
     if (visibleActivity == null) {

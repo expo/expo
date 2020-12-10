@@ -1,0 +1,1 @@
+../../../../FlipperKit/iOS/Plugins/FlipperKitReactPlugin/FlipperKitReactPlugin/FlipperKitReactPlugin.h

@@ -11,4 +11,5 @@ public interface Manifest {
   UpdateEntity getUpdateEntity();
   ArrayList<AssetEntity> getAssetEntityList();
   JSONObject getRawManifestJson();
+  boolean isDevelopmentMode();
 }

@@ -18,21 +18,21 @@ class Stripe {
             this.stripeInitialized = true;
             return StripeModule.init(options, errorCodes);
         };
-        // @deprecated use deviceSupportsNativePay
+        /** @deprecated use `deviceSupportsNativePay` */
         this.deviceSupportsAndroidPayAsync = () => StripeModule.deviceSupportsAndroidPay();
-        // @deprecated use deviceSupportsNativePay
+        /** @deprecated use `deviceSupportsNativePay` */
         this.deviceSupportsApplePayAsync = () => StripeModule.deviceSupportsApplePay();
         this.deviceSupportsNativePayAsync = () => Platform.select({
             ios: () => this.deviceSupportsApplePayAsync(),
             android: () => this.deviceSupportsAndroidPayAsync(),
             default: () => Promise.resolve(false),
         })();
-        // @deprecated use canMakeNativePayPayments
+        /** @deprecated use `canMakeNativePayPayments` */
         this.canMakeApplePayPaymentsAsync = (options = {}) => {
             checkArgs(validators.canMakeApplePayPaymentsOptionsPropTypes, options, 'options', 'Stripe.canMakeApplePayPayments');
             return StripeModule.canMakeApplePayPayments(options);
         };
-        // @deprecated use canMakeNativePayPayments
+        /** @deprecated use `canMakeNativePayPayments` */
         this.canMakeAndroidPayPaymentsAsync = () => StripeModule.canMakeAndroidPayPayments();
         // iOS requires networks array while Android requires nothing
         this.canMakeNativePayPaymentsAsync = (options = {}) => Platform.select({
@@ -40,20 +40,20 @@ class Stripe {
             android: () => this.canMakeAndroidPayPaymentsAsync(),
             default: () => Promise.resolve(false),
         })();
-        // @deprecated use paymentRequestWithNativePay
+        /** @deprecated use `paymentRequestWithNativePay` */
         this.paymentRequestWithAndroidPayAsync = (options) => {
             checkInit(this);
             checkArgs(validators.paymentRequestWithAndroidPayOptionsPropTypes, options, 'options', 'Stripe.paymentRequestWithAndroidPay');
             return StripeModule.paymentRequestWithAndroidPay(options);
         };
-        // @deprecated use paymentRequestWithNativePay
+        /** @deprecated use `paymentRequestWithNativePay` */
         this.paymentRequestWithApplePayAsync = (items, options) => {
             checkInit(this);
             checkArgs(validators.paymentRequestWithApplePayItemsPropTypes, { items }, 'items', 'Stripe.paymentRequestWithApplePay');
             checkArgs(validators.paymentRequestWithApplePayOptionsPropTypes, options, 'options', 'Stripe.paymentRequestWithApplePay');
             return StripeModule.paymentRequestWithApplePay(items, options);
         };
-        // @deprecated use completeNativePayRequest
+        /** @deprecated use completeNativePayRequest */
         this.completeApplePayRequestAsync = () => {
             checkInit(this);
             return StripeModule.completeApplePayRequest();
@@ -63,7 +63,7 @@ class Stripe {
             ios: () => this.completeApplePayRequestAsync(),
             default: () => Promise.resolve(),
         })();
-        // @deprecated use cancelNativePayRequest
+        /** @deprecated use `cancelNativePayRequest` */
         this.cancelApplePayRequestAsync = () => {
             checkInit(this);
             return StripeModule.cancelApplePayRequest();
@@ -73,7 +73,7 @@ class Stripe {
             ios: () => this.cancelApplePayRequestAsync(),
             default: () => Promise.resolve(),
         })();
-        // @deprecated use openNativePaySetup
+        /** @deprecated use `openNativePaySetup` */
         this.openApplePaySetupAsync = () => StripeModule.openApplePaySetup();
         // no corresponding android impl exists
         this.openNativePaySetupAsync = () => Platform.select({

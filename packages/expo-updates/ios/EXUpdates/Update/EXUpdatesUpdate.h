@@ -13,7 +13,8 @@ typedef NS_ENUM(NSInteger, EXUpdatesUpdateStatus) {
   EXUpdatesUpdateStatusLaunchable = 2,
   EXUpdatesUpdateStatusPending = 3,
   EXUpdatesUpdateStatusUnused = 4,
-  EXUpdatesUpdateStatusEmbedded = 5
+  EXUpdatesUpdateStatusEmbedded = 5,
+  EXUpdatesUpdateStatusDevelopment = 6
 };
 
 @interface EXUpdatesUpdate : NSObject
@@ -25,12 +26,14 @@ typedef NS_ENUM(NSInteger, EXUpdatesUpdateStatus) {
 @property (nonatomic, strong, readonly, nullable) NSDictionary * metadata;
 @property (nonatomic, assign, readonly) BOOL keep;
 @property (nonatomic, strong, readonly) NSArray<EXUpdatesAsset *> *assets;
+@property (nonatomic, assign, readonly) BOOL isDevelopmentMode;
 
 @property (nonatomic, strong, readonly) NSDictionary *rawManifest;
 
 @property (nonatomic, assign) EXUpdatesUpdateStatus status;
 
 + (instancetype)updateWithId:(NSUUID *)updateId
+                    scopeKey:(NSString *)scopeKey
                   commitTime:(NSDate *)commitTime
               runtimeVersion:(NSString *)runtimeVersion
                     metadata:(nullable NSDictionary *)metadata

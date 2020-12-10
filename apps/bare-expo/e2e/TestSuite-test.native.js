@@ -1,6 +1,6 @@
 import { by, device, element, expect as detoxExpect, waitFor } from 'detox';
 
-import { getTextAsync, sleepAsync } from './Utils';
+import { sleepAsync } from './Utils';
 import { expectResults } from './utils/report';
 
 let TESTS = [
@@ -50,7 +50,9 @@ describe('test-suite', () => {
           // test hasn't completed within the timeout
           // continue and log the intermediate results
         }
-        const input = await getTextAsync('test_suite_final_results');
+        const attributes = await element(by.id('test_suite_final_results')).getAttributes();
+
+        const input = attributes.text;
 
         expectResults({
           testName,

@@ -1,5 +1,5 @@
 import { Platform } from '@unimodules/core';
-import Constants from 'expo-constants';
+import Constants, { ExecutionEnvironment } from 'expo-constants';
 import * as Linking from 'expo-linking';
 import { dismissAuthSession, openAuthSessionAsync } from 'expo-web-browser';
 import { AuthRequest } from './AuthRequest';
@@ -54,6 +54,7 @@ export async function startAsync(options) {
         type: errorCode ? 'error' : 'success',
         params,
         errorCode,
+        authentication: null,
         url: result.url,
     };
 }
@@ -64,7 +65,7 @@ export function getDefaultReturnUrl() {
     return sessionUrlProvider.getDefaultReturnUrl();
 }
 /**
- * Deprecated: Use `makeRedirectUri({ path, useProxy })` instead.
+ * @deprecated Use `makeRedirectUri({ path, useProxy })` instead.
  *
  * @param path
  */
@@ -83,7 +84,7 @@ export function getRedirectUrl(path) {
 export function makeRedirectUri({ native, path, preferLocalhost, useProxy, } = {}) {
     if (Platform.OS !== 'web') {
         // Bare workflow
-        if (!Constants.manifest) {
+        if (Constants.executionEnvironment === ExecutionEnvironment.Bare) {
             if (!native) {
                 // TODO(Bacon): Link to docs or fyi
                 console.warn("makeRedirectUri requires you define a `native` scheme for bare workflow, and standalone native apps, you'll need to manually define it based on your app's URI schemes.");
@@ -93,7 +94,7 @@ export function makeRedirectUri({ native, path, preferLocalhost, useProxy, } = {
             return native || '';
         }
         // Should use the user-defined native scheme in standalone builds
-        if (Constants.appOwnership === 'standalone' && native) {
+        if (Constants.executionEnvironment === ExecutionEnvironment.Standalone && native) {
             return native;
         }
     }
@@ -132,7 +133,7 @@ async function _openWebBrowserAsync(startUrl, returnUrl, showInRecents) {
     }
     return result;
 }
-export * from './AuthRequestHooks';
+export { useAutoDiscovery, useAuthRequest } from './AuthRequestHooks';
 export { AuthError, TokenError } from './Errors';
 export { AuthRequest, CodeChallengeMethod, Prompt, ResponseType, resolveDiscoveryAsync, fetchDiscoveryAsync, generateHexStringAsync, };
 export { 

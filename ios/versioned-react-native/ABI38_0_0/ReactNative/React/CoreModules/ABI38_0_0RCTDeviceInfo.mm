@@ -19,7 +19,7 @@
 
 using namespace ABI38_0_0facebook::ABI38_0_0React;
 
-@interface ABI38_0_0RCTDeviceInfo () <NativeDeviceInfoSpec>
+@interface ABI38_0_0RCTDeviceInfo () <ABI38_0_0NativeDeviceInfoSpec>
 @end
 
 @implementation ABI38_0_0RCTDeviceInfo {

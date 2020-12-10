@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BNCKeyChain.h
+../../../Branch/Branch-SDK/BNCKeyChain.h

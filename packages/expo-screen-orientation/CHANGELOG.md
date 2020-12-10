@@ -4,9 +4,19 @@
 
 ### 🛠 Breaking changes
 
-- Now the module will keep the lock active when the app backgrounds. ([#8727](https://github.com/expo/expo/pull/8727) by [@lukmccall](https://github.com/lukmccall))
-
 ### 🎉 New features
+
+### 🐛 Bug fixes
+
+## 2.1.0 — 2020-11-17
+
+_This version does not introduce any user-facing changes._
+
+## 2.0.0 — 2020-08-11
+
+### 🛠 Breaking changes
+
+- Now the module will keep the lock active when the app backgrounds. ([#8727](https://github.com/expo/expo/pull/8727) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 

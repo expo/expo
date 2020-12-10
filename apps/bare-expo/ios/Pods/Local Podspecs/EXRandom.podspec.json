@@ -1,11 +1,11 @@
 {
   "name": "EXRandom",
-  "version": "8.2.1",
+  "version": "10.0.0",
   "summary": "Expo universal module for random bytes",
   "description": "Expo universal module for random bytes",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-random",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/random/",
   "platforms": {
     "ios": "10.0"
   },
@@ -16,7 +16,7 @@
   "preserve_paths": "EXRandom/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "UMCore": [
+    "React-Core": [
 
     ]
   }

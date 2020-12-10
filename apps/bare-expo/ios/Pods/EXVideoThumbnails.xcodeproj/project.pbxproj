@@ -7,20 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		302177E034652D5E9E7CB05F8438C984 /* EXVideoThumbnailsModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 7F06D87E3754EF2A11B4738D8FA760D5 /* EXVideoThumbnailsModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		7E50A9AB2029C0D0BBF13E93B72EE455 /* EXVideoThumbnails-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 30C3A7BCC96AFBF2B5E36957F083A9D6 /* EXVideoThumbnails-dummy.m */; };
-		D9CD4345D23F962352D982FD7867F747 /* EXVideoThumbnailsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF58797B509585FEA0CD4E55C485F88 /* EXVideoThumbnailsModule.m */; };
+		2796DC275493FD5F32F9C93D6DF3CD91 /* EXVideoThumbnailsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF58797B509585FEA0CD4E55C485F88 /* EXVideoThumbnailsModule.m */; };
+		56B96BBF49FCAD4457A4B0820E3BB4AD /* EXVideoThumbnails-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 30C3A7BCC96AFBF2B5E36957F083A9D6 /* EXVideoThumbnails-dummy.m */; };
+		79A9A90F7C6283A0F23E80759E9FAEB0 /* EXVideoThumbnailsModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 7F06D87E3754EF2A11B4738D8FA760D5 /* EXVideoThumbnailsModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		02E01906DC2A296FB213F3EAC8A145A8 /* PBXContainerItemProxy */ = {
+		938AFC761C730600E01E85450EEA72F1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B77444528BEEDC29D2F616A4C3E94C6E /* UMFileSystemInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
 			remoteInfo = UMFileSystemInterface;
 		};
-		7D4BEA7EF3BF7918D812288F59F662AC /* PBXContainerItemProxy */ = {
+		B3144328B63CECA0688836A39F66E315 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5DAC50812CE3AE7B2163C4E17E8A4D30 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -43,7 +43,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		E0C80711CF651F185ABC411C7F302362 /* Frameworks */ = {
+		AC0C80DE21553C2CD98355797185DDF2 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -122,11 +122,11 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		D956DCC5EA4AAEFDA3B0BE33F5E8770F /* Headers */ = {
+		98E476D97BEF904D4EF3C6057851B58D /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				302177E034652D5E9E7CB05F8438C984 /* EXVideoThumbnailsModule.h in Headers */,
+				79A9A90F7C6283A0F23E80759E9FAEB0 /* EXVideoThumbnailsModule.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -135,17 +135,17 @@
 /* Begin PBXNativeTarget section */
 		16ED442C06F5D444E672AE845A57E796 /* EXVideoThumbnails */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 763B63C6701CEFABF4822347C37A33C9 /* Build configuration list for PBXNativeTarget "EXVideoThumbnails" */;
+			buildConfigurationList = 571AE34882D80214F2AF263A7696DF66 /* Build configuration list for PBXNativeTarget "EXVideoThumbnails" */;
 			buildPhases = (
-				D956DCC5EA4AAEFDA3B0BE33F5E8770F /* Headers */,
-				16415F35359B6CEDB88B94C2B5C6E5CD /* Sources */,
-				E0C80711CF651F185ABC411C7F302362 /* Frameworks */,
+				98E476D97BEF904D4EF3C6057851B58D /* Headers */,
+				FA4822468B375636975E763D43E56A8E /* Sources */,
+				AC0C80DE21553C2CD98355797185DDF2 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				F6AC46B4868AC66CB5A92508CCC694F2 /* PBXTargetDependency */,
-				366B3A8A316B8E4C3D3D68E622F8B0A3 /* PBXTargetDependency */,
+				31C7C48165D4438EEB5AEA9D09F651DA /* PBXTargetDependency */,
+				66C4367739F94BCBE69EB1532967B6DF /* PBXTargetDependency */,
 			);
 			name = EXVideoThumbnails;
 			productName = EXVideoThumbnails;
@@ -188,125 +188,40 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		16415F35359B6CEDB88B94C2B5C6E5CD /* Sources */ = {
+		FA4822468B375636975E763D43E56A8E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7E50A9AB2029C0D0BBF13E93B72EE455 /* EXVideoThumbnails-dummy.m in Sources */,
-				D9CD4345D23F962352D982FD7867F747 /* EXVideoThumbnailsModule.m in Sources */,
+				56B96BBF49FCAD4457A4B0820E3BB4AD /* EXVideoThumbnails-dummy.m in Sources */,
+				2796DC275493FD5F32F9C93D6DF3CD91 /* EXVideoThumbnailsModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		366B3A8A316B8E4C3D3D68E622F8B0A3 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMFileSystemInterface;
-			targetProxy = 02E01906DC2A296FB213F3EAC8A145A8 /* PBXContainerItemProxy */;
-		};
-		F6AC46B4868AC66CB5A92508CCC694F2 /* PBXTargetDependency */ = {
+		31C7C48165D4438EEB5AEA9D09F651DA /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 7D4BEA7EF3BF7918D812288F59F662AC /* PBXContainerItemProxy */;
+			targetProxy = B3144328B63CECA0688836A39F66E315 /* PBXContainerItemProxy */;
+		};
+		66C4367739F94BCBE69EB1532967B6DF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMFileSystemInterface;
+			targetProxy = 938AFC761C730600E01E85450EEA72F1 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		30C9E94EF4C6F58194539B5F317E2E1B /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"POD_CONFIGURATION_RELEASE=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.0;
-				SYMROOT = "${SRCROOT}/../build";
-			};
-			name = Release;
-		};
-		597BEFE8649B68E53C477AE73F3AD755 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 48B3321902F08F749D6CBA94758B6533 /* EXVideoThumbnails.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXVideoThumbnails/EXVideoThumbnails-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXVideoThumbnails;
-				PRODUCT_NAME = EXVideoThumbnails;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		E8403E7B2020C38004F4309D86CAEEB4 /* Release */ = {
+		6AF940F0D360C3191477DFC3BC877AD1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = FE0842B13C675703F3C3553BB8C01972 /* EXVideoThumbnails.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/EXVideoThumbnails/EXVideoThumbnails-prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				OTHER_LDFLAGS = "";
@@ -324,10 +239,36 @@
 			};
 			name = Release;
 		};
-		EF6D5A9080B8EA9C84DA45A9F785C2B5 /* Debug */ = {
+		9797D1ECEF9DABFB46F6D9044473CD19 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 48B3321902F08F749D6CBA94758B6533 /* EXVideoThumbnails.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/EXVideoThumbnails/EXVideoThumbnails-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXVideoThumbnails;
+				PRODUCT_NAME = EXVideoThumbnails;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		DA1BEB1337BB40865583D8E6E9A52150 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -350,6 +291,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -388,14 +330,76 @@
 			};
 			name = Debug;
 		};
+		DD033A69AA3E41597EDDA87F40E28618 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		763B63C6701CEFABF4822347C37A33C9 /* Build configuration list for PBXNativeTarget "EXVideoThumbnails" */ = {
+		571AE34882D80214F2AF263A7696DF66 /* Build configuration list for PBXNativeTarget "EXVideoThumbnails" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				597BEFE8649B68E53C477AE73F3AD755 /* Debug */,
-				E8403E7B2020C38004F4309D86CAEEB4 /* Release */,
+				9797D1ECEF9DABFB46F6D9044473CD19 /* Debug */,
+				6AF940F0D360C3191477DFC3BC877AD1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -403,8 +407,8 @@
 		ED7C38C83E4C9850E45227979BA5A4E5 /* Build configuration list for PBXProject "EXVideoThumbnails" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				EF6D5A9080B8EA9C84DA45A9F785C2B5 /* Debug */,
-				30C9E94EF4C6F58194539B5F317E2E1B /* Release */,
+				DA1BEB1337BB40865583D8E6E9A52150 /* Debug */,
+				DD033A69AA3E41597EDDA87F40E28618 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

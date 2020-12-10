@@ -5,7 +5,7 @@ title: Sharing the image
 import SnackInline from '~/components/plugins/SnackInline';
 import Video from '~/components/plugins/Video'
 
-Similar to expo-image-picker, the functionality that we need to share is available in an Expo library &mdash; this one is called [expo-sharing](/versions/latest/sdk/sharing/).
+Similar to expo-image-picker, the functionality that we need to share is available in an Expo library &mdash; this one is called [expo-sharing](../versions/latest/sdk/sharing.md).
 
 ## Installing expo-sharing
 
@@ -17,6 +17,7 @@ You can install expo-sharing in the same way as you installed expo-image-picker:
 
 <SnackInline label="Sharing" templateId="tutorial/sharing-simple" dependencies={['expo-image-picker', 'expo-sharing']}>
 
+<!-- prettier-ignore -->
 ```js
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -85,14 +86,14 @@ export default function App() {
 
 <p>
 
-Sharing didn't work here because the desktop Chrome browser doesn't yet implement the [Web Share API](https://web.dev/web-share/). _"But wait,"_ you say, _"aren't we using expo-sharing, not the Web Share API?"_ You can you can think of the Expo SDK libraries as translators for different platforms. They speak the language of Expo and turn it into the language of iOS, Android, and web. It isn't always possible to translate from Expo's language to the platform that you're working with. In other words, if the platform doesn't implement a feature, Expo can't tell it to invoke that feature. In some cases Expo can attempt to [polyfill](<https://en.wikipedia.org/wiki/Polyfill_(programming)>) the feature for you, but this isn't always possible. Invoking your operating system's built-in share dialog to share content with other applications needs to be implemented by the platform itself &mdash; Chrome in this case.
+Sharing didn't work here because the desktop Chrome browser doesn't yet implement the [Web Share API](https://web.dev/web-share/). _"But wait,"_ you say, _"aren't we using expo-sharing, not the Web Share API?"_ You can think of the Expo SDK libraries as translators for different platforms. They speak the language of Expo and turn it into the language of iOS, Android, and web. It isn't always possible to translate from Expo's language to the platform that you're working with. In other words, if the platform doesn't implement a feature, Expo can't tell it to invoke that feature. In some cases Expo can attempt to [polyfill](<https://en.wikipedia.org/wiki/Polyfill_(programming)>) the feature for you, but this isn't always possible. Invoking your operating system's built-in share dialog to share content with other applications needs to be implemented by the platform itself &mdash; Chrome in this case.
 
 </p>
 </details>
 
 ## Working with what we have available
 
-In the next section we are going to look at how we can handle this and another important platform difference. [Continue to "Handling platform differences"](../../tutorial/platform-differences/).
+In the next section we are going to look at how we can handle this and another important platform difference. [Continue to "Handling platform differences"](../tutorial/platform-differences.md).
 
 <!-- TODO(brentvatne): when we have a better workflow for https in expo-cli and a way to open Snack web on mobile we should revisit this -->
 

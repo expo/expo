@@ -6,6 +6,7 @@ exports[`renders A 1`] = `
   data-focusable={true}
   dir="auto"
   href="#"
+  onClick={[Function]}
   role="link"
   target="_parent"
 />

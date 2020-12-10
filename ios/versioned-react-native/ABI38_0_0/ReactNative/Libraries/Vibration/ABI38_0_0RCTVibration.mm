@@ -13,7 +13,7 @@
 
 #import "ABI38_0_0RCTVibrationPlugins.h"
 
-@interface ABI38_0_0RCTVibration() <NativeVibrationSpec>
+@interface ABI38_0_0RCTVibration() <ABI38_0_0NativeVibrationSpec>
 @end
 
 @implementation ABI38_0_0RCTVibration

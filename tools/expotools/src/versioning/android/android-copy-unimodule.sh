@@ -14,10 +14,6 @@ cp -r $2/src/main/java/* $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION
 cp -r $2/src/main/kotlin/* $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION
 cp -r $2/src/main/AndroidManifest.xml $UNIMODULE_MANIFEST_PATH
 
-# Rename references to other packages previously under versioned.host.exp.exponent
-
-find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION -iname 'flutter' -type d -print0 | xargs -0 rm -r
-
 # Remove packages-to-keep
 
 while read PACKAGE

@@ -31,7 +31,7 @@
 - (void)addLoader:(nonnull id<SDImageLoader>)loader;
 
 /**
- Remove a image loader in the loaders array.
+ Remove an image loader in the loaders array.
  
  @param loader loader
  */

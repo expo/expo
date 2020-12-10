@@ -1,4 +1,4 @@
-import { UnavailabilityError } from '@unimodules/core';
+import { Platform, UnavailabilityError } from '@unimodules/core';
 import uuidv4 from 'uuid/v4';
 
 import NotificationScheduler from './NotificationScheduler';
@@ -7,8 +7,11 @@ import {
   NotificationRequestInput,
   NotificationTriggerInput,
   DailyTriggerInput,
+  WeeklyTriggerInput,
   CalendarTriggerInput,
   TimeIntervalTriggerInput,
+  DateTriggerInput,
+  ChannelAwareTriggerInput,
 } from './Notifications.types';
 
 export default async function scheduleNotificationAsync(
@@ -25,7 +28,9 @@ export default async function scheduleNotificationAsync(
   );
 }
 
-function parseTrigger(userFacingTrigger: NotificationTriggerInput): NativeNotificationTriggerInput {
+export function parseTrigger(
+  userFacingTrigger: NotificationTriggerInput
+): NativeNotificationTriggerInput {
   if (userFacingTrigger === null) {
     return null;
   }
@@ -36,10 +41,8 @@ function parseTrigger(userFacingTrigger: NotificationTriggerInput): NativeNotifi
     );
   }
 
-  if (userFacingTrigger instanceof Date) {
-    return { type: 'date', timestamp: userFacingTrigger.getTime() };
-  } else if (typeof userFacingTrigger === 'number') {
-    return { type: 'date', timestamp: userFacingTrigger };
+  if (isDateTrigger(userFacingTrigger)) {
+    return parseDateTrigger(userFacingTrigger);
   } else if (isDailyTriggerInput(userFacingTrigger)) {
     const hour = userFacingTrigger.hour;
     const minute = userFacingTrigger.minute;
@@ -54,6 +57,37 @@ function parseTrigger(userFacingTrigger: NotificationTriggerInput): NativeNotifi
     }
     return {
       type: 'daily',
+      channelId: userFacingTrigger.channelId,
+      hour,
+      minute,
+    };
+  } else if (isWeeklyTriggerInput(userFacingTrigger)) {
+    const weekday = userFacingTrigger.weekday;
+    const hour = userFacingTrigger.hour;
+    const minute = userFacingTrigger.minute;
+    if (
+      weekday === undefined ||
+      weekday == null ||
+      hour === undefined ||
+      hour == null ||
+      minute === undefined ||
+      minute == null
+    ) {
+      throw new TypeError('Weekday, hour and minute need to have valid values. Found undefined');
+    }
+    if (weekday < 1 || weekday > 7) {
+      throw new RangeError(`The weekday parameter needs to be between 1 and 7. Found: ${weekday}`);
+    }
+    if (hour < 0 || hour > 23) {
+      throw new RangeError(`The hour parameter needs to be between 0 and 23. Found: ${hour}`);
+    }
+    if (minute < 0 || minute > 59) {
+      throw new RangeError(`The minute parameter needs to be between 0 and 59. Found: ${minute}`);
+    }
+    return {
+      type: 'weekly',
+      channelId: userFacingTrigger.channelId,
+      weekday,
       hour,
       minute,
     };
@@ -64,34 +98,96 @@ function parseTrigger(userFacingTrigger: NotificationTriggerInput): NativeNotifi
   } else if ('seconds' in userFacingTrigger) {
     return {
       type: 'timeInterval',
+      channelId: userFacingTrigger.channelId,
       seconds: userFacingTrigger.seconds,
       repeats: userFacingTrigger.repeats ?? false,
     };
-  } else {
+  } else if (isCalendarTrigger(userFacingTrigger)) {
     const { repeats, ...calendarTrigger } = userFacingTrigger;
     return { type: 'calendar', value: calendarTrigger, repeats };
+  } else {
+    return Platform.select({
+      default: null, // There's no notion of channels on platforms other than Android.
+      android: { type: 'channel', channelId: userFacingTrigger.channelId },
+    });
   }
 }
 
-function isDailyTriggerInput(
-  trigger: DailyTriggerInput | CalendarTriggerInput | TimeIntervalTriggerInput
-): trigger is DailyTriggerInput {
+function isCalendarTrigger(
+  trigger: CalendarTriggerInput | ChannelAwareTriggerInput
+): trigger is CalendarTriggerInput {
+  const { channelId, ...triggerWithoutChannelId } = trigger;
+  return Object.keys(triggerWithoutChannelId).length > 0;
+}
+
+function isDateTrigger(
+  trigger:
+    | DateTriggerInput
+    | WeeklyTriggerInput
+    | DailyTriggerInput
+    | CalendarTriggerInput
+    | TimeIntervalTriggerInput
+): trigger is DateTriggerInput {
   return (
-    Object.keys(trigger).length === 3 &&
-    'hour' in trigger &&
-    'minute' in trigger &&
-    'repeats' in trigger &&
-    trigger.repeats === true
+    trigger instanceof Date ||
+    typeof trigger === 'number' ||
+    (typeof trigger === 'object' && 'date' in trigger)
+  );
+}
+
+function parseDateTrigger(trigger: DateTriggerInput): NativeNotificationTriggerInput {
+  if (trigger instanceof Date || typeof trigger === 'number') {
+    return { type: 'date', timestamp: toTimestamp(trigger) };
+  }
+  return { type: 'date', timestamp: toTimestamp(trigger.date), channelId: trigger.channelId };
+}
+
+function toTimestamp(date: number | Date) {
+  if (date instanceof Date) {
+    return date.getTime();
+  }
+  return date;
+}
+
+function isDailyTriggerInput(
+  trigger: WeeklyTriggerInput | DailyTriggerInput | CalendarTriggerInput | TimeIntervalTriggerInput
+): trigger is DailyTriggerInput {
+  const { channelId, ...triggerWithoutChannelId } = trigger;
+  return (
+    Object.keys(triggerWithoutChannelId).length === 3 &&
+    'hour' in triggerWithoutChannelId &&
+    'minute' in triggerWithoutChannelId &&
+    'repeats' in triggerWithoutChannelId &&
+    triggerWithoutChannelId.repeats === true
+  );
+}
+
+function isWeeklyTriggerInput(
+  trigger: WeeklyTriggerInput | DailyTriggerInput | CalendarTriggerInput | TimeIntervalTriggerInput
+): trigger is WeeklyTriggerInput {
+  const { channelId, ...triggerWithoutChannelId } = trigger;
+  return (
+    Object.keys(triggerWithoutChannelId).length === 4 &&
+    'weekday' in triggerWithoutChannelId &&
+    'hour' in triggerWithoutChannelId &&
+    'minute' in triggerWithoutChannelId &&
+    'repeats' in triggerWithoutChannelId &&
+    triggerWithoutChannelId.repeats === true
   );
 }
 
 function isSecondsPropertyMisusedInCalendarTriggerInput(
   trigger: TimeIntervalTriggerInput | CalendarTriggerInput
 ) {
+  const { channelId, ...triggerWithoutChannelId } = trigger;
   return (
     // eg. { seconds: ..., repeats: ..., hour: ... }
-    ('seconds' in trigger && 'repeats' in trigger && Object.keys(trigger).length > 2) ||
+    ('seconds' in triggerWithoutChannelId &&
+      'repeats' in triggerWithoutChannelId &&
+      Object.keys(triggerWithoutChannelId).length > 2) ||
     // eg. { seconds: ..., hour: ... }
-    ('seconds' in trigger && !('repeats' in trigger) && Object.keys(trigger).length > 1)
+    ('seconds' in triggerWithoutChannelId &&
+      !('repeats' in triggerWithoutChannelId) &&
+      Object.keys(triggerWithoutChannelId).length > 1)
   );
 }

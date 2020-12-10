@@ -22,10 +22,10 @@ export const FormInput = React.forwardRef(
       ref,
       () => ({
         focus() {
-          input.current?.focus();
+          input.current?.focus?.();
         },
         blur() {
-          input.current?.blur();
+          input.current?.blur?.();
         },
       }),
       [input]
@@ -35,7 +35,7 @@ export const FormInput = React.forwardRef(
     React.useEffect(() => {
       if (autoFocus) {
         InteractionManager.runAfterInteractions(() => {
-          input.current?.focus();
+          input.current?.focus?.();
         });
       }
     }, []);

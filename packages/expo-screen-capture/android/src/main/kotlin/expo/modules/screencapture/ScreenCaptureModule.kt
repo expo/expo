@@ -6,10 +6,10 @@ import android.view.WindowManager
 
 import org.unimodules.core.ExportedModule
 import org.unimodules.core.ModuleRegistry
-import org.unimodules.core.errors.CurrentActivityNotFoundException
 import org.unimodules.core.Promise
-import org.unimodules.core.interfaces.ExpoMethod
+import org.unimodules.core.errors.CurrentActivityNotFoundException
 import org.unimodules.core.interfaces.ActivityProvider
+import org.unimodules.core.interfaces.ExpoMethod
 
 class ScreenCaptureModule(context: Context) : ExportedModule(context) {
 
@@ -21,6 +21,7 @@ class ScreenCaptureModule(context: Context) : ExportedModule(context) {
 
   override fun onCreate(moduleRegistry: ModuleRegistry) {
     mActivityProvider = moduleRegistry.getModule(ActivityProvider::class.java)
+    ScreenshotEventEmitter(context, moduleRegistry)
   }
 
   @ExpoMethod

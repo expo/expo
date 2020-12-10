@@ -3,9 +3,15 @@ const LOCAL_STORAGE_KEY = 'EXPO_ERROR_RECOVERY_STORAGE';
 function _consumeRecoveryProps() {
     if (!canUseDOM)
         return null;
-    const props = localStorage.getItem(LOCAL_STORAGE_KEY);
-    localStorage.removeItem(LOCAL_STORAGE_KEY);
-    return props;
+    try {
+        const props = localStorage.getItem(LOCAL_STORAGE_KEY);
+        localStorage.removeItem(LOCAL_STORAGE_KEY);
+        return props;
+    }
+    catch (e) {
+        // Catches localStorage SecurityError https://github.com/expo/expo/issues/8355
+    }
+    return null;
 }
 export default {
     get name() {
@@ -14,7 +20,12 @@ export default {
     saveRecoveryProps(props) {
         if (!canUseDOM)
             return;
-        localStorage.setItem(LOCAL_STORAGE_KEY, props);
+        try {
+            localStorage.setItem(LOCAL_STORAGE_KEY, props);
+        }
+        catch (e) {
+            // Catches localStorage SecurityError https://github.com/expo/expo/issues/8355
+        }
     },
     recoveredProps: _consumeRecoveryProps(),
 };

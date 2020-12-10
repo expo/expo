@@ -1,11 +1,11 @@
 ---
 title: Location
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-location'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-location'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
 import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-location`** allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.
@@ -22,25 +22,30 @@ In Managed and bare apps, `Location` requires `Permissions.LOCATION`.
 
 In order to use [Background Location Methods](#background-location-methods), the following requirements apply:
 
-- `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [Permissions.LOCATION](../permissions/#permissionslocation) for more details.
-- `"location"` background mode must be specified in `Info.plist` file. See [background tasks configuration guide](../task-manager/#configuration). **(_iOS only_)**
-- Background location task must be defined in the top-level scope, using [TaskManager.defineTask](../task-manager/#taskmanagerdefinetasktaskname-task).
+- `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [Permissions.LOCATION](permissions.md#permissionslocation) for more details.
+- `"location"` background mode must be specified in `Info.plist` file. See [background tasks configuration guide](task-manager.md#configuration). **(_iOS only_)**
+- Background location task must be defined in the top-level scope, using [TaskManager.defineTask](task-manager.md#taskmanagerdefinetasktaskname-task).
 
 In order to use [Geofencing Methods](#geofencing-methods), the following requirements apply:
 
-- `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [Permissions.LOCATION](../permissions/#permissionslocation) for more details.
-- Geofencing task must be defined in the top-level scope, using [TaskManager.defineTask](../task-manager/#taskmanagerdefinetasktaskname-task).
+- `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [Permissions.LOCATION](permissions.md#permissionslocation) for more details.
+- Geofencing task must be defined in the top-level scope, using [TaskManager.defineTask](task-manager.md#taskmanagerdefinetasktaskname-task).
 - On iOS, there is a [limit of 20](https://developer.apple.com/documentation/corelocation/monitoring_the_user_s_proximity_to_geographic_regions) `regions` that can be simultaneously monitored.
+
+On Android, This module requires the permissions for approximate and exact device location. It also needs the foreground service permission to subscribe to location updates, while the app is in use. The `ACCESS_COARSE_LOCATION`, `ACCESS_FINE_LOCATION`, and `FOREGROUND_SERVICE` permissions are automatically added.
 
 ## Usage
 
 If you're using the iOS or Android Emulators, ensure that [Location is enabled](#enabling-emulator-location).
 
-<SnackInline label='Linear Gradient' templateId='location' dependencies={['expo-location', 'expo-constants']}>
+<SnackInline label='Location' dependencies={['expo-location', 'expo-constants']}>
 
-```js
+```jsx
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import { Platform, Text, View, StyleSheet } from 'react-native';
+/* @hide */
+import Constants from 'expo-constants';
+/* @end */
 import * as Location from 'expo-location';
 
 export default function App() {
@@ -49,9 +54,18 @@ export default function App() {
 
   useEffect(() => {
     (async () => {
+      /* @hide */
+      if (Platform.OS === 'android' && !Constants.isDevice) {
+        setErrorMsg(
+          'Oops, this will not work on Snack in an Android emulator. Try it on your device!'
+        );
+        return;
+      }
+      /* @end */
       let { status } = await Location.requestPermissionsAsync();
       if (status !== 'granted') {
         setErrorMsg('Permission to access location was denied');
+        return;
       }
 
       let location = await Location.getCurrentPositionAsync({});
@@ -68,16 +82,25 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Text>{text}</Text>
+      <Text style={styles.paragraph}>{text}</Text>
     </View>
   );
 }
 
+/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  paragraph: {
+    fontSize: 18,
+    textAlign: 'center',
   },
 });
+/* @end */
 ```
 
 </SnackInline>
@@ -87,16 +110,6 @@ const styles = StyleSheet.create({
 ```js
 import * as Location from 'expo-location';
 ```
-
-<TableOfContentSection title='Methods' contents={['Location.hasServicesEnabledAsync()', 'Location.requestPermissionsAsync()', 'Location.getPermissionsAsync()', 'Location.getLastKnownPositionAsync(options)', 'Location.getCurrentPositionAsync(options)', 'Location.watchPositionAsync(options, callback)', 'Location.getProviderStatusAsync()', 'Location.enableNetworkProviderAsync()', 'Location.getHeadingAsync()', 'Location.watchHeadingAsync(callback)', 'Location.geocodeAsync(address)', 'Location.reverseGeocodeAsync(location)', 'Location.setApiKey(apiKey)', 'Location.installWebGeolocationPolyfill()']} />
-
-<TableOfContentSection title='Background Location Methods' contents={['Location.startLocationUpdatesAsync(taskName, options)', 'Location.stopLocationUpdatesAsync(taskName)', 'Location.hasStartedLocationUpdatesAsync(taskName)']} />
-
-<TableOfContentSection title='Geofencing Methods' contents={['Location.startGeofencingAsync(taskName, regions)', 'Location.stopGeofencingAsync(taskName)', 'Location.hasStartedGeofencingAsync(taskName)']} />
-
-<TableOfContentSection title='Types' contents={['LocationPermissionResponse', 'LocationObject', 'LocationProviderStatus', 'LocationHeadingObject', 'LocationRegion']} />
-
-<TableOfContentSection title='Enums' contents={['LocationAccuracy', 'LocationActivityType', 'LocationGeofencingEventType', 'LocationGeofencingRegionState']} />
 
 ## Methods
 
@@ -222,16 +235,18 @@ Geocode an address string to latitiude-longitude location.
 
 #### Arguments
 
-- **address (_string_)** -- A string representing address, eg. "Baker Street London"
+- **address (_string_)** — A string representing address, eg. "Baker Street London"
+- **options (_object_)** — A map of options:
+  - **useGoogleMaps (_boolean_)** — Whether to force using Google Maps API instead of the native implementation. Used by default only on Web platform. Requires providing an API key by `setGoogleApiKey`.
 
 #### Returns
 
 Returns a promise resolving to an array (in most cases its size is 1) of geocoded location objects with the following fields:
 
-- **latitude (_number_)** -- The latitude in degrees.
-- **longitude (_number_)** -- The longitude in degrees.
-- **altitude (_number_)** -- The altitude in meters above the WGS 84 reference ellipsoid.
-- **accuracy (_number_)** -- The radius of uncertainty for the location, measured in meters.
+- **latitude (_number_)** — The latitude in degrees.
+- **longitude (_number_)** — The longitude in degrees.
+- **altitude (_number_)** — The altitude in meters above the WGS 84 reference ellipsoid.
+- **accuracy (_number_)** — The radius of uncertainty for the location, measured in meters.
 
 ### `Location.reverseGeocodeAsync(location)`
 
@@ -243,30 +258,34 @@ Reverse geocode a location to postal address.
 
 #### Arguments
 
-- **location (_object_)** -- An object representing a location:
-
-  - **latitude (_number_)** -- The latitude of location to reverse geocode, in degrees.
-  - **longitude (_number_)** -- The longitude of location to reverse geocode, in degrees.
+- **location (_object_)** — An object representing a location:
+  - **latitude (_number_)** — The latitude of location to reverse geocode, in degrees.
+  - **longitude (_number_)** — The longitude of location to reverse geocode, in degrees.
+- **options (_object_)** — A map of options:
+  - **useGoogleMaps (_boolean_)** — Whether to force using Google Maps API instead of the native implementation. Used by default only on Web platform. Requires providing an API key by `setGoogleApiKey`.
 
 #### Returns
 
 Returns a promise resolving to an array (in most cases its size is 1) of address objects with following fields:
 
-- **city (_string_)** -- City name of the address.
-- **street (_string_)** -- Street name of the address.
-- **region (_string_)** -- Region/area name of the address.
-- **postalCode (_string_)** -- Postal code of the address.
-- **country (_string_)** -- Localized country name of the address.
-- **name (_string_)** -- Place name of the address, for example, "Tower Bridge".
-- **isoCountryCode (_string|null_)** -- Localized (iso) country code of the address, if available.
+- **city (_string_ | _null_)** — City name of the address.
+- **district (_string_ | _null_)** — Additional city-level information like district name.
+- **street (_string_ | _null_)** — Street name of the address.
+- **region (_string_ | _null_)** — The state or province associated with the address.
+- **subregion (_string_ | _null_)** — Additional information about administrative area.
+- **postalCode (_string_ | _null_)** — Postal code of the address.
+- **country (_string_ | _null_)** — Localized country name of the address.
+- **name (_string_ | _null_)** — The name of the placemark, for example, "Tower Bridge".
+- **isoCountryCode (_string_ | _null_)** — Localized (iso) country code of the address, if available.
+- **timezone (_string_ | _null_)** — The timezone identifier associated with the address. (**iOS only**)
 
-### `Location.setApiKey(apiKey)`
+### `Location.setGoogleApiKey(apiKey)`
 
-Sets a Google API Key for using Geocoding API. This method can be useful for Android devices that do not have Google Play Services, hence no Geocoder Service. After setting the key using Google's API will be possible.
+Sets a Google API Key for using Google Maps Geocoding API which is used by default on Web platform and can be enabled through `useGoogleMaps` option of `geocodeAsync` and `reverseGeocodeAsync` methods. It might be useful for Android devices that do not have Google Play Services, hence no Geocoder Service.
 
 #### Arguments
 
-- **apiKey (_string_)** -- API key collected from Google Developer site.
+- **apiKey (_string_)** — Google API key obtained from Google API Console. This API key must have `Geocoding API` enabled, otherwise your geocoding requests will be denied.
 
 ### `Location.installWebGeolocationPolyfill()`
 
@@ -275,6 +294,8 @@ Polyfills `navigator.geolocation` for interop with the core React Native and Web
 ## Background Location Methods
 
 The Background Location API can notify your app about new locations while your app is backgrounded. Make sure you've followed the required steps detailed [here](#configuration).
+
+> **Note:** on Android, you have to [submit your app for review and request access to use the background location permission](https://support.google.com/googleplay/android-developer/answer/9799150?hl=en).
 
 ### `Location.startLocationUpdatesAsync(taskName, options)`
 
@@ -346,7 +367,9 @@ A promise resolving to boolean value indicating whether the location task is sta
 ## Geofencing Methods
 
 Geofencing API notifies your app when the device enters or leaves geographical regions you set up.
-To make it work in the background, it uses [TaskManager](../task-manager/) Native API under the hood. Make sure you've followed the required steps detailed [here](#configuration).
+To make it work in the background, it uses [TaskManager](task-manager.md) Native API under the hood. Make sure you've followed the required steps detailed [here](#configuration).
+
+> **Note:** on Android, you have to [submit your app for review and request access to use the background location permission](https://support.google.com/googleplay/android-developer/answer/9799150?hl=en).
 
 ### `Location.startGeofencingAsync(taskName, regions)`
 
@@ -418,7 +441,7 @@ A promise resolving to boolean value indicating whether the geofencing task is s
 
 ### `LocationPermissionResponse`
 
-`LocationPermissionResponse` extends [PermissionResponse](../permissions/#permissionresponse) type exported by `unimodules-permission-interface` and contains additional platform-specific fields:
+`LocationPermissionResponse` extends [PermissionResponse](permissions.md#permissionresponse) type exported by `unimodules-permission-interface` and contains additional platform-specific fields:
 
 - **ios (_object_)**
   - **scope (_string_)** — The scope of granted permission. Indicates when it's possible to use location, possible values are: `whenInUse`, `always` or `none`.

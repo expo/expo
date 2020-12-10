@@ -6,13 +6,13 @@ import TabIcon from '../components/TabIcon';
 import { Layout } from '../constants';
 import ExpoComponents from '../screens/ExpoComponentsScreen';
 import { Screens } from './ExpoComponents';
-import StackConfig from './StackConfig';
+import getStackConfig from './StackConfig';
 
 const Stack = createStackNavigator();
 
 function ExpoComponentsStackNavigator(props: { navigation: BottomTabNavigationProp<any> }) {
   return (
-    <Stack.Navigator {...props} {...StackConfig}>
+    <Stack.Navigator {...props} {...getStackConfig(props)}>
       <Stack.Screen
         name="ExpoComponents"
         options={{ title: Layout.isSmallDevice ? 'Expo SDK Components' : 'Components in Expo SDK' }}
@@ -31,10 +31,10 @@ function ExpoComponentsStackNavigator(props: { navigation: BottomTabNavigationPr
 }
 
 const icon = ({ focused }: { focused: boolean }) => {
-  return <TabIcon name="cards-playing-outline" focused={focused} />;
+  return <TabIcon name="react" focused={focused} />;
 };
 ExpoComponentsStackNavigator.navigationOptions = {
-  title: 'Expo Components',
+  title: 'Components',
   tabBarLabel: 'Components',
   tabBarIcon: icon,
   drawerIcon: icon,

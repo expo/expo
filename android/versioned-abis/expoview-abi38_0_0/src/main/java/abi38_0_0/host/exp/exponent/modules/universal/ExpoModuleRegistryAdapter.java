@@ -1,23 +1,15 @@
 package abi38_0_0.host.exp.exponent.modules.universal;
 
-import abi38_0_0.com.facebook.react.bridge.NativeModule;
-import abi38_0_0.com.facebook.react.bridge.ReactApplicationContext;
-
 import org.json.JSONObject;
-import abi38_0_0.org.unimodules.adapters.react.ModuleRegistryAdapter;
-import abi38_0_0.org.unimodules.adapters.react.ReactModuleRegistryProvider;
-import abi38_0_0.org.unimodules.core.ModuleRegistry;
-import abi38_0_0.org.unimodules.core.interfaces.InternalModule;
-import abi38_0_0.org.unimodules.core.interfaces.RegistryLifecycleListener;
 
 import java.util.List;
 import java.util.Map;
 
-import host.exp.exponent.kernel.ExperienceId;
-import host.exp.exponent.utils.ScopedContext;
+import abi38_0_0.com.facebook.react.bridge.NativeModule;
+import abi38_0_0.com.facebook.react.bridge.ReactApplicationContext;
 import abi38_0_0.host.exp.exponent.modules.universal.av.SharedCookiesDataSourceFactoryProvider;
-import abi38_0_0.host.exp.exponent.modules.universal.notifications.ScopedNotificationScheduler;
 import abi38_0_0.host.exp.exponent.modules.universal.notifications.ScopedExpoNotificationPresentationModule;
+import abi38_0_0.host.exp.exponent.modules.universal.notifications.ScopedNotificationScheduler;
 import abi38_0_0.host.exp.exponent.modules.universal.notifications.ScopedNotificationsEmitter;
 import abi38_0_0.host.exp.exponent.modules.universal.notifications.ScopedNotificationsHandler;
 import abi38_0_0.host.exp.exponent.modules.universal.sensors.ScopedAccelerometerService;
@@ -27,6 +19,13 @@ import abi38_0_0.host.exp.exponent.modules.universal.sensors.ScopedLinearAcceler
 import abi38_0_0.host.exp.exponent.modules.universal.sensors.ScopedMagnetometerService;
 import abi38_0_0.host.exp.exponent.modules.universal.sensors.ScopedMagnetometerUncalibratedService;
 import abi38_0_0.host.exp.exponent.modules.universal.sensors.ScopedRotationVectorSensorService;
+import abi38_0_0.org.unimodules.adapters.react.ModuleRegistryAdapter;
+import abi38_0_0.org.unimodules.adapters.react.ReactModuleRegistryProvider;
+import abi38_0_0.org.unimodules.core.ModuleRegistry;
+import abi38_0_0.org.unimodules.core.interfaces.InternalModule;
+import abi38_0_0.org.unimodules.core.interfaces.RegistryLifecycleListener;
+import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.utils.ScopedContext;
 
 public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements ScopedModuleRegistryAdapter {
   public ExpoModuleRegistryAdapter(ReactModuleRegistryProvider moduleRegistryProvider) {

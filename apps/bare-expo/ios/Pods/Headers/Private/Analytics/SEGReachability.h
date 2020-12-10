@@ -1,1 +1,1 @@
-../../../Analytics/Analytics/Vendor/SEGReachability.h
+../../../Analytics/Analytics/Classes/SEGReachability.h

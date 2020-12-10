@@ -164,6 +164,17 @@ export type LocationHeadingObject = {
 export type LocationHeadingCallback = (location: LocationHeadingObject) => any;
 
 /**
+ * An object of options for forward and reverse geocoding.
+ */
+export type LocationGeocodingOptions = {
+  /**
+   * Whether to force using Google Maps API instead of the native implementation.
+   * Used by default only on Web platform. Requires providing an API key by `setGoogleApiKey`.
+   */
+  useGoogleMaps?: boolean;
+};
+
+/**
  * Type representing a result of `geocodeAsync`.
  */
 export type LocationGeocodedLocation = {
@@ -177,13 +188,16 @@ export type LocationGeocodedLocation = {
  * Type representing a result of `reverseGeocodeAsync`.
  */
 export type LocationGeocodedAddress = {
-  city: string;
-  street: string;
-  region: string;
-  country: string;
-  postalCode: string;
-  name: string;
+  city: string | null;
+  district: string | null;
+  street: string | null;
+  region: string | null;
+  subregion: string | null;
+  country: string | null;
+  postalCode: string | null;
+  name: string | null;
   isoCountryCode: string | null;
+  timezone: string | null;
 };
 
 /**

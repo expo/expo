@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/UIViewController+Branch.h
+../../../Branch/Branch-SDK/UIViewController+Branch.h

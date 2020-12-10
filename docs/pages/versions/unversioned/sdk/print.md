@@ -1,6 +1,6 @@
 ---
 title: Print
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-print'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-print'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
@@ -43,7 +43,7 @@ Prints a document or HTML, on web this prints the HTML from the page.
 
 ### `Print.printToFileAsync(options)`
 
-Prints HTML to PDF file and saves it to [app's cache directory](../filesystem/#expofilesystemcachedirectory). On web this method opens the print dialog.
+Prints HTML to PDF file and saves it to [app's cache directory](filesystem.md#expofilesystemcachedirectory). On web this method opens the print dialog.
 
 #### Arguments
 

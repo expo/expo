@@ -1,37 +1,18 @@
 ---
 title: Random
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-random'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-random'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-**`expo-random`** provides a native interface for creating strong random bytes. With `Random` you can create values equivalent to `Node.js` core `crypto.randomBytes` API.
+**`expo-random`** provides a native interface for creating strong random bytes. With `Random` you can create values equivalent to `Node.js` core `crypto.randomBytes` API. `expo-random` also works with `expo-standard-web-crypto`, which implements the W3C Crypto API for generating random bytes.
 
 <PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
 <InstallSection packageName="expo-random" />
-
-## Usage
-
-```javascript
-import React from 'react';
-import { View } from 'react-native';
-import * as Random from 'expo-random';
-
-export default class DemoView extends React.Component {
-  async componentDidMount() {
-    const randomBytes = await Random.getRandomBytesAsync(16);
-
-    /* Some crypto operation... */
-  }
-  render() {
-    return <View />;
-  }
-}
-```
 
 ## API
 
@@ -41,28 +22,29 @@ import * as Random from 'expo-random';
 
 ## Methods
 
-### `Random.getRandomBytesAsync(byteCount)`
+- [`Random.getRandomBytes(byteCount)`](#randomgetrandombytesbytecount)
+- [`Random.getRandomBytesAsync(byteCount)`](#networkgetipaddressasync)
 
-```js
-getRandomBytesAsync(byteCount: number): Promise<Uint8Array>
-```
+### `Random.getRandomBytes(byteCount)`
 
 Generates completely random bytes using native implementations. The `byteCount` property is a `number` indicating the number of bytes to generate in the form of a `Uint8Array`.
 
-**Parameters**
+## Arguments
 
-| Name      | Type     | Description                                                                     |
-| --------- | -------- | ------------------------------------------------------------------------------- |
-| byteCount | `number` | A number within the range: **0...1024**. Anything else will throw a `TypeError` |
+- **byteCount (_number_)** -- A number within the range: **0...1024**. Anything else will throw a `TypeError`.
 
-**Returns**
+## Returns
 
-| Name        | Type                  | Description                                                      |
-| ----------- | --------------------- | ---------------------------------------------------------------- |
-| randomBytes | `Promise<Uint8Array>` | An array of random bytes with the same length as the `byteCount` |
+- **randomBytes (_Uint8Array_)** -- An array of random bytes with the same length as the `byteCount`.
 
-**Example**
+### `Random.getRandomBytesAsync(byteCount)`
 
-```js
-const randomBytes = await Random.getRandomBytesAsync(3);
-```
+Generates completely random bytes using native implementations. The `byteCount` property is a `number` indicating the number of bytes to generate in the form of a `Uint8Array`.
+
+## Arguments
+
+- **byteCount (_number_)** -- A number within the range: **0...1024**. Anything else will throw a `TypeError`.
+
+## Returns
+
+- **randomBytes (_Promise&lt;Uint8Array&gt;_)** -- An array of random bytes with the same length as the `byteCount`.

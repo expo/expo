@@ -7,29 +7,29 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		26CD0310FE7E03FC90A8F0F6A0BD25D6 /* RNSharedElementTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = C2E82AD1DFC1DEF3CC0EEC9BD15DEDEA /* RNSharedElementTypes.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		2D50BE8FE8E7009322E72ACCF7E766AF /* RNSharedElementTransitionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FEFB431E3645C105372645A097B0230 /* RNSharedElementTransitionManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		57C07C310B83FA857A92369C3D5E56BA /* RNSharedElementContent.h in Headers */ = {isa = PBXBuildFile; fileRef = 107C64F3E7DA4D866887FDDD83A217EC /* RNSharedElementContent.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		59F829ABC4D97E670BD9146219ACFB5F /* RNSharedElementStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = 841273D23BE992C5B3D9B4483A590CF0 /* RNSharedElementStyle.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		6B3E261300CCAB740D3949073439C734 /* RNSharedElementTransition.h in Headers */ = {isa = PBXBuildFile; fileRef = 693B0EF35168FF1EE53CBA9030DB5A2C /* RNSharedElementTransition.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		86B568DA21B9A54F21ADA2AADBF870CF /* RNSharedElementNode.h in Headers */ = {isa = PBXBuildFile; fileRef = C57F3DC12D435D7E4480D93A978F9021 /* RNSharedElementNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		8AFEE23A5A49E8E7E47CDA7B7A0D720A /* RNSharedElementCornerRadii.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CA9386C1F6CD5D57C2CC7E4FD79CD5C /* RNSharedElementCornerRadii.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		8B65E70B5C02F1355E76B16FE21D51D0 /* RNSharedElementTransitionItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 92ADF66D8A88BB2A247AA806073A68F2 /* RNSharedElementTransitionItem.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		8C8CCA0CF0099BFD53D498565D15F60C /* RNSharedElementNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C38F0C8645FB78B8E51065C1730D74 /* RNSharedElementNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		901C76A4307CAA997924A28075817122 /* RNSharedElementCornerRadii.h in Headers */ = {isa = PBXBuildFile; fileRef = A6EEAA5F08A787F434184584522F0845 /* RNSharedElementCornerRadii.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		9067ABC94A7DB313ABCD98957D53A77A /* RNSharedElementContent.m in Sources */ = {isa = PBXBuildFile; fileRef = 18C2E9A621AC11CB0EA9C2E547987B32 /* RNSharedElementContent.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		AC4B5493626E8FDA5BC1ABFC6A290CF1 /* RNSharedElement-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 77542C95A32026F215F36E45058C9200 /* RNSharedElement-dummy.m */; };
-		D74CB686C90A77D0326E56FD5B73F2A2 /* RNSharedElementStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = D860B278B6420AA7EA2FD6966890DA1B /* RNSharedElementStyle.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		D8C8886B11A6D0FE18AC023DD66A63DA /* RNSharedElementNodeManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DEBF74DB743E403804E24026114DDEB /* RNSharedElementNodeManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		D930A1B51DBD81FB51F3E622E0086A9F /* RNSharedElementTransitionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 86849FE7F168869A21A4D175E9DA0F1E /* RNSharedElementTransitionManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		D93A3D55FFF4D1C4393FF2899F031C52 /* RNSharedElementDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = DEF5A363C9F6BF169EC9B6C800E354A4 /* RNSharedElementDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		EA4526F314BC84F06A953DA69FB345E9 /* RNSharedElementTransitionItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 18AE2509DD726A7CC8960FB9B2CCFD5F /* RNSharedElementTransitionItem.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		F0DFED5B2CF4C4EAE89D4F2FF78591D3 /* RNSharedElementTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = A06624EEF972C7998E29FFF96E6CA78B /* RNSharedElementTransition.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		F3163EB5DC558026BF61F438B5D8E529 /* RNSharedElementNodeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6ADFCE4FAEFCBED5E37319A6E873E939 /* RNSharedElementNodeManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		03B426E4ED9D01CC9DFE5E0C13028592 /* RNSharedElementDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = DEF5A363C9F6BF169EC9B6C800E354A4 /* RNSharedElementDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		18FA1562907B42758D2748B230D36E8C /* RNSharedElementTransitionItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 92ADF66D8A88BB2A247AA806073A68F2 /* RNSharedElementTransitionItem.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		2332E5870BA9D37930071037CB9C0987 /* RNSharedElement-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 77542C95A32026F215F36E45058C9200 /* RNSharedElement-dummy.m */; };
+		29EDA6FE8C440DFC9CE9FC495AA047C6 /* RNSharedElementContent.m in Sources */ = {isa = PBXBuildFile; fileRef = 18C2E9A621AC11CB0EA9C2E547987B32 /* RNSharedElementContent.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		2C271822D237A0B69A52CC7E501BA884 /* RNSharedElementNodeManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DEBF74DB743E403804E24026114DDEB /* RNSharedElementNodeManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		31D9EFC2BF034DA3D788BA6E085C0118 /* RNSharedElementTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = A06624EEF972C7998E29FFF96E6CA78B /* RNSharedElementTransition.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		41D6E9D1F030C210F43C8C5FA0818A92 /* RNSharedElementCornerRadii.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CA9386C1F6CD5D57C2CC7E4FD79CD5C /* RNSharedElementCornerRadii.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		458165A296B403CAD82FFFB7612D86F2 /* RNSharedElementTransition.h in Headers */ = {isa = PBXBuildFile; fileRef = 693B0EF35168FF1EE53CBA9030DB5A2C /* RNSharedElementTransition.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		54BD077708BDACA68E039CAD2A8F5010 /* RNSharedElementStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = D860B278B6420AA7EA2FD6966890DA1B /* RNSharedElementStyle.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		56D73D05AA799988E27E1738CB3D8F55 /* RNSharedElementTransitionItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 18AE2509DD726A7CC8960FB9B2CCFD5F /* RNSharedElementTransitionItem.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		614627EA615B0514AD3C466574EE47FF /* RNSharedElementNode.h in Headers */ = {isa = PBXBuildFile; fileRef = C57F3DC12D435D7E4480D93A978F9021 /* RNSharedElementNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7B2C0737EF93F3DD498B25246F2AF1CD /* RNSharedElementNodeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6ADFCE4FAEFCBED5E37319A6E873E939 /* RNSharedElementNodeManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		7FF1F4F7E4AA6008E7AF81EB2B7ED101 /* RNSharedElementTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = C2E82AD1DFC1DEF3CC0EEC9BD15DEDEA /* RNSharedElementTypes.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		812366C1F029BE8668A7BE2C88C7C37E /* RNSharedElementContent.h in Headers */ = {isa = PBXBuildFile; fileRef = 107C64F3E7DA4D866887FDDD83A217EC /* RNSharedElementContent.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8F719678DFE1662B7A221381DE4EB237 /* RNSharedElementCornerRadii.h in Headers */ = {isa = PBXBuildFile; fileRef = A6EEAA5F08A787F434184584522F0845 /* RNSharedElementCornerRadii.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A5F1822B2CC07107B9D341FEAC4E4355 /* RNSharedElementTransitionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 86849FE7F168869A21A4D175E9DA0F1E /* RNSharedElementTransitionManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D76A661E702EB1AB31F5C16D007C4A76 /* RNSharedElementStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = 841273D23BE992C5B3D9B4483A590CF0 /* RNSharedElementStyle.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		D9D1BFFC97A3E7D7EA3B7F555EEDFAB2 /* RNSharedElementTransitionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FEFB431E3645C105372645A097B0230 /* RNSharedElementTransitionManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		DD362313085388E954D2AFFAFB97AFBB /* RNSharedElementNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 88C38F0C8645FB78B8E51065C1730D74 /* RNSharedElementNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		2EBEF772AB82FC25F59776DA9E204BAB /* PBXContainerItemProxy */ = {
+		42E10546B6D34B55A26C9295A6D66284 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 94741F2629BD78C85DCE6EE4396177AD /* React.xcodeproj */;
 			proxyType = 1;
@@ -69,7 +69,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		366E5A65E6940E841D6570EC0F722778 /* Frameworks */ = {
+		43D2DA61DB72953025B7FBFBD40E2E7B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -165,20 +165,20 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		65343F3B733A5C68ED6219546C41941B /* Headers */ = {
+		A33C89ACC6644C4FCDFDE278FEFBC223 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				57C07C310B83FA857A92369C3D5E56BA /* RNSharedElementContent.h in Headers */,
-				901C76A4307CAA997924A28075817122 /* RNSharedElementCornerRadii.h in Headers */,
-				D93A3D55FFF4D1C4393FF2899F031C52 /* RNSharedElementDelegate.h in Headers */,
-				86B568DA21B9A54F21ADA2AADBF870CF /* RNSharedElementNode.h in Headers */,
-				D8C8886B11A6D0FE18AC023DD66A63DA /* RNSharedElementNodeManager.h in Headers */,
-				D74CB686C90A77D0326E56FD5B73F2A2 /* RNSharedElementStyle.h in Headers */,
-				6B3E261300CCAB740D3949073439C734 /* RNSharedElementTransition.h in Headers */,
-				EA4526F314BC84F06A953DA69FB345E9 /* RNSharedElementTransitionItem.h in Headers */,
-				D930A1B51DBD81FB51F3E622E0086A9F /* RNSharedElementTransitionManager.h in Headers */,
-				26CD0310FE7E03FC90A8F0F6A0BD25D6 /* RNSharedElementTypes.h in Headers */,
+				812366C1F029BE8668A7BE2C88C7C37E /* RNSharedElementContent.h in Headers */,
+				8F719678DFE1662B7A221381DE4EB237 /* RNSharedElementCornerRadii.h in Headers */,
+				03B426E4ED9D01CC9DFE5E0C13028592 /* RNSharedElementDelegate.h in Headers */,
+				614627EA615B0514AD3C466574EE47FF /* RNSharedElementNode.h in Headers */,
+				2C271822D237A0B69A52CC7E501BA884 /* RNSharedElementNodeManager.h in Headers */,
+				54BD077708BDACA68E039CAD2A8F5010 /* RNSharedElementStyle.h in Headers */,
+				458165A296B403CAD82FFFB7612D86F2 /* RNSharedElementTransition.h in Headers */,
+				56D73D05AA799988E27E1738CB3D8F55 /* RNSharedElementTransitionItem.h in Headers */,
+				A5F1822B2CC07107B9D341FEAC4E4355 /* RNSharedElementTransitionManager.h in Headers */,
+				7FF1F4F7E4AA6008E7AF81EB2B7ED101 /* RNSharedElementTypes.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -187,16 +187,16 @@
 /* Begin PBXNativeTarget section */
 		3B3381B4254E1D060981A4320138A0DD /* RNSharedElement */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 38BA0D83416D3A39AF5DB4D51229E3ED /* Build configuration list for PBXNativeTarget "RNSharedElement" */;
+			buildConfigurationList = 82BBE8B8CA29593EA79AC13CAE5F9C36 /* Build configuration list for PBXNativeTarget "RNSharedElement" */;
 			buildPhases = (
-				65343F3B733A5C68ED6219546C41941B /* Headers */,
-				3509C2B1FC67DD8171000339D59F818F /* Sources */,
-				366E5A65E6940E841D6570EC0F722778 /* Frameworks */,
+				A33C89ACC6644C4FCDFDE278FEFBC223 /* Headers */,
+				4CF7493748EB3DE68B319235D81E3EF7 /* Sources */,
+				43D2DA61DB72953025B7FBFBD40E2E7B /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				EE1FCCDBA6DB77EBF3E3C6DDA791BF8D /* PBXTargetDependency */,
+				16FBEA1DCAE8B1DECBCF34FCAA653481 /* PBXTargetDependency */,
 			);
 			name = RNSharedElement;
 			productName = RNSharedElement;
@@ -236,61 +236,38 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		3509C2B1FC67DD8171000339D59F818F /* Sources */ = {
+		4CF7493748EB3DE68B319235D81E3EF7 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AC4B5493626E8FDA5BC1ABFC6A290CF1 /* RNSharedElement-dummy.m in Sources */,
-				9067ABC94A7DB313ABCD98957D53A77A /* RNSharedElementContent.m in Sources */,
-				8AFEE23A5A49E8E7E47CDA7B7A0D720A /* RNSharedElementCornerRadii.m in Sources */,
-				8C8CCA0CF0099BFD53D498565D15F60C /* RNSharedElementNode.m in Sources */,
-				F3163EB5DC558026BF61F438B5D8E529 /* RNSharedElementNodeManager.m in Sources */,
-				59F829ABC4D97E670BD9146219ACFB5F /* RNSharedElementStyle.m in Sources */,
-				F0DFED5B2CF4C4EAE89D4F2FF78591D3 /* RNSharedElementTransition.m in Sources */,
-				8B65E70B5C02F1355E76B16FE21D51D0 /* RNSharedElementTransitionItem.m in Sources */,
-				2D50BE8FE8E7009322E72ACCF7E766AF /* RNSharedElementTransitionManager.m in Sources */,
+				2332E5870BA9D37930071037CB9C0987 /* RNSharedElement-dummy.m in Sources */,
+				29EDA6FE8C440DFC9CE9FC495AA047C6 /* RNSharedElementContent.m in Sources */,
+				41D6E9D1F030C210F43C8C5FA0818A92 /* RNSharedElementCornerRadii.m in Sources */,
+				DD362313085388E954D2AFFAFB97AFBB /* RNSharedElementNode.m in Sources */,
+				7B2C0737EF93F3DD498B25246F2AF1CD /* RNSharedElementNodeManager.m in Sources */,
+				D76A661E702EB1AB31F5C16D007C4A76 /* RNSharedElementStyle.m in Sources */,
+				31D9EFC2BF034DA3D788BA6E085C0118 /* RNSharedElementTransition.m in Sources */,
+				18FA1562907B42758D2748B230D36E8C /* RNSharedElementTransitionItem.m in Sources */,
+				D9D1BFFC97A3E7D7EA3B7F555EEDFAB2 /* RNSharedElementTransitionManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		EE1FCCDBA6DB77EBF3E3C6DDA791BF8D /* PBXTargetDependency */ = {
+		16FBEA1DCAE8B1DECBCF34FCAA653481 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = React;
-			targetProxy = 2EBEF772AB82FC25F59776DA9E204BAB /* PBXContainerItemProxy */;
+			targetProxy = 42E10546B6D34B55A26C9295A6D66284 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		3D5627138E5AD33228C804D8FA1C6382 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7D8A4422C8C708EDACF852BA214DCAA0 /* RNSharedElement.debug.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/RNSharedElement/RNSharedElement-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = RNSharedElement;
-				PRODUCT_NAME = RNSharedElement;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		65CB832708F4926A78F6348A9A631B60 /* Release */ = {
+		1720A573E15A7F7314C82413E0711CCA /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -313,6 +290,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -347,10 +325,11 @@
 			};
 			name = Release;
 		};
-		A7AD9856C42C247001F167BBE6DFA640 /* Debug */ = {
+		2DC974A468F1265FFD60F2002A180DEB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -373,6 +352,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -411,14 +391,14 @@
 			};
 			name = Debug;
 		};
-		C27F7B15AC4CF7B199F50E805789D833 /* Release */ = {
+		B90AF3DBC9AB9B52B505C1B856AE16D9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4F010EA0D4127CC8D30036C6537C3B53 /* RNSharedElement.release.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/RNSharedElement/RNSharedElement-prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				OTHER_LDFLAGS = "";
@@ -436,14 +416,38 @@
 			};
 			name = Release;
 		};
+		E7A9E3E76A5453DE97F5CB6E85BF3FFD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7D8A4422C8C708EDACF852BA214DCAA0 /* RNSharedElement.debug.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/RNSharedElement/RNSharedElement-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RNSharedElement;
+				PRODUCT_NAME = RNSharedElement;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		38BA0D83416D3A39AF5DB4D51229E3ED /* Build configuration list for PBXNativeTarget "RNSharedElement" */ = {
+		82BBE8B8CA29593EA79AC13CAE5F9C36 /* Build configuration list for PBXNativeTarget "RNSharedElement" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				3D5627138E5AD33228C804D8FA1C6382 /* Debug */,
-				C27F7B15AC4CF7B199F50E805789D833 /* Release */,
+				E7A9E3E76A5453DE97F5CB6E85BF3FFD /* Debug */,
+				B90AF3DBC9AB9B52B505C1B856AE16D9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -451,8 +455,8 @@
 		BEE2D1E36C0FAFC587106E83E07F835F /* Build configuration list for PBXProject "RNSharedElement" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				A7AD9856C42C247001F167BBE6DFA640 /* Debug */,
-				65CB832708F4926A78F6348A9A631B60 /* Release */,
+				2DC974A468F1265FFD60F2002A180DEB /* Debug */,
+				1720A573E15A7F7314C82413E0711CCA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

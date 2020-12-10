@@ -23,6 +23,7 @@ export default {
         }
         await AdMobNativeModule.setAdUnitID(id);
     },
+    /** @deprecated Test device IDs are now set globally. Use `AdMob.setTestDeviceIDAsync` instead. */
     async setTestDeviceID(id) {
         console.warn('AdMobRewarded.setTestDeviceID is deprecated. Test device IDs are now set globally. Use AdMob.setTestDeviceIDAsync instead.');
         await setTestDeviceIDAsync(id);

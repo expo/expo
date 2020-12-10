@@ -7,49 +7,53 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		312F0046473FDD5010898B8725C9ABD7 /* RNSScreen.h in Headers */ = {isa = PBXBuildFile; fileRef = D5290121338AA5B6D2C1CF855E1C6C30 /* RNSScreen.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		4348E87142BBF4F6EA8EDF850A6B6355 /* RNSScreenContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = BFC334CE5003EA7749B96C3B056C51FA /* RNSScreenContainer.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		497D7F58825340EACD1464DCB1738F70 /* RNSScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FE6FE6AD0AF78756677C7A44235F2DB /* RNSScreen.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		70F1797ECED6916216A954B35207FC4E /* RNSScreenStack.m in Sources */ = {isa = PBXBuildFile; fileRef = E12A88AA01B50F4AFAA0C61BC141E3DA /* RNSScreenStack.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		8A780B82E553C34BD0EDD92230E201CC /* RNSScreenContainer.h in Headers */ = {isa = PBXBuildFile; fileRef = 20A1C521E15417B5781B0C85F8FD63FF /* RNSScreenContainer.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		ED0E0BD84B1C4F67EFBDA1A7FE4B4D03 /* RNSScreenStackHeaderConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 704C5436BC47E76F2299D8747FAF620D /* RNSScreenStackHeaderConfig.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		F78F309D47D1B1B8E3856EEDFE34476E /* RNSScreenStackHeaderConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F3F10BB8C09267AC0C9EBC5C1C1BCF0 /* RNSScreenStackHeaderConfig.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		F7B16395221BBE67F19951230C55141A /* RNScreens-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = EAC70E002D5514F194F577929186D143 /* RNScreens-dummy.m */; };
-		F86E9B3183BC30158CABEB14F8771132 /* RNSScreenStack.h in Headers */ = {isa = PBXBuildFile; fileRef = B634C11AB55A9FC462D463C742009B2C /* RNSScreenStack.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		1CB784831164F295BD6CFB8512D263EC /* RNSScreenContainer.h in Headers */ = {isa = PBXBuildFile; fileRef = 09430A3D9FEE04DF43C3E53F9DE6FC34 /* RNSScreenContainer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		4B14F10A585DFAE398744147A2FF0E19 /* RNSScreenStackHeaderConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 312857E7F1858B4814EA7BC74ACA68D3 /* RNSScreenStackHeaderConfig.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		631EBCA5B4A5F08E440F46455DC5F083 /* RNSScreenContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = FA02BEC87CE8B2F39A145A8B89AB7E26 /* RNSScreenContainer.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		6DB99E83666DEC8366EF721029BACBDF /* RNSScreenStack.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F7091B87D893285A109A7BDBB53C57E /* RNSScreenStack.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7116AD724A636BB4B7B793450541CC77 /* UIViewController+RNScreens.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B0E33BAAFBFC6FFB9524747E94957D3 /* UIViewController+RNScreens.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8EFF5A5FCFBB149E3F44228B62410568 /* UIViewController+RNScreens.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E027D3D46FDA40F2D54F83F55A02B1 /* UIViewController+RNScreens.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		94B5D7B5783BB63223116A584CB8F7A7 /* RNSScreenStack.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F79E4FC198645D85EEE4B2479662BE9 /* RNSScreenStack.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		D9D56D2715C17F927466856B2EEADB82 /* RNSScreen.h in Headers */ = {isa = PBXBuildFile; fileRef = D2555F3D8B6046CF3AB8B1A0EB8F6DE5 /* RNSScreen.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		E60261717483859A470D2BF0A4DFDF6F /* RNScreens-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 439217616AC56FF5F119F74CBF810951 /* RNScreens-dummy.m */; };
+		ED8A9277E22734B191D551D02105DF0B /* RNSScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = 528771694B7ED9ADF932B8EBE954CC8F /* RNSScreen.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		F1EED78E9D37DF732628DF997A3BE400 /* RNSScreenStackHeaderConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 10EACAC38973108F393EE558DFBF4025 /* RNSScreenStackHeaderConfig.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		5C81F390D6AA288D7AC678A87BAB3872 /* PBXContainerItemProxy */ = {
+		9922294BD1C922D6EDBABF87CF151CE2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 872F6F6306A98CCDC071A3FEEB61B9B0 /* React.xcodeproj */;
+			containerPortal = 840C8BA93AA8C668309541566C1103A5 /* React-Core.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 94DA87F24FB4B93E5D08FE961D5E5A3E;
-			remoteInfo = React;
+			remoteGlobalIDString = 5DA1A74647F652AE8E4DE074AFC4C6B7;
+			remoteInfo = "React-Core";
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0F3F10BB8C09267AC0C9EBC5C1C1BCF0 /* RNSScreenStackHeaderConfig.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNSScreenStackHeaderConfig.h; path = ios/RNSScreenStackHeaderConfig.h; sourceTree = "<group>"; };
-		20A1C521E15417B5781B0C85F8FD63FF /* RNSScreenContainer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNSScreenContainer.h; path = ios/RNSScreenContainer.h; sourceTree = "<group>"; };
-		2FE6FE6AD0AF78756677C7A44235F2DB /* RNSScreen.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNSScreen.m; path = ios/RNSScreen.m; sourceTree = "<group>"; };
-		3B729F2946FE39153F6E13D6E82CE26F /* RNScreens.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = RNScreens.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		48967475546A8DC53DCB5FF0D0753EA2 /* RNScreens-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "RNScreens-prefix.pch"; sourceTree = "<group>"; };
-		4F75AA6FE7BB7DF1D0D94687FE653DC1 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
-		704C5436BC47E76F2299D8747FAF620D /* RNSScreenStackHeaderConfig.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNSScreenStackHeaderConfig.m; path = ios/RNSScreenStackHeaderConfig.m; sourceTree = "<group>"; };
-		7F0FEF8A24D611DB1D3978FEB7D1EBCC /* RNScreens.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = RNScreens.debug.xcconfig; sourceTree = "<group>"; };
-		872F6F6306A98CCDC071A3FEEB61B9B0 /* React */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React; path = React.xcodeproj; sourceTree = "<group>"; };
+		09430A3D9FEE04DF43C3E53F9DE6FC34 /* RNSScreenContainer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNSScreenContainer.h; path = ios/RNSScreenContainer.h; sourceTree = "<group>"; };
+		0F7091B87D893285A109A7BDBB53C57E /* RNSScreenStack.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNSScreenStack.h; path = ios/RNSScreenStack.h; sourceTree = "<group>"; };
+		10EACAC38973108F393EE558DFBF4025 /* RNSScreenStackHeaderConfig.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNSScreenStackHeaderConfig.m; path = ios/RNSScreenStackHeaderConfig.m; sourceTree = "<group>"; };
+		312857E7F1858B4814EA7BC74ACA68D3 /* RNSScreenStackHeaderConfig.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNSScreenStackHeaderConfig.h; path = ios/RNSScreenStackHeaderConfig.h; sourceTree = "<group>"; };
+		439217616AC56FF5F119F74CBF810951 /* RNScreens-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "RNScreens-dummy.m"; sourceTree = "<group>"; };
+		528771694B7ED9ADF932B8EBE954CC8F /* RNSScreen.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNSScreen.m; path = ios/RNSScreen.m; sourceTree = "<group>"; };
+		5F7784A090E89A39D6A48EB499DD826B /* RNScreens-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "RNScreens-prefix.pch"; sourceTree = "<group>"; };
+		83485CE2322FDCE08A9FB5ABBE76BD61 /* RNScreens.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = RNScreens.debug.xcconfig; sourceTree = "<group>"; };
+		840C8BA93AA8C668309541566C1103A5 /* React-Core */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-Core"; path = "React-Core.xcodeproj"; sourceTree = "<group>"; };
+		8B0E33BAAFBFC6FFB9524747E94957D3 /* UIViewController+RNScreens.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIViewController+RNScreens.h"; path = "ios/UIViewController+RNScreens.h"; sourceTree = "<group>"; };
+		8C9FD06393EE339FCE2374154462BC2B /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
 		9BA0C6F2A2AD2D83C2936A958B5E5EE6 /* libRNScreens.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libRNScreens.a; path = libRNScreens.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		B634C11AB55A9FC462D463C742009B2C /* RNSScreenStack.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNSScreenStack.h; path = ios/RNSScreenStack.h; sourceTree = "<group>"; };
-		BFC334CE5003EA7749B96C3B056C51FA /* RNSScreenContainer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNSScreenContainer.m; path = ios/RNSScreenContainer.m; sourceTree = "<group>"; };
-		D5290121338AA5B6D2C1CF855E1C6C30 /* RNSScreen.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNSScreen.h; path = ios/RNSScreen.h; sourceTree = "<group>"; };
-		D8603788A87ECC98858AEF3F8382CE1C /* RNScreens.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = RNScreens.release.xcconfig; sourceTree = "<group>"; };
-		E12A88AA01B50F4AFAA0C61BC141E3DA /* RNSScreenStack.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNSScreenStack.m; path = ios/RNSScreenStack.m; sourceTree = "<group>"; };
-		EAC70E002D5514F194F577929186D143 /* RNScreens-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "RNScreens-dummy.m"; sourceTree = "<group>"; };
-		EFBED36322237CF6702B739E96448B50 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		9F79E4FC198645D85EEE4B2479662BE9 /* RNSScreenStack.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNSScreenStack.m; path = ios/RNSScreenStack.m; sourceTree = "<group>"; };
+		B0E6D0295247C039DC6B0FD7D816B43A /* RNScreens.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = RNScreens.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		B6E027D3D46FDA40F2D54F83F55A02B1 /* UIViewController+RNScreens.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIViewController+RNScreens.m"; path = "ios/UIViewController+RNScreens.m"; sourceTree = "<group>"; };
+		B909CF0270DF296272D69A2E5DDAAEAC /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		C9446F716826C67E8F9ABEC19FAA2683 /* RNScreens.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = RNScreens.release.xcconfig; sourceTree = "<group>"; };
+		D2555F3D8B6046CF3AB8B1A0EB8F6DE5 /* RNSScreen.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNSScreen.h; path = ios/RNSScreen.h; sourceTree = "<group>"; };
+		FA02BEC87CE8B2F39A145A8B89AB7E26 /* RNSScreenContainer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNSScreenContainer.m; path = ios/RNSScreenContainer.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		F6B17CCAAEAA118C3E06EC261B0DDFED /* Frameworks */ = {
+		2FAE877FDBF53618D846F3CFDAC49901 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -59,32 +63,30 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		246D787016F343B1AF62E2C53B28E3A8 /* Support Files */ = {
+		0A4D6CA91BAC4E016AF9BFAF581AFA8C /* RNScreens */ = {
 			isa = PBXGroup;
 			children = (
-				EAC70E002D5514F194F577929186D143 /* RNScreens-dummy.m */,
-				48967475546A8DC53DCB5FF0D0753EA2 /* RNScreens-prefix.pch */,
-				7F0FEF8A24D611DB1D3978FEB7D1EBCC /* RNScreens.debug.xcconfig */,
-				D8603788A87ECC98858AEF3F8382CE1C /* RNScreens.release.xcconfig */,
+				D2555F3D8B6046CF3AB8B1A0EB8F6DE5 /* RNSScreen.h */,
+				528771694B7ED9ADF932B8EBE954CC8F /* RNSScreen.m */,
+				09430A3D9FEE04DF43C3E53F9DE6FC34 /* RNSScreenContainer.h */,
+				FA02BEC87CE8B2F39A145A8B89AB7E26 /* RNSScreenContainer.m */,
+				0F7091B87D893285A109A7BDBB53C57E /* RNSScreenStack.h */,
+				9F79E4FC198645D85EEE4B2479662BE9 /* RNSScreenStack.m */,
+				312857E7F1858B4814EA7BC74ACA68D3 /* RNSScreenStackHeaderConfig.h */,
+				10EACAC38973108F393EE558DFBF4025 /* RNSScreenStackHeaderConfig.m */,
+				8B0E33BAAFBFC6FFB9524747E94957D3 /* UIViewController+RNScreens.h */,
+				B6E027D3D46FDA40F2D54F83F55A02B1 /* UIViewController+RNScreens.m */,
+				5A9CD812D2EDA73C764CF381CEA615CA /* Pod */,
+				B0EEAE9AB3BC4430A02546575E5E3D76 /* Support Files */,
 			);
-			name = "Support Files";
-			path = "../../apps/bare-expo/ios/Pods/Target Support Files/RNScreens";
+			name = RNScreens;
+			path = "../../../../node_modules/react-native-screens";
 			sourceTree = "<group>";
 		};
-		3C2A7F0415FD132115AB3181B59BC9DF /* Pod */ = {
+		0FEF857D5E1F72D17B9FA4C46CFE2A6A /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
-				4F75AA6FE7BB7DF1D0D94687FE653DC1 /* LICENSE */,
-				EFBED36322237CF6702B739E96448B50 /* README.md */,
-				3B729F2946FE39153F6E13D6E82CE26F /* RNScreens.podspec */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
-		3FFA0F2F35EF7CFB2C2FBFDBA450E372 /* Dependencies */ = {
-			isa = PBXGroup;
-			children = (
-				872F6F6306A98CCDC071A3FEEB61B9B0 /* React */,
+				840C8BA93AA8C668309541566C1103A5 /* React-Core */,
 			);
 			name = Dependencies;
 			sourceTree = "<group>";
@@ -97,14 +99,36 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		5A9CD812D2EDA73C764CF381CEA615CA /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				B909CF0270DF296272D69A2E5DDAAEAC /* LICENSE */,
+				8C9FD06393EE339FCE2374154462BC2B /* README.md */,
+				B0E6D0295247C039DC6B0FD7D816B43A /* RNScreens.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
 		610ADD9E1161B32EB343C4D5C46C63A2 = {
 			isa = PBXGroup;
 			children = (
-				3FFA0F2F35EF7CFB2C2FBFDBA450E372 /* Dependencies */,
+				0FEF857D5E1F72D17B9FA4C46CFE2A6A /* Dependencies */,
 				DDDE9B30F4828B33492B966978E2E8B0 /* Frameworks */,
 				4A5D95752278B820B8E9F348EE1F3242 /* Products */,
-				E81D95EB36A99D1ED8488570FE9B10F2 /* RNScreens */,
+				0A4D6CA91BAC4E016AF9BFAF581AFA8C /* RNScreens */,
 			);
+			sourceTree = "<group>";
+		};
+		B0EEAE9AB3BC4430A02546575E5E3D76 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				439217616AC56FF5F119F74CBF810951 /* RNScreens-dummy.m */,
+				5F7784A090E89A39D6A48EB499DD826B /* RNScreens-prefix.pch */,
+				83485CE2322FDCE08A9FB5ABBE76BD61 /* RNScreens.debug.xcconfig */,
+				C9446F716826C67E8F9ABEC19FAA2683 /* RNScreens.release.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../../apps/bare-expo/ios/Pods/Target Support Files/RNScreens";
 			sourceTree = "<group>";
 		};
 		DDDE9B30F4828B33492B966978E2E8B0 /* Frameworks */ = {
@@ -114,35 +138,18 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		E81D95EB36A99D1ED8488570FE9B10F2 /* RNScreens */ = {
-			isa = PBXGroup;
-			children = (
-				D5290121338AA5B6D2C1CF855E1C6C30 /* RNSScreen.h */,
-				2FE6FE6AD0AF78756677C7A44235F2DB /* RNSScreen.m */,
-				20A1C521E15417B5781B0C85F8FD63FF /* RNSScreenContainer.h */,
-				BFC334CE5003EA7749B96C3B056C51FA /* RNSScreenContainer.m */,
-				B634C11AB55A9FC462D463C742009B2C /* RNSScreenStack.h */,
-				E12A88AA01B50F4AFAA0C61BC141E3DA /* RNSScreenStack.m */,
-				0F3F10BB8C09267AC0C9EBC5C1C1BCF0 /* RNSScreenStackHeaderConfig.h */,
-				704C5436BC47E76F2299D8747FAF620D /* RNSScreenStackHeaderConfig.m */,
-				3C2A7F0415FD132115AB3181B59BC9DF /* Pod */,
-				246D787016F343B1AF62E2C53B28E3A8 /* Support Files */,
-			);
-			name = RNScreens;
-			path = "../../../../node_modules/react-native-screens";
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		0AB5767F8CBE4BE20C263CB5ADAC246F /* Headers */ = {
+		E5B804F73B8E8A7DBAA999CF3B34DAFB /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				312F0046473FDD5010898B8725C9ABD7 /* RNSScreen.h in Headers */,
-				8A780B82E553C34BD0EDD92230E201CC /* RNSScreenContainer.h in Headers */,
-				F86E9B3183BC30158CABEB14F8771132 /* RNSScreenStack.h in Headers */,
-				F78F309D47D1B1B8E3856EEDFE34476E /* RNSScreenStackHeaderConfig.h in Headers */,
+				D9D56D2715C17F927466856B2EEADB82 /* RNSScreen.h in Headers */,
+				1CB784831164F295BD6CFB8512D263EC /* RNSScreenContainer.h in Headers */,
+				6DB99E83666DEC8366EF721029BACBDF /* RNSScreenStack.h in Headers */,
+				4B14F10A585DFAE398744147A2FF0E19 /* RNSScreenStackHeaderConfig.h in Headers */,
+				7116AD724A636BB4B7B793450541CC77 /* UIViewController+RNScreens.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -151,16 +158,16 @@
 /* Begin PBXNativeTarget section */
 		A72DB725A68697789F3F72BCF9C3A522 /* RNScreens */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = FDAE63E964A3C2D09E318FD27D72E875 /* Build configuration list for PBXNativeTarget "RNScreens" */;
+			buildConfigurationList = 726A83B5CE19DF6C61CA828445E83A21 /* Build configuration list for PBXNativeTarget "RNScreens" */;
 			buildPhases = (
-				0AB5767F8CBE4BE20C263CB5ADAC246F /* Headers */,
-				246EAF9E9EB9D270736C2FD4E209EABF /* Sources */,
-				F6B17CCAAEAA118C3E06EC261B0DDFED /* Frameworks */,
+				E5B804F73B8E8A7DBAA999CF3B34DAFB /* Headers */,
+				96ECD6247F8C549DE3A4B231D59FD3BD /* Sources */,
+				2FAE877FDBF53618D846F3CFDAC49901 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				8370EF9DE78A329ED81B569DE6A8C9BF /* PBXTargetDependency */,
+				EE682BC7FB43EC94A5885634DB985508 /* PBXTargetDependency */,
 			);
 			name = RNScreens;
 			productName = RNScreens;
@@ -189,7 +196,7 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProjectRef = 872F6F6306A98CCDC071A3FEEB61B9B0 /* React */;
+					ProjectRef = 840C8BA93AA8C668309541566C1103A5 /* React-Core */;
 				},
 			);
 			projectRoot = "";
@@ -200,82 +207,35 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		246EAF9E9EB9D270736C2FD4E209EABF /* Sources */ = {
+		96ECD6247F8C549DE3A4B231D59FD3BD /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F7B16395221BBE67F19951230C55141A /* RNScreens-dummy.m in Sources */,
-				497D7F58825340EACD1464DCB1738F70 /* RNSScreen.m in Sources */,
-				4348E87142BBF4F6EA8EDF850A6B6355 /* RNSScreenContainer.m in Sources */,
-				70F1797ECED6916216A954B35207FC4E /* RNSScreenStack.m in Sources */,
-				ED0E0BD84B1C4F67EFBDA1A7FE4B4D03 /* RNSScreenStackHeaderConfig.m in Sources */,
+				E60261717483859A470D2BF0A4DFDF6F /* RNScreens-dummy.m in Sources */,
+				ED8A9277E22734B191D551D02105DF0B /* RNSScreen.m in Sources */,
+				631EBCA5B4A5F08E440F46455DC5F083 /* RNSScreenContainer.m in Sources */,
+				94B5D7B5783BB63223116A584CB8F7A7 /* RNSScreenStack.m in Sources */,
+				F1EED78E9D37DF732628DF997A3BE400 /* RNSScreenStackHeaderConfig.m in Sources */,
+				8EFF5A5FCFBB149E3F44228B62410568 /* UIViewController+RNScreens.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		8370EF9DE78A329ED81B569DE6A8C9BF /* PBXTargetDependency */ = {
+		EE682BC7FB43EC94A5885634DB985508 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = React;
-			targetProxy = 5C81F390D6AA288D7AC678A87BAB3872 /* PBXContainerItemProxy */;
+			name = "React-Core";
+			targetProxy = 9922294BD1C922D6EDBABF87CF151CE2 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		10E83C296E666A85DA96FF75E1BAFBCE /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7F0FEF8A24D611DB1D3978FEB7D1EBCC /* RNScreens.debug.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/RNScreens/RNScreens-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = RNScreens;
-				PRODUCT_NAME = RNScreens;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		1449380D65CA55B6B71333EDC0809839 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = D8603788A87ECC98858AEF3F8382CE1C /* RNScreens.release.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/RNScreens/RNScreens-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = RNScreens;
-				PRODUCT_NAME = RNScreens;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		1EE53705A65B87856EA683A5E79F7F1E /* Debug */ = {
+		2F8B5AB6300B4EFC41E58BCA44BBCEED /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -298,6 +258,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -336,10 +297,11 @@
 			};
 			name = Debug;
 		};
-		D636C5C38FB121D58F454E597147386C /* Release */ = {
+		92C35DE9E0A9311AC40C95AA86CDAA10 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -362,6 +324,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -396,23 +359,72 @@
 			};
 			name = Release;
 		};
+		BF81960AF3E5F3CEBC70EB9D1C910D53 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 83485CE2322FDCE08A9FB5ABBE76BD61 /* RNScreens.debug.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/RNScreens/RNScreens-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RNScreens;
+				PRODUCT_NAME = RNScreens;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		DC250A5728DFE70A7E10237E009BD9D6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C9446F716826C67E8F9ABEC19FAA2683 /* RNScreens.release.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/RNScreens/RNScreens-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RNScreens;
+				PRODUCT_NAME = RNScreens;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		1A763B9E7A11D17A2F76DA998DAF392C /* Build configuration list for PBXProject "RNScreens" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1EE53705A65B87856EA683A5E79F7F1E /* Debug */,
-				D636C5C38FB121D58F454E597147386C /* Release */,
+				2F8B5AB6300B4EFC41E58BCA44BBCEED /* Debug */,
+				92C35DE9E0A9311AC40C95AA86CDAA10 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		FDAE63E964A3C2D09E318FD27D72E875 /* Build configuration list for PBXNativeTarget "RNScreens" */ = {
+		726A83B5CE19DF6C61CA828445E83A21 /* Build configuration list for PBXNativeTarget "RNScreens" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				10E83C296E666A85DA96FF75E1BAFBCE /* Debug */,
-				1449380D65CA55B6B71333EDC0809839 /* Release */,
+				BF81960AF3E5F3CEBC70EB9D1C910D53 /* Debug */,
+				DC250A5728DFE70A7E10237E009BD9D6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -41,7 +41,9 @@ interface State {
   permissionsFunction: 'askAsync' | 'getAsync';
 }
 
-export default class PermissionsScreen extends React.Component<object, State> {
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
+export default class PermissionsScreen extends React.Component<{}, State> {
   static navigationOptions = {
     title: 'Permissions',
   };
@@ -56,15 +58,17 @@ export default class PermissionsScreen extends React.Component<object, State> {
   };
 
   renderSinglePermissionsButtons() {
-    const permissions: Array<[string, Permissions.PermissionType]> = [
+    const permissions: [string, Permissions.PermissionType][] = [
       ['CAMERA', Permissions.CAMERA],
+      ['MOTION', Permissions.MOTION],
       ['AUDIO_RECORDING', Permissions.AUDIO_RECORDING],
       ['LOCATION', Permissions.LOCATION],
       ['USER_FACING_NOTIFICATIONS', Permissions.USER_FACING_NOTIFICATIONS],
       ['NOTIFICATIONS', Permissions.NOTIFICATIONS],
       ['CONTACTS', Permissions.CONTACTS],
       ['SYSTEM_BRIGHTNESS', Permissions.SYSTEM_BRIGHTNESS],
-      ['CAMERA_ROLL', Permissions.CAMERA_ROLL],
+      ['MEDIA_LIBRARY_WRITE_ONLY', Permissions.MEDIA_LIBRARY_WRITE_ONLY],
+      ['MEDIA_LIBRARY', Permissions.MEDIA_LIBRARY],
       ['CALENDAR', Permissions.CALENDAR],
       ['REMINDERS', Permissions.REMINDERS],
     ];
@@ -119,7 +123,7 @@ export default class PermissionsScreen extends React.Component<object, State> {
                     Permissions.NOTIFICATIONS,
                     Permissions.CONTACTS,
                     Permissions.SYSTEM_BRIGHTNESS,
-                    Permissions.CAMERA_ROLL,
+                    Permissions.MEDIA_LIBRARY,
                     Permissions.CALENDAR,
                     Permissions.REMINDERS,
                   ] as Permissions.PermissionType[])
@@ -128,7 +132,7 @@ export default class PermissionsScreen extends React.Component<object, State> {
               title={
                 'Ask for Permissions: ' +
                 'CAMERA, AUDIO_RECORDING, LOCATION, USER_FACING_NOTIFICATIONS, ' +
-                'NOTIFICATIONS, CONTACTS, SYSTEM_BRIGHTNESS, CAMERA_ROLL, CALENDAR, REMINDERS'
+                'NOTIFICATIONS, CONTACTS, SYSTEM_BRIGHTNESS, MEDIA_LIBRARY, CALENDAR, REMINDERS'
               }
             />
           </View>

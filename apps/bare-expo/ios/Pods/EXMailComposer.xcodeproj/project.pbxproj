@@ -7,20 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		AD57F2B7FCA9F61D54FAF01D723EEF23 /* EXMailComposer-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F84D9F75A7B2D8C1086E851FB49AC3D /* EXMailComposer-dummy.m */; };
-		C9259AD24CF067B4AAA548779EBCE6ED /* EXMailComposer.m in Sources */ = {isa = PBXBuildFile; fileRef = 969BF0423CD1819821D8C126DBA0DB36 /* EXMailComposer.m */; };
-		DD3DCA8D547A2A66D4938A671D234DD1 /* EXMailComposer.h in Headers */ = {isa = PBXBuildFile; fileRef = 822824618F5FB9C88EF4E04808A02DFB /* EXMailComposer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		300A3E67ED3E21A24ED110AE2DBDC83A /* EXMailComposer.h in Headers */ = {isa = PBXBuildFile; fileRef = 822824618F5FB9C88EF4E04808A02DFB /* EXMailComposer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		60BB218B88DE87AE2C0E0C3A033B30EB /* EXMailComposer-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F84D9F75A7B2D8C1086E851FB49AC3D /* EXMailComposer-dummy.m */; };
+		9C0BF0FA66E83E9EAC8D2BB360C5DF08 /* EXMailComposer.m in Sources */ = {isa = PBXBuildFile; fileRef = 969BF0423CD1819821D8C126DBA0DB36 /* EXMailComposer.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		282DFCF446286227D2ECB94416EDC12D /* PBXContainerItemProxy */ = {
+		1579F808A7F7781458304799D53E03CE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 813298070ADF4621DE884238CB780596 /* UMFileSystemInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
 			remoteInfo = UMFileSystemInterface;
 		};
-		3E00A5EB2C1C63535B9409BAA56B49BA /* PBXContainerItemProxy */ = {
+		984CDA4F226301336AA4B490896AA906 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0C730C301ED2FFBAF8027878DCB8A9F3 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -43,7 +43,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		6BB43F7DB6A83799A59704D83CADC88D /* Frameworks */ = {
+		720AB02A4CA8234D81363AFDF6B7A353 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -122,11 +122,11 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		01EBC8E3EA7EE2F944D06475EC5449F2 /* Headers */ = {
+		7EEB545B99F224E1ED6DAACAF3DC85B1 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DD3DCA8D547A2A66D4938A671D234DD1 /* EXMailComposer.h in Headers */,
+				300A3E67ED3E21A24ED110AE2DBDC83A /* EXMailComposer.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -135,17 +135,17 @@
 /* Begin PBXNativeTarget section */
 		2E02530F5AAAD2AC2A43FE2B8AC3E99C /* EXMailComposer */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 6A7441A1B25FB2C81A2ED770C2386D70 /* Build configuration list for PBXNativeTarget "EXMailComposer" */;
+			buildConfigurationList = 5D803575930FBEA921865AE155836E01 /* Build configuration list for PBXNativeTarget "EXMailComposer" */;
 			buildPhases = (
-				01EBC8E3EA7EE2F944D06475EC5449F2 /* Headers */,
-				C55BA22CE31B16692236FE2689EB116A /* Sources */,
-				6BB43F7DB6A83799A59704D83CADC88D /* Frameworks */,
+				7EEB545B99F224E1ED6DAACAF3DC85B1 /* Headers */,
+				ABCCC0A3D6C7C9B8AEB52D42EDDD36DD /* Sources */,
+				720AB02A4CA8234D81363AFDF6B7A353 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				A8C76084287BAAE5D71B3B03D2DB0E80 /* PBXTargetDependency */,
-				30310B251234405E70D2C40D53EDC189 /* PBXTargetDependency */,
+				5497E4DE65EA1E6D2D56A9FE11802885 /* PBXTargetDependency */,
+				25686DD3AD0AB4609E3015F9FFA0432E /* PBXTargetDependency */,
 			);
 			name = EXMailComposer;
 			productName = EXMailComposer;
@@ -188,40 +188,40 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		C55BA22CE31B16692236FE2689EB116A /* Sources */ = {
+		ABCCC0A3D6C7C9B8AEB52D42EDDD36DD /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AD57F2B7FCA9F61D54FAF01D723EEF23 /* EXMailComposer-dummy.m in Sources */,
-				C9259AD24CF067B4AAA548779EBCE6ED /* EXMailComposer.m in Sources */,
+				60BB218B88DE87AE2C0E0C3A033B30EB /* EXMailComposer-dummy.m in Sources */,
+				9C0BF0FA66E83E9EAC8D2BB360C5DF08 /* EXMailComposer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		30310B251234405E70D2C40D53EDC189 /* PBXTargetDependency */ = {
+		25686DD3AD0AB4609E3015F9FFA0432E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMFileSystemInterface;
-			targetProxy = 282DFCF446286227D2ECB94416EDC12D /* PBXContainerItemProxy */;
+			targetProxy = 1579F808A7F7781458304799D53E03CE /* PBXContainerItemProxy */;
 		};
-		A8C76084287BAAE5D71B3B03D2DB0E80 /* PBXTargetDependency */ = {
+		5497E4DE65EA1E6D2D56A9FE11802885 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 3E00A5EB2C1C63535B9409BAA56B49BA /* PBXContainerItemProxy */;
+			targetProxy = 984CDA4F226301336AA4B490896AA906 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		09BBE67460A7E985B1FE287F4B8841C5 /* Release */ = {
+		34731E77224A976B740B2820680BB528 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 59E1B7917A822DF4201297DE477CA1C6 /* EXMailComposer.release.xcconfig */;
+			baseConfigurationReference = D207EC23B5299B2C778C3E57FCF3EBA0 /* EXMailComposer.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/EXMailComposer/EXMailComposer-prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				OTHER_LDFLAGS = "";
@@ -235,14 +235,14 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
-		6801C6B1BB3268F42C640A890D374A9F /* Release */ = {
+		38BE57EFB91E56B32DBB216323EACFFD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -265,6 +265,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -299,10 +300,11 @@
 			};
 			name = Release;
 		};
-		98A661790499223437837ED8B813F8C1 /* Debug */ = {
+		72D528084D60DBA11753F8551E04DA39 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -325,6 +327,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -363,15 +366,15 @@
 			};
 			name = Debug;
 		};
-		D26E5971132ED1BF738573E21646B87B /* Debug */ = {
+		976BA247629138BF22AD861C2998C20D /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D207EC23B5299B2C778C3E57FCF3EBA0 /* EXMailComposer.debug.xcconfig */;
+			baseConfigurationReference = 59E1B7917A822DF4201297DE477CA1C6 /* EXMailComposer.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/EXMailComposer/EXMailComposer-prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				OTHER_LDFLAGS = "";
@@ -385,8 +388,9 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
@@ -394,17 +398,17 @@
 		24618B347D0F22AF25988072BEC2A9D9 /* Build configuration list for PBXProject "EXMailComposer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				98A661790499223437837ED8B813F8C1 /* Debug */,
-				6801C6B1BB3268F42C640A890D374A9F /* Release */,
+				72D528084D60DBA11753F8551E04DA39 /* Debug */,
+				38BE57EFB91E56B32DBB216323EACFFD /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		6A7441A1B25FB2C81A2ED770C2386D70 /* Build configuration list for PBXNativeTarget "EXMailComposer" */ = {
+		5D803575930FBEA921865AE155836E01 /* Build configuration list for PBXNativeTarget "EXMailComposer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D26E5971132ED1BF738573E21646B87B /* Debug */,
-				09BBE67460A7E985B1FE287F4B8841C5 /* Release */,
+				34731E77224A976B740B2820680BB528 /* Debug */,
+				976BA247629138BF22AD861C2998C20D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

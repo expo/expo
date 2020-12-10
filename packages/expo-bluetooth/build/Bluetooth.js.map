@@ -1,1 +1,0 @@
-{"version":3,"file":"Bluetooth.js","sourceRoot":"","sources":["../src/Bluetooth.ts"],"names":[],"mappings":"","sourcesContent":["import ExpoBluetooth from './ExpoBluetooth'; // eslint-disable-line\n"]}

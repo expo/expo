@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI39_0_0/Expo/EXVideoThumbnails/ABI39_0_0EXVideoThumbnails/ABI39_0_0EXVideoThumbnailsModule.h

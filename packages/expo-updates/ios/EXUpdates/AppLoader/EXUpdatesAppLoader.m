@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-static NSString * const kEXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
+static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
 
 @implementation EXUpdatesAppLoader
 
@@ -82,9 +82,55 @@ static NSString * const kEXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
     return;
   }
 
+  if (updateManifest.isDevelopmentMode) {
+    dispatch_async(_database.databaseQueue, ^{
+      NSError *updateError;
+      [self->_database addUpdate:updateManifest error:&updateError];
+
+      if (updateError) {
+        [self _finishWithError:updateError];
+        return;
+      }
+
+      NSError *updateReadyError;
+      [self->_database markUpdateFinished:updateManifest error:&updateReadyError];
+      if (updateReadyError) {
+        [self _finishWithError:updateReadyError];
+        return;
+      }
+
+      EXUpdatesAppLoaderSuccessBlock successBlock;
+      if (self->_successBlock) {
+        successBlock = self->_successBlock;
+      }
+      dispatch_async(self->_completionQueue, ^{
+        if (successBlock) {
+          successBlock(updateManifest);
+        }
+        [self _reset];
+      });
+    });
+    return;
+  }
+
   dispatch_async(_database.databaseQueue, ^{
     NSError *existingUpdateError;
     EXUpdatesUpdate *existingUpdate = [self->_database updateWithId:updateManifest.updateId config:self->_config error:&existingUpdateError];
+
+    // if something has gone wrong on the server and we have two updates with the same id
+    // but different scope keys, we should try to launch something rather than show a cryptic
+    // error to the user.
+    if (existingUpdate && ![existingUpdate.scopeKey isEqualToString:updateManifest.scopeKey]) {
+      NSError *setScopeKeyError;
+      [self->_database setScopeKey:updateManifest.scopeKey onUpdate:existingUpdate error:&setScopeKeyError];
+
+      if (setScopeKeyError) {
+        [self _finishWithError:setScopeKeyError];
+        return;
+      }
+
+      NSLog(@"EXUpdatesAppLoader: Loaded an update with the same ID but a different scopeKey than one we already have on disk. This is a server error. Overwriting the scopeKey and loading the existing update.");
+    }
 
     if (existingUpdate && existingUpdate.status == EXUpdatesUpdateStatusReady) {
       if (self->_successBlock) {
@@ -263,7 +309,7 @@ static NSString * const kEXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
 
     dispatch_async(self->_completionQueue, ^{
       if (errorBlock) {
-        errorBlock([NSError errorWithDomain:kEXUpdatesAppLoaderErrorDomain
+        errorBlock([NSError errorWithDomain:EXUpdatesAppLoaderErrorDomain
                                        code:1012
                                    userInfo:@{NSLocalizedDescriptionKey: @"Failed to load all assets"}]);
       } else if (successBlock) {

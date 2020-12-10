@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.core.os.CancellationSignal;
 
 import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricPrompt;
@@ -30,7 +29,7 @@ import org.unimodules.core.interfaces.services.UIManager;
 public class LocalAuthenticationModule extends ExportedModule {
   private final BiometricManager mBiometricManager;
   private final PackageManager mPackageManager;
-  private CancellationSignal mCancellationSignal;
+  private BiometricPrompt mBiometricPrompt;
   private Promise mPromise;
   private boolean mIsAuthenticating = false;
   private ModuleRegistry mModuleRegistry;
@@ -45,6 +44,7 @@ public class LocalAuthenticationModule extends ExportedModule {
             @Override
             public void onAuthenticationSucceeded(BiometricPrompt.AuthenticationResult result) {
               mIsAuthenticating = false;
+              mBiometricPrompt = null;
               Bundle successResult = new Bundle();
               successResult.putBoolean("success", true);
               safeResolve(successResult);
@@ -53,6 +53,7 @@ public class LocalAuthenticationModule extends ExportedModule {
             @Override
             public void onAuthenticationError(int errMsgId, CharSequence errString) {
               mIsAuthenticating = false;
+              mBiometricPrompt = null;
               Bundle errorResult = new Bundle();
               errorResult.putBoolean("success", false);
               errorResult.putString("error", convertErrorCode(errMsgId));
@@ -143,6 +144,16 @@ public class LocalAuthenticationModule extends ExportedModule {
       return;
     }
 
+    final FragmentActivity fragmentActivity = (FragmentActivity) getCurrentActivity();
+    if (fragmentActivity == null) {
+      Bundle errorResult = new Bundle();
+      errorResult.putBoolean("success", false);
+      errorResult.putString("error", "not_available");
+      errorResult.putString("message", "getCurrentActivity() returned null");
+      promise.resolve(errorResult);
+      return;
+    }
+
     // BiometricPrompt callbacks are invoked on the main thread so also run this there to avoid
     // having to do locking.
     mUIManager.runOnUiQueueThread(new Runnable() {
@@ -175,11 +186,9 @@ public class LocalAuthenticationModule extends ExportedModule {
 
         mIsAuthenticating = true;
         mPromise = promise;
-        mCancellationSignal = new CancellationSignal();
 
-        FragmentActivity fragmentActivity = (FragmentActivity) getCurrentActivity();
         Executor executor = Executors.newSingleThreadExecutor();
-        BiometricPrompt biometricPrompt = new BiometricPrompt(fragmentActivity, executor, mAuthenticationCallback);
+        mBiometricPrompt = new BiometricPrompt(fragmentActivity, executor, mAuthenticationCallback);
 
         BiometricPrompt.PromptInfo.Builder promptInfoBuilder = new BiometricPrompt.PromptInfo.Builder()
                 .setDeviceCredentialAllowed(!disableDeviceFallback)
@@ -188,7 +197,11 @@ public class LocalAuthenticationModule extends ExportedModule {
           promptInfoBuilder.setNegativeButtonText(cancelLabel);
         }
         BiometricPrompt.PromptInfo promptInfo = promptInfoBuilder.build();
-        biometricPrompt.authenticate(promptInfo);
+        try {
+          mBiometricPrompt.authenticate(promptInfo);
+        } catch (NullPointerException ex) {
+          promise.reject("E_INTERNAL_ERRROR", "Canceled authentication due to an internal error");
+        }
       }
     });
   }
@@ -204,9 +217,8 @@ public class LocalAuthenticationModule extends ExportedModule {
   }
 
   private void safeCancel() {
-    if (mCancellationSignal != null) {
-      mCancellationSignal.cancel();
-      mCancellationSignal = null;
+    if (mBiometricPrompt != null && mIsAuthenticating) {
+      mBiometricPrompt.cancelAuthentication();
     }
   }
 

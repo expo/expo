@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BNCThreads.h
+../../../Branch/Branch-SDK/BNCThreads.h

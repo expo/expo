@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,6 +15,8 @@
  */
 
 #include <folly/Format.h>
+
+#include <cassert>
 
 #include <folly/ConstexprMath.h>
 #include <folly/CppAttributes.h>
@@ -49,7 +51,8 @@ struct format_table_conv_make_item {
     std::size_t index{};
     constexpr explicit make_item(std::size_t index_) : index(index_) {} // gcc49
     constexpr char alpha(std::size_t ord) const {
-      return ord < 10 ? '0' + ord : (Upper ? 'A' : 'a') + (ord - 10);
+      return static_cast<char>(
+          ord < 10 ? '0' + ord : (Upper ? 'A' : 'a') + (ord - 10));
     }
     constexpr char operator()(std::size_t offset) const {
       return alpha(index / constexpr_pow(Base, Size - offset - 1) % Base);
@@ -131,6 +134,9 @@ void FormatValue<double>::formatHelper(
     case FormatArg::Sign::SPACE_OR_MINUS:
       plusSign = ' ';
       break;
+    case FormatArg::Sign::DEFAULT:
+    case FormatArg::Sign::MINUS:
+    case FormatArg::Sign::INVALID:
     default:
       plusSign = '\0';
       break;
@@ -206,9 +212,9 @@ void FormatValue<double>::formatHelper(
       arg.error("invalid specifier '", arg.presentation, "'");
   }
 
-  int len = builder.position();
+  auto len = builder.position();
   builder.Finalize();
-  DCHECK_GT(len, 0);
+  assert(len > 0);
 
   // Add '+' or ' ' sign if needed
   char* p = buf + 1;
@@ -264,7 +270,7 @@ void FormatArg::initSlow() {
     }
 
     Sign s;
-    unsigned char uSign = static_cast<unsigned char>(*p);
+    auto uSign = static_cast<unsigned char>(*p);
     if ((s = formatSignTable[uSign]) != Sign::INVALID) {
       sign = s;
       if (++p == end) {
@@ -385,7 +391,7 @@ void FormatArg::validate(Type type) const {
 
 namespace detail {
 void insertThousandsGroupingUnsafe(char* start_buffer, char** end_buffer) {
-  uint32_t remaining_digits = uint32_t(*end_buffer - start_buffer);
+  auto remaining_digits = uint32_t(*end_buffer - start_buffer);
   uint32_t separator_size = (remaining_digits - 1) / 3;
   uint32_t result_size = remaining_digits + separator_size;
   *end_buffer = *end_buffer + separator_size;

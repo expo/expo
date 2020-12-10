@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,7 +33,7 @@ namespace folly {
  */
 template <typename Tuple>
 using index_sequence_for_tuple =
-    make_index_sequence<std::tuple_size<Tuple>::value>;
+    std::make_index_sequence<std::tuple_size<Tuple>::value>;
 
 namespace detail {
 namespace apply_tuple {
@@ -45,7 +45,8 @@ struct ApplyInvoke {
   using seq = index_sequence_for_tuple<std::remove_reference_t<T>>;
 
   template <typename F, typename T, std::size_t... I>
-  static constexpr auto invoke_(F&& f, T&& t, index_sequence<I...>) noexcept(
+  static constexpr auto
+  invoke_(F&& f, T&& t, std::index_sequence<I...>) noexcept(
       is_nothrow_invocable<F&&, decltype(get<I>(std::declval<T>()))...>::value)
       -> invoke_result_t<F&&, decltype(get<I>(std::declval<T>()))...> {
     return invoke(static_cast<F&&>(f), get<I>(static_cast<T&&>(t))...);
@@ -57,7 +58,8 @@ template <
     std::size_t... Indices,
     typename ReturnTuple =
         std::tuple<decltype(get<Indices>(std::declval<Tuple>()))...>>
-auto forward_tuple(Tuple&& tuple, index_sequence<Indices...>) -> ReturnTuple {
+auto forward_tuple(Tuple&& tuple, std::index_sequence<Indices...>)
+    -> ReturnTuple {
   return ReturnTuple{get<Indices>(std::forward<Tuple>(tuple))...};
 }
 } // namespace adl
@@ -76,7 +78,13 @@ struct ApplyInvoke : private detail::apply_tuple::adl::ApplyInvoke {
 
 //////////////////////////////////////////////////////////////////////
 
-#if __cpp_lib_apply >= 201603
+//  libc++ v3.9 has std::apply
+//  android ndk r15c libc++ claims to be v3.9 but is missing std::apply
+#if __cpp_lib_apply >= 201603 ||                   \
+    (((__ANDROID__ && _LIBCPP_VERSION > 3900) ||   \
+      (!__ANDROID__ && _LIBCPP_VERSION > 3800)) && \
+     _LIBCPP_STD_VER > 14) ||                      \
+    (_MSC_VER && _HAS_CXX17)
 
 /* using override */ using std::apply;
 
@@ -126,13 +134,25 @@ template <typename F, typename Tuple>
 using apply_result_t = invoke_result_t<ApplyInvoke, F, Tuple>;
 template <typename F, typename Tuple>
 struct is_applicable : is_invocable<ApplyInvoke, F, Tuple> {};
+template <typename F, typename Tuple>
+FOLLY_INLINE_VARIABLE constexpr bool is_applicable_v =
+    is_applicable<F, Tuple>::value;
 template <typename R, typename F, typename Tuple>
 struct is_applicable_r : is_invocable_r<R, ApplyInvoke, F, Tuple> {};
+template <typename R, typename F, typename Tuple>
+FOLLY_INLINE_VARIABLE constexpr bool is_applicable_r_v =
+    is_applicable_r<R, F, Tuple>::value;
 template <typename F, typename Tuple>
 struct is_nothrow_applicable : is_nothrow_invocable<ApplyInvoke, F, Tuple> {};
+template <typename F, typename Tuple>
+FOLLY_INLINE_VARIABLE constexpr bool is_nothrow_applicable_v =
+    is_nothrow_applicable<F, Tuple>::value;
 template <typename R, typename F, typename Tuple>
 struct is_nothrow_applicable_r
     : is_nothrow_invocable_r<R, ApplyInvoke, F, Tuple> {};
+template <typename R, typename F, typename Tuple>
+FOLLY_INLINE_VARIABLE constexpr bool is_nothrow_applicable_r_v =
+    is_nothrow_applicable_r<R, F, Tuple>::value;
 
 namespace detail {
 namespace apply_tuple {

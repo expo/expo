@@ -6,8 +6,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString * const kEXUpdatesFileDownloaderErrorDomain = @"EXUpdatesFileDownloader";
-NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
+NSString * const EXUpdatesFileDownloaderErrorDomain = @"EXUpdatesFileDownloader";
+NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
 
 @interface EXUpdatesFileDownloader () <NSURLSessionDataDelegate>
 
@@ -63,7 +63,7 @@ NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
     if ([data writeToFile:destinationPath options:NSDataWritingAtomic error:&error]) {
       successBlock(data, response);
     } else {
-      errorBlock([NSError errorWithDomain:kEXUpdatesFileDownloaderErrorDomain
+      errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
                                      code:1002
                                  userInfo:@{
                                    NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Could not write to path %@: %@", destinationPath, error.localizedDescription],
@@ -82,16 +82,40 @@ NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
 {
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
                                                          cachePolicy:NSURLRequestReloadIgnoringCacheData
-                                                     timeoutInterval:kEXUpdatesDefaultTimeoutInterval];
+                                                     timeoutInterval:EXUpdatesDefaultTimeoutInterval];
   [self _setManifestHTTPHeaderFields:request];
   [self _downloadDataWithRequest:request successBlock:^(NSData *data, NSURLResponse *response) {
     NSError *err;
-    id manifest = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&err];
-    NSAssert(!err && manifest && [manifest isKindOfClass:[NSDictionary class]], @"manifest should be a valid JSON object");
+    id parsedJson = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&err];
+    if (err) {
+      errorBlock(err, response);
+      return;
+    }
+
+    NSDictionary *manifest = [self _extractManifest:parsedJson error:&err];
+    if (err) {
+      errorBlock(err, response);
+      return;
+    }
 
     id innerManifestString = manifest[@"manifestString"];
     id signature = manifest[@"signature"];
-    if (innerManifestString && signature) {
+    BOOL isSigned = innerManifestString != nil && signature != nil;
+
+    // XDL serves unsigned manifests with the `signature` key set to "UNSIGNED".
+    // We should treat these manifests as unsigned rather than signed with an invalid signature.
+    if (isSigned && [signature isKindOfClass:[NSString class]] && [(NSString *)signature isEqualToString:@"UNSIGNED"]) {
+      isSigned = NO;
+
+      NSError *err;
+      manifest = [NSJSONSerialization JSONObjectWithData:[(NSString *)innerManifestString dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&err];
+      NSAssert(!err && manifest && [manifest isKindOfClass:[NSDictionary class]], @"manifest should be a valid JSON object");
+      NSMutableDictionary *mutableManifest = [manifest mutableCopy];
+      mutableManifest[@"isVerified"] = @(NO);
+      manifest = [mutableManifest copy];
+    }
+
+    if (isSigned) {
       NSAssert([innerManifestString isKindOfClass:[NSString class]], @"manifestString should be a string");
       NSAssert([signature isKindOfClass:[NSString class]], @"signature should be a string");
       [EXUpdatesCrypto verifySignatureWithData:(NSString *)innerManifestString
@@ -103,12 +127,14 @@ NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
                                                     NSError *err;
                                                     id innerManifest = [NSJSONSerialization JSONObjectWithData:[(NSString *)innerManifestString dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&err];
                                                     NSAssert(!err && innerManifest && [innerManifest isKindOfClass:[NSDictionary class]], @"manifest should be a valid JSON object");
-                                                    EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:(NSDictionary *)innerManifest
+                                                    NSMutableDictionary *mutableInnerManifest = [(NSDictionary *)innerManifest mutableCopy];
+                                                    mutableInnerManifest[@"isVerified"] = @(YES);
+                                                    EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:[mutableInnerManifest copy]
                                                                                                            config:self->_config
                                                                                                          database:database];
                                                     successBlock(update);
                                                   } else {
-                                                    NSError *error = [NSError errorWithDomain:kEXUpdatesFileDownloaderErrorDomain code:1003 userInfo:@{NSLocalizedDescriptionKey: @"Manifest verification failed"}];
+                                                    NSError *error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain code:1003 userInfo:@{NSLocalizedDescriptionKey: @"Manifest verification failed"}];
                                                     errorBlock(error, response);
                                                   }
                                                 }
@@ -132,7 +158,7 @@ NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
   // pass any custom cache policy onto this specific request
   NSURLRequestCachePolicy cachePolicy = _sessionConfiguration ? _sessionConfiguration.requestCachePolicy : NSURLRequestUseProtocolCachePolicy;
 
-  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:cachePolicy timeoutInterval:kEXUpdatesDefaultTimeoutInterval];
+  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:cachePolicy timeoutInterval:EXUpdatesDefaultTimeoutInterval];
   [self _setHTTPHeaderFields:request];
 
   [self _downloadDataWithRequest:request successBlock:successBlock errorBlock:errorBlock];
@@ -159,6 +185,29 @@ NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
     }
   }];
   [task resume];
+}
+
+- (nullable NSDictionary *)_extractManifest:(id)parsedJson error:(NSError **)error
+{
+  if ([parsedJson isKindOfClass:[NSDictionary class]]) {
+    return (NSDictionary *)parsedJson;
+  } else if ([parsedJson isKindOfClass:[NSArray class]]) {
+    // TODO: either add support for runtimeVersion or deprecate multi-manifests
+    for (id providedManifest in (NSArray *)parsedJson) {
+      if ([providedManifest isKindOfClass:[NSDictionary class]] && providedManifest[@"sdkVersion"]){
+        NSString *sdkVersion = providedManifest[@"sdkVersion"];
+        NSArray<NSString *> *supportedSdkVersions = [_config.sdkVersion componentsSeparatedByString:@","];
+        if ([supportedSdkVersions containsObject:sdkVersion]){
+          return providedManifest;
+        }
+      }
+    }
+  }
+
+  if (error) {
+    *error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain code:1009 userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"No compatible update found at %@. Only %@ are supported.", _config.updateUrl.absoluteString, _config.sdkVersion]}];
+  }
+  return nil;
 }
 
 - (void)_setHTTPHeaderFields:(NSMutableURLRequest *)request
@@ -234,7 +283,7 @@ NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
   NSDictionary *userInfo = @{
                              NSLocalizedDescriptionKey: body,
                              };
-  return [NSError errorWithDomain:kEXUpdatesFileDownloaderErrorDomain code:response.statusCode userInfo:userInfo];
+  return [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain code:response.statusCode userInfo:userInfo];
 }
 
 @end

@@ -60,7 +60,7 @@
 
 - (BOOL)isAppAccessible:(nonnull NSString *)name
 {
-  // Deny access to the protected default app on the Expo client
+  // Deny access to the protected default app on the Expo Go
   if (_protectedAppNames && _protectedAppNames[name]) {
     return NO;
   }

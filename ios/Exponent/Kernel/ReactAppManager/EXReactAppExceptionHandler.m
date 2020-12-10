@@ -52,15 +52,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                    stack:(nullable NSArray<NSDictionary<NSString *, id> *> *)stack
                              exceptionId:(NSNumber *)exceptionId
 {
-  [[self _bridgeForRecord].redBox showErrorMessage:message withStack:stack];
+  // In RN 0.8 this was used to invoke the native red box errors (via `showErrorMessage`).
+  // The invocation has since been moved into the method that invokes this delegate method.
+  // https://github.com/facebook/react-native/commit/31b5b0ac010d44afe3e742e85c75a9ef9e72a9e0#diff-35e5d8a9e7e9ea80b2ccfd41b905b703
 }
 
 - (void)handleFatalJSExceptionWithMessage:(nullable NSString *)message
                                     stack:(nullable NSArray<NSDictionary<NSString *, id> *> *)stack
                               exceptionId:(NSNumber *)exceptionId
 {
-  [[self _bridgeForRecord].redBox showErrorMessage:message withStack:stack];
-
   NSString *description = [@"Unhandled JS Exception: " stringByAppendingString:message];
   NSDictionary *errorInfo = @{ NSLocalizedDescriptionKey: description, RCTJSStackTraceKey: stack };
   NSError *error = [NSError errorWithDomain:RCTErrorDomain code:0 userInfo:errorInfo];

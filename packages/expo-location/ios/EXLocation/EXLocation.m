@@ -289,13 +289,16 @@ UM_EXPORT_METHOD_AS(reverseGeocodeAsync,
       NSMutableArray *results = [NSMutableArray arrayWithCapacity:placemarks.count];
       for (CLPlacemark* placemark in placemarks) {
         NSDictionary *address = @{
-                                  @"city": placemark.locality ?: [NSNull null],
-                                  @"street": placemark.thoroughfare ?: [NSNull null],
-                                  @"region": placemark.administrativeArea ?: [NSNull null],
-                                  @"country": placemark.country ?: [NSNull null],
-                                  @"postalCode": placemark.postalCode ?: [NSNull null],
-                                  @"name": placemark.name ?: [NSNull null],
-                                  @"isoCountryCode": placemark.ISOcountryCode ?: [NSNull null],
+                                  @"city": UMNullIfNil(placemark.locality),
+                                  @"district": UMNullIfNil(placemark.subLocality),
+                                  @"street": UMNullIfNil(placemark.thoroughfare),
+                                  @"region": UMNullIfNil(placemark.administrativeArea),
+                                  @"subregion": UMNullIfNil(placemark.subAdministrativeArea),
+                                  @"country": UMNullIfNil(placemark.country),
+                                  @"postalCode": UMNullIfNil(placemark.postalCode),
+                                  @"name": UMNullIfNil(placemark.name),
+                                  @"isoCountryCode": UMNullIfNil(placemark.ISOcountryCode),
+                                  @"timezone": UMNullIfNil(placemark.timeZone.name),
                                   };
         [results addObject:address];
       }

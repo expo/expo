@@ -2,11 +2,21 @@
 title: Create a Splash Screen
 ---
 
-A splash screen, also known as a launch screen, is the first screen that a user sees when opening your app, and it stays visible while the app is loading. You can control when the splash screen disappears by using the [AppLoading](/versions/latest/sdk/app-loading/) component or [SplashScreen module](/versions/latest/sdk/splash-screen/).
+A splash screen, also known as a launch screen, is the first screen that a user sees when opening your app, and it stays visible while the app is loading. You can control when the splash screen disappears by using the [AppLoading](../versions/latest/sdk/app-loading.md) component or [SplashScreen module](../versions/latest/sdk/splash-screen.md).
 
 ## Customize the splash screen for your app
 
 The default splash screen is a blank white screen. This might work for you, if it does, you're in luck! If not, you're also in luck because it's quite easy to customize using `app.json` and the `splash` key. Let's walk through it.
+
+### Video walkthrough
+
+Create an app icon and splash image with the [Figma template](https://www.figma.com/file/ddc0glVeILssZl0Dcn1lSS/App-Icon-and-Splash?node-id=0%3A1) and video below:
+
+<object width="100%" height="400">
+   <param name="movie" value="https://youtube.com/embed/mVOFvLSiJ_s" />
+   <param name="wmode" value="transparent" />
+   <embed src="https://youtube.com/embed/mVOFvLSiJ_s" type="application/x-shockwave-flash" wmode="transparent" width="100%" height="400" />
+ </object>
 
 ### Make a splash image
 
@@ -70,14 +80,14 @@ Notice that in the last example, we stretched the image to fill the entire width
 
 Any of the splash options can be configured on a per-platform basis by nesting the configuration under the `android` or `ios` keys within `app.json` (the same as how you would customize an icon for either platform). In addition to this, certain configuration options are only available on iOS or Android.
 
-- On iOS, you can set [ios.splash.tabletImage](../../workflow/configuration/#tabletimage) if you would like to have a different splash image on iPads.
-- On Android, you can set splash images for [different device DPIs](../../workflow/configuration/#android), from `mdpi` to `xxxhdpi`.
+- On iOS, you can set [ios.splash.tabletImage](../workflow/configuration.md#tabletimage) if you would like to have a different splash image on iPads.
+- On Android, you can set splash images for [different device DPIs](../workflow/configuration.md#android), from `mdpi` to `xxxhdpi`.
 
 ### Using `AppLoading` and/or `SplashScreen`
 
 As long as `AppLoading` is the only component rendered in your application, your splash screen will remain visible. We recommend using `AppLoading` while caching assets or fetching any data from `AsyncStorage` to set the app up. However, if you want to control the moment of splash screen visibility change use `SplashScreen`.
 
-Read more about [AppLoading](/versions/latest/sdk/app-loading/) and [SplashScreen](/versions/latest/sdk/splash-screen/).
+Read more about [AppLoading](../versions/latest/sdk/app-loading.md) and [SplashScreen](../versions/latest/sdk/splash-screen.md).
 
 ### Differences between environments - iOS
 
@@ -100,13 +110,13 @@ For iOS, you can also choose to use a `.xib` interface builder document as the s
 Splash screen behaves in most cases exactly the same as in iOS case.
 
 There is a slight difference when it comes down to **standalone Android applications**.
-In this scenario extra attention should be paid to [`android.splash` section](../../workflow/configuration/#android) configuration inside [`app.json`](../../workflow/configuration/#android).
+In this scenario extra attention should be paid to [`android.splash` section](../workflow/configuration.md#android) configuration inside [`app.json`](../workflow/configuration.md#android).
 
 Depending on the `resizeMode` you will get the following behavior:
 
 - **contain** - on Android, the splash screen API is unable to stretch/scale the splash image (see the **native** mode). As a result, the `contain` mode will initially display only the background color, and when the initial view hierarchy is mounted then `splash.image` will be displayed.
 - **cover** - this mode has the limitations as **contain** for the same reasons.
-- **native** - in this mode your app will be leveraging Android's ability to present a static bitmap while the application is starting up. Android (unlike iOS) does not support stretching the provided image, so the application will present the given image centered on the screen. By default `splash.image` would be used as the `xxxdpi` resource. It's up to you to provide graphics that meet your expectations and fit the screen dimension. To achieve this, use different resolutions for [different device DPIs](../../workflow/configuration/#android), from `mdpi` to `xxxhdpi`.
+- **native** - in this mode your app will be leveraging Android's ability to present a static bitmap while the application is starting up. Android (unlike iOS) does not support stretching the provided image, so the application will present the given image centered on the screen. By default `splash.image` would be used as the `xxxdpi` resource. It's up to you to provide graphics that meet your expectations and fit the screen dimension. To achieve this, use different resolutions for [different device DPIs](../workflow/configuration.md#android), from `mdpi` to `xxxhdpi`.
 
 ### Bare workflow apps
 

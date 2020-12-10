@@ -250,7 +250,7 @@ function ContactDetailView({
   };
 
   const _selectPhoto = async () => {
-    const permission = await getPermissionAsync(Permissions.CAMERA_ROLL);
+    const permission = await getPermissionAsync(Permissions.MEDIA_LIBRARY);
     if (!permission) {
       return;
     }
@@ -272,7 +272,7 @@ function ContactDetailView({
             style={styles.image}
             onPress={onPressImage}
             name={contact?.name ?? ''}
-            image={contact?.image as any}
+            image={contact?.image?.uri}
           />
           <Text style={styles.name}>{contact?.name}</Text>
 

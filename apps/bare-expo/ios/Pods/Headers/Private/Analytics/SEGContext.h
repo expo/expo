@@ -1,1 +1,1 @@
-../../../Analytics/Analytics/Classes/Middlewares/SEGContext.h
+../../../Analytics/Analytics/Classes/SEGContext.h

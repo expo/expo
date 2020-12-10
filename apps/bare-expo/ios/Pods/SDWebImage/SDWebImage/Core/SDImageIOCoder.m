@@ -14,6 +14,9 @@
 #import "SDImageHEICCoderInternal.h"
 #import "SDImageIOAnimatedCoderInternal.h"
 
+// Specify File Size for lossy format encoding, like JPEG
+static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestinationRequestedFileSize";
+
 @implementation SDImageIOCoder {
     size_t _width, _height;
     CGImagePropertyOrientation _orientation;
@@ -98,7 +101,7 @@
         return nil;
     }
     
-    UIImage *image = [SDImageIOAnimatedCoder createFrameAtIndex:0 source:source scale:scale preserveAspectRatio:preserveAspectRatio thumbnailSize:thumbnailSize];
+    UIImage *image = [SDImageIOAnimatedCoder createFrameAtIndex:0 source:source scale:scale preserveAspectRatio:preserveAspectRatio thumbnailSize:thumbnailSize options:nil];
     CFRelease(source);
     if (!image) {
         return nil;
@@ -190,7 +193,7 @@
         if (scaleFactor != nil) {
             scale = MAX([scaleFactor doubleValue], 1);
         }
-        image = [SDImageIOAnimatedCoder createFrameAtIndex:0 source:_imageSource scale:scale preserveAspectRatio:_preserveAspectRatio thumbnailSize:_thumbnailSize];
+        image = [SDImageIOAnimatedCoder createFrameAtIndex:0 source:_imageSource scale:scale preserveAspectRatio:_preserveAspectRatio thumbnailSize:_thumbnailSize options:nil];
         if (image) {
             CFStringRef uttype = CGImageSourceGetType(_imageSource);
             image.sd_imageFormat = [NSData sd_imageFormatFromUTType:uttype];
@@ -221,9 +224,14 @@
     if (!image) {
         return nil;
     }
+    CGImageRef imageRef = image.CGImage;
+    if (!imageRef) {
+        // Earily return, supports CGImage only
+        return nil;
+    }
     
     if (format == SDImageFormatUndefined) {
-        BOOL hasAlpha = [SDImageCoderHelper CGImageContainsAlpha:image.CGImage];
+        BOOL hasAlpha = [SDImageCoderHelper CGImageContainsAlpha:imageRef];
         if (hasAlpha) {
             format = SDImageFormatPNG;
         } else {
@@ -248,14 +256,52 @@
     CGImagePropertyOrientation exifOrientation = kCGImagePropertyOrientationUp;
 #endif
     properties[(__bridge NSString *)kCGImagePropertyOrientation] = @(exifOrientation);
+    // Encoding Options
     double compressionQuality = 1;
     if (options[SDImageCoderEncodeCompressionQuality]) {
         compressionQuality = [options[SDImageCoderEncodeCompressionQuality] doubleValue];
     }
     properties[(__bridge NSString *)kCGImageDestinationLossyCompressionQuality] = @(compressionQuality);
+    CGColorRef backgroundColor = [options[SDImageCoderEncodeBackgroundColor] CGColor];
+    if (backgroundColor) {
+        properties[(__bridge NSString *)kCGImageDestinationBackgroundColor] = (__bridge id)(backgroundColor);
+    }
+    CGSize maxPixelSize = CGSizeZero;
+    NSValue *maxPixelSizeValue = options[SDImageCoderEncodeMaxPixelSize];
+    if (maxPixelSizeValue != nil) {
+#if SD_MAC
+        maxPixelSize = maxPixelSizeValue.sizeValue;
+#else
+        maxPixelSize = maxPixelSizeValue.CGSizeValue;
+#endif
+    }
+    NSUInteger pixelWidth = CGImageGetWidth(imageRef);
+    NSUInteger pixelHeight = CGImageGetHeight(imageRef);
+    if (maxPixelSize.width > 0 && maxPixelSize.height > 0 && pixelWidth > maxPixelSize.width && pixelHeight > maxPixelSize.height) {
+        CGFloat pixelRatio = pixelWidth / pixelHeight;
+        CGFloat maxPixelSizeRatio = maxPixelSize.width / maxPixelSize.height;
+        CGFloat finalPixelSize;
+        if (pixelRatio > maxPixelSizeRatio) {
+            finalPixelSize = maxPixelSize.width;
+        } else {
+            finalPixelSize = maxPixelSize.height;
+        }
+        properties[(__bridge NSString *)kCGImageDestinationImageMaxPixelSize] = @(finalPixelSize);
+    }
+    NSUInteger maxFileSize = [options[SDImageCoderEncodeMaxFileSize] unsignedIntegerValue];
+    if (maxFileSize > 0) {
+        properties[kSDCGImageDestinationRequestedFileSize] = @(maxFileSize);
+        // Remove the quality if we have file size limit
+        properties[(__bridge NSString *)kCGImageDestinationLossyCompressionQuality] = nil;
+    }
+    BOOL embedThumbnail = NO;
+    if (options[SDImageCoderEncodeEmbedThumbnail]) {
+        embedThumbnail = [options[SDImageCoderEncodeEmbedThumbnail] boolValue];
+    }
+    properties[(__bridge NSString *)kCGImageDestinationEmbedThumbnail] = @(embedThumbnail);
     
     // Add your image to the destination.
-    CGImageDestinationAddImage(imageDestination, image.CGImage, (__bridge CFDictionaryRef)properties);
+    CGImageDestinationAddImage(imageDestination, imageRef, (__bridge CFDictionaryRef)properties);
     
     // Finalize the destination.
     if (CGImageDestinationFinalize(imageDestination) == NO) {

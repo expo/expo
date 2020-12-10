@@ -48,7 +48,7 @@ public class LocationTaskService extends Service {
       mChannelId = extras.getString("appId") + ":" + extras.getString("taskName");
     }
 
-    return START_STICKY;
+    return START_REDELIVER_INTENT;
   }
 
   public void setParentContext(Context context) {

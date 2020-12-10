@@ -6,9 +6,10 @@ yarn run schema-sync unversioned -> updates the schema that versions/unversioned
 */
 
 const axios = require('axios');
-let fsExtra = require('fs-extra');
+const fs = require('fs-extra');
+const path = require('path');
 
-let version = process.argv[2];
+const version = process.argv[2];
 
 if (!version) {
   console.log('Please enter a version number\n');
@@ -20,30 +21,25 @@ if (version === 'unversioned') {
   axios
     .get(`http://exp.host/--/api/v2/project/configuration/schema/UNVERSIONED`)
     .then(async ({ data }) => {
-      await fsExtra.writeFile(
+      await fs.writeFile(
         `scripts/schemas/unversioned/app-config-schema.js`,
         'export default ',
         'utf8'
       );
-      await fsExtra.appendFile(
+      await fs.appendFile(
         `scripts/schemas/unversioned/app-config-schema.js`,
         JSON.stringify(data.data.schema.properties),
         'utf8'
       );
     });
 } else {
+  const schemaPath = `scripts/schemas/v${version}.0.0/app-config-schema.js`;
+  fs.ensureDirSync(path.dirname(schemaPath));
+
   axios
     .get(`http://exp.host/--/api/v2/project/configuration/schema/${version}.0.0`)
     .then(async ({ data }) => {
-      await fsExtra.writeFile(
-        `scripts/schemas/v${version}.0.0/app-config-schema.js`,
-        'export default ',
-        'utf8'
-      );
-      await fsExtra.appendFile(
-        `scripts/schemas/v${version}.0.0/app-config-schema.js`,
-        JSON.stringify(data.data.schema.properties),
-        'utf8'
-      );
+      await fs.writeFile(schemaPath, 'export default ', 'utf8');
+      await fs.appendFile(schemaPath, JSON.stringify(data.data.schema.properties), 'utf8');
     });
 }

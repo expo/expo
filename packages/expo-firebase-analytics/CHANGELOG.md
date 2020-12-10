@@ -8,6 +8,21 @@
 
 ### 🐛 Bug fixes
 
+## 2.6.0 — 2020-10-27
+
+### 🐛 Bug fixes
+
+- Fix exception in setCurrentScreen on Android. ([#10804](https://github.com/expo/expo/pull/10804) by [@IjzerenHein](https://github.com/IjzerenHein))
+- Fix setup native firebase link in README. ([#10740](https://github.com/expo/expo/pull/10740) by [@jarvisluong](https://github.com/jarvisluong))
+
+## 2.5.1 — 2020-10-08
+
+- Fix failed network requests on Android. ([#10606](https://github.com/expo/expo/pull/10606) by [@IjzerenHein](https://github.com/IjzerenHein))
+
+## 2.5.0 — 2020-08-18
+
+_This version does not introduce any user-facing changes._
+
 ## 2.4.1 — 2020-05-29
 
 ### 🐛 Bug fixes

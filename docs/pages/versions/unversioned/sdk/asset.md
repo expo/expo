@@ -1,6 +1,6 @@
 ---
 title: Asset
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-asset'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-asset'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
@@ -45,10 +45,7 @@ Downloads and stores one or more assets locally. After the assets are loaded, wi
 
 ```tsx
 function App() {
-  const [assets] = useAssets([
-    require('path/to/asset.jpg'),
-    require('path/to/other.png'),
-  ]);
+  const [assets] = useAssets([require('path/to/asset.jpg'), require('path/to/other.png')]);
 
   if (!assets) {
     return <AppLoading />;

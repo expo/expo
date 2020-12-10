@@ -51,7 +51,7 @@ static NSString *ABI38_0_0RCTColorSchemePreference(UITraitCollection *traitColle
   return ABI38_0_0RCTAppearanceColorSchemeLight;
 }
 
-@interface ABI38_0_0RCTAppearance () <NativeAppearanceSpec>
+@interface ABI38_0_0RCTAppearance () <ABI38_0_0NativeAppearanceSpec>
 @end
 
 @implementation ABI38_0_0RCTAppearance

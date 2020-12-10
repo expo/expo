@@ -7,6 +7,7 @@ import {
   WebBrowserAuthSessionResult,
   WebBrowserOpenOptions,
   WebBrowserResult,
+  WebBrowserResultType,
   WebBrowserWindowFeatures,
 } from './WebBrowser.types';
 
@@ -52,11 +53,11 @@ export default {
     url: string,
     browserParams: WebBrowserOpenOptions = {}
   ): Promise<WebBrowserResult> {
-    if (!canUseDOM) return { type: 'cancel' };
+    if (!canUseDOM) return { type: WebBrowserResultType.CANCEL };
     const { windowName = '_blank', windowFeatures } = browserParams;
     const features = getPopupFeaturesString(windowFeatures);
     window.open(url, windowName, features);
-    return { type: 'opened' };
+    return { type: WebBrowserResultType.OPENED };
   },
   dismissAuthSession() {
     if (!canUseDOM) return;
@@ -116,7 +117,7 @@ export default {
     redirectUrl?: string,
     openOptions?: WebBrowserOpenOptions
   ): Promise<WebBrowserAuthSessionResult> {
-    if (!canUseDOM) return { type: 'cancel' };
+    if (!canUseDOM) return { type: WebBrowserResultType.CANCEL };
 
     redirectUrl = redirectUrl ?? getRedirectUrlFromUrlOrGenerate(url);
 
@@ -184,7 +185,7 @@ export default {
       // Check if the window has been closed every second.
       const interval = setInterval(() => {
         if (popupWindow?.closed) {
-          if (resolve) resolve({ type: 'dismiss' });
+          if (resolve) resolve({ type: WebBrowserResultType.DISMISS });
           clearInterval(interval);
           dismissPopup();
         }

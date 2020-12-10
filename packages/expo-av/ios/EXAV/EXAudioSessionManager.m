@@ -83,7 +83,7 @@ UM_REGISTER_SINGLETON_MODULE(AudioSessionManager);
 }
 
 - (NSError *)setActive:(BOOL)active forModule:(id)module {
-  BOOL overridenActive = [self _shouldBeActive];
+  BOOL prevActive = [self _shouldBeActive];
 
   if (active) {
     [_activeModules setObject:@(YES) forKey:module];
@@ -91,8 +91,12 @@ UM_REGISTER_SINGLETON_MODULE(AudioSessionManager);
     [_activeModules removeObjectForKey:module];
   }
 
-  if (active != overridenActive) {
-    return [self _updateSessionConfiguration];
+  if (active != prevActive) {
+    NSError *error = [self _updateSessionConfiguration];
+    if (error && active) {
+      [_activeModules removeObjectForKey:module];
+    }
+    return error;
   }
   return nil;
 }

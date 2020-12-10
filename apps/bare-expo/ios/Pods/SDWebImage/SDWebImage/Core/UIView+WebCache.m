@@ -11,6 +11,7 @@
 #import "UIView+WebCacheOperation.h"
 #import "SDWebImageError.h"
 #import "SDInternalMacros.h"
+#import "SDWebImageTransitionInternal.h"
 
 const int64_t SDWebImageProgressUnitCountUnknown = 1LL;
 
@@ -52,10 +53,19 @@ const int64_t SDWebImageProgressUnitCountUnknown = 1LL;
                      setImageBlock:(nullable SDSetImageBlock)setImageBlock
                           progress:(nullable SDImageLoaderProgressBlock)progressBlock
                          completed:(nullable SDInternalCompletionBlock)completedBlock {
-    context = [context copy]; // copy to avoid mutable object
+    if (context) {
+        // copy to avoid mutable object
+        context = [context copy];
+    } else {
+        context = [NSDictionary dictionary];
+    }
     NSString *validOperationKey = context[SDWebImageContextSetImageOperationKey];
     if (!validOperationKey) {
+        // pass through the operation key to downstream, which can used for tracing operation or image view class
         validOperationKey = NSStringFromClass([self class]);
+        SDWebImageMutableContext *mutableContext = [context mutableCopy];
+        mutableContext[SDWebImageContextSetImageOperationKey] = validOperationKey;
+        context = [mutableContext copy];
     }
     self.sd_latestOperationKey = validOperationKey;
     [self sd_cancelImageLoadOperationWithKey:validOperationKey];
@@ -83,6 +93,11 @@ const int64_t SDWebImageProgressUnitCountUnknown = 1LL;
         SDWebImageManager *manager = context[SDWebImageContextCustomManager];
         if (!manager) {
             manager = [SDWebImageManager sharedManager];
+        } else {
+            // remove this manager to avoid retain cycle (manger -> loader -> operation -> context -> manager)
+            SDWebImageMutableContext *mutableContext = [context mutableCopy];
+            mutableContext[SDWebImageContextCustomManager] = nil;
+            context = [mutableContext copy];
         }
         
         SDImageLoaderProgressBlock combinedProgressBlock = ^(NSInteger receivedSize, NSInteger expectedSize, NSURL * _Nullable targetURL) {
@@ -260,10 +275,21 @@ const int64_t SDWebImageProgressUnitCountUnknown = 1LL;
         } completionHandler:^{
             [NSAnimationContext runAnimationGroup:^(NSAnimationContext * _Nonnull context) {
                 context.duration = transition.duration;
-                context.timingFunction = transition.timingFunction;
+                #pragma clang diagnostic push
+                #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+                CAMediaTimingFunction *timingFunction = transition.timingFunction;
+                #pragma clang diagnostic pop
+                if (!timingFunction) {
+                    timingFunction = SDTimingFunctionFromAnimationOptions(transition.animationOptions);
+                }
+                context.timingFunction = timingFunction;
                 context.allowsImplicitAnimation = SD_OPTIONS_CONTAINS(transition.animationOptions, SDWebImageAnimationOptionAllowsImplicitAnimation);
                 if (finalSetImageBlock && !transition.avoidAutoSetImage) {
                     finalSetImageBlock(image, imageData, cacheType, imageURL);
+                }
+                CATransition *trans = SDTransitionFromAnimationOptions(transition.animationOptions);
+                if (trans) {
+                    [view.layer addAnimation:trans forKey:kCATransition];
                 }
                 if (transition.animations) {
                     transition.animations(view, image);

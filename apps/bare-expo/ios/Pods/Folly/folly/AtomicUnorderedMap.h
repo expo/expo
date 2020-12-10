@@ -1,11 +1,11 @@
 /*
- * Copyright 2013-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,11 +24,10 @@
 #include <system_error>
 #include <type_traits>
 
-#include <boost/type_traits/has_trivial_destructor.hpp>
-
 #include <folly/Conv.h>
 #include <folly/Likely.h>
 #include <folly/Random.h>
+#include <folly/Traits.h>
 #include <folly/detail/AtomicUnorderedMapUtils.h>
 #include <folly/lang/Bits.h>
 #include <folly/portability/SysMman.h>
@@ -135,8 +134,8 @@ template <
     typename Hash = std::hash<Key>,
     typename KeyEqual = std::equal_to<Key>,
     bool SkipKeyValueDeletion =
-        (boost::has_trivial_destructor<Key>::value &&
-         boost::has_trivial_destructor<Value>::value),
+        (std::is_trivially_destructible<Key>::value &&
+         std::is_trivially_destructible<Value>::value),
     template <typename> class Atom = std::atomic,
     typename IndexType = uint32_t,
     typename Allocator = folly::detail::MMapAlloc>
@@ -362,8 +361,7 @@ struct AtomicUnorderedInsertMap {
     IndexType next_;
 
     /// Key and Value
-    typename std::aligned_storage<sizeof(value_type), alignof(value_type)>::type
-        raw_;
+    aligned_storage_for_t<value_type> raw_;
 
     ~Slot() {
       auto s = state();
@@ -463,7 +461,7 @@ struct AtomicUnorderedInsertMap {
   void zeroFillSlots() {
     using folly::detail::GivesZeroFilledMemory;
     if (!GivesZeroFilledMemory<Allocator>::value) {
-      memset(slots_, 0, mmapRequested_);
+      memset(static_cast<void*>(slots_), 0, mmapRequested_);
     }
   }
 };
@@ -478,8 +476,8 @@ template <
     typename Hash = std::hash<Key>,
     typename KeyEqual = std::equal_to<Key>,
     bool SkipKeyValueDeletion =
-        (boost::has_trivial_destructor<Key>::value &&
-         boost::has_trivial_destructor<Value>::value),
+        (std::is_trivially_destructible<Key>::value &&
+         std::is_trivially_destructible<Value>::value),
     template <typename> class Atom = std::atomic,
     typename Allocator = folly::detail::MMapAlloc>
 using AtomicUnorderedInsertMap64 = AtomicUnorderedInsertMap<

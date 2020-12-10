@@ -26,9 +26,15 @@ public class ScreenViewManager extends ViewGroupManager<Screen> {
     return new Screen(reactContext);
   }
 
-  @ReactProp(name = "active", defaultFloat = 0)
-  public void setActive(Screen view, float active) {
-    view.setActive(active != 0);
+  @ReactProp(name = "activityState")
+  public void setActivityState(Screen view, int activityState) {
+    if (activityState == 0) {
+      view.setActivityState(Screen.ActivityState.INACTIVE);
+    } else if (activityState == 1) {
+      view.setActivityState(Screen.ActivityState.TRANSITIONING_OR_BELOW_TOP);
+    } else if (activityState == 2) {
+      view.setActivityState(Screen.ActivityState.ON_TOP);
+    }
   }
 
   @ReactProp(name = "stackPresentation")
@@ -62,14 +68,29 @@ public class ScreenViewManager extends ViewGroupManager<Screen> {
     view.setGestureEnabled(gestureEnabled);
   }
 
+  @ReactProp(name = "replaceAnimation")
+  public void setReplaceAnimation(Screen view, String animation) {
+    if (animation == null || "pop".equals(animation)) {
+      view.setReplaceAnimation(Screen.ReplaceAnimation.POP);
+    } else if ("push".equals(animation)) {
+      view.setReplaceAnimation(Screen.ReplaceAnimation.PUSH);
+    }
+  }
+
   @Nullable
   @Override
   public Map getExportedCustomDirectEventTypeConstants() {
     return MapBuilder.of(
             ScreenDismissedEvent.EVENT_NAME,
             MapBuilder.of("registrationName", "onDismissed"),
+            ScreenWillAppearEvent.EVENT_NAME,
+            MapBuilder.of("registrationName", "onWillAppear"),
             ScreenAppearEvent.EVENT_NAME,
             MapBuilder.of("registrationName", "onAppear"),
+            ScreenWillDisappearEvent.EVENT_NAME,
+            MapBuilder.of("registrationName", "onWillDisappear"),
+            ScreenDisappearEvent.EVENT_NAME,
+            MapBuilder.of("registrationName", "onDisappear"),
             StackFinishTransitioningEvent.EVENT_NAME,
             MapBuilder.of("registrationName", "onFinishTransitioning"));
   }

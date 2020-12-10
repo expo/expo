@@ -1,11 +1,11 @@
 /*
- * Copyright 2016-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,8 @@
 #pragma once
 
 #include <cstdlib>
+
+#include <folly/portability/Config.h>
 
 #if defined(__APPLE__)
 #if __has_include(<crt_externs.h>)
@@ -46,6 +48,11 @@ int unsetenv(const char* name);
 char*** _NSGetEnviron(void);
 #endif
 #define environ (*_NSGetEnviron())
+#endif
+
+#if defined(__FreeBSD__)
+// Needed to resolve linkage
+char** environ;
 #endif
 
 #if !__linux__ && !FOLLY_MOBILE

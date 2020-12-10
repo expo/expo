@@ -15,7 +15,7 @@
   "source_files": "ios/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "React": [
+    "React-Core": [
 
     ],
     "SDWebImage": [

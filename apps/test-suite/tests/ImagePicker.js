@@ -9,7 +9,7 @@ import { alertAndWaitForResponse } from './helpers';
 
 export const name = 'ImagePicker';
 
-export async function test({ it, xit, beforeAll, expect, jasmine, xdescribe, describe, afterAll }) {
+export async function test({ it, beforeAll, expect, jasmine, describe, afterAll }) {
   function testMediaObjectShape(shape, type) {
     expect(shape).toBeDefined();
     expect(typeof shape.cancelled).toBe('boolean');
@@ -43,11 +43,11 @@ export async function test({ it, xit, beforeAll, expect, jasmine, xdescribe, des
     let originalTimeout;
 
     beforeAll(async () => {
-      await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
       await Permissions.askAsync(Permissions.CAMERA);
 
       await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
-        return Permissions.askAsync(Permissions.CAMERA_ROLL);
+        return Permissions.askAsync(Permissions.MEDIA_LIBRARY);
       });
       originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
       jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout * 10;

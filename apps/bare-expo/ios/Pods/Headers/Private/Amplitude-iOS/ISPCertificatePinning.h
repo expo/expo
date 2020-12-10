@@ -1,1 +1,0 @@
-../../../Amplitude-iOS/Amplitude/SSLCertificatePinning/ISPCertificatePinning.h

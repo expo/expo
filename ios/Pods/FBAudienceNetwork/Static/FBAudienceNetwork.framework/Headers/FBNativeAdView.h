@@ -74,7 +74,9 @@ FB_CLASS_EXPORT
  @param type The type of this native ad template. For more information, consult FBNativeAdViewType.
  @param attributes The attributes to render this native ad template with.
  */
-+ (instancetype)nativeAdViewWithNativeAd:(FBNativeAd *)nativeAd withType:(FBNativeAdViewType)type withAttributes:(FBNativeAdViewAttributes *)attributes;
++ (instancetype)nativeAdViewWithNativeAd:(FBNativeAd *)nativeAd
+                                withType:(FBNativeAdViewType)type
+                          withAttributes:(FBNativeAdViewAttributes *)attributes;
 
 @end
 

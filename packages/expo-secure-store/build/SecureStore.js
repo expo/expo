@@ -8,6 +8,14 @@ export const ALWAYS_THIS_DEVICE_ONLY = ExpoSecureStore.ALWAYS_THIS_DEVICE_ONLY;
 export const WHEN_UNLOCKED = ExpoSecureStore.WHEN_UNLOCKED;
 export const WHEN_UNLOCKED_THIS_DEVICE_ONLY = ExpoSecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY;
 const VALUE_BYTES_LIMIT = 2048;
+/**
+ * Returns whether the SecureStore API is enabled on the current device. This does not check the app permissions.
+ *
+ * @returns Async `boolean`, indicating whether the SecureStore API is available on the current device. Currently this resolves `true` on iOS and Android only.
+ */
+export async function isAvailableAsync() {
+    return !!ExpoSecureStore.getValueWithKeyAsync;
+}
 export async function deleteItemAsync(key, options = {}) {
     _ensureValidKey(key);
     if (!ExpoSecureStore.deleteValueWithKeyAsync) {

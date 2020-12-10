@@ -7,15 +7,15 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 Push Notifications are an important feature, no matter what kind of app you're building. Not only is it nice to let users know about something that may interest them, be it a new album being released, a sale or other limited-time-only deal, or that one of their friends sent them a message, but push notifications are proven to help boost user interaction and create a better overall user experience.
 
-Whether you just want to be able to let users know when a relevant event happens, or you're trying to optimize customer engagement and retention, Expo makes implementing push notifications almost too easy. All the hassle with native device information and communicating with APNS (Apple Push Notification Service) or FCM (Firebase Cloud Messaging) is taken care of behind the scenes, so that you can treat iOS and Android notifications the same, saving you time on the front-end, and back-end!
+Whether you just want to be able to let users know when a relevant event happens, or you're trying to optimize customer engagement and retention, Expo makes implementing push notifications almost too easy. All the hassle with native device information and communicating with APNs (Apple Push Notification service) or FCM (Firebase Cloud Messaging) is taken care of behind the scenes, so that you can treat iOS and Android notifications the same, saving you time on the front-end, and back-end!
 
 There are three main steps to setting up push notifications, and we provide a guide for each part of the process:
 
-- [Setup: getting a user's Expo Push Token](../push-notifications-setup/)
-- [Sending: calling Expo's Push API with the token when you want to send a notification](../sending-notifications/)
-- [Receiving: responding to the notification in your app](../receiving-notifications/) (maybe upon opening, you want to jump to a particular screen that the notification refers to)
+- [Setup: getting a user's Expo Push Token](push-notifications-setup.md)
+- [Sending: calling Expo's Push API with the token when you want to send a notification](sending-notifications.md)
+- [Receiving: responding to the notification in your app](receiving-notifications.md) (maybe upon opening, you want to jump to a particular screen that the notification refers to)
 
-## Example Usage
+## Usage
 
 The Snack below shows a full example of how to register for, send, and receive push notifications in an Expo app. But make sure to read the rest of the guide, so that you understand how Expo's push notification service works, what the best practices are, and how to investigate any problems you run into!
 
@@ -84,7 +84,7 @@ export default function App() {
   );
 }
 
-// Can use this function below, OR use Expo's Push Notification Tool-> https://expo.io/dashboard/notifications
+// Can use this function below, OR use Expo's Push Notification Tool-> https://expo.io/notifications
 async function sendPushNotification(expoPushToken) {
   const message = {
     to: expoPushToken,
@@ -141,7 +141,7 @@ async function registerForPushNotificationsAsync() {
 
 ## Testing
 
-iOS and Android simulators cannot receive push notifications, so you will need to test using a physical device. Additionally, when calling `Permissions.askAsync` on the simulator, it will resolve immediately with `undetermined` as the status, regardless of whether you choose to allow or not.
+We recommend testing push notifications on a physical device. iOS simulators **cannot** receive push notifications, and neither can Android emulators unless you are running an image with Google Play Services installed and configured. Additionally, when calling `Permissions.askAsync` on the simulator, it will resolve immediately with `undetermined` as the status, regardless of whether you choose to allow or not.
 
 The [Expo push notification tool](https://expo.io/notifications) is also useful for testing push notifications during development. It lets you easily send test notifications to your device, without having to use your CLI or write out a test server.
 
@@ -153,6 +153,10 @@ The [Expo push notification tool](https://expo.io/notifications) is also useful 
 
 - **How does Expo encrypt connections to push notification services, like Apple's and Google's?** Expo's connections to Apple and Google are encrypted and use HTTPS.
 
-- **What browsers does Expo for Web's push notifications support?** It works on all browsers that support Push API such as Chrome and Firefox. Check the full list here: https://caniuse.com/#feat=push-api.
-
 - **How do I handle expired push notification credentials?** When your push notification credentials have expired, run `expo credentials:manager -p ios` which will provide a list of actions to choose from. Select the removal of your expired credentials and then select "Add new Push Notifications Key".
+
+- **What delivery guarantees are there for push notifications?** Expo makes a best effort to deliver notifications to the push notification services operated by Apple and Google. Expo's infrastructure is designed for at-least-once delivery to the underlying push notification services; it is more likely for a notification to be delivered to Apple or Google more than once rather than not at all, though both are uncommon but possible.
+
+  After a notification has been handed off to an underlying push notification service, Expo creates a "push receipt" that records whether the handoff was successful; a push receipt denotes whether the underlying push notification service received the notification.
+
+  Finally, the push notification services from Apple, Google, etc... make a best effort to deliver the notification to the device according to their own policies.

@@ -28,7 +28,7 @@ FOUNDATION_EXPORT CGFloat SDImageScaleFactorForKey(NSString * _Nullable key);
 /**
  Scale the image with the scale factor for the specify key. If no need to scale, return the original image.
  This works for `UIImage`(UIKit) or `NSImage`(AppKit). And this function also preserve the associated value in `UIImage+Metadata.h`.
- @note This is actually a convenience function, which firstlly call `SDImageScaleFactorForKey` and then call `SDScaledImageForScaleFactor`, kept for backward compatibility.
+ @note This is actually a convenience function, which firstly call `SDImageScaleFactorForKey` and then call `SDScaledImageForScaleFactor`, kept for backward compatibility.
 
  @param key The image cache key
  @param image The image
@@ -171,7 +171,7 @@ typedef NS_OPTIONS(NSUInteger, SDWebImageOptions) {
     SDWebImageAvoidDecodeImage = 1 << 18,
     
     /**
-     * By default, we decode the animated image. This flag can force decode the first frame only and produece the static image.
+     * By default, we decode the animated image. This flag can force decode the first frame only and produce the static image.
      */
     SDWebImageDecodeFirstFrameOnly = 1 << 19,
     
@@ -190,7 +190,7 @@ typedef NS_OPTIONS(NSUInteger, SDWebImageOptions) {
     
     /**
      * By default, when we load the image from network, the image will be written to the cache (memory and disk, controlled by your `storeCacheType` context option)
-     * This maybe an asynchronously operation and the final `SDInternalCompletionBlock` callback does not gurantee the disk cache written is finished and may cause logic error. (For example, you modify the disk data just in completion block, however, the disk cache is not ready)
+     * This maybe an asynchronously operation and the final `SDInternalCompletionBlock` callback does not guarantee the disk cache written is finished and may cause logic error. (For example, you modify the disk data just in completion block, however, the disk cache is not ready)
      * If you need to process with the disk cache in the completion block, you should use this option to ensure the disk cache already been written when callback.
      * Note if you use this when using the custom cache serializer, or using the transformer, we will also wait until the output image data written is finished.
      */
@@ -213,31 +213,31 @@ FOUNDATION_EXPORT SDWebImageContextOption _Nonnull const SDWebImageContextSetIma
 
 /**
  A SDWebImageManager instance to control the image download and cache process using in UIImageView+WebCache category and likes. If not provided, use the shared manager (SDWebImageManager *)
- @deprecated Deprecated in the future. This context options can be replaced by other context option control like `.imageCache`, `.imageLoader`, `.imageTransofmer` (See below), which already matches all the properties in SDWebImageManager.
+ @deprecated Deprecated in the future. This context options can be replaced by other context option control like `.imageCache`, `.imageLoader`, `.imageTransformer` (See below), which already matches all the properties in SDWebImageManager.
  */
 FOUNDATION_EXPORT SDWebImageContextOption _Nonnull const SDWebImageContextCustomManager API_DEPRECATED("Use individual context option like .imageCache, .imageLoader and .imageTransformer instead", macos(10.10, API_TO_BE_DEPRECATED), ios(8.0, API_TO_BE_DEPRECATED), tvos(9.0, API_TO_BE_DEPRECATED), watchos(2.0, API_TO_BE_DEPRECATED));
 
 /**
- A id<SDImageCache> instance which conforms to `SDImageCache` protocol. It's used to override the image mananger's cache during the image loading pipeline.
+ A id<SDImageCache> instance which conforms to `SDImageCache` protocol. It's used to override the image manager's cache during the image loading pipeline.
  In other word, if you just want to specify a custom cache during image loading, you don't need to re-create a dummy SDWebImageManager instance with the cache. If not provided, use the image manager's cache (id<SDImageCache>)
  */
 FOUNDATION_EXPORT SDWebImageContextOption _Nonnull const SDWebImageContextImageCache;
 
 /**
- A id<SDImageLoader> instance which conforms to `SDImageLoader` protocol. It's used to override the image mananger's loader during the image loading pipeline.
+ A id<SDImageLoader> instance which conforms to `SDImageLoader` protocol. It's used to override the image manager's loader during the image loading pipeline.
  In other word, if you just want to specify a custom loader during image loading, you don't need to re-create a dummy SDWebImageManager instance with the loader. If not provided, use the image manager's cache (id<SDImageLoader>)
 */
 FOUNDATION_EXPORT SDWebImageContextOption _Nonnull const SDWebImageContextImageLoader;
 
 /**
- A id<SDImageCoder> instance which conforms to `SDImageCoder` protocol. It's used to override the default image codre for image decoding(including progressive) and encoding during the image loading process.
+ A id<SDImageCoder> instance which conforms to `SDImageCoder` protocol. It's used to override the default image coder for image decoding(including progressive) and encoding during the image loading process.
  If you use this context option, we will not always use `SDImageCodersManager.shared` to loop through all registered coders and find the suitable one. Instead, we will arbitrarily use the exact provided coder without extra checking (We may not call `canDecodeFromData:`).
  @note This is only useful for cases which you can ensure the loading url matches your coder, or you find it's too hard to write a common coder which can used for generic usage. This will bind the loading url with the coder logic, which is not always a good design, but possible. (id<SDImageCache>)
 */
 FOUNDATION_EXPORT SDWebImageContextOption _Nonnull const SDWebImageContextImageCoder;
 
 /**
- A id<SDImageTransformer> instance which conforms `SDImageTransformer` protocol. It's used for image transform after the image load finished and store the transformed image to cache. If you provide one, it will ignore the `transformer` in manager and use provided one instead. (id<SDImageTransformer>)
+ A id<SDImageTransformer> instance which conforms `SDImageTransformer` protocol. It's used for image transform after the image load finished and store the transformed image to cache. If you provide one, it will ignore the `transformer` in manager and use provided one instead. If you pass NSNull, the transformer feature will be disabled. (id<SDImageTransformer>)
  */
 FOUNDATION_EXPORT SDWebImageContextOption _Nonnull const SDWebImageContextImageTransformer;
 
@@ -260,6 +260,12 @@ FOUNDATION_EXPORT SDWebImageContextOption _Nonnull const SDWebImageContextImageP
 FOUNDATION_EXPORT SDWebImageContextOption _Nonnull const SDWebImageContextImageThumbnailPixelSize;
 
 /**
+ A SDImageCacheType raw value which specify the source of cache to query. Specify `SDImageCacheTypeDisk` to query from disk cache only; `SDImageCacheTypeMemory` to query from memory only. And `SDImageCacheTypeAll` to query from both memory cache and disk cache. Specify `SDImageCacheTypeNone` is invalid and totally ignore the cache query.
+ If not provide or the value is invalid, we will use `SDImageCacheTypeAll`. (NSNumber)
+ */
+FOUNDATION_EXPORT SDWebImageContextOption _Nonnull const SDWebImageContextQueryCacheType;
+
+/**
  A SDImageCacheType raw value which specify the store cache type when the image has just been downloaded and will be stored to the cache. Specify `SDImageCacheTypeNone` to disable cache storage; `SDImageCacheTypeDisk` to store in disk cache only; `SDImageCacheTypeMemory` to store in memory only. And `SDImageCacheTypeAll` to store in both memory cache and disk cache.
  If you use image transformer feature, this actually apply for the transformed image, but not the original image itself. Use `SDWebImageContextOriginalStoreCacheType` if you want to control the original image's store cache type at the same time.
  If not provide or the value is invalid, we will use `SDImageCacheTypeAll`. (NSNumber)
@@ -267,8 +273,16 @@ FOUNDATION_EXPORT SDWebImageContextOption _Nonnull const SDWebImageContextImageT
 FOUNDATION_EXPORT SDWebImageContextOption _Nonnull const SDWebImageContextStoreCacheType;
 
 /**
+ The same behavior like `SDWebImageContextQueryCacheType`, but control the query cache type for the original image when you use image transformer feature. This allows the detail control of cache query for these two images. For example, if you want to query the transformed image from both memory/disk cache, query the original image from disk cache only, use `[.queryCacheType : .all, .originalQueryCacheType : .disk]`
+ If not provide or the value is invalid, we will use `SDImageCacheTypeNone`, which does not query the original image from cache. (NSNumber)
+ @note Which means, if you set this value to not be `.none`, we will query the original image from cache, then do transform with transformer, instead of actual downloading, which can save bandwidth usage.
+ */
+FOUNDATION_EXPORT SDWebImageContextOption _Nonnull const SDWebImageContextOriginalQueryCacheType;
+
+/**
  The same behavior like `SDWebImageContextStoreCacheType`, but control the store cache type for the original image when you use image transformer feature. This allows the detail control of cache storage for these two images. For example, if you want to store the transformed image into both memory/disk cache, store the original image into disk cache only, use `[.storeCacheType : .all, .originalStoreCacheType : .disk]`
  If not provide or the value is invalid, we will use `SDImageCacheTypeNone`, which does not store the original image into cache. (NSNumber)
+ @note This only store the original image, if you want to use the original image without downloading in next query, specify `SDWebImageContextOriginalQueryCacheType` as well.
  */
 FOUNDATION_EXPORT SDWebImageContextOption _Nonnull const SDWebImageContextOriginalStoreCacheType;
 

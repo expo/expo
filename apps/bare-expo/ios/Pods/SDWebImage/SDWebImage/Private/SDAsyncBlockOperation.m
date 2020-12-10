@@ -35,33 +35,58 @@
 }
 
 - (void)start {
-    if (self.isCancelled) {
-        return;
-    }
-    
-    [self willChangeValueForKey:@"isExecuting"];
-    self.executing = YES;
-    [self didChangeValueForKey:@"isExecuting"];
-    
-    if (self.executionBlock) {
-        self.executionBlock(self);
-    } else {
-        [self complete];
+    @synchronized (self) {
+        if (self.isCancelled) {
+            self.finished = YES;
+            return;
+        }
+        
+        self.finished = NO;
+        self.executing = YES;
+        
+        if (self.executionBlock) {
+            self.executionBlock(self);
+        } else {
+            self.executing = NO;
+            self.finished = YES;
+        }
     }
 }
 
 - (void)cancel {
-    [super cancel];
-    [self complete];
+    @synchronized (self) {
+        [super cancel];
+        if (self.isExecuting) {
+            self.executing = NO;
+            self.finished = YES;
+        }
+    }
 }
 
+ 
 - (void)complete {
-    [self willChangeValueForKey:@"isExecuting"];
+    @synchronized (self) {
+        if (self.isExecuting) {
+            self.finished = YES;
+            self.executing = NO;
+        }
+    }
+ }
+
+- (void)setFinished:(BOOL)finished {
     [self willChangeValueForKey:@"isFinished"];
-    self.executing = NO;
-    self.finished = YES;
-    [self didChangeValueForKey:@"isExecuting"];
+    _finished = finished;
     [self didChangeValueForKey:@"isFinished"];
+}
+
+- (void)setExecuting:(BOOL)executing {
+    [self willChangeValueForKey:@"isExecuting"];
+    _executing = executing;
+    [self didChangeValueForKey:@"isExecuting"];
+}
+
+- (BOOL)isConcurrent {
+    return YES;
 }
 
 @end

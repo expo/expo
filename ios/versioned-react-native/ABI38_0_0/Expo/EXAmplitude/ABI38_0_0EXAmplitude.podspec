@@ -18,5 +18,5 @@ Pod::Spec.new do |s|
 
   s.dependency 'ABI38_0_0UMCore'
   s.dependency 'ABI38_0_0UMConstantsInterface'
-  s.dependency 'Amplitude-iOS', '~> 4.7.1'
+  s.dependency 'Amplitude', '~> 6.0.0'
 end

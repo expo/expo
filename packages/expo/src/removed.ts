@@ -7,6 +7,7 @@ declare var module: any;
 
 /* eslint-disable getter-return */
 Object.defineProperties(module.exports, {
+  /** @deprecated */
   AdMobBanner: {
     enumerable: true,
     get() {
@@ -17,6 +18,7 @@ Object.defineProperties(module.exports, {
       );
     },
   },
+  /** @deprecated */
   AdMobInterstitial: {
     enumerable: true,
     get() {
@@ -27,6 +29,7 @@ Object.defineProperties(module.exports, {
       );
     },
   },
+  /** @deprecated */
   AdMobRewarded: {
     enumerable: true,
     get() {
@@ -37,6 +40,7 @@ Object.defineProperties(module.exports, {
       );
     },
   },
+  /** @deprecated */
   Animated: {
     enumerable: true,
     get() {
@@ -47,6 +51,7 @@ Object.defineProperties(module.exports, {
       );
     },
   },
+  /** @deprecated */
   AR: {
     enumerable: true,
     get() {
@@ -59,6 +64,7 @@ Object.defineProperties(module.exports, {
       }
     },
   },
+  /** @deprecated */
   AuthSession: {
     enumerable: true,
     get() {
@@ -69,6 +75,7 @@ Object.defineProperties(module.exports, {
       );
     },
   },
+  /** @deprecated */
   Easing: {
     enumerable: true,
     get() {
@@ -79,6 +86,7 @@ Object.defineProperties(module.exports, {
       );
     },
   },
+  /** @deprecated */
   Transition: {
     enumerable: true,
     get() {
@@ -89,6 +97,7 @@ Object.defineProperties(module.exports, {
       );
     },
   },
+  /** @deprecated */
   Transitioning: {
     enumerable: true,
     get() {
@@ -99,6 +108,8 @@ Object.defineProperties(module.exports, {
       );
     },
   },
+
+  /** @deprecated */
   PublisherBanner: {
     enumerable: true,
     get() {
@@ -110,6 +121,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   FacebookAds: {
     enumerable: true,
     get() {
@@ -121,6 +133,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   Amplitude: {
     enumerable: true,
     get() {
@@ -132,6 +145,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   Segment: {
     enumerable: true,
     get() {
@@ -143,6 +157,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   AppAuth: {
     enumerable: true,
     get() {
@@ -154,6 +169,22 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
+  AppLoading: {
+    enumerable: true,
+    get() {
+      removedModule(
+        `import { AppLoading } from 'expo' -> import AppLoading from 'expo-app-loading'`,
+        'AppLoading',
+        'expo-app-loading'
+      );
+
+      const AppLoadingPlaceholder = require('./launch/AppLoadingPlaceholder');
+      return AppLoadingPlaceholder.default;
+    },
+  },
+
+  /** @deprecated */
   Asset: {
     enumerable: true,
     get() {
@@ -165,6 +196,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   Audio: {
     enumerable: true,
     get() {
@@ -175,6 +207,7 @@ Object.defineProperties(module.exports, {
       );
     },
   },
+  /** @deprecated */
   Video: {
     enumerable: true,
     get() {
@@ -186,6 +219,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   BackgroundFetch: {
     enumerable: true,
     get() {
@@ -197,6 +231,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   BarCodeScanner: {
     enumerable: true,
     get() {
@@ -208,6 +243,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   BlurView: {
     enumerable: true,
     get() {
@@ -219,6 +255,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   Brightness: {
     enumerable: true,
     get() {
@@ -230,6 +267,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   Calendar: {
     enumerable: true,
     get() {
@@ -241,6 +279,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   Camera: {
     enumerable: true,
     get() {
@@ -252,6 +291,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   Constants: {
     enumerable: true,
     get() {
@@ -263,6 +303,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   Contacts: {
     enumerable: true,
     get() {
@@ -274,6 +315,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   Crypto: {
     enumerable: true,
     get() {
@@ -285,6 +327,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   DocumentPicker: {
     enumerable: true,
     get() {
@@ -296,6 +339,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   ErrorRecovery: {
     enumerable: true,
     get() {
@@ -307,6 +351,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   FaceDetector: {
     enumerable: true,
     get() {
@@ -318,6 +363,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   Facebook: {
     enumerable: true,
     get() {
@@ -329,6 +375,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   FileSystem: {
     enumerable: true,
     get() {
@@ -340,6 +387,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   Font: {
     enumerable: true,
     get() {
@@ -351,6 +399,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   GL: {
     enumerable: true,
     get() {
@@ -358,6 +407,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   GLView: {
     enumerable: true,
     get() {
@@ -369,6 +419,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   GoogleSignIn: {
     enumerable: true,
     get() {
@@ -380,6 +431,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   Google: {
     enumerable: true,
     get() {
@@ -391,6 +443,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   Haptic: {
     enumerable: true,
     get() {
@@ -401,6 +454,7 @@ Object.defineProperties(module.exports, {
       );
     },
   },
+  /** @deprecated */
   Haptics: {
     enumerable: true,
     get() {
@@ -412,6 +466,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   ImageManipulator: {
     enumerable: true,
     get() {
@@ -423,6 +478,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   ImagePicker: {
     enumerable: true,
     get() {
@@ -434,6 +490,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   IntentLauncher: {
     enumerable: true,
     get() {
@@ -444,6 +501,7 @@ Object.defineProperties(module.exports, {
       );
     },
   },
+  /** @deprecated */
   IntentLauncherAndroid: {
     enumerable: true,
     get() {
@@ -455,6 +513,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   KeepAwake: {
     enumerable: true,
     get() {
@@ -466,6 +525,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   LinearGradient: {
     enumerable: true,
     get() {
@@ -477,6 +537,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   LocalAuthentication: {
     enumerable: true,
     get() {
@@ -488,6 +549,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   Localization: {
     enumerable: true,
     get() {
@@ -499,6 +561,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   Location: {
     enumerable: true,
     get() {
@@ -510,6 +573,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   MailComposer: {
     enumerable: true,
     get() {
@@ -521,6 +585,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   MediaLibrary: {
     enumerable: true,
     get() {
@@ -532,6 +597,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   Permissions: {
     enumerable: true,
     get() {
@@ -543,6 +609,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   Print: {
     enumerable: true,
     get() {
@@ -554,6 +621,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   Random: {
     enumerable: true,
     get() {
@@ -565,6 +633,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   ScreenOrientation: {
     enumerable: true,
     get() {
@@ -576,6 +645,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   SecureStore: {
     enumerable: true,
     get() {
@@ -587,6 +657,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   Accelerometer: {
     enumerable: true,
     get() {
@@ -597,6 +668,7 @@ Object.defineProperties(module.exports, {
       );
     },
   },
+  /** @deprecated */
   Barometer: {
     enumerable: true,
     get() {
@@ -607,6 +679,7 @@ Object.defineProperties(module.exports, {
       );
     },
   },
+  /** @deprecated */
   Gyroscope: {
     enumerable: true,
     get() {
@@ -617,6 +690,7 @@ Object.defineProperties(module.exports, {
       );
     },
   },
+  /** @deprecated */
   Magnetometer: {
     enumerable: true,
     get() {
@@ -627,6 +701,7 @@ Object.defineProperties(module.exports, {
       );
     },
   },
+  /** @deprecated */
   MagnetometerUncalibrated: {
     enumerable: true,
     get() {
@@ -637,6 +712,18 @@ Object.defineProperties(module.exports, {
       );
     },
   },
+  /** @deprecated */
+  Pedometer: {
+    enumerable: true,
+    get() {
+      removedModule(
+        `import { Pedometer } from 'expo' -> import { Pedometer } from 'expo-sensors'`,
+        'Pedometer',
+        'expo-sensors'
+      );
+    },
+  },
+  /** @deprecated */
   Sensors: {
     enumerable: true,
     get() {
@@ -648,6 +735,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   Sharing: {
     enumerable: true,
     get() {
@@ -659,6 +747,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   SMS: {
     enumerable: true,
     get() {
@@ -670,6 +759,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   Speech: {
     enumerable: true,
     get() {
@@ -681,6 +771,19 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
+  SplashScreen: {
+    enumerable: true,
+    get() {
+      removedModule(
+        `import { SplashScreen } from 'expo' -> import * as SplashScreen from 'expo-splash-screen'`,
+        'SplashScreen',
+        'expo-splash-screen'
+      );
+    },
+  },
+
+  /** @deprecated */
   SQLite: {
     enumerable: true,
     get() {
@@ -691,7 +794,7 @@ Object.defineProperties(module.exports, {
       );
     },
   },
-
+  /** @deprecated */
   StoreReview: {
     enumerable: true,
     get() {
@@ -703,6 +806,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   TaskManager: {
     enumerable: true,
     get() {
@@ -714,6 +818,19 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
+  Updates: {
+    enumerable: true,
+    get() {
+      removedModule(
+        `import { Updates } from 'expo' -> import * as Updates from 'expo-updates'`,
+        'Updates',
+        'expo-updates'
+      );
+    },
+  },
+
+  /** @deprecated */
   WebBrowser: {
     enumerable: true,
     get() {
@@ -727,6 +844,7 @@ Object.defineProperties(module.exports, {
 
   // Vendored native modules
 
+  /** @deprecated */
   GestureHandler: {
     enumerable: true,
     get() {
@@ -738,6 +856,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   Icon: {
     enumerable: true,
     get() {
@@ -749,6 +868,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   MapView: {
     enumerable: true,
     get() {
@@ -760,6 +880,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   Svg: {
     enumerable: true,
     get() {
@@ -771,6 +892,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   takeSnapshotAsync: {
     enumerable: true,
     get() {
@@ -782,6 +904,7 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  /** @deprecated */
   WebView: {
     enumerable: true,
     get() {

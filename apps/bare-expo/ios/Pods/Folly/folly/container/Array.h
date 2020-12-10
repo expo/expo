@@ -1,11 +1,11 @@
 /*
- * Copyright 2016-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #pragma once
 
 #include <array>
@@ -26,10 +27,8 @@
 namespace folly {
 
 namespace array_detail {
-template <typename>
-struct is_ref_wrapper : std::false_type {};
-template <typename T>
-struct is_ref_wrapper<std::reference_wrapper<T>> : std::true_type {};
+template <class T>
+using is_ref_wrapper = detail::is_instantiation_of<std::reference_wrapper, T>;
 
 template <typename T>
 using not_ref_wrapper =
@@ -61,9 +60,9 @@ constexpr array_detail::return_type<D, TList...> make_array(TList&&... t) {
 
 namespace array_detail {
 template <typename MakeItem, std::size_t... Index>
-FOLLY_ALWAYS_INLINE FOLLY_ATTR_VISIBILITY_HIDDEN constexpr auto make_array_with(
+FOLLY_ERASE constexpr auto make_array_with_(
     MakeItem const& make,
-    index_sequence<Index...>) {
+    std::index_sequence<Index...>) {
   return std::array<decltype(make(0)), sizeof...(Index)>{{make(Index)...}};
 }
 } // namespace array_detail
@@ -73,7 +72,7 @@ FOLLY_ALWAYS_INLINE FOLLY_ATTR_VISIBILITY_HIDDEN constexpr auto make_array_with(
 //  Constructs a std::array<..., Size> with elements m(i) for i in [0, Size).
 template <std::size_t Size, typename MakeItem>
 constexpr auto make_array_with(MakeItem const& make) {
-  return array_detail::make_array_with(make, make_index_sequence<Size>{});
+  return array_detail::make_array_with_(make, std::make_index_sequence<Size>{});
 }
 
 } // namespace folly

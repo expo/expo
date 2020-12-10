@@ -1,6 +1,6 @@
 {
   "name": "EXBarCodeScanner",
-  "version": "8.2.1",
+  "version": "9.1.0",
   "summary": "Allows scanning variety of supported barcodes both as standalone module and as extension for expo-camera. It also allows scanning barcodes from existing images.",
   "description": "Allows scanning variety of supported barcodes both as standalone module and as extension for expo-camera. It also allows scanning barcodes from existing images.",
   "license": "MIT",
@@ -12,11 +12,11 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXBarCodeScanner/**/*.{h,m}",
-  "preserve_paths": "EXBarCodeScanner/**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "UMCore": [
+
+    ],
+    "UMBarCodeScannerInterface": [
 
     ],
     "UMImageLoaderInterface": [
@@ -31,5 +31,6 @@
     "ZXingObjC/OneD": [
 
     ]
-  }
+  },
+  "source_files": "EXBarCodeScanner/**/*.{h,m}"
 }

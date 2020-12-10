@@ -13,113 +13,86 @@
 
 @implementation RNCSegmentedControl
 
-- (instancetype)initWithFrame:(CGRect)frame
-{
+- (instancetype)initWithFrame:(CGRect)frame {
   if ((self = [super initWithFrame:frame])) {
     _selectedIndex = self.selectedSegmentIndex;
-    [self addTarget:self action:@selector(didChange)
-              forControlEvents:UIControlEventValueChanged];
-      _attributes = [[NSMutableDictionary alloc] init];
+    [self addTarget:self
+                  action:@selector(didChange)
+        forControlEvents:UIControlEventValueChanged];
   }
   return self;
 }
 
-- (void)setValues:(NSArray<NSString *> *)values
-{
-  [self removeAllSegments];
-  for (NSString *value in values) {
-    [self insertSegmentWithTitle:value atIndex:self.numberOfSegments animated:NO];
-  }
-  super.selectedSegmentIndex = _selectedIndex;
+- (void)setValues:(NSArray *)values {
+	[self removeAllSegments];
+	for (id segment in values) {
+		if ([segment isKindOfClass:[NSMutableDictionary class]]){
+			UIImage *image = [[RCTConvert UIImage:segment] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+			[self insertSegmentWithImage:image
+								 atIndex:self.numberOfSegments
+								animated:NO];
+		} else {
+			[self insertSegmentWithTitle:(NSString *)segment
+								 atIndex:self.numberOfSegments
+								animated:NO];
+		}
+	}
+	super.selectedSegmentIndex = _selectedIndex;
 }
 
-- (void)setSelectedIndex:(NSInteger)selectedIndex
-{
+- (void)setSelectedIndex:(NSInteger)selectedIndex {
   _selectedIndex = selectedIndex;
   super.selectedSegmentIndex = selectedIndex;
 }
 
-- (void)setFontSize:(NSInteger)fontSize
-{
-  UIFont *font = [UIFont systemFontOfSize: fontSize];
-    [_attributes setObject: font forKey:NSFontAttributeName];
-    [self setTitleTextAttributes:_attributes
-                                forState:UIControlStateNormal];
-  UIFont *fontBold = [UIFont boldSystemFontOfSize: fontSize];
-    [_attributes setObject: fontBold forKey:NSFontAttributeName];
-    [self setTitleTextAttributes:_attributes
-                                forState:UIControlStateSelected];
-}
-
-- (void)setBackgroundColor:(UIColor *)backgroundColor
-{
-    #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
-        __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
-    if (@available(iOS 13.0, *)) {
-      [super setBackgroundColor:backgroundColor];
-    }
-    #endif
-}
-
-- (void)setTextColor:(UIColor *)textColor
-{
-    #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
-        __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
-    if (@available(iOS 13.0, *)) {
-        [_attributes setObject: textColor forKey:NSForegroundColorAttributeName];
-        [self setTitleTextAttributes:_attributes
-                          forState:UIControlStateNormal];
-    }
-    #endif
-}
-
-- (void)setActiveTextColor:(UIColor *)textColor
-{
-    #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
-        __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
-    if (@available(iOS 13.0, *)) {
-      [_attributes setObject: textColor forKey:NSForegroundColorAttributeName];
-      [self setTitleTextAttributes:_attributes
-                  forState:UIControlStateSelected];
-    }
-    #endif
-}
-
-- (void)setTintColor:(UIColor *)tintColor
-{
-  [super setTintColor:tintColor];
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
+- (void)setBackgroundColor:(UIColor *)backgroundColor {
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) &&      \
     __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
   if (@available(iOS 13.0, *)) {
-    [self setSelectedSegmentTintColor:tintColor];
-    [_attributes setObject: tintColor forKey:NSForegroundColorAttributeName];
-    [self setTitleTextAttributes:_attributes
-                  forState:UIControlStateNormal];
+    [super setBackgroundColor:backgroundColor];
   }
 #endif
 }
 
-- (void)didChange
-{
+- (void)setTintColor:(UIColor *)tintColor {
+  [super setTintColor:tintColor];
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) &&      \
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
+  if (@available(iOS 13.0, *)) {
+    [self setSelectedSegmentTintColor:tintColor];
+    NSDictionary *attributes = [NSDictionary
+        dictionaryWithObjectsAndKeys:tintColor, NSForegroundColorAttributeName,
+                                     nil];
+    NSDictionary *activeAttributes = [NSDictionary
+        dictionaryWithObjectsAndKeys:UIColor.labelColor,
+                                     NSForegroundColorAttributeName, nil];
+    [self setTitleTextAttributes:attributes forState:UIControlStateNormal];
+    [self setTitleTextAttributes:activeAttributes
+                        forState:UIControlStateSelected];
+  }
+#endif
+}
+
+- (void)didChange {
   _selectedIndex = self.selectedSegmentIndex;
   if (_onChange) {
+	  NSString *segmentTitle = [self titleForSegmentAtIndex:_selectedIndex];
     _onChange(@{
-      @"value": [self titleForSegmentAtIndex:_selectedIndex],
-      @"selectedSegmentIndex": @(_selectedIndex)
+		@"value" : (segmentTitle) ? segmentTitle : [self imageForSegmentAtIndex:_selectedIndex],
+      @"selectedSegmentIndex" : @(_selectedIndex)
     });
   }
 }
 
-- (void)setAppearance:(NSString *)appearanceString
-{
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
+- (void)setAppearance:(NSString *)appearanceString {
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) &&      \
     __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
   if (@available(iOS 13.0, *)) {
-      if ([appearanceString  isEqual: @"dark"]) {
-          [self setOverrideUserInterfaceStyle:UIUserInterfaceStyleDark];
-      } else if ([appearanceString  isEqual: @"light"]) {
-          [self setOverrideUserInterfaceStyle:UIUserInterfaceStyleLight];
-      }
+    if ([appearanceString isEqual:@"dark"]) {
+      [self setOverrideUserInterfaceStyle:UIUserInterfaceStyleDark];
+    } else if ([appearanceString isEqual:@"light"]) {
+      [self setOverrideUserInterfaceStyle:UIUserInterfaceStyleLight];
+    }
   }
 #endif
 }

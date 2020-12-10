@@ -24,21 +24,15 @@ export function setNotificationHandler(handler) {
     if (handler) {
         handleSubscription = notificationEmitter.addListener(handleNotificationEventName, async ({ id, notification }) => {
             if (!NotificationsHandlerModule.handleNotificationAsync) {
-                // TODO: Remove eslint-disable once we upgrade to a version that supports ?. notation.
-                // eslint-disable-next-line
                 handler.handleError?.(id, new UnavailabilityError('Notifications', 'handleNotificationAsync'));
                 return;
             }
             try {
                 const behavior = await handler.handleNotification(notification);
                 await NotificationsHandlerModule.handleNotificationAsync(id, behavior);
-                // TODO: Remove eslint-disable once we upgrade to a version that supports ?. notation.
-                // eslint-disable-next-line
                 handler.handleSuccess?.(id);
             }
             catch (error) {
-                // TODO: Remove eslint-disable once we upgrade to a version that supports ?. notation.
-                // eslint-disable-next-line
                 handler.handleError?.(id, error);
             }
         });

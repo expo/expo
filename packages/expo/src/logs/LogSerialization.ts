@@ -94,15 +94,6 @@ async function _serializeErrorAsync(error: Error, message?: string): Promise<Log
     message = error.message;
   }
 
-  // note(brentvatne): React Native currently appends part of the stack inside of
-  // the error message itself for some reason. This is just confusing and we don't
-  // want to include it in the expo-cli output
-  const messageParts = message.split('\n');
-  const firstUselessLine = messageParts.indexOf('This error is located at:');
-  if (firstUselessLine > 0) {
-    message = messageParts.slice(0, firstUselessLine - 1).join('\n');
-  }
-
   if (!error.stack || !error.stack.length) {
     return prettyFormat(error);
   }
@@ -206,9 +197,7 @@ function _captureConsoleStackTrace(): Error {
 }
 
 function _getProjectRoot(): string | null {
-  return Constants.manifest && Constants.manifest.developer
-    ? Constants.manifest.developer.projectRoot
-    : null;
+  return Constants.manifest?.developer?.projectRoot ?? null;
 }
 
 export default {

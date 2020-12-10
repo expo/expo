@@ -15,7 +15,7 @@
 
 #import "ABI38_0_0RCTSettingsPlugins.h"
 
-@interface ABI38_0_0RCTSettingsManager() <NativeSettingsManagerSpec>
+@interface ABI38_0_0RCTSettingsManager() <ABI38_0_0NativeSettingsManagerSpec>
 @end
 
 @implementation ABI38_0_0RCTSettingsManager

@@ -1,6 +1,6 @@
 require_relative './podfile_helpers.rb'
 require_relative '../packages/react-native-unimodules/cocoapods.rb'
-require_relative '../react-native-lab/react-native/scripts/autolink-ios.rb'
+require_relative '../react-native-lab/react-native/scripts/react_native_pods'
 
 install! 'cocoapods',
          :generate_multiple_pod_projects => true,
@@ -10,7 +10,7 @@ inhibit_all_warnings!
 
 target 'Exponent' do
   # Expo Client dependencies
-  pod 'Amplitude-iOS'
+  pod 'Amplitude'
   pod 'CocoaLumberjack', '~> 3.5.3'
   pod 'GoogleMaps', '~> 3.6'
   pod 'Google-Maps-iOS-Utils', '~> 2.1.0'
@@ -22,16 +22,16 @@ target 'Exponent' do
     modules_paths: ['../packages'],
     exclude: [
       'expo-module-template',
-      'expo-bluetooth',
       'expo-in-app-purchases',
       'expo-payments-stripe',
-      'expo-splash-screen',
-      'expo-updates',
     ],
     flags: {
       :inhibit_warnings => false
     }
   })
+
+  # Expo modules that are not unimodules
+  pod 'EXRandom', path: '../packages/expo-random/ios'
 
   # Unversioned React Native
   use_react_native! path: '../react-native-lab/react-native'
@@ -55,6 +55,13 @@ target 'Exponent' do
 
       target_installation_result.native_target.build_configurations.each do |config|
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '10.0'
+      end
+
+      if pod_name == 'Branch'
+        target_installation_result.native_target.build_configurations.each do |config|
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'BRANCH_EXCLUDE_IDFA_CODE=1'
+        end
       end
 
       # Build React Native with RCT_DEV enabled and RCT_ENABLE_INSPECTOR and

@@ -8,29 +8,40 @@ If you don't have an Android device available to test with, we recommend using t
 
 - [Download](https://developer.android.com/studio) and install Android Studio 3.0+.
 
-- Go to Preferences -> Appearance & Behavior -> System Settings -> Android SDK. Click on the "SDK Tools" tab and make sure you have at least one version of the "Android SDK Build-Tools" installed.
+- Select "Standard" for the "Install Type" inside the wizard.
 
-![Android SDK location](/static/images/android-studio-build-tools.png)
+- Inside Android Studio, go to Preferences > Appearance & Behavior > System Settings > Android SDK. Click on the "SDK Tools" tab and make sure you have at least one version of the "Android SDK Build-Tools" installed.
+
+![Android SDK build tools](/static/images/android-studio-build-tools.png)
 
 - Copy or remember the path listed in the box that says "Android SDK Location."
 
 ![Android SDK location](/static/images/android-studio-sdk-location.png)
 
-- If you are on macOS or Linux, add the Android SDK location to your PATH using `~/.bash_profile` or `~/.bashrc`. You can do this by adding a line like `export ANDROID_SDK=/Users/myuser/Library/Android/sdk`.
+- If you are on macOS or Linux, add an environment variable pointing to the Android SDK location in `~/.bash_profile` (or `~/.zshenv` if you use Zsh) - eg. `export ANDROID_SDK=/your/path/here`. Copy and paste these two lines to do this automatically for Bash and Zsh:
 
-- On macOS, you will also need to add `platform-tools` to your `~/.bash_profile` or `~/.bashrc.`, by adding a line like `export PATH=/Users/myuser/Library/Android/sdk/platform-tools:$PATH`
+```bash
+[ -d "$HOME/Library/Android/sdk" ] && ANDROID_SDK=$HOME/Library/Android/sdk || ANDROID_SDK=$HOME/Android/Sdk
+echo "export ANDROID_SDK=$ANDROID_SDK" >> ~/`[[ $SHELL == *"zsh" ]] && echo '.zshenv' || echo '.bash_profile'`
+```
 
-> Note that later versions of macOS, such as Catalina, use `zsh` instead of `bash`, so you will update `.zprofile` or `.zshrc` instead.
+- On macOS, you will also need to add `platform-tools` to your `~/.bash_profile` (or `~/.zshenv` if you use Zsh) - eg. `export PATH=/your/path/here:$PATH`. Copy and paste this line to do this automatically for Bash and Zsh:
+
+```bash
+echo "export PATH=$HOME/Library/Android/sdk/platform-tools:\$PATH" >> ~/`[[ $SHELL == *"zsh" ]] && echo '.zshenv' || echo '.bash_profile'`
+```
 
 - Make sure that you can run `adb` from your terminal.
 
 ## Step 2: Set up a virtual device
 
-- From the Android Studio main screen, go to `Tools -> AVD Manager`.
+- On the Android Studio main screen, click "Configure", then "AVD Manager" in the dropdown.
+
+![Android Studio configure](/static/images/android-studio-configure.png)
 
 - Press the "+ Create Virtual Device" button.
 
-![Android SDK location](/static/images/android-studio-avd-manager.png)
+![Android Studio create virtual device](/static/images/android-studio-avd-manager.png)
 
 - Choose the type of hardware you'd like to emulate. We recommend testing against a variety of devices, but if you're unsure where to start, the newest device in the Pixel line could be a good choice.
 
@@ -50,10 +61,10 @@ This is because the adb version on your system is different from the adb version
 
 - And from the Android SDK platform-tool directory:
 
-`$cd ~/Android/sdk/platform-tools`
+`$cd ~/Library/Android/sdk/platform-tools`
 
 `$./adb version`
 
 - Copy `adb` from Android SDK directory to `usr/bin` directory:
 
-`$sudo cp ~/Android/sdk/platform-tools/adb /usr/bin`
+`$sudo cp ~/Library/Android/sdk/platform-tools/adb /usr/bin`

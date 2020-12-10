@@ -1,6 +1,6 @@
 {
   "name": "EXCrypto",
-  "version": "8.2.1",
+  "version": "8.4.0",
   "summary": "Expo universal module for crypto",
   "description": "Expo universal module for crypto",
   "license": "MIT",
@@ -12,12 +12,10 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXCrypto/**/*.{h,m}",
-  "preserve_paths": "EXCrypto/**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "UMCore": [
 
     ]
-  }
+  },
+  "source_files": "EXCrypto/**/*.{h,m}"
 }

@@ -12,6 +12,7 @@ import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.arguments.MapArguments;
+import org.unimodules.core.errors.CurrentActivityNotFoundException;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.RegistryLifecycleListener;
@@ -24,7 +25,7 @@ import androidx.annotation.Nullable;
 public class FirebaseAnalyticsModule extends ExportedModule implements RegistryLifecycleListener {
   private static final String NAME = "ExpoFirebaseAnalytics";
 
-  private Activity mActivity;
+  private ActivityProvider mActivityProvider;
   private ModuleRegistry mModuleRegistry;
 
   public FirebaseAnalyticsModule(Context context) {
@@ -38,14 +39,14 @@ public class FirebaseAnalyticsModule extends ExportedModule implements RegistryL
 
   @Override
   public void onCreate(ModuleRegistry moduleRegistry) {
-    ActivityProvider mActivityProvider = moduleRegistry.getModule(ActivityProvider.class);
-    mActivity = mActivityProvider.getCurrentActivity();
+    mActivityProvider = moduleRegistry.getModule(ActivityProvider.class);
     mModuleRegistry = moduleRegistry;
-
   }
 
   private FirebaseAnalytics getFirebaseAnalyticsOrReject(final Promise promise) {
     FirebaseCoreInterface firebaseCore = mModuleRegistry.getModule(FirebaseCoreInterface.class);
+    Activity activity = mActivityProvider.getCurrentActivity();
+
     if (firebaseCore == null) {
       promise.reject("ERR_FIREBASE_ANALYTICS",
               "FirebaseCore could not be found. Ensure that your app has correctly linked 'expo-firebase-core' and your project has react-native-unimodules installed.");
@@ -67,7 +68,11 @@ public class FirebaseAnalyticsModule extends ExportedModule implements RegistryL
       promise.reject("ERR_FIREBASE_ANALYTICS", "Analytics events can only be logged for the default app.");
       return null;
     }
-    FirebaseAnalytics analytics = FirebaseAnalytics.getInstance(mActivity.getApplicationContext());
+    if (activity == null) {
+      promise.reject(new CurrentActivityNotFoundException());
+      return null;
+    }
+    FirebaseAnalytics analytics = FirebaseAnalytics.getInstance(activity.getApplicationContext());
     if (analytics == null) {
       promise.reject("ERR_FIREBASE_ANALYTICS", "Failed to obtain Analytics instance");
       return null;
@@ -103,14 +108,21 @@ public class FirebaseAnalyticsModule extends ExportedModule implements RegistryL
 
   @ExpoMethod
   public void setCurrentScreen(final String screenName, final String screenClassOverride, final Promise promise) {
+    final Activity activity = mActivityProvider.getCurrentActivity();
+
+    if (activity == null) {
+      promise.reject(new CurrentActivityNotFoundException());
+      return;
+    }
+
     // This is the only method that runs on the main thread.
-    mActivity.runOnUiThread(new Runnable() {
+    activity.runOnUiThread(new Runnable() {
       public void run() {
         try {
           FirebaseAnalytics analytics = getFirebaseAnalyticsOrReject(promise);
           if (analytics == null)
             return;
-          analytics.setCurrentScreen(mActivity, screenName, screenClassOverride);
+          analytics.setCurrentScreen(activity, screenName, screenClassOverride);
           promise.resolve(null);
         } catch (Exception e) {
           promise.reject(e);

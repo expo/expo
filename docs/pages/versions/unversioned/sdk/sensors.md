@@ -1,6 +1,6 @@
 ---
 title: Sensors
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-sensors'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-sensors'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
@@ -31,8 +31,8 @@ import {
 
 For more information, please see the documentation for the sensor you are interested in:
 
-- [Accelerometer](../accelerometer/)
-- [Barometer](../barometer/)
-- [Gyroscope](../gyroscope/)
-- [Magnetometer](../magnetometer/)
-- [Pedometer](../pedometer/)
+- [Accelerometer](accelerometer.md)
+- [Barometer](barometer.md)
+- [Gyroscope](gyroscope.md)
+- [Magnetometer](magnetometer.md)
+- [Pedometer](pedometer.md)

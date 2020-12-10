@@ -1,11 +1,11 @@
 /*
- * Copyright 2016-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,21 +20,22 @@
 
 namespace folly {
 
-#ifndef __ANDROID__
+#if !defined(__ANDROID__) && !defined(__UCLIBC__)
 
 /**
- * Most platforms hopefully provide std::nextafter.
+ * Most platforms hopefully provide std::nextafter, std::remainder.
  */
 
 /* using override */ using std::nextafter;
+/* using override */ using std::remainder;
 
-#else // !__ANDROID__
+#else // !__ANDROID__ && !__UCLIBC__
 
 /**
- * On Android, std::nextafter isn't implemented. However, the C functions and
- * compiler builtins are still provided. Using the GCC builtin is actually
- * slightly faster, as they're constexpr and the use cases within folly are in
- * constexpr context.
+ * On Android and uclibc, std::nextafter or std::remainder isn't implemented.
+ * However, the C functions and compiler builtins are still provided. Using the
+ * GCC builtin is actually slightly faster, as they're constexpr and the use
+ * cases within folly are in constexpr context.
  */
 
 #if defined(__GNUC__) && !defined(__clang__)
@@ -67,5 +68,23 @@ inline long double nextafter(long double x, long double y) {
 
 #endif // __GNUC__
 
-#endif // __ANDROID__
+/**
+ * On uclibc, std::remainder isn't implemented.
+ * Implement it using builtin versions
+ */
+#ifdef __UCLIBC__
+constexpr float remainder(float x, float y) {
+  return __builtin_remainderf(x, y);
+}
+
+constexpr double remainder(double x, double y) {
+  return __builtin_remainder(x, y);
+}
+
+constexpr long double remainder(long double x, long double y) {
+  return __builtin_remainderl(x, y);
+}
+#endif // __UCLIBC__
+
+#endif // !__ANDROID__ && !__UCLIBC__
 } // namespace folly

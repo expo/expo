@@ -106,12 +106,8 @@ class FirebaseAnalyticsJS {
       cache: 'no-cache',
       headers: {
         'Content-Type': 'text/plain;charset=UTF-8',
+        ...(options.headers || {}),
       },
-      ...(options.headers
-        ? {
-            headers: options.headers,
-          }
-        : {}),
       body,
     });
   }

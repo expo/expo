@@ -14,7 +14,7 @@
 
 using namespace ABI38_0_0facebook::ABI38_0_0React;
 
-@interface ABI38_0_0RCTClipboard () <NativeClipboardSpec>
+@interface ABI38_0_0RCTClipboard () <ABI38_0_0NativeClipboardSpec>
 @end
 
 @implementation ABI38_0_0RCTClipboard

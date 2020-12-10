@@ -1,6 +1,6 @@
 {
   "name": "EXAdsFacebook",
-  "version": "8.3.0",
+  "version": "8.4.1",
   "summary": "Facebook Audience SDK integration",
   "description": "Facebook Audience SDK integration",
   "license": "MIT",
@@ -12,15 +12,13 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXAdsFacebook/**/*.{h,m}",
-  "preserve_paths": "EXAdsFacebook/**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "UMCore": [
 
     ],
     "FBAudienceNetwork": [
-      "5.7.1"
+      "~> 5.9.0"
     ]
-  }
+  },
+  "source_files": "EXAdsFacebook/**/*.{h,m}"
 }

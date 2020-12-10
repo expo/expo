@@ -1,7 +1,0 @@
-{
-  "name": "example",
-  "version": "1.0.0",
-  "main": "lib/main.dart",
-  "license": "MIT",
-  "private": true
-}

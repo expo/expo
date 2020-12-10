@@ -1,7 +1,12 @@
 import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import { v4 as uuidv4 } from 'uuid';
 
-import { NativeConstants, PlatformManifest, WebManifest } from './Constants.types';
+import {
+  ExecutionEnvironment,
+  NativeConstants,
+  PlatformManifest,
+  WebManifest,
+} from './Constants.types';
 
 const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
 
@@ -42,6 +47,9 @@ export default {
   },
   get appOwnership() {
     return null;
+  },
+  get executionEnvironment() {
+    return ExecutionEnvironment.Bare;
   },
   get installationId(): string {
     let installationId;

@@ -78,7 +78,7 @@ typedef NS_OPTIONS(NSUInteger, SDWebImageDownloaderOptions) {
     SDWebImageDownloaderAvoidDecodeImage = 1 << 9,
     
     /**
-     * By default, we decode the animated image. This flag can force decode the first frame only and produece the static image.
+     * By default, we decode the animated image. This flag can force decode the first frame only and produce the static image.
      */
     SDWebImageDownloaderDecodeFirstFrameOnly = 1 << 10,
     

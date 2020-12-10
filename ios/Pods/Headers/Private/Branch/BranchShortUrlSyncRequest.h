@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/Networking/Requests/BranchShortUrlSyncRequest.h
+../../../Branch/Branch-SDK/BranchShortUrlSyncRequest.h

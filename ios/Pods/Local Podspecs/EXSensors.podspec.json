@@ -1,6 +1,6 @@
 {
   "name": "EXSensors",
-  "version": "9.0.1",
+  "version": "9.2.0",
   "summary": "Provides access to a hardware device's accelerometer, gyroscope, magnetometer, and pedometer.",
   "description": "Provides access to a hardware device's accelerometer, gyroscope, magnetometer, and pedometer.",
   "license": "MIT",
@@ -12,9 +12,6 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXSensors/**/*.{h,m}",
-  "preserve_paths": "EXSensors/**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "UMCore": [
 
@@ -22,5 +19,6 @@
     "UMSensorsInterface": [
 
     ]
-  }
+  },
+  "source_files": "EXSensors/**/*.{h,m}"
 }

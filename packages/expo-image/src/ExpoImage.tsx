@@ -46,7 +46,8 @@ export default function ExpoImage({ source, style, ...props }: ImageProps) {
   // to set a background-color on the Image when using shadows. This will ensure
   // consistent rendering on all platforms and mitigate Androids drawing artefacts.
   if (hasShadows) {
-    const bkColor = resolvedStyle.backgroundColor ? processColor(resolvedStyle.backgroundColor) : 0;
+    const processedColor = processColor(resolvedStyle.backgroundColor);
+    const bkColor: number = typeof processedColor === 'number' ? processedColor : 0;
     const alpha = bkColor >> 24;
     if (alpha !== -1 && alpha !== 255) {
       // To silence this warning, set background-color to a fully transparent color

@@ -119,7 +119,7 @@ static NSDictionary *ABI38_0_0RCTDeleteStorageDirectory(NSString *storageDirecto
 
 #pragma mark - ABI38_0_0RCTAsyncLocalStorage
 
-@interface ABI38_0_0RCTAsyncLocalStorage () <NativeAsyncStorageSpec>
+@interface ABI38_0_0RCTAsyncLocalStorage () <ABI38_0_0NativeAsyncStorageSpec>
 
 @property (nonatomic, copy) NSString *storageDirectory;
 @property (nonatomic, copy) NSString *manifestFilePath;

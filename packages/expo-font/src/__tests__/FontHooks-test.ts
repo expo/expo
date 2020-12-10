@@ -27,10 +27,10 @@ describe('useFonts', () => {
 
     expect(loadAsyncSpy).toBeCalledWith(FONTS);
 
-    const partialFonts = { ...FONTS };
+    const partialFonts: Partial<typeof FONTS> = { ...FONTS };
     delete partialFonts['ComicSans-Regular'];
 
-    hook.rerender(partialFonts);
+    hook.rerender(partialFonts as typeof FONTS);
 
     expect(hook.result.current[DATA]).toBe(true);
     expect(loadAsyncSpy).not.toBeCalledWith(partialFonts);

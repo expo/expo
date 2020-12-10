@@ -22,7 +22,7 @@ export declare type FileSystemDownloadResult = FileSystemHttpResult & {
     md5?: string;
 };
 /**
- * @deprecated Use FileSystemDownloadResult instead.
+ * @deprecated Use `FileSystemDownloadResult` instead.
  */
 export declare type DownloadResult = FileSystemDownloadResult;
 export declare type FileSystemUploadOptions = ({

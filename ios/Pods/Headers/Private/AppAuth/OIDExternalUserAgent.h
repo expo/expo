@@ -1,1 +1,1 @@
-../../../AppAuth/Source/OIDExternalUserAgent.h
+../../../AppAuth/Source/AppAuthCore/OIDExternalUserAgent.h

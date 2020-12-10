@@ -18,7 +18,7 @@
 
 NSString *const ABI38_0_0RCTAccessibilityManagerDidUpdateMultiplierNotification = @"ABI38_0_0RCTAccessibilityManagerDidUpdateMultiplierNotification";
 
-@interface ABI38_0_0RCTAccessibilityManager () <NativeAccessibilityManagerSpec>
+@interface ABI38_0_0RCTAccessibilityManager () <ABI38_0_0NativeAccessibilityManagerSpec>
 
 @property (nonatomic, copy) NSString *contentSizeCategory;
 @property (nonatomic, assign) CGFloat multiplier;

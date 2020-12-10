@@ -16,6 +16,7 @@ const mp4Source = require('../assets/big_buck_bunny.mp4');
 const hlsStreamUri = 'http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8';
 const hlsStreamUriWithRedirect = 'http://bit.ly/1iy90bn';
 let source = null; // Local URI of the downloaded default source is set in a beforeAll callback.
+let portraitVideoSource = null;
 let imageSource = null;
 let webmSource = null;
 
@@ -27,6 +28,10 @@ export function test(t, { setPortalChild, cleanupPortal }) {
       const mp4Asset = Asset.fromModule(mp4Source);
       await mp4Asset.downloadAsync();
       source = { uri: mp4Asset.localUri };
+
+      const portraitAsset = Asset.fromModule(require('../assets/portrait_video.mp4'));
+      await portraitAsset.downloadAsync();
+      portraitVideoSource = { uri: portraitAsset.localUri };
 
       const imageAsset = Asset.fromModule(require('../assets/black-128x256.png'));
       await imageAsset.downloadAsync();
@@ -306,7 +311,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         t.expect(status.naturalSize).toBeDefined();
         t.expect(status.naturalSize.width).toBeDefined();
         t.expect(status.naturalSize.height).toBeDefined();
-        t.expect(status.naturalSize.orientation).toBeDefined();
+        t.expect(status.naturalSize.orientation).toBe('landscape');
       });
 
       t.it('gets called with the `status` object', async () => {
@@ -340,6 +345,30 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         t.expect(status.status).toBeDefined();
         t.expect(status.status.isLoaded).toBe(true);
       });
+
+      t.it('gets called for HLS streams', async () => {
+        const props = {
+          style,
+          source: { uri: hlsStreamUri },
+        };
+        const status = await mountAndWaitFor(<Video {...props} />, 'onReadyForDisplay');
+        t.expect(status.naturalSize).toBeDefined();
+        t.expect(status.naturalSize.width).toBeDefined();
+        t.expect(status.naturalSize.height).toBeDefined();
+        t.expect(status.naturalSize.orientation).toBeDefined();
+      });
+
+      t.it('correctly detects portrait video', async () => {
+        const props = {
+          style,
+          source: portraitVideoSource,
+        };
+        const status = await mountAndWaitFor(<Video {...props} />, 'onReadyForDisplay');
+        t.expect(status.naturalSize).toBeDefined();
+        t.expect(status.naturalSize.width).toBeDefined();
+        t.expect(status.naturalSize.height).toBeDefined();
+        t.expect(status.naturalSize.orientation).toBe('portrait');
+      })
     });
 
     t.describe('Video fullscreen player', () => {
@@ -580,6 +609,39 @@ export function test(t, { setPortalChild, cleanupPortal }) {
             resolve();
           }, 1000);
         });
+      });
+
+      t.it('gets called periodically when playing', async () => {
+        const onPlaybackStatusUpdate = t.jasmine.createSpy('onPlaybackStatusUpdate');
+        const props = {
+          onPlaybackStatusUpdate,
+          source,
+          style,
+          ref: refSetter,
+          progressUpdateIntervalMillis: 10,
+        };
+        await mountAndWaitFor(<Video {...props} />);
+        await new Promise(resolve => setTimeout(resolve, 100));
+        await retryForStatus(instance, { isBuffering: false, isLoaded: true });
+        // Verify that status-update doesn't get called periodically when not started
+        const beforeCount = onPlaybackStatusUpdate.calls.count();
+        t.expect(beforeCount).toBeLessThan(6);
+
+        const status = await instance.getStatusAsync();
+        await instance.setStatusAsync({
+          shouldPlay: true,
+          positionMillis: status.durationMillis - 500,
+        });
+        await retryForStatus(instance, { isPlaying: true });
+        await new Promise(resolve => setTimeout(resolve, 500));
+        await retryForStatus(instance, { isPlaying: false });
+        const duringCount = onPlaybackStatusUpdate.calls.count() - beforeCount;
+        t.expect(duringCount).toBeGreaterThan(50);
+
+        // Wait a bit longer and verify it doesn't get called anymore
+        await new Promise(resolve => setTimeout(resolve, 100));
+        const afterCount = onPlaybackStatusUpdate.calls.count() - beforeCount - duringCount;
+        t.expect(afterCount).toBeLessThan(3);
       });
     });
 

@@ -1,6 +1,6 @@
 {
   "name": "EXImageManipulator",
-  "version": "8.2.1",
+  "version": "8.4.0",
   "summary": "Provides functions that let you manipulation images on the local file system, eg: resize, crop.",
   "description": "Provides functions that let you manipulation images on the local file system, eg: resize, crop.",
   "license": "MIT",
@@ -12,9 +12,6 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXImageManipulator/**/*.{h,m}",
-  "preserve_paths": "EXImageManipulator/**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "UMCore": [
 
@@ -25,5 +22,6 @@
     "UMImageLoaderInterface": [
 
     ]
-  }
+  },
+  "source_files": "EXImageManipulator/**/*.{h,m}"
 }

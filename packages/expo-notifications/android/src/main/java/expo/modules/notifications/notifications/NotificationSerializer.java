@@ -1,6 +1,10 @@
 package expo.modules.notifications.notifications;
 
+import android.os.Build;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -13,22 +17,31 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import androidx.annotation.Nullable;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 import expo.modules.notifications.notifications.model.Notification;
+import expo.modules.notifications.notifications.model.NotificationAction;
+import expo.modules.notifications.notifications.model.NotificationCategory;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.NotificationResponse;
+import expo.modules.notifications.notifications.model.TextInputNotificationAction;
+import expo.modules.notifications.notifications.model.TextInputNotificationResponse;
 import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger;
+
+import expo.modules.notifications.notifications.triggers.ChannelAwareTrigger;
 import expo.modules.notifications.notifications.triggers.DailyTrigger;
 import expo.modules.notifications.notifications.triggers.DateTrigger;
 import expo.modules.notifications.notifications.triggers.TimeIntervalTrigger;
+import expo.modules.notifications.notifications.triggers.WeeklyTrigger;
 
 public class NotificationSerializer {
   public static Bundle toBundle(NotificationResponse response) {
     Bundle serializedResponse = new Bundle();
     serializedResponse.putString("actionIdentifier", response.getActionIdentifier());
     serializedResponse.putBundle("notification", toBundle(response.getNotification()));
+    if (response instanceof TextInputNotificationResponse) {
+      serializedResponse.putString("userText", ((TextInputNotificationResponse) response).getUserText());
+    }
     return serializedResponse;
   }
 
@@ -79,6 +92,9 @@ public class NotificationSerializer {
       serializedContent.putDoubleArray("vibrationPattern", serializedVibrationPattern);
     }
     serializedContent.putBoolean("autoDismiss", content.isAutoDismiss());
+    if (content.getCategoryId() != null) {
+      serializedContent.putString("categoryIdentifier", content.getCategoryId());
+    }
     serializedContent.putBoolean("sticky", content.isSticky());
     return serializedContent;
   }
@@ -120,7 +136,7 @@ public class NotificationSerializer {
     }
   }
 
-  private static List toList(JSONArray array) {
+  private static List<Object> toList(JSONArray array) {
     List<Object> result = new ArrayList<>(array.length());
     for (int i = 0; i < array.length(); i++) {
       if (array.isNull(i)) {
@@ -156,9 +172,24 @@ public class NotificationSerializer {
       bundle.putString("type", "daily");
       bundle.putInt("hour", ((DailyTrigger) trigger).getHour());
       bundle.putInt("minute", ((DailyTrigger) trigger).getMinute());
+    } else if (trigger instanceof WeeklyTrigger) {
+      bundle.putString("type", "weekly");
+      bundle.putInt("weekday", ((WeeklyTrigger) trigger).getWeekday());
+      bundle.putInt("hour", ((WeeklyTrigger) trigger).getHour());
+      bundle.putInt("minute", ((WeeklyTrigger) trigger).getMinute());
     } else {
       bundle.putString("type", "unknown");
     }
+    bundle.putString("channelId", getChannelId(trigger));
+
     return bundle;
+  }
+
+  @Nullable
+  private static String getChannelId(NotificationTrigger trigger) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      return trigger.getNotificationChannel();
+    }
+    return null;
   }
 }

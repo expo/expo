@@ -15,7 +15,7 @@ Let's go through some of our recommended practices when it comes to each of thes
 
 These are way more common, and we won't delve too much into how to approach these. Usually, debugging when running your app locally with `expo-cli` is pretty easy, thanks to [all the tools available in the Expo client app](#developer-menu).
 
-Sometimes you'll be able to tell exactly what's wrong just by the [stacktrace](../../tutorial/errors/#redbox-errors-and-stack-traces), but other times the error message is a little more cryptic. For errors that aren't as intuitive to solve, here's a good list of steps to take:
+Sometimes you'll be able to tell exactly what's wrong just by the [stacktrace](../get-started/errors.md#redbox-errors-and-stack-traces), but other times the error message is a little more cryptic. For errors that aren't as intuitive to solve, here's a good list of steps to take:
 
 - Search for the error message in Google and [Stack Overflow](https://stackoverflow.com/questions), it's likely you're not the first person to ever run into this
 - **Isolate the code that's throwing the error**. This step is _vital_ in fixing obscure errors. To do this:
@@ -33,13 +33,13 @@ Errors or bugs in your production app can be much harder to solve, mainly becaus
 
 > **Hint**: sometimes, running your app in "production mode" locally will show errors that normally wouldn't be thrown. You can run an app locally in production by running `expo start --no-dev --minify`. "--no-dev" tells the server not to be run in development mode, and "--minify" will minify your code the same way it is for production Javascript bundles.
 
-Using an automated error logging system like [Sentry](../../guides/using-sentry/) is a huge help in identifying, tracking, and resolving Javascript errors in your production app. This will give you a good sense of how many people are running into an error, how often, when, **and it even provides sourcemaps so you will have stacktraces of your errors!** Sentry is one of those tools that if you wait until you need it to install it, then you waited too long. Also- Sentry is free up to 5000 events/month.
+Using an automated error logging system like [Sentry](../guides/using-sentry.md) is a huge help in identifying, tracking, and resolving Javascript errors in your production app. This will give you a good sense of how many people are running into an error, how often, when, **and it even provides sourcemaps so you will have stacktraces of your errors!** Sentry is one of those tools that if you wait until you need it to install it, then you waited too long. Also- Sentry is free up to 5000 events/month.
 
 ### My production app is crashing
 
 This can be a really frustrating scenario, since it gives you very little information to go off of on first glance. But, in reality, crashes can be one of the easiest-to-solve errors once you:
 
-- [Access the native device logs](../logging/#optional-manually-access-device-logs)
+- [Access the native device logs](logging.md#optional-manually-access-device-logs)
 - Reproduce the crash (either using your production app, or the Expo client app)
 - Search the logs for a "fatal exception" (there could be a few) to see exactly what is causing your app to crash
 
@@ -69,7 +69,7 @@ This menu gives you access to several functions which are useful for debugging, 
 The Developer Menu gives you a couple different functionalities. A few are pretty self-explanatory, like:
 
 - Reload manifest & JS bundle: this will reload your app. Usually this isn't necessary if you have Live or Hot Reload enabled, since it will automatically refresh whenever you save your changes in your text editor.
-- Go to Expo Home: Leave your app and navigate back to the Expo Client homescreen
+- Go to Expo Home: Leave your app and navigate back to the Expo client homescreen
 - Enable/Disable Live Reload: When enabled, your app will automatically refresh the JS bundle whenever you save file changes in your project directory.
 
 > **Note**: In order to use Live Reload, your components must be **class** components, rather than a functional components. You can read about their differences [here](https://reactjs.org/docs/components-and-props.html#function-and-class-components).
@@ -141,7 +141,7 @@ npm install -g react-devtools
 
 (if you don't want to install it globally, run `npm install --dev react-devtools` to install it as a project dependency).
 
-After running `expo start` in your project's root directory, use a separate terminal tab to run `react-devtools`. This will open up the React Devtools console (for it to connect, you need to select `Debug remote JS` from the Developer Menu in the Expo Client). From this console, you can search for your React components at the top, or open up the Developer Menu and enable the Element Inspector. Once you do that, you can tap on any element on screen and React DevTools will automatically find and display that element in the tree. From there, you can inspect the elements state, props, etc.
+After running `expo start` in your project's root directory, use a separate terminal tab to run `react-devtools`. This will open up the React Devtools console (for it to connect, you need to select `Debug remote JS` from the Developer Menu in the Expo client). From this console, you can search for your React components at the top, or open up the Developer Menu and enable the Element Inspector. Once you do that, you can tap on any element on screen and React DevTools will automatically find and display that element in the tree. From there, you can inspect the elements state, props, etc.
 
 <Video file="debugging/react-devtools.mp4" />
 
@@ -171,4 +171,4 @@ Source maps and async functions aren't 100% reliable. React Native doesn't play 
 
 In a perfect world, your app would ship without any bugs. However, that's usually not the case. So, it's usually a good idea to implement a crash and bug reporting system into your app. This way, if any user experiences a fatal JS error (or any event that you've configured to notify Sentry) you can see the details in your Sentry dashboard.
 
-Expo provides a wrapper called [sentry-expo](../../guides/using-sentry/) which allows you to get as much information as possible from crashes and other events. Plus, when running in the managed workflow, you can configure sourcemaps so that the stracktraces you see in Sentry will look much more like the code in your editor.
+Expo provides a wrapper called [sentry-expo](../guides/using-sentry.md) which allows you to get as much information as possible from crashes and other events. Plus, when running in the managed workflow, you can configure sourcemaps so that the stracktraces you see in Sentry will look much more like the code in your editor.

@@ -1,11 +1,11 @@
 /*
- * Copyright 2011-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -56,6 +56,9 @@
  *   - sorted_vector_map::value_type is pair<K,V>, not pair<const K,V>.
  *     (This is basically because we want to store the value_type in
  *     std::vector<>, which requires it to be Assignable.)
+ *   - insert() single key variants, emplace(), and emplace_hint() only provide
+ *     the strong exception guarantee (unchanged when exception is thrown) when
+ *     std::is_nothrow_move_constructible<value_type>::value is true.
  */
 
 #pragma once
@@ -64,14 +67,17 @@
 #include <cassert>
 #include <initializer_list>
 #include <iterator>
+#include <memory>
 #include <stdexcept>
 #include <type_traits>
 #include <utility>
 #include <vector>
 
+#include <folly/ScopeGuard.h>
 #include <folly/Traits.h>
 #include <folly/Utility.h>
 #include <folly/lang/Exception.h>
+#include <folly/memory/MemoryResource.h>
 
 namespace folly {
 
@@ -127,34 +133,34 @@ int distance_if_multipass(Iterator first, Iterator last) {
   return std::distance(first, last);
 }
 
-template <class OurContainer, class Vector, class GrowthPolicy>
+template <class OurContainer, class Vector, class GrowthPolicy, class Value>
 typename OurContainer::iterator insert_with_hint(
     OurContainer& sorted,
     Vector& cont,
-    typename OurContainer::iterator hint,
-    typename OurContainer::value_type&& value,
+    typename OurContainer::const_iterator hint,
+    Value&& value,
     GrowthPolicy& po) {
   const typename OurContainer::value_compare& cmp(sorted.value_comp());
   if (hint == cont.end() || cmp(value, *hint)) {
     if (hint == cont.begin() || cmp(*(hint - 1), value)) {
       hint = po.increase_capacity(cont, hint);
-      return cont.insert(hint, std::move(value));
+      return cont.insert(hint, std::forward<Value>(value));
     } else {
-      return sorted.insert(std::move(value)).first;
+      return sorted.insert(std::forward<Value>(value)).first;
     }
   }
 
   if (cmp(*hint, value)) {
     if (hint + 1 == cont.end() || cmp(value, *(hint + 1))) {
       hint = po.increase_capacity(cont, hint + 1);
-      return cont.insert(hint, std::move(value));
+      return cont.insert(hint, std::forward<Value>(value));
     } else {
-      return sorted.insert(std::move(value)).first;
+      return sorted.insert(std::forward<Value>(value)).first;
     }
   }
 
   // Value and *hint did not compare, so they are equal keys.
-  return hint;
+  return sorted.begin() + std::distance(sorted.cbegin(), hint);
 }
 
 template <class OurContainer, class Vector, class InputIterator>
@@ -196,9 +202,30 @@ void bulk_insert(
 }
 
 template <typename Container, typename Compare>
-Container&& as_sorted(Container&& container, Compare const& comp) {
-  using namespace std;
-  std::sort(begin(container), end(container), comp);
+bool is_sorted_unique(Container const& container, Compare const& comp) {
+  if (container.empty()) {
+    return true;
+  }
+  auto const e = container.end();
+  for (auto a = container.begin(), b = std::next(a); b != e; ++a, ++b) {
+    if (!comp(*a, *b)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+template <typename Container, typename Compare>
+Container&& as_sorted_unique(Container&& container, Compare const& comp) {
+  std::sort(container.begin(), container.end(), comp);
+  container.erase(
+      std::unique(
+          container.begin(),
+          container.end(),
+          [&](auto const& a, auto const& b) {
+            return !comp(a, b) && !comp(b, a);
+          }),
+      container.end());
   return static_cast<Container&&>(container);
 }
 } // namespace detail
@@ -234,11 +261,15 @@ class sorted_vector_set : detail::growth_policy_wrapper<GrowthPolicy> {
   using if_is_transparent =
       _t<detail::sorted_vector_enable_if_is_transparent<void, C, K, V>>;
 
+  struct EBO;
+
  public:
   typedef T value_type;
   typedef T key_type;
   typedef Compare key_compare;
   typedef Compare value_compare;
+  typedef Allocator allocator_type;
+  typedef Container container_type;
 
   typedef typename Container::pointer pointer;
   typedef typename Container::reference reference;
@@ -255,13 +286,28 @@ class sorted_vector_set : detail::growth_policy_wrapper<GrowthPolicy> {
   typedef typename Container::reverse_iterator reverse_iterator;
   typedef typename Container::const_reverse_iterator const_reverse_iterator;
 
+  sorted_vector_set() : m_(Compare(), Allocator()) {}
+
+  sorted_vector_set(const sorted_vector_set&) = default;
+
+  sorted_vector_set(const sorted_vector_set& other, const Allocator& alloc)
+      : m_(other.m_, alloc) {}
+
+  sorted_vector_set(sorted_vector_set&&) = default;
+
+  sorted_vector_set(sorted_vector_set&& other, const Allocator& alloc) noexcept(
+      std::is_nothrow_constructible<EBO, EBO&&, const Allocator&>::value)
+      : m_(std::move(other.m_), alloc) {}
+
+  explicit sorted_vector_set(const Allocator& alloc) : m_(Compare(), alloc) {}
+
   explicit sorted_vector_set(
-      const Compare& comp = Compare(),
+      const Compare& comp,
       const Allocator& alloc = Allocator())
       : m_(comp, alloc) {}
 
   template <class InputIterator>
-  explicit sorted_vector_set(
+  sorted_vector_set(
       InputIterator first,
       InputIterator last,
       const Compare& comp = Compare(),
@@ -272,11 +318,29 @@ class sorted_vector_set : detail::growth_policy_wrapper<GrowthPolicy> {
     insert(first, last);
   }
 
+  template <class InputIterator>
+  sorted_vector_set(
+      InputIterator first,
+      InputIterator last,
+      const Allocator& alloc)
+      : m_(Compare(), alloc) {
+    // This is linear if [first, last) is already sorted (and if we
+    // can figure out the distance between the two iterators).
+    insert(first, last);
+  }
+
   /* implicit */ sorted_vector_set(
       std::initializer_list<value_type> list,
       const Compare& comp = Compare(),
       const Allocator& alloc = Allocator())
       : m_(comp, alloc) {
+    insert(list.begin(), list.end());
+  }
+
+  sorted_vector_set(
+      std::initializer_list<value_type> list,
+      const Allocator& alloc)
+      : m_(Compare(), alloc) {
     insert(list.begin(), list.end());
   }
 
@@ -292,27 +356,38 @@ class sorted_vector_set : detail::growth_policy_wrapper<GrowthPolicy> {
       Container&& container,
       const Compare& comp = Compare())
       : sorted_vector_set(
-            presorted,
-            detail::as_sorted(std::move(container), comp),
+            sorted_unique,
+            detail::as_sorted_unique(std::move(container), comp),
             comp) {}
 
   // Construct a sorted_vector_set by stealing the storage of a prefilled
-  // container. The container must be sorted, as presorted_t hints. Supports
-  // bulk construction of sorted_vector_set with zero allocations, not counting
-  // those performed by the caller. (The iterator range constructor performs at
-  // least one allocation).
+  // container. Its elements must be sorted and unique, as sorted_unique_t
+  // hints. Supports bulk construction of sorted_vector_set with zero
+  // allocations, not counting those performed by the caller. (The iterator
+  // range constructor performs at least one allocation).
   //
-  // Note that `sorted_vector_set(presorted_t, const Container& container)` is
-  // not provided, since the purpose of this constructor is to avoid an extra
+  // Note that `sorted_vector_set(sorted_unique_t, const Container& container)`
+  // is not provided, since the purpose of this constructor is to avoid an extra
   // copy.
   sorted_vector_set(
-      presorted_t,
+      sorted_unique_t,
       Container&& container,
-      const Compare& comp = Compare())
-      : m_(comp, container.get_allocator()) {
-    assert(std::is_sorted(container.begin(), container.end(), value_comp()));
-    m_.cont_.swap(container);
+      const Compare& comp = Compare()) noexcept(std::
+                                                    is_nothrow_constructible<
+                                                        EBO,
+                                                        const Compare&,
+                                                        Container&&>::value)
+      : m_(comp, std::move(container)) {
+    assert(detail::is_sorted_unique(m_.cont_, value_comp()));
   }
+
+  Allocator get_allocator() const {
+    return m_.cont_.get_allocator();
+  }
+
+  sorted_vector_set& operator=(const sorted_vector_set& other) = default;
+
+  sorted_vector_set& operator=(sorted_vector_set&& other) = default;
 
   sorted_vector_set& operator=(std::initializer_list<value_type> ilist) {
     clear();
@@ -381,7 +456,12 @@ class sorted_vector_set : detail::growth_policy_wrapper<GrowthPolicy> {
   }
 
   std::pair<iterator, bool> insert(const value_type& value) {
-    return insert(std::move(value_type(value)));
+    iterator it = lower_bound(value);
+    if (it == end() || value_comp()(value, *it)) {
+      it = get_growth_policy().increase_capacity(m_.cont_, it);
+      return std::make_pair(m_.cont_.insert(it, value), true);
+    }
+    return std::make_pair(it, false);
   }
 
   std::pair<iterator, bool> insert(value_type&& value) {
@@ -393,11 +473,12 @@ class sorted_vector_set : detail::growth_policy_wrapper<GrowthPolicy> {
     return std::make_pair(it, false);
   }
 
-  iterator insert(iterator hint, const value_type& value) {
-    return insert(hint, std::move(value_type(value)));
+  iterator insert(const_iterator hint, const value_type& value) {
+    return detail::insert_with_hint(
+        *this, m_.cont_, hint, value, get_growth_policy());
   }
 
-  iterator insert(iterator hint, value_type&& value) {
+  iterator insert(const_iterator hint, value_type&& value) {
     return detail::insert_with_hint(
         *this, m_.cont_, hint, std::move(value), get_growth_policy());
   }
@@ -405,6 +486,54 @@ class sorted_vector_set : detail::growth_policy_wrapper<GrowthPolicy> {
   template <class InputIterator>
   void insert(InputIterator first, InputIterator last) {
     detail::bulk_insert(*this, m_.cont_, first, last);
+  }
+
+  void insert(std::initializer_list<value_type> ilist) {
+    insert(ilist.begin(), ilist.end());
+  }
+
+  // emplace isn't better than insert for sorted_vector_set, but aids
+  // compatibility
+  template <typename... Args>
+  std::pair<iterator, bool> emplace(Args&&... args) {
+    std::aligned_storage_t<sizeof(value_type), alignof(value_type)> b;
+    value_type* p = static_cast<value_type*>(static_cast<void*>(&b));
+    auto a = get_allocator();
+    std::allocator_traits<allocator_type>::construct(
+        a, p, std::forward<Args>(args)...);
+    auto g = makeGuard(
+        [&]() { std::allocator_traits<allocator_type>::destroy(a, p); });
+    return insert(std::move(*p));
+  }
+
+  std::pair<iterator, bool> emplace(const value_type& value) {
+    return insert(value);
+  }
+
+  std::pair<iterator, bool> emplace(value_type&& value) {
+    return insert(std::move(value));
+  }
+
+  // emplace_hint isn't better than insert for sorted_vector_set, but aids
+  // compatibility
+  template <typename... Args>
+  iterator emplace_hint(const_iterator hint, Args&&... args) {
+    std::aligned_storage_t<sizeof(value_type), alignof(value_type)> b;
+    value_type* p = static_cast<value_type*>(static_cast<void*>(&b));
+    auto a = get_allocator();
+    std::allocator_traits<allocator_type>::construct(
+        a, p, std::forward<Args>(args)...);
+    auto g = makeGuard(
+        [&]() { std::allocator_traits<allocator_type>::destroy(a, p); });
+    return insert(hint, std::move(*p));
+  }
+
+  iterator emplace_hint(const_iterator hint, const value_type& value) {
+    return insert(hint, value);
+  }
+
+  iterator emplace_hint(const_iterator hint, value_type&& value) {
+    return insert(hint, std::move(value));
   }
 
   size_type erase(const key_type& key) {
@@ -416,11 +545,11 @@ class sorted_vector_set : detail::growth_policy_wrapper<GrowthPolicy> {
     return 1;
   }
 
-  iterator erase(iterator it) {
+  iterator erase(const_iterator it) {
     return m_.cont_.erase(it);
   }
 
-  iterator erase(iterator first, iterator last) {
+  iterator erase(const_iterator first, const_iterator last) {
     return m_.cont_.erase(first, last);
   }
 
@@ -554,8 +683,26 @@ class sorted_vector_set : detail::growth_policy_wrapper<GrowthPolicy> {
    * More info:  http://www.cantrip.org/emptyopt.html
    */
   struct EBO : Compare {
-    explicit EBO(const Compare& c, const Allocator& alloc)
+    explicit EBO(const Compare& c, const Allocator& alloc) noexcept(
+        std::is_nothrow_default_constructible<Container>::value)
         : Compare(c), cont_(alloc) {}
+    EBO(const EBO& other, const Allocator& alloc)
+    noexcept(std::is_nothrow_constructible<
+             Container,
+             const Container&,
+             const Allocator&>::value)
+        : Compare(static_cast<const Compare&>(other)),
+          cont_(other.cont_, alloc) {}
+    EBO(EBO&& other, const Allocator& alloc)
+    noexcept(std::is_nothrow_constructible<
+             Container,
+             Container&&,
+             const Allocator&>::value)
+        : Compare(static_cast<Compare&&>(other)),
+          cont_(std::move(other.cont_), alloc) {}
+    EBO(const Compare& c, Container&& cont)
+    noexcept(std::is_nothrow_move_constructible<Container>::value)
+        : Compare(c), cont_(std::move(cont)) {}
     Container cont_;
   } m_;
 
@@ -581,6 +728,27 @@ inline void swap(
     sorted_vector_set<T, C, A, G>& b) {
   return a.swap(b);
 }
+
+#if FOLLY_HAS_MEMORY_RESOURCE
+
+namespace pmr {
+
+template <
+    class T,
+    class Compare = std::less<T>,
+    class GrowthPolicy = void,
+    class Container =
+        std::vector<T, folly::detail::std_pmr::polymorphic_allocator<T>>>
+using sorted_vector_set = folly::sorted_vector_set<
+    T,
+    Compare,
+    folly::detail::std_pmr::polymorphic_allocator<T>,
+    GrowthPolicy,
+    Container>;
+
+} // namespace pmr
+
+#endif
 
 //////////////////////////////////////////////////////////////////////
 
@@ -615,11 +783,15 @@ class sorted_vector_map : detail::growth_policy_wrapper<GrowthPolicy> {
   using if_is_transparent =
       _t<detail::sorted_vector_enable_if_is_transparent<void, C, K, V>>;
 
+  struct EBO;
+
  public:
   typedef Key key_type;
   typedef Value mapped_type;
   typedef typename Container::value_type value_type;
   typedef Compare key_compare;
+  typedef Allocator allocator_type;
+  typedef Container container_type;
 
   struct value_compare : private Compare {
     bool operator()(const value_type& a, const value_type& b) const {
@@ -641,8 +813,26 @@ class sorted_vector_map : detail::growth_policy_wrapper<GrowthPolicy> {
   typedef typename Container::reverse_iterator reverse_iterator;
   typedef typename Container::const_reverse_iterator const_reverse_iterator;
 
+  sorted_vector_map() noexcept(
+      std::is_nothrow_constructible<EBO, value_compare, Allocator>::value)
+      : m_(value_compare(Compare()), Allocator()) {}
+
+  sorted_vector_map(const sorted_vector_map&) = default;
+
+  sorted_vector_map(const sorted_vector_map& other, const Allocator& alloc)
+      : m_(other.m_, alloc) {}
+
+  sorted_vector_map(sorted_vector_map&&) = default;
+
+  sorted_vector_map(sorted_vector_map&& other, const Allocator& alloc) noexcept(
+      std::is_nothrow_constructible<EBO, EBO&&, const Allocator&>::value)
+      : m_(std::move(other.m_), alloc) {}
+
+  explicit sorted_vector_map(const Allocator& alloc)
+      : m_(value_compare(Compare()), alloc) {}
+
   explicit sorted_vector_map(
-      const Compare& comp = Compare(),
+      const Compare& comp,
       const Allocator& alloc = Allocator())
       : m_(value_compare(comp), alloc) {}
 
@@ -656,11 +846,27 @@ class sorted_vector_map : detail::growth_policy_wrapper<GrowthPolicy> {
     insert(first, last);
   }
 
-  explicit sorted_vector_map(
+  template <class InputIterator>
+  sorted_vector_map(
+      InputIterator first,
+      InputIterator last,
+      const Allocator& alloc)
+      : m_(value_compare(Compare()), alloc) {
+    insert(first, last);
+  }
+
+  /* implicit */ sorted_vector_map(
       std::initializer_list<value_type> list,
       const Compare& comp = Compare(),
       const Allocator& alloc = Allocator())
       : m_(value_compare(comp), alloc) {
+    insert(list.begin(), list.end());
+  }
+
+  sorted_vector_map(
+      std::initializer_list<value_type> list,
+      const Allocator& alloc)
+      : m_(value_compare(Compare()), alloc) {
     insert(list.begin(), list.end());
   }
 
@@ -676,27 +882,39 @@ class sorted_vector_map : detail::growth_policy_wrapper<GrowthPolicy> {
       Container&& container,
       const Compare& comp = Compare())
       : sorted_vector_map(
-            presorted,
-            detail::as_sorted(std::move(container), value_compare(comp)),
+            sorted_unique,
+            detail::as_sorted_unique(std::move(container), value_compare(comp)),
             comp) {}
 
   // Construct a sorted_vector_map by stealing the storage of a prefilled
-  // container. The container must be sorted, as presorted_t hints. S supports
-  // bulk construction of sorted_vector_map with zero allocations, not counting
-  // those performed by the caller. (The iterator range constructor performs at
-  // least one allocation).
+  // container. Its elements must be sorted and unique, as sorted_unique_t
+  // hints. Supports bulk construction of sorted_vector_map with zero
+  // allocations, not counting those performed by the caller. (The iterator
+  // range constructor performs at least one allocation).
   //
-  // Note that `sorted_vector_map(presorted_t, const Container& container)` is
-  // not provided, since the purpose of this constructor is to avoid an extra
+  // Note that `sorted_vector_map(sorted_unique_t, const Container& container)`
+  // is not provided, since the purpose of this constructor is to avoid an extra
   // copy.
   sorted_vector_map(
-      presorted_t,
+      sorted_unique_t,
       Container&& container,
-      const Compare& comp = Compare())
-      : m_(value_compare(comp), container.get_allocator()) {
-    assert(std::is_sorted(container.begin(), container.end(), value_comp()));
-    m_.cont_.swap(container);
+      const Compare& comp = Compare()) noexcept(std::
+                                                    is_nothrow_constructible<
+                                                        EBO,
+                                                        value_compare,
+                                                        Container&&>::value)
+      : m_(value_compare(comp), std::move(container)) {
+    assert(std::is_sorted(m_.cont_.begin(), m_.cont_.end(), value_comp()));
+    assert(detail::is_sorted_unique(m_.cont_, value_comp()));
   }
+
+  Allocator get_allocator() const {
+    return m_.cont_.get_allocator();
+  }
+
+  sorted_vector_map& operator=(const sorted_vector_map& other) = default;
+
+  sorted_vector_map& operator=(sorted_vector_map&& other) = default;
 
   sorted_vector_map& operator=(std::initializer_list<value_type> ilist) {
     clear();
@@ -765,7 +983,12 @@ class sorted_vector_map : detail::growth_policy_wrapper<GrowthPolicy> {
   }
 
   std::pair<iterator, bool> insert(const value_type& value) {
-    return insert(std::move(value_type(value)));
+    iterator it = lower_bound(value.first);
+    if (it == end() || value_comp()(value, *it)) {
+      it = get_growth_policy().increase_capacity(m_.cont_, it);
+      return std::make_pair(m_.cont_.insert(it, value), true);
+    }
+    return std::make_pair(it, false);
   }
 
   std::pair<iterator, bool> insert(value_type&& value) {
@@ -777,11 +1000,12 @@ class sorted_vector_map : detail::growth_policy_wrapper<GrowthPolicy> {
     return std::make_pair(it, false);
   }
 
-  iterator insert(iterator hint, const value_type& value) {
-    return insert(hint, std::move(value_type(value)));
+  iterator insert(const_iterator hint, const value_type& value) {
+    return detail::insert_with_hint(
+        *this, m_.cont_, hint, value, get_growth_policy());
   }
 
-  iterator insert(iterator hint, value_type&& value) {
+  iterator insert(const_iterator hint, value_type&& value) {
     return detail::insert_with_hint(
         *this, m_.cont_, hint, std::move(value), get_growth_policy());
   }
@@ -789,6 +1013,54 @@ class sorted_vector_map : detail::growth_policy_wrapper<GrowthPolicy> {
   template <class InputIterator>
   void insert(InputIterator first, InputIterator last) {
     detail::bulk_insert(*this, m_.cont_, first, last);
+  }
+
+  void insert(std::initializer_list<value_type> ilist) {
+    insert(ilist.begin(), ilist.end());
+  }
+
+  // emplace isn't better than insert for sorted_vector_map, but aids
+  // compatibility
+  template <typename... Args>
+  std::pair<iterator, bool> emplace(Args&&... args) {
+    std::aligned_storage_t<sizeof(value_type), alignof(value_type)> b;
+    value_type* p = static_cast<value_type*>(static_cast<void*>(&b));
+    auto a = get_allocator();
+    std::allocator_traits<allocator_type>::construct(
+        a, p, std::forward<Args>(args)...);
+    auto g = makeGuard(
+        [&]() { std::allocator_traits<allocator_type>::destroy(a, p); });
+    return insert(std::move(*p));
+  }
+
+  std::pair<iterator, bool> emplace(const value_type& value) {
+    return insert(value);
+  }
+
+  std::pair<iterator, bool> emplace(value_type&& value) {
+    return insert(std::move(value));
+  }
+
+  // emplace_hint isn't better than insert for sorted_vector_set, but aids
+  // compatibility
+  template <typename... Args>
+  iterator emplace_hint(const_iterator hint, Args&&... args) {
+    std::aligned_storage_t<sizeof(value_type), alignof(value_type)> b;
+    value_type* p = static_cast<value_type*>(static_cast<void*>(&b));
+    auto a = get_allocator();
+    std::allocator_traits<allocator_type>::construct(
+        a, p, std::forward<Args>(args)...);
+    auto g = makeGuard(
+        [&]() { std::allocator_traits<allocator_type>::destroy(a, p); });
+    return insert(hint, std::move(*p));
+  }
+
+  iterator emplace_hint(const_iterator hint, const value_type& value) {
+    return insert(hint, value);
+  }
+
+  iterator emplace_hint(const_iterator hint, value_type&& value) {
+    return insert(hint, std::move(value));
   }
 
   size_type erase(const key_type& key) {
@@ -800,11 +1072,11 @@ class sorted_vector_map : detail::growth_policy_wrapper<GrowthPolicy> {
     return 1;
   }
 
-  iterator erase(iterator it) {
+  iterator erase(const_iterator it) {
     return m_.cont_.erase(it);
   }
 
-  iterator erase(iterator first, iterator last) {
+  iterator erase(const_iterator first, const_iterator last) {
     return m_.cont_.erase(first, last);
   }
 
@@ -953,8 +1225,26 @@ class sorted_vector_map : detail::growth_policy_wrapper<GrowthPolicy> {
   // This is to get the empty base optimization; see the comment in
   // sorted_vector_set.
   struct EBO : value_compare {
-    explicit EBO(const value_compare& c, const Allocator& alloc)
+    explicit EBO(const value_compare& c, const Allocator& alloc) noexcept(
+        std::is_nothrow_default_constructible<Container>::value)
         : value_compare(c), cont_(alloc) {}
+    EBO(const EBO& other, const Allocator& alloc)
+    noexcept(std::is_nothrow_constructible<
+             Container,
+             const Container&,
+             const Allocator&>::value)
+        : value_compare(static_cast<const value_compare&>(other)),
+          cont_(other.cont_, alloc) {}
+    EBO(EBO&& other, const Allocator& alloc)
+    noexcept(std::is_nothrow_constructible<
+             Container,
+             Container&&,
+             const Allocator&>::value)
+        : value_compare(static_cast<value_compare&&>(other)),
+          cont_(std::move(other.cont_), alloc) {}
+    EBO(const Compare& c, Container&& cont)
+    noexcept(std::is_nothrow_move_constructible<Container>::value)
+        : value_compare(c), cont_(std::move(cont)) {}
     Container cont_;
   } m_;
 
@@ -1006,6 +1296,30 @@ inline void swap(
     sorted_vector_map<K, V, C, A, G>& b) {
   return a.swap(b);
 }
+
+#if FOLLY_HAS_MEMORY_RESOURCE
+
+namespace pmr {
+
+template <
+    class Key,
+    class Value,
+    class Compare = std::less<Key>,
+    class GrowthPolicy = void,
+    class Container = std::vector<
+        std::pair<Key, Value>,
+        folly::detail::std_pmr::polymorphic_allocator<std::pair<Key, Value>>>>
+using sorted_vector_map = folly::sorted_vector_map<
+    Key,
+    Value,
+    Compare,
+    folly::detail::std_pmr::polymorphic_allocator<std::pair<Key, Value>>,
+    GrowthPolicy,
+    Container>;
+
+} // namespace pmr
+
+#endif
 
 //////////////////////////////////////////////////////////////////////
 

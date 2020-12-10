@@ -6,3 +6,4 @@
 #import "EXRootViewController.h"
 
 #import <UMCore/UMAppDelegateWrapper.h>
+#import <UMCore/UMModuleRegistryProvider.h>

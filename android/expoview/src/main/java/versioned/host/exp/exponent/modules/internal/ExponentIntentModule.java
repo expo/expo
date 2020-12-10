@@ -9,6 +9,7 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.intent.IntentModule;
 
 import java.util.Map;
@@ -21,6 +22,7 @@ import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry;
 import host.exp.exponent.kernel.services.linking.LinkingKernelService;
 
+@ReactModule(name = ExponentIntentModule.NAME, canOverrideExistingModule = true)
 public class ExponentIntentModule extends IntentModule {
   @Inject
   protected ExpoKernelServiceRegistry mKernelServiceRegistry;
@@ -42,7 +44,7 @@ public class ExponentIntentModule extends IntentModule {
     return true;
   }
 
-  @ReactMethod
+  @Override
   public void getInitialURL(Promise promise) {
     try {
       promise.resolve(mExperienceProperties.get(KernelConstants.INTENT_URI_KEY));
@@ -52,7 +54,7 @@ public class ExponentIntentModule extends IntentModule {
     }
   }
 
-  @ReactMethod
+  @Override
   public void openURL(String url, final Promise promise) {
     if (url == null || url.isEmpty()) {
       promise.reject(new JSApplicationIllegalArgumentException("Invalid URL: " + url));
@@ -74,7 +76,7 @@ public class ExponentIntentModule extends IntentModule {
     }
   }
 
-  @ReactMethod
+  @Override
   public void canOpenURL(String url, Promise promise) {
     if (url == null || url.isEmpty()) {
       promise.reject(new JSApplicationIllegalArgumentException("Invalid URL: " + url));
@@ -88,19 +90,5 @@ public class ExponentIntentModule extends IntentModule {
     } else {
       super.canOpenURL(url, promise);
     }
-  }
-
-  /**
-   * We need to add these methods because otherwise React Native won't export them.
-   * RN doesn't export methods from base classes
-   */
-  @ReactMethod
-  public void openSettings(Promise promise) {
-    super.openSettings(promise);
-  }
-
-  @ReactMethod
-  public void sendIntent(String action, @Nullable ReadableArray extras, Promise promise) {
-    super.sendIntent(action, extras, promise);
   }
 }

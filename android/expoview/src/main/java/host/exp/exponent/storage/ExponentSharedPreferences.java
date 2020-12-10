@@ -8,6 +8,11 @@ import android.content.SharedPreferences;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -42,9 +47,6 @@ public class ExponentSharedPreferences {
 
   // Other
   public static final String IS_FIRST_KERNEL_RUN_KEY = "is_first_kernel_run";
-  public static final String HAS_SAVED_SHORTCUT_KEY = "has_saved_shortcut";
-  public static final String UUID_KEY = "uuid";
-  public static final String GCM_TOKEN_KEY = "gcm_token";
   public static final String FCM_TOKEN_KEY = "fcm_token";
   public static final String REFERRER_KEY = "referrer";
   public static final String NUX_HAS_FINISHED_FIRST_RUN_KEY = "nux_has_finished_first_run";
@@ -69,7 +71,6 @@ public class ExponentSharedPreferences {
 
   static {
     DEFAULT_VALUES.put(USE_INTERNET_KERNEL_KEY, ExpoViewBuildConfig.USE_INTERNET_KERNEL);
-    DEFAULT_VALUES.put(HAS_SAVED_SHORTCUT_KEY, false);
     DEFAULT_VALUES.put(IS_FIRST_KERNEL_RUN_KEY, true);
     DEFAULT_VALUES.put(IS_ONBOARDING_FINISHED_KEY, false);
     DEFAULT_VALUES.put(NUX_HAS_FINISHED_FIRST_RUN_KEY, false);
@@ -78,11 +79,13 @@ public class ExponentSharedPreferences {
 
   private SharedPreferences mSharedPreferences;
   private Context mContext;
+  private ExponentInstallationId mExponentInstallationId;
 
   @Inject
   public ExponentSharedPreferences(Context context) {
     mSharedPreferences = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
     mContext = context;
+    mExponentInstallationId = new ExponentInstallationId(context, mSharedPreferences);
 
     // We renamed `nux` to `onboarding` in January 2020 - the old preference key can be removed from here after some time,
     // but since then we need to rewrite nux setting to the new key.
@@ -127,23 +130,12 @@ public class ExponentSharedPreferences {
     return getBoolean(USE_INTERNET_KERNEL_KEY);
   }
 
-  public boolean hasSavedShortcut() {
-    return getBoolean(HAS_SAVED_SHORTCUT_KEY);
-  }
-
   public String getUUID() {
-    return mSharedPreferences.getString(UUID_KEY, null);
+    return mExponentInstallationId.getUUID();
   }
 
   public String getOrCreateUUID() {
-    String uuid = mSharedPreferences.getString(UUID_KEY, null);
-    if (uuid != null) {
-      return uuid;
-    }
-
-    uuid = UUID.randomUUID().toString();
-    setString(UUID_KEY, uuid);
-    return uuid;
+    return mExponentInstallationId.getOrCreateUUID();
   }
 
   public void updateSession(JSONObject session) {

@@ -693,7 +693,13 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
       try {
         mAudioRecorder.stop();
       } catch (final RuntimeException e) {
-        promise.reject("E_AUDIO_RECORDINGSTOP", "Stop encountered an error: recording not stopped", e);
+        mAudioRecorderIsPaused = false;
+        if (!mAudioRecorderIsRecording) {
+          promise.reject("E_AUDIO_RECORDINGSTOP", "Stop encountered an error: recording not started", e);  
+        } else {
+          mAudioRecorderIsRecording = false;
+          promise.reject("E_AUDIO_NODATA", "Stop encountered an error: no valid audio data has been received", e);
+        }
         return;
       }
 

@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI39_0_0/Expo/EXFileSystem/ABI39_0_0EXFileSystem/ABI39_0_0EXFilePermissionModule.h

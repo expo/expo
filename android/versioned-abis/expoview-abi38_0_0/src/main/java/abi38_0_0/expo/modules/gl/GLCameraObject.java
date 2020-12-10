@@ -61,7 +61,7 @@ import static android.opengl.GLES30.glUniformMatrix4fv;
 import static android.opengl.GLES30.glUseProgram;
 import static android.opengl.GLES30.glVertexAttribPointer;
 import static android.opengl.GLES30.glViewport;
-import static expo.modules.gl.cpp.EXGL.EXGLContextMapObject;
+import static expo.modules.gl.cpp.legacy.EXGL.EXGLContextMapObject;
 
 public class GLCameraObject extends GLObject implements SurfaceTexture.OnFrameAvailableListener {
   private CameraViewInterface mCameraView;

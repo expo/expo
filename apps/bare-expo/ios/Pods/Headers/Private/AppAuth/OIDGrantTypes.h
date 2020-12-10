@@ -1,1 +1,1 @@
-../../../AppAuth/Source/OIDGrantTypes.h
+../../../AppAuth/Source/AppAuthCore/OIDGrantTypes.h

@@ -54,7 +54,7 @@ export interface TaskManagerTask {
 }
 
 /**
- * @deprecated in favor of TaskManagerTask.
+ * @deprecated Use `TaskManagerTask` instead.
  */
 export interface RegisteredTask extends TaskManagerTask {}
 
@@ -198,4 +198,8 @@ if (ExpoTaskManager) {
       }
     }
   );
+}
+
+export async function isAvailableAsync(): Promise<boolean> {
+  return await ExpoTaskManager.isAvailableAsync();
 }

@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI39_0_0/Expo/EXBattery/ABI39_0_0EXBattery/ABI39_0_0EXBattery.h

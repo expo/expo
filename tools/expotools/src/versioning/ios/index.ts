@@ -9,6 +9,7 @@ import spawnAsync from '@expo/spawn-async';
 import { runTransformPipelineAsync } from './transforms';
 import { injectMacros } from './transforms/injectMacros';
 import { postTransforms } from './transforms/postTransforms';
+import { kernelFilesTransforms } from './transforms/kernelFilesTransforms';
 import { podspecTransforms } from './transforms/podspecTransforms';
 
 import { getListOfPackagesAsync } from '../../Packages';
@@ -19,7 +20,7 @@ const RELATIVE_RN_PATH = './react-native-lab/react-native';
 
 const RELATIVE_UNIVERSAL_MODULES_PATH = './packages';
 const EXTERNAL_REACT_ABI_DEPENDENCIES = [
-  'Amplitude-iOS',
+  'Amplitude',
   'Analytics',
   'AppAuth',
   'FBAudienceNetwork',
@@ -32,6 +33,7 @@ const EXTERNAL_REACT_ABI_DEPENDENCIES = [
   'JKBigInteger2',
   'Branch',
   'Google-Mobile-Ads-SDK',
+  'Folly',
 ];
 
 /**
@@ -55,7 +57,7 @@ async function namespaceReactNativeFilesAsync(filenames, versionPrefix, versione
     // protect contents of EX_UNVERSIONED macro
     let unversionedCaptures: string[] = [];
     await _transformFileContentsAsync(filename, (fileString) => {
-      let pattern = /EX_UNVERSIONED\((.*)\)/g;
+      let pattern = /EX_UNVERSIONED\((.*?)\)/g;
       let match = pattern.exec(fileString);
       while (match != null) {
         unversionedCaptures.push(match[1]);
@@ -224,7 +226,42 @@ async function generateVersionedReactNativeAsync(versionName: string): Promise<v
 }
 
 /**
- * - Copies `scripts/autolink-ios.rb` script into versioned ReactNative directory.
+ * There are some kernel files that unfortunately have to call versioned code directly.
+ * This function applies the specified changes in the kernel codebase.
+ * The nature of kernel modifications is that they are temporary and at one point these have to be rollbacked.
+ * @param versionName SDK version, e.g. 21.0.0, 37.0.0, etc.
+ * @param rollback flag indicating whether to invoke rollbacking modification.
+ */
+async function modifyKernelFilesAsync(
+  versionName: string,
+  rollback: boolean = false
+): Promise<void> {
+  const kernelFilesPath = path.join(IOS_DIR, 'Exponent/kernel');
+  const filenameQueries = [`${kernelFilesPath}/**/EXAppViewController.m`];
+  let filenames: string[] = [];
+  await Promise.all(
+    filenameQueries.map(async (query) => {
+      let queryFilenames = (await glob(query)) as string[];
+      if (queryFilenames) {
+        filenames = filenames.concat(queryFilenames);
+      }
+    })
+  );
+  await Promise.all(
+    filenames.map(async (filename) => {
+      console.log(`Modifying ${chalk.magenta(path.relative(EXPO_DIR, filename))}:`);
+      await _transformFileContentsAsync(filename, (fileContents) =>
+        runTransformPipelineAsync({
+          pipeline: kernelFilesTransforms(versionName, rollback),
+          targetPath: filename,
+          input: fileContents,
+        })
+      );
+    })
+  );
+}
+/**
+ * - Copies `scripts/react_native_pods.rb` script into versioned ReactNative directory.
  * - Removes pods installed from third-party-podspecs (we don't version them).
  * - Versions `use_react_native` method and all pods it declares.
  */
@@ -232,10 +269,10 @@ async function generateAutolinkingScriptAsync(
   versionedReactNativePath: string,
   versionName: string
 ): Promise<void> {
-  const targetAutolinkPath = path.join(versionedReactNativePath, 'autolink-ios.rb');
+  const targetAutolinkPath = path.join(versionedReactNativePath, 'react_native_pods.rb');
 
   await fs.copy(
-    path.join(EXPO_DIR, RELATIVE_RN_PATH, 'scripts', 'autolink-ios.rb'),
+    path.join(EXPO_DIR, RELATIVE_RN_PATH, 'scripts', 'react_native_pods.rb'),
     targetAutolinkPath
   );
 
@@ -288,7 +325,11 @@ async function generateReactNativePodspecsAsync(
   await generateReactPodspecAsync(versionedReactNativePath, versionName);
 }
 
-async function generateVersionedExpoAsync(versionName: string): Promise<void> {
+/**
+ * @param versionName 
+ * @param versionNumber format "XX.X.X"
+ */
+async function generateVersionedExpoAsync(versionName: string, versionNumber: string): Promise<void> {
   const versionedExpoPath = getVersionedExpoPath(versionName);
   const versionedExpoKitPath = getVersionedExpoKitPath(versionName);
   const versionedUnimodulePods = await getVersionedUnimodulePodsAsync(versionName);
@@ -384,7 +425,7 @@ async function generateVersionedExpoAsync(versionName: string): Promise<void> {
 
   console.log(`Generating podspec for ${chalk.green('ExpoKit')} ...`);
 
-  await generateExpoKitPodspecAsync(versionedExpoKitPath, versionedUnimodulePods, versionName);
+  await generateExpoKitPodspecAsync(versionedExpoKitPath, versionedUnimodulePods, versionName, versionNumber);
 }
 
 /**
@@ -398,7 +439,8 @@ async function generateVersionedExpoAsync(versionName: string): Promise<void> {
 async function generateExpoKitPodspecAsync(
   specfilePath: string,
   universalModulesPodNames: { [key: string]: string },
-  versionName: string
+  versionName: string,
+  versionNumber: string
 ): Promise<void> {
   const versionedReactPodName = getVersionedReactPodName(versionName);
   const versionedExpoKitPodName = getVersionedExpoKitPodName(versionName);
@@ -417,7 +459,6 @@ async function generateExpoKitPodspecAsync(
     const universalModulesDependencies = (await getListOfPackagesAsync())
       .filter(
         (pkg) =>
-          pkg.isUnimodule() &&
           pkg.isIncludedInExpoClientOnPlatform('ios') &&
           pkg.podspecName &&
           !excludedPodNames.includes(pkg.podspecName)
@@ -432,10 +473,11 @@ async function generateExpoKitPodspecAsync(
     ).join(`
     `);
     let subspec = `s.subspec "Expo" do |ss|
-    ss.source_files     = "Core/**/*.{h,m,mm}"
+    ss.source_files     = "Core/**/*.{h,m,mm,cpp}"
 
     ss.dependency         "${versionedReactPodName}-Core"
     ss.dependency         "${versionedReactPodName}-Core/DevSupport"
+    ss.dependency         "${versionedReactPodName}Common"
     ${universalModulesDependencies}
     ${externalDependencies}
   end
@@ -448,6 +490,27 @@ async function generateExpoKitPodspecAsync(
       /(s\.subspec ".+?"[\S\s]+?(?=end\b)end\b[\s]+)+/g,
       `${subspec}\n`
     );
+
+    // correct version number
+    fileString = fileString.replace(/(?<=s.version = ").*?(?=")/g, versionNumber);
+
+    // add Reanimated V2 Folly dependency  
+    fileString = fileString
+      .replace(/(?=Pod::Spec.new do \|s\|)/, `
+folly_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'
+folly_compiler_flags = folly_flags + ' ' + '-Wno-comma -Wno-shorten-64-to-32'
+folly_version = '2020.01.13.00'
+boost_compiler_flags = '-Wno-documentation'\n\n`)
+      .replace(/(?=  s.subspec "Expo" do \|ss\|)/g, `
+  s.pod_target_xcconfig    = {
+    "USE_HEADERMAP"       => "YES",
+    "HEADER_SEARCH_PATHS" => "\\"$(PODS_TARGET_SRCROOT)/ReactCommon\\" \\"$(PODS_TARGET_SRCROOT)\\" \\"$(PODS_ROOT)/Folly\\" \\"$(PODS_ROOT)/boost-for-react-native\\" \\"$(PODS_ROOT)/DoubleConversion\\" \\"$(PODS_ROOT)/Headers/Private/React-Core\\" "
+  }
+  s.compiler_flags = folly_compiler_flags + ' ' + boost_compiler_flags
+  s.xcconfig               = { 
+    "HEADER_SEARCH_PATHS" => "\\"$(PODS_ROOT)/boost-for-react-native\\" \\"$(PODS_ROOT)/glog\\" \\"$(PODS_ROOT)/Folly\\" \\"$(PODS_ROOT)/Headers/Private/${versionName}React-Core\\"",
+    "OTHER_CFLAGS"        => "$(inherited)" + " " + folly_flags
+  }\n\n`);
 
     return fileString;
   });
@@ -569,7 +632,7 @@ async function generatePodfileSubscriptsAsync(
   // Add a dependency on newPodName
   let dep = `# @generated by expotools
 
-require './${relativeReactNativePath}/autolink-ios.rb'
+require './${relativeReactNativePath}/react_native_pods.rb'
 
 use_react_native_${versionName}! path: './${relativeReactNativePath}'
 
@@ -861,7 +924,7 @@ export async function addVersionAsync(versionNumber: string) {
       path.relative(EXPO_DIR, getVersionedExpoPath(versionName))
     )} directory...`
   );
-  await generateVersionedExpoAsync(versionName);
+  await generateVersionedExpoAsync(versionName, versionNumber);
 
   // Namespace the new React clone
   console.log('Namespacing/transforming files...');
@@ -884,6 +947,10 @@ export async function addVersionAsync(versionNumber: string) {
     path.join(EXPO_DIR, 'exponent-view-template', 'ios', 'exponent-view-template', 'Supporting'),
     (config) => addVersionToConfig(config, versionNumber)
   );
+
+  // Modifying kernel files
+  console.log(`Modifying ${chalk.bold('kernel files')} to incorporate new SDK version...`);
+  await modifyKernelFilesAsync(versionName);
 
   console.log('Removing any `filename--` files from the new pod ...');
 
@@ -931,7 +998,9 @@ export async function reinstallPodsAsync(force?: boolean) {
 }
 
 export async function removeVersionAsync(versionNumber: string) {
-  let { newVersionPath, versionedPodNames } = await getConfigsFromArguments(versionNumber);
+  let { newVersionPath, versionedPodNames, versionName } = await getConfigsFromArguments(
+    versionNumber
+  );
   console.log(
     `Removing SDK version ${chalk.cyan(versionNumber)} from ${chalk.magenta(
       path.relative(EXPO_DIR, newVersionPath)
@@ -972,6 +1041,10 @@ export async function removeVersionAsync(versionNumber: string) {
     path.join(EXPO_DIR, 'exponent-view-template', 'ios', 'exponent-view-template', 'Supporting'),
     (config) => removeVersionFromConfig(config, versionNumber)
   );
+
+  // modify kernel files
+  console.log('Rollbacking SDK modifications from kernel files...');
+  await modifyKernelFilesAsync(versionName, true);
 
   await reinstallPodsAsync();
 
@@ -1060,6 +1133,20 @@ function _getReactNativeTransformRules(versionPrefix, reactPodName) {
       pattern: `s/\\([^A-Za-z0-9_+]\\)REA/\\1${versionPrefix}REA/g`,
     },
     {
+      pattern: `s/^REA/${versionPrefix}REA/g`,
+      paths: 'Core/Api/Reanimated',
+    },
+    {
+      // Prefixes all direct references to objects under `reanimated` namespace.
+      // It must be applied before versioning `namespace reanimated` so
+      // `using namespace reanimated::` don't get versioned twice.
+      pattern: `s/reanimated::/${versionPrefix}reanimated::/g`,
+    },
+    {
+      // Prefixes reanimated namespace.
+      pattern: `s/namespace reanimated/namespace ${versionPrefix}reanimated/g`,
+    },
+    {
       // Fix imports in C++ libs in ReactCommon.
       // Extended syntax (-E) is required to use (a|b).
       flags: '-Ei',
@@ -1107,9 +1194,16 @@ function _getReactNativeTransformRules(versionPrefix, reactPodName) {
       pattern: `s/${versionPrefix}EX${reactPodName}/${versionPrefix}EXReact/g`,
     },
     {
-      // For EXConstants
+      // For EXConstants and EXNotifications so that when their migrators
+      // try to access legacy storage for UUID migration, they access the proper value.
       pattern: `s/${versionPrefix}EXDeviceInstallUUIDKey/EXDeviceInstallUUIDKey/g`,
-      paths: 'Expo/EXConstants',
+      paths: 'Expo',
+    },
+    {
+      // For EXConstants and EXNotifications so that the installation ID
+      // stays the same between different SDK versions. (https://github.com/expo/expo/issues/11008#issuecomment-726370187)
+      pattern: `s/${versionPrefix}EXDeviceInstallationUUIDKey/EXDeviceInstallationUUIDKey/g`,
+      paths: 'Expo',
     },
     {
       // RCTPlatform exports version of React Native
@@ -1155,7 +1249,7 @@ function _isDirectory(dir) {
 }
 
 // TODO: use the one in XDL
-async function _transformFileContentsAsync(filename, transform) {
+async function _transformFileContentsAsync(filename: string, transform: (fileString: string) => Promise<string> | string | null) {
   let fileString = await fs.readFile(filename, 'utf8');
   let newFileString = await transform(fileString);
   if (newFileString !== null) {

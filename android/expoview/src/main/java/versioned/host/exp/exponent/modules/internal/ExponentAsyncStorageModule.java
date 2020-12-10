@@ -8,15 +8,14 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.storage.AsyncStorageModule;
 import com.facebook.react.modules.storage.ReactDatabaseSupplier;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.kernel.KernelProvider;
 
+@ReactModule(name = ExponentAsyncStorageModule.NAME, canOverrideExistingModule = true)
 public class ExponentAsyncStorageModule extends AsyncStorageModule {
 
   public static String experienceIdToDatabaseName(String experienceId) throws UnsupportedEncodingException {
@@ -41,35 +40,5 @@ public class ExponentAsyncStorageModule extends AsyncStorageModule {
   @Override
   public boolean canOverrideExistingModule() {
     return true;
-  }
-
-  @ReactMethod
-  public void multiGet(final ReadableArray keys, final Callback callback) {
-    super.multiGet(keys, callback);
-  }
-
-  @ReactMethod
-  public void multiSet(final ReadableArray keyValueArray, final Callback callback) {
-    super.multiSet(keyValueArray, callback);
-  }
-
-  @ReactMethod
-  public void multiRemove(final ReadableArray keys, final Callback callback) {
-    super.multiRemove(keys, callback);
-  }
-
-  @ReactMethod
-  public void multiMerge(final ReadableArray keyValueArray, final Callback callback) {
-    super.multiMerge(keyValueArray, callback);
-  }
-
-  @ReactMethod
-  public void clear(final Callback callback) {
-    super.clear(callback);
-  }
-
-  @ReactMethod
-  public void getAllKeys(final Callback callback) {
-    super.getAllKeys(callback);
   }
 }

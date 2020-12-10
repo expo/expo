@@ -7,17 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		033CE66682B8FAFD35090D3192C3B967 /* RNCAppearanceProviderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B9DFB4F327BFE20261BFEE0E0722C0D5 /* RNCAppearanceProviderManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		137D11BF3C0556D52CE9D71CCFB0B25A /* RNCAppearanceProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = DC57110C5FF7359B591E8CBB556F401D /* RNCAppearanceProvider.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		36FF4040E00CD70A3C7924CA03CE87C0 /* RNCAppearance.h in Headers */ = {isa = PBXBuildFile; fileRef = 796499E17394C43C0760C1635F51B919 /* RNCAppearance.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		4C187F80A5C0080050C9DE80EE22DD0F /* RNCAppearanceProviderManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B4F2C854DCD1A024BAFFDECBCD3C5BD /* RNCAppearanceProviderManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		92927620FEDAE36B6DFA3C6FF3D26C8D /* RNCAppearanceProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = 3A3DE776964F9A4EDAC2048C0EFCC039 /* RNCAppearanceProvider.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		CF34B47B261DD340CF9FFAA2D5BEE362 /* RNCAppearance.m in Sources */ = {isa = PBXBuildFile; fileRef = D2CE290AC5629681DDA309FFB042B0DA /* RNCAppearance.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		DE4B9D8FE59AFF059239EB1DE0F59516 /* react-native-appearance-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1063F614B384FA25BC30EA589ED2981C /* react-native-appearance-dummy.m */; };
+		38FAF5DDE776D45CBB4144699D55DE1E /* RNCAppearanceProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = DC57110C5FF7359B591E8CBB556F401D /* RNCAppearanceProvider.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		4F337EF7F81342E8B720B446C1E3C01D /* RNCAppearanceProviderManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B4F2C854DCD1A024BAFFDECBCD3C5BD /* RNCAppearanceProviderManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8DDCF38F317CA68CDA6628DAA04044FB /* RNCAppearance.h in Headers */ = {isa = PBXBuildFile; fileRef = 796499E17394C43C0760C1635F51B919 /* RNCAppearance.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		989B9A5E82BA8C71AE0C889B42003FE0 /* RNCAppearanceProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = 3A3DE776964F9A4EDAC2048C0EFCC039 /* RNCAppearanceProvider.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B03DB758D0BF77864825A5C7B51919D4 /* react-native-appearance-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1063F614B384FA25BC30EA589ED2981C /* react-native-appearance-dummy.m */; };
+		B71DD1C887273670C9B9BC826BE7E816 /* RNCAppearance.m in Sources */ = {isa = PBXBuildFile; fileRef = D2CE290AC5629681DDA309FFB042B0DA /* RNCAppearance.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		D707C165F2CC56C84CFFBAC1626AC292 /* RNCAppearanceProviderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B9DFB4F327BFE20261BFEE0E0722C0D5 /* RNCAppearanceProviderManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		7D1DDE1C1F437DA8C4DEA80E251A7D49 /* PBXContainerItemProxy */ = {
+		0F4B25DAB47C0543706401583D3B76EB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1E87F611B8EA724ED25B90E3390957E8 /* React.xcodeproj */;
 			proxyType = 1;
@@ -45,7 +45,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		AF2B51DB7C6A6DF4E896176124FE1F21 /* Frameworks */ = {
+		B0337C327BCD58A0A912BE5E6F612838 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -129,13 +129,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		37A5E56CC6675BD7A324892D89BEA92E /* Headers */ = {
+		7CAB5ECE511345CD9A7C130C11BADC23 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				36FF4040E00CD70A3C7924CA03CE87C0 /* RNCAppearance.h in Headers */,
-				92927620FEDAE36B6DFA3C6FF3D26C8D /* RNCAppearanceProvider.h in Headers */,
-				4C187F80A5C0080050C9DE80EE22DD0F /* RNCAppearanceProviderManager.h in Headers */,
+				8DDCF38F317CA68CDA6628DAA04044FB /* RNCAppearance.h in Headers */,
+				989B9A5E82BA8C71AE0C889B42003FE0 /* RNCAppearanceProvider.h in Headers */,
+				4F337EF7F81342E8B720B446C1E3C01D /* RNCAppearanceProviderManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -144,16 +144,16 @@
 /* Begin PBXNativeTarget section */
 		A6256F4276AA88FDEAAA83D3F4FEBA89 /* react-native-appearance */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8A5EB7A5CE061FED89157A4C9C01DE39 /* Build configuration list for PBXNativeTarget "react-native-appearance" */;
+			buildConfigurationList = B3BCCDB288EF1D70F3F21640841317C8 /* Build configuration list for PBXNativeTarget "react-native-appearance" */;
 			buildPhases = (
-				37A5E56CC6675BD7A324892D89BEA92E /* Headers */,
-				0AFB6D12BDBBECBF9BF470B8B98DCC54 /* Sources */,
-				AF2B51DB7C6A6DF4E896176124FE1F21 /* Frameworks */,
+				7CAB5ECE511345CD9A7C130C11BADC23 /* Headers */,
+				1BAF2C97B07F2B04D49053E497C187AD /* Sources */,
+				B0337C327BCD58A0A912BE5E6F612838 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				2818C4D34EBA95AC26FF535792C3386C /* PBXTargetDependency */,
+				5BEA25830BC3E98FD59DC7C0DDA2C025 /* PBXTargetDependency */,
 			);
 			name = "react-native-appearance";
 			productName = "react-native-appearance";
@@ -193,32 +193,58 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		0AFB6D12BDBBECBF9BF470B8B98DCC54 /* Sources */ = {
+		1BAF2C97B07F2B04D49053E497C187AD /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DE4B9D8FE59AFF059239EB1DE0F59516 /* react-native-appearance-dummy.m in Sources */,
-				CF34B47B261DD340CF9FFAA2D5BEE362 /* RNCAppearance.m in Sources */,
-				137D11BF3C0556D52CE9D71CCFB0B25A /* RNCAppearanceProvider.m in Sources */,
-				033CE66682B8FAFD35090D3192C3B967 /* RNCAppearanceProviderManager.m in Sources */,
+				B03DB758D0BF77864825A5C7B51919D4 /* react-native-appearance-dummy.m in Sources */,
+				B71DD1C887273670C9B9BC826BE7E816 /* RNCAppearance.m in Sources */,
+				38FAF5DDE776D45CBB4144699D55DE1E /* RNCAppearanceProvider.m in Sources */,
+				D707C165F2CC56C84CFFBAC1626AC292 /* RNCAppearanceProviderManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		2818C4D34EBA95AC26FF535792C3386C /* PBXTargetDependency */ = {
+		5BEA25830BC3E98FD59DC7C0DDA2C025 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = React;
-			targetProxy = 7D1DDE1C1F437DA8C4DEA80E251A7D49 /* PBXContainerItemProxy */;
+			targetProxy = 0F4B25DAB47C0543706401583D3B76EB /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		0A3F3C7FA12F3A1367870351DC98685F /* Debug */ = {
+		30B1E206010CCE28F3125EDFB8BD4DAB /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D08578AF62DFC00B7C5B2B4A42C02D32 /* react-native-appearance.release.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/react-native-appearance/react-native-appearance-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = react_native_appearance;
+				PRODUCT_NAME = "react-native-appearance";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		561D9B84840EBB607D01C59A39BEB797 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -241,6 +267,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -279,10 +306,35 @@
 			};
 			name = Debug;
 		};
-		447F1137C2B49CBA2D6015A557818796 /* Release */ = {
+		86451DF3FAF304719635A2683BF34010 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F8BBDFDE78207250E64DC302913354D2 /* react-native-appearance.debug.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/react-native-appearance/react-native-appearance-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = react_native_appearance;
+				PRODUCT_NAME = "react-native-appearance";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		B0EFB891803624323C842E98ADBD9349 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -305,6 +357,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -339,63 +392,14 @@
 			};
 			name = Release;
 		};
-		9316C916F3F56FB36C66D379C4206DCE /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = D08578AF62DFC00B7C5B2B4A42C02D32 /* react-native-appearance.release.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/react-native-appearance/react-native-appearance-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = react_native_appearance;
-				PRODUCT_NAME = "react-native-appearance";
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		C1062580E1D7FEEB48C6E82176F6EAE9 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = F8BBDFDE78207250E64DC302913354D2 /* react-native-appearance.debug.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/react-native-appearance/react-native-appearance-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = react_native_appearance;
-				PRODUCT_NAME = "react-native-appearance";
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		8A5EB7A5CE061FED89157A4C9C01DE39 /* Build configuration list for PBXNativeTarget "react-native-appearance" */ = {
+		B3BCCDB288EF1D70F3F21640841317C8 /* Build configuration list for PBXNativeTarget "react-native-appearance" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C1062580E1D7FEEB48C6E82176F6EAE9 /* Debug */,
-				9316C916F3F56FB36C66D379C4206DCE /* Release */,
+				86451DF3FAF304719635A2683BF34010 /* Debug */,
+				30B1E206010CCE28F3125EDFB8BD4DAB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -403,8 +407,8 @@
 		C5EC5DE239DFFB8AED6C83053D64D538 /* Build configuration list for PBXProject "react-native-appearance" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				0A3F3C7FA12F3A1367870351DC98685F /* Debug */,
-				447F1137C2B49CBA2D6015A557818796 /* Release */,
+				561D9B84840EBB607D01C59A39BEB797 /* Debug */,
+				B0EFB891803624323C842E98ADBD9349 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

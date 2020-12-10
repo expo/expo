@@ -1,4 +1,9 @@
-#include <EXGL_CPP/EXiOSUtils.h>
+#import <Foundation/Foundation.h>
+
+#include <EXGL_CPP/EXPlatformUtils.h>
+
+namespace expo {
+namespace gl_cpp {
 
 void EXiOSLog(const char *msg, ...) {
   va_list args;
@@ -15,4 +20,6 @@ EXiOSOperatingSystemVersion EXiOSGetOperatingSystemVersion() {
     version.minorVersion,
     version.patchVersion,
   };
+}
+}
 }

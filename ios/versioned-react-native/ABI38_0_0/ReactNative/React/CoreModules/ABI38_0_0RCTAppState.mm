@@ -33,7 +33,7 @@ static NSString *ABI38_0_0RCTCurrentAppState()
   return states[@(ABI38_0_0RCTSharedApplication().applicationState)] ?: @"unknown";
 }
 
-@interface ABI38_0_0RCTAppState() <NativeAppStateSpec>
+@interface ABI38_0_0RCTAppState() <ABI38_0_0NativeAppStateSpec>
 @end
 
 @implementation ABI38_0_0RCTAppState

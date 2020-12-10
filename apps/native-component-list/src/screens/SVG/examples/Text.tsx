@@ -1,6 +1,8 @@
+/* eslint-disable */
 // tslint:disable max-classes-per-file
 import React from 'react';
 import * as Svg from 'react-native-svg';
+
 import Example from './Example';
 
 const { LinearGradient, Stop, Defs, Path, G, TSpan, TextPath } = Svg;
@@ -57,8 +59,7 @@ class TextStroke extends React.Component {
           fontSize="30"
           fontWeight="bold"
           x="100"
-          y="40"
-        >
+          y="40">
           <TSpan textAnchor="middle">{['STROKE TEXT']}</TSpan>
         </Svg.Text>
       </Svg.Svg>
@@ -87,8 +88,7 @@ class TextFill extends React.Component {
           fontStyle="italic"
           x="100"
           y="40"
-          textAnchor="middle"
-        >
+          textAnchor="middle">
           FILL TEXT
         </Svg.Text>
       </Svg.Svg>
@@ -172,8 +172,7 @@ const icon = (
       textAnchor="middle"
       fill="none"
       stroke="blue"
-      strokeWidth="1"
-    >
+      strokeWidth="1">
       字
     </Svg.Text>
   </Svg.Svg>

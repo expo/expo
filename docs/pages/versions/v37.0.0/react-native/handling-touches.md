@@ -3,11 +3,11 @@ id: handling-touches
 title: Handling Touches
 ---
 
-Users interact with mobile apps mainly through touch. They can use a combination of gestures, such as tapping on a button, scrolling a list, or zooming on a map. React Native provides components to handle all sorts of common gestures, as well as a comprehensive [gesture responder system](../gesture-responder-system/) to allow for more advanced gesture recognition, but the one component you will most likely be interested in is the basic Button.
+Users interact with mobile apps mainly through touch. They can use a combination of gestures, such as tapping on a button, scrolling a list, or zooming on a map. React Native provides components to handle all sorts of common gestures, as well as a comprehensive [gesture responder system](gesture-responder-system.md) to allow for more advanced gesture recognition, but the one component you will most likely be interested in is the basic Button.
 
 ## Displaying a basic button
 
-[Button](../button/) provides a basic button component that is rendered nicely on all platforms. The minimal example to display a button looks like this:
+[Button](button.md) provides a basic button component that is rendered nicely on all platforms. The minimal example to display a button looks like this:
 
 ```jsx
 <Button
@@ -73,13 +73,13 @@ If the basic button doesn't look right for your app, you can build your own butt
 
 Which "Touchable" component you use will depend on what kind of feedback you want to provide:
 
-- Generally, you can use [**TouchableHighlight**](../touchablehighlight/) anywhere you would use a button or link on web. The view's background will be darkened when the user presses down on the button.
+- Generally, you can use [**TouchableHighlight**](touchablehighlight.md) anywhere you would use a button or link on web. The view's background will be darkened when the user presses down on the button.
 
-- You may consider using [**TouchableNativeFeedback**](../touchablenativefeedback/) on Android to display ink surface reaction ripples that respond to the user's touch.
+- You may consider using [**TouchableNativeFeedback**](touchablenativefeedback.md) on Android to display ink surface reaction ripples that respond to the user's touch.
 
-- [**TouchableOpacity**](../touchableopacity/) can be used to provide feedback by reducing the opacity of the button, allowing the background to be seen through while the user is pressing down.
+- [**TouchableOpacity**](touchableopacity.md) can be used to provide feedback by reducing the opacity of the button, allowing the background to be seen through while the user is pressing down.
 
-- If you need to handle a tap gesture but you don't want any feedback to be displayed, use [**TouchableWithoutFeedback**](../touchablewithoutfeedback/).
+- If you need to handle a tap gesture but you don't want any feedback to be displayed, use [**TouchableWithoutFeedback**](touchablewithoutfeedback.md).
 
 In some cases, you may want to detect when a user presses and holds a view for a set amount of time. These long presses can be handled by passing a function to the `onLongPress` props of any of the "Touchable" components.
 
@@ -170,4 +170,4 @@ const styles = StyleSheet.create({
 
 ## Scrolling lists, swiping pages, and pinch-to-zoom
 
-Another gesture commonly used in mobile apps is the swipe or pan. This gesture allows the user to scroll through a list of items, or swipe through pages of content. In order to handle these and other gestures, we'll learn [how to use a ScrollView](../using-a-scrollview/) next.
+Another gesture commonly used in mobile apps is the swipe or pan. This gesture allows the user to scroll through a list of items, or swipe through pages of content. In order to handle these and other gestures, we'll learn [how to use a ScrollView](using-a-scrollview.md) next.

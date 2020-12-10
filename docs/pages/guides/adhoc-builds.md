@@ -2,7 +2,7 @@
 title: Installing a Custom iOS Expo client
 ---
 
-Build and install a custom version of the [Expo client](../../get-started/installation/#2-mobile-app-expo-client-for-ios) with your own Apple Credentials using our build service. This custom version of the Expo client contains features that were previously only available on the Android versions. Our build service will prepare your custom Expo client, and you can install it to your iOS device directly from our website.
+Build and install a custom version of the [Expo client](../get-started/installation.md#2-mobile-app-expo-client-for-ios) with your own Apple Credentials using our build service. This custom version of the Expo client contains features that were previously only available on the Android versions. Our build service will prepare your custom Expo client, and you can install it to your iOS device directly from our website.
 
 #### Installation overview
 
@@ -11,7 +11,7 @@ Build and install a custom version of the [Expo client](../../get-started/instal
 ## 0. Prerequisites
 
 - You’ll need a **paid** [Apple Developer Account](https://developer.apple.com/programs) to configure credentials required for the development and distribution process of an app. Learn more [here](https://developer.apple.com/programs/whats-included/).
-- Install the `expo-cli` command line app by following the instructions [here](../../workflow/expo-cli/).
+- Install the `expo-cli` command line app by following the instructions [here](../workflow/expo-cli.md).
 
 **Windows users** must have WSL enabled. You can follow the installation guide [here](https://docs.microsoft.com/en-us/windows/wsl/install-win10). We recommend picking Ubuntu from the Windows Store. Be sure to launch Ubuntu at least once. After that, use an Admin powershell to run:
 `Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux`
@@ -24,7 +24,7 @@ Push Notifications are currently unavailable with ad hoc clients until we comple
 
 #### Google Maps
 
-You will need to run `expo client:ios` in a project directory with a valid `app.json`, or pass in the flag to your custom configuration file with `--config <path-to-file.json>`. Make sure you set your Google API key in `ios.config.googleMapsApiKey` as described [here](../../versions/latest/sdk/map-view/#deploying-google-maps-to-a-standalone-app).
+You will need to run `expo client:ios` in a project directory with a valid `app.json`, or pass in the flag to your custom configuration file with `--config <path-to-file.json>`. Make sure you set your Google API key in `ios.config.googleMapsApiKey` as described [here](../versions/latest/sdk/map-view.md#deploying-google-maps-to-a-standalone-app).
 
 #### Facebook
 
@@ -46,7 +46,7 @@ Run `expo client:ios`
 
 You are given a choice of letting `expo-cli` create the necessary credentials for you, while still having a chance to provide your own overrides. Your Apple ID and password are used locally and never saved on Expo's servers.
 
-Letting Expo handle credentials for you will greatly simplify the build process. Learn more [here](../../distribution/security) on what these credentials are and how we store them.
+Letting Expo handle credentials for you will greatly simplify the build process. Learn more [here](../distribution/security.md) on what these credentials are and how we store them.
 
 ```sh
 $ expo client:ios

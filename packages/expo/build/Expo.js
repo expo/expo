@@ -1,16 +1,12 @@
 import './Expo.fx';
-import * as SplashScreen from './launch/SplashScreen';
 import * as Logs from './logs/Logs';
 export { Logs };
 export { default as apisAreAvailable } from './apisAreAvailable';
 export { default as registerRootComponent } from './launch/registerRootComponent';
-export { default as Notifications } from './Notifications/Notifications';
 // The following should all be extracted from this package
-export { SplashScreen };
-export { default as AppLoading } from './launch/AppLoading';
 export { default as DangerZone } from './DangerZone';
 // @ts-ignore
-export { Updates, Linking } from './deprecated';
+export { Linking, Notifications } from './deprecated';
 // @ts-ignore
 export { 
 // @ts-ignore
@@ -27,6 +23,8 @@ Animated,
 Amplitude, 
 // @ts-ignore
 AppAuth, 
+// @ts-ignore
+AppLoading, 
 // @ts-ignore
 AR, 
 // @ts-ignore
@@ -138,6 +136,8 @@ SMS,
 // @ts-ignore
 Speech, 
 // @ts-ignore
+SplashScreen, 
+// @ts-ignore
 SQLite, 
 // @ts-ignore
 Svg, 
@@ -149,6 +149,8 @@ TaskManager,
 Transition, 
 // @ts-ignore
 Transitioning, 
+// @ts-ignore
+Updates, 
 // @ts-ignore
 Video, 
 // @ts-ignore

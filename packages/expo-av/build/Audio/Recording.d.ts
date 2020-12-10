@@ -106,7 +106,7 @@ export declare class Recording {
     _progressUpdateTimeoutVariable: number | null;
     _progressUpdateIntervalMillis: number;
     _options: RecordingOptions | null;
-    _cleanupForUnloadedRecorder: (finalStatus: RecordingStatus) => Promise<RecordingStatus>;
+    _cleanupForUnloadedRecorder: (finalStatus?: RecordingStatus | undefined) => Promise<RecordingStatus>;
     _pollingLoop: () => Promise<void>;
     _disablePolling(): void;
     _enablePollingIfNecessaryAndPossible(): void;
@@ -120,6 +120,7 @@ export declare class Recording {
     pauseAsync(): Promise<RecordingStatus>;
     stopAndUnloadAsync(): Promise<RecordingStatus>;
     getURI(): string | null;
+    /** @deprecated Use `createNewLoadedSoundAsync()` instead */
     createNewLoadedSound(initialStatus?: AVPlaybackStatusToSet, onPlaybackStatusUpdate?: ((status: AVPlaybackStatus) => void) | null): Promise<{
         sound: Sound;
         status: AVPlaybackStatus;

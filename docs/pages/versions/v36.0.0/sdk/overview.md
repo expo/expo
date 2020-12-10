@@ -9,7 +9,7 @@ import * as Contacts from 'expo-contacts';
 import { Gyroscope } from 'expo-sensors';
 ```
 
-This allows you to write [`Contacts.getContactsAsync()`](../contacts/#getcontactsasync), for example.
+This allows you to write [`Contacts.getContactsAsync()`](contacts.md#getcontactsasync), for example.
 
 ## SDK Version
 

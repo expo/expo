@@ -14,7 +14,7 @@ In addition to `https`, you're likely also familiar with the `mailto` scheme. Wh
 
 Just like using the `mailto` scheme, it's possible to link to other applications by using other url schemes. For example, when you get a "Magic Link" email from Slack, the "Launch Slack" button is an anchor tag with an href that looks something like: `slack://secret/magic-login/other-secret`. Like with Slack, you can tell the operating system that you want to handle a custom scheme. Read more about [configuring a scheme](#in-a-standalone-app). When the Slack app opens, it receives the URL that was used to open it and can then act on the data that is made available through the url -- in this case, a secret string that will log the user in to a particular server. This is often referred to as **deep linking**. Read more about [handling deep links into your app](#handling-links-into-your-app).
 
-Deep linking with schemes isn't the only linking tool available to you. It is often desirable for regular HTTPS links to open your application on mobile. For example, if you're sending a notification email about a change to a record, you don't want to use a custom URL scheme in links in the email, because then the links would be broken on desktop. Instead, you want to use a regular HTTPS link such as `https://www.myapp.io/records/123`, and on mobile you want that link to open your app. iOS terms this concept "universal links" and Android calls it "deep links" (unfortunate naming, since deep links can also refer to the topic above). Expo supports these links on both platforms (with some [configuration](#universaldeep-links-without-a-custom-scheme)). Expo also supports deferred deep links with [Branch](/versions/latest/sdk/branch/).
+Deep linking with schemes isn't the only linking tool available to you. It is often desirable for regular HTTPS links to open your application on mobile. For example, if you're sending a notification email about a change to a record, you don't want to use a custom URL scheme in links in the email, because then the links would be broken on desktop. Instead, you want to use a regular HTTPS link such as `https://www.myapp.io/records/123`, and on mobile you want that link to open your app. iOS terms this concept "universal links" and Android calls it "deep links" (unfortunate naming, since deep links can also refer to the topic above). Expo supports these links on both platforms (with some [configuration](#universaldeep-links-without-a-custom-scheme)). Expo also supports deferred deep links with [Branch](../versions/latest/sdk/branch.md).
 
 ## Linking from your app to other apps
 
@@ -225,7 +225,7 @@ The example project [examples/with-webbrowser-redirect](https://github.com/expo/
 
 ### Example: using linking for authentication
 
-A common use case for linking to your app is to redirect back to your app after opening a [WebBrowser](/versions/latest/sdk/webbrowser/). For example, you can open a web browser session to your sign in screen and when the user has successfully signed in, you can have your website redirect back to your app by using the scheme and appending the authentication token and other data to the URL.
+A common use case for linking to your app is to redirect back to your app after opening a [WebBrowser](../versions/latest/sdk/webbrowser.md). For example, you can open a web browser session to your sign in screen and when the user has successfully signed in, you can have your website redirect back to your app by using the scheme and appending the authentication token and other data to the URL.
 
 **Note**: if try to use `Linking.openURL` to open the web browser for authentication then your app may be rejected by Apple on the grounds of a bad or confusing user experience. `WebBrowser.openBrowserAsync` opens the browser window in a modal, which looks and feels good and is Apple approved.
 
@@ -239,12 +239,16 @@ It is often desirable for regular HTTPS links (without a custom URL scheme) to d
 
 ### Universal links on iOS
 
-To implement universal links on iOS, you must first set up verification that you own your domain. This is done by serving an Apple App Site Association (AASA) file from your webserver. The AASA must be served from `/.well-known/apple-app-site-association` (with no extension). The AASA contains JSON which specifies your Apple app ID and a list of paths on your domain that should be handled by your mobile app. For example, if you want links of the format `https://www.myapp.io/records/123` to be opened by your mobile app, your AASA would have the following contents:
+#### AASA configuration
+
+To implement universal links on iOS, you must first set up verification that you own your domain. This is done by serving an Apple App Site Association (AASA) file from your webserver.
+
+The AASA must be served from `/.well-known/apple-app-site-association` (with no extension). The AASA contains JSON which specifies your Apple app ID and a list of paths on your domain that should be handled by your mobile app. For example, if you want links of the format `https://www.myapp.io/records/123` to be opened by your mobile app, your AASA would have the following contents:
 
 ```
 {
   "applinks": {
-    "apps": [],
+    "apps": [], // This is usually left empty, but still must be included
     "details": [{
       "appID": "LKWJEF.io.myapp.example",
       "paths": ["/records/*"]
@@ -253,17 +257,67 @@ To implement universal links on iOS, you must first set up verification that you
 }
 ```
 
-This tells iOS that any links to `https://www.myapp.io/records/*` (with wildcard matching for the record ID) should be opened directly by your mobile app. See [Apple's documentation](https://developer.apple.com/documentation/uikit/core_app/allowing_apps_and_websites_to_link_to_your_content/enabling_universal_links) for further details on the format of the AASA. Branch provides an [AASA validator](https://branch.io/resources/aasa-validator/) which can help you confirm that your AASA is correctly deployed and has a valid format.
+This tells iOS that any links to `https://www.myapp.io/records/*` (with wildcard matching for the record ID) should be opened directly by the app with ID `LKWJEF.io.myapp.example`. See [Apple's documentation](https://developer.apple.com/documentation/uikit/core_app/allowing_apps_and_websites_to_link_to_your_content/enabling_universal_links) for further details on the format of the AASA. Branch provides an [AASA validator](https://branch.io/resources/aasa-validator/) which can help you confirm that your AASA is correctly deployed and has a valid format.
+
+> The `*` wildcard does **not** match domain or path separators (periods and slashes).
+
+As of iOS 13, [a new `details` format is supported](https://developer.apple.com/documentation/safariservices/supporting_associated_domains) which allows you to specify
+
+- `appIDs` instead of `appID`, which makes it easier to associate multiple apps with the same configuration
+- an array of `components`, which allows you to specify fragments, exclude specific paths, and add comments
+
+<details><summary><h4>Here's the example AASA json from Apple's documentation:</h4></summary>
+<p>
+
+```
+{
+  "applinks": {
+      "details": [
+           {
+             "appIDs": [ "ABCDE12345.com.example.app", "ABCDE12345.com.example.app2" ],
+             "components": [
+               {
+                  "#": "no_universal_links",
+                  "exclude": true,
+                  "comment": "Matches any URL whose fragment equals no_universal_links and instructs the system not to open it as a universal link"
+               },
+               {
+                  "/": "/buy/*",
+                  "comment": "Matches any URL whose path starts with /buy/"
+               },
+               {
+                  "/": "/help/website/*",
+                  "exclude": true,
+                  "comment": "Matches any URL whose path starts with /help/website/ and instructs the system not to open it as a universal link"
+               },
+               {
+                  "/": "/help/*",
+                  "?": { "articleNumber": "????" },
+                  "comment": "Matches any URL whose path starts with /help/ and which has a query item with name 'articleNumber' and a value of exactly 4 characters"
+               }
+             ]
+           }
+       ]
+   }
+}
+```
+
+</p>
+</details>
+
+To support all iOS versions, you can provide both the above formats in your `details` key, but we recommend placing the configuration for more recent iOS versions first.
 
 Note that iOS will download your AASA when your app is first installed and when updates are installed from the App Store, but it will not refresh any more frequently. If you wish to change the paths in your AASA for a production app, you will need to issue a full update via the App Store so that all of your users' apps re-fetch your AASA and recognize the new paths.
 
-After deploying your AASA, you must also configure your app to use your associated domain. First, you need to add the `associatedDomains` [configuration](../../workflow/configuration#ios) to your `app.json` (make sure to follow [Apple's specified format](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_associated-domains)). Second, you need to edit your App ID on the Apple developer portal and enable the "Associated Domains" application service. To do so go in the App IDs section and click on your App ID. Select Edit, check the Associated Domains checkbox and click Done. You will also need to regenerate your provisioning profile after adding the service to the App ID. This can be done by running `expo build:ios --clear-provisioning-profile` inside of your app directory. Next time you build your app, it will prompt you to create a new one.
+#### Expo configuration
+
+After deploying your AASA, you must also configure your app to use your associated domain. First, you need to add the `associatedDomains` [configuration](../workflow/configuration.md#ios) to your `app.json` (make sure to follow [Apple's specified format](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_associated-domains)). Second, you need to edit your App ID on the Apple developer portal and enable the "Associated Domains" application service. To do so go in the App IDs section and click on your App ID. Select Edit, check the Associated Domains checkbox and click Done. You will also need to regenerate your provisioning profile after adding the service to the App ID. This can be done by running `expo build:ios --clear-provisioning-profile` inside of your app directory. Next time you build your app, it will prompt you to create a new one.
 
 At this point, opening a link on your mobile device should now open your app! If it doesn't, re-check the previous steps to ensure that your AASA is valid, the path is specified in the AASA, and you have correctly configured your App ID in the Apple developer portal. Once you've got your app opening, move to the [Handling links into your app](#handling-links-into-your-app) section for details on how to handle the inbound link and show the user the content they requested.
 
 ### Deep links on Android
 
-Implementing deep links on Android (without a custom URL scheme) is somewhat simpler than on iOS. You simply need to add `intentFilters` to the [Android section](../../workflow/configuration#android) of your `app.json`. The following basic configuration will cause your app to be presented in the standard Android dialog as an option for handling any record links to `myapp.io`:
+Implementing deep links on Android (without a custom URL scheme) is somewhat simpler than on iOS. You simply need to add `intentFilters` to the [Android section](../workflow/configuration.md#android) of your `app.json`. The following basic configuration will cause your app to be presented in the standard Android dialog as an option for handling any record links to `myapp.io`:
 
 ```
 "intentFilters": [

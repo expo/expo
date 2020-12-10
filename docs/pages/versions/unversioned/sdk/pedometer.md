@@ -1,6 +1,6 @@
 ---
 title: Pedometer
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-sensors'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-sensors'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
@@ -19,10 +19,10 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 <SnackInline label='Pedometer' dependencies={['expo-sensors']} >
 
-```js
+```jsx
 import React from 'react';
-import { Pedometer } from 'expo-sensors';
 import { StyleSheet, Text, View } from 'react-native';
+import { Pedometer } from 'expo-sensors';
 
 export default class App extends React.Component {
   state = {
@@ -90,6 +90,7 @@ export default class App extends React.Component {
   }
 }
 
+/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -98,6 +99,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+/* @end */
 ```
 
 </SnackInline>

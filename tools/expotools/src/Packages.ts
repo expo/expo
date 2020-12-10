@@ -6,6 +6,7 @@ import IosUnversionablePackages from './versioning/ios/unversionablePackages.jso
 import AndroidUnversionablePackages from './versioning/android/unversionablePackages.json';
 import * as Directories from './Directories';
 import * as Npm from './Npm';
+import { spawnJSONCommandAsync } from './Utils';
 
 const ANDROID_DIR = Directories.getAndroidDir();
 const IOS_DIR = Directories.getIosDir();
@@ -39,7 +40,7 @@ export type PackageDependency = {
 /**
  * Union with possible platform names.
  */
-export type Platform = 'ios' | 'android' | 'web';
+type Platform = 'ios' | 'android' | 'web';
 
 /**
  * Type representing `unimodule.json` structure.
@@ -54,6 +55,19 @@ export type UnimoduleJson = {
   android?: {
     subdirectory?: string;
   };
+};
+
+export type Podspec = {
+  name: string;
+  version: string;
+  platforms: Record<string, string>;
+  source_files: string | string[];
+  exclude_files: string | string[];
+  compiler_flags: string;
+  frameworks: string | string[];
+  pod_target_xcconfig: Record<string, string>;
+  dependencies: Record<string, any>;
+  info_plist: Record<string, string>;
 };
 
 /**
@@ -88,13 +102,9 @@ export class Package {
   }
 
   get podspecName(): string | null {
-    if (!this.unimoduleJson) {
-      return null;
-    }
-
     const iosConfig = {
       subdirectory: 'ios',
-      ...('ios' in this.unimoduleJson ? this.unimoduleJson.ios : {}),
+      ...(this.unimoduleJson?.ios ?? {}),
     };
 
     // 'ios.podName' is actually not used anywhere in our unimodules, but let's have the same logic as react-native-unimodules script.
@@ -103,7 +113,7 @@ export class Package {
     }
 
     // Obtain podspecName by looking for podspecs
-    const podspecPaths = glob.sync('**/*.podspec', {
+    const podspecPaths = glob.sync('*.podspec', {
       cwd: path.join(this.path, iosConfig.subdirectory),
     });
 
@@ -111,6 +121,10 @@ export class Package {
       return null;
     }
     return path.basename(podspecPaths[0], '.podspec');
+  }
+
+  get iosSubdirectory(): string {
+    return this.unimoduleJson?.ios?.subdirectory ?? 'ios';
   }
 
   get androidSubdirectory(): string {
@@ -138,7 +152,16 @@ export class Package {
   }
 
   isSupportedOnPlatform(platform: 'ios' | 'android'): boolean {
-    return this.unimoduleJson?.platforms?.includes(platform) ?? false;
+    if (this.unimoduleJson) {
+      return this.unimoduleJson.platforms?.includes(platform) ?? false;
+    } else if (platform === 'android') {
+      return fs.existsSync(path.join(this.path, this.androidSubdirectory, 'build.gradle'));
+    } else if (platform === 'ios') {
+      return fs
+        .readdirSync(path.join(this.path, this.iosSubdirectory))
+        .some((path) => path.endsWith('.podspec'));
+    }
+    return false;
   }
 
   isIncludedInExpoClientOnPlatform(platform: 'ios' | 'android'): boolean {
@@ -263,6 +286,43 @@ export class Package {
     // TODO(tsapeta): Support ios and web.
     throw new Error(`"hasNativeTestsAsync" for platform "${platform}" is not implemented yet.`);
   }
+
+  /**
+   * Checks whether package contains native instrumentation tests for Android.
+   */
+  async hasNativeInstrumentationTestsAsync(platform: Platform): Promise<boolean> {
+    if (platform === 'android') {
+      return fs.pathExists(path.join(this.path, this.androidSubdirectory, 'src/androidTest'));
+    }
+    return false;
+  }
+
+  /**
+   * Reads the podspec and returns it in JSON format
+   * or `null` if the package doesn't have a podspec.
+   */
+  async getPodspecAsync(): Promise<Podspec | null> {
+    const podspecName = this.podspecName;
+    const podspecPath = path.join(this.path, this.iosSubdirectory, `${podspecName}.podspec`);
+
+    if (!podspecName) {
+      return null;
+    }
+    return await spawnJSONCommandAsync('pod', ['ipc', 'spec', podspecPath]);
+  }
+}
+
+/**
+ * Resolves to a Package instance if the package with given name exists in the repository.
+ */
+export function getPackageByName(packageName: string): Package | null {
+  const packageJsonPath = pathToLocalPackageJson(packageName);
+  try {
+    const packageJson = require(packageJsonPath);
+    return new Package(path.dirname(packageJsonPath), packageJson);
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -272,7 +332,7 @@ export async function getListOfPackagesAsync(): Promise<Package[]> {
   if (!cachedPackages) {
     const paths = await glob('**/package.json', {
       cwd: PACKAGES_DIR,
-      ignore: ['**/example/**', '**/node_modules/**'],
+      ignore: ['**/example/**', '**/expo-development-client/bundle/**', '**/node_modules/**'],
     });
     cachedPackages = paths.map((packageJsonPath) => {
       const fullPackageJsonPath = path.join(PACKAGES_DIR, packageJsonPath);
@@ -292,4 +352,8 @@ function readUnimoduleJsonAtDirectory(dir: string) {
   } catch (error) {
     return null;
   }
+}
+
+function pathToLocalPackageJson(packageName: string): string {
+  return path.join(PACKAGES_DIR, packageName, 'package.json');
 }

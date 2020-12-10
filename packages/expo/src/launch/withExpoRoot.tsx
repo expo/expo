@@ -1,9 +1,7 @@
 import * as ErrorRecovery from 'expo-error-recovery';
 import * as React from 'react';
-import { Platform } from 'react-native';
 
 import Notifications from '../Notifications/Notifications';
-import RootErrorBoundary from './RootErrorBoundary';
 import { InitialProps } from './withExpoRoot.types';
 
 export default function withExpoRoot<P extends InitialProps>(
@@ -25,14 +23,6 @@ export default function withExpoRoot<P extends InitialProps>(
       exp: { ...props.exp, errorRecovery: ErrorRecovery.recoveredProps },
     };
 
-    if (__DEV__ && Platform.OS === 'android') {
-      return (
-        <RootErrorBoundary>
-          <AppRootComponent {...combinedProps} />
-        </RootErrorBoundary>
-      );
-    } else {
-      return <AppRootComponent {...combinedProps} />;
-    }
+    return <AppRootComponent {...combinedProps} />;
   };
 }

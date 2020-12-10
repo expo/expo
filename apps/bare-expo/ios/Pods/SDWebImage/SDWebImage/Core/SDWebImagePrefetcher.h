@@ -92,7 +92,7 @@ typedef void(^SDWebImagePrefetcherCompletionBlock)(NSUInteger noOfFinishedUrls, 
 @property (strong, nonatomic, nonnull) dispatch_queue_t delegateQueue;
 
 /**
- * The delegate for the prefetcher. Defatuls to nil.
+ * The delegate for the prefetcher. Defaults to nil.
  */
 @property (weak, nonatomic, nullable) id <SDWebImagePrefetcherDelegate> delegate;
 
@@ -108,7 +108,7 @@ typedef void(^SDWebImagePrefetcherCompletionBlock)(NSUInteger noOfFinishedUrls, 
 
 /**
  * Assign list of URLs to let SDWebImagePrefetcher to queue the prefetching. It based on the image manager so the image may from the cache and network according to the `options` property.
- * Prefetching is seperate to each other, which means the progressBlock and completionBlock you provide is bind to the prefetching for the list of urls.
+ * Prefetching is separate to each other, which means the progressBlock and completionBlock you provide is bind to the prefetching for the list of urls.
  * Attention that call this will not cancel previous fetched urls. You should keep the token return by this to cancel or cancel all the prefetch.
  *
  * @param urls list of URLs to prefetch
@@ -118,7 +118,7 @@ typedef void(^SDWebImagePrefetcherCompletionBlock)(NSUInteger noOfFinishedUrls, 
 
 /**
  * Assign list of URLs to let SDWebImagePrefetcher to queue the prefetching. It based on the image manager so the image may from the cache and network according to the `options` property.
- * Prefetching is seperate to each other, which means the progressBlock and completionBlock you provide is bind to the prefetching for the list of urls.
+ * Prefetching is separate to each other, which means the progressBlock and completionBlock you provide is bind to the prefetching for the list of urls.
  * Attention that call this will not cancel previous fetched urls. You should keep the token return by this to cancel or cancel all the prefetch.
  *
  * @param urls            list of URLs to prefetch

@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI36_0_0/Expo/EXUpdates/ABI36_0_0EXUpdates/ABI36_0_0EXUpdatesModule.h

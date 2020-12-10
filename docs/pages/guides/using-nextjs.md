@@ -399,7 +399,7 @@ createServerAsync(projectRoot, {
 
 ### Web push notifications support
 
-With the regular `expo start:web` or `expo start --web` commands [web push notifications](../../push-notifications/overview/) are supported without any additional configuration. To get this same functionality working with Next.js you'll need to configure a few things.
+With the regular `expo start:web` or `expo start --web` commands [web push notifications](../push-notifications/overview.md) are supported without any additional configuration. To get this same functionality working with Next.js you'll need to configure a few things.
 
 <details><summary>Instructions</summary>
 <p>

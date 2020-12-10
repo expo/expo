@@ -1,6 +1,6 @@
 {
   "name": "EXLocalAuthentication",
-  "version": "9.2.0",
+  "version": "9.5.0",
   "summary": "Provides an API for FaceID and TouchID (iOS) or the Fingerprint API (Android) to authenticate the user with a face or fingerprint scan.",
   "description": "Provides an API for FaceID and TouchID (iOS) or the Fingerprint API (Android) to authenticate the user with a face or fingerprint scan.",
   "license": "MIT",
@@ -12,9 +12,6 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXLocalAuthentication/**/*.{h,m}",
-  "preserve_paths": "EXLocalAuthentication/**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "UMCore": [
 
@@ -22,5 +19,6 @@
     "UMConstantsInterface": [
 
     ]
-  }
+  },
+  "source_files": "EXLocalAuthentication/**/*.{h,m}"
 }

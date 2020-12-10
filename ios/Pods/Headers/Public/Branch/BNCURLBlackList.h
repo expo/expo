@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BNCURLBlackList.h
+../../../Branch/Branch-SDK/BNCURLBlackList.h

@@ -16,7 +16,8 @@ extern NSString * _Nonnull const RNBranchLinkOpenedNotificationLinkPropertiesKey
 @property (class, readonly, nonnull) Branch *branch;
 
 + (void)initSessionWithLaunchOptions:(NSDictionary * _Nullable)launchOptions isReferrable:(BOOL)isReferrable;
-+ (BOOL)handleDeepLink:(NSURL * _Nonnull)url __deprecated_msg("Please use [RNBranch.branch application:openURL:options] or [RNBranch.branch application:openURL:sourceApplication:annotation:] instead.");
++ (BOOL)application:(UIApplication * _Nullable)application openURL:(NSURL * _Nullable)url options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> * _Nullable)options;
++ (BOOL)application:(UIApplication * _Nullable)application openURL:(NSURL * _Nullable)url sourceApplication:(NSString * _Nullable)sourceApplication annotation:(id _Nullable)annotation;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wpartial-availability"
 + (BOOL)continueUserActivity:(NSUserActivity * _Nonnull)userActivity;

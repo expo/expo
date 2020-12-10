@@ -46,7 +46,6 @@ export default class AdTriggerView extends React.Component {
     }
     // TODO: change from TouchableOpacity to a Gesture Handler BorderlessButton
     _renderDefaultInteractiveComponent(props) {
-        // @ts-ignore: the RN TypeScript declarations are missing the "collapsable" prop
         return React.createElement(TouchableOpacity, Object.assign({}, props, { collapsable: false }));
     }
 }

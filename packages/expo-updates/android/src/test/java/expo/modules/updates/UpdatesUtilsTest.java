@@ -17,16 +17,6 @@ public class UpdatesUtilsTest {
   public void testCreateFilenameForAsset() {
     AssetEntity assetEntity = new AssetEntity("key", "png");
     Assert.assertEquals("key", UpdatesUtils.createFilenameForAsset(assetEntity));
-
-    // For assets with a non-null `url` field, we use the SHA-256 hash of the url as the filename.
-    // This is for compatibility with older versions of expo-updates without needing to do database
-    // migrations.
-    Uri mockedUri = mock(Uri.class);
-    when(mockedUri.toString()).thenReturn("https://exp.host/test/url");
-    assetEntity.url = mockedUri;
-    Assert.assertEquals(
-      "276DA8F0D751F20A0A8774C7FD5576D80576376634AA84AB3F778166CB52A9AA.png",
-      UpdatesUtils.createFilenameForAsset(assetEntity));
   }
 
   @Test

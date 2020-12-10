@@ -1,29 +1,20 @@
 import * as DocumentPicker from 'expo-document-picker';
 import React from 'react';
-import { Alert, Image, Switch, Text, View } from 'react-native';
+import { Alert, Image, Text, View } from 'react-native';
 
 import Button from '../components/Button';
+import TitleSwitch from '../components/TitledSwitch';
 
-interface State {
-  document?: DocumentPicker.DocumentResult;
-  copyToCache: boolean;
-}
+export default function DocumentPickerScreen() {
+  const [copyToCache, setCopyToCache] = React.useState(false);
+  const [document, setDocument] = React.useState<DocumentPicker.DocumentResult | null>(null);
 
-export default class DocumentPickerScreen extends React.Component<object, State> {
-  static navigationOptions = {
-    title: 'DocumentPicker',
-  };
-
-  readonly state: State = {
-    copyToCache: false,
-  };
-
-  _openPicker = async () => {
+  const openPicker = async () => {
     const result = await DocumentPicker.getDocumentAsync({
-      copyToCacheDirectory: this.state.copyToCache,
+      copyToCacheDirectory: copyToCache,
     });
     if (result.type === 'success') {
-      this.setState({ document: result });
+      setDocument(result);
     } else {
       setTimeout(() => {
         Alert.alert('Document picked', JSON.stringify(result, null, 2));
@@ -31,45 +22,34 @@ export default class DocumentPickerScreen extends React.Component<object, State>
     }
   };
 
-  _renderDocument() {
-    if (this.state.document?.type !== 'success') {
-      return null;
-    }
-    return (
-      <View>
-        {this.state.document.name!.match(/\.(png|jpg)$/gi) ? (
-          <Image
-            source={{ uri: this.state.document.uri }}
-            resizeMode="cover"
-            style={{ width: 100, height: 100 }}
-          />
-        ) : null}
-        <Text>
-          {this.state.document.name} ({this.state.document.size! / 1000} KB)
-        </Text>
-        <Text>URI: {this.state.document.uri}</Text>
-      </View>
-    );
-  }
-
-  render() {
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Button onPress={this._openPicker} title="Open document picker" />
-        <View
-          style={{
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexDirection: 'row',
-          }}>
-          <Text>Copy to cache</Text>
-          <Switch
-            value={this.state.copyToCache}
-            onValueChange={value => this.setState({ copyToCache: value })}
-          />
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Button onPress={openPicker} title="Open document picker" />
+      <TitleSwitch
+        style={{ marginVertical: 24 }}
+        value={copyToCache}
+        setValue={setCopyToCache}
+        title="Copy to cache"
+      />
+      {document?.type === 'success' && (
+        <View>
+          {document.name!.match(/\.(png|jpg)$/gi) ? (
+            <Image
+              source={{ uri: document.uri }}
+              resizeMode="cover"
+              style={{ width: 100, height: 100 }}
+            />
+          ) : null}
+          <Text>
+            {document.name} ({document.size! / 1000} KB)
+          </Text>
+          <Text>URI: {document.uri}</Text>
         </View>
-        {this._renderDocument()}
-      </View>
-    );
-  }
+      )}
+    </View>
+  );
 }
+
+DocumentPickerScreen.navigationOptions = {
+  title: 'DocumentPicker',
+};

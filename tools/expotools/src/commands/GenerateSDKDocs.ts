@@ -10,7 +10,7 @@ import { Directories } from '../expotools';
 const EXPO_DIR = Directories.getExpoRepositoryRootDir();
 const DOCS_DIR = path.join(EXPO_DIR, 'docs');
 const SDK_DOCS_DIR = path.join(DOCS_DIR, 'pages', 'versions');
-const STATIC_EXAMPLES_DIR = path.join(DOCS_DIR, 'static', 'examples');
+const STATIC_EXAMPLES_DIR = path.join(DOCS_DIR, 'public', 'static', 'examples');
 
 async function action(options) {
   const { sdk, updateReactNativeDocs } = options;
@@ -72,7 +72,7 @@ async function action(options) {
         const apiFilePath = path.join(targetSdkDirectory, 'sdk', api);
         await transformFileAsync(apiFilePath, [
           {
-            pattern: /(sourceCodeUrl:.*?\/tree\/)(sdk-\d*)(\/packages[^\n]*)/,
+            pattern: /(sourceCodeUrl:.*?\/tree\/)(master)(\/packages[^\n]*)/,
             replaceWith: `$1sdk-${sdk.substring(0, 2)}$3`,
           },
         ]);

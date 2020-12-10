@@ -1,6 +1,6 @@
 ---
 title: Application
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-application'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-application'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
@@ -19,21 +19,6 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 ```js
 import * as Application from 'expo-application';
 ```
-
-### Constants
-
-- [`Application.applicationName`](#applicationapplicationname)
-- [`Application.applicationId`](#applicationapplicationid)
-- [`Application.nativeApplicationVersion`](#applicationnativeapplicationversion)
-- [`Application.nativeBuildVersion`](#applicationnativebuildversion)
-- [`Application.androidId`](#applicationandroidid) (Android only)
-
-### Methods
-
-- [`Application.getIosIdForVendorAsync()`](#applicationgetiosidforvendorasync) (iOS only)
-- [`Application.getInstallReferrerAsync()`](#applicationgetinstallreferrerasync) (Android only)
-- [`Application.getInstallationTimeAsync()`](#applicationgetinstallationtimeasync)
-- [`Application.getLastUpdateTimeAsync()`](#applicationgetlastupdatetimeasync) (Android only)
 
 ## Constants
 

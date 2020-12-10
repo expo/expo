@@ -44,6 +44,9 @@ const NativeComponentList: NativeComponentListExportsType = optionalRequire(() =
 const Redirect = optionalRequire(() =>
   require('native-component-list/src/screens/RedirectScreen')
 ) as any;
+const Search = optionalRequire(() =>
+  require('native-component-list/src/screens/SearchScreen')
+) as any;
 
 let nclLinking: Record<string, any> = {};
 if (NativeComponentList) {
@@ -105,6 +108,7 @@ export default () => (
   <NavigationContainer linking={linking}>
     <Switch.Navigator headerMode="none" initialRouteName="main">
       {Redirect && <Switch.Screen name="redirect" component={Redirect} />}
+      {Search && <Switch.Screen name="search" component={Search} />}
       <Switch.Screen name="main" component={TabNavigator} />
     </Switch.Navigator>
   </NavigationContainer>

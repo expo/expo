@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3EC77E602D8791FFCC27053EC13EFE55 /* EXErrorRecoveryModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 47A730E2F5EA5D2C7CFF1F0EA2A7291C /* EXErrorRecoveryModule.m */; };
-		403C9E40BCAD45DE06535D0806D5A2A6 /* EXErrorRecovery-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BF7B2DB3BDE43BD0AA7CA2F43C97750 /* EXErrorRecovery-dummy.m */; };
-		C59B9BFBB963460BABD76766096E1520 /* EXErrorRecoveryModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 160B6865275A86A75CF23ABCAE08506C /* EXErrorRecoveryModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		6558112BC2A9331359EA816D0FC47CF8 /* EXErrorRecoveryModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 160B6865275A86A75CF23ABCAE08506C /* EXErrorRecoveryModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B4215F87D49D8195C77F415A8EDD515A /* EXErrorRecoveryModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 47A730E2F5EA5D2C7CFF1F0EA2A7291C /* EXErrorRecoveryModule.m */; };
+		CDE9FF02D209D567FD6169909117F859 /* EXErrorRecovery-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BF7B2DB3BDE43BD0AA7CA2F43C97750 /* EXErrorRecovery-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		D3AD5FBF4C98CB80F95A5F5FAE3994A2 /* PBXContainerItemProxy */ = {
+		65DAC0F1DD1425E902C9CE324C2C7C9A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = FDE7E72F4F259D2C8E974C92345D460C /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -35,7 +35,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		FD5E98E35B9E1A3DBF2C807A9876C4FF /* Frameworks */ = {
+		360FC7269450B2B7F6D49B25E2C9125E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -113,11 +113,11 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		38003B0E2D40EACBFF42594B5312EE5C /* Headers */ = {
+		A407180EEC602C6E350EC6955C44BD89 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C59B9BFBB963460BABD76766096E1520 /* EXErrorRecoveryModule.h in Headers */,
+				6558112BC2A9331359EA816D0FC47CF8 /* EXErrorRecoveryModule.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -126,16 +126,16 @@
 /* Begin PBXNativeTarget section */
 		49603BA4A7FB1CFC9ACD589B8CE05EA2 /* EXErrorRecovery */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 88FE7B3B8211A6769125AF890B5E1CEE /* Build configuration list for PBXNativeTarget "EXErrorRecovery" */;
+			buildConfigurationList = E8400600708CD154C3ACDEA08EA9D6CC /* Build configuration list for PBXNativeTarget "EXErrorRecovery" */;
 			buildPhases = (
-				38003B0E2D40EACBFF42594B5312EE5C /* Headers */,
-				B6DF9E171327743F469EE77A0C817CFD /* Sources */,
-				FD5E98E35B9E1A3DBF2C807A9876C4FF /* Frameworks */,
+				A407180EEC602C6E350EC6955C44BD89 /* Headers */,
+				BA41C0B53A3CD25A6037D10BDC04ABA7 /* Sources */,
+				360FC7269450B2B7F6D49B25E2C9125E /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				83EB1087705797493F18750D99849CAA /* PBXTargetDependency */,
+				250D80D5736A0E63EC45FEAB25C4705A /* PBXTargetDependency */,
 			);
 			name = EXErrorRecovery;
 			productName = EXErrorRecovery;
@@ -175,30 +175,82 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		B6DF9E171327743F469EE77A0C817CFD /* Sources */ = {
+		BA41C0B53A3CD25A6037D10BDC04ABA7 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				403C9E40BCAD45DE06535D0806D5A2A6 /* EXErrorRecovery-dummy.m in Sources */,
-				3EC77E602D8791FFCC27053EC13EFE55 /* EXErrorRecoveryModule.m in Sources */,
+				CDE9FF02D209D567FD6169909117F859 /* EXErrorRecovery-dummy.m in Sources */,
+				B4215F87D49D8195C77F415A8EDD515A /* EXErrorRecoveryModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		83EB1087705797493F18750D99849CAA /* PBXTargetDependency */ = {
+		250D80D5736A0E63EC45FEAB25C4705A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = D3AD5FBF4C98CB80F95A5F5FAE3994A2 /* PBXContainerItemProxy */;
+			targetProxy = 65DAC0F1DD1425E902C9CE324C2C7C9A /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		6D9238E83838AA053287AA04412BABB9 /* Release */ = {
+		029CA68874C873DC42328FFA401808D7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3D0F271CA4B173F6ACC353CFD297A7C3 /* EXErrorRecovery.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/EXErrorRecovery/EXErrorRecovery-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXErrorRecovery;
+				PRODUCT_NAME = EXErrorRecovery;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		18CE58C78997FB15E2B835C872969939 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 838A833F096233AA79CB78666FED339B /* EXErrorRecovery.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/EXErrorRecovery/EXErrorRecovery-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXErrorRecovery;
+				PRODUCT_NAME = EXErrorRecovery;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		1F50A2CE74F086B597903301E76EC5B6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -221,6 +273,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -255,61 +308,11 @@
 			};
 			name = Release;
 		};
-		B167957B3C4782C867B96078BCB890A8 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 838A833F096233AA79CB78666FED339B /* EXErrorRecovery.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXErrorRecovery/EXErrorRecovery-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXErrorRecovery;
-				PRODUCT_NAME = EXErrorRecovery;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		EBA7B4FB0012360717F262A88EE9E637 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3D0F271CA4B173F6ACC353CFD297A7C3 /* EXErrorRecovery.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXErrorRecovery/EXErrorRecovery-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXErrorRecovery;
-				PRODUCT_NAME = EXErrorRecovery;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		FCB107B7DDB712F693667C16A1E7468D /* Debug */ = {
+		8F64F2162071475652F77A56F677BB69 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -332,6 +335,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -376,17 +380,17 @@
 		61421EC4653DB8649986CEDA53D60430 /* Build configuration list for PBXProject "EXErrorRecovery" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				FCB107B7DDB712F693667C16A1E7468D /* Debug */,
-				6D9238E83838AA053287AA04412BABB9 /* Release */,
+				8F64F2162071475652F77A56F677BB69 /* Debug */,
+				1F50A2CE74F086B597903301E76EC5B6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		88FE7B3B8211A6769125AF890B5E1CEE /* Build configuration list for PBXNativeTarget "EXErrorRecovery" */ = {
+		E8400600708CD154C3ACDEA08EA9D6CC /* Build configuration list for PBXNativeTarget "EXErrorRecovery" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B167957B3C4782C867B96078BCB890A8 /* Debug */,
-				EBA7B4FB0012360717F262A88EE9E637 /* Release */,
+				18CE58C78997FB15E2B835C872969939 /* Debug */,
+				029CA68874C873DC42328FFA401808D7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -6,16 +6,33 @@
 
 #import <UMCore/UMUtilities.h>
 #import <EXConstants/EXConstantsService.h>
+#import <EXConstants/EXConstantsInstallationIdProvider.h>
 
-static NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
+NSString * const EXConstantsExecutionEnvironmentBare = @"bare";
+NSString * const EXConstantsExecutionEnvironmentStandalone = @"standalone";
+NSString * const EXConstantsExecutionEnvironmentStoreClient = @"storeClient";
 
 @interface EXConstantsService ()
 
 @property (nonatomic, strong) NSString *sessionId;
+@property (nonatomic, strong) EXConstantsInstallationIdProvider *installationIdProvider;
 
 @end
 
 @implementation EXConstantsService
+
+- (instancetype)init
+{
+  return [self initWithInstallationIdProvider:[[EXConstantsInstallationIdProvider alloc] init]];
+}
+
+- (instancetype)initWithInstallationIdProvider:(EXConstantsInstallationIdProvider *)installationIdProvider
+{
+  if (self = [super init]) {
+    _installationIdProvider = installationIdProvider;
+  }
+  return self;
+}
 
 UM_REGISTER_MODULE();
 
@@ -37,6 +54,7 @@ UM_REGISTER_MODULE();
 
   return @{
            @"sessionId": _sessionId,
+           @"executionEnvironment": EXConstantsExecutionEnvironmentBare,
            @"statusBarHeight": @([self statusBarHeight]),
            @"deviceYearClass": [[self class] deviceYear],
            @"deviceName": [[self class] deviceName],
@@ -46,7 +64,8 @@ UM_REGISTER_MODULE();
            @"isHeadless": @(NO),
            @"nativeAppVersion": [self appVersion],
            @"nativeBuildVersion": [self buildVersion],
-           @"installationId": [[self class] installationId],
+           @"installationId": [_installationIdProvider getOrCreateInstallationId],
+           @"manifest": UMNullIfNil([[self class] appConfig]),
            @"platform": @{
                @"ios": @{
                    @"buildNumber": [self buildVersion],
@@ -408,14 +427,22 @@ UM_REGISTER_MODULE();
   return [UIDevice currentDevice].name;
 }
 
-+ (NSString *)installationId
++ (NSDictionary *)appConfig
 {
-  NSString *uuid = [[NSUserDefaults standardUserDefaults] stringForKey:kEXDeviceInstallUUIDKey];
-  if (!uuid) {
-    uuid = [[NSUUID UUID] UUIDString];
-    [[NSUserDefaults standardUserDefaults] setObject:uuid forKey:kEXDeviceInstallUUIDKey];
+  NSString *path = [[NSBundle mainBundle] pathForResource:@"app" ofType:@"config"];
+  if (path) {
+    NSData *configData = [NSData dataWithContentsOfFile:path];
+    if (configData) {
+      NSError *error;
+      NSDictionary *configObject = [NSJSONSerialization JSONObjectWithData:configData options:kNilOptions error:&error];
+      if (!configObject || ![configObject isKindOfClass:[NSDictionary class]]) {
+        NSLog(@"Error reading embedded app config: %@", error.localizedDescription ?: @"config is not an object");
+        return nil;
+      }
+      return configObject;
+    }
   }
-  return uuid;
+  return nil;
 }
 
 

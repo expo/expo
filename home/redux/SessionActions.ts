@@ -2,10 +2,12 @@ import Analytics from '../api/Analytics';
 import ApolloClient from '../api/ApolloClient';
 import AuthApi from '../api/AuthApi';
 import LocalStorage from '../storage/LocalStorage';
+import { SessionObject } from './SessionReducer';
+import { AppDispatch, AppThunk } from './Store.types';
 
 export default {
-  setSession(session) {
-    return async dispatch => {
+  setSession(session: SessionObject): AppThunk {
+    return async (dispatch: AppDispatch) => {
       await LocalStorage.saveSessionAsync(session);
       return dispatch({
         type: 'setSession',
@@ -14,8 +16,8 @@ export default {
     };
   },
 
-  signOut({ retainApolloStore = false } = {}) {
-    return async dispatch => {
+  signOut({ retainApolloStore = false }: { retainApolloStore?: boolean } = {}): AppThunk {
+    return async (dispatch: AppDispatch) => {
       const session = await LocalStorage.getSessionAsync();
       if (session) {
         try {

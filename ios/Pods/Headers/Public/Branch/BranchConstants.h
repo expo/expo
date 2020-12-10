@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BranchConstants.h
+../../../Branch/Branch-SDK/BranchConstants.h

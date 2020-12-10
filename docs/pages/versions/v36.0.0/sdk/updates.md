@@ -11,7 +11,7 @@ The `Updates` API from **`expo`** allows you to programatically control and resp
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not yet available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps.
+This API is pre-installed in [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps. It is not yet available for [bare](../../../introduction/managed-vs-bare.md#bare-workflow) React Native apps.
 
 ## API
 

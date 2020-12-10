@@ -1,12 +1,11 @@
 ---
 title: Battery
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-battery'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-battery'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-battery`** provides battery information for the physical device (such as battery level, whether or not the device is charging, and more) as well as corresponding event listeners.
 
@@ -16,11 +15,11 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 <InstallSection packageName="expo-battery" />
 
-## Example Usage
+## Usage
 
-<SnackInline label='Basic Battery Usage' templateId='battery' dependencies={['expo-battery']}>
+<SnackInline label='Basic Battery Usage' dependencies={['expo-battery']}>
 
-```js
+```jsx
 import * as React from 'react';
 import * as Battery from 'expo-battery';
 import { StyleSheet, Text, View } from 'react-native';
@@ -30,7 +29,7 @@ export default class App extends React.Component {
     batteryLevel: null,
   };
 
-  componentDidMount() {  
+  componentDidMount() {
     this._subscribe();
   }
 
@@ -60,6 +59,17 @@ export default class App extends React.Component {
     );
   }
 }
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+/* @end */
 ```
 
 </SnackInline>
@@ -69,12 +79,6 @@ export default class App extends React.Component {
 ```js
 import * as Battery from 'expo-battery';
 ```
-
-<TableOfContentSection title='Methods' contents={['Battery.getBatteryLevelAsync()', 'Battery.getBatteryStateAsync()', 'Battery.isLowPowerModeEnabledAsync()', 'Battery.getPowerStateAsync()']}/>
-
-<TableOfContentSection title='Event Subscriptions' contents={['Battery.addBatteryLevelListener(callback)', 'Battery.addBatteryStateListener(callback)', 'Battery.addLowPowerModeListener(callback)']} />
-
-<TableOfContentSection title='Enum Types' contents={['Battery.BatteryState']} />
 
 ## Methods
 

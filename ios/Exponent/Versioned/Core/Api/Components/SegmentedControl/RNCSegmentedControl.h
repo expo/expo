@@ -6,12 +6,10 @@
  */
 
 #import <UIKit/UIKit.h>
-
 #import <React/RCTComponent.h>
 
 @interface RNCSegmentedControl : UISegmentedControl
-@property (nonatomic, copy) NSMutableDictionary *attributes;
-@property (nonatomic, assign) NSInteger selectedIndex;
-@property (nonatomic, copy) RCTBubblingEventBlock onChange;
+@property(nonatomic, assign) NSInteger selectedIndex;
+@property(nonatomic, copy) RCTBubblingEventBlock onChange;
 
 @end

@@ -1,3 +1,8 @@
-import { checkChangelog } from '@expo/danger';
+import { checkChangelog, checkAndroidPermissions } from '@expo/danger';
 
-checkChangelog();
+async function run() {
+  await checkChangelog();
+  await checkAndroidPermissions();
+}
+
+run();

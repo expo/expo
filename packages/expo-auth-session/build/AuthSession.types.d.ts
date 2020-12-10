@@ -1,4 +1,5 @@
 import { AuthError } from './Errors';
+import { TokenResponse } from './TokenRequest';
 export declare type AuthSessionOptions = {
     authUrl: string;
     returnUrl?: string;
@@ -13,6 +14,7 @@ export declare type AuthSessionResult = {
     params: {
         [key: string]: string;
     };
+    authentication: TokenResponse | null;
     url: string;
 };
 /**

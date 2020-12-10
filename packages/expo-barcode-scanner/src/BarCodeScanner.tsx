@@ -48,7 +48,7 @@ export { PermissionResponse, PermissionStatus };
 export interface BarCodeScannerProps extends ViewProps {
   type?: 'front' | 'back' | number;
   barCodeTypes?: string[];
-  onBarCodeScanned: BarCodeScannedCallback;
+  onBarCodeScanned?: BarCodeScannedCallback;
 }
 
 export class BarCodeScanner extends React.Component<BarCodeScannerProps> {

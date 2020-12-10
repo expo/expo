@@ -7,30 +7,30 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1519F82429BB58283AF77426B36FCB63 /* cct.nanopb.c in Sources */ = {isa = PBXBuildFile; fileRef = 30EE70890DC1031AC4251F0C9B44338A /* cct.nanopb.c */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		2B985F2BD53834E7027DC5733CC0B2F6 /* GDTCOREvent+NetworkConnectionInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 82E32012E8EAEF12D13E23A7F8C86375 /* GDTCOREvent+NetworkConnectionInfo.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		2BBB10CD5F2C74E1F27E0F3D545AED1C /* GDTCCTNanopbHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F542C556F9D82DD5E1785B2426C5BB5 /* GDTCCTNanopbHelpers.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		40F47810E4049F27D9655F2541C9F260 /* GDTCCTPrioritizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 2F5DEFF4339E064F6E5010F05954EFB9 /* GDTCCTPrioritizer.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		4AD668C3B1F854E77C9A177BCD390E71 /* GDTCCTPrioritizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 95B2B65BE92C14469C8B9498ABAE075A /* GDTCCTPrioritizer.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		61D0EB43DD5AEF1556ECD29B06748EF1 /* GDTCCTCompressionHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 42F4F6F8A274757D5C3E1129A00FDCD7 /* GDTCCTCompressionHelper.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		6801DA22FE9F6CDB9A41C22DE7B6D23F /* GDTCCTUploader.h in Headers */ = {isa = PBXBuildFile; fileRef = 123E9A1A9276D2146187DD6822B74F45 /* GDTCCTUploader.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		6A4D0DA46BA8DC79199CC4AD699B6E93 /* cct.nanopb.h in Headers */ = {isa = PBXBuildFile; fileRef = 716FBF07938CC17E0B6A868E9D640B2C /* cct.nanopb.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		7B1E2CE16BE2919DF416F07FD37D54BD /* GDTCOREvent+NetworkConnectionInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = FC67CB141B4C40C2D998E5C7B8AFE1E6 /* GDTCOREvent+NetworkConnectionInfo.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		AA0CF624A7A99526D2E69593720CF2FF /* GDTCCTCompressionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = E63C29B66E1BB857415AE03CF3975ACA /* GDTCCTCompressionHelper.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		AA958C6FDEB021F770DDC3CB31C63E49 /* GDTCCTUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FC3FE80BA9FF07601C17E46D6BD8210 /* GDTCCTUploader.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		ABA4969B9266FFD7F13619B049FD238D /* GoogleDataTransportCCTSupport-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D5CAF1DA61B8EFF870C6BC5B934FC91 /* GoogleDataTransportCCTSupport-dummy.m */; };
-		AF7A16F747AC801A7D9AC432A5EAE27B /* GDTCCTNanopbHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = F11156A52AB727ECAFF3DA8123F690C0 /* GDTCCTNanopbHelpers.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		00487265A8F11CEE16982F0EDF9969CF /* GDTCCTPrioritizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 95B2B65BE92C14469C8B9498ABAE075A /* GDTCCTPrioritizer.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		0A7D33D354A9A27FA370D60C8DDA94FF /* GoogleDataTransportCCTSupport-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D5CAF1DA61B8EFF870C6BC5B934FC91 /* GoogleDataTransportCCTSupport-dummy.m */; };
+		0FEAD9C8414561848CD7E4DCF198CA6C /* GDTCCTUploader.h in Headers */ = {isa = PBXBuildFile; fileRef = 123E9A1A9276D2146187DD6822B74F45 /* GDTCCTUploader.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		16D03233AC39A6D133B622DA77AD52D7 /* GDTCCTUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FC3FE80BA9FF07601C17E46D6BD8210 /* GDTCCTUploader.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		24268D8B544DF9F36AD838EFFA438F5C /* GDTCCTCompressionHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 42F4F6F8A274757D5C3E1129A00FDCD7 /* GDTCCTCompressionHelper.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3E5A7C387C4D135C9080BDEA76D79BC3 /* GDTCCTNanopbHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F542C556F9D82DD5E1785B2426C5BB5 /* GDTCCTNanopbHelpers.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		401F9A6F5541AA92231D9BC76B2B2EA9 /* cct.nanopb.h in Headers */ = {isa = PBXBuildFile; fileRef = 716FBF07938CC17E0B6A868E9D640B2C /* cct.nanopb.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		4376C908DA04FAA7DAA40C7A4A75FA60 /* cct.nanopb.c in Sources */ = {isa = PBXBuildFile; fileRef = 30EE70890DC1031AC4251F0C9B44338A /* cct.nanopb.c */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		444E24D1544EA134734486BEBF338779 /* GDTCOREvent+NetworkConnectionInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = FC67CB141B4C40C2D998E5C7B8AFE1E6 /* GDTCOREvent+NetworkConnectionInfo.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		4B9BA7A07ABC557B80F6EE2AA958C26E /* GDTCCTNanopbHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = F11156A52AB727ECAFF3DA8123F690C0 /* GDTCCTNanopbHelpers.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		9D58C3FA6BB8C2B054A59900B6D055B1 /* GDTCOREvent+NetworkConnectionInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 82E32012E8EAEF12D13E23A7F8C86375 /* GDTCOREvent+NetworkConnectionInfo.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		B00EA405C0FEF7302BD140350FB3273E /* GDTCCTPrioritizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 2F5DEFF4339E064F6E5010F05954EFB9 /* GDTCCTPrioritizer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		EF246F51BC583B43F7ABB00503E492E1 /* GDTCCTCompressionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = E63C29B66E1BB857415AE03CF3975ACA /* GDTCCTCompressionHelper.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		320E4DF76969F2F64BFBB62651EF4EEF /* PBXContainerItemProxy */ = {
+		3B18A582CFC7DE41E54CB45930EA625D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A663367796379208D0A82DEBFE31A521 /* GoogleDataTransport.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 78B41281B6D2EAC6C3C75FFE5052E985;
 			remoteInfo = GoogleDataTransport;
 		};
-		57D0608A68B2B123BDFCA354A5EB2F1B /* PBXContainerItemProxy */ = {
+		5EF165F04034359DBADA87BB87120981 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 824DD5954CCEACD8EEE92626E02B93D5 /* nanopb.xcodeproj */;
 			proxyType = 1;
@@ -61,7 +61,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		3116D7F58BCD08EC5C32056F39FB1098 /* Frameworks */ = {
+		3B50E07AB0EB7EEEBC472E7F4DD60E2F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -140,16 +140,16 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		05C24AE913ECB2A43BC0329D99A8B546 /* Headers */ = {
+		16A619EAD0721AD1ADB1FDB5399A480B /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6A4D0DA46BA8DC79199CC4AD699B6E93 /* cct.nanopb.h in Headers */,
-				61D0EB43DD5AEF1556ECD29B06748EF1 /* GDTCCTCompressionHelper.h in Headers */,
-				AF7A16F747AC801A7D9AC432A5EAE27B /* GDTCCTNanopbHelpers.h in Headers */,
-				40F47810E4049F27D9655F2541C9F260 /* GDTCCTPrioritizer.h in Headers */,
-				6801DA22FE9F6CDB9A41C22DE7B6D23F /* GDTCCTUploader.h in Headers */,
-				7B1E2CE16BE2919DF416F07FD37D54BD /* GDTCOREvent+NetworkConnectionInfo.h in Headers */,
+				401F9A6F5541AA92231D9BC76B2B2EA9 /* cct.nanopb.h in Headers */,
+				24268D8B544DF9F36AD838EFFA438F5C /* GDTCCTCompressionHelper.h in Headers */,
+				4B9BA7A07ABC557B80F6EE2AA958C26E /* GDTCCTNanopbHelpers.h in Headers */,
+				B00EA405C0FEF7302BD140350FB3273E /* GDTCCTPrioritizer.h in Headers */,
+				0FEAD9C8414561848CD7E4DCF198CA6C /* GDTCCTUploader.h in Headers */,
+				444E24D1544EA134734486BEBF338779 /* GDTCOREvent+NetworkConnectionInfo.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -158,17 +158,17 @@
 /* Begin PBXNativeTarget section */
 		11C41BD6B3D59337B4AE45F453918096 /* GoogleDataTransportCCTSupport */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 7A6335768FFDEB83C9189F03E3908C23 /* Build configuration list for PBXNativeTarget "GoogleDataTransportCCTSupport" */;
+			buildConfigurationList = EE1A0DC2E963661B98116F93AC67A0EA /* Build configuration list for PBXNativeTarget "GoogleDataTransportCCTSupport" */;
 			buildPhases = (
-				05C24AE913ECB2A43BC0329D99A8B546 /* Headers */,
-				6BE203CF58411DD805F10445596D275D /* Sources */,
-				3116D7F58BCD08EC5C32056F39FB1098 /* Frameworks */,
+				16A619EAD0721AD1ADB1FDB5399A480B /* Headers */,
+				E787A1F2D9F421EFE152AD2924B9E73C /* Sources */,
+				3B50E07AB0EB7EEEBC472E7F4DD60E2F /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				A21F38087776EF3F11EF10EBE0877ED0 /* PBXTargetDependency */,
-				6C21B44D8697D803E182B859FCC39162 /* PBXTargetDependency */,
+				3F0704CB227C3A85F230C4E38D60B745 /* PBXTargetDependency */,
+				FB1E79EFFB4BDE3BEE854A3320A884E1 /* PBXTargetDependency */,
 			);
 			name = GoogleDataTransportCCTSupport;
 			productName = GoogleDataTransportCCTSupport;
@@ -211,104 +211,44 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		6BE203CF58411DD805F10445596D275D /* Sources */ = {
+		E787A1F2D9F421EFE152AD2924B9E73C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1519F82429BB58283AF77426B36FCB63 /* cct.nanopb.c in Sources */,
-				AA0CF624A7A99526D2E69593720CF2FF /* GDTCCTCompressionHelper.m in Sources */,
-				2BBB10CD5F2C74E1F27E0F3D545AED1C /* GDTCCTNanopbHelpers.m in Sources */,
-				4AD668C3B1F854E77C9A177BCD390E71 /* GDTCCTPrioritizer.m in Sources */,
-				AA958C6FDEB021F770DDC3CB31C63E49 /* GDTCCTUploader.m in Sources */,
-				2B985F2BD53834E7027DC5733CC0B2F6 /* GDTCOREvent+NetworkConnectionInfo.m in Sources */,
-				ABA4969B9266FFD7F13619B049FD238D /* GoogleDataTransportCCTSupport-dummy.m in Sources */,
+				4376C908DA04FAA7DAA40C7A4A75FA60 /* cct.nanopb.c in Sources */,
+				EF246F51BC583B43F7ABB00503E492E1 /* GDTCCTCompressionHelper.m in Sources */,
+				3E5A7C387C4D135C9080BDEA76D79BC3 /* GDTCCTNanopbHelpers.m in Sources */,
+				00487265A8F11CEE16982F0EDF9969CF /* GDTCCTPrioritizer.m in Sources */,
+				16D03233AC39A6D133B622DA77AD52D7 /* GDTCCTUploader.m in Sources */,
+				9D58C3FA6BB8C2B054A59900B6D055B1 /* GDTCOREvent+NetworkConnectionInfo.m in Sources */,
+				0A7D33D354A9A27FA370D60C8DDA94FF /* GoogleDataTransportCCTSupport-dummy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		6C21B44D8697D803E182B859FCC39162 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = nanopb;
-			targetProxy = 57D0608A68B2B123BDFCA354A5EB2F1B /* PBXContainerItemProxy */;
-		};
-		A21F38087776EF3F11EF10EBE0877ED0 /* PBXTargetDependency */ = {
+		3F0704CB227C3A85F230C4E38D60B745 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = GoogleDataTransport;
-			targetProxy = 320E4DF76969F2F64BFBB62651EF4EEF /* PBXContainerItemProxy */;
+			targetProxy = 3B18A582CFC7DE41E54CB45930EA625D /* PBXContainerItemProxy */;
+		};
+		FB1E79EFFB4BDE3BEE854A3320A884E1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = nanopb;
+			targetProxy = 5EF165F04034359DBADA87BB87120981 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		11E31C5C8D23E1215B96F6D8F484AEA5 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"POD_CONFIGURATION_RELEASE=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.0;
-				SYMROOT = "${SRCROOT}/../build";
-			};
-			name = Release;
-		};
-		455DBF6F4A7A29C852D6DF5BC69F16DF /* Debug */ = {
+		1CF499A1523C3A8DFA44EC202FAA50FC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C64E18019C15FD7C64AC46ADBDA4F2E2 /* GoogleDataTransportCCTSupport.debug.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
@@ -324,14 +264,14 @@
 			};
 			name = Debug;
 		};
-		9F9583205962318023EA22B66AAE919C /* Release */ = {
+		4D0C8B8CA03BAFAE86E8422B8E4D64FB /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 54777E3586B086311A7B857C65613D15 /* GoogleDataTransportCCTSupport.release.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
@@ -348,10 +288,11 @@
 			};
 			name = Release;
 		};
-		E1C9FE49D9DA28B0480C07D1EE48D982 /* Debug */ = {
+		9647570C9F0050BDFD65DC1A6A6852EF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -374,6 +315,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -412,23 +354,85 @@
 			};
 			name = Debug;
 		};
+		F0D79B3ACB2B98A62A7904278CDC0032 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		7A6335768FFDEB83C9189F03E3908C23 /* Build configuration list for PBXNativeTarget "GoogleDataTransportCCTSupport" */ = {
+		B1C72DF855D459F0CC540825ED10BFB6 /* Build configuration list for PBXProject "GoogleDataTransportCCTSupport" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				455DBF6F4A7A29C852D6DF5BC69F16DF /* Debug */,
-				9F9583205962318023EA22B66AAE919C /* Release */,
+				9647570C9F0050BDFD65DC1A6A6852EF /* Debug */,
+				F0D79B3ACB2B98A62A7904278CDC0032 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B1C72DF855D459F0CC540825ED10BFB6 /* Build configuration list for PBXProject "GoogleDataTransportCCTSupport" */ = {
+		EE1A0DC2E963661B98116F93AC67A0EA /* Build configuration list for PBXNativeTarget "GoogleDataTransportCCTSupport" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E1C9FE49D9DA28B0480C07D1EE48D982 /* Debug */,
-				11E31C5C8D23E1215B96F6D8F484AEA5 /* Release */,
+				1CF499A1523C3A8DFA44EC202FAA50FC /* Debug */,
+				4D0C8B8CA03BAFAE86E8422B8E4D64FB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -9,14 +9,24 @@ const ANDROID_DIR = Directories.getAndroidDir();
 
 const excludedInTests = [
   'expo-module-template',
-  'expo-bluetooth',
   'expo-notifications',
   'expo-in-app-purchases',
   'expo-splash-screen',
   'unimodules-test-core',
 ];
 
-export async function androidNativeUnitTests() {
+type TestType = 'local' | 'instrumented';
+
+export async function androidNativeUnitTests({ type }: { type: TestType }) {
+  if (!type) {
+    throw new Error(
+      'Must specify which type of unit test to run with `--type local` or `--type instrumented`.'
+    );
+  }
+  if (type !== 'local' && type !== 'instrumented') {
+    throw new Error('Invalid type specified. Must use `--type local` or `--type instrumented`.');
+  }
+
   const packages = await Packages.getListOfPackagesAsync();
 
   function consoleErrorOutput(
@@ -31,11 +41,19 @@ export async function androidNativeUnitTests() {
   const androidPackages = await filterAsync(packages, async (pkg) => {
     const pkgSlug = pkg.packageSlug;
 
-    return (
-      pkg.isSupportedOnPlatform('android') &&
-      (await pkg.hasNativeTestsAsync('android')) &&
-      !excludedInTests.includes(pkgSlug)
-    );
+    if (type === 'instrumented') {
+      return (
+        pkg.isSupportedOnPlatform('android') &&
+        (await pkg.hasNativeInstrumentationTestsAsync('android')) &&
+        !excludedInTests.includes(pkgSlug)
+      );
+    } else {
+      return (
+        pkg.isSupportedOnPlatform('android') &&
+        (await pkg.hasNativeTestsAsync('android')) &&
+        !excludedInTests.includes(pkgSlug)
+      );
+    }
   });
 
   console.log(chalk.green('Packages to test: '));
@@ -43,10 +61,11 @@ export async function androidNativeUnitTests() {
     console.log(chalk.yellow(pkg.packageSlug));
   });
 
+  const testCommand = type === 'instrumented' ? 'connectedAndroidTest' : 'test';
   try {
     await spawnAsync(
       './gradlew',
-      androidPackages.map((pkg) => `:${pkg.packageSlug}:test`),
+      androidPackages.map((pkg) => `:${pkg.packageSlug}:${testCommand}`),
       {
         cwd: ANDROID_DIR,
         stdio: 'inherit',
@@ -66,6 +85,7 @@ export async function androidNativeUnitTests() {
 export default (program: any) => {
   program
     .command('android-native-unit-tests')
+    .option('-t, --type <string>', 'Type of unit test to run: local or instrumented')
     .description('Runs Android native unit tests for each package that provides them.')
     .asyncAction(androidNativeUnitTests);
 };

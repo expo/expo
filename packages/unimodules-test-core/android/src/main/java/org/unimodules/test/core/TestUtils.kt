@@ -1,9 +1,9 @@
 package org.unimodules.test.core
 
 import android.os.Bundle
-import junit.framework.Assert.assertEquals
-import junit.framework.Assert.assertTrue
 import junit.framework.ComparisonFailure
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.unimodules.core.arguments.MapArguments
 import org.unimodules.core.arguments.ReadableArguments
 
@@ -25,14 +25,35 @@ fun assertListsEqual(first: List<*>?, second: List<*>?, message: String = "") {
   }
 }
 
-fun promiseResolved(promise: PromiseMock, with: (Bundle) -> Unit) {
+fun assertResolved(promise: PromiseMock) {
   assertEquals(PromiseState.RESOLVED, promise.state)
+}
+
+fun assertRejected(promise: PromiseMock) {
+  assertEquals(PromiseState.REJECTED, promise.state)
+}
+
+fun promiseResolved(promise: PromiseMock, with: (Bundle) -> Unit) {
+  assertResolved(promise)
   with(promise.resolveValue as Bundle)
 }
 
+inline fun <reified T>promiseResolvedWithType(promise: PromiseMock, with: (T) -> Unit) {
+  assertResolved(promise)
+  assertTrue("Promise resolved with incorrect type", promise.resolveValue is T)
+  with(promise.resolveValue as T)
+}
+
 fun promiseRejected(promise: PromiseMock, with: (PromiseMock) -> Unit) {
-  assertEquals(PromiseState.REJECTED, promise.state)
+  assertRejected(promise)
   with(promise)
+}
+
+fun assertRejectedWithCode(promise: PromiseMock, rejectCode: String) {
+  promiseRejected(promise) {
+    assertTrue("Promise has no rejection code", it.rejectCodeSet)
+    assertEquals(it.rejectCode, rejectCode)
+  }
 }
 
 fun readableArgumentsOf(values: Map<String, Any>): ReadableArguments {

@@ -1,11 +1,11 @@
 /*
- * Copyright 2017-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,13 +23,22 @@
 #include <typeinfo>
 #include <utility>
 
+#include <folly/Portability.h>
 #include <folly/Traits.h>
 #include <folly/Utility.h>
 #include <folly/detail/TypeList.h>
 #include <folly/functional/Invoke.h>
 #include <folly/lang/Exception.h>
+#include <folly/lang/StaticConst.h>
 
 #include <folly/PolyException.h>
+
+#if defined(__cpp_template_auto) || \
+    defined(__cpp_nontype_template_parameter_auto)
+#define FOLLY_POLY_NTTP_AUTO 1
+#else
+#define FOLLY_POLY_NTTP_AUTO 0
+#endif
 
 namespace folly {
 /// \cond
@@ -65,7 +74,7 @@ detail::AddCvrefOf<T, I>& poly_cast(detail::PolyRoot<I>&);
 template <class T, class I>
 detail::AddCvrefOf<T, I> const& poly_cast(detail::PolyRoot<I> const&);
 
-#if !defined(__cpp_template_auto)
+#if !FOLLY_POLY_NTTP_AUTO
 #define FOLLY_AUTO class
 template <class... Ts>
 using PolyMembers = detail::TypeList<Ts...>;
@@ -180,25 +189,11 @@ itself, depending on the size of T and whether or not it has a noexcept move
 constructor.
 */
 
-template <class T>
-using Uncvref = std::remove_cv_t<std::remove_reference_t<T>>;
-
 template <class T, template <class...> class U>
 struct IsInstanceOf : std::false_type {};
 
 template <class... Ts, template <class...> class U>
 struct IsInstanceOf<U<Ts...>, U> : std::true_type {};
-
-template <class T>
-using Not = Bool<!T::value>;
-
-template <class T>
-struct StaticConst {
-  static constexpr T value{};
-};
-
-template <class T>
-constexpr T StaticConst<T>::value;
 
 template <class Then>
 decltype(auto) if_constexpr(std::true_type, Then then) {
@@ -233,20 +228,20 @@ struct PolyRef;
 struct PolyAccess;
 
 template <class T>
-using IsPoly = IsInstanceOf<Uncvref<T>, Poly>;
+using IsPoly = IsInstanceOf<remove_cvref_t<T>, Poly>;
 
 // Given an interface I and a concrete type T that satisfies the interface
 // I, create a list of member function bindings from members of T to members
 // of I.
 template <class I, class T>
-using MembersOf = typename I::template Members<Uncvref<T>>;
+using MembersOf = typename I::template Members<remove_cvref_t<T>>;
 
 // Given an interface I and a base type T, create a type that implements
 // the interface I in terms of the capabilities of T.
 template <class I, class T>
 using InterfaceOf = typename I::template Interface<T>;
 
-#if !defined(__cpp_template_auto)
+#if !FOLLY_POLY_NTTP_AUTO
 template <class T, T V>
 using Member = std::integral_constant<T, V>;
 
@@ -387,13 +382,13 @@ struct Data {
 
 template <class U, class I>
 using Arg =
-    If<std::is_same<Uncvref<U>, Archetype<I>>::value,
+    If<std::is_same<remove_cvref_t<U>, Archetype<I>>::value,
        Poly<AddCvrefOf<I, U const&>>,
        U>;
 
 template <class U, class I>
 using Ret =
-    If<std::is_same<Uncvref<U>, Archetype<I>>::value,
+    If<std::is_same<remove_cvref_t<U>, Archetype<I>>::value,
        AddCvrefOf<Poly<I>, U>,
        U>;
 
@@ -409,6 +404,19 @@ template <class R, class C, class... As, class I>
 struct SignatureOf_<R (C::*)(As...) const, I> {
   using type = Ret<R, I> (*)(Data const&, Arg<As, I>...);
 };
+
+#if FOLLY_HAVE_NOEXCEPT_FUNCTION_TYPE
+template <class R, class C, class... As, class I>
+struct SignatureOf_<R (C::*)(As...) noexcept, I> {
+  using type = std::add_pointer_t<Ret<R, I>(Data&, Arg<As, I>...) noexcept>;
+};
+
+template <class R, class C, class... As, class I>
+struct SignatureOf_<R (C::*)(As...) const noexcept, I> {
+  using type =
+      std::add_pointer_t<Ret<R, I>(Data const&, Arg<As, I>...) noexcept>;
+};
+#endif
 
 template <class R, class This, class... As, class I>
 struct SignatureOf_<R (*)(This&, As...), I> {
@@ -430,6 +438,13 @@ template <FOLLY_AUTO User, class I, class Ret, class Data, class... Args>
 struct ArgTypes_<User, I, Ret (*)(Data, Args...)> {
   using type = TypeList<Args...>;
 };
+
+#if FOLLY_HAVE_NOEXCEPT_FUNCTION_TYPE
+template <FOLLY_AUTO User, class I, class Ret, class Data, class... Args>
+struct ArgTypes_<User, I, Ret (*)(Data, Args...) noexcept> {
+  using type = TypeList<Args...>;
+};
+#endif
 
 template <FOLLY_AUTO User, class I>
 using ArgTypes = _t<ArgTypes_<User, I>>;
@@ -490,10 +505,10 @@ template <class Arg, class U>
 decltype(auto) convert(U&& u) {
   return detail::if_constexpr(
       StrictConjunction<
-          IsPolyRef<Uncvref<U>>,
+          IsPolyRef<remove_cvref_t<U>>,
           Negation<std::is_convertible<U, Arg>>>(),
       [&](auto id) -> decltype(auto) {
-        return poly_cast<Uncvref<Arg>>(id(u).get());
+        return poly_cast<remove_cvref_t<Arg>>(id(u).get());
       },
       [&](auto id) -> U&& { return static_cast<U&&>(id(u)); });
 }
@@ -506,6 +521,14 @@ struct IsConstMember<R (C::*)(As...) const> : std::true_type {};
 
 template <class R, class C, class... As>
 struct IsConstMember<R (*)(C const&, As...)> : std::true_type {};
+
+#if FOLLY_HAVE_NOEXCEPT_FUNCTION_TYPE
+template <class R, class C, class... As>
+struct IsConstMember<R (C::*)(As...) const noexcept> : std::true_type {};
+
+template <class R, class C, class... As>
+struct IsConstMember<R (*)(C const&, As...) noexcept> : std::true_type {};
+#endif
 
 template <
     class T,
@@ -602,7 +625,7 @@ void* execOnHeap(Op op, Data* from, void* to) {
       }
       throw_exception<BadPolyCast>();
     case Op::eRefr:
-      return vtableForRef<I, Uncvref<T>>(
+      return vtableForRef<I, remove_cvref_t<T>>(
           static_cast<RefType>(reinterpret_cast<std::uintptr_t>(to)));
   }
   return nullptr;
@@ -611,7 +634,7 @@ void* execOnHeap(Op op, Data* from, void* to) {
 template <
     class I,
     class T,
-    std::enable_if_t<Not<std::is_reference<T>>::value, int> = 0>
+    std::enable_if_t<Negation<std::is_reference<T>>::value, int> = 0>
 void* execOnHeap(Op op, Data* from, void* to) {
   switch (op) {
     case Op::eNuke:
@@ -633,7 +656,7 @@ void* execOnHeap(Op op, Data* from, void* to) {
       }
       throw_exception<BadPolyCast>();
     case Op::eRefr:
-      return vtableForRef<I, Uncvref<T>>(
+      return vtableForRef<I, remove_cvref_t<T>>(
           static_cast<RefType>(reinterpret_cast<std::uintptr_t>(to)));
   }
   return nullptr;
@@ -664,7 +687,7 @@ void* execInSitu(Op op, Data* from, void* to) {
       }
       throw_exception<BadPolyCast>();
     case Op::eRefr:
-      return vtableForRef<I, Uncvref<T>>(
+      return vtableForRef<I, remove_cvref_t<T>>(
           static_cast<RefType>(reinterpret_cast<std::uintptr_t>(to)));
   }
   return nullptr;
@@ -681,14 +704,19 @@ struct BasePtr {
   VTable<I> const* vptr_;
 };
 
-template <class I, class T, std::enable_if_t<inSitu<T>(), int> = 0>
-constexpr void* (*getOps() noexcept)(Op, Data*, void*) {
+template <class I, class T>
+constexpr void* (*getOpsImpl(std::true_type) noexcept)(Op, Data*, void*) {
   return &execInSitu<I, T>;
 }
 
-template <class I, class T, std::enable_if_t<!inSitu<T>(), int> = 0>
-constexpr void* (*getOps() noexcept)(Op, Data*, void*) {
+template <class I, class T>
+constexpr void* (*getOpsImpl(std::false_type) noexcept)(Op, Data*, void*) {
   return &execOnHeap<I, T>;
+}
+
+template <class I, class T>
+constexpr void* (*getOps() noexcept)(Op, Data*, void*) {
+  return getOpsImpl<I, T>(std::integral_constant<bool, inSitu<T>()>{});
 }
 
 template <class I, FOLLY_AUTO... Arch, class... S>
@@ -743,10 +771,10 @@ struct PolyAccess {
   }
 
   template <class Poly>
-  using Iface = typename Uncvref<Poly>::_polyInterface_;
+  using Iface = typename remove_cvref_t<Poly>::_polyInterface_;
 
   template <class Node, class Tfx = MetaIdentity>
-  static typename Uncvref<Node>::template _polySelf_<Node, Tfx> self_();
+  static typename remove_cvref_t<Node>::template _polySelf_<Node, Tfx> self_();
 
   template <class T, class Poly, class I = Iface<Poly>>
   static decltype(auto) cast(Poly&& _this) {
@@ -770,7 +798,8 @@ struct PolyAccess {
   }
 
   template <class I>
-  static VTable<Uncvref<I>> const* vtable(PolyRoot<I> const& _this) noexcept {
+  static VTable<remove_cvref_t<I>> const* vtable(
+      PolyRoot<I> const& _this) noexcept {
     return _this.vptr_;
   }
 
@@ -839,8 +868,10 @@ struct PolyRoot : private PolyBase, private Data {
 };
 
 template <class I>
-using PolyImpl =
-    TypeFold<InclusiveSubsumptionsOf<Uncvref<I>>, PolyRoot<I>, MakePolyNode>;
+using PolyImpl = TypeFold<
+    InclusiveSubsumptionsOf<remove_cvref_t<I>>,
+    PolyRoot<I>,
+    MakePolyNode>;
 
 // A const-qualified function type means the user is trying to disambiguate
 // a member function pointer.
@@ -904,20 +935,31 @@ struct Sig<R(A&, As...)> : SigImpl<R, A&, As...> {
   }
 };
 
-template <
-    class T,
-    class I,
-    class U = std::decay_t<T>,
-    std::enable_if_t<Not<std::is_base_of<PolyBase, U>>::value, int> = 0,
-    std::enable_if_t<std::is_constructible<AddCvrefOf<U, I>, T>::value, int> =
-        0,
-    class = MembersOf<std::decay_t<I>, U>>
-std::true_type modelsInterface_(int);
-template <class T, class I>
-std::false_type modelsInterface_(long);
+template <class T, class I, class = void>
+struct ModelsInterface2_ : std::false_type {};
 
 template <class T, class I>
-struct ModelsInterface : decltype(modelsInterface_<T, I>(0)) {};
+struct ModelsInterface2_<
+    T,
+    I,
+    void_t<
+        std::enable_if_t<
+            std::is_constructible<AddCvrefOf<std::decay_t<T>, I>, T>::value>,
+        MembersOf<std::decay_t<I>, std::decay_t<T>>>> : std::true_type {};
+
+template <class T, class I, class = void>
+struct ModelsInterface_ : std::false_type {};
+
+template <class T, class I>
+struct ModelsInterface_<
+    T,
+    I,
+    std::enable_if_t<
+        Negation<std::is_base_of<PolyBase, std::decay_t<T>>>::value>>
+    : ModelsInterface2_<T, I> {};
+
+template <class T, class I>
+struct ModelsInterface : ModelsInterface_<T, I> {};
 
 template <class I1, class I2>
 struct ValueCompatible : std::is_base_of<I1, I2> {};

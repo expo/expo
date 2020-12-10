@@ -1,25 +1,17 @@
-import path from 'path';
-import chalk from 'chalk';
-import JsonFile from '@expo/json-file';
 import { Command } from '@expo/commander';
-import spawnAsync from '@expo/spawn-async';
+import JsonFile from '@expo/json-file';
+import chalk from 'chalk';
+import * as path from 'path';
 
 import { PACKAGES_DIR, EXPO_DIR } from '../Constants';
+import generateModuleAsync from '../generate-module/generateModuleAsync';
+import { spawnAsync } from '../Utils';
 
 type ActionOptions = {
   name: string;
+  template?: string;
+  useLocalTemplate?: boolean;
 };
-
-async function generateModuleWithExpoCLI(unimoduleDirectory) {
-  console.log(
-    `Creating new unimodule under ${chalk.magenta(path.relative(EXPO_DIR, unimoduleDirectory))}...`
-  );
-
-  await spawnAsync('expo', ['generate-module', unimoduleDirectory], {
-    cwd: EXPO_DIR,
-    stdio: 'inherit',
-  });
-}
 
 async function setupExpoModuleScripts(unimoduleDirectory) {
   const packageJsonPath = path.join(unimoduleDirectory, 'package.json');
@@ -74,7 +66,7 @@ async function action(options: ActionOptions) {
 
   const unimoduleDirectory = path.join(PACKAGES_DIR, options.name);
 
-  await generateModuleWithExpoCLI(unimoduleDirectory);
+  await generateModuleAsync(unimoduleDirectory, options);
 
   await setupExpoModuleScripts(unimoduleDirectory);
 }
@@ -85,5 +77,13 @@ export default (program: Command) => {
     .alias('cu')
     .description('Creates a new unimodule under the `packages` folder.')
     .option('-n, --name <string>', 'Name of the package to create.', null)
+    .option(
+      '--use-local-template',
+      'Uses local `packages/expo-module-template` instead of the one published to NPM. Ignored when -t option is used.'
+    )
+    .option(
+      '-t, --template <string>',
+      'Local directory or npm package containing template for unimodule'
+    )
     .asyncAction(action);
 };

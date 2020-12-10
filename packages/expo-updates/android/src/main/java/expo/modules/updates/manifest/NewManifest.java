@@ -101,4 +101,8 @@ public class NewManifest implements Manifest {
 
     return assetList;
   }
+
+  public boolean isDevelopmentMode() {
+    return false;
+  }
 }

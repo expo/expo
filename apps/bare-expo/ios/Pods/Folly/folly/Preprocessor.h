@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,8 @@
 // @author: Andrei Alexandrescu
 
 #pragma once
+
+#include <folly/CPortability.h>
 
 /**
  * Necessarily evil preprocessor-related amenities.
@@ -87,17 +89,26 @@
 #define FB_CONCATENATE_IMPL(s1, s2) s1##s2
 #define FB_CONCATENATE(s1, s2) FB_CONCATENATE_IMPL(s1, s2)
 #ifdef __COUNTER__
+// Modular builds build each module with its own preprocessor state, meaning
+// `__COUNTER__` no longer provides a unique number across a TU.  Instead of
+// calling back to just `__LINE__`, use a mix of `__COUNTER__` and `__LINE__`
+// to try provide as much uniqueness as possible.
+#if FOLLY_HAS_FEATURE(modules)
+#define FB_ANONYMOUS_VARIABLE(str) \
+  FB_CONCATENATE(FB_CONCATENATE(FB_CONCATENATE(str, __COUNTER__), _), __LINE__)
+#else
 #define FB_ANONYMOUS_VARIABLE(str) FB_CONCATENATE(str, __COUNTER__)
+#endif
 #else
 #define FB_ANONYMOUS_VARIABLE(str) FB_CONCATENATE(str, __LINE__)
 #endif
 #endif
 
 /**
- * Use FB_STRINGIZE(x) when you'd want to do what #x does inside
+ * Use FOLLY_PP_STRINGIZE(x) when you'd want to do what #x does inside
  * another macro expansion.
  */
-#define FB_STRINGIZE(x) #x
+#define FOLLY_PP_STRINGIZE(x) #x
 
 #define FOLLY_PP_DETAIL_NARGS_1(dummy, _7, _6, _5, _4, _3, _2, _1, _0, ...) _0
 #define FOLLY_PP_DETAIL_NARGS(...) \

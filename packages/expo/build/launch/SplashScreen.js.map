@@ -1,1 +1,0 @@
-{"version":3,"file":"SplashScreen.js","sourceRoot":"","sources":["../../src/launch/SplashScreen.ts"],"names":[],"mappings":"AAAA,cAAc,oBAAoB,CAAC","sourcesContent":["export * from 'expo-splash-screen';\n"]}

@@ -1,4 +1,5 @@
 import { A, B } from '@expo/html-elements';
+import * as AuthSession from 'expo-auth-session';
 import React from 'react';
 import { Text, View } from 'react-native';
 
@@ -28,7 +29,20 @@ export function AuthSection({
   promptAsync,
   useProxy,
   disabled,
-}: any) {
+}: {
+  title: string;
+  request: null | AuthSession.AuthRequest;
+  result: null | AuthSession.AuthSessionResult;
+  tokenResponse?: null | AuthSession.TokenResponse;
+  promptAsync: (
+    options?: AuthSession.AuthRequestPromptOptions
+  ) => Promise<AuthSession.AuthSessionResult>;
+  useProxy?: boolean;
+  disabled?: boolean;
+}) {
+  // @ts-ignore
+  const params = result?.params;
+
   return (
     <View style={{ paddingBottom: 8 }}>
       <AuthCard
@@ -36,7 +50,16 @@ export function AuthSection({
         disabled={disabled}
         status={result?.type}
         url={request?.url}
-        onPress={() => promptAsync({ useProxy })}
+        onPress={color =>
+          promptAsync({
+            useProxy,
+            // Tint the controller
+            toolbarColor: color,
+            // iOS -- unused, possibly should remove the types
+            controlsColor: color,
+            secondaryToolbarColor: color,
+          })
+        }
       />
       <View style={{ padding: 8 }}>
         <KVText
@@ -44,7 +67,7 @@ export function AuthSection({
           k="Redirect URL"
           v={request?.redirectUri || 'Loading...'}
         />
-        <AuthResult result={result?.params} />
+        <AuthResult result={params} />
         <AuthResult result={tokenResponse} />
       </View>
     </View>

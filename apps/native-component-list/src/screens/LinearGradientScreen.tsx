@@ -1,8 +1,11 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
-import { Image, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, Platform, Animated, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import MonoText from '../components/MonoText';
+
+// https://github.com/expo/expo/issues/10599
+const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
 function incrementColor(color: string, step: number) {
   const intColor = parseInt(color.substr(1), 16);
@@ -10,7 +13,15 @@ function incrementColor(color: string, step: number) {
   return `#${'0'.repeat(6 - newIntColor.length)}${newIntColor}`;
 }
 
-export default class LinearGradientScreen extends React.Component {
+type State = {
+  count: number;
+  colorTop: string;
+  colorBottom: string;
+};
+
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
+export default class LinearGradientScreen extends React.Component<{}, State> {
   static navigationOptions = {
     title: 'LinearGradient',
   };
@@ -24,12 +35,13 @@ export default class LinearGradientScreen extends React.Component {
   _interval?: number;
 
   componentDidMount() {
+    // @ts-expect-error: TS resolves node types first
     this._interval = setInterval(() => {
-      this.setState({
-        count: this.state.count + 1,
-        colorTop: incrementColor(this.state.colorTop, 1),
-        colorBottom: incrementColor(this.state.colorBottom, -1),
-      });
+      this.setState(state => ({
+        count: state.count + 1,
+        colorTop: incrementColor(state.colorTop, 1),
+        colorBottom: incrementColor(state.colorBottom, -1),
+      }));
     }, 100);
   }
 
@@ -47,6 +59,10 @@ export default class LinearGradientScreen extends React.Component {
           alignItems: 'stretch',
           paddingVertical: 10,
         }}>
+        <AnimatedLinearGradient
+          style={{ display: 'none' }}
+          colors={[this.state.colorTop, this.state.colorBottom]}
+        />
         <ColorsTest colors={[this.state.colorTop, this.state.colorBottom]} />
         <LocationsTest locations={[location, 1.0 - location]} />
         <ControlPointTest start={[position, 0]} />

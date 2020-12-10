@@ -4,7 +4,7 @@ import { Platform } from 'react-native';
 const map = {
   ios: {
     // bare-expo
-    'dev.expo.Payments': '29635966244-v8mbqt2mtno71thelt7f2i6pob104f6e',
+    'dev.expo.Payments': '629683148649-uvkfsi3pckps3lc4mbc2mi7pna8pqej5',
     // NCL standalone
     'host.exp.nclexp': '29635966244-1vu5o3e9ucoh12ujlsjpn30kt3dbersv',
   },

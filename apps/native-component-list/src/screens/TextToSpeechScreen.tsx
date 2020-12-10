@@ -1,8 +1,15 @@
 import * as Speech from 'expo-speech';
-import React from 'react';
-import { Button, Picker, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
-import Touchable from 'react-native-platform-touchable';
-import { TouchableProps } from 'react-native-svg';
+import * as React from 'react';
+import {
+  Button,
+  Picker,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import HeadingText from '../components/HeadingText';
 import { Colors } from '../constants';
@@ -14,9 +21,12 @@ const EXAMPLES = [
   { language: 'en', text: 'Adam Perry ate a pear in pairs in Paris' },
 ];
 
-const AmountControlButton: React.FunctionComponent<TouchableProps & { title: string }> = props => (
-  <Touchable
-    onPress={props.disabled ? undefined : props.onPress}
+const AmountControlButton: React.FunctionComponent<React.ComponentProps<typeof TouchableOpacity> & {
+  title: string;
+}> = props => (
+  <TouchableOpacity
+    disabled={props.disabled}
+    onPress={props.onPress}
     hitSlop={{ top: 10, bottom: 10, left: 20, right: 20 }}>
     <Text
       style={{
@@ -27,7 +37,7 @@ const AmountControlButton: React.FunctionComponent<TouchableProps & { title: str
       }}>
       {props.title}
     </Text>
-  </Touchable>
+  </TouchableOpacity>
 );
 
 interface State {
@@ -36,11 +46,13 @@ interface State {
   paused: boolean;
   pitch: number;
   rate: number;
-  voiceList?: Array<{ name: string; identifier: string }>;
+  voiceList?: { name: string; identifier: string }[];
   voice?: string;
 }
 
-export default class TextToSpeechScreen extends React.Component<object, State> {
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
+export default class TextToSpeechScreen extends React.Component<{}, State> {
   static navigationOptions = {
     title: 'Speech',
   };
@@ -208,14 +220,14 @@ export default class TextToSpeechScreen extends React.Component<object, State> {
     const isSelected = selectedExample === example;
 
     return (
-      <Touchable
+      <TouchableOpacity
         key={i}
         hitSlop={{ top: 10, bottom: 10, left: 20, right: 20 }}
         onPress={() => this._selectExample(example)}>
         <Text style={[styles.exampleText, isSelected && styles.selectedExampleText]}>
           {example.text} ({example.language})
         </Text>
-      </Touchable>
+      </TouchableOpacity>
     );
   };
 

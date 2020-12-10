@@ -51,6 +51,8 @@ NSString * const kEXEmbeddedManifestResourceName = @"shell-app-manifest";
   _standaloneManifestUrl = nil;
   _urlScheme = nil;
   _areRemoteUpdatesEnabled = YES;
+  _updatesCheckAutomatically = YES;
+  _updatesFallbackToCacheTimeout = @(0);
   _allManifestUrls = @[];
   _isDebugXCodeScheme = NO;
   _releaseChannel = @"default";
@@ -202,6 +204,13 @@ NSString * const kEXEmbeddedManifestResourceName = @"shell-app-manifest";
   _areRemoteUpdatesEnabled = (shellConfig[@"areRemoteUpdatesEnabled"] == nil)
     ? YES
     : [shellConfig[@"areRemoteUpdatesEnabled"] boolValue];
+  _updatesCheckAutomatically = (shellConfig[@"updatesCheckAutomatically"] == nil)
+    ? YES
+    : [shellConfig[@"updatesCheckAutomatically"] boolValue];
+  _updatesFallbackToCacheTimeout = (shellConfig[@"updatesFallbackToCacheTimeout"] &&
+                                    [shellConfig[@"updatesFallbackToCacheTimeout"] isKindOfClass:[NSNumber class]])
+    ? shellConfig[@"updatesFallbackToCacheTimeout"]
+    : @(0);
   if (infoPlist[@"ExpoReleaseChannel"]) {
     _releaseChannel = infoPlist[@"ExpoReleaseChannel"];
   } else {

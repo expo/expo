@@ -23,11 +23,11 @@ export async function getInstallReferrerAsync(): Promise<string> {
   return await ExpoApplication.getInstallReferrerAsync();
 }
 
-export async function getIosIdForVendorAsync(): Promise<string> {
+export async function getIosIdForVendorAsync(): Promise<string | null> {
   if (!ExpoApplication.getIosIdForVendorAsync) {
     throw new UnavailabilityError('expo-application', 'getIosIdForVendorAsync');
   }
-  return await ExpoApplication.getIosIdForVendorAsync();
+  return (await ExpoApplication.getIosIdForVendorAsync()) ?? null;
 }
 
 export enum ApplicationReleaseType {

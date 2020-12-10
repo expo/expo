@@ -253,16 +253,8 @@ public class ExperienceActivityUtils {
           appliedStatusBarStyle = STATUS_BAR_STYLE_DARK_CONTENT;
           break;
         default:
-          // TODO: remove this once SDK36 is phased out
-          if (ABIVersion.toNumber(sdkVersion) < ABIVersion.toNumber("37.0.0")) {
-            // defaults to "light-content" on pre SDK37
-            systemUiVisibilityFlags &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-            appliedStatusBarStyle = STATUS_BAR_STYLE_LIGHT_CONTENT;
-          } else {
-            // default to "dark-content" since SDK37
-            systemUiVisibilityFlags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-            appliedStatusBarStyle = STATUS_BAR_STYLE_DARK_CONTENT;
-          }
+          systemUiVisibilityFlags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+          appliedStatusBarStyle = STATUS_BAR_STYLE_DARK_CONTENT;
           break;
       }
       decorView.setSystemUiVisibility(systemUiVisibilityFlags);

@@ -1,3 +1,4 @@
+import { Subscription } from '@unimodules/core';
 /**
  * Prevents screenshots and screen recordings. If you are
  * already preventing screen capture, this method does nothing.
@@ -48,3 +49,30 @@ export declare function allowScreenCaptureAsync(key?: string): Promise<void>;
  * ```
  */
 export declare function usePreventScreenCapture(key?: string): void;
+/**
+ * Adds a listener that will fire whenever the user takes a screenshot.
+ *
+ * @param listener Callback executed when a screenshot occurs.
+ *
+ * @example
+ * ```typescript
+ * addScreenshotListener(() => {
+ *   alert('Screenshots are fun!');
+ * });
+ * ```
+ */
+export declare function addScreenshotListener(listener: () => void): Subscription;
+/**
+ * Removes the listener added by addScreenshotListener
+ *
+ * @param subscription The subscription to remove (created by addScreenshotListener).
+ *
+ * @example
+ * ```typescript
+ * const subscription = addScreenshotListener(() => {
+ *   alert('Screenshots are fun!');
+ * });
+ * removeScreenshotListener(subscription);
+ * ```
+ */
+export declare function removeScreenshotListener(subscription: Subscription): void;

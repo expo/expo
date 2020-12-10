@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
 
 ## Props
 
-Inherits [View Props](../view/#props).
+Inherits [View Props](view.md#props).
 
 ### `date`
 
@@ -112,7 +112,7 @@ Restricts the range of possible date/time values.
 | ---- | -------- |
 | Date | No       |
 
-See [`maximumDate`](../datepickerios/#maximumdate) for an example image.
+See [`maximumDate`](datepickerios.md#maximumdate) for an example image.
 
 ---
 

@@ -13,6 +13,7 @@ import com.raizlabs.android.dbflow.structure.database.transaction.QueryTransacti
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import androidx.annotation.WorkerThread;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
 
@@ -60,6 +61,7 @@ public class ExponentDB {
         }).execute();
   }
 
+  @WorkerThread
   public static ExperienceDBObject experienceIdToExperienceSync(String experienceId) {
     return SQLite.select()
       .from(ExperienceDBObject.class)

@@ -13,7 +13,7 @@ For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-
 
 # Installation in bare React Native projects
 
-For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
+For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/expo/expo/tree/master/packages/react-native-unimodules) before continuing.
 
 ### Add the package to your npm dependencies
 
@@ -47,6 +47,15 @@ Ensure that there is a `meta-data` element inside the `application` node inside 
     <!-- You can find your App ID in the AdMob UI -->
     ...
   </application>
+</manifest>
+```
+
+This package automatically adds the `INTERNET` permission. It's required to interact with Google's service.
+
+```xml
+<manifest>
+  <!-- Added permissions -->
+  <uses-permission android:name="android.permission.INTERNET" />
 </manifest>
 ```
 

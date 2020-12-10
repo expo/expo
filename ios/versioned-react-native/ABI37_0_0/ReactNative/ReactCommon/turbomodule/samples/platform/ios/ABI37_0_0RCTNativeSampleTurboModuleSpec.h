@@ -18,7 +18,7 @@
 /**
  * The ObjC protocol based on the JS Flow type for SampleTurboModule.
  */
-@protocol NativeSampleTurboModuleSpec <ABI37_0_0RCTBridgeModule, ABI37_0_0RCTTurboModule>
+@protocol ABI37_0_0NativeSampleTurboModuleSpec <ABI37_0_0RCTBridgeModule, ABI37_0_0RCTTurboModule>
 
 - (void)voidFunc;
 - (NSNumber *)getBool:(BOOL)arg;

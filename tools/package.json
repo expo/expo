@@ -7,7 +7,6 @@
   "dependencies": {
     "@ccheever/crayon": "^5.0.0",
     "@expo/json-file": "^8.0.0",
-    "@expo/xdl": "^56.1.4-rc.2",
     "@exponent/spawn-async": "^1.2.8",
     "appc-aar-tools": "^1.1.4",
     "chalk": "^2.3.0",

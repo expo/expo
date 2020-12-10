@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI39_0_0/Expo/ExpoKit/Core/Api/ViewShot/ABI39_0_0RNViewShot.h

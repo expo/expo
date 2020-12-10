@@ -1,6 +1,6 @@
 ---
 title: SecureStore
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-secure-store'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-secure-store'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
@@ -27,6 +27,14 @@ Android: Values are stored in [`SharedPreferences`](https://developer.android.co
 ```js
 import * as SecureStore from 'expo-secure-store';
 ```
+
+### `SecureStore.isAvailableAsync()`
+
+Returns whether the SecureStore API is enabled on the current device.
+
+#### Returns
+
+Async `boolean`, indicating whether the SecureStore API is available on the current device. Currently this resolves `true` on iOS and Android only.
 
 ### `SecureStore.setItemAsync(key, value, options)`
 

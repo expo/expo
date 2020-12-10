@@ -4,6 +4,12 @@ export enum AppOwnership {
   Guest = 'guest',
 }
 
+export enum ExecutionEnvironment {
+  Bare = 'bare',
+  Standalone = 'standalone',
+  StoreClient = 'storeClient',
+}
+
 export enum UserInterfaceIdiom {
   Handset = 'handset',
   Tablet = 'tablet',
@@ -94,6 +100,7 @@ export interface NativeConstants {
   debugMode: boolean;
   deviceName?: string;
   deviceYearClass: number | null;
+  executionEnvironment: ExecutionEnvironment;
   experienceUrl: string;
   // only nullable on web
   expoRuntimeVersion: string | null;

@@ -1,5 +1,6 @@
 import fs from 'fs-extra';
-import basicSpawnAsync, { SpawnResult, SpawnOptions } from '@expo/spawn-async';
+import chalk from 'chalk';
+import basicSpawnAsync, { SpawnResult, SpawnOptions, SpawnPromise } from '@expo/spawn-async';
 
 import { EXPO_DIR } from './Constants';
 
@@ -8,12 +9,12 @@ export { SpawnResult, SpawnOptions };
 /**
  * Asynchronously spawns a process with given command, args and options. Working directory is set to repo's root by default.
  */
-export async function spawnAsync(
+export function spawnAsync(
   command: string,
   args: Readonly<string[]> = [],
   options: SpawnOptions = {}
-): Promise<SpawnResult> {
-  return await basicSpawnAsync(command, args, {
+): SpawnPromise<SpawnResult> {
+  return basicSpawnAsync(command, args, {
     env: { ...process.env },
     cwd: EXPO_DIR,
     ...options,
@@ -29,7 +30,13 @@ export async function spawnJSONCommandAsync<T = object>(
   options: SpawnOptions = {}
 ): Promise<T> {
   const child = await spawnAsync(command, args, options);
-  return JSON.parse(child.stdout);
+  try {
+    return JSON.parse(child.stdout);
+  } catch (e) {
+    e.message +=
+      '\n' + chalk.red('Cannot parse this output as JSON: ') + chalk.yellow(child.stdout.trim());
+    throw e;
+  }
 }
 
 /**
@@ -85,4 +92,33 @@ export async function filterAsync<T = any>(
 ): Promise<T[]> {
   const results = await Promise.all(arr.map(filter));
   return arr.filter((item, index) => results[index]);
+}
+
+/**
+ * Retries executing the function with given interval and with given retry limit.
+ * It resolves immediately once the callback returns anything else than `undefined`.
+ */
+export async function retryAsync<T = any>(
+  interval: number,
+  limit: number,
+  callback: () => T | Promise<T>
+): Promise<T> {
+  return new Promise((resolve) => {
+    let count = 0;
+
+    const timeoutCallback = async () => {
+      const result = await callback();
+
+      if (result !== undefined) {
+        resolve(result);
+        return;
+      }
+      if (++count < limit) {
+        setTimeout(timeoutCallback, interval);
+      } else {
+        resolve(undefined);
+      }
+    };
+    timeoutCallback();
+  });
 }

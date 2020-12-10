@@ -1,5 +1,5 @@
 ---
-title: Publishing
+title: Publishing updates
 ---
 
 While you’re developing your project, you’re writing code on your
@@ -22,9 +22,9 @@ project. It makes your project available at a persistent URL, for
 example https://expo.io/@community/native-component-list, which can be
 opened with the Expo client app. It also uploads all of your app images,
 fonts, and videos to a CDN ([read more
-here](../how-expo-works/#publishingdeploying-an-expo-app-in-production)).
+here](how-expo-works.md#publishingdeploying-an-expo-app-in-production)).
 
-## How to Publish
+## How to publish
 
 To publish a project, click the Publish button in Expo Dev Tools. (It’s in the left side bar.) If you're using command line, run
 `expo publish`. No setup is required, go ahead and create a new project
@@ -45,7 +45,7 @@ open it.
 
 ## What version of the app will my users get?
 
-Your users will get the most recent compatible release that was pushed to a [release channel](../../distribution/release-channels/). Factors that affect compatibility:
+Your users will get the most recent compatible release that was pushed to a [release channel](../distribution/release-channels.md). Factors that affect compatibility:
 
 - sdkVersion (standalone apps are built to support only a single SDK version)
 - platform
@@ -59,7 +59,7 @@ The following flowchart shows how we determine which release to return to a user
 
 When you're ready to distribute your app to end-users, you can create a
 standalone app binary (an ipa or apk file) and put it in the iOS App
-Store and the Google Play Store. See [Distributing Your App](../../distribution/introduction/).
+Store and the Google Play Store. See [Distributing Your App](../distribution/introduction.md).
 
 The standalone app knows to look for updates at your app's published
 url, and if you publish an update then the next time a user opens your
@@ -68,11 +68,11 @@ commonly referred to as "Over the Air" (OTA) updates, the functionality
 is similar to [CodePush](https://microsoft.github.io/code-push/), but it
 is built into Expo so you don't need to install anything.
 
-To configure the way your app handles JS updates, see [Offline Support](../../guides/offline-support/).
+To configure the way your app handles JS updates, see [Offline Support](../guides/offline-support.md).
 
 ## Uploading Assets to the CDN
 
-In order for assets to be uploaded to the CDN, they must be explicitly required somewhere in your application's code. Conditionally requiring assets will result in the packager being unable to detect them and therefore they will not be uploaded when you publish your project. A great way to ensure your assets will be uploaded is to make use of [pre-loading and caching assets](../../guides/preloading-and-caching-assets/).
+In order for assets to be uploaded to the CDN, they must be explicitly required somewhere in your application's code. Conditionally requiring assets will result in the packager being unable to detect them and therefore they will not be uploaded when you publish your project. A great way to ensure your assets will be uploaded is to make use of [pre-loading and caching assets](../guides/preloading-and-caching-assets.md).
 
 ## Limitations
 
@@ -111,8 +111,8 @@ These options work similarly to the way they do on YouTube. Unlisted
 project URLs will be secret unless you tell people about them or share
 them. Public projects might be surfaced to other developers.
 
-## How do I remove a Managed Expo project that I published?
+## How do I remove a managed Expo project that I published?
 
-The default [privacy setting](../../workflow/configuration/) for managed apps is `unlisted` so nobody can find your app unless you share the link with them.
+The default [privacy setting](../workflow/configuration.md) for managed apps is `unlisted` so nobody can find your app unless you share the link with them.
 
-If you really want your published app to be 'unpublished', check out our guide on [Advanced Release Channels](../../distribution/advanced-release-channels/), which explains how to roll back.
+If you really want your published app to be 'unpublished', check out our guide on [Advanced Release Channels](../distribution/advanced-release-channels.md), which explains how to roll back.

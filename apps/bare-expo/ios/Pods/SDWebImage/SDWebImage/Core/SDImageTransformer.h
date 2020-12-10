@@ -19,6 +19,16 @@
 FOUNDATION_EXPORT NSString * _Nullable SDTransformedKeyForKey(NSString * _Nullable key, NSString * _Nonnull transformerKey);
 
 /**
+ Return the thumbnailed cache key which applied with specify thumbnailSize and preserveAspectRatio control.
+ @param key The original cache key
+ @param thumbnailPixelSize The thumbnail pixel size
+ @param preserveAspectRatio The preserve aspect ratio option
+ @return The thumbnailed cache key
+ @note If you have both transformer and thumbnail applied for image, call `SDThumbnailedKeyForKey` firstly and then with `SDTransformedKeyForKey`.`
+ */
+FOUNDATION_EXPORT NSString * _Nullable SDThumbnailedKeyForKey(NSString * _Nullable key, CGSize thumbnailPixelSize, BOOL preserveAspectRatio);
+
+/**
  A transformer protocol to transform the image load from cache or from download.
  You can provide transformer to cache and manager (Through the `transformer` property or context option `SDWebImageContextImageTransformer`).
  
@@ -38,10 +48,10 @@ FOUNDATION_EXPORT NSString * _Nullable SDTransformedKeyForKey(NSString * _Nullab
  Transform the image to another image.
 
  @param image The image to be transformed
- @param key The cache key associated to the image
+ @param key The cache key associated to the image. This arg is a hint for image source, not always useful and should be nullable. In the future we will remove this arg.
  @return The transformed image, or nil if transform failed
  */
-- (nullable UIImage *)transformedImageWithImage:(nonnull UIImage *)image forKey:(nonnull NSString *)key;
+- (nullable UIImage *)transformedImageWithImage:(nonnull UIImage *)image forKey:(nonnull NSString *)key API_DEPRECATED("The key arg will be removed in the future. Update your code and don't rely on that.", macos(10.10, API_TO_BE_DEPRECATED), ios(8.0, API_TO_BE_DEPRECATED), tvos(9.0, API_TO_BE_DEPRECATED), watchos(2.0, API_TO_BE_DEPRECATED));
 
 @end
 
@@ -49,7 +59,7 @@ FOUNDATION_EXPORT NSString * _Nullable SDTransformedKeyForKey(NSString * _Nullab
 
 /**
  Pipeline transformer. Which you can bind multiple transformers together to let the image to be transformed one by one in order and generate the final image.
- @note Because transformers are lightweight, if you want to append or arrange transfomers, create another pipeline transformer instead. This class is considered as immutable.
+ @note Because transformers are lightweight, if you want to append or arrange transformers, create another pipeline transformer instead. This class is considered as immutable.
  */
 @interface SDImagePipelineTransformer : NSObject <SDImageTransformer>
 

@@ -20,7 +20,7 @@
 
 static NSString *const kBlobURIScheme = @"blob";
 
-@interface ABI38_0_0RCTBlobManager () <ABI38_0_0RCTNetworkingRequestHandler, ABI38_0_0RCTNetworkingResponseHandler, ABI38_0_0RCTWebSocketContentHandler, NativeBlobModuleSpec>
+@interface ABI38_0_0RCTBlobManager () <ABI38_0_0RCTNetworkingRequestHandler, ABI38_0_0RCTNetworkingResponseHandler, ABI38_0_0RCTWebSocketContentHandler, ABI38_0_0NativeBlobModuleSpec>
 
 @end
 

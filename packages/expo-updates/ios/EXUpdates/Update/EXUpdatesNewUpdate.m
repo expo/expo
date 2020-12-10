@@ -39,10 +39,10 @@ NS_ASSUME_NONNULL_BEGIN
   NSMutableArray<EXUpdatesAsset *> *processedAssets = [NSMutableArray new];
 
   NSString *bundleKey = [NSString stringWithFormat:@"bundle-%@", commitTime];
-  EXUpdatesAsset *jsBundleAsset = [[EXUpdatesAsset alloc] initWithKey:bundleKey type:kEXUpdatesEmbeddedBundleFileType];
+  EXUpdatesAsset *jsBundleAsset = [[EXUpdatesAsset alloc] initWithKey:bundleKey type:EXUpdatesEmbeddedBundleFileType];
   jsBundleAsset.url = bundleUrl;
   jsBundleAsset.isLaunchAsset = YES;
-  jsBundleAsset.mainBundleFilename = kEXUpdatesEmbeddedBundleFilename;
+  jsBundleAsset.mainBundleFilename = EXUpdatesEmbeddedBundleFilename;
   [processedAssets addObject:jsBundleAsset];
 
   for (NSDictionary *assetDict in (NSArray *)assets) {

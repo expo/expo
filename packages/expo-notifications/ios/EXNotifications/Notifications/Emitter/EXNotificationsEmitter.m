@@ -6,17 +6,15 @@
 
 #import <UMCore/UMEventEmitterService.h>
 
-static NSString * const onDidReceiveNotification = @"onDidReceiveNotification";
-static NSString * const onDidReceiveNotificationResponse = @"onDidReceiveNotificationResponse";
-
 @interface EXNotificationsEmitter ()
 
 @property (nonatomic, weak) id<EXNotificationCenterDelegate> notificationCenterDelegate;
 
-@property (nonatomic, assign) BOOL isListening;
 @property (nonatomic, assign) BOOL isBeingObserved;
 
 @property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
+
+@property (nonatomic, strong) UNNotificationResponse *lastNotificationResponse;
 
 @end
 
@@ -24,12 +22,20 @@ static NSString * const onDidReceiveNotificationResponse = @"onDidReceiveNotific
 
 UM_EXPORT_MODULE(ExpoNotificationsEmitter);
 
+UM_EXPORT_METHOD_AS(getLastNotificationResponseAsync,
+                    getLastNotificationResponseAsyncWithResolver:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject)
+{
+  resolve(_lastNotificationResponse ? [self serializedNotificationResponse:_lastNotificationResponse] : [NSNull null]);
+}
+
 # pragma mark - UMModuleRegistryConsumer
 
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
+
   _notificationCenterDelegate = [moduleRegistry getSingletonModuleForName:@"NotificationCenterDelegate"];
+  [_notificationCenterDelegate addDelegate:self];
 }
 
 # pragma mark - UMEventEmitter
@@ -41,25 +47,12 @@ UM_EXPORT_MODULE(ExpoNotificationsEmitter);
 
 - (void)startObserving
 {
-  [self setIsBeingObserved:YES];
+  _isBeingObserved = YES;
 }
 
 - (void)stopObserving
 {
-  [self setIsBeingObserved:NO];
-}
-
-- (void)setIsBeingObserved:(BOOL)isBeingObserved
-{
-  _isBeingObserved = isBeingObserved;
-  BOOL shouldListen = _isBeingObserved;
-  if (shouldListen && !_isListening) {
-    [_notificationCenterDelegate addDelegate:self];
-    _isListening = YES;
-  } else if (!shouldListen && _isListening) {
-    [_notificationCenterDelegate removeDelegate:self];
-    _isListening = NO;
-  }
+  _isBeingObserved = NO;
 }
 
 # pragma mark - EXNotificationsDelegate
@@ -72,14 +65,34 @@ UM_EXPORT_MODULE(ExpoNotificationsEmitter);
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler
 {
-  [_eventEmitter sendEventWithName:onDidReceiveNotificationResponse body:[EXNotificationSerializer serializedNotificationResponse:response]];
+  _lastNotificationResponse = response;
+  [self sendEventWithName:onDidReceiveNotificationResponse body:[self serializedNotificationResponse:response]];
   completionHandler();
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler
 {
-  [_eventEmitter sendEventWithName:onDidReceiveNotification body:[EXNotificationSerializer serializedNotification:notification]];
+  [self sendEventWithName:onDidReceiveNotification body:[self serializedNotification:notification]];
   completionHandler(UNNotificationPresentationOptionNone);
+}
+
+- (void)sendEventWithName:(NSString *)eventName body:(id)body
+{
+  // Silence React Native warning: "Sending ... with no listeners registered."
+  // See: https://github.com/expo/expo/pull/10883#pullrequestreview-529183413
+  if (_isBeingObserved) {
+    [_eventEmitter sendEventWithName:eventName body:body];
+  }
+}
+
+- (NSDictionary *)serializedNotification:(UNNotification *)notification
+{
+  return [EXNotificationSerializer serializedNotification:notification];
+}
+
+- (NSDictionary *)serializedNotificationResponse:(UNNotificationResponse *)notificationResponse
+{
+  return [EXNotificationSerializer serializedNotificationResponse:notificationResponse];
 }
 
 @end

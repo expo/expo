@@ -7,7 +7,7 @@ import StoreReview from './ExpoStoreReview';
 /**
  * Determine if the platform has the capabilities to use `requestedReview`
  * - iOS: `true` if iOS 10.3 or greater and the StoreKit framework is linked
- * - Android: Always `true` (open URL to app store)
+ * - Android: `true` if Android 5.0 or greater and PlayStore is installed
  * - web: Always `false`
  */
 export async function isAvailableAsync(): Promise<boolean> {
@@ -24,8 +24,8 @@ export function isSupported(): void {
 }
 
 /**
- * Use the iOS `SKStoreReviewController` API to prompt a user rating without leaving the app,
- * or open a web browser to the play store on Android.
+ * Use the iOS `SKStoreReviewController` or Android `ReviewManager` API
+ * to prompt a user rating without leaving the app.
  */
 export async function requestReview(): Promise<void> {
   if (StoreReview?.requestReview) {

@@ -1,11 +1,11 @@
 /*
- * Copyright 2017-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -168,8 +168,10 @@ using If = MetaApply<impl::If_<If_>, Then, Else>;
  */
 template <template <class...> class C, class... Ts>
 class MetaDefer {
-  template <template <class...> class D = C, class = D<Ts...>>
+  template <template <class...> class D, class = D<Ts...>>
   static char (&try_(int))[1];
+
+  template <template <class...> class D, class = void>
   static char (&try_(long))[2];
   struct Result {
     using type = C<Ts...>;
@@ -177,7 +179,7 @@ class MetaDefer {
 
  public:
   template <class... Us>
-  using apply = _t<If<sizeof(try_(0)) - 1 || sizeof...(Us), Empty, Result>>;
+  using apply = _t<If<sizeof(try_<C>(0)) - 1 || sizeof...(Us), Empty, Result>>;
 };
 
 /**
@@ -496,7 +498,7 @@ struct AsTypeList_<T<Ts...>> {
   using type = TypeList<Ts...>;
 };
 template <class T, T... Is>
-struct AsTypeList_<folly::integer_sequence<T, Is...>> {
+struct AsTypeList_<std::integer_sequence<T, Is...>> {
   using type = TypeList<std::integral_constant<T, Is>...>;
 };
 } // namespace impl

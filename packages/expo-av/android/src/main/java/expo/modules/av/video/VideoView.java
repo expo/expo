@@ -46,6 +46,7 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
 
   private PlayerData mPlayerData = null;
 
+  private ReadableArguments mLastSource;
   private ScalableType mResizeMode = ScalableType.LEFT_TOP;
   private boolean mUseNativeControls = false;
   private Boolean mOverridingUseNativeControls = null;
@@ -227,7 +228,9 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
 
   @Override
   public void onFullscreenPlayerDidPresent() {
-    mMediaController.updateControls();
+    if (mMediaController != null) {
+      mMediaController.updateControls();
+    }
     callFullscreenCallbackWithUpdate(VideoViewManager.FullscreenPlayerUpdate.FULLSCREEN_PLAYER_DID_PRESENT);
 
     if (mFullscreenPlayerPresentationChangeProgressListener != null) {
@@ -247,7 +250,9 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
 
   @Override
   public void onFullscreenPlayerDidDismiss() {
-    mMediaController.updateControls();
+    if (mMediaController != null) {
+      mMediaController.updateControls();
+    }
     callFullscreenCallbackWithUpdate(VideoViewManager.FullscreenPlayerUpdate.FULLSCREEN_PLAYER_DID_DISMISS);
 
     if (mFullscreenPlayerPresentationChangeProgressListener != null) {
@@ -298,6 +303,37 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
   void setUseNativeControls(final boolean useNativeControls) {
     mUseNativeControls = useNativeControls;
     maybeUpdateMediaControllerForUseNativeControls();
+  }
+
+  private static boolean equalBundles(Bundle one, Bundle two) {
+    if((one.size() != two.size()) || !one.keySet().containsAll(two.keySet())) {
+      return false;
+    }
+
+    for (String key : one.keySet()) {
+      Object valueOne = one.get(key);
+      Object valueTwo = two.get(key);
+      if (valueOne instanceof Bundle && valueTwo instanceof Bundle) {
+        if (!equalBundles((Bundle) valueOne, (Bundle) valueTwo)) {
+          return false;
+        }
+      } else if (valueOne == null) {
+        if (valueTwo != null) {
+          return false;
+        }
+      } else if (!valueOne.equals(valueTwo)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  public void setSource(final ReadableArguments source) {
+    if (mLastSource == null || !equalBundles(mLastSource.toBundle(), source.toBundle())) {
+      mLastSource = source;
+      setSource(source, null, null);
+    }
   }
 
   public void setSource(final ReadableArguments source, final ReadableArguments initialStatus, final Promise promise) {
@@ -364,6 +400,10 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
         }
 
         mPlayerData.setStatusUpdateListener(mStatusUpdateListener);
+
+        if (mMediaController == null) {
+          mMediaController = new MediaController(VideoView.this.getContext());
+        }
         mMediaController.setMediaPlayer(new PlayerDataControl(mPlayerData));
         mMediaController.setAnchorView(VideoView.this);
         maybeUpdateMediaControllerForUseNativeControls(false);
@@ -399,9 +439,11 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
   }
 
   void setResizeMode(final ScalableType resizeMode) {
-    mResizeMode = resizeMode;
-    if (mPlayerData != null) {
-      mVideoTextureView.scaleVideoSize(mPlayerData.getVideoWidthHeight(), mResizeMode);
+    if (mResizeMode != resizeMode) {
+      mResizeMode = resizeMode;
+      if (mPlayerData != null) {
+        mVideoTextureView.scaleVideoSize(mPlayerData.getVideoWidthHeight(), mResizeMode);
+      }
     }
   }
 
@@ -486,6 +528,7 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
     if (mPlayerData != null) {
       mPlayerData.onResume();
     }
+    mVideoTextureView.onResume();
   }
 
   // FullscreenPresenter

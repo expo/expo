@@ -60,6 +60,11 @@ UM_REGISTER_MODULE();
   return EXUpdatesAppController.sharedInstance.isEmergencyLaunch;
 }
 
+- (BOOL)canRelaunch
+{
+  return EXUpdatesAppController.sharedInstance.isStarted;
+}
+
 - (void)requestRelaunchWithCompletion:(EXUpdatesAppRelaunchCompletionBlock)completion
 {
   return [EXUpdatesAppController.sharedInstance requestRelaunchWithCompletion:completion];

@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BNCLinkData.h
+../../../Branch/Branch-SDK/BNCLinkData.h

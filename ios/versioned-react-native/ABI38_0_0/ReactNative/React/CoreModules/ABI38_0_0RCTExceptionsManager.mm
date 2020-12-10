@@ -17,7 +17,7 @@
 
 #import "ABI38_0_0CoreModulesPlugins.h"
 
-@interface ABI38_0_0RCTExceptionsManager() <NativeExceptionsManagerSpec>
+@interface ABI38_0_0RCTExceptionsManager() <ABI38_0_0NativeExceptionsManagerSpec>
 
 @end
 

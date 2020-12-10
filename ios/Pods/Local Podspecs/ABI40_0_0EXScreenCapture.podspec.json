@@ -1,0 +1,23 @@
+{
+  "name": "ABI40_0_0EXScreenCapture",
+  "version": "2.0.0",
+  "summary": "ExpoScreenCapture standalone module",
+  "description": "ExpoScreenCapture standalone module",
+  "license": "MIT",
+  "authors": "650 Industries, Inc.",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/screen-capture",
+  "platforms": {
+    "ios": "10.0"
+  },
+  "source": {
+    "git": "https://github.com/expo/expo.git"
+  },
+  "source_files": "ABI40_0_0EXScreenCapture/**/*.{h,m}",
+  "preserve_paths": "ABI40_0_0EXScreenCapture/**/*.{h,m}",
+  "requires_arc": true,
+  "dependencies": {
+    "ABI40_0_0UMCore": [
+
+    ]
+  }
+}

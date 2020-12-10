@@ -1,1 +1,0 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../../src/ExpoBluetooth/index.ts"],"names":[],"mappings":"AAAA,OAAO,aAAa,MAAM,iBAAiB,CAAC;AAC5C,eAAe,aAAa,CAAC","sourcesContent":["import ExpoBluetooth from './ExpoBluetooth';\nexport default ExpoBluetooth;\n"]}

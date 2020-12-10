@@ -1,9 +1,7 @@
 import Entypo from '@expo/vector-icons/build/Entypo';
 import Ionicons from '@expo/vector-icons/build/Ionicons';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { NavigationContainer, useTheme } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import Constants from 'expo-constants';
 import * as React from 'react';
 import { Platform, StyleSheet } from 'react-native';
@@ -12,10 +10,10 @@ import CloseButton from '../components/CloseButton';
 import OpenProjectByURLButton from '../components/OpenProjectByURLButton.ios';
 import OptionsButton from '../components/OptionsButton';
 import UserSettingsButton from '../components/UserSettingsButton';
-import Colors from '../constants/Colors';
 import * as Themes from '../constants/Themes';
 import AudioDiagnosticsScreen from '../screens/AudioDiagnosticsScreen';
 import DiagnosticsScreen from '../screens/DiagnosticsScreen';
+import ExperienceScreen from '../screens/ExperienceScreen';
 import ExploreScreen from '../screens/ExploreScreen';
 import GeofencingScreen from '../screens/GeofencingScreen';
 import LocationDiagnosticsScreen from '../screens/LocationDiagnosticsScreen';
@@ -28,6 +26,7 @@ import SignUpScreen from '../screens/SignUpScreen';
 import SnacksForUserScreen from '../screens/SnacksForUserScreen';
 import UserSettingsScreen from '../screens/UserSettingsScreen';
 import Environment from '../utils/Environment';
+import BottomTab, { getNavigatorProps } from './BottomTabNavigator';
 import defaultNavigationOptions from './defaultNavigationOptions';
 
 // TODO(Bacon): Do we need to create a new one each time?
@@ -46,7 +45,7 @@ const profileNavigationOptions = ({ route }) => {
   };
 };
 
-function ProjectsStackScreen(props) {
+function ProjectsStackScreen() {
   const theme = useThemeName();
   return (
     <ProjectsStack.Navigator
@@ -169,142 +168,105 @@ function DiagnosticsStackScreen() {
   );
 }
 
-const BottomTab = createBottomTabNavigator();
-
-const MaterialBottomTab = createMaterialBottomTabNavigator();
-
 const RootStack = createStackNavigator();
 
-export default (props: { theme: string }) => (
-  <NavigationContainer theme={Themes[props.theme]}>
-    <RootStack.Navigator initialRouteName="Tabs" mode="modal">
-      <RootStack.Screen name="Tabs" options={{ headerShown: false }}>
-        {() => {
-          const projectsNavigationOptions = () => ({
-            tabBarIcon: props => <Entypo {...props} style={styles.icon} name="grid" size={24} />,
-            tabBarLabel: 'Projects',
-          });
-          const profileNavigationOptions = () => ({
-            tabBarIcon: props => (
-              <Ionicons {...props} style={styles.icon} name="ios-person" size={26} />
-            ),
-            tabBarLabel: 'Profile',
-          });
-          const diagnosticsNavigationOptions = () => ({
-            tabBarIcon: props => (
-              <Ionicons {...props} style={styles.icon} name="ios-git-branch" size={26} />
-            ),
-            tabBarLabel: 'Diagnostics',
-          });
-          const exploreNavigationOptions = () => ({
+function TabNavigator(props: { theme: string }) {
+  const initialRouteName = Environment.IsIOSRestrictedBuild
+    ? 'ProfileStackScreen'
+    : 'ProjectsStack';
+
+  return (
+    <BottomTab.Navigator {...getNavigatorProps(props)} initialRouteName={initialRouteName}>
+      <BottomTab.Screen
+        name="ProjectsStack"
+        component={ProjectsStackScreen}
+        options={{
+          tabBarIcon: props => <Entypo {...props} style={styles.icon} name="grid" size={24} />,
+          tabBarLabel: 'Projects',
+        }}
+      />
+      {!Environment.IsIOSRestrictedBuild && (
+        <BottomTab.Screen
+          name="ExploreStack"
+          component={ExploreStackScreen}
+          options={{
             tabBarIcon: props => (
               <Ionicons {...props} style={styles.icon} name="ios-search" size={24} />
             ),
             tabBarLabel: 'Explore',
-            tabBarOnPress: ({ navigation, defaultHandler }) => {
-              if (!navigation.isFocused()) {
-                defaultHandler();
-                return;
-              }
-
-              navigation.popToTop();
-
-              if (navigation.state.routes[0].index > 0) {
-                navigation.navigate('Explore');
-              } else {
-                navigation.emit('refocus');
-              }
-            },
-          });
-
-          if (Platform.OS === 'ios') {
-            return (
-              <BottomTab.Navigator
-                tabBarOptions={{ labelStyle: { fontWeight: '600' } }}
-                initialRouteName={
-                  Environment.IsIOSRestrictedBuild ? 'ProfileStackScreen' : 'ProjectsStack'
-                }>
-                <BottomTab.Screen
-                  name="ProjectsStack"
-                  component={ProjectsStackScreen}
-                  options={projectsNavigationOptions}
-                />
-                {!Environment.IsIOSRestrictedBuild && (
-                  <BottomTab.Screen
-                    name="ExploreStack"
-                    component={ExploreStackScreen}
-                    options={exploreNavigationOptions}
-                  />
-                )}
-                <BottomTab.Screen
-                  name="DiagnosticsStack"
-                  component={DiagnosticsStackScreen}
-                  options={diagnosticsNavigationOptions}
-                />
-                <BottomTab.Screen
-                  name="ProfileStack"
-                  component={ProfileStackScreen}
-                  options={profileNavigationOptions}
-                />
-              </BottomTab.Navigator>
-            );
-          }
-          return (
-            <MaterialBottomTab.Navigator
-              initialRouteName="ProjectsStack"
-              shifting
-              activeColor={Colors[props.theme].tabIconSelected}
-              inactiveColor={Colors[props.theme].tabIconDefault}
-              barStyle={{
-                backgroundColor: Colors[props.theme].cardBackground,
-                borderTopWidth:
-                  props.theme === 'dark' ? StyleSheet.hairlineWidth * 2 : StyleSheet.hairlineWidth,
-                borderTopColor: Colors[props.theme].cardSeparator,
-              }}>
-              <MaterialBottomTab.Screen
-                name="ProjectsStack"
-                component={ProjectsStackScreen}
-                options={projectsNavigationOptions}
-              />
-              <MaterialBottomTab.Screen
-                name="ExploreStack"
-                component={ExploreStackScreen}
-                options={exploreNavigationOptions}
-              />
-              <MaterialBottomTab.Screen
-                name="ProfileStack"
-                component={ProfileStackScreen}
-                options={profileNavigationOptions}
-              />
-            </MaterialBottomTab.Navigator>
-          );
-        }}
-      </RootStack.Screen>
-      <RootStack.Screen
-        name="SignIn"
-        component={SignInScreen}
+          }}
+        />
+      )}
+      {Platform.OS === 'ios' && (
+        <BottomTab.Screen
+          name="DiagnosticsStack"
+          component={DiagnosticsStackScreen}
+          options={{
+            tabBarIcon: props => (
+              <Ionicons {...props} style={styles.icon} name="ios-git-branch" size={26} />
+            ),
+            tabBarLabel: 'Diagnostics',
+          }}
+        />
+      )}
+      <BottomTab.Screen
+        name="ProfileStack"
+        component={ProfileStackScreen}
         options={{
-          title: 'Sign In',
-          headerLeft: () => <CloseButton />,
+          tabBarIcon: props => (
+            <Ionicons {...props} style={styles.icon} name="ios-person" size={26} />
+          ),
+          tabBarLabel: 'Profile',
         }}
       />
-      <RootStack.Screen
-        name="SignUp"
-        component={SignUpScreen}
-        options={{
-          title: 'Sign Up',
-          headerLeft: () => <CloseButton />,
-        }}
-      />
-      <RootStack.Screen
-        name="QRCode"
-        component={QRCodeScreen}
-        options={{
-          headerShown: false,
-          // stackPresentation: 'modal',
-        }}
-      />
-    </RootStack.Navigator>
+    </BottomTab.Navigator>
+  );
+}
+
+const ModalStack = createStackNavigator();
+
+export default (props: { theme: string }) => (
+  <NavigationContainer theme={Themes[props.theme]}>
+    <ModalStack.Navigator
+      initialRouteName="RootStack"
+      screenOptions={({ route, navigation }) => ({
+        headerShown: false,
+        gestureEnabled: true,
+        cardOverlayEnabled: true,
+        cardStyle: { backgroundColor: 'transparent' },
+        headerStatusBarHeight:
+          navigation.dangerouslyGetState().routes.indexOf(route) > 0 ? 0 : undefined,
+        ...TransitionPresets.ModalPresentationIOS,
+      })}
+      mode="modal">
+      <ModalStack.Screen name="RootStack">
+        {() => (
+          <RootStack.Navigator initialRouteName="Tabs" mode="modal">
+            <RootStack.Screen name="Tabs" options={{ headerShown: false }}>
+              {() => <TabNavigator theme={props.theme} />}
+            </RootStack.Screen>
+            <RootStack.Screen
+              name="SignIn"
+              component={SignInScreen}
+              options={{
+                title: 'Sign In',
+                headerLeft: () => <CloseButton />,
+              }}
+            />
+            <RootStack.Screen
+              name="SignUp"
+              component={SignUpScreen}
+              options={{
+                title: 'Sign Up',
+                headerLeft: () => <CloseButton />,
+              }}
+            />
+          </RootStack.Navigator>
+        )}
+      </ModalStack.Screen>
+      <ModalStack.Screen name="QRCode" component={QRCodeScreen} />
+      <ModalStack.Screen name="Experience" component={ExperienceScreen} />
+    </ModalStack.Navigator>
   </NavigationContainer>
 );
 

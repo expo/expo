@@ -1,6 +1,9 @@
+import { EventEmitter } from '@unimodules/core';
 import { useEffect } from 'react';
 import ExpoScreenCapture from './ExpoScreenCapture';
 const activeTags = new Set();
+const emitter = new EventEmitter(ExpoScreenCapture);
+const onScreenshotEventName = 'onScreenshot';
 /**
  * Prevents screenshots and screen recordings. If you are
  * already preventing screen capture, this method does nothing.
@@ -67,5 +70,36 @@ export function usePreventScreenCapture(key = 'default') {
             allowScreenCaptureAsync(key);
         };
     }, [key]);
+}
+/**
+ * Adds a listener that will fire whenever the user takes a screenshot.
+ *
+ * @param listener Callback executed when a screenshot occurs.
+ *
+ * @example
+ * ```typescript
+ * addScreenshotListener(() => {
+ *   alert('Screenshots are fun!');
+ * });
+ * ```
+ */
+export function addScreenshotListener(listener) {
+    return emitter.addListener(onScreenshotEventName, listener);
+}
+/**
+ * Removes the listener added by addScreenshotListener
+ *
+ * @param subscription The subscription to remove (created by addScreenshotListener).
+ *
+ * @example
+ * ```typescript
+ * const subscription = addScreenshotListener(() => {
+ *   alert('Screenshots are fun!');
+ * });
+ * removeScreenshotListener(subscription);
+ * ```
+ */
+export function removeScreenshotListener(subscription) {
+    emitter.removeSubscription(subscription);
 }
 //# sourceMappingURL=ScreenCapture.js.map

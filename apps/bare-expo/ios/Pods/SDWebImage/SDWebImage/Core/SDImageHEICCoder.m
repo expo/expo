@@ -9,7 +9,7 @@
 #import "SDImageHEICCoder.h"
 #import "SDImageHEICCoderInternal.h"
 
-// These constantce are available from iOS 13+ and Xcode 11. This raw value is used for toolchain and firmware compatiblitiy
+// These constants are available from iOS 13+ and Xcode 11. This raw value is used for toolchain and firmware compatibility
 static NSString * kSDCGImagePropertyHEICSDictionary = @"{HEICS}";
 static NSString * kSDCGImagePropertyHEICSLoopCount = @"LoopCount";
 static NSString * kSDCGImagePropertyHEICSDelayTime = @"DelayTime";

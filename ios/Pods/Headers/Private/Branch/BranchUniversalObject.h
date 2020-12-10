@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BranchUniversalObject.h
+../../../Branch/Branch-SDK/BranchUniversalObject.h

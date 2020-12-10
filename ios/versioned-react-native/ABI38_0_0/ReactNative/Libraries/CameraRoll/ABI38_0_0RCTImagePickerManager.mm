@@ -28,7 +28,7 @@
 
 @end
 
-@interface ABI38_0_0RCTImagePickerManager () <UIImagePickerControllerDelegate, UINavigationControllerDelegate, NativeImagePickerIOSSpec>
+@interface ABI38_0_0RCTImagePickerManager () <UIImagePickerControllerDelegate, UINavigationControllerDelegate, ABI38_0_0NativeImagePickerIOSSpec>
 @end
 
 @implementation ABI38_0_0RCTImagePickerManager

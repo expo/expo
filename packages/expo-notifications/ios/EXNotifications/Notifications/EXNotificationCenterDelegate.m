@@ -124,18 +124,18 @@ UM_REGISTER_SINGLETON_MODULE(NotificationCenterDelegate);
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler
 {
   // Save response to pending responses array if none of the handlers will handle it.
-  BOOL responseWillBeHandledByAnyDelegate = NO;
+  BOOL responseWillBeHandledByAppropriateDelegate = NO;
   for (int i = 0; i < _delegates.count; i++) {
     id pointer = [_delegates pointerAtIndex:i];
-    if ([pointer respondsToSelector:@selector(userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:)]) {
-      responseWillBeHandledByAnyDelegate = YES;
+    if ([pointer respondsToSelector:@selector(userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:)] 
+      && ![NSStringFromClass([pointer class]) isEqual: @"EXUserNotificationManager"]) {
+      // Remove EXUserNotificationManager check when LegacyNotifications are no longer supported
+      responseWillBeHandledByAppropriateDelegate = YES;
       break;
     }
   }
-  if (!responseWillBeHandledByAnyDelegate) {
+  if (!responseWillBeHandledByAppropriateDelegate) {
     [_pendingNotificationResponses addObject:response];
-    completionHandler();
-    return;
   }
 
   __block int delegatesCalled = 0;

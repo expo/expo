@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @class SEGAnalyticsConfiguration;
 
-
+NS_SWIFT_NAME(Analytics)
 @interface SEGAnalytics : NSObject
 
 /**
@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @see -setupWithConfiguration:
  */
-+ (instancetype _Nullable)sharedAnalytics;
++ (instancetype)sharedAnalytics;
 
 /*!
  @method
@@ -215,9 +215,11 @@ NS_ASSUME_NONNULL_BEGIN
 /** Returns the anonymous ID of the current user. */
 - (NSString *)getAnonymousId;
 
+/** Returns the registered device token of this device */
+- (NSString *)getDeviceToken;
+
 /** Returns the configuration used to create the analytics client. */
 - (SEGAnalyticsConfiguration *)configuration;
-
 
 @end
 

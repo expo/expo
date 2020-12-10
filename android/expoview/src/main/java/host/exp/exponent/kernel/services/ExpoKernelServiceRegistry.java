@@ -84,6 +84,9 @@ public class ExpoKernelServiceRegistry {
     return mPermissionsKernelService;
   }
 
+  /**
+   * Remove once SDK38 is phased out.
+   */
   public SplashScreenKernelService getSplashScreenKernelService() {
     return mSplashScreenKernelService;
   }

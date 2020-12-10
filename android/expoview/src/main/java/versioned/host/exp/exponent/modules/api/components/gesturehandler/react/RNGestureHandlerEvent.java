@@ -31,6 +31,7 @@ public class RNGestureHandlerEvent extends Event<RNGestureHandlerEvent> {
   }
 
   private WritableMap mExtraData;
+  private short mCoalescingKey;
 
   private RNGestureHandlerEvent() {
   }
@@ -45,6 +46,7 @@ public class RNGestureHandlerEvent extends Event<RNGestureHandlerEvent> {
     }
     mExtraData.putInt("handlerTag", handler.getTag());
     mExtraData.putInt("state", handler.getState());
+    mCoalescingKey = handler.getEventCoalescingKey();
   }
 
   @Override
@@ -60,14 +62,12 @@ public class RNGestureHandlerEvent extends Event<RNGestureHandlerEvent> {
 
   @Override
   public boolean canCoalesce() {
-    // TODO: coalescing
-    return false;
+    return true;
   }
 
   @Override
   public short getCoalescingKey() {
-    // TODO: coalescing
-    return 0;
+    return mCoalescingKey;
   }
 
   @Override

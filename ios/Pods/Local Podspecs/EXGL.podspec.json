@@ -1,6 +1,6 @@
 {
   "name": "EXGL",
-  "version": "8.4.0",
+  "version": "9.2.0",
   "summary": "Provides GLView that acts as OpenGL ES render target and gives GL context object implementing WebGL 2.0 specification.",
   "description": "Provides GLView that acts as OpenGL ES render target and gives GL context object implementing WebGL 2.0 specification.",
   "license": "MIT",
@@ -12,9 +12,6 @@
   "source": {
     "git": "https://github.com/expo/expo-gl.git"
   },
-  "source_files": "**/*.{h,m}",
-  "preserve_paths": "**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "UMCore": [
 
@@ -28,5 +25,6 @@
     "EXGL_CPP": [
 
     ]
-  }
+  },
+  "source_files": "EXGL/**/*.{h,m}"
 }

@@ -1,4 +1,5 @@
 import * as Permissions from 'expo-permissions';
+import * as ScreenOrientation from 'expo-screen-orientation';
 import { Accelerometer } from 'expo-sensors';
 import React from 'react';
 import {
@@ -16,18 +17,23 @@ import { Colors } from '../constants';
 const COUNT = 5;
 const ITEM_SIZE = Dimensions.get('window').width / COUNT;
 
-interface State {
-  items: any[];
-  error: string | null;
-  isSetup: boolean;
-}
-
 interface Props {
   numItems: number;
   perspective: number;
 }
 
+function useLockedScreenOrientation() {
+  React.useEffect(() => {
+    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+    return () => {
+      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.ALL);
+    };
+  }, []);
+}
+
 export default function AccelerometerScreen({ numItems = COUNT, perspective = 200 }: Props) {
+  useLockedScreenOrientation();
+
   const [items, setItems] = React.useState<any[]>([]);
   const [error, setError] = React.useState<string | null>(null);
   const [isSetup, setSetup] = React.useState<boolean>(false);

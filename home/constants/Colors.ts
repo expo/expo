@@ -2,6 +2,7 @@ import { Platform } from 'react-native';
 
 const tintColor = '#4e9bde';
 const darkTintColor = '#1a74b3';
+const error = '#dc3545';
 
 export default {
   light: {
@@ -17,6 +18,8 @@ export default {
     cardBackground: '#fff',
     cardSeparator: '#f4f4f5',
     cardTitle: '#242c39',
+    error,
+    highlightColor: '#5944ed',
 
     tabIconDefault: '#bdbfc3',
     tabIconSelected: Platform.OS === 'android' ? '#000' : tintColor,
@@ -43,6 +46,8 @@ export default {
     cardSeparator: '#343437',
     cardTitle: '#fff',
     separator: '#1b1b1b',
+    error,
+    highlightColor: '#5944ed',
 
     tabBar: '#000',
     tabIconDefault: '#bdbfc3',

@@ -10,10 +10,9 @@ export declare type MailComposerOptions = {
 export declare type MailComposerResult = {
     status: MailComposerStatus;
 };
-export declare const MailComposerStatus: {
-    readonly UNDETERMINED: "undetermined";
-    readonly SENT: "sent";
-    readonly SAVED: "saved";
-    readonly CANCELLED: "cancelled";
-};
-export declare type MailComposerStatus = typeof MailComposerStatus[keyof typeof MailComposerStatus];
+export declare enum MailComposerStatus {
+    UNDETERMINED = "undetermined",
+    SENT = "sent",
+    SAVED = "saved",
+    CANCELLED = "cancelled"
+}

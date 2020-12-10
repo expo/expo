@@ -7,6 +7,8 @@ import Colors from '../constants/Colors';
 type FormInputProps = React.ComponentProps<typeof TextInput> & {
   autoFocus?: boolean;
   label?: string;
+  // unused on Android
+  hideBottomBorder?: boolean;
 };
 
 const FormInput = React.forwardRef((props: FormInputProps, ref) => {
@@ -21,10 +23,10 @@ const FormInput = React.forwardRef((props: FormInputProps, ref) => {
     ref,
     () => ({
       focus() {
-        inputRef.current?.focus();
+        inputRef.current?.focus?.();
       },
       blur() {
-        inputRef.current?.blur();
+        inputRef.current?.blur?.();
       },
     }),
     [inputRef]
@@ -99,7 +101,7 @@ const FormInput = React.forwardRef((props: FormInputProps, ref) => {
   );
 });
 
-export default function Form(props: React.ComponentProps<typeof View>) {
+export default function Form(props: React.ComponentProps<typeof View> & { children?: any }) {
   return <View {...props} style={[styles.formContainer, props.style]} />;
 }
 

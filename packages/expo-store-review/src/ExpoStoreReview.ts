@@ -1,13 +1,10 @@
-import { Platform } from '@unimodules/core';
-
+// Unimplemented on web
 export default {
   get name(): string {
     return 'ExpoStoreReview';
   },
   async isAvailableAsync(): Promise<boolean> {
-    // true on Android, false on web
-    return Platform.OS === 'android';
+    return false;
   },
-  // Unimplemented on web and Android
   requestReview: null as null | (() => Promise<void>),
 };

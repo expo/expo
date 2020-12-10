@@ -22,9 +22,10 @@
 #import "Nodes/REAParamNode.h"
 #import "Nodes/REAFunctionNode.h"
 #import "Nodes/REACallFuncNode.h"
+#import <React/RCTShadowView.h>
 
 // Interface below has been added in order to use private methods of RCTUIManager,
-// RCTUIManager#UpdateView is a React Method which is exported to JS but in 
+// RCTUIManager#UpdateView is a React Method which is exported to JS but in
 // Objective-C it stays private
 // RCTUIManager#setNeedsLayout is a method which updated layout only which
 // in its turn will trigger relayout if no batch has been activated
@@ -36,6 +37,12 @@
              props:(NSDictionary *)props;
 
 - (void)setNeedsLayout;
+
+@end
+
+@interface REANodesManager() <RCTUIManagerObserver>
+
+@property BOOL shouldInterceptMountingBlock;
 
 @end
 
@@ -51,6 +58,8 @@
   BOOL _processingDirectEvent;
   NSMutableArray<REAOnAnimationCallback> *_onAnimationCallbacks;
   NSMutableArray<REANativeAnimationOp> *_operationsInBatch;
+  REAEventHandler _eventHandler;
+  volatile void (^_mounting)(void);
 }
 
 - (instancetype)initWithModule:(REAModule *)reanimatedModule
@@ -66,18 +75,29 @@
     _wantRunUpdates = NO;
     _onAnimationCallbacks = [NSMutableArray new];
     _operationsInBatch = [NSMutableArray new];
+    _shouldInterceptMountingBlock = NO;
+    [[uiManager observerCoordinator] addObserver:self];
   }
+    
+  _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(onAnimationFrame:)];
+  [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+  [_displayLink setPaused:true];
   return self;
+}
+
+- (void)dealloc {
+  [[_uiManager observerCoordinator] removeObserver:self];
 }
 
 - (void)invalidate
 {
+  _eventHandler = nil;
   [self stopUpdatingOnAnimationFrame];
 }
 
 - (void)operationsBatchDidComplete
 {
-  if (_displayLink) {
+  if (![_displayLink isPaused]) {
     // if display link is set it means some of the operations that have run as a part of the batch
     // requested updates. We want updates to be run in the same frame as in which operations have
     // been scheduled as it may mean the new view has just been mounted and expects its initial
@@ -108,9 +128,13 @@
   }
 }
 
+- (void)registerEventHandler:(REAEventHandler)eventHandler
+{
+  _eventHandler = eventHandler;
+}
+
 - (void)startUpdatingOnAnimationFrame
 {
-  if (!_displayLink) {
     // Setting _currentAnimationTimestamp here is connected with manual triggering of performOperations
     // in operationsBatchDidComplete. If new node has been created and clock has not been started,
     // _displayLink won't be initialized soon enough and _displayLink.timestamp will be 0.
@@ -118,23 +142,21 @@
     // evaluation, it could be used it here. In usual case, CACurrentMediaTime is not being used in
     // favor of setting it with _displayLink.timestamp in onAnimationFrame method.
     _currentAnimationTimestamp = CACurrentMediaTime();
-    _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(onAnimationFrame:)];
-    [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
-  }
+    [_displayLink setPaused:false];
 }
 
 - (void)stopUpdatingOnAnimationFrame
 {
   if (_displayLink) {
-    [_displayLink invalidate];
-    _displayLink = nil;
+    [_displayLink setPaused:true];
   }
 }
 
 - (void)onAnimationFrame:(CADisplayLink *)displayLink
 {
-  // We process all enqueued events first
   _currentAnimationTimestamp = _displayLink.timestamp;
+
+  // We process all enqueued events first
   for (NSUInteger i = 0; i < _eventQueue.count; i++) {
     id<RCTEvent> event = _eventQueue[i];
     [self processEvent:event];
@@ -158,6 +180,14 @@
   }
 }
 
+- (BOOL)uiManager:(RCTUIManager *)manager performMountingWithBlock:(RCTUIManagerMountingBlock)block {
+  if (_shouldInterceptMountingBlock) {
+    _mounting = block;
+    return YES;
+  }
+  return NO;
+}
+
 - (void)performOperations
 {
   if (_wantRunUpdates) {
@@ -166,12 +196,40 @@
   if (_operationsInBatch.count != 0) {
     NSMutableArray<REANativeAnimationOp> *copiedOperationsQueue = _operationsInBatch;
     _operationsInBatch = [NSMutableArray new];
+    
+    __weak typeof(self) weakSelf = self;
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     RCTExecuteOnUIManagerQueue(^{
-      for (int i = 0; i < copiedOperationsQueue.count; i++) {
-        copiedOperationsQueue[i](self.uiManager);
+      __typeof__(self) strongSelf = weakSelf;
+      if (strongSelf == nil) {
+        return;
       }
-      [self.uiManager setNeedsLayout];
+      NSMutableArray *pendingUIBlocks = [strongSelf.uiManager valueForKey:@"_pendingUIBlocks"];
+      bool canPerformLayout = ([pendingUIBlocks count] == 0);
+      
+      if (!canPerformLayout) {
+        dispatch_semaphore_signal(semaphore);
+      }
+      
+      for (int i = 0; i < copiedOperationsQueue.count; i++) {
+        copiedOperationsQueue[i](strongSelf.uiManager);
+      }
+      
+      if (canPerformLayout) {
+        strongSelf.shouldInterceptMountingBlock = YES;
+        [strongSelf.uiManager batchDidComplete];
+        strongSelf.shouldInterceptMountingBlock = NO;
+        dispatch_semaphore_signal(semaphore);
+      } else {
+        [strongSelf.uiManager setNeedsLayout];
+      }
     });
+    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+    
+    if (_mounting) {
+      _mounting();
+      _mounting = nil;
+    }
   }
   _wantRunUpdates = NO;
 }
@@ -224,7 +282,7 @@
             @"concat": [REAConcatNode class],
             @"param": [REAParamNode class],
             @"func": [REAFunctionNode class],
-            @"callfunc": [REACallFuncNode class],
+            @"callfunc": [REACallFuncNode class]
 //            @"listener": nil,
             };
   });
@@ -247,6 +305,7 @@
 {
   REANode *node = _nodes[nodeID];
   if (node) {
+    [node onDrop];
     [_nodes removeObjectForKey:nodeID];
   }
 }
@@ -358,7 +417,7 @@
       @"topScrollEndDrag"
     ];
   });
-  
+
   return [directEventNames containsObject:RCTNormalizeInputEventName(event.eventName)];
 }
 
@@ -367,6 +426,26 @@
   NSString *key = [NSString stringWithFormat:@"%@%@",
                    event.viewTag,
                    RCTNormalizeInputEventName(event.eventName)];
+
+  NSString *eventHash = [NSString stringWithFormat:@"%@%@",
+  event.viewTag,
+  event.eventName];
+
+  if (_eventHandler != nil) {
+    __weak REAEventHandler eventHandler = _eventHandler;
+    __weak typeof(self) weakSelf = self;
+    RCTExecuteOnMainQueue(^void(){
+      __typeof__(self) strongSelf = weakSelf;
+      if (strongSelf == nil) {
+        return;
+      }
+      eventHandler(eventHash, event);
+      if ([strongSelf isDirectEvent:event]) {
+        [strongSelf performOperations];
+      }
+    });
+  }
+
   REANode *eventNode = [_eventMapping objectForKey:key];
 
   if (eventNode != nil) {
@@ -397,6 +476,60 @@
 
   REAValueNode *valueNode = (REAValueNode *)node;
   [valueNode setValue:newValue];
+}
+
+- (void)updateProps:(nonnull NSDictionary *)props
+      ofViewWithTag:(nonnull NSNumber *)viewTag
+           withName:(nonnull NSString *)viewName
+{
+  // TODO: refactor PropsNode to also use this function
+  NSMutableDictionary *uiProps = [NSMutableDictionary new];
+  NSMutableDictionary *nativeProps = [NSMutableDictionary new];
+  NSMutableDictionary *jsProps = [NSMutableDictionary new];
+
+  void (^addBlock)(NSString *key, id obj, BOOL * stop) = ^(NSString *key, id obj, BOOL * stop){
+    if ([self.uiProps containsObject:key]) {
+      uiProps[key] = obj;
+    } else if ([self.nativeProps containsObject:key]) {
+      nativeProps[key] = obj;
+    } else {
+      jsProps[key] = obj;
+    }
+  };
+
+  [props enumerateKeysAndObjectsUsingBlock:addBlock];
+
+  if (uiProps.count > 0) {
+    [self.uiManager
+     synchronouslyUpdateViewOnUIThread:viewTag
+     viewName:viewName
+     props:uiProps];
+    }
+    if (nativeProps.count > 0) {
+      [self enqueueUpdateViewOnNativeThread:viewTag viewName:viewName nativeProps:nativeProps];
+    }
+    if (jsProps.count > 0) {
+      [self.reanimatedModule sendEventWithName:@"onReanimatedPropsChange"
+                                          body:@{@"viewTag": viewTag, @"props": jsProps }];
+    }
+}
+
+- (NSString*)obtainProp:(nonnull NSNumber *)viewTag
+               propName:(nonnull NSString *)propName
+{
+    UIView* view = [self.uiManager viewForReactTag:viewTag];
+    
+    NSString* result = [NSString stringWithFormat:@"error: unknown propName %@, currently supported: opacity, zIndex", propName];
+    
+    if ([propName isEqualToString:@"opacity"]) {
+        CGFloat alpha = view.alpha;
+        result = [@(alpha) stringValue];
+    } else if ([propName isEqualToString:@"zIndex"]) {
+        NSInteger zIndex = view.reactZIndex;
+        result = [@(zIndex) stringValue];
+    }
+    
+    return result;
 }
 
 @end

@@ -1,7 +1,3 @@
-<manifest package="expo.modules.ads.admob"
-          xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <uses-permission android:name="android.permission.INTERNET"/>
-
+<manifest package="expo.modules.ads.admob" xmlns:android="http://schemas.android.com/apk/res/android">
+  <uses-permission android:name="android.permission.INTERNET" />
 </manifest>
-  

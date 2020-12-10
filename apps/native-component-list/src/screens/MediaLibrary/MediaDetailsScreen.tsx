@@ -1,7 +1,7 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import * as MediaLibrary from 'expo-media-library';
 import React from 'react';
-import { Image, ScrollView, StyleSheet, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, View, Alert } from 'react-native';
 
 import Button from '../../components/Button';
 import HeadingText from '../../components/HeadingText';
@@ -13,7 +13,7 @@ type Links = {
   MediaDetails: { asset: MediaLibrary.Asset; onGoBack: () => void; album: MediaLibrary.Album };
 };
 
-type Props = StackScreenProps<Links, 'MediaDetails'>
+type Props = StackScreenProps<Links, 'MediaDetails'>;
 
 export default class MediaDetailsScreen extends React.Component<Props> {
   static navigationOptions = {
@@ -24,10 +24,11 @@ export default class MediaDetailsScreen extends React.Component<Props> {
     details: null,
   };
 
-  async componentDidMount() {
+  componentDidMount() {
     const { asset } = this.props.route.params;
-    const details = await MediaLibrary.getAssetInfoAsync(asset);
-    this.setState({ details });
+    MediaLibrary.getAssetInfoAsync(asset).then(details => {
+      this.setState({ details });
+    });
   }
 
   goBack() {
@@ -48,6 +49,12 @@ export default class MediaDetailsScreen extends React.Component<Props> {
   };
 
   addToAlbum = async () => {
+    const permissions = await MediaLibrary.getPermissionsAsync();
+    if (permissions?.accessPrivileges && permissions.accessPrivileges !== 'all') {
+      Alert.alert('Access to all photos is required to do this operation');
+      return;
+    }
+
     const { asset } = this.props.route.params!;
     const expoAlbum = await MediaLibrary.getAlbumAsync(EXPO_ALBUM_NAME);
 

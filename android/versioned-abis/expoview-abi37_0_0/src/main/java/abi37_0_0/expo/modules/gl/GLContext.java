@@ -35,7 +35,7 @@ import abi37_0_0.org.unimodules.core.interfaces.services.UIManager;
 import abi37_0_0.expo.modules.gl.utils.FileSystemUtils;
 
 import static android.opengl.GLES30.*;
-import static expo.modules.gl.cpp.EXGL.*;
+import static expo.modules.gl.cpp.legacy.EXGL.*;
 
 public class GLContext {
   private int mEXGLCtxId = -1;

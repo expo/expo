@@ -26,7 +26,7 @@ export declare type GoogleLogInConfig = {
      */
     iosStandaloneAppClientId?: string;
     /**
-     * **Deprecated:** [learn more here](https://docs.expo.io/versions/latest/sdk/google/#server-side-apis).
+     * @deprecated [learn more here](https://docs.expo.io/versions/latest/sdk/google/#server-side-apis).
      */
     webClientId?: string;
     /**
@@ -73,6 +73,7 @@ export declare type LogInResult = {
     refreshToken: string | null;
     user: GoogleUser;
 };
+export declare function getPlatformGUID(config: GoogleLogInConfig): string;
 /**
  * Prompts the user to log into Google and grants your app permission to access some of their Google data, as specified by the scopes.
  *

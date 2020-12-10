@@ -8,7 +8,8 @@ RCT_METRO_PORT=${RCT_METRO_PORT:=8081}
 NODE_BINARY=${NODE_BINARY:-node}
 
 # Related to: https://github.com/facebook/react-native/blob/c9f869f9c7c8b035a669980382af4bbd4afecb89/scripts/react-native-xcode.sh#L59-L69
-PROJECT_ROOT=${PROJECT_ROOT:-$PWD/..}
+PROJECT_ROOT=${PROJECT_ROOT:-$PWD}
+cd "$PROJECT_ROOT" || exit
 
 if ! [ -x "$(command -v $NODE_BINARY)" ]; then
   echo 'Error: cannot find the node binary. Try setting the NODE_BINARY variable in the ' \

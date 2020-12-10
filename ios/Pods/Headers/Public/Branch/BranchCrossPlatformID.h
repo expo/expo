@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BranchCrossPlatformID.h
+../../../Branch/Branch-SDK/BranchCrossPlatformID.h

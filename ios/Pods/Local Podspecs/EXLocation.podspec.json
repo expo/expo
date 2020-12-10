@@ -1,6 +1,6 @@
 {
   "name": "EXLocation",
-  "version": "8.3.0",
+  "version": "10.0.0",
   "summary": "Allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.",
   "description": "Allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.",
   "license": "MIT",
@@ -12,9 +12,6 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXLocation/**/*.{h,m}",
-  "preserve_paths": "EXLocation/**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "UMCore": [
 
@@ -25,5 +22,6 @@
     "UMTaskManagerInterface": [
 
     ]
-  }
+  },
+  "source_files": "EXLocation/**/*.{h,m}"
 }

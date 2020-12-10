@@ -1,9 +1,6 @@
 import React from 'react';
-import { connect } from 'react-redux';
 
-export default
-@connect()
-class Example extends React.Component {
+export default class Example extends React.Component {
   state = {
     x: 'x',
     ...{

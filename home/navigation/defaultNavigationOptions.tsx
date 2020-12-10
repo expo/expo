@@ -1,4 +1,4 @@
-import { StackNavigationOptions } from '@react-navigation/stack';
+import { StackNavigationOptions, HeaderStyleInterpolators } from '@react-navigation/stack';
 import { Platform, StyleSheet } from 'react-native';
 
 import Colors from '../constants/Colors';
@@ -15,5 +15,6 @@ export default (theme: string): StackNavigationOptions => {
       fontWeight: Platform.OS === 'ios' ? '600' : '400',
       color: Colors[theme].text,
     },
+    headerStyleInterpolator: HeaderStyleInterpolators.forUIKit,
   };
 };

@@ -22,6 +22,7 @@ public class ParamNode extends ValueNode {
     mUpdateContext.callID = mPrevCallID;
     ((ValueNode) node).setValue(value);
     mUpdateContext.callID = callID;
+    forceUpdateMemoizedValue(value);
   }
 
   public void beginContext(Integer ref, String prevCallID) {

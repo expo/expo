@@ -1,6 +1,6 @@
 ---
 title: Network
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-network'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-network'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
@@ -13,6 +13,10 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 ## Installation
 
 <InstallSection packageName="expo-network" />
+
+## Configuration
+
+On Android, this module requires permissions to access the network and Wi-Fi state. The permissions `ACCESS_NETWORK_STATE` and `ACCESS_WIFI_STATE` are added automatically.
 
 ## API
 

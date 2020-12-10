@@ -15,7 +15,7 @@ For [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/
 
 # Installation in bare React Native projects
 
-For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
+For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/expo/expo/tree/master/packages/react-native-unimodules) before continuing.
 
 ### Add the package to your npm dependencies
 
@@ -29,7 +29,7 @@ Run `npx pod-install` after installing the npm package.
 
 # Setup native Firebase
 
-Follow the ["Setup Native Firebase"](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/guides/setup-native-firebase.md) guide in the docs to get started using native Firebase SDK features.
+Follow the ["Setup Native Firebase"](https://github.com/expo/expo/blob/master/docs/pages/guides/setup-native-firebase.md) guide in the docs to get started using native Firebase SDK features.
 
 # Contributing
 

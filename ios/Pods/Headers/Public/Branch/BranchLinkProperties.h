@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BranchLinkProperties.h
+../../../Branch/Branch-SDK/BranchLinkProperties.h

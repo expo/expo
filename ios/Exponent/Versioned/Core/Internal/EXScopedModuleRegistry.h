@@ -5,6 +5,9 @@
 
 #import "EXScopedBridgeModule.h"
 
+// used for initializing scoped modules which don't tie in to any kernel service.
+#define EX_KERNEL_SERVICE_NONE @"EXKernelServiceNone"
+
 /**
  *  Use this in place of RCT_EXPORT_MODULE() to auto-init an instance of your scoped module on RCTBridge instances.
  *  @param js_name same as RCT_EXPORT_MODULE(), the module name available in JS

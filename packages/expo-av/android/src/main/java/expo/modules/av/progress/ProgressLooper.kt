@@ -42,6 +42,10 @@ class ProgressLooper(private val timeMachine: TimeMachine) {
     this.listener = null
   }
 
+  fun isLooping(): Boolean {
+    return this.interval > 0;
+  }
+
   private fun scheduleNextTick() {
     if (nextExpectedTick == -1L) {
       nextExpectedTick = timeMachine.time

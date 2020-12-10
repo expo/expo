@@ -31,16 +31,12 @@ function guardPermission() {
 }
 
 async function _subscribeDeviceToPushNotificationsAsync(): Promise<DevicePushToken['data']> {
-  // TODO: Remove eslint-disable once we upgrade to a version that supports ?. notation.
-  // eslint-disable-next-line
   if (!Constants.manifest.notification?.vapidPublicKey) {
     throw new CodedError(
       'ERR_NOTIFICATIONS_PUSH_WEB_MISSING_CONFIG',
       'You must provide `notification.vapidPublicKey` in `app.json` to use push notifications on web. Learn more: https://docs.expo.io/versions/latest/guides/using-vapid/.'
     );
   }
-  // TODO: Remove eslint-disable once we upgrade to a version that supports ?. notation.
-  // eslint-disable-next-line
   if (!Constants.manifest.notification?.serviceWorkerPath) {
     throw new CodedError(
       'ERR_NOTIFICATIONS_PUSH_MISSING_CONFIGURATION',

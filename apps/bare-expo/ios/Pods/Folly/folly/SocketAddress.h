@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,8 @@
 #pragma once
 
 #include <sys/types.h>
+
+#include <cassert>
 #include <cstddef>
 #include <iosfwd>
 #include <string>
@@ -24,6 +26,7 @@
 #include <folly/IPAddress.h>
 #include <folly/Portability.h>
 #include <folly/Range.h>
+#include <folly/net/NetworkSocket.h>
 #include <folly/portability/Sockets.h>
 
 namespace folly {
@@ -324,14 +327,14 @@ class SocketAddress {
    *
    * Raises std::system_error on error.
    */
-  void setFromPeerAddress(int socket);
+  void setFromPeerAddress(NetworkSocket socket);
 
   /**
    * Initialize this SocketAddress from a socket's local address.
    *
    * Raises std::system_error on error.
    */
-  void setFromLocalAddress(int socket);
+  void setFromLocalAddress(NetworkSocket socket);
 
   /**
    * Initialize this folly::SocketAddress from a struct sockaddr.
@@ -402,7 +405,7 @@ class SocketAddress {
   socklen_t getActualSize() const;
 
   sa_family_t getFamily() const {
-    DCHECK(external_ || AF_UNIX != storage_.addr.family());
+    assert(external_ || AF_UNIX != storage_.addr.family());
     return external_ ? sa_family_t(AF_UNIX) : storage_.addr.family();
   }
 
@@ -578,9 +581,11 @@ class SocketAddress {
 
   struct addrinfo* getAddrInfo(const char* host, uint16_t port, int flags);
   struct addrinfo* getAddrInfo(const char* host, const char* port, int flags);
-  void setFromAddrInfo(const struct addrinfo* results);
-  void setFromLocalAddr(const struct addrinfo* results);
-  void setFromSocket(int socket, int (*fn)(int, struct sockaddr*, socklen_t*));
+  void setFromAddrInfo(const struct addrinfo* info);
+  void setFromLocalAddr(const struct addrinfo* info);
+  void setFromSocket(
+      NetworkSocket socket,
+      int (*fn)(NetworkSocket, struct sockaddr*, socklen_t*));
   std::string getIpString(int flags) const;
   void getIpString(char* buf, size_t buflen, int flags) const;
 

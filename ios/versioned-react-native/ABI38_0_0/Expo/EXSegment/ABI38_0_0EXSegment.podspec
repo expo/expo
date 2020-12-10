@@ -18,5 +18,5 @@ Pod::Spec.new do |s|
 
   s.dependency 'ABI38_0_0UMCore'
   s.dependency 'ABI38_0_0UMConstantsInterface'
-  s.dependency 'Analytics', '~> 3.7'
+  s.dependency 'Analytics'
 end

@@ -177,14 +177,14 @@ public class Contact {
 
   public String getFirstName() {
     if (firstName == null) {
-      return displayName;
+      return displayName == null ? "" : displayName;
     }
     return firstName;
   }
 
   public String getLastName() {
     if (lastName == null) {
-      return displayName;
+      return displayName == null ? "" : displayName;
     }
     return lastName;
   }

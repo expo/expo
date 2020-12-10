@@ -6,9 +6,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
-static NSString * const kEXPublicKeyTag = @"exp.host.publickey";
-static NSString * const kEXPublicKeyFilename = @"manifestPublicKey.pem";
+static NSString * const EXUpdatesCryptoPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
+static NSString * const EXUpdatesCryptoPublicKeyTag = @"exp.host.publickey";
+static NSString * const EXUpdatesCryptoPublicKeyFilename = @"manifestPublicKey.pem";
 
 @implementation EXUpdatesCrypto
 
@@ -41,7 +41,7 @@ static NSString * const kEXPublicKeyFilename = @"manifestPublicKey.pem";
     return;
   }
 
-  NSURL *cachedPublicKeyUrl = [cacheDirectory URLByAppendingPathComponent:kEXPublicKeyFilename];
+  NSURL *cachedPublicKeyUrl = [cacheDirectory URLByAppendingPathComponent:EXUpdatesCryptoPublicKeyFilename];
   if (useCache) {
     NSData *publicKeyData = [NSData dataWithContentsOfFile:[cachedPublicKeyUrl absoluteString]];
     [[self class] verifyWithPublicKey:publicKeyData signature:signature signedString:data callback:^(BOOL isValid) {
@@ -61,7 +61,7 @@ static NSString * const kEXPublicKeyFilename = @"manifestPublicKey.pem";
     NSURLSessionConfiguration *configuration = NSURLSessionConfiguration.defaultSessionConfiguration;
     configuration.requestCachePolicy = NSURLRequestReloadIgnoringCacheData;
     EXUpdatesFileDownloader *fileDownloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config URLSessionConfiguration:configuration];
-    [fileDownloader downloadFileFromURL:[NSURL URLWithString:kEXPublicKeyUrl]
+    [fileDownloader downloadFileFromURL:[NSURL URLWithString:EXUpdatesCryptoPublicKeyUrl]
                                  toPath:[cachedPublicKeyUrl path]
                            successBlock:^(NSData *publicKeyData, NSURLResponse *response) {
                                           [[self class] verifyWithPublicKey:publicKeyData signature:signature signedString:data callback:successBlock];
@@ -131,7 +131,7 @@ static NSString * const kEXPublicKeyFilename = @"manifestPublicKey.pem";
     return nil;
   }
 
-  NSData *tag = [NSData dataWithBytes:[kEXPublicKeyTag UTF8String] length:[kEXPublicKeyTag length]];
+  NSData *tag = [NSData dataWithBytes:[EXUpdatesCryptoPublicKeyTag UTF8String] length:[EXUpdatesCryptoPublicKeyTag length]];
 
   // Delete any old lingering key with the same tag.
   NSDictionary *deleteParams = @{

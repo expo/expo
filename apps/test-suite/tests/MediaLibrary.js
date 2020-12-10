@@ -1,6 +1,5 @@
 import { Asset } from 'expo-asset';
 import * as MediaLibrary from 'expo-media-library';
-import * as Permissions from 'expo-permissions';
 import { Platform } from 'react-native';
 
 import { waitFor } from './helpers';
@@ -57,8 +56,7 @@ const WRONG_NAME = 'wertyuiopdfghjklvbnhjnftyujn';
 const WRONG_ID = '1234567890';
 
 async function getFiles() {
-  await Promise.all(FILES.map(req => Asset.loadAsync(req)));
-  return FILES.map(file => Asset.fromModule(file));
+  return await Asset.loadAsync(FILES);
 }
 
 async function getAssets(files) {
@@ -95,9 +93,29 @@ export async function test(t) {
     let testAssets;
     let album;
     let files;
+    let permissions;
+
+    const checkIfAllPermissionsWereGranted = () => {
+      if (Platform.OS === 'ios') {
+        return permissions.accessPrivileges === 'all';
+      }
+      return permissions.granted;
+    };
+
+    const oldIt = t.it;
+    t.it = (name, fn) =>
+      oldIt(name, async () => {
+        if (checkIfAllPermissionsWereGranted()) {
+          await fn();
+        }
+      });
 
     async function initializeAsync() {
-      await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      permissions = await MediaLibrary.requestPermissionsAsync();
+      if (!checkIfAllPermissionsWereGranted()) {
+        console.warn('Tests were skipped - not enough permissions to run them.');
+        return;
+      }
       files = await getFiles();
       testAssets = await getAssets(files);
       album = await MediaLibrary.getAlbumAsync(ALBUM_NAME);
@@ -109,8 +127,10 @@ export async function test(t) {
     }
 
     async function cleanupAsync() {
-      await MediaLibrary.deleteAssetsAsync(testAssets);
-      await MediaLibrary.deleteAlbumsAsync(album);
+      if (checkIfAllPermissionsWereGranted()) {
+        await MediaLibrary.deleteAssetsAsync(testAssets);
+        await MediaLibrary.deleteAlbumsAsync(album);
+      }
     }
 
     t.beforeAll(async () => {

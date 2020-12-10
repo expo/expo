@@ -1,6 +1,7 @@
 // tslint:disable max-classes-per-file
 import React from 'react';
 import * as Svg from 'react-native-svg';
+
 import Example from './Example';
 
 class CircleExample extends React.Component {
@@ -52,7 +53,7 @@ class PieCircle extends React.Component {
         <Svg.Circle cx="50" cy="50" r="40" fill="#ddd" />
         <Svg.Circle
           origin="50, 50"
-          rotate="-90"
+          rotation="-90"
           cx="50"
           cy="50"
           r="20"

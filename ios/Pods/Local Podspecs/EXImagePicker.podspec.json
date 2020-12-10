@@ -1,6 +1,6 @@
 {
   "name": "EXImagePicker",
-  "version": "8.4.0",
+  "version": "9.2.1",
   "summary": "Provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.",
   "description": "Provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.",
   "license": "MIT",
@@ -12,9 +12,6 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXImagePicker/**/*.{h,m}",
-  "preserve_paths": "EXImagePicker/**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "UMCore": [
 
@@ -25,5 +22,6 @@
     "UMPermissionsInterface": [
 
     ]
-  }
+  },
+  "source_files": "EXImagePicker/**/*.{h,m}"
 }

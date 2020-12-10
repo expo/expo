@@ -1,1 +1,0 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../src/index.ts"],"names":[],"mappings":"AAAA,IAAI,SAAS,GAAG,KAAK,CAAC;AACtB,IAAI,CAAC,SAAS,EAAE;IACd,SAAS,GAAG,IAAI,CAAC;IACjB,MAAM,IAAI,KAAK,CAAC,oCAAoC,CAAC,CAAC;CACvD","sourcesContent":["let hasWarned = false;\nif (!hasWarned) {\n  hasWarned = true;\n  throw new Error('expo-bluetooth is currently a stub');\n}\n"]}

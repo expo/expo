@@ -14,7 +14,7 @@
 
 static NSDictionary *ABI38_0_0RCTParseKeyboardNotification(NSNotification *notification);
 
-@interface ABI38_0_0RCTKeyboardObserver() <NativeKeyboardObserverSpec>
+@interface ABI38_0_0RCTKeyboardObserver() <ABI38_0_0NativeKeyboardObserverSpec>
 @end
 
 @implementation ABI38_0_0RCTKeyboardObserver

@@ -347,6 +347,7 @@ class MediaPlayerData extends PlayerData implements
 
     if (!mp.isLooping()) {
       mAVModule.abandonAudioFocusIfUnused();
+      stopUpdatingProgressIfNecessary();
     }
   }
 

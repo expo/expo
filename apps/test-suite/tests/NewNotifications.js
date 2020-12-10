@@ -196,6 +196,18 @@ export async function test(t) {
         t.expect(receivedEvent).not.toBeNull();
       });
 
+      t.it('the notification has proper `data` value', async () => {
+        let iterations = 0;
+        while (iterations < 5) {
+          iterations += 1;
+          if (receivedEvent) {
+            break;
+          }
+          await waitFor(1000);
+        }
+        t.expect(receivedEvent.request.content.data.fieldTestedInDataContentsTest).toBe(42);
+      });
+
       t.describe('if handler responds in time', async () => {
         t.it(
           'calls `handleSuccess` callback of the notification handler',
@@ -275,6 +287,7 @@ export async function test(t) {
         });
         t.expect(permissions).toBeDefined();
         t.expect(typeof permissions).toBe('object');
+        t.expect(typeof permissions.status).toBe('string');
       });
     });
 
@@ -597,6 +610,176 @@ export async function test(t) {
       });
     });
 
+    t.describe('Notification Categories', () => {
+      const vanillaButton = {
+        identifier: 'vanillaButton',
+        buttonTitle: 'Plain Option',
+        options: {
+          isDestructive: true,
+          isAuthenticationRequired: true,
+          opensAppToForeground: false,
+        },
+      };
+      const textResponseButton = {
+        identifier: 'textResponseButton',
+        buttonTitle: 'Click to Respond with Text',
+        options: {
+          isDestructive: true,
+          isAuthenticationRequired: true,
+          opensAppToForeground: true,
+        },
+        textInput: { submitButtonTitle: 'Send', placeholder: 'Type Something' },
+      };
+
+      const testCategory1 = {
+        identifier: 'testNotificationCategory1',
+        actions: [vanillaButton],
+        options: {
+          previewPlaceholder: 'preview goes here',
+          customDismissAction: false,
+          allowInCarPlay: false,
+          showTitle: false,
+          showSubtitle: false,
+          allowAnnouncement: false,
+        },
+      };
+      const testCategory2 = {
+        identifier: 'testNotificationCategory2',
+        actions: [vanillaButton, textResponseButton],
+        options: {
+          customDismissAction: false,
+          allowInCarPlay: false,
+          showTitle: true,
+          showSubtitle: true,
+          allowAnnouncement: false,
+        },
+      };
+
+      const allTestCategoryIds = ['testNotificationCategory1', 'testNotificationCategory2'];
+
+      t.describe('getNotificationCategoriesAsync()', () => {
+        let existingCategoriesCount = 0;
+        t.beforeAll(async () => {
+          existingCategoriesCount = (await Notifications.getNotificationCategoriesAsync()).length;
+        });
+
+        t.afterEach(async () => {
+          allTestCategoryIds.forEach(async id => {
+            await Notifications.deleteNotificationCategoryAsync(id);
+          });
+        });
+
+        t.it('returns an empty array if there are no categories', async () => {
+          t.expect((await Notifications.getNotificationCategoriesAsync()).length).toEqual(existingCategoriesCount);
+        });
+
+        t.it('returns an array with the just-created categories', async () => {
+          await Notifications.setNotificationCategoryAsync(
+            testCategory1.identifier,
+            testCategory1.actions,
+            testCategory1.options
+          );
+          await Notifications.setNotificationCategoryAsync(
+            testCategory2.identifier,
+            testCategory2.actions,
+            testCategory2.options
+          );
+          t.expect((await Notifications.getNotificationCategoriesAsync()).length).toEqual(existingCategoriesCount + 2);
+        });
+      });
+
+      t.describe('setNotificationCategoriesAsync()', () => {
+        t.afterEach(async () => {
+          allTestCategoryIds.forEach(async id => {
+            await Notifications.deleteNotificationCategoryAsync(id);
+          });
+        });
+        t.it('creates a category with one action successfully', async () => {
+          const resultCategory = await Notifications.setNotificationCategoryAsync(
+            testCategory1.identifier,
+            testCategory1.actions,
+            testCategory1.options
+          );
+
+          t.expect(testCategory1.identifier).toEqual(resultCategory.identifier);
+          testCategory1.actions.forEach((action, i) => {
+            t.expect(action.identifier).toEqual(resultCategory.actions[i].identifier);
+            t.expect(action.buttonTitle).toEqual(resultCategory.actions[i].buttonTitle);
+            t.expect(action.options).toEqual(
+              t.jasmine.objectContaining(resultCategory.actions[i].options)
+            );
+          });
+          t.expect(testCategory1.options).toEqual(
+            t.jasmine.objectContaining(resultCategory.options)
+          );
+        });
+
+        t.it('creates a category with two actions successfully', async () => {
+          const resultCategory = await Notifications.setNotificationCategoryAsync(
+            testCategory2.identifier,
+            testCategory2.actions,
+            testCategory2.options
+          );
+
+          t.expect(testCategory2.identifier).toEqual(resultCategory.identifier);
+          testCategory2.actions.forEach((action, i) => {
+            t.expect(action.identifier).toEqual(resultCategory.actions[i].identifier);
+            t.expect(action.buttonTitle).toEqual(resultCategory.actions[i].buttonTitle);
+            t.expect(action.options).toEqual(
+              t.jasmine.objectContaining(resultCategory.actions[i].options)
+            );
+          });
+          t.expect(testCategory2.options).toEqual(
+            t.jasmine.objectContaining(resultCategory.options)
+          );
+        });
+      });
+
+      t.describe('deleteNotificationCategoriesAsync()', () => {
+        t.afterEach(async () => {
+          allTestCategoryIds.forEach(async id => {
+            await Notifications.deleteNotificationCategoryAsync(id);
+          });
+        });
+        t.it('deleting a category that does not exist returns false', async () => {
+          const categoriesBefore = await Notifications.getNotificationCategoriesAsync();
+          t.expect(
+            await Notifications.deleteNotificationCategoryAsync('nonExistentCategoryId')
+          ).toBe(false);
+          const categoriesAfter = await Notifications.getNotificationCategoriesAsync();
+          t.expect(categoriesAfter.length).toEqual(categoriesBefore.length);
+        });
+
+        t.it('deleting a category that does exist returns true', async () => {
+          await Notifications.setNotificationCategoryAsync(
+            testCategory2.identifier,
+            testCategory2.actions,
+            testCategory2.options
+          );
+          t.expect(
+            await Notifications.deleteNotificationCategoryAsync('testNotificationCategory2')
+          ).toBe(true);
+        });
+
+        t.it('returns an array of length 1 after creating 2 categories & deleting 1', async () => {
+          await Notifications.setNotificationCategoryAsync(
+            testCategory1.identifier,
+            testCategory1.actions,
+            testCategory1.options
+          );
+          await Notifications.setNotificationCategoryAsync(
+            testCategory2.identifier,
+            testCategory2.actions,
+            testCategory2.options
+          );
+          const categoriesBefore = await Notifications.getNotificationCategoriesAsync();
+          await Notifications.deleteNotificationCategoryAsync('testNotificationCategory1');
+          const categoriesAfter = await Notifications.getNotificationCategoriesAsync();
+          t.expect(categoriesBefore.length - 1).toEqual(categoriesAfter.length);
+        });
+      });
+    });
+
     t.describe('getBadgeCountAsync', () => {
       t.it('resolves with an integer', async () => {
         const badgeCount = await Notifications.getBadgeCountAsync();
@@ -678,18 +861,16 @@ export async function test(t) {
         );
       });
 
-      if (Constants.appOwnership === 'expo') {
+      // TODO: Limited this test to Android platform only as only there we have the "Exponent notification"
+      if (Constants.appOwnership === 'expo' && Platform.OS === 'android') {
         t.it('includes the foreign persistent notification', async () => {
           const displayedNotifications = await Notifications.getPresentedNotificationsAsync();
           t.expect(displayedNotifications).toContain(
             t.jasmine.objectContaining({
               request: t.jasmine.objectContaining({
-                identifier: t.jasmine.stringMatching(/^__expo_foreign_notification__#.*#\d+$/),
-                content: t.jasmine.objectContaining({
-                  data: t.jasmine.objectContaining({
-                    'android.contains.customView': true,
-                  }),
-                }),
+                identifier: t.jasmine.stringMatching(
+                  /^expo-notifications:\/\/foreign_notifications/
+                ),
               }),
             })
           );
@@ -1014,6 +1195,7 @@ export async function test(t) {
           if (Platform.OS === 'android') {
             t.expect(result[0].trigger).toEqual({
               type: 'daily',
+              channelId: null,
               ...trigger,
             });
           } else if (Platform.OS === 'ios') {
@@ -1029,7 +1211,51 @@ export async function test(t) {
               },
             });
           } else {
-            throw new Error('Test does not support platfrom');
+            throw new Error('Test does not support platform');
+          }
+        },
+        4000
+      );
+
+      t.it(
+        'schedules a repeating weekly notification. only first scheduled event is verified.',
+        async () => {
+          const dateNow = new Date();
+          const trigger = {
+            // JS weekday range equals 0 to 6, Sunday equals 0
+            // Native weekday range equals 1 to 7, Sunday equals 1
+            weekday: dateNow.getDay() + 1,
+            hour: dateNow.getHours(),
+            minute: (dateNow.getMinutes() + 2) % 60,
+            repeats: true,
+          };
+          await Notifications.scheduleNotificationAsync({
+            identifier,
+            content: notification,
+            trigger,
+          });
+          const result = await Notifications.getAllScheduledNotificationsAsync();
+          delete trigger.repeats;
+          if (Platform.OS === 'android') {
+            t.expect(result[0].trigger).toEqual({
+              type: 'weekly',
+              channelId: null,
+              ...trigger,
+            });
+          } else if (Platform.OS === 'ios') {
+            t.expect(result[0].trigger).toEqual({
+              type: 'calendar',
+              class: 'UNCalendarNotificationTrigger',
+              repeats: true,
+              dateComponents: {
+                ...trigger,
+                timeZone: null,
+                isLeapMonth: false,
+                calendar: null,
+              },
+            });
+          } else {
+            throw new Error('Test does not support platform');
           }
         },
         4000
@@ -1084,6 +1310,46 @@ export async function test(t) {
           16000
         );
       }
+    });
+
+    t.describe('getNextTriggerDateAsync', () => {
+      if (Platform.OS === 'ios') {
+        t.it('generates trigger date for a calendar trigger', async () => {
+          const nextDate = await Notifications.getNextTriggerDateAsync({ month: 1, hour: 9 });
+          t.expect(nextDate).not.toBeNull();
+        });
+      } else {
+        t.it('fails to generate trigger date for a calendar trigger', async () => {
+          let exception = null;
+          try {
+            await Notifications.getNextTriggerDateAsync({ month: 1, hour: 9, repeats: true });
+          } catch (e) {
+            exception = e;
+          }
+          t.expect(exception).toBeDefined();
+        });
+      }
+
+      t.it('generates trigger date for a daily trigger', async () => {
+        const nextDate = await Notifications.getNextTriggerDateAsync({
+          hour: 9,
+          minute: 20,
+          repeats: true,
+        });
+        t.expect(nextDate).not.toBeNull();
+        t.expect(new Date(nextDate).getHours()).toBe(9);
+        t.expect(new Date(nextDate).getMinutes()).toBe(20);
+      });
+
+      t.it('fails to generate trigger date for the immediate trigger', async () => {
+        let exception = null;
+        try {
+          await Notifications.getNextTriggerDateAsync({ channelId: 'test-channel-id' });
+        } catch (e) {
+          exception = e;
+        }
+        t.expect(exception).toBeDefined();
+      });
     });
 
     t.describe('cancelScheduledNotificationAsync', () => {
@@ -1355,6 +1621,68 @@ export async function test(t) {
         );
       }
     );
+
+    onlyInteractiveDescribe(
+      'triggers a repeating weekly notification. only first scheduled event is awaited and verified.',
+      () => {
+        let timesSpyHasBeenCalled = 0;
+        const identifier = 'test-scheduled-notification';
+        const notification = {
+          title: 'Scheduled notification',
+          data: { key: 'value' },
+          badge: 2,
+          vibrate: [100, 100, 100, 100, 100, 100],
+          color: '#FF0000',
+        };
+
+        t.beforeEach(async () => {
+          await Notifications.cancelAllScheduledNotificationsAsync();
+          Notifications.setNotificationHandler({
+            handleNotification: async () => {
+              timesSpyHasBeenCalled += 1;
+              return {
+                shouldShowAlert: false,
+              };
+            },
+          });
+        });
+
+        t.afterEach(async () => {
+          Notifications.setNotificationHandler(null);
+          await Notifications.cancelAllScheduledNotificationsAsync();
+        });
+
+        t.it(
+          'triggers a repeating weekly notification. only first event is verified.',
+          async () => {
+            // On iOS because we are using the calendar with repeat, it needs to be
+            // greater than 60 seconds
+            const triggerDate = new Date(
+              new Date().getTime() + (Platform.OS === 'ios' ? 120000 : 60000)
+            );
+            await Notifications.scheduleNotificationAsync({
+              identifier,
+              content: notification,
+              trigger: {
+                // JS weekday range equals 0 to 6, Sunday equals 0
+                // Native weekday range equals 1 to 7, Sunday equals 1
+                weekday: triggerDate.getDay() + 1,
+                hour: triggerDate.getHours(),
+                minute: triggerDate.getMinutes(),
+                repeats: true,
+              },
+            });
+            const scheduledTime = new Date(triggerDate);
+            scheduledTime.setSeconds(0);
+            scheduledTime.setMilliseconds(0);
+            const milliSecondsToWait = scheduledTime - new Date().getTime() + 2000;
+            await waitFor(milliSecondsToWait);
+            t.expect(timesSpyHasBeenCalled).toBe(1);
+          },
+          140000
+        );
+      }
+    );
   });
 }
 
@@ -1379,6 +1707,7 @@ async function sendTestPushNotification(expoPushToken, notificationOverrides) {
         to: expoPushToken,
         title: 'Hello from Expo server!',
         data: {
+          fieldTestedInDataContentsTest: 42, // <- it's true, do not remove it
           firstLevelString: 'value',
           firstLevelObject: {
             secondLevelInteger: 2137,

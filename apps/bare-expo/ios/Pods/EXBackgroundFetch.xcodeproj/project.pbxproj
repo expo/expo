@@ -7,27 +7,27 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		29ACCC7A18FEF7383323D79A3CDA672B /* EXBackgroundFetch-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = FC17D7420D59402389A3C95143D4E236 /* EXBackgroundFetch-dummy.m */; };
-		AB75B0DA948C8A633C79B9E6FA24FFF6 /* EXBackgroundFetchTaskConsumer.h in Headers */ = {isa = PBXBuildFile; fileRef = 3065A3071C3BE89317A7E8C1DC5870F3 /* EXBackgroundFetchTaskConsumer.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		B3F999F0933422B5817529B475AB67C6 /* EXBackgroundFetch.m in Sources */ = {isa = PBXBuildFile; fileRef = 36FBA310A317953574E864C77C599621 /* EXBackgroundFetch.m */; };
-		D0AF37C54E078D2AF05EA5D01BDBC379 /* EXBackgroundFetchTaskConsumer.m in Sources */ = {isa = PBXBuildFile; fileRef = 395B7113CDC7AA3A8370ED71D074397F /* EXBackgroundFetchTaskConsumer.m */; };
-		E21169A97857674FDA3C06E0ACD0673B /* EXBackgroundFetch.h in Headers */ = {isa = PBXBuildFile; fileRef = E02F298BAEEACA30D8EBAE26601AAB3E /* EXBackgroundFetch.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		AF0AA0A9B3A3678E94AD955BFCACBD9B /* EXBackgroundFetchTaskConsumer.h in Headers */ = {isa = PBXBuildFile; fileRef = 3065A3071C3BE89317A7E8C1DC5870F3 /* EXBackgroundFetchTaskConsumer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C30908882DD651AE40BFCD81483B1215 /* EXBackgroundFetch.h in Headers */ = {isa = PBXBuildFile; fileRef = E02F298BAEEACA30D8EBAE26601AAB3E /* EXBackgroundFetch.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		DA549EFB557A4DFC3B1AB38D7B2B4F5D /* EXBackgroundFetch-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = FC17D7420D59402389A3C95143D4E236 /* EXBackgroundFetch-dummy.m */; };
+		DA8727B95342346CD9184122D067DD25 /* EXBackgroundFetchTaskConsumer.m in Sources */ = {isa = PBXBuildFile; fileRef = 395B7113CDC7AA3A8370ED71D074397F /* EXBackgroundFetchTaskConsumer.m */; };
+		FDDFB38DEB1575839E51B4D102B4C6D3 /* EXBackgroundFetch.m in Sources */ = {isa = PBXBuildFile; fileRef = 36FBA310A317953574E864C77C599621 /* EXBackgroundFetch.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		6BBE7FD06B738EDA7F94006694911AAF /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 72BD1A624439F4690EC30BAFFE717CFF /* UMCore.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
-			remoteInfo = UMCore;
-		};
-		730AD3ACDF414C45B7551327A8A6A196 /* PBXContainerItemProxy */ = {
+		239C5B267D18A411984069990D8E7DAB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BDED71367B1520A20534D21C679D9009 /* UMTaskManagerInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = A565C99DEFBAFA44A1B5C3B49ADD8A84;
 			remoteInfo = UMTaskManagerInterface;
+		};
+		631534814053A768199D79B6BE369153 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 72BD1A624439F4690EC30BAFFE717CFF /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -47,7 +47,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		8F79A5E9AF4198585451B0B25106DF63 /* Frameworks */ = {
+		B4139FADF9E1E095BDCCA6F11F769CCE /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -128,12 +128,12 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		2EFAF0B96C9AB565BDBFA70F3CFDF616 /* Headers */ = {
+		9F059537FAB1F98E6D4815B4F099E615 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E21169A97857674FDA3C06E0ACD0673B /* EXBackgroundFetch.h in Headers */,
-				AB75B0DA948C8A633C79B9E6FA24FFF6 /* EXBackgroundFetchTaskConsumer.h in Headers */,
+				C30908882DD651AE40BFCD81483B1215 /* EXBackgroundFetch.h in Headers */,
+				AF0AA0A9B3A3678E94AD955BFCACBD9B /* EXBackgroundFetchTaskConsumer.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -142,17 +142,17 @@
 /* Begin PBXNativeTarget section */
 		280658D584B63A5E8CB5F0405789A353 /* EXBackgroundFetch */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 78FDBBA42F6224C080499707400EF85E /* Build configuration list for PBXNativeTarget "EXBackgroundFetch" */;
+			buildConfigurationList = C7932945C72B70AC242E150629CAD5B4 /* Build configuration list for PBXNativeTarget "EXBackgroundFetch" */;
 			buildPhases = (
-				2EFAF0B96C9AB565BDBFA70F3CFDF616 /* Headers */,
-				021463BC164DFC20BBF51DCF80DAC939 /* Sources */,
-				8F79A5E9AF4198585451B0B25106DF63 /* Frameworks */,
+				9F059537FAB1F98E6D4815B4F099E615 /* Headers */,
+				CDC2E948251123C9AC3EA707FBA90131 /* Sources */,
+				B4139FADF9E1E095BDCCA6F11F769CCE /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				4592BFF23DED0FAF04E12BCE5C703F22 /* PBXTargetDependency */,
-				B3BA6FD64D6A65434E986A7CA71BCE5E /* PBXTargetDependency */,
+				0873C864D4ACF278E3D829E32F9EA48F /* PBXTargetDependency */,
+				5D2F609889D320ABF7023D74731ECE9C /* PBXTargetDependency */,
 			);
 			name = EXBackgroundFetch;
 			productName = EXBackgroundFetch;
@@ -195,41 +195,41 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		021463BC164DFC20BBF51DCF80DAC939 /* Sources */ = {
+		CDC2E948251123C9AC3EA707FBA90131 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				29ACCC7A18FEF7383323D79A3CDA672B /* EXBackgroundFetch-dummy.m in Sources */,
-				B3F999F0933422B5817529B475AB67C6 /* EXBackgroundFetch.m in Sources */,
-				D0AF37C54E078D2AF05EA5D01BDBC379 /* EXBackgroundFetchTaskConsumer.m in Sources */,
+				DA549EFB557A4DFC3B1AB38D7B2B4F5D /* EXBackgroundFetch-dummy.m in Sources */,
+				FDDFB38DEB1575839E51B4D102B4C6D3 /* EXBackgroundFetch.m in Sources */,
+				DA8727B95342346CD9184122D067DD25 /* EXBackgroundFetchTaskConsumer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		4592BFF23DED0FAF04E12BCE5C703F22 /* PBXTargetDependency */ = {
+		0873C864D4ACF278E3D829E32F9EA48F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 6BBE7FD06B738EDA7F94006694911AAF /* PBXContainerItemProxy */;
+			targetProxy = 631534814053A768199D79B6BE369153 /* PBXContainerItemProxy */;
 		};
-		B3BA6FD64D6A65434E986A7CA71BCE5E /* PBXTargetDependency */ = {
+		5D2F609889D320ABF7023D74731ECE9C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMTaskManagerInterface;
-			targetProxy = 730AD3ACDF414C45B7551327A8A6A196 /* PBXContainerItemProxy */;
+			targetProxy = 239C5B267D18A411984069990D8E7DAB /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		7103590B8F3E5B42249408618CCBB6C2 /* Debug */ = {
+		20889A6CD1D77DA9108EC4E2A8F3EA1E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 039EBA03978F6F52E9290C7C2F07D8DE /* EXBackgroundFetch.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/EXBackgroundFetch/EXBackgroundFetch-prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				OTHER_LDFLAGS = "";
@@ -246,10 +246,37 @@
 			};
 			name = Debug;
 		};
-		A65E88A7B2B9CBA5E5DB6EAF9742FB3F /* Release */ = {
+		4A35BED92A85DDA67078220060448E70 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 41E4C06E2E5D3A717905E4DF03CA3C91 /* EXBackgroundFetch.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/EXBackgroundFetch/EXBackgroundFetch-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXBackgroundFetch;
+				PRODUCT_NAME = EXBackgroundFetch;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		D27CAD877F95D6957CD0C6F5770A89C7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -272,6 +299,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -306,36 +334,11 @@
 			};
 			name = Release;
 		};
-		B795B4F9605A038109A2D6E03B9B1A7F /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 41E4C06E2E5D3A717905E4DF03CA3C91 /* EXBackgroundFetch.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXBackgroundFetch/EXBackgroundFetch-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXBackgroundFetch;
-				PRODUCT_NAME = EXBackgroundFetch;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		F33F9945B58DEC40F6ECB6879887CC59 /* Debug */ = {
+		DAC82F85C1054F07107122A1D58EF8D1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -358,6 +361,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -402,17 +406,17 @@
 		1299C83AD861366B0E06F259E430137D /* Build configuration list for PBXProject "EXBackgroundFetch" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				F33F9945B58DEC40F6ECB6879887CC59 /* Debug */,
-				A65E88A7B2B9CBA5E5DB6EAF9742FB3F /* Release */,
+				DAC82F85C1054F07107122A1D58EF8D1 /* Debug */,
+				D27CAD877F95D6957CD0C6F5770A89C7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		78FDBBA42F6224C080499707400EF85E /* Build configuration list for PBXNativeTarget "EXBackgroundFetch" */ = {
+		C7932945C72B70AC242E150629CAD5B4 /* Build configuration list for PBXNativeTarget "EXBackgroundFetch" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				7103590B8F3E5B42249408618CCBB6C2 /* Debug */,
-				B795B4F9605A038109A2D6E03B9B1A7F /* Release */,
+				20889A6CD1D77DA9108EC4E2A8F3EA1E /* Debug */,
+				4A35BED92A85DDA67078220060448E70 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

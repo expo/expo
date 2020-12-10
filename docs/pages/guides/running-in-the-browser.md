@@ -11,7 +11,7 @@ As of SDK 33 you can use Expo to create web apps that run in the browser using t
 Starting in _SDK 33_ projects bootstrapped with the Expo CLI will have web support from the start. To add web support to an existing Expo app you can do the following:
 
 - Install the latest version of the Expo CLI: `npm i -g expo-cli`
-- Add web dependencies: `yarn add react-native-web react-dom`
+- Add web dependencies: `yarn add react-native-web@~0.11 react-dom`
   - Ensure your project has at least `expo@^33.0.0` installed.
 - Start your project with `expo start` then press `w` to start Webpack and open the project in the browser.
 
@@ -34,12 +34,12 @@ The Expo Unimodules and dev-tools are highly composable and can be used in _any_
 
 ### Create React App & React Native CLI
 
- Here is how to use the web portion of the modules in a project bootstrapped with either the React Native CLI (`react-native init`) or Create React App ([`create-react-app`](https://github.com/facebook/create-react-app)).
+Here is how to use the web portion of the modules in a project bootstrapped with either the React Native CLI (`react-native init`) or Create React App ([`create-react-app`](https://github.com/facebook/create-react-app)).
 
 - Install the latest version of the Expo CLI: `npm i -g expo-cli`
-- Add web dependencies: `yarn add react-native-web react-dom expo`
+- Add web dependencies: `yarn add react-native-web@~0.11 react-dom expo`
   - On web all of the unused Expo, and React Native modules will be tree-shaken during the production build.
-- Modify (or create) your project's [`app.json`](../../workflow/configuration/):
+- Modify (or create) your project's [`app.json`](../workflow/configuration.md):
 
   ```diff
   {
@@ -116,7 +116,6 @@ To use Expo for both web and native:
   ```
 - Delete the `index.js` because `AppEntry` uses the `App.js` file in your root directory as the main component.
   - You don't need to invoke `ReactDOM.render` or `AppRegistry.registerComponent` because `AppEntry` will do this for you for each platform.
-
 
 [rnw]: https://github.com/necolas/react-native-web/
 [forums]: http://forums.expo.io/

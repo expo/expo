@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useMemo, useEffect, useState } from 'react';
 
 import { AuthRequest } from './AuthRequest';
 import { AuthRequestConfig, AuthRequestPromptOptions } from './AuthRequest.types';
@@ -22,6 +22,84 @@ export function useAutoDiscovery(issuerOrDiscovery: IssuerOrDiscovery): Discover
   return discovery;
 }
 
+export function useLoadedAuthRequest(
+  config: AuthRequestConfig,
+  discovery: DiscoveryDocument | null,
+  AuthRequestInstance: typeof AuthRequest
+): AuthRequest | null {
+  const [request, setRequest] = useState<AuthRequest | null>(null);
+  const scopeString = useMemo(() => config.scopes?.join(','), [config.scopes]);
+  const extraParamsString = useMemo(() => JSON.stringify(config.extraParams || {}), [
+    config.extraParams,
+  ]);
+  useEffect(
+    () => {
+      let isMounted = true;
+
+      if (discovery) {
+        const request = new AuthRequestInstance(config);
+        request.makeAuthUrlAsync(discovery).then(() => {
+          if (isMounted) {
+            // @ts-ignore
+            setRequest(request);
+          }
+        });
+      }
+      return () => {
+        isMounted = false;
+      };
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      discovery?.authorizationEndpoint,
+      config.clientId,
+      config.redirectUri,
+      config.responseType,
+      config.prompt,
+      config.clientSecret,
+      config.codeChallenge,
+      config.state,
+      config.usePKCE,
+      scopeString,
+      extraParamsString,
+    ]
+  );
+  return request;
+}
+
+type PromptMethod = (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>;
+
+export function useAuthRequestResult(
+  request: AuthRequest | null,
+  discovery: DiscoveryDocument | null,
+  customOptions: AuthRequestPromptOptions = {}
+): [AuthSessionResult | null, PromptMethod] {
+  const [result, setResult] = useState<AuthSessionResult | null>(null);
+
+  const promptAsync = useCallback(
+    async ({ windowFeatures = {}, ...options }: AuthRequestPromptOptions = {}) => {
+      if (!discovery || !request) {
+        throw new Error('Cannot prompt to authenticate until the request has finished loading.');
+      }
+      const inputOptions = {
+        ...customOptions,
+        ...options,
+        windowFeatures: {
+          ...(customOptions.windowFeatures ?? {}),
+          ...windowFeatures,
+        },
+      };
+      const result = await request?.promptAsync(discovery, inputOptions);
+      setResult(result);
+      return result;
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [request?.url, discovery?.authorizationEndpoint]
+  );
+
+  return [result, promptAsync];
+}
+
 /**
  * Load an authorization request.
  * Returns a loaded request, a response, and a prompt method.
@@ -38,38 +116,7 @@ export function useAuthRequest(
   AuthSessionResult | null,
   (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>
 ] {
-  const [request, setRequest] = useState<AuthRequest | null>(null);
-  const [result, setResult] = useState<AuthSessionResult | null>(null);
-
-  const promptAsync = useCallback(
-    async (options: AuthRequestPromptOptions = {}) => {
-      if (!discovery || !request) {
-        throw new Error('Cannot prompt to authenticate until the request has finished loading.');
-      }
-      const result = await request?.promptAsync(discovery, options);
-      setResult(result);
-      return result;
-    },
-    [request?.url, discovery?.authorizationEndpoint]
-  );
-
-  useEffect(() => {
-    if (discovery) {
-      const request = new AuthRequest(config);
-      request.makeAuthUrlAsync(discovery).then(() => setRequest(request));
-    }
-  }, [
-    discovery?.authorizationEndpoint,
-    config.clientId,
-    config.redirectUri,
-    config.prompt,
-    config.scopes.join(','),
-    config.clientSecret,
-    config.codeChallenge,
-    config.state,
-    JSON.stringify(config.extraParams || {}),
-    config.usePKCE,
-  ]);
-
+  const request = useLoadedAuthRequest(config, discovery, AuthRequest);
+  const [result, promptAsync] = useAuthRequestResult(request, discovery);
   return [request, result, promptAsync];
 }

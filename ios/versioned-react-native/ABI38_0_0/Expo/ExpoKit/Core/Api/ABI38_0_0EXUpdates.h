@@ -22,9 +22,9 @@ didRequestManifestWithCacheBehavior:(ABI38_0_0EXManifestCacheBehavior)cacheBehav
               success:(void (^)(NSDictionary * _Nonnull))success
               failure:(void (^)(NSError * _Nonnull))failure;
 - (void)updatesModule:(id)scopedModule
-didRequestBundleWithManifest:(NSDictionary *)manifest
-             progress:(void (^)(NSDictionary * _Nonnull))progress
-              success:(void (^)(NSData * _Nonnull))success
+didRequestBundleWithCompletionQueue:(dispatch_queue_t)completionQueue
+                start:(void (^)(void))startBlock
+              success:(void (^)(NSDictionary * _Nullable))success
               failure:(void (^)(NSError * _Nonnull))failure;
 
 @end

@@ -1,6 +1,6 @@
 {
   "name": "EXTaskManager",
-  "version": "8.4.0",
+  "version": "8.6.0",
   "summary": "Expo module that provides support for tasks that can run in the background.",
   "description": "Expo module that provides support for tasks that can run in the background.",
   "license": "MIT",
@@ -12,9 +12,6 @@
   "source": {
     "git": "https://github.com/expo/expo-task-manager.git"
   },
-  "source_files": "EXTaskManager/**/*.{h,m}",
-  "preserve_paths": "EXTaskManager/**/*.{h,m}",
-  "requires_arc": true,
   "dependencies": {
     "UMCore": [
 
@@ -28,5 +25,6 @@
     "UMAppLoader": [
 
     ]
-  }
+  },
+  "source_files": "EXTaskManager/**/*.{h,m}"
 }

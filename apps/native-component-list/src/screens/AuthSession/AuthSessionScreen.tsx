@@ -1,12 +1,15 @@
 import { H2 } from '@expo/html-elements';
 import * as AuthSession from 'expo-auth-session';
-import { useAuthRequest, TokenTypeHint } from 'expo-auth-session';
+import { useAuthRequest } from 'expo-auth-session';
+import * as FacebookAuthSession from 'expo-auth-session/providers/facebook';
+import * as GoogleAuthSession from 'expo-auth-session/providers/google';
 import Constants from 'expo-constants';
 import { maybeCompleteAuthSession } from 'expo-web-browser';
 import React from 'react';
 import { Platform, ScrollView, View } from 'react-native';
 
 import { getGUID } from '../../api/guid';
+import TitledPicker from '../../components/TitledPicker';
 import TitledSwitch from '../../components/TitledSwitch';
 import { AuthSection } from './AuthResult';
 import LegacyAuthSession from './LegacyAuthSession';
@@ -15,10 +18,17 @@ maybeCompleteAuthSession();
 
 const isInClient = Platform.OS !== 'web' && Constants.appOwnership === 'expo';
 
+const languages = [
+  { key: 'en', value: 'English' },
+  { key: 'pl', value: 'Polish' },
+  { key: 'nl', value: 'Dutch' },
+  { key: 'fi', value: 'Finnish' },
+];
 export default function AuthSessionScreen() {
   const [useProxy, setProxy] = React.useState<boolean>(false);
   const [usePKCE, setPKCE] = React.useState<boolean>(true);
   const [prompt, setSwitch] = React.useState<undefined | AuthSession.Prompt>(undefined);
+  const [language, setLanguage] = React.useState<any>(languages[0].key);
 
   return (
     <View style={{ flex: 1, alignItems: 'center' }}>
@@ -41,9 +51,20 @@ export default function AuthSessionScreen() {
             setValue={value => setSwitch(value ? AuthSession.Prompt.SelectAccount : undefined)}
           />
           <TitledSwitch title="Use PKCE" value={usePKCE} setValue={setPKCE} />
+          <TitledPicker
+            items={languages}
+            title="Language"
+            value={language}
+            setValue={setLanguage}
+          />
         </View>
         <H2>Services</H2>
-        <AuthSessionProviders prompt={prompt} usePKCE={usePKCE} useProxy={useProxy} />
+        <AuthSessionProviders
+          prompt={prompt}
+          usePKCE={usePKCE}
+          useProxy={useProxy}
+          language={language}
+        />
         <H2>Legacy</H2>
         <LegacyAuthSession />
       </ScrollView>
@@ -59,8 +80,9 @@ function AuthSessionProviders(props: {
   useProxy: boolean;
   usePKCE: boolean;
   prompt?: AuthSession.Prompt;
+  language: string;
 }) {
-  const { useProxy, usePKCE, prompt } = props;
+  const { useProxy, usePKCE, prompt, language } = props;
 
   const redirectUri = AuthSession.makeRedirectUri({
     native: 'bareexpo://redirect',
@@ -73,14 +95,17 @@ function AuthSessionProviders(props: {
     usePKCE,
     prompt,
     redirectUri,
+    language,
   };
 
   const providers = [
+    Google,
+    GoogleFirebase,
     Facebook,
     Spotify,
+    Strava,
     Twitch,
     Dropbox,
-    Google,
     Reddit,
     Github,
     Coinbase,
@@ -100,138 +125,112 @@ function AuthSessionProviders(props: {
   );
 }
 
-function Google({ useProxy, prompt, usePKCE }: any) {
-  const redirectUri = AuthSession.makeRedirectUri({
-    path: 'redirect',
-    preferLocalhost: true,
-    useProxy,
-    native: `com.googleusercontent.apps.${getGUID()}:/oauthredirect`,
-  });
-
-  const discovery = AuthSession.useAutoDiscovery('https://accounts.google.com');
-
-  const [request, result, promptAsync] = useAuthRequest(
+function Google({ prompt, language, usePKCE }: any) {
+  const [request, result, promptAsync] = GoogleAuthSession.useAuthRequest(
     {
-      clientId: useProxy
-        ? '29635966244-bc5tjrdacdaktqorhinsbtda80tchl7n.apps.googleusercontent.com'
-        : getGUID(),
-      redirectUri,
-      prompt,
-      scopes: ['profile', 'email', 'openid'],
+      language,
+      expoClientId: '629683148649-qevd4mfvh06q14i4nl453r62sgd1p85d.apps.googleusercontent.com',
+      clientId: `${getGUID()}.apps.googleusercontent.com`,
+      selectAccount: !!prompt,
       usePKCE,
     },
-    discovery
+    {
+      path: 'redirect',
+      preferLocalhost: true,
+    }
   );
 
-  const [access, setAccess] = React.useState<null | AuthSession.TokenResponse>(null);
-  const clientSecret = '';
-  // Code exchange test
   React.useEffect(() => {
-    if (!clientSecret || access || !request || !discovery || result?.type !== 'success') {
-      return;
+    if (request && result?.type === 'success') {
+      console.log('Result: ', result.authentication);
     }
-
-    if (result.params.code) {
-      AuthSession.exchangeCodeAsync(
-        {
-          clientId: request.clientId,
-          clientSecret: request.clientSecret ?? clientSecret,
-          redirectUri: request.redirectUri,
-          scopes: request.scopes,
-          code: result.params.code,
-          extraParams: {
-            // @ts-ignore: allow for instances where PKCE is disabled
-            code_verifier: request.codeVerifier,
-          },
-        },
-        discovery
-      ).then(token => {
-        setAccess(token);
-      });
-    } else if (result.params.access_token) {
-      setAccess(AuthSession.TokenResponse.fromQueryParams(result.params));
-    } else {
-      console.warn('unexpected response: ', result);
-    }
-  }, [access, result, discovery, request]);
-
-  // Revocation test
-  React.useEffect(() => {
-    if (!request || !access || !discovery) return;
-
-    console.log('Revoking: ', access);
-
-    AuthSession.revokeAsync(
-      {
-        token: access.accessToken,
-        // tokenTypeHint: TokenTypeHint.AccessToken,
-        // clientId: request?.clientId,
-        // clientSecret: request?.clientSecret,
-        // scopes: request.scopes,
-      },
-      discovery
-    ).then(result => {
-      console.log('Revoked', result);
-    });
-  }, [request, access, discovery]);
+  }, [result]);
 
   return (
     <AuthSection
-      disabled={!useProxy && isInClient}
       request={request}
-      tokenResponse={access}
       title="google"
       result={result}
-      promptAsync={() => promptAsync({ useProxy, windowFeatures: { width: 515, height: 680 } })}
-      useProxy={useProxy}
+      promptAsync={() => promptAsync()}
+    />
+  );
+}
+
+function GoogleFirebase({ prompt, language, usePKCE }: any) {
+  const [request, result, promptAsync] = GoogleAuthSession.useIdTokenAuthRequest(
+    {
+      language,
+      expoClientId: '629683148649-qevd4mfvh06q14i4nl453r62sgd1p85d.apps.googleusercontent.com',
+      clientId: `${getGUID()}.apps.googleusercontent.com`,
+      selectAccount: !!prompt,
+      usePKCE,
+    },
+    {
+      path: 'redirect',
+      preferLocalhost: true,
+    }
+  );
+
+  React.useEffect(() => {
+    if (request && result?.type === 'success') {
+      console.log('Result:', result.params.id_token);
+    }
+  }, [result]);
+
+  return (
+    <AuthSection
+      request={request}
+      title="google_firebase"
+      result={result}
+      promptAsync={() => promptAsync()}
     />
   );
 }
 
 // Couldn't get this working. API is really confusing.
-function Azure({ useProxy, prompt, usePKCE }: any) {
-  const redirectUri = AuthSession.makeRedirectUri({
-    path: 'redirect',
-    preferLocalhost: true,
-    useProxy,
-    native: Platform.select<string>({
-      ios: 'msauth.dev.expo.Payments://auth',
-      android: 'msauth://dev.expo.payments/sZs4aocytGUGvP1%2BgFAavaPMPN0%3D',
-    }),
-  });
+// function Azure({ useProxy, prompt, usePKCE }: any) {
+//   const redirectUri = AuthSession.makeRedirectUri({
+//     path: 'redirect',
+//     preferLocalhost: true,
+//     useProxy,
+//     native: Platform.select<string>({
+//       ios: 'msauth.dev.expo.Payments://auth',
+//       android: 'msauth://dev.expo.payments/sZs4aocytGUGvP1%2BgFAavaPMPN0%3D',
+//     }),
+//   });
 
-  // 'https://login.microsoftonline.com/your-tenant-id/v2.0',
-  const discovery = AuthSession.useAutoDiscovery(
-    'https://login.microsoftonline.com/f8cdef31-a31e-4b4a-93e4-5f571e91255a/v2.0'
-  );
-  const [request, result, promptAsync] = useAuthRequest(
-    // config
-    {
-      clientId: '96891596-721b-4ae1-8e67-674809373165',
-      redirectUri,
-      prompt,
-      extraParams: {
-        domain_hint: 'live.com',
-      },
-      // redirectUri: 'msauth.{bundleId}://auth',
-      scopes: ['openid', 'profile', 'email', 'offline_access'],
-      usePKCE,
-    },
-    // discovery
-    discovery
-  );
+//   // 'https://login.microsoftonline.com/your-tenant-id/v2.0',
+//   const discovery = AuthSession.useAutoDiscovery(
+//     'https://login.microsoftonline.com/f8cdef31-a31e-4b4a-93e4-5f571e91255a/v2.0'
+//   );
+//   const [request, result, promptAsync] = useAuthRequest(
+//     // config
+//     {
+//       clientId: '96891596-721b-4ae1-8e67-674809373165',
+//       redirectUri,
+//       prompt,
+//       extraParams: {
+//         domain_hint: 'live.com',
+//       },
+//       // redirectUri: 'msauth.{bundleId}://auth',
+//       scopes: ['openid', 'profile', 'email', 'offline_access'],
+//       usePKCE,
+//     },
+//     // discovery
+//     discovery
+//   );
 
-  return (
-    <AuthSection
-      title="azure"
-      disabled={isInClient}
-      request={request}
-      result={result}
-      promptAsync={promptAsync}
-      useProxy={useProxy}
-    />
-  );
-}
+//   return (
+//     <AuthSection
+//       title="azure"
+//       disabled={isInClient}
+//       request={request}
+//       result={result}
+//       promptAsync={promptAsync}
+//       useProxy={useProxy}
+//     />
+//   );
+// }
 
 function Okta({ redirectUri, usePKCE, useProxy }: any) {
   const discovery = AuthSession.useAutoDiscovery('https://dev-720924.okta.com/oauth2/default');
@@ -444,42 +443,28 @@ function FitBit({ redirectUri, prompt, usePKCE, useProxy }: any) {
   );
 }
 
-function Facebook({ usePKCE, prompt, useProxy }: any) {
-  const redirectUri = AuthSession.makeRedirectUri({
-    path: 'redirect',
-    preferLocalhost: true,
-    useProxy,
-    native: `fb145668956753819://authorize`,
-  });
-
-  const [request, result, promptAsync] = useAuthRequest(
+function Facebook({ usePKCE, useProxy, language }: any) {
+  const [request, result, promptAsync] = FacebookAuthSession.useAuthRequest(
     {
       clientId: '145668956753819',
-      redirectUri,
-      scopes: ['public_profile', 'user_likes'],
       usePKCE,
-      prompt,
-      extraParams: {
-        display: 'popup',
-        // Rerequest decliened permissions, to test this,
-        // add "email" to the scopes and try again (be sure not to allow email permission).
-        auth_type: 'rerequest',
-      },
+      language,
+      scopes: ['user_likes'],
     },
     {
-      authorizationEndpoint: 'https://www.facebook.com/v6.0/dialog/oauth',
-      tokenEndpoint: 'https://graph.facebook.com/v6.0/oauth/access_token',
+      path: 'redirect',
+      preferLocalhost: true,
+      useProxy,
     }
   );
+  // Add fetch user example
 
   return (
     <AuthSection
       title="facebook"
-      disabled={isInClient && !useProxy}
       request={request}
       result={result}
-      promptAsync={() => promptAsync({ useProxy, windowFeatures: { width: 700, height: 600 } })}
-      useProxy={useProxy}
+      promptAsync={() => promptAsync()}
     />
   );
 }
@@ -541,6 +526,52 @@ function Spotify({ redirectUri, prompt, usePKCE, useProxy }: any) {
   return (
     <AuthSection
       title="spotify"
+      request={request}
+      result={result}
+      promptAsync={promptAsync}
+      useProxy={useProxy}
+    />
+  );
+}
+
+function Strava({ redirectUri, prompt, usePKCE, useProxy }: any) {
+  const discovery = {
+    authorizationEndpoint: 'https://www.strava.com/oauth/mobile/authorize',
+    tokenEndpoint: 'https://www.strava.com/oauth/token',
+  };
+  const [request, result, promptAsync] = useAuthRequest(
+    {
+      clientId: '51935',
+      redirectUri,
+      scopes: ['activity:read_all'],
+      usePKCE,
+      prompt,
+    },
+    discovery
+  );
+
+  React.useEffect(() => {
+    if (request && result?.type === 'success' && result.params.code) {
+      AuthSession.exchangeCodeAsync(
+        {
+          clientId: request?.clientId,
+          redirectUri,
+          code: result.params.code,
+          extraParams: {
+            // You must use the extraParams variation of clientSecret.
+            client_secret: '...',
+          },
+        },
+        discovery
+      ).then(result => {
+        console.log('RES: ', result);
+      });
+    }
+  }, [result]);
+
+  return (
+    <AuthSection
+      title="strava"
       request={request}
       result={result}
       promptAsync={promptAsync}

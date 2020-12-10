@@ -67,9 +67,7 @@ static SEL whenInUseAuthorizationSelector;
   
   return @{
            @"status": @(status),
-           @"ios": @{
-               @"scope": scope,
-               },
+           @"scope": scope
            };
 }
 

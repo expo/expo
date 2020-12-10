@@ -1,11 +1,10 @@
 import hoistNonReactStatics from 'hoist-non-react-statics';
 import * as React from 'react';
-import { useSelector } from 'react-redux';
 
-import isUserAuthenticated from './isUserAuthenticated';
+import { useIsAuthenticated } from './isUserAuthenticated';
 
 function Authenticated({ children }: { children: any }) {
-  const isAuthenticated = useSelector(data => isUserAuthenticated(data.session));
+  const isAuthenticated = useIsAuthenticated();
   if (isAuthenticated) {
     return children;
   }

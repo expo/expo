@@ -1,6 +1,9 @@
 import { NotificationFeedbackType, ImpactFeedbackStyle } from './Haptics.types';
+/** @deprecated Use `Haptics.notificationAsync` instead. */
 export declare function notification(type?: NotificationFeedbackType): Promise<void>;
+/** @deprecated Use `Haptics.impactAsync` instead */
 export declare function impact(style?: ImpactFeedbackStyle): Promise<void>;
+/** @deprecated Use `Haptics.selectionAsync` instead */
 export declare function selection(): Promise<void>;
 /**
  * Triggers notification feedback.

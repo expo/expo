@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI39_0_0/Expo/UMSensorsInterface/ABI39_0_0UMSensorsInterface/ABI39_0_0UMAccelerometerInterface.h

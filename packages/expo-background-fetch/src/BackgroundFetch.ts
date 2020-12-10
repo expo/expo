@@ -1,37 +1,25 @@
-import { NativeModulesProxy, Platform, UnavailabilityError } from '@unimodules/core';
+import { Platform, UnavailabilityError } from '@unimodules/core';
 import * as TaskManager from 'expo-task-manager';
 
-const { ExpoBackgroundFetch } = NativeModulesProxy;
-
-enum BackgroundFetchResult {
-  NoData = 1,
-  NewData = 2,
-  Failed = 3,
-}
-
-enum BackgroundFetchStatus {
-  Denied = 1,
-  Restricted = 2,
-  Available = 3,
-}
-
-export interface BackgroundFetchOptions {
-  minimumInterval?: number;
-  stopOnTerminate?: boolean;
-  startOnBoot?: boolean;
-}
+import {
+  BackgroundFetchOptions,
+  BackgroundFetchResult,
+  BackgroundFetchStatus,
+} from './BackgroundFetch.types';
+import ExpoBackgroundFetch from './ExpoBackgroundFetch';
 
 export async function getStatusAsync(): Promise<BackgroundFetchStatus | null> {
-  if (Platform.OS !== 'ios') {
+  if (Platform.OS === 'android') {
     return BackgroundFetchStatus.Available;
   }
   return ExpoBackgroundFetch.getStatusAsync();
 }
 
 export async function setMinimumIntervalAsync(minimumInterval: number): Promise<void> {
-  if (Platform.OS !== 'ios') {
+  if (!ExpoBackgroundFetch.setMinimumIntervalAsync) {
     return;
   }
+  // iOS only
   await ExpoBackgroundFetch.setMinimumIntervalAsync(minimumInterval);
 }
 

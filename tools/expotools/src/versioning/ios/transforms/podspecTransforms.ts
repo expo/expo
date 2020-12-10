@@ -33,6 +33,12 @@ export function podspecTransforms(versionName: string): TransformPipeline {
         with: `{${versionName}$1,${versionName}$2}`,
       },
       {
+        // Prefixes conflicting AccessibilityResources
+        paths: 'React-Core.podspec',
+        replace: /"AccessibilityResources"/g,
+        with: `"${versionName}AccessibilityResources"`,
+      },
+      {
         // Fixes HEADER_SEARCH_PATHS
         paths: ['React-Core.podspec', 'ReactCommon.podspec'],
         replace: /(Headers\/Private\/)(React-Core)/g,

@@ -61,7 +61,7 @@ ABI38_0_0RCT_ENUM_CONVERTER(
 
 #if !TARGET_OS_TV
 
-@interface ABI38_0_0RCTStatusBarManager() <NativeStatusBarManagerIOSSpec>
+@interface ABI38_0_0RCTStatusBarManager() <ABI38_0_0NativeStatusBarManagerIOSSpec>
 @end
 
 #endif

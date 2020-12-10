@@ -24,10 +24,12 @@ import java.util.Map;
 
 import host.exp.exponent.AppLoader;
 import host.exp.exponent.Constants;
+import host.exp.exponent.ExpoUpdatesAppLoader;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.RNObject;
 import host.exp.exponent.experience.DetachedModuleRegistryAdapter;
 import host.exp.exponent.kernel.ExponentUrls;
+import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.taskManager.AppLoaderInterface;
 import host.exp.exponent.taskManager.AppRecordInterface;
 import host.exp.exponent.utils.AsyncCondition;
@@ -84,7 +86,7 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
     mCallback = callback;
     mActivityId = ExpoActivityIds.getNextHeadlessActivityId();
 
-    new AppLoader(mManifestUrl, true) {
+    new ExpoUpdatesAppLoader(mManifestUrl, new ExpoUpdatesAppLoader.AppLoaderCallback() {
       @Override
       public void onOptimisticManifest(final JSONObject optimisticManifest) {
       }
@@ -105,7 +107,9 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
 
       @Override
       public void onBundleCompleted(String localBundlePath) {
-        setBundle(localBundlePath);
+        Exponent.getInstance().runOnUiThread(() -> {
+          setBundle(localBundlePath);
+        });
       }
 
       @Override
@@ -113,15 +117,16 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
       }
 
       @Override
-      public void onError(Exception e) {
-        mCallback.onComplete(false, new Exception(e.getMessage()));
+      public void updateStatus(ExpoUpdatesAppLoader.AppLoaderStatus status) {
       }
 
       @Override
-      public void onError(String e) {
-        mCallback.onComplete(false, new Exception(e));
+      public void onError(Exception e) {
+        Exponent.getInstance().runOnUiThread(() -> {
+          mCallback.onComplete(false, new Exception(e.getMessage()));
+        });
       }
-    }.start();
+    }, true).start(mContext);
 
     return mAppRecord;
   }
@@ -130,6 +135,9 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
     mManifestUrl = manifestUrl;
     mManifest = manifest;
     mSdkVersion = manifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
+
+    // Notifications logic uses this to determine which experience to route a notification to
+    ExponentDB.saveExperience(mManifestUrl, manifest, bundleUrl);
 
     // Sometime we want to release a new version without adding a new .aar. Use TEMPORARY_ABI_VERSION
     // to point to the unversioned code in ReactAndroid.
@@ -216,7 +224,7 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
   @SuppressWarnings("unchecked")
   private List<ReactPackage> reactPackages() {
     if (!Constants.isStandaloneApp()) {
-      // Pass null if it's on Expo Client. In that case packages from ExperiencePackagePicker will be used instead.
+      // Pass null if it's on Expo Go. In that case packages from ExperiencePackagePicker will be used instead.
       return null;
     }
     try {
@@ -231,7 +239,7 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
   @SuppressWarnings("unchecked")
   public List<Package> expoPackages() {
     if (!Constants.isStandaloneApp()) {
-      // Pass null if it's on Expo Client. In that case packages from ExperiencePackagePicker will be used instead.
+      // Pass null if it's on Expo Go. In that case packages from ExperiencePackagePicker will be used instead.
       return null;
     }
     try {
@@ -297,7 +305,7 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
     RNObject builder = versionedUtils.callRecursive("getReactInstanceManagerBuilder", instanceManagerBuilderProperties);
 
     // Since there is no activity to be attached, we cannot set ReactInstanceManager state to RESUMED, so we opt to BEFORE_RESUME
-    builder.call("setInitialLifecycleState", LifecycleState.BEFORE_RESUME);
+    builder.call("setInitialLifecycleState", RNObject.versionedEnum(mSDKVersion, "com.facebook.react.common.LifecycleState", "BEFORE_RESUME"));
 
     if (extraNativeModules != null) {
       for (Object nativeModule : extraNativeModules) {

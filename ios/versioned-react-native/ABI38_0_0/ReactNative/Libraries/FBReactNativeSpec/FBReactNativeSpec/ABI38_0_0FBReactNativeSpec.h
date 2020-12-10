@@ -26,7 +26,7 @@
 #import <vector>
 
 
-@protocol NativeAccessibilityInfoSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeAccessibilityInfoSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)isReduceMotionEnabled:(ABI38_0_0RCTResponseSenderBlock)onSuccess;
 - (void)isTouchExplorationEnabled:(ABI38_0_0RCTResponseSenderBlock)onSuccess;
@@ -74,7 +74,7 @@ namespace JS {
 @interface ABI38_0_0RCTCxxConvert (NativeAccessibilityManager_SpecSetAccessibilityContentSizeMultipliersJSMultipliers)
 + (ABI38_0_0RCTManagedPointer *)JS_NativeAccessibilityManager_SpecSetAccessibilityContentSizeMultipliersJSMultipliers:(id)json;
 @end
-@protocol NativeAccessibilityManagerSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeAccessibilityManagerSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)getCurrentBoldTextState:(ABI38_0_0RCTResponseSenderBlock)onSuccess
                         onError:(ABI38_0_0RCTResponseSenderBlock)onError;
@@ -168,7 +168,7 @@ namespace JS {
 @interface ABI38_0_0RCTCxxConvert (NativeActionSheetManager_SpecShowShareActionSheetWithOptionsFailureCallbackError)
 + (ABI38_0_0RCTManagedPointer *)JS_NativeActionSheetManager_SpecShowShareActionSheetWithOptionsFailureCallbackError:(id)json;
 @end
-@protocol NativeActionSheetManagerSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeActionSheetManagerSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)showActionSheetWithOptions:(JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions &)options
                           callback:(ABI38_0_0RCTResponseSenderBlock)callback;
@@ -213,7 +213,7 @@ namespace JS {
 @interface ABI38_0_0RCTCxxConvert (NativeAlertManager_Args)
 + (ABI38_0_0RCTManagedPointer *)JS_NativeAlertManager_Args:(id)json;
 @end
-@protocol NativeAlertManagerSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeAlertManagerSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)alertWithArgs:(JS::NativeAlertManager::Args &)args
              callback:(ABI38_0_0RCTResponseSenderBlock)callback;
@@ -265,7 +265,7 @@ namespace JS {
 @interface ABI38_0_0RCTCxxConvert (NativeAnimatedModule_EventMapping)
 + (ABI38_0_0RCTManagedPointer *)JS_NativeAnimatedModule_EventMapping:(id)json;
 @end
-@protocol NativeAnimatedModuleSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeAnimatedModuleSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)createAnimatedNode:(double)tag
                     config:(NSDictionary *)config;
@@ -315,7 +315,7 @@ namespace ABI38_0_0facebook {
     };
   } // namespace ABI38_0_0React
 } // namespace ABI38_0_0facebook
-@protocol NativeAnimationsDebugModuleSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeAnimationsDebugModuleSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)startRecordingFps;
 - (void)stopRecordingFps:(double)animationStopTimeMs;
@@ -378,7 +378,7 @@ namespace JS {
     };
   }
 }
-@protocol NativeAppStateSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeAppStateSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)getCurrentAppState:(ABI38_0_0RCTResponseSenderBlock)success
                      error:(ABI38_0_0RCTResponseSenderBlock)error;
@@ -401,7 +401,7 @@ namespace ABI38_0_0facebook {
     };
   } // namespace ABI38_0_0React
 } // namespace ABI38_0_0facebook
-@protocol NativeAppearanceSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeAppearanceSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (NSString *)getColorScheme;
 - (void)addListener:(NSString *)eventName;
@@ -540,7 +540,7 @@ namespace JS {
 @interface ABI38_0_0RCTCxxConvert (NativeAsyncStorage_SpecGetAllKeysCallbackError)
 + (ABI38_0_0RCTManagedPointer *)JS_NativeAsyncStorage_SpecGetAllKeysCallbackError:(id)json;
 @end
-@protocol NativeAsyncStorageSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeAsyncStorageSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)multiGet:(NSArray *)keys
         callback:(ABI38_0_0RCTResponseSenderBlock)callback;
@@ -596,7 +596,7 @@ namespace JS {
     };
   }
 }
-@protocol NativeBlobModuleSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeBlobModuleSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)addNetworkingHandler;
 - (void)addWebSocketHandler:(double)id;
@@ -623,7 +623,7 @@ namespace ABI38_0_0facebook {
     };
   } // namespace ABI38_0_0React
 } // namespace ABI38_0_0facebook
-@protocol NativeBugReportingSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeBugReportingSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)startReportAProblemFlow;
 - (void)setExtraData:(NSDictionary *)extraData
@@ -666,7 +666,7 @@ namespace JS {
 @interface ABI38_0_0RCTCxxConvert (NativeCameraRollManager_GetPhotosParams)
 + (ABI38_0_0RCTManagedPointer *)JS_NativeCameraRollManager_GetPhotosParams:(id)json;
 @end
-@protocol NativeCameraRollManagerSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeCameraRollManagerSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)getPhotos:(JS::NativeCameraRollManager::GetPhotosParams &)params
           resolve:(ABI38_0_0RCTPromiseResolveBlock)resolve
@@ -805,7 +805,7 @@ namespace JS {
 @interface ABI38_0_0RCTCxxConvert (NativeCameraRollManager_PhotoIdentifiersPage)
 + (ABI38_0_0RCTManagedPointer *)JS_NativeCameraRollManager_PhotoIdentifiersPage:(id)json;
 @end
-@protocol NativeClipboardSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeClipboardSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)getString:(ABI38_0_0RCTPromiseResolveBlock)resolve
            reject:(ABI38_0_0RCTPromiseRejectBlock)reject;
@@ -825,7 +825,7 @@ namespace ABI38_0_0facebook {
     };
   } // namespace ABI38_0_0React
 } // namespace ABI38_0_0facebook
-@protocol NativeDatePickerAndroidSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeDatePickerAndroidSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)open:(NSDictionary *)options
      resolve:(ABI38_0_0RCTPromiseResolveBlock)resolve
@@ -845,7 +845,7 @@ namespace ABI38_0_0facebook {
     };
   } // namespace ABI38_0_0React
 } // namespace ABI38_0_0facebook
-@protocol NativeDevLoadingViewSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeDevLoadingViewSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)showMessage:(NSString *)message
               color:(NSDictionary *)color
@@ -866,7 +866,7 @@ namespace ABI38_0_0facebook {
     };
   } // namespace ABI38_0_0React
 } // namespace ABI38_0_0facebook
-@protocol NativeDevMenuSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeDevMenuSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)show;
 - (void)reload;
@@ -888,7 +888,7 @@ namespace ABI38_0_0facebook {
     };
   } // namespace ABI38_0_0React
 } // namespace ABI38_0_0facebook
-@protocol NativeDevSettingsSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeDevSettingsSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)reload;
 - (void)reloadWithReason:(NSString *)reason;
@@ -914,7 +914,7 @@ namespace ABI38_0_0facebook {
     };
   } // namespace ABI38_0_0React
 } // namespace ABI38_0_0facebook
-@protocol NativeDeviceEventManagerSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeDeviceEventManagerSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)invokeDefaultBackPressHandler;
 
@@ -1055,7 +1055,7 @@ namespace JS {
     };
   }
 }
-@protocol NativeDeviceInfoSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeDeviceInfoSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (ABI38_0_0facebook::ABI38_0_0React::ModuleConstants<JS::NativeDeviceInfo::Constants::Builder>)constantsToExport;
 - (ABI38_0_0facebook::ABI38_0_0React::ModuleConstants<JS::NativeDeviceInfo::Constants::Builder>)getConstants;
@@ -1128,7 +1128,7 @@ namespace JS {
     };
   }
 }
-@protocol NativeDialogManagerAndroidSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeDialogManagerAndroidSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)showAlert:(JS::NativeDialogManagerAndroid::DialogOptions &)config
           onError:(ABI38_0_0RCTResponseSenderBlock)onError
@@ -1193,7 +1193,7 @@ namespace JS {
 @interface ABI38_0_0RCTCxxConvert (NativeExceptionsManager_ExceptionData)
 + (ABI38_0_0RCTManagedPointer *)JS_NativeExceptionsManager_ExceptionData:(id)json;
 @end
-@protocol NativeExceptionsManagerSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeExceptionsManagerSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)reportFatalException:(NSString *)message
                        stack:(NSArray *)stack
@@ -1221,7 +1221,7 @@ namespace ABI38_0_0facebook {
     };
   } // namespace ABI38_0_0React
 } // namespace ABI38_0_0facebook
-@protocol NativeFileReaderModuleSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeFileReaderModuleSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)readAsDataURL:(NSDictionary *)data
               resolve:(ABI38_0_0RCTPromiseResolveBlock)resolve
@@ -1262,7 +1262,7 @@ namespace JS {
 @interface ABI38_0_0RCTCxxConvert (NativeFrameRateLogger_SpecSetGlobalOptionsOptions)
 + (ABI38_0_0RCTManagedPointer *)JS_NativeFrameRateLogger_SpecSetGlobalOptionsOptions:(id)json;
 @end
-@protocol NativeFrameRateLoggerSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeFrameRateLoggerSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)setGlobalOptions:(JS::NativeFrameRateLogger::SpecSetGlobalOptionsOptions &)options;
 - (void)setContext:(NSString *)context;
@@ -1283,7 +1283,7 @@ namespace ABI38_0_0facebook {
     };
   } // namespace ABI38_0_0React
 } // namespace ABI38_0_0facebook
-@protocol NativeHeadlessJsTaskSupportSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeHeadlessJsTaskSupportSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)notifyTaskFinished:(double)taskId;
 - (void)notifyTaskRetry:(double)taskId
@@ -1304,7 +1304,7 @@ namespace ABI38_0_0facebook {
     };
   } // namespace ABI38_0_0React
 } // namespace ABI38_0_0facebook
-@protocol NativeHeapCaptureSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeHeapCaptureSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)captureHeap:(NSString *)path;
 - (void)captureComplete:(NSString *)path
@@ -1353,7 +1353,7 @@ namespace JS {
     };
   }
 }
-@protocol NativeI18nManagerSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeI18nManagerSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)allowRTL:(BOOL)allowRTL;
 - (void)forceRTL:(BOOL)forceRTL;
@@ -1445,7 +1445,7 @@ namespace JS {
 @interface ABI38_0_0RCTCxxConvert (NativeImageEditor_Options)
 + (ABI38_0_0RCTManagedPointer *)JS_NativeImageEditor_Options:(id)json;
 @end
-@protocol NativeImageEditorSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeImageEditorSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)cropImage:(NSString *)uri
          cropData:(JS::NativeImageEditor::Options &)cropData
@@ -1466,7 +1466,7 @@ namespace ABI38_0_0facebook {
     };
   } // namespace ABI38_0_0React
 } // namespace ABI38_0_0facebook
-@protocol NativeImageLoaderAndroidSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeImageLoaderAndroidSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)abortRequest:(double)requestId;
 - (void)getSize:(NSString *)uri
@@ -1498,7 +1498,7 @@ namespace ABI38_0_0facebook {
     };
   } // namespace ABI38_0_0React
 } // namespace ABI38_0_0facebook
-@protocol NativeImageLoaderIOSSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeImageLoaderIOSSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)getSize:(NSString *)uri
         resolve:(ABI38_0_0RCTPromiseResolveBlock)resolve
@@ -1562,7 +1562,7 @@ namespace JS {
 @interface ABI38_0_0RCTCxxConvert (NativeImagePickerIOS_SpecOpenSelectDialogConfig)
 + (ABI38_0_0RCTManagedPointer *)JS_NativeImagePickerIOS_SpecOpenSelectDialogConfig:(id)json;
 @end
-@protocol NativeImagePickerIOSSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeImagePickerIOSSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)canRecordVideos:(ABI38_0_0RCTResponseSenderBlock)callback;
 - (void)canUseCamera:(ABI38_0_0RCTResponseSenderBlock)callback;
@@ -1605,7 +1605,7 @@ namespace JS {
 @interface ABI38_0_0RCTCxxConvert (NativeImageStore_SpecAddImageFromBase64ErrorCallbackError)
 + (ABI38_0_0RCTManagedPointer *)JS_NativeImageStore_SpecAddImageFromBase64ErrorCallbackError:(id)json;
 @end
-@protocol NativeImageStoreSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeImageStoreSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)getBase64ForTag:(NSString *)uri
         successCallback:(ABI38_0_0RCTResponseSenderBlock)successCallback
@@ -1631,7 +1631,7 @@ namespace ABI38_0_0facebook {
     };
   } // namespace ABI38_0_0React
 } // namespace ABI38_0_0facebook
-@protocol NativeJSCSamplingProfilerSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeJSCSamplingProfilerSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)operationComplete:(double)token
                    result:(NSString * _Nullable)result
@@ -1680,7 +1680,7 @@ namespace JS {
     };
   }
 }
-@protocol NativeJSDevSupportSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeJSDevSupportSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)onSuccess:(NSDictionary *)data;
 - (void)onFailure:(double)errorCode
@@ -1702,7 +1702,7 @@ namespace ABI38_0_0facebook {
     };
   } // namespace ABI38_0_0React
 } // namespace ABI38_0_0facebook
-@protocol NativeKeyboardObserverSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeKeyboardObserverSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)addListener:(NSString *)eventName;
 - (void)removeListeners:(double)count;
@@ -1738,7 +1738,7 @@ namespace JS {
 @interface ABI38_0_0RCTCxxConvert (NativeLinking_SpecSendIntentExtrasElement)
 + (ABI38_0_0RCTManagedPointer *)JS_NativeLinking_SpecSendIntentExtrasElement:(id)json;
 @end
-@protocol NativeLinkingSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeLinkingSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)getInitialURL:(ABI38_0_0RCTPromiseResolveBlock)resolve
                reject:(ABI38_0_0RCTPromiseRejectBlock)reject;
@@ -1771,7 +1771,7 @@ namespace ABI38_0_0facebook {
     };
   } // namespace ABI38_0_0React
 } // namespace ABI38_0_0facebook
-@protocol NativeLogBoxSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeLogBoxSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)show;
 - (void)hide;
@@ -1790,7 +1790,7 @@ namespace ABI38_0_0facebook {
     };
   } // namespace ABI38_0_0React
 } // namespace ABI38_0_0facebook
-@protocol NativeModalManagerSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeModalManagerSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)addListener:(NSString *)eventName;
 - (void)removeListeners:(double)count;
@@ -1826,7 +1826,7 @@ namespace JS {
 @interface ABI38_0_0RCTCxxConvert (NativeNetworkingAndroid_Header)
 + (ABI38_0_0RCTManagedPointer *)JS_NativeNetworkingAndroid_Header:(id)json;
 @end
-@protocol NativeNetworkingAndroidSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeNetworkingAndroidSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)sendRequest:(NSString *)method
                 url:(NSString *)url
@@ -1879,7 +1879,7 @@ namespace JS {
 @interface ABI38_0_0RCTCxxConvert (NativeNetworkingIOS_SpecSendRequestQuery)
 + (ABI38_0_0RCTManagedPointer *)JS_NativeNetworkingIOS_SpecSendRequestQuery:(id)json;
 @end
-@protocol NativeNetworkingIOSSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeNetworkingIOSSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)sendRequest:(JS::NativeNetworkingIOS::SpecSendRequestQuery &)query
            callback:(ABI38_0_0RCTResponseSenderBlock)callback;
@@ -1902,7 +1902,7 @@ namespace ABI38_0_0facebook {
     };
   } // namespace ABI38_0_0React
 } // namespace ABI38_0_0facebook
-@protocol NativePermissionsAndroidSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativePermissionsAndroidSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)checkPermission:(NSString *)permission
                 resolve:(ABI38_0_0RCTPromiseResolveBlock)resolve
@@ -1998,7 +1998,7 @@ namespace JS {
     };
   }
 }
-@protocol NativePlatformConstantsAndroidSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativePlatformConstantsAndroidSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (NSString *)getAndroidID;
 - (ABI38_0_0facebook::ABI38_0_0React::ModuleConstants<JS::NativePlatformConstantsAndroid::Constants::Builder>)constantsToExport;
@@ -2082,7 +2082,7 @@ namespace JS {
     };
   }
 }
-@protocol NativePlatformConstantsIOSSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativePlatformConstantsIOSSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (ABI38_0_0facebook::ABI38_0_0React::ModuleConstants<JS::NativePlatformConstantsIOS::Constants::Builder>)constantsToExport;
 - (ABI38_0_0facebook::ABI38_0_0React::ModuleConstants<JS::NativePlatformConstantsIOS::Constants::Builder>)getConstants;
@@ -2161,7 +2161,7 @@ namespace JS {
 @interface ABI38_0_0RCTCxxConvert (NativePushNotificationManagerIOS_Notification)
 + (ABI38_0_0RCTManagedPointer *)JS_NativePushNotificationManagerIOS_Notification:(id)json;
 @end
-@protocol NativePushNotificationManagerIOSSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativePushNotificationManagerIOSSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)onFinishRemoteNotification:(NSString *)notificationId
                        fetchResult:(NSString *)fetchResult;
@@ -2199,7 +2199,7 @@ namespace ABI38_0_0facebook {
     };
   } // namespace ABI38_0_0React
 } // namespace ABI38_0_0facebook
-@protocol NativeRedBoxSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeRedBoxSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)setExtraData:(NSDictionary *)extraData
        forIdentifier:(NSString *)forIdentifier;
@@ -2219,7 +2219,7 @@ namespace ABI38_0_0facebook {
     };
   } // namespace ABI38_0_0React
 } // namespace ABI38_0_0facebook
-@protocol NativeSegmentFetcherSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeSegmentFetcherSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)fetchSegment:(double)segmentId
              options:(NSDictionary *)options
@@ -2270,7 +2270,7 @@ namespace JS {
     };
   }
 }
-@protocol NativeSettingsManagerSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeSettingsManagerSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)setValues:(NSDictionary *)values;
 - (void)deleteValues:(NSArray *)values;
@@ -2308,7 +2308,7 @@ namespace JS {
 @interface ABI38_0_0RCTCxxConvert (NativeShareModule_SpecShareContent)
 + (ABI38_0_0RCTManagedPointer *)JS_NativeShareModule_SpecShareContent:(id)json;
 @end
-@protocol NativeShareModuleSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeShareModuleSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)share:(JS::NativeShareModule::SpecShareContent &)content
   dialogTitle:(NSString *)dialogTitle
@@ -2329,7 +2329,7 @@ namespace ABI38_0_0facebook {
     };
   } // namespace ABI38_0_0React
 } // namespace ABI38_0_0facebook
-@protocol NativeSoundManagerSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeSoundManagerSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)playTouchSound;
 
@@ -2375,7 +2375,7 @@ namespace JS {
     };
   }
 }
-@protocol NativeSourceCodeSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeSourceCodeSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (ABI38_0_0facebook::ABI38_0_0React::ModuleConstants<JS::NativeSourceCode::Constants::Builder>)constantsToExport;
 - (ABI38_0_0facebook::ABI38_0_0React::ModuleConstants<JS::NativeSourceCode::Constants::Builder>)getConstants;
@@ -2423,7 +2423,7 @@ namespace JS {
     };
   }
 }
-@protocol NativeStatusBarManagerAndroidSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeStatusBarManagerAndroidSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)setColor:(double)color
         animated:(BOOL)animated;
@@ -2492,7 +2492,7 @@ namespace JS {
     };
   }
 }
-@protocol NativeStatusBarManagerIOSSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeStatusBarManagerIOSSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)getHeight:(ABI38_0_0RCTResponseSenderBlock)callback;
 - (void)setNetworkActivityIndicatorVisible:(BOOL)visible;
@@ -2519,7 +2519,7 @@ namespace ABI38_0_0facebook {
     };
   } // namespace ABI38_0_0React
 } // namespace ABI38_0_0facebook
-@protocol NativeTVNavigationEventEmitterSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeTVNavigationEventEmitterSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)addListener:(NSString *)eventName;
 - (void)removeListeners:(double)count;
@@ -2557,7 +2557,7 @@ namespace JS {
 @interface ABI38_0_0RCTCxxConvert (NativeTimePickerAndroid_TimePickerOptions)
 + (ABI38_0_0RCTManagedPointer *)JS_NativeTimePickerAndroid_TimePickerOptions:(id)json;
 @end
-@protocol NativeTimePickerAndroidSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeTimePickerAndroidSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)open:(JS::NativeTimePickerAndroid::TimePickerOptions &)options
      resolve:(ABI38_0_0RCTPromiseResolveBlock)resolve
@@ -2595,7 +2595,7 @@ namespace JS {
 @interface ABI38_0_0RCTCxxConvert (NativeTimePickerAndroid_TimePickerResult)
 + (ABI38_0_0RCTManagedPointer *)JS_NativeTimePickerAndroid_TimePickerResult:(id)json;
 @end
-@protocol NativeTimingSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeTimingSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)createTimer:(double)callbackID
            duration:(double)duration
@@ -2650,7 +2650,7 @@ namespace JS {
     };
   }
 }
-@protocol NativeToastAndroidSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeToastAndroidSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)show:(NSString *)message
     duration:(double)duration;
@@ -2706,7 +2706,7 @@ namespace JS {
     };
   }
 }
-@protocol NativeUIManagerSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeUIManagerSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (NSDictionary *)getConstantsForViewManager:(NSString *)viewManagerName;
 - (NSArray<NSString *> *)getDefaultEventTypes;
@@ -2783,7 +2783,7 @@ namespace ABI38_0_0facebook {
     };
   } // namespace ABI38_0_0React
 } // namespace ABI38_0_0facebook
-@protocol NativeVibrationSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeVibrationSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)vibrate:(double)pattern;
 - (void)vibrateByPattern:(NSArray *)pattern
@@ -2820,7 +2820,7 @@ namespace JS {
 @interface ABI38_0_0RCTCxxConvert (NativeWebSocketModule_SpecConnectOptions)
 + (ABI38_0_0RCTManagedPointer *)JS_NativeWebSocketModule_SpecConnectOptions:(id)json;
 @end
-@protocol NativeWebSocketModuleSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
+@protocol ABI38_0_0NativeWebSocketModuleSpec <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTTurboModule>
 
 - (void)connect:(NSString *)url
       protocols:(NSArray *_Nullable)protocols

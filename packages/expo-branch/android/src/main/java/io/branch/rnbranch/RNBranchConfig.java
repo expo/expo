@@ -126,4 +126,17 @@ public class RNBranchConfig {
             return false;
         }
     }
+
+    public boolean getEnableFacebookLinkCheck() {
+        if (mConfiguration == null) return false;
+
+        try {
+            if (!mConfiguration.has("enableFacebookLinkCheck")) return false;
+            return mConfiguration.getBoolean("enableFacebookLinkCheck");
+        }
+        catch (JSONException exception) {
+            Log.e(TAG, "Error parsing branch.json: " + exception.getMessage());
+            return false;
+        }
+    }
 }

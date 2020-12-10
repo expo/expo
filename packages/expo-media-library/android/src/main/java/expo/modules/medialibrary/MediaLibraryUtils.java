@@ -1,19 +1,20 @@
 package expo.modules.medialibrary;
 
-import android.content.Context;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
-import android.os.Bundle;
 import android.media.MediaMetadataRetriever;
+import android.net.Uri;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Files;
 import android.provider.MediaStore.Images.Media;
-import androidx.exifinterface.media.ExifInterface;
 import android.text.TextUtils;
-import android.net.Uri;
 import android.util.Log;
+
+import org.unimodules.core.Promise;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.unimodules.core.Promise;
+import androidx.exifinterface.media.ExifInterface;
 
 import static expo.modules.medialibrary.MediaLibraryConstants.ASSET_PROJECTION;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_IO_EXCEPTION;
@@ -236,6 +237,8 @@ final class MediaLibraryUtils {
         Log.e("expo-media-library", "MediaMetadataRetriever unexpectedly returned non-integer: " + e.getMessage());
       } catch (FileNotFoundException e) {
         Log.e("expo-media-library", String.format("ContentResolver failed to read %s: %s", uri, e.getMessage()));
+      } catch (RuntimeException e) {
+        Log.e("expo-media-library", "MediaMetadataRetriever finished with unexpected error: " + e.getMessage());
       } finally {
         if (retriever != null) {
           retriever.release();
@@ -345,17 +348,15 @@ final class MediaLibraryUtils {
 
   static void queryAlbum(Context context, final String selection, final String[] selectionArgs, Promise promise) {
     Bundle result = new Bundle();
-    final String countColumn = "COUNT(*)";
-    final String[] projection = {Media.BUCKET_ID, Media.BUCKET_DISPLAY_NAME, countColumn};
-    final String selectionWithGroupBy = selection + ") GROUP BY (" + Media.BUCKET_ID;
-    final String group = Media.BUCKET_DISPLAY_NAME;
+    final String[] projection = {Media.BUCKET_ID, Media.BUCKET_DISPLAY_NAME};
+    final String order = Media.BUCKET_DISPLAY_NAME;
 
     try (Cursor albums = context.getContentResolver().query(
       EXTERNAL_CONTENT,
       projection,
-      selectionWithGroupBy,
+      selection,
       selectionArgs,
-      group)) {
+      order)) {
 
       if (albums == null) {
         promise.reject(ERROR_UNABLE_TO_LOAD, "Could not get album. Query is incorrect.");
@@ -367,15 +368,16 @@ final class MediaLibraryUtils {
       }
       final int bucketIdIndex = albums.getColumnIndex(Media.BUCKET_ID);
       final int bucketDisplayNameIndex = albums.getColumnIndex(Media.BUCKET_DISPLAY_NAME);
-      final int numOfItemsIndex = albums.getColumnIndex(countColumn);
 
       result.putString("id", albums.getString(bucketIdIndex));
       result.putString("title", albums.getString(bucketDisplayNameIndex));
-      result.putInt("assetCount", albums.getInt(numOfItemsIndex));
+      result.putInt("assetCount", albums.getCount());
       promise.resolve(result);
     } catch (SecurityException e) {
       promise.reject(ERROR_UNABLE_TO_LOAD_PERMISSION,
         "Could not get albums: need READ_EXTERNAL_STORAGE permission.", e);
+    } catch (IllegalArgumentException e) {
+      promise.reject(ERROR_UNABLE_TO_LOAD, "Could not get album.", e);
     }
   }
 
@@ -396,8 +398,8 @@ final class MediaLibraryUtils {
           if (file.delete()) {
             context.getContentResolver().delete(
               EXTERNAL_CONTENT,
-              Media.DATA + " = \"" + filePath + "\"",
-              null);
+              Media.DATA + "=?",
+              new String[]{filePath});
           } else {
             promise.reject(ERROR_UNABLE_TO_DELETE, "Could not delete file.");
             return;
@@ -408,12 +410,15 @@ final class MediaLibraryUtils {
     } catch (SecurityException e) {
       promise.reject(ERROR_UNABLE_TO_SAVE_PERMISSION,
         "Could not delete asset: need WRITE_EXTERNAL_STORAGE permission.", e);
+    } catch (IllegalArgumentException e) {
+      e.printStackTrace();
+      promise.reject(ERROR_UNABLE_TO_DELETE, "Could not delete file.", e);
     }
   }
 
   static String getInPart(String assetsId[]) {
     int length = assetsId.length;
-    String array[] = new String[length];
+    String[] array = new String[length];
     Arrays.fill(array, "?");
     return TextUtils.join(",", array);
   }

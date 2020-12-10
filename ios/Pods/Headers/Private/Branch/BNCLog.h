@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BNCLog.h
+../../../Branch/Branch-SDK/BNCLog.h

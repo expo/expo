@@ -6,7 +6,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-av'
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-The [`Audio.Sound`](../audio/) objects and [`Video`](../video/) components share a unified imperative API for media playback.
+The [`Audio.Sound`](audio.md) objects and [`Video`](video.md) components share a unified imperative API for media playback.
 
 Note that for `Video`, all of these operations are also available via props on the component, but we recommend using this imperative playback API for most applications where finer control over the state of the video playback is needed.
 
@@ -42,7 +42,7 @@ const playbackObject = await Audio.Sound.createAsync(
 ...
 ```
 
-See the [audio documentation](../audio/) for further information on `Audio.Sound.createAsync()`.
+See the [audio documentation](audio.md) for further information on `Audio.Sound.createAsync()`.
 
 #### Example: `Video`
 
@@ -85,7 +85,7 @@ On the `playbackObject` reference, the following API is provided:
       The `overrideFileExtensionAndroid` property may come in handy if the player receives an URL like `example.com/play` which redirects to `example.com/player.m3u8`. Setting this property to `m3u8` would allow the Android player to properly infer the content type of the media and use proper media file reader.
 
     - `require('path/to/file')` for a media file asset in the source code directory.
-    - An [`Asset`](../asset/) object for a media file asset.
+    - An [`Asset`](asset.md) object for a media file asset.
 
     The [iOS developer documentation](https://developer.apple.com/library/ios/documentation/Miscellaneous/Conceptual/iPhoneOSTechOverview/MediaLayer/MediaLayer.html) lists the audio and video formats supported on iOS.
 

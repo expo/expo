@@ -87,7 +87,7 @@ ABI38_0_0RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 typedef void (^ABI38_0_0RCTDevMenuAlertActionHandler)(UIAlertAction *action);
 
-@interface ABI38_0_0RCTDevMenu () <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTInvalidating, NativeDevMenuSpec>
+@interface ABI38_0_0RCTDevMenu () <ABI38_0_0RCTBridgeModule, ABI38_0_0RCTInvalidating, ABI38_0_0NativeDevMenuSpec>
 
 @end
 
@@ -494,7 +494,7 @@ ABI38_0_0RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 
 #else // Unavailable when not in dev mode
 
-@interface ABI38_0_0RCTDevMenu() <NativeDevMenuSpec>
+@interface ABI38_0_0RCTDevMenu() <ABI38_0_0NativeDevMenuSpec>
 @end
 
 @implementation ABI38_0_0RCTDevMenu

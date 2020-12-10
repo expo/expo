@@ -101,10 +101,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 
 ### Configuration Resolution Rules
 
-There are two different types of configs static (`app.config.json`, `app.json`) and dynamic (`app.config.js`, `app.config.ts`). Static configs can be automatically updated with CLI tools, whereas dynamic configs must be manually updated by the developer.
+There are two different types of configs: static (`app.config.json`, `app.json`), and dynamic (`app.config.js`, `app.config.ts`). Static configs can be automatically updated with CLI tools, whereas dynamic configs must be manually updated by the developer.
 
-1. First the static config will be read by checking first if `app.config.json` exists, then falling back on app.json. If no static config exists then default values will be inferred from the package.json and installed node modules.
-2. The dynamic config will read by first checking if `app.config.ts` or `app.config.js` exists. If both exist then the TypeScript config will be used.
-3. If the dynamic config returns a function, then the static config will be passed to the function with `({ config }) => ({})`. This can be used to mutate the static config values.
-4. Whatever is returned from the dynamic config will be used as the final config. It cannot have any promises.
-5. All functions in the config will be evaluated and serialized before any tool in the Expo ecosystem uses it. This is because the config must be a json manifest when it's hosted.
+1. The static config is read if `app.config.json` exists (falls back to `app.json`). If no static config exists, then default values are inferred from the `package.json` and your dependencies.
+2. The dynamic config is read if either `app.config.ts` or `app.config.js` exist. If both exist, then the TypeScript config is used.
+3. If the dynamic config returns a function, then the static config is passed to the function with `({ config }) => ({})`. This function can then mutate the static config values.
+4. The return value from the dynamic config is used as the final config. It cannot have any promises.
+5. All functions in the config are evaluated and serialized before any tool in the Expo ecosystem uses it. The config must be a JSON manifest when it is hosted.

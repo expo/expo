@@ -6,8 +6,13 @@ Expotools is a CLI and library that contains internal Expo tooling. It is used a
   - Run tests locally
   - Assist with the release process
 
-## Distribution
-Run `expotools` or `et` from the Expo repository to run the latest version of expotools.
+## Prerequisites
+Run `bundle install` in the root to install all required Ruby gems.
+
+## Usage
+Run `expotools` or `et` from the Expo repository to run the latest version of expotools. This automatically rebuilds the code according to the latest sources.
+
+For example, running `et --help` will display all the available commands.
 
 ## Development
 Build the code once using `yarn build`.

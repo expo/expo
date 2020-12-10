@@ -1,5 +1,5 @@
 import { Platform } from '@unimodules/core';
-import Constants from 'expo-constants';
+import Constants, { ExecutionEnvironment } from 'expo-constants';
 import * as Linking from 'expo-linking';
 import { dismissAuthSession, openAuthSessionAsync } from 'expo-web-browser';
 
@@ -85,6 +85,7 @@ export async function startAsync(options: AuthSessionOptions): Promise<AuthSessi
     type: errorCode ? 'error' : 'success',
     params,
     errorCode,
+    authentication: null,
     url: result.url,
   };
 }
@@ -98,7 +99,7 @@ export function getDefaultReturnUrl(): string {
 }
 
 /**
- * Deprecated: Use `makeRedirectUri({ path, useProxy })` instead.
+ * @deprecated Use `makeRedirectUri({ path, useProxy })` instead.
  *
  * @param path
  */
@@ -123,7 +124,7 @@ export function makeRedirectUri({
 }: AuthSessionRedirectUriOptions = {}): string {
   if (Platform.OS !== 'web') {
     // Bare workflow
-    if (!Constants.manifest) {
+    if (Constants.executionEnvironment === ExecutionEnvironment.Bare) {
       if (!native) {
         // TODO(Bacon): Link to docs or fyi
         console.warn(
@@ -135,7 +136,7 @@ export function makeRedirectUri({
       return native || '';
     }
     // Should use the user-defined native scheme in standalone builds
-    if (Constants.appOwnership === 'standalone' && native) {
+    if (Constants.executionEnvironment === ExecutionEnvironment.Standalone && native) {
       return native;
     }
   }
@@ -185,7 +186,7 @@ async function _openWebBrowserAsync(startUrl: string, returnUrl: string, showInR
   return result;
 }
 
-export * from './AuthRequestHooks';
+export { useAutoDiscovery, useAuthRequest } from './AuthRequestHooks';
 export { AuthError, TokenError } from './Errors';
 
 export {

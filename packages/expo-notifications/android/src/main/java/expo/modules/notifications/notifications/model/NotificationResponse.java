@@ -10,16 +10,20 @@ import android.os.Parcelable;
 public class NotificationResponse implements Parcelable {
   public static final String DEFAULT_ACTION_IDENTIFIER = "expo.modules.notifications.actions.DEFAULT";
 
-  private String mActionIdentifier;
+  private NotificationAction mAction;
   private Notification mNotification;
 
-  public NotificationResponse(String actionIdentifier, Notification notification) {
-    mActionIdentifier = actionIdentifier;
+  public NotificationResponse(NotificationAction action, Notification notification) {
+    mAction = action;
     mNotification = notification;
   }
 
+  public NotificationAction getAction() {
+    return mAction;
+  }
+
   public String getActionIdentifier() {
-    return mActionIdentifier;
+    return mAction.getIdentifier();
   }
 
   public Notification getNotification() {
@@ -44,13 +48,13 @@ public class NotificationResponse implements Parcelable {
   }
 
   protected NotificationResponse(Parcel in) {
-    mActionIdentifier = in.readString();
+    mAction = in.readParcelable(getClass().getClassLoader());
     mNotification = in.readParcelable(getClass().getClassLoader());
   }
 
   @Override
   public void writeToParcel(Parcel dest, int flags) {
-    dest.writeString(mActionIdentifier);
+    dest.writeParcelable(mAction, 0);
     dest.writeParcelable(mNotification, 0);
   }
 }

@@ -32,7 +32,9 @@ const CREDENTIAL_MESSAGES = {
   [AppleAuthenticationCredentialState.TRANSFERRED]: 'Credentials transferred.', // Whatever that means...
 };
 
-export default class AppleAuthenticationScreen extends React.Component<object, State> {
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
+export default class AppleAuthenticationScreen extends React.Component<{}, State> {
   static navigationOptions = {
     title: 'Apple Authentication',
   };
@@ -102,7 +104,7 @@ export default class AppleAuthenticationScreen extends React.Component<object, S
 
   signOut = async () => {
     try {
-      const credentials = await AppleAuthentication.signOutAsync({
+      await AppleAuthentication.signOutAsync({
         user: (await this.getUserIdentifier())!,
         state: 'this-is-a-test',
       });

@@ -76,7 +76,6 @@ import com.android.build.OutputFile
  */
 
 project.ext.react = [
-    entryFile: "index.js",
     enableHermes: false,  // clean and rebuild if changing
 ]
 
@@ -166,6 +165,10 @@ android {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
+        releaseWithDevMenu {
+            initWith release
+            matchingFallbacks = ['release', 'debug']
+        }
     }
     // applicationVariants are e.g. debug, release
     applicationVariants.all { variant ->
@@ -183,12 +186,19 @@ android {
     }
 }
 
+repositories {
+    jcenter()
+}
+
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
     implementation "com.facebook.react:react-native:+"  // From node_modules
 
+    implementation project(":expo-dev-launcher")
+    implementation project(":expo-dev-menu")
     implementation project(":expo-image")
+    implementation project(":expo-random")
 
     def packageJsonFile = new File(rootProject.projectDir, '../package.json')
     def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
@@ -209,6 +219,15 @@ dependencies {
         releaseImplementation files(hermesPath + "hermes-release.aar")
     } else {
         implementation jscFlavor
+    }
+
+    // Flipper
+    implementation('com.facebook.flipper:flipper:0.62.0') {
+        exclude group:'com.facebook.fbjni'
+    }
+
+    implementation('com.facebook.flipper:flipper-network-plugin:0.62.0') {
+        exclude group:'com.facebook.flipper'
     }
 }
 

@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI39_0_0/Expo/EXMailComposer/ABI39_0_0EXMailComposer/ABI39_0_0EXMailComposer.h
