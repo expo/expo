@@ -5,6 +5,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-av'
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-av`** allows you to implement audio playback and recording in your app.
 
@@ -17,6 +18,125 @@ Try the [playlist example app](https://expo.io/@documentation/playlist-example) 
 ## Installation
 
 <InstallSection packageName="expo-av" />
+
+## Usage
+
+### Playing sounds
+
+<SnackInline
+  label='Playing sounds'
+  dependencies={['expo-av', 'expo-asset']}
+  files={{
+    'assets/Hello.mp3': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/c9c43b458d6daa9771a7287cae9f5b47'
+  }}>
+
+```jsx
+import * as React from 'react';
+import { Text, View, StyleSheet, Button } from 'react-native';
+import { Audio } from 'expo-av';
+
+export default function App() {
+  const [sound, setSound] = React.useState();
+
+  async function playSound() {
+    console.log('Loading Sound');
+    /* @info */const { sound } = await Audio.Sound.createAsync(/* @end */require('./assets/Hello.mp3'));
+    setSound(sound);
+
+    console.log('Playing Sound');
+    await /* @info */sound.playAsync();/* @end */
+  }
+
+  React.useEffect(() => {
+    return sound ? () => {
+      console.log('Unloading Sound');
+      /* @info Always unload the Sound after using it to prevent memory leaks.*/sound.unloadAsync();/* @end */
+     } : undefined;
+  }, [sound]);
+
+  return (
+    <View style={styles.container}>
+      <Button title='Play Sound' onPress={playSound} />
+    </View>
+  );
+}
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: '#ecf0f1',
+    padding: 10,
+  },
+});
+/* @end */
+```
+
+</SnackInline>
+
+### Recording sounds
+
+<SnackInline label='Recording sounds' dependencies={['expo-av', 'expo-asset']}>
+
+```jsx
+import * as React from 'react';
+import { Text, View, StyleSheet, Button } from 'react-native';
+import { Audio } from 'expo-av';
+
+export default function App() {
+  const [recording, setRecording] = React.useState();
+
+  async function startRecording() {
+    try {
+      console.log('Requesting permissions..');
+      /* @info */await Audio.requestPermissionsAsync();
+      await Audio.setAudioModeAsync({ allowsRecordingIOS: true, playsInSilentModeIOS: true });/* @end */
+
+      console.log('Starting recording..');
+      /* @info */const recording = new Audio.Recording();
+      await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
+      await recording.startAsync();/* @end */
+      
+      setRecording(recording);
+      console.log('Recording started');
+    } catch (err) {
+      console.error('Failed to start recording', err);
+    }
+  }
+
+  async function stopRecording() {
+    console.log('Stopping recording..');
+    setRecording(undefined);
+    /* @info */await recording.stopAndUnloadAsync();
+    const uri = recording.getURI();/* @end */
+    
+    console.log('Recording stopped and stored at', uri);
+  }
+
+  return (
+    <View style={styles.container}>
+      <Button
+        title={recording ? 'Stop Recording' : 'Start Recording'}
+        onPress={recording ? stopRecording : startRecording} />
+    </View>
+  );
+}
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: '#ecf0f1',
+    padding: 10
+  },
+});
+/* @end */
+```
+
+</SnackInline>
+
 
 ## API
 
@@ -134,15 +254,15 @@ A newly constructed instance of `Audio.Sound`.
 #### Example
 
 ```javascript
-const soundObject = new Audio.Sound();
+const sound = new Audio.Sound();
 try {
-  await soundObject.loadAsync(require('./assets/sounds/hello.mp3'));
-  await soundObject.playAsync();
+  await sound.loadAsync(require('./assets/sounds/hello.mp3'));
+  await sound.playAsync();
   // Your sound is playing!
 
   // Don't forget to unload the sound from memory
   // when you are done using the Sound object
-  await soundObject.unloadAsync();
+  await sound.unloadAsync();
 } catch (error) {
   // An error occurred!
 }
@@ -154,12 +274,13 @@ A static convenience method to construct and load a sound is also provided:
 
   Creates and loads a sound from source, with optional `initialStatus`, `onPlaybackStatusUpdate`, and `downloadFirst`.
 
-  This is equivalent to the following:
-
   ```javascript
-  const soundObject = new Audio.Sound();
-  soundObject.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
-  await soundObject.loadAsync(source, initialStatus, downloadFirst);
+  const { sound } = await Audio.Sound.createAsync(source, initialStatus, onPlaybackStatusUpdate, downloadFirst);
+
+  // Which is equivalent to the following:
+  const sound = new Audio.Sound();
+  sound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
+  await sound.loadAsync(source, initialStatus, downloadFirst);
   ```
 
   #### Parameters
