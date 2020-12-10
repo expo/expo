@@ -530,18 +530,20 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
     int durationMillisFromRecorder = [self _getDurationMillisOfRecordingAudioRecorder];
     // After stop, the recorder's duration goes to zero, so we replace it with the correct duration in this case.
     int durationMillis = durationMillisFromRecorder == 0 ? _audioRecorderDurationMillis : durationMillisFromRecorder;
-    if(_audioRecorder.meteringEnabled) {
-        
-        [_audioRecorder updateMeters];
-      float _currentLevel = [_audioRecorder averagePowerForChannel: 0];
-      return @{@"canRecord": @(YES),
-             @"isRecording": @([_audioRecorder isRecording]),
-             @"durationMillis": @(durationMillis),
-             @"metering": @(_currentLevel)};
+
+    NSMutableDictionary *result = [@{
+      @"canRecord": @(YES),
+      @"isRecording": @([_audioRecorder isRecording]),
+      @"durationMillis": @(durationMillis),
+    } mutableCopy];
+
+    if (_audioRecorder.meteringEnabled) {
+      [_audioRecorder updateMeters];
+      float currentLevel = [_audioRecorder averagePowerForChannel: 0];
+      result[@"metering"] = @(currentLevel);
     }
-    return @{@"canRecord": @(YES),
-             @"isRecording": @([_audioRecorder isRecording]),
-             @"durationMillis": @(durationMillis)};
+
+    return result;
   } else {
     return nil;
   }
