@@ -19,7 +19,7 @@ public class ScopedSecureStoreModule extends SecureStoreModule {
   private Context mScopedContext;
 
   public ScopedSecureStoreModule(ScopedContext scopedContext) {
-    super(scopedContext.getBaseContext());
+    super(Constants.isStandaloneApp() ? scopedContext.getBaseContext() : scopedContext);
     mScopedContext = scopedContext;
     maybeMigrateSharedPreferences();
   }
