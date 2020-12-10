@@ -540,10 +540,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
     /**
      * Defaulting to -160 to match the scenario on iOS platform when there's no sound
      */
-    if (mAudioRecorder == null) {
-      return -160;
-    }
-    if(!mAudioRecorderIsMeteringEnabled) {
+    if (mAudioRecorder == null || !mAudioRecorderIsMeteringEnabled) {
       return -160;
     }
 
