@@ -18,6 +18,8 @@ abstract class DevMenuAwareReactActivity : ReactActivity() {
     if (currentReactNative == null || currentReactNative != reactNativeHost) {
       currentReactNative = reactNativeHost
       DevMenuManager.initializeWithReactNativeHost(reactNativeHost)
+    } else {
+      DevMenuManager.synchronizeDelegate()
     }
   }
 
