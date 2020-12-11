@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add @expo/config to dependencies
+
 ## 9.3.4 — 2020-12-09
 
 ### 🐛 Bug fixes
