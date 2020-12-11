@@ -22,7 +22,7 @@ import { PermissionResponse, PermissionType } from './Permissions.types';
 export function usePermissions(
   type: PermissionType | PermissionType[],
   options: PermissionsOptions = {}
-): [PermissionResponse | undefined, () => Promise<void>, () => Promise<void>] {
+): [PermissionResponse | undefined, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>] {
   const [data, setData] = useState<PermissionResponse>();
   const { ask = false, get = true } = options;
   const types = Array.isArray(type) ? type : [type];
@@ -31,9 +31,25 @@ export function usePermissions(
   // when `type` is casted to an array, it possible creates a new one on every render.
   // to prevent unnecessary function instances we need to listen to the "raw" value.
 
-  const askPermissions = useCallback(() => askAsync(...types).then(setData), [type]);
+  const askPermissions = useCallback(
+    () =>
+      askAsync(...types).then(result => {
+        setData(result);
 
-  const getPermissions = useCallback(() => getAsync(...types).then(setData), [type]);
+        return result;
+      }),
+    [type],
+  );
+
+  const getPermissions = useCallback(
+    () =>
+      getAsync(...types).then(result => {
+        setData(result);
+
+        return result;
+      }),
+    [type],
+  );
 
   useEffect(() => {
     if (ask) {
