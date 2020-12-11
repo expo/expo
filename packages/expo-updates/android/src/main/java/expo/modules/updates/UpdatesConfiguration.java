@@ -113,6 +113,9 @@ public class UpdatesConfiguration {
         Log.e(TAG, "Invalid value " + checkOnLaunchString + " for expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH in AndroidManifest; defaulting to ALWAYS");
         mCheckOnLaunch = CheckAutomaticallyConfiguration.ALWAYS;
       }
+
+      // used only for expo-updates development
+      mHasEmbeddedUpdate = ai.metaData.getBoolean("expo.modules.updates.HAS_EMBEDDED_UPDATE", true);
     } catch (Exception e) {
       Log.e(TAG, "Could not read expo-updates configuration data in AndroidManifest", e);
     }
