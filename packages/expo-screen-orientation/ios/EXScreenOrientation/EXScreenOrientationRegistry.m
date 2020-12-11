@@ -159,10 +159,10 @@ UM_REGISTER_SINGLETON_MODULE(ScreenOrientationRegistry)
       return;
     }
     
-    // on iPads, traitCollectionDidChange isn't triggered at all
-    if ([EXScreenOrientationUtilities isIPad] &&
-        ((UIInterfaceOrientationIsPortrait(newScreenOrientation) && UIInterfaceOrientationIsLandscape(_currentScreenOrientation))
-         || (UIInterfaceOrientationIsLandscape(newScreenOrientation) && UIInterfaceOrientationIsPortrait(_currentScreenOrientation)))) {
+    // Sometimes, traitCollectionDidChange isn't triggered at all.
+    // i.e. on iPads and when the view is a Modal
+    if ((UIInterfaceOrientationIsPortrait(newScreenOrientation) && UIInterfaceOrientationIsLandscape(_currentScreenOrientation))
+         || (UIInterfaceOrientationIsLandscape(newScreenOrientation) && UIInterfaceOrientationIsPortrait(_currentScreenOrientation))) {
       [self screenOrientationDidChange:newScreenOrientation];
     }
   }
