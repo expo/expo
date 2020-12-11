@@ -41,7 +41,7 @@ const sections = [
       'Configuration with eas.json',
       'Internal distribution',
       'Trigger builds from CI',
-      'Advanced credentials configuration',
+      'Manual credentials configuration',
       'Android build process',
       'iOS build process',
     ],
