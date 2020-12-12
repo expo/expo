@@ -69,7 +69,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
                                    NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Could not write to path %@: %@", destinationPath, error.localizedDescription],
                                    NSUnderlyingErrorKey: error
                                  }
-                  ], response);
+                  ], data, response);
     }
   } errorBlock:errorBlock];
 }
@@ -88,13 +88,13 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
     NSError *err;
     id parsedJson = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&err];
     if (err) {
-      errorBlock(err, response);
+      errorBlock(err, data, response);
       return;
     }
 
     NSDictionary *manifest = [self _extractManifest:parsedJson error:&err];
     if (err) {
-      errorBlock(err, response);
+      errorBlock(err, data, response);
       return;
     }
 
@@ -135,11 +135,11 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
                                                     successBlock(update);
                                                   } else {
                                                     NSError *error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain code:1003 userInfo:@{NSLocalizedDescriptionKey: @"Manifest verification failed"}];
-                                                    errorBlock(error, response);
+                                                    errorBlock(error, data, response);
                                                   }
                                                 }
                                     errorBlock:^(NSError *error) {
-                                                  errorBlock(error, response);
+                                                  errorBlock(error, data, response);
                                                 }
       ];
     } else {
@@ -179,7 +179,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
     }
 
     if (error) {
-      errorBlock(error, response);
+      errorBlock(error, data, response);
     } else {
       successBlock(data, response);
     }

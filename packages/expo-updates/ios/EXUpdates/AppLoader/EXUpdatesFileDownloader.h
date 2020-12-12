@@ -7,7 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^EXUpdatesFileDownloaderSuccessBlock)(NSData *data, NSURLResponse *response);
 typedef void (^EXUpdatesFileDownloaderManifestSuccessBlock)(EXUpdatesUpdate *update);
-typedef void (^EXUpdatesFileDownloaderErrorBlock)(NSError *error, NSURLResponse *response);
+typedef void (^EXUpdatesFileDownloaderErrorBlock)(NSError *error, NSData *data, NSURLResponse *response);
 
 @interface EXUpdatesFileDownloader : NSObject
 

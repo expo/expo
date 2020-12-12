@@ -267,7 +267,7 @@ static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
         asset.downloadTime = [NSDate date];
         completion(nil, asset, assetLocalUrl);
       });
-    } errorBlock:^(NSError *error, NSURLResponse *response) {
+    } errorBlock:^(NSError *error, NSData *data, NSURLResponse *response) {
       dispatch_async(self->_launcherQueue, ^{
         completion(error, asset, assetLocalUrl);
       });

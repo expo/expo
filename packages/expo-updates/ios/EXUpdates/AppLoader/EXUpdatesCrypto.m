@@ -66,8 +66,13 @@ static NSString * const EXUpdatesCryptoPublicKeyFilename = @"manifestPublicKey.p
                            successBlock:^(NSData *publicKeyData, NSURLResponse *response) {
                                           [[self class] verifyWithPublicKey:publicKeyData signature:signature signedString:data callback:successBlock];
                                         }
-                             errorBlock:^(NSError *error, NSURLResponse *response) {
-                                          errorBlock(error);
+                             errorBlock:^(NSError *error, NSData *publicKeyData, NSURLResponse *response) {
+                                          NSLog(@"Could not write manifest public key to cache; continuing without caching. Error: %@", error.localizedDescription);
+                                          if (publicKeyData) {
+                                            [[self class] verifyWithPublicKey:publicKeyData signature:signature signedString:data callback:successBlock];
+                                          } else {
+                                            errorBlock(error);
+                                          }
                                         }
     ];
   }

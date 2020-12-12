@@ -93,7 +93,7 @@ UM_EXPORT_METHOD_AS(checkForUpdateAsync,
         @"isAvailable": @(NO)
       });
     }
-  } errorBlock:^(NSError *error, NSURLResponse *response) {
+  } errorBlock:^(NSError *error, NSData *data, NSURLResponse *response) {
     reject(@"ERR_UPDATES_CHECK", error.localizedDescription, error);
   }];
 }
