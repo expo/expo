@@ -38,17 +38,17 @@ const sections = [
       'Creating your first build',
       'Configuration with eas.json',
       'Over-the-air updates',
-      'Triggering builds from CI',
       'Internal distribution',
+      'Triggering builds from CI'
     ],
   },
   {
     name: 'App Signing',
     reference: [
-      'Automatically generating credentials',
-      'Using existing app signing credentials',
-      'Manually configuring credentials',
-      'Syncing credentials',
+      'Managed credentials',
+      'Using existing credentials',
+      'Sourcing local credentials',
+      'Syncing credentials between remote and local sources',
     ],
   },
   {

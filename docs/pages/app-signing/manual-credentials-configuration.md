@@ -1,5 +1,5 @@
 ---
-title: Manually configuring credentials
+title: Sourcing local credentials
 ---
 
 You can usually get away with not being a codesigning expert by letting EAS handle it for you. However, there are cases where some users might want to manage their project keystore, certificates and profiles on their own.
