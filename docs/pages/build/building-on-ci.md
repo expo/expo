@@ -1,5 +1,5 @@
 ---
-title: Trigger builds from CI
+title: Triggering builds from CI
 ---
 
 This document outlines how to trigger builds on EAS for your app from a CI environment, such as GitHub Actions.
@@ -12,7 +12,7 @@ To trigger EAS builds from a CI environment, we first need to configure our app 
 
 If you have run `eas build -p [all|ios|android]` successfuly before, then you can continue.
 
-If you haven't done this yet, please refer to the [Setup](setup.md) guide and return here when you're ready.
+If you haven't done this yet, please refer to the ["Creating your first build"](setup.md) guide and return here when you're ready.
 
 ## Configure your app for CI
 

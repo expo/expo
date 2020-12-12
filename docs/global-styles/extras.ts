@@ -114,4 +114,10 @@ export const globalExtras = css`
     border-bottom: none;
     border-right: none;
   }
+
+  // TODO: investigate why some style is forcing nested ordered lists to have
+  // 1rem bottom margin!
+  ul ul {
+    margin-bottom: 0 !important;
+  }
 `;

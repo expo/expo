@@ -1,3 +1,3 @@
 ---
-title: Use existing app signing credentials
+title: Using existing app signing credentials
 ---

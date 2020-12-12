@@ -1,3 +1,5 @@
 ---
-title: Generate credentials for release builds
+title: Automatically generating credentials
 ---
+
+talk about how eas cli will handle this for you.

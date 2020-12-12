@@ -1,5 +1,5 @@
 ---
-title: Create your first build
+title: Creating your first build
 ---
 
 In this guide you will learn how to build a ready-to-submit binary for the Apple App Store and Google Play store with EAS Build. For a simple app, it shouldn't take more than a few minutes total to kick off your builds for both Android and iOS.
@@ -34,6 +34,24 @@ EAS Build is a brand new and rapidly evolving service. It can't do everything ye
 
 > While EAS Build is in preview, it is only available to EAS Priority Plan subscribers. Once it graduates from preview it will become more broadly available. The first month is free, cancel any time.
 
+<details><summary><h4>🍎 If you want to build for iOS: Apple Developer Program membership.</h4></summary>
+<p>
+
+- If you are going to use EAS Build to create release builds for the Apple App Store, this requires access to an account with a $99 USD [Apple Developer Program](https://developer.apple.com/programs) membership.
+
+</p>
+</details>
+
+<!-- <details><summary><h4>🤖 If you want to build for the Play Store: Google Play Developer membership.</h4></summary>
+<p>
+
+- If you are going to use EAS Build to create release builds for the Google Play Store, this requries access to an account with a one-time $25 USD.
+
+</p>
+</details>
+
+> There are other ways to distribute Android applications than Google Play, such as sharing an `apk` file directly with the user, and so this is not strictly required to use EAS Build for Android apps. -->
+
 ## 1. Install the latest EAS CLI
 
 Install EAS CLI by running `npm install -g eas-cli` (or `yarn global add eas-cli`). It will notify you when a new version is available, we encourage you to always stay up to date with the latest version.
@@ -44,14 +62,12 @@ If you are already signed in through Expo CLI, you don't need to do anything. Ot
 
 ## 3. Configure the project
 
-Run `eas build:configure` to configure your iOS and Android projects to run on EAS Build.
-
-If you have released your app previously and have existing [app signing credentials](/distribution/app-signing.md) that you would like to use, [refer to this guide](/app-signing/existing-credentials.md) for more information on how to configure them.
+Run `eas build:configure` to configure your iOS and Android projects to run on EAS Build. If you'd like to learn more about what happens behind the scenes, you can read the [build configuration process reference](build-reference/build-configuration.md).
 
 Additional configuration may be required for some scenarios:
 
-- Is your project inside of a monorepo? [Follow these instructions](how-tos.md#how-to-set-up-eas-build-with).
-- Do you use a private npm registry? [Add your npm token](how-tos.md#how-to-use-private-package-repositories).
+- Is your project inside of a monorepo? [Follow these instructions](/build-reference/how-tos.md#how-to-set-up-eas-build-with).
+- Do you use private npm packages? [Add your npm token](/build-reference/how-tos.md#how-to-use-private-package-repositories).
 
 ## 4. Run a build
 
@@ -59,13 +75,23 @@ Additional configuration may be required for some scenarios:
 
 - Run `eas build --platform ios` to build for iOS.
 
-When you first run the build, you will be guided through generating or supplying your app signing credentials.
+- Alternatively, you can run `eas build --platform all` to build for Android and iOS at the same time.
 
-- **Android**: If you have not yet generated a keystore for your app, you can let Expo take care of that for you. If you have already built your app in the managed workflow with `expo build:android`, then the same credentials will be used here. If you would rather manually generate your keystore, please see the advanced [Android Credentials](advanced-credentials-configuration.md#android-credentials) section for more information.
+Before the build can start, we'll need to generate or provide app signing credentials. If you have no experience with this, don't worry &mdash; no knowledge is required, you will be guided through the process and EAS CLI will do the heavy lifting.
 
-- **iOS**: This requires access to a **paid** [Apple Developer Account](https://developer.apple.com/programs) to configure the credentials required for signing your app. Expo will take care of acquiring the credentials for you, and if you have already built your app in the managed workflow with `expo build:ios`, then the same credentials will be used here. If you would rather manually provide your credentials, refer to the advanced [iOS Credentials](advanced-credentials-configuration.md#ios-credentials) section for more information.
+> If you have released your app to stores previously and have existing [app signing credentials](/distribution/app-signing.md) that you would like to use, [follow these instructions to configure them](/app-signing/existing-credentials.md).
 
-> 💡 You can run `eas build --platform all` to build for Android and iOS at the same time.
+#### Android app signing credentials
+
+- If you have not yet generated a keystore for your app, you can let EAS CLI take care of that for you by selecting `Generate new keystore`, and then you're done. The keystore will be stored securely on EAS servers.
+- If you have previously built your app in the managed workflow with `expo build:android` (using the same `slug`), then the same credentials will be used here.
+- If you would rather manually generate your keystore, please see the [manual Android credentials guide](/app-signing/manual-credentials-configuration.md#android-credentials) for more information.
+
+#### iOS app signing credentials
+
+- If you have not generated a provisioning profile and/or distribution certificate yet, you can let EAS CLI take care of that for you by signing into your Apple Developer Program account and following the prompts.
+- If you have already built your app in the managed workflow with `expo build:ios` (using the same `slug`), then the same credentials will be used here.
+- If you would rather manually generate your credentials, refer to the [manual iOS credentials guide](/app-signing/manual-credentials-configuration.md#ios-credentials) for more information.
 
 ## 5. Wait for the build to complete
 
@@ -75,13 +101,12 @@ By default, the `eas build` command will wait for your build to complete. Howeve
 
 ### Distribute your app
 
-- Want to distribute your apps to internal testers? [Learn about internal distribution](internal-distribution.md).
 - Ship your app! [Learn how to submit your app to app stores with EAS Submit](/submit/introduction.md).
+- Want to distribute your apps to internal testers? [Learn about internal distribution](internal-distribution.md).
   <!-- - Add new build profiles, such as simulator builds or build specific for certain release environments. -->
 
 ### Get a deeper understanding
 
-- Read the [Configuration with eas.json](eas-json.md) guide to get familiar with EAS Build configuration options.
-- If you want to learn more about the internals of Android and iOS builds, check out our [Android build process](android-builds.md) and [iOS build process](ios-builds.md) pages.
-- Lastly, if you feel like an expert on credentials configuration, see the [Advanced credentials configuration](advanced-credentials-configuration.md) guide to customize the build process even further.
-- Other than that, stay tuned - more features are coming to EAS Build soon!
+- If you want to learn more about how of Android and iOS build jobs are performed, check out our [Android build process](/build-reference/android-builds.md) and [iOS build process](/build-reference/ios-builds.md) pages.
+- Learn about the hardware infrastructure that the builds are run on and the software environment that they execute in on the [build server infrastructure reference](/build-reference/infrastructure.md)
+- Learn about [caching dependencies](/build-reference/caching.md), [environment variables](/build-reference/variables.md), and [limitations of EAS Build](/build-reference/limitations.md).

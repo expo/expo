@@ -1,5 +1,5 @@
 ---
-title: Manual credentials configuration
+title: Manually configuring credentials
 ---
 
 You can usually get away with not being a codesigning expert by letting EAS handle it for you. However, there are cases where some users might want to manage their project keystore, certificates and profiles on their own.
@@ -184,4 +184,4 @@ Consider the following steps:
 
 Similarly, you can encode your keystore, provisioning profile and distribution certificate so you can restore them later on the CI. In order to successfully trigger your build using local credentials from CI, you'll have to make sure all the credentials exist in the CI instance's file system (at the same locations as defined in `credentials.json`).
 
-Once the restoring steps are in place, you can use the same process described in the [Trigger builds from CI](building-on-ci.md) guide to trigger the builds.
+Once the restoring steps are in place, you can use the same process described in the [Triggering builds from CI](building-on-ci.md) guide to trigger the builds.
