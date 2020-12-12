@@ -1,36 +1,59 @@
 ---
-title: Set up your project and environment
+title: Create your first build
 ---
 
-Follow these instructions to integrate EAS Build in your existing project.
+In this guide you will learn how to build a ready-to-submit binary for the Apple App Store and Google Play store with EAS Build. For a simple app, it shouldn't take more than a few minutes total to kick off your builds for both Android and iOS.
+
+## Prerequisites
+
+
+EAS Build is a brand new and rapidly evolving service. It can't do everything yet, so before you set out to create a build for your project we recommend consulting the [limitations](/build-reference/limitations.md) page and the other prequisites below.
+
+<details><summary><h4>📦 A React Native iOS and/or Android project that you want to build.</h4></summary>
+<p>
+
+- Install Expo CLI by running `npm install -g expo-cli` (or `yarn global add expo-cli`).
+- Run `expo init PROJECT_NAME` (let's assume `PROJECT_NAME` is `abcd`) and choose a bare workflow template (either `minimal` or `minimal (TypeScript)`).
+- EAS Build also works well with projects created by `npx react-native`, `create-react-native-app` `ignite-cli`, and other project bootstrapping tools.
+
+<center><img src="/static/images/eas-build/walkthrough/01-init.png" /></center>
+
+</p>
+</details>
+
+> EAS Build has early and rapidly improving support for managed workflow projects, but we recommend using it with bare React Native projects for best results right now.
+
+<details><summary><h4>💡 An Expo account with an EAS Priority Plan subscription.</h4></summary>
+<p>
+
+- You can sign up for an Expo account at [https://expo.io/signup](https://expo.io/signup).
+- Learn more about the EAS Priority Plan and sign up for a free month at [https://expo.io/pricing](https://expo.io/pricing).
+
+</p>
+</details>
+
+> While EAS Build is in preview, it is only available to EAS Priority Plan subscribers. Once it graduates from preview it will become more broadly available. The first month is free, cancel any time.
 
 ## 1. Install the latest EAS CLI
 
-Install EAS CLI by running `npm install -g eas-cli` (or `yarn global add eas-cli`). If you already have it, make sure you're using the latest version. EAS Build is in beta and it's changing rapidly, so the only way to ensure that you will have the best experience is to use the latest eas-cli version.
+Install EAS CLI by running `npm install -g eas-cli` (or `yarn global add eas-cli`). It will notify you when a new version is available, we encourage you to always stay up to date with the latest version.
 
 ## 2. Log in to your Expo account
 
-Log in with `eas login`, or [sign up](https://expo.io/signup) if you don't have an account yet. You can check if you're logged in by running `eas whoami`.
+If you are already signed in through Expo CLI, you don't need to do anything. Otherwise, log in with `eas login`. You can check if you're logged in by running `eas whoami`.
 
-## 3. Set application identifiers
+## 3. Configure the project
 
-These will be used to identify your application on the Apple App Store and Google Play.
+Run `eas build:configure` to configure your iOS and Android projects to run on EAS Build.
 
-- **Android**: Set `expo.android.package` in your [app.json/app.config.js](/workflow/configuration.md).
-- **iOS**: Set `expo.ios.bundleIdentifier` in your [app.json/app.config.js](/workflow/configuration.md).
-
-Learn more about application identifiers in the [Walkthrough](walkthrough.md#set-application-identifiers).
-
-## 4. Configure the project
-
-Run `eas build:configure` to configure your iOS and Android projects to run on EAS Build. This will only take a few seconds, it's automated.
+If you have released your app previously and have existing [app signing credentials](/distribution/app-signing.md) that you would like to use, [refer to this guide](/app-signing/existing-credentials.md) for more information on how to configure them.
 
 Additional configuration may be required for some scenarios:
 
 - Is your project inside of a monorepo? [Follow these instructions](how-tos.md#how-to-set-up-eas-build-with).
 - Do you use a private npm registry? [Add your npm token](how-tos.md#how-to-use-private-package-repositories).
 
-## 5. Run a build
+## 4. Run a build
 
 - Run `eas build --platform android` to build for Android.
 
@@ -44,11 +67,11 @@ When you first run the build, you will be guided through generating or supplying
 
 > 💡 You can run `eas build --platform all` to build for Android and iOS at the same time.
 
-## 6. Wait for the build to complete
+## 5. Wait for the build to complete
 
 By default, the `eas build` command will wait for your build to complete. However, if you interrupt this command and monitor the progress of your builds by either visiting [the EAS Build dashboard](https://expo.io/builds?type=eas) or running the `eas build:show` command.
 
-## 7. Next steps
+## 6. Next steps
 
 ### Distribute your app
 

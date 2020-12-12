@@ -38,9 +38,11 @@ export const globalExtras = css`
   details summary h4 {
     font-family: ${Constants.fonts.demi};
     color: ${Constants.colors.black90};
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 500;
     display: inline-block;
+    vertical-align: text-top;
+    max-width: 90%;
   }
 
   details summary p {

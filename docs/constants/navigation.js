@@ -20,7 +20,7 @@ const GROUPS = {
   'Configuration Files': ['Configuration Files'],
   'React Native': ['React Native'],
   Preview: ['Preview'],
-  'EAS Build': ['EAS Build'],
+  'EAS Build': ['Start Building', 'App Signing', 'Reference'],
   'EAS Submit': ['EAS Submit'],
   'Development Clients': ['Development Clients'],
 };
@@ -32,18 +32,36 @@ const sections = [
     reference: ['Introduction', 'Support and feedback'],
   },
   {
-    name: 'EAS Build',
+    name: 'Start Building',
     reference: [
       'Introduction',
-      'Walkthrough',
-      'Set up your project and environment',
-      'Common configuration examples',
-      'Configuration with eas.json',
-      'Internal distribution',
+      'Create your first build',
+      'Using build profiles',
+      'Over-the-air updates',
       'Trigger builds from CI',
+      'Internal distribution',
+    ],
+  },
+  {
+    name: 'App Signing',
+    reference: [
+      'Generate credentials for release builds',
+      'Use existing app signing credentials',
       'Manual credentials configuration',
+      'Syncing credentials',
+    ],
+  },
+  {
+    name: 'Reference',
+    reference: [
+      'Configuration with eas.json',
+      'Tooling integrations',
       'Android build process',
       'iOS build process',
+      'Environment variables and secrets',
+      'Build server infrastructure',
+      'Caching dependencies',
+      'Limitations',
     ],
   },
   {
