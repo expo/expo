@@ -231,7 +231,7 @@ A common use case for linking to your app is to redirect back to your app after 
 
 To see a full example of using `WebBrowser` for authentication with Facebook, see [examples/with-facebook-auth](https://github.com/expo/examples/tree/master/with-facebook-auth). Currently Facebook authentication requires that you deploy a small webserver to redirect back to your app (as described in the example) because Facebook does not let you redirect to custom schemes, Expo is working on a solution to make this easier for you. [Try it out in Expo](https://expo.io/@community/with-facebook-auth).
 
-Another example of using `WebBrowser` for authentication can be found at [expo/auth0-example](https://github.com/expo/auth0-example).
+Another example of using `WebBrowser` for authentication can be found at [examples/with-auth0](https://github.com/expo/examples/tree/master/with-auth0).
 
 ## Universal/deep links (without a custom scheme)
 
