@@ -6,12 +6,12 @@ This document describes the current build infrastructure as of December 11, 2020
 
 The software components will become customizable, but they aren't yet. So there is only one version of Node, yarn, CocoaPods, Xcode, Ruby, Fastlane, and so on currently available.
 
-## Common
+## JavaScript environment
 
 - node 14.15.1
 - yarn 1.22.10
 
-## Android
+## Android build server configuration
 
 - one pod per k8s node (gcp n2-standard-2)
   - 2 CPU (gcp unit)
@@ -33,7 +33,7 @@ org.gradle.configureondemand=true
 org.gradle.daemon=false
 ```
 
-## iOS
+## iOS build server configuration
 
 - VMs run on Mac Pro 6.1
     - Intel(R) Xeon(R) CPU E5-2697 (12 core/24 threads) (4 cores per vm)
