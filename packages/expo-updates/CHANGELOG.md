@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Complete manifest verification check on iOS even if we can't cache the public key to disk ([#11327](https://github.com/expo/expo/pull/11327) by [@esamelson](https://github.com/esamelson))
+
 ## 0.4.1 — 2020-11-25
 
 ### 🛠 Breaking changes
