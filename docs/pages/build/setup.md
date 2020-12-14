@@ -12,6 +12,9 @@ EAS Build is a brand new and rapidly evolving service. It can't do everything ye
 <details><summary><h4>📦 A React Native iOS and/or Android project that you want to build.</h4></summary>
 <p>
 
+Don't have a project yet? No problem, it's quick and easy to create a "Hello world" app that you can use with this guide.
+<div style={{marginTop: -10}} />
+
 - Install Expo CLI by running `npm install -g expo-cli` (or `yarn global add expo-cli`).
 - Run `expo init PROJECT_NAME` (let's assume `PROJECT_NAME` is `abcd`) and choose a bare workflow template (either `minimal` or `minimal (TypeScript)`).
 - EAS Build also works well with projects created by `npx react-native`, `create-react-native-app` `ignite-cli`, and other project bootstrapping tools.
