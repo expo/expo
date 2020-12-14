@@ -4,7 +4,7 @@ import Foundation
 
 let RECENTLY_OPENED_APPS_REGISTRY_KEY = "expo.devlauncher.recentlyopenedapps"
 
-let TIME_TO_REMOVE = 60 * 60 * 24 * 3 // 3 days
+let TIME_TO_REMOVE = 1000 * 60 * 60 * 24 * 3 // 3 days
 
 @objc(EXDevLauncherRecentlyOpenedAppsRegistry)
 public class EXDevLauncherRecentlyOpenedAppsRegistry : NSObject {

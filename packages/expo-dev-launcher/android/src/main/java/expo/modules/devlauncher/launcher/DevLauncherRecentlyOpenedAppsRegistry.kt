@@ -6,7 +6,7 @@ import com.google.gson.Gson
 
 private const val RECENTLY_OPENED_APPS_SHARED_PREFERENCES = "expo.modules.devlauncher.recentyopenedapps"
 
-private const val TIME_TO_REMOVE = 60 * 60 * 24 * 3 // 3 days
+private const val TIME_TO_REMOVE = 1000 * 60 * 60 * 24 * 3 // 3 days
 
 data class DevLauncherAppEntry(
   val timestamp: Long,
