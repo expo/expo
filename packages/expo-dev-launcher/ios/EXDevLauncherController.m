@@ -268,7 +268,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 }
 
 /**
- * We need that function to sync the dev-menu interface  with the main application.
+ * We need that function to sync the dev-menu user interface with the main application.
  */
 - (void)_ensureUserInterfaceStyleIsInSyncWithViewController:(UIViewController *)controller
 {
@@ -298,4 +298,3 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 }
 
 @end
-
