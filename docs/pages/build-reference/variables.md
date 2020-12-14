@@ -4,7 +4,7 @@ title: Environment variables and secrets
 
 The ["Environment variables in Expo"](/guides/environment-variables.md) guide presents several options for how you can access system environment variables to your app JavaScript code. This can be a useful way to inject values in your code, but [these values should not be secrets](/guides/environment-variables.md#security-considerations), and so the value it provides can be summarized as a convenience for accommodating certain development workflows.
 
-Using the techniques described in the environment variables document above, environment variables are inlined (the `process.env.X` text is replaced with it's evaluated result) in the app JavaScript _at the the time that the app is built_, and included in the JavaScript app bundle. This means that the substitution would occur on EAS Build servers and not on your development machine, so if you tried to run a build on EAS Build without the environment variables present you would encounter errors.
+Using the techniques described in the environment variables document above, environment variables are inlined (the `process.env.X` text is replaced with it's evaluated result) in your app's JavaScript code _at the the time that the app is built_, and included in the app bundle. This means that the substitution would occur on EAS Build servers and not on your development machine, so if you tried to run a build on EAS Build without the environment variables present you would encounter errors.
 
 In similar situations, you would typically resolve this by configuring the environment variables on the remote server, however **it is not currently possible to set environment variables on EAS Build jobs**.
 
@@ -12,7 +12,7 @@ In similar situations, you would typically resolve this by configuring the envir
 
 ## Making your app that depends on environment variables compatible with EAS Build
 
-If you use environment variables as described above, you will need to modify your application in order to account for this. Given that you should not be providing any secrets in these variables, one way to work around this is to create a JavaScript files with fallbacks for all of your environment variables and accessing everything through there:
+If you use environment variables as described above, you will need to modify your application in order to account for this. Given that you should not be providing any secrets in these variables, one way to work around this is to create a JavaScript file that reads the environment variables and provides fallbacks when they aren't present:
 
 ```js
 // Constants.ts

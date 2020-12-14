@@ -43,6 +43,6 @@ The following example demonstrates how you might use the `"production"` release 
 
 ## Binary compatibility and other usage concerns
 
-Your native runtime may change on each build, depending on whether you modify the code in a way that changes the API contract with JavaScript. If you ship a JavaScript bundle to a binary that with a different native runtime (for example, a function that the JavaScript bundle expects to exist does not exist) then your app may not work as expected or crash.
+Your native runtime may change on each build, depending on whether you modify the code in a way that changes the API contract with JavaScript. If you publish a JavaScript bundle to a binary with an incompatible native runtime (for example, a function that the JavaScript bundle expects to exist does not exist) then your app may not work as expected or it may crash.
 
 Please refer to the ["Updating your app over-the-air"](/bare/updating-your-app.md) guide to learn more about update compatibility and more.

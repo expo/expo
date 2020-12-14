@@ -53,7 +53,7 @@ Android does not restrict distribution of applications &mdash; the operating sys
 
 Apple restricts distribution of applications on iPhones and iPads, so we will need to build the app with an ad-hoc provisioning profile that explicitly lists the devices that the application can run on.
 
-An alternative to ad-hoc provisioning is enterprise provisioning, but this is expensive (\$299 USD per year from Apple) and not yet supported by internal distribution (coming soon).
+An alternative to ad hoc provisioning is enterprise provisioning, but this is expensive ($299 USD per year from Apple) and not yet supported by EAS Build internal distribution (support is planned and coming soon).
 
 <!--
 (@dsokal) this is not implemented yet
@@ -81,9 +81,9 @@ Setting up ad hoc provisioning consists of two steps. In the first step, you'll 
 
 <TerminalBlock cmd={['# Register Apple Devices for internal distribution', 'eas device:create']} />
 
-The next step is to generate or update the provisioning profile. When you proceed to running a build you will be guided through this.
-
 You can register new devices at any time, but builds that were created before the device was registered will not run on newly registered devices; only builds that are created after the device is registered will be installable.
+
+The next step is to generate or update the provisioning profile. When you proceed to running a build, you will be guided through this process.
 
 > **Are you using manual local credentials?** Make sure to point your `credentials.json` to an ad hoc <!-- or enterprise -->provisioning profile that you generate through the Apple Developer portal. Beware that EAS CLI does only a limited validation of your local credentials, and you will have to handle device UDID registration manually. Read more about [Using local credentials](/app-signing/manual-credentials.md).
 

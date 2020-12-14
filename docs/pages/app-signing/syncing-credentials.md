@@ -10,7 +10,7 @@ To download your automatically managed credentials, run `eas credentials` in the
 
 Android credentials will be ready to use immediately because your project will read the credentials from `credentials.json`.
 
-iOS credentials will require a couple steps. You will first need to install the distribution certificate into your keychain. Next, open Xcode, import your provisioning profile and select it.
+iOS credentials requires two steps to set up locally. You will first need to install the distribution certificate into your keychain. Next, open your project Xcode and navigate to the "Signing & Capabilities" section, then import your provisioning profile and select it.
 
 ## Uploading credentials
 
