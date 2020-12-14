@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#import "Private/GULUserDefaults.h"
+#import "GoogleUtilities/UserDefaults/Private/GULUserDefaults.h"
 
-#import <GoogleUtilities/GULLogger.h>
+#import "GoogleUtilities/Logger/Private/GULLogger.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

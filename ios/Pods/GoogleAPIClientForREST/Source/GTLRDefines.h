@@ -17,9 +17,7 @@
 // GTLRDefines.h
 //
 
-// Ensure Apple's conditionals we depend on are defined.
-#import <TargetConditionals.h>
-#import <AvailabilityMacros.h>
+#import <Foundation/Foundation.h>
 
 // These can be redefined via a prefix if you are prefixing symbols to prefix
 // the names used in strings. Something like:
@@ -32,7 +30,7 @@
   #define GTLR_CLASSNAME_CSTR(x) _GTLR_CLASSNAME_HELPER(x)
 #endif
 
-// Provide a common definition for externing constants/functions
+// The ServiceGenerator used to use this, now it just uses `FOUNDATION_EXTERN`.
 #if defined(__cplusplus)
   #define GTLR_EXTERN extern "C"
 #else
@@ -68,42 +66,3 @@
     #define GTLR_DEBUG_LOG(...) do { } while (0)
   #endif
 #endif
-
-#ifndef GTLR_DEBUG_ASSERT_CURRENT_QUEUE
-  #define GTLR_ASSERT_CURRENT_QUEUE_DEBUG(targetQueue)                  \
-      GTLR_DEBUG_ASSERT(0 == strcmp(GTLR_QUEUE_NAME(targetQueue),       \
-                        GTLR_QUEUE_NAME(DISPATCH_CURRENT_QUEUE_LABEL)), \
-          @"Current queue is %s (expected %s)",                         \
-          GTLR_QUEUE_NAME(DISPATCH_CURRENT_QUEUE_LABEL),                \
-          GTLR_QUEUE_NAME(targetQueue))
-
-  #define GTLR_QUEUE_NAME(queue) \
-      (strlen(dispatch_queue_get_label(queue)) > 0 ? dispatch_queue_get_label(queue) : "unnamed")
-#endif  // GTLR_ASSERT_CURRENT_QUEUE_DEBUG
-
-// Sanity check the min versions.
-
-#if (defined(TARGET_OS_TV) && TARGET_OS_TV) || (defined(TARGET_OS_WATCH) && TARGET_OS_WATCH)
-  // No min checks for these two.
-#elif TARGET_OS_IPHONE
-  #if !defined(__IPHONE_9_0) || (__IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_9_0)
-    #error "This project expects to be compiled with the iOS 9.0 SDK (or later)."
-  #endif
-  #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_7_0
-    #error "The minimum supported iOS version is 7.0."
-  #endif
-#elif TARGET_OS_MAC
-  #if !defined(MAC_OS_X_VERSION_10_10) || (MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_10)
-    #error "This project expects to be compiled with the OS X 10.10 SDK (or later)."
-  #endif
-  #if MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_9
-    #error "The minimum supported OS X version is 10.9."
-  #endif
-#else
-  #error "Unknown target platform."
-#endif
-
-// Version marker used to validate the generated sources against the library
-// version. The will be changed any time the library makes a change that means
-// past sources need to be regenerated.
-#define GTLR_RUNTIME_VERSION 3000

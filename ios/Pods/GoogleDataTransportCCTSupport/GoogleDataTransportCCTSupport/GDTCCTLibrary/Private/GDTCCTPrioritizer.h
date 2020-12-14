@@ -17,27 +17,36 @@
 #import <Foundation/Foundation.h>
 
 #import <GoogleDataTransport/GDTCORClock.h>
+#import <GoogleDataTransport/GDTCOREvent.h>
 #import <GoogleDataTransport/GDTCORPrioritizer.h>
+#import <GoogleDataTransport/GDTCORTargets.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 /** Manages the prioritization of events from GoogleDataTransport. */
-@interface GDTCCTPrioritizer : NSObject <GDTCORPrioritizer>
+@interface GDTCCTPrioritizer : NSObject <NSSecureCoding, GDTCORPrioritizer>
 
 /** The queue on which this prioritizer operates. */
 @property(nonatomic) dispatch_queue_t queue;
 
-/** All log events that have been processed by this prioritizer. */
-@property(nonatomic) NSMutableSet<GDTCORStoredEvent *> *events;
+/** The most recent attempted upload of CCT daily uploaded logs. */
+@property(nonatomic) GDTCORClock *CCTTimeOfLastDailyUpload;
 
-/** The most recent attempted upload of daily uploaded logs. */
-@property(nonatomic) GDTCORClock *timeOfLastDailyUpload;
+/** The most recent attempted upload of FLL daily uploaded logs*/
+@property(nonatomic) GDTCORClock *FLLOfLastDailyUpload;
 
 /** Creates and/or returns the singleton instance of this class.
  *
  * @return The singleton instance of this class.
  */
 + (instancetype)sharedInstance;
+
+/** Returns a set of events that have been prioritized for the given target.
+ *
+ * @param target The target to check. CCT, FLL, and CSH are currently supported by this class.
+ * @return The set of events prioritized so far.
+ */
+- (nullable NSSet *)eventsForTarget:(GDTCORTarget)target;
 
 NS_ASSUME_NONNULL_END
 

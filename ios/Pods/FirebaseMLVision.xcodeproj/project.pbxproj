@@ -18,7 +18,7 @@
 				06890C6951330352501CF1D6A5C8876D /* PBXTargetDependency */,
 				53BD6695F5D04AA375CE598C7B11548F /* PBXTargetDependency */,
 				7E0DDF43D8B448E4A3AE71E0230F0C3E /* PBXTargetDependency */,
-				E54F6FDDD0713533AF28DFC0A7EC6447 /* PBXTargetDependency */,
+				10E0F8E86CF1612C724004C34754336B /* PBXTargetDependency */,
 			);
 			name = FirebaseMLVision;
 		};
@@ -46,7 +46,7 @@
 			remoteGlobalIDString = E899E01EE94E3AAE44DBC0A0C183AD70;
 			remoteInfo = GoogleAPIClientForREST;
 		};
-		AD05346EE123AC51C96165956026C9B6 /* PBXContainerItemProxy */ = {
+		8F25CAD32D4A23E04F4D960C6BD189F8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3CE09663017C990D605E18352B9D139F /* Protobuf.xcodeproj */;
 			proxyType = 1;
@@ -200,6 +200,11 @@
 			name = GoogleAPIClientForREST;
 			targetProxy = 87E2B97F9516EE8ABDE2A969F9639DF1 /* PBXContainerItemProxy */;
 		};
+		10E0F8E86CF1612C724004C34754336B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Protobuf;
+			targetProxy = 8F25CAD32D4A23E04F4D960C6BD189F8 /* PBXContainerItemProxy */;
+		};
 		53BD6695F5D04AA375CE598C7B11548F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = GoogleToolboxForMac;
@@ -219,11 +224,6 @@
 			isa = PBXTargetDependency;
 			name = GTMSessionFetcher;
 			targetProxy = C445F3CF34803B678EBE7BD7F540B2CA /* PBXContainerItemProxy */;
-		};
-		E54F6FDDD0713533AF28DFC0A7EC6447 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Protobuf;
-			targetProxy = AD05346EE123AC51C96165956026C9B6 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

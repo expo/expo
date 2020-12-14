@@ -19,6 +19,8 @@
 
 #import "GTLRDuration.h"
 
+#import "GTLRDefines.h"
+
 static const int32_t kNanosPerMillisecond = 1000000;
 static const int32_t kNanosPerMicrosecond = 1000;
 static const int32_t kNanosPerSecond = 1000000000;

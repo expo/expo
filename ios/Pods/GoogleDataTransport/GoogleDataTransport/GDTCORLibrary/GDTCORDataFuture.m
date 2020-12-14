@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#import <GoogleDataTransport/GDTCORDataFuture.h>
+#import "GDTCORLibrary/Private/GDTCORDataFuture.h"
 
 @implementation GDTCORDataFuture
 
@@ -32,7 +32,7 @@
 
 - (NSUInteger)hash {
   // In reality, only one of these should be populated.
-  return [_fileURL hash] ^ [_originalData hash];
+  return [_fileURL hash];
 }
 
 #pragma mark - NSSecureCoding
@@ -40,23 +40,18 @@
 /** Coding key for _fileURL ivar. */
 static NSString *kGDTCORDataFutureFileURLKey = @"GDTCORDataFutureFileURLKey";
 
-/** Coding key for _data ivar. */
-static NSString *kGDTCORDataFutureDataKey = @"GDTCORDataFutureDataKey";
-
 + (BOOL)supportsSecureCoding {
   return YES;
 }
 
 - (void)encodeWithCoder:(nonnull NSCoder *)aCoder {
   [aCoder encodeObject:_fileURL forKey:kGDTCORDataFutureFileURLKey];
-  [aCoder encodeObject:_originalData forKey:kGDTCORDataFutureDataKey];
 }
 
 - (nullable instancetype)initWithCoder:(nonnull NSCoder *)aDecoder {
   self = [self init];
   if (self) {
     _fileURL = [aDecoder decodeObjectOfClass:[NSURL class] forKey:kGDTCORDataFutureFileURLKey];
-    _originalData = [aDecoder decodeObjectOfClass:[NSData class] forKey:kGDTCORDataFutureDataKey];
   }
   return self;
 }

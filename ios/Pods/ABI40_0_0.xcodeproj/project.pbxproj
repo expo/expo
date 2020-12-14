@@ -1960,13 +1960,6 @@
 			remoteGlobalIDString = 32AB2597F26D238AAF12A9F8A95B992E;
 			remoteInfo = Branch;
 		};
-		00899FFFF659888CCBD982A9D1C64D80 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 1934646C8DDDBBF6AB68ABC5B4E3EB7E /* Firebase.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 15B99218A87324F316F0E937B3DAAC8B;
-			remoteInfo = Firebase;
-		};
 		008ADDBF4CC75CE7504D517E6A81F415 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BB8BC85E7C8E685CA0C44DE0803D5E4E /* Project object */;
@@ -2527,13 +2520,6 @@
 			remoteGlobalIDString = EA6568A175B848582C72E9C3AD9E531F;
 			remoteInfo = ABI40_0_0FBReactNativeSpec;
 		};
-		4E4BF4968E16188C4DA8B361EF8A75FE /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 1934646C8DDDBBF6AB68ABC5B4E3EB7E /* Firebase.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 15B99218A87324F316F0E937B3DAAC8B;
-			remoteInfo = Firebase;
-		};
 		4E5849ABECD35C30FEEA487A3E7BFCAB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BB8BC85E7C8E685CA0C44DE0803D5E4E /* Project object */;
@@ -2905,6 +2891,13 @@
 			remoteGlobalIDString = 1EC3290DC2F8DEFF25F1D2C44453927E;
 			remoteInfo = "ABI40_0_0React-RCTNetwork";
 		};
+		774CDF1949F85E4149B7D04D7C44E740 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1934646C8DDDBBF6AB68ABC5B4E3EB7E /* Firebase.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 15B99218A87324F316F0E937B3DAAC8B;
+			remoteInfo = Firebase;
+		};
 		788E14BD730CDF3939E0746706E2192F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BB8BC85E7C8E685CA0C44DE0803D5E4E /* Project object */;
@@ -3044,6 +3037,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 3694E34BB369B3EFECFDDD11A1318250;
 			remoteInfo = ABI40_0_0UMTaskManagerInterface;
+		};
+		8617C4F5C373FF33F6A29CDD2D6E9A74 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6F4AB749B59FFF0CF6FD62D35CE3C216 /* Google-Mobile-Ads-SDK.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 662B519EDA759B92F78065D8C998C86E;
+			remoteInfo = "Google-Mobile-Ads-SDK";
 		};
 		87A70FB0668AFB865FD87A8838C0F284 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -3268,6 +3268,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 725D0E8C1060F8939288E8C91236BA4F;
 			remoteInfo = DoubleConversion;
+		};
+		9F343FB5166B0C5B2FD53634F8A353FF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6F4AB749B59FFF0CF6FD62D35CE3C216 /* Google-Mobile-Ads-SDK.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 662B519EDA759B92F78065D8C998C86E;
+			remoteInfo = "Google-Mobile-Ads-SDK";
 		};
 		9F8C41E7B657B1B773301978E602A4E2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -3535,13 +3542,6 @@
 			remoteGlobalIDString = AB3661601751A275A2AB380DC266271F;
 			remoteInfo = ABI40_0_0UMCore;
 		};
-		BB574FF17F56B64D2884420896ECD825 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 6F4AB749B59FFF0CF6FD62D35CE3C216 /* Google-Mobile-Ads-SDK.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 662B519EDA759B92F78065D8C998C86E;
-			remoteInfo = "Google-Mobile-Ads-SDK";
-		};
 		BB7D9A3A44DA225F790AB7500F268BD0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BB8BC85E7C8E685CA0C44DE0803D5E4E /* Project object */;
@@ -3738,6 +3738,13 @@
 			remoteGlobalIDString = 1791219DE4146DF164AD0E1E6B564184;
 			remoteInfo = ABI40_0_0UMFileSystemInterface;
 		};
+		D536E4F7D3AB8CFCB737A05E43204435 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1934646C8DDDBBF6AB68ABC5B4E3EB7E /* Firebase.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 15B99218A87324F316F0E937B3DAAC8B;
+			remoteInfo = Firebase;
+		};
 		D5A8D42AEA4A43B6A2F3F6993B138502 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0163B431E0D44EF1B5A445131B28D3BE /* boost-for-react-native.xcodeproj */;
@@ -3751,13 +3758,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 14BB2B7275726942E762F076FA966088;
 			remoteInfo = Folly;
-		};
-		D5B30BBCCB012428D3A76F0EA68C30F6 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 6F4AB749B59FFF0CF6FD62D35CE3C216 /* Google-Mobile-Ads-SDK.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 662B519EDA759B92F78065D8C998C86E;
-			remoteInfo = "Google-Mobile-Ads-SDK";
 		};
 		D643CF5A8C6A3D000FD6CB50E8BCD80A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -3807,13 +3807,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = B466178D20F8EA36D6002DFD17CA90F6;
 			remoteInfo = ABI40_0_0EXFirebaseCore;
-		};
-		DDB835D41E73B8E2B27622F504DAA326 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 1934646C8DDDBBF6AB68ABC5B4E3EB7E /* Firebase.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 15B99218A87324F316F0E937B3DAAC8B;
-			remoteInfo = Firebase;
 		};
 		DEA4BA1FCFF64EBFFBA1139CC2EA02C2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -3884,6 +3877,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = CB749544CF773A9FC191AC6AB2221F16;
 			remoteInfo = ABI40_0_0EXAppleAuthentication;
+		};
+		E46ECEEF8F53284DD0C47A49F10E6C1B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1934646C8DDDBBF6AB68ABC5B4E3EB7E /* Firebase.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 15B99218A87324F316F0E937B3DAAC8B;
+			remoteInfo = Firebase;
 		};
 		E489705F8CA99BB97D2E6A015DF6E838 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -15170,7 +15170,7 @@
 			dependencies = (
 				1D6C12820B3AAC26EDCF1FBD20A62E2D /* PBXTargetDependency */,
 				8AECED2AE7E7664BED2CB70389AF424C /* PBXTargetDependency */,
-				05EE9925130862C2C43287C2A146800C /* PBXTargetDependency */,
+				CFC84462A12191126DF377C3BE055612 /* PBXTargetDependency */,
 			);
 			name = ABI40_0_0EXFaceDetector;
 			productName = ABI40_0_0EXFaceDetector;
@@ -15636,7 +15636,7 @@
 			);
 			dependencies = (
 				8DD448A02F6245404ABB9FA22055CA12 /* PBXTargetDependency */,
-				E770470DBD342421067A9C7B904D2C1B /* PBXTargetDependency */,
+				60792172E877881C62FFC789AC310793 /* PBXTargetDependency */,
 			);
 			name = ABI40_0_0EXFirebaseCore;
 			productName = ABI40_0_0EXFirebaseCore;
@@ -15908,7 +15908,7 @@
 			dependencies = (
 				90331770E78A318CF649BF92A465B1CA /* PBXTargetDependency */,
 				E15E3E64AF4EB64C2A3E753E5A64E344 /* PBXTargetDependency */,
-				7AF66D51F4C12E2EDBA167374B21926F /* PBXTargetDependency */,
+				7A745EEB6B55A815539AD9DB7F68CFEB /* PBXTargetDependency */,
 			);
 			name = ABI40_0_0EXFirebaseAnalytics;
 			productName = ABI40_0_0EXFirebaseAnalytics;
@@ -16127,7 +16127,7 @@
 				2A66E2E036EA34292116A8827C6F1DDE /* PBXTargetDependency */,
 				6696528FC2BB0C7CFF63DCE8F6AC7E91 /* PBXTargetDependency */,
 				1DB63377A17DFE3CE62EB6ACF48218C9 /* PBXTargetDependency */,
-				E025EF79282F57634D69BDB8924053B6 /* PBXTargetDependency */,
+				27B8E6E29CB5C8F4AED27ACEFA29CA02 /* PBXTargetDependency */,
 				47666D576D3DEAB7FF44BF34BBC89A35 /* PBXTargetDependency */,
 				4A2B30B51DF1228EB5386357EE8B086E /* PBXTargetDependency */,
 				1769ABD4311DE944D547975315E44E12 /* PBXTargetDependency */,
@@ -16297,7 +16297,7 @@
 			);
 			dependencies = (
 				70D96EB9F7D97D40476784DBD4FCA07F /* PBXTargetDependency */,
-				84AF88E1C499B9759AAFF6A83104ACE6 /* PBXTargetDependency */,
+				AACF1CF48FC1A966C96026AFAEF34DB2 /* PBXTargetDependency */,
 			);
 			name = ABI40_0_0EXAdsAdMob;
 			productName = ABI40_0_0EXAdsAdMob;
@@ -18110,11 +18110,6 @@
 			target = D0303F7D11D5AD5F675E76A782BE510D /* ABI40_0_0EXDevice */;
 			targetProxy = FCCC0B153AA672356A13D10F1607B398 /* PBXContainerItemProxy */;
 		};
-		05EE9925130862C2C43287C2A146800C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Firebase;
-			targetProxy = 4E4BF4968E16188C4DA8B361EF8A75FE /* PBXContainerItemProxy */;
-		};
 		065A563F37440786D8EE6DCFB41A0C3F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = glog;
@@ -18346,6 +18341,11 @@
 			name = "ABI40_0_0React-jsi";
 			target = 2A4FF27890766E6C6F0EDEF27BA8296B /* ABI40_0_0React-jsi */;
 			targetProxy = 522A2105EB4B09977850B7052B5A6A54 /* PBXContainerItemProxy */;
+		};
+		27B8E6E29CB5C8F4AED27ACEFA29CA02 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "Google-Mobile-Ads-SDK";
+			targetProxy = 9F343FB5166B0C5B2FD53634F8A353FF /* PBXContainerItemProxy */;
 		};
 		2879B9B00895FB36DB214BAB632F7173 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -18775,6 +18775,11 @@
 			name = GoogleSignIn;
 			targetProxy = E973CB5DBF5AB701CA011BE5224A48DF /* PBXContainerItemProxy */;
 		};
+		60792172E877881C62FFC789AC310793 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Firebase;
+			targetProxy = E46ECEEF8F53284DD0C47A49F10E6C1B /* PBXContainerItemProxy */;
+		};
 		61C7FBA6DD2CA2448C6EB901D0EA0740 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = ABI40_0_0UMFileSystemInterface;
@@ -18974,16 +18979,16 @@
 			target = 7F6B15F345333E519532E6F94821ECBF /* ABI40_0_0UMConstantsInterface */;
 			targetProxy = 1B1EEECE7B4C428B2071E990522E8304 /* PBXContainerItemProxy */;
 		};
+		7A745EEB6B55A815539AD9DB7F68CFEB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Firebase;
+			targetProxy = 774CDF1949F85E4149B7D04D7C44E740 /* PBXContainerItemProxy */;
+		};
 		7AE322B6C5818C770F04285A1C74B270 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = ABI40_0_0UMCore;
 			target = AB3661601751A275A2AB380DC266271F /* ABI40_0_0UMCore */;
 			targetProxy = F2AC2316BE5726EA33C2C0F35DA0FB13 /* PBXContainerItemProxy */;
-		};
-		7AF66D51F4C12E2EDBA167374B21926F /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Firebase;
-			targetProxy = 00899FFFF659888CCBD982A9D1C64D80 /* PBXContainerItemProxy */;
 		};
 		7B32B4EF845AE425FB337C5F551B223D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -19055,11 +19060,6 @@
 			name = ABI40_0_0UMFileSystemInterface;
 			target = 1791219DE4146DF164AD0E1E6B564184 /* ABI40_0_0UMFileSystemInterface */;
 			targetProxy = 9CA341664A3CBE8882D56A983FEC581F /* PBXContainerItemProxy */;
-		};
-		84AF88E1C499B9759AAFF6A83104ACE6 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "Google-Mobile-Ads-SDK";
-			targetProxy = BB574FF17F56B64D2884420896ECD825 /* PBXContainerItemProxy */;
 		};
 		84FB83B531458713EFCA4F98C3B4A8EB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -19378,6 +19378,11 @@
 			target = 41447C2A185C02EC76D57514F1B385C1 /* ABI40_0_0EXFileSystem */;
 			targetProxy = E6D716A637E3B550745A681896EAFD33 /* PBXContainerItemProxy */;
 		};
+		AACF1CF48FC1A966C96026AFAEF34DB2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "Google-Mobile-Ads-SDK";
+			targetProxy = 8617C4F5C373FF33F6A29CDD2D6E9A74 /* PBXContainerItemProxy */;
+		};
 		AB081ED5487B222FA7986F4FB37AB43A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Folly;
@@ -19594,6 +19599,11 @@
 			target = AB3661601751A275A2AB380DC266271F /* ABI40_0_0UMCore */;
 			targetProxy = B9C6779C7C6A4B2BDE2B46F13BA37440 /* PBXContainerItemProxy */;
 		};
+		CFC84462A12191126DF377C3BE055612 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Firebase;
+			targetProxy = D536E4F7D3AB8CFCB737A05E43204435 /* PBXContainerItemProxy */;
+		};
 		D10653743F263B736903A3003EBAA0E6 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = ABI40_0_0EXBrightness;
@@ -19676,11 +19686,6 @@
 			target = B200218659B9756D4B17520714E29653 /* ABI40_0_0EXApplication */;
 			targetProxy = A5472420DA6E226B527473280EB038B2 /* PBXContainerItemProxy */;
 		};
-		E025EF79282F57634D69BDB8924053B6 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "Google-Mobile-Ads-SDK";
-			targetProxy = D5B30BBCCB012428D3A76F0EA68C30F6 /* PBXContainerItemProxy */;
-		};
 		E087A3438CC894B3D14F3A08C94431C1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = ABI40_0_0UMPermissionsInterface;
@@ -19722,11 +19727,6 @@
 			name = ABI40_0_0UMSensorsInterface;
 			target = 25B8B1B309BB622A8FB4A5D115717194 /* ABI40_0_0UMSensorsInterface */;
 			targetProxy = D643CF5A8C6A3D000FD6CB50E8BCD80A /* PBXContainerItemProxy */;
-		};
-		E770470DBD342421067A9C7B904D2C1B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Firebase;
-			targetProxy = DDB835D41E73B8E2B27622F504DAA326 /* PBXContainerItemProxy */;
 		};
 		E8742DE4FD8B628A95CBBCAAE226AC52 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

@@ -13,22 +13,22 @@
 			buildPhases = (
 			);
 			dependencies = (
-				38284B8DAA09C9CADBFD861B1B601F05 /* PBXTargetDependency */,
-				0A04BDE67A70D396702FDC031687FA10 /* PBXTargetDependency */,
+				3A391CA63B7860014C3F2A5D4FF5B993 /* PBXTargetDependency */,
+				8EF71ED0B2BDDBE3FA0BE015C7DA49BC /* PBXTargetDependency */,
 			);
 			name = GoogleAppMeasurement;
 		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXContainerItemProxy section */
-		75BF1D7BC3BF10918A0D15870DBE8896 /* PBXContainerItemProxy */ = {
+		011657059C01A8361C86D2EF55AD3FFE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B14A6E5D41DC74FF5FB1D41790DF8C06 /* GoogleUtilities.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 80B861CBFC18436AFD9A3703F00CEEC4;
 			remoteInfo = GoogleUtilities;
 		};
-		9D958842553F52AC288820321656E2A5 /* PBXContainerItemProxy */ = {
+		FFD0F959938710DFACB46A89DCE96610 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F066E3ECBE8B460E55410B3554DDE30C /* nanopb.xcodeproj */;
 			proxyType = 1;
@@ -143,15 +143,15 @@
 /* End PBXProject section */
 
 /* Begin PBXTargetDependency section */
-		0A04BDE67A70D396702FDC031687FA10 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = nanopb;
-			targetProxy = 9D958842553F52AC288820321656E2A5 /* PBXContainerItemProxy */;
-		};
-		38284B8DAA09C9CADBFD861B1B601F05 /* PBXTargetDependency */ = {
+		3A391CA63B7860014C3F2A5D4FF5B993 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = GoogleUtilities;
-			targetProxy = 75BF1D7BC3BF10918A0D15870DBE8896 /* PBXContainerItemProxy */;
+			targetProxy = 011657059C01A8361C86D2EF55AD3FFE /* PBXContainerItemProxy */;
+		};
+		8EF71ED0B2BDDBE3FA0BE015C7DA49BC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = nanopb;
+			targetProxy = FFD0F959938710DFACB46A89DCE96610 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

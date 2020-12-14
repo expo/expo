@@ -24,7 +24,9 @@
 
 + (instancetype)queryWithObject:(GTLRVision_BatchAnnotateFilesRequest *)object {
   if (object == nil) {
-    GTLR_DEBUG_ASSERT(object != nil, @"Got a nil object");
+#if defined(DEBUG) && DEBUG
+    NSAssert(object != nil, @"Got a nil object");
+#endif
     return nil;
   }
   NSString *pathURITemplate = @"v1/files:annotate";
@@ -44,7 +46,9 @@
 
 + (instancetype)queryWithObject:(GTLRVision_AsyncBatchAnnotateFilesRequest *)object {
   if (object == nil) {
-    GTLR_DEBUG_ASSERT(object != nil, @"Got a nil object");
+#if defined(DEBUG) && DEBUG
+    NSAssert(object != nil, @"Got a nil object");
+#endif
     return nil;
   }
   NSString *pathURITemplate = @"v1/files:asyncBatchAnnotate";
@@ -64,7 +68,9 @@
 
 + (instancetype)queryWithObject:(GTLRVision_BatchAnnotateImagesRequest *)object {
   if (object == nil) {
-    GTLR_DEBUG_ASSERT(object != nil, @"Got a nil object");
+#if defined(DEBUG) && DEBUG
+    NSAssert(object != nil, @"Got a nil object");
+#endif
     return nil;
   }
   NSString *pathURITemplate = @"v1/images:annotate";
@@ -84,7 +90,9 @@
 
 + (instancetype)queryWithObject:(GTLRVision_AsyncBatchAnnotateImagesRequest *)object {
   if (object == nil) {
-    GTLR_DEBUG_ASSERT(object != nil, @"Got a nil object");
+#if defined(DEBUG) && DEBUG
+    NSAssert(object != nil, @"Got a nil object");
+#endif
     return nil;
   }
   NSString *pathURITemplate = @"v1/images:asyncBatchAnnotate";
@@ -126,7 +134,9 @@
 + (instancetype)queryWithObject:(GTLRVision_CancelOperationRequest *)object
                            name:(NSString *)name {
   if (object == nil) {
-    GTLR_DEBUG_ASSERT(object != nil, @"Got a nil object");
+#if defined(DEBUG) && DEBUG
+    NSAssert(object != nil, @"Got a nil object");
+#endif
     return nil;
   }
   NSArray *pathParams = @[ @"name" ];
@@ -208,7 +218,9 @@
 + (instancetype)queryWithObject:(GTLRVision_BatchAnnotateFilesRequest *)object
                          parent:(NSString *)parent {
   if (object == nil) {
-    GTLR_DEBUG_ASSERT(object != nil, @"Got a nil object");
+#if defined(DEBUG) && DEBUG
+    NSAssert(object != nil, @"Got a nil object");
+#endif
     return nil;
   }
   NSArray *pathParams = @[ @"parent" ];
@@ -233,7 +245,9 @@
 + (instancetype)queryWithObject:(GTLRVision_AsyncBatchAnnotateFilesRequest *)object
                          parent:(NSString *)parent {
   if (object == nil) {
-    GTLR_DEBUG_ASSERT(object != nil, @"Got a nil object");
+#if defined(DEBUG) && DEBUG
+    NSAssert(object != nil, @"Got a nil object");
+#endif
     return nil;
   }
   NSArray *pathParams = @[ @"parent" ];
@@ -258,7 +272,9 @@
 + (instancetype)queryWithObject:(GTLRVision_BatchAnnotateImagesRequest *)object
                          parent:(NSString *)parent {
   if (object == nil) {
-    GTLR_DEBUG_ASSERT(object != nil, @"Got a nil object");
+#if defined(DEBUG) && DEBUG
+    NSAssert(object != nil, @"Got a nil object");
+#endif
     return nil;
   }
   NSArray *pathParams = @[ @"parent" ];
@@ -283,7 +299,9 @@
 + (instancetype)queryWithObject:(GTLRVision_AsyncBatchAnnotateImagesRequest *)object
                          parent:(NSString *)parent {
   if (object == nil) {
-    GTLR_DEBUG_ASSERT(object != nil, @"Got a nil object");
+#if defined(DEBUG) && DEBUG
+    NSAssert(object != nil, @"Got a nil object");
+#endif
     return nil;
   }
   NSArray *pathParams = @[ @"parent" ];
@@ -308,7 +326,9 @@
 + (instancetype)queryWithObject:(GTLRVision_BatchAnnotateFilesRequest *)object
                          parent:(NSString *)parent {
   if (object == nil) {
-    GTLR_DEBUG_ASSERT(object != nil, @"Got a nil object");
+#if defined(DEBUG) && DEBUG
+    NSAssert(object != nil, @"Got a nil object");
+#endif
     return nil;
   }
   NSArray *pathParams = @[ @"parent" ];
@@ -333,7 +353,9 @@
 + (instancetype)queryWithObject:(GTLRVision_AsyncBatchAnnotateFilesRequest *)object
                          parent:(NSString *)parent {
   if (object == nil) {
-    GTLR_DEBUG_ASSERT(object != nil, @"Got a nil object");
+#if defined(DEBUG) && DEBUG
+    NSAssert(object != nil, @"Got a nil object");
+#endif
     return nil;
   }
   NSArray *pathParams = @[ @"parent" ];
@@ -358,7 +380,9 @@
 + (instancetype)queryWithObject:(GTLRVision_BatchAnnotateImagesRequest *)object
                          parent:(NSString *)parent {
   if (object == nil) {
-    GTLR_DEBUG_ASSERT(object != nil, @"Got a nil object");
+#if defined(DEBUG) && DEBUG
+    NSAssert(object != nil, @"Got a nil object");
+#endif
     return nil;
   }
   NSArray *pathParams = @[ @"parent" ];
@@ -383,7 +407,9 @@
 + (instancetype)queryWithObject:(GTLRVision_AsyncBatchAnnotateImagesRequest *)object
                          parent:(NSString *)parent {
   if (object == nil) {
-    GTLR_DEBUG_ASSERT(object != nil, @"Got a nil object");
+#if defined(DEBUG) && DEBUG
+    NSAssert(object != nil, @"Got a nil object");
+#endif
     return nil;
   }
   NSArray *pathParams = @[ @"parent" ];
@@ -427,7 +453,9 @@
 + (instancetype)queryWithObject:(GTLRVision_Product *)object
                          parent:(NSString *)parent {
   if (object == nil) {
-    GTLR_DEBUG_ASSERT(object != nil, @"Got a nil object");
+#if defined(DEBUG) && DEBUG
+    NSAssert(object != nil, @"Got a nil object");
+#endif
     return nil;
   }
   NSArray *pathParams = @[ @"parent" ];
@@ -471,7 +499,9 @@
 + (instancetype)queryWithObject:(GTLRVision_AddProductToProductSetRequest *)object
                            name:(NSString *)name {
   if (object == nil) {
-    GTLR_DEBUG_ASSERT(object != nil, @"Got a nil object");
+#if defined(DEBUG) && DEBUG
+    NSAssert(object != nil, @"Got a nil object");
+#endif
     return nil;
   }
   NSArray *pathParams = @[ @"name" ];
@@ -496,7 +526,9 @@
 + (instancetype)queryWithObject:(GTLRVision_ProductSet *)object
                          parent:(NSString *)parent {
   if (object == nil) {
-    GTLR_DEBUG_ASSERT(object != nil, @"Got a nil object");
+#if defined(DEBUG) && DEBUG
+    NSAssert(object != nil, @"Got a nil object");
+#endif
     return nil;
   }
   NSArray *pathParams = @[ @"parent" ];
@@ -559,7 +591,9 @@
 + (instancetype)queryWithObject:(GTLRVision_ImportProductSetsRequest *)object
                          parent:(NSString *)parent {
   if (object == nil) {
-    GTLR_DEBUG_ASSERT(object != nil, @"Got a nil object");
+#if defined(DEBUG) && DEBUG
+    NSAssert(object != nil, @"Got a nil object");
+#endif
     return nil;
   }
   NSArray *pathParams = @[ @"parent" ];
@@ -603,7 +637,9 @@
 + (instancetype)queryWithObject:(GTLRVision_ProductSet *)object
                            name:(NSString *)name {
   if (object == nil) {
-    GTLR_DEBUG_ASSERT(object != nil, @"Got a nil object");
+#if defined(DEBUG) && DEBUG
+    NSAssert(object != nil, @"Got a nil object");
+#endif
     return nil;
   }
   NSArray *pathParams = @[ @"name" ];
@@ -647,7 +683,9 @@
 + (instancetype)queryWithObject:(GTLRVision_RemoveProductFromProductSetRequest *)object
                            name:(NSString *)name {
   if (object == nil) {
-    GTLR_DEBUG_ASSERT(object != nil, @"Got a nil object");
+#if defined(DEBUG) && DEBUG
+    NSAssert(object != nil, @"Got a nil object");
+#endif
     return nil;
   }
   NSArray *pathParams = @[ @"name" ];
@@ -710,7 +748,9 @@
 + (instancetype)queryWithObject:(GTLRVision_Product *)object
                            name:(NSString *)name {
   if (object == nil) {
-    GTLR_DEBUG_ASSERT(object != nil, @"Got a nil object");
+#if defined(DEBUG) && DEBUG
+    NSAssert(object != nil, @"Got a nil object");
+#endif
     return nil;
   }
   NSArray *pathParams = @[ @"name" ];
@@ -735,7 +775,9 @@
 + (instancetype)queryWithObject:(GTLRVision_PurgeProductsRequest *)object
                          parent:(NSString *)parent {
   if (object == nil) {
-    GTLR_DEBUG_ASSERT(object != nil, @"Got a nil object");
+#if defined(DEBUG) && DEBUG
+    NSAssert(object != nil, @"Got a nil object");
+#endif
     return nil;
   }
   NSArray *pathParams = @[ @"parent" ];
@@ -760,7 +802,9 @@
 + (instancetype)queryWithObject:(GTLRVision_ReferenceImage *)object
                          parent:(NSString *)parent {
   if (object == nil) {
-    GTLR_DEBUG_ASSERT(object != nil, @"Got a nil object");
+#if defined(DEBUG) && DEBUG
+    NSAssert(object != nil, @"Got a nil object");
+#endif
     return nil;
   }
   NSArray *pathParams = @[ @"parent" ];
