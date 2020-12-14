@@ -48,23 +48,6 @@ class DevLauncherExpoActivityConfigurator(
     }
   }
 
-  fun applyUiMode(activity: ReactActivity) {
-    val uiMode = manifest
-      .userInterfaceStyle
-      ?.let {
-        when (it) {
-          DevLauncherUserInterface.AUTOMATIC -> {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-              AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
-            } else AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-          }
-          DevLauncherUserInterface.DARK -> AppCompatDelegate.MODE_NIGHT_YES
-          DevLauncherUserInterface.LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
-        }
-      } ?: AppCompatDelegate.MODE_NIGHT_NO
-    activity.delegate.localNightMode = uiMode
-  }
-
   fun applyStatusBarConfiguration(activity: ReactActivity) {
     val style = manifest.androidStatusBar?.barStyle
     val backgroundColor = manifest.androidStatusBar?.backgroundColor
