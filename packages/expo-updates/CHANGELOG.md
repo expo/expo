@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added alpha support for EAS update manifest format ([#11050](https://github.com/expo/expo/pull/11050) by [@esamelson](https://github.com/esamelson))
+
 ### 🐛 Bug fixes
 
 ## 0.4.1 — 2020-11-25
