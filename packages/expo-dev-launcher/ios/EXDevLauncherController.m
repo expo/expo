@@ -6,6 +6,8 @@
 #import <React/RCTAsyncLocalStorage.h>
 #import <React/RCTDevSettings.h>
 #import <React/RCTRootContentView.h>
+#import <React/RCTAppearance.h>
+#import <React/RCTConstants.h>
 
 #import "EXDevLauncherBundle.h"
 #import "EXDevLauncherBundleSource.h"
@@ -107,12 +109,17 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 - (void)navigateToLauncher {
   [_appBridge invalidate];
 
+
+  [self _applyUserInterfaceStyle:UIUserInterfaceStyleUnspecified];
+  
   _launcherBridge = [[EXDevLauncherRCTBridge alloc] initWithDelegate:self launchOptions:_launchOptions];
 
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:_launcherBridge
                                                    moduleName:@"main"
                                             initialProperties:nil];
 
+  [self _ensureUserInterfaceStyleIsInSyncWithViewController:rootView];
+  
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(onAppContentDidAppear)
                                                name:RCTContentDidAppearNotification
@@ -209,7 +216,22 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   
   dispatch_async(dispatch_get_main_queue(), ^{
     self.sourceUrl = bundleUrl;
+    
+    [self _applyUserInterfaceStyle:manifest.userInterfaceStyle];
+    if (@available(iOS 12, *)) {
+      // Fix for the community react-native-appearance.
+      // RNC appearance checks the global trait collection and doesn't have another way to override the user interface.
+      // So we swap `currentTraitCollection` with one from the root view controller.
+      // Note that the root view controller will have the correct value of `userInterfaceStyle`.
+      if (manifest.userInterfaceStyle != UIUserInterfaceStyleUnspecified) {
+        UITraitCollection.currentTraitCollection = [_window.rootViewController.traitCollection copy];
+      }
+    }
+    
     [self.delegate devLauncherController:self didStartWithSuccess:YES];
+    
+    [self _ensureUserInterfaceStyleIsInSyncWithViewController:_window.rootViewController];
+
     [[UIDevice currentDevice] setValue:@(orientation) forKey:@"orientation"];
     [UIViewController attemptRotationToDeviceOrientation];
     
@@ -245,5 +267,34 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   });
 }
 
-@end
+/**
+ * We need that function to sync the dev-menu user interface with the main application.
+ */
+- (void)_ensureUserInterfaceStyleIsInSyncWithViewController:(UIViewController *)controller
+{
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTUserInterfaceStyleDidChangeNotification
+                                                      object:controller
+                                                    userInfo:@{
+                                                      RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey : controller.traitCollection
+                                                    }];
+}
 
+- (void)_applyUserInterfaceStyle:(UIUserInterfaceStyle)userInterfaceStyle
+{
+  NSString *colorSchema = nil;
+  if (@available(iOS 12, *)) {
+    if (userInterfaceStyle == UIUserInterfaceStyleDark) {
+      colorSchema = @"dark";
+    } else if (userInterfaceStyle == UIUserInterfaceStyleLight) {
+      colorSchema = @"light";
+    }
+    
+    // change system window appearance
+    _window.overrideUserInterfaceStyle = userInterfaceStyle;
+  }
+  
+  // change RN appearance
+  RCTOverrideAppearancePreference(colorSchema);
+}
+
+@end
