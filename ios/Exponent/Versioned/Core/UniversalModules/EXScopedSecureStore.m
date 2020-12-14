@@ -42,7 +42,7 @@
   return _isStandaloneApp ? key : [NSString stringWithFormat:@"%@-%@", _experienceId, key];
 }
 
-// We must override this method so that items saved in standalone apps on SDK 39 and under,
+// We must override this method so that items saved in standalone apps on SDK 39 and below,
 // which were scoped by prefixing the validated key with the experienceId, can still be
 // found in SDK 40 and up. This override can be removed in SDK TO BE DETERMINED.
 - (NSString *)_getValueWithKey:(NSString *)key withOptions:(NSDictionary *)options error:(NSError **)error
@@ -88,7 +88,10 @@
   return nil;
 }
 
-- (void)migrateValue:(NSString *)value fromScopedKey:(NSString *)scopedKey toNewKey:(NSString *)newKey withOptions:(NSDictionary *)options
+- (void)migrateValue:(NSString *)value
+       fromScopedKey:(NSString *)scopedKey
+            toNewKey:(NSString *)newKey
+         withOptions:(NSDictionary *)options
 {
   // Migrate the value to unscoped storage, then delete the legacy
   // value if successful.
