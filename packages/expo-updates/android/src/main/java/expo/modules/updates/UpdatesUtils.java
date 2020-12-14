@@ -28,6 +28,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import androidx.annotation.Nullable;
 import expo.modules.updates.db.entity.AssetEntity;
@@ -187,7 +188,16 @@ public class UpdatesUtils {
   }
 
   public static Date parseDateString(String dateString) throws ParseException {
-    DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.US);
-    return formatter.parse(dateString);
+    try {
+      DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.US);
+      return formatter.parse(dateString);
+    } catch (ParseException e) {
+      Log.e(TAG, "Failed to parse date string on first try: " + dateString, e);
+      // some old Android versions don't support the 'X' character in SimpleDateFormat, so try without this
+      DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
+      formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+      // throw if this fails too
+      return formatter.parse(dateString);
+    }
   }
 }

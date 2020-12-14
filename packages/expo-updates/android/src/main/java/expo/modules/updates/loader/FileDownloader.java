@@ -251,7 +251,7 @@ public class FileDownloader {
             .header("Expo-Api-Version", "1")
             .header("Expo-Updates-Environment", "BARE")
             .header("Expo-JSON-Error", "true")
-            // as of 11-25-20, the EAS Update alpha returns an error if Expo-Accept-Signature: true is included in the request
+            // as of 2020-11-25, the EAS Update alpha returns an error if Expo-Accept-Signature: true is included in the request
             .header("Expo-Accept-Signature", String.valueOf(configuration.usesLegacyManifest()))
             .cacheControl(CacheControl.FORCE_NETWORK);
 

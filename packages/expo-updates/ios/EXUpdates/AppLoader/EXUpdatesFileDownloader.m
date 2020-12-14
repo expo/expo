@@ -225,7 +225,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
 {
   [request setValue:@"application/expo+json,application/json" forHTTPHeaderField:@"Accept"];
   [request setValue:@"true" forHTTPHeaderField:@"Expo-JSON-Error"];
-  // as of 11-25-20, the EAS Update alpha returns an error if Expo-Accept-Signature: true is included in the request
+  // as of 2020-11-25, the EAS Update alpha returns an error if Expo-Accept-Signature: true is included in the request
   [request setValue:(_config.usesLegacyManifest ? @"true" : @"false") forHTTPHeaderField:@"Expo-Accept-Signature"];
   [request setValue:_config.releaseChannel forHTTPHeaderField:@"Expo-Release-Channel"];
 
