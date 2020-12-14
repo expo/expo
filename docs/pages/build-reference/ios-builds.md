@@ -27,7 +27,7 @@ Next, this is what happens when EAS Build picks up your request:
 
 1. Create a new macOS VM for the build.
 
-   Every build gets its own, fresh macOS VM with all build tools installed there (Xcode, fastlane, and so on).
+   Every build gets its own, fresh macOS VM with all build tools installed there (Xcode, Fastlane, and so on).
 
 2. Download the project tarball from a private AWS S3 bucket and unpack it.
 3. Run `yarn install` in the project root (or `npm install` if `yarn.lock` does not exist).
@@ -53,7 +53,7 @@ Next, this is what happens when EAS Build picks up your request:
 
 ## Building iOS Projects With Fastlane
 
-We're using [fastlane](https://fastlane.tools/) for building iOS projects. To be more precise, we're using the `fastlane gym` command ([see the fastlane docs to learn more](https://docs.fastlane.tools/actions/gym/)). This command allows you to declare the build configuration in `Gymfile`.
+We're using [Fastlane](https://fastlane.tools/) for building iOS projects. To be more precise, we're using the `fastlane gym` command ([see the Fastlane docs to learn more](https://docs.fastlane.tools/actions/gym/)). This command allows you to declare the build configuration in `Gymfile`.
 
 EAS Build can use your own `Gymfile`. All you need to do is to place this file in the `ios` directory.
 

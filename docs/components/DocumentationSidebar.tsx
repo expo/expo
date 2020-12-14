@@ -21,6 +21,16 @@ const STYLES_SECTION_CATEGORY = css`
   margin-bottom: 24px;
 `;
 
+function shouldSkipCategory(info: NavigationRoute) {
+  // For now the /eas route is just responsible for having some index page and
+  // providing a convenient way to view feature preview docs
+  if (info.name === 'Feature Preview') {
+    return true;
+  }
+
+  return false;
+}
+
 function shouldSkipTitle(info: NavigationRoute, parentGroup?: NavigationRoute) {
   if (info.name === parentGroup?.name) {
     // If the title of the group is Expo SDK and the section within it has the same name
@@ -66,6 +76,10 @@ export default class DocumentationSidebar extends React.Component<Props> {
   };
 
   private renderCategoryElements = (info: NavigationRoute, parentGroup?: NavigationRoute) => {
+    if (shouldSkipCategory(info)) {
+      return null;
+    }
+
     if (info.children) {
       return (
         <DocumentationSidebarGroup

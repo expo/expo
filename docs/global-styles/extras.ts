@@ -38,9 +38,11 @@ export const globalExtras = css`
   details summary h4 {
     font-family: ${Constants.fonts.demi};
     color: ${Constants.colors.black90};
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 500;
     display: inline-block;
+    vertical-align: text-top;
+    max-width: 90%;
   }
 
   details summary p {
@@ -111,5 +113,11 @@ export const globalExtras = css`
   .diff-container th {
     border-bottom: none;
     border-right: none;
+  }
+
+  // TODO: investigate why some style is forcing nested ordered lists to have
+  // 1rem bottom margin!
+  ul ul {
+    margin-bottom: 0 !important;
   }
 `;

@@ -1,25 +1,15 @@
 ---
-title: Introduction
+title: EAS Build
+sidebar_title: Introduction
 ---
 
-**EAS Build** is a hosted service for building app binaries for your Expo and React Native projects. It makes building your apps for distribution super easy by providing defaults that work well for Expo and React Native projects out of the box and by handling your app signing credentials for you, if you would like it to. It is also configurable where needed, in case your app has custom build requirements. It will one day replace the existing build service entirely.
+**EAS Build** is a hosted service for building app binaries for your Expo and React Native projects.
 
-## Discover EAS Build
+It makes building your apps for distribution super easy by providing defaults that work well for Expo and React Native projects out of the box, and by handling your app signing credentials for you, if you would like it to. It makes sharing builds with your team easier than ever with [internal distribution](internal-distribution.md) (using ad hoc provisioning), it deeply integrates with [EAS Submit](/submit/introduction.md) for app store submissions, and has first-class support for [expo-updates](updates.md) to send over-the-air updates.
+
+It's the next generation of the [`expo build:[ios/android]`](/distribution/building-standalone-apps.md) command &mdash; it is designed to work for any native project, not just managed Expo projects.
 
 ### Get started
 
-- [Walkthrough](walkthrough.md) - This walkthrough will show you how to initialize a new project and kick off a build in less than 5 mintues. If you want to experiment with EAS Build before integrating it with your existing project, this is a good place to start.
-- [Set up your project and environment](setup.md) - Get your existing project ready to build.
-- [Common configuration examples](how-tos.md) - Instructions on how to configure builds for some common cases that can't be handled automatically.
-- [Configuration with eas.json](eas-json.md) - Learn about configuring your build workflows with the `eas.json` file.
-
-### Distributing your app
-
-- [Internal distribution](internal-distribution.md) - Share runnable builds with your team without going through TestFlight or Google Play Beta.
-- [Submitting to app stores with EAS Submit](/submit/introduction.md) - Submit your build to Apple App Store and/or Google Play Store.
-
-### Get a deeper understanding
-
-- [Android build process](android-builds.md) - See how Android builds work under the hood.
-- [iOS build process](ios-builds.md) - See how iOS builds work under the hood.
-- [Advanced credentials configuration](advanced-credentials-configuration.md) - Use your existing app's credentials or streamline the CI build process with `credentials.json`.
+- [Creating your first build](setup.md) - it should only take a few minutes in total to get up and running for iOS and/or Android.
+- [Learn about the limitations](/build-reference/limitations.md) - EAS Build is a brand new and rapidly evolving service. It can't do everything yet, so we recommend getting familiar with the current limitations and checking back occasionally.
