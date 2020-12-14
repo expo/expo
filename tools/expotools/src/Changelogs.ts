@@ -45,6 +45,7 @@ export enum ChangeType {
   BREAKING_CHANGES = '🛠 Breaking changes',
   NEW_FEATURES = '🎉 New features',
   BUG_FIXES = '🐛 Bug fixes',
+  NOTICES = '⚠️ Notices',
 }
 
 /**
