@@ -2,7 +2,7 @@
 title: Using automatically managed credentials
 ---
 
-In order to distribute your app on an app store it needs to be digitally signed with credentials such as a keystore or distribution certificate to certify the source of the app and ensure that its can't be tampered with. Other credentials, such as your Apple Push Key and FCM API Key, are needed to send push notifications, but they are not involved in app signing.
+In order to distribute your app on an app store it needs to be digitally signed with credentials such as a keystore or distribution certificate to certify the source of the app and ensure that it can't be tampered with. Other credentials, such as your Apple Push Key and FCM API Key, are needed to send push notifications, but they are not involved in app signing.
 
 Thankfully, that's all that you need to know about any of this to build an app with EAS Build, but if you would like to learn more you can refer to the ["App Signing"](/distribution/app-signing.md) guide.
 
