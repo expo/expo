@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+- Data saved with `expo-secure-store` is no longer lost upon ejecting, **if you first upgrade your app to SDK 40 before ejecting**. ([#11309](https://github.com/expo/expo/pull/11309) by [@cruzach](https://github.com/cruzach))
+
+> On Android, all of your `SecureStore` data will be migrated on app start-up. On iOS, keys and their associated data will be migrated whenever you call `getItemAsync` on that key. This means that any keys you don't `get` while on SDK 40 will **not** be migrated.
+
 ## 9.3.0 — 2020-11-17
 
 _This version does not introduce any user-facing changes._
