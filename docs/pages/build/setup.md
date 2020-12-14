@@ -65,7 +65,7 @@ If you are already signed in through Expo CLI, you don't need to do anything. Ot
 
 ## 3. Configure the project
 
-Run `eas build:configure` to configure your iOS and Android projects to run on EAS Build. If you'd like to learn more about what happens behind the scenes, you can read the [build configuration process reference](build-reference/build-configuration.md).
+Run `eas build:configure` to configure your iOS and Android projects to run on EAS Build. If you'd like to learn more about what happens behind the scenes, you can read the [build configuration process reference](/build-reference/build-configuration.md).
 
 Additional configuration may be required for some scenarios:
 

@@ -181,7 +181,7 @@ This is the minimal working example. EAS CLI will ask you for the app's credenti
 }
 ```
 
-If you'd like to build your iOS project with a custom `Gymfile` ([learn more on this here](ios-builds.md#building-ios-projects-with-fastlane)) where you've defined a different output directory than `ios/build`, use the following example:
+If you'd like to build your iOS project with a custom `Gymfile` ([learn more on this here](/build-reference/ios-builds.md#building-ios-projects-with-fastlane)) where you've defined a different output directory than `ios/build`, use the following example:
 
 <!-- prettier-ignore -->
 ```json

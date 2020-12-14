@@ -142,7 +142,7 @@ If you do not set any option, `"credentialsSource"` will default to `"auto"`.
 
 ### Automatic credentials resolution (default)
 
-Let's assume we're only building for Android and we're using the following configuration (defined in `eas.json` - [learn more about this file](eas-json.md)):
+Let's assume we're only building for Android and we're using the following configuration (defined in `eas.json` - [learn more about this file](/build/eas-json.md)):
 
 ```json
 {
@@ -184,4 +184,4 @@ Consider the following steps:
 
 Similarly, you can encode your keystore, provisioning profile and distribution certificate so you can restore them later on the CI. In order to successfully trigger your build using local credentials from CI, you'll have to make sure all the credentials exist in the CI instance's file system (at the same locations as defined in `credentials.json`).
 
-Once the restoring steps are in place, you can use the same process described in the [Triggering builds from CI](building-on-ci.md) guide to trigger the builds.
+Once the restoring steps are in place, you can use the same process described in the [Triggering builds from CI](/build/building-on-ci.md) guide to trigger the builds.

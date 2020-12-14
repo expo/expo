@@ -33,7 +33,7 @@ The command will create an `eas.json` file in the root directory with the follow
 }
 ```
 
-This is your EAS Build configuration. It defines a single build profile named `release` (you can have multiple build profiles like `release`, `debug`, `testing`, etc.) for each platform. In the generated configuration, each profile declares that the project is a generic React Native project (unlike a managed Expo project which doesn't contain native code in the project tree). If you want to learn more about `eas.json` see the [Configuration with eas.json](eas-json.md) page.
+This is your EAS Build configuration. It defines a single build profile named `release` (you can have multiple build profiles like `release`, `debug`, `testing`, etc.) for each platform. In the generated configuration, each profile declares that the project is a generic React Native project (unlike a managed Expo project which doesn't contain native code in the project tree). If you want to learn more about `eas.json` see the [Configuration with eas.json](/build/eas-json.md) page.
 
 #### 3. Configure the Android project
 
