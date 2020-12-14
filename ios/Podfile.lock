@@ -2180,7 +2180,7 @@ PODS:
   - EXCalendar (8.6.0):
     - UMCore
     - UMPermissionsInterface
-  - EXCamera (9.1.0):
+  - EXCamera (9.1.1):
     - UMBarCodeScannerInterface
     - UMCameraInterface
     - UMCore
@@ -4716,7 +4716,7 @@ SPEC CHECKSUMS:
   EXBranch: fc3b6dfdf1fdc07d50fe8981ed2093dd71ed8f86
   EXBrightness: 727cafd6a90578fe82fb968edefc7515d1d4cdcf
   EXCalendar: fde5f855ffdb7276fd228c51bf9ff725c624ea04
-  EXCamera: 074bee96afdf07064d2ed9383d5240d3b2624bea
+  EXCamera: 06ece8c6124560cfd71703b2c26eba72128bfa6d
   EXCellular: 38a3df120e149e4ea40e7ebde90144815adf3d53
   EXConstants: 54d0bf04319d1692c6c7bc03ca151ef7a71705a4
   EXContacts: 512bd4a8139e2eb4574a774f9c3cd254f687ca10

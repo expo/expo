@@ -10867,7 +10867,7 @@ CACHE_KEYS:
       EXCamera:
         :debug: 48eead8d4bfd68c2952e2f2323ea5f36
         :release: 48eead8d4bfd68c2952e2f2323ea5f36
-    CHECKSUM: 074bee96afdf07064d2ed9383d5240d3b2624bea
+    CHECKSUM: 06ece8c6124560cfd71703b2c26eba72128bfa6d
     FILES:
       - "../../packages/expo-camera/ios/EXCamera/EXCamera.h"
       - "../../packages/expo-camera/ios/EXCamera/EXCamera.m"
@@ -10879,7 +10879,7 @@ CACHE_KEYS:
       - "../../packages/expo-camera/ios/EXCamera/Utilities/EXCameraUtils.m"
     PROJECT_NAME: EXCamera
     SPECS:
-      - EXCamera (9.1.0)
+      - EXCamera (9.1.1)
   EXCellular:
     BUILD_SETTINGS_CHECKSUM:
       EXCellular:

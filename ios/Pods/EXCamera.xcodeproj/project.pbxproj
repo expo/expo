@@ -7,87 +7,95 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0A0A84C2529B41529A33E7FD02F57EF4 /* EXCameraManager.h in Headers */ = {isa = PBXBuildFile; fileRef = D734345E1D4C547F02040BAD0B3024E8 /* EXCameraManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		1BDBF5AA1393526016D8F658678DE830 /* EXCamera.h in Headers */ = {isa = PBXBuildFile; fileRef = B9FC2C70A3055A1BEFA535CE8F2615DF /* EXCamera.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		5A79C869241E5053D7009D336CAC448C /* EXCameraUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = A5FE4A6509FB087B5363B865BB1F0080 /* EXCameraUtils.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		7057FF012489BED4355B3DDCD9DA39FE /* EXCamera-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F702BA261953A978752F127F06C2EB /* EXCamera-dummy.m */; };
-		9265CBF4610D8350E08F31A791504E43 /* EXCameraPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 42A827B51B483CA8589F3A61A7D5E5B3 /* EXCameraPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		A3079E5139286985BC4281D4A04C636D /* EXCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = 87AF4210749E0055DDC2261082399C0F /* EXCamera.m */; };
-		B04B37A249D7EC0F4BC4CE3300FD86B1 /* EXCameraUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 982B56C594A4E2706ECCFC36D75A215C /* EXCameraUtils.m */; };
-		F74A6FEA7834560CEC5C47F88746CAB0 /* EXCameraPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 243EB2B5AF52509A71BA8BD39214D890 /* EXCameraPermissionRequester.m */; };
-		F950219EB1B9407853E148DDD8661860 /* EXCameraManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D2900E034934711256F89F3AA6DB33E4 /* EXCameraManager.m */; };
+		2A2D92D06F2A435F8EB9CFC71D1ED3F5 /* EXCameraPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 42A827B51B483CA8589F3A61A7D5E5B3 /* EXCameraPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		34805C8400467589C808A3E620F447BE /* EXCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = 87AF4210749E0055DDC2261082399C0F /* EXCamera.m */; };
+		4B996E394103859C1C041EBEB47AB0F7 /* EXCameraUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = A5FE4A6509FB087B5363B865BB1F0080 /* EXCameraUtils.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		5E4A3164B79B978E86E51C0A3EB1B293 /* EXCameraManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D2900E034934711256F89F3AA6DB33E4 /* EXCameraManager.m */; };
+		6D38BBDA6AEF3F71F0BE2E51544A801B /* EXCameraManager.h in Headers */ = {isa = PBXBuildFile; fileRef = D734345E1D4C547F02040BAD0B3024E8 /* EXCameraManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		86017FFCE85F47E1B4B10AE7A25EEF08 /* EXCameraPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 243EB2B5AF52509A71BA8BD39214D890 /* EXCameraPermissionRequester.m */; };
+		D5B4DD1DF5BE809D55827ADAE9931539 /* EXCameraUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 982B56C594A4E2706ECCFC36D75A215C /* EXCameraUtils.m */; };
+		E1F16161F16D5653D11F0D97A7E693D4 /* EXCamera.h in Headers */ = {isa = PBXBuildFile; fileRef = B9FC2C70A3055A1BEFA535CE8F2615DF /* EXCamera.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		FB3C4AEDA627E972BCF1131D5A13D36B /* EXCamera-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F702BA261953A978752F127F06C2EB /* EXCamera-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		0B74A60C0D269E26EFA474888BA12DE5 /* PBXContainerItemProxy */ = {
+		16BA1946299A3EEA40C7837049631EF4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 0AD405795122146FB9C697231E3D1521 /* UMImageLoaderInterface.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = A734124238F83C1FEE81C0FEDC5CDC5C;
-			remoteInfo = UMImageLoaderInterface;
-		};
-		5F6D9153C11BB7781D2D30E5DC9F08B3 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 236A85D7FD3A40D579B852A84F2CC5D6 /* UMPermissionsInterface.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 12FF61416C5E794E9DEAC78D381D9726;
-			remoteInfo = UMPermissionsInterface;
-		};
-		664224EB3019956C00BA374A8BA3BE42 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2D94D631128DA7939504D25BFE3EA32D /* UMBarCodeScannerInterface.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 971E60E1AF9163E7E08105622FC91C16;
-			remoteInfo = UMBarCodeScannerInterface;
-		};
-		8FE09826B4A00936711150D6A1DB4456 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 42474EF91FF85C22003C5B01555CBB9C /* UMFileSystemInterface.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
-			remoteInfo = UMFileSystemInterface;
-		};
-		B11B248F567153938A0AD2EF92EF92E1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D13F5A7168964D3EA86E532274286F4B /* UMCore.xcodeproj */;
+			containerPortal = BE518697D537208788E18E01848F9FCA /* UMCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
 		};
-		E4F63DA33C82977C64D9F1490300113B /* PBXContainerItemProxy */ = {
+		309A8695A964CD20D6A2275F75F78241 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 86B3D2D8D6194E9C4FCD5CC693DA66C4 /* UMFaceDetectorInterface.xcodeproj */;
+			containerPortal = E3113329CD2CA8839AC57B5047B34E8E /* UMPermissionsInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 12FF61416C5E794E9DEAC78D381D9726;
+			remoteInfo = UMPermissionsInterface;
+		};
+		3E4091B95035632973BDD24B37A9C79F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EE13457D10FB2FBCB7F81491D4CF4366 /* UMCameraInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 86372E925D4E10D72894E239CC18BCD9;
+			remoteInfo = UMCameraInterface;
+		};
+		87F3F2D33DB664A6DC5B2852C002F5C6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E088899686C9D7D827042963BC774398 /* UMFaceDetectorInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 8DC606D9CFDD04C553C81728629364B3;
 			remoteInfo = UMFaceDetectorInterface;
+		};
+		97D0C3A48B803B74077C3AE55BA89010 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 72F6B8D50028A0D21A922478C6A9938A /* UMBarCodeScannerInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 971E60E1AF9163E7E08105622FC91C16;
+			remoteInfo = UMBarCodeScannerInterface;
+		};
+		A24D7A8C0A3FB44B41CFA5AD12B86693 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 52918480E9C9E3E91C08001DA6851B91 /* UMFileSystemInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
+			remoteInfo = UMFileSystemInterface;
+		};
+		C6CAF3267A6EF2C54AA05F04F709EE10 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6BA9F0E830B1F18BFFD63D333C96C650 /* UMImageLoaderInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A734124238F83C1FEE81C0FEDC5CDC5C;
+			remoteInfo = UMImageLoaderInterface;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		01B2F9739DAEB04BBA3B9E84C770D768 /* EXCamera-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXCamera-prefix.pch"; sourceTree = "<group>"; };
-		0AD405795122146FB9C697231E3D1521 /* UMImageLoaderInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMImageLoaderInterface; path = UMImageLoaderInterface.xcodeproj; sourceTree = "<group>"; };
 		0ADC0D329D75B7C789FBE98AB348DC39 /* EXCamera.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXCamera.debug.xcconfig; sourceTree = "<group>"; };
 		15021A61023A16A3501C8DEA2CB5C5EA /* EXCamera.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXCamera.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		236A85D7FD3A40D579B852A84F2CC5D6 /* UMPermissionsInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMPermissionsInterface; path = UMPermissionsInterface.xcodeproj; sourceTree = "<group>"; };
 		243EB2B5AF52509A71BA8BD39214D890 /* EXCameraPermissionRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXCameraPermissionRequester.m; path = EXCamera/EXCameraPermissionRequester.m; sourceTree = "<group>"; };
 		27F702BA261953A978752F127F06C2EB /* EXCamera-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXCamera-dummy.m"; sourceTree = "<group>"; };
-		2D94D631128DA7939504D25BFE3EA32D /* UMBarCodeScannerInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMBarCodeScannerInterface; path = UMBarCodeScannerInterface.xcodeproj; sourceTree = "<group>"; };
-		42474EF91FF85C22003C5B01555CBB9C /* UMFileSystemInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMFileSystemInterface; path = UMFileSystemInterface.xcodeproj; sourceTree = "<group>"; };
 		42A827B51B483CA8589F3A61A7D5E5B3 /* EXCameraPermissionRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXCameraPermissionRequester.h; path = EXCamera/EXCameraPermissionRequester.h; sourceTree = "<group>"; };
+		52918480E9C9E3E91C08001DA6851B91 /* UMFileSystemInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMFileSystemInterface; path = UMFileSystemInterface.xcodeproj; sourceTree = "<group>"; };
 		5CD77AD3F2D8B2B0A163E9DA43FBFDA9 /* libEXCamera.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXCamera.a; path = libEXCamera.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		86B3D2D8D6194E9C4FCD5CC693DA66C4 /* UMFaceDetectorInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMFaceDetectorInterface; path = UMFaceDetectorInterface.xcodeproj; sourceTree = "<group>"; };
+		6BA9F0E830B1F18BFFD63D333C96C650 /* UMImageLoaderInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMImageLoaderInterface; path = UMImageLoaderInterface.xcodeproj; sourceTree = "<group>"; };
+		72F6B8D50028A0D21A922478C6A9938A /* UMBarCodeScannerInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMBarCodeScannerInterface; path = UMBarCodeScannerInterface.xcodeproj; sourceTree = "<group>"; };
 		87AF4210749E0055DDC2261082399C0F /* EXCamera.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXCamera.m; path = EXCamera/EXCamera.m; sourceTree = "<group>"; };
 		982B56C594A4E2706ECCFC36D75A215C /* EXCameraUtils.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXCameraUtils.m; sourceTree = "<group>"; };
 		A5FE4A6509FB087B5363B865BB1F0080 /* EXCameraUtils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXCameraUtils.h; sourceTree = "<group>"; };
 		B9FC2C70A3055A1BEFA535CE8F2615DF /* EXCamera.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXCamera.h; path = EXCamera/EXCamera.h; sourceTree = "<group>"; };
-		D13F5A7168964D3EA86E532274286F4B /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
+		BE518697D537208788E18E01848F9FCA /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
 		D2900E034934711256F89F3AA6DB33E4 /* EXCameraManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXCameraManager.m; path = EXCamera/EXCameraManager.m; sourceTree = "<group>"; };
 		D734345E1D4C547F02040BAD0B3024E8 /* EXCameraManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXCameraManager.h; path = EXCamera/EXCameraManager.h; sourceTree = "<group>"; };
+		E088899686C9D7D827042963BC774398 /* UMFaceDetectorInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMFaceDetectorInterface; path = UMFaceDetectorInterface.xcodeproj; sourceTree = "<group>"; };
+		E3113329CD2CA8839AC57B5047B34E8E /* UMPermissionsInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMPermissionsInterface; path = UMPermissionsInterface.xcodeproj; sourceTree = "<group>"; };
 		E588865B62139F316B3ACC8EA47C5461 /* EXCamera.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXCamera.release.xcconfig; sourceTree = "<group>"; };
+		EE13457D10FB2FBCB7F81491D4CF4366 /* UMCameraInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCameraInterface; path = UMCameraInterface.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		AA49AFFA650EE09DAFA5F3AAE01C9EF5 /* Frameworks */ = {
+		4B2D1F996FCE226C920455966D7046FF /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -132,11 +140,25 @@
 		35210F96004084B41E7A6BDF6FA612D1 = {
 			isa = PBXGroup;
 			children = (
-				ED95B5BB26E580B92CE71F66D24795C3 /* Dependencies */,
+				8C47983CDE889FCF4CF7ACD5C03097CC /* Dependencies */,
 				0736CB4F3553963DBF446BF1F2A6C83D /* EXCamera */,
 				14754CEC8C5B096A0664A0449AE5A441 /* Frameworks */,
 				0E37E809EEE1BD81B9E9D96AA2C085A6 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		8C47983CDE889FCF4CF7ACD5C03097CC /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				72F6B8D50028A0D21A922478C6A9938A /* UMBarCodeScannerInterface */,
+				EE13457D10FB2FBCB7F81491D4CF4366 /* UMCameraInterface */,
+				BE518697D537208788E18E01848F9FCA /* UMCore */,
+				E088899686C9D7D827042963BC774398 /* UMFaceDetectorInterface */,
+				52918480E9C9E3E91C08001DA6851B91 /* UMFileSystemInterface */,
+				6BA9F0E830B1F18BFFD63D333C96C650 /* UMImageLoaderInterface */,
+				E3113329CD2CA8839AC57B5047B34E8E /* UMPermissionsInterface */,
+			);
+			name = Dependencies;
 			sourceTree = "<group>";
 		};
 		BDCFCE451FFACE417CBA2D61C19D26C2 /* Support Files */ = {
@@ -169,30 +191,17 @@
 			path = EXCamera/Utilities;
 			sourceTree = "<group>";
 		};
-		ED95B5BB26E580B92CE71F66D24795C3 /* Dependencies */ = {
-			isa = PBXGroup;
-			children = (
-				2D94D631128DA7939504D25BFE3EA32D /* UMBarCodeScannerInterface */,
-				D13F5A7168964D3EA86E532274286F4B /* UMCore */,
-				86B3D2D8D6194E9C4FCD5CC693DA66C4 /* UMFaceDetectorInterface */,
-				42474EF91FF85C22003C5B01555CBB9C /* UMFileSystemInterface */,
-				0AD405795122146FB9C697231E3D1521 /* UMImageLoaderInterface */,
-				236A85D7FD3A40D579B852A84F2CC5D6 /* UMPermissionsInterface */,
-			);
-			name = Dependencies;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		3612C77A39528E1397FFFAD552E4058F /* Headers */ = {
+		514AAA82E8E3DC0B2CFB0D691F8A6E45 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1BDBF5AA1393526016D8F658678DE830 /* EXCamera.h in Headers */,
-				0A0A84C2529B41529A33E7FD02F57EF4 /* EXCameraManager.h in Headers */,
-				9265CBF4610D8350E08F31A791504E43 /* EXCameraPermissionRequester.h in Headers */,
-				5A79C869241E5053D7009D336CAC448C /* EXCameraUtils.h in Headers */,
+				E1F16161F16D5653D11F0D97A7E693D4 /* EXCamera.h in Headers */,
+				6D38BBDA6AEF3F71F0BE2E51544A801B /* EXCameraManager.h in Headers */,
+				2A2D92D06F2A435F8EB9CFC71D1ED3F5 /* EXCameraPermissionRequester.h in Headers */,
+				4B996E394103859C1C041EBEB47AB0F7 /* EXCameraUtils.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -201,21 +210,22 @@
 /* Begin PBXNativeTarget section */
 		4B109C23F45DFD6B4CA40B87D733EB11 /* EXCamera */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = CA3395EA9E74FB95DF23D67B32D52310 /* Build configuration list for PBXNativeTarget "EXCamera" */;
+			buildConfigurationList = A3F05A7FA0D2FE62CCCBFAAFA70EEB85 /* Build configuration list for PBXNativeTarget "EXCamera" */;
 			buildPhases = (
-				3612C77A39528E1397FFFAD552E4058F /* Headers */,
-				93E01E061E111969CDD1EDEC33B407DA /* Sources */,
-				AA49AFFA650EE09DAFA5F3AAE01C9EF5 /* Frameworks */,
+				514AAA82E8E3DC0B2CFB0D691F8A6E45 /* Headers */,
+				90A295F52A373FC2725ABB1E6EFAEC51 /* Sources */,
+				4B2D1F996FCE226C920455966D7046FF /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				0B9174B5432A3164BA1F1884FA0CCDDC /* PBXTargetDependency */,
-				09AA3C3518CEF1C34404E45DA11681F8 /* PBXTargetDependency */,
-				8ABA450A906DDC04444918FEB629D9CD /* PBXTargetDependency */,
-				0F836C37A1EA192841404722763FA184 /* PBXTargetDependency */,
-				833CCFB1C964EBBE968121D444304F9A /* PBXTargetDependency */,
-				E16C02EFF7BF051AC2839ABE516EABB9 /* PBXTargetDependency */,
+				D6B3DE243252650E3B9A6ECFD99477DE /* PBXTargetDependency */,
+				03B739840BC543F3C22C011F49060052 /* PBXTargetDependency */,
+				7B1A1B4218169157B418670EF2F81153 /* PBXTargetDependency */,
+				2C5C6ECE9EEACEE906A7224623404E3F /* PBXTargetDependency */,
+				6E9BB344B5A21DB118B257DFCA0AFDFA /* PBXTargetDependency */,
+				C491C22F1211FBB9BBE3B128D6F75481 /* PBXTargetDependency */,
+				22AE638CB521EE3F618388F4916665F1 /* PBXTargetDependency */,
 			);
 			name = EXCamera;
 			productName = EXCamera;
@@ -244,22 +254,25 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProjectRef = D13F5A7168964D3EA86E532274286F4B /* UMCore */;
+					ProjectRef = BE518697D537208788E18E01848F9FCA /* UMCore */;
 				},
 				{
-					ProjectRef = 42474EF91FF85C22003C5B01555CBB9C /* UMFileSystemInterface */;
+					ProjectRef = EE13457D10FB2FBCB7F81491D4CF4366 /* UMCameraInterface */;
 				},
 				{
-					ProjectRef = 0AD405795122146FB9C697231E3D1521 /* UMImageLoaderInterface */;
+					ProjectRef = 52918480E9C9E3E91C08001DA6851B91 /* UMFileSystemInterface */;
 				},
 				{
-					ProjectRef = 236A85D7FD3A40D579B852A84F2CC5D6 /* UMPermissionsInterface */;
+					ProjectRef = 6BA9F0E830B1F18BFFD63D333C96C650 /* UMImageLoaderInterface */;
 				},
 				{
-					ProjectRef = 86B3D2D8D6194E9C4FCD5CC693DA66C4 /* UMFaceDetectorInterface */;
+					ProjectRef = E3113329CD2CA8839AC57B5047B34E8E /* UMPermissionsInterface */;
 				},
 				{
-					ProjectRef = 2D94D631128DA7939504D25BFE3EA32D /* UMBarCodeScannerInterface */;
+					ProjectRef = E088899686C9D7D827042963BC774398 /* UMFaceDetectorInterface */;
+				},
+				{
+					ProjectRef = 72F6B8D50028A0D21A922478C6A9938A /* UMBarCodeScannerInterface */;
 				},
 			);
 			projectRoot = "";
@@ -270,55 +283,84 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		93E01E061E111969CDD1EDEC33B407DA /* Sources */ = {
+		90A295F52A373FC2725ABB1E6EFAEC51 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7057FF012489BED4355B3DDCD9DA39FE /* EXCamera-dummy.m in Sources */,
-				A3079E5139286985BC4281D4A04C636D /* EXCamera.m in Sources */,
-				F950219EB1B9407853E148DDD8661860 /* EXCameraManager.m in Sources */,
-				F74A6FEA7834560CEC5C47F88746CAB0 /* EXCameraPermissionRequester.m in Sources */,
-				B04B37A249D7EC0F4BC4CE3300FD86B1 /* EXCameraUtils.m in Sources */,
+				FB3C4AEDA627E972BCF1131D5A13D36B /* EXCamera-dummy.m in Sources */,
+				34805C8400467589C808A3E620F447BE /* EXCamera.m in Sources */,
+				5E4A3164B79B978E86E51C0A3EB1B293 /* EXCameraManager.m in Sources */,
+				86017FFCE85F47E1B4B10AE7A25EEF08 /* EXCameraPermissionRequester.m in Sources */,
+				D5B4DD1DF5BE809D55827ADAE9931539 /* EXCameraUtils.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		09AA3C3518CEF1C34404E45DA11681F8 /* PBXTargetDependency */ = {
+		03B739840BC543F3C22C011F49060052 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = UMCore;
-			targetProxy = B11B248F567153938A0AD2EF92EF92E1 /* PBXContainerItemProxy */;
+			name = UMCameraInterface;
+			targetProxy = 3E4091B95035632973BDD24B37A9C79F /* PBXContainerItemProxy */;
 		};
-		0B9174B5432A3164BA1F1884FA0CCDDC /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMBarCodeScannerInterface;
-			targetProxy = 664224EB3019956C00BA374A8BA3BE42 /* PBXContainerItemProxy */;
-		};
-		0F836C37A1EA192841404722763FA184 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMFileSystemInterface;
-			targetProxy = 8FE09826B4A00936711150D6A1DB4456 /* PBXContainerItemProxy */;
-		};
-		833CCFB1C964EBBE968121D444304F9A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMImageLoaderInterface;
-			targetProxy = 0B74A60C0D269E26EFA474888BA12DE5 /* PBXContainerItemProxy */;
-		};
-		8ABA450A906DDC04444918FEB629D9CD /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMFaceDetectorInterface;
-			targetProxy = E4F63DA33C82977C64D9F1490300113B /* PBXContainerItemProxy */;
-		};
-		E16C02EFF7BF051AC2839ABE516EABB9 /* PBXTargetDependency */ = {
+		22AE638CB521EE3F618388F4916665F1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMPermissionsInterface;
-			targetProxy = 5F6D9153C11BB7781D2D30E5DC9F08B3 /* PBXContainerItemProxy */;
+			targetProxy = 309A8695A964CD20D6A2275F75F78241 /* PBXContainerItemProxy */;
+		};
+		2C5C6ECE9EEACEE906A7224623404E3F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMFaceDetectorInterface;
+			targetProxy = 87F3F2D33DB664A6DC5B2852C002F5C6 /* PBXContainerItemProxy */;
+		};
+		6E9BB344B5A21DB118B257DFCA0AFDFA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMFileSystemInterface;
+			targetProxy = A24D7A8C0A3FB44B41CFA5AD12B86693 /* PBXContainerItemProxy */;
+		};
+		7B1A1B4218169157B418670EF2F81153 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = 16BA1946299A3EEA40C7837049631EF4 /* PBXContainerItemProxy */;
+		};
+		C491C22F1211FBB9BBE3B128D6F75481 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMImageLoaderInterface;
+			targetProxy = C6CAF3267A6EF2C54AA05F04F709EE10 /* PBXContainerItemProxy */;
+		};
+		D6B3DE243252650E3B9A6ECFD99477DE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMBarCodeScannerInterface;
+			targetProxy = 97D0C3A48B803B74077C3AE55BA89010 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		501E18B8125BE049030B056B9BB96AD4 /* Release */ = {
+		11578DC60C919BB5ACBDABEA9C72E9DC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0ADC0D329D75B7C789FBE98AB348DC39 /* EXCamera.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXCamera/EXCamera-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXCamera;
+				PRODUCT_NAME = EXCamera;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		5B1BC94D178F4A0273EEA53C30BED5EA /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E588865B62139F316B3ACC8EA47C5461 /* EXCamera.release.xcconfig */;
 			buildSettings = {
@@ -342,30 +384,6 @@
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
-		};
-		5792FB14A5FD5836DD943BF7534F69D1 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0ADC0D329D75B7C789FBE98AB348DC39 /* EXCamera.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXCamera/EXCamera-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXCamera;
-				PRODUCT_NAME = EXCamera;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
 		};
 		70DB676F11853C908CE8FFC0919CE330 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -507,11 +525,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		CA3395EA9E74FB95DF23D67B32D52310 /* Build configuration list for PBXNativeTarget "EXCamera" */ = {
+		A3F05A7FA0D2FE62CCCBFAAFA70EEB85 /* Build configuration list for PBXNativeTarget "EXCamera" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				5792FB14A5FD5836DD943BF7534F69D1 /* Debug */,
-				501E18B8125BE049030B056B9BB96AD4 /* Release */,
+				11578DC60C919BB5ACBDABEA9C72E9DC /* Debug */,
+				5B1BC94D178F4A0273EEA53C30BED5EA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
