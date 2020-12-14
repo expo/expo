@@ -79,7 +79,7 @@ async function checkOrAskForOptions(options: ActionOptions): Promise<ActionOptio
       type: 'list',
       name: 'type',
       message: 'What is the type?',
-      choices: ['bug-fix', 'new-feature', 'breaking-change'],
+      choices: ['bug-fix', 'new-feature', 'breaking-change', 'library-upgrade', 'notice'],
     });
   }
 
@@ -96,6 +96,10 @@ function toChangeType(type: string): Changelogs.ChangeType | null {
       return Changelogs.ChangeType.NEW_FEATURES;
     case 'breaking-change':
       return Changelogs.ChangeType.BREAKING_CHANGES;
+    case 'library-upgrade':
+      return Changelogs.ChangeType.LIBRARY_UPGRADES;
+    case 'notice':
+      return Changelogs.ChangeType.NOTICES;
   }
   return null;
 }
@@ -196,7 +200,7 @@ export default (program: Command) => {
     )
     .option(
       '-t, --type <string>',
-      'Type of change that determines the section into which the entry should be added. Possible options: bug-fix | new-feature | breaking-change.'
+      'Type of change that determines the section into which the entry should be added. Possible options: bug-fix | new-feature | breaking-change | library-upgrade | notice.'
     )
     .option(
       '-v, --version [string]',
