@@ -32,7 +32,7 @@ npm install --save-dev eas-cli
 
 > 💡 Make sure to update this dependency frequently to stay up to date with the EAS API interface. -->
 
-### Provide a personal access token to authentiate with your Expo account on CI
+### Provide a personal access token to authenticate with your Expo account on CI
 
 Next, we need to authenticate as the owner of the app. This is possible by storing a personal access token in the `EXPO_TOKEN` environment variable in the CI settings.
 

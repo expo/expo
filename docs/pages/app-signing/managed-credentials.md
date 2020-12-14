@@ -18,9 +18,9 @@ Generating your iOS credentials (distribution certificate, provisioning profile,
 
 ## Sharing credentials with your team
 
-If you collaborate on your project with other developers, it is often useful to give them access to perform builds on their own. [Ensure that your project is configured for collaboration](/accounts/working-together.md) and any teammates that you have added through the [Expo dashboard](https://expo.io/) and have sufficient permissions will be able to run `eas build` seamlessly.
+If you collaborate on your project with other developers, it is often useful to give them access to perform builds on their own. [Ensure that your project is configured for collaboration](/accounts/working-together.md) and any teammates that you have added through the [Expo dashboard](https://expo.io/) will be able to run `eas build` seamlessly, provided that they have sufficient permissions.
 
-If credentials are already configured for your app, your teammates can run `eas build --skip-credentials-check` if they don't have access to the Apple Developer team in order to skip iOS credentials validation prior to the build; this flag is not needed on Android. This is similar to how you would [trigger a build from CI](/build/building-on-ci.md).
+After you have generated your iOS credentials, it's no longer necessary to have access to the Apple Developer team in order to start a build. Collaborators can run `eas build --skip-credentials-check` to skip iOS credentials validation before the build. There is no equivalent validation necessary for Android, and so this flag is not needed for Android builds.
 
 ## Inspecting credentials configuration
 
