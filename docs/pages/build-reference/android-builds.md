@@ -55,9 +55,9 @@ Every time you want to build a new Android app binary, we validate that the proj
 
 ### Android Keystore
 
-Android requires you to sign your application with a certificate. That certificate is stored in your keystore. The Google Play store identifies applications based on the certificate. It means that if you lose your keystore you may not be able to update your application in the store. However, with [Play App Signing](https://developer.android.com/studio/publish/app-signing#app-signing-google-play), you can mitigate the risk of losing your keystore.
+Android requires you to sign your application with a certificate. That certificate is stored in your keystore. The Google Play Store identifies applications based on the certificate. It means that if you lose your keystore you may not be able to update your application in the store. However, with [Play App Signing](https://developer.android.com/studio/publish/app-signing#app-signing-google-play), you can mitigate the risk of losing your keystore.
 
-Your application's keystore should be kept private. **Under no circumstances should you check it in to your repository.** Debug keystores are the only exception because we don't use them for uploading apps to the Google Play store.
+Your application's keystore should be kept private. **Under no circumstances should you check it in to your repository.** Debug keystores are the only exception because we don't use them for uploading apps to the Google Play Store.
 
 ### Configuring Gradle
 
