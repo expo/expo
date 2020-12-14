@@ -34,39 +34,40 @@ const sections = [
   {
     name: 'Start Building',
     reference: [
-      'Introduction',
+      'EAS Build',
       'Creating your first build',
       'Configuration with eas.json',
       'Over-the-air updates',
       'Internal distribution',
-      'Triggering builds from CI'
+      'Triggering builds from CI',
     ],
   },
   {
     name: 'App Signing',
     reference: [
-      'Managed credentials',
+      'Using automatically managed credentials',
+      'Using local credentials',
       'Using existing credentials',
-      'Sourcing local credentials',
       'Syncing credentials between remote and local sources',
     ],
   },
   {
     name: 'Reference',
     reference: [
+      'Limitations',
       'Integrating with JavaScript tooling',
       'Environment variables and secrets',
       'Build server infrastructure',
       'Caching dependencies',
+      'Application identifiers',
       'Build configuration process',
       'Android build process',
       'iOS build process',
-      'Limitations',
     ],
   },
   {
     name: 'EAS Submit',
-    reference: ['Introduction', 'Submit to the Apple App Store', 'Submit to the Google Play Store'],
+    reference: ['EAS Submit', 'Submit to the Apple App Store', 'Submit to the Google Play Store'],
   },
   {
     name: 'Development Clients',
@@ -168,11 +169,11 @@ const sections = [
     reference: [
       'Overview',
       'Building Standalone Apps',
-      'Build Webhooks',
       'App Signing',
       'Deploying to App Stores',
       'Release Channels',
       'Advanced Release Channels',
+      'Build Webhooks',
       'Hosting Updates on Your Servers',
       'Building Standalone Apps on Your CI',
       'Uploading Apps to the Apple App Store and Google Play',

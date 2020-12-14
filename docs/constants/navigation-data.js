@@ -27,6 +27,7 @@ const DIR_MAPPING = {
   'push-notifications': 'Push Notifications',
   preview: 'Preview',
   build: 'Start Building',
+  eas: 'Feature Preview',
   'app-signing': 'App Signing',
   'build-reference': 'Reference',
   submit: 'EAS Submit',
@@ -128,11 +129,19 @@ const startingDirectories = ['introduction', 'get-started', 'tutorial', 'next-st
 
 let previewDirectories, easDirectories;
 if (isEasReleased) {
-  easDirectories = ['build', 'app-signing', 'build-reference', 'submit'];
+  easDirectories = ['eas', 'build', 'app-signing', 'build-reference', 'submit'];
   previewDirectories = ['preview', 'client'];
 } else {
   easDirectories = [];
-  previewDirectories = ['preview', 'build', 'app-signing', 'build-reference', 'submit', 'client'];
+  previewDirectories = [
+    'eas',
+    'preview',
+    'build',
+    'app-signing',
+    'build-reference',
+    'submit',
+    'client',
+  ];
 }
 
 // Find any directories that aren't reference or starting directories. Also exclude the api

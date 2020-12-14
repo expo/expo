@@ -284,9 +284,9 @@ export default class DocumentationHeader extends React.PureComponent<Props> {
             </a>
           </Link>
           {isEasReleased ? (
-            <Link href="/build/introduction" passHref>
+            <Link href="/eas" passHref>
               <a css={[SECTION_LINK, this.props.activeSection === 'eas' && SECTION_LINK_ACTIVE]}>
-                <span css={SECTION_LINK_TEXT}>EAS Preview</span>
+                <span css={SECTION_LINK_TEXT}>Feature Preview</span>
               </a>
             </Link>
           ) : (

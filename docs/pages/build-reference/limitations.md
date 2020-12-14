@@ -8,10 +8,12 @@ EAS Build is currently in preview and is missing features that will be available
 
 ## Current limitations
 
-<details><summary><h4>Managed Expo project support is early, not recommended for production.</h4></summary>
+<details><summary><h4>Managed workflow support is early, not recommended for production.</h4></summary>
 <p>
 
-EAS Build supports building iOS/Android native projects, so it works with any React Native app. It also supports managed Expo projects, but work still needs to be done in order to make it as solid as `expo build`. We encourage you to experiment with your Expo managed app on EAS Build and report issues, but we suggest holding off on using it for production managed app deployments for now.
+EAS Build supports building iOS/Android native projects, so it works with any React Native app. It also supports [managed Expo projects](/introduction/managed-vs-bare.md), but work is in progress to achieve parity with builds produced through `expo build`.
+
+The goal for managed projects with EAS Build is to remove the limitations commonly encountered with the `expo build` service: it will produce smaller binaries by only including the dependencies you need, and you will be able to include custom native code. We encourage you to experiment with your Expo managed app on EAS Build and report issues, but we suggest holding off on using it for production managed app deployments for now.
 
 </p>
 </details>
@@ -54,14 +56,14 @@ In the future there will be support for securely storing secrets and other value
 </p>
 </details>
 
+<details><summary><h4>Maximum build duration of 60 minutes.</h4></summary>
+<p>
+
+If your build takes longer than 60 minutes to run, it will be cancelled. This limit is subject to change in the future, and it will be possible to increase it if needed.
+
+</p>
+</details>
+
 ## Get notified about changes
 
 To be notified as progress is made on these items, you can subscribe to the newsletter on the [Feature Preview page](https://expo.io/eas).
-
-<!-- <details><summary><h4>Builds timeout after ___ minutes</h4></summary>
-<p>
-
-If your build takes longer than ___ to run, it will be cancelled. It will be possible in the future to increase this limit.
-
-</p>
-</details> -->

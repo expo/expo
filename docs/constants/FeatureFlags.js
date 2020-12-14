@@ -1,3 +1,3 @@
 module.exports = {
-  isEasReleased: false,
+  isEasReleased: true,
 };

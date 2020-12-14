@@ -85,13 +85,13 @@ Before the build can start, we'll need to generate or provide app signing creden
 
 - If you have not yet generated a keystore for your app, you can let EAS CLI take care of that for you by selecting `Generate new keystore`, and then you're done. The keystore will be stored securely on EAS servers.
 - If you have previously built your app in the managed workflow with `expo build:android` (using the same `slug`), then the same credentials will be used here.
-- If you would rather manually generate your keystore, please see the [manual Android credentials guide](/app-signing/manual-credentials-configuration.md#android-credentials) for more information.
+- If you would rather manually generate your keystore, please see the [manual Android credentials guide](/app-signing/manual-credentials.md#android-credentials) for more information.
 
 #### iOS app signing credentials
 
 - If you have not generated a provisioning profile and/or distribution certificate yet, you can let EAS CLI take care of that for you by signing into your Apple Developer Program account and following the prompts.
 - If you have already built your app in the managed workflow with `expo build:ios` (using the same `slug`), then the same credentials will be used here.
-- If you would rather manually generate your credentials, refer to the [manual iOS credentials guide](/app-signing/manual-credentials-configuration.md#ios-credentials) for more information.
+- If you would rather manually generate your credentials, refer to the [manual iOS credentials guide](/app-signing/manual-credentials.md#ios-credentials) for more information.
 
 ## 5. Wait for the build to complete
 
