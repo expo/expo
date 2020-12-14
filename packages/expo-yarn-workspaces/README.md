@@ -26,7 +26,7 @@ The postinstall script determines the location of the generated entry module by 
 
 You can specify other paths too. The `.expo` directory is convenient since it already contains auto-generated files and is .gitignore'd.
 
-### Create a file named `metro.config.js` and reference it from app.json
+### Create a file named `metro.config.js`
 
 **Create a file named `metro.config.js` in the app's base directory with these contents:**
 
