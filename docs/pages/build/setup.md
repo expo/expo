@@ -2,7 +2,7 @@
 title: Creating your first build
 ---
 
-In this guide you will learn how to build a ready-to-submit binary for the Apple App Store and Google Play store with EAS Build. For a simple app, it shouldn't take more than a few minutes total to kick off your builds for both Android and iOS.
+In this guide you will learn how to build a ready-to-submit binary for the Apple App Store and Google Play Store with EAS Build. For a simple app, it shouldn't take more than a few minutes total to kick off your builds for both Android and iOS.
 
 ## Prerequisites
 
