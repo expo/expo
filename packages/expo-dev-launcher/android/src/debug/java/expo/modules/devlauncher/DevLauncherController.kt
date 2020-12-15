@@ -201,6 +201,9 @@ class DevLauncherController private constructor(
     private var sLauncherClass: Class<*>? = null
 
     @JvmStatic
+    fun wasInitialized() = sInstance != null
+    
+    @JvmStatic
     val instance: DevLauncherController
       get() = checkNotNull(sInstance) {
         "DevelopmentClientController.getInstance() was called before the module was initialized"
