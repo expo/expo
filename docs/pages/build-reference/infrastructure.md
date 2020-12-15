@@ -19,12 +19,15 @@ The software components will become customizable, but they aren't yet. So there 
 - Installed software:
   - Docker image: `ubuntu:bionic-20201119`
   - NDK 19.2.5345600
-- NPM cache deployed inside k8s cluster
-- Maven cache deployed inside k8s cluster
+- NPM cache deployed with Kubernetes
+- Maven cache deployed with Kubernetes, cached repositories:
   - `maven-central` - [https://repo1.maven.org/maven2/](https://repo1.maven.org/maven2/)
-  - `google` - [https://maven.google.com/](https://maven.google.com/)
-  - `android-tools` - [https://dl.bintray.com/android/android-tools/](https://dl.bintray.com/android/android-tools/)
-  - `jcenter` - [https://jcenter.bintray.com/](https://jcenter.bintray.com/)
+    <!-- the following repos are not yet cached -->
+    <!--
+    - `google` - [https://maven.google.com/](https://maven.google.com/)
+    - `android-tools` - [https://dl.bintray.com/android/android-tools/](https://dl.bintray.com/android/android-tools/)
+    - `jcenter` - [https://jcenter.bintray.com/](https://jcenter.bintray.com/)
+    -->
 - Global gradle configuration in `~/.gradle/gradle.properties`:
 
   ```jsx
