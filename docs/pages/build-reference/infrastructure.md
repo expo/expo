@@ -25,7 +25,7 @@ The software components will become customizable, but they aren't yet. So there 
   - `google` - [https://maven.google.com/](https://maven.google.com/)
   - `android-tools` - [https://dl.bintray.com/android/android-tools/](https://dl.bintray.com/android/android-tools/)
   - `jcenter` - [https://jcenter.bintray.com/](https://jcenter.bintray.com/)
-- Global `gradle.properties`:
+- Global gradle configuration in `~/.gradle/gradle.properties`:
 
   ```jsx
   org.gradle.jvmargs=-Xmx6g -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
@@ -39,7 +39,7 @@ The software components will become customizable, but they aren't yet. So there 
 - iOS worker VMs run on Macs Pro 6.1 in an isolated environement
   - Every build gets its own fresh macOS VM
   - Hardware: Intel(R) Xeon(R) CPU E5-2697 (12 core/24 threads), 64 GB RAM
-  - Build resource limits: 4 CPU, 8 GB RAM
+  - Build resource limits: 4 cores, 8 GB RAM
 - Installed software:
   - macOS Catalina 10.15.4
   - Xcode 12.1 (12A7403)
