@@ -24,6 +24,8 @@ import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import javax.annotation.Nullable;
+import android.graphics.PorterDuff;
+import android.graphics.Color;
 
 /**
  * {@link ViewManager} for the {@link ReactPicker} view. This is abstract because the
@@ -69,6 +71,11 @@ public abstract class ReactPickerManager extends SimpleViewManager<ReactPicker> 
   @ReactProp(name = "selected")
   public void setSelected(ReactPicker view, int selected) {
     view.setStagedSelection(selected);
+  }
+
+  @ReactProp(name = "dropdownIconColor") 
+  public void setDropdownIconColor(ReactPicker view, @Nullable String color) {
+    view.getBackground().setColorFilter(Color.parseColor(color), PorterDuff.Mode.SRC_ATOP);
   }
 
   @Override

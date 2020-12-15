@@ -11,7 +11,7 @@ const attributes = {
 
 const STYLES_UNORDERED_LIST = css`
   ${paragraph}
-  list-style: none;
+  list-style: disc;
   margin-left: 1rem;
   margin-bottom: 1rem;
 
@@ -29,7 +29,7 @@ export const UL: React.FC = ({ children }) => (
 // TODO(jim): Get anchors working properly for ordered lists.
 const STYLES_ORDERED_LIST = css`
   ${paragraph}
-  list-style: none;
+  list-style: decimal;
   margin-left: 1rem;
   margin-bottom: 1rem;
 
@@ -47,7 +47,6 @@ export const OL: React.FC = ({ children }) => (
 const STYLES_LIST_ITEM = css`
   padding: 0.25rem 0;
   :before {
-    content: '•';
     font-size: 130%;
     line-height: 0;
     margin: 0 0.5rem 0 -1rem;

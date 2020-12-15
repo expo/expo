@@ -8,6 +8,18 @@
 
 ### 🐛 Bug fixes
 
+## 3.0.0 — 2020-12-09
+
+### 🛠 Breaking changes
+
+- Make expo-random a peer dependency. ([#11280](https://github.com/expo/expo/pull/11280) by [@brentvatne](https://github.com/brentvatne))
+
+## 2.0.1 — 2020-11-17
+
+### 🐛 Bug fixes
+
+- Improved mechanism used to determine whether in bare or managed workflow. ([#10993](https://github.com/expo/expo/pull/10993) by [@esamelson](https://github.com/esamelson))
+
 ## 2.0.0 — 2020-09-22
 
 _This version does not introduce any user-facing changes._

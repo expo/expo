@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+- Dropped support for iOS 10.0 ([#11344](https://github.com/expo/expo/pull/11344) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+## 9.0.0 — 2020-11-17
+
+### 🛠 Breaking changes
+
 - Renamed all methods to include the 'Async' suffix:
   - `initialize` to `initializeAsync`
   - `setUserId` to `setUserIdAsync`
@@ -15,11 +25,6 @@
   - `setTrackingOptions` to `setTrackingOptionsAsync`
     ([#9212](https://github.com/expo/expo/pull/9212/) by [@cruzach](https://github.com/cruzach))
 - All methods now return a Promise. ([#9212](https://github.com/expo/expo/pull/9212/) by [@cruzach](https://github.com/cruzach))
-
-
-### 🎉 New features
-
-### 🐛 Bug fixes
 
 ## 8.3.1 — 2020-08-24
 

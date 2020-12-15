@@ -4,9 +4,17 @@
 
 ### 🛠 Breaking changes
 
+- Dropped support for iOS 10.0 ([#11344](https://github.com/expo/expo/pull/11344) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+## 8.6.0 — 2020-11-17
+
+### 🎉 New features
+
+- Added `isAvailableAsync` method. ([#10657](https://github.com/expo/expo/pull/10657) by [@PranshuChittora](https://github.com/pranshuchittora))
 
 ## 8.5.0 — 2020-08-18
 

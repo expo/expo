@@ -3,11 +3,11 @@ import Link from 'next/link';
 import * as React from 'react';
 
 import AlgoliaSearch from '~/components/plugins/AlgoliaSearch';
+import { isEasReleased } from '~/constants/FeatureFlags';
 import * as Constants from '~/constants/theme';
 
 const STYLES_LOGO = css`
   display: flex;
-  cursor: pointer;
 `;
 
 const STYLES_UNSTYLED_ANCHOR = css`
@@ -22,7 +22,6 @@ const STYLES_TITLE_TEXT = css`
   padding-left: 8px;
   font-size: 1.2rem;
   font-family: ${Constants.fonts.bold};
-  cursor: pointer;
 `;
 
 const STYLES_LEFT = css`
@@ -60,7 +59,7 @@ const STYLES_NAV = css`
   height: 60px;
   box-sizing: unset;
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-    border-bottom: 1px solid ${Constants.expoColors.gray[250]};
+    border-bottom: 1px solid ${Constants.expoColors.semantic.border};
   }
 `;
 
@@ -72,7 +71,7 @@ const STYLES_MOBILE_NAV = css`
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     display: flex;
-    border-bottom: 1px solid ${Constants.expoColors.gray[250]};
+    border-bottom: 1px solid ${Constants.expoColors.semantic.border};
   }
 `;
 
@@ -214,13 +213,15 @@ export default class DocumentationHeader extends React.PureComponent<Props> {
         <header css={[STYLES_NAV, STYLES_STICKY]}>
           <div css={STYLES_LEFT}>
             <div css={STYLES_LOGO_CONTAINER}>
-              <Link href="/">
-                <span css={STYLES_LOGO}>
-                  <img src="/static/images/header/sdk.svg" />
-                </span>
+              <Link href="/" passHref>
+                <a css={STYLES_UNSTYLED_ANCHOR}>
+                  <span css={STYLES_LOGO}>
+                    <img src="/static/images/header/sdk.svg" />
+                  </span>
+                </a>
               </Link>
 
-              <Link href="/">
+              <Link href="/" passHref>
                 <a css={STYLES_UNSTYLED_ANCHOR}>
                   <h1 css={STYLES_TITLE_TEXT}>Expo</h1>
                 </a>
@@ -272,17 +273,26 @@ export default class DocumentationHeader extends React.PureComponent<Props> {
     return (
       <div css={[SECTION_LINKS_WRAPPER, hiddenOnMobile && STYLES_HIDDEN_ON_MOBILE]}>
         <SectionContainer spaceBetween={hiddenOnMobile ? 8 : 0}>
-          <Link href="/">
+          <Link href="/" passHref>
             <a css={[SECTION_LINK, this.props.activeSection === 'starting' && SECTION_LINK_ACTIVE]}>
               <span css={SECTION_LINK_TEXT}>Get Started</span>
             </a>
           </Link>
-          <Link href="/guides">
+          <Link href="/guides" passHref>
             <a css={[SECTION_LINK, this.props.activeSection === 'general' && SECTION_LINK_ACTIVE]}>
               <span css={SECTION_LINK_TEXT}>Guides</span>
             </a>
           </Link>
-          <Link href="/versions/latest/">
+          {isEasReleased ? (
+            <Link href="/eas" passHref>
+              <a css={[SECTION_LINK, this.props.activeSection === 'eas' && SECTION_LINK_ACTIVE]}>
+                <span css={SECTION_LINK_TEXT}>Feature Preview</span>
+              </a>
+            </Link>
+          ) : (
+            <span />
+          )}
+          <Link href="/versions/latest/" passHref>
             <a
               css={[SECTION_LINK, this.props.activeSection === 'reference' && SECTION_LINK_ACTIVE]}>
               <span css={SECTION_LINK_TEXT}>API Reference</span>

@@ -351,7 +351,11 @@ async function onCapabilitiesReady(
     >('whiteBalanceMode', 'whiteBalance', CapabilityUtils.convertWhiteBalanceJSONToNative);
   }
 
-  await track.applyConstraints({ advanced: [constraints] });
+  try {
+    await track.applyConstraints({ advanced: [constraints] });
+  } catch (error) {
+    if (__DEV__) console.warn('Failed to apply constraints', error);
+  }
 }
 
 export function stopMediaStream(stream: MediaStream | null) {

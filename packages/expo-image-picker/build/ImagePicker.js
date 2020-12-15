@@ -21,14 +21,38 @@ function validateOptions(options) {
 export async function getCameraPermissionsAsync() {
     return ExponentImagePicker.getCameraPermissionsAsync();
 }
+/**
+ * @deprecated in favor of getMediaLibraryPermissionsAsync()
+ */
 export async function getCameraRollPermissionsAsync() {
-    return ExponentImagePicker.getCameraRollPermissionsAsync();
+    console.warn('ImagePicker.getCameraRollPermissionsAsync() is deprecated in favour of ImagePicker.getMediaLibraryPermissionsAsync()');
+    return getMediaLibraryPermissionsAsync();
+}
+export async function getMediaLibraryPermissionsAsync(writeOnly = false) {
+    // due to a typo in iOS, we need to check on the typo too
+    // todo: remove this workaround for SDK 41
+    const imagePickerMethod = typeof ExponentImagePicker.getMediaLibaryPermissionsAsync === 'function'
+        ? ExponentImagePicker.getMediaLibaryPermissionsAsync
+        : ExponentImagePicker.getMediaLibraryPermissionsAsync;
+    return imagePickerMethod(writeOnly);
 }
 export async function requestCameraPermissionsAsync() {
     return ExponentImagePicker.requestCameraPermissionsAsync();
 }
+/**
+ * @deprecated in favor of requestMediaLibraryPermissionsAsync()
+ */
 export async function requestCameraRollPermissionsAsync() {
-    return ExponentImagePicker.requestCameraRollPermissionsAsync();
+    console.warn('ImagePicker.requestCameraRollPermissionsAsync() is deprecated in favour of ImagePicker.requestMediaLibraryPermissionsAsync()');
+    return requestMediaLibraryPermissionsAsync();
+}
+export async function requestMediaLibraryPermissionsAsync(writeOnly = false) {
+    // due to a typo in iOS, we need to check on the typo too
+    // todo: remove this workaround for SDK 41
+    const imagePickerMethod = typeof ExponentImagePicker.requestMediaLibaryPermissionsAsync === 'function'
+        ? ExponentImagePicker.requestMediaLibaryPermissionsAsync
+        : ExponentImagePicker.requestMediaLibraryPermissionsAsync;
+    return imagePickerMethod(writeOnly);
 }
 export async function getPendingResultAsync() {
     if (ExponentImagePicker.getPendingResultAsync) {

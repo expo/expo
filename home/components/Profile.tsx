@@ -309,7 +309,13 @@ function ProfileSnacksSection({
 
   const renderSnack = (snack: any, i: number) => {
     return (
-      <SnackListItem key={i} url={snack.fullName} title={snack.name} subtitle={snack.description} />
+      <SnackListItem
+        key={i}
+        url={snack.fullName}
+        title={snack.name}
+        subtitle={snack.description}
+        isDraft={snack.isDraft}
+      />
     );
   };
 

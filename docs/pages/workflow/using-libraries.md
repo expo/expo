@@ -7,7 +7,7 @@ import InstallSection from '~/components/plugins/InstallSection';
 
 Every app is made up of some combination of React Native, Expo SDK, and third party libraries. It's important to understand how to use the libraries from each of these sources, and how to determine whether a third-party library will work in your project or not.
 
-If you are using the bare workflow, read the [guide for using libraries in the bare workflow](../../bare/using-libraries/) instead of this page.
+If you are using the bare workflow, read the [guide for using libraries in the bare workflow](../bare/using-libraries.md) instead of this page.
 
 ## Using React Native Core Libraries
 
@@ -98,7 +98,7 @@ Now check the following:
 
 If you answered yes to either of these questions and the library is not part of the Expo SDK, this library may not be supported in the managed workflow. You can go ahead and try it in a new project to be sure! Run `expo init` and add the library to the new project and try to use it. This is a great way to experiment with a library before including it in your project in all circumstances.
 
-If the library is not compatible with the managed workflow and you need it to build your app, you may want to [eject to the bare workflow](../../workflow/customizing/).
+If the library is not compatible with the managed workflow and you need it to build your app, you may want to [eject to the bare workflow](../workflow/customizing.md).
 
 > 🙏 If you want some help determining library compatibility, [please create an issue on the React Native Directory repository](https://github.com/react-native-community/directory/issues/new/choose) and let us know. This will not just help you, it will help to ensure that other developers have an easy answer in the future!
 

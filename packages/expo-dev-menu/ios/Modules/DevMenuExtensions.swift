@@ -28,6 +28,9 @@ open class DevMenuExtensions: NSObject, RCTBridgeModule, DevMenuExtensionProtoco
     }
 
     let reload = DevMenuExtensions.reloadAction {
+      // Without this the `expo-splash-screen` will reject
+      // No native splash screen registered for given view controller. Call 'SplashScreen.show' for given view controller first.
+      DevMenuManager.shared.hideMenu();
       self.bridge?.requestReload()
     }
 
@@ -38,7 +41,9 @@ open class DevMenuExtensions: NSObject, RCTBridgeModule, DevMenuExtensionProtoco
 
     #if DEBUG
     let remoteDebug = DevMenuExtensions.remoteDebugAction {
-      devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely
+      DispatchQueue.main.async {
+        devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely
+      }
     }
     remoteDebug.isAvailable = { devSettings.isRemoteDebuggingAvailable }
     remoteDebug.isEnabled = { devSettings.isDebuggingRemotely }

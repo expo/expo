@@ -19,7 +19,7 @@ function QRCodeButton(props: Props) {
   };
   return (
     <ListItem
-      icon={Platform.OS === 'ios' ? 'ios-qr-scanner' : 'md-qr-scanner'}
+      icon={Platform.OS === 'ios' ? 'ios-qr-scanner' : 'qr-code-outline'}
       title="Scan QR Code"
       subtitle="Open your projects without typing"
       onPress={handlePressAsync}

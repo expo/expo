@@ -13,7 +13,7 @@
 			buildPhases = (
 			);
 			dependencies = (
-				BE082707DA6BA1163BC70B3620800694 /* PBXTargetDependency */,
+				79BC0DDC0DB97D4E5B52DEA8E047A60A /* PBXTargetDependency */,
 				BB73BD78E6055885E4BB0DD51174CCFA /* PBXTargetDependency */,
 				89F447B029F4AE3E52F511DABAD870E5 /* PBXTargetDependency */,
 				E89CBEDBB8E18FEEEB1E4846BE4E1E70 /* PBXTargetDependency */,
@@ -35,6 +35,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 8FD0C9BFE0E509D0066C67C06EE170B5;
 			remoteInfo = "React-RCTAnimation";
+		};
+		0DEC43A9B2698FC97303B033292C75FF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CFB747993BAAEC36B7C492C20A89F4BF /* React-Core.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 5DA1A74647F652AE8E4DE074AFC4C6B7;
+			remoteInfo = "React-Core";
 		};
 		1498F265CACA8862FC72F372B76C8CEE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -77,13 +84,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = D8D59AAB809693DB02967107370F4619;
 			remoteInfo = "React-RCTBlob";
-		};
-		E3D8AD4834976440636050B96B54376B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = CFB747993BAAEC36B7C492C20A89F4BF /* React-Core.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 5DA1A74647F652AE8E4DE074AFC4C6B7;
-			remoteInfo = "React-Core";
 		};
 		E76BE154ED1797F3828F9436217A7A76 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -262,6 +262,11 @@
 			name = "React-RCTLinking";
 			targetProxy = F865DA5CB970381EFCE6C878AAB1AE36 /* PBXContainerItemProxy */;
 		};
+		79BC0DDC0DB97D4E5B52DEA8E047A60A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "React-Core";
+			targetProxy = 0DEC43A9B2698FC97303B033292C75FF /* PBXContainerItemProxy */;
+		};
 		7C763B09F0EAECA5251133D8D1B6B229 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-RCTVibration";
@@ -287,11 +292,6 @@
 			name = "React-RCTActionSheet";
 			targetProxy = 3CC6057AF14185B64352D2D0F51A5014 /* PBXContainerItemProxy */;
 		};
-		BE082707DA6BA1163BC70B3620800694 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "React-Core";
-			targetProxy = E3D8AD4834976440636050B96B54376B /* PBXContainerItemProxy */;
-		};
 		E89CBEDBB8E18FEEEB1E4846BE4E1E70 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-RCTBlob";
@@ -300,39 +300,11 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		1DE8C9C4DA02662DFFAA65AC5CF29BA3 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = BD1C1B5A54BEA124395A528AA595EC0D /* React.debug.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		2E528D43403E8BA9033E57F81B61E218 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1891E358C9E8EAABC2C18EE87CE01951 /* React.release.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		39002ED14126B5140F5A368238ABF008 /* Debug */ = {
+		21F304DB90EF9B8B126EEFC5ADD29DAD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -355,6 +327,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -393,10 +366,11 @@
 			};
 			name = Debug;
 		};
-		F11D6DAF13DEB3A08C6010C1D9C2893C /* Release */ = {
+		64FD83F0372C376769F67AD963BE2055 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -419,6 +393,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -453,14 +428,45 @@
 			};
 			name = Release;
 		};
+		9D51410C35DFA54B041163B6545D038D /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1891E358C9E8EAABC2C18EE87CE01951 /* React.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		F29F0ED83920ED125232857757FF2F77 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BD1C1B5A54BEA124395A528AA595EC0D /* React.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		839235B444A07E704D72B3CECB45C641 /* Build configuration list for PBXProject "React" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				39002ED14126B5140F5A368238ABF008 /* Debug */,
-				F11D6DAF13DEB3A08C6010C1D9C2893C /* Release */,
+				21F304DB90EF9B8B126EEFC5ADD29DAD /* Debug */,
+				64FD83F0372C376769F67AD963BE2055 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -468,8 +474,8 @@
 		A179F86E2BF8E5ED372A4A70D3EE7169 /* Build configuration list for PBXAggregateTarget "React" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1DE8C9C4DA02662DFFAA65AC5CF29BA3 /* Debug */,
-				2E528D43403E8BA9033E57F81B61E218 /* Release */,
+				F29F0ED83920ED125232857757FF2F77 /* Debug */,
+				9D51410C35DFA54B041163B6545D038D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

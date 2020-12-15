@@ -1,6 +1,6 @@
 {
   "name": "expo-gl-cpp",
-  "version": "9.1.2",
+  "version": "9.2.0",
   "description": "C++ bindings for WebGL 2.0 used in Expo GL module",
   "main": "index.js",
   "keywords": [

@@ -18,11 +18,6 @@ fun <T> getVendoredClass(className: String, argsType: Array<Class<*>>, args: Arr
   return constructFromClass(clazz, argsType, args)
 }
 
-fun getSafeArea(): ReactPackage {
-  val clazz = Class.forName("com.th3rdwave.safeareacontext.SafeAreaContextPackage")
-  return constructFromClass(clazz, emptyArray(), emptyArray())
-}
-
 @Suppress("UNCHECKED_CAST")
 fun <T> constructFromClass(clazz: Class<*>, argsType: Array<Class<*>>, args: Array<Any>): T {
   val constructor = clazz.getConstructor(*argsType)

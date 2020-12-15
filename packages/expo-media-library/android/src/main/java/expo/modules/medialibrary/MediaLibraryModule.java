@@ -12,17 +12,17 @@ import android.provider.MediaStore;
 import android.provider.MediaStore.Files;
 import android.provider.MediaStore.Images.Media;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.services.EventEmitter;
 import org.unimodules.interfaces.permissions.Permissions;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -97,13 +97,13 @@ public class MediaLibraryModule extends ExportedModule {
   }
 
   @ExpoMethod
-  public void requestPermissionsAsync(final Promise promise) {
-    Permissions.askForPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE);
+  public void requestPermissionsAsync(boolean writeOnly, final Promise promise) {
+    Permissions.askForPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, getManifestPermissions(writeOnly));
   }
 
   @ExpoMethod
-  public void getPermissionsAsync(final Promise promise) {
-    Permissions.getPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE);
+  public void getPermissionsAsync(boolean writeOnly, final Promise promise) {
+    Permissions.getPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, getManifestPermissions(writeOnly));
   }
 
   @ExpoMethod
@@ -114,7 +114,7 @@ public class MediaLibraryModule extends ExportedModule {
     }
 
     new CreateAsset(mContext, localUri, promise, false)
-        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+      .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   @ExpoMethod
@@ -125,7 +125,7 @@ public class MediaLibraryModule extends ExportedModule {
     }
 
     new CreateAsset(mContext, localUri, promise)
-        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+      .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   @ExpoMethod
@@ -136,7 +136,7 @@ public class MediaLibraryModule extends ExportedModule {
     }
 
     new AddAssetsToAlbum(mContext,
-        assetsId.toArray(new String[0]), albumId, copyToAlbum, promise).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+      assetsId.toArray(new String[0]), albumId, copyToAlbum, promise).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
 
@@ -148,7 +148,7 @@ public class MediaLibraryModule extends ExportedModule {
     }
 
     new RemoveAssetsFromAlbum(mContext,
-        assetsId.toArray(new String[0]), albumId, promise).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+      assetsId.toArray(new String[0]), albumId, promise).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   @ExpoMethod
@@ -159,7 +159,7 @@ public class MediaLibraryModule extends ExportedModule {
     }
 
     new DeleteAssets(mContext, assetsId.toArray(new String[0]), promise)
-        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+      .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   @ExpoMethod
@@ -170,7 +170,7 @@ public class MediaLibraryModule extends ExportedModule {
     }
 
     new GetAssetInfo(mContext, assetId, promise).
-        executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+      executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
 
@@ -193,7 +193,7 @@ public class MediaLibraryModule extends ExportedModule {
     }
 
     new GetAlbum(mContext, albumName, promise)
-        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+      .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   @ExpoMethod
@@ -204,7 +204,7 @@ public class MediaLibraryModule extends ExportedModule {
     }
 
     new CreateAlbum(mContext, albumName, assetId, copyAsset, promise)
-        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+      .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   @ExpoMethod
@@ -215,7 +215,7 @@ public class MediaLibraryModule extends ExportedModule {
     }
 
     new DeleteAlbums(mContext, albumIds, promise)
-        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+      .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
   }
 
@@ -227,7 +227,7 @@ public class MediaLibraryModule extends ExportedModule {
     }
 
     new GetAssets(mContext, assetOptions, promise)
-        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+      .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   // Library change observer
@@ -250,14 +250,14 @@ public class MediaLibraryModule extends ExportedModule {
     ContentResolver contentResolver = mContext.getContentResolver();
 
     contentResolver.registerContentObserver(
-        Media.EXTERNAL_CONTENT_URI,
-        true,
-        mImagesObserver
+      Media.EXTERNAL_CONTENT_URI,
+      true,
+      mImagesObserver
     );
     contentResolver.registerContentObserver(
-        MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-        true,
-        mVideosObserver
+      MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+      true,
+      mVideosObserver
     );
     promise.resolve(null);
   }
@@ -294,6 +294,18 @@ public class MediaLibraryModule extends ExportedModule {
     return !permissionsManager.hasGrantedPermissions(WRITE_EXTERNAL_STORAGE);
   }
 
+  private String[] getManifestPermissions(boolean writeOnly) {
+    if (writeOnly) {
+      return new String[]{
+        WRITE_EXTERNAL_STORAGE
+      };
+    }
+    return new String[]{
+      READ_EXTERNAL_STORAGE,
+      WRITE_EXTERNAL_STORAGE
+    };
+  }
+
   private class MediaStoreContentObserver extends ContentObserver {
     private int mAssetsTotalCount;
     private int mMediaType;
@@ -323,11 +335,11 @@ public class MediaLibraryModule extends ExportedModule {
 
     private int getAssetsTotalCount(int mediaType) {
       Cursor countCursor = mContext.getContentResolver().query(
-          EXTERNAL_CONTENT,
-          null,
-          Files.FileColumns.MEDIA_TYPE + " == " + mediaType,
-          null,
-          null
+        EXTERNAL_CONTENT,
+        null,
+        Files.FileColumns.MEDIA_TYPE + " == " + mediaType,
+        null,
+        null
       );
 
       return countCursor != null ? countCursor.getCount() : 0;

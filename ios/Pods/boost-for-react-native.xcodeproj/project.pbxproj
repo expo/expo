@@ -94,37 +94,11 @@
 /* End PBXProject section */
 
 /* Begin XCBuildConfiguration section */
-		0329DE6AEBE681C363A6D040D5084C4D /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 92A6BD93BEFF24EFB61708EE9A11C7A1 /* boost-for-react-native.debug.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		3A3A650B4B1958B0A54792C5C687888D /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2EE36E98F4C042833FF117F0A683D96C /* boost-for-react-native.release.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		506B044A91348C18424162B8CFB3A93E /* Release */ = {
+		54A1E4B8253656A8700CBA6BE5C9549B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -147,6 +121,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -181,10 +156,11 @@
 			};
 			name = Release;
 		};
-		EED1722D119A2C9E6ADF722DF35B899D /* Debug */ = {
+		6F60FFAC135976E2254A40DF9DA73594 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -207,6 +183,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -245,14 +222,41 @@
 			};
 			name = Debug;
 		};
+		9D7FE78013E551A0D8AB6547E34063A5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 92A6BD93BEFF24EFB61708EE9A11C7A1 /* boost-for-react-native.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		AF4B742885B0642565FAF2B22F1EA8F0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2EE36E98F4C042833FF117F0A683D96C /* boost-for-react-native.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		35E9179E77BE13EBA2FD0B3F94AA8613 /* Build configuration list for PBXAggregateTarget "boost-for-react-native" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				0329DE6AEBE681C363A6D040D5084C4D /* Debug */,
-				3A3A650B4B1958B0A54792C5C687888D /* Release */,
+				9D7FE78013E551A0D8AB6547E34063A5 /* Debug */,
+				AF4B742885B0642565FAF2B22F1EA8F0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -260,8 +264,8 @@
 		D474C71E0AE952B061F29CEC011F984B /* Build configuration list for PBXProject "boost-for-react-native" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				EED1722D119A2C9E6ADF722DF35B899D /* Debug */,
-				506B044A91348C18424162B8CFB3A93E /* Release */,
+				6F60FFAC135976E2254A40DF9DA73594 /* Debug */,
+				54A1E4B8253656A8700CBA6BE5C9549B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -4,11 +4,21 @@
 
 ### 🛠 Breaking changes
 
+- Dropped support for iOS 10.0 ([#11344](https://github.com/expo/expo/pull/11344) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+## 9.1.1 — 2020-12-14
+
+_This version does not introduce any user-facing changes._
+
+## 9.1.0 — 2020-11-17
+
 ### 🎉 New features
 
 - Added support for video poster to show while the camera is loading on web. ([#9930](https://github.com/expo/expo/pull/9930) by [@liorJuice](https://github.com/liorJuice))
-
-### 🐛 Bug fixes
 
 ## 9.0.0 — 2020-08-18
 

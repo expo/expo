@@ -9,6 +9,7 @@ import spawnAsync from '@expo/spawn-async';
 import { runTransformPipelineAsync } from './transforms';
 import { injectMacros } from './transforms/injectMacros';
 import { postTransforms } from './transforms/postTransforms';
+import { kernelFilesTransforms } from './transforms/kernelFilesTransforms';
 import { podspecTransforms } from './transforms/podspecTransforms';
 
 import { getListOfPackagesAsync } from '../../Packages';
@@ -224,6 +225,41 @@ async function generateVersionedReactNativeAsync(versionName: string): Promise<v
   await generateReactNativePodspecsAsync(versionedReactNativePath, versionName);
 }
 
+/**
+ * There are some kernel files that unfortunately have to call versioned code directly.
+ * This function applies the specified changes in the kernel codebase.
+ * The nature of kernel modifications is that they are temporary and at one point these have to be rollbacked.
+ * @param versionName SDK version, e.g. 21.0.0, 37.0.0, etc.
+ * @param rollback flag indicating whether to invoke rollbacking modification.
+ */
+async function modifyKernelFilesAsync(
+  versionName: string,
+  rollback: boolean = false
+): Promise<void> {
+  const kernelFilesPath = path.join(IOS_DIR, 'Exponent/kernel');
+  const filenameQueries = [`${kernelFilesPath}/**/EXAppViewController.m`];
+  let filenames: string[] = [];
+  await Promise.all(
+    filenameQueries.map(async (query) => {
+      let queryFilenames = (await glob(query)) as string[];
+      if (queryFilenames) {
+        filenames = filenames.concat(queryFilenames);
+      }
+    })
+  );
+  await Promise.all(
+    filenames.map(async (filename) => {
+      console.log(`Modifying ${chalk.magenta(path.relative(EXPO_DIR, filename))}:`);
+      await _transformFileContentsAsync(filename, (fileContents) =>
+        runTransformPipelineAsync({
+          pipeline: kernelFilesTransforms(versionName, rollback),
+          targetPath: filename,
+          input: fileContents,
+        })
+      );
+    })
+  );
+}
 /**
  * - Copies `scripts/react_native_pods.rb` script into versioned ReactNative directory.
  * - Removes pods installed from third-party-podspecs (we don't version them).
@@ -441,6 +477,7 @@ async function generateExpoKitPodspecAsync(
 
     ss.dependency         "${versionedReactPodName}-Core"
     ss.dependency         "${versionedReactPodName}-Core/DevSupport"
+    ss.dependency         "${versionedReactPodName}Common"
     ${universalModulesDependencies}
     ${externalDependencies}
   end
@@ -911,6 +948,10 @@ export async function addVersionAsync(versionNumber: string) {
     (config) => addVersionToConfig(config, versionNumber)
   );
 
+  // Modifying kernel files
+  console.log(`Modifying ${chalk.bold('kernel files')} to incorporate new SDK version...`);
+  await modifyKernelFilesAsync(versionName);
+
   console.log('Removing any `filename--` files from the new pod ...');
 
   try {
@@ -957,7 +998,9 @@ export async function reinstallPodsAsync(force?: boolean) {
 }
 
 export async function removeVersionAsync(versionNumber: string) {
-  let { newVersionPath, versionedPodNames } = await getConfigsFromArguments(versionNumber);
+  let { newVersionPath, versionedPodNames, versionName } = await getConfigsFromArguments(
+    versionNumber
+  );
   console.log(
     `Removing SDK version ${chalk.cyan(versionNumber)} from ${chalk.magenta(
       path.relative(EXPO_DIR, newVersionPath)
@@ -998,6 +1041,10 @@ export async function removeVersionAsync(versionNumber: string) {
     path.join(EXPO_DIR, 'exponent-view-template', 'ios', 'exponent-view-template', 'Supporting'),
     (config) => removeVersionFromConfig(config, versionNumber)
   );
+
+  // modify kernel files
+  console.log('Rollbacking SDK modifications from kernel files...');
+  await modifyKernelFilesAsync(versionName, true);
 
   await reinstallPodsAsync();
 
@@ -1147,9 +1194,16 @@ function _getReactNativeTransformRules(versionPrefix, reactPodName) {
       pattern: `s/${versionPrefix}EX${reactPodName}/${versionPrefix}EXReact/g`,
     },
     {
-      // For EXConstants
+      // For EXConstants and EXNotifications so that when their migrators
+      // try to access legacy storage for UUID migration, they access the proper value.
       pattern: `s/${versionPrefix}EXDeviceInstallUUIDKey/EXDeviceInstallUUIDKey/g`,
-      paths: 'Expo/EXConstants',
+      paths: 'Expo',
+    },
+    {
+      // For EXConstants and EXNotifications so that the installation ID
+      // stays the same between different SDK versions. (https://github.com/expo/expo/issues/11008#issuecomment-726370187)
+      pattern: `s/${versionPrefix}EXDeviceInstallationUUIDKey/EXDeviceInstallationUUIDKey/g`,
+      paths: 'Expo',
     },
     {
       // RCTPlatform exports version of React Native

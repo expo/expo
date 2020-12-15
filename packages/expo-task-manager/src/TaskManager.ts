@@ -199,3 +199,7 @@ if (ExpoTaskManager) {
     }
   );
 }
+
+export async function isAvailableAsync(): Promise<boolean> {
+  return await ExpoTaskManager.isAvailableAsync();
+}

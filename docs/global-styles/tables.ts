@@ -7,7 +7,7 @@ export const globalTables = css`
     margin-bottom: 1rem;
     font-size: 0.8rem;
     border-collapse: collapse;
-    border: 1px solid ${Constants.expoColors.gray[250]};
+    border: 1px solid ${Constants.expoColors.semantic.border};
     border-radius: 4px;
     width: 100%;
   }
@@ -21,8 +21,8 @@ export const globalTables = css`
   td,
   th {
     padding: 16px;
-    border-bottom: 1px solid ${Constants.expoColors.gray[250]};
-    border-right: 1px solid ${Constants.expoColors.gray[250]};
+    border-bottom: 1px solid ${Constants.expoColors.semantic.border};
+    border-right: 1px solid ${Constants.expoColors.semantic.border};
 
     :last-child {
       border-right: 0px;

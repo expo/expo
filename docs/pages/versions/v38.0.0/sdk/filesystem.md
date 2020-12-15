@@ -5,7 +5,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-38/packages/expo-file-syst
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-file-system`** provides access to a file system stored locally on the device. Within the Expo client, each app has a separate file system and has no access to the file system of other Expo apps.
 
@@ -15,7 +14,7 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 <InstallSection packageName="expo-file-system" />
 
-## Example Usage
+## Usage
 
 ```javascript
 const callback = downloadProgress => {
@@ -78,12 +77,6 @@ try {
 ```js
 import * as FileSystem from 'expo-file-system';
 ```
-
-<TableOfContentSection title='Directories' contents={['FileSystem.documentDirectory', 'FileSystem.cacheDirectory']} />
-
-<TableOfContentSection title='Constants' contents={['FileSystem.EncodingType', 'FileSystem.FileSystemSessionType', 'FileSystem.FileSystemUploadOptions']} />
-
-<TableOfContentSection title='Methods' contents={['FileSystem.getInfoAsync(fileUri, options)', 'FileSystem.readAsStringAsync(fileUri, options)', 'FileSystem.writeAsStringAsync(fileUri, contents, options)', 'FileSystem.deleteAsync(fileUri, options)', 'FileSystem.moveAsync(options)', 'FileSystem.copyAsync(options)', 'FileSystem.makeDirectoryAsync(fileUri, options)', 'FileSystem.readDirectoryAsync(fileUri)', 'FileSystem.downloadAsync(uri, fileUri, options)', 'FileSystem.uploadAsync(url, fileUri, options)', 'FileSystem.createDownloadResumable(uri, fileUri, options, callback, resumeData)', 'FileSystem.DownloadResumable.downloadAsync()', 'FileSystem.DownloadResumable.pauseAsync()', 'FileSystem.DownloadResumable.resumeAsync()', 'FileSystem.DownloadResumable.savable()', 'FileSystem.getContentUriAsync(fileUri)', 'FileSystem.getFreeDiskStorageAsync()', 'FileSystem.getTotalDiskCapacityAsync()']} />
 
 ## Directories
 

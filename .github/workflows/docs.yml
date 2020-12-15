@@ -55,7 +55,9 @@ jobs:
             docs-next-
       - run: yarn export
         timeout-minutes: 15
-      - name: test links
+      - name: lint links
+        run: yarn lint-links --quiet
+      - name: test links (legacy)
         run: |
           yarn export-server &
           while ! nc -z localhost 8000; do
@@ -75,6 +77,14 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_docs }}
         with:
           channel: '#docs'
-          status: ${{ job.status }}
-          fields: author,job,message
-          author_name: docs build
+          status: custom
+          fields: author,commit
+          custom_payload: |
+            {
+              username: 'github-actions',
+              icon_emoji: ':octocat:',
+              attachments: [{
+                color: 'danger',
+                text: `docs build failed: ${process.env.AS_COMMIT} by ${process.env.AS_AUTHOR}`,
+              }]
+            }

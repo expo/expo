@@ -71,7 +71,7 @@ export default class FeceDetectorScreen extends React.Component<{}, State> {
   };
 
   showPicker = async (mediaTypes: ImagePicker.MediaTypeOptions, allowsEditing = false) => {
-    const permission = await requestPermissionAsync(Permissions.CAMERA_ROLL);
+    const permission = await requestPermissionAsync(Permissions.MEDIA_LIBRARY);
     if (permission) {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes,

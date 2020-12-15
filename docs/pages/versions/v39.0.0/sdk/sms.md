@@ -71,10 +71,12 @@ Android does not provide information about the status of the SMS message, so on 
 const { result } = await SMS.sendSMSAsync(
   ['0123456789', '9876543210'],
   'My sample HelloWorld message',
-  attachments: {
-    uri: 'path/myfile.png',
-    mimeType: 'image/png',
-    filename: 'myfile.png',
+  {
+    attachments: {
+      uri: 'path/myfile.png',
+      mimeType: 'image/png',
+      filename: 'myfile.png',
+    },
   }
 );
 ```
@@ -85,6 +87,6 @@ const { result } = await SMS.sendSMSAsync(
 
 An object that is used to describe an attachment that is included with a SMS message.
 
-- **uri (_string_)** -- the content URI of the attachment. The URI needs be a content URI so that it can be accessed by other applications outside of Expo. (See [FileSystem.getContentUriAsync](../filesystem/#filesystemgetcontenturiasyncfileuri))
+- **uri (_string_)** -- the content URI of the attachment. The URI needs be a content URI so that it can be accessed by other applications outside of Expo. (See [FileSystem.getContentUriAsync](filesystem.md#filesystemgetcontenturiasyncfileuri))
 - **mimeType (_string_)** -- the mime type of the attachment such as `image/png`
 - **filename (_string_)** -- the filename of the attachment

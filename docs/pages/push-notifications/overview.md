@@ -11,11 +11,11 @@ Whether you just want to be able to let users know when a relevant event happens
 
 There are three main steps to setting up push notifications, and we provide a guide for each part of the process:
 
-- [Setup: getting a user's Expo Push Token](../push-notifications-setup/)
-- [Sending: calling Expo's Push API with the token when you want to send a notification](../sending-notifications/)
-- [Receiving: responding to the notification in your app](../receiving-notifications/) (maybe upon opening, you want to jump to a particular screen that the notification refers to)
+- [Setup: getting a user's Expo Push Token](push-notifications-setup.md)
+- [Sending: calling Expo's Push API with the token when you want to send a notification](sending-notifications.md)
+- [Receiving: responding to the notification in your app](receiving-notifications.md) (maybe upon opening, you want to jump to a particular screen that the notification refers to)
 
-## Example Usage
+## Usage
 
 The Snack below shows a full example of how to register for, send, and receive push notifications in an Expo app. But make sure to read the rest of the guide, so that you understand how Expo's push notification service works, what the best practices are, and how to investigate any problems you run into!
 
@@ -141,7 +141,7 @@ async function registerForPushNotificationsAsync() {
 
 ## Testing
 
-iOS and Android simulators cannot receive push notifications, so you will need to test using a physical device. Additionally, when calling `Permissions.askAsync` on the simulator, it will resolve immediately with `undetermined` as the status, regardless of whether you choose to allow or not.
+We recommend testing push notifications on a physical device. iOS simulators **cannot** receive push notifications, and neither can Android emulators unless you are running an image with Google Play Services installed and configured. Additionally, when calling `Permissions.askAsync` on the simulator, it will resolve immediately with `undetermined` as the status, regardless of whether you choose to allow or not.
 
 The [Expo push notification tool](https://expo.io/notifications) is also useful for testing push notifications during development. It lets you easily send test notifications to your device, without having to use your CLI or write out a test server.
 

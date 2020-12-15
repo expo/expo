@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		535AC6E5CAB955C4525C45001AF1B24A /* EXKeepAwake-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 690C3E887A711C6393DB55E4841FCC0D /* EXKeepAwake-dummy.m */; };
-		7B24C4C5D9375F1A12692629EB3513B0 /* EXKeepAwake.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A1A0692F29B7D37BE45A8C2019A413E /* EXKeepAwake.m */; };
-		CF3607FA749762EF7FA7EFB8F0549A3B /* EXKeepAwake.h in Headers */ = {isa = PBXBuildFile; fileRef = 5DE525447AEE34DF7ECE3BC10012AD70 /* EXKeepAwake.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		538BCCCDBC18F1D48B5596730696BAA0 /* EXKeepAwake.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A1A0692F29B7D37BE45A8C2019A413E /* EXKeepAwake.m */; };
+		6359653AAB93D1219D4BFA8F6BD9D72A /* EXKeepAwake.h in Headers */ = {isa = PBXBuildFile; fileRef = 5DE525447AEE34DF7ECE3BC10012AD70 /* EXKeepAwake.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B817DAD5FA521CB719CD1477D9CF4056 /* EXKeepAwake-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 690C3E887A711C6393DB55E4841FCC0D /* EXKeepAwake-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		038B3DD660569C1D16F452185D51E667 /* PBXContainerItemProxy */ = {
+		424748E2385299CE74FF931ABC3FE7FF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B21C702A327A1FDEFA6CF37D23D42E93 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -35,7 +35,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		65350C7128941538850904E74678B917 /* Frameworks */ = {
+		54A3F30E4D3BA320FA9A341EFB5979C8 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -113,11 +113,11 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		651229A5F646F0C58A99BB5E1250ECE7 /* Headers */ = {
+		E8CC745A7EFD95055E109C25BC9CA6AA /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CF3607FA749762EF7FA7EFB8F0549A3B /* EXKeepAwake.h in Headers */,
+				6359653AAB93D1219D4BFA8F6BD9D72A /* EXKeepAwake.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -126,16 +126,16 @@
 /* Begin PBXNativeTarget section */
 		E593B1631324E147D59AE9990EDA53A2 /* EXKeepAwake */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 514B3B43938A18F8902A85F4E991BDE6 /* Build configuration list for PBXNativeTarget "EXKeepAwake" */;
+			buildConfigurationList = 068DD32F7BAED288D967FB7FCD80F52A /* Build configuration list for PBXNativeTarget "EXKeepAwake" */;
 			buildPhases = (
-				651229A5F646F0C58A99BB5E1250ECE7 /* Headers */,
-				FD692CD9924C0E5F8A61E8CC6105E942 /* Sources */,
-				65350C7128941538850904E74678B917 /* Frameworks */,
+				E8CC745A7EFD95055E109C25BC9CA6AA /* Headers */,
+				7384A06F67FFEB73E1A0CEA89FD09DE7 /* Sources */,
+				54A3F30E4D3BA320FA9A341EFB5979C8 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				1B404E31CE2B744CAD5008726F515258 /* PBXTargetDependency */,
+				80F00E88C5A9AAC7F293D93DE5F10E2B /* PBXTargetDependency */,
 			);
 			name = EXKeepAwake;
 			productName = EXKeepAwake;
@@ -175,30 +175,31 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		FD692CD9924C0E5F8A61E8CC6105E942 /* Sources */ = {
+		7384A06F67FFEB73E1A0CEA89FD09DE7 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				535AC6E5CAB955C4525C45001AF1B24A /* EXKeepAwake-dummy.m in Sources */,
-				7B24C4C5D9375F1A12692629EB3513B0 /* EXKeepAwake.m in Sources */,
+				B817DAD5FA521CB719CD1477D9CF4056 /* EXKeepAwake-dummy.m in Sources */,
+				538BCCCDBC18F1D48B5596730696BAA0 /* EXKeepAwake.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		1B404E31CE2B744CAD5008726F515258 /* PBXTargetDependency */ = {
+		80F00E88C5A9AAC7F293D93DE5F10E2B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 038B3DD660569C1D16F452185D51E667 /* PBXContainerItemProxy */;
+			targetProxy = 424748E2385299CE74FF931ABC3FE7FF /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		0E6C90D163135078999B68C7927CF5E0 /* Release */ = {
+		127D434CB91507C4D828232E55210D44 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -221,66 +222,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"POD_CONFIGURATION_RELEASE=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.0;
-				SYMROOT = "${SRCROOT}/../build";
-			};
-			name = Release;
-		};
-		644F570E7FC70AB1D0007330167077E5 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -306,7 +248,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -319,40 +261,15 @@
 			};
 			name = Debug;
 		};
-		6F844285497451EDBCF7588F1CAA28E4 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9203775D7D476B1A7F7E79F5E4037C79 /* EXKeepAwake.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXKeepAwake/EXKeepAwake-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXKeepAwake;
-				PRODUCT_NAME = EXKeepAwake;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		BA1EC8B087FF7A352A1B08527F3CA1C3 /* Release */ = {
+		843C60F29FB55C3A67896AA544D262DD /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27F3D90DB7835F678FEB3EE3FA156A9C /* EXKeepAwake.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/EXKeepAwake/EXKeepAwake-prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				OTHER_LDFLAGS = "";
@@ -370,14 +287,101 @@
 			};
 			name = Release;
 		};
+		9B4239B77A1933330A598755D8E63756 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9203775D7D476B1A7F7E79F5E4037C79 /* EXKeepAwake.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/EXKeepAwake/EXKeepAwake-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXKeepAwake;
+				PRODUCT_NAME = EXKeepAwake;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		E02FC128B3741FE7439EE4AEE0A9F590 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		514B3B43938A18F8902A85F4E991BDE6 /* Build configuration list for PBXNativeTarget "EXKeepAwake" */ = {
+		068DD32F7BAED288D967FB7FCD80F52A /* Build configuration list for PBXNativeTarget "EXKeepAwake" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				6F844285497451EDBCF7588F1CAA28E4 /* Debug */,
-				BA1EC8B087FF7A352A1B08527F3CA1C3 /* Release */,
+				9B4239B77A1933330A598755D8E63756 /* Debug */,
+				843C60F29FB55C3A67896AA544D262DD /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -385,8 +389,8 @@
 		C691F848E0393226CB8861BDE92D8471 /* Build configuration list for PBXProject "EXKeepAwake" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				644F570E7FC70AB1D0007330167077E5 /* Debug */,
-				0E6C90D163135078999B68C7927CF5E0 /* Release */,
+				127D434CB91507C4D828232E55210D44 /* Debug */,
+				E02FC128B3741FE7439EE4AEE0A9F590 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

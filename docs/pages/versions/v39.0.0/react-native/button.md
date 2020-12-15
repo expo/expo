@@ -5,7 +5,7 @@ title: Button
 
 A basic button component that should render nicely on any platform. Supports a minimal level of customization.
 
-If this button doesn't look right for your app, you can build your own button using [TouchableOpacity](../touchableopacity/) or [TouchableWithoutFeedback](../touchablewithoutfeedback/). For inspiration, look at the [source code for this button component](https://github.com/facebook/react-native/blob/master/Libraries/Components/Button.js). Or, take a look at the [wide variety of button components built by the community](https://js.coach/?menu%5Bcollections%5D=React%20Native&page=1&query=button).
+If this button doesn't look right for your app, you can build your own button using [TouchableOpacity](touchableopacity.md) or [TouchableWithoutFeedback](touchablewithoutfeedback.md). For inspiration, look at the [source code for this button component](https://github.com/facebook/react-native/blob/master/Libraries/Components/Button.js). Or, take a look at the [wide variety of button components built by the community](https://js.coach/?menu%5Bcollections%5D=React%20Native&page=1&query=button).
 
 ```js
 <Button

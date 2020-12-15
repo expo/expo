@@ -106,10 +106,52 @@
 /* End PBXProject section */
 
 /* Begin XCBuildConfiguration section */
-		0C2AFD91EC664270B8068E4B064DB616 /* Release */ = {
+		10DC7A0C1D83FF38AEB14552F048A673 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0D5028FAA582688C37F9CF2E6199504A /* React-callinvoker.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"RCT_DEV=1",
+					"RCT_ENABLE_INSPECTOR=0",
+					"ENABLE_PACKAGER_CONNECTION=0",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		1C2E23171301C1FC1E5689B1030A59D4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 645F7DE761B27B6F8FDD342BD66A18B2 /* React-callinvoker.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"RCT_DEV=1",
+					"RCT_ENABLE_INSPECTOR=0",
+					"ENABLE_PACKAGER_CONNECTION=0",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		950EC2D3CC020608E9272F78CE617811 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -132,6 +174,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -166,30 +209,11 @@
 			};
 			name = Release;
 		};
-		8E3FF60F1B7853D9F5A5B9BF2787CACA /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 645F7DE761B27B6F8FDD342BD66A18B2 /* React-callinvoker.debug.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"$(inherited)",
-					"RCT_DEV=1",
-					"RCT_ENABLE_INSPECTOR=0",
-					"ENABLE_PACKAGER_CONNECTION=0",
-				);
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		F31D3D28BEDEAB89EF3D342FC761E165 /* Debug */ = {
+		B528620D351749D0D794ABC64C35FB80 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -212,6 +236,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -250,35 +275,14 @@
 			};
 			name = Debug;
 		};
-		FCD7D63460914D7A1E09B41DDB4BDA69 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0D5028FAA582688C37F9CF2E6199504A /* React-callinvoker.release.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"$(inherited)",
-					"RCT_DEV=1",
-					"RCT_ENABLE_INSPECTOR=0",
-					"ENABLE_PACKAGER_CONNECTION=0",
-				);
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		6660DD9FACA546428CED0BB84ED89747 /* Build configuration list for PBXAggregateTarget "React-callinvoker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8E3FF60F1B7853D9F5A5B9BF2787CACA /* Debug */,
-				FCD7D63460914D7A1E09B41DDB4BDA69 /* Release */,
+				1C2E23171301C1FC1E5689B1030A59D4 /* Debug */,
+				10DC7A0C1D83FF38AEB14552F048A673 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -286,8 +290,8 @@
 		F2218B408CE42C4B1BFF13EFB9B4B484 /* Build configuration list for PBXProject "React-callinvoker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				F31D3D28BEDEAB89EF3D342FC761E165 /* Debug */,
-				0C2AFD91EC664270B8068E4B064DB616 /* Release */,
+				B528620D351749D0D794ABC64C35FB80 /* Debug */,
+				950EC2D3CC020608E9272F78CE617811 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

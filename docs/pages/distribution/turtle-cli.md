@@ -6,7 +6,7 @@ title: Building Standalone Apps on Your CI
 
 This guide describes an advanced feature of Expo. In most cases you can build
 standalone Expo apps using Expo's build services as described in the guide
-on [Building Standalone Apps](../building-standalone-apps/).
+on [Building Standalone Apps](building-standalone-apps.md).
 
 If you prefer to not rely on our builders stability and you don't like waiting
 in the queue to get your standalone app build then you can build your Expo
@@ -65,8 +65,8 @@ Turtle CLI makes use of exactly the same codebase which is running on our server
 This means you're required to publish your app to Expo's servers or host it on your own server **prior to building it with Turtle CLI**.
 Whether you want Expo to host your app, or you'd like to do it yourself, all you need to do is follow the appropriate guide:
 
-- [Publishing an app to Expo's servers](../../workflow/publishing/)
-- [Hosting an app on your own server](../hosting-your-app/)
+- [Publishing an app to Expo's servers](../workflow/publishing.md)
+- [Hosting an app on your own server](hosting-your-app.md)
 
 ## Start the build
 
@@ -89,7 +89,7 @@ Before starting the build, prepare the following things:
 - Keystore alias
 - Keystore password and key password
 
-To learn how to generate those, see the guide on [Building Standalone Apps](../building-standalone-apps/)
+To learn how to generate those, see the guide on [Building Standalone Apps](building-standalone-apps.md)
 first.
 
 Set the `EXPO_ANDROID_KEYSTORE_PASSWORD` and `EXPO_ANDROID_KEY_PASSWORD`
@@ -119,7 +119,7 @@ Prepare the following unless you're building only for the iOS simulator:
 - Provisioning Profile
 
 To learn how to generate those, see the guide
-on [Building Standalone Apps](../building-standalone-apps/) first.
+on [Building Standalone Apps](building-standalone-apps.md) first.
 
 Set the `EXPO_IOS_DIST_P12_PASSWORD` environment variable with the value of
 the Distribution Certificate password.

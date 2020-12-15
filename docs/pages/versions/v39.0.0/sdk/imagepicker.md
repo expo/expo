@@ -20,9 +20,9 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Configuration
 
-In managed apps, the permissions to pick images, from camera ([`Permissions.CAMERA`](../permissions/#permissionscamera)) or camera roll ([`Permissions.CAMERA_ROLL`](../permissions/#permissionscamera_roll)), are added automatically.
+In managed apps, the permissions to pick images, from camera ([`Permissions.CAMERA`](permissions.md#permissionscamera)) or camera roll ([`Permissions.CAMERA_ROLL`](permissions.md#permissionscamera_roll)), are added automatically.
 
-## Example Usage
+## Usage
 
 <SnackInline label='Image Picker' dependencies={['expo-constants', 'expo-permissions', 'expo-image-picker']}>
 
@@ -157,7 +157,7 @@ Otherwise, this method returns information about the selected media item. When t
 
 - The `uri` property is a URI to the local image or video file (usable as the source of an `Image` element, in the case of an image) and `width` and `height` specify the dimensions of the media.
 - The `exif` field is included if the `exif` option is truthy, and is an object containing the image's EXIF data. The names of this object's properties are EXIF tags and the values are the respective EXIF values for those tags.
-- The `base64` property is included if the `base64` option is truthy, and is a Base64-encoded string of the selected image's JPEG data. If you prepend this with `'data:image/jpeg;base64,'` to create a data URI, you can use it as the source of an `Image` element; for example: `<Image source={'data:image/jpeg;base64,' + launchCameraResult.base64} style={{width: 200, height: 200}} />`.
+- The `base64` property is included if the `base64` option is truthy, and is a Base64-encoded string of the selected image's JPEG data. If you prepend this with `'data:image/jpeg;base64,'` to create a data URI, you can use it as the source of an `Image` element; for example: `<Image source={{uri: 'data:image/jpeg;base64,' + launchCameraResult.base64}} style={{width: 200, height: 200}} />`.
 - The `duration` property is the length of the video in milliseconds.
 
 > **Note:** Make sure that you handle `MainActivity` destruction on **Android**. See [ImagePicker.getPendingResultAsync](#imagepickergetpendingresultasync).
@@ -198,7 +198,7 @@ Otherwise, this method returns information about the selected media item. When t
 
 - The `uri` property is a URI to the local image or video file (usable as the source of an `Image` element, in the case of an image) and `width` and `height` specify the dimensions of the media.
 - The `exif` field is included if the `exif` option is truthy, and is an object containing the image's EXIF data. The names of this object's properties are EXIF tags and the values are the respective EXIF values for those tags.
-- The `base64` property is included if the `base64` option is truthy, and is a Base64-encoded string of the selected image's JPEG data. If you prepend this with `'data:image/jpeg;base64,'` to create a data URI, you can use it as the source of an `Image` element; for example: `<Image source={'data:image/jpeg;base64,' + launchCameraResult.base64} style={{width: 200, height: 200}} />`.
+- The `base64` property is included if the `base64` option is truthy, and is a Base64-encoded string of the selected image's JPEG data. If you prepend this with `'data:image/jpeg;base64,'` to create a data URI, you can use it as the source of an `Image` element; for example: `<Image source={{uri: 'data:image/jpeg;base64,' + launchCameraResult.base64}} style={{width: 200, height: 200}} />`.
 - The `duration` property is the length of the video in milliseconds.
 
 > **Note:** Make sure that you handle `MainActivity` destruction on **Android**. See [ImagePicker.getPendingResultAsync](#imagepickergetpendingresultasync).
@@ -243,7 +243,7 @@ Android system sometimes kills the `MainActivity` after the `ImagePicker` finish
 
 ### `ImagePicker.CameraRollPermissionResponse`
 
-`ImagePicker.CameraRollPermissionResponse` extends [PermissionResponse](../permissions/#permissionresponse) type exported by `unimodules-permission-interface` and contains additional iOS-specific field:
+`ImagePicker.CameraRollPermissionResponse` extends [PermissionResponse](permissions.md#permissionresponse) type exported by `unimodules-permission-interface` and contains additional iOS-specific field:
 
 - `accessPrivileges` **(string)** - Indicates if your app has access to the whole or only part of the photo library. Possible values are:
   - `all` if the user granted your app access to the whole photo library
@@ -252,7 +252,7 @@ Android system sometimes kills the `MainActivity` after the `ImagePicker` finish
 
 ### `ImagePicker.CameraPermissionResponse`
 
-`ImagePicker.CameraPermissionResponse` alias for [PermissionResponse](../permissions/#permissionresponse) type exported by `unimodules-permission-interface`.
+`ImagePicker.CameraPermissionResponse` alias for [PermissionResponse](permissions.md#permissionresponse) type exported by `unimodules-permission-interface`.
 
 ### `ImagePicker.ImagePickerErrorResult`
 

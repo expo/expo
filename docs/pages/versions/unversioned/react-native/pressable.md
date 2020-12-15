@@ -191,7 +191,7 @@ Either view styles or a function that receives a boolean reflecting whether the 
 
 | Type                                  | Required |
 | ------------------------------------- | -------- |
-| [ViewStyleProp](../view-style-props/) | No       |
+| [ViewStyleProp](view-style-props.md) | No       |
 
 ### `testOnly_pressed`
 

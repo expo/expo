@@ -22,8 +22,7 @@ class DevMenuInternalModule(reactContext: ReactApplicationContext)
   }
 
   private val devMenuSettings by lazy {
-    reactContext
-      .getNativeModule(DevMenuSettings::class.java)
+    devMenuManger.getSettings()!!
   }
 
   private val doesDeviceSupportKeyCommands

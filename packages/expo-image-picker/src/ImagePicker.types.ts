@@ -2,10 +2,15 @@ import { PermissionResponse } from 'unimodules-permissions-interface';
 
 export { PermissionResponse as CameraPermissionResponse };
 
-export type CameraRollPermissionResponse = PermissionResponse & {
+export type MediaLibraryPermissionResponse = PermissionResponse & {
   // iOS only
   accessPrivileges?: 'all' | 'limited' | 'none';
 };
+
+/**
+ * @deprecated Use `ImagePicker.MediaLibraryPermissionResponse`
+ */
+export type CameraRollPermissionResponse = MediaLibraryPermissionResponse;
 
 export enum MediaTypeOptions {
   All = 'All',

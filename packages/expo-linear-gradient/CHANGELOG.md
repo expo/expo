@@ -4,9 +4,17 @@
 
 ### 🛠 Breaking changes
 
+- Dropped support for iOS 10.0 ([#11344](https://github.com/expo/expo/pull/11344) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+## 8.4.0 — 2020-11-25
+
+### 🐛 Bug fixes
+
+- Revert to class component. ([#11111](https://github.com/expo/expo/pull/11111) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 8.3.1 — 2020-09-23
 

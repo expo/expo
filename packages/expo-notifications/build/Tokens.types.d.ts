@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import { Platform } from '@unimodules/core';
 export interface NativeDevicePushToken {
     type: 'ios' | 'android';
     data: string;

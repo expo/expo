@@ -164,7 +164,7 @@ public class ExpoUpdatesAppLoader {
     configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_SCOPE_KEY_KEY, httpManifestUrl.toString());
     configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_SDK_VERSION_KEY, Constants.SDK_VERSIONS);
     configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_RELEASE_CHANNEL_KEY, Constants.RELEASE_CHANNEL);
-    configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE, Constants.isStandaloneApp());
+    configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY, Constants.isStandaloneApp());
     configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_ENABLED_KEY, Constants.ARE_REMOTE_UPDATES_ENABLED);
     if (mUseCacheOnly) {
       configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY, "NEVER");
@@ -352,6 +352,9 @@ public class ExpoUpdatesAppLoader {
       manifest.put(ExponentManifest.MANIFEST_ID_KEY, sandboxedId);
       manifest.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true);
     }
+    if (Constants.isStandaloneApp()) {
+      manifest.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true);
+    }
     if (!manifest.has(ExponentManifest.MANIFEST_IS_VERIFIED_KEY)) {
       manifest.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, false);
     }
@@ -462,12 +465,16 @@ public class ExpoUpdatesAppLoader {
   private ManifestException formatExceptionForIncompatibleSdk(String sdkVersion) {
     JSONObject errorJson = new JSONObject();
     try {
-      errorJson.put("errorCode", "EXPERIENCE_SDK_VERSION_OUTDATED");
       errorJson.put("message", "Invalid SDK version");
-      errorJson.put("metadata", new JSONObject().put(
-        "availableSDKVersions",
-        new JSONArray().put(sdkVersion))
-      );
+      if (ABIVersion.toNumber(sdkVersion) > ABIVersion.toNumber(Constants.SDK_VERSIONS_LIST.get(0))) {
+        errorJson.put("errorCode", "EXPERIENCE_SDK_VERSION_TOO_NEW");
+      } else {
+        errorJson.put("errorCode", "EXPERIENCE_SDK_VERSION_OUTDATED");
+        errorJson.put("metadata", new JSONObject().put(
+          "availableSDKVersions",
+          new JSONArray().put(sdkVersion))
+        );
+      }
     } catch (Exception e) {
       Log.e(TAG, "Failed to format error message for incompatible SDK version", e);
     }

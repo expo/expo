@@ -119,4 +119,7 @@ if (ExpoTaskManager) {
         }
     });
 }
+export async function isAvailableAsync() {
+    return await ExpoTaskManager.isAvailableAsync();
+}
 //# sourceMappingURL=TaskManager.js.map

@@ -39,7 +39,7 @@ export default App;
 
 ## Props
 
-Inherits [View Props](../view/#props).
+Inherits [View Props](view.md#props).
 
 ---
 

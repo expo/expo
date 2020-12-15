@@ -7,5 +7,8 @@ export default {
     },
     addListener() { },
     removeListeners() { },
+    async isAvailableAsync() {
+        return false;
+    },
 };
 //# sourceMappingURL=ExpoTaskManager.web.js.map

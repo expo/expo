@@ -29,7 +29,7 @@ Run `npx pod-install` after installing the npm package.
 
 # Setup native Firebase
 
-Follow the ["Setup Native Firebase"](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/guides/setup-native-firebase.md) guide in the docs to get started using native Firebase SDK features.
+Follow the ["Setup Native Firebase"](https://github.com/expo/expo/blob/master/docs/pages/guides/setup-native-firebase.md) guide in the docs to get started using native Firebase SDK features.
 
 # Contributing
 

@@ -14,7 +14,7 @@ const STYLES_H1 = css`
   margin-top: 0.5rem;
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid ${Constants.expoColors.gray[250]};
+  border-bottom: 1px solid ${Constants.expoColors.semantic.border};
 `;
 
 export const H1: React.FC = ({ children }) => (
@@ -28,7 +28,7 @@ const STYLES_H2 = css`
   margin-bottom: 1rem;
   margin-top: 2rem;
   padding-bottom: 0.25rem;
-  border-bottom: 1px solid ${Constants.expoColors.gray[250]};
+  border-bottom: 1px solid ${Constants.expoColors.semantic.border};
 
   code {
     ${h2}

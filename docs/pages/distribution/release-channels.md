@@ -70,14 +70,17 @@ import Constants from 'expo-constants';
 function getEnvironment() {
   let releaseChannel = Constants.manifest.releaseChannel;
 
-  if (releaseChannel === undefined) {  // no releaseChannel (is undefined) in dev
-    return {envName: "DEVELOPMENT", dbUrl: 'aaa', apiKey: 'bbb'};  // dev env settings
+  if (releaseChannel === undefined) {
+    // no releaseChannel (is undefined) in dev
+    return { envName: 'DEVELOPMENT', dbUrl: 'aaa', apiKey: 'bbb' }; // dev env settings
   }
-  if (releaseChannel.indexOf('prod') !== -1) { // matches prod-v1, prod-v2, prod-v3
-    return {envName: "PRODUCTION", dbUrl: 'ccc', apiKey: 'ddd'};  // prod env settings
+  if (releaseChannel.indexOf('prod') !== -1) {
+    // matches prod-v1, prod-v2, prod-v3
+    return { envName: 'PRODUCTION', dbUrl: 'ccc', apiKey: 'ddd' }; // prod env settings
   }
-  if (releaseChannel.indexOf('staging') !== -1) {  // matches staging-v1, staging-v2
-    return {envName: "STAGING", dbUrl: 'eee', apiKey: 'fff'}; // stage env settings
+  if (releaseChannel.indexOf('staging') !== -1) {
+    // matches staging-v1, staging-v2
+    return { envName: 'STAGING', dbUrl: 'eee', apiKey: 'fff' }; // stage env settings
   }
 }
 ```

@@ -4,9 +4,15 @@
 
 ### 🛠 Breaking changes
 
+- Dropped support for iOS 10.0 ([#11344](https://github.com/expo/expo/pull/11344) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+## 9.1.0 — 2020-11-17
+
+_This version does not introduce any user-facing changes._
 
 ## 9.0.0 — 2020-08-18
 
@@ -27,7 +33,9 @@
         [key: string]: any
     }
 }
-```### 🎉 New features
+```
+
+### 🎉 New features
 
 - You can now pass in custom options to `identifyWithTraits`, `groupWithTraits`, `alias`, `trackWithProperties`, and `screenWithProperties`. This allows you to set [these common fields](https://segment.com/docs/connections/spec/common/). ([#9606](https://github.com/expo/expo/pull/9606) by [@cruzach](https://github.com/cruzach/)).
 

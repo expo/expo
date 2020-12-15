@@ -30,6 +30,13 @@
 #import <EXScreenOrientation/EXScreenOrientationRegistry.h>
 #endif
 
+#import <React/RCTAppearance.h>
+#if __has_include(<ABI40_0_0React/ABI40_0_0RCTAppearance.h>)
+#import <ABI40_0_0React/ABI40_0_0RCTAppearance.h>
+#endif
+#if __has_include(<ABI39_0_0React/ABI39_0_0RCTAppearance.h>)
+#import <ABI39_0_0React/ABI39_0_0RCTAppearance.h>
+#endif
 
 #define EX_INTERFACE_ORIENTATION_USE_MANIFEST 0
 
@@ -75,7 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) EXManagedAppSplashScreenViewProvider *managedAppSplashScreenViewProvider;
 
 /*
- * This view is available in managed apps run in Expo Client only.
+ * This view is available in managed apps run in Expo Go only.
  * It is shown only before any managed app manifest is delivered by the app loader.
  */
 @property (nonatomic, strong, nullable) EXAppLoadingCancelView *appLoadingCancelView;
@@ -215,7 +222,7 @@ NS_ASSUME_NONNULL_BEGIN
   }
 
   NSString *domain = (error && error.domain) ? error.domain : @"";
-  BOOL isNetworkError = ([domain isEqualToString:(NSString *)kCFErrorDomainCFNetwork] || [domain isEqualToString:EXNetworkErrorDomain]);
+  BOOL isNetworkError = ([domain isEqualToString:(NSString *)kCFErrorDomainCFNetwork] || [domain isEqualToString:NSURLErrorDomain] || [domain isEqualToString:EXNetworkErrorDomain]);
 
   if (isNetworkError) {
     // show a human-readable reachability error
@@ -271,6 +278,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.isBridgeAlreadyLoading = YES;
     dispatch_async(dispatch_get_main_queue(), ^{
       [self _overrideUserInterfaceStyleOf:self];
+      [self _overrideAppearanceModuleBehaviour];
       [self _enforceDesiredDeviceOrientation];
       [self _invalidateRecoveryTimer];
       [[EXKernel sharedInstance] logAnalyticsEvent:@"LOAD_EXPERIENCE" forAppRecord:self.appRecord];
@@ -370,7 +378,7 @@ NS_ASSUME_NONNULL_BEGIN
   // 2. hide the splash screen of root view controller
   // Disclaimer:
   //  there's only one root view controller, but possibly many EXAppViewControllers
-  //  (in Expo Client: one Experience -> one EXAppViewController)
+  //  (in Expo Go: one project -> one EXAppViewController)
   //  and we want to hide SplashScreen only once for the root view controller, hence the "once"
   static dispatch_once_t once;
   void (^hideRootViewControllerSplashScreen)(void) = ^void() {
@@ -608,6 +616,33 @@ NS_ASSUME_NONNULL_BEGIN
     [[UIDevice currentDevice] setValue:@(newOrientation) forKey:@"orientation"];
   }
   [UIViewController attemptRotationToDeviceOrientation];
+}
+
+#pragma mark - RCTAppearanceModule
+
+/**
+ * This function overrides behaviour of RCTAppearanceModule
+ * basing on 'userInterfaceStyle' option from the app manifest.
+ * It also defaults the RCTAppearanceModule to 'light'.
+ */
+- (void)_overrideAppearanceModuleBehaviour
+{
+  NSString *userInterfaceStyle = [self _readUserInterfaceStyleFromManifest:_appRecord.appLoader.manifest];
+  NSString *appearancePreference = nil;
+  if (!userInterfaceStyle || [userInterfaceStyle isEqualToString:@"light"]) {
+    appearancePreference = @"light";
+  } else if ([userInterfaceStyle isEqualToString:@"dark"]) {
+    appearancePreference = @"dark";
+  } else if ([userInterfaceStyle isEqualToString:@"automatic"]) {
+    appearancePreference = nil;
+  }
+  RCTOverrideAppearancePreference(appearancePreference);
+#if __has_include(<ABI40_0_0React/ABI40_0_0RCTAppearance.h>)
+  ABI40_0_0RCTOverrideAppearancePreference(appearancePreference);
+#endif
+#if __has_include(<ABI39_0_0React/ABI39_0_0RCTAppearance.h>)
+  ABI39_0_0RCTOverrideAppearancePreference(appearancePreference);
+#endif
 }
 
 #pragma mark - user interface style

@@ -39,6 +39,9 @@ allprojects {
     }
     // For old expoviews to work
     maven {
+      url "$rootDir/versioned-abis/expoview-abi40_0_0/maven"
+    }
+    maven {
       url "$rootDir/versioned-abis/expoview-abi39_0_0/maven"
     }
     maven {
@@ -46,9 +49,6 @@ allprojects {
     }
     maven {
       url "$rootDir/versioned-abis/expoview-abi37_0_0/maven"
-    }
-    maven {
-      url "$rootDir/versioned-abis/expoview-abi36_0_0/maven"
     }
     maven {
       url "$rootDir/versioned-abis/maven"

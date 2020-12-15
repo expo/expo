@@ -4,37 +4,50 @@
 #import <EXUpdates/EXUpdatesNewUpdate.h>
 #import <EXUpdates/EXUpdatesUpdate+Private.h>
 #import <EXUpdates/EXUpdatesUtils.h>
+#import <React/RCTConvert.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXUpdatesNewUpdate
 
-+ (EXUpdatesUpdate *)updateWithNewManifest:(NSDictionary *)manifest
++ (EXUpdatesUpdate *)updateWithNewManifest:(NSDictionary *)rootManifest
                                     config:(EXUpdatesConfig *)config
                                   database:(EXUpdatesDatabase *)database
 {
+  NSDictionary *manifest = rootManifest;
+  if (rootManifest[@"data"]) {
+    manifest = rootManifest[@"data"];
+  }
+  if (manifest[@"publicManifest"]) {
+    manifest = manifest[@"publicManifest"];
+  }
+  if (manifest[@"manifest"]) {
+    manifest = manifest[@"manifest"];
+  }
+
   EXUpdatesUpdate *update = [[EXUpdatesUpdate alloc] initWithRawManifest:manifest
                                                                   config:config
                                                                 database:database];
 
   id updateId = manifest[@"id"];
-  id commitTime = manifest[@"commitTime"];
+  id commitTime = manifest[@"createdAt"];
   id runtimeVersion = manifest[@"runtimeVersion"];
-  id metadata = manifest[@"metadata"];
-  id bundleUrlString = manifest[@"bundleUrl"];
+  id launchAsset = manifest[@"launchAsset"];
   id assets = manifest[@"assets"];
 
   NSAssert([updateId isKindOfClass:[NSString class]], @"update ID should be a string");
-  NSAssert([commitTime isKindOfClass:[NSNumber class]], @"commitTime should be a number");
+  NSAssert([commitTime isKindOfClass:[NSString class]], @"createdAt should be a string");
   NSAssert([runtimeVersion isKindOfClass:[NSString class]], @"runtimeVersion should be a string");
-  NSAssert(!metadata || [metadata isKindOfClass:[NSDictionary class]], @"metadata should be null or an object");
-  NSAssert([bundleUrlString isKindOfClass:[NSString class]], @"bundleUrl should be a string");
+  NSAssert([launchAsset isKindOfClass:[NSDictionary class]], @"launchAsset should be a dictionary");
   NSAssert(assets && [assets isKindOfClass:[NSArray class]], @"assets should be a nonnull array");
 
   NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:(NSString *)updateId];
   NSAssert(uuid, @"update ID should be a valid UUID");
+  
+  id bundleUrlString = (NSDictionary *)launchAsset[@"url"];
+  NSAssert([bundleUrlString isKindOfClass:[NSString class]], @"launchAsset.url should be a string");
   NSURL *bundleUrl = [NSURL URLWithString:bundleUrlString];
-  NSAssert(bundleUrl, @"bundleUrl should be a valid URL");
+  NSAssert(bundleUrl, @"launchAsset.url should be a valid URL");
 
   NSMutableArray<EXUpdatesAsset *> *processedAssets = [NSMutableArray new];
 
@@ -49,12 +62,12 @@ NS_ASSUME_NONNULL_BEGIN
     NSAssert([assetDict isKindOfClass:[NSDictionary class]], @"assets must be objects");
     id key = assetDict[@"key"];
     id urlString = assetDict[@"url"];
-    id type = assetDict[@"type"];
+    id type = assetDict[@"contentType"];
     id metadata = assetDict[@"metadata"];
     id mainBundleFilename = assetDict[@"mainBundleFilename"];
     NSAssert(key && [key isKindOfClass:[NSString class]], @"asset key should be a nonnull string");
     NSAssert(urlString && [urlString isKindOfClass:[NSString class]], @"asset url should be a nonnull string");
-    NSAssert(type && [type isKindOfClass:[NSString class]], @"asset type should be a nonnull string");
+    NSAssert(type && [type isKindOfClass:[NSString class]], @"asset contentType should be a nonnull string");
     NSURL *url = [NSURL URLWithString:(NSString *)urlString];
     NSAssert(url, @"asset url should be a valid URL");
 
@@ -75,15 +88,13 @@ NS_ASSUME_NONNULL_BEGIN
   }
 
   update.updateId = uuid;
-  update.commitTime = [NSDate dateWithTimeIntervalSince1970:[(NSNumber *)commitTime doubleValue] / 1000];
+  update.commitTime = [RCTConvert NSDate:(NSString *)commitTime];
   update.runtimeVersion = (NSString *)runtimeVersion;
-  if (metadata) {
-    update.metadata = (NSDictionary *)metadata;
-  }
   update.status = EXUpdatesUpdateStatusPending;
   update.keep = YES;
   update.bundleUrl = bundleUrl;
   update.assets = processedAssets;
+  update.metadata = manifest;
 
   return update;
 }

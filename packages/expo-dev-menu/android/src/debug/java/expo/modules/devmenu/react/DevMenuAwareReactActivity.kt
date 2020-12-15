@@ -1,9 +1,11 @@
 package expo.modules.devmenu.react
 
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.view.KeyEvent
 import android.view.MotionEvent
 import com.facebook.react.ReactActivity
+import com.facebook.react.ReactNativeHost
 import expo.modules.devmenu.DevMenuManager
 
 /**
@@ -11,11 +13,13 @@ import expo.modules.devmenu.DevMenuManager
  * It dispatches key events and touch event.
  */
 abstract class DevMenuAwareReactActivity : ReactActivity() {
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    if (!wasInitialized) {
-      wasInitialized = true
+  override fun onPostCreate(savedInstanceState: Bundle?) {
+    super.onPostCreate(savedInstanceState)
+    if (currentReactNative == null || currentReactNative != reactNativeHost) {
+      currentReactNative = reactNativeHost
       DevMenuManager.initializeWithReactNativeHost(reactNativeHost)
+    } else {
+      DevMenuManager.synchronizeDelegate()
     }
   }
 
@@ -31,6 +35,6 @@ abstract class DevMenuAwareReactActivity : ReactActivity() {
   companion object {
     @get:Synchronized
     @set:Synchronized
-    var wasInitialized = false
+    var currentReactNative: ReactNativeHost? = null
   }
 }

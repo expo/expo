@@ -19,7 +19,7 @@
 
 # Git
 
-Expo’s code is stored in Git repositories, including the Expo client repository. We generally develop on feature branches and then rebase those commits on top of the “master” branch. All of the Git repositories keep a linear history, which makes it easier to read the history, bisect issues, and revert commits.
+Expo’s code is stored in Git repositories, including the Expo platform repository. We generally develop on feature branches and then rebase those commits on top of the “master” branch. All of the Git repositories keep a linear history, which makes it easier to read the history, bisect issues, and revert commits.
 
 ## “master” is green
 

@@ -66,7 +66,7 @@ const STYLES_BLOCKQUOTE = css`
   grid-gap: 12px;
   padding: 12px;
   margin-bottom: 1rem;
-  border-left: 4px solid ${Constants.expoColors.gray[250]};
+  border-left: 4px solid ${Constants.expoColors.semantic.border};
   background: ${Constants.expoColors.gray[100]};
   border-radius: 4px;
 

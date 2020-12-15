@@ -9,41 +9,41 @@
 /* Begin PBXAggregateTarget section */
 		D61B01865B69609E47812F6C78446AFB /* FirebaseMLVisionFaceModel */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = 05FD932D43BFB55887D9DD35BA4F7417 /* Build configuration list for PBXAggregateTarget "FirebaseMLVisionFaceModel" */;
+			buildConfigurationList = 7450D8A692FD90C6C4ACD340DE6AAACF /* Build configuration list for PBXAggregateTarget "FirebaseMLVisionFaceModel" */;
 			buildPhases = (
 			);
 			dependencies = (
-				3D82CFDC478406A9B41F634B305A85CA /* PBXTargetDependency */,
-				441970FDAD0C75C4F5F8E33EA35A0034 /* PBXTargetDependency */,
+				A91F08066B25E09370F9E4DEA11A7FBF /* PBXTargetDependency */,
+				F40C69C6A0A79C6623437BE4239BB3E9 /* PBXTargetDependency */,
 			);
 			name = FirebaseMLVisionFaceModel;
 		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		0D751E21AE625FA5CF1AB8A5D918F7D5 /* contours.tfl in Resources */ = {isa = PBXBuildFile; fileRef = 8C1575BDA08AE8245C0DD9E23FF5E394 /* contours.tfl */; };
-		21A2D131D30105144EEBBC3B4A332024 /* LMprec_600.emd in Resources */ = {isa = PBXBuildFile; fileRef = EBF680B21B1EACE28DC478D46B242469 /* LMprec_600.emd */; };
-		2DE516DDC57B62905CD6D1D0A05CFB43 /* MFT_fssd_fastgray.pb in Resources */ = {isa = PBXBuildFile; fileRef = C1AAE208F623DF3ED4A307DC83D17D83 /* MFT_fssd_fastgray.pb */; };
-		5255BDC8017DF471E846F1BE5D3D15A2 /* BCLlefteyeclosed_200.emd in Resources */ = {isa = PBXBuildFile; fileRef = 1EB476FC697927EAA181DBDE2793AEEF /* BCLlefteyeclosed_200.emd */; };
-		63E9128627103B3E8269FD274357CFA8 /* fssd_100_8bit_v1.tflite in Resources */ = {isa = PBXBuildFile; fileRef = B13652C6AAD11FD974BB05DEE8232D6B /* fssd_100_8bit_v1.tflite */; };
-		8B5B0FAE7D2D46F42B212C19310A561F /* blazeface.tfl in Resources */ = {isa = PBXBuildFile; fileRef = C1EC3F49C3E21D1704DC070823195D76 /* blazeface.tfl */; };
-		8E3C15A18FE15E59DEE74E6E7B04A162 /* fssd_100_8bit_gray_v1.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 7E0BA937C80291F5B2589D036256F5DF /* fssd_100_8bit_gray_v1.tflite */; };
-		A37613BBBE7AA3C396D9838469207064 /* fssd_25_8bit_gray_v1.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 46480F6ADDCD288AB6E956A73C0F92BB /* fssd_25_8bit_gray_v1.tflite */; };
-		AB889CBCFD4287F6E4B868EF23B213C8 /* BCLjoy_200.emd in Resources */ = {isa = PBXBuildFile; fileRef = DE9F159E6BFD946C3BBE843AC1CF306D /* BCLjoy_200.emd */; };
-		BA69C583E35FEE603391764B43AFA1C4 /* MFT_fssd_accgray.pb in Resources */ = {isa = PBXBuildFile; fileRef = B37BB0FD74860522932A1BBCFE900DFF /* MFT_fssd_accgray.pb */; };
-		CFA86CB35FFB22385D67CC12D3B491EC /* fssd_25_8bit_v1.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 4F468DFD8223E0239F93F3ACCFD81E47 /* fssd_25_8bit_v1.tflite */; };
-		F79C5947F934E40FD1B266BAF5B9A828 /* BCLrighteyeclosed_200.emd in Resources */ = {isa = PBXBuildFile; fileRef = 829C67A413C12C8A7E213E853677414B /* BCLrighteyeclosed_200.emd */; };
+		076F7FB11CD61C5BB0C98F84CF0095D7 /* fssd_25_8bit_gray_v1.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 46480F6ADDCD288AB6E956A73C0F92BB /* fssd_25_8bit_gray_v1.tflite */; };
+		146AD57CC63EE57B7F67A01039682D73 /* fssd_100_8bit_gray_v1.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 7E0BA937C80291F5B2589D036256F5DF /* fssd_100_8bit_gray_v1.tflite */; };
+		4927408CF842341ED331B8A2E44161C5 /* LMprec_600.emd in Resources */ = {isa = PBXBuildFile; fileRef = EBF680B21B1EACE28DC478D46B242469 /* LMprec_600.emd */; };
+		4ECE015CABB56CD287720E0DA049049B /* BCLlefteyeclosed_200.emd in Resources */ = {isa = PBXBuildFile; fileRef = 1EB476FC697927EAA181DBDE2793AEEF /* BCLlefteyeclosed_200.emd */; };
+		4FA9FCE7C3B1CA9F4E8A7E2DC6592C69 /* fssd_100_8bit_v1.tflite in Resources */ = {isa = PBXBuildFile; fileRef = B13652C6AAD11FD974BB05DEE8232D6B /* fssd_100_8bit_v1.tflite */; };
+		750221BCD7EFE04208A095BAC88AE1C8 /* blazeface.tfl in Resources */ = {isa = PBXBuildFile; fileRef = C1EC3F49C3E21D1704DC070823195D76 /* blazeface.tfl */; };
+		760269B72B437DD18039E75A024F7F98 /* BCLrighteyeclosed_200.emd in Resources */ = {isa = PBXBuildFile; fileRef = 829C67A413C12C8A7E213E853677414B /* BCLrighteyeclosed_200.emd */; };
+		8690630723660BF30D2DADC786304D56 /* MFT_fssd_fastgray.pb in Resources */ = {isa = PBXBuildFile; fileRef = C1AAE208F623DF3ED4A307DC83D17D83 /* MFT_fssd_fastgray.pb */; };
+		A531C6BBE7604F20DA5CB0DAE06B23A3 /* fssd_25_8bit_v1.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 4F468DFD8223E0239F93F3ACCFD81E47 /* fssd_25_8bit_v1.tflite */; };
+		C60E222ADB2D35ADA5AB2EC89DD9F94A /* MFT_fssd_accgray.pb in Resources */ = {isa = PBXBuildFile; fileRef = B37BB0FD74860522932A1BBCFE900DFF /* MFT_fssd_accgray.pb */; };
+		D3153CF84057A7E0A6195B317C260A68 /* BCLjoy_200.emd in Resources */ = {isa = PBXBuildFile; fileRef = DE9F159E6BFD946C3BBE843AC1CF306D /* BCLjoy_200.emd */; };
+		F4BAEEE9133E9BFEE72A4FD0B250EE23 /* contours.tfl in Resources */ = {isa = PBXBuildFile; fileRef = 8C1575BDA08AE8245C0DD9E23FF5E394 /* contours.tfl */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		071CBB37EDA63503F1C6412A6ECFE2A4 /* PBXContainerItemProxy */ = {
+		7ACC02355045241338F905899C6EE9F1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1ED3BDF47844AF120A442E287048A242 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 7B6C6D53C608A3605121E35B2EB8C94A;
 			remoteInfo = "FirebaseMLVisionFaceModel-GoogleMVFaceDetectorResources";
 		};
-		E6215D1250D74196A5972A731C9721EF /* PBXContainerItemProxy */ = {
+		D17115D4B8799EEB3987046D520CAAAF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4DFD91FAA1D13D985D6AB3D9C0640DC3 /* FirebaseMLVision.xcodeproj */;
 			proxyType = 1;
@@ -74,7 +74,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		DCB8D70BB0162B14AFAD5A1FB580FFA0 /* Frameworks */ = {
+		D6D04C5C5A0A21EC65E8F4470AC977EF /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -171,11 +171,11 @@
 /* Begin PBXNativeTarget section */
 		7B6C6D53C608A3605121E35B2EB8C94A /* FirebaseMLVisionFaceModel-GoogleMVFaceDetectorResources */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 972759B433526A503672B7289B60786E /* Build configuration list for PBXNativeTarget "FirebaseMLVisionFaceModel-GoogleMVFaceDetectorResources" */;
+			buildConfigurationList = 992DE217F879E4DB2B223E4255C7E696 /* Build configuration list for PBXNativeTarget "FirebaseMLVisionFaceModel-GoogleMVFaceDetectorResources" */;
 			buildPhases = (
-				514FE874851EBBBB492BBFA2B6E29C7F /* Sources */,
-				DCB8D70BB0162B14AFAD5A1FB580FFA0 /* Frameworks */,
-				147BCA5950A6EF950EB5E00371EFF738 /* Resources */,
+				FBE5CAA3878F1F5BAF0F88E153E32E19 /* Sources */,
+				D6D04C5C5A0A21EC65E8F4470AC977EF /* Frameworks */,
+				8BFA7F567D2109282C9B99B535BE5F04 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -220,29 +220,29 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		147BCA5950A6EF950EB5E00371EFF738 /* Resources */ = {
+		8BFA7F567D2109282C9B99B535BE5F04 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AB889CBCFD4287F6E4B868EF23B213C8 /* BCLjoy_200.emd in Resources */,
-				5255BDC8017DF471E846F1BE5D3D15A2 /* BCLlefteyeclosed_200.emd in Resources */,
-				F79C5947F934E40FD1B266BAF5B9A828 /* BCLrighteyeclosed_200.emd in Resources */,
-				8B5B0FAE7D2D46F42B212C19310A561F /* blazeface.tfl in Resources */,
-				0D751E21AE625FA5CF1AB8A5D918F7D5 /* contours.tfl in Resources */,
-				8E3C15A18FE15E59DEE74E6E7B04A162 /* fssd_100_8bit_gray_v1.tflite in Resources */,
-				63E9128627103B3E8269FD274357CFA8 /* fssd_100_8bit_v1.tflite in Resources */,
-				A37613BBBE7AA3C396D9838469207064 /* fssd_25_8bit_gray_v1.tflite in Resources */,
-				CFA86CB35FFB22385D67CC12D3B491EC /* fssd_25_8bit_v1.tflite in Resources */,
-				21A2D131D30105144EEBBC3B4A332024 /* LMprec_600.emd in Resources */,
-				BA69C583E35FEE603391764B43AFA1C4 /* MFT_fssd_accgray.pb in Resources */,
-				2DE516DDC57B62905CD6D1D0A05CFB43 /* MFT_fssd_fastgray.pb in Resources */,
+				D3153CF84057A7E0A6195B317C260A68 /* BCLjoy_200.emd in Resources */,
+				4ECE015CABB56CD287720E0DA049049B /* BCLlefteyeclosed_200.emd in Resources */,
+				760269B72B437DD18039E75A024F7F98 /* BCLrighteyeclosed_200.emd in Resources */,
+				750221BCD7EFE04208A095BAC88AE1C8 /* blazeface.tfl in Resources */,
+				F4BAEEE9133E9BFEE72A4FD0B250EE23 /* contours.tfl in Resources */,
+				146AD57CC63EE57B7F67A01039682D73 /* fssd_100_8bit_gray_v1.tflite in Resources */,
+				4FA9FCE7C3B1CA9F4E8A7E2DC6592C69 /* fssd_100_8bit_v1.tflite in Resources */,
+				076F7FB11CD61C5BB0C98F84CF0095D7 /* fssd_25_8bit_gray_v1.tflite in Resources */,
+				A531C6BBE7604F20DA5CB0DAE06B23A3 /* fssd_25_8bit_v1.tflite in Resources */,
+				4927408CF842341ED331B8A2E44161C5 /* LMprec_600.emd in Resources */,
+				C60E222ADB2D35ADA5AB2EC89DD9F94A /* MFT_fssd_accgray.pb in Resources */,
+				8690630723660BF30D2DADC786304D56 /* MFT_fssd_fastgray.pb in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		514FE874851EBBBB492BBFA2B6E29C7F /* Sources */ = {
+		FBE5CAA3878F1F5BAF0F88E153E32E19 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -252,71 +252,55 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		3D82CFDC478406A9B41F634B305A85CA /* PBXTargetDependency */ = {
+		A91F08066B25E09370F9E4DEA11A7FBF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = FirebaseMLVision;
-			targetProxy = E6215D1250D74196A5972A731C9721EF /* PBXContainerItemProxy */;
+			targetProxy = D17115D4B8799EEB3987046D520CAAAF /* PBXContainerItemProxy */;
 		};
-		441970FDAD0C75C4F5F8E33EA35A0034 /* PBXTargetDependency */ = {
+		F40C69C6A0A79C6623437BE4239BB3E9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "FirebaseMLVisionFaceModel-GoogleMVFaceDetectorResources";
 			target = 7B6C6D53C608A3605121E35B2EB8C94A /* FirebaseMLVisionFaceModel-GoogleMVFaceDetectorResources */;
-			targetProxy = 071CBB37EDA63503F1C6412A6ECFE2A4 /* PBXContainerItemProxy */;
+			targetProxy = 7ACC02355045241338F905899C6EE9F1 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		0CE0F428206134949893609E0FEF5902 /* Debug */ = {
+		039DD105892A407EFF13550564C88FB3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 21D6D2329AC743EE8DE79483D96051CB /* FirebaseMLVisionFaceModel.debug.xcconfig */;
 			buildSettings = {
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/FirebaseMLVisionFaceModel";
+				IBSC_MODULE = FirebaseMLVisionFaceModel;
+				INFOPLIST_FILE = "Target Support Files/FirebaseMLVisionFaceModel/ResourceBundle-GoogleMVFaceDetectorResources-FirebaseMLVisionFaceModel-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				PRODUCT_NAME = GoogleMVFaceDetectorResources;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Debug;
+		};
+		313960793498D1F8979CF8C1655C618B /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CDFBA9E9FBC6F0F6C5AF4952C1425F84 /* FirebaseMLVisionFaceModel.release.xcconfig */;
+			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		3C3CA39A9F6191F74DD1CA0B1023A995 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 21D6D2329AC743EE8DE79483D96051CB /* FirebaseMLVisionFaceModel.debug.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/FirebaseMLVisionFaceModel";
-				IBSC_MODULE = FirebaseMLVisionFaceModel;
-				INFOPLIST_FILE = "Target Support Files/FirebaseMLVisionFaceModel/ResourceBundle-GoogleMVFaceDetectorResources-FirebaseMLVisionFaceModel-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				PRODUCT_NAME = GoogleMVFaceDetectorResources;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				WRAPPER_EXTENSION = bundle;
-			};
-			name = Debug;
-		};
-		5171AD94D403006F4FC8F5537A8CA92A /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = CDFBA9E9FBC6F0F6C5AF4952C1425F84 /* FirebaseMLVisionFaceModel.release.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/FirebaseMLVisionFaceModel";
-				IBSC_MODULE = FirebaseMLVisionFaceModel;
-				INFOPLIST_FILE = "Target Support Files/FirebaseMLVisionFaceModel/ResourceBundle-GoogleMVFaceDetectorResources-FirebaseMLVisionFaceModel-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				PRODUCT_NAME = GoogleMVFaceDetectorResources;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				WRAPPER_EXTENSION = bundle;
+				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
-		59C3E50A82E4D8789EF25634A6C44EC8 /* Debug */ = {
+		3187E54949C1DCCBDDA132EE95ABE499 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -339,6 +323,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -377,24 +362,11 @@
 			};
 			name = Debug;
 		};
-		6DA63B5C20C630F3D580D52D8F691247 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = CDFBA9E9FBC6F0F6C5AF4952C1425F84 /* FirebaseMLVisionFaceModel.release.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		B3827D811056CCD4225455D0898E1FF8 /* Release */ = {
+		31D3A1CBE6084DA1B9A8E8CDDD1A9516 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -417,6 +389,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -451,14 +424,43 @@
 			};
 			name = Release;
 		};
+		90B5F673EC505CBE08604E0426F7D54E /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CDFBA9E9FBC6F0F6C5AF4952C1425F84 /* FirebaseMLVisionFaceModel.release.xcconfig */;
+			buildSettings = {
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/FirebaseMLVisionFaceModel";
+				IBSC_MODULE = FirebaseMLVisionFaceModel;
+				INFOPLIST_FILE = "Target Support Files/FirebaseMLVisionFaceModel/ResourceBundle-GoogleMVFaceDetectorResources-FirebaseMLVisionFaceModel-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				PRODUCT_NAME = GoogleMVFaceDetectorResources;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Release;
+		};
+		9B05C96F5D5F2F1966494881BC05CAAA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 21D6D2329AC743EE8DE79483D96051CB /* FirebaseMLVisionFaceModel.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		05FD932D43BFB55887D9DD35BA4F7417 /* Build configuration list for PBXAggregateTarget "FirebaseMLVisionFaceModel" */ = {
+		7450D8A692FD90C6C4ACD340DE6AAACF /* Build configuration list for PBXAggregateTarget "FirebaseMLVisionFaceModel" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				0CE0F428206134949893609E0FEF5902 /* Debug */,
-				6DA63B5C20C630F3D580D52D8F691247 /* Release */,
+				9B05C96F5D5F2F1966494881BC05CAAA /* Debug */,
+				313960793498D1F8979CF8C1655C618B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -466,17 +468,17 @@
 		752374B8BB182D363FFCD5DB4B74A6FD /* Build configuration list for PBXProject "FirebaseMLVisionFaceModel" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				59C3E50A82E4D8789EF25634A6C44EC8 /* Debug */,
-				B3827D811056CCD4225455D0898E1FF8 /* Release */,
+				3187E54949C1DCCBDDA132EE95ABE499 /* Debug */,
+				31D3A1CBE6084DA1B9A8E8CDDD1A9516 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		972759B433526A503672B7289B60786E /* Build configuration list for PBXNativeTarget "FirebaseMLVisionFaceModel-GoogleMVFaceDetectorResources" */ = {
+		992DE217F879E4DB2B223E4255C7E696 /* Build configuration list for PBXNativeTarget "FirebaseMLVisionFaceModel-GoogleMVFaceDetectorResources" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				3C3CA39A9F6191F74DD1CA0B1023A995 /* Debug */,
-				5171AD94D403006F4FC8F5537A8CA92A /* Release */,
+				039DD105892A407EFF13550564C88FB3 /* Debug */,
+				90B5F673EC505CBE08604E0426F7D54E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

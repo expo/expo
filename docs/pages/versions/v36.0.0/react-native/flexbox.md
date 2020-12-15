@@ -223,8 +223,8 @@ The `position` type of an element defines how it is positioned within its parent
 
 Check out the interactive [yoga playground](https://yogalayout.com/playground) that you can use to get a better understanding of flexbox.
 
-We've covered the basics, but there are many other styles you may need for layouts. The full list of props that control layout is documented [here](../layout-props/).
+We've covered the basics, but there are many other styles you may need for layouts. The full list of props that control layout is documented [here](layout-props.md).
 
-We're getting close to being able to build a real application. One thing we are still missing is a way to take user input, so let's move on to [learn how to handle text input with the TextInput component](../handling-text-input/).
+We're getting close to being able to build a real application. One thing we are still missing is a way to take user input, so let's move on to [learn how to handle text input with the TextInput component](handling-text-input.md).
 
 See some examples from [Wix Engineers](https://medium.com/wix-engineering/the-full-react-native-layout-cheat-sheet-a4147802405c):

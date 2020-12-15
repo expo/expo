@@ -48,19 +48,8 @@ jobs:
             ${{ runner.os }}-yarn-
       - run: yarn install --frozen-lockfile
       - uses: ruby/setup-ruby@v1
-      - name: bundler cache
-        uses: actions/cache@v1
         with:
-          path: vendor/bundle
-          key: ${{ runner.os }}-gems-${{ hashFiles('.ruby-version') }}-${{ hashFiles('Gemfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-gems-
-      - run: echo "::set-env name=BUNDLE_BIN::$(pwd)/.direnv/bin"
-      - name: install fastlane
-        run: |
-          bundle config path vendor/bundle
-          bundle install --jobs 4 --retry 3
-      - run: echo "::add-path::$BUNDLE_BIN"
+          bundler-cache: true
       - run: sudo apt-get install git-crypt
       - name: decrypt secrets if possible
         env:
@@ -88,6 +77,7 @@ jobs:
         if: steps.cache-android-ndk.outputs.cache-hit != 'true'
         run: |
           sudo $ANDROID_HOME/tools/bin/sdkmanager --install "ndk;19.2.5345600"
+      - run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: Build APK
         env:
           ANDROID_KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
@@ -120,6 +110,7 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: AKIAJ3SWUQ4QLNQC7FXA
           AWS_SECRET_ACCESS_KEY: ${{ secrets.android_client_build_aws_secret_key }}
+          EXPO_VERSIONS_SECRET: ${{ secrets.expo_versions_secret }}
       - name: Upload APK to Google Play and release to production
         if: ${{ github.event.inputs.releaseGooglePlay == 'release-google-play' }}
         run: fastlane android prod_release
@@ -132,6 +123,14 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_android }}
         with:
           channel: '#platform-android'
-          status: ${{ job.status }}
-          fields: author,job,message,ref
-          author_name: client android build
+          status: custom
+          fields: author,commit,ref,workflow
+          custom_payload: |
+            {
+              username: 'github-actions',
+              icon_emoji: ':octocat:',
+              attachments: [{
+                color: 'danger',
+                text: `${process.env.AS_WORKFLOW}@${process.env.AS_REF} failed: ${process.env.AS_COMMIT} by ${process.env.AS_AUTHOR}`,
+              }]
+            }

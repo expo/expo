@@ -9,14 +9,25 @@
 /* Begin PBXAggregateTarget section */
 		A565C99DEFBAFA44A1B5C3B49ADD8A84 /* UMTaskManagerInterface */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = BE40488489EF9C1F84FFA7DC07467B49 /* Build configuration list for PBXAggregateTarget "UMTaskManagerInterface" */;
+			buildConfigurationList = E471BFC35B623622E6CAF81EAF81586A /* Build configuration list for PBXAggregateTarget "UMTaskManagerInterface" */;
 			buildPhases = (
 			);
 			dependencies = (
+				FCEFAB3FA7E08247A9BAD5B048D0443A /* PBXTargetDependency */,
 			);
 			name = UMTaskManagerInterface;
 		};
 /* End PBXAggregateTarget section */
+
+/* Begin PBXContainerItemProxy section */
+		E447C147CB67895020EC8B88E5A98402 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8E0983B5911DB1B2478D991A142C6072 /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		07ADD1863B984A8AFCF0A561BCE1FC5F /* UMTaskServiceInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMTaskServiceInterface.h; path = UMTaskManagerInterface/UMTaskServiceInterface.h; sourceTree = "<group>"; };
@@ -26,6 +37,7 @@
 		41A25679E375924F437CB29FAD39A2C0 /* UMTaskManagerInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMTaskManagerInterface.h; path = UMTaskManagerInterface/UMTaskManagerInterface.h; sourceTree = "<group>"; };
 		5293DD290AF85B13A5BCB3EFF9EC9B70 /* UMTaskInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMTaskInterface.h; path = UMTaskManagerInterface/UMTaskInterface.h; sourceTree = "<group>"; };
 		5CDD746C13C9E5BAF1C1FBF029FA9039 /* UMTaskManagerInterface.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = UMTaskManagerInterface.debug.xcconfig; sourceTree = "<group>"; };
+		8E0983B5911DB1B2478D991A142C6072 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
 		C6534043BE6F4670BF61804BA1D4F86B /* UMTaskLaunchReason.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMTaskLaunchReason.h; path = UMTaskManagerInterface/UMTaskLaunchReason.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -80,10 +92,19 @@
 		F45AAFB805099B0525807E88FCEEDE14 = {
 			isa = PBXGroup;
 			children = (
+				F757D0B49B6221744E1E3CF4CE3AB1A6 /* Dependencies */,
 				2F7A2A7E83CC5EDC15FDC72999441FCD /* Frameworks */,
 				BBB4E2E92B232BF150EC6BFC1A95E383 /* Products */,
 				CEE3BDC61725CF325B8E90C6F05DF4BD /* UMTaskManagerInterface */,
 			);
+			sourceTree = "<group>";
+		};
+		F757D0B49B6221744E1E3CF4CE3AB1A6 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				8E0983B5911DB1B2478D991A142C6072 /* UMCore */,
+			);
+			name = Dependencies;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -106,6 +127,11 @@
 			mainGroup = F45AAFB805099B0525807E88FCEEDE14;
 			productRefGroup = BBB4E2E92B232BF150EC6BFC1A95E383 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProjectRef = 8E0983B5911DB1B2478D991A142C6072 /* UMCore */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				A565C99DEFBAFA44A1B5C3B49ADD8A84 /* UMTaskManagerInterface */,
@@ -113,14 +139,23 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXTargetDependency section */
+		FCEFAB3FA7E08247A9BAD5B048D0443A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = E447C147CB67895020EC8B88E5A98402 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
-		1EE8E1E87CEDC50D7CE531A0E278B0C5 /* Debug */ = {
+		1396444D872573F91D1CE4AC51FBF1E6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5CDD746C13C9E5BAF1C1FBF029FA9039 /* UMTaskManagerInterface.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				SDKROOT = iphoneos;
@@ -128,25 +163,11 @@
 			};
 			name = Debug;
 		};
-		78299EB9E14775121B67CE416317F7FA /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 31958379626F47CD42A34D55FFEB67FF /* UMTaskManagerInterface.release.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		7F2D1D9D61D3FAAFC10E0C53B7FADCD0 /* Debug */ = {
+		6DB5DA9C3A432A4382A9E38C9E9969CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -169,6 +190,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -194,7 +216,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -207,10 +229,11 @@
 			};
 			name = Debug;
 		};
-		A565F20E8771D26C5E01514FC5C362DB /* Release */ = {
+		91B98442CA3B2396AD03EED4B1006B48 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -233,6 +256,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -255,7 +279,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -267,23 +291,39 @@
 			};
 			name = Release;
 		};
+		A4B5B5368450A693ED557ACFA6060ABF /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 31958379626F47CD42A34D55FFEB67FF /* UMTaskManagerInterface.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		00F2D18BEE068986E851956CD0E0AE63 /* Build configuration list for PBXProject "UMTaskManagerInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				7F2D1D9D61D3FAAFC10E0C53B7FADCD0 /* Debug */,
-				A565F20E8771D26C5E01514FC5C362DB /* Release */,
+				6DB5DA9C3A432A4382A9E38C9E9969CD /* Debug */,
+				91B98442CA3B2396AD03EED4B1006B48 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		BE40488489EF9C1F84FFA7DC07467B49 /* Build configuration list for PBXAggregateTarget "UMTaskManagerInterface" */ = {
+		E471BFC35B623622E6CAF81EAF81586A /* Build configuration list for PBXAggregateTarget "UMTaskManagerInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1EE8E1E87CEDC50D7CE531A0E278B0C5 /* Debug */,
-				78299EB9E14775121B67CE416317F7FA /* Release */,
+				1396444D872573F91D1CE4AC51FBF1E6 /* Debug */,
+				A4B5B5368450A693ED557ACFA6060ABF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

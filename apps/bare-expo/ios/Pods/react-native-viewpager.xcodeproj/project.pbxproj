@@ -7,32 +7,32 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		043599813594994364FD9F7E14532C8F /* RCTOnPageSelected.m in Sources */ = {isa = PBXBuildFile; fileRef = 41D67596DB015B5D5B8489705A3BA4E9 /* RCTOnPageSelected.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		082948CEEC3EC346592C703FDC0D9CE5 /* RCTOnPageSelected.h in Headers */ = {isa = PBXBuildFile; fileRef = 2798357FDCE1958765F69BFFFE3BDE2A /* RCTOnPageSelected.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		25FB1CC21B7A3CB31E264F90034BA656 /* RCTConvert+UIPageViewControllerTransitionStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = 885F5C41FFD44B2CC900AEFF3628E7D8 /* RCTConvert+UIPageViewControllerTransitionStyle.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		31A75785B9F562E0A8A73A81EEAEAEC9 /* RCTConvert+UIPageViewControllerNavigationOrientation.h in Headers */ = {isa = PBXBuildFile; fileRef = E1A33ACBBD393354188FD418D978EA13 /* RCTConvert+UIPageViewControllerNavigationOrientation.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		4BD4B65A479C7FDBBC0D34CD24991B8A /* RCTConvert+UIPageViewControllerNavigationOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = 91C8E16B3ACF54BA29B2F8559B052FD2 /* RCTConvert+UIPageViewControllerNavigationOrientation.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		4EBD9DA0AB7D31EB13E9C98601736E0E /* ReactViewPagerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 58E89734D707A44E141CC58227A439B7 /* ReactViewPagerManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		4EDE086306720FFD5101D029047AB46B /* ReactNativePageView.m in Sources */ = {isa = PBXBuildFile; fileRef = DA968A27B09A1239C413FD48A3DA6276 /* ReactNativePageView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		60412C6D1A6210989EE941CAD33E3E6E /* UIViewController+CreateExtension.h in Headers */ = {isa = PBXBuildFile; fileRef = 5DE5888EA7FFA66AED45A75FEF2ABD8D /* UIViewController+CreateExtension.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		6DEAEF2864C6A22B9B85ECF81CCD11C5 /* RCTOnPageScrollStateChanged.m in Sources */ = {isa = PBXBuildFile; fileRef = BF9625904EB15811EE7E71629C8E6F3C /* RCTOnPageScrollStateChanged.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		72FD8464D1F2DA45642A3AB1641F8A7F /* react-native-viewpager-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = D16AAB8F82D9AC4F41DE8C494C1BA2E4 /* react-native-viewpager-dummy.m */; };
-		802B51E4AB2878E9544A7729AB2F9B87 /* ReactViewPagerManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 80E21BAD380078AC30C73E494B22B2F9 /* ReactViewPagerManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		8087607680DDDD93D78DF83524E545A2 /* RCTOnPageScrollEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 67734CD4FB528E3EA3A6AD13F348B372 /* RCTOnPageScrollEvent.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		956339803BADDA6E1D2A671F842A9976 /* RCTOnPageScrollStateChanged.h in Headers */ = {isa = PBXBuildFile; fileRef = 860C006FB4C9595E2257AEF0BD63D83B /* RCTOnPageScrollStateChanged.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		B5EAFC9E3CA621EE50A9283CC7E8F22D /* ReactNativePageView.h in Headers */ = {isa = PBXBuildFile; fileRef = 15FEB7BAA96BD47810AFBEBBA1B0DB67 /* ReactNativePageView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		C34A80F73B34F13824DFB96EFB997FD6 /* UIViewController+CreateExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = C99B43C372BB2B1A2CE7166D6405108D /* UIViewController+CreateExtension.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		D9DEF36510E388DCFFEF752E0359B8D4 /* RCTConvert+UIPageViewControllerTransitionStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D121B51848895C97664B1066704FC99 /* RCTConvert+UIPageViewControllerTransitionStyle.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		F2C23F21D4EFC8BF68CAD20D52A3D28E /* RCTOnPageScrollEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = FE60D42FA13C8E62353AB98CB676B8B1 /* RCTOnPageScrollEvent.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		012FCA177E24983F072E45061C9D0903 /* ReactNativePageView.m in Sources */ = {isa = PBXBuildFile; fileRef = DA968A27B09A1239C413FD48A3DA6276 /* ReactNativePageView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		055898C63F2FCF318F48395BA88D4C9F /* ReactViewPagerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 58E89734D707A44E141CC58227A439B7 /* ReactViewPagerManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		067FA58D99F8B859C6F4C55830AF1D13 /* RCTOnPageScrollEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = FE60D42FA13C8E62353AB98CB676B8B1 /* RCTOnPageScrollEvent.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		099FD600F8BED308954212CF79C38371 /* RCTOnPageScrollStateChanged.m in Sources */ = {isa = PBXBuildFile; fileRef = BF9625904EB15811EE7E71629C8E6F3C /* RCTOnPageScrollStateChanged.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		0CF9FA446C7CEE8CB64CCD90E6311992 /* RCTOnPageScrollEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 67734CD4FB528E3EA3A6AD13F348B372 /* RCTOnPageScrollEvent.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		22760AB247AD82B0D8EFEDD6A1D30311 /* RCTConvert+UIPageViewControllerNavigationOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = 91C8E16B3ACF54BA29B2F8559B052FD2 /* RCTConvert+UIPageViewControllerNavigationOrientation.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		41C1B1F30EEE51FFDFF5AD0700438FD1 /* UIViewController+CreateExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = C99B43C372BB2B1A2CE7166D6405108D /* UIViewController+CreateExtension.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		42621F4CD66C75F2E09E633C70E2C869 /* RCTOnPageSelected.m in Sources */ = {isa = PBXBuildFile; fileRef = 41D67596DB015B5D5B8489705A3BA4E9 /* RCTOnPageSelected.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		4911BFD08EB26C86E80890F7AF72EA61 /* RCTOnPageScrollStateChanged.h in Headers */ = {isa = PBXBuildFile; fileRef = 860C006FB4C9595E2257AEF0BD63D83B /* RCTOnPageScrollStateChanged.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		4A67C430011A71E1019ADC7ED467EA37 /* RCTOnPageSelected.h in Headers */ = {isa = PBXBuildFile; fileRef = 2798357FDCE1958765F69BFFFE3BDE2A /* RCTOnPageSelected.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7E3FD1046CDEA3FAC2DE5DA5ADB7880B /* react-native-viewpager-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = D16AAB8F82D9AC4F41DE8C494C1BA2E4 /* react-native-viewpager-dummy.m */; };
+		9A82B4068A4A99764CD4B0BF0D668B83 /* RCTConvert+UIPageViewControllerNavigationOrientation.h in Headers */ = {isa = PBXBuildFile; fileRef = E1A33ACBBD393354188FD418D978EA13 /* RCTConvert+UIPageViewControllerNavigationOrientation.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		9C48F2D2D4B3D32B72108FCEE3B1211C /* RCTConvert+UIPageViewControllerTransitionStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = 885F5C41FFD44B2CC900AEFF3628E7D8 /* RCTConvert+UIPageViewControllerTransitionStyle.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		BF83BF4A1CC28255E5EE8A8330445A91 /* ReactViewPagerManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 80E21BAD380078AC30C73E494B22B2F9 /* ReactViewPagerManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C60BB7A3B6DC7B7486CE0B7EB8233F2B /* ReactNativePageView.h in Headers */ = {isa = PBXBuildFile; fileRef = 15FEB7BAA96BD47810AFBEBBA1B0DB67 /* ReactNativePageView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		F54FB1E5CD5EB0871D3CD03CBC233536 /* UIViewController+CreateExtension.h in Headers */ = {isa = PBXBuildFile; fileRef = 5DE5888EA7FFA66AED45A75FEF2ABD8D /* UIViewController+CreateExtension.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		FBF10A09FFD54FD99F63162405ADAC6E /* RCTConvert+UIPageViewControllerTransitionStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D121B51848895C97664B1066704FC99 /* RCTConvert+UIPageViewControllerTransitionStyle.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		5C66A5CAEDFB1BEE75CEF50FCFA4DCB1 /* PBXContainerItemProxy */ = {
+		FC6384BE8C393DB86704B3B6A5477C8E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = D8C0DB5D59EA35E6306B68B2B820C452 /* React.xcodeproj */;
+			containerPortal = 460372599D8A22C4E3B419D60919FCDA /* React-Core.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 94DA87F24FB4B93E5D08FE961D5E5A3E;
-			remoteInfo = React;
+			remoteGlobalIDString = 5DA1A74647F652AE8E4DE074AFC4C6B7;
+			remoteInfo = "React-Core";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -43,6 +43,7 @@
 		2798357FDCE1958765F69BFFFE3BDE2A /* RCTOnPageSelected.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RCTOnPageSelected.h; path = ios/RCTOnPageSelected.h; sourceTree = "<group>"; };
 		3D121B51848895C97664B1066704FC99 /* RCTConvert+UIPageViewControllerTransitionStyle.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "RCTConvert+UIPageViewControllerTransitionStyle.h"; path = "ios/RCTConvert+UIPageViewControllerTransitionStyle.h"; sourceTree = "<group>"; };
 		41D67596DB015B5D5B8489705A3BA4E9 /* RCTOnPageSelected.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RCTOnPageSelected.m; path = ios/RCTOnPageSelected.m; sourceTree = "<group>"; };
+		460372599D8A22C4E3B419D60919FCDA /* React-Core */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-Core"; path = "React-Core.xcodeproj"; sourceTree = "<group>"; };
 		4B766D516C87226FCC8265FB188E5713 /* react-native-viewpager.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = "react-native-viewpager.podspec"; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		56B13F16BCC23F16CB1089599435647A /* libreact-native-viewpager.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libreact-native-viewpager.a"; path = "libreact-native-viewpager.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		58E89734D707A44E141CC58227A439B7 /* ReactViewPagerManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ReactViewPagerManager.m; path = ios/ReactViewPagerManager.m; sourceTree = "<group>"; };
@@ -58,14 +59,13 @@
 		BF9625904EB15811EE7E71629C8E6F3C /* RCTOnPageScrollStateChanged.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RCTOnPageScrollStateChanged.m; path = ios/RCTOnPageScrollStateChanged.m; sourceTree = "<group>"; };
 		C99B43C372BB2B1A2CE7166D6405108D /* UIViewController+CreateExtension.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIViewController+CreateExtension.m"; path = "ios/UIViewController+CreateExtension.m"; sourceTree = "<group>"; };
 		D16AAB8F82D9AC4F41DE8C494C1BA2E4 /* react-native-viewpager-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "react-native-viewpager-dummy.m"; sourceTree = "<group>"; };
-		D8C0DB5D59EA35E6306B68B2B820C452 /* React */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React; path = React.xcodeproj; sourceTree = "<group>"; };
 		DA968A27B09A1239C413FD48A3DA6276 /* ReactNativePageView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ReactNativePageView.m; path = ios/ReactNativePageView.m; sourceTree = "<group>"; };
 		E1A33ACBBD393354188FD418D978EA13 /* RCTConvert+UIPageViewControllerNavigationOrientation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "RCTConvert+UIPageViewControllerNavigationOrientation.h"; path = "ios/RCTConvert+UIPageViewControllerNavigationOrientation.h"; sourceTree = "<group>"; };
 		FE60D42FA13C8E62353AB98CB676B8B1 /* RCTOnPageScrollEvent.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RCTOnPageScrollEvent.m; path = ios/RCTOnPageScrollEvent.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		F52553D78D9BF7E0331EF58C8DF090E7 /* Frameworks */ = {
+		74114D149D85BB7E46A8EBCEA6B8CE4F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -104,10 +104,10 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		59839D8FDE6EDB18D7C3275F26DAF148 /* Dependencies */ = {
+		450A5B159A66EC61169AC5FC65FEDC57 /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
-				D8C0DB5D59EA35E6306B68B2B820C452 /* React */,
+				460372599D8A22C4E3B419D60919FCDA /* React-Core */,
 			);
 			name = Dependencies;
 			sourceTree = "<group>";
@@ -141,7 +141,7 @@
 		87F4FA791098E2CB2FF9150671DCF54D = {
 			isa = PBXGroup;
 			children = (
-				59839D8FDE6EDB18D7C3275F26DAF148 /* Dependencies */,
+				450A5B159A66EC61169AC5FC65FEDC57 /* Dependencies */,
 				2EFFFF54BF4FC958AD130F91D198CDC8 /* Frameworks */,
 				E38F268F75721E49C0615CFDEDF1676B /* Products */,
 				65B936AE2B612654CE0E1DAB76318FDB /* react-native-viewpager */,
@@ -159,18 +159,18 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		F3482AB7D8491226250C2DC74AD6A263 /* Headers */ = {
+		371EC63972E3B02FA4BF7BFCC150C19A /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				31A75785B9F562E0A8A73A81EEAEAEC9 /* RCTConvert+UIPageViewControllerNavigationOrientation.h in Headers */,
-				D9DEF36510E388DCFFEF752E0359B8D4 /* RCTConvert+UIPageViewControllerTransitionStyle.h in Headers */,
-				8087607680DDDD93D78DF83524E545A2 /* RCTOnPageScrollEvent.h in Headers */,
-				956339803BADDA6E1D2A671F842A9976 /* RCTOnPageScrollStateChanged.h in Headers */,
-				082948CEEC3EC346592C703FDC0D9CE5 /* RCTOnPageSelected.h in Headers */,
-				B5EAFC9E3CA621EE50A9283CC7E8F22D /* ReactNativePageView.h in Headers */,
-				802B51E4AB2878E9544A7729AB2F9B87 /* ReactViewPagerManager.h in Headers */,
-				60412C6D1A6210989EE941CAD33E3E6E /* UIViewController+CreateExtension.h in Headers */,
+				9A82B4068A4A99764CD4B0BF0D668B83 /* RCTConvert+UIPageViewControllerNavigationOrientation.h in Headers */,
+				FBF10A09FFD54FD99F63162405ADAC6E /* RCTConvert+UIPageViewControllerTransitionStyle.h in Headers */,
+				0CF9FA446C7CEE8CB64CCD90E6311992 /* RCTOnPageScrollEvent.h in Headers */,
+				4911BFD08EB26C86E80890F7AF72EA61 /* RCTOnPageScrollStateChanged.h in Headers */,
+				4A67C430011A71E1019ADC7ED467EA37 /* RCTOnPageSelected.h in Headers */,
+				C60BB7A3B6DC7B7486CE0B7EB8233F2B /* ReactNativePageView.h in Headers */,
+				BF83BF4A1CC28255E5EE8A8330445A91 /* ReactViewPagerManager.h in Headers */,
+				F54FB1E5CD5EB0871D3CD03CBC233536 /* UIViewController+CreateExtension.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -179,16 +179,16 @@
 /* Begin PBXNativeTarget section */
 		CFC877DE04A417D8C15AFE74E1B178E8 /* react-native-viewpager */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 6922EA78DA27D351F24014AE9D409B2B /* Build configuration list for PBXNativeTarget "react-native-viewpager" */;
+			buildConfigurationList = DAB44C1905FE1AE502473D290124B5C2 /* Build configuration list for PBXNativeTarget "react-native-viewpager" */;
 			buildPhases = (
-				F3482AB7D8491226250C2DC74AD6A263 /* Headers */,
-				021ADF0E35B94895275DD721F863432B /* Sources */,
-				F52553D78D9BF7E0331EF58C8DF090E7 /* Frameworks */,
+				371EC63972E3B02FA4BF7BFCC150C19A /* Headers */,
+				8830D6C06D7D3D5617D34BD1945DA3DF /* Sources */,
+				74114D149D85BB7E46A8EBCEA6B8CE4F /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				0A6F656EBF66E7790427CCAEA29933E7 /* PBXTargetDependency */,
+				E78EE5BCDA14D79275650B3BDB88E786 /* PBXTargetDependency */,
 			);
 			name = "react-native-viewpager";
 			productName = "react-native-viewpager";
@@ -217,7 +217,7 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProjectRef = D8C0DB5D59EA35E6306B68B2B820C452 /* React */;
+					ProjectRef = 460372599D8A22C4E3B419D60919FCDA /* React-Core */;
 				},
 			);
 			projectRoot = "";
@@ -228,37 +228,38 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		021ADF0E35B94895275DD721F863432B /* Sources */ = {
+		8830D6C06D7D3D5617D34BD1945DA3DF /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4BD4B65A479C7FDBBC0D34CD24991B8A /* RCTConvert+UIPageViewControllerNavigationOrientation.m in Sources */,
-				25FB1CC21B7A3CB31E264F90034BA656 /* RCTConvert+UIPageViewControllerTransitionStyle.m in Sources */,
-				F2C23F21D4EFC8BF68CAD20D52A3D28E /* RCTOnPageScrollEvent.m in Sources */,
-				6DEAEF2864C6A22B9B85ECF81CCD11C5 /* RCTOnPageScrollStateChanged.m in Sources */,
-				043599813594994364FD9F7E14532C8F /* RCTOnPageSelected.m in Sources */,
-				72FD8464D1F2DA45642A3AB1641F8A7F /* react-native-viewpager-dummy.m in Sources */,
-				4EDE086306720FFD5101D029047AB46B /* ReactNativePageView.m in Sources */,
-				4EBD9DA0AB7D31EB13E9C98601736E0E /* ReactViewPagerManager.m in Sources */,
-				C34A80F73B34F13824DFB96EFB997FD6 /* UIViewController+CreateExtension.m in Sources */,
+				22760AB247AD82B0D8EFEDD6A1D30311 /* RCTConvert+UIPageViewControllerNavigationOrientation.m in Sources */,
+				9C48F2D2D4B3D32B72108FCEE3B1211C /* RCTConvert+UIPageViewControllerTransitionStyle.m in Sources */,
+				067FA58D99F8B859C6F4C55830AF1D13 /* RCTOnPageScrollEvent.m in Sources */,
+				099FD600F8BED308954212CF79C38371 /* RCTOnPageScrollStateChanged.m in Sources */,
+				42621F4CD66C75F2E09E633C70E2C869 /* RCTOnPageSelected.m in Sources */,
+				7E3FD1046CDEA3FAC2DE5DA5ADB7880B /* react-native-viewpager-dummy.m in Sources */,
+				012FCA177E24983F072E45061C9D0903 /* ReactNativePageView.m in Sources */,
+				055898C63F2FCF318F48395BA88D4C9F /* ReactViewPagerManager.m in Sources */,
+				41C1B1F30EEE51FFDFF5AD0700438FD1 /* UIViewController+CreateExtension.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		0A6F656EBF66E7790427CCAEA29933E7 /* PBXTargetDependency */ = {
+		E78EE5BCDA14D79275650B3BDB88E786 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = React;
-			targetProxy = 5C66A5CAEDFB1BEE75CEF50FCFA4DCB1 /* PBXContainerItemProxy */;
+			name = "React-Core";
+			targetProxy = FC6384BE8C393DB86704B3B6A5477C8E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		5E94579178E5B1112CDB8A8F6D21B567 /* Debug */ = {
+		2750179B06E7214D9D84463BEA7ACC02 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -281,6 +282,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -319,14 +321,14 @@
 			};
 			name = Debug;
 		};
-		7DF4F1A0DA2E74FC315AA2B58736C027 /* Debug */ = {
+		47209BD0279F21CF1116FCF96BE45169 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 09438710E40CB3B506F8411F95B2EC62 /* react-native-viewpager.debug.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/react-native-viewpager/react-native-viewpager-prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				OTHER_LDFLAGS = "";
@@ -343,14 +345,14 @@
 			};
 			name = Debug;
 		};
-		9116171AD227DB98C2C50A69BFFD8603 /* Release */ = {
+		4F60047A15A6D3D77BC22231CD1EDEE4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = A5B3D63148A045781F71C169EECE64B1 /* react-native-viewpager.release.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/react-native-viewpager/react-native-viewpager-prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				OTHER_LDFLAGS = "";
@@ -368,10 +370,11 @@
 			};
 			name = Release;
 		};
-		9DFE67D73F47559487948E974C2E01E1 /* Release */ = {
+		C5A46DFC455DB80C7B1F18C8F919144D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -394,6 +397,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -434,17 +438,17 @@
 		034ADAC841F7680DA9D15F01ED1E0B41 /* Build configuration list for PBXProject "react-native-viewpager" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				5E94579178E5B1112CDB8A8F6D21B567 /* Debug */,
-				9DFE67D73F47559487948E974C2E01E1 /* Release */,
+				2750179B06E7214D9D84463BEA7ACC02 /* Debug */,
+				C5A46DFC455DB80C7B1F18C8F919144D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		6922EA78DA27D351F24014AE9D409B2B /* Build configuration list for PBXNativeTarget "react-native-viewpager" */ = {
+		DAB44C1905FE1AE502473D290124B5C2 /* Build configuration list for PBXNativeTarget "react-native-viewpager" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				7DF4F1A0DA2E74FC315AA2B58736C027 /* Debug */,
-				9116171AD227DB98C2C50A69BFFD8603 /* Release */,
+				47209BD0279F21CF1116FCF96BE45169 /* Debug */,
+				4F60047A15A6D3D77BC22231CD1EDEE4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

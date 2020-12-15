@@ -95,3 +95,4 @@ export declare function unregisterTaskAsync(taskName: string): Promise<void>;
  * signing out and you no longer need to track his location or run any other background tasks.
  */
 export declare function unregisterAllTasksAsync(): Promise<void>;
+export declare function isAvailableAsync(): Promise<boolean>;

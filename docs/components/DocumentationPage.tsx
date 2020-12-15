@@ -26,7 +26,7 @@ const STYLES_DOCUMENT = css`
   padding: 40px 56px;
 
   hr {
-    border-top: 1px solid ${Constants.expoColors.gray[250]};
+    border-top: 1px solid ${Constants.expoColors.semantic.border};
     border-bottom: 0px;
   }
 
@@ -152,6 +152,10 @@ export default class DocumentationPage extends React.Component<Props, State> {
     );
   };
 
+  private isEasPath = () => {
+    return some(navigation.easDirectories, name => this.props.url.pathname.startsWith(`/${name}`));
+  };
+
   private isPreviewPath = () => {
     return some(navigation.previewDirectories, name =>
       this.props.url.pathname.startsWith(`/${name}`)
@@ -171,13 +175,9 @@ export default class DocumentationPage extends React.Component<Props, State> {
 
   private getVersion = () => {
     let version = (this.props.asPath || this.props.url.pathname).split(`/`)[2];
-    if (!version || VERSIONS.indexOf(version) === -1) {
-      version = VERSIONS[0];
-    }
-    if (!version) {
+    if (!version || !VERSIONS.includes(version)) {
       version = 'latest';
     }
-
     return version;
   };
 
@@ -197,6 +197,8 @@ export default class DocumentationPage extends React.Component<Props, State> {
       return 'general';
     } else if (this.isGettingStartedPath()) {
       return 'starting';
+    } else if (this.isEasPath()) {
+      return 'eas';
     } else if (this.isPreviewPath()) {
       return 'preview';
     }
@@ -259,6 +261,29 @@ export default class DocumentationPage extends React.Component<Props, State> {
         sidebarScrollPosition={sidebarScrollPosition}>
         <Head title={`${this.props.title} - Expo Documentation`}>
           <meta name="docsearch:version" content={isReferencePath ? version : 'none'} />
+          <meta property="og:title" content={`${this.props.title} - Expo Documentation`} />
+          <meta property="og:type" content="website" />
+          <meta property="og:image" content="https://docs.expo.io/static/images/og.png" />
+          <meta property="og:image:url" content="https://docs.expo.io/static/images/og.png" />
+          <meta
+            property="og:image:secure_url"
+            content="https://docs.expo.io/static/images/og.png"
+          />
+          <meta property="og:locale" content="en_US" />
+          <meta property="og:site_name" content="Expo Documentation" />
+          <meta
+            property="og:description"
+            content="Expo is an open-source platform for making universal native apps for Android, iOS, and the web with JavaScript and React."
+          />
+
+          <meta name="twitter:site" content="@expo" />
+          <meta name="twitter:card" content="summary" />
+          <meta property="twitter:title" content={`${this.props.title} - Expo Documentation`} />
+          <meta
+            name="twitter:description"
+            content="Expo is an open-source platform for making universal native apps for Android, iOS, and the web with JavaScript and React."
+          />
+          <meta property="twitter:image" content="https://docs.expo.io/static/images/twitter.png" />
 
           {(version === 'unversioned' || this.isPreviewPath()) && (
             <meta name="robots" content="noindex" />

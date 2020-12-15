@@ -4,9 +4,21 @@
 
 ### 🛠 Breaking changes
 
+- Dropped support for iOS 10.0 ([#11344](https://github.com/expo/expo/pull/11344) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+## 9.2.1 — 2020-12-09
+
+### 🐛 Bug fixes
+
+- Fix typo in media library permission methods. ([#11292](https://github.com/expo/expo/pull/11292) by [@bycedric](https://github.com/bycedric))
+
+## 9.2.0 — 2020-11-17
+
+_This version does not introduce any user-facing changes._
 
 ## 9.1.1 — 2020-09-23
 

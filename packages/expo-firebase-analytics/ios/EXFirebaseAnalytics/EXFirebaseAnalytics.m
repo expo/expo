@@ -4,7 +4,7 @@
 #import <EXFirebaseCore/UMFirebaseCoreInterface.h>
 #import <EXFirebaseAnalytics/EXFirebaseAnalytics.h>
 #import <UIKit/UIKit.h>
-#import <Firebase/Firebase.h>
+#import <FirebaseAnalytics/FirebaseAnalytics.h>
 
 @interface NSObject (Private)
 - (NSString*)_methodDescription;

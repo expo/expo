@@ -7,22 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4F82C01B6264E6FF00AF24A58561453F /* RNCWKProcessPoolManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BE6A9EF3090A964BF9ABB6C892C711E /* RNCWKProcessPoolManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		72FA0023A55111E9CF64D0EE068EE485 /* react-native-webview-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 293CA3A65279C9107054CAD0E3BF6DAF /* react-native-webview-dummy.m */; };
-		863604AE361F89E6FB8A42346BB7A1F9 /* RNCWKProcessPoolManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 93B06175C69696D54AB820D015ED6AD2 /* RNCWKProcessPoolManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		8CAD76B167F71AEF8B33F8DA1362CF8F /* RNCWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = 8981D8A90CFE6E723C16FBDF5A3985C3 /* RNCWebView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		A15F0392CBDF1BD4022E2847B938DC79 /* RNCWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8AC57BC1976913D4D415BBCF14326B82 /* RNCWebView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		A4918CBC2B5112E45A918F4B2328CE43 /* RNCWebViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 427EFBEB2C6F01FE1BCC1BC521ACC370 /* RNCWebViewManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		CA76DE9BCDF2C598E83CE0AE053E483C /* RNCWebViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 817635517BF59D86FA8FC8521BC91B4C /* RNCWebViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		02DC8E7CD34AE9BDE2681AA161272118 /* RNCWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = 8981D8A90CFE6E723C16FBDF5A3985C3 /* RNCWebView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		253072BD9377DB1F1D8E6FEBB3330C84 /* RNCWKProcessPoolManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BE6A9EF3090A964BF9ABB6C892C711E /* RNCWKProcessPoolManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		40965E0517EDB3879CBD82526938ABED /* react-native-webview-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 293CA3A65279C9107054CAD0E3BF6DAF /* react-native-webview-dummy.m */; };
+		7E8998D8A7725FCA5FAC69DF6C44FB85 /* RNCWebViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 427EFBEB2C6F01FE1BCC1BC521ACC370 /* RNCWebViewManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		91EBF5DB1076487969F4C8039DED8630 /* RNCWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8AC57BC1976913D4D415BBCF14326B82 /* RNCWebView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		9CB19EB76206110129DF25795BEC279B /* RNCWKProcessPoolManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 93B06175C69696D54AB820D015ED6AD2 /* RNCWKProcessPoolManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		C8E4A41B87E0BAD5308A2FC80022A8A6 /* RNCWebViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 817635517BF59D86FA8FC8521BC91B4C /* RNCWebViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		FAE9EE219A15F1E2E0CEA648C281246A /* PBXContainerItemProxy */ = {
+		D04B7654FCB6A3CB4980BFECB0878E7A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 3FE1FA2CFAA55C71FC386BCA81D56276 /* React.xcodeproj */;
+			containerPortal = 8EB2AC4A45EDDFADE7549C8363A22B18 /* React-Core.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 94DA87F24FB4B93E5D08FE961D5E5A3E;
-			remoteInfo = React;
+			remoteGlobalIDString = 5DA1A74647F652AE8E4DE074AFC4C6B7;
+			remoteInfo = "React-Core";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -30,7 +30,6 @@
 		039DE1F18B5345712648B1ACB965C45F /* react-native-webview.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "react-native-webview.debug.xcconfig"; sourceTree = "<group>"; };
 		2149957640D8FB08172C0AABB923D7B5 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
 		293CA3A65279C9107054CAD0E3BF6DAF /* react-native-webview-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "react-native-webview-dummy.m"; sourceTree = "<group>"; };
-		3FE1FA2CFAA55C71FC386BCA81D56276 /* React */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React; path = React.xcodeproj; sourceTree = "<group>"; };
 		427EFBEB2C6F01FE1BCC1BC521ACC370 /* RNCWebViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNCWebViewManager.m; path = apple/RNCWebViewManager.m; sourceTree = "<group>"; };
 		4B42DF5FE549C8F3371670233C953096 /* libreact-native-webview.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libreact-native-webview.a"; path = "libreact-native-webview.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5297BE602E262B0FE021754B5C528447 /* react-native-webview-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "react-native-webview-prefix.pch"; sourceTree = "<group>"; };
@@ -40,12 +39,13 @@
 		817635517BF59D86FA8FC8521BC91B4C /* RNCWebViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNCWebViewManager.h; path = apple/RNCWebViewManager.h; sourceTree = "<group>"; };
 		8981D8A90CFE6E723C16FBDF5A3985C3 /* RNCWebView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNCWebView.h; path = apple/RNCWebView.h; sourceTree = "<group>"; };
 		8AC57BC1976913D4D415BBCF14326B82 /* RNCWebView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNCWebView.m; path = apple/RNCWebView.m; sourceTree = "<group>"; };
+		8EB2AC4A45EDDFADE7549C8363A22B18 /* React-Core */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-Core"; path = "React-Core.xcodeproj"; sourceTree = "<group>"; };
 		93B06175C69696D54AB820D015ED6AD2 /* RNCWKProcessPoolManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNCWKProcessPoolManager.m; path = apple/RNCWKProcessPoolManager.m; sourceTree = "<group>"; };
 		967E43E505A189DF5C93ED98306AAF27 /* react-native-webview.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = "react-native-webview.podspec"; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		F46906BE823D67F1A8E4056D0356874A /* Frameworks */ = {
+		A9980F4E20D8EB07435F08D81D562F86 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -55,14 +55,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		16EBBD126AF0A464D2524C7B1F47FAA6 /* Dependencies */ = {
-			isa = PBXGroup;
-			children = (
-				3FE1FA2CFAA55C71FC386BCA81D56276 /* React */,
-			);
-			name = Dependencies;
-			sourceTree = "<group>";
-		};
 		62F5B19CD4BBC43AA37F308E68224B1B /* Pod */ = {
 			isa = PBXGroup;
 			children = (
@@ -100,10 +92,18 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		BCF996C30EAB202BD6A5B2EBCDC62508 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				8EB2AC4A45EDDFADE7549C8363A22B18 /* React-Core */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
 		BF1D675A3B23E86E7804ECEAA39FA644 = {
 			isa = PBXGroup;
 			children = (
-				16EBBD126AF0A464D2524C7B1F47FAA6 /* Dependencies */,
+				BCF996C30EAB202BD6A5B2EBCDC62508 /* Dependencies */,
 				A98D58962AA2C1EFCE80B7BBB8E7CEA8 /* Frameworks */,
 				817845D438C0F919FF69FEE00663E5FB /* Products */,
 				CD339CBE71015AE44E1D3B8880618375 /* react-native-webview */,
@@ -129,13 +129,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		FC47241D6EBA663F7252453A715816A8 /* Headers */ = {
+		91284B093692E4B207A6A188DAE94DC9 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8CAD76B167F71AEF8B33F8DA1362CF8F /* RNCWebView.h in Headers */,
-				CA76DE9BCDF2C598E83CE0AE053E483C /* RNCWebViewManager.h in Headers */,
-				4F82C01B6264E6FF00AF24A58561453F /* RNCWKProcessPoolManager.h in Headers */,
+				02DC8E7CD34AE9BDE2681AA161272118 /* RNCWebView.h in Headers */,
+				C8E4A41B87E0BAD5308A2FC80022A8A6 /* RNCWebViewManager.h in Headers */,
+				253072BD9377DB1F1D8E6FEBB3330C84 /* RNCWKProcessPoolManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -144,16 +144,16 @@
 /* Begin PBXNativeTarget section */
 		42F64E6A68A3E4462CDCAC8DD31120D1 /* react-native-webview */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A1F7A2C3A7450D9889AE32D946902402 /* Build configuration list for PBXNativeTarget "react-native-webview" */;
+			buildConfigurationList = 1071B9FB32EBC525DAB75B47697EDD92 /* Build configuration list for PBXNativeTarget "react-native-webview" */;
 			buildPhases = (
-				FC47241D6EBA663F7252453A715816A8 /* Headers */,
-				35DFD09DB0C777912166E3343E96C5D0 /* Sources */,
-				F46906BE823D67F1A8E4056D0356874A /* Frameworks */,
+				91284B093692E4B207A6A188DAE94DC9 /* Headers */,
+				A595B471938F2957865814B8B19A06B2 /* Sources */,
+				A9980F4E20D8EB07435F08D81D562F86 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				9450745110F656A3AE39E915D54C5FA6 /* PBXTargetDependency */,
+				4CB131BF8B370BCE22DEEAAF21BA5428 /* PBXTargetDependency */,
 			);
 			name = "react-native-webview";
 			productName = "react-native-webview";
@@ -182,7 +182,7 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProjectRef = 3FE1FA2CFAA55C71FC386BCA81D56276 /* React */;
+					ProjectRef = 8EB2AC4A45EDDFADE7549C8363A22B18 /* React-Core */;
 				},
 			);
 			projectRoot = "";
@@ -193,61 +193,36 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		35DFD09DB0C777912166E3343E96C5D0 /* Sources */ = {
+		A595B471938F2957865814B8B19A06B2 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				72FA0023A55111E9CF64D0EE068EE485 /* react-native-webview-dummy.m in Sources */,
-				A15F0392CBDF1BD4022E2847B938DC79 /* RNCWebView.m in Sources */,
-				A4918CBC2B5112E45A918F4B2328CE43 /* RNCWebViewManager.m in Sources */,
-				863604AE361F89E6FB8A42346BB7A1F9 /* RNCWKProcessPoolManager.m in Sources */,
+				40965E0517EDB3879CBD82526938ABED /* react-native-webview-dummy.m in Sources */,
+				91EBF5DB1076487969F4C8039DED8630 /* RNCWebView.m in Sources */,
+				7E8998D8A7725FCA5FAC69DF6C44FB85 /* RNCWebViewManager.m in Sources */,
+				9CB19EB76206110129DF25795BEC279B /* RNCWKProcessPoolManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		9450745110F656A3AE39E915D54C5FA6 /* PBXTargetDependency */ = {
+		4CB131BF8B370BCE22DEEAAF21BA5428 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = React;
-			targetProxy = FAE9EE219A15F1E2E0CEA648C281246A /* PBXContainerItemProxy */;
+			name = "React-Core";
+			targetProxy = D04B7654FCB6A3CB4980BFECB0878E7A /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		11C2F2F0D596B63C2A381894ED9F288A /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 63B9E1B389448E9701C1E8E783690647 /* react-native-webview.release.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/react-native-webview/react-native-webview-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = react_native_webview;
-				PRODUCT_NAME = "react-native-webview";
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		4925FC1F45221B414897AA9602ADEE82 /* Debug */ = {
+		027CFCD28631B84CC91DB9B897008B6D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 039DE1F18B5345712648B1ACB965C45F /* react-native-webview.debug.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/react-native-webview/react-native-webview-prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				OTHER_LDFLAGS = "";
@@ -264,10 +239,11 @@
 			};
 			name = Debug;
 		};
-		B5412795D833B7EF309E1800466988E1 /* Release */ = {
+		8AAC9924547377A9D67CBE3BC364DB80 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -290,66 +266,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"POD_CONFIGURATION_RELEASE=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.0;
-				SYMROOT = "${SRCROOT}/../build";
-			};
-			name = Release;
-		};
-		D18B9FB885F40C73FF1AD810A0B32E8F /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -388,14 +305,101 @@
 			};
 			name = Debug;
 		};
+		A2D07532C39522E43A42CBCB96DEFC57 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		D3B2ECA3C3120B8925486F1A96557BA1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 63B9E1B389448E9701C1E8E783690647 /* react-native-webview.release.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/react-native-webview/react-native-webview-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = react_native_webview;
+				PRODUCT_NAME = "react-native-webview";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		A1F7A2C3A7450D9889AE32D946902402 /* Build configuration list for PBXNativeTarget "react-native-webview" */ = {
+		1071B9FB32EBC525DAB75B47697EDD92 /* Build configuration list for PBXNativeTarget "react-native-webview" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				4925FC1F45221B414897AA9602ADEE82 /* Debug */,
-				11C2F2F0D596B63C2A381894ED9F288A /* Release */,
+				027CFCD28631B84CC91DB9B897008B6D /* Debug */,
+				D3B2ECA3C3120B8925486F1A96557BA1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -403,8 +407,8 @@
 		C3108A6274FD45EAB652BA17B06F77D5 /* Build configuration list for PBXProject "react-native-webview" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D18B9FB885F40C73FF1AD810A0B32E8F /* Debug */,
-				B5412795D833B7EF309E1800466988E1 /* Release */,
+				8AAC9924547377A9D67CBE3BC364DB80 /* Debug */,
+				A2D07532C39522E43A42CBCB96DEFC57 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

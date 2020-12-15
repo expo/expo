@@ -212,6 +212,9 @@ dependencies {
   // Versioned react native
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
+  // BEGIN_SDK_40
+  api 'host.exp:reactandroid-abi40_0_0:1.0.0'
+  // END_SDK_40
   // BEGIN_SDK_39
   api 'host.exp:reactandroid-abi39_0_0:1.0.0'
   // END_SDK_39
@@ -221,9 +224,6 @@ dependencies {
   // BEGIN_SDK_37
   api 'host.exp:reactandroid-abi37_0_0:1.0.0'
   // END_SDK_37
-  // BEGIN_SDK_36
-  api 'host.exp:reactandroid-abi36_0_0:1.0.0'
-  // END_SDK_36
   // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
   // WHEN_VERSIONING_REMOVE_TO_HERE
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
@@ -246,7 +246,7 @@ dependencies {
   api 'javax.inject:javax.inject:1'
 
   // Our dependencies
-  api "androidx.appcompat:appcompat:1.1.0"
+  api "androidx.appcompat:appcompat:1.2.0"
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
   api 'de.greenrobot:eventbus:2.4.0'
   api "androidx.room:room-runtime:2.1.0"
@@ -284,7 +284,7 @@ dependencies {
   annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
   // Remember to update DetachAppTemplate build.gradle if you add any excludes or transitive = false here!
 
-  // Used only in Expo client, see Analytics.java
+  // Used only in Expo Go, see Analytics.java
   compileOnly 'com.amplitude:android-sdk:2.23.2'
 
   // expo-file-system

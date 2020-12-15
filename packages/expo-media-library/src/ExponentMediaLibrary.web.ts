@@ -34,10 +34,10 @@ export default {
     };
   },
 
-  async getPermissionsAsync(): Promise<PermissionResponse> {
+  async getPermissionsAsync(_writeOnly: boolean): Promise<PermissionResponse> {
     return noPermissionResponse;
   },
-  async requestPermissionsAsync(): Promise<PermissionResponse> {
+  async requestPermissionsAsync(_writeOnly: boolean): Promise<PermissionResponse> {
     return noPermissionResponse;
   },
 };

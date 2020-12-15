@@ -3,17 +3,17 @@ title: Limitations
 sidebar_title: Limitations
 ---
 
-Your success will be limited if you don't know the limitations of your tools. A good software engineer strives to understand the tradeoffs in the decisions she makes.
+Your success will be limited if you don't know the limitations of your tools. A good software engineer strives to understand the tradeoffs in the decisions they make.
 
 ## Limitations of the managed workflow
 
-As explained on the [workflows overview page](../managed-vs-bare/), the managed workflow is kind of like "[Rails](https://rubyonrails.org/)" and "[Create React App](https://github.com/facebook/create-react-app)" for React Native. If you use the tools we provide in the managed workflow to build your app, we try to handle as much of the complexity of building apps for you as we can. The tradeoff here is that this workflow won't be suitable for _every possible app_.
+As explained on the [workflows overview page](managed-vs-bare.md), the managed workflow is kind of like "[Rails](https://rubyonrails.org/)" and "[Create React App](https://github.com/facebook/create-react-app)" for React Native. If you use the tools we provide in the managed workflow to build your app, we try to handle as much of the complexity of building apps for you as we can. The tradeoff here is that this workflow won't be suitable for _every possible app_.
 
 There are plenty of cases where its current constraints may not be appropriate for your project. The following is a list of limitations that we are aware of that may influence your decision on whether the managed workflow is a good fit for your project.
 
 <details><summary><h4>Not all iOS and Android APIs are available</h4></summary> <p>
 
-Many device APIs are supported (check out the "SDK API Reference" in the sidebar), but **not all iOS and Android APIs are available yet**: need Bluetooth? Sorry, we haven't built support for it yet. WebRTC? Not quite. One of the most frequent requests we get is for In-App Purchases and Apple and Google Pay integration. We haven't built this yet, but it's on the roadmap. We are constantly adding new APIs, so if we don't have something you need now, you can either use the [bare workflow](../managed-vs-bare/#bare-workflow) or follow [our blog](https://blog.expo.io) to see the release notes for our SDK updates. Feature prioritization isn't strictly based off of popular vote, but it certainly helps us to gauge what is important to users.
+Many device APIs are supported (check out the "SDK API Reference" in the sidebar), but **not all iOS and Android APIs are available yet**: need Bluetooth? Sorry, we haven't built support for it yet. WebRTC? Not quite. One of the most frequent requests we get is for In-App Purchases and Apple and Google Pay integration. We haven't built this yet, but it's on the roadmap. We are constantly adding new APIs, so if we don't have something you need now, you can either use the [bare workflow](managed-vs-bare.md#bare-workflow) or follow [our blog](https://blog.expo.io) to see the release notes for our SDK updates. Feature prioritization isn't strictly based off of popular vote, but it certainly helps us to gauge what is important to users.
 
 </p>
 </details>
@@ -37,7 +37,7 @@ The size for a managed Expo app on iOS is approximately 20mb (download), and And
 <details><summary><h4>Native libraries to integrate with proprietary services are usually not included in the SDK</h4></summary>
 <p>
 
-Related to the previous point, we typically avoid adding native modules to the SDK if they are tied to external, proprietary services &mdash; we can't add something to the SDK just because a few users need it for their app, we have to think of the broader userbase. In these cases developers will want to use the [bare workflow](../../introduction/managed-vs-bare/), and they can easily migrate to it by [ejecting](../../workflow/customizing/).
+Related to the previous point, we typically avoid adding native modules to the SDK if they are tied to external, proprietary services &mdash; we can't add something to the SDK just because a few users need it for their app, we have to think of the broader userbase. In these cases developers will want to use the [bare workflow](../introduction/managed-vs-bare.md), and they can easily migrate to it by [ejecting](../workflow/customizing.md).
 
 </p>
 </details>
@@ -45,7 +45,7 @@ Related to the previous point, we typically avoid adding native modules to the S
 <details><summary><h4>The only supported push notification service is the Expo notification service</h4></summary>
 <p>
 
-If you want to use another push notification service, such as OneSignal, instead of the [Expo Push Notification service/API](../../push-notifications/overview/), you will need to use the bare workflow.
+If you want to use another push notification service, such as OneSignal, instead of the [Expo Push Notification service/API](../push-notifications/overview.md), you will need to use the bare workflow.
 
 </p>
 </details>
@@ -61,7 +61,7 @@ If you need to support older versions, you will not be able to use the managed w
 <details><summary><h4>Free builds can sometimes be queued</h4></summary>
 <p>
 
-You can easily build your app for submission to stores without even installing Xcode or Android Studio by using the free [standalone build service](../../distribution/building-standalone-apps/), but it occasionally has a queue depending on how many other folks are building a binary at that time. You can have access to dedicated build infrastructure with a ["Priority" plan](https://expo.io/developer-services), or you can [run the builds on your own CI](../../distribution/turtle-cli/) if you prefer.
+You can easily build your app for submission to stores without even installing Xcode or Android Studio by using the free [standalone build service](../distribution/building-standalone-apps.md), but it occasionally has a queue depending on how many other folks are building a binary at that time. You can have access to dedicated build infrastructure with a ["Priority" plan](https://expo.io/developer-services), or you can [run the builds on your own CI](../distribution/turtle-cli.md) if you prefer.
 
 </p>
 </details>
@@ -69,9 +69,19 @@ You can easily build your app for submission to stores without even installing X
 <details><summary><h4>Updates (JS and assets) for OTA updates and builds are size-limited</h4></summary>
 <p>
 
-Expo's current update service supports updates around 50 MiB. Updates are published both for OTA updates and to build standalone apps, which embed updates. See more about [optimizing updates](../../distribution/optimizing-updates/).
+Expo's current update service supports updates around 50 MiB. Updates are published both for OTA updates and to build standalone apps, which embed updates. See more about [optimizing updates](../distribution/optimizing-updates.md).
 
-You also can use the [bare workflow](../../bare/exploring-bare-workflow/) with the [`expo-updates`](../../versions/latest/sdk/updates/) library, which supports arbitrarily large updates that are self-hosted or embedded in apps compiled on your own computer.
+You also can use the [bare workflow](../bare/exploring-bare-workflow.md) with the [`expo-updates`](../versions/latest/sdk/updates.md) library, which supports arbitrarily large updates that are self-hosted or embedded in apps compiled on your own computer.
+
+</p>
+</details>
+
+<details><summary><h4>Your app cannot target only children under 13 years old.</h4></summary>
+<p>
+
+Both [Apple](https://developer.apple.com/app-store/review/guidelines/#kids) and [Google](https://support.google.com/googleplay/android-developer/answer/9285070?hl=en) provide strict guidelines for any apps that specifically target children under a particular age. One of these guidelines states that certain ad libraries, such as Facebook's Audience Network, cannot be used in the app. Since managed workflow apps [contain code for the entire Expo SDK by default](https://expo.fyi/managed-app-size), including Facebook's Audience Network library, you cannot list your app as "designed primarily for children under 13" in the App Store or Play Store, _even though this code is never run unless you explicitly call it_.
+
+You can continue to use the managed workflow for all your development, but when it comes time to build your app files for the stores, you should run `expo eject` and build natively with Xcode and Android Studio. We're working on letting you customize exactly what libraries are included in your managed workflow projects, so thank you for your patience in the meantime!
 
 </p>
 </details>
@@ -106,5 +116,5 @@ Configuring app icons, launch screen, and so on must be configured in the native
 
 If you've been reading along each section of the introduction then you will have a pretty good high-level understanding of Expo tools.
 
-- 👩‍💻 If you have heard enough and want to get to coding, [jump ahead to "Installation"](../../get-started/installation/).
-- ⁉️ If you have some unanswered questions, [continue to the "Common Questions" page](../../introduction/faq/).
+- 👩‍💻 If you have heard enough and want to get to coding, [jump ahead to "Installation"](../get-started/installation.md).
+- ⁉️ If you have some unanswered questions, [continue to the "Common Questions" page](../introduction/faq.md).

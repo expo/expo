@@ -14,14 +14,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URI;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
 import java.util.UUID;
 
 import static expo.modules.updates.loader.EmbeddedLoader.BUNDLE_FILENAME;
@@ -76,9 +72,7 @@ public class LegacyManifest implements Manifest {
       id = UUID.fromString(manifestJson.getString("releaseId"));
       String commitTimeString = manifestJson.getString("commitTime");
       try {
-        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
-        formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
-        commitTime = formatter.parse(commitTimeString);
+        commitTime = UpdatesUtils.parseDateString(commitTimeString);
       } catch (ParseException e) {
         Log.e(TAG, "Could not parse commitTime", e);
         commitTime = new Date();

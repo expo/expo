@@ -14,9 +14,10 @@ UseModernBuildSystem=${2:-"NO"}
 
 xcodebuild \
   -workspace ios/BareExpo.xcworkspace \
-  -scheme BareExpo \
+  -scheme BareExpoDetox \
   -configuration "$configuration" \
   -sdk iphonesimulator \
+  -arch x86_64 \
   -derivedDataPath "ios/build" \
   -UseModernBuildSystem="$UseModernBuildSystem" 2>&1 | xcpretty --knock
 

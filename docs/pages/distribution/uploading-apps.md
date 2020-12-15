@@ -7,7 +7,7 @@ You'll need a paid developer account for each platform for which you wish to upl
 
 ## 1. Build a standalone app
 
-To learn how to build native binaries, see [Building Standalone Apps](../building-standalone-apps/) or [Building Standalone Apps on Your CI](../turtle-cli).
+To learn how to build native binaries, see [Building Standalone Apps](building-standalone-apps.md) or [Building Standalone Apps on Your CI](turtle-cli.md).
 
 ## 2. Start the upload
 

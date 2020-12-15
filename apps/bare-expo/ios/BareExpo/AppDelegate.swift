@@ -12,24 +12,29 @@ import EXDevMenuInterface
 import EXDevMenu
 #endif
 
+#if FB_SONARKIT_ENABLED
+import FlipperKit
+#endif
+
 @UIApplicationMain
 class AppDelegate: UMAppDelegateWrapper {
   var moduleRegistryAdapter: UMModuleRegistryAdapter!
   var bridge: RCTBridge?
-  var launchOptions: [UIApplication.LaunchOptionsKey: Any]?;
+  var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
 
   let useDevClient: Bool = false
   
   override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    initializeFlipper(with: application)
     moduleRegistryAdapter = UMModuleRegistryAdapter(moduleRegistryProvider: UMModuleRegistryProvider())
     window = UIWindow(frame: UIScreen.main.bounds)
     self.launchOptions = launchOptions;
 
     if (useDevClient) {
-      let controller = EXDevelopmentClientController.sharedInstance()
+      let controller = EXDevLauncherController.sharedInstance()
       controller?.start(with: window, delegate: self, launchOptions: launchOptions);
     } else {
-      initializeReactNativeBridge();
+      initializeReactNativeBridge(launchOptions);
     }
 
     super.application(application, didFinishLaunchingWithOptions: launchOptions)
@@ -38,8 +43,8 @@ class AppDelegate: UMAppDelegateWrapper {
   }
 
   @discardableResult
-  func initializeReactNativeBridge() -> RCTBridge? {
-    if let bridge = RCTBridge(delegate: self, launchOptions: self.launchOptions) {
+  func initializeReactNativeBridge(_ launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> RCTBridge? {
+    if let bridge = RCTBridge(delegate: self, launchOptions: launchOptions) {
       let rootView = RCTRootView(bridge: bridge, moduleName: "BareExpo", initialProperties: nil)
       let rootViewController = UIViewController()
       rootView.backgroundColor = UIColor.white
@@ -52,6 +57,7 @@ class AppDelegate: UMAppDelegateWrapper {
       #if canImport(EXDevMenu)
       DevMenuManager.configure(withBridge: bridge)
       #endif
+      return bridge;
     }
     return nil;
   }
@@ -63,7 +69,23 @@ class AppDelegate: UMAppDelegateWrapper {
   #endif
   
   override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+    if (useDevClient && EXDevLauncherController.sharedInstance()!.onDeepLink(url, options: options)) {
+      return true;
+    }
+    
     return RCTLinkingManager.application(app, open: url, options: options)
+  }
+  
+  private func initializeFlipper(with application: UIApplication) {
+  #if FB_SONARKIT_ENABLED
+    let client = FlipperClient.shared()
+    let layoutDescriptorMapper = SKDescriptorMapper(defaults: ())
+    client?.add(FlipperKitLayoutPlugin(rootNode: application, with: layoutDescriptorMapper!))
+    client?.add(FKUserDefaultsPlugin(suiteName: nil))
+    client?.add(FlipperKitReactPlugin())
+    client?.add(FlipperKitNetworkPlugin(networkAdapter: SKIOSNetworkAdapter()))
+    client?.start()
+  #endif
   }
 }
 
@@ -74,7 +96,7 @@ extension AppDelegate: RCTBridgeDelegate {
     // DEBUG must be setup in Swift projects: https://stackoverflow.com/a/24112024/4047926
     #if DEBUG
     if (useDevClient) {
-      return EXDevelopmentClientController.sharedInstance()?.sourceUrl()
+      return EXDevLauncherController.sharedInstance()?.sourceUrl()
     } else {
       return RCTBundleURLProvider.sharedSettings()?.jsBundleURL(forBundleRoot: "index", fallbackResource: nil)
     }
@@ -104,8 +126,8 @@ extension AppDelegate: RCTBridgeDelegate {
 
 // MARK: - EXDevelopmentClientControllerDelegate
 
-extension AppDelegate:  EXDevelopmentClientControllerDelegate {
-  func developmentClientController(_ developmentClientController: EXDevelopmentClientController!, didStartWithSuccess success: Bool) {
-    developmentClientController.appBridge = initializeReactNativeBridge()
+extension AppDelegate:  EXDevLauncherControllerDelegate {
+  func devLauncherController(_ developmentClientController: EXDevLauncherController!, didStartWithSuccess success: Bool) {
+    developmentClientController.appBridge = initializeReactNativeBridge(developmentClientController.getLaunchOptions())
   }
 }

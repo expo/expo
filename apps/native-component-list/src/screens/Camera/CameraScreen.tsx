@@ -12,7 +12,7 @@ import * as FileSystem from 'expo-file-system';
 import * as Permissions from 'expo-permissions';
 import React from 'react';
 import { Alert, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import isIPhoneX from 'react-native-is-iphonex';
+import { isIphoneX } from 'react-native-iphone-x-helper';
 
 import { face, landmarks } from '../../components/Face';
 import GalleryScreen from './GalleryScreen';
@@ -388,7 +388,7 @@ const styles = StyleSheet.create({
     paddingTop: Constants.statusBarHeight / 2,
   },
   bottomBar: {
-    paddingBottom: isIPhoneX() ? 25 : 5,
+    paddingBottom: isIphoneX() ? 25 : 5,
     backgroundColor: 'transparent',
     justifyContent: 'space-between',
     flexDirection: 'row',

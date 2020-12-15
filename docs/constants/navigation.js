@@ -20,8 +20,9 @@ const GROUPS = {
   'Configuration Files': ['Configuration Files'],
   'React Native': ['React Native'],
   Preview: ['Preview'],
-  'EAS Build': ['EAS Build'],
-  'Dev Client': ['Dev Client'],
+  'EAS Build': ['Start Building', 'App Signing', 'Reference'],
+  'EAS Submit': ['EAS Submit'],
+  'Development Clients': ['Development Clients'],
 };
 
 // This array provides the **ordering** for pages within each section
@@ -31,26 +32,55 @@ const sections = [
     reference: ['Introduction', 'Support and feedback'],
   },
   {
-    name: 'EAS Build',
+    name: 'Start Building',
     reference: [
-      'Introduction',
-      'EAS Build from scratch in 5 minutes',
-      'Set up your project and environment',
+      'EAS Build',
+      'Creating your first build',
       'Configuration with eas.json',
-      'Android build process',
-      'iOS build process',
-      'Advanced credentials configuration',
-      'How to: configuration examples',
+      'Over-the-air updates',
+      'Internal distribution',
+      'Triggering builds from CI',
     ],
   },
   {
-    name: 'Dev Client',
+    name: 'App Signing',
+    reference: [
+      'Using automatically managed credentials',
+      'Using local credentials',
+      'Using existing credentials',
+      'Syncing credentials between remote and local sources',
+    ],
+  },
+  {
+    name: 'Reference',
+    reference: [
+      'Limitations',
+      'Integrating with JavaScript tooling',
+      'Environment variables and secrets',
+      'Build server infrastructure',
+      'Caching dependencies',
+      'Application identifiers',
+      'Build configuration process',
+      'Android build process',
+      'iOS build process',
+    ],
+  },
+  {
+    name: 'EAS Submit',
+    reference: [
+      'EAS Submit',
+      'Submitting to the Google Play Store',
+      'Submitting to the Apple App Store',
+    ],
+  },
+  {
+    name: 'Development Clients',
     reference: [
       'Introduction',
       'Installation',
-      'Coming from React Native',
-      'Distribution for iOS',
-      'Distribution for Android',
+      'Building With EAS',
+      'Building iOS Locally',
+      'Building Android Locally',
       'Extending the Development Menu',
     ],
   },
@@ -143,11 +173,11 @@ const sections = [
     reference: [
       'Overview',
       'Building Standalone Apps',
-      'Build Webhooks',
       'App Signing',
       'Deploying to App Stores',
       'Release Channels',
       'Advanced Release Channels',
+      'Build Webhooks',
       'Hosting Updates on Your Servers',
       'Building Standalone Apps on Your CI',
       'Uploading Apps to the Apple App Store and Google Play',
@@ -181,7 +211,7 @@ const sections = [
       'Debugging',
       'Common Development Errors',
       'Configuration with app.json / app.config.js',
-      'Publishing',
+      'Publishing updates',
       'Release Channels',
       'Building Standalone Apps',
       'Developing for Web',
@@ -411,13 +441,16 @@ const sortedReference = Object.assign(
 const sortedGeneral = groupNav(sortNav(prevaledNavigationData.general));
 const sortedStarting = groupNav(sortNav(prevaledNavigationData.starting));
 const sortedPreview = groupNav(sortNav(prevaledNavigationData.preview));
+const sortedEas = groupNav(sortNav(prevaledNavigationData.eas));
 
 module.exports = {
   generalDirectories: prevaledNavigationData.generalDirectories,
   startingDirectories: prevaledNavigationData.startingDirectories,
   previewDirectories: prevaledNavigationData.previewDirectories,
+  easDirectories: prevaledNavigationData.easDirectories,
   starting: sortedStarting,
   general: sortedGeneral,
   preview: sortedPreview,
+  eas: sortedEas,
   reference: { ...sortedReference, latest: sortedReference['v' + packageVersion] },
 };

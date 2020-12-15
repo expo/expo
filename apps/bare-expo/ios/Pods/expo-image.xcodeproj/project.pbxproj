@@ -7,33 +7,33 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		06B86C076470A84A526A00AA80EE71A7 /* EXImageBorders.h in Headers */ = {isa = PBXBuildFile; fileRef = F957CDBB5DB4F96046613398A9389909 /* EXImageBorders.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		113FF76F3FD25C5E9D8E8225349F19A1 /* EXImageCornerRadii.m in Sources */ = {isa = PBXBuildFile; fileRef = A656B3D967D8BE99B60E4B1B368EBE56 /* EXImageCornerRadii.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		1D03CE503C23D597DCE8BD139B771B9A /* EXImageTypes.m in Sources */ = {isa = PBXBuildFile; fileRef = 379BB62077BC14B8652A07A6D848DCBD /* EXImageTypes.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		1DC31921A8A1CD60085565D5BCED5323 /* EXImageView.h in Headers */ = {isa = PBXBuildFile; fileRef = E5F86A7A93120B3D6BC72641ACF136A0 /* EXImageView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		424185B00E242B3DE0C39897545586FD /* EXImageBorders.m in Sources */ = {isa = PBXBuildFile; fileRef = A9B11E7198547215C275B0FB3DD6A6A2 /* EXImageBorders.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		50E18452A363B2A12FC40ADE1079D04F /* EXImageTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 0128B0DCCA5AA76C5EFAA19D319CA473 /* EXImageTypes.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		76CCD29A06DEB015FDC9CC312D1FED83 /* EXImageViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 6E423D24E1AC458FFAF0FA2DBD3F5AA3 /* EXImageViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		839046502FC1BE7BF0AE42FF5331020E /* expo-image-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = FC17246A8EA3B74E5DFD2F60D51E5D0D /* expo-image-dummy.m */; };
-		A6CD7C98E2EEC92D785F1304FD651DE7 /* EXImageCornerRadii.h in Headers */ = {isa = PBXBuildFile; fileRef = 334E0C285DABA08C699F65013634D728 /* EXImageCornerRadii.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		BF6987A8D274BCA3D1890D56E1D1BC75 /* EXImageViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E61405F207102CC507CF95D57639F1 /* EXImageViewManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		CA3E46BC3FD36A0473E2421732766B2C /* EXImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = E130C99FA39D91785141177D3A7C7C0C /* EXImageView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		088A045587AAC637FAFCC7A797B49D17 /* EXImageCornerRadii.h in Headers */ = {isa = PBXBuildFile; fileRef = 334E0C285DABA08C699F65013634D728 /* EXImageCornerRadii.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		28517FAA807015164B2B1BEC1717BDEC /* expo-image-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = FC17246A8EA3B74E5DFD2F60D51E5D0D /* expo-image-dummy.m */; };
+		5D9E8D38DF63BE68D177AE4B251F4E31 /* EXImageViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 6E423D24E1AC458FFAF0FA2DBD3F5AA3 /* EXImageViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		64088AEB21CF2F1F89870670646F8850 /* EXImageTypes.m in Sources */ = {isa = PBXBuildFile; fileRef = 379BB62077BC14B8652A07A6D848DCBD /* EXImageTypes.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		66A7541917A1E52C2807FC0403BF98F4 /* EXImageViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 41E61405F207102CC507CF95D57639F1 /* EXImageViewManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		6C34714BBBEB97A55E7930B0BC34EAC4 /* EXImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = E130C99FA39D91785141177D3A7C7C0C /* EXImageView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		712EA55A5D47C9D088668F11585FAB64 /* EXImageTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 0128B0DCCA5AA76C5EFAA19D319CA473 /* EXImageTypes.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		755929E5C08CEF556A5FB2F1E698EEB8 /* EXImageBorders.h in Headers */ = {isa = PBXBuildFile; fileRef = F957CDBB5DB4F96046613398A9389909 /* EXImageBorders.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		800543C08F5BFCEE8C9DBCDB50509CD7 /* EXImageBorders.m in Sources */ = {isa = PBXBuildFile; fileRef = A9B11E7198547215C275B0FB3DD6A6A2 /* EXImageBorders.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		AB7A8A8598C42CCD2F08D0C68B73907D /* EXImageView.h in Headers */ = {isa = PBXBuildFile; fileRef = E5F86A7A93120B3D6BC72641ACF136A0 /* EXImageView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		CA9CD58F43052567030BFBDE429C7F49 /* EXImageCornerRadii.m in Sources */ = {isa = PBXBuildFile; fileRef = A656B3D967D8BE99B60E4B1B368EBE56 /* EXImageCornerRadii.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		20DC92AEF95EC991EC5802371F5159EC /* PBXContainerItemProxy */ = {
+		01731B09EF6A85B3347D9646B9ACC52A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = A8F80DADAD201671DD85863777B579B2 /* SDWebImage.xcodeproj */;
+			containerPortal = ED35E4E876E5823AB6AA5388F0EFDBDD /* React-Core.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 5DA1A74647F652AE8E4DE074AFC4C6B7;
+			remoteInfo = "React-Core";
+		};
+		901BA7A2FD973D3B6B08BB8227C13757 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F704B45F9CB86EA1DCCA8791214766C0 /* SDWebImage.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 4ECF4E662EEBE4FA58102FF984D920CC;
 			remoteInfo = SDWebImage;
-		};
-		450985C1B9AD2686C0A4EBC84F73CF3E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 43BE6997A25E5AE2BA1305B0948D2BB0 /* React.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 94DA87F24FB4B93E5D08FE961D5E5A3E;
-			remoteInfo = React;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -43,24 +43,24 @@
 		334E0C285DABA08C699F65013634D728 /* EXImageCornerRadii.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXImageCornerRadii.h; path = ios/EXImageCornerRadii.h; sourceTree = "<group>"; };
 		379BB62077BC14B8652A07A6D848DCBD /* EXImageTypes.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXImageTypes.m; path = ios/EXImageTypes.m; sourceTree = "<group>"; };
 		41E61405F207102CC507CF95D57639F1 /* EXImageViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXImageViewManager.m; path = ios/EXImageViewManager.m; sourceTree = "<group>"; };
-		43BE6997A25E5AE2BA1305B0948D2BB0 /* React */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React; path = React.xcodeproj; sourceTree = "<group>"; };
 		639DAC0A3055375F1C643E81D0ADF162 /* libexpo-image.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libexpo-image.a"; path = "libexpo-image.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6E423D24E1AC458FFAF0FA2DBD3F5AA3 /* EXImageViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXImageViewManager.h; path = ios/EXImageViewManager.h; sourceTree = "<group>"; };
 		7D2A3722F03BF93B0EB5450E53325AD4 /* expo-image-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "expo-image-prefix.pch"; sourceTree = "<group>"; };
 		97DDF198DFE687D17729E41641B3CCA8 /* expo-image.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "expo-image.debug.xcconfig"; sourceTree = "<group>"; };
 		A656B3D967D8BE99B60E4B1B368EBE56 /* EXImageCornerRadii.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXImageCornerRadii.m; path = ios/EXImageCornerRadii.m; sourceTree = "<group>"; };
-		A8F80DADAD201671DD85863777B579B2 /* SDWebImage */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDWebImage; path = SDWebImage.xcodeproj; sourceTree = "<group>"; };
 		A9B11E7198547215C275B0FB3DD6A6A2 /* EXImageBorders.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXImageBorders.m; path = ios/EXImageBorders.m; sourceTree = "<group>"; };
 		C2FCBF852A2A222CAD474EFF4B264BC9 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
 		CBE4769D4F0AE49D3ABA61A47275DBF1 /* expo-image.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "expo-image.release.xcconfig"; sourceTree = "<group>"; };
 		E130C99FA39D91785141177D3A7C7C0C /* EXImageView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXImageView.m; path = ios/EXImageView.m; sourceTree = "<group>"; };
 		E5F86A7A93120B3D6BC72641ACF136A0 /* EXImageView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXImageView.h; path = ios/EXImageView.h; sourceTree = "<group>"; };
+		ED35E4E876E5823AB6AA5388F0EFDBDD /* React-Core */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-Core"; path = "React-Core.xcodeproj"; sourceTree = "<group>"; };
+		F704B45F9CB86EA1DCCA8791214766C0 /* SDWebImage */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDWebImage; path = SDWebImage.xcodeproj; sourceTree = "<group>"; };
 		F957CDBB5DB4F96046613398A9389909 /* EXImageBorders.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXImageBorders.h; path = ios/EXImageBorders.h; sourceTree = "<group>"; };
 		FC17246A8EA3B74E5DFD2F60D51E5D0D /* expo-image-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "expo-image-dummy.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		9713D8B32360C47EAD6104C51FE36595 /* Frameworks */ = {
+		14E427152AA8BEC4457BEE638436C007 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -70,15 +70,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		09CEF12A23BF4FC2BA5467D256A39D6E /* Dependencies */ = {
-			isa = PBXGroup;
-			children = (
-				43BE6997A25E5AE2BA1305B0948D2BB0 /* React */,
-				A8F80DADAD201671DD85863777B579B2 /* SDWebImage */,
-			);
-			name = Dependencies;
-			sourceTree = "<group>";
-		};
 		1D7BBA87E60FDCA09B3735801B124154 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
@@ -103,7 +94,7 @@
 		7589308CCE89843C07D3BA71641AA5E2 = {
 			isa = PBXGroup;
 			children = (
-				09CEF12A23BF4FC2BA5467D256A39D6E /* Dependencies */,
+				CBB6706F8ABA8C150B8F9CDFC4F5AE88 /* Dependencies */,
 				B1A6C3EB090F747B46FE96F9329A5BA3 /* expo-image */,
 				B399983926C222C00E6C871240BC878C /* Frameworks */,
 				AE2F1E22B45928ABA2320DA517BFAA0C /* Products */,
@@ -145,18 +136,27 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		CBB6706F8ABA8C150B8F9CDFC4F5AE88 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				ED35E4E876E5823AB6AA5388F0EFDBDD /* React-Core */,
+				F704B45F9CB86EA1DCCA8791214766C0 /* SDWebImage */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		E8242DB8F1D63E6DEBC5F28C32A3A1D4 /* Headers */ = {
+		E2F043BBDCB51C616D58F66B12324248 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				06B86C076470A84A526A00AA80EE71A7 /* EXImageBorders.h in Headers */,
-				A6CD7C98E2EEC92D785F1304FD651DE7 /* EXImageCornerRadii.h in Headers */,
-				50E18452A363B2A12FC40ADE1079D04F /* EXImageTypes.h in Headers */,
-				1DC31921A8A1CD60085565D5BCED5323 /* EXImageView.h in Headers */,
-				76CCD29A06DEB015FDC9CC312D1FED83 /* EXImageViewManager.h in Headers */,
+				755929E5C08CEF556A5FB2F1E698EEB8 /* EXImageBorders.h in Headers */,
+				088A045587AAC637FAFCC7A797B49D17 /* EXImageCornerRadii.h in Headers */,
+				712EA55A5D47C9D088668F11585FAB64 /* EXImageTypes.h in Headers */,
+				AB7A8A8598C42CCD2F08D0C68B73907D /* EXImageView.h in Headers */,
+				5D9E8D38DF63BE68D177AE4B251F4E31 /* EXImageViewManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -165,17 +165,17 @@
 /* Begin PBXNativeTarget section */
 		3D9EF1DD98EB7E08A487963855D70CFB /* expo-image */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 87B5D8E78076E19C8076B4BE6FABF1DE /* Build configuration list for PBXNativeTarget "expo-image" */;
+			buildConfigurationList = 7784273440F3116D9EA2CBACF6507F65 /* Build configuration list for PBXNativeTarget "expo-image" */;
 			buildPhases = (
-				E8242DB8F1D63E6DEBC5F28C32A3A1D4 /* Headers */,
-				00B8E087AD18FA1DD8C731EA42355282 /* Sources */,
-				9713D8B32360C47EAD6104C51FE36595 /* Frameworks */,
+				E2F043BBDCB51C616D58F66B12324248 /* Headers */,
+				2CB5E8EC872064E2D7CA2E10DF3E19A0 /* Sources */,
+				14E427152AA8BEC4457BEE638436C007 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				E66A0FE1D528162E63D6C759EB64A02B /* PBXTargetDependency */,
-				D8E1A2CB6683E36FACFE0CB5DFFEFE13 /* PBXTargetDependency */,
+				E7AC172EBE97B9C352D7608523E1FB90 /* PBXTargetDependency */,
+				3D1C8BAAAC9AEECBF313548FB6C7BD91 /* PBXTargetDependency */,
 			);
 			name = "expo-image";
 			productName = "expo-image";
@@ -204,10 +204,10 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProjectRef = 43BE6997A25E5AE2BA1305B0948D2BB0 /* React */;
+					ProjectRef = ED35E4E876E5823AB6AA5388F0EFDBDD /* React-Core */;
 				},
 				{
-					ProjectRef = A8F80DADAD201671DD85863777B579B2 /* SDWebImage */;
+					ProjectRef = F704B45F9CB86EA1DCCA8791214766C0 /* SDWebImage */;
 				},
 			);
 			projectRoot = "";
@@ -218,64 +218,40 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		00B8E087AD18FA1DD8C731EA42355282 /* Sources */ = {
+		2CB5E8EC872064E2D7CA2E10DF3E19A0 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				424185B00E242B3DE0C39897545586FD /* EXImageBorders.m in Sources */,
-				113FF76F3FD25C5E9D8E8225349F19A1 /* EXImageCornerRadii.m in Sources */,
-				1D03CE503C23D597DCE8BD139B771B9A /* EXImageTypes.m in Sources */,
-				CA3E46BC3FD36A0473E2421732766B2C /* EXImageView.m in Sources */,
-				BF6987A8D274BCA3D1890D56E1D1BC75 /* EXImageViewManager.m in Sources */,
-				839046502FC1BE7BF0AE42FF5331020E /* expo-image-dummy.m in Sources */,
+				800543C08F5BFCEE8C9DBCDB50509CD7 /* EXImageBorders.m in Sources */,
+				CA9CD58F43052567030BFBDE429C7F49 /* EXImageCornerRadii.m in Sources */,
+				64088AEB21CF2F1F89870670646F8850 /* EXImageTypes.m in Sources */,
+				6C34714BBBEB97A55E7930B0BC34EAC4 /* EXImageView.m in Sources */,
+				66A7541917A1E52C2807FC0403BF98F4 /* EXImageViewManager.m in Sources */,
+				28517FAA807015164B2B1BEC1717BDEC /* expo-image-dummy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		D8E1A2CB6683E36FACFE0CB5DFFEFE13 /* PBXTargetDependency */ = {
+		3D1C8BAAAC9AEECBF313548FB6C7BD91 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = SDWebImage;
-			targetProxy = 20DC92AEF95EC991EC5802371F5159EC /* PBXContainerItemProxy */;
+			targetProxy = 901BA7A2FD973D3B6B08BB8227C13757 /* PBXContainerItemProxy */;
 		};
-		E66A0FE1D528162E63D6C759EB64A02B /* PBXTargetDependency */ = {
+		E7AC172EBE97B9C352D7608523E1FB90 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = React;
-			targetProxy = 450985C1B9AD2686C0A4EBC84F73CF3E /* PBXContainerItemProxy */;
+			name = "React-Core";
+			targetProxy = 01731B09EF6A85B3347D9646B9ACC52A /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		0624BDCC7FA5DD66200B5358D680566A /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 97DDF198DFE687D17729E41641B3CCA8 /* expo-image.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/expo-image/expo-image-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = expo_image;
-				PRODUCT_NAME = "expo-image";
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		71BF62F953A82D6D52BF93300C1F87EE /* Debug */ = {
+		3176DA70DC130839C233272E8253F52F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -298,6 +274,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -323,7 +300,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -336,15 +313,15 @@
 			};
 			name = Debug;
 		};
-		DA9EB9EE5B158761C7C1BA32CC652E68 /* Release */ = {
+		9777F111E8FF557973F1D53B168D36D8 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CBE4769D4F0AE49D3ABA61A47275DBF1 /* expo-image.release.xcconfig */;
+			baseConfigurationReference = 97DDF198DFE687D17729E41641B3CCA8 /* expo-image.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/expo-image/expo-image-prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				OTHER_LDFLAGS = "";
@@ -358,14 +335,14 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
-		E959990F64940C3401DFC3528FFC16A8 /* Release */ = {
+		BA47DF26E6411919E6B7F9A2CB743FAB /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -388,6 +365,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -410,7 +388,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -422,14 +400,40 @@
 			};
 			name = Release;
 		};
+		EED067FADB948823ABA3293058678188 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CBE4769D4F0AE49D3ABA61A47275DBF1 /* expo-image.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/expo-image/expo-image-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = expo_image;
+				PRODUCT_NAME = "expo-image";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		87B5D8E78076E19C8076B4BE6FABF1DE /* Build configuration list for PBXNativeTarget "expo-image" */ = {
+		7784273440F3116D9EA2CBACF6507F65 /* Build configuration list for PBXNativeTarget "expo-image" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				0624BDCC7FA5DD66200B5358D680566A /* Debug */,
-				DA9EB9EE5B158761C7C1BA32CC652E68 /* Release */,
+				9777F111E8FF557973F1D53B168D36D8 /* Debug */,
+				EED067FADB948823ABA3293058678188 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -437,8 +441,8 @@
 		F7869D04746DCB157532D301F6627DA4 /* Build configuration list for PBXProject "expo-image" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				71BF62F953A82D6D52BF93300C1F87EE /* Debug */,
-				E959990F64940C3401DFC3528FFC16A8 /* Release */,
+				3176DA70DC130839C233272E8253F52F /* Debug */,
+				BA47DF26E6411919E6B7F9A2CB743FAB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

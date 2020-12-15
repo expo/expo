@@ -1,6 +1,7 @@
 #import <React/RCTViewManager.h>
 #import <React/RCTView.h>
 #import <React/RCTComponent.h>
+
 #import "RNSScreenContainer.h"
 
 @class RNSScreenContainerView;
@@ -27,6 +28,12 @@ typedef NS_ENUM(NSInteger, RNSScreenReplaceAnimation) {
   RNSScreenReplaceAnimationPush,
 };
 
+typedef NS_ENUM(NSInteger, RNSActivityState) {
+  RNSActivityStateInactive = 0,
+  RNSActivityStateTransitioningOrBelowTop = 1,
+  RNSActivityStateOnTop = 2
+};
+
 @interface RCTConvert (RNSScreen)
 
 + (RNSScreenStackPresentation)RNSScreenStackPresentation:(id)json;
@@ -34,7 +41,7 @@ typedef NS_ENUM(NSInteger, RNSScreenReplaceAnimation) {
 
 @end
 
-@interface RNSScreen : UIViewController
+@interface RNSScreen : UIViewController <RNScreensViewControllerDelegate>
 
 - (instancetype)initWithView:(UIView *)view;
 - (void)notifyFinishTransitioning;
@@ -42,6 +49,7 @@ typedef NS_ENUM(NSInteger, RNSScreenReplaceAnimation) {
 @end
 
 @interface RNSScreenManager : RCTViewManager
+
 @end
 
 @interface RNSScreenView : RCTView
@@ -54,7 +62,7 @@ typedef NS_ENUM(NSInteger, RNSScreenReplaceAnimation) {
 @property (weak, nonatomic) UIView<RNSScreenContainerDelegate> *reactSuperview;
 @property (nonatomic, retain) UIViewController *controller;
 @property (nonatomic, readonly) BOOL dismissed;
-@property (nonatomic) BOOL active;
+@property (nonatomic) int activityState;
 @property (nonatomic) BOOL gestureEnabled;
 @property (nonatomic) RNSScreenStackAnimation stackAnimation;
 @property (nonatomic) RNSScreenStackPresentation stackPresentation;

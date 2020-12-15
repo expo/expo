@@ -55,8 +55,6 @@ public class ConstantsBinding extends ConstantsService implements ConstantsInter
     Map<String, Object> constants = super.getConstants();
 
     constants.put("expoVersion", ExpoViewKernel.getInstance().getVersionName());
-    // Override scoped installationId from ConstantsService with unscoped
-    constants.put("installationId", mExponentSharedPreferences.getOrCreateUUID());
     constants.put("manifest", mManifest.toString());
     constants.put("nativeAppVersion", ExpoViewKernel.getInstance().getVersionName());
     constants.put("nativeBuildVersion", Constants.ANDROID_VERSION_CODE);
@@ -65,6 +63,7 @@ public class ConstantsBinding extends ConstantsService implements ConstantsInter
     String appOwnership = getAppOwnership();
 
     constants.put("appOwnership", appOwnership);
+    constants.put("executionEnvironment", getExecutionEnvironment().getString());
     constants.putAll(mExperienceProperties);
 
     Map<String, Object> platform = new HashMap<>();
@@ -102,5 +101,19 @@ public class ConstantsBinding extends ConstantsService implements ConstantsInter
     } else {
       return "expo";
     }
+  }
+
+  private ExecutionEnvironment getExecutionEnvironment() {
+    if (Constants.isStandaloneApp()) {
+      return ExecutionEnvironment.STANDALONE;
+    } else {
+      return ExecutionEnvironment.STORE_CLIENT;
+    }
+  }
+
+  @Override
+  public String getOrCreateInstallationId() {
+    // Override scoped installationId from ConstantsService with unscoped
+    return mExponentSharedPreferences.getOrCreateUUID();
   }
 }

@@ -22,7 +22,7 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_ROOT)
 LOCAL_CPP_FEATURES := exceptions
 
 LOCAL_STATIC_LIBRARIES := libjsi
-LOCAL_SHARED_LIBRARIES := jsinspector_abi39_0_0 libfb_abi39_0_0 libfbjni_abi39_0_0 libfolly_futures libfolly_json_abi39_0_0 libhermes_abi39_0_0
+LOCAL_SHARED_LIBRARIES := jsinspector_abi40_0_0 libfb_abi40_0_0 libfbjni_abi40_0_0 libfolly_futures libfolly_json_abi40_0_0 libhermes_abi40_0_0
 
 include $(BUILD_SHARED_LIBRARY)
 

@@ -144,9 +144,35 @@ Skipping or misconfiguring either of these will result in sourcemaps not working
 
 ### Publish your app with sourcemaps
 
-With the `postPublish` hook in place, now all you need to do is run `expo publish` and the sourcemaps will be uploaded automatically. We automatically assign a unique release version for Sentry each time you hit publish, based on the version you specify in `app.json` and a release id on our backend -- this means that if you forget to update the version but hit publish, you will still get a unique Sentry release. If you're not familiar with publishing on Expo, you can [read more about it here](../../workflow/publishing/).
+With the `postPublish` hook in place, now all you need to do is run `expo publish` and the sourcemaps will be uploaded automatically. We automatically assign a unique release version for Sentry each time you hit publish, based on the version you specify in `app.json` and a release id on our backend -- this means that if you forget to update the version but hit publish, you will still get a unique Sentry release. If you're not familiar with publishing on Expo, you can [read more about it here](../workflow/publishing.md).
 
-> This hook can also be used as a `postExport` hook if you're [self-hosting your OTA Updates](/distribution/hosting-your-app/).
+> This hook can also be used as a `postExport` hook if you're [self-hosting your OTA Updates](../distribution/hosting-your-app.md).
+
+### Self-hosting OTA?
+
+If you're self-hosting your Over the Air Updates (this means you run `expo export` instead of `expo publish`), you need to:
+
+- replace `hooks.postPublish` in your `app.json` file with `hooks.postExport` (everything else stays the same)
+- add the `RewriteFrames` integration to your `Sentry.init` call like so:
+
+```js
+Sentry.init({
+  dsn: SENTRY_DSN,
+  enableInExpoDevelopment: true,
+  integrations: [
+    new RewriteFrames({
+      iteratee: frame => {
+        if (frame.filename) {
+          // the values depend on what names you give the bundle files you are uploading to Sentry
+          frame.filename =
+            Platform.OS === 'android' ? 'app:///index.android.bundle' : 'app:///main.jsbundle';
+        }
+        return frame;
+      },
+    }),
+  ],
+});
+```
 
 ### Testing Sentry
 
