@@ -117,7 +117,8 @@ export const globalExtras = css`
 
   // TODO: investigate why some style is forcing nested ordered lists to have
   // 1rem bottom margin!
-  ul ul {
+  ul ul,
+  ol ul {
     margin-bottom: 0 !important;
   }
 `;

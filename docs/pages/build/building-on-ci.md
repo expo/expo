@@ -2,15 +2,17 @@
 title: Triggering builds from CI
 ---
 
-This document outlines how to trigger builds on EAS for your app from a CI environment, such as GitHub Actions.
+This document outlines how to trigger builds on EAS for your app from a CI environment such as GitHub Actions.
 
 Before building with EAS on CI, we need to install and configure `eas-cli`. Then, we can trigger new builds with the `eas build` command.
 
-## Prerequisite: run a successful build from your local machine
+## Prerequisites
+
+### Run a successful build from your local machine
 
 To trigger EAS builds from a CI environment, we first need to configure our app for EAS Build and successfully run a build from our local machine for each platform that we'd like to support on CI.
 
-If you have run `eas build -p [all|ios|android]` successfuly before, then you can continue.
+If you have run `eas build -p [all|ios|android]` successfully before, then you can continue.
 
 If you haven't done this yet, please refer to the ["Creating your first build"](setup.md) guide and return here when you're ready.
 
@@ -34,7 +36,7 @@ npm install --save-dev eas-cli
 
 ### Provide a personal access token to authenticate with your Expo account on CI
 
-Next, we need to authenticate as the owner of the app. This is possible by storing a personal access token in the `EXPO_TOKEN` environment variable in the CI settings.
+Next, we need to ensure that we can authenticate ourselves on CI as the owner of the app. This is possible by storing a personal access token in the `EXPO_TOKEN` environment variable in the CI settings.
 
 See [the guide for personal access tokens](https://docs.expo.io/accounts/personal/#personal-access-tokens) to learn how to create access tokens.
 

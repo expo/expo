@@ -6,7 +6,7 @@ This page describes the process of building Android projects with EAS Build. You
 
 ## Build Process
 
-Let's take a closer look at the steps for building Android projects with EAS Build. We first run some steps on your local machine to prepare the project, and then we actually build the project on a remote service.
+Let's take a closer look at the steps for building Android projects with EAS Build. We'll first run some steps on your local machine to prepare the project, and then we'll actually build the project on a remote service.
 
 ### Local Steps
 
@@ -15,7 +15,7 @@ The first phase happens on your computer. EAS CLI is in charge of completing the
 1. Check if the git index is clean - this means that there aren't any uncommitted changes. If it's not clean, an error is thrown. We use git to prepare a tarball of your project to upload to the build service.
 2. Prepare the credentials needed for the build unless `builds.android.PROFILE_NAME.withoutCredentials` is set to `true`.
 
-   Depending on the value of `builds.android.PROFILE_NAME.credentialsSource`, the credentials are obtained from either the local `credentials.json` file or from the EAS servers. If the `auto` or `remote` mode is selected but no credentials exist yet, you're offered to generate a new keystore.
+   - Depending on the value of `builds.android.PROFILE_NAME.credentialsSource`, the credentials are obtained from either the local `credentials.json` file or from the EAS servers. If the `auto` or `remote` mode is selected but no credentials exist yet, you're prompted to generate a new keystore.
 
 3. Additional step for **generic** projects: Check if the Android project is configured to be buildable on the EAS servers.
 
@@ -31,23 +31,23 @@ Next, this is what happens when EAS Build picks up your request:
 
 1. Create a new Docker container for the build.
 
-   Every build gets its own, fresh container with all build tools installed there (Java JDK, Android SDK, NDK, and so on).
+   - Every build gets its own fresh container with all build tools installed there (Java JDK, Android SDK, NDK, and so on).
 
 2. Download the project tarball from a private AWS S3 bucket and unpack it.
 3. Run `yarn install` in the project root (or `npm install` if `yarn.lock` does not exist).
 4. Additional steps for **managed** projects:
 
    - Run `expo eject` to convert the project to a generic one.
-   - Configure the Android similarly to the step 3. from [Local Steps](#local-steps).
+   - Configure the Android similarly to the step 3 from [Local Steps](#local-steps).
 
 5. Restore the keystore (if it was included in the build request).
 6. Run `./gradlew COMMAND` in the `android` directory inside your project.
 
-   `COMMAND` is the command defined in your `eas.json` at `builds.android.PROFILE_NAME.gradleCommand`. It defaults to `:app:bundleRelease` which produces the AAB (Android App Bundle).
+   - `COMMAND` is the command defined in your `eas.json` at `builds.android.PROFILE_NAME.gradleCommand`. It defaults to `:app:bundleRelease` which produces the AAB (Android App Bundle).
 
 7. Upload the build artifact to AWS S3.
 
-   The artifact path can be configured in `eas.json` at `builds.android.PROFILE_NAME.artifactPath`. It defaults to `android/app/build/outputs/**/*.{apk,aab}`. We're using the [fast-glob](https://github.com/mrmlnc/fast-glob#pattern-syntax) package for pattern matching.
+   - The artifact path can be configured in `eas.json` at `builds.android.PROFILE_NAME.artifactPath`. It defaults to `android/app/build/outputs/**/*.{apk,aab}`. We're using the [fast-glob](https://github.com/mrmlnc/fast-glob#pattern-syntax) package for pattern matching.
 
 ## Project Auto-Configuration
 
@@ -55,13 +55,13 @@ Every time you want to build a new Android app binary, we validate that the proj
 
 ### Android Keystore
 
-Android requires you to sign your application with a certificate. That certificate is stored in your keystore. The Google Play Store identifies applications based on the certificate. It means that if you lose your keystore you may not be able to update your application in the store. However, with [Play App Signing](https://developer.android.com/studio/publish/app-signing#app-signing-google-play), you can mitigate the risk of losing your keystore.
+Android requires you to sign your application with a certificate. That certificate is stored in your keystore. The Google Play Store identifies applications based on the certificate. This means that if you lose your keystore, you may not be able to update your application in the store. However, with [Play App Signing](https://developer.android.com/studio/publish/app-signing#app-signing-google-play), you can mitigate the risk of losing your keystore.
 
 Your application's keystore should be kept private. **Under no circumstances should you check it in to your repository.** Debug keystores are the only exception because we don't use them for uploading apps to the Google Play Store.
 
 ### Configuring Gradle
 
-Let's focus on building a release app binary. Like we previously mentioned, your app binary needs to be signed with the keystore. Because we're building the project on a remote server we had to come up with a way of providing Gradle with the credentials which are not checked in to the repository. When running `eas build:configure`, we're writing the `android/app/eas-build.gradle` file with the following contents:
+Let's focus on building a release app binary. Like we previously mentioned, your app binary needs to be signed with the keystore. Since we're building the project on a remote server, we had to come up with a way to provide Gradle with credentials which aren't, for security reasons, checked in to your repository. When running `eas build:configure`, we're writing the `android/app/eas-build.gradle` file with the following contents:
 
 <!-- prettier-ignore -->
 ```groovy
@@ -95,7 +95,7 @@ tasks.whenTaskAdded {
   }
   /* @end */
 
-  // We only need to configure EAS build once
+  // We need to configure EAS Build only once
   if (isEasBuildConfigured) {
     return
   }

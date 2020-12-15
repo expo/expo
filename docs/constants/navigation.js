@@ -67,7 +67,11 @@ const sections = [
   },
   {
     name: 'EAS Submit',
-    reference: ['EAS Submit', 'Submit to the Apple App Store', 'Submit to the Google Play Store'],
+    reference: [
+      'EAS Submit',
+      'Submitting to the Google Play Store',
+      'Submitting to the Apple App Store',
+    ],
   },
   {
     name: 'Development Clients',

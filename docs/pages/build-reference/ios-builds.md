@@ -6,7 +6,7 @@ This page describes the process of building iOS projects with EAS Build. You may
 
 ## Build Process
 
-Let's take a closer look at the steps for building iOS projects with EAS Build. We first run some steps on your local machine to prepare the project, and then we actually build the project on a remote service.
+Let's take a closer look at the steps for building iOS projects with EAS Build. We'll first run some steps on your local machine to prepare the project and then we'll actually build the project on a remote service.
 
 ### Local Steps
 
@@ -15,25 +15,25 @@ The first phase happens on your computer. EAS CLI is in charge of completing the
 1. Check if the git index is clean - this means if there aren't any uncommitted changes. If it's not clean an error is thrown.
 2. Prepare the credentials needed for the build.
 
-   Depending on the value of `builds.ios.PROFILE_NAME.credentialsSource`, the credentials are obtained from either the local `credentials.json` file or from the EAS servers. If the `auto` or `remote` mode is selected but no credentials exist yet, you're offered to generate them.
+   - Depending on the value of `builds.ios.PROFILE_NAME.credentialsSource`, the credentials are obtained from either the local `credentials.json` file or from the EAS servers. If the `auto` or `remote` mode is selected but no credentials exist yet, you're offered to generate them.
 
-3. Additional step for **generic** projects: Check if the Xcode project is configured to be buildable on the EAS servers, i.e. ensure the correct bundle identifier and Apple Team ID are set.
+3. **Generic** projects require an additional step: check whether the Xcode project is configured to be buildable on the EAS servers (i.e. ensure the correct bundle identifier and Apple Team ID are set).
 4. Create the tarball containing all your project sources - run `git archive --format=tar.gz --prefix project/ -o project.tar.gz HEAD`.
 5. Upload the project tarball to a private AWS S3 bucket and send the build request to EAS Build.
 
 ### Remote Steps
 
-Next, this is what happens when EAS Build picks up your request:
+In this next phase, this is what happens when EAS Build picks up your request:
 
 1. Create a new macOS VM for the build.
 
-   Every build gets its own, fresh macOS VM with all build tools installed there (Xcode, Fastlane, and so on).
+   - Every build gets its own fresh macOS VM with all build tools installed there (Xcode, Fastlane, and so on).
 
 2. Download the project tarball from a private AWS S3 bucket and unpack it.
 3. Run `yarn install` in the project root (or `npm install` if `yarn.lock` does not exist).
-4. Additional step for **managed** projects: Run `expo eject` to convert the project to a generic one.
+4. **Managed** projects require an additional step: Run `expo eject` to convert the project to a generic one.
 5. Run `pod install` in the `ios` directory inside your project.
-6. Restore the credentials.
+6. Restore the credentials:
 
    - Create a new keychain.
 
@@ -45,11 +45,11 @@ Next, this is what happens when EAS Build picks up your request:
 
    - Update the Xcode project with the ID of the Provisioning Profile.
 
-7. Create `Gymfile` in the `ios` directory if it does **not** exist (check out the [Default Gymfile](#default-gymfile) section).
+7. Create `Gymfile` in the `ios` directory if it does **not** already exist (check out the [Default Gymfile](#default-gymfile) section).
 8. Run `fastlane gym` in the `ios` directory.
 9. Upload the build artifact to a private AWS S3 bucket.
 
-   The artifact path can be configured in `eas.json` at `builds.ios.PROFILE_NAME.artifactPath`. It defaults to `ios/build/App.ipa`. You can specify a glob-like pattern for `artifactPath`. We're using the [fast-glob](https://github.com/mrmlnc/fast-glob#pattern-syntax) package under the hood.
+   - The artifact path can be configured in `eas.json` at `builds.ios.PROFILE_NAME.artifactPath`. It defaults to `ios/build/App.ipa`. You can specify a glob-like pattern for `artifactPath`. We're using the [fast-glob](https://github.com/mrmlnc/fast-glob#pattern-syntax) package under the hood.
 
 ## Building iOS Projects With Fastlane
 
