@@ -28,7 +28,7 @@
     "expo-crypto": "~8.4.0",
     "expo-device": "~2.4.0",
     "expo-file-system": "~9.3.0",
-    "expo-gl": "~9.2.0",
+    "expo-gl": "~10.0.0",
     "expo-google-sign-in": "~8.4.0",
     "expo-haptics": "~8.4.0",
     "expo-image-manipulator": "~8.4.0",
