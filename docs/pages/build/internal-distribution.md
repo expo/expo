@@ -4,9 +4,9 @@ title: Internal distribution
 
 import TerminalBlock from '~/components/plugins/TerminalBlock';
 
-Uploading your app to TestFlight and Google Play beta can be time consuming and can be limiting (e.g. TestFlight can only have one active build at a time). You can skip these services entirely by building binaries that can be downloaded and installed to physical devices directly from a web browser.
+Uploading your app to TestFlight and Google Play beta can be time consuming and limiting (e.g. TestFlight can only have one active build at a time). You can skip these services entirely by building binaries that can be downloaded and installed to physical devices directly from a web browser.
 
-EAS Build can help you with this by providing sharable URLs for your builds with instructions on how to get them running, so you can just share one URL with a teammate and it'll include all of the information they need to test the app.
+EAS Build can help you with this by providing sharable URLs for your builds with instructions on how to get them running, so you can share a single URL with a teammate that'll include all of the information they need to test the app.
 
 > 😅 Installing an app on iOS is a bit trickier than on Android, but it's possible thanks to ad hoc and enterprise provisioning profiles. We'll talk more about this later in this doc.
 
@@ -85,7 +85,7 @@ You can register new devices at any time, but builds that were created before th
 
 The next step is to generate or update the provisioning profile. When you proceed to running a build, you will be guided through this process.
 
-> **Are you using manual local credentials?** Make sure to point your `credentials.json` to an ad hoc <!-- or enterprise -->provisioning profile that you generate through the Apple Developer portal. Beware that EAS CLI does only a limited validation of your local credentials, and you will have to handle device UDID registration manually. Read more about [Using local credentials](/app-signing/manual-credentials.md).
+> **Are you using manual local credentials?** Make sure to point your `credentials.json` to an ad hoc <!-- or enterprise -->provisioning profile that you generate through the Apple Developer portal. Beware that EAS CLI does only a limited validation of your local credentials, and you will have to handle device UDID registration manually. Read more about [using local credentials](/app-signing/local-credentials.md).
 
 ### 3. Run a build with the internal build profile
 

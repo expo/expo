@@ -8,7 +8,7 @@ If you would like to manage your own app signing credentials, you can use `crede
 
 ## credentials.json
 
-If you opt-in to manual credentials configuration, you will create a `credentials.json` file at the root of your project and it will look something like this:
+If you opt in to local credentials configuration, you'll need to create a `credentials.json` file at the root of your project and it should look something like this:
 
 ```json
 {
@@ -142,7 +142,7 @@ If you do not set any option, `"credentialsSource"` will default to `"auto"`.
 
 ### Automatic credentials resolution (default)
 
-Let's assume we're only building for Android and we're using the following configuration (defined in `eas.json` - [learn more about this file](/build/eas-json.md)):
+Let's assume we're building only for Android and using the following configuration (defined in `eas.json` - [learn more about using the `eas.json` file](/build/eas-json.md)):
 
 ```json
 {
@@ -169,7 +169,7 @@ The algorithm of the auto mode works like this:
 
 ## Using local credentials on builds triggered from CI
 
-Before you start working on setting up your CI job, make sure you have your `credentials.json` and `eas.json` files configured as described above.
+Before you start setting up your CI job, make sure you have your `credentials.json` and `eas.json` files configured [as described above](#credentialsjson).
 
 We are going to pass in `credentials.json` as a secret, and developers tend to provide CI jobs with secrets by using environment variables. One of the challenges with this approach is that the `credentials.json` file contains a JSON object and it might be difficult to escape it properly, so you could assign it to an environment variable. One possible solution to this problem is to convert the file to a base64-encoded string, set an environment variable to that value, and later decode it and restore the file on the CI.
 

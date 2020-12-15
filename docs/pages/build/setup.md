@@ -2,7 +2,7 @@
 title: Creating your first build
 ---
 
-In this guide you will learn how to build a ready-to-submit binary for the Apple App Store and Google Play Store with EAS Build. For a simple app, it shouldn't take more than a few minutes total to kick off your builds for both Android and iOS.
+In this guide, you'll learn how to build a ready-to-submit binary for the Apple App Store and Google Play Store using EAS Build. For a simple app, you should expect to have kicked off your builds for Android and iOS within a few minutes.
 
 ## Prerequisites
 
@@ -12,12 +12,12 @@ EAS Build is a brand new and rapidly evolving service. It can't do everything ye
 <details><summary><h4>📦 A React Native iOS and/or Android project that you want to build.</h4></summary>
 <p>
 
-Don't have a project yet? No problem, it's quick and easy to create a "Hello world" app that you can use with this guide.
+Don't have a project yet? No problem: it's quick and easy to create a "Hello world" app that you can use with this guide.
 <div style={{marginTop: -10}} />
 
 - Install Expo CLI by running `npm install -g expo-cli` (or `yarn global add expo-cli`).
 - Run `expo init PROJECT_NAME` (let's assume `PROJECT_NAME` is `abcd`) and choose a bare workflow template (either `minimal` or `minimal (TypeScript)`).
-- EAS Build also works well with projects created by `npx react-native`, `create-react-native-app` `ignite-cli`, and other project bootstrapping tools.
+- EAS Build also works well with projects created by `npx react-native`, `create-react-native-app`, `ignite-cli`, and other project bootstrapping tools.
 
 <center><img src="/static/images/eas-build/walkthrough/01-init.png" /></center>
 
@@ -35,7 +35,7 @@ Don't have a project yet? No problem, it's quick and easy to create a "Hello wor
 </p>
 </details>
 
-> While EAS Build is in preview, it is only available to EAS Priority Plan subscribers. Once it graduates from preview it will become more broadly available. The first month is free, cancel any time.
+> While EAS Build is in preview, it is available only to EAS Priority Plan subscribers. Once it graduates from preview it will become more broadly available. The first month is free, and you can cancel any time.
 
 <details><summary><h4>🍎 If you want to build for iOS: Apple Developer Program membership.</h4></summary>
 <p>
@@ -57,11 +57,11 @@ Don't have a project yet? No problem, it's quick and easy to create a "Hello wor
 
 ## 1. Install the latest EAS CLI
 
-Install EAS CLI by running `npm install -g eas-cli` (or `yarn global add eas-cli`). It will notify you when a new version is available, we encourage you to always stay up to date with the latest version.
+Install EAS CLI by running `npm install -g eas-cli` (or `yarn global add eas-cli`). It will notify you when a new version is available (we encourage you to always stay up to date with the latest version).
 
 ## 2. Log in to your Expo account
 
-If you are already signed in through Expo CLI, you don't need to do anything. Otherwise, log in with `eas login`. You can check if you're logged in by running `eas whoami`.
+If you are already signed in through Expo CLI, you don't need to do anything. Otherwise, log in with `eas login`. You can check whether you're logged in by running `eas whoami`.
 
 ## 3. Configure the project
 
@@ -88,13 +88,13 @@ Before the build can start, we'll need to generate or provide app signing creden
 
 - If you have not yet generated a keystore for your app, you can let EAS CLI take care of that for you by selecting `Generate new keystore`, and then you're done. The keystore will be stored securely on EAS servers.
 - If you have previously built your app in the managed workflow with `expo build:android` (using the same `slug`), then the same credentials will be used here.
-- If you would rather manually generate your keystore, please see the [manual Android credentials guide](/app-signing/manual-credentials.md#android-credentials) for more information.
+- If you would rather manually generate your keystore, please see the [manual Android credentials guide](/app-signing/local-credentials.md#android-credentials) for more information.
 
 #### iOS app signing credentials
 
 - If you have not generated a provisioning profile and/or distribution certificate yet, you can let EAS CLI take care of that for you by signing into your Apple Developer Program account and following the prompts.
 - If you have already built your app in the managed workflow with `expo build:ios` (using the same `slug`), then the same credentials will be used here.
-- If you would rather manually generate your credentials, refer to the [manual iOS credentials guide](/app-signing/manual-credentials.md#ios-credentials) for more information.
+- If you would rather manually generate your credentials, refer to the [manual iOS credentials guide](/app-signing/local-credentials.md#ios-credentials) for more information.
 
 ## 5. Wait for the build to complete
 
