@@ -213,16 +213,17 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		34731E77224A976B740B2820680BB528 /* Debug */ = {
+		380E4D5F268CC3BB631833B184A48E5F /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 092DA9E0A5B71FB803DF32C051A4CB48 /* EXMailComposer.debug.xcconfig */;
+			baseConfigurationReference = CAA27822E77F737D2C64B02B99965F79 /* EXMailComposer.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				GCC_PREFIX_HEADER = "Target Support Files/EXMailComposer/EXMailComposer-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -234,10 +235,11 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
-		38BE57EFB91E56B32DBB216323EACFFD /* Release */ = {
+		951149CDE7A4AF19663F9083F2F30BE4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -287,7 +289,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -299,7 +301,32 @@
 			};
 			name = Release;
 		};
-		72D528084D60DBA11753F8551E04DA39 /* Debug */ = {
+		ACAA88172D065F439DEB6C5968D2E07D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 092DA9E0A5B71FB803DF32C051A4CB48 /* EXMailComposer.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXMailComposer/EXMailComposer-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXMailComposer;
+				PRODUCT_NAME = EXMailComposer;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		F9F601FC072ECBAB4CAC9DF0CDE4E1E5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -352,7 +379,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -365,39 +392,14 @@
 			};
 			name = Debug;
 		};
-		976BA247629138BF22AD861C2998C20D /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = CAA27822E77F737D2C64B02B99965F79 /* EXMailComposer.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXMailComposer/EXMailComposer-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXMailComposer;
-				PRODUCT_NAME = EXMailComposer;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		24618B347D0F22AF25988072BEC2A9D9 /* Build configuration list for PBXProject "EXMailComposer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				72D528084D60DBA11753F8551E04DA39 /* Debug */,
-				38BE57EFB91E56B32DBB216323EACFFD /* Release */,
+				F9F601FC072ECBAB4CAC9DF0CDE4E1E5 /* Debug */,
+				951149CDE7A4AF19663F9083F2F30BE4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -405,8 +407,8 @@
 		5D803575930FBEA921865AE155836E01 /* Build configuration list for PBXNativeTarget "EXMailComposer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				34731E77224A976B740B2820680BB528 /* Debug */,
-				976BA247629138BF22AD861C2998C20D /* Release */,
+				ACAA88172D065F439DEB6C5968D2E07D /* Debug */,
+				380E4D5F268CC3BB631833B184A48E5F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

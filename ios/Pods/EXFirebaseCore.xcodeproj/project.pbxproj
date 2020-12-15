@@ -16,19 +16,19 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		7DCF50EAD8B39A3AD42CC1BA2367325F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6D7BDFAFD7CB44FAC83E19F637A6B6B4 /* Firebase.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 15B99218A87324F316F0E937B3DAAC8B;
+			remoteInfo = Firebase;
+		};
 		8ECC1CA4762FAF5B25B60E3FE741368A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B53CDD009FA913CFF50104926B465EAB /* UMCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
-		};
-		FACF6CAB1639AB934CE6537E691FFC11 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 6D7BDFAFD7CB44FAC83E19F637A6B6B4 /* Firebase.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 15B99218A87324F316F0E937B3DAAC8B;
-			remoteInfo = Firebase;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -155,7 +155,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				7E84A6AEB60CACC81B771A8C4668B919 /* PBXTargetDependency */,
+				5F6F913C9AFFC53B3E1C84631EDBC6E7 /* PBXTargetDependency */,
 				73232EB7B9D3C9AD52BED55A8B4B8C93 /* PBXTargetDependency */,
 			);
 			name = EXFirebaseCore;
@@ -212,29 +212,30 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		5F6F913C9AFFC53B3E1C84631EDBC6E7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Firebase;
+			targetProxy = 7DCF50EAD8B39A3AD42CC1BA2367325F /* PBXContainerItemProxy */;
+		};
 		73232EB7B9D3C9AD52BED55A8B4B8C93 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
 			targetProxy = 8ECC1CA4762FAF5B25B60E3FE741368A /* PBXContainerItemProxy */;
 		};
-		7E84A6AEB60CACC81B771A8C4668B919 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Firebase;
-			targetProxy = FACF6CAB1639AB934CE6537E691FFC11 /* PBXContainerItemProxy */;
-		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		4A75F51527D03F0D25631E7F7AD7FA04 /* Release */ = {
+		12B04EA749DC72C7426448B6685B0E28 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 79E70E1EFFADAB9202216FE2C562F23F /* EXFirebaseCore.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				GCC_PREFIX_HEADER = "Target Support Files/EXFirebaseCore/EXFirebaseCore-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -250,7 +251,7 @@
 			};
 			name = Release;
 		};
-		5D55BE920044B96DE19BA18B263AAD63 /* Debug */ = {
+		1E48CA9BC7A8370D4E05A50D7A015D49 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -303,7 +304,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -316,7 +317,32 @@
 			};
 			name = Debug;
 		};
-		87544F7B8579B4B3ABBC3B9CB082B2A7 /* Release */ = {
+		7157562BE70C45336107D16A159EEC40 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9A9223A96120659843C90BF08A4C5FA2 /* EXFirebaseCore.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXFirebaseCore/EXFirebaseCore-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXFirebaseCore;
+				PRODUCT_NAME = EXFirebaseCore;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		854705C0F3090D4A7AD260B31D6797FD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -366,7 +392,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -378,38 +404,14 @@
 			};
 			name = Release;
 		};
-		F7502A10C4F739E377206F82422DFCBD /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9A9223A96120659843C90BF08A4C5FA2 /* EXFirebaseCore.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXFirebaseCore/EXFirebaseCore-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXFirebaseCore;
-				PRODUCT_NAME = EXFirebaseCore;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		4698A7079FB741213EA9D3C91BD091C8 /* Build configuration list for PBXProject "EXFirebaseCore" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				5D55BE920044B96DE19BA18B263AAD63 /* Debug */,
-				87544F7B8579B4B3ABBC3B9CB082B2A7 /* Release */,
+				1E48CA9BC7A8370D4E05A50D7A015D49 /* Debug */,
+				854705C0F3090D4A7AD260B31D6797FD /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -417,8 +419,8 @@
 		5140C7426C7CE892163D356B371BC4EA /* Build configuration list for PBXNativeTarget "EXFirebaseCore" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				F7502A10C4F739E377206F82422DFCBD /* Debug */,
-				4A75F51527D03F0D25631E7F7AD7FA04 /* Release */,
+				7157562BE70C45336107D16A159EEC40 /* Debug */,
+				12B04EA749DC72C7426448B6685B0E28 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

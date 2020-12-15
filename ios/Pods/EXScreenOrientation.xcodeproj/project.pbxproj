@@ -26,7 +26,7 @@
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
 		};
-		545E02A8D00688A3D354FFA06B1DDB88 /* PBXContainerItemProxy */ = {
+		BCC0120C7B9C16870E5CD8509DE5CBBB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D8E3B542AC88C7CF2991D44EC4E50F7F /* React-Core.xcodeproj */;
 			proxyType = 1;
@@ -165,7 +165,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				F68B4BDF65DEDDEADD9C0943A76350D9 /* PBXTargetDependency */,
+				DFD220A5AD48854C115706FF69A6F8FB /* PBXTargetDependency */,
 				86367B6BC3C2864F9DD66491B016440B /* PBXTargetDependency */,
 			);
 			name = EXScreenOrientation;
@@ -229,39 +229,15 @@
 			name = UMCore;
 			targetProxy = 4762CA170DE8D9D07AF6B3A9548E85C8 /* PBXContainerItemProxy */;
 		};
-		F68B4BDF65DEDDEADD9C0943A76350D9 /* PBXTargetDependency */ = {
+		DFD220A5AD48854C115706FF69A6F8FB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-Core";
-			targetProxy = 545E02A8D00688A3D354FFA06B1DDB88 /* PBXContainerItemProxy */;
+			targetProxy = BCC0120C7B9C16870E5CD8509DE5CBBB /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		21BE5529FAE42367DAC68BC43ADAD498 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = B15FB0C6841456E5068505897E38ABB4 /* EXScreenOrientation.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXScreenOrientation/EXScreenOrientation-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXScreenOrientation;
-				PRODUCT_NAME = EXScreenOrientation;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		724F9DD4EA5342885A2125B89E0B0365 /* Debug */ = {
+		201FFEB969FC8D2243E2CD216EBF12C9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -314,7 +290,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -327,32 +303,7 @@
 			};
 			name = Debug;
 		};
-		91B50711165510B54D6C6F2334745866 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 034F9A0AE662DAD2DCA489427BF3B55D /* EXScreenOrientation.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXScreenOrientation/EXScreenOrientation-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXScreenOrientation;
-				PRODUCT_NAME = EXScreenOrientation;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		FE0E2D173FA4E9ADB995D8AE9C0406CB /* Release */ = {
+		2D4410E2C8B43A5BFB8D1B08E793ACFA /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -402,7 +353,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -414,14 +365,65 @@
 			};
 			name = Release;
 		};
+		8FD23FC87ED4B88ED3F0F4937D939FFA /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 034F9A0AE662DAD2DCA489427BF3B55D /* EXScreenOrientation.release.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXScreenOrientation/EXScreenOrientation-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXScreenOrientation;
+				PRODUCT_NAME = EXScreenOrientation;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		FD769BB8C686ADB3D9EB5A5793ED675F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B15FB0C6841456E5068505897E38ABB4 /* EXScreenOrientation.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXScreenOrientation/EXScreenOrientation-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXScreenOrientation;
+				PRODUCT_NAME = EXScreenOrientation;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		5EB446D8747D58C8AE18C4B8D7E65A20 /* Build configuration list for PBXProject "EXScreenOrientation" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				724F9DD4EA5342885A2125B89E0B0365 /* Debug */,
-				FE0E2D173FA4E9ADB995D8AE9C0406CB /* Release */,
+				201FFEB969FC8D2243E2CD216EBF12C9 /* Debug */,
+				2D4410E2C8B43A5BFB8D1B08E793ACFA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -429,8 +431,8 @@
 		BA63C0E2F16FF4A07D94025B1BC5FD14 /* Build configuration list for PBXNativeTarget "EXScreenOrientation" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				21BE5529FAE42367DAC68BC43ADAD498 /* Debug */,
-				91B50711165510B54D6C6F2334745866 /* Release */,
+				FD769BB8C686ADB3D9EB5A5793ED675F /* Debug */,
+				8FD23FC87ED4B88ED3F0F4937D939FFA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

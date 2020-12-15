@@ -213,32 +213,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		1CA55AE3F6BC1AEB83490D882C358200 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5FEB0C10308284D6273F40085C03701F /* EXLocalAuthentication.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXLocalAuthentication/EXLocalAuthentication-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXLocalAuthentication;
-				PRODUCT_NAME = EXLocalAuthentication;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		3ACD67244238CF385A51728FF8AEC9A8 /* Release */ = {
+		6320D9840E278B8670C2A95C975D436C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -288,7 +263,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -300,16 +275,43 @@
 			};
 			name = Release;
 		};
-		BF7C05FD27FEC7C5F4995A3658A7A4F9 /* Debug */ = {
+		67529449701CE3CDAC08244D8A49BB85 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 331064274FEAF12C63981DDFE9C69444 /* EXLocalAuthentication.debug.xcconfig */;
+			baseConfigurationReference = 5FEB0C10308284D6273F40085C03701F /* EXLocalAuthentication.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				GCC_PREFIX_HEADER = "Target Support Files/EXLocalAuthentication/EXLocalAuthentication-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXLocalAuthentication;
+				PRODUCT_NAME = EXLocalAuthentication;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		DD46A18D2789912CF6628019194741B8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 331064274FEAF12C63981DDFE9C69444 /* EXLocalAuthentication.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXLocalAuthentication/EXLocalAuthentication-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -324,7 +326,7 @@
 			};
 			name = Debug;
 		};
-		E38BBD47432074FBE270E5F612669D5F /* Debug */ = {
+		FA0759A4D39D3D86962E7915F8BEF7B0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -377,7 +379,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -396,8 +398,8 @@
 		E904FA9D582CAB8B67E8CBE89749A179 /* Build configuration list for PBXNativeTarget "EXLocalAuthentication" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				BF7C05FD27FEC7C5F4995A3658A7A4F9 /* Debug */,
-				1CA55AE3F6BC1AEB83490D882C358200 /* Release */,
+				DD46A18D2789912CF6628019194741B8 /* Debug */,
+				67529449701CE3CDAC08244D8A49BB85 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -405,8 +407,8 @@
 		F4268BE03DF6A9E38B85B1B6DA8B3278 /* Build configuration list for PBXProject "EXLocalAuthentication" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E38BBD47432074FBE270E5F612669D5F /* Debug */,
-				3ACD67244238CF385A51728FF8AEC9A8 /* Release */,
+				FA0759A4D39D3D86962E7915F8BEF7B0 /* Debug */,
+				6320D9840E278B8670C2A95C975D436C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

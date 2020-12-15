@@ -1007,12 +1007,10 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
                                                                @"screenshot": @(PHAssetMediaSubtypePhotoScreenshot),
                                                                @"highFrameRate": @(PHAssetMediaSubtypeVideoHighFrameRate)
                                                                } mutableCopy];
-  
+
   subtypesDict[@"livePhoto"] = @(PHAssetMediaSubtypePhotoLive);
-  if (@available(iOS 10.2, *)) {
-    subtypesDict[@"depthEffect"] = @(PHAssetMediaSubtypePhotoDepthEffect);
-  }
-  
+  subtypesDict[@"depthEffect"] = @(PHAssetMediaSubtypePhotoDepthEffect);
+
   for (NSString *subtype in subtypesDict) {
     if (mediaSubtypes & [subtypesDict[subtype] unsignedIntegerValue]) {
       [subtypes addObject:subtype];

@@ -195,7 +195,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		0CDDB10968729B3482368CDD2D07EF36 /* Debug */ = {
+		2159565A8627E18DFFD8BB29D015397A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -248,7 +248,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -261,16 +261,43 @@
 			};
 			name = Debug;
 		};
-		2A0BE1E7D5F791AA98D603E9A6F32094 /* Debug */ = {
+		270D096062774072DF63CA38486D4B72 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 339164B02F39F0C2E01B51AA76227A49 /* EXSecureStore.debug.xcconfig */;
+			baseConfigurationReference = 3F023EFDEB100FAF7A6BD3FF7F9CFF36 /* EXSecureStore.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				GCC_PREFIX_HEADER = "Target Support Files/EXSecureStore/EXSecureStore-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXSecureStore;
+				PRODUCT_NAME = EXSecureStore;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		9695FF332F990DCF08439FA04E381583 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 339164B02F39F0C2E01B51AA76227A49 /* EXSecureStore.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXSecureStore/EXSecureStore-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -285,7 +312,7 @@
 			};
 			name = Debug;
 		};
-		AAE81ABCE99581D0ABBB2D659D6CA646 /* Release */ = {
+		DF4FECACE9144BBFA42522537548B5B2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -335,7 +362,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -347,39 +374,14 @@
 			};
 			name = Release;
 		};
-		DD813B83B6646DF3B64B2C6C4CDDC694 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3F023EFDEB100FAF7A6BD3FF7F9CFF36 /* EXSecureStore.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXSecureStore/EXSecureStore-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXSecureStore;
-				PRODUCT_NAME = EXSecureStore;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		041C0C6164469D6D9066689D180E0BD5 /* Build configuration list for PBXProject "EXSecureStore" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				0CDDB10968729B3482368CDD2D07EF36 /* Debug */,
-				AAE81ABCE99581D0ABBB2D659D6CA646 /* Release */,
+				2159565A8627E18DFFD8BB29D015397A /* Debug */,
+				DF4FECACE9144BBFA42522537548B5B2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -387,8 +389,8 @@
 		970EC6EECF7FEBB6AC335A6B8254DAB4 /* Build configuration list for PBXNativeTarget "EXSecureStore" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				2A0BE1E7D5F791AA98D603E9A6F32094 /* Debug */,
-				DD813B83B6646DF3B64B2C6C4CDDC694 /* Release */,
+				9695FF332F990DCF08439FA04E381583 /* Debug */,
+				270D096062774072DF63CA38486D4B72 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

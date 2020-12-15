@@ -29,7 +29,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		29673CAAFCC8383F061D47C2FE1753F0 /* PBXContainerItemProxy */ = {
+		7F549D73A9E8864432714791E88D1B11 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 30370C30637C5BC8B26AF64A1A750B38 /* FBAudienceNetwork.xcodeproj */;
 			proxyType = 1;
@@ -200,7 +200,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				2993F06CAD050D1D881E73E4162A8F66 /* PBXTargetDependency */,
+				9F1AD47F5C2A5B2AD4234D653966AA4C /* PBXTargetDependency */,
 				4175BBA1E7C327419900F9014A3268FC /* PBXTargetDependency */,
 			);
 			name = EXAdsFacebook;
@@ -264,29 +264,56 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		2993F06CAD050D1D881E73E4162A8F66 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = FBAudienceNetwork;
-			targetProxy = 29673CAAFCC8383F061D47C2FE1753F0 /* PBXContainerItemProxy */;
-		};
 		4175BBA1E7C327419900F9014A3268FC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
 			targetProxy = EBA1D0F85BD4DAC869AAD6592ADA2DC3 /* PBXContainerItemProxy */;
 		};
+		9F1AD47F5C2A5B2AD4234D653966AA4C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = FBAudienceNetwork;
+			targetProxy = 7F549D73A9E8864432714791E88D1B11 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		38AEA9695B3349DA653645F6268E7D31 /* Debug */ = {
+		1687FEE5FA1812CE596C095678FF6886 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6C6697032BD1AD9068DF4DAFCB4D562C /* EXAdsFacebook.debug.xcconfig */;
+			baseConfigurationReference = 9A5D491EBE5669297439B8B3D5B7B867 /* EXAdsFacebook.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				GCC_PREFIX_HEADER = "Target Support Files/EXAdsFacebook/EXAdsFacebook-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXAdsFacebook;
+				PRODUCT_NAME = EXAdsFacebook;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		61C88D925EDCB9A628802A77059EC40E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6C6697032BD1AD9068DF4DAFCB4D562C /* EXAdsFacebook.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXAdsFacebook/EXAdsFacebook-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -301,7 +328,7 @@
 			};
 			name = Debug;
 		};
-		8920A3910431D726075A4790C115802D /* Debug */ = {
+		66AB11CD47EFA1FC0AFEF5E146191BED /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -354,7 +381,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -367,32 +394,7 @@
 			};
 			name = Debug;
 		};
-		97B4CFA2DDCB1BD4DED3734DB9B112D2 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9A5D491EBE5669297439B8B3D5B7B867 /* EXAdsFacebook.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXAdsFacebook/EXAdsFacebook-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXAdsFacebook;
-				PRODUCT_NAME = EXAdsFacebook;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		F0234C13E10473AE83D329896D63B215 /* Release */ = {
+		955C087E3FF5008FC29BCCADA69A2A38 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -442,7 +444,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -460,8 +462,8 @@
 		A17A6439AE6BCEF67C1512C32B838DBC /* Build configuration list for PBXProject "EXAdsFacebook" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8920A3910431D726075A4790C115802D /* Debug */,
-				F0234C13E10473AE83D329896D63B215 /* Release */,
+				66AB11CD47EFA1FC0AFEF5E146191BED /* Debug */,
+				955C087E3FF5008FC29BCCADA69A2A38 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -469,8 +471,8 @@
 		FC0B25F4D357A67793E7769441DF3844 /* Build configuration list for PBXNativeTarget "EXAdsFacebook" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				38AEA9695B3349DA653645F6268E7D31 /* Debug */,
-				97B4CFA2DDCB1BD4DED3734DB9B112D2 /* Release */,
+				61C88D925EDCB9A628802A77059EC40E /* Debug */,
+				1687FEE5FA1812CE596C095678FF6886 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

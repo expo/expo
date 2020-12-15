@@ -106,21 +106,7 @@
 /* End PBXProject section */
 
 /* Begin XCBuildConfiguration section */
-		445DE433433E6D21A20977F70F82B03E /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = DD140BC32708B48F1BA6CFB007DEF547 /* UMImageLoaderInterface.debug.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		70EDCA47FDB373E8747A6FD7E538EC41 /* Debug */ = {
+		17A1C3EC7046AC78896351E6FE87BA20 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -173,7 +159,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -186,14 +172,15 @@
 			};
 			name = Debug;
 		};
-		818F8335ECF41074D482F18EFE7F38AC /* Release */ = {
+		823CF377228BE6E961EB0312CC3642AF /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 29DAF6466AF1E95D4B23A2F6ECC68664 /* UMImageLoaderInterface.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -201,7 +188,7 @@
 			};
 			name = Release;
 		};
-		84A3DA5E3980969FFE69CFC4D79E030C /* Release */ = {
+		A1D3FD61738AD3E5CCF4243E4E0ED6C1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -251,7 +238,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -263,14 +250,29 @@
 			};
 			name = Release;
 		};
+		C85898DD9AFDA9FBC7715E10CFCE7C7A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = DD140BC32708B48F1BA6CFB007DEF547 /* UMImageLoaderInterface.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		74301DFD6973EA54F668249306CC5B41 /* Build configuration list for PBXAggregateTarget "UMImageLoaderInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				445DE433433E6D21A20977F70F82B03E /* Debug */,
-				818F8335ECF41074D482F18EFE7F38AC /* Release */,
+				C85898DD9AFDA9FBC7715E10CFCE7C7A /* Debug */,
+				823CF377228BE6E961EB0312CC3642AF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -278,8 +280,8 @@
 		A48FD2B36CD97C791820A934FCCB4A3E /* Build configuration list for PBXProject "UMImageLoaderInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				70EDCA47FDB373E8747A6FD7E538EC41 /* Debug */,
-				84A3DA5E3980969FFE69CFC4D79E030C /* Release */,
+				17A1C3EC7046AC78896351E6FE87BA20 /* Debug */,
+				A1D3FD61738AD3E5CCF4243E4E0ED6C1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

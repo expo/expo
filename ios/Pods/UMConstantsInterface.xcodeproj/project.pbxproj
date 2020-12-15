@@ -9,17 +9,29 @@
 /* Begin PBXAggregateTarget section */
 		46F82E84687582F366B907E2BD5F1EA2 /* UMConstantsInterface */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = 9FCF3522CD75A3D47B02FAEA9E2C5301 /* Build configuration list for PBXAggregateTarget "UMConstantsInterface" */;
+			buildConfigurationList = 1BE85DC64F16549BF9AFDA5471C80EEC /* Build configuration list for PBXAggregateTarget "UMConstantsInterface" */;
 			buildPhases = (
 			);
 			dependencies = (
+				D8DF5E74F13538D42512B9F3CF3EA878 /* PBXTargetDependency */,
 			);
 			name = UMConstantsInterface;
 		};
 /* End PBXAggregateTarget section */
 
+/* Begin PBXContainerItemProxy section */
+		7B55B20D8707022CF9B6710882144077 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 464F27F5DF2D7B8AE08371485573189E /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		39BB0ABF9A738E54B49712FF35DAB2F8 /* UMConstantsInterface.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = UMConstantsInterface.debug.xcconfig; sourceTree = "<group>"; };
+		464F27F5DF2D7B8AE08371485573189E /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
 		7A37BC3FBDC2582D9755905C29AD72F1 /* UMConstantsInterface.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = UMConstantsInterface.release.xcconfig; sourceTree = "<group>"; };
 		7EC6C61F6CDF8FB52CFF1C64C0A51906 /* UMConstantsInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMConstantsInterface.h; path = UMConstantsInterface/UMConstantsInterface.h; sourceTree = "<group>"; };
 		BF49C6D23FE29D97296E09B92030B775 /* UMConstantsInterface.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = UMConstantsInterface.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
@@ -32,6 +44,14 @@
 				BF49C6D23FE29D97296E09B92030B775 /* UMConstantsInterface.podspec */,
 			);
 			name = Pod;
+			sourceTree = "<group>";
+		};
+		2FE55B05FA0265CA46BCB787611CC79A /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				464F27F5DF2D7B8AE08371485573189E /* UMCore */,
+			);
+			name = Dependencies;
 			sourceTree = "<group>";
 		};
 		511D186A0B5D8346D6BD25D648E7EC37 /* UMConstantsInterface */ = {
@@ -48,6 +68,7 @@
 		5532349ECFCBEA2CCC8E49EAF3063706 = {
 			isa = PBXGroup;
 			children = (
+				2FE55B05FA0265CA46BCB787611CC79A /* Dependencies */,
 				7CDAF4B96918C54964D46B0451654FD5 /* Frameworks */,
 				CE6EF44D1074332B4FB699D057131E69 /* Products */,
 				511D186A0B5D8346D6BD25D648E7EC37 /* UMConstantsInterface */,
@@ -98,6 +119,11 @@
 			mainGroup = 5532349ECFCBEA2CCC8E49EAF3063706;
 			productRefGroup = CE6EF44D1074332B4FB699D057131E69 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProjectRef = 464F27F5DF2D7B8AE08371485573189E /* UMCore */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				46F82E84687582F366B907E2BD5F1EA2 /* UMConstantsInterface */,
@@ -105,15 +131,24 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXTargetDependency section */
+		D8DF5E74F13538D42512B9F3CF3EA878 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = 7B55B20D8707022CF9B6710882144077 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
-		3D3BD2D4CBDD0277D184C34832EBDD9B /* Release */ = {
+		19EE655EAA1D0A64BCE7BABABF749FE5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7A37BC3FBDC2582D9755905C29AD72F1 /* UMConstantsInterface.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -121,21 +156,7 @@
 			};
 			name = Release;
 		};
-		3EE5C5244D4FD3D2844FFA581388BB05 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 39BB0ABF9A738E54B49712FF35DAB2F8 /* UMConstantsInterface.debug.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		42BF5E4FC34042888514C99C49800B71 /* Release */ = {
+		8632BBC99784317F76A38A943ADF6F6F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -185,7 +206,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -197,7 +218,22 @@
 			};
 			name = Release;
 		};
-		9063A9DB9C9FF138C436EE01CDDB51C6 /* Debug */ = {
+		E793FA4FD640DAC74232B23002C41A0E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 39BB0ABF9A738E54B49712FF35DAB2F8 /* UMConstantsInterface.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		FDA523533AE9E7E0AB4F29ABB20458CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -250,7 +286,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -266,11 +302,11 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		9FCF3522CD75A3D47B02FAEA9E2C5301 /* Build configuration list for PBXAggregateTarget "UMConstantsInterface" */ = {
+		1BE85DC64F16549BF9AFDA5471C80EEC /* Build configuration list for PBXAggregateTarget "UMConstantsInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				3EE5C5244D4FD3D2844FFA581388BB05 /* Debug */,
-				3D3BD2D4CBDD0277D184C34832EBDD9B /* Release */,
+				E793FA4FD640DAC74232B23002C41A0E /* Debug */,
+				19EE655EAA1D0A64BCE7BABABF749FE5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -278,8 +314,8 @@
 		B77F986A59348816BB7C17673A28EFF2 /* Build configuration list for PBXProject "UMConstantsInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				9063A9DB9C9FF138C436EE01CDDB51C6 /* Debug */,
-				42BF5E4FC34042888514C99C49800B71 /* Release */,
+				FDA523533AE9E7E0AB4F29ABB20458CD /* Debug */,
+				8632BBC99784317F76A38A943ADF6F6F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

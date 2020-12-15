@@ -35,7 +35,7 @@
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
 		};
-		B287093424A9DC25BA3602866744E9F8 /* PBXContainerItemProxy */ = {
+		E754545665001EF2AE321F41CBB9F9AE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 8D781B1A63954C2C00515B355326EB4D /* React-Core.xcodeproj */;
 			proxyType = 1;
@@ -199,7 +199,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				C361FD65167ABE9F5DD6AF4B00BEC1A2 /* PBXTargetDependency */,
+				3C129B200924375ED18F9853CABEDCC6 /* PBXTargetDependency */,
 				86C319D6D9B1F49082F25967DC282D90 /* PBXTargetDependency */,
 				368D9D3AE7FF94CE4B96D3D1C019B838 /* PBXTargetDependency */,
 				FC473397EADA744CCB2DC20CD6F27118 /* PBXTargetDependency */,
@@ -272,15 +272,15 @@
 			name = UMFileSystemInterface;
 			targetProxy = F0518424A2BA8F1E000EA87E54EF1BFE /* PBXContainerItemProxy */;
 		};
+		3C129B200924375ED18F9853CABEDCC6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "React-Core";
+			targetProxy = E754545665001EF2AE321F41CBB9F9AE /* PBXContainerItemProxy */;
+		};
 		86C319D6D9B1F49082F25967DC282D90 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
 			targetProxy = AB4343840CA9C782C2B51C8551107E26 /* PBXContainerItemProxy */;
-		};
-		C361FD65167ABE9F5DD6AF4B00BEC1A2 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "React-Core";
-			targetProxy = B287093424A9DC25BA3602866744E9F8 /* PBXContainerItemProxy */;
 		};
 		FC473397EADA744CCB2DC20CD6F27118 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -290,7 +290,33 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		12868AC3B0E87A3D1413013CCC2A0D17 /* Release */ = {
+		0D20356D2E49DBA0CAF18930D64D665D /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 29779233CC384FBB18E42A0CA19BEA8F /* EXMediaLibrary.release.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXMediaLibrary/EXMediaLibrary-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXMediaLibrary;
+				PRODUCT_NAME = EXMediaLibrary;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		78E52F441FAF2AEBB456D024D14B771E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -340,7 +366,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -352,7 +378,32 @@
 			};
 			name = Release;
 		};
-		7FD2C6BE1F1197D457DC5D994EB548EC /* Debug */ = {
+		E37E95E52399455DDB78925756E2FCD5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2F3338ED8D60CFFDFBAB85A728B0731A /* EXMediaLibrary.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXMediaLibrary/EXMediaLibrary-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXMediaLibrary;
+				PRODUCT_NAME = EXMediaLibrary;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		E9B546F0D3BD5E1BA2420BA61C377323 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -405,7 +456,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -418,63 +469,14 @@
 			};
 			name = Debug;
 		};
-		9F077F643F14EF0D7DF4B9D52EF3BDDF /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 29779233CC384FBB18E42A0CA19BEA8F /* EXMediaLibrary.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXMediaLibrary/EXMediaLibrary-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXMediaLibrary;
-				PRODUCT_NAME = EXMediaLibrary;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		D7BE073247A1C5A772F1699792620402 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2F3338ED8D60CFFDFBAB85A728B0731A /* EXMediaLibrary.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXMediaLibrary/EXMediaLibrary-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXMediaLibrary;
-				PRODUCT_NAME = EXMediaLibrary;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		4D428884EDA32B17C7C7E631701931F6 /* Build configuration list for PBXNativeTarget "EXMediaLibrary" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D7BE073247A1C5A772F1699792620402 /* Debug */,
-				9F077F643F14EF0D7DF4B9D52EF3BDDF /* Release */,
+				E37E95E52399455DDB78925756E2FCD5 /* Debug */,
+				0D20356D2E49DBA0CAF18930D64D665D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -482,8 +484,8 @@
 		92C1512F651AB8F0999D49559B9E07CB /* Build configuration list for PBXProject "EXMediaLibrary" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				7FD2C6BE1F1197D457DC5D994EB548EC /* Debug */,
-				12868AC3B0E87A3D1413013CCC2A0D17 /* Release */,
+				E9B546F0D3BD5E1BA2420BA61C377323 /* Debug */,
+				78E52F441FAF2AEBB456D024D14B771E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

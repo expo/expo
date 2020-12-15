@@ -5,7 +5,7 @@ require_relative '../react-native-lab/react-native/scripts/react_native_pods'
 install! 'cocoapods',
          :generate_multiple_pod_projects => true,
          :incremental_installation => true
-platform :ios, '10.0'
+platform :ios, '11.0'
 inhibit_all_warnings!
 
 target 'Exponent' do
@@ -54,7 +54,7 @@ target 'Exponent' do
       run_versioned_postinstalls!(pod_name, target_installation_result)
 
       target_installation_result.native_target.build_configurations.each do |config|
-        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '10.0'
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '11.0'
       end
 
       if pod_name == 'Branch'

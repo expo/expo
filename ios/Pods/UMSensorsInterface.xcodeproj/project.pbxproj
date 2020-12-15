@@ -9,14 +9,25 @@
 /* Begin PBXAggregateTarget section */
 		1FDCE556B997E87DAB0DA2727CC69285 /* UMSensorsInterface */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = 041F90F346145D525156A6CA751ACBDA /* Build configuration list for PBXAggregateTarget "UMSensorsInterface" */;
+			buildConfigurationList = 702E23262755DF2062CF19F2A8BE6F37 /* Build configuration list for PBXAggregateTarget "UMSensorsInterface" */;
 			buildPhases = (
 			);
 			dependencies = (
+				B8071BA1991836C19F0764AFCE1CFD33 /* PBXTargetDependency */,
 			);
 			name = UMSensorsInterface;
 		};
 /* End PBXAggregateTarget section */
+
+/* Begin PBXContainerItemProxy section */
+		95B3C45E56233AB21C7956976DE34A0E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B21904055EB3DEEA4DD2E9F075D43A70 /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		202A854405F8543328E471218005F43B /* UMMagnetometerInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMMagnetometerInterface.h; path = UMSensorsInterface/UMMagnetometerInterface.h; sourceTree = "<group>"; };
@@ -26,6 +37,7 @@
 		83DC850B2D4B9ED19F1A604A09EA89D2 /* UMMagnetometerUncalibratedInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMMagnetometerUncalibratedInterface.h; path = UMSensorsInterface/UMMagnetometerUncalibratedInterface.h; sourceTree = "<group>"; };
 		849C5382D17A45EC596180CFB927ACE4 /* UMGyroscopeInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMGyroscopeInterface.h; path = UMSensorsInterface/UMGyroscopeInterface.h; sourceTree = "<group>"; };
 		A43ADA1273A4DD1532C46C7709FD4236 /* UMDeviceMotionInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMDeviceMotionInterface.h; path = UMSensorsInterface/UMDeviceMotionInterface.h; sourceTree = "<group>"; };
+		B21904055EB3DEEA4DD2E9F075D43A70 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
 		C330357CD23A6473C5D47C0E4E489364 /* UMSensorsInterface.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = UMSensorsInterface.debug.xcconfig; sourceTree = "<group>"; };
 		CC7F83A8B680B94E1A276A5B2411F14E /* UMSensorsInterface.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = UMSensorsInterface.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 /* End PBXFileReference section */
@@ -72,6 +84,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		9465CB1952B309FD50C305157C6FC695 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				B21904055EB3DEEA4DD2E9F075D43A70 /* UMCore */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
 		CF64CA6104EC601590EFC64C9D2DBA28 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -82,6 +102,7 @@
 		E7078DE2AF52178DD7F186F84DA4A087 = {
 			isa = PBXGroup;
 			children = (
+				9465CB1952B309FD50C305157C6FC695 /* Dependencies */,
 				67871855C5D1E5DD14996EDBB0BA42CE /* Frameworks */,
 				CF64CA6104EC601590EFC64C9D2DBA28 /* Products */,
 				1BD0DAFFD39A4A364DF58F60C83F110C /* UMSensorsInterface */,
@@ -108,6 +129,11 @@
 			mainGroup = E7078DE2AF52178DD7F186F84DA4A087;
 			productRefGroup = CF64CA6104EC601590EFC64C9D2DBA28 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProjectRef = B21904055EB3DEEA4DD2E9F075D43A70 /* UMCore */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				1FDCE556B997E87DAB0DA2727CC69285 /* UMSensorsInterface */,
@@ -115,8 +141,16 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXTargetDependency section */
+		B8071BA1991836C19F0764AFCE1CFD33 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = 95B3C45E56233AB21C7956976DE34A0E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
-		012030C138D2E7C09D4D408746FE04EB /* Debug */ = {
+		2FEE1C06EDB02D235AE3429DC21F019E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -169,7 +203,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -182,7 +216,38 @@
 			};
 			name = Debug;
 		};
-		1C76C88E18E9CC40CA3529803F2D51D9 /* Release */ = {
+		66A123A363D718546D90D9934464934D /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 368E580F0B32121FA1A47A33A24F78C3 /* UMSensorsInterface.release.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		7987D5B20099BB7D849E7820FF106937 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C330357CD23A6473C5D47C0E4E489364 /* UMSensorsInterface.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		9792476195DFA0B202CE4E471E48C44F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -232,7 +297,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -244,52 +309,23 @@
 			};
 			name = Release;
 		};
-		446D8B4CD046527E3F940E065D299019 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = C330357CD23A6473C5D47C0E4E489364 /* UMSensorsInterface.debug.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		5CC525A40C1CF0635824D46741FA821C /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 368E580F0B32121FA1A47A33A24F78C3 /* UMSensorsInterface.release.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		041F90F346145D525156A6CA751ACBDA /* Build configuration list for PBXAggregateTarget "UMSensorsInterface" */ = {
+		0B4EA880714FD2072B6CF42C7B1CB82A /* Build configuration list for PBXProject "UMSensorsInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				446D8B4CD046527E3F940E065D299019 /* Debug */,
-				5CC525A40C1CF0635824D46741FA821C /* Release */,
+				2FEE1C06EDB02D235AE3429DC21F019E /* Debug */,
+				9792476195DFA0B202CE4E471E48C44F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		0B4EA880714FD2072B6CF42C7B1CB82A /* Build configuration list for PBXProject "UMSensorsInterface" */ = {
+		702E23262755DF2062CF19F2A8BE6F37 /* Build configuration list for PBXAggregateTarget "UMSensorsInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				012030C138D2E7C09D4D408746FE04EB /* Debug */,
-				1C76C88E18E9CC40CA3529803F2D51D9 /* Release */,
+				7987D5B20099BB7D849E7820FF106937 /* Debug */,
+				66A123A363D718546D90D9934464934D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
