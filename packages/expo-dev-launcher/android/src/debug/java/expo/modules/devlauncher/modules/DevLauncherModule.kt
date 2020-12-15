@@ -10,6 +10,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter
 import expo.modules.devlauncher.DevLauncherController.Companion.instance
+import expo.modules.devlauncher.DevLauncherController.Companion.wasInitialized
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -19,12 +20,16 @@ private const val CLIENT_PACKAGE_NAME = "host.exp.exponent"
 class DevLauncherModule(reactContext: ReactApplicationContext?) : ReactContextBaseJavaModule(reactContext) {
   override fun initialize() {
     super.initialize()
-    instance.pendingIntentRegistry.subscribe(this::onNewPendingIntent)
+    if (wasInitialized()) {
+      instance.pendingIntentRegistry.subscribe(this::onNewPendingIntent)
+    }
   }
 
   override fun invalidate() {
     super.invalidate()
-    instance.pendingIntentRegistry.unsubscribe(this::onNewPendingIntent)
+    if (wasInitialized()) {
+      instance.pendingIntentRegistry.unsubscribe(this::onNewPendingIntent)
+    }
   }
 
   override fun getName(): String {
@@ -78,7 +83,7 @@ class DevLauncherModule(reactContext: ReactApplicationContext?) : ReactContextBa
     if (openLink(Uri.parse("https://play.google.com/store/apps/details?id=$CLIENT_PACKAGE_NAME"))) {
       return
     }
-    
+
     promise.reject("ERR_DEVELOPMENT_CLIENT_CANNOT_OPEN_CAMERA", "Couldn't find the Expo Go app.")
   }
 
