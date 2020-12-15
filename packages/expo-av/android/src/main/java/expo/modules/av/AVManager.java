@@ -47,6 +47,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   private static final String AUDIO_MODE_PLAY_THROUGH_EARPIECE = "playThroughEarpieceAndroid";
   private static final String AUDIO_MODE_STAYS_ACTIVE_IN_BACKGROUND = "staysActiveInBackground";
 
+  private static final String RECORDING_OPTION_IS_METERING_ENABLED_KEY = "isMeteringEnabled";
   private static final String RECORDING_OPTIONS_KEY = "android";
   private static final String RECORDING_OPTION_EXTENSION_KEY = "extension";
   private static final String RECORDING_OPTION_OUTPUT_FORMAT_KEY = "outputFormat";
@@ -90,6 +91,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   private boolean mAudioRecorderIsRecording = false;
   private boolean mAudioRecorderIsPaused = false;
   private boolean mIsRegistered = false;
+  private boolean mAudioRecorderIsMeteringEnabled = false;
 
   private ModuleRegistry mModuleRegistry;
 
@@ -534,12 +536,38 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
     return duration;
   }
 
+  private int getAudioRecorderLevels() {
+    /**
+     * Defaulting to -160 to match the scenario on iOS platform when there's no sound
+     */
+    if (mAudioRecorder == null || !mAudioRecorderIsMeteringEnabled) {
+      return -160;
+    }
+
+    int amplitude = mAudioRecorder.getMaxAmplitude();
+    if (amplitude == 0) {
+      return -160;
+    }
+     
+    // Amplitude to decibel conversion.
+    // Code copied from https://github.com/punarinta/react-native-sound-level
+    // It's supposed to be a ratio between the base sound level and the measured one.
+    // Decibels is a relative measurement.
+	// Value `32767d` gives levels info comparable to iOS's values.
+	// see: https://github.com/punarinta/react-native-sound-level/issues/20
+    return = (int) (20 * Math.log(((double) amplitude) / 32767d));
+  }
+
   private Bundle getAudioRecorderStatus() {
     final Bundle map = new Bundle();
     if (mAudioRecorder != null) {
       map.putBoolean("canRecord", true);
       map.putBoolean("isRecording", mAudioRecorderIsRecording);
       map.putInt("durationMillis", (int) getAudioRecorderDurationMillis());
+
+      if (mAudioRecorderIsMeteringEnabled) {
+        map.putInt("metering", (int) getAudioRecorderLevels());
+      }
     }
     return map;
   }
@@ -585,6 +613,9 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
       promise.reject("E_MISSING_PERMISSION", "Missing audio recording permissions.");
       return;
     }
+
+    mAudioRecorderIsMeteringEnabled
+ = options.getBoolean(RECORDING_OPTION_IS_METERING_ENABLED_KEY);
 
     removeAudioRecorder();
 
