@@ -36,8 +36,8 @@
     "preset": "expo-module-scripts/ios"
   },
   "dependencies": {
-    "@unimodules/core": "~6.0.0",
-    "@unimodules/react-native-adapter": "~5.7.0",
+    "@unimodules/core": "~7.0.0",
+    "@unimodules/react-native-adapter": "~6.0.0",
     "chalk": "^2.4.2",
     "expo-asset": "~8.2.1",
     "expo-constants": "~9.3.5",

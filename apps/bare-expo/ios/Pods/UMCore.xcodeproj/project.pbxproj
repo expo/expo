@@ -313,17 +313,18 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		484DED4E4BC52404A9838E37EF60EFC7 /* Debug */ = {
+		32EEF4725F56C780931B7D7625C6A6F8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E9DCDA765133C69C14340EB332487F88 /* UMCore.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/UMCore/UMCore-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -466,17 +467,18 @@
 			};
 			name = Debug;
 		};
-		FD413F107835347566DF9A7C4EC5C083 /* Release */ = {
+		FE4B17C3267790635E562F1CE1D7C84D /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = F3902608630D9FC02C32369BAFD7FEBF /* UMCore.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/UMCore/UMCore-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -507,8 +509,8 @@
 		5ECCBAA9D0F27735424095E6AD3DE5D5 /* Build configuration list for PBXNativeTarget "UMCore" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				484DED4E4BC52404A9838E37EF60EFC7 /* Debug */,
-				FD413F107835347566DF9A7C4EC5C083 /* Release */,
+				32EEF4725F56C780931B7D7625C6A6F8 /* Debug */,
+				FE4B17C3267790635E562F1CE1D7C84D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

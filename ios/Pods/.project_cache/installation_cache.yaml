@@ -11102,7 +11102,7 @@ CACHE_KEYS:
       EXGL:
         :debug: 12a987cb4861a1ed84251626f97bc6be
         :release: 12a987cb4861a1ed84251626f97bc6be
-    CHECKSUM: b13834001bba158c04cf6715406f8488b7de8af8
+    CHECKSUM: 69c08cdb099ab158e9777ae2089ab0260019e145
     FILES:
       - "../../packages/expo-gl/ios/EXGL/EXGLCameraObject.h"
       - "../../packages/expo-gl/ios/EXGL/EXGLCameraObject.m"
@@ -11118,13 +11118,13 @@ CACHE_KEYS:
       - "../../packages/expo-gl/ios/EXGL/EXGLViewManager.m"
     PROJECT_NAME: EXGL
     SPECS:
-      - EXGL (9.2.0)
+      - EXGL (10.0.0)
   EXGL_CPP:
     BUILD_SETTINGS_CHECKSUM:
       EXGL_CPP:
         :debug: 86a7800c4e5b3b9e961c0ade8a584577
         :release: 86a7800c4e5b3b9e961c0ade8a584577
-    CHECKSUM: 19fe8dd6badb8b1e50d86f44f5089092c82d6d4f
+    CHECKSUM: e943090d937fcb75186e8c7e436270b8fc2b8b01
     FILES:
       - "../../packages/expo-gl-cpp/cpp/EXGLContext-inl.h"
       - "../../packages/expo-gl-cpp/cpp/EXGLContext.cpp"
@@ -11143,7 +11143,7 @@ CACHE_KEYS:
       - "../../packages/expo-gl-cpp/cpp/UEXGL.h"
     PROJECT_NAME: EXGL_CPP
     SPECS:
-      - EXGL_CPP (9.2.0)
+      - EXGL_CPP (10.0.0)
   EXGL_CPP_LEGACY:
     BUILD_SETTINGS_CHECKSUM:
       EXGL_CPP_LEGACY:
@@ -12913,7 +12913,7 @@ CACHE_KEYS:
       UMCore:
         :debug: b133cf6df6dbaf6259afd89694631b68
         :release: b133cf6df6dbaf6259afd89694631b68
-    CHECKSUM: 6610095fab3b003b5781dabb0da86dad4deb71d9
+    CHECKSUM: 6d61fd607665328831115744e18e1db6b4a061eb
     FILES:
       - "../../packages/@unimodules/core/ios/UMCore/Protocols/UMAppLifecycleListener.h"
       - "../../packages/@unimodules/core/ios/UMCore/Protocols/UMAppLifecycleService.h"
@@ -12948,7 +12948,7 @@ CACHE_KEYS:
       - "../../packages/@unimodules/core/ios/UMCore/UMViewManager.m"
     PROJECT_NAME: UMCore
     SPECS:
-      - UMCore (6.0.0)
+      - UMCore (7.0.0)
   UMFaceDetectorInterface:
     BUILD_SETTINGS_CHECKSUM:
       UMFaceDetectorInterface:
@@ -13017,7 +13017,7 @@ CACHE_KEYS:
       UMReactNativeAdapter:
         :debug: d5b46c1a381c1d32510911a8f822612a
         :release: d5b46c1a381c1d32510911a8f822612a
-    CHECKSUM: ac43190ce85363525cd031c3fc14ab52229a43f7
+    CHECKSUM: 76bba69d275c4c25c66f64b8776e96fcb34649bd
     FILES:
       - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/Services/UMReactFontManager.h"
       - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/Services/UMReactFontManager.m"
@@ -13040,7 +13040,7 @@ CACHE_KEYS:
       - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMViewManagerAdapter/UMViewManagerAdapter.m"
     PROJECT_NAME: UMReactNativeAdapter
     SPECS:
-      - UMReactNativeAdapter (5.7.0)
+      - UMReactNativeAdapter (6.0.0)
   UMSensorsInterface:
     BUILD_SETTINGS_CHECKSUM:
       UMSensorsInterface:
