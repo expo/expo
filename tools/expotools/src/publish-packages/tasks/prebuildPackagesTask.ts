@@ -21,7 +21,7 @@ export const prebuildPackagesTask = new Task<TaskArgs>(
         continue;
       }
       logger.info('\n👷‍♀️ Prebuilding %s', chalk.green(pkg.packageName));
-      await prebuildPackageAsync(pkg, { quiet: true });
+      await prebuildPackageAsync(pkg);
     }
   }
 );
