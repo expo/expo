@@ -31,7 +31,9 @@ _This version does not introduce any user-facing changes._
         [key: string]: any
     }
 }
-```### 🎉 New features
+```
+
+### 🎉 New features
 
 - You can now pass in custom options to `identifyWithTraits`, `groupWithTraits`, `alias`, `trackWithProperties`, and `screenWithProperties`. This allows you to set [these common fields](https://segment.com/docs/connections/spec/common/). ([#9606](https://github.com/expo/expo/pull/9606) by [@cruzach](https://github.com/cruzach/)).
 
@@ -42,4 +44,3 @@ _This version does not introduce any user-facing changes._
 ## 8.2.0 — 2020-05-27
 
 _This version does not introduce any user-facing changes._
-```
