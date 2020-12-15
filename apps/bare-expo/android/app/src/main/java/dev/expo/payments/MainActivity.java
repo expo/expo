@@ -44,8 +44,10 @@ public class MainActivity extends DevMenuAwareReactActivity {
 
   @Override
   public void onNewIntent(Intent intent) {
-    if (DevLauncherController.tryToHandleIntent(this, intent)) {
-      return;
+    if (MainApplication.USE_DEV_CLIENT) {
+      if (DevLauncherController.tryToHandleIntent(this, intent)) {
+        return;
+      }
     }
     super.onNewIntent(intent);
   }
