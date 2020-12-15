@@ -140,7 +140,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		39D3F37044F3B28751FDEFB70717396F /* Release */ = {
+		66CF4773FBACD7A60F36D5B57F09D4E1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -190,7 +190,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -202,7 +202,7 @@
 			};
 			name = Release;
 		};
-		E7285C65C6D56FB5C6348A03A345F8FF /* Debug */ = {
+		891E4959ABA1DF94ADDA279C7976D2A8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -255,7 +255,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -268,7 +268,22 @@
 			};
 			name = Debug;
 		};
-		EA90C120DD3F75A7914208B26E23B1EC /* Release */ = {
+		CAC9C414DD57EBA5C7E9890BC75374DA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D3D5E3E3C10E3343EFD5D703AD02575F /* UMCameraInterface.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		F71017A583DDC9032BF50B0BD351AF1A /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E0C4EF714903A2544D15ED1321DFAAA1 /* UMCameraInterface.release.xcconfig */;
 			buildSettings = {
@@ -284,29 +299,14 @@
 			};
 			name = Release;
 		};
-		FCB450618799F583DA03AF62C4ECB87D /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = D3D5E3E3C10E3343EFD5D703AD02575F /* UMCameraInterface.debug.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		8DBF6E740A062E8F3FD8A6133956258B /* Build configuration list for PBXProject "UMCameraInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E7285C65C6D56FB5C6348A03A345F8FF /* Debug */,
-				39D3F37044F3B28751FDEFB70717396F /* Release */,
+				891E4959ABA1DF94ADDA279C7976D2A8 /* Debug */,
+				66CF4773FBACD7A60F36D5B57F09D4E1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -314,8 +314,8 @@
 		DF7FD37847E72ED7DD762970B5C19EDB /* Build configuration list for PBXAggregateTarget "UMCameraInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				FCB450618799F583DA03AF62C4ECB87D /* Debug */,
-				EA90C120DD3F75A7914208B26E23B1EC /* Release */,
+				CAC9C414DD57EBA5C7E9890BC75374DA /* Debug */,
+				F71017A583DDC9032BF50B0BD351AF1A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

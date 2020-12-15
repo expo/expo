@@ -140,7 +140,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		1F29D8A44E9A640D6AF991A52376484B /* Debug */ = {
+		41AAA0BE4AA98F409A8241639C6CCA1A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7AF973A89EF7449165924249C545C503 /* UMConstantsInterface.debug.xcconfig */;
 			buildSettings = {
@@ -155,7 +155,7 @@
 			};
 			name = Debug;
 		};
-		42BF5E4FC34042888514C99C49800B71 /* Release */ = {
+		8632BBC99784317F76A38A943ADF6F6F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -205,7 +205,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -217,7 +217,7 @@
 			};
 			name = Release;
 		};
-		645EFAFD925B0EF2B317F4E022106EDD /* Release */ = {
+		98C33FEECDD7BBCCD5393E0CB2B93302 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BD264BF7AD730217F1035FE036839B6B /* UMConstantsInterface.release.xcconfig */;
 			buildSettings = {
@@ -233,7 +233,7 @@
 			};
 			name = Release;
 		};
-		9063A9DB9C9FF138C436EE01CDDB51C6 /* Debug */ = {
+		FDA523533AE9E7E0AB4F29ABB20458CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -286,7 +286,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -305,8 +305,8 @@
 		1BE85DC64F16549BF9AFDA5471C80EEC /* Build configuration list for PBXAggregateTarget "UMConstantsInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1F29D8A44E9A640D6AF991A52376484B /* Debug */,
-				645EFAFD925B0EF2B317F4E022106EDD /* Release */,
+				41AAA0BE4AA98F409A8241639C6CCA1A /* Debug */,
+				98C33FEECDD7BBCCD5393E0CB2B93302 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -314,8 +314,8 @@
 		B77F986A59348816BB7C17673A28EFF2 /* Build configuration list for PBXProject "UMConstantsInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				9063A9DB9C9FF138C436EE01CDDB51C6 /* Debug */,
-				42BF5E4FC34042888514C99C49800B71 /* Release */,
+				FDA523533AE9E7E0AB4F29ABB20458CD /* Debug */,
+				8632BBC99784317F76A38A943ADF6F6F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

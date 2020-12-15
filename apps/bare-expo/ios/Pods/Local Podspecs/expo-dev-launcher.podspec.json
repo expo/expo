@@ -1,13 +1,13 @@
 {
   "name": "expo-dev-launcher",
-  "version": "0.0.11",
+  "version": "0.1.0",
   "summary": "Pre-release version of the Expo development launcher package for testing.",
   "description": "Pre-release version of the Expo development launcher package for testing.",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
   "homepage": "https://docs.expo.io",
   "platforms": {
-    "ios": "10.0"
+    "ios": "11.0"
   },
   "swift_versions": "5.2",
   "source": {

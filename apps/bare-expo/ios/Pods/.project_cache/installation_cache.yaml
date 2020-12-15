@@ -72,7 +72,7 @@ CACHE_KEYS:
       EXAmplitude:
         :debug: a724658198c583166709aa947ac031a5
         :release: a724658198c583166709aa947ac031a5
-    CHECKSUM: 9ed04d7618ee27b56c25ccdbf81436b9d79a6b6d
+    CHECKSUM: f4fe548682f1c2c95133dc0b1557512368e6c91b
     FILES:
       - "../../../../packages/expo-analytics-amplitude/ios/EXAmplitude/EXAmplitude.h"
       - "../../../../packages/expo-analytics-amplitude/ios/EXAmplitude/EXAmplitude.m"
@@ -84,7 +84,7 @@ CACHE_KEYS:
       EXAppAuth:
         :debug: 5196b67a1864fbbe0e9c328d33cd6f82
         :release: 5196b67a1864fbbe0e9c328d33cd6f82
-    CHECKSUM: c1fd33abf7c7ce45ba096a67eea78bda2666b400
+    CHECKSUM: 0f1d0d7582d87fc700910907ab6b85a15e3d7d5f
     FILES:
       - "../../../../packages/expo-app-auth/ios/EXAppAuth/EXAppAuth+JSON.h"
       - "../../../../packages/expo-app-auth/ios/EXAppAuth/EXAppAuth+JSON.m"
@@ -102,7 +102,7 @@ CACHE_KEYS:
       EXApplication:
         :debug: 662b6cf816424e6fb8e204690d2bcee6
         :release: 662b6cf816424e6fb8e204690d2bcee6
-    CHECKSUM: 39485a1bd2175a68b22cb2a209a7a4b1f4d362cd
+    CHECKSUM: 59dd6d1e8a7b4bfa4153eb34fc0a4c3b2173b7e0
     FILES:
       - "../../../../packages/expo-application/ios/EXApplication/EXApplication.h"
       - "../../../../packages/expo-application/ios/EXApplication/EXApplication.m"
@@ -116,7 +116,7 @@ CACHE_KEYS:
       EXAV:
         :debug: 2e94ccd99a5958e8763d10c21f5b2342
         :release: 2e94ccd99a5958e8763d10c21f5b2342
-    CHECKSUM: 9a683f5aec5824c7fa375a3b77b71230d301dda9
+    CHECKSUM: d9703b0176a008c728bf2b50932399ac59ba680b
     FILES:
       - "../../../../packages/expo-av/ios/EXAV/EXAudioRecordingPermissionRequester.h"
       - "../../../../packages/expo-av/ios/EXAV/EXAudioRecordingPermissionRequester.m"
@@ -142,7 +142,7 @@ CACHE_KEYS:
       EXBackgroundFetch:
         :debug: b4a393f24433ff939008c36d79042465
         :release: b4a393f24433ff939008c36d79042465
-    CHECKSUM: 56675cb2aede53a7d1934e58cbbab052a9bbd743
+    CHECKSUM: 9dfd9571957508a11ed2c57eca67f6d142c8c5f5
     FILES:
       - "../../../../packages/expo-background-fetch/ios/EXBackgroundFetch/EXBackgroundFetch.h"
       - "../../../../packages/expo-background-fetch/ios/EXBackgroundFetch/EXBackgroundFetch.m"
@@ -156,7 +156,7 @@ CACHE_KEYS:
       EXBarCodeScanner:
         :debug: 3ec3c52cd6a33e27b74e4b6d9543cc7f
         :release: 3ec3c52cd6a33e27b74e4b6d9543cc7f
-    CHECKSUM: 6c04525e0f9d91a581a99c9411a8184b0353a63a
+    CHECKSUM: f606c76d7f313c7bab85be7d7533d3bce8b6bac3
     FILES:
       - "../../../../packages/expo-barcode-scanner/ios/EXBarCodeScanner/EXBarCodeCameraRequester.h"
       - "../../../../packages/expo-barcode-scanner/ios/EXBarCodeScanner/EXBarCodeCameraRequester.m"
@@ -180,7 +180,7 @@ CACHE_KEYS:
       EXBattery:
         :debug: 4eec38c8882e48da816a7d0593b44a1d
         :release: 4eec38c8882e48da816a7d0593b44a1d
-    CHECKSUM: a1b74b2ce87e65d4e809f632ea2116262222d565
+    CHECKSUM: 82d4ddff351207b3788853826f302b757efa96c3
     FILES:
       - "../../../../packages/expo-battery/ios/EXBattery/EXBattery.h"
       - "../../../../packages/expo-battery/ios/EXBattery/EXBattery.m"
@@ -192,7 +192,7 @@ CACHE_KEYS:
       EXBlur:
         :debug: 6ff742c05d7d0f0190daad6ccee01558
         :release: 6ff742c05d7d0f0190daad6ccee01558
-    CHECKSUM: 569d38c2b0b7b000866d928bc36acadfdc02ea8e
+    CHECKSUM: 4044217657dbc3e1267479181a940d4423cf5611
     FILES:
       - "../../../../packages/expo-blur/ios/EXBlur/EXBlurView.h"
       - "../../../../packages/expo-blur/ios/EXBlur/EXBlurView.m"
@@ -206,7 +206,7 @@ CACHE_KEYS:
       EXBrightness:
         :debug: f0c665a6af265257eb3cee17cd289ec4
         :release: f0c665a6af265257eb3cee17cd289ec4
-    CHECKSUM: 727cafd6a90578fe82fb968edefc7515d1d4cdcf
+    CHECKSUM: 38901fd6804944a36222b6ad6c3c5cbf80f7927a
     FILES:
       - "../../../../packages/expo-brightness/ios/EXBrightness/EXBrightness.h"
       - "../../../../packages/expo-brightness/ios/EXBrightness/EXBrightness.m"
@@ -220,7 +220,7 @@ CACHE_KEYS:
       EXCalendar:
         :debug: 83e0dc5c1943b16ca7c3b3c14366f1ff
         :release: 83e0dc5c1943b16ca7c3b3c14366f1ff
-    CHECKSUM: fde5f855ffdb7276fd228c51bf9ff725c624ea04
+    CHECKSUM: 64d7a6da2ef6c09f3258e188887c3cfbd3a6a59d
     FILES:
       - "../../../../packages/expo-calendar/ios/EXCalendar/EXCalendar.h"
       - "../../../../packages/expo-calendar/ios/EXCalendar/EXCalendar.m"
@@ -238,7 +238,7 @@ CACHE_KEYS:
       EXCellular:
         :debug: d5463779234db14bb7a4209c477e8274
         :release: d5463779234db14bb7a4209c477e8274
-    CHECKSUM: 38a3df120e149e4ea40e7ebde90144815adf3d53
+    CHECKSUM: 611767148624d7daa4cbcd8cf315d20662d14c3e
     FILES:
       - "../../../../packages/expo-cellular/ios/EXCellular/EXCellularModule.h"
       - "../../../../packages/expo-cellular/ios/EXCellular/EXCellularModule.m"
@@ -250,7 +250,7 @@ CACHE_KEYS:
       EXConstants:
         :debug: 9d9d8728b1b0afc838ae324607eba432
         :release: 9d9d8728b1b0afc838ae324607eba432
-    CHECKSUM: 54d0bf04319d1692c6c7bc03ca151ef7a71705a4
+    CHECKSUM: 8e7d5f068653b4033cc4f883c8c42f1c0eef916e
     FILES:
       - "../../../../packages/expo-constants/ios/EXConstants/EXConstants.h"
       - "../../../../packages/expo-constants/ios/EXConstants/EXConstants.m"
@@ -266,7 +266,7 @@ CACHE_KEYS:
       EXContacts:
         :debug: edc76e8161354a61f60cbaa0e677313a
         :release: edc76e8161354a61f60cbaa0e677313a
-    CHECKSUM: 512bd4a8139e2eb4574a774f9c3cd254f687ca10
+    CHECKSUM: af0985f2774788882924cdf58325e5053a85a487
     FILES:
       - "../../../../packages/expo-contacts/ios/EXContacts/EXContacts+Serialization.h"
       - "../../../../packages/expo-contacts/ios/EXContacts/EXContacts+Serialization.m"
@@ -284,7 +284,7 @@ CACHE_KEYS:
       EXCrypto:
         :debug: 3ef6dd73bad434d9815db5548e3171bc
         :release: 3ef6dd73bad434d9815db5548e3171bc
-    CHECKSUM: d9692bf7aa323f428b924b68601fd2ed98c2e95d
+    CHECKSUM: b4e71a1766ce80505bd386424ba2d082774a70ed
     FILES:
       - "../../../../packages/expo-crypto/ios/EXCrypto/EXCrypto.h"
       - "../../../../packages/expo-crypto/ios/EXCrypto/EXCrypto.m"
@@ -296,7 +296,7 @@ CACHE_KEYS:
       EXDevice:
         :debug: 29c6c1382722ef66b5adf3744b8cf15c
         :release: 29c6c1382722ef66b5adf3744b8cf15c
-    CHECKSUM: 1e9838beb1a0e063422cbdc09aae0cfe2a44420c
+    CHECKSUM: b4f128964c602af9ca60025ef232f8970801c3cb
     FILES:
       - "../../../../packages/expo-device/ios/EXDevice/EXDevice.h"
       - "../../../../packages/expo-device/ios/EXDevice/EXDevice.m"
@@ -308,7 +308,7 @@ CACHE_KEYS:
       EXDevMenu:
         :debug: c66fa0d2cbb00c3a5517658d5d28a97d
         :release: c66fa0d2cbb00c3a5517658d5d28a97d
-    CHECKSUM: d646c74a8db111dbe272fd0d48b988049eee2da0
+    CHECKSUM: f61e1c8223e516f670c2a47cf2f24ead2d25d7fb
     FILES:
       - "../../../../packages/expo-dev-menu/assets/dev-menu-packager-host"
       - "../../../../packages/expo-dev-menu/assets/EXDevMenuApp.ios.js"
@@ -434,13 +434,13 @@ CACHE_KEYS:
       - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/RCTConvert+DevMenuREATransition.m"
     PROJECT_NAME: EXDevMenu
     SPECS:
-      - EXDevMenu (0.0.4)
+      - EXDevMenu (0.1.0)
   EXDevMenuInterface:
     BUILD_SETTINGS_CHECKSUM:
       EXDevMenuInterface:
         :debug: 0e0e044bc773ff543113d95f784c8e05
         :release: 0e0e044bc773ff543113d95f784c8e05
-    CHECKSUM: d4d450da8df80ae6f27a7ad4a1cc0da4055a3f0b
+    CHECKSUM: 76dff7c65f1b9474b8ab6a37187ed6fcf81fa654
     FILES:
       - "../../../../packages/expo-dev-menu-interface/ios/DevMenuBridgeProtocol.swift"
       - "../../../../packages/expo-dev-menu-interface/ios/DevMenuDelegateProtocol.swift"
@@ -453,13 +453,13 @@ CACHE_KEYS:
       - "../../../../packages/expo-dev-menu-interface/README.md"
     PROJECT_NAME: EXDevMenuInterface
     SPECS:
-      - EXDevMenuInterface (0.0.3)
+      - EXDevMenuInterface (0.1.0)
   EXDocumentPicker:
     BUILD_SETTINGS_CHECKSUM:
       EXDocumentPicker:
         :debug: 596391212786af2a8fff807d4607cd44
         :release: 596391212786af2a8fff807d4607cd44
-    CHECKSUM: 1b5c9bf123bcbf9826790cd1a6c101368d442191
+    CHECKSUM: a1627dd979adfc601bf2c08f0ab426ab9b003a5e
     FILES:
       - "../../../../packages/expo-document-picker/ios/EXDocumentPicker/EXDocumentPickerModule.h"
       - "../../../../packages/expo-document-picker/ios/EXDocumentPicker/EXDocumentPickerModule.m"
@@ -471,7 +471,7 @@ CACHE_KEYS:
       EXErrorRecovery:
         :debug: 6821f444ebca1721d44a7db49c1fd095
         :release: 6821f444ebca1721d44a7db49c1fd095
-    CHECKSUM: 40cbc98b4db2811fe87e9ac266bbe370f0c44db0
+    CHECKSUM: 33d22d8958362d5c457083d5ebfad94e5780add9
     FILES:
       - "../../../../packages/expo-error-recovery/ios/EXErrorRecovery/EXErrorRecoveryModule.h"
       - "../../../../packages/expo-error-recovery/ios/EXErrorRecovery/EXErrorRecoveryModule.m"
@@ -483,7 +483,7 @@ CACHE_KEYS:
       EXFacebook:
         :debug: 9b0f4d0af7e809156667b3d31bbd5170
         :release: 9b0f4d0af7e809156667b3d31bbd5170
-    CHECKSUM: 2716f75a170ef461b0e7f27e082a4878e64773a7
+    CHECKSUM: 54969ee527bec15552addabff4d824605fa8b6b8
     FILES:
       - "../../../../packages/expo-facebook/ios/EXFacebook/EXFacebook.h"
       - "../../../../packages/expo-facebook/ios/EXFacebook/EXFacebook.m"
@@ -497,7 +497,7 @@ CACHE_KEYS:
       EXFileSystem:
         :debug: a05b80b1fcaf98a229d99c79dd92a37b
         :release: a05b80b1fcaf98a229d99c79dd92a37b
-    CHECKSUM: e3ebe6d3f4f7f03eb73fa7262c1701951e5717f0
+    CHECKSUM: 58b0fbdc0c4387c5b83ac9b07bed0ba6bb482202
     FILES:
       - "../../../../packages/expo-file-system/ios/EXFileSystem/EXFilePermissionModule.h"
       - "../../../../packages/expo-file-system/ios/EXFileSystem/EXFilePermissionModule.m"
@@ -531,7 +531,7 @@ CACHE_KEYS:
       EXFirebaseAnalytics:
         :debug: 0f7b89f4d68690550a05f82fe1e1d770
         :release: 0f7b89f4d68690550a05f82fe1e1d770
-    CHECKSUM: 8ae41a5530b7294c858bebd9fef3fbad778d6521
+    CHECKSUM: 6118a277043b028c5ee0edd2da2584d0b33cc980
     FILES:
       - "../../../../packages/expo-firebase-analytics/ios/EXFirebaseAnalytics/EXFirebaseAnalytics.h"
       - "../../../../packages/expo-firebase-analytics/ios/EXFirebaseAnalytics/EXFirebaseAnalytics.m"
@@ -543,7 +543,7 @@ CACHE_KEYS:
       EXFirebaseCore:
         :debug: 00d0887080c99b9b933c849048b43c7c
         :release: 00d0887080c99b9b933c849048b43c7c
-    CHECKSUM: e70a4f2ce5b69e3731933cc445653673f02cdcb0
+    CHECKSUM: e3d818b9624e508fff8a7981b175d93d42eb6bab
     FILES:
       - "../../../../packages/expo-firebase-core/ios/EXFirebaseCore/EXFirebaseCore+FIROptions.h"
       - "../../../../packages/expo-firebase-core/ios/EXFirebaseCore/EXFirebaseCore+FIROptions.m"
@@ -558,7 +558,7 @@ CACHE_KEYS:
       EXFont:
         :debug: 297943a06109176cfd7a052128223ee5
         :release: 297943a06109176cfd7a052128223ee5
-    CHECKSUM: bbfcd894ca1d731a5fc3f2f8b6480079340822b1
+    CHECKSUM: 14aabf82e9f32b5d80914b7368dc8a9150ac9863
     FILES:
       - "../../../../packages/expo-font/ios/EXFont/EXFont.h"
       - "../../../../packages/expo-font/ios/EXFont/EXFont.m"
@@ -580,7 +580,7 @@ CACHE_KEYS:
       EXGL:
         :debug: 3988f43f660e9ea04f53a63caff29941
         :release: 3988f43f660e9ea04f53a63caff29941
-    CHECKSUM: 48a092e2ac0951824610acdedbaf020194d4b579
+    CHECKSUM: b13834001bba158c04cf6715406f8488b7de8af8
     FILES:
       - "../../../../packages/expo-gl/ios/EXGL/EXGLCameraObject.h"
       - "../../../../packages/expo-gl/ios/EXGL/EXGLCameraObject.m"
@@ -602,7 +602,7 @@ CACHE_KEYS:
       EXGL_CPP:
         :debug: 655317cba4f38e8faf784f60c15db7a2
         :release: 655317cba4f38e8faf784f60c15db7a2
-    CHECKSUM: 136ac9d6d96d93241770869a3b83a8df7297ae03
+    CHECKSUM: 19fe8dd6badb8b1e50d86f44f5089092c82d6d4f
     FILES:
       - "../../../../packages/expo-gl-cpp/cpp/EXGLContext-inl.h"
       - "../../../../packages/expo-gl-cpp/cpp/EXGLContext.cpp"
@@ -627,7 +627,7 @@ CACHE_KEYS:
       EXGL_CPP_LEGACY:
         :debug: e87752b8714259abc6f1d196c3a5cbc2
         :release: e87752b8714259abc6f1d196c3a5cbc2
-    CHECKSUM: 53e09fa405bf392e3d24b3c4fd62080f340a7429
+    CHECKSUM: 0d65426183da75b3c263f88fc92ac27515926422
     FILES:
       - "../../../../packages/expo-gl-cpp-legacy/cpp/EXGLContext.cpp"
       - "../../../../packages/expo-gl-cpp-legacy/cpp/EXGLContext.h"
@@ -652,7 +652,7 @@ CACHE_KEYS:
       EXGoogleSignIn:
         :debug: f31359b1fe376bcd0d1899240b826489
         :release: f31359b1fe376bcd0d1899240b826489
-    CHECKSUM: c41506338af7b0227ec0e29ea228f3e32df9aa83
+    CHECKSUM: be57d8296b87e8249820354aaae0bb8beb339ccc
     FILES:
       - "../../../../packages/expo-google-sign-in/ios/EXGoogleSignIn/EXAuthTask.h"
       - "../../../../packages/expo-google-sign-in/ios/EXGoogleSignIn/EXAuthTask.m"
@@ -670,7 +670,7 @@ CACHE_KEYS:
       EXHaptics:
         :debug: 392bac91b25b8946870e93ff8b400f97
         :release: 392bac91b25b8946870e93ff8b400f97
-    CHECKSUM: 41c1de6e5baea7559b1a3c75b0ed685fc09ef7d4
+    CHECKSUM: f63505c2ba521e20053d12396dab69441d0df9c6
     FILES:
       - "../../../../packages/expo-haptics/ios/EXHaptics/EXHapticsModule.h"
       - "../../../../packages/expo-haptics/ios/EXHaptics/EXHapticsModule.m"
@@ -682,7 +682,7 @@ CACHE_KEYS:
       EXImageLoader:
         :debug: 46d0ade92a14e3c3e16b9bf16e92852a
         :release: 46d0ade92a14e3c3e16b9bf16e92852a
-    CHECKSUM: a7288feb3c46852e980b5f157be7874de79881f6
+    CHECKSUM: ec9d8c47b5475c792aafd5953bd4b0f138b5f4b3
     FILES:
       - "../../../../packages/expo-image-loader/ios/EXImageLoader/EXImageLoader.h"
       - "../../../../packages/expo-image-loader/ios/EXImageLoader/EXImageLoader.m"
@@ -694,7 +694,7 @@ CACHE_KEYS:
       EXImageManipulator:
         :debug: 3e1c44f767957e026710f8cc1c24de28
         :release: 3e1c44f767957e026710f8cc1c24de28
-    CHECKSUM: 22da66c56a8d9f59b93e82bf449755037ecf3be7
+    CHECKSUM: a9354517b224d9623837a9a9d125baf8f1706c11
     FILES:
       - "../../../../packages/expo-image-manipulator/ios/EXImageManipulator/EXImageManipulatorModule.h"
       - "../../../../packages/expo-image-manipulator/ios/EXImageManipulator/EXImageManipulatorModule.m"
@@ -706,7 +706,7 @@ CACHE_KEYS:
       EXImagePicker:
         :debug: 7558ff23e83a17afb34ee12d8f9fbeaf
         :release: 7558ff23e83a17afb34ee12d8f9fbeaf
-    CHECKSUM: 82fb929fb57b38de8d0a2d7fc3ca49726b9b8f78
+    CHECKSUM: db16b27d46d6cda51e05ba45eef5d485a48192ff
     FILES:
       - "../../../../packages/expo-image-picker/ios/EXImagePicker/EXImagePicker.h"
       - "../../../../packages/expo-image-picker/ios/EXImagePicker/EXImagePicker.m"
@@ -724,7 +724,7 @@ CACHE_KEYS:
       EXInAppPurchases:
         :debug: 861a853e987cb06d3dadedcf82204b27
         :release: 861a853e987cb06d3dadedcf82204b27
-    CHECKSUM: c647953e5e1dad71bbda2e3bb92966dac440ede4
+    CHECKSUM: 0108a77fcf050f29f047313ccd98067777914d83
     FILES:
       - "../../../../packages/expo-in-app-purchases/ios/EXInAppPurchases/EXInAppPurchasesModule.h"
       - "../../../../packages/expo-in-app-purchases/ios/EXInAppPurchases/EXInAppPurchasesModule.m"
@@ -736,7 +736,7 @@ CACHE_KEYS:
       EXKeepAwake:
         :debug: 453e9d9070bb0a70eca611c99651448f
         :release: 453e9d9070bb0a70eca611c99651448f
-    CHECKSUM: 380cd8ee73fba1977e4e55607ff891f8f314d211
+    CHECKSUM: 25bbafbafbb87e4f57a071e6e7b8c7b99ef40737
     FILES:
       - "../../../../packages/expo-keep-awake/ios/EXKeepAwake/EXKeepAwake.h"
       - "../../../../packages/expo-keep-awake/ios/EXKeepAwake/EXKeepAwake.m"
@@ -748,7 +748,7 @@ CACHE_KEYS:
       EXLinearGradient:
         :debug: a1608de93dfc6d5121324fe285afea97
         :release: a1608de93dfc6d5121324fe285afea97
-    CHECKSUM: 4d916d62bd37a13e32a69d44a2e307759080dcd4
+    CHECKSUM: 548ad4d9af30a0b18691c3e29299b9189a6ea838
     FILES:
       - "../../../../packages/expo-linear-gradient/ios/EXLinearGradient/EXLinearGradient.h"
       - "../../../../packages/expo-linear-gradient/ios/EXLinearGradient/EXLinearGradient.m"
@@ -764,7 +764,7 @@ CACHE_KEYS:
       EXLocalAuthentication:
         :debug: 29ffc925d1b9835a14be7b8db6bfeef6
         :release: 29ffc925d1b9835a14be7b8db6bfeef6
-    CHECKSUM: a256f4ab172276d3d0b7556bf2ede5f7a2ac00f9
+    CHECKSUM: 2b77ad6ebca2d8d956b232f223999e07f1d6793a
     FILES:
       - "../../../../packages/expo-local-authentication/ios/EXLocalAuthentication/EXLocalAuthentication.h"
       - "../../../../packages/expo-local-authentication/ios/EXLocalAuthentication/EXLocalAuthentication.m"
@@ -776,7 +776,7 @@ CACHE_KEYS:
       EXLocalization:
         :debug: f6518365cdc5b2f1688e47d6b99bae91
         :release: f6518365cdc5b2f1688e47d6b99bae91
-    CHECKSUM: 60cf18fb8914ddc5339bff6c69027e85fcb7610c
+    CHECKSUM: 2703af93d8a2c77b3ebef9519c57ef841cf39f7c
     FILES:
       - "../../../../packages/expo-localization/ios/EXLocalization/EXLocalization.h"
       - "../../../../packages/expo-localization/ios/EXLocalization/EXLocalization.m"
@@ -788,7 +788,7 @@ CACHE_KEYS:
       EXLocation:
         :debug: d248281b1c728fd102812a6601a840e8
         :release: d248281b1c728fd102812a6601a840e8
-    CHECKSUM: b1ae697782413fa55aaa69a27ad392d0b45785b0
+    CHECKSUM: 67ba20a24f23cc7214642d8dfe42c6650cf821dd
     FILES:
       - "../../../../packages/expo-location/ios/EXLocation/EXLocation.h"
       - "../../../../packages/expo-location/ios/EXLocation/EXLocation.m"
@@ -808,7 +808,7 @@ CACHE_KEYS:
       EXMailComposer:
         :debug: 6727cf3350b74cd5ecc6637d62894236
         :release: 6727cf3350b74cd5ecc6637d62894236
-    CHECKSUM: 1261bad4b153681c5e5381cfd42c8689d8059e77
+    CHECKSUM: b37a67a790bf4ef318eeb6ec978cb088a62d50a8
     FILES:
       - "../../../../packages/expo-mail-composer/ios/EXMailComposer/EXMailComposer.h"
       - "../../../../packages/expo-mail-composer/ios/EXMailComposer/EXMailComposer.m"
@@ -820,7 +820,7 @@ CACHE_KEYS:
       EXMediaLibrary:
         :debug: 853545713788e73e5bc845f9b315e0ba
         :release: 853545713788e73e5bc845f9b315e0ba
-    CHECKSUM: 773b643958fb86acce1d6bf10c7de9d99a628410
+    CHECKSUM: e2b564da3f70197d9151e4a93904b91553c930a7
     FILES:
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.h"
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.m"
@@ -840,7 +840,7 @@ CACHE_KEYS:
       EXNetwork:
         :debug: b72231c6e4917d66f76f1660a94543f8
         :release: b72231c6e4917d66f76f1660a94543f8
-    CHECKSUM: f440a35438d03e4e15cfbb907348b52de0f0135f
+    CHECKSUM: 6f4fb971c3779842387e4744fee288ae0aa58175
     FILES:
       - "../../../../packages/expo-network/ios/EXNetwork/EXNetwork.h"
       - "../../../../packages/expo-network/ios/EXNetwork/EXNetwork.m"
@@ -852,7 +852,7 @@ CACHE_KEYS:
       EXNotifications:
         :debug: 85bbec8baa9d46b6dc06709027c20187
         :release: 85bbec8baa9d46b6dc06709027c20187
-    CHECKSUM: 82ad7328328e713b15147bffa840d08aa45084c5
+    CHECKSUM: 557d4875448c003c55031d1430f3edbbd8545d4a
     FILES:
       - "../../../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.h"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.m"
@@ -900,7 +900,7 @@ CACHE_KEYS:
       EXPermissions:
         :debug: e6b5a5f6b878192926b2a93300bb5dc2
         :release: e6b5a5f6b878192926b2a93300bb5dc2
-    CHECKSUM: 9a60f6121fabeb8965d6972a31f92c17c912f960
+    CHECKSUM: c240b4218ffe5e8b6684f47d87ddec46221f7101
     FILES:
       - "../../../../packages/expo-permissions/ios/EXPermissions/EXPermissions.h"
       - "../../../../packages/expo-permissions/ios/EXPermissions/EXPermissions.m"
@@ -914,7 +914,7 @@ CACHE_KEYS:
       expo-dev-launcher:
         :debug: 22367e25b8294f3c1f9c2b5052cb58d8
         :release: 22367e25b8294f3c1f9c2b5052cb58d8
-    CHECKSUM: f4156bea76a0d9b13b8e07bbf3df272c86eba413
+    CHECKSUM: ebebf6f7c63cb67d52f529f86250ddd9b2820ec1
     FILES:
       - "../../../../packages/expo-dev-launcher/ios/EXDevLauncher.h"
       - "../../../../packages/expo-dev-launcher/ios/EXDevLauncher.m"
@@ -941,13 +941,13 @@ CACHE_KEYS:
       - "../../../../packages/expo-dev-launcher/README.md"
     PROJECT_NAME: expo-dev-launcher
     SPECS:
-      - expo-dev-launcher (0.0.11)
+      - expo-dev-launcher (0.1.0)
   expo-image:
     BUILD_SETTINGS_CHECKSUM:
       expo-image:
         :debug: c70070a4832fdd505cd079254e6663aa
         :release: c70070a4832fdd505cd079254e6663aa
-    CHECKSUM: dc52ebb150b98a54d6023cd7448141e7366598d0
+    CHECKSUM: 07527eb7a57f5ac939c5ded392bcf64c975b9c87
     FILES:
       - "../../../../packages/expo-image/ios/EXImageBorders.h"
       - "../../../../packages/expo-image/ios/EXImageBorders.m"
@@ -968,7 +968,7 @@ CACHE_KEYS:
       EXPrint:
         :debug: d4a96eaf93ebf9ef8ea4795f317a1bc3
         :release: d4a96eaf93ebf9ef8ea4795f317a1bc3
-    CHECKSUM: f74312fc2062597ccabc089483efb3422956605e
+    CHECKSUM: d2fa3a6ac93758bbb597426b729c9a33e3c5a63b
     FILES:
       - "../../../../packages/expo-print/ios/EXPrint/EXPrint.h"
       - "../../../../packages/expo-print/ios/EXPrint/EXPrint.m"
@@ -986,7 +986,7 @@ CACHE_KEYS:
       EXRandom:
         :debug: 237e2f91c50577fa9ecdb8869a0a1226
         :release: 237e2f91c50577fa9ecdb8869a0a1226
-    CHECKSUM: d7e0f3dd64810aabd27d59f8ecffee359177e2c3
+    CHECKSUM: 492160fc4833e9557824ec897faded9e297508ec
     FILES:
       - "../../../../packages/expo-random/ios/EXRandom/EXRandom.h"
       - "../../../../packages/expo-random/ios/EXRandom/EXRandom.m"
@@ -998,7 +998,7 @@ CACHE_KEYS:
       EXScreenCapture:
         :debug: 846333da3cf9b23bf420e93dfbd2e1d3
         :release: 846333da3cf9b23bf420e93dfbd2e1d3
-    CHECKSUM: d218c5dc6d6150da181eb49b203e34e6641ec25e
+    CHECKSUM: 9cbb3995e4dec9a74d3d6b117761acde41cf3557
     FILES:
       - "../../../../packages/expo-screen-capture/ios/EXScreenCapture/EXScreenCaptureModule.h"
       - "../../../../packages/expo-screen-capture/ios/EXScreenCapture/EXScreenCaptureModule.m"
@@ -1010,7 +1010,7 @@ CACHE_KEYS:
       EXScreenOrientation:
         :debug: 8a385bf2434b0e1caa9d115b9ec099d2
         :release: 8a385bf2434b0e1caa9d115b9ec099d2
-    CHECKSUM: 888c124a8d5775a3c46798d3f2f7bc1171b27767
+    CHECKSUM: 43ecdc1c3410c60c6d9a72eeb69b24d49a8350ea
     FILES:
       - "../../../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationModule.h"
       - "../../../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationModule.m"
@@ -1028,7 +1028,7 @@ CACHE_KEYS:
       EXSecureStore:
         :debug: be7849ef03912c95da7dcb3ddd76f2e3
         :release: be7849ef03912c95da7dcb3ddd76f2e3
-    CHECKSUM: ad9082c0f4ce9b615c469cf6d9ca02b099bcc8e0
+    CHECKSUM: dac88c52a0df042282545278a0bdc347266a95d1
     FILES:
       - "../../../../packages/expo-secure-store/ios/EXSecureStore/EXSecureStore.h"
       - "../../../../packages/expo-secure-store/ios/EXSecureStore/EXSecureStore.m"
@@ -1040,7 +1040,7 @@ CACHE_KEYS:
       EXSegment:
         :debug: b2ca603d9f22cee6cebb55d093804aa2
         :release: b2ca603d9f22cee6cebb55d093804aa2
-    CHECKSUM: b4e85065e10b4e2cdcfab2f0f166da1389b63854
+    CHECKSUM: 5ae19ad49ea03cf9aa5df07916ab66580b1061b6
     FILES:
       - "../../../../packages/expo-analytics-segment/ios/EXSegment/EXSegment.h"
       - "../../../../packages/expo-analytics-segment/ios/EXSegment/EXSegment.m"
@@ -1052,7 +1052,7 @@ CACHE_KEYS:
       EXSensors:
         :debug: a5a4008fefda4679b965ad5dd6256951
         :release: a5a4008fefda4679b965ad5dd6256951
-    CHECKSUM: 08ac0628be262b80e9e1f69610993f715bec98d0
+    CHECKSUM: e32f3764530071ca587911b0b020f23b675f9fc1
     FILES:
       - "../../../../packages/expo-sensors/ios/EXSensors/EXSensorsManager.h"
       - "../../../../packages/expo-sensors/ios/EXSensors/EXSensorsManager.m"
@@ -1080,7 +1080,7 @@ CACHE_KEYS:
       EXSharing:
         :debug: 9f4d10e09bbce2181e0d9414af3dc9a1
         :release: 9f4d10e09bbce2181e0d9414af3dc9a1
-    CHECKSUM: 3df721cc76b4ae95a686767c17b2c2d2fb4d74c7
+    CHECKSUM: 1ad40d163cda9af8b49b08b0a838a60d6f4c8651
     FILES:
       - "../../../../packages/expo-sharing/ios/EXSharing/EXSharingModule.h"
       - "../../../../packages/expo-sharing/ios/EXSharing/EXSharingModule.m"
@@ -1092,7 +1092,7 @@ CACHE_KEYS:
       EXSMS:
         :debug: 3b4afdaf27544c092dc57fcfcef41c6f
         :release: 3b4afdaf27544c092dc57fcfcef41c6f
-    CHECKSUM: ba27e2a28d08430eeb3d45bfa43998e55295913a
+    CHECKSUM: 1323e327e81c95da53737f5fadd8b68efea05ef6
     FILES:
       - "../../../../packages/expo-sms/ios/EXSMS/EXSMSModule.h"
       - "../../../../packages/expo-sms/ios/EXSMS/EXSMSModule.m"
@@ -1104,7 +1104,7 @@ CACHE_KEYS:
       EXSpeech:
         :debug: d62f1b701ecc78e19c61a591fea599cc
         :release: d62f1b701ecc78e19c61a591fea599cc
-    CHECKSUM: 708aca898ec51f8cdc7d38009a623b0f487728cc
+    CHECKSUM: 6332dabda4ccf2237c562bc606ff8e8cc2a91582
     FILES:
       - "../../../../packages/expo-speech/ios/EXSpeech/EXSpeech.h"
       - "../../../../packages/expo-speech/ios/EXSpeech/EXSpeech.m"
@@ -1116,7 +1116,7 @@ CACHE_KEYS:
       EXSQLite:
         :debug: 3673694f8cf86807841fc3c1e0651ef9
         :release: 3673694f8cf86807841fc3c1e0651ef9
-    CHECKSUM: 73b2328cfc7cf0b97d0331167d4793f6301ebc6b
+    CHECKSUM: 17b985c220d4b45672cd1442c77f17c8304102ca
     FILES:
       - "../../../../packages/expo-sqlite/ios/EXSQLite/EXSQLite.h"
       - "../../../../packages/expo-sqlite/ios/EXSQLite/EXSQLite.m"
@@ -1128,7 +1128,7 @@ CACHE_KEYS:
       EXStoreReview:
         :debug: 1d0589254eb432311521b099a0fd9926
         :release: 1d0589254eb432311521b099a0fd9926
-    CHECKSUM: f63cc372c049082fb27d8dfed44a33fb6176f8e8
+    CHECKSUM: aee633ceed1258e609e7f6d391987c7e916998e4
     FILES:
       - "../../../../packages/expo-store-review/ios/EXStoreReview/EXStoreReviewModule.h"
       - "../../../../packages/expo-store-review/ios/EXStoreReview/EXStoreReviewModule.m"
@@ -1140,7 +1140,7 @@ CACHE_KEYS:
       EXTaskManager:
         :debug: 802e1ce7c61fcabe4f44a66660ac1496
         :release: 802e1ce7c61fcabe4f44a66660ac1496
-    CHECKSUM: 0029f5a8536792abe270126f37994302b307778b
+    CHECKSUM: ff8336c60319ac74b487e69d848c3b63bf15bf3b
     FILES:
       - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTask.h"
       - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTask.m"
@@ -1160,7 +1160,7 @@ CACHE_KEYS:
       EXVideoThumbnails:
         :debug: 4e0fb4aca97e1cf3e333cbed0ab3c1c3
         :release: 4e0fb4aca97e1cf3e333cbed0ab3c1c3
-    CHECKSUM: 21d5831317e516267e3baa5e7e0f8a001a9ae5f9
+    CHECKSUM: b631add5fd06167cbeb4ccf65b517f575bb689b8
     FILES:
       - "../../../../packages/expo-video-thumbnails/ios/EXVideoThumbnails/EXVideoThumbnailsModule.h"
       - "../../../../packages/expo-video-thumbnails/ios/EXVideoThumbnails/EXVideoThumbnailsModule.m"
@@ -1172,7 +1172,7 @@ CACHE_KEYS:
       EXWebBrowser:
         :debug: fa2c6a75e2f4c155518984062966b6c9
         :release: fa2c6a75e2f4c155518984062966b6c9
-    CHECKSUM: 43f0533393fbf743e646c8ddfee96cd73ff2bdfd
+    CHECKSUM: c17231eed8fa43eb6f2b2f4260e2e14e4e267f41
     FILES:
       - "../../../../packages/expo-web-browser/ios/EXWebBrowser/EXWebBrowser.h"
       - "../../../../packages/expo-web-browser/ios/EXWebBrowser/EXWebBrowser.m"
@@ -2842,7 +2842,7 @@ CACHE_KEYS:
       UMAppLoader:
         :debug: f84a5595af56c0135fcbfb45c95cee7a
         :release: f84a5595af56c0135fcbfb45c95cee7a
-    CHECKSUM: 2b78e321466b4518b2c1e6e011df912e4e36834c
+    CHECKSUM: bee14c578914554aa8cfb0b0c77b4906b6278189
     FILES:
       - "../../../../packages/unimodules-app-loader/ios/UMAppLoader/Interfaces/UMAppLoaderInterface.h"
       - "../../../../packages/unimodules-app-loader/ios/UMAppLoader/Interfaces/UMAppRecordInterface.h"
@@ -2856,7 +2856,7 @@ CACHE_KEYS:
       UMBarCodeScannerInterface:
         :debug: 436093c486c7abadc765c3f824a5dd36
         :release: 436093c486c7abadc765c3f824a5dd36
-    CHECKSUM: 8d5e0782fdc13eca3604149d288db545c18aa8d1
+    CHECKSUM: d24d7bfca41008b5da35b2132a1fac9e75720ea0
     FILES:
       - "../../../../packages/unimodules-barcode-scanner-interface/ios/UMBarCodeScannerInterface/UMBarCodeScannerInterface.h"
       - "../../../../packages/unimodules-barcode-scanner-interface/ios/UMBarCodeScannerInterface/UMBarCodeScannerProviderInterface.h"
@@ -2868,7 +2868,7 @@ CACHE_KEYS:
       UMCameraInterface:
         :debug: 7e21e6d0c58b57d3334f399479a6f51f
         :release: 7e21e6d0c58b57d3334f399479a6f51f
-    CHECKSUM: c218a7b13733bf73041ecb8f381a1f1e728a062b
+    CHECKSUM: c4ceed954023beeb36e54a7107ceee0e8c00f6c8
     FILES:
       - "../../../../packages/unimodules-camera-interface/ios/UMCameraInterface/UMCameraInterface.h"
     PROJECT_NAME: UMCameraInterface
@@ -2879,7 +2879,7 @@ CACHE_KEYS:
       UMConstantsInterface:
         :debug: 091feb990cf05f42669927d842c95799
         :release: 091feb990cf05f42669927d842c95799
-    CHECKSUM: de0fc717e02969b753f176dca78ac685d26f1471
+    CHECKSUM: 4f295088041c9be94d3a2c777b2189f9096747ae
     FILES:
       - "../../../../packages/unimodules-constants-interface/ios/UMConstantsInterface/UMConstantsInterface.h"
     PROJECT_NAME: UMConstantsInterface
@@ -2890,7 +2890,7 @@ CACHE_KEYS:
       UMCore:
         :debug: 6ce780582f422731b8b29dfda4da306f
         :release: 6ce780582f422731b8b29dfda4da306f
-    CHECKSUM: 73966cbc64e999a6f6086b82f19ee905ec3684c4
+    CHECKSUM: 6610095fab3b003b5781dabb0da86dad4deb71d9
     FILES:
       - "../../../../packages/@unimodules/core/ios/UMCore/Protocols/UMAppLifecycleListener.h"
       - "../../../../packages/@unimodules/core/ios/UMCore/Protocols/UMAppLifecycleService.h"
@@ -2931,7 +2931,7 @@ CACHE_KEYS:
       UMFileSystemInterface:
         :debug: 3e190c5dda23f8ba42b0dbdd6413d502
         :release: 3e190c5dda23f8ba42b0dbdd6413d502
-    CHECKSUM: b4dbb5c769c883814bf033e7c3f3687773ca246c
+    CHECKSUM: 05c4255c0b670b7c567abcafaab6ba181f331875
     FILES:
       - "../../../../packages/unimodules-file-system-interface/ios/UMFileSystemInterface/UMFilePermissionModuleInterface.h"
       - "../../../../packages/unimodules-file-system-interface/ios/UMFileSystemInterface/UMFileSystemInterface.h"
@@ -2943,7 +2943,7 @@ CACHE_KEYS:
       UMFontInterface:
         :debug: 4abe433273f7b4fdd21eb941a9ce5474
         :release: 4abe433273f7b4fdd21eb941a9ce5474
-    CHECKSUM: d6a5961be8640deae2b061eb278acb61bd4f8462
+    CHECKSUM: 66a5a5260d08632470bf14aa4fd83c69abf80cbe
     FILES:
       - "../../../../packages/unimodules-font-interface/ios/UMFontInterface/UMFontManagerInterface.h"
       - "../../../../packages/unimodules-font-interface/ios/UMFontInterface/UMFontProcessorInterface.h"
@@ -2957,7 +2957,7 @@ CACHE_KEYS:
       UMImageLoaderInterface:
         :debug: 06a92d43bd1acc20cbff03080d7d622b
         :release: 06a92d43bd1acc20cbff03080d7d622b
-    CHECKSUM: 33338d8a5593c63fa7770cc791b09caca9337c73
+    CHECKSUM: 1161185ac1ddd1993b1109708627c060e0093a3b
     FILES:
       - "../../../../packages/unimodules-image-loader-interface/ios/UMImageLoaderInterface/UMImageLoaderInterface.h"
     PROJECT_NAME: UMImageLoaderInterface
@@ -2968,7 +2968,7 @@ CACHE_KEYS:
       UMPermissionsInterface:
         :debug: 9d9965b92a693371a503aedf1404c7ca
         :release: 9d9965b92a693371a503aedf1404c7ca
-    CHECKSUM: edbdf3c537f6ed8d23c4a9cf3b75965b8d0e8e03
+    CHECKSUM: f451df3df33c11eb6e878f01e5db121c362ad279
     FILES:
       - "../../../../packages/unimodules-permissions-interface/ios/UMPermissionsInterface/UMPermissionsInterface.h"
       - "../../../../packages/unimodules-permissions-interface/ios/UMPermissionsInterface/UMPermissionsMethodsDelegate.h"
@@ -2982,7 +2982,7 @@ CACHE_KEYS:
       UMReactNativeAdapter:
         :debug: b1cd206ebbc6c6226d82c17dfee9db93
         :release: b1cd206ebbc6c6226d82c17dfee9db93
-    CHECKSUM: debfc0d03367149f3b33a4add9e0aa01a349224a
+    CHECKSUM: ac43190ce85363525cd031c3fc14ab52229a43f7
     FILES:
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/Services/UMReactFontManager.h"
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/Services/UMReactFontManager.m"
@@ -3011,7 +3011,7 @@ CACHE_KEYS:
       UMSensorsInterface:
         :debug: 5da9cbcf222c644f2592d04eadc21b7b
         :release: 5da9cbcf222c644f2592d04eadc21b7b
-    CHECKSUM: 8870aa025dcb9141683606aa9ef66d09c6e19367
+    CHECKSUM: ee77144787aa11f3adb4668f6dc3fbfb5d810992
     FILES:
       - "../../../../packages/unimodules-sensors-interface/ios/UMSensorsInterface/UMAccelerometerInterface.h"
       - "../../../../packages/unimodules-sensors-interface/ios/UMSensorsInterface/UMBarometerInterface.h"
@@ -3027,7 +3027,7 @@ CACHE_KEYS:
       UMTaskManagerInterface:
         :debug: f143f18524b9c8f7ea1740bbe7c98b76
         :release: f143f18524b9c8f7ea1740bbe7c98b76
-    CHECKSUM: e8c98f4974c666857e9243cf116051b5d9877e86
+    CHECKSUM: 0e327dfaa0c5e211fdfe603ac97f49f0166d836c
     FILES:
       - "../../../../packages/unimodules-task-manager-interface/ios/UMTaskManagerInterface/UMTaskConsumerInterface.h"
       - "../../../../packages/unimodules-task-manager-interface/ios/UMTaskManagerInterface/UMTaskInterface.h"

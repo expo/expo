@@ -195,7 +195,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		3324DE4C0DE373D0CC6BFDB1A85ECD7D /* Release */ = {
+		4CB9361BC86C400336C04E8E0A0FD1A0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = F34CA6A1671CE7C544368ECFB361F692 /* EXCrypto.release.xcconfig */;
 			buildSettings = {
@@ -221,7 +221,7 @@
 			};
 			name = Release;
 		};
-		3ABE9621AFA4C88EA4B40A5DBFC57E68 /* Release */ = {
+		7154FB11545CC71E909D90186520E763 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -271,7 +271,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -283,7 +283,7 @@
 			};
 			name = Release;
 		};
-		8923F77D83C4CA20FD14C6CE4C7BAF78 /* Debug */ = {
+		A45121023476A5B2DD756F81AA3CF6EF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 14438ACC7C88C3A5002E083620854A77 /* EXCrypto.debug.xcconfig */;
 			buildSettings = {
@@ -308,7 +308,7 @@
 			};
 			name = Debug;
 		};
-		E5B6110472BECB2BF13E9A59F5D42DE6 /* Debug */ = {
+		ACC6D5D89DC6F132E9B8FC4A953C615F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -361,7 +361,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -380,8 +380,8 @@
 		9E5A6763ECB3347FA643B16C61231049 /* Build configuration list for PBXNativeTarget "EXCrypto" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8923F77D83C4CA20FD14C6CE4C7BAF78 /* Debug */,
-				3324DE4C0DE373D0CC6BFDB1A85ECD7D /* Release */,
+				A45121023476A5B2DD756F81AA3CF6EF /* Debug */,
+				4CB9361BC86C400336C04E8E0A0FD1A0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -389,8 +389,8 @@
 		AEB2CD984190CA4F5D2D3857F7D630F0 /* Build configuration list for PBXProject "EXCrypto" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E5B6110472BECB2BF13E9A59F5D42DE6 /* Debug */,
-				3ABE9621AFA4C88EA4B40A5DBFC57E68 /* Release */,
+				ACC6D5D89DC6F132E9B8FC4A953C615F /* Debug */,
+				7154FB11545CC71E909D90186520E763 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -195,7 +195,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		20D60F6BE228DEE290E1EE4980318A2F /* Debug */ = {
+		28A22D0C5BD03A98CEF711D786F33A2B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -248,7 +248,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -261,7 +261,7 @@
 			};
 			name = Debug;
 		};
-		9041404710734202C0A818CFB3E1FA91 /* Release */ = {
+		590F51BD155B64B3074F9F1AA8038F25 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -311,7 +311,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -323,32 +323,7 @@
 			};
 			name = Release;
 		};
-		96F6AC78D8A29B3C258D8F7A350E1244 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3638A28E49D2268DC35FF8784403E105 /* EXScreenCapture.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/EXScreenCapture/EXScreenCapture-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXScreenCapture;
-				PRODUCT_NAME = EXScreenCapture;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		CA539C8F5F5BAD7C44FF452113F64ADF /* Release */ = {
+		8F07ED2ACDB36F2347739D6A373AA128 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7B214199DA1D7F0D6CB70C5CC280D3DD /* EXScreenCapture.release.xcconfig */;
 			buildSettings = {
@@ -374,14 +349,39 @@
 			};
 			name = Release;
 		};
+		D3A9D94A9C87E5C6508FDF5EDCD4D478 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3638A28E49D2268DC35FF8784403E105 /* EXScreenCapture.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/EXScreenCapture/EXScreenCapture-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXScreenCapture;
+				PRODUCT_NAME = EXScreenCapture;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		1B101987503504736FA9C53B79FC837A /* Build configuration list for PBXProject "EXScreenCapture" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				20D60F6BE228DEE290E1EE4980318A2F /* Debug */,
-				9041404710734202C0A818CFB3E1FA91 /* Release */,
+				28A22D0C5BD03A98CEF711D786F33A2B /* Debug */,
+				590F51BD155B64B3074F9F1AA8038F25 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -389,8 +389,8 @@
 		DCD3F4891766FF69F8079C33B03CF3E8 /* Build configuration list for PBXNativeTarget "EXScreenCapture" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				96F6AC78D8A29B3C258D8F7A350E1244 /* Debug */,
-				CA539C8F5F5BAD7C44FF452113F64ADF /* Release */,
+				D3A9D94A9C87E5C6508FDF5EDCD4D478 /* Debug */,
+				8F07ED2ACDB36F2347739D6A373AA128 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

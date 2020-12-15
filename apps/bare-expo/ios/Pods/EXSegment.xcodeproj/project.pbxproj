@@ -231,7 +231,32 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		28095C1BD9D3FAF4743CF3F73B247ED4 /* Release */ = {
+		1D681042F868BE41738061FE79FF3FC4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 803C635076B99F11C04D8D837039CBC6 /* EXSegment.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/EXSegment/EXSegment-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXSegment;
+				PRODUCT_NAME = EXSegment;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		4370878E98FB7889922FA90B4818EEB5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -281,7 +306,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -293,32 +318,7 @@
 			};
 			name = Release;
 		};
-		2B447BA07372BBF68F13974EBBF3D73C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 803C635076B99F11C04D8D837039CBC6 /* EXSegment.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/EXSegment/EXSegment-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXSegment;
-				PRODUCT_NAME = EXSegment;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		84AF581AB5276A8EF79305202BCC2973 /* Debug */ = {
+		7FC97C6A6CC90F5478F19F94B1403E10 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -371,7 +371,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -384,7 +384,7 @@
 			};
 			name = Debug;
 		};
-		9CDC9DDE7625AF3C2F56D96567EFA717 /* Release */ = {
+		CDAD285902AAAD39A4638E98219A9B0E /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9BA4CCE1B1FF5C24010BCFF2C4B87D62 /* EXSegment.release.xcconfig */;
 			buildSettings = {
@@ -416,8 +416,8 @@
 		0AFDC5D20DC83CFAE1D0EB17AA29CD80 /* Build configuration list for PBXProject "EXSegment" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				84AF581AB5276A8EF79305202BCC2973 /* Debug */,
-				28095C1BD9D3FAF4743CF3F73B247ED4 /* Release */,
+				7FC97C6A6CC90F5478F19F94B1403E10 /* Debug */,
+				4370878E98FB7889922FA90B4818EEB5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -425,8 +425,8 @@
 		4CAE2B78564C0C7126874B55450199D1 /* Build configuration list for PBXNativeTarget "EXSegment" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				2B447BA07372BBF68F13974EBBF3D73C /* Debug */,
-				9CDC9DDE7625AF3C2F56D96567EFA717 /* Release */,
+				1D681042F868BE41738061FE79FF3FC4 /* Debug */,
+				CDAD285902AAAD39A4638E98219A9B0E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

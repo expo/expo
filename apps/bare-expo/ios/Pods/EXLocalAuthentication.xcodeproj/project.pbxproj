@@ -213,7 +213,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		1CA55AE3F6BC1AEB83490D882C358200 /* Release */ = {
+		259C8062FC42C3FE8D41BE97CE669E89 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = CD8F4F8803C653DE75B23DCB704F784B /* EXLocalAuthentication.release.xcconfig */;
 			buildSettings = {
@@ -239,7 +239,7 @@
 			};
 			name = Release;
 		};
-		3ACD67244238CF385A51728FF8AEC9A8 /* Release */ = {
+		6320D9840E278B8670C2A95C975D436C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -289,7 +289,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -301,7 +301,7 @@
 			};
 			name = Release;
 		};
-		BF7C05FD27FEC7C5F4995A3658A7A4F9 /* Debug */ = {
+		E1B6D27CE0CB0776195B1E016B11ED32 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D9DDCA0541815731E489C05CA88A6680 /* EXLocalAuthentication.debug.xcconfig */;
 			buildSettings = {
@@ -326,7 +326,7 @@
 			};
 			name = Debug;
 		};
-		E38BBD47432074FBE270E5F612669D5F /* Debug */ = {
+		FA0759A4D39D3D86962E7915F8BEF7B0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -379,7 +379,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -398,8 +398,8 @@
 		E904FA9D582CAB8B67E8CBE89749A179 /* Build configuration list for PBXNativeTarget "EXLocalAuthentication" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				BF7C05FD27FEC7C5F4995A3658A7A4F9 /* Debug */,
-				1CA55AE3F6BC1AEB83490D882C358200 /* Release */,
+				E1B6D27CE0CB0776195B1E016B11ED32 /* Debug */,
+				259C8062FC42C3FE8D41BE97CE669E89 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -407,8 +407,8 @@
 		F4268BE03DF6A9E38B85B1B6DA8B3278 /* Build configuration list for PBXProject "EXLocalAuthentication" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E38BBD47432074FBE270E5F612669D5F /* Debug */,
-				3ACD67244238CF385A51728FF8AEC9A8 /* Release */,
+				FA0759A4D39D3D86962E7915F8BEF7B0 /* Debug */,
+				6320D9840E278B8670C2A95C975D436C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

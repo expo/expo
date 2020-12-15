@@ -195,7 +195,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		2E4FF4B5C81D13E47589A3DEC1E8DE79 /* Release */ = {
+		0D5C6F7782D7476E0E1043891992C31C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -245,7 +245,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -257,9 +257,9 @@
 			};
 			name = Release;
 		};
-		D451C6959470B92068CBAC020F24C46E /* Debug */ = {
+		0DD62DA56164CA387136798381752500 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 07BBF23F7017AB21C3628EA2A1335CD2 /* EXHaptics.debug.xcconfig */;
+			baseConfigurationReference = E8EA935BD2A1A33A6E655AF0317AA505 /* EXHaptics.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -279,10 +279,11 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
-		DCC995232686A0721D3F50694A03499A /* Debug */ = {
+		365398BAABE49BBE2221210379F7F0CE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -335,7 +336,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -348,9 +349,9 @@
 			};
 			name = Debug;
 		};
-		E4A4CE0AC08380756F61E8437A699AAC /* Release */ = {
+		82ABE9897A9CCE71E6EFAA4A7FBFDC8C /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E8EA935BD2A1A33A6E655AF0317AA505 /* EXHaptics.release.xcconfig */;
+			baseConfigurationReference = 07BBF23F7017AB21C3628EA2A1335CD2 /* EXHaptics.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -370,9 +371,8 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
 /* End XCBuildConfiguration section */
 
@@ -380,8 +380,8 @@
 		3B287211A957592575094743444D940E /* Build configuration list for PBXProject "EXHaptics" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				DCC995232686A0721D3F50694A03499A /* Debug */,
-				2E4FF4B5C81D13E47589A3DEC1E8DE79 /* Release */,
+				365398BAABE49BBE2221210379F7F0CE /* Debug */,
+				0D5C6F7782D7476E0E1043891992C31C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -389,8 +389,8 @@
 		ECB65E3D2C21234C1F5148004C6DED23 /* Build configuration list for PBXNativeTarget "EXHaptics" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D451C6959470B92068CBAC020F24C46E /* Debug */,
-				E4A4CE0AC08380756F61E8437A699AAC /* Release */,
+				82ABE9897A9CCE71E6EFAA4A7FBFDC8C /* Debug */,
+				0DD62DA56164CA387136798381752500 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

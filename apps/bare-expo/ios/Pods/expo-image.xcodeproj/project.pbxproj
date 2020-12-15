@@ -21,19 +21,19 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		27B12CDBFA7C0389A64956982BBD0152 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F704B45F9CB86EA1DCCA8791214766C0 /* SDWebImage.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 4ECF4E662EEBE4FA58102FF984D920CC;
-			remoteInfo = SDWebImage;
-		};
-		E1CA221F70C3432F048544BCDB7E2E94 /* PBXContainerItemProxy */ = {
+		01731B09EF6A85B3347D9646B9ACC52A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = ED35E4E876E5823AB6AA5388F0EFDBDD /* React-Core.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 5DA1A74647F652AE8E4DE074AFC4C6B7;
 			remoteInfo = "React-Core";
+		};
+		901BA7A2FD973D3B6B08BB8227C13757 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F704B45F9CB86EA1DCCA8791214766C0 /* SDWebImage.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 4ECF4E662EEBE4FA58102FF984D920CC;
+			remoteInfo = SDWebImage;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -174,8 +174,8 @@
 			buildRules = (
 			);
 			dependencies = (
-				D925C5A88DD7CCA42E0B7CC22D9A6FCB /* PBXTargetDependency */,
-				2DF3AF4C9C0AB6AC57144C95DA36250A /* PBXTargetDependency */,
+				E7AC172EBE97B9C352D7608523E1FB90 /* PBXTargetDependency */,
+				3D1C8BAAAC9AEECBF313548FB6C7BD91 /* PBXTargetDependency */,
 			);
 			name = "expo-image";
 			productName = "expo-image";
@@ -234,20 +234,20 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		2DF3AF4C9C0AB6AC57144C95DA36250A /* PBXTargetDependency */ = {
+		3D1C8BAAAC9AEECBF313548FB6C7BD91 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = SDWebImage;
-			targetProxy = 27B12CDBFA7C0389A64956982BBD0152 /* PBXContainerItemProxy */;
+			targetProxy = 901BA7A2FD973D3B6B08BB8227C13757 /* PBXContainerItemProxy */;
 		};
-		D925C5A88DD7CCA42E0B7CC22D9A6FCB /* PBXTargetDependency */ = {
+		E7AC172EBE97B9C352D7608523E1FB90 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-Core";
-			targetProxy = E1CA221F70C3432F048544BCDB7E2E94 /* PBXContainerItemProxy */;
+			targetProxy = 01731B09EF6A85B3347D9646B9ACC52A /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		3DE72C3D703CF02E5527AA6A3E727509 /* Debug */ = {
+		3176DA70DC130839C233272E8253F52F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -300,7 +300,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -313,7 +313,7 @@
 			};
 			name = Debug;
 		};
-		46137EB89D3596382F22F1CC8B1869C3 /* Debug */ = {
+		9777F111E8FF557973F1D53B168D36D8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 97DDF198DFE687D17729E41641B3CCA8 /* expo-image.debug.xcconfig */;
 			buildSettings = {
@@ -338,33 +338,7 @@
 			};
 			name = Debug;
 		};
-		C094F6FA926D653DFA6D2BB3653A506C /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = CBE4769D4F0AE49D3ABA61A47275DBF1 /* expo-image.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/expo-image/expo-image-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = expo_image;
-				PRODUCT_NAME = "expo-image";
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		FE544D1B0BAD8BB98553719048FD4EBE /* Release */ = {
+		BA47DF26E6411919E6B7F9A2CB743FAB /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -414,7 +388,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -426,14 +400,40 @@
 			};
 			name = Release;
 		};
+		EED067FADB948823ABA3293058678188 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CBE4769D4F0AE49D3ABA61A47275DBF1 /* expo-image.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/expo-image/expo-image-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = expo_image;
+				PRODUCT_NAME = "expo-image";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		7784273440F3116D9EA2CBACF6507F65 /* Build configuration list for PBXNativeTarget "expo-image" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				46137EB89D3596382F22F1CC8B1869C3 /* Debug */,
-				C094F6FA926D653DFA6D2BB3653A506C /* Release */,
+				9777F111E8FF557973F1D53B168D36D8 /* Debug */,
+				EED067FADB948823ABA3293058678188 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -441,8 +441,8 @@
 		F7869D04746DCB157532D301F6627DA4 /* Build configuration list for PBXProject "expo-image" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				3DE72C3D703CF02E5527AA6A3E727509 /* Debug */,
-				FE544D1B0BAD8BB98553719048FD4EBE /* Release */,
+				3176DA70DC130839C233272E8253F52F /* Debug */,
+				BA47DF26E6411919E6B7F9A2CB743FAB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

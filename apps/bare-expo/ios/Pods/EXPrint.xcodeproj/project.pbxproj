@@ -237,7 +237,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		08BE175A62A77C697DF059CB44A9C1F7 /* Debug */ = {
+		25C73274D1B164578C62528E0D22B6D8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -290,7 +290,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -303,7 +303,33 @@
 			};
 			name = Debug;
 		};
-		8CEF2DD15DD714978214D1A4796CAE74 /* Debug */ = {
+		58B881C4AE3ACB3E8DCA9D159647B930 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = FF8A9263C3816A9B6E25DD83ACE4688C /* EXPrint.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/EXPrint/EXPrint-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXPrint;
+				PRODUCT_NAME = EXPrint;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		AAF2EC6394E876F8704E7D63E8D207B5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = AAF20F963002FA8963526C709A078DE8 /* EXPrint.debug.xcconfig */;
 			buildSettings = {
@@ -328,7 +354,7 @@
 			};
 			name = Debug;
 		};
-		A82E3D6A6F9084551B9EA477BAAEEB92 /* Release */ = {
+		D9B857CA06773FE5C81E5E057A5538B6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -378,7 +404,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -390,40 +416,14 @@
 			};
 			name = Release;
 		};
-		DA077651EE55F8EF6411F2F0B61F22CD /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = FF8A9263C3816A9B6E25DD83ACE4688C /* EXPrint.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/EXPrint/EXPrint-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXPrint;
-				PRODUCT_NAME = EXPrint;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		BC2BF1398567101A062FF443C4D1611F /* Build configuration list for PBXProject "EXPrint" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				08BE175A62A77C697DF059CB44A9C1F7 /* Debug */,
-				A82E3D6A6F9084551B9EA477BAAEEB92 /* Release */,
+				25C73274D1B164578C62528E0D22B6D8 /* Debug */,
+				D9B857CA06773FE5C81E5E057A5538B6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -431,8 +431,8 @@
 		D0DC118FE28A2EC2E4C7F9C640F3F866 /* Build configuration list for PBXNativeTarget "EXPrint" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8CEF2DD15DD714978214D1A4796CAE74 /* Debug */,
-				DA077651EE55F8EF6411F2F0B61F22CD /* Release */,
+				AAF2EC6394E876F8704E7D63E8D207B5 /* Debug */,
+				58B881C4AE3ACB3E8DCA9D159647B930 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

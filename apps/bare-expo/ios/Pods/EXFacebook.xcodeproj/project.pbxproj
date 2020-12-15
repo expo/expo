@@ -257,7 +257,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		1B90EEF7D9F2C2618AD8A6D702B0EDC6 /* Debug */ = {
+		6124A4D16E5A74A7022AD85AC3FCE159 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -310,7 +310,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -323,7 +323,7 @@
 			};
 			name = Debug;
 		};
-		D5A541ECEA26414B77317D1E9133422A /* Release */ = {
+		90D885F273F3F88369E1A5D85D6DFFFC /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 067AA815D6275FB32B2954F95FF76C85 /* EXFacebook.release.xcconfig */;
 			buildSettings = {
@@ -349,7 +349,32 @@
 			};
 			name = Release;
 		};
-		E361C36B9F570B1AADE6D4E481EB6311 /* Release */ = {
+		AEB38661B3B77BA35B2295139AFD9099 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F556591E30CE69D61EDB1082C5CC0C97 /* EXFacebook.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/EXFacebook/EXFacebook-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXFacebook;
+				PRODUCT_NAME = EXFacebook;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		DEDBB0789838A3CD27E90073D79FABE0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -399,7 +424,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -411,39 +436,14 @@
 			};
 			name = Release;
 		};
-		FCF68EEEA8455079E97B34C79CCEB262 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = F556591E30CE69D61EDB1082C5CC0C97 /* EXFacebook.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/EXFacebook/EXFacebook-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXFacebook;
-				PRODUCT_NAME = EXFacebook;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		952626A25396D8D9559455337FF9A969 /* Build configuration list for PBXProject "EXFacebook" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1B90EEF7D9F2C2618AD8A6D702B0EDC6 /* Debug */,
-				E361C36B9F570B1AADE6D4E481EB6311 /* Release */,
+				6124A4D16E5A74A7022AD85AC3FCE159 /* Debug */,
+				DEDBB0789838A3CD27E90073D79FABE0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -451,8 +451,8 @@
 		E6DC74E1F2F302CDA3A533A5F6D40691 /* Build configuration list for PBXNativeTarget "EXFacebook" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				FCF68EEEA8455079E97B34C79CCEB262 /* Debug */,
-				D5A541ECEA26414B77317D1E9133422A /* Release */,
+				AEB38661B3B77BA35B2295139AFD9099 /* Debug */,
+				90D885F273F3F88369E1A5D85D6DFFFC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

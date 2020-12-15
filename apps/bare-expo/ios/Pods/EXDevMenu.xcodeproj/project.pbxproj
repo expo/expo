@@ -133,7 +133,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		06BC49171D0C69199C9DAD1703D56934 /* PBXContainerItemProxy */ = {
+		1C7E590D54B1FD0F9A12FA7E8027D3D6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1E2CD0D4CDF5B230204076A8882319DE /* EXDevMenuInterface.xcodeproj */;
 			proxyType = 1;
@@ -689,7 +689,7 @@
 			);
 			dependencies = (
 				68E22D863EBC604DCF69281B4A6A35E2 /* PBXTargetDependency */,
-				20DE4F18D686347EF1C35CCF297A13FC /* PBXTargetDependency */,
+				226492B9AFAAFF2DF2EB84E7772BC0F5 /* PBXTargetDependency */,
 				67964B19A0400A10E97455C13517F14C /* PBXTargetDependency */,
 			);
 			name = EXDevMenu;
@@ -874,10 +874,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		20DE4F18D686347EF1C35CCF297A13FC /* PBXTargetDependency */ = {
+		226492B9AFAAFF2DF2EB84E7772BC0F5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = EXDevMenuInterface;
-			targetProxy = 06BC49171D0C69199C9DAD1703D56934 /* PBXContainerItemProxy */;
+			targetProxy = 1C7E590D54B1FD0F9A12FA7E8027D3D6 /* PBXContainerItemProxy */;
 		};
 		67964B19A0400A10E97455C13517F14C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -893,41 +893,14 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		5499B6EDE4ECBEDE6F7E2EBD1F359751 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5E8F677030A0A6DF34BE44A7CB6E24B5 /* EXDevMenu.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/EXDevMenu/EXDevMenu-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				MODULEMAP_FILE = Headers/Public/EXDevMenu/EXDevMenu.modulemap;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXDevMenu;
-				PRODUCT_NAME = EXDevMenu;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.2;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		8825FA2836A5F6442FD0C7FE28B6FDC4 /* Release */ = {
+		1FEF0EA6967E5AF5CCD4202CB93208CA /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5E8F677030A0A6DF34BE44A7CB6E24B5 /* EXDevMenu.release.xcconfig */;
 			buildSettings = {
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/EXDevMenu";
 				IBSC_MODULE = EXDevMenu;
 				INFOPLIST_FILE = "Target Support Files/EXDevMenu/ResourceBundle-EXDevMenu-EXDevMenu-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				PRODUCT_NAME = EXDevMenu;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -936,7 +909,23 @@
 			};
 			name = Release;
 		};
-		8FE0DE80B7F6C7206B6B8D6F308C8F6D /* Release */ = {
+		20983668EFDFF947A5DD5B9BC40B72A2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 25192453F4A26196BB00A5FEDC39541A /* EXDevMenu.debug.xcconfig */;
+			buildSettings = {
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/EXDevMenu";
+				IBSC_MODULE = EXDevMenu;
+				INFOPLIST_FILE = "Target Support Files/EXDevMenu/ResourceBundle-EXDevMenu-EXDevMenu-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				PRODUCT_NAME = EXDevMenu;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Debug;
+		};
+		68DA17C5C2A23F1DE22760A4D54FBDB1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -986,7 +975,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -998,7 +987,34 @@
 			};
 			name = Release;
 		};
-		B075CFCAA085502E1117F8EBB8F09CE4 /* Debug */ = {
+		A6EEBCC3833032FAD799F379E33F9BFB /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5E8F677030A0A6DF34BE44A7CB6E24B5 /* EXDevMenu.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/EXDevMenu/EXDevMenu-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MODULEMAP_FILE = Headers/Public/EXDevMenu/EXDevMenu.modulemap;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXDevMenu;
+				PRODUCT_NAME = EXDevMenu;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A8A0120C192A0585D3DF08B047B2EA58 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 25192453F4A26196BB00A5FEDC39541A /* EXDevMenu.debug.xcconfig */;
 			buildSettings = {
@@ -1024,7 +1040,7 @@
 			};
 			name = Debug;
 		};
-		D8725859997D46D0DDD8C88AC1ED6E81 /* Debug */ = {
+		AF421FBC73D15221D91BE539CE0D68E4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -1077,7 +1093,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1090,30 +1106,14 @@
 			};
 			name = Debug;
 		};
-		E7D9D5B6196B2329A9CF650A28DB4C0C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 25192453F4A26196BB00A5FEDC39541A /* EXDevMenu.debug.xcconfig */;
-			buildSettings = {
-				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/EXDevMenu";
-				IBSC_MODULE = EXDevMenu;
-				INFOPLIST_FILE = "Target Support Files/EXDevMenu/ResourceBundle-EXDevMenu-EXDevMenu-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				PRODUCT_NAME = EXDevMenu;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				WRAPPER_EXTENSION = bundle;
-			};
-			name = Debug;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		3A170442EC91A8248BDAB6EFE8139BD6 /* Build configuration list for PBXNativeTarget "EXDevMenu" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B075CFCAA085502E1117F8EBB8F09CE4 /* Debug */,
-				5499B6EDE4ECBEDE6F7E2EBD1F359751 /* Release */,
+				A8A0120C192A0585D3DF08B047B2EA58 /* Debug */,
+				A6EEBCC3833032FAD799F379E33F9BFB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1121,8 +1121,8 @@
 		6553AD574F7AE2B3261C00AD0DC606B9 /* Build configuration list for PBXProject "EXDevMenu" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D8725859997D46D0DDD8C88AC1ED6E81 /* Debug */,
-				8FE0DE80B7F6C7206B6B8D6F308C8F6D /* Release */,
+				AF421FBC73D15221D91BE539CE0D68E4 /* Debug */,
+				68DA17C5C2A23F1DE22760A4D54FBDB1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1130,8 +1130,8 @@
 		9B1016AD84C9D305E25DABCAFDA494D2 /* Build configuration list for PBXNativeTarget "EXDevMenu-EXDevMenu" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E7D9D5B6196B2329A9CF650A28DB4C0C /* Debug */,
-				8825FA2836A5F6442FD0C7FE28B6FDC4 /* Release */,
+				20983668EFDFF947A5DD5B9BC40B72A2 /* Debug */,
+				1FEF0EA6967E5AF5CCD4202CB93208CA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

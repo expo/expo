@@ -195,7 +195,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		0CDDB10968729B3482368CDD2D07EF36 /* Debug */ = {
+		2159565A8627E18DFFD8BB29D015397A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -248,7 +248,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -261,7 +261,7 @@
 			};
 			name = Debug;
 		};
-		2A0BE1E7D5F791AA98D603E9A6F32094 /* Debug */ = {
+		423E9A6A61DB115D52D373186526E002 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BC5741C7727980E8EABEA839476D5FC0 /* EXSecureStore.debug.xcconfig */;
 			buildSettings = {
@@ -286,7 +286,7 @@
 			};
 			name = Debug;
 		};
-		AAE81ABCE99581D0ABBB2D659D6CA646 /* Release */ = {
+		DF4FECACE9144BBFA42522537548B5B2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -336,7 +336,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -348,7 +348,7 @@
 			};
 			name = Release;
 		};
-		DD813B83B6646DF3B64B2C6C4CDDC694 /* Release */ = {
+		E8A3846E9A6F631AD03BF755295A2375 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 15B545DF7C8CECEFA8CE4A9A86E97979 /* EXSecureStore.release.xcconfig */;
 			buildSettings = {
@@ -380,8 +380,8 @@
 		041C0C6164469D6D9066689D180E0BD5 /* Build configuration list for PBXProject "EXSecureStore" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				0CDDB10968729B3482368CDD2D07EF36 /* Debug */,
-				AAE81ABCE99581D0ABBB2D659D6CA646 /* Release */,
+				2159565A8627E18DFFD8BB29D015397A /* Debug */,
+				DF4FECACE9144BBFA42522537548B5B2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -389,8 +389,8 @@
 		970EC6EECF7FEBB6AC335A6B8254DAB4 /* Build configuration list for PBXNativeTarget "EXSecureStore" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				2A0BE1E7D5F791AA98D603E9A6F32094 /* Debug */,
-				DD813B83B6646DF3B64B2C6C4CDDC694 /* Release */,
+				423E9A6A61DB115D52D373186526E002 /* Debug */,
+				E8A3846E9A6F631AD03BF755295A2375 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
