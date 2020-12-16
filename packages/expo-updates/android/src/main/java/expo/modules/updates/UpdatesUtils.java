@@ -171,7 +171,7 @@ public class UpdatesUtils {
     } else if (sdkVersion != null && sdkVersion.length() > 0) {
       return sdkVersion;
     } else {
-      throw new AssertionError("One of expo_runtime_version or expo_sdk_version must be defined in the Android app manifest");
+      return "1";
     }
   }
 

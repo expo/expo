@@ -43,7 +43,8 @@ UM_EXPORT_MODULE(ExpoUpdates);
       @"manifest": launchedUpdate.rawManifest ?: @{},
       @"releaseChannel": _updatesService.config.releaseChannel,
       @"localAssets": _updatesService.assetFilesMap ?: @{},
-      @"isEmergencyLaunch": @(_updatesService.isEmergencyLaunch)
+      @"isEmergencyLaunch": @(_updatesService.isEmergencyLaunch),
+      @"shouldShowNoRuntimeVersionWarning": @(!_updatesService.config.runtimeVersion && !_updatesService.config.sdkVersion)
     };
   }
   

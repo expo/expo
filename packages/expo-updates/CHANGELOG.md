@@ -16,6 +16,8 @@
 
 ### 🐛 Bug fixes
 
+- Show a console.warn message (rather than hard crashing) if neither runtime nor SDK version are configured
+
 ## 0.4.1 — 2020-11-25
 
 ### 🛠 Breaking changes

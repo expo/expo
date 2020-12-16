@@ -1,4 +1,4 @@
-import { RCTDeviceEventEmitter, CodedError, NativeModulesProxy, UnavailabilityError, } from '@unimodules/core';
+import { RCTDeviceEventEmitter, CodedError, NativeModulesProxy, Platform, UnavailabilityError, } from '@unimodules/core';
 import { EventEmitter } from 'fbemitter';
 import ExpoUpdates from './ExpoUpdates';
 export * from './Updates.types';
@@ -14,6 +14,12 @@ if (ExpoUpdates.manifestString) {
     _manifest = JSON.parse(ExpoUpdates.manifestString);
 }
 export const manifest = _manifest ?? {};
+if (ExpoUpdates.shouldShowNoRuntimeVersionWarning) {
+    console.warn('Warning: expo-updates is installed but there is no runtime or SDK version configured. ' +
+        "You'll need to configure one of these two properties in " +
+        Platform.select({ ios: 'Expo.plist', android: 'AndroidManifest.xml' }) +
+        ' before OTA updates will work properly.');
+}
 const isUsingDeveloperTool = !!manifest.developer?.tool;
 const isUsingExpoDevelopmentClient = NativeModulesProxy.ExponentConstants?.appOwnership === 'expo';
 const manualUpdatesInstructions = isUsingExpoDevelopmentClient

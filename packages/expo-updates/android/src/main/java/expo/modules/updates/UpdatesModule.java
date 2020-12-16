@@ -74,6 +74,13 @@ public class UpdatesModule extends ExportedModule {
         constants.put("isEnabled", updatesService.getConfiguration().isEnabled());
         constants.put("releaseChannel", updatesService.getConfiguration().getReleaseChannel());
         constants.put("isUsingEmbeddedAssets", updatesService.isUsingEmbeddedAssets());
+
+        String runtimeVersion = updatesService.getConfiguration().getRuntimeVersion();
+        String sdkVersion = updatesService.getConfiguration().getSdkVersion();
+        if ((runtimeVersion == null || runtimeVersion.length() == 0) &&
+            (sdkVersion == null || sdkVersion.length() == 0)) {
+          constants.put("shouldShowNoRuntimeVersionWarning", true);
+        }
       }
     } catch (Exception e) {
       // do nothing; this is expected in a development client
