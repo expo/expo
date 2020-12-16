@@ -15,7 +15,7 @@ The software components will become customizable, but they aren't yet. So there 
 
 - Android workers run on Kubernetes in an isolated environment
   - Every build gets its own container running on a dedicated Kubernetes node
-  - Build resource limits: 3 CPU, 12 GB RAM
+  - Build resources: 4 CPU, 16 GB RAM (14 GB after k8s overhead)
 - Installed software:
   - Docker image: `ubuntu:bionic-20201119`
   - NDK 19.2.5345600
@@ -31,7 +31,7 @@ The software components will become customizable, but they aren't yet. So there 
 - Global gradle configuration in `~/.gradle/gradle.properties`:
 
   ```jsx
-  org.gradle.jvmargs=-Xmx6g -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
+  org.gradle.jvmargs=-Xmx14g -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
   org.gradle.parallel=true
   org.gradle.configureondemand=true
   org.gradle.daemon=false
@@ -42,7 +42,7 @@ The software components will become customizable, but they aren't yet. So there 
 - iOS worker VMs run on Macs Pro 6.1 in an isolated environement
   - Every build gets its own fresh macOS VM
   - Hardware: Intel(R) Xeon(R) CPU E5-2697 (12 core/24 threads), 64 GB RAM
-  - Build resource limits: 4 cores, 8 GB RAM
+  - Build resource limits: 6 cores, 8 GB RAM
 - Installed software:
   - macOS Catalina 10.15.4
   - Xcode 12.1 (12A7403)
