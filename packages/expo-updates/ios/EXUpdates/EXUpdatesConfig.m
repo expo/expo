@@ -129,8 +129,6 @@ static NSString * const EXUpdatesConfigNeverString = @"NEVER";
     _runtimeVersion = (NSString *)runtimeVersion;
   }
 
-  NSAssert(_sdkVersion || _runtimeVersion, @"One of EXUpdatesSDKVersion or EXUpdatesRuntimeVersion must be configured in expo-updates");
-  
   id usesLegacyManifest = config[EXUpdatesConfigUsesLegacyManifestKey];
   if (usesLegacyManifest && [usesLegacyManifest isKindOfClass:[NSNumber class]]) {
     _usesLegacyManifest = [(NSNumber *)usesLegacyManifest boolValue];
@@ -140,6 +138,11 @@ static NSString * const EXUpdatesConfigNeverString = @"NEVER";
   if (hasEmbeddedUpdate && [hasEmbeddedUpdate isKindOfClass:[NSNumber class]]) {
     _hasEmbeddedUpdate = [(NSNumber *)hasEmbeddedUpdate boolValue];
   }
+}
+
+- (BOOL)shouldShowNoRuntimeVersionWarning
+{
+  return (!_runtimeVersion || !_runtimeVersion.length) && (!_sdkVersion || !_sdkVersion.length);
 }
 
 + (NSString *)normalizedURLOrigin:(NSURL *)url

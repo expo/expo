@@ -98,7 +98,7 @@ static NSString * const EXUpdatesUtilsErrorDomain = @"EXUpdatesUtils";
 
 + (NSString *)getRuntimeVersionWithConfig:(EXUpdatesConfig *)config
 {
-  return config.runtimeVersion ?: config.sdkVersion;
+  return config.runtimeVersion ?: config.sdkVersion ?: @"1";
 }
 
 @end
