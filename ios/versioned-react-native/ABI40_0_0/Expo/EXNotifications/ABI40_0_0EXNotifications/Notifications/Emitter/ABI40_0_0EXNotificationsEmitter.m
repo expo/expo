@@ -11,6 +11,7 @@
 @property (nonatomic, weak) id<ABI40_0_0EXNotificationCenterDelegate> notificationCenterDelegate;
 
 @property (nonatomic, assign) BOOL isBeingObserved;
+@property (nonatomic, assign) BOOL isListening;
 
 @property (nonatomic, weak) id<ABI40_0_0UMEventEmitterService> eventEmitter;
 
@@ -47,12 +48,25 @@ ABI40_0_0UM_EXPORT_METHOD_AS(getLastNotificationResponseAsync,
 
 - (void)startObserving
 {
-  _isBeingObserved = YES;
+  [self setIsBeingObserved:YES];
 }
 
 - (void)stopObserving
 {
-  _isBeingObserved = NO;
+  [self setIsBeingObserved:NO];
+}
+
+- (void)setIsBeingObserved:(BOOL)isBeingObserved
+{
+  _isBeingObserved = isBeingObserved;
+  BOOL shouldListen = _isBeingObserved;
+  if (shouldListen && !_isListening) {
+    [_notificationCenterDelegate addDelegate:self];
+    _isListening = YES;
+  } else if (!shouldListen && _isListening) {
+    [_notificationCenterDelegate removeDelegate:self];
+    _isListening = NO;
+  }
 }
 
 # pragma mark - ABI40_0_0EXNotificationsDelegate
@@ -80,6 +94,10 @@ ABI40_0_0UM_EXPORT_METHOD_AS(getLastNotificationResponseAsync,
 {
   // Silence ABI40_0_0React Native warning: "Sending ... with no listeners registered."
   // See: https://github.com/expo/expo/pull/10883#pullrequestreview-529183413
+  // While in practice we don't need to verify this, as as of the end of 2020
+  // we wouldn't send any event to JS if we weren't being observed because
+  // we wouldn't be subscribed to the notification center delegate it's nice
+  // to be sure this problem won't ever arise.
   if (_isBeingObserved) {
     [_eventEmitter sendEventWithName:eventName body:body];
   }
