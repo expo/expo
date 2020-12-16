@@ -7,5 +7,5 @@ sidebar_title: Introduction
 
 ### Get started
 
-- [Submit to the Apple App Store](submit-ios.md): Learn how to submit an iOS/iPadOS app to the Apple App Store from any operating system.
-- [Submitting to the Google Play Store](submit-android.md): Learn how to submit an Android app to the Google Play Store.
+- [Submit to the Apple App Store](ios.md): Learn how to submit an iOS/iPadOS app to the Apple App Store from any operating system.
+- [Submitting to the Google Play Store](android.md): Learn how to submit an Android app to the Google Play Store.
