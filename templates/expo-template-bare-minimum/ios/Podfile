@@ -12,12 +12,13 @@ target 'HelloWorld' do
 
   # Uncomment the code below to enable Flipper.
   #
-  # Note that if you have use_frameworks! enabled, Flipper will not work and
-  # you should disable these next few lines.
-  # if (!!ENV['SKIP_FLIPPER'])
-  #  use_flipper!
-  #  post_install do |installer|
-  #    flipper_post_install(installer)
-  #  end
+  # You should not install Flipper in CI environments when creating release
+  # builds, this will lead to significantly slower build times.
+  #
+  # Note that if you have use_frameworks! enabled, Flipper will not work.
+  #
+  # use_flipper!
+  # post_install do |installer|
+  #   flipper_post_install(installer)
   # end
 end
