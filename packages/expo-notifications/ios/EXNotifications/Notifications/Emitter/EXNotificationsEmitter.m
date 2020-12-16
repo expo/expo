@@ -92,6 +92,10 @@ UM_EXPORT_METHOD_AS(getLastNotificationResponseAsync,
 {
   // Silence React Native warning: "Sending ... with no listeners registered."
   // See: https://github.com/expo/expo/pull/10883#pullrequestreview-529183413
+  // While in practice we don't need to verify this, as as of the end of 2020
+  // we wouldn't send any event to JS if we weren't being observed because
+  // we wouldn't be subscribed to the notification center delegate it's nice
+  // to be sure this problem won't ever arise.
   if (_isBeingObserved) {
     [_eventEmitter sendEventWithName:eventName body:body];
   }
