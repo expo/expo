@@ -35,12 +35,12 @@ function DevMenuApp(props) {
   const [fontsWereLoaded, didFontsLoad] = useState(false);
 
   useEffect(() => {
-    const f = async () => {
+    const loadFonts = async () => {
       await loadFontsAsync();
       didFontsLoad(true);
     };
 
-    f();
+    loadFonts();
   }, []);
 
   if (!fontsWereLoaded) {
