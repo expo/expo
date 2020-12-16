@@ -102,9 +102,16 @@ typedef void (^GTMSessionUploadFetcherCancellationHandler)(
                                chunkSize:(int64_t)chunkSize
                           fetcherService:(GTM_NULLABLE GTMSessionFetcherService *)fetcherServiceOrNil;
 
+// Allows cellular access.
 + (instancetype)uploadFetcherWithLocation:(NSURL * GTM_NULLABLE_TYPE)uploadLocationURL
                            uploadMIMEType:(NSString *)uploadMIMEType
                                 chunkSize:(int64_t)chunkSize
+                           fetcherService:(GTM_NULLABLE GTMSessionFetcherService *)fetcherServiceOrNil;
+
++ (instancetype)uploadFetcherWithLocation:(NSURL *GTM_NULLABLE_TYPE)uploadLocationURL
+                           uploadMIMEType:(NSString *)uploadMIMEType
+                                chunkSize:(int64_t)chunkSize
+                     allowsCellularAccess:(BOOL)allowsCellularAccess
                            fetcherService:(GTM_NULLABLE GTMSessionFetcherService *)fetcherServiceOrNil;
 
 // Allows dataProviders for files of unknown length. Pass kGTMSessionUploadFetcherUnknownFileSize as
@@ -125,8 +132,10 @@ typedef void (^GTMSessionUploadFetcherCancellationHandler)(
 @property(atomic, strong, GTM_NULLABLE) NSFileHandle *uploadFileHandle;
 @property(atomic, copy, readonly, GTM_NULLABLE) GTMSessionUploadFetcherDataProvider uploadDataProvider;
 @property(atomic, copy) NSString *uploadMIMEType;
-@property(atomic, assign) int64_t chunkSize;
+@property(atomic, readonly, assign) int64_t chunkSize;
 @property(atomic, readonly, assign) int64_t currentOffset;
+// Reflects the original NSURLRequest's @c allowCellularAccess property.
+@property(atomic, readonly, assign) BOOL allowsCellularAccess;
 
 // The fetcher for the current data chunk, if any
 @property(atomic, strong, GTM_NULLABLE) GTMSessionFetcher *chunkFetcher;

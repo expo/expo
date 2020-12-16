@@ -76,16 +76,30 @@ the following software:
 
   * Xcode 10.1 (or later)
   * CocoaPods 1.7.2 (or later)
+  * [CocoaPods generate](https://github.com/square/cocoapods-generate)
 
 For the pod that you want to develop:
 
-`pod gen Firebase{name here}.podspec --local-sources=./ --auto-open`
+`pod gen Firebase{name here}.podspec --local-sources=./ --auto-open --platforms=ios`
 
 Note: If the CocoaPods cache is out of date, you may need to run
 `pod repo update` before the `pod gen` command.
 
+Note: Set the `--platforms` option to `macos` or `tvos` to develop/test for
+those platforms. Since 10.2, Xcode does not properly handle multi-platform
+CocoaPods workspaces.
+
 Firestore has a self contained Xcode project. See
 [Firestore/README.md](Firestore/README.md).
+
+### Development for Catalyst
+* `pod gen {name here}.podspec --local-sources=./ --auto-open --platforms=ios`
+* Check the Mac box in the App-iOS Build Settings
+* Sign the App in the Settings Signing & Capabilities tab
+* Click Pods in the Project Manager
+* Add Signing to the iOS host app and unit test targets
+* Select the Unit-unit scheme
+* Run it to build and test
 
 ### Adding a New Firebase Pod
 
@@ -185,32 +199,38 @@ We've seen an amazing amount of interest and contributions to improve the Fireba
 very grateful!  We'd like to empower as many developers as we can to be able to use Firebase and
 participate in the Firebase community.
 
-### macOS and tvOS
+### tvOS, macOS, and Catalyst
 Thanks to contributions from the community, FirebaseABTesting, FirebaseAuth, FirebaseCore,
 FirebaseDatabase, FirebaseMessaging, FirebaseFirestore,
 FirebaseFunctions, FirebaseRemoteConfig, and FirebaseStorage now compile, run unit tests, and work on
-macOS and tvOS.
+tvOS, macOS, and Catalyst.
 
 For tvOS, checkout the [Sample](Example/tvOSSample).
 
-Keep in mind that macOS and tvOS are not officially supported by Firebase, and this repository is
-actively developed primarily for iOS. While we can catch basic unit test issues with Travis, there
-may be some changes where the SDK no longer works as expected on macOS or tvOS. If you encounter
-this, please [file an issue](https://github.com/firebase/firebase-ios-sdk/issues).
+Keep in mind that macOS, Catalyst and tvOS are not officially supported by Firebase, and this
+repository is actively developed primarily for iOS. While we can catch basic unit test issues with
+Travis, there may be some changes where the SDK no longer works as expected on macOS or tvOS. If you
+encounter this, please [file an issue](https://github.com/firebase/firebase-ios-sdk/issues).
 
 To install, add a subset of the following to the Podfile:
 
 ```
-pod 'FirebaseABTesting'
-pod 'FirebaseAuth'
-pod 'FirebaseCore'
-pod 'FirebaseDatabase'
-pod 'FirebaseFirestore'
-pod 'FirebaseFunctions'
-pod 'FirebaseMessaging'
-pod 'FirebaseRemoteConfig'
-pod 'FirebaseStorage'
+pod 'Firebase/ABTesting'
+pod 'Firebase/Auth'
+pod 'Firebase/Database'
+pod 'Firebase/Firestore'
+pod 'Firebase/Functions'
+pod 'Firebase/Messaging'
+pod 'Firebase/RemoteConfig'
+pod 'Firebase/Storage'
 ```
+
+#### Additional Catalyst Notes
+
+* FirebaseAuth and FirebaseMessaging require adding `Keychain Sharing Capability`
+to Build Settings.
+* FirebaseFirestore requires signing the
+[gRPC Resource target](https://github.com/firebase/firebase-ios-sdk/issues/3500#issuecomment-518741681).
 
 ## Roadmap
 

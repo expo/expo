@@ -22,6 +22,7 @@
 
 #import "GTLRRuntimeCommon.h"
 
+#import "GTLRDefines.h"
 #import "GTLRDateTime.h"
 #import "GTLRDuration.h"
 #import "GTLRObject.h"

@@ -16,14 +16,39 @@
 
 #import <Foundation/Foundation.h>
 
+/** The current logging level. This value and higher will be printed. Declared as volatile to make
+ * getting and setting atomic.
+ */
+FOUNDATION_EXPORT volatile NSInteger GDTCORConsoleLoggerLoggingLevel;
+
+/** A  list of logging levels that GDT supports. */
+typedef NS_ENUM(NSInteger, GDTCORLoggingLevel) {
+
+  /** Causes all logs to be printed. */
+  GDTCORLoggingLevelDebug = 1,
+
+  /** Causes all non-debug logs to be printed. */
+  GDTCORLoggingLevelVerbose = 2,
+
+  /** Causes warnings and errors to be printed. */
+  GDTCORLoggingLevelWarnings = 3,
+
+  /** Causes errors to be printed. This is the default value. */
+  GDTCORLoggingLevelErrors = 4
+};
+
 /** A list of message codes to print in the logger that help to correspond printed messages with
  * code locations.
  *
  * Prefixes:
+ * - MCD => MessageCodeDebug
  * - MCW => MessageCodeWarning
  * - MCE => MessageCodeError
  */
 typedef NS_ENUM(NSInteger, GDTCORMessageCode) {
+
+  /** For debug logs. */
+  GDTCORMCDDebugLog = 0,
 
   /** For warning messages concerning transportBytes: not being implemented by a data object. */
   GDTCORMCWDataObjectMissingBytesImpl = 1,
@@ -36,6 +61,12 @@ typedef NS_ENUM(NSInteger, GDTCORMessageCode) {
 
   /** For warning messages concerning a failed reachability call. */
   GDTCORMCWReachabilityFailed = 4,
+
+  /** For warning messages concerning a database warning. */
+  GDTCORMCWDatabaseWarning = 5,
+
+  /** For warning messages concerning the reading of a event file. */
+  GDTCORMCWFileReadError = 6,
 
   /** For error messages concerning transform: not being implemented by an event transformer. */
   GDTCORMCETransformerDoesntImplementTransform = 1000,
@@ -61,12 +92,37 @@ typedef NS_ENUM(NSInteger, GDTCORMessageCode) {
   /** For fatal errors. Please go to https://github.com/firebase/firebase-ios-sdk/issues and open
    * an issue if you encounter an error with this code.
    */
-  GDTCORMCEFatalAssertion = 1007
+  GDTCORMCEFatalAssertion = 1007,
+
+  /** For error messages concerning the reading of a event file. */
+  GDTCORMCEFileReadError = 1008,
+
+  /** For errors related to running sqlite. */
+  GDTCORMCEDatabaseError = 1009,
 };
 
-/** */
+/** Prints the given code and format string to the console.
+ *
+ * @param code The message code describing the nature of the log.
+ * @param logLevel The log level of this log.
+ * @param format The format string.
+ */
 FOUNDATION_EXPORT
-void GDTCORLog(GDTCORMessageCode code, NSString *_Nonnull format, ...);
+void GDTCORLog(GDTCORMessageCode code, GDTCORLoggingLevel logLevel, NSString *_Nonnull format, ...)
+    NS_FORMAT_FUNCTION(3, 4);
+
+/** Prints an assert log to the console.
+ *
+ * @param wasFatal Send YES if the assertion should be fatal, NO otherwise.
+ * @param file The file in which the failure occurred.
+ * @param line The line number of the failure.
+ * @param format The format string.
+ */
+FOUNDATION_EXPORT void GDTCORLogAssert(BOOL wasFatal,
+                                       NSString *_Nonnull file,
+                                       NSInteger line,
+                                       NSString *_Nullable format,
+                                       ...) NS_FORMAT_FUNCTION(4, 5);
 
 /** Returns the string that represents some message code.
  *
@@ -75,10 +131,13 @@ void GDTCORLog(GDTCORMessageCode code, NSString *_Nonnull format, ...);
  */
 FOUNDATION_EXPORT NSString *_Nonnull GDTCORMessageCodeEnumToString(GDTCORMessageCode code);
 
+#define GDTCORLogDebug(MESSAGE_FORMAT, ...) \
+  GDTCORLog(GDTCORMCDDebugLog, GDTCORLoggingLevelDebug, MESSAGE_FORMAT, __VA_ARGS__);
+
 // A define to wrap GULLogWarning with slightly more convenient usage.
 #define GDTCORLogWarning(MESSAGE_CODE, MESSAGE_FORMAT, ...) \
-  GDTCORLog(MESSAGE_CODE, MESSAGE_FORMAT, __VA_ARGS__);
+  GDTCORLog(MESSAGE_CODE, GDTCORLoggingLevelWarnings, MESSAGE_FORMAT, __VA_ARGS__);
 
 // A define to wrap GULLogError with slightly more convenient usage and a failing assert.
 #define GDTCORLogError(MESSAGE_CODE, MESSAGE_FORMAT, ...) \
-  GDTCORLog(MESSAGE_CODE, MESSAGE_FORMAT, __VA_ARGS__);
+  GDTCORLog(MESSAGE_CODE, GDTCORLoggingLevelErrors, MESSAGE_FORMAT, __VA_ARGS__);

@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI37_0_0/Expo/UMFileSystemInterface/ABI37_0_0UMFileSystemInterface/ABI37_0_0UMFilePermissionModuleInterface.h

@@ -16,16 +16,16 @@
 				E59A30DBCFD43E08560543131F92C716 /* PBXTargetDependency */,
 				919C3EE7CE5F8B38E9B36889564BF2D0 /* PBXTargetDependency */,
 				97CCA8D47A50C42F6B1408D4A94D4F85 /* PBXTargetDependency */,
-				CE91FFF7EA89874BA06EA31EB43040DD /* PBXTargetDependency */,
+				73928E6978179735DBD847A63BBB59EF /* PBXTargetDependency */,
 				7EB16EBE078E007B398A6A7126FFEBB5 /* PBXTargetDependency */,
-				22213E896BDFC4F60C4DB3EA75146890 /* PBXTargetDependency */,
+				704774DA33109C6AAF36E35FA0CCAD4C /* PBXTargetDependency */,
 			);
 			name = FirebaseMLCommon;
 		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXContainerItemProxy section */
-		2FA87D209E2B5669A3EC7CD978708309 /* PBXContainerItemProxy */ = {
+		294C291EACBF38CBBB8FE29EFF97CC22 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2E530F5A2FE0D41A194A0028276E2C7D /* GoogleUtilities.xcodeproj */;
 			proxyType = 1;
@@ -39,7 +39,7 @@
 			remoteGlobalIDString = 4BD5DE1E00ED67A59118DB4A3CD5F288;
 			remoteInfo = FirebaseCore;
 		};
-		926CDC3D49A40E614A37C920EAA2769A /* PBXContainerItemProxy */ = {
+		A0C1625359B07A6261709531EC8315C2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9046F13051A9DF618764D318EBD24CEA /* Protobuf.xcodeproj */;
 			proxyType = 1;
@@ -195,10 +195,15 @@
 /* End PBXProject section */
 
 /* Begin PBXTargetDependency section */
-		22213E896BDFC4F60C4DB3EA75146890 /* PBXTargetDependency */ = {
+		704774DA33109C6AAF36E35FA0CCAD4C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Protobuf;
-			targetProxy = 926CDC3D49A40E614A37C920EAA2769A /* PBXContainerItemProxy */;
+			targetProxy = A0C1625359B07A6261709531EC8315C2 /* PBXContainerItemProxy */;
+		};
+		73928E6978179735DBD847A63BBB59EF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = GoogleUtilities;
+			targetProxy = 294C291EACBF38CBBB8FE29EFF97CC22 /* PBXContainerItemProxy */;
 		};
 		7EB16EBE078E007B398A6A7126FFEBB5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -214,11 +219,6 @@
 			isa = PBXTargetDependency;
 			name = GoogleToolboxForMac;
 			targetProxy = A2291BEC98B0C75D1B82850F3B9BC9AA /* PBXContainerItemProxy */;
-		};
-		CE91FFF7EA89874BA06EA31EB43040DD /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = GoogleUtilities;
-			targetProxy = 2FA87D209E2B5669A3EC7CD978708309 /* PBXContainerItemProxy */;
 		};
 		E59A30DBCFD43E08560543131F92C716 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

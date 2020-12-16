@@ -19,6 +19,7 @@
 
 #include <objc/runtime.h>
 
+#import "GTLRDefines.h"
 #import "GTLRObject.h"
 #import "GTLRRuntimeCommon.h"
 #import "GTLRUtilities.h"
@@ -468,7 +469,8 @@ static NSMutableDictionary *DeepMutableCopyOfJSONDictionary(NSDictionary *initia
     } else if ([rawValue isKindOfClass:[NSArray class]]) {
       // for arrays, show the number of items in the array:
       //   [3]
-      value = [NSString stringWithFormat:@"[%tu]", ((NSArray *)rawValue).count];
+      value = [NSString stringWithFormat:@"[%lu]",
+               (unsigned long)((NSArray *)rawValue).count];
     } else if ([rawValue isKindOfClass:[NSString class]]) {
       // for strings, show the string in quotes:
       //   "Hi mom."
@@ -580,8 +582,8 @@ static NSMutableDictionary *gArrayPropertyToClassMapCache = nil;
   NSArray *items = [self valueForKey:key];
   if (items == nil) {
     [NSException raise:NSRangeException
-                format:@"index %tu beyond bounds (%@ property \"%@\" is nil)",
-                       idx, [self class], key];
+                format:@"index %lu beyond bounds (%@ property \"%@\" is nil)",
+                       (unsigned long)idx, [self class], key];
   }
   id result = [items objectAtIndexedSubscript:idx];
   return result;
@@ -611,8 +613,9 @@ static NSMutableDictionary *gArrayPropertyToClassMapCache = nil;
   if (self.JSON.count > 0) {
     jsonDesc = [self JSONDescription];
   }
-  return [NSString stringWithFormat:@"%@ %p: %tu bytes, contentType:%@ %@",
-          [self class], self, self.data.length, self.contentType, jsonDesc];
+  return [NSString stringWithFormat:@"%@ %p: %lu bytes, contentType:%@ %@",
+          [self class], self, (unsigned long)self.data.length, self.contentType,
+          jsonDesc];
 }
 
 - (id)copyWithZone:(NSZone *)zone {
@@ -661,7 +664,7 @@ static NSMutableDictionary *gArrayPropertyToClassMapCache = nil;
 
 - (NSString *)JSONDescription {
   // Just like GTLRObject's handing of arrays, just return the count.
-  return [NSString stringWithFormat:@"[%tu]", self.JSON.count];
+  return [NSString stringWithFormat:@"[%lu]", (unsigned long)self.JSON.count];
 }
 
 @end
