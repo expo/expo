@@ -5,7 +5,9 @@ import { updateDevicePushTokenAsync } from '../updateDevicePushTokenAsync';
 
 const TOKEN: DevicePushToken = { type: 'ios', data: 'i-am-token' };
 
-jest.mock('../../ServerRegistrationModule');
+jest.mock('../../ServerRegistrationModule', () => ({
+  getInstallationIdAsync: () => 'abcdefg',
+}));
 
 declare const global: any;
 
