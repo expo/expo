@@ -36,6 +36,10 @@ export type DevMenuItemGroupType = DevMenuItemBaseType<DevMenuItemEnum.GROUP> & 
 
 export type DevMenuItemAnyType = DevMenuItemActionType | DevMenuItemGroupType;
 
+export type DevMenuItemProps<ItemType = DevMenuItemAnyType> = {
+  item: ItemType;
+};
+
 export type DevMenuSettingsType = Partial<{
   motionGestureEnabled: boolean;
   touchGestureEnabled: boolean;
