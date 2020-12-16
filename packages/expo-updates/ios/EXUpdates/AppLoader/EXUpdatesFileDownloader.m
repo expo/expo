@@ -120,7 +120,6 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
       [EXUpdatesCrypto verifySignatureWithData:(NSString *)innerManifestString
                                      signature:(NSString *)signature
                                         config:self->_config
-                                cacheDirectory:cacheDirectory
                                   successBlock:^(BOOL isValid) {
                                                   if (isValid) {
                                                     NSError *err;

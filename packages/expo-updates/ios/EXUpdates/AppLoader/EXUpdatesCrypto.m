@@ -15,7 +15,6 @@ static NSString * const EXUpdatesCryptoPublicKeyFilename = @"manifestPublicKey.p
 + (void)verifySignatureWithData:(NSString *)data
                       signature:(NSString *)signature
                          config:(EXUpdatesConfig *)config
-                 cacheDirectory:(NSURL *)cacheDirectory
                    successBlock:(EXUpdatesVerifySignatureSuccessBlock)successBlock
                      errorBlock:(EXUpdatesVerifySignatureErrorBlock)errorBlock
 {
