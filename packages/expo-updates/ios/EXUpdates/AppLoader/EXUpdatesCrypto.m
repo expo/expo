@@ -55,7 +55,7 @@ static NSString * const EXUpdatesCryptoPublicKeyFilename = @"manifestPublicKey.p
                              errorBlock:(EXUpdatesVerifySignatureErrorBlock)errorBlock
 {
   NSURLSessionConfiguration *configuration = NSURLSessionConfiguration.defaultSessionConfiguration;
-  configuration.requestCachePolicy = NSURLRequestReloadIgnoringCacheData;
+  configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
 
   EXUpdatesFileDownloader *fileDownloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config URLSessionConfiguration:configuration];
   [fileDownloader downloadDataFromURL:[NSURL URLWithString:EXUpdatesCryptoPublicKeyUrl]
