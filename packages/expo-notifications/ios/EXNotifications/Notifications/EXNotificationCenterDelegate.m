@@ -191,7 +191,10 @@ UM_REGISTER_SINGLETON_MODULE(NotificationCenterDelegate);
         // completion handler doesn't need to do anything
       }];
     }
-    [_pendingNotificationResponses removeAllObjects];
+    // Remove EXUserNotificationManager check when LegacyNotifications are no longer supported
+    if (![NSStringFromClass([delegate class]) isEqual:@"EXUserNotificationManager"]) {
+      [_pendingNotificationResponses removeAllObjects];
+    }
   }
 }
 
