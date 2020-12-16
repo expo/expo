@@ -22,7 +22,7 @@ export default async function getExpoPushTokenAsync(options = {}) {
     const url = options.url ?? `${baseUrl}push/getExpoPushToken`;
     const body = {
         type,
-        deviceId,
+        deviceId: deviceId.toLowerCase(),
         development,
         experienceId,
         appId: applicationId,
