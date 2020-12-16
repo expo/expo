@@ -555,7 +555,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
     // Decibels is a relative measurement.
 	// Value `32767d` gives levels info comparable to iOS's values.
 	// see: https://github.com/punarinta/react-native-sound-level/issues/20
-    return = (int) (20 * Math.log(((double) amplitude) / 32767d));
+    return (int) (20 * Math.log(((double) amplitude) / 32767d));
   }
 
   private Bundle getAudioRecorderStatus() {
