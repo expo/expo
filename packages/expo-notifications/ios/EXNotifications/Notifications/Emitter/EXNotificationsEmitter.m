@@ -11,6 +11,7 @@
 @property (nonatomic, weak) id<EXNotificationCenterDelegate> notificationCenterDelegate;
 
 @property (nonatomic, assign) BOOL isBeingObserved;
+@property (nonatomic, assign) BOOL isListening;
 
 @property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
 
@@ -33,9 +34,7 @@ UM_EXPORT_METHOD_AS(getLastNotificationResponseAsync,
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
-
   _notificationCenterDelegate = [moduleRegistry getSingletonModuleForName:@"NotificationCenterDelegate"];
-  [_notificationCenterDelegate addDelegate:self];
 }
 
 # pragma mark - UMEventEmitter
@@ -47,12 +46,25 @@ UM_EXPORT_METHOD_AS(getLastNotificationResponseAsync,
 
 - (void)startObserving
 {
-  _isBeingObserved = YES;
+  [self setIsBeingObserved:YES];
 }
 
 - (void)stopObserving
 {
-  _isBeingObserved = NO;
+  [self setIsBeingObserved:NO];
+}
+
+- (void)setIsBeingObserved:(BOOL)isBeingObserved
+{
+  _isBeingObserved = isBeingObserved;
+  BOOL shouldListen = _isBeingObserved;
+  if (shouldListen && !_isListening) {
+    [_notificationCenterDelegate addDelegate:self];
+    _isListening = YES;
+  } else if (!shouldListen && _isListening) {
+    [_notificationCenterDelegate removeDelegate:self];
+    _isListening = NO;
+  }
 }
 
 # pragma mark - EXNotificationsDelegate
