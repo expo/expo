@@ -15,6 +15,8 @@
 
 ### 🐛 Bug fixes
 
+
+- Fixed device token not being properly updated on Expo's servers for iOS devices. (Only applicable if you're using `ExpoPushToken`s) ([#11363](https://github.com/expo/expo/pull/11363) by [@cruzach](https://github.com/cruzach))
 - Fixed migration process to **not** use `expo-constants` installation ID if there is a notifications-specific identifier. ([#11287](https://github.com/expo/expo/pull/11287) by [@sjchmiela](https://github.com/sjchmiela))
 - Changed the visibility of Android's `InstallationId#getNonBackedUpUuidFile` method so it's easier to override by custom implementations. ([#11249](https://github.com/expo/expo/pull/11249) by [@sjchmiela](https://github.com/sjchmiela))
 
