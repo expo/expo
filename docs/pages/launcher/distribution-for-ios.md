@@ -6,9 +6,7 @@ import InstallSection from '~/components/plugins/InstallSection';
 
 import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
 
-Now that you've installed the Expo Dev Client, you are ready to share builds with your team.
-
-> ⚠️ **Managed Expo projects are not yet supported**, but we are working on bringing the Development Client to the Managed Workflow! If you want to build a managed Expo project with the Development Client, you'll have to eject it first. See the [Ejecting to Bare Workflow](../workflow/customizing.md) page to learn how.
+> ⚠️ **Managed Expo projects are not yet supported**, but we are working on bringing the Dev Launcher to the Managed Workflow! If you want to build a managed Expo project with the Dev Launcher, you'll have to eject it first. See the [Ejecting to Bare Workflow](../workflow/customizing.md) page to learn how.
 
 ## If you are installing in a simulator
 
@@ -22,17 +20,17 @@ After running the command, the generated APK will be named **MyApp.app** and can
 
 <br />
 
-You can transfer the app folder via email, shared network directory, or however you would transfer an arbitrary file. You may want to compress the .app folder to facilitate the transfer.
+You can transfer the app folder via email, shared network directory, or however you would transfer an arbitrary file. You may want to compress the `app/` folder to facilitate the transfer.
 
 ### 3. Install on simulator
 
-After launching your simulator, you can simply drag the .app/ folder from your file explorer onto the running simulator to install it.
+After launching your simulator, you can simply drag the `app/` folder from your file explorer onto the running simulator to install it.
 
 If you would prefer to install via the command line you can do so via `xcrun simctl install booted [path to .app folder]`
 
 ## If you are installing on a physical device
 
-> 💡 The process for installing a development client build is currently **very manual**. We are hard at work to provide a smoother flow for developers utiliziing our build service.
+> 💡 The process for installing a dev launcher build is currently **very manual**. We are hard at work to provide a smoother flow for developers utilizing our build service.
 
 ### 1. Collect the UDID for any devices that will need to load the application
 
