@@ -17,8 +17,8 @@ target 'HelloWorld' do
   #
   # Note that if you have use_frameworks! enabled, Flipper will not work.
   #
-  # use_flipper!
-  # post_install do |installer|
-  #   flipper_post_install(installer)
-  # end
+  #  use_flipper!
+  #  post_install do |installer|
+  #    flipper_post_install(installer)
+  #  end
 end
