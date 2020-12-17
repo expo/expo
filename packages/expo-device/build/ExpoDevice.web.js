@@ -1,10 +1,8 @@
+import { Platform } from '@unimodules/core';
 import UAParser from 'ua-parser-js';
 import { DeviceType } from './Device.types';
-const canUseDOM = !!(typeof window !== 'undefined' &&
-    window.document &&
-    window.document.createElement);
 let result = null;
-if (canUseDOM) {
+if (Platform.isDOMAvailable) {
     const parser = new UAParser(window.navigator.userAgent);
     result = parser.getResult();
 }
