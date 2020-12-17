@@ -21,6 +21,16 @@ For bare React Native projects, you must ensure that you have [installed and con
 expo install expo-payments-stripe
 ```
 
+Then include the config plugin in your `app.config.js` or `app.json`
+
+```json
+{
+  "plugins": [["expo-payments-stripe", { "scheme": "your-redirect-uri" }]]
+}
+```
+
+Be sure to sync the changes with `expo eject`, and rebuild the native project with `eas build`.
+
 ### Configure for iOS
 
 Run `npx pod-install` after installing the npm package.
