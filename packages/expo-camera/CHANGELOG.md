@@ -14,7 +14,7 @@
 
 ### 🐛 Bug fixes
 
-- Removed `fbjs`dependency ([#11396](https://github.com/expo/expo/pull/11396) by [@cruzach](https://github.com/cruzach))
+- Removed `fbjs` dependency ([#11396](https://github.com/expo/expo/pull/11396) by [@cruzach](https://github.com/cruzach))
 
 ## 9.1.1 — 2020-12-14
 
