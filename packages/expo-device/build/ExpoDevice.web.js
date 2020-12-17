@@ -1,6 +1,8 @@
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import UAParser from 'ua-parser-js';
 import { DeviceType } from './Device.types';
+const canUseDOM = !!(typeof window !== 'undefined' &&
+    window.document &&
+    window.document.createElement);
 let result = null;
 if (canUseDOM) {
     const parser = new UAParser(window.navigator.userAgent);
