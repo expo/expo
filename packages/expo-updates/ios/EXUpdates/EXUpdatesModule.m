@@ -28,14 +28,14 @@ UM_EXPORT_MODULE(ExpoUpdates);
   if (!_updatesService.isStarted) {
     return @{
       @"isEnabled": @(NO),
-      @"shouldShowNoRuntimeVersionWarning": @(_updatesService.config.shouldShowNoRuntimeVersionWarning)
+      @"isMissingRuntimeVersion": @(_updatesService.config.isMissingRuntimeVersion)
     };
   }
   EXUpdatesUpdate *launchedUpdate = _updatesService.launchedUpdate;
   if (!launchedUpdate) {
     return @{
       @"isEnabled": @(NO),
-      @"shouldShowNoRuntimeVersionWarning": @(_updatesService.config.shouldShowNoRuntimeVersionWarning)
+      @"isMissingRuntimeVersion": @(_updatesService.config.isMissingRuntimeVersion)
     };
   } else {
     return @{
@@ -46,7 +46,7 @@ UM_EXPORT_MODULE(ExpoUpdates);
       @"releaseChannel": _updatesService.config.releaseChannel,
       @"localAssets": _updatesService.assetFilesMap ?: @{},
       @"isEmergencyLaunch": @(_updatesService.isEmergencyLaunch),
-      @"shouldShowNoRuntimeVersionWarning": @(_updatesService.config.shouldShowNoRuntimeVersionWarning)
+      @"isMissingRuntimeVersion": @(_updatesService.config.isMissingRuntimeVersion)
     };
   }
   

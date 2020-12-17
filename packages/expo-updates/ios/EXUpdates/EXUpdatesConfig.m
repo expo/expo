@@ -140,7 +140,7 @@ static NSString * const EXUpdatesConfigNeverString = @"NEVER";
   }
 }
 
-- (BOOL)shouldShowNoRuntimeVersionWarning
+- (BOOL)isMissingRuntimeVersion
 {
   return (!_runtimeVersion || !_runtimeVersion.length) && (!_sdkVersion || !_sdkVersion.length);
 }

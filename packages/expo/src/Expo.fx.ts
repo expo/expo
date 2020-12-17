@@ -4,7 +4,7 @@ import './environment/react-native-logs.fx';
 import 'expo-asset';
 
 import { NativeModulesProxy, Platform } from '@unimodules/core';
-if (NativeModulesProxy.ExpoUpdates?.shouldShowNoRuntimeVersionWarning) {
+if (NativeModulesProxy.ExpoUpdates?.isMissingRuntimeVersion) {
   console.warn(
     'Warning: expo-updates is installed but there is no runtime or SDK version configured. ' +
       "You'll need to configure one of these two properties in " +

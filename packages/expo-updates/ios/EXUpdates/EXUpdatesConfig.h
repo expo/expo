@@ -22,7 +22,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesCheckAutomaticallyConfig) {
 
 @property (nullable, nonatomic, readonly) NSString *sdkVersion;
 @property (nullable, nonatomic, readonly) NSString *runtimeVersion;
-@property (nonatomic, readonly) BOOL shouldShowNoRuntimeVersionWarning;
+@property (nonatomic, readonly) BOOL isMissingRuntimeVersion;
 
 @property (nonatomic, readonly) BOOL usesLegacyManifest;
 @property (nonatomic, readonly) BOOL hasEmbeddedUpdate;
