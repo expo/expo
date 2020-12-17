@@ -55,7 +55,7 @@ public class UpdatesModule extends ExportedModule {
       UpdatesInterface updatesService = getUpdatesService();
       if (updatesService != null) {
         constants.put("isEmergencyLaunch", updatesService.isEmergencyLaunch());
-        constants.put("shouldShowNoRuntimeVersionWarning", updatesService.getConfiguration().shouldShowNoRuntimeVersionWarning());
+        constants.put("isMissingRuntimeVersion", updatesService.getConfiguration().isMissingRuntimeVersion());
 
         UpdateEntity launchedUpdate = updatesService.getLaunchedUpdate();
         if (launchedUpdate != null) {
@@ -86,7 +86,7 @@ public class UpdatesModule extends ExportedModule {
       // provided at runtime in MainApplication.java, because we don't have access to that in a
       // debug build.
       UpdatesConfiguration configuration = new UpdatesConfiguration().loadValuesFromMetadata(getContext());
-      constants.put("shouldShowNoRuntimeVersionWarning", configuration.shouldShowNoRuntimeVersionWarning());
+      constants.put("isMissingRuntimeVersion", configuration.isMissingRuntimeVersion());
     }
 
     return constants;

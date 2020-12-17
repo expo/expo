@@ -79,7 +79,7 @@ public class UpdatesConfiguration {
     return mRuntimeVersion;
   }
 
-  public boolean shouldShowNoRuntimeVersionWarning() {
+  public boolean isMissingRuntimeVersion() {
     return (mRuntimeVersion == null || mRuntimeVersion.length() == 0) &&
       (mSdkVersion == null || mSdkVersion.length() == 0);
   }
