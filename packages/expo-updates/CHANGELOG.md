@@ -16,6 +16,8 @@
 
 ### 🐛 Bug fixes
 
+- On iOS, use default NSURLCache for manifest public key rather than caching it manually.
+
 ## 0.4.1 — 2020-11-25
 
 ### 🛠 Breaking changes
