@@ -13,13 +13,12 @@
 
 @interface SDImageCachesManager ()
 
-@property (nonatomic, strong, nonnull) dispatch_semaphore_t cachesLock;
+@property (nonatomic, strong, nonnull) NSMutableArray<id<SDImageCache>> *imageCaches;
 
 @end
 
-@implementation SDImageCachesManager
-{
-    NSMutableArray<id<SDImageCache>> *_imageCaches;
+@implementation SDImageCachesManager {
+    SD_LOCK_DECLARE(_cachesLock);
 }
 
 + (SDImageCachesManager *)sharedManager {
@@ -41,25 +40,25 @@
         self.clearOperationPolicy = SDImageCachesManagerOperationPolicyConcurrent;
         // initialize with default image caches
         _imageCaches = [NSMutableArray arrayWithObject:[SDImageCache sharedImageCache]];
-        _cachesLock = dispatch_semaphore_create(1);
+        SD_LOCK_INIT(_cachesLock);
     }
     return self;
 }
 
 - (NSArray<id<SDImageCache>> *)caches {
-    SD_LOCK(self.cachesLock);
+    SD_LOCK(_cachesLock);
     NSArray<id<SDImageCache>> *caches = [_imageCaches copy];
-    SD_UNLOCK(self.cachesLock);
+    SD_UNLOCK(_cachesLock);
     return caches;
 }
 
 - (void)setCaches:(NSArray<id<SDImageCache>> *)caches {
-    SD_LOCK(self.cachesLock);
+    SD_LOCK(_cachesLock);
     [_imageCaches removeAllObjects];
     if (caches.count) {
         [_imageCaches addObjectsFromArray:caches];
     }
-    SD_UNLOCK(self.cachesLock);
+    SD_UNLOCK(_cachesLock);
 }
 
 #pragma mark - Cache IO operations
@@ -68,18 +67,18 @@
     if (![cache conformsToProtocol:@protocol(SDImageCache)]) {
         return;
     }
-    SD_LOCK(self.cachesLock);
+    SD_LOCK(_cachesLock);
     [_imageCaches addObject:cache];
-    SD_UNLOCK(self.cachesLock);
+    SD_UNLOCK(_cachesLock);
 }
 
 - (void)removeCache:(id<SDImageCache>)cache {
     if (![cache conformsToProtocol:@protocol(SDImageCache)]) {
         return;
     }
-    SD_LOCK(self.cachesLock);
+    SD_LOCK(_cachesLock);
     [_imageCaches removeObject:cache];
-    SD_UNLOCK(self.cachesLock);
+    SD_UNLOCK(_cachesLock);
 }
 
 #pragma mark - SDImageCache

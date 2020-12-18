@@ -14,16 +14,6 @@
 #import <QuartzCore/QuartzCore.h>
 #endif
 
-#if SD_UIKIT
-#if __IPHONE_13_0 || __TVOS_13_0 || __MAC_10_15
-// Xcode 11
-#else
-// Supports Xcode 10 users, for those users, define these enum
-static NSInteger UIActivityIndicatorViewStyleMedium = 100;
-static NSInteger UIActivityIndicatorViewStyleLarge = 101;
-#endif
-#endif
-
 #pragma mark - Activity Indicator
 
 @interface SDWebImageActivityIndicator ()

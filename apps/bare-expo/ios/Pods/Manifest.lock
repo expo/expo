@@ -604,9 +604,9 @@ PODS:
     - React
   - RNSVG (12.1.0):
     - React
-  - SDWebImage (5.8.1):
-    - SDWebImage/Core (= 5.8.1)
-  - SDWebImage/Core (5.8.1)
+  - SDWebImage (5.10.0):
+    - SDWebImage/Core (= 5.10.0)
+  - SDWebImage/Core (5.10.0)
   - UMAppLoader (1.4.0)
   - UMBarCodeScannerInterface (5.4.0):
     - UMCore
@@ -1178,7 +1178,7 @@ SPEC CHECKSUMS:
   RNScreens: 2ad555d4d9fa10b91bb765ca07fe9b29d59573f0
   RNSharedElement: 00b1a1420d213a34459bb9a5aacabb38107d7948
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
-  SDWebImage: e3eae2eda88578db0685a0c88597fdadd9433f05
+  SDWebImage: 9169792e9eec3e45bba2a0c02f74bf8bd922d1ee
   UMAppLoader: bee14c578914554aa8cfb0b0c77b4906b6278189
   UMBarCodeScannerInterface: d24d7bfca41008b5da35b2132a1fac9e75720ea0
   UMCameraInterface: c4ceed954023beeb36e54a7107ceee0e8c00f6c8
@@ -1195,6 +1195,6 @@ SPEC CHECKSUMS:
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: b7dc0d17e13cceb5ec86c449d892db74d7cada8e
+PODFILE CHECKSUM: 9be2c5525c20f8f3f84be65be4c45e3ef69dc6bd
 
 COCOAPODS: 1.10.0

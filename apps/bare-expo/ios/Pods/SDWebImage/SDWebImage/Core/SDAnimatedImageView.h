@@ -11,14 +11,21 @@
 #if SD_UIKIT || SD_MAC
 
 #import "SDAnimatedImage.h"
+#import "SDAnimatedImagePlayer.h"
 
 /**
  A drop-in replacement for UIImageView/NSImageView, you can use this for animated image rendering.
- Call `setImage:` with `UIImage(NSImage)` which conform to `SDAnimatedImage` protocol will start animated image rendering. Call with normal UIImage(NSImage) will back to normal UIImageView(NSImageView) rendering
+ Call `setImage:` with `UIImage(NSImage)` which conforms to `SDAnimatedImage` protocol will start animated image rendering. Call with normal UIImage(NSImage) will back to normal UIImageView(NSImageView) rendering
  For UIKit: use `-startAnimating`, `-stopAnimating` to control animating. `isAnimating` to check animation state.
  For AppKit: use `-setAnimates:` to control animating, `animates` to check animation state. This view is layer-backed.
  */
 @interface SDAnimatedImageView : UIImageView
+/**
+ The internal animation player.
+ This property is only used for advanced usage, like inspecting/debugging animation status, control progressive loading, complicated animation frame index control, etc.
+ @warning Pay attention if you directly update the player's property like `totalFrameCount`, `totalLoopCount`, the same property on `SDAnimatedImageView` may not get synced.
+ */
+@property (nonatomic, strong, readonly, nullable) SDAnimatedImagePlayer *player;
 
 /**
  Current display frame image. This value is KVO Compliance.
@@ -52,6 +59,10 @@
  `< 0.0` is not supported currently and stop animation. (may support reverse playback in the future)
  */
 @property (nonatomic, assign) double playbackRate;
+
+/// Asynchronous setup animation playback mode. Default mode is SDAnimatedImagePlaybackModeNormal.
+@property (nonatomic, assign) SDAnimatedImagePlaybackMode playbackMode;
+
 /**
  Provide a max buffer size by bytes. This is used to adjust frame buffer count and can be useful when the decoding cost is expensive (such as Animated WebP software decoding). Default is 0.
  `0` means automatically adjust by calculating current memory usage.
@@ -82,7 +93,7 @@
 @property (nonatomic, assign) BOOL resetFrameIndexWhenStopped;
 
 /**
- If the image has more than one frame, set this value to `YES` will automatically
+ If the image which conforms to `SDAnimatedImage` protocol has more than one frame, set this value to `YES` will automatically
  play/stop the animation when the view become visible/invisible.
  Default is YES.
  */

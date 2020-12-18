@@ -160,7 +160,8 @@ typedef NS_OPTIONS(NSUInteger, SDWebImageOptions) {
     SDWebImageFromLoaderOnly = 1 << 16,
     
     /**
-     * By default, when you use `SDWebImageTransition` to do some view transition after the image load finished, this transition is only applied for image download from the network. This mask can force to apply view transition for memory and disk cache as well.
+     * By default, when you use `SDWebImageTransition` to do some view transition after the image load finished, this transition is only applied for image when the callback from manager is asynchronous (from network, or disk cache query)
+     * This mask can force to apply view transition for any cases, like memory cache query, or sync disk cache query.
      */
     SDWebImageForceTransition = 1 << 17,
     
@@ -200,7 +201,7 @@ typedef NS_OPTIONS(NSUInteger, SDWebImageOptions) {
      * We usually don't apply transform on vector images, because vector images supports dynamically changing to any size, rasterize to a fixed size will loss details. To modify vector images, you can process the vector data at runtime (such as modifying PDF tag / SVG element).
      * Use this flag to transform them anyway.
      */
-    SDWebImageTransformVectorImage = 1 << 23,
+    SDWebImageTransformVectorImage = 1 << 23
 };
 
 

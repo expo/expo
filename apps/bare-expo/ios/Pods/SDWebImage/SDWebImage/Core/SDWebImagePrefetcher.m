@@ -22,8 +22,8 @@
     unsigned long _totalCount;
     
     // Used to ensure NSPointerArray thread safe
-    dispatch_semaphore_t _prefetchOperationsLock;
-    dispatch_semaphore_t _loadOperationsLock;
+    SD_LOCK_DECLARE(_prefetchOperationsLock)
+    SD_LOCK_DECLARE(_loadOperationsLock);
 }
 
 @property (nonatomic, copy, readwrite) NSArray<NSURL *> *urls;
@@ -268,8 +268,8 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        _prefetchOperationsLock = dispatch_semaphore_create(1);
-        _loadOperationsLock = dispatch_semaphore_create(1);
+        SD_LOCK_INIT(_prefetchOperationsLock);
+        SD_LOCK_INIT(_loadOperationsLock);
     }
     return self;
 }

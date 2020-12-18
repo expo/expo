@@ -25,7 +25,6 @@ static const size_t kBytesPerPixel = 4;
 static const size_t kBitsPerComponent = 8;
 
 static const CGFloat kBytesPerMB = 1024.0f * 1024.0f;
-static const CGFloat kPixelsPerMB = kBytesPerMB / kBytesPerPixel;
 /*
  * Defines the maximum size in MB of the decoded image when the flag `SDWebImageScaleDownLargeImages` is set
  * Suggested value for iPad1 and iPhone 3GS: 60.
@@ -379,8 +378,8 @@ static const CGFloat kDestSeemOverlap = 2.0f;   // the numbers of pixels to over
         // see kDestImageSizeMB, and how it relates to destTotalPixels.
         CGFloat imageScale = sqrt(destTotalPixels / sourceTotalPixels);
         CGSize destResolution = CGSizeZero;
-        destResolution.width = (int)(sourceResolution.width * imageScale);
-        destResolution.height = (int)(sourceResolution.height * imageScale);
+        destResolution.width = MAX(1, (int)(sourceResolution.width * imageScale));
+        destResolution.height = MAX(1, (int)(sourceResolution.height * imageScale));
         
         // device color space
         CGColorSpaceRef colorspaceRef = [self colorSpaceGetDeviceRGB];
@@ -419,7 +418,7 @@ static const CGFloat kDestSeemOverlap = 2.0f;   // the numbers of pixels to over
         // The source tile height is dynamic. Since we specified the size
         // of the source tile in MB, see how many rows of pixels high it
         // can be given the input image width.
-        sourceTile.size.height = (int)(tileTotalPixels / sourceTile.size.width );
+        sourceTile.size.height = MAX(1, (int)(tileTotalPixels / sourceTile.size.width));
         sourceTile.origin.x = 0.0f;
         // The output tile is the same proportions as the input tile, but
         // scaled to image scale.
@@ -485,7 +484,7 @@ static const CGFloat kDestSeemOverlap = 2.0f;   // the numbers of pixels to over
 }
 
 + (void)setDefaultScaleDownLimitBytes:(NSUInteger)defaultScaleDownLimitBytes {
-    if (defaultScaleDownLimitBytes < kBytesPerMB) {
+    if (defaultScaleDownLimitBytes < kBytesPerPixel) {
         return;
     }
     kDestImageLimitBytes = defaultScaleDownLimitBytes;
@@ -596,13 +595,10 @@ static const CGFloat kDestSeemOverlap = 2.0f;   // the numbers of pixels to over
     }
     CGFloat destTotalPixels;
     if (bytes == 0) {
-        bytes = kDestImageLimitBytes;
+        bytes = [self defaultScaleDownLimitBytes];
     }
+    bytes = MAX(bytes, kBytesPerPixel);
     destTotalPixels = bytes / kBytesPerPixel;
-    if (destTotalPixels <= kPixelsPerMB) {
-        // Too small to scale down
-        return NO;
-    }
     float imageScale = destTotalPixels / sourceTotalPixels;
     if (imageScale < 1) {
         shouldScaleDown = YES;

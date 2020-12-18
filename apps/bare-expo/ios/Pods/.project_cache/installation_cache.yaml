@@ -2832,11 +2832,11 @@ CACHE_KEYS:
       SDWebImage:
         :debug: 1e90e26ff5c55c782bb1feb0482e135e
         :release: 1e90e26ff5c55c782bb1feb0482e135e
-    CHECKSUM: e3eae2eda88578db0685a0c88597fdadd9433f05
+    CHECKSUM: 9169792e9eec3e45bba2a0c02f74bf8bd922d1ee
     PROJECT_NAME: SDWebImage
     SPECS:
-      - SDWebImage (5.8.1)
-      - SDWebImage/Core (5.8.1)
+      - SDWebImage (5.10.0)
+      - SDWebImage/Core (5.10.0)
   UMAppLoader:
     BUILD_SETTINGS_CHECKSUM:
       UMAppLoader:
