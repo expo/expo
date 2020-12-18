@@ -1,1 +1,1 @@
-../../../../../../../../react-native-lab/react-native/Libraries/Image/RCTImageURLLoader.h
+../../../../../../node_modules/react-native/Libraries/Image/RCTImageURLLoader.h

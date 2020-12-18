@@ -1,1 +1,1 @@
-../../../../../../../../react-native-lab/react-native/Libraries/LinkingIOS/RCTLinkingPlugins.h
+../../../../../../node_modules/react-native/Libraries/LinkingIOS/RCTLinkingPlugins.h

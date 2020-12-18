@@ -1,1 +1,1 @@
-../../../../../../../../react-native-lab/react-native/React/Base/RCTCxxConvert.h
+../../../../../../node_modules/react-native/React/Base/RCTCxxConvert.h

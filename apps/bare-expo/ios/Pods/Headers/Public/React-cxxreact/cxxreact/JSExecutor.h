@@ -1,1 +1,1 @@
-../../../../../../../../react-native-lab/react-native/ReactCommon/cxxreact/JSExecutor.h
+../../../../../../node_modules/react-native/ReactCommon/cxxreact/JSExecutor.h

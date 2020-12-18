@@ -1,1 +1,1 @@
-../../../../../../../../react-native-lab/react-native/ReactCommon/cxxreact/CxxNativeModule.h
+../../../../../../node_modules/react-native/ReactCommon/cxxreact/CxxNativeModule.h

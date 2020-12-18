@@ -1,1 +1,1 @@
-../../../../../../../../react-native-lab/react-native/React/Base/RCTEventDispatcher.h
+../../../../../../node_modules/react-native/React/Base/RCTEventDispatcher.h
