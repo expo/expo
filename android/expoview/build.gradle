@@ -130,7 +130,7 @@ class GenerateDynamicMacrosPlugin implements Plugin<Project> {
         it.toLowerCase().contains("release")
       } ? "release" : "debug"
 
-      workingDir '../../tools/expotools/bin'
+      workingDir '../../tools/bin'
 
       if (Os.isFamily(Os.FAMILY_WINDOWS)) {
         commandLine 'cmd.exe', '/c', "expotools.js android-generate-dynamic-macros --configuration ${configuration}"
