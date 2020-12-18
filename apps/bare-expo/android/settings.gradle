@@ -1,8 +1,8 @@
 import groovy.json.JsonSlurper
 
-apply from: '../../../node_modules/react-native-unimodules/gradle.groovy'
+apply from: '../node_modules/react-native-unimodules/gradle.groovy'
 
-apply from: file("../../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle");
+apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle");
 applyNativeModulesSettingsGradle(settings)
 
 include(":expo-dev-launcher")

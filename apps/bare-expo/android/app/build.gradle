@@ -79,7 +79,7 @@ project.ext.react = [
     enableHermes: false,  // clean and rebuild if changing
 ]
 
-apply from: '../../../../node_modules/react-native-unimodules/gradle.groovy'
+apply from: '../../node_modules/react-native-unimodules/gradle.groovy'
 apply from: "../../node_modules/react-native/react.gradle"
 
 /**
@@ -214,7 +214,7 @@ dependencies {
     ])
 
     if (enableHermes) {
-        def hermesPath = "../../../../node_modules/hermes-engine/android/";
+        def hermesPath = "../../node_modules/hermes-engine/android/";
         debugImplementation files(hermesPath + "hermes-debug.aar")
         releaseImplementation files(hermesPath + "hermes-release.aar")
     } else {
@@ -271,7 +271,7 @@ class GenerateDynamicMacrosPlugin implements Plugin<Project> {
     }
 }
 
-apply from: file("../../../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle");
+apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle");
 applyNativeModulesAppBuildGradle(project)
 
 // [Custom]: Add Google Services file
