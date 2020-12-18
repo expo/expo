@@ -16,8 +16,12 @@ function symlinkNecessaryPackages(projectPath) {
 
   symlinkNecessaryPackage(projectPath, 'expo');
   symlinkNecessaryPackage(projectPath, 'react-native');
+  // For community CLI autolinking in bare-expo
   symlinkNecessaryPackage(projectPath, 'expo-image');
   symlinkNecessaryPackage(projectPath, 'expo-random');
+  symlinkNecessaryPackage(projectPath, 'expo-dev-launcher');
+  symlinkNecessaryPackage(projectPath, 'expo-dev-menu');
+  symlinkNecessaryPackage(projectPath, 'expo-dev-menu-interface');
 }
 
 function symlinkNecessaryPackage(projectPath, packageName) {

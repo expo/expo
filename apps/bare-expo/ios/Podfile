@@ -36,9 +36,6 @@ abstract_target 'BareExpoMain' do
     }
   )
 
-  pod 'EXDevMenu', path: '../../../packages/expo-dev-menu', configurations: :debug
-  pod 'expo-dev-launcher', path: '../../../packages/expo-dev-launcher'
-
   # Fix Google Sign-in and Flipper
   post_install do |installer|
     installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
