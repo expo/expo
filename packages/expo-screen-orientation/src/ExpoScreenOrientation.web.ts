@@ -32,9 +32,10 @@ const OrientationWebToAPI: {
 
 declare const window: Window;
 
-const { screen }: any = Platform.canUseViewport && window;
-const orientation: ScreenOrientation | null =
-  Platform.canUseViewport && (screen.orientation || screen.msOrientation || null);
+const screen: Screen = Platform.canUseViewport ? window.screen : ({} as Screen);
+const orientation: ScreenOrientation | null = Platform.canUseViewport
+  ? screen.orientation || (screen as any).msOrientation || null
+  : null;
 
 async function emitOrientationEvent() {
   const [orientationLock, orientation] = await Promise.all([
