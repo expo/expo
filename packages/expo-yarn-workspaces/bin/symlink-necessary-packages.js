@@ -17,6 +17,7 @@ function symlinkNecessaryPackages(projectPath) {
   symlinkNecessaryPackage(projectPath, 'expo');
   symlinkNecessaryPackage(projectPath, 'react-native');
   symlinkNecessaryPackage(projectPath, 'expo-image');
+  symlinkNecessaryPackage(projectPath, 'expo-random');
 }
 
 function symlinkNecessaryPackage(projectPath, packageName) {
