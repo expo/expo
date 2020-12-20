@@ -14,6 +14,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed background location permission check on Android. ([#11399](https://github.com/expo/expo/pull/11399) by [@peterdn](https://github.com/peterdn))
+
 ## 10.0.0 — 2020-11-17
 
 ### 🛠 Breaking changes
