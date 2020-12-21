@@ -1,10 +1,10 @@
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+import { Platform } from '@unimodules/core';
 import UAParser from 'ua-parser-js';
 
 import { DeviceType } from './Device.types';
 
 let result: any = null;
-if (canUseDOM) {
+if (Platform.isDOMAvailable) {
   const parser = new UAParser(window.navigator.userAgent);
   result = parser.getResult();
 }
