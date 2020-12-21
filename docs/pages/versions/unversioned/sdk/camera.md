@@ -144,7 +144,7 @@ Camera flash mode. Use one of `Camera.Constants.FlashMode`. When `on`, the flash
 
 ### `autoFocus`
 
-State of camera auto focus. Use one of `Camera.Constants.AutoFocus`. When `on`, auto focus will be enabled, when `off`, it wont't and focus will lock as it was in the moment of change but it can be adjusted on some devices via `focusDepth` prop.
+State of camera auto focus. Use one of `Camera.Constants.AutoFocus`. When `on`, auto focus will be enabled, when `off`, it won't and focus will lock as it was in the moment of change but it can be adjusted on some devices via `focusDepth` prop.
 
 ### `zoom`
 
