@@ -15,6 +15,7 @@ function symlinkNecessaryPackages(projectPath) {
   projectPath = path.resolve(projectPath);
 
   symlinkNecessaryPackage(projectPath, 'expo');
+  symlinkNecessaryPackage(projectPath, 'expo-camera');
   symlinkNecessaryPackage(projectPath, 'jsc-android');
   symlinkNecessaryPackage(projectPath, 'hermes-engine');
   symlinkNecessaryPackage(projectPath, 'react-native');
