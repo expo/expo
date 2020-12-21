@@ -17,7 +17,7 @@ export function installKotlin(Prism: any) {
       },
     ],
     number: /\b(?:0[xX][\da-fA-F]+(?:_[\da-fA-F]+)*|0[bB][01]+(?:_[01]+)*|\d+(?:_\d+)*(?:\.\d+(?:_\d+)*)?(?:[eE][+-]?\d+(?:_\d+)*)?[fFL]?)\b/,
-    operator: /\+[+=]?|-[-=>]?|==?=?|!(?:!|==?)?|[\/*%<>]=?|[?:]:?|\.\.|&&|\|\||\b(?:and|inv|or|shl|shr|ushr|xor)\b/,
+    operator: /\+[+=]?|-[-=>]?|==?=?|!(?:!|==?)?|[/*%<>]=?|[?:]:?|\.\.|&&|\|\||\b(?:and|inv|or|shl|shr|ushr|xor)\b/,
   });
 
   delete Prism.languages.kotlin['class-name'];
@@ -59,9 +59,11 @@ export function installKotlin(Prism: any) {
     },
   ];
 
-  Prism.languages.kotlin['string'].inside = Prism.languages.kotlin['raw-string'].inside = {
+  Prism.languages.kotlin['raw-string'].inside = {
     interpolation,
   };
+
+  Prism.languages.kotlin['string'].inside = Prism.languages.kotlin['raw-string'].inside;
 
   Prism.languages.kt = Prism.languages.kotlin;
   Prism.languages.kts = Prism.languages.kotlin;
