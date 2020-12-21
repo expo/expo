@@ -7,8 +7,12 @@
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
-      "resizeMode": "cover"
+      "resizeMode": "cover",
+      "backgroundColor": "#000020"
     },
+    "facebookScheme": "fb1201211719949057",
+    "facebookAppId": "1201211719949057",
+    "facebookDisplayName": "Expo APIs",
     "privacy": "unlisted",
     "version": "1.0.0",
     "platforms": ["ios", "android", "web"],
@@ -21,6 +25,9 @@
       }
     },
     "android": {
+      "scheme": [
+        "com.googleusercontent.apps.29635966244-knmlpr1upnv6rs4bumqea7hpit4o7kg2"
+      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000020"
