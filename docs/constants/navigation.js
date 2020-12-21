@@ -133,6 +133,7 @@ const sections = [
       'Sending Notifications with APNs & FCM',
       'Receiving Notifications',
       'Using FCM for Push Notifications',
+      'Troubleshooting and FAQ',
     ],
   },
   {
