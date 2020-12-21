@@ -2,6 +2,8 @@ import {
   ActionsListRepoWorkflowsResponseData,
   ActionsListWorkflowRunsForRepoResponseData,
   ActionsListJobsForWorkflowRunResponseData,
+  PullsGetResponseData,
+  IssuesCreateCommentResponseData,
 } from '@octokit/types';
 import { request } from '@octokit/request';
 import fs from 'fs-extra';
@@ -110,6 +112,49 @@ export async function dispatchWorkflowEventAsync(
     process.exit(1);
   }
   logger.success('🎉 Successfully dispatched workflow event ');
+}
+
+/**
+ * Requests for the pull request object.
+ */
+export async function getPullRequestAsync(pullRequestId: number): Promise<PullsGetResponseData> {
+  const response = await request(
+    'GET /repos/:owner/:repo/pulls/:pull_number',
+    makeExpoOptions({
+      pull_number: pullRequestId, //10469,
+    })
+  );
+  return response.data;
+}
+
+/**
+ * Returns an array of issue IDs that has been auto-closed by the pull request.
+ */
+export async function getClosedIssuesAsync(pullRequestId: number): Promise<number[]> {
+  const pullRequest = await getPullRequestAsync(pullRequestId);
+  const matches = execAll(
+    /(?:close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved) (#|https:\/\/github\.com\/expo\/expo\/issues\/)(\d+)/gi,
+    pullRequest.body,
+    2
+  );
+  return matches.map((match) => parseInt(match, 10)).filter((issue) => !isNaN(issue));
+}
+
+/**
+ * Creates an issue comment with given body.
+ */
+export async function commentOnIssueAsync(
+  issueId: number,
+  body: string
+): Promise<IssuesCreateCommentResponseData> {
+  const response = await request(
+    'POST /repos/:owner/:repo/issues/:issue_number/comments',
+    makeExpoOptions({
+      issue_number: issueId,
+      body,
+    })
+  );
+  return response.data;
 }
 
 /**
