@@ -1,0 +1,17 @@
+name: Comments on issues
+
+on:
+  workflow_dispatch:
+    inputs:
+      payload:
+        description: 'Serialized and escaped JSON describing what and where to comment.'
+        required: true
+
+jobs:
+  comment:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Comment on issues as github-actions bot
+        run: bin/expotools commentator --payload "${{ github.event.inputs.payload }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
