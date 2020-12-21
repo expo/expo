@@ -165,8 +165,8 @@ In the managed workflow, we use our forked `react-native` repository because we 
 
 ## 0.9. Publish `sdk-XX` project templates
 
-| Prerequisites                                                                               |
-| ------------------------------------------------------------------------------------------- |
+| Prerequisites                                                               |
+| --------------------------------------------------------------------------- |
 | [0.7. Publish `next` packages](#07-publish-any-missing-or-changed-packages) |
 
 **Why:** We also need to prepare project templates that are used when people run `expo init` command and publish them to NPM registry to test in QA.
@@ -233,7 +233,7 @@ In the managed workflow, we use our forked `react-native` repository because we 
   - Run `et add-sdk --platform ios` to copy unversioned code into the new ABI and prefix (or suffix) its files and corresponding code references with `ABIXX_0_0`. If this script errors partway, you can always delete the new directory it created under `ios/versioned-react-native` and revert any other changes it made to `EXSDKVersions.plist` and `sdkVersions.json` (or just run `et remove-sdk --platform --sdkVersion XX.0.0`). Then it's safe to run this script again.
   - Let the `add-sdk` script to regenerate Podfile and reinstall pods, then try to build the project in Xcode. This script does most of the work, but usually breaks in various ways, partly because some assumptions change every SDK cycle. If you found anything broken, please keep versioning script up to date.
 - **Android**:
-  - Run `et add-sdk --platform android` to create the new versioned AAR and expoview code. This script will attempt to rename some native libraries and will ask you to manually verify that it has renamed them all properly. If you notice some that are missing, add them to the list in `tools/expotools/src/versioning/android/libraries.ts` and rerun the script. Commit the changes.
+  - Run `et add-sdk --platform android` to create the new versioned AAR and expoview code. This script will attempt to rename some native libraries and will ask you to manually verify that it has renamed them all properly. If you notice some that are missing, add them to the list in `tools/src/versioning/android/libraries.ts` and rerun the script. Commit the changes.
   - You may need to make a change like [this one](https://github.com/expo/expo/commit/8581608ab748ed3092b71befc3a0b8a48f0f20a0#diff-c31b32364ce19ca8fcd150a417ecce58) in order to get the project to build, as the manifest merger script we're currently using doesn't handle this properly.
 - Commit the changes to the `sdk-XX` branch and push. Take a look at the GitHub stats of added/deleted lines in your commit and be proud of your most productive day this month 😎.
 
@@ -241,8 +241,8 @@ In the managed workflow, we use our forked `react-native` repository because we 
 
 ## 2.1. Versioned Quality Assurance - Expo Go for iOS/Android
 
-| Prerequisites                                                               |
-| --------------------------------------------------------------------------- |
+| Prerequisites                                                         |
+| --------------------------------------------------------------------- |
 | [1.3. Version code for the new SDK](#13-version-code-for-the-new-sdk) |
 
 **Why:** We really care about the quality of the code that we release for the users. Quality Assurance is the most important task during the release process, so please don't ignore any steps and also focus on things that have been changed/reworked/refactored in this cycle.
@@ -333,8 +333,8 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 ## 3.1. Publish home
 
-| Prerequisites |
-| --- |
+| Prerequisites                                                           |
+| ----------------------------------------------------------------------- |
 | [1.3. Unversioned Quality Assurance](#13-unversioned-quality-assurance) |
 
 **Why:** We need to publish a new version of home in order to embed it in the Expo Go apps before building them.
@@ -375,8 +375,8 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 ## 3.3. Make a simulator/emulator build
 
-| Prerequisites                                             |
-| --------------------------------------------------------- |
+| Prerequisites                                 |
+| --------------------------------------------- |
 | [3.2. Build and submit](#32-build-and-submit) |
 
 **Why:** To allow developers to install Expo Go on the simulator (which doesn't have an App Store) we need to make a build for it, upload it to S3 servers and save its url and version on the versions endpoint. These builds are then downloaded and installed by the users using `expo client:install:ios`.
@@ -402,8 +402,8 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 ## 4.2. Make shell app build
 
-| Prerequisites                                                                                                |
-| ------------------------------------------------------------------------------------------------------------ |
+| Prerequisites                                                                                   |
+| ----------------------------------------------------------------------------------------------- |
 | [4.1. Update JS dependencies required for build](#41-update-js-dependencies-required-for-build) |
 
 **Why:** Shell app is a simple app on which Expo's Turtle work on to generate a standalone app. On iOS, shell app is compiled before it is uploaded to Turtle, so the process of building a standalone app is reduced to the minimum. We need to prepare such app for the new SDK, compile it, then put it into a tarball and put its url to Turtle's shellTarballs configs.
@@ -429,8 +429,8 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 # Stage 5 - Beta release
 
-| Prerequisites                                 |
-| --------------------------------------------- |
+| Prerequisites                                                            |
+| ------------------------------------------------------------------------ |
 | **All previous steps** and App Store approval for TestFlight public beta |
 
 Once everything above is completed and Apple has approved Expo Go (iOS) for the TestFlight public beta, the beta release is ready to go. Complete the following steps **in order**, ideally in fairly quick succession (not spread over multiple days).
@@ -470,7 +470,6 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
   - `react-native-unimodules`
 - One way to get the right version numbers is to run `yarn why <package-name>` to see which version is used by apps in the expo/expo repo. Generally the version numbers should have a carat (`^`) except for `react-native-unimodules`, which should have a tilde (`~`).
 
-
 ## 5.4. Re-publish project templates
 
 **Why:** Ensure that the templates include the latest version of packages, so when we release the beta
@@ -479,8 +478,8 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
 
 ## 5.5. Promote versions to production with new SDK version flagged as beta
 
-| Prerequisites                                 |
-| --------------------------------------------- |
+| Prerequisites          |
+| ---------------------- |
 | **All previous steps** |
 
 **Why:** It's time for everything that uses the production versions endpoint to know about this new SDK version!
@@ -493,10 +492,10 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
 
 ## 5.6. Add SDK support to Snack
 
-| Prerequisites                                                 |
-| ------------------------------------------------------------- |
+| Prerequisites                                                                               |
+| ------------------------------------------------------------------------------------------- |
 | [2.6. Publish any missing or changed packages](#26-publish-any-missing-or-changed-packages) |
-| [4.2. Making a simulator/emulator build](#42-making-a-simulatoremulator-build) |
+| [4.2. Making a simulator/emulator build](#42-making-a-simulatoremulator-build)              |
 
 **How:** Reach out to Hein (@ijzerenhein)
 
@@ -507,6 +506,7 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
 **How:**
 
 Publish a blog post that includes the following information:
+
 - Link to a GitHub umbrella issue for beta release issues
 - Link to CHANGELOG
 - Provide instructions for how to opt-in
@@ -622,8 +622,8 @@ Publish a blog post that includes the following information:
 
 ## 6.8. Press release
 
-| Prerequisites                                 |
-| --------------------------------------------- |
+| Prerequisites          |
+| ---------------------- |
 | **All previous steps** |
 
 This should be ready to publish immediately after the previous step is finished!

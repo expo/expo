@@ -6,15 +6,15 @@ import InstallSection from '~/components/plugins/InstallSection';
 
 import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
 
-Now that you've installed the Expo Dev Client, you are ready to share builds with your team.
-
 > ⚠️ **Managed Expo projects are not yet supported**, but we are working on bringing the Development Client to the Managed Workflow! If you want to build a managed Expo project with the Development Client, you'll have to eject it first. See the [Ejecting to Bare Workflow](../workflow/customizing.md) page to learn how.
 
 ## 1. Generate a Development APK
 
-Unimodules contains infrastructure and a small set of foundational libraries that are depended on by other modules in the Expo ecosystem. Once it is installed you can use most of the libraries from the Expo SDK, like expo-camera, expo-media-library and many more.
+To generate a development APK you need to run the following command:
 
-<InstallSection packageName="expo-dev-client" cmd={["./gradlew assembleDebug"]} hideBareInstructions />
+<InstallSection packageName="expo-development-client" cmd={["./gradlew assembleDebug"]} hideBareInstructions />
+
+For more information check the [official Android documentation](https://developer.android.com/studio/build/building-cmdline#build_apk).
 
 <br />
 
