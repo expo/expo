@@ -12,7 +12,7 @@ import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
 
 To generate a development APK you need to run the following command:
 
-<InstallSection packageName="expo-dev-client" cmd={["./gradlew assembleDebug"]} hideBareInstructions />
+<InstallSection packageName="expo-development-client" cmd={["./gradlew assembleDebug"]} hideBareInstructions />
 
 For more information check the [official Android documentation](https://developer.android.com/studio/build/building-cmdline#build_apk).
 

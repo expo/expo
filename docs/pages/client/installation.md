@@ -13,7 +13,7 @@ import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
 
 The easiest way to get started is to initialize a new project by executing the following command:
 
-<InstallSection packageName="expo-dev-launcher" cmd={["npx crna -t with-dev-launcher"]} hideBareInstructions />
+<InstallSection packageName="expo-development-client" cmd={["npx crna -t with-dev-launcher"]} hideBareInstructions />
 
 ## Add the Development Client to the existing project
 
@@ -21,7 +21,7 @@ The easiest way to get started is to initialize a new project by executing the f
 
 Add the Expo Development Client packages to your package.json.
 
-<InstallSection packageName="expo-dev-launcher" cmd={["npm install expo-dev-menu expo-dev-menu-interface expo-dev-launcher"]} hideBareInstructions />
+<InstallSection packageName="expo-development-client" cmd={["npm install expo-dev-menu expo-dev-menu-interface expo-dev-launcher"]} hideBareInstructions />
 
 <!-- note: `/client/submodules` doesn't exists, commenting this out for now -->
 <!-- [Want to learn more about how these modules work?](/client/submodules/) -->
@@ -34,13 +34,13 @@ Change your `Podfile` to make sure that the Development Client will be removed i
 
 Then you can run the following command to install native code for the Dev Launcher via Cocoapods.
 
-<InstallSection packageName="expo-dev-launcher" cmd={["npx pod-install"]} hideBareInstructions />
+<InstallSection packageName="expo-development-client" cmd={["npx pod-install"]} hideBareInstructions />
 
 ### 2. Basic configuration
 
 The Development Client uses deep links to open projects from the QR code. If you had added a custom deep link schema to your project, the Development Client will use it. However, if this isn't the case, you need to configure the deep link support for your application. We know that this process might be difficult. So, we provided a simple command which will do all the work for you:
 
-<InstallSection packageName="expo-dev-launcher" cmd={["npx uri-scheme add <your scheme>"]} hideBareInstructions />
+<InstallSection packageName="expo-development-client" cmd={["npx uri-scheme add <your scheme>"]} hideBareInstructions />
 
 See the [uri-scheme package](https://www.npmjs.com/package/uri-scheme) for more information.
 
