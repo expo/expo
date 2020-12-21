@@ -11,6 +11,10 @@ jobs:
   comment:
     runs-on: ubuntu-18.04
     steps:
+      - name: Checkout a ref for the event
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
       - name: Comment on issues as github-actions bot
         run: bin/expotools commentator --payload "${{ github.event.inputs.payload }}"
         env:
