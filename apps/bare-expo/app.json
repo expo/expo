@@ -10,8 +10,9 @@
       "resizeMode": "cover",
       "backgroundColor": "#000020"
     },
-    "facebookScheme": "fb1201211719949057",
-    "facebookAppId": "1201211719949057",
+    "scheme": "bareexpo",
+    "facebookScheme": "fb629712900716487",
+    "facebookAppId": "629712900716487",
     "facebookDisplayName": "Expo APIs",
     "privacy": "unlisted",
     "version": "1.0.0",
