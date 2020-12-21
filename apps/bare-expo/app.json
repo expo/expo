@@ -28,7 +28,8 @@
       "package": "dev.expo.payments"
     },
     "ios": {
-      "bundleIdentifier": "dev.expo.Payments"
+      "bundleIdentifier": "dev.expo.Payments",
+      "supportsTablet": true
     },
     "notification": {
       "serviceWorkerPath": "/expo-service-worker.js",
