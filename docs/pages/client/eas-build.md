@@ -6,11 +6,11 @@ import InstallSection from '~/components/plugins/InstallSection';
 
 ## Setting up distinct build profiles on iOS
 
-If you would like to use EAS Build to generate and distribute builds of the Dev Launcher, you will need to create a new XCode scheme for Dev Launcher builds of your project.
+If you would like to use EAS Build to generate and distribute builds of the Development Client, you will need to create a new XCode scheme for Development Client builds of your project.
 
 The easiest way to do this is to duplicate the scheme for your main application. [You can find Apple's instructions for how to do so here](https://developer.apple.com/library/archive/documentation/ToolsLanguages/Conceptual/Xcode_Overview/ManagingSchemes.html)
 
-Once this is done, you will need to set the `Build Configuration` for your Dev Launcher to `Debug`
+Once this is done, you will need to set the `Build Configuration` for your Development Client to `Debug`
 
 ## Setting up EAS
 
@@ -18,7 +18,7 @@ You can set up your project to use EAS by [following the instructions here](/bui
 
 ## Modifying your EAS.json
 
-Assuming you named your new XCode scheme `Project - Dev Launcher`, edit your eas.json to look like this.
+Assuming you named your new XCode scheme `Project - Development Client`, edit your eas.json to look like this.
 
 ```json
 {
@@ -40,7 +40,7 @@ Assuming you named your new XCode scheme `Project - Dev Launcher`, edit your eas
       },
       "development": {
         "workflow": "generic",
-        "scheme": "Project - Dev Launcher"
+        "scheme": "Project - Development Client"
       }
     }
   }

@@ -60,7 +60,7 @@ export function installKotlin(Prism: any) {
   ];
 
   Prism.languages.kotlin['string'].inside = Prism.languages.kotlin['raw-string'].inside = {
-    interpolation: interpolation,
+    interpolation,
   };
 
   Prism.languages.kt = Prism.languages.kotlin;

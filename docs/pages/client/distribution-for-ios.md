@@ -6,7 +6,7 @@ import InstallSection from '~/components/plugins/InstallSection';
 
 import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
 
-> ⚠️ **Managed Expo projects are not yet supported**, but we are working on bringing the Dev Launcher to the Managed Workflow! If you want to build a managed Expo project with the Dev Launcher, you'll have to eject it first. See the [Ejecting to Bare Workflow](../workflow/customizing.md) page to learn how.
+> ⚠️ **Managed Expo projects are not yet supported**, but we are working on bringing the Development Client to the Managed Workflow! If you want to build a managed Expo project with the Development Client, you'll have to eject it first. See the [Ejecting to Bare Workflow](../workflow/customizing.md) page to learn how.
 
 ## If you are installing in a simulator
 
@@ -30,7 +30,7 @@ If you would prefer to install via the command line you can do so via `xcrun sim
 
 ## If you are installing on a physical device
 
-> 💡 The process for installing a dev launcher build is currently **very manual**. We are hard at work to provide a smoother flow for developers utilizing our build service.
+> 💡 The process for installing a development client build is currently **very manual**. We are hard at work to provide a smoother flow for developers utilizing our build service.
 
 ### 1. Collect the UDID for any devices that will need to load the application
 
