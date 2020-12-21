@@ -4,6 +4,11 @@
   "expo": {
     "name": "BareExpo",
     "slug": "bare-expo",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "cover"
+    },
     "privacy": "unlisted",
     "version": "1.0.0",
     "platforms": ["ios", "android", "web"],
@@ -16,6 +21,10 @@
       }
     },
     "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#000020"
+      },
       "package": "dev.expo.payments"
     },
     "ios": {
