@@ -15,7 +15,12 @@ function symlinkNecessaryPackages(projectPath) {
   projectPath = path.resolve(projectPath);
 
   symlinkNecessaryPackage(projectPath, 'expo');
+  symlinkNecessaryPackage(projectPath, 'jsc-android');
+  symlinkNecessaryPackage(projectPath, 'hermes-engine');
   symlinkNecessaryPackage(projectPath, 'react-native');
+  symlinkNecessaryPackage(projectPath, 'react-native-unimodules');
+  symlinkNecessaryPackage(projectPath, '@react-native-community/cli-platform-ios');
+  symlinkNecessaryPackage(projectPath, '@react-native-community/cli-platform-android');
 }
 
 function symlinkNecessaryPackage(projectPath, packageName) {
