@@ -24,9 +24,9 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>bareexpo</string>
-				<string>dev.expo.Payments</string>
-				<string>com.googleusercontent.apps.29635966244-v8mbqt2mtno71thelt7f2i6pob104f6e</string>
 				<string>msauth.dev.expo.Payments</string>
+				<string>com.googleusercontent.apps.29635966244-v8mbqt2mtno71thelt7f2i6pob104f6e</string>
+				<string>dev.expo.Payments</string>
 			</array>
 		</dict>
 		<dict>
@@ -95,11 +95,7 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>UIRequiresFullScreen</key>
-	<true/>
-	<key>CFBundleDisplayName</key>
-	<string>BareExpo</string>
-	<key>FacebookAppID</key>
-	<string>629712900716487</string>
+	<false/>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>fbapi</string>
@@ -107,6 +103,10 @@
 		<string>fbauth2</string>
 		<string>fbshareextension</string>
 	</array>
+	<key>CFBundleDisplayName</key>
+	<string>BareExpo</string>
+	<key>FacebookAppID</key>
+	<string>629712900716487</string>
 	<key>FacebookDisplayName</key>
 	<string>Expo APIs</string>
 </dict>

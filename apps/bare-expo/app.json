@@ -36,8 +36,14 @@
       "package": "dev.expo.payments"
     },
     "ios": {
+      "scheme": [
+        "msauth.dev.expo.Payments",
+        "com.googleusercontent.apps.29635966244-v8mbqt2mtno71thelt7f2i6pob104f6e"
+      ],
       "bundleIdentifier": "dev.expo.Payments",
-      "supportsTablet": true
+      "supportsTablet": true,
+      "requireFullScreen": false
+
     },
     "notification": {
       "serviceWorkerPath": "/expo-service-worker.js",
