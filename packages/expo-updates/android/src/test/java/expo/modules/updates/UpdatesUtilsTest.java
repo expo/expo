@@ -38,12 +38,12 @@ public class UpdatesUtilsTest {
     Assert.assertEquals("1.0", UpdatesUtils.getRuntimeVersion(bothConfig));
   }
 
-  @Test(expected = AssertionError.class)
+  @Test
   public void testGetRuntimeVersion_neitherDefined() {
     // should throw if neither are specified
     UpdatesConfiguration neitherConfig = mock(UpdatesConfiguration.class);
     when(neitherConfig.getSdkVersion()).thenReturn(null);
     when(neitherConfig.getRuntimeVersion()).thenReturn(null);
-    UpdatesUtils.getRuntimeVersion(neitherConfig);
+    Assert.assertEquals("1", UpdatesUtils.getRuntimeVersion(neitherConfig));
   }
 }
