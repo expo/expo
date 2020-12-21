@@ -11,8 +11,8 @@ if (NativeModulesProxy.ExpoUpdates?.isMissingRuntimeVersion) {
     Platform.select({ ios: 'Expo.plist', android: 'AndroidManifest.xml' }) +
     ' before OTA updates will work properly.';
   if (__DEV__) {
-    console.warn(`Warning: ${message}`);
+    console.warn(message);
   } else {
-    throw new Error(`Error: ${message}`);
+    throw new Error(message);
   }
 }
