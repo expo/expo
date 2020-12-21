@@ -44,11 +44,23 @@ RCT_EXPORT_METHOD(getPendingDeepLink:(RCTPromiseResolveBlock)resolve
   resolve([EXDevLauncherController sharedInstance].pendingDeepLinkRegistry.pendingDeepLink.absoluteString);
 }
 
-RCT_EXPORT_METHOD(loadApp:(NSString *)url
+RCT_EXPORT_METHOD(loadApp:(NSString *)urlString
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 {
+  NSString *sanitizedUrl = [urlString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+
   EXDevLauncherController *controller = [EXDevLauncherController sharedInstance];
+  NSURL *url = [NSURL URLWithString:sanitizedUrl];
+
+  if ([EXDevLauncherURLHelper isDevLauncherURL:url]) {
+    url = [EXDevLauncherURLHelper getAppURLFromDevLaucherURL:url];
+  }
+
+  if (!url) {
+    return reject(@"ERR_DEV_LAUNCHER_INVALID_URL", @"Cannot parse the provided url.", nil);
+  }
+  
   [controller loadApp:url onSuccess:^{
     resolve(nil);
   } onError:^(NSError *error) {

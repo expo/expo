@@ -11,6 +11,8 @@ import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter
 import expo.modules.devlauncher.DevLauncherController.Companion.instance
 import expo.modules.devlauncher.DevLauncherController.Companion.wasInitialized
+import expo.modules.devlauncher.helpers.getAppUrlFromDevLauncherUrl
+import expo.modules.devlauncher.helpers.isDevLauncherUrl
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -44,7 +46,13 @@ class DevLauncherModule(reactContext: ReactApplicationContext?) : ReactContextBa
   fun loadApp(url: String, promise: Promise) {
     GlobalScope.launch {
       try {
-        instance.loadApp(url)
+        val parsedUrl = Uri.parse(url.trim())
+        val appUrl = if (isDevLauncherUrl(parsedUrl)) {
+          requireNotNull(getAppUrlFromDevLauncherUrl(parsedUrl)) { "The provided url doesn't contain the app url." }
+        } else {
+          parsedUrl
+        }
+        instance.loadApp(appUrl)
       } catch (e: Exception) {
         promise.reject(e)
       }
