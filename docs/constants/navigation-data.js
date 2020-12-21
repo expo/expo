@@ -32,7 +32,7 @@ const DIR_MAPPING = {
   'build-reference': 'Reference',
   submit: 'EAS Submit',
   accounts: 'Expo Accounts',
-  client: 'Development Clients',
+  client: 'Development Client',
 };
 
 const processUrl = path => {
