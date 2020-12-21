@@ -16,7 +16,9 @@
 
 ### 🐛 Bug fixes
 
+- Removed `fbjs` dependency ([#11396](https://github.com/expo/expo/pull/11396) by [@cruzach](https://github.com/cruzach))
 - On iOS, use default NSURLCache for manifest public key rather than caching it manually.
+- Use `console.warn` message rather than hard crashing if neither runtime nor SDK version are configured (requires a corresponding update to the `expo` package) ([#11367](https://github.com/expo/expo/pull/11367) by [@esamelson](https://github.com/esamelson))
 
 ## 0.4.1 — 2020-11-25
 

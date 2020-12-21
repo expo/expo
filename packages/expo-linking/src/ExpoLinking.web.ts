@@ -1,5 +1,5 @@
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
-import invariant from 'fbjs/lib/invariant';
+import { Platform } from '@unimodules/core';
+import invariant from 'invariant';
 
 import { NativeURLListener, URLListener } from './Linking.types';
 
@@ -40,12 +40,12 @@ export default {
   },
 
   async getInitialURL(): Promise<string> {
-    if (!canUseDOM) return '';
+    if (!Platform.isDOMAvailable) return '';
     return window.location.href;
   },
 
   async openURL(url: string): Promise<void> {
-    if (canUseDOM) {
+    if (Platform.isDOMAvailable) {
       // @ts-ignore
       window.location = new URL(url, window.location).toString();
     }

@@ -1,1 +1,1 @@
-../../../../../../../../react-native-lab/react-native/React/CxxBridge/NSDataBigString.h
+../../../../../../node_modules/react-native/React/CxxBridge/NSDataBigString.h

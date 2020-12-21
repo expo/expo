@@ -45,8 +45,7 @@
   },
   "dependencies": {
     "expo-gl-cpp": "~10.0.0",
-    "invariant": "^2.2.4",
-    "fbjs": "1.0.0"
+    "invariant": "^2.2.4"
   },
   "devDependencies": {
     "@types/invariant": "^2.2.33",

@@ -1,0 +1,105 @@
+diff --git a/ios/expodevexample/AppDelegate.m b/ios/expodevexample/AppDelegate.m
+index 86b3a12..1a310cf 100644
+--- a/ios/expodevexample/AppDelegate.m
++++ b/ios/expodevexample/AppDelegate.m
+@@ -19,6 +19,14 @@
+ #import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
+ #import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
+ 
++#if __has_include(<EXDevMenu/EXDevMenu-umbrella.h>)
++@import EXDevMenu;
++#endif
++
++#if __has_include(<EXDevLauncherController.h>)
++#include <EXDevLauncherController.h>
++#endif
++
+ static void InitializeFlipper(UIApplication *application) {
+   FlipperClient *client = [FlipperClient sharedClient];
+   SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
+@@ -49,7 +57,12 @@ - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(
+   self.launchOptions = launchOptions;
+   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+   #ifdef DEBUG
+-    [self initializeReactNativeApp];
++    #if __has_include(<EXDevLauncherController.h>)
++      EXDevLauncherController *contoller = [EXDevLauncherController sharedInstance];
++      [contoller startWithWindow:self.window delegate:self launchOptions:launchOptions];
++    #else
++      [self initializeReactNativeApp];
++    #endif
+   #else
+     EXUpdatesAppController *controller = [EXUpdatesAppController sharedInstance];
+     controller.delegate = self;
+@@ -63,10 +76,20 @@ - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(
+ 
+ - (RCTBridge *)initializeReactNativeApp
+ {
+-  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:self.launchOptions];
++#if __has_include(<EXDevMenu/EXDevMenu-umbrella.h>)
++  NSDictionary *launchOptions = [EXDevLauncherController.sharedInstance getLaunchOptions];
++#else
++  NSDictionary *launchOptions = self.launchOptions;
++#endif
++  
++  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
+   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"main" initialProperties:nil];
+   rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
+ 
++  #if __has_include(<EXDevMenu/EXDevMenu-umbrella.h>)
++  [DevMenuManager configureWithBridge:bridge];
++  #endif
++  
+   UIViewController *rootViewController = [UIViewController new];
+   rootViewController.view = rootView;
+   self.window.rootViewController = rootViewController;
+@@ -83,11 +106,15 @@ - (RCTBridge *)initializeReactNativeApp
+ }
+ 
+ - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge {
+- #ifdef DEBUG
+-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
+- #else
++#ifdef DEBUG
++  #if __has_include(<EXDevLauncherController.h>)
++    return [[EXDevLauncherController sharedInstance] sourceUrl];
++  #else
++    return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
++  #endif
++#else
+   return [[EXUpdatesAppController sharedInstance] launchAssetUrl];
+- #endif
++#endif
+ }
+ 
+ - (void)appController:(EXUpdatesAppController *)appController didStartWithSuccess:(BOOL)success {
+@@ -98,6 +125,11 @@ - (void)appController:(EXUpdatesAppController *)appController didStartWithSucces
+ 
+ // Linking API
+ - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
++#if __has_include(<EXDevLauncherController.h>)
++  if ([EXDevLauncherController.sharedInstance onDeepLink:url options:options]) {
++      return true;
++  }
++#endif
+   return [RCTLinkingManager application:application openURL:url options:options];
+ }
+ 
+@@ -109,3 +141,17 @@ - (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull N
+ }
+ 
+ @end
++
++#if __has_include(<EXDevLauncherController.h>)
++@implementation AppDelegate (EXDevLauncherControllerDelegate)
++
++- (void)devLauncherController:(EXDevLauncherController *)developmentClientController
++          didStartWithSuccess:(BOOL)success
++{
++  developmentClientController.appBridge = [self initializeReactNativeApp];
++  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
++  [splashScreenService showSplashScreenFor:self.window.rootViewController];
++}
++
++@end
++#endif

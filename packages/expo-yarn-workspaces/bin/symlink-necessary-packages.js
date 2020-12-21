@@ -15,6 +15,8 @@ function symlinkNecessaryPackages(projectPath) {
   projectPath = path.resolve(projectPath);
 
   symlinkNecessaryPackage(projectPath, 'expo');
+  symlinkNecessaryPackage(projectPath, 'jsc-android');
+  symlinkNecessaryPackage(projectPath, 'hermes-engine');
   symlinkNecessaryPackage(projectPath, 'react-native');
   // For community CLI autolinking in bare-expo
   symlinkNecessaryPackage(projectPath, 'expo-image');
@@ -22,6 +24,9 @@ function symlinkNecessaryPackages(projectPath) {
   symlinkNecessaryPackage(projectPath, 'expo-dev-launcher');
   symlinkNecessaryPackage(projectPath, 'expo-dev-menu');
   symlinkNecessaryPackage(projectPath, 'expo-dev-menu-interface');
+  symlinkNecessaryPackage(projectPath, 'react-native-unimodules');
+  symlinkNecessaryPackage(projectPath, '@react-native-community/cli-platform-ios');
+  symlinkNecessaryPackage(projectPath, '@react-native-community/cli-platform-android');
 }
 
 function symlinkNecessaryPackage(projectPath, packageName) {

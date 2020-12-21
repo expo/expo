@@ -1,1 +1,1 @@
-../../../../../../../../react-native-lab/react-native/Libraries/NativeAnimation/Drivers/RCTFrameAnimation.h
+../../../../../../node_modules/react-native/Libraries/NativeAnimation/Drivers/RCTFrameAnimation.h

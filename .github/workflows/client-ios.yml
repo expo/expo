@@ -11,7 +11,7 @@ on:
     paths:
       - .github/workflows/client-ios.yml
       - ios/**
-      - tools/expotools/**
+      - tools/**
       - secrets/**
       - fastlane/**
       - Gemfile.lock
@@ -21,7 +21,7 @@ on:
     paths:
       - .github/workflows/client-ios.yml
       - ios/**
-      - tools/expotools/**
+      - tools/**
       - secrets/**
       - fastlane/**
       - Gemfile.lock

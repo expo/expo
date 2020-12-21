@@ -8,7 +8,7 @@ on:
       - .github/workflows/android-instrumentation-tests.yml
       - 'fastlane/**'
       - 'packages/**/android/**'
-      - 'tools/expotools/**'
+      - 'tools/**'
       - yarn.lock
   pull_request:
     branches: [master]
@@ -16,7 +16,7 @@ on:
       - .github/workflows/android-instrumentation-tests.yml
       - 'fastlane/**'
       - 'packages/**/android/**'
-      - 'tools/expotools/**'
+      - 'tools/**'
       - yarn.lock
 
 jobs:

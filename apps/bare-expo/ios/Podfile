@@ -10,23 +10,12 @@ inhibit_all_warnings!
 # Get the package.json for the excluded modules
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 
-# [Custom] Add target the root modules in the workspace
-modules_path = '../../../node_modules'
-# [Custom] Don't try to use the symlinked copy from the postinstall script it won't work as
-# expected (you may get `'React/<File>.h' file not found` when building)
-rnPrefix = '../../../react-native-lab/react-native'
-
 # Import the auto-linking packages
-require_relative "#{modules_path}/react-native-unimodules/cocoapods.rb"
-require_relative "#{modules_path}/@react-native-community/cli-platform-ios/native_modules"
-require_relative "#{rnPrefix}/scripts/react_native_pods"
+require_relative '../node_modules/react-native/scripts/react_native_pods'
+require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
+require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
 abstract_target 'BareExpoMain' do
-  # react-native-cli auto-linking
-  config = use_native_modules!
-
-  use_react_native!(path: rnPrefix)
-
   # Auto-linking
   use_unimodules!(
     {
@@ -35,6 +24,9 @@ abstract_target 'BareExpoMain' do
       flags: { inhibit_warnings: false }
     }
   )
+  config = use_native_modules!
+
+  use_react_native!(path: config['reactNativePath'])
 
   # Fix Google Sign-in and Flipper
   post_install do |installer|

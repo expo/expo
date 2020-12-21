@@ -40,7 +40,7 @@ Assuming you named your new XCode scheme `Project - Development Client`, edit yo
       },
       "development": {
         "workflow": "generic",
-        "scheme": "Project - Dev Client"
+        "scheme": "Project - Development Client"
       }
     }
   }
@@ -53,7 +53,7 @@ You can now generate a new build of your project from any commit through EAS.
 
 For iOS simulators:
 
-<InstallSection packageName="expo-dev-client" cmd={["expo eas:build --profile development --platform android"]} hideBareInstructions />
+<InstallSection packageName="expo-dev-launcher" cmd={["expo eas:build --profile development --platform android"]} hideBareInstructions />
 
 For iOS devices:
 
@@ -61,4 +61,4 @@ For iOS devices:
 
 For Android:
 
-<InstallSection packageName="expo-dev-client" cmd={["expo eas:build --profile development --platform ios"]} hideBareInstructions />
+<InstallSection packageName="expo-dev-launcher" cmd={["expo eas:build --profile development --platform ios"]} hideBareInstructions />
