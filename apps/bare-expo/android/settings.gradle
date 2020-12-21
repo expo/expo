@@ -41,9 +41,6 @@ includeUnimodulesProjects(
 // [Custom] To avoid dealing with this error: 
 // 'GADInvalidInitializationException', reason: 'The Google Mobile Ads SDK was initialized without an application ID. Google AdMob publishers, follow instructions here: https://googlemobileadssdk.page.link/admob-ios-update-plist to set GADApplicationIdentifier with a valid App ID. Google Ad Manager publishers, follow instructions here: https://googlemobileadssdk.page.link/ad-manager-ios-update-plist'
 // "expo-ads-admob",
-// [Custom] Remove non-unimodules
-// "expo-video-thumbnails",
-// "expo-module-template"
      exclude      : excludedUnimodules
 )
 
