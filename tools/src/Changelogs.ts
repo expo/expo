@@ -24,11 +24,16 @@ export type ChangelogEntry = {
 };
 
 /**
+ * Describes changelog entries under specific version.
+ */
+export type ChangelogVersionChanges = Record<ChangeType, ChangelogEntry[]>;
+
+/**
  * Type of the objects representing changelog entries.
  */
 export type ChangelogChanges = {
   totalCount: number;
-  versions: Record<string, Partial<Record<ChangeType, string[]>>>;
+  versions: Record<string, ChangelogVersionChanges>;
 };
 
 /**
@@ -160,7 +165,7 @@ export class Changelog {
           currentSection = null;
 
           if (!versions[currentVersion]) {
-            versions[currentVersion] = {};
+            versions[currentVersion] = {} as ChangelogVersionChanges;
           }
         } else if (currentVersion && token.depth === CHANGE_TYPE_HEADING_DEPTH) {
           currentSection = token.text;
@@ -177,7 +182,7 @@ export class Changelog {
           const text = item.tokens.find(Markdown.isTextToken)?.text ?? item.text;
 
           changes.totalCount++;
-          versions[currentVersion][currentSection].push(text.trim());
+          versions[currentVersion][currentSection].push(textToChangelogEntry(text));
         }
       }
     }
@@ -455,4 +460,19 @@ export function getChangeEntryLabel(entry: ChangelogEntry): string {
  */
 function getGroupLabel(groupName: string): string {
   return `**\`${groupName}\`**`;
+}
+
+function textToChangelogEntry(text: string): ChangelogEntry {
+  const pullRequests = execAll(
+    /\[#\d+\]\(https?:\/\/github\.com\/expo\/expo\/pull\/(\d+)\)/g,
+    text,
+    1
+  );
+  const authors = execAll(/\[@\w+\]\(https?:\/\/github\.com\/([^/)]+)\)/g, text, 1);
+
+  return {
+    message: text.trim(),
+    pullRequests: pullRequests.map((match) => parseInt(match, 10)),
+    authors,
+  };
 }
