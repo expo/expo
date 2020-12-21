@@ -1,1 +1,1 @@
-../../../../../../../../react-native-lab/react-native/React/Views/RefreshControl/RCTRefreshControlManager.h
+../../../../../../node_modules/react-native/React/Views/RefreshControl/RCTRefreshControlManager.h

@@ -14,7 +14,9 @@
     "notification": {
       "icon": "./assets/icons/notificationIcon.png",
       "color": "#000000",
-      "iosDisplayInForeground": true
+      "iosDisplayInForeground": true,
+      "serviceWorkerPath": "/expo-service-worker.js",
+      "vapidPublicKey": "BNHvR05XkY5LH9GdN0GreLx2wZnK9IwNJGVmo3jujIkFni4of26E3U3fnt9nUrZfM7h0omdIHKM0eshkzTSFOWQ"
     },
     "splash": {
       "image": "./assets/icons/loadingIcon.png"
@@ -63,6 +65,14 @@
           "apiKey": "key_live_pcxsCTBguAUqQBd8CjYZ7ogkurnZcQAO"
         },
         "googleMobileAdsAppId": "ca-app-pub-3940256099942544~1458002511"
+      }
+    },
+    "web": {
+      "build": {
+        "babel": {
+          "root": "./",
+          "include": ["test-suite", "native-component-list", "bare-expo"]
+        }
       }
     },
     "assetBundlePatterns": [

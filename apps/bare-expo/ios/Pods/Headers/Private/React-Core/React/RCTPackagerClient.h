@@ -1,1 +1,1 @@
-../../../../../../../../react-native-lab/react-native/React/DevSupport/RCTPackagerClient.h
+../../../../../../node_modules/react-native/React/DevSupport/RCTPackagerClient.h

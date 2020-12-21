@@ -1,1 +1,1 @@
-../../../../../../../../react-native-lab/react-native/ReactCommon/turbomodule/core/LongLivedObject.h
+../../../../../../node_modules/react-native/ReactCommon/turbomodule/core/LongLivedObject.h

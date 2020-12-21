@@ -1,1 +1,1 @@
-../../../../../../../../react-native-lab/react-native/React/Inspector/RCTInspectorPackagerConnection.h
+../../../../../../node_modules/react-native/React/Inspector/RCTInspectorPackagerConnection.h

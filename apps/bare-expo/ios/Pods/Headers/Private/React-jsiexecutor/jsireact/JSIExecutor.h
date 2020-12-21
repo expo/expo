@@ -1,1 +1,1 @@
-../../../../../../../../react-native-lab/react-native/ReactCommon/jsiexecutor/jsireact/JSIExecutor.h
+../../../../../../node_modules/react-native/ReactCommon/jsiexecutor/jsireact/JSIExecutor.h

@@ -1,1 +1,1 @@
-../../../../../../../../react-native-lab/react-native/Libraries/Text/Text/RCTTextViewManager.h
+../../../../../../node_modules/react-native/Libraries/Text/Text/RCTTextViewManager.h

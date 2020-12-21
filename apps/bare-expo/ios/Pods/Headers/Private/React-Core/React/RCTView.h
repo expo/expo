@@ -1,1 +1,1 @@
-../../../../../../../../react-native-lab/react-native/React/Views/RCTView.h
+../../../../../../node_modules/react-native/React/Views/RCTView.h

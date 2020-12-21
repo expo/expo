@@ -1,1 +1,1 @@
-../../../../../../../../react-native-lab/react-native/Libraries/FBLazyVector/FBLazyVector/FBLazyIterator.h
+../../../../../../node_modules/react-native/Libraries/FBLazyVector/FBLazyVector/FBLazyIterator.h
