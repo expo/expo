@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Removed `fbjs` dependency ([#11396](https://github.com/expo/expo/pull/11396) by [@cruzach](https://github.com/cruzach))
+
 ## 2.4.0 — 2020-11-17
 
 _This version does not introduce any user-facing changes._
