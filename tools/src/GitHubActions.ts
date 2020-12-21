@@ -7,7 +7,7 @@ import { request } from '@octokit/request';
 import fs from 'fs-extra';
 import path from 'path';
 
-import { filterAsync } from './Utils';
+import { execAll, filterAsync } from './Utils';
 import { EXPO_DIR } from './Constants';
 import logger from './Logger';
 

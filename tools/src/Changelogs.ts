@@ -3,6 +3,7 @@ import semver from 'semver';
 import semverRegex from 'semver-regex';
 
 import * as Markdown from './Markdown';
+import { execAll } from './Utils';
 
 /**
  * Type of the objects representing single changelog entry.
