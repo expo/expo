@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXDevLauncherManifestParser.h"
-#import <expo_dev_launcher-Swift.h>
+#import <EXDevLauncher-Swift.h>
 
 typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
 
