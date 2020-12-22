@@ -196,7 +196,7 @@ function QRCodeView() {
 
       {showFooter && (
         <View pointerEvents="box-none" style={[styles.footer, { bottom: 30 }]}>
-          <QRFooterButton disabled={!toggle} onPress={toggle} iconName="ios-reverse-camera" />
+          <QRFooterButton disabled={!toggle} onPress={toggle} iconName="camera-reverse" />
           <QRFooterButton
             disabled={type !== CameraType.back}
             onPress={onFlashToggle}
@@ -377,6 +377,7 @@ const styles = StyleSheet.create({
     width: size,
     height: size,
     borderRadius: size / 2,
+    overflow: 'hidden',
     justifyContent: 'center',
     alignItems: 'center',
   },

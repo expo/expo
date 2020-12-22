@@ -9,39 +9,57 @@
 /* Begin PBXAggregateTarget section */
 		15B99218A87324F316F0E937B3DAAC8B /* Firebase */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = EE5D5CF2272725C026B68F65013F9068 /* Build configuration list for PBXAggregateTarget "Firebase" */;
+			buildConfigurationList = F282E03759CCB4747852ED460A4733DE /* Build configuration list for PBXAggregateTarget "Firebase" */;
 			buildPhases = (
 			);
 			dependencies = (
-				0502C3AC9DF214259BC0F8729C2DD1D3 /* PBXTargetDependency */,
-				E755D52DDD3EF8F63B539153906BBD89 /* PBXTargetDependency */,
+				6A849941208C5B912B3DE474B9679B88 /* PBXTargetDependency */,
+				310C8DE9DC0FBF7F787185B28228AE3D /* PBXTargetDependency */,
+				6F97101E4CD1BB59B6BC6CC104B0F645 /* PBXTargetDependency */,
+				C321BBE577E3D9D2285299EE467BE798 /* PBXTargetDependency */,
 			);
 			name = Firebase;
 		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXContainerItemProxy section */
-		76C5083149424BC86CE232334E1803C0 /* PBXContainerItemProxy */ = {
+		084C9223B106CDEDBCF2BBA2FC0F1266 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 3FE92FF2BDCB13FDBE87D1F6A16788A3 /* FirebaseCore.xcodeproj */;
+			containerPortal = 35573AE5308005A067A0C7093F50B4AA /* FirebaseMLVision.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 3D5358053745F186EF3299093007AD97;
+			remoteInfo = FirebaseMLVision;
+		};
+		9529D32F03A7835AC0FECA395D6278CD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 91ACC218D124FC41D8CFDADD30E247D3 /* FirebaseCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 4BD5DE1E00ED67A59118DB4A3CD5F288;
 			remoteInfo = FirebaseCore;
 		};
-		7D1027D735B84DEC8FE9E018A16405A4 /* PBXContainerItemProxy */ = {
+		D13ADB58B7B6FECBDFF0A09725A1619F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 8150651C1FF57E29648FF2E70695162C /* FirebaseAnalytics.xcodeproj */;
+			containerPortal = 4FC0CA1100ACC8BD372AC48AD285F645 /* FirebaseAnalytics.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 3DC59710253F562E6B3BE135BABFBA19;
 			remoteInfo = FirebaseAnalytics;
+		};
+		DADE595E6BBD4A899949A25316200549 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C898B3359D1C59BBBBC37C8970861ED1 /* FirebaseMLVisionFaceModel.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D61B01865B69609E47812F6C78446AFB;
+			remoteInfo = FirebaseMLVisionFaceModel;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		2697158071AB59F75AEF558051FF326D /* Firebase.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Firebase.debug.xcconfig; sourceTree = "<group>"; };
-		3FE92FF2BDCB13FDBE87D1F6A16788A3 /* FirebaseCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FirebaseCore; path = FirebaseCore.xcodeproj; sourceTree = "<group>"; };
+		35573AE5308005A067A0C7093F50B4AA /* FirebaseMLVision */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FirebaseMLVision; path = FirebaseMLVision.xcodeproj; sourceTree = "<group>"; };
+		4FC0CA1100ACC8BD372AC48AD285F645 /* FirebaseAnalytics */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FirebaseAnalytics; path = FirebaseAnalytics.xcodeproj; sourceTree = "<group>"; };
 		530578E780F2D4D0D994449831AD4E07 /* Firebase.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Firebase.release.xcconfig; sourceTree = "<group>"; };
-		8150651C1FF57E29648FF2E70695162C /* FirebaseAnalytics */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FirebaseAnalytics; path = FirebaseAnalytics.xcodeproj; sourceTree = "<group>"; };
+		91ACC218D124FC41D8CFDADD30E247D3 /* FirebaseCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FirebaseCore; path = FirebaseCore.xcodeproj; sourceTree = "<group>"; };
+		C898B3359D1C59BBBBC37C8970861ED1 /* FirebaseMLVisionFaceModel */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FirebaseMLVisionFaceModel; path = FirebaseMLVisionFaceModel.xcodeproj; sourceTree = "<group>"; };
 		F2A97D0F8ACFB912A1D06FB884E8A3BC /* Firebase.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = Firebase.h; path = CoreOnly/Sources/Firebase.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -80,10 +98,21 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		9813E545FABE1622461FD41DFEAFF7B8 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				4FC0CA1100ACC8BD372AC48AD285F645 /* FirebaseAnalytics */,
+				91ACC218D124FC41D8CFDADD30E247D3 /* FirebaseCore */,
+				35573AE5308005A067A0C7093F50B4AA /* FirebaseMLVision */,
+				C898B3359D1C59BBBBC37C8970861ED1 /* FirebaseMLVisionFaceModel */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
 		E8ABE8752B34C7D7270417EFC4D92A89 = {
 			isa = PBXGroup;
 			children = (
-				FD03B126C65AD4C061DB547677DD913F /* Dependencies */,
+				9813E545FABE1622461FD41DFEAFF7B8 /* Dependencies */,
 				126FD15E26066FE126976B14269AEC68 /* Firebase */,
 				012A247E6E6EF3281F994FFF15D35FED /* Frameworks */,
 				7677451580D65C621C3555C5ED0FF2C7 /* Products */,
@@ -96,15 +125,6 @@
 				F2A97D0F8ACFB912A1D06FB884E8A3BC /* Firebase.h */,
 			);
 			name = CoreOnly;
-			sourceTree = "<group>";
-		};
-		FD03B126C65AD4C061DB547677DD913F /* Dependencies */ = {
-			isa = PBXGroup;
-			children = (
-				8150651C1FF57E29648FF2E70695162C /* FirebaseAnalytics */,
-				3FE92FF2BDCB13FDBE87D1F6A16788A3 /* FirebaseCore */,
-			);
-			name = Dependencies;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -129,10 +149,16 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProjectRef = 8150651C1FF57E29648FF2E70695162C /* FirebaseAnalytics */;
+					ProjectRef = 4FC0CA1100ACC8BD372AC48AD285F645 /* FirebaseAnalytics */;
 				},
 				{
-					ProjectRef = 3FE92FF2BDCB13FDBE87D1F6A16788A3 /* FirebaseCore */;
+					ProjectRef = 91ACC218D124FC41D8CFDADD30E247D3 /* FirebaseCore */;
+				},
+				{
+					ProjectRef = 35573AE5308005A067A0C7093F50B4AA /* FirebaseMLVision */;
+				},
+				{
+					ProjectRef = C898B3359D1C59BBBBC37C8970861ED1 /* FirebaseMLVisionFaceModel */;
 				},
 			);
 			projectRoot = "";
@@ -143,15 +169,25 @@
 /* End PBXProject section */
 
 /* Begin PBXTargetDependency section */
-		0502C3AC9DF214259BC0F8729C2DD1D3 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = FirebaseAnalytics;
-			targetProxy = 7D1027D735B84DEC8FE9E018A16405A4 /* PBXContainerItemProxy */;
-		};
-		E755D52DDD3EF8F63B539153906BBD89 /* PBXTargetDependency */ = {
+		310C8DE9DC0FBF7F787185B28228AE3D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = FirebaseCore;
-			targetProxy = 76C5083149424BC86CE232334E1803C0 /* PBXContainerItemProxy */;
+			targetProxy = 9529D32F03A7835AC0FECA395D6278CD /* PBXContainerItemProxy */;
+		};
+		6A849941208C5B912B3DE474B9679B88 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = FirebaseAnalytics;
+			targetProxy = D13ADB58B7B6FECBDFF0A09725A1619F /* PBXContainerItemProxy */;
+		};
+		6F97101E4CD1BB59B6BC6CC104B0F645 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = FirebaseMLVision;
+			targetProxy = 084C9223B106CDEDBCF2BBA2FC0F1266 /* PBXContainerItemProxy */;
+		};
+		C321BBE577E3D9D2285299EE467BE798 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = FirebaseMLVisionFaceModel;
+			targetProxy = DADE595E6BBD4A899949A25316200549 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -284,14 +320,15 @@
 			};
 			name = Debug;
 		};
-		B4CAB0AA056F87F0220B10C0A9A508D6 /* Release */ = {
+		5CB93B053EFA89D59934BE66D9B0CDEF /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 530578E780F2D4D0D994449831AD4E07 /* Firebase.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -299,14 +336,15 @@
 			};
 			name = Release;
 		};
-		D0A860C65A674988D6100377AB330891 /* Debug */ = {
+		7ADD5B17F68F3DD1907991337CD3204C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2697158071AB59F75AEF558051FF326D /* Firebase.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -325,11 +363,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		EE5D5CF2272725C026B68F65013F9068 /* Build configuration list for PBXAggregateTarget "Firebase" */ = {
+		F282E03759CCB4747852ED460A4733DE /* Build configuration list for PBXAggregateTarget "Firebase" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D0A860C65A674988D6100377AB330891 /* Debug */,
-				B4CAB0AA056F87F0220B10C0A9A508D6 /* Release */,
+				7ADD5B17F68F3DD1907991337CD3204C /* Debug */,
+				5CB93B053EFA89D59934BE66D9B0CDEF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
