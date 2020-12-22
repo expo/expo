@@ -230,7 +230,7 @@
 			dependencies = (
 			);
 			name = BareExpo;
-			productName = "Hello World";
+			productName = BareExpo;
 			productReference = 13B07F961A680F5B00A75B9A /* Bare Expo.app */;
 			productType = "com.apple.product-type.application";
 		};
@@ -253,7 +253,7 @@
 			dependencies = (
 			);
 			name = BareExpoDetox;
-			productName = "Hello World";
+			productName = BareExpoDetox;
 			productReference = B2C0265D256BDB3E008FD925 /* BareExpoDetox.app */;
 			productType = "com.apple.product-type.application";
 		};
