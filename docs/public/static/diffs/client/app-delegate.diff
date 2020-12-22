@@ -36,7 +36,7 @@ index 86b3a12..1a310cf 100644
  - (RCTBridge *)initializeReactNativeApp
  {
 -  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:self.launchOptions];
-+#if __has_include(<EXDevMenu/EXDevMenu-umbrella.h>)
++#if __has_include(<EXDevLauncher/EXDevLauncherController.h>)
 +  NSDictionary *launchOptions = [EXDevLauncherController.sharedInstance getLaunchOptions];
 +#else
 +  NSDictionary *launchOptions = self.launchOptions;
