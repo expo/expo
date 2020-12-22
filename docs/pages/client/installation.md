@@ -13,7 +13,7 @@ import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
 
 The easiest way to get started is to initialize a new project by executing the following command:
 
-<InstallSection packageName="expo-development-client" cmd={["npx crna -t with-dev-launcher"]} hideBareInstructions />
+<InstallSection packageName="expo-development-client" cmd={["npx crna -t with-development-client"]} hideBareInstructions />
 
 ## Add the Development Client to the existing project
 
