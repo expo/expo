@@ -17,7 +17,7 @@
     @"deviceToken": deviceToken.apnsTokenString,
     @"type": @"apns",
   }];
-  // Presence of this file is assured in Expo client
+  // Presence of this file is assured in Expo Go
   // and in ejected projects Expo Push Notifications don't work anyway
   // so this codepath shouldn't be executed at all.
 #if __has_include(<EXApplication/EXProvisioningProfile.h>)
@@ -50,7 +50,7 @@
     @"deviceToken": deviceToken.apnsTokenString,
     @"type": @"apns",
   }];
-  // Presence of this file is assured in Expo client
+  // Presence of this file is assured in Expo Go
   // and in ejected projects Expo Push Notifications don't work anyway
   // so this codepath shouldn't be executed at all.
 #if __has_include(<EXApplication/EXProvisioningProfile.h>)
