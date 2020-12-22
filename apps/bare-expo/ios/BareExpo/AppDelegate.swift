@@ -45,7 +45,7 @@ class AppDelegate: UMAppDelegateWrapper {
   @discardableResult
   func initializeReactNativeBridge(_ launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> RCTBridge? {
     if let bridge = RCTBridge(delegate: self, launchOptions: launchOptions) {
-      let rootView = RCTRootView(bridge: bridge, moduleName: "BareExpo", initialProperties: nil)
+      let rootView = RCTRootView(bridge: bridge, moduleName: "main", initialProperties: nil)
       let rootViewController = UIViewController()
       rootView.backgroundColor = UIColor.white
       rootViewController.view = rootView
