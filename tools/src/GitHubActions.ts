@@ -11,7 +11,6 @@ import path from 'path';
 
 import { execAll, filterAsync } from './Utils';
 import { EXPO_DIR } from './Constants';
-import logger from './Logger';
 
 export type Workflow = ActionsListRepoWorkflowsResponseData['workflows'][0] & {
   slug: string;
