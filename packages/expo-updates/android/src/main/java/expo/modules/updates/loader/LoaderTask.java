@@ -192,7 +192,7 @@ public class LoaderTask {
    * loaded an update to launch and the timer isn't still running, the appropriate callback function
    * will be fired. If not, no callback will be fired.
    */
-  private void maybeFinish() {
+  private synchronized void maybeFinish() {
     if (!mIsReadyToLaunch || !mTimeoutFinished) {
       // too early, bail out
       return;
@@ -288,10 +288,13 @@ public class LoaderTask {
               public void onSuccess() {
                 mDatabaseHolder.releaseDatabase();
 
-                boolean hasLaunched = mHasLaunched;
-                if (!hasLaunched) {
-                  mCandidateLauncher = newLauncher;
-                  mIsUpToDate = true;
+                boolean hasLaunched;
+                synchronized (LoaderTask.this) {
+                  hasLaunched = mHasLaunched;
+                  if (!hasLaunched) {
+                    mCandidateLauncher = newLauncher;
+                    mIsUpToDate = true;
+                  }
                 }
 
                 remoteUpdateCallback.onSuccess();
@@ -312,10 +315,12 @@ public class LoaderTask {
 
   private void runReaper() {
     AsyncTask.execute(() -> {
-      if (mFinalizedLauncher != null && mFinalizedLauncher.getLaunchedUpdate() != null) {
-        UpdatesDatabase database = mDatabaseHolder.getDatabase();
-        Reaper.reapUnusedUpdates(mConfiguration, database, mDirectory, mFinalizedLauncher.getLaunchedUpdate(), mSelectionPolicy);
-        mDatabaseHolder.releaseDatabase();
+      synchronized (LoaderTask.this) {
+        if (mFinalizedLauncher != null && mFinalizedLauncher.getLaunchedUpdate() != null) {
+          UpdatesDatabase database = mDatabaseHolder.getDatabase();
+          Reaper.reapUnusedUpdates(mConfiguration, database, mDirectory, mFinalizedLauncher.getLaunchedUpdate(), mSelectionPolicy);
+          mDatabaseHolder.releaseDatabase();
+        }
       }
     });
   }
