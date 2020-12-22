@@ -46,9 +46,6 @@ includeUnimodulesProjects(
 // [Custom] Remove branch
 // "expo-branch", 
 // [Custom] Remove the camera
-// "expo-camera",
-// "expo-face-detector",
-// "unimodules-face-detector-interface",
 // "expo-payments-stripe",
 // [Custom] FBSDK adds a lot of time to the pod install 
 // "expo-facebook",
