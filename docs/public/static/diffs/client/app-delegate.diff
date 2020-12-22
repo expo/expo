@@ -11,7 +11,7 @@ index 86b3a12..1a310cf 100644
 +#endif
 +
 +#if __has_include(<EXDevLauncher/EXDevLauncherController.h>)
-+#include <EXDevLauncherController.h>
++#include <EXDevLauncher/EXDevLauncherController.h>
 +#endif
 +
  static void InitializeFlipper(UIApplication *application) {
