@@ -210,6 +210,14 @@ expo-dev-launcher:
   LABEL: expo-dev-launcher
   PROJECT_PATH: expo-dev-launcher.xcodeproj
   UUID: 26E7F2DCC5852B236EADEC0282A1217D
+expo-dev-menu:
+  LABEL: expo-dev-menu
+  PROJECT_PATH: expo-dev-menu.xcodeproj
+  UUID: E3CE9F665E43CE3A24403912B50AAE19
+expo-dev-menu-interface:
+  LABEL: expo-dev-menu-interface
+  PROJECT_PATH: expo-dev-menu-interface.xcodeproj
+  UUID: EA5CD250B8A6DE0639CB6EC046B239A9
 expo-development-client:
   LABEL: expo-development-client
   PROJECT_PATH: expo-development-client.xcodeproj

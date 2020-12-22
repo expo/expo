@@ -16,10 +16,11 @@ Pod::Spec.new do |s|
   s.source_files   = 'ios/**/*.{h,m,swift,cpp}'
   s.preserve_paths = 'ios/**/*.{h,m,swift}'
   s.requires_arc   = true
-  
+  s.header_dir     = 'EXDevLauncher'
+
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = { "DEFINES_MODULE" => "YES" }
   
   s.dependency "React"
-  s.dependency "EXDevMenuInterface"
+  s.dependency "expo-dev-menu-interface"
 end

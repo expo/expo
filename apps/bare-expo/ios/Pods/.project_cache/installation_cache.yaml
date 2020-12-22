@@ -321,157 +321,6 @@ CACHE_KEYS:
     PROJECT_NAME: EXDevice
     SPECS:
       - EXDevice (2.4.0)
-  EXDevMenu:
-    BUILD_SETTINGS_CHECKSUM:
-      EXDevMenu:
-        :debug: c66fa0d2cbb00c3a5517658d5d28a97d
-        :release: c66fa0d2cbb00c3a5517658d5d28a97d
-    CHECKSUM: f61e1c8223e516f670c2a47cf2f24ead2d25d7fb
-    FILES:
-      - "../../../../packages/expo-dev-menu/assets/dev-menu-packager-host"
-      - "../../../../packages/expo-dev-menu/assets/EXDevMenuApp.ios.js"
-      - "../../../../packages/expo-dev-menu/assets/Ionicons.ttf"
-      - "../../../../packages/expo-dev-menu/assets/MaterialCommunityIcons.ttf"
-      - "../../../../packages/expo-dev-menu/ios/DevMenuAppInstance.swift"
-      - "../../../../packages/expo-dev-menu/ios/DevMenuGestureRecognizer.swift"
-      - "../../../../packages/expo-dev-menu/ios/DevMenuLoadingView.h"
-      - "../../../../packages/expo-dev-menu/ios/DevMenuLoadingView.m"
-      - "../../../../packages/expo-dev-menu/ios/DevMenuManager.swift"
-      - "../../../../packages/expo-dev-menu/ios/DevMenuRCTBridge.h"
-      - "../../../../packages/expo-dev-menu/ios/DevMenuRCTBridge.m"
-      - "../../../../packages/expo-dev-menu/ios/DevMenuRootView.h"
-      - "../../../../packages/expo-dev-menu/ios/DevMenuRootView.m"
-      - "../../../../packages/expo-dev-menu/ios/DevMenuSession.swift"
-      - "../../../../packages/expo-dev-menu/ios/DevMenuSettings.swift"
-      - "../../../../packages/expo-dev-menu/ios/DevMenuUtils.swift"
-      - "../../../../packages/expo-dev-menu/ios/DevMenuVendoredModulesUtils.h"
-      - "../../../../packages/expo-dev-menu/ios/DevMenuVendoredModulesUtils.m"
-      - "../../../../packages/expo-dev-menu/ios/DevMenuViewController.swift"
-      - "../../../../packages/expo-dev-menu/ios/DevMenuWindow.swift"
-      - "../../../../packages/expo-dev-menu/ios/Headers/EXDevMenu-Bridging-Header.h"
-      - "../../../../packages/expo-dev-menu/ios/Headers/EXDevMenu.h"
-      - "../../../../packages/expo-dev-menu/ios/Headers/RCTPerfMonitor+Private.h"
-      - "../../../../packages/expo-dev-menu/ios/Headers/RCTRootView+Private.h"
-      - "../../../../packages/expo-dev-menu/ios/Interceptors/DevMenuKeyCommandsInterceptor.swift"
-      - "../../../../packages/expo-dev-menu/ios/Interceptors/DevMenuMotionInterceptor.swift"
-      - "../../../../packages/expo-dev-menu/ios/Interceptors/DevMenuTouchInterceptor.swift"
-      - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuExtensions.m"
-      - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuExtensions.swift"
-      - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuInternalModule.m"
-      - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuInternalModule.swift"
-      - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuModule.m"
-      - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuModule.swift"
-      - "../../../../packages/expo-dev-menu/ios/Modules/MockedSafeAreaViewProvider.swift"
-      - "../../../../packages/expo-dev-menu/README.md"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandler.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandler.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerButton.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerButton.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerDirection.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerEvents.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerEvents.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerManager.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerManager.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerModule.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerModule.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerRegistry.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerRegistry.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerState.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNRootViewGestureRecognizer.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNRootViewGestureRecognizer.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNFlingHandler.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNFlingHandler.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNForceTouchHandler.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNForceTouchHandler.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNLongPressHandler.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNLongPressHandler.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNNativeViewHandler.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNNativeViewHandler.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNPanHandler.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNPanHandler.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNPinchHandler.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNPinchHandler.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNRotationHandler.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNRotationHandler.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNTapHandler.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNTapHandler.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/DevMenuREAModule.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/DevMenuREAModule.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/DevMenuREANodesManager.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/DevMenuREANodesManager.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/DevMenuREAUtils.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAAlwaysNode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAAlwaysNode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREABezierNode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREABezierNode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREABlockNode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREABlockNode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREACallFuncNode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREACallFuncNode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAClockNodes.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAClockNodes.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAConcatNode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAConcatNode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREACondNode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREACondNode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREADebugNode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREADebugNode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAEventNode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAEventNode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAFunctionNode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAFunctionNode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAJSCallNode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAJSCallNode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREANode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREANode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAOperatorNode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAOperatorNode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAParamNode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAParamNode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAPropsNode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAPropsNode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREASetNode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREASetNode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAStyleNode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAStyleNode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREATransformNode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREATransformNode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAValueNode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAValueNode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREAAllTransitions.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREAAllTransitions.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREATransition.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREATransition.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREATransitionAnimation.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREATransitionAnimation.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREATransitionManager.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREATransitionManager.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREATransitionValues.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREATransitionValues.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/RCTConvert+DevMenuREATransition.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/RCTConvert+DevMenuREATransition.m"
-    PROJECT_NAME: EXDevMenu
-    SPECS:
-      - EXDevMenu (0.1.0)
-  EXDevMenuInterface:
-    BUILD_SETTINGS_CHECKSUM:
-      EXDevMenuInterface:
-        :debug: 0e0e044bc773ff543113d95f784c8e05
-        :release: 0e0e044bc773ff543113d95f784c8e05
-    CHECKSUM: 76dff7c65f1b9474b8ab6a37187ed6fcf81fa654
-    FILES:
-      - "../../../../packages/expo-dev-menu-interface/ios/DevMenuBridgeProtocol.swift"
-      - "../../../../packages/expo-dev-menu-interface/ios/DevMenuDelegateProtocol.swift"
-      - "../../../../packages/expo-dev-menu-interface/ios/DevMenuExtensionProtocol.swift"
-      - "../../../../packages/expo-dev-menu-interface/ios/DevMenuManagerProtocol.swift"
-      - "../../../../packages/expo-dev-menu-interface/ios/DevMenuUIResponderExtensionProtocol.swift"
-      - "../../../../packages/expo-dev-menu-interface/ios/MenuItems/DevMenuAction.swift"
-      - "../../../../packages/expo-dev-menu-interface/ios/MenuItems/DevMenuGroup.swift"
-      - "../../../../packages/expo-dev-menu-interface/ios/MenuItems/DevMenuItem.swift"
-      - "../../../../packages/expo-dev-menu-interface/README.md"
-    PROJECT_NAME: EXDevMenuInterface
-    SPECS:
-      - EXDevMenuInterface (0.1.0)
   EXDocumentPicker:
     BUILD_SETTINGS_CHECKSUM:
       EXDocumentPicker:
@@ -956,9 +805,9 @@ CACHE_KEYS:
   expo-dev-launcher:
     BUILD_SETTINGS_CHECKSUM:
       expo-dev-launcher:
-        :debug: 22367e25b8294f3c1f9c2b5052cb58d8
-        :release: 22367e25b8294f3c1f9c2b5052cb58d8
-    CHECKSUM: ebebf6f7c63cb67d52f529f86250ddd9b2820ec1
+        :debug: a05154ea236f2285cbdf3359f2424387
+        :release: a05154ea236f2285cbdf3359f2424387
+    CHECKSUM: 132ef53628b7c74894b3f6b9016b7415571bc1bb
     FILES:
       - "../../../../packages/expo-dev-launcher/ios/EXDevLauncher.h"
       - "../../../../packages/expo-dev-launcher/ios/EXDevLauncher.m"
@@ -987,6 +836,157 @@ CACHE_KEYS:
     PROJECT_NAME: expo-dev-launcher
     SPECS:
       - expo-dev-launcher (0.1.0)
+  expo-dev-menu:
+    BUILD_SETTINGS_CHECKSUM:
+      expo-dev-menu:
+        :debug: 16f74ad736b93e99f6a6d09d36f79fee
+        :release: 16f74ad736b93e99f6a6d09d36f79fee
+    CHECKSUM: e019ac461f4d8269eb22181d33f842f2277148be
+    FILES:
+      - "../../../../packages/expo-dev-menu/assets/dev-menu-packager-host"
+      - "../../../../packages/expo-dev-menu/assets/EXDevMenuApp.ios.js"
+      - "../../../../packages/expo-dev-menu/assets/Ionicons.ttf"
+      - "../../../../packages/expo-dev-menu/assets/MaterialCommunityIcons.ttf"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuAppInstance.swift"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuGestureRecognizer.swift"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuLoadingView.h"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuLoadingView.m"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuManager.swift"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuRCTBridge.h"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuRCTBridge.m"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuRootView.h"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuRootView.m"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuSession.swift"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuSettings.swift"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuUtils.swift"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuVendoredModulesUtils.h"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuVendoredModulesUtils.m"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuViewController.swift"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuWindow.swift"
+      - "../../../../packages/expo-dev-menu/ios/Headers/EXDevMenu-Bridging-Header.h"
+      - "../../../../packages/expo-dev-menu/ios/Headers/EXDevMenu.h"
+      - "../../../../packages/expo-dev-menu/ios/Headers/RCTPerfMonitor+Private.h"
+      - "../../../../packages/expo-dev-menu/ios/Headers/RCTRootView+Private.h"
+      - "../../../../packages/expo-dev-menu/ios/Interceptors/DevMenuKeyCommandsInterceptor.swift"
+      - "../../../../packages/expo-dev-menu/ios/Interceptors/DevMenuMotionInterceptor.swift"
+      - "../../../../packages/expo-dev-menu/ios/Interceptors/DevMenuTouchInterceptor.swift"
+      - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuExtensions.m"
+      - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuExtensions.swift"
+      - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuInternalModule.m"
+      - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuInternalModule.swift"
+      - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuModule.m"
+      - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuModule.swift"
+      - "../../../../packages/expo-dev-menu/ios/Modules/MockedSafeAreaViewProvider.swift"
+      - "../../../../packages/expo-dev-menu/README.md"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandler.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandler.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerButton.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerButton.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerDirection.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerEvents.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerEvents.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerManager.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerManager.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerModule.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerModule.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerRegistry.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerRegistry.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerState.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNRootViewGestureRecognizer.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNRootViewGestureRecognizer.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNFlingHandler.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNFlingHandler.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNForceTouchHandler.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNForceTouchHandler.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNLongPressHandler.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNLongPressHandler.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNNativeViewHandler.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNNativeViewHandler.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNPanHandler.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNPanHandler.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNPinchHandler.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNPinchHandler.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNRotationHandler.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNRotationHandler.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNTapHandler.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNTapHandler.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/DevMenuREAModule.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/DevMenuREAModule.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/DevMenuREANodesManager.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/DevMenuREANodesManager.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/DevMenuREAUtils.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAAlwaysNode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAAlwaysNode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREABezierNode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREABezierNode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREABlockNode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREABlockNode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREACallFuncNode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREACallFuncNode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAClockNodes.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAClockNodes.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAConcatNode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAConcatNode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREACondNode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREACondNode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREADebugNode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREADebugNode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAEventNode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAEventNode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAFunctionNode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAFunctionNode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAJSCallNode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAJSCallNode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREANode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREANode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAOperatorNode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAOperatorNode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAParamNode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAParamNode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAPropsNode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAPropsNode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREASetNode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREASetNode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAStyleNode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAStyleNode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREATransformNode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREATransformNode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAValueNode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAValueNode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREAAllTransitions.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREAAllTransitions.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREATransition.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREATransition.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREATransitionAnimation.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREATransitionAnimation.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREATransitionManager.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREATransitionManager.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREATransitionValues.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREATransitionValues.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/RCTConvert+DevMenuREATransition.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/RCTConvert+DevMenuREATransition.m"
+    PROJECT_NAME: expo-dev-menu
+    SPECS:
+      - expo-dev-menu (0.1.0)
+  expo-dev-menu-interface:
+    BUILD_SETTINGS_CHECKSUM:
+      expo-dev-menu-interface:
+        :debug: 3234bfb07d53670ee5689d5c4868f6be
+        :release: 3234bfb07d53670ee5689d5c4868f6be
+    CHECKSUM: 4cf17b1680a0939fd347ab59ec92a82171e51227
+    FILES:
+      - "../../../../packages/expo-dev-menu-interface/ios/DevMenuBridgeProtocol.swift"
+      - "../../../../packages/expo-dev-menu-interface/ios/DevMenuDelegateProtocol.swift"
+      - "../../../../packages/expo-dev-menu-interface/ios/DevMenuExtensionProtocol.swift"
+      - "../../../../packages/expo-dev-menu-interface/ios/DevMenuManagerProtocol.swift"
+      - "../../../../packages/expo-dev-menu-interface/ios/DevMenuUIResponderExtensionProtocol.swift"
+      - "../../../../packages/expo-dev-menu-interface/ios/MenuItems/DevMenuAction.swift"
+      - "../../../../packages/expo-dev-menu-interface/ios/MenuItems/DevMenuGroup.swift"
+      - "../../../../packages/expo-dev-menu-interface/ios/MenuItems/DevMenuItem.swift"
+      - "../../../../packages/expo-dev-menu-interface/README.md"
+    PROJECT_NAME: expo-dev-menu-interface
+    SPECS:
+      - expo-dev-menu-interface (0.1.0)
   expo-image:
     BUILD_SETTINGS_CHECKSUM:
       expo-image:
@@ -1566,10 +1566,10 @@ CACHE_KEYS:
       - OpenSSL-Universal/Static (1.0.2.20)
   Pods-BareExpoMain-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: af392ae72b82e02639d80d4b376c2394
-      Release: 914dd9641a7c9ce233087b5f04a46114
+      Debug: 5db66a18ad969b7519ae07e48f927627
+      Release: c991bf264af38a51773fb524fa3539f5
     FILES:
-      - "${PODS_CONFIGURATION_BUILD_DIR}/EXDevMenu/EXDevMenu.bundle"
+      - "${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-menu/EXDevMenu.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/FirebaseMLVisionFaceModel/GoogleMVFaceDetectorResources.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle"
       - "${PODS_ROOT}/Amplitude/Sources/Amplitude/ComodoRsaDomainValidationCA.der"
@@ -1577,10 +1577,10 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoMain-BareExpoDetox:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: d83ea3426168e7fd67ddb69d4e801394
-      Release: 7ad6baca115f1ad253c3b57bdac57148
+      Debug: 1c78e270f44c401f9b981c54e72a06f8
+      Release: ad296aff4c10bfaa21e6fc6807162532
     FILES:
-      - "${PODS_CONFIGURATION_BUILD_DIR}/EXDevMenu/EXDevMenu.bundle"
+      - "${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-menu/EXDevMenu.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/FirebaseMLVisionFaceModel/GoogleMVFaceDetectorResources.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle"
       - "${PODS_ROOT}/Amplitude/Sources/Amplitude/ComodoRsaDomainValidationCA.der"
@@ -1588,8 +1588,8 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 76115989be8ee0615e3dd567d83cfd21
-      Release: 76115989be8ee0615e3dd567d83cfd21
+      Debug: b96b360a5226c57f4d648a5bc5dab1f9
+      Release: b96b360a5226c57f4d648a5bc5dab1f9
   PromisesObjC:
     BUILD_SETTINGS_CHECKSUM:
       PromisesObjC:
