@@ -51,7 +51,7 @@
 #endif
 
 #if __has_include(<ABI39_0_0EXFacebook/ABI39_0_0EXFacebook.h>)
-  // only override in Expo Go
+  // only override in Expo client
   if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
     ABI39_0_0EXScopedFacebook *scopedFacebook = [[ABI39_0_0EXScopedFacebook alloc] initWithExperienceId:experienceId andParams:params];
     [moduleRegistry registerExportedModule:scopedFacebook];
