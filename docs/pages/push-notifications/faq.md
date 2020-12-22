@@ -13,7 +13,7 @@ There is no cost associated with sending notifications through Expo's classic pu
 
 We don't impose any limit on the number of push notifications you can send. For best results, we do recommend you add throttling (handled automatically in the [`expo-server-sdk-node`](https://github.com/expo/expo-server-sdk-node)) and retry logic to your server.
 
-Total notifications is much less important than your maximum notification throughput- how many notifications you send per second at peak. If this number is more than a couple hundred, reach out to us because we'd love to hear about what you're working on!
+Total notifications is much less important than your maximum notification throughput—how many notifications you send per second at peak. If this number is more than a couple hundred, reach out to us because we'd love to hear about what you're working on!
 
 ### How do I set up push notifications?
 
