@@ -92,26 +92,22 @@ export async function getJobsForWorkflowRunAsync(workflowRunId: number): Promise
 }
 
 /**
- * Dispatches an event that triggers a workflow with given ID.
+ * Dispatches an event that triggers a workflow with given ID or workflow filename (including extension).
  */
 export async function dispatchWorkflowEventAsync(
-  workflowId: number,
+  workflowId: number | string,
   ref: string,
   inputs?: WorkflowDispatchEventInputs
 ): Promise<void> {
-  const response = await request(
+  await request(
     'POST /repos/:owner/:repo/actions/workflows/:workflow_id/dispatches',
+    // @ts-ignore It expects workflow_id to be a number, however workflow filename (string) is also supported.
     makeExpoOptions({
       workflow_id: workflowId,
       ref,
       inputs: inputs ?? {},
     })
   );
-  if (response.status !== 204) {
-    logger.error('💥 Dispatching workflow failed with response', JSON.stringify(response, null, 2));
-    process.exit(1);
-  }
-  logger.success('🎉 Successfully dispatched workflow event ');
 }
 
 /**

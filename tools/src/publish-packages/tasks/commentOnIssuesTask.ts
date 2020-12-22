@@ -1,20 +1,21 @@
-import {
-  // dispatchWorkflowEventAsync,
-  getClosedIssuesAsync,
-  // getWorkflowsAsync,
-} from '../../GitHubActions';
-import { Task } from '../../TasksRunner';
-import { CommandOptions, Parcel, TaskArgs } from '../types';
-import logger from '../../Logger';
-// import Git from '../../Git';
+import chalk from 'chalk';
+import path from 'path';
+
 import { ChangelogEntry, UNPUBLISHED_VERSION_NAME } from '../../Changelogs';
+import { EXPO_DIR } from '../../Constants';
+import { link } from '../../Formatter';
+import Git from '../../Git';
+import { dispatchWorkflowEventAsync, getClosedIssuesAsync } from '../../GitHubActions';
+import logger from '../../Logger';
+import { Package } from '../../Packages';
+import { Task } from '../../TasksRunner';
 import { CommentatorPayload } from '../../commands/CommentatorCommand';
+import { CommandOptions, Parcel, TaskArgs } from '../types';
 import { selectPackagesToPublish } from './selectPackagesToPublish';
 
 type CommentRowObject = {
-  packageName: string;
+  pkg: Package;
   version: string;
-  tag: string;
   pullRequests: number[];
 };
 
@@ -29,107 +30,170 @@ export const commentOnIssuesTask = new Task<TaskArgs>(
     backupable: true,
   },
   async (parcels: Parcel[], options: CommandOptions) => {
+    logger.info('\n🐙 Commenting on issues closed by published changes');
+
+    const payload = await generatePayloadForCommentatorAsync(parcels, options.tag);
+
+    if (!payload.length) {
+      logger.log('There are no closed issues to comment on\n');
+      return;
+    }
+    if (options.dry) {
+      logger.debug('Skipping due to --dry flag');
+      logManualFallback(payload);
+      return;
+    }
     if (!process.env.GITHUB_TOKEN) {
       logger.error(
-        'Environment variable `GITHUB_TOKEN` must be set to dispatch a commentator workflow.'
+        'Environment variable `%s` must be set to dispatch a commentator workflow',
+        chalk.magenta('GITHUB_TOKEN')
       );
-      // should prompt for it?
+      logManualFallback(payload);
       return;
     }
 
-    // const workflows = await getWorkflowsAsync();
-    // const workflow = workflows.find((workflow) => workflow.slug === 'commentator');
+    const currentBranchName = await Git.getCurrentBranchNameAsync();
 
-    // if (!workflow) {
-    //   logger.error(`Commentator workflow not found 😠`);
-    //   return;
-    // }
-
-    // const currentBranchName = await Git.getCurrentBranchNameAsync();
-
-    // An object whose key is the issue number and value is an array of rows to put in the comment's body.
-    const commentRows: Record<number, CommentRowObject[]> = {};
-
-    // An object whose key is the pull request number and value is an array of issues it closes.
-    const closedIssuesRegistry: Record<number, number[]> = {};
-
-    for (const { pkg, state } of parcels) {
-      const versionChanges = state.changelogChanges?.versions[UNPUBLISHED_VERSION_NAME];
-
-      if (!versionChanges) {
-        continue;
-      }
-      const allEntries = ([] as ChangelogEntry[]).concat(...Object.values(versionChanges));
-      const allPullRequests = new Set(
-        ([] as number[]).concat(...allEntries.map((entry) => entry.pullRequests ?? []))
-      );
-
-      // Visit all pull requests mentioned in the changelog.
-      for (const pullRequest of allPullRequests) {
-        // Look for closed issues just once per pull request to reduce number of GitHub API calls.
-        if (!closedIssuesRegistry[pullRequest]) {
-          closedIssuesRegistry[pullRequest] = await getClosedIssuesAsync(pullRequest);
-        }
-        const closedIssues = closedIssuesRegistry[pullRequest];
-
-        console.log(pullRequest, ':', closedIssues);
-
-        // Visit all issues that have been closed by this pull request.
-        for (const issue of closedIssues) {
-          if (!commentRows[issue]) {
-            commentRows[issue] = [];
-          }
-
-          // Check if the row for the package already exists. If it does, then just add
-          // another pull request reference into that row instead of creating a new one.
-          // This is to prevent duplicating packages within the comment's body.
-          const existingRowForPackage = commentRows[issue].find(
-            (entry) => entry.packageName === pkg.packageName
-          );
-
-          if (existingRowForPackage) {
-            existingRowForPackage.pullRequests.push(pullRequest);
-          } else {
-            commentRows[issue].push({
-              packageName: pkg.packageName,
-              version: state.releaseVersion!,
-              tag: options.tag,
-              pullRequests: [pullRequest],
-            });
-          }
-        }
-      }
+    // Sometimes we publish from different branches (especially for testing) where comments are not advisable.
+    if (currentBranchName !== 'master') {
+      logger.warn('This feature is disabled on branches other than master');
+      logManualFallback(payload);
+      return;
     }
 
-    const payload: CommentatorPayload = Object.entries(commentRows).map(([issue, entries]) => {
-      return {
-        issue: +issue,
-        body: generateCommentBody(entries),
-      };
+    // Dispatch commentator workflow on GitHub Actions with stringified and escaped payload.
+    await dispatchWorkflowEventAsync('commentator.yml', currentBranchName, {
+      payload: JSON.stringify(payload).replace(/("|`)/g, '\\$1'),
     });
-
-    console.log(payload);
-
-    // await dispatchWorkflowEventAsync(workflow.id, currentBranchName, {
-    //   payload: JSON.stringify(payload).replace(/"/g, '\\"'),
-    // });
+    logger.success(
+      'Successfully dispatched commentator action for the following issues: %s',
+      linksToClosedIssues(payload.map(({ issue }) => issue))
+    );
   }
 );
 
-function generateCommentBody(entries: CommentRowObject[]): string {
-  const rows = entries.map(({ packageName, version, tag, pullRequests }) => {
-    const prs = pullRequests.map((pr) => '#' + pr).join(', ');
-    return `| ${packageName} | ${version} | ${tag} | ${prs} |`;
+/**
+ * Generates payload for `expotools commentator` command.
+ */
+async function generatePayloadForCommentatorAsync(
+  parcels: Parcel[],
+  tag: string
+): Promise<CommentatorPayload> {
+  // An object whose key is the issue number and value is an array of rows to put in the comment's body.
+  const commentRows: Record<number, CommentRowObject[]> = {};
+
+  // An object whose key is the pull request number and value is an array of issues it closes.
+  const closedIssuesRegistry: Record<number, number[]> = {};
+
+  for (const { pkg, state } of parcels) {
+    const versionChanges = state.changelogChanges?.versions[UNPUBLISHED_VERSION_NAME];
+
+    if (!versionChanges) {
+      continue;
+    }
+    const allEntries = ([] as ChangelogEntry[]).concat(...Object.values(versionChanges));
+    const allPullRequests = new Set(
+      ([] as number[]).concat(...allEntries.map((entry) => entry.pullRequests ?? []))
+    );
+
+    // Visit all pull requests mentioned in the changelog.
+    for (const pullRequest of allPullRequests) {
+      // Look for closed issues just once per pull request to reduce number of GitHub API calls.
+      if (!closedIssuesRegistry[pullRequest]) {
+        closedIssuesRegistry[pullRequest] = await getClosedIssuesAsync(pullRequest);
+      }
+      const closedIssues = closedIssuesRegistry[pullRequest];
+
+      // Visit all issues that have been closed by this pull request.
+      for (const issue of closedIssues) {
+        if (!commentRows[issue]) {
+          commentRows[issue] = [];
+        }
+
+        // Check if the row for the package already exists. If it does, then just add
+        // another pull request reference into that row instead of creating a new one.
+        // This is to prevent duplicating packages within the comment's body.
+        const existingRowForPackage = commentRows[issue].find((entry) => entry.pkg === pkg);
+
+        if (existingRowForPackage) {
+          existingRowForPackage.pullRequests.push(pullRequest);
+        } else {
+          commentRows[issue].push({
+            pkg,
+            version: state.releaseVersion!,
+            pullRequests: [pullRequest],
+          });
+        }
+      }
+    }
+  }
+
+  return Object.entries(commentRows).map(([issue, entries]) => {
+    return {
+      issue: +issue,
+      body: generateCommentBody(entries, tag),
+    };
+  });
+}
+
+/**
+ * Logs a list of closed issues. We use it as a fallback in several places, so it's extracted.
+ */
+function logManualFallback(payload: CommentatorPayload): void {
+  logger.log(
+    'If necessary, you can still do this manually on the following issues: %s',
+    linksToClosedIssues(payload.map(({ issue }) => issue))
+  );
+}
+
+/**
+ * Returns a string with concatenated links to all given issues.
+ */
+function linksToClosedIssues(issues: number[]): string {
+  return issues
+    .map((issue) => link(chalk.blue('#' + issue), `https://github.com/expo/expo/issues/${issue}`))
+    .join(', ');
+}
+
+/**
+ * Generates comment body based on given entries.
+ */
+function generateCommentBody(entries: CommentRowObject[], tag: string): string {
+  const rows = entries.map(({ pkg, version, pullRequests }) => {
+    const items = [
+      linkToNpmPackage(pkg.packageName, version),
+      version,
+      pullRequests.map((pr) => '#' + pr).join(', '),
+      linkToChangelog(pkg),
+    ];
+    return `| ${items.join(' | ')} |`;
   });
 
-  return `Some changes in the following packages that may fix this issue have just been published 🥳
+  return `<!-- Generated by \`expotools publish\` -->
+Some changes in the following packages that may fix this issue have just been published to npm under \`${tag}\` tag 🚀
 
-| 📦 Package | 🔢 Version | 🏷 NPM tag | ↖️ Pull requests |
+| 📦 Package | 🔢 Version | ↖️ Pull requests | 📝 Release notes |
 |:--:|:--:|:--:|:--:|
 ${rows.join('\n')}
 
-If you're using bare workflow you can install them right away with \`yarn upgrade <package>@<npm tag>\`.
-We kindly ask you for feedback whether they fixed this issue or not 🙏
+If you're using bare workflow you can upgrade them right away. We kindly ask you for some feedback—even if it works 🙏
 
-For managed workflow they will become available with the next SDK release.`;
+They will become available in managed workflow with the next SDK release 👀
+
+Happy Coding! 🎉`;
+}
+
+/**
+ * Returns markdown link to the package on npm.
+ */
+function linkToNpmPackage(packageName: string, version: string): string {
+  return `[${packageName}](https://www.npmjs.com/package/${packageName}/v/${version})`;
+}
+
+/**
+ * Returns markdown link to package's changelog.
+ */
+function linkToChangelog(pkg: Package): string {
+  const changelogRelativePath = path.relative(EXPO_DIR, pkg.changelogPath);
+  return `[CHANGELOG.md](https://github.com/expo/expo/blob/master/${changelogRelativePath})`;
 }
