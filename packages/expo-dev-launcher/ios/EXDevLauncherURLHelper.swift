@@ -17,7 +17,7 @@ public class EXDevLauncherURLHelper : NSObject  {
   }
 
   @objc
-  public static func getAppURLFromDevLaucherURL(_ url: URL) -> URL? {
+  public static func getAppURLFromDevLauncherURL(_ url: URL) -> URL? {
     let componets = URLComponents.init(url: url, resolvingAgainstBaseURL: false)
     for parameter in componets?.queryItems ?? [] {
       if parameter.name == "url" {

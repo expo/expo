@@ -54,7 +54,7 @@ RCT_EXPORT_METHOD(loadApp:(NSString *)urlString
   NSURL *url = [NSURL URLWithString:sanitizedUrl];
 
   if ([EXDevLauncherURLHelper isDevLauncherURL:url]) {
-    url = [EXDevLauncherURLHelper getAppURLFromDevLaucherURL:url];
+    url = [EXDevLauncherURLHelper getAppURLFromDevLauncherURL:url];
   }
 
   if (!url) {

@@ -2,7 +2,7 @@ package expo.modules.devlauncher.helpers
 
 import android.net.Uri
 
-fun changeUrlSchema(uri: Uri, scheme: String): Uri = uri.buildUpon().scheme(scheme).build()
+fun changeUrlScheme(uri: Uri, scheme: String): Uri = uri.buildUpon().scheme(scheme).build()
 
 fun isDevLauncherUrl(uri: Uri) = uri.host == "expo-development-client"
 

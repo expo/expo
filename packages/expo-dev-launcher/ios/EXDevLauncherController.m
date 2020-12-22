@@ -139,7 +139,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     return [self _handleExternalDeepLink:url options:options];
   }
   
-  NSURL *appUrl = [EXDevLauncherURLHelper getAppURLFromDevLaucherURL:url];
+  NSURL *appUrl = [EXDevLauncherURLHelper getAppURLFromDevLauncherURL:url];
   if (appUrl) {
     [self loadApp:appUrl onSuccess:nil onError:^(NSError *error) {
       NSLog(error.description);

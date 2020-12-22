@@ -8,7 +8,7 @@ import androidx.annotation.UiThread
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactNativeHost
-import expo.modules.devlauncher.helpers.changeUrlSchema
+import expo.modules.devlauncher.helpers.changeUrlScheme
 import expo.modules.devlauncher.helpers.getAppUrlFromDevLauncherUrl
 import expo.modules.devlauncher.helpers.getFieldInClassHierarchy
 import expo.modules.devlauncher.helpers.isDevLauncherUrl
@@ -54,7 +54,7 @@ class DevLauncherController private constructor(
   suspend fun loadApp(url: Uri, mainActivity: ReactActivity? = null) {
     ensureHostWasCleared(mAppHost, activityToBeInvalidated = mainActivity)
 
-    val parsedUrl = changeUrlSchema(url, "http")
+    val parsedUrl = changeUrlScheme(url, "http")
 
     val manifestParser = DevLauncherManifestParser(httpClient, parsedUrl)
     val appIntent = createAppIntent()
