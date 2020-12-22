@@ -288,7 +288,9 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     } else if (userInterfaceStyle == UIUserInterfaceStyleLight) {
       colorSchema = @"light";
     }
-    
+  }
+  
+  if (@available(iOS 13, *)) {
     // change system window appearance
     _window.overrideUserInterfaceStyle = userInterfaceStyle;
   }
