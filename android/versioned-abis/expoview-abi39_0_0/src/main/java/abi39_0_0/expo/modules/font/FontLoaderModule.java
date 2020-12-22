@@ -70,7 +70,7 @@ public class FontLoaderModule extends ExportedModule {
 
   private boolean isScoped() {
     ConstantsInterface constantsModule = mModuleRegistry.getModule(ConstantsInterface.class);
-    // If there's no constants module, or app ownership isn't "expo", we're not in Expo Go.
+    // If there's no constants module, or app ownership isn't "expo", we're not in Expo Client.
     return constantsModule != null && "expo".equals(constantsModule.getAppOwnership());
   }
 }
