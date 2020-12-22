@@ -109,8 +109,9 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 - (void)navigateToLauncher {
   [_appBridge invalidate];
 
-
-  [self _applyUserInterfaceStyle:UIUserInterfaceStyleUnspecified];
+  if (@available(iOS 12, *)) {
+    [self _applyUserInterfaceStyle:UIUserInterfaceStyleUnspecified];
+  }
   
   _launcherBridge = [[EXDevLauncherRCTBridge alloc] initWithDelegate:self launchOptions:_launchOptions];
 
@@ -217,8 +218,9 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   dispatch_async(dispatch_get_main_queue(), ^{
     self.sourceUrl = bundleUrl;
     
-    [self _applyUserInterfaceStyle:manifest.userInterfaceStyle];
     if (@available(iOS 12, *)) {
+      [self _applyUserInterfaceStyle:manifest.userInterfaceStyle];
+      
       // Fix for the community react-native-appearance.
       // RNC appearance checks the global trait collection and doesn't have another way to override the user interface.
       // So we swap `currentTraitCollection` with one from the root view controller.
@@ -279,15 +281,13 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
                                                     }];
 }
 
-- (void)_applyUserInterfaceStyle:(UIUserInterfaceStyle)userInterfaceStyle
+- (void)_applyUserInterfaceStyle:(UIUserInterfaceStyle)userInterfaceStyle API_AVAILABLE(ios(12.0))
 {
   NSString *colorSchema = nil;
-  if (@available(iOS 12, *)) {
-    if (userInterfaceStyle == UIUserInterfaceStyleDark) {
-      colorSchema = @"dark";
-    } else if (userInterfaceStyle == UIUserInterfaceStyleLight) {
-      colorSchema = @"light";
-    }
+  if (userInterfaceStyle == UIUserInterfaceStyleDark) {
+    colorSchema = @"dark";
+  } else if (userInterfaceStyle == UIUserInterfaceStyleLight) {
+    colorSchema = @"light";
   }
   
   // change RN appearance
