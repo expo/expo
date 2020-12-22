@@ -313,7 +313,7 @@ UM_REGISTER_MODULE();
       deviceModel = @"Apple TV";
     }
   }
-  return deviceModel;
+  return deviceModel ?: @"Unsupported";
 }
 
 + (NSNumber *)deviceYear
