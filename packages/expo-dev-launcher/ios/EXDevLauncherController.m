@@ -135,18 +135,16 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 }
 
 - (BOOL)onDeepLink:(NSURL *)url options:(NSDictionary *)options {
-  if (![url.host isEqual:@"expo-development-client"]) {
+  if (![EXDevLauncherURLHelper isDevLauncherURL:url]) {
     return [self _handleExternalDeepLink:url options:options];
   }
   
-  NSURLComponents *urlComponets = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:NO];
-  for (NSURLQueryItem *parameter in urlComponets.queryItems) {
-    if ([parameter.name isEqual:@"url"]) {
-      [self loadApp:[parameter.value stringByRemovingPercentEncoding] onSuccess:nil onError:^(NSError *error) {
-        NSLog(error.description);
-      }];
-      return true;
-    }
+  NSURL *appUrl = [EXDevLauncherURLHelper getAppURLFromDevLauncherURL:url];
+  if (appUrl) {
+    [self loadApp:appUrl onSuccess:nil onError:^(NSError *error) {
+      NSLog(error.description);
+    }];
+    return true;
   }
   
   [self navigateToLauncher];
@@ -163,12 +161,9 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   return true;
 }
 
-- (void)loadApp:(NSString *)expoUrl onSuccess:(void (^)())onSuccess onError:(void (^)(NSError *error))onError
+- (void)loadApp:(NSURL *)expoUrl onSuccess:(void (^)())onSuccess onError:(void (^)(NSError *error))onError
 {
-  NSString *sanitizedUrl = [expoUrl stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-  NSURLComponents *urlComponets = [NSURLComponents componentsWithURL:[NSURL URLWithString:sanitizedUrl] resolvingAgainstBaseURL:YES];
-  urlComponets.scheme = @"http";
-  NSURL *url = urlComponets.URL;
+  NSURL *url = [EXDevLauncherURLHelper changeURLScheme:expoUrl to:@"http"];
   
   if (@available(iOS 14, *)) {
     // Try to detect if we're trying to open a local network URL so we can preemptively show the
@@ -190,13 +185,13 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   [manifestParser tryToParseManifest:^(EXDevLauncherManifest * _Nullable manifest) {
     NSURL *bundleUrl = [NSURL URLWithString:manifest.bundleUrl];
     
-    [_recentlyOpenedAppsRegistry appWasOpened:sanitizedUrl name:manifest.name];
+    [_recentlyOpenedAppsRegistry appWasOpened:[expoUrl absoluteString] name:manifest.name];
     [self _initApp:bundleUrl manifest:manifest];
     if (onSuccess) {
       onSuccess();
     }
   } onInvalidManifestURL:^{
-    [_recentlyOpenedAppsRegistry appWasOpened:sanitizedUrl name:nil];
+    [_recentlyOpenedAppsRegistry appWasOpened:[expoUrl absoluteString] name:nil];
     if ([url.path isEqual:@"/"] || [url.path isEqual:@""]) {
       [self _initApp:[NSURL URLWithString:@"index.bundle?platform=ios&dev=true&minify=false" relativeToURL:url] manifest:nil];
     } else {

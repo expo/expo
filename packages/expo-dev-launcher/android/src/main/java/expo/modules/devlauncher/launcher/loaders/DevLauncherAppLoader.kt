@@ -73,7 +73,7 @@ abstract class DevLauncherAppLoader(
     }
   }
 
-  abstract fun getBundleUrl(): String
+  abstract fun getBundleUrl(): Uri
 
   protected open fun onDelegateWillBeCreated(activity: ReactActivity) = Unit
   protected open fun onCreate(activity: ReactActivity) = Unit
@@ -83,9 +83,8 @@ abstract class DevLauncherAppLoader(
     return null
   }
 
-  private fun setAppUrl(url: String): Boolean {
-    val uri = Uri.parse(url)
-    val debugServerHost = uri.host + ":" + uri.port
+  private fun setAppUrl(url: Uri): Boolean {
+    val debugServerHost = url.host + ":" + url.port
     return injectDebugServerHost(context, appHost, debugServerHost)
   }
 

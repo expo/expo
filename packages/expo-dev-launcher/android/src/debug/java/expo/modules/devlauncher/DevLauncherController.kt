@@ -8,7 +8,10 @@ import androidx.annotation.UiThread
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactNativeHost
+import expo.modules.devlauncher.helpers.changeUrlScheme
+import expo.modules.devlauncher.helpers.getAppUrlFromDevLauncherUrl
 import expo.modules.devlauncher.helpers.getFieldInClassHierarchy
+import expo.modules.devlauncher.helpers.isDevLauncherUrl
 import expo.modules.devlauncher.helpers.runBlockingOnMainThread
 import expo.modules.devlauncher.launcher.DevLauncherActivity
 import expo.modules.devlauncher.launcher.DevLauncherClientHost
@@ -24,7 +27,6 @@ import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivity
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
-import java.net.URLDecoder
 
 // Use this to load from a development server for the development client launcher UI
 //  private final String DEV_LAUNCHER_HOST = "10.0.0.175:8090";
@@ -49,14 +51,11 @@ class DevLauncherController private constructor(
 
   var mode = Mode.LAUNCHER
 
-  suspend fun loadApp(url: String, mainActivity: ReactActivity? = null) {
+  suspend fun loadApp(url: Uri, mainActivity: ReactActivity? = null) {
     ensureHostWasCleared(mAppHost, activityToBeInvalidated = mainActivity)
 
-    val parsedUrl = Uri.parse(url.trim())
-      .buildUpon()
-      .scheme("http")
-      .build()
-      .toString()
+    val parsedUrl = changeUrlScheme(url, "http")
+
     val manifestParser = DevLauncherManifestParser(httpClient, parsedUrl)
     val appIntent = createAppIntent()
 
@@ -95,16 +94,16 @@ class DevLauncherController private constructor(
     intent
       ?.data
       ?.let { uri ->
-        if ("expo-development-client" != uri.host) {
+        if (!isDevLauncherUrl(uri)) {
           return handleExternalIntent(intent)
         }
 
-        if (uri.getQueryParameter("url") == null) {
+        val appUrl = getAppUrlFromDevLauncherUrl(uri)
+        if (appUrl == null) {
           navigateToLauncher()
           return true
         }
 
-        val appUrl = URLDecoder.decode(uri.getQueryParameter("url"), "UTF-8")
         GlobalScope.launch {
           loadApp(appUrl, activityToBeInvalidated)
         }

@@ -972,6 +972,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-dev-launcher/ios/EXDevLauncherDevMenuExtensions.m"
       - "../../../../packages/expo-dev-launcher/ios/EXDevLauncherPendingDeepLinkRegistry.swift"
       - "../../../../packages/expo-dev-launcher/ios/EXDevLauncherRecentlyOpenedAppsRegistry.swift"
+      - "../../../../packages/expo-dev-launcher/ios/EXDevLauncherURLHelper.swift"
       - "../../../../packages/expo-dev-launcher/ios/expo-dev-launcher-Bridging-Header.h"
       - "../../../../packages/expo-dev-launcher/ios/Headers/EXDevLauncherPendingDeepLinkListener.h"
       - "../../../../packages/expo-dev-launcher/ios/Manifest/EXDevLauncherManifest.swift"
