@@ -3,6 +3,7 @@ package dev.expo.payments;
 import android.content.Intent;
 import android.os.Bundle;
 
+import android.app.Activity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
 import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
@@ -26,6 +27,7 @@ public class MainActivity extends DevMenuAwareReactActivity {
 
   @Override
   protected ReactActivityDelegate createReactActivityDelegate() {
+    Activity activity = this;
     ReactActivityDelegate delegate = new ReactActivityDelegate(this, getMainComponentName()) {
       @Override
       protected ReactRootView createRootView() {
@@ -37,7 +39,7 @@ public class MainActivity extends DevMenuAwareReactActivity {
         super.onCreate(savedInstanceState);
         // SplashScreen.show(...) has to be called after super.onCreate(...)
         // Below line is handled by '@expo/configure-splash-screen' command and it's discouraged to modify it manually
-        // SplashScreen.show(this, SplashScreenImageResizeMode.COVER, ReactRootView.class, false);
+        SplashScreen.show(activity, SplashScreenImageResizeMode.COVER, ReactRootView.class, false);
       }
     };
 
