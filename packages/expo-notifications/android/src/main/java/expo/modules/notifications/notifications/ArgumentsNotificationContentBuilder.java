@@ -29,6 +29,7 @@ public class ArgumentsNotificationContentBuilder extends NotificationContent.Bui
   private static final String AUTO_DISMISS_KEY = "autoDismiss";
   private static final String CATEGORY_IDENTIFIER_KEY = "categoryIdentifier";
   private static final String STICKY_KEY = "sticky";
+  private static final String TAG_KEY = "tag";
 
   private SoundResolver mSoundResolver;
 
@@ -46,7 +47,8 @@ public class ArgumentsNotificationContentBuilder extends NotificationContent.Bui
       .setColor(getColor(payload))
       .setAutoDismiss(getAutoDismiss(payload))
       .setCategoryId(getCategoryId(payload))
-      .setSticky(getSticky(payload));
+      .setSticky(getSticky(payload))
+      .setTag(payload.getString(TAG_KEY, null));
 
     if (shouldPlayDefaultSound(payload)) {
       useDefaultSound();
