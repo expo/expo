@@ -294,6 +294,7 @@ UM_REGISTER_MODULE();
 
                             // Simulator
                             @"i386": @"Simulator",
+                            @"arm64": @"Simulator",
                             @"x86_64": @"Simulator",
                             };
 
