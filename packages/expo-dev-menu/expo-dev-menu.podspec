@@ -3,7 +3,7 @@ require 'json'
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 
 Pod::Spec.new do |s|
-  s.name           = 'EXDevMenu'
+  s.name           = 'expo-dev-menu'
   s.version        = package['version']
   s.summary        = package['description']
   s.description    = package['description']
@@ -16,6 +16,7 @@ Pod::Spec.new do |s|
   s.source_files   = 'ios/**/*.{h,m,swift}', 'vendored/**/*.{h,m}'
   s.preserve_paths = 'ios/**/*.{h,m,swift}'
   s.requires_arc   = true
+  s.header_dir     = 'EXDevMenu'
 
   s.resource_bundles = { 'EXDevMenu' => [
     'assets/*.ios.js',
@@ -23,6 +24,7 @@ Pod::Spec.new do |s|
     'assets/*.ttf'
   ]}
 
+  # EXDevMenu
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = { "DEFINES_MODULE" => "YES" }
   # s.script_phase = {
@@ -33,5 +35,5 @@ Pod::Spec.new do |s|
   # }
 
   s.dependency 'React'
-  s.dependency 'EXDevMenuInterface'
+  s.dependency 'expo-dev-menu-interface'
 end
