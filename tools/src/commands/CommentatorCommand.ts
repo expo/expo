@@ -39,8 +39,12 @@ async function main(options: ActionOptions) {
       logger.error('Comment payload is incomplete:', comment);
       continue;
     }
-    await commentOnIssueAsync(comment.issue, comment.body);
-    commentedIssues.push(comment.issue);
+    try {
+      await commentOnIssueAsync(comment.issue, comment.body);
+      commentedIssues.push(comment.issue);
+    } catch (e) {
+      logger.error(`Failed to comment on issue #${comment.issue}:`, e);
+    }
   }
   if (commentedIssues.length > 0) {
     logger.log(
