@@ -290,11 +290,6 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     }
   }
   
-  if (@available(iOS 13, *)) {
-    // change system window appearance
-    _window.overrideUserInterfaceStyle = userInterfaceStyle;
-  }
-  
   // change RN appearance
   RCTOverrideAppearancePreference(colorSchema);
 }
