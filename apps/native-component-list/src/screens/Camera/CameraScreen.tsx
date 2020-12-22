@@ -253,7 +253,7 @@ export default class CameraScreen extends React.Component<{}, State> {
   renderTopBar = () => (
     <View style={styles.topBar}>
       <TouchableOpacity style={styles.toggleButton} onPress={this.toggleFacing}>
-        <Ionicons name="ios-reverse-camera" size={32} color="white" />
+        <Ionicons name="camera-reverse" size={32} color="white" />
       </TouchableOpacity>
       <TouchableOpacity style={styles.toggleButton} onPress={this.toggleFlash}>
         <MaterialIcons name={flashIcons[this.state.flash]} size={32} color="white" />

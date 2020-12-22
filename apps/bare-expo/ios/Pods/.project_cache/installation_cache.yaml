@@ -233,6 +233,24 @@ CACHE_KEYS:
     PROJECT_NAME: EXCalendar
     SPECS:
       - EXCalendar (8.6.0)
+  EXCamera:
+    BUILD_SETTINGS_CHECKSUM:
+      EXCamera:
+        :debug: 087720988d2b91aabbef4c3f727835bd
+        :release: 087720988d2b91aabbef4c3f727835bd
+    CHECKSUM: 11b544bf6d4e94b8c772a3a70064148972e0f02b
+    FILES:
+      - "../../../../packages/expo-camera/ios/EXCamera/EXCamera.h"
+      - "../../../../packages/expo-camera/ios/EXCamera/EXCamera.m"
+      - "../../../../packages/expo-camera/ios/EXCamera/EXCameraManager.h"
+      - "../../../../packages/expo-camera/ios/EXCamera/EXCameraManager.m"
+      - "../../../../packages/expo-camera/ios/EXCamera/EXCameraPermissionRequester.h"
+      - "../../../../packages/expo-camera/ios/EXCamera/EXCameraPermissionRequester.m"
+      - "../../../../packages/expo-camera/ios/EXCamera/Utilities/EXCameraUtils.h"
+      - "../../../../packages/expo-camera/ios/EXCamera/Utilities/EXCameraUtils.m"
+    PROJECT_NAME: EXCamera
+    SPECS:
+      - EXCamera (9.1.1)
   EXCellular:
     BUILD_SETTINGS_CHECKSUM:
       EXCellular:
@@ -492,6 +510,32 @@ CACHE_KEYS:
     PROJECT_NAME: EXFacebook
     SPECS:
       - EXFacebook (9.1.0)
+  EXFaceDetector:
+    BUILD_SETTINGS_CHECKSUM:
+      EXFaceDetector:
+        :debug: bd24f28fb644d96bea27c03e1e35fdb2
+        :release: bd24f28fb644d96bea27c03e1e35fdb2
+    CHECKSUM: 668d8cc62b9b91dbad949ee3b07e27367ec2bdc3
+    FILES:
+      - "../../../../packages/expo-face-detector/ios/EXFaceDetector/EXCSBufferOrientationCalculator.h"
+      - "../../../../packages/expo-face-detector/ios/EXFaceDetector/EXCSBufferOrientationCalculator.m"
+      - "../../../../packages/expo-face-detector/ios/EXFaceDetector/EXFaceDetector.h"
+      - "../../../../packages/expo-face-detector/ios/EXFaceDetector/EXFaceDetector.m"
+      - "../../../../packages/expo-face-detector/ios/EXFaceDetector/EXFaceDetectorAppDelegate.h"
+      - "../../../../packages/expo-face-detector/ios/EXFaceDetector/EXFaceDetectorAppDelegate.m"
+      - "../../../../packages/expo-face-detector/ios/EXFaceDetector/EXFaceDetectorManager.h"
+      - "../../../../packages/expo-face-detector/ios/EXFaceDetector/EXFaceDetectorManager.m"
+      - "../../../../packages/expo-face-detector/ios/EXFaceDetector/EXFaceDetectorManagerProvider.h"
+      - "../../../../packages/expo-face-detector/ios/EXFaceDetector/EXFaceDetectorManagerProvider.m"
+      - "../../../../packages/expo-face-detector/ios/EXFaceDetector/EXFaceDetectorModule.h"
+      - "../../../../packages/expo-face-detector/ios/EXFaceDetector/EXFaceDetectorModule.m"
+      - "../../../../packages/expo-face-detector/ios/EXFaceDetector/EXFaceEncoder.h"
+      - "../../../../packages/expo-face-detector/ios/EXFaceDetector/EXFaceEncoder.m"
+      - "../../../../packages/expo-face-detector/ios/EXFaceDetector/Utilities/EXFaceDetectorUtils.h"
+      - "../../../../packages/expo-face-detector/ios/EXFaceDetector/Utilities/EXFaceDetectorUtils.m"
+    PROJECT_NAME: EXFaceDetector
+    SPECS:
+      - EXFaceDetector (8.4.0)
   EXFileSystem:
     BUILD_SETTINGS_CHECKSUM:
       EXFileSystem:
@@ -529,8 +573,8 @@ CACHE_KEYS:
   EXFirebaseAnalytics:
     BUILD_SETTINGS_CHECKSUM:
       EXFirebaseAnalytics:
-        :debug: 0f7b89f4d68690550a05f82fe1e1d770
-        :release: 0f7b89f4d68690550a05f82fe1e1d770
+        :debug: ba450ae9bc013467e8dfab4720055c58
+        :release: ba450ae9bc013467e8dfab4720055c58
     CHECKSUM: 6118a277043b028c5ee0edd2da2584d0b33cc980
     FILES:
       - "../../../../packages/expo-firebase-analytics/ios/EXFirebaseAnalytics/EXFirebaseAnalytics.h"
@@ -541,8 +585,8 @@ CACHE_KEYS:
   EXFirebaseCore:
     BUILD_SETTINGS_CHECKSUM:
       EXFirebaseCore:
-        :debug: 00d0887080c99b9b933c849048b43c7c
-        :release: 00d0887080c99b9b933c849048b43c7c
+        :debug: 785587cb74df5cd42a78fbfc3310149f
+        :release: 785587cb74df5cd42a78fbfc3310149f
     CHECKSUM: e3d818b9624e508fff8a7981b175d93d42eb6bab
     FILES:
       - "../../../../packages/expo-firebase-core/ios/EXFirebaseCore/EXFirebaseCore+FIROptions.h"
@@ -1227,13 +1271,15 @@ CACHE_KEYS:
   Firebase:
     BUILD_SETTINGS_CHECKSUM:
       Firebase:
-        :debug: 4f4040f754677421f8d029e82b98abad
-        :release: 4f4040f754677421f8d029e82b98abad
+        :debug: d8d5ec9415591b961df055bc480bd086
+        :release: d8d5ec9415591b961df055bc480bd086
     CHECKSUM: 0219bb4782eb1406f1b9b0628a2e625484ce910d
     PROJECT_NAME: Firebase
     SPECS:
       - Firebase/Core (6.14.0)
       - Firebase/CoreOnly (6.14.0)
+      - Firebase/MLVision (6.14.0)
+      - Firebase/MLVisionFaceModel (6.14.0)
   FirebaseAnalytics:
     BUILD_SETTINGS_CHECKSUM:
       FirebaseAnalytics:
@@ -1279,6 +1325,33 @@ CACHE_KEYS:
     PROJECT_NAME: FirebaseInstanceID
     SPECS:
       - FirebaseInstanceID (4.2.8)
+  FirebaseMLCommon:
+    BUILD_SETTINGS_CHECKSUM:
+      FirebaseMLCommon:
+        :debug: f0ac843096880cfc9dafd82b62498246
+        :release: f0ac843096880cfc9dafd82b62498246
+    CHECKSUM: 074a67e05122b1c9f6401a4e33b2cea3b4efd224
+    PROJECT_NAME: FirebaseMLCommon
+    SPECS:
+      - FirebaseMLCommon (0.19.0)
+  FirebaseMLVision:
+    BUILD_SETTINGS_CHECKSUM:
+      FirebaseMLVision:
+        :debug: 1c4f5e5a55b3e0ab52e20696a83ab64d
+        :release: 1c4f5e5a55b3e0ab52e20696a83ab64d
+    CHECKSUM: 7a456009787690e3b53436092ae9b635563de8f3
+    PROJECT_NAME: FirebaseMLVision
+    SPECS:
+      - FirebaseMLVision (0.19.0)
+  FirebaseMLVisionFaceModel:
+    BUILD_SETTINGS_CHECKSUM:
+      FirebaseMLVisionFaceModel:
+        :debug: 738d3efc9e6919c8898d918f41db8f0c
+        :release: 738d3efc9e6919c8898d918f41db8f0c
+    CHECKSUM: 1003e20ab8979cb77d7a39c93faeb58c959a63f1
+    PROJECT_NAME: FirebaseMLVisionFaceModel
+    SPECS:
+      - FirebaseMLVisionFaceModel (0.19.0)
   Flipper:
     BUILD_SETTINGS_CHECKSUM:
       Flipper:
@@ -1373,6 +1446,16 @@ CACHE_KEYS:
     PROJECT_NAME: glog
     SPECS:
       - glog (0.3.5)
+  GoogleAPIClientForREST:
+    BUILD_SETTINGS_CHECKSUM:
+      GoogleAPIClientForREST:
+        :debug: 0a9e5a04d822e0268e019bc6a8c74157
+        :release: 0a9e5a04d822e0268e019bc6a8c74157
+    CHECKSUM: 4bb409633efcc2e1b3f945afe7e35039b5a61db2
+    PROJECT_NAME: GoogleAPIClientForREST
+    SPECS:
+      - GoogleAPIClientForREST/Core (1.5.1)
+      - GoogleAPIClientForREST/Vision (1.5.1)
   GoogleAppMeasurement:
     BUILD_SETTINGS_CHECKSUM:
       GoogleAppMeasurement:
@@ -1409,6 +1492,20 @@ CACHE_KEYS:
     PROJECT_NAME: GoogleSignIn
     SPECS:
       - GoogleSignIn (5.0.2)
+  GoogleToolboxForMac:
+    BUILD_SETTINGS_CHECKSUM:
+      GoogleToolboxForMac:
+        :debug: 9060d74b8418e2bf725e4b9e6b9dba35
+        :release: 9060d74b8418e2bf725e4b9e6b9dba35
+    CHECKSUM: 1350d40e86a76f7863928d63bcb0b89c84c521c5
+    PROJECT_NAME: GoogleToolboxForMac
+    SPECS:
+      - GoogleToolboxForMac/DebugUtils (2.3.0)
+      - GoogleToolboxForMac/Defines (2.3.0)
+      - GoogleToolboxForMac/Logger (2.3.0)
+      - "GoogleToolboxForMac/NSData+zlib (2.3.0)"
+      - "GoogleToolboxForMac/NSDictionary+URLArguments (2.3.0)"
+      - "GoogleToolboxForMac/NSString+URLArguments (2.3.0)"
   GoogleUtilities:
     BUILD_SETTINGS_CHECKSUM:
       GoogleUtilities:
@@ -1468,28 +1565,30 @@ CACHE_KEYS:
       - OpenSSL-Universal/Static (1.0.2.20)
   Pods-BareExpoMain-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 714aa748f7f959c2aa50406a21150433
-      Release: 3ec4a899588da68b602f2d7f4c151077
+      Debug: af392ae72b82e02639d80d4b376c2394
+      Release: 914dd9641a7c9ce233087b5f04a46114
     FILES:
       - "${PODS_CONFIGURATION_BUILD_DIR}/EXDevMenu/EXDevMenu.bundle"
+      - "${PODS_CONFIGURATION_BUILD_DIR}/FirebaseMLVisionFaceModel/GoogleMVFaceDetectorResources.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle"
       - "${PODS_ROOT}/Amplitude/Sources/Amplitude/ComodoRsaDomainValidationCA.der"
       - "${PODS_ROOT}/FBSDKCoreKit/FacebookSDKStrings.bundle"
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoMain-BareExpoDetox:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: f4389601193a31df9ef2ab694775b670
-      Release: e63f288222a1d91189a0bbb17e2b4d07
+      Debug: d83ea3426168e7fd67ddb69d4e801394
+      Release: 7ad6baca115f1ad253c3b57bdac57148
     FILES:
       - "${PODS_CONFIGURATION_BUILD_DIR}/EXDevMenu/EXDevMenu.bundle"
+      - "${PODS_CONFIGURATION_BUILD_DIR}/FirebaseMLVisionFaceModel/GoogleMVFaceDetectorResources.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle"
       - "${PODS_ROOT}/Amplitude/Sources/Amplitude/ComodoRsaDomainValidationCA.der"
       - "${PODS_ROOT}/FBSDKCoreKit/FacebookSDKStrings.bundle"
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: c82c8fe26698bfa8082b2b1de709ff25
-      Release: c82c8fe26698bfa8082b2b1de709ff25
+      Debug: 76115989be8ee0615e3dd567d83cfd21
+      Release: 76115989be8ee0615e3dd567d83cfd21
   PromisesObjC:
     BUILD_SETTINGS_CHECKSUM:
       PromisesObjC:
@@ -1499,6 +1598,15 @@ CACHE_KEYS:
     PROJECT_NAME: PromisesObjC
     SPECS:
       - PromisesObjC (1.2.9)
+  Protobuf:
+    BUILD_SETTINGS_CHECKSUM:
+      Protobuf:
+        :debug: f3a63680e8eff9d184081e037d49773d
+        :release: f3a63680e8eff9d184081e037d49773d
+    CHECKSUM: 0cde852566359049847168e51bd1c690e0f70056
+    PROJECT_NAME: Protobuf
+    SPECS:
+      - Protobuf (3.14.0)
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired:
@@ -2926,6 +3034,18 @@ CACHE_KEYS:
     PROJECT_NAME: UMCore
     SPECS:
       - UMCore (7.0.0)
+  UMFaceDetectorInterface:
+    BUILD_SETTINGS_CHECKSUM:
+      UMFaceDetectorInterface:
+        :debug: 43bdd4a72ca6d0785867448264086b5f
+        :release: 43bdd4a72ca6d0785867448264086b5f
+    CHECKSUM: 72beeead8c494612730939aaef58ebd38725dedb
+    FILES:
+      - "../../../../packages/unimodules-face-detector-interface/ios/UMFaceDetectorInterface/UMFaceDetectorManager.h"
+      - "../../../../packages/unimodules-face-detector-interface/ios/UMFaceDetectorInterface/UMFaceDetectorManagerProvider.h"
+    PROJECT_NAME: UMFaceDetectorInterface
+    SPECS:
+      - UMFaceDetectorInterface (5.4.0)
   UMFileSystemInterface:
     BUILD_SETTINGS_CHECKSUM:
       UMFileSystemInterface:
