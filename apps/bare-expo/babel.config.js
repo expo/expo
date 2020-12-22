@@ -4,7 +4,7 @@ module.exports = function(api) {
   const moduleResolverConfig = {
     alias: {
       '~expo': 'expo',
-      // expo: require.resolve('./moduleResolvers/expoResolver.js'),
+      expo: require.resolve('./moduleResolvers/expoResolver.js'),
     },
   };
 
