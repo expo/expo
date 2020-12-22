@@ -1,4 +1,5 @@
-import registerRootComponent from 'expo/build/launch/registerRootComponent';
+// @ts-ignore
+import registerRootComponent from '~expo/build/launch/registerRootComponent';
 
 import App from './App';
 
