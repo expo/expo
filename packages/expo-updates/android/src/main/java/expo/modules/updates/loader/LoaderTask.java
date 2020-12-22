@@ -314,7 +314,9 @@ public class LoaderTask {
   }
 
   private void runReaper() {
-    AsyncTask.execute(() -> {
+    final HandlerThread reaperThread = new HandlerThread("expo-updates-reaper");
+    reaperThread.start();
+    new Handler(reaperThread.getLooper()).postDelayed(() -> {
       synchronized (LoaderTask.this) {
         if (mFinalizedLauncher != null && mFinalizedLauncher.getLaunchedUpdate() != null) {
           UpdatesDatabase database = mDatabaseHolder.getDatabase();
@@ -322,6 +324,7 @@ public class LoaderTask {
           mDatabaseHolder.releaseDatabase();
         }
       }
-    });
+      reaperThread.quitSafely();
+    }, 5000);
   }
 }

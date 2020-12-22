@@ -181,13 +181,15 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
 
 - (void)_runReaper
 {
-  if (_finalizedLauncher.launchedUpdate) {
-    [EXUpdatesReaper reapUnusedUpdatesWithConfig:_config
-                                        database:_database
-                                       directory:_directory
-                                 selectionPolicy:_selectionPolicy
-                                  launchedUpdate:_finalizedLauncher.launchedUpdate];
-  }
+  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), _loaderTaskQueue, ^{
+    if (self->_finalizedLauncher.launchedUpdate) {
+      [EXUpdatesReaper reapUnusedUpdatesWithConfig:self->_config
+                                          database:self->_database
+                                         directory:self->_directory
+                                   selectionPolicy:self->_selectionPolicy
+                                    launchedUpdate:self->_finalizedLauncher.launchedUpdate];
+    }
+  });
 }
 
 - (void)_loadEmbeddedUpdateWithCompletion:(void (^)(void))completion
