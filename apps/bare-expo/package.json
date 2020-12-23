@@ -72,6 +72,16 @@
     "runner-config": "./e2e/jest.config.json",
     "test-runner": "jest"
   },
+  "expo-yarn-workspaces": {
+    "symlinks": [
+      "jsc-android",
+      "hermes-engine",
+      "react-native-unimodules",
+      "@react-native-community/cli-platform-ios",
+      "@react-native-community/cli-platform-android",
+      "expo-image"
+    ]
+  },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@react-native-community/async-storage": "~1.12.0",

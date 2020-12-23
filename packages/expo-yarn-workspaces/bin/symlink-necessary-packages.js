@@ -15,13 +15,28 @@ function symlinkNecessaryPackages(projectPath) {
   projectPath = path.resolve(projectPath);
 
   symlinkNecessaryPackage(projectPath, 'expo');
-  symlinkNecessaryPackage(projectPath, 'expo-camera');
-  symlinkNecessaryPackage(projectPath, 'jsc-android');
-  symlinkNecessaryPackage(projectPath, 'hermes-engine');
   symlinkNecessaryPackage(projectPath, 'react-native');
-  symlinkNecessaryPackage(projectPath, 'react-native-unimodules');
-  symlinkNecessaryPackage(projectPath, '@react-native-community/cli-platform-ios');
-  symlinkNecessaryPackage(projectPath, '@react-native-community/cli-platform-android');
+
+  const packageJson = getProjectPackageJson(projectPath);
+
+  const workspace = packageJson['expo-yarn-workspaces'] || {};
+  const symlinks = workspace.symlinks || [];
+  debug(`Project defined symlinks`, symlinks);
+
+  for (const symlink of symlinks) {
+    if (typeof symlink === 'string') {
+      symlinkNecessaryPackage(projectPath, symlink);
+    }
+  }
+}
+
+function getProjectPackageJson(projectPath) {
+  try {
+    const contents = fs.readFileSync(path.join(projectPath, 'package.json'));
+    return JSON.parse(contents);
+  } catch {
+    return {};
+  }
 }
 
 function symlinkNecessaryPackage(projectPath, packageName) {
