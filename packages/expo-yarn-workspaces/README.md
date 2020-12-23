@@ -46,4 +46,4 @@ You can configure workspaces using the `workspace` field in each workspace packa
 
 #### symlinks
 
-Sometimes a node module must be located in the project's `node_modules` folder for things to work properly. Using the `workspaces.symlinks` string array you can define a list of packages that should be linked on install.
+Sometimes an npm package must be located in the project's `node_modules` folder for things to work properly. Using the `workspaces.symlinks` string array you can define a list of packages to symlink under the project's `node_modules` folder after installing the workspaces' dependencies.
