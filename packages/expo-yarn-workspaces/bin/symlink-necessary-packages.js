@@ -18,7 +18,7 @@ function symlinkNecessaryPackages(projectPath) {
   symlinkNecessaryPackage(projectPath, 'jsc-android');
   symlinkNecessaryPackage(projectPath, 'hermes-engine');
   symlinkNecessaryPackage(projectPath, 'react-native');
- 
+
   const packageJson = getProjectPackageJson(projectPath);
 
   const workspace = packageJson.workspace || {};
@@ -32,12 +32,12 @@ function symlinkNecessaryPackages(projectPath) {
   }
 }
 
-function getProjectPackageJson(projectPath) { 
+function getProjectPackageJson(projectPath) {
   try {
     const contents = fs.readFileSync(path.join(projectPath, 'package.json'));
     return JSON.parse(contents);
   } catch {
-    return {}
+    return {};
   }
 }
 
