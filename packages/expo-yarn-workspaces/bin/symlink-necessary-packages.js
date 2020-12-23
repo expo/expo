@@ -21,8 +21,8 @@ function symlinkNecessaryPackages(projectPath) {
  
   const packageJson = getProjectPackageJson(projectPath);
 
-  const workspaces = packageJson.workspaces || {};
-  const symlinks = workspaces.symlinks || [];
+  const workspace = packageJson.workspace || {};
+  const symlinks = workspace.symlinks || [];
   debug(`Project defined symlinks`, symlinks);
 
   for (const symlink of symlinks) {

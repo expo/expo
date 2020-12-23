@@ -42,7 +42,7 @@
     "expo-updates",
     "expo-module-template"
   ],
-  "workspaces": {
+  "workspace": {
     "symlinks": [
       "expo-camera",
       "expo-image",
@@ -106,7 +106,6 @@
     "expo-random": "~10.0.0",
     "expo-notifications": "~0.8.2",
     "expo-splash-screen": "~0.8.1",
-    "expo-yarn-workspaces": "^1.2.1",
     "native-component-list": "*",
     "react": "16.13.1",
     "react-dom": "16.13.1",
