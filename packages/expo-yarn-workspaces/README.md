@@ -42,7 +42,7 @@ The `expo-yarn-workspaces` package defines a Metro configuration object that mak
 
 ### Configuration
 
-You can configure workspaces using the `workspaces` object in the `package.json`.
+You can configure workspaces using the `workspace` field in each workspace package's package.json file.
 
 #### symlinks
 
