@@ -35,7 +35,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		89FC75D107BCE49D2F3409EA40591E8A /* PBXContainerItemProxy */ = {
+		C2285F564AB7C2E043DFF1F89F793846 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 34B59E00CA2CB49441A848A048806DAF /* expo-dev-menu-interface.xcodeproj */;
 			proxyType = 1;
@@ -253,7 +253,7 @@
 			);
 			dependencies = (
 				E60B5045BD888BA7D230AA22CDDC05FC /* PBXTargetDependency */,
-				7B523A7519944D95CF7131673FC8C1F7 /* PBXTargetDependency */,
+				0AF1E89DC7AE4B1BAF04DD2FB732E7D9 /* PBXTargetDependency */,
 			);
 			name = "expo-dev-launcher";
 			productName = "expo-dev-launcher";
@@ -347,10 +347,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		7B523A7519944D95CF7131673FC8C1F7 /* PBXTargetDependency */ = {
+		0AF1E89DC7AE4B1BAF04DD2FB732E7D9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "expo-dev-menu-interface";
-			targetProxy = 89FC75D107BCE49D2F3409EA40591E8A /* PBXContainerItemProxy */;
+			targetProxy = C2285F564AB7C2E043DFF1F89F793846 /* PBXContainerItemProxy */;
 		};
 		E60B5045BD888BA7D230AA22CDDC05FC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
