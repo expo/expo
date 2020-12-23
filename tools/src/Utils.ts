@@ -122,3 +122,16 @@ export async function retryAsync<T = any>(
     timeoutCallback();
   });
 }
+
+/**
+ * Executes regular expression against a string until the last match is found.
+ */
+export function execAll(rgx: RegExp, str: string, index: number = 0): string[] {
+  const globalRgx = new RegExp(rgx.source, 'g' + rgx.flags.replace('g', ''));
+  const matches: string[] = [];
+  let match;
+  while ((match = globalRgx.exec(str))) {
+    matches.push(match[index]);
+  }
+  return matches;
+}

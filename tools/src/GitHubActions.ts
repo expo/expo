@@ -2,14 +2,15 @@ import {
   ActionsListRepoWorkflowsResponseData,
   ActionsListWorkflowRunsForRepoResponseData,
   ActionsListJobsForWorkflowRunResponseData,
+  PullsGetResponseData,
+  IssuesCreateCommentResponseData,
 } from '@octokit/types';
 import { request } from '@octokit/request';
 import fs from 'fs-extra';
 import path from 'path';
 
-import { filterAsync } from './Utils';
+import { execAll, filterAsync } from './Utils';
 import { EXPO_DIR } from './Constants';
-import logger from './Logger';
 
 export type Workflow = ActionsListRepoWorkflowsResponseData['workflows'][0] & {
   slug: string;
@@ -90,26 +91,65 @@ export async function getJobsForWorkflowRunAsync(workflowRunId: number): Promise
 }
 
 /**
- * Dispatches an event that triggers a workflow with given ID.
+ * Dispatches an event that triggers a workflow with given ID or workflow filename (including extension).
  */
 export async function dispatchWorkflowEventAsync(
-  workflowId: number,
+  workflowId: number | string,
   ref: string,
   inputs?: WorkflowDispatchEventInputs
 ): Promise<void> {
-  const response = await request(
+  await request(
     'POST /repos/:owner/:repo/actions/workflows/:workflow_id/dispatches',
+    // @ts-ignore It expects workflow_id to be a number, however workflow filename (string) is also supported.
     makeExpoOptions({
       workflow_id: workflowId,
       ref,
       inputs: inputs ?? {},
     })
   );
-  if (response.status !== 204) {
-    logger.error('💥 Dispatching workflow failed with response', JSON.stringify(response, null, 2));
-    process.exit(1);
-  }
-  logger.success('🎉 Successfully dispatched workflow event ');
+}
+
+/**
+ * Requests for the pull request object.
+ */
+export async function getPullRequestAsync(pullRequestId: number): Promise<PullsGetResponseData> {
+  const response = await request(
+    'GET /repos/:owner/:repo/pulls/:pull_number',
+    makeExpoOptions({
+      pull_number: pullRequestId, //10469,
+    })
+  );
+  return response.data;
+}
+
+/**
+ * Returns an array of issue IDs that has been auto-closed by the pull request.
+ */
+export async function getClosedIssuesAsync(pullRequestId: number): Promise<number[]> {
+  const pullRequest = await getPullRequestAsync(pullRequestId);
+  const matches = execAll(
+    /(?:close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved) (#|https:\/\/github\.com\/expo\/expo\/issues\/)(\d+)/gi,
+    pullRequest.body,
+    2
+  );
+  return matches.map((match) => parseInt(match, 10)).filter((issue) => !isNaN(issue));
+}
+
+/**
+ * Creates an issue comment with given body.
+ */
+export async function commentOnIssueAsync(
+  issueId: number,
+  body: string
+): Promise<IssuesCreateCommentResponseData> {
+  const response = await request(
+    'POST /repos/:owner/:repo/issues/:issue_number/comments',
+    makeExpoOptions({
+      issue_number: issueId,
+      body,
+    })
+  );
+  return response.data;
 }
 
 /**

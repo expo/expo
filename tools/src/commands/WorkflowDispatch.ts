@@ -117,6 +117,8 @@ async function main(workflowSlug: string | undefined, options: CommandOptions) {
   // Dispatch `workflow_dispatch` event.
   await dispatchWorkflowEventAsync(workflow.id, ref, workflow.inputs);
 
+  logger.success('🎉 Successfully dispatched workflow event ');
+
   // Let's wait a little bit for the new workflow run to start and appear in the API response.
   logger.info('⏳ Waiting for the new workflow run to start...');
   const newWorkflowRun = await retryAsync(2000, 10, async () => {

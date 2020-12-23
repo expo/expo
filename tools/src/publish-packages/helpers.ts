@@ -110,7 +110,7 @@ export function printPackageParcel(parcel: Parcel): void {
       logger.log('  ', magenta(`${Formatter.stripNonAsciiChars(changeType).trim()}:`));
 
       for (const change of unpublishedChanges[changeType]) {
-        logger.log('    ', Formatter.formatChangelogEntry(change));
+        logger.log('    ', Formatter.formatChangelogEntry(change.message));
       }
     }
   }
