@@ -42,6 +42,19 @@
     "expo-updates",
     "expo-module-template"
   ],
+  "workspaces": {
+    "symlinks": [
+      "expo-camera",
+      "expo-image",
+      "expo-random",
+      "expo-dev-launcher",
+      "expo-dev-menu",
+      "expo-dev-menu-interface",
+      "react-native-unimodules",
+      "@react-native-community/cli-platform-ios",
+      "@react-native-community/cli-platform-android"
+    ]
+  },
   "detox": {
     "configurations": {
       "ios.sim.debug": {

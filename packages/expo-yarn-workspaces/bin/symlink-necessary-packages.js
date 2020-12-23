@@ -15,19 +15,30 @@ function symlinkNecessaryPackages(projectPath) {
   projectPath = path.resolve(projectPath);
 
   symlinkNecessaryPackage(projectPath, 'expo');
-  symlinkNecessaryPackage(projectPath, 'expo-camera');
   symlinkNecessaryPackage(projectPath, 'jsc-android');
   symlinkNecessaryPackage(projectPath, 'hermes-engine');
   symlinkNecessaryPackage(projectPath, 'react-native');
-  // For community CLI autolinking in bare-expo
-  symlinkNecessaryPackage(projectPath, 'expo-image');
-  symlinkNecessaryPackage(projectPath, 'expo-random');
-  symlinkNecessaryPackage(projectPath, 'expo-dev-launcher');
-  symlinkNecessaryPackage(projectPath, 'expo-dev-menu');
-  symlinkNecessaryPackage(projectPath, 'expo-dev-menu-interface');
-  symlinkNecessaryPackage(projectPath, 'react-native-unimodules');
-  symlinkNecessaryPackage(projectPath, '@react-native-community/cli-platform-ios');
-  symlinkNecessaryPackage(projectPath, '@react-native-community/cli-platform-android');
+ 
+  const packageJson = getProjectPackageJson(projectPath);
+
+  const workspaces = packageJson.workspaces || {};
+  const symlinks = workspaces.symlinks || [];
+  debug(`Project defined symlinks `, symlinks);
+
+  for (const symlink of symlinks) {
+    if (typeof symlink === 'string') {
+      symlinkNecessaryPackage(projectPath, symlink);
+    }
+  }
+}
+
+function getProjectPackageJson(projectPath) { 
+  try {
+    const contents = fs.readFileSync(path.join(projectPath, 'package.json'));
+    return JSON.parse(contents);
+  } catch {
+    return {}
+  }
 }
 
 function symlinkNecessaryPackage(projectPath, packageName) {
