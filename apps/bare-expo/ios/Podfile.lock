@@ -62,7 +62,7 @@ PODS:
     - UMPermissionsInterface
   - EXCrypto (8.4.0):
     - UMCore
-  - EXDevice (2.4.0):
+  - EXDevice (3.0.0):
     - UMCore
   - EXDocumentPicker (8.4.1):
     - UMCore
@@ -1148,7 +1148,7 @@ SPEC CHECKSUMS:
   EXConstants: 8e7d5f068653b4033cc4f883c8c42f1c0eef916e
   EXContacts: af0985f2774788882924cdf58325e5053a85a487
   EXCrypto: b4e71a1766ce80505bd386424ba2d082774a70ed
-  EXDevice: b4f128964c602af9ca60025ef232f8970801c3cb
+  EXDevice: 3763c4fe50988ed87206dbf8672ba0d1429cf667
   EXDocumentPicker: a1627dd979adfc601bf2c08f0ab426ab9b003a5e
   EXErrorRecovery: 33d22d8958362d5c457083d5ebfad94e5780add9
   EXFacebook: 54969ee527bec15552addabff4d824605fa8b6b8

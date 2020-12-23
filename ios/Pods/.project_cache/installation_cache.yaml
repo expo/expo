@@ -8489,13 +8489,13 @@ CACHE_KEYS:
       EXDevice:
         :debug: e79829305cd6710464c7fcca3a84778e
         :release: e79829305cd6710464c7fcca3a84778e
-    CHECKSUM: b4f128964c602af9ca60025ef232f8970801c3cb
+    CHECKSUM: 3763c4fe50988ed87206dbf8672ba0d1429cf667
     FILES:
       - "../../packages/expo-device/ios/EXDevice/EXDevice.h"
       - "../../packages/expo-device/ios/EXDevice/EXDevice.m"
     PROJECT_NAME: EXDevice
     SPECS:
-      - EXDevice (2.4.0)
+      - EXDevice (3.0.0)
   EXDocumentPicker:
     BUILD_SETTINGS_CHECKSUM:
       EXDocumentPicker:
