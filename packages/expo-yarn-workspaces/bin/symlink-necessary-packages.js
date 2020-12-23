@@ -23,7 +23,7 @@ function symlinkNecessaryPackages(projectPath) {
 
   const workspaces = packageJson.workspaces || {};
   const symlinks = workspaces.symlinks || [];
-  debug(`Project defined symlinks `, symlinks);
+  debug(`Project defined symlinks`, symlinks);
 
   for (const symlink of symlinks) {
     if (typeof symlink === 'string') {
