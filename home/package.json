@@ -38,7 +38,7 @@
     "expo-blur": "~8.2.2",
     "expo-camera": "~9.1.1",
     "expo-constants": "~9.3.5",
-    "expo-device": "~2.4.0",
+    "expo-device": "~3.0.0",
     "expo-font": "~8.4.0",
     "expo-linear-gradient": "~8.4.0",
     "expo-location": "~10.0.0",
