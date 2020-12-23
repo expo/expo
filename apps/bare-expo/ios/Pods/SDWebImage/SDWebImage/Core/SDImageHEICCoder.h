@@ -17,6 +17,7 @@
  @note This coder is not in the default coder list for now, since HEIC animated image is really rare, and Apple's implementation still contains performance issues. You can enable if you need this.
  @note If you need to support lower firmware version for HEIF, you can have a try at https://github.com/SDWebImage/SDWebImageHEIFCoder
  */
+API_AVAILABLE(ios(13.0), tvos(13.0), macos(10.15), watchos(6.0))
 @interface SDImageHEICCoder : SDImageIOAnimatedCoder <SDProgressiveImageCoder, SDAnimatedImageCoder>
 
 @property (nonatomic, class, readonly, nonnull) SDImageHEICCoder *sharedCoder;

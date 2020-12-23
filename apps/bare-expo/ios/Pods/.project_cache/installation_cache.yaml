@@ -807,7 +807,7 @@ CACHE_KEYS:
       expo-dev-launcher:
         :debug: a05154ea236f2285cbdf3359f2424387
         :release: a05154ea236f2285cbdf3359f2424387
-    CHECKSUM: 132ef53628b7c74894b3f6b9016b7415571bc1bb
+    CHECKSUM: 6dc7330b56aaf50d71752b4636f4349d8c809c29
     FILES:
       - "../../../../packages/expo-dev-launcher/ios/EXDevLauncher.h"
       - "../../../../packages/expo-dev-launcher/ios/EXDevLauncher.m"
@@ -835,13 +835,13 @@ CACHE_KEYS:
       - "../../../../packages/expo-dev-launcher/README.md"
     PROJECT_NAME: expo-dev-launcher
     SPECS:
-      - expo-dev-launcher (0.1.0)
+      - expo-dev-launcher (0.1.1)
   expo-dev-menu:
     BUILD_SETTINGS_CHECKSUM:
       expo-dev-menu:
         :debug: 16f74ad736b93e99f6a6d09d36f79fee
         :release: 16f74ad736b93e99f6a6d09d36f79fee
-    CHECKSUM: e019ac461f4d8269eb22181d33f842f2277148be
+    CHECKSUM: abf512cc663ded2f1d1d18c40a7725d8e84f8a52
     FILES:
       - "../../../../packages/expo-dev-menu/assets/dev-menu-packager-host"
       - "../../../../packages/expo-dev-menu/assets/EXDevMenuApp.ios.js"
@@ -967,13 +967,13 @@ CACHE_KEYS:
       - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/RCTConvert+DevMenuREATransition.m"
     PROJECT_NAME: expo-dev-menu
     SPECS:
-      - expo-dev-menu (0.1.0)
+      - expo-dev-menu (0.1.1)
   expo-dev-menu-interface:
     BUILD_SETTINGS_CHECKSUM:
       expo-dev-menu-interface:
         :debug: 3234bfb07d53670ee5689d5c4868f6be
         :release: 3234bfb07d53670ee5689d5c4868f6be
-    CHECKSUM: 4cf17b1680a0939fd347ab59ec92a82171e51227
+    CHECKSUM: e2534e9e6d5c333ef0a0bee02e459f310ddf810b
     FILES:
       - "../../../../packages/expo-dev-menu-interface/ios/DevMenuBridgeProtocol.swift"
       - "../../../../packages/expo-dev-menu-interface/ios/DevMenuDelegateProtocol.swift"
@@ -986,7 +986,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-dev-menu-interface/README.md"
     PROJECT_NAME: expo-dev-menu-interface
     SPECS:
-      - expo-dev-menu-interface (0.1.0)
+      - expo-dev-menu-interface (0.1.1)
   expo-image:
     BUILD_SETTINGS_CHECKSUM:
       expo-image:
@@ -1156,6 +1156,25 @@ CACHE_KEYS:
     PROJECT_NAME: EXSpeech
     SPECS:
       - EXSpeech (8.5.0)
+  EXSplashScreen:
+    BUILD_SETTINGS_CHECKSUM:
+      EXSplashScreen:
+        :debug: 869e9e2cbdef7fe98f2d5631b0f81486
+        :release: 869e9e2cbdef7fe98f2d5631b0f81486
+    CHECKSUM: b4e177a13a8016884c813b773b900220fe6a1ad1
+    FILES:
+      - "../../../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenController.h"
+      - "../../../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenController.m"
+      - "../../../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenModule.h"
+      - "../../../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenModule.m"
+      - "../../../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenService.h"
+      - "../../../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenService.m"
+      - "../../../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenViewNativeProvider.h"
+      - "../../../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenViewNativeProvider.m"
+      - "../../../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenViewProvider.h"
+    PROJECT_NAME: EXSplashScreen
+    SPECS:
+      - EXSplashScreen (0.8.1)
   EXSQLite:
     BUILD_SETTINGS_CHECKSUM:
       EXSQLite:
@@ -1566,8 +1585,8 @@ CACHE_KEYS:
       - OpenSSL-Universal/Static (1.0.2.20)
   Pods-BareExpoMain-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 5db66a18ad969b7519ae07e48f927627
-      Release: c991bf264af38a51773fb524fa3539f5
+      Debug: 877ce0e8e6463584617fddce28690ce4
+      Release: 1d4c90d06175ff45bd9e2da0cfb19fd3
     FILES:
       - "${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-menu/EXDevMenu.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/FirebaseMLVisionFaceModel/GoogleMVFaceDetectorResources.bundle"
@@ -1577,8 +1596,8 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoMain-BareExpoDetox:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 1c78e270f44c401f9b981c54e72a06f8
-      Release: ad296aff4c10bfaa21e6fc6807162532
+      Debug: 367aa70f33d76b29ed5101412ee45005
+      Release: 2d0a3e3c4dfa6655b2cc06f970bf2237
     FILES:
       - "${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-menu/EXDevMenu.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/FirebaseMLVisionFaceModel/GoogleMVFaceDetectorResources.bundle"
@@ -1588,8 +1607,8 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: b96b360a5226c57f4d648a5bc5dab1f9
-      Release: b96b360a5226c57f4d648a5bc5dab1f9
+      Debug: f411f8663373fe028066c95ceedf3390
+      Release: f411f8663373fe028066c95ceedf3390
   PromisesObjC:
     BUILD_SETTINGS_CHECKSUM:
       PromisesObjC:
@@ -2941,11 +2960,11 @@ CACHE_KEYS:
       SDWebImage:
         :debug: 1e90e26ff5c55c782bb1feb0482e135e
         :release: 1e90e26ff5c55c782bb1feb0482e135e
-    CHECKSUM: e3eae2eda88578db0685a0c88597fdadd9433f05
+    CHECKSUM: 9169792e9eec3e45bba2a0c02f74bf8bd922d1ee
     PROJECT_NAME: SDWebImage
     SPECS:
-      - SDWebImage (5.8.1)
-      - SDWebImage/Core (5.8.1)
+      - SDWebImage (5.10.0)
+      - SDWebImage/Core (5.10.0)
   UMAppLoader:
     BUILD_SETTINGS_CHECKSUM:
       UMAppLoader:

@@ -34,6 +34,7 @@ typedef void(^SDSetImageBlock)(UIImage * _Nullable image, NSData * _Nullable ima
 /**
  * Get the current image operation key. Operation key is used to identify the different queries for one view instance (like UIButton).
  * See more about this in `SDWebImageContextSetImageOperationKey`.
+ * If you cancel current image load, the key will be set to nil.
  * @note You can use method `UIView+WebCacheOperation` to investigate different queries' operation.
  */
 @property (nonatomic, strong, readonly, nullable) NSString *sd_latestOperationKey;

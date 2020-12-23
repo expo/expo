@@ -13,14 +13,6 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #endif
 
-// iOS 8 Image/IO framework binary does not contains these APNG constants, so we define them. Thanks Apple :)
-// We can not use runtime @available check for this issue, because it's a global symbol and should be loaded during launch time by dyld. So hack if the min deployment target version < iOS 9.0, whatever it running on iOS 9+ or not.
-#if (__IPHONE_OS_VERSION_MIN_REQUIRED && __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_9_0)
-const CFStringRef kCGImagePropertyAPNGLoopCount = (__bridge CFStringRef)@"LoopCount";
-const CFStringRef kCGImagePropertyAPNGDelayTime = (__bridge CFStringRef)@"DelayTime";
-const CFStringRef kCGImagePropertyAPNGUnclampedDelayTime = (__bridge CFStringRef)@"UnclampedDelayTime";
-#endif
-
 @implementation SDImageAPNGCoder
 
 + (instancetype)sharedCoder {

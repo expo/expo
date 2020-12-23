@@ -26,14 +26,15 @@ static id<SDImageLoader> _defaultImageLoader;
 
 @end
 
-@interface SDWebImageManager ()
+@interface SDWebImageManager () {
+    SD_LOCK_DECLARE(_failedURLsLock); // a lock to keep the access to `failedURLs` thread-safe
+    SD_LOCK_DECLARE(_runningOperationsLock); // a lock to keep the access to `runningOperations` thread-safe
+}
 
 @property (strong, nonatomic, readwrite, nonnull) SDImageCache *imageCache;
 @property (strong, nonatomic, readwrite, nonnull) id<SDImageLoader> imageLoader;
 @property (strong, nonatomic, nonnull) NSMutableSet<NSURL *> *failedURLs;
-@property (strong, nonatomic, nonnull) dispatch_semaphore_t failedURLsLock; // a lock to keep the access to `failedURLs` thread-safe
 @property (strong, nonatomic, nonnull) NSMutableSet<SDWebImageCombinedOperation *> *runningOperations;
-@property (strong, nonatomic, nonnull) dispatch_semaphore_t runningOperationsLock; // a lock to keep the access to `runningOperations` thread-safe
 
 @end
 
@@ -87,9 +88,9 @@ static id<SDImageLoader> _defaultImageLoader;
         _imageCache = cache;
         _imageLoader = loader;
         _failedURLs = [NSMutableSet new];
-        _failedURLsLock = dispatch_semaphore_create(1);
+        SD_LOCK_INIT(_failedURLsLock);
         _runningOperations = [NSMutableSet new];
-        _runningOperationsLock = dispatch_semaphore_create(1);
+        SD_LOCK_INIT(_runningOperationsLock);
     }
     return self;
 }
@@ -188,9 +189,9 @@ static id<SDImageLoader> _defaultImageLoader;
 
     BOOL isFailedUrl = NO;
     if (url) {
-        SD_LOCK(self.failedURLsLock);
+        SD_LOCK(_failedURLsLock);
         isFailedUrl = [self.failedURLs containsObject:url];
-        SD_UNLOCK(self.failedURLsLock);
+        SD_UNLOCK(_failedURLsLock);
     }
 
     if (url.absoluteString.length == 0 || (!(options & SDWebImageRetryFailed) && isFailedUrl)) {
@@ -200,9 +201,9 @@ static id<SDImageLoader> _defaultImageLoader;
         return operation;
     }
 
-    SD_LOCK(self.runningOperationsLock);
+    SD_LOCK(_runningOperationsLock);
     [self.runningOperations addObject:operation];
-    SD_UNLOCK(self.runningOperationsLock);
+    SD_UNLOCK(_runningOperationsLock);
     
     // Preprocess the options and context arg to decide the final the result for manager
     SDWebImageOptionsResult *result = [self processedResultForURL:url options:options context:context];
@@ -214,17 +215,17 @@ static id<SDImageLoader> _defaultImageLoader;
 }
 
 - (void)cancelAll {
-    SD_LOCK(self.runningOperationsLock);
+    SD_LOCK(_runningOperationsLock);
     NSSet<SDWebImageCombinedOperation *> *copiedOperations = [self.runningOperations copy];
-    SD_UNLOCK(self.runningOperationsLock);
+    SD_UNLOCK(_runningOperationsLock);
     [copiedOperations makeObjectsPerformSelector:@selector(cancel)]; // This will call `safelyRemoveOperationFromRunning:` and remove from the array
 }
 
 - (BOOL)isRunning {
     BOOL isRunning = NO;
-    SD_LOCK(self.runningOperationsLock);
+    SD_LOCK(_runningOperationsLock);
     isRunning = (self.runningOperations.count > 0);
-    SD_UNLOCK(self.runningOperationsLock);
+    SD_UNLOCK(_runningOperationsLock);
     return isRunning;
 }
 
@@ -232,15 +233,15 @@ static id<SDImageLoader> _defaultImageLoader;
     if (!url) {
         return;
     }
-    SD_LOCK(self.failedURLsLock);
+    SD_LOCK(_failedURLsLock);
     [self.failedURLs removeObject:url];
-    SD_UNLOCK(self.failedURLsLock);
+    SD_UNLOCK(_failedURLsLock);
 }
 
 - (void)removeAllFailedURLs {
-    SD_LOCK(self.failedURLsLock);
+    SD_LOCK(_failedURLsLock);
     [self.failedURLs removeAllObjects];
-    SD_UNLOCK(self.failedURLsLock);
+    SD_UNLOCK(_failedURLsLock);
 }
 
 #pragma mark - Private
@@ -378,7 +379,11 @@ static id<SDImageLoader> _defaultImageLoader;
     BOOL shouldDownload = !SD_OPTIONS_CONTAINS(options, SDWebImageFromCacheOnly);
     shouldDownload &= (!cachedImage || options & SDWebImageRefreshCached);
     shouldDownload &= (![self.delegate respondsToSelector:@selector(imageManager:shouldDownloadImageForURL:)] || [self.delegate imageManager:self shouldDownloadImageForURL:url]);
-    shouldDownload &= [imageLoader canRequestImageForURL:url];
+    if ([imageLoader respondsToSelector:@selector(canRequestImageForURL:options:context:)]) {
+        shouldDownload &= [imageLoader canRequestImageForURL:url options:options context:context];
+    } else {
+        shouldDownload &= [imageLoader canRequestImageForURL:url];
+    }
     if (shouldDownload) {
         if (cachedImage && options & SDWebImageRefreshCached) {
             // If image was found in the cache but SDWebImageRefreshCached is provided, notify about the cached image
@@ -411,15 +416,15 @@ static id<SDImageLoader> _defaultImageLoader;
                 BOOL shouldBlockFailedURL = [self shouldBlockFailedURLWithURL:url error:error options:options context:context];
                 
                 if (shouldBlockFailedURL) {
-                    SD_LOCK(self.failedURLsLock);
+                    SD_LOCK(self->_failedURLsLock);
                     [self.failedURLs addObject:url];
-                    SD_UNLOCK(self.failedURLsLock);
+                    SD_UNLOCK(self->_failedURLsLock);
                 }
             } else {
                 if ((options & SDWebImageRetryFailed)) {
-                    SD_LOCK(self.failedURLsLock);
+                    SD_LOCK(self->_failedURLsLock);
                     [self.failedURLs removeObject:url];
-                    SD_UNLOCK(self.failedURLsLock);
+                    SD_UNLOCK(self->_failedURLsLock);
                 }
                 // Continue store cache process
                 [self callStoreCacheProcessForOperation:operation url:url options:options context:context downloadedImage:downloadedImage downloadedData:downloadedData finished:finished progress:progressBlock completed:completedBlock];
@@ -560,9 +565,9 @@ static id<SDImageLoader> _defaultImageLoader;
     if (!operation) {
         return;
     }
-    SD_LOCK(self.runningOperationsLock);
+    SD_LOCK(_runningOperationsLock);
     [self.runningOperations removeObject:operation];
-    SD_UNLOCK(self.runningOperationsLock);
+    SD_UNLOCK(_runningOperationsLock);
 }
 
 - (void)storeImage:(nullable UIImage *)image
@@ -631,7 +636,11 @@ static id<SDImageLoader> _defaultImageLoader;
     if ([self.delegate respondsToSelector:@selector(imageManager:shouldBlockFailedURL:withError:)]) {
         shouldBlockFailedURL = [self.delegate imageManager:self shouldBlockFailedURL:url withError:error];
     } else {
-        shouldBlockFailedURL = [imageLoader shouldBlockFailedURLWithURL:url error:error];
+        if ([imageLoader respondsToSelector:@selector(shouldBlockFailedURLWithURL:error:options:context:)]) {
+            shouldBlockFailedURL = [imageLoader shouldBlockFailedURLWithURL:url error:error options:options context:context];
+        } else {
+            shouldBlockFailedURL = [imageLoader shouldBlockFailedURLWithURL:url error:error];
+        }
     }
     
     return shouldBlockFailedURL;

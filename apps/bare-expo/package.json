@@ -74,12 +74,7 @@
   },
   "expo-yarn-workspaces": {
     "symlinks": [
-      "jsc-android",
-      "hermes-engine",
-      "react-native-unimodules",
-      "@react-native-community/cli-platform-ios",
-      "@react-native-community/cli-platform-android",
-      "expo-image"
+      "expo-camera"
     ]
   },
   "dependencies": {
@@ -101,8 +96,8 @@
     "expo-dev-launcher": "0.1.1",
     "expo-image": "~1.0.0-alpha.0",
     "expo-notifications": "~0.8.2",
+    "expo-random": "~10.0.0",
     "expo-splash-screen": "~0.8.1",
-    "expo-yarn-workspaces": "^1.2.1",
     "native-component-list": "*",
     "react": "16.13.1",
     "react-dom": "16.13.1",

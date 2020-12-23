@@ -16,6 +16,12 @@ function symlinkNecessaryPackages(projectPath) {
 
   symlinkNecessaryPackage(projectPath, 'expo');
   symlinkNecessaryPackage(projectPath, 'react-native');
+  // Required for bare workflow gradle and Podfile imports which don't have access to node module resolution.
+  symlinkNecessaryPackage(projectPath, "jsc-android");
+  symlinkNecessaryPackage(projectPath, "hermes-engine");
+  symlinkNecessaryPackage(projectPath, "react-native-unimodules");
+  symlinkNecessaryPackage(projectPath, "@react-native-community/cli-platform-ios");
+  symlinkNecessaryPackage(projectPath, "@react-native-community/cli-platform-android");
 
   const packageJson = getProjectPackageJson(projectPath);
 
