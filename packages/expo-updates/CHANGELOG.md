@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Keep current update and one older update, for safety and to make rollbacks faster ([#11449](https://github.com/expo/expo/pull/11449) by [@esamelson](https://github.com/esamelson))
+
 ### 🐛 Bug fixes
 
 ## 0.4.1 — 2020-11-25
