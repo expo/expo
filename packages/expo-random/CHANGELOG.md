@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Export JSON from `react-native.config` ([#11456](https://github.com/expo/expo/pull/11456) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 10.0.0 — 2020-11-17
 
 ### 🛠 Breaking changes
