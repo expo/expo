@@ -11,6 +11,7 @@
 #import "NSImage+Compatibility.h"
 #import <ImageIO/ImageIO.h>
 #import "UIImage+Metadata.h"
+#import "SDImageHEICCoderInternal.h"
 #import "SDImageIOAnimatedCoderInternal.h"
 
 // Specify File Size for lossy format encoding, like JPEG
@@ -54,7 +55,19 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
 
 #pragma mark - Decode
 - (BOOL)canDecodeFromData:(nullable NSData *)data {
-    return YES;
+    switch ([NSData sd_imageFormatForImageData:data]) {
+        case SDImageFormatWebP:
+            // Do not support WebP decoding
+            return NO;
+        case SDImageFormatHEIC:
+            // Check HEIC decoding compatibility
+            return [SDImageHEICCoder canDecodeFromHEICFormat];
+        case SDImageFormatHEIF:
+            // Check HEIF decoding compatibility
+            return [SDImageHEICCoder canDecodeFromHEIFFormat];
+        default:
+            return YES;
+    }
 }
 
 - (UIImage *)decodedImageWithData:(NSData *)data options:(nullable SDImageCoderOptions *)options {
@@ -192,7 +205,19 @@ static NSString * kSDCGImageDestinationRequestedFileSize = @"kCGImageDestination
 
 #pragma mark - Encode
 - (BOOL)canEncodeToFormat:(SDImageFormat)format {
-    return YES;
+    switch (format) {
+        case SDImageFormatWebP:
+            // Do not support WebP encoding
+            return NO;
+        case SDImageFormatHEIC:
+            // Check HEIC encoding compatibility
+            return [SDImageHEICCoder canEncodeToHEICFormat];
+        case SDImageFormatHEIF:
+            // Check HEIF encoding compatibility
+            return [SDImageHEICCoder canEncodeToHEIFFormat];
+        default:
+            return YES;
+    }
 }
 
 - (NSData *)encodedDataWithImage:(UIImage *)image format:(SDImageFormat)format options:(nullable SDImageCoderOptions *)options {

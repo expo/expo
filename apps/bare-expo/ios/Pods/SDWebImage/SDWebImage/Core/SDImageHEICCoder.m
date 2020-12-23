@@ -7,7 +7,7 @@
 */
 
 #import "SDImageHEICCoder.h"
-#import "SDImageIOAnimatedCoderInternal.h"
+#import "SDImageHEICCoderInternal.h"
 
 // These constants are available from iOS 13+ and Xcode 11. This raw value is used for toolchain and firmware compatibility
 static NSString * kSDCGImagePropertyHEICSDictionary = @"{HEICS}";
@@ -18,6 +18,8 @@ static NSString * kSDCGImagePropertyHEICSUnclampedDelayTime = @"UnclampedDelayTi
 @implementation SDImageHEICCoder
 
 + (void)initialize {
+#if __IPHONE_13_0 || __TVOS_13_0 || __MAC_10_15 || __WATCHOS_6_0
+    // Xcode 11
     if (@available(iOS 13, tvOS 13, macOS 10.15, watchOS 6, *)) {
         // Use SDK instead of raw value
         kSDCGImagePropertyHEICSDictionary = (__bridge NSString *)kCGImagePropertyHEICSDictionary;
@@ -25,6 +27,7 @@ static NSString * kSDCGImagePropertyHEICSUnclampedDelayTime = @"UnclampedDelayTi
         kSDCGImagePropertyHEICSDelayTime = (__bridge NSString *)kCGImagePropertyHEICSDelayTime;
         kSDCGImagePropertyHEICSUnclampedDelayTime = (__bridge NSString *)kCGImagePropertyHEICSUnclampedDelayTime;
     }
+#endif
 }
 
 + (instancetype)sharedCoder {
@@ -42,10 +45,10 @@ static NSString * kSDCGImagePropertyHEICSUnclampedDelayTime = @"UnclampedDelayTi
     switch ([NSData sd_imageFormatForImageData:data]) {
         case SDImageFormatHEIC:
             // Check HEIC decoding compatibility
-            return [self.class canDecodeFromFormat:SDImageFormatHEIC];
+            return [self.class canDecodeFromHEICFormat];
         case SDImageFormatHEIF:
             // Check HEIF decoding compatibility
-            return [self.class canDecodeFromFormat:SDImageFormatHEIF];
+            return [self.class canDecodeFromHEIFFormat];
         default:
             return NO;
     }
@@ -59,13 +62,76 @@ static NSString * kSDCGImagePropertyHEICSUnclampedDelayTime = @"UnclampedDelayTi
     switch (format) {
         case SDImageFormatHEIC:
             // Check HEIC encoding compatibility
-            return [self.class canEncodeToFormat:SDImageFormatHEIC];
+            return [self.class canEncodeToHEICFormat];
         case SDImageFormatHEIF:
             // Check HEIF encoding compatibility
-            return [self.class canEncodeToFormat:SDImageFormatHEIF];
+            return [self.class canEncodeToHEIFFormat];
         default:
             return NO;
     }
+}
+
+#pragma mark - HEIF Format
+
++ (BOOL)canDecodeFromFormat:(SDImageFormat)format {
+    CFStringRef imageUTType = [NSData sd_UTTypeFromImageFormat:format];
+    NSArray *imageUTTypes = (__bridge_transfer NSArray *)CGImageSourceCopyTypeIdentifiers();
+    if ([imageUTTypes containsObject:(__bridge NSString *)(imageUTType)]) {
+        return YES;
+    }
+    return NO;
+}
+
++ (BOOL)canDecodeFromHEICFormat {
+    static BOOL canDecode = NO;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        canDecode = [self canDecodeFromFormat:SDImageFormatHEIC];
+    });
+    return canDecode;
+}
+
++ (BOOL)canDecodeFromHEIFFormat {
+    static BOOL canDecode = NO;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        canDecode = [self canDecodeFromFormat:SDImageFormatHEIF];
+    });
+    return canDecode;
+}
+
++ (BOOL)canEncodeToFormat:(SDImageFormat)format {
+    NSMutableData *imageData = [NSMutableData data];
+    CFStringRef imageUTType = [NSData sd_UTTypeFromImageFormat:format];
+    
+    // Create an image destination.
+    CGImageDestinationRef imageDestination = CGImageDestinationCreateWithData((__bridge CFMutableDataRef)imageData, imageUTType, 1, NULL);
+    if (!imageDestination) {
+        // Can't encode to HEIC
+        return NO;
+    } else {
+        // Can encode to HEIC
+        CFRelease(imageDestination);
+        return YES;
+    }
+}
+
++ (BOOL)canEncodeToHEICFormat {
+    static BOOL canEncode = NO;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        canEncode = [self canEncodeToFormat:SDImageFormatHEIC];
+    });
+    return canEncode;
+}
+
++ (BOOL)canEncodeToHEIFFormat {
+    static BOOL canEncode = NO;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        canEncode = [self canEncodeToFormat:SDImageFormatHEIF];
+    });
+    return canEncode;
 }
 
 #pragma mark - Subclass Override

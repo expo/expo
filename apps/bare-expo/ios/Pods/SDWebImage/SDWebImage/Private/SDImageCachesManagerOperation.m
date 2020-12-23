@@ -9,8 +9,9 @@
 #import "SDImageCachesManagerOperation.h"
 #import "SDInternalMacros.h"
 
-@implementation SDImageCachesManagerOperation {
-    SD_LOCK_DECLARE(_pendingCountLock);
+@implementation SDImageCachesManagerOperation
+{
+    dispatch_semaphore_t _pendingCountLock;
 }
 
 @synthesize executing = _executing;
@@ -20,7 +21,7 @@
 
 - (instancetype)init {
     if (self = [super init]) {
-        SD_LOCK_INIT(_pendingCountLock);
+        _pendingCountLock = dispatch_semaphore_create(1);
         _pendingCount = 0;
     }
     return self;

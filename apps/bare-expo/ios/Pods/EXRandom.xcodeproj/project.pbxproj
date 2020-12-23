@@ -323,18 +323,17 @@
 			};
 			name = Debug;
 		};
-		CA3E8DA89C6C8EAFF792650A802096E8 /* Debug */ = {
+		7F0868989CF551254C41E2B85146CFF0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7C5A1A1C5498A4D797BC312930AD84C5 /* EXRandom.debug.xcconfig */;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/EXRandom/EXRandom-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -349,18 +348,17 @@
 			};
 			name = Debug;
 		};
-		F1432659CAE6C49169DDC5B6A9037A26 /* Release */ = {
+		996876F60E641452C988DC9794ABA479 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5063B1618AB21EA03BA6C0EE5C560E9D /* EXRandom.release.xcconfig */;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/EXRandom/EXRandom-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -391,8 +389,8 @@
 		E573EF930A87295B00F7709493A4E5E3 /* Build configuration list for PBXNativeTarget "EXRandom" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				CA3E8DA89C6C8EAFF792650A802096E8 /* Debug */,
-				F1432659CAE6C49169DDC5B6A9037A26 /* Release */,
+				7F0868989CF551254C41E2B85146CFF0 /* Debug */,
+				996876F60E641452C988DC9794ABA479 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
