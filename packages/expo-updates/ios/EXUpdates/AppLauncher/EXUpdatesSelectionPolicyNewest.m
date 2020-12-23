@@ -50,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
   }
 
   NSMutableArray<EXUpdatesUpdate *> *updatesToDelete = [NSMutableArray new];
-  // keep the launched update and one other, the next newest, to be safe
+  // keep the launched update and one other, the next newest, to be safe and make rollbacks faster
   EXUpdatesUpdate *nextNewestUpdate;
   for (EXUpdatesUpdate *update in updates) {
     if ([launchedUpdate.commitTime compare:update.commitTime] == NSOrderedDescending) {
