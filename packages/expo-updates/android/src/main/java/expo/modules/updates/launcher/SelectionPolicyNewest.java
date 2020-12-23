@@ -48,10 +48,19 @@ public class SelectionPolicyNewest implements SelectionPolicy {
     }
 
     List<UpdateEntity> updatesToDelete = new ArrayList<>();
+    // keep the launched update and one other, the next newest, to be safe and make rollbacks faster
+    UpdateEntity nextNewestUpdate = null;
     for (UpdateEntity update : updates) {
       if (update.commitTime.before(launchedUpdate.commitTime)) {
         updatesToDelete.add(update);
+        if (nextNewestUpdate == null || nextNewestUpdate.commitTime.before(update.commitTime)) {
+          nextNewestUpdate = update;
+        }
       }
+    }
+
+    if (nextNewestUpdate != null) {
+      updatesToDelete.remove(nextNewestUpdate);
     }
     return updatesToDelete;
   }
