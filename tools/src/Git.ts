@@ -219,12 +219,17 @@ export class GitDirectory {
       .split(/\n/g)
       .filter(Boolean)
       .map((line) => {
-        const [status, relativePath] = line.split(/\s+/);
+        // Consecutive columns are separated by horizontal tabs.
+        // In case of `R` (rename) status, there are three columns instead of two,
+        // where the third is the new path after renaming and we should use the new one.
+        const [status, relativePath, relativePathAfterRename] = line.split(/\t+/g);
+        const newPath = relativePathAfterRename ?? relativePath;
 
         return {
-          relativePath,
-          path: path.join(this.path, relativePath),
-          status: GitFileStatus[status] ?? status,
+          relativePath: newPath,
+          path: path.join(this.path, newPath),
+          // `R` status also has a number, but we take care of only the first character.
+          status: GitFileStatus[status[0]] ?? status,
         };
       });
   }
