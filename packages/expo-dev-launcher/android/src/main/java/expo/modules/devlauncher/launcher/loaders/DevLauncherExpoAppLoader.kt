@@ -2,6 +2,7 @@ package expo.modules.devlauncher.launcher.loaders
 
 import android.content.Context
 import android.graphics.Color
+import android.net.Uri
 import android.util.Log
 import android.view.View
 import com.facebook.react.ReactActivity
@@ -21,8 +22,8 @@ class DevLauncherExpoAppLoader(
   private val activityConfigurator: DevLauncherExpoActivityConfigurator =
     DevLauncherExpoActivityConfigurator(manifest, context)
 ) : DevLauncherAppLoader(appHost, context) {
-  override fun getBundleUrl(): String {
-    return manifest.bundleUrl
+  override fun getBundleUrl(): Uri {
+    return Uri.parse(manifest.bundleUrl)
   }
 
   override fun onCreate(activity: ReactActivity) = with(activityConfigurator) {

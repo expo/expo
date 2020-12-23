@@ -52,6 +52,7 @@ Add the following scripts to your `package.json` and run `yarn`
 ```
 
 Running `yarn` will now run the `prepare` script, which generates any missing files:
+
 - [`.eslintrc.js`](./templates/.eslintrc.js) ([docs](https://eslint.org/docs/user-guide/configuring)) this extends [`eslint-config-universe`](https://github.com/expo/expo/tree/master/packages/eslint-config-universe).
   - Optionally you can customize Prettier too: [.prettierrc guide](https://github.com/expo/expo/tree/master/packages/eslint-config-universe#customizing-prettier).
 - [`.npmignore`](./templates/.npmignore) ([docs](https://docs.npmjs.com/misc/developers)) currently only ignores the `babel.config.js` in your module. You might also want to also add tests and docs.
@@ -199,6 +200,15 @@ If we were to use just Babel with the TypeScript plugin for the `build` command,
 ### lint
 
 This runs ESLint over the source JS and TypeScript files.
+
+One of the rules enforced is restricting any imports from the `fbjs` library. As stated in that [library's readme](https://github.com/facebook/fbjs#purpose):
+
+> If you are consuming the code here and you are not also a Facebook project, be prepared for a bad time.
+
+Replacements for common `fbjs` uses-cases are listed below:
+
+- `invariant`- replace with [`invariant`](https://www.npmjs.com/package/invariant)
+- `ExecutionEnvironment`- replace with [`Platform` from `@unimodules/core`](https://github.com/expo/expo/blob/master/packages/%40unimodules/react-native-adapter/src/Platform.ts)
 
 ### clean
 

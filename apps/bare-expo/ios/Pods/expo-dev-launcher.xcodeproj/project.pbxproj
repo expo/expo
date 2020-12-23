@@ -7,87 +7,89 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0A1EB9C29FD7F7DA2FAD21E4E759EAA2 /* expo-dev-launcher-Bridging-Header.h in Headers */ = {isa = PBXBuildFile; fileRef = B80E030F0E5DC8D50BBB2BBD6724FA95 /* expo-dev-launcher-Bridging-Header.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		148EABF11DACC7DB76B460F01F9F48FF /* EXDevLauncherManifest.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD14C7EDBE831007B36C4D28459E92AA /* EXDevLauncherManifest.swift */; };
-		18B02B5A798E2D42288FEAD2273EE6C7 /* EXDevLauncherRCTBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 1145F48825438AC1B8DB248E0F25AC5C /* EXDevLauncherRCTBridge.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		219FF4B354BE8BB58C8FE64997CC822B /* EXDevLauncherController+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 8241808C69091C3FAD8D5F8442AC8033 /* EXDevLauncherController+Private.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		27EDE522B2746CD514B9351A4A2F1DC6 /* EXDevLauncherManifestParser.h in Headers */ = {isa = PBXBuildFile; fileRef = B95762E55F046E0F5D9F8173E311A113 /* EXDevLauncherManifestParser.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		3D7F9EF06A083D31AAE3E4813A9FB4F8 /* EXDevLauncherBundleSource.h in Headers */ = {isa = PBXBuildFile; fileRef = DE4F238BCD11D23664330ED011281FAA /* EXDevLauncherBundleSource.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		3DE5EFB287074FA2B04455E09DE1CC51 /* EXDevLauncherManifestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AC6182963D20DE7667912886B0C8AD2 /* EXDevLauncherManifestHelper.swift */; };
-		403716AE2E219B251211E277E28A1252 /* EXDevLauncherBundleSource.m in Sources */ = {isa = PBXBuildFile; fileRef = D0305A4F05912B9D9E17F8E79CD90DB8 /* EXDevLauncherBundleSource.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		4261AF0BF2DF7A76A6ACBBA3D8692A69 /* EXDevLauncherController.h in Headers */ = {isa = PBXBuildFile; fileRef = 69EFD9F41AEB6627BB5FC507466B6296 /* EXDevLauncherController.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		4EFB24A0FBA994866714E452072C25FE /* EXDevLauncherPendingDeepLinkListener.h in Headers */ = {isa = PBXBuildFile; fileRef = 5D7A61551D76C8729DD63F028897F82F /* EXDevLauncherPendingDeepLinkListener.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		51E79B5D80620AF7F8BA893EE5FBA3F7 /* EXDevLauncherBundle.h in Headers */ = {isa = PBXBuildFile; fileRef = 9F13AF2D3BF039F5DE7019C36C712428 /* EXDevLauncherBundle.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		53D2429BF4F403180B7930CB552A0FB0 /* expo-dev-launcher-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = FB23926822117E19CBCFBDC7E66B97A2 /* expo-dev-launcher-umbrella.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		54B6E8751B19F4ECD47A456DA5A06BFD /* EXDevLauncher.m in Sources */ = {isa = PBXBuildFile; fileRef = 614DD3255A285C3CC0A130FBB8F5C4BF /* EXDevLauncher.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		5A625707AEDEE53F6550BDB81FA5D949 /* EXDevLauncherRecentlyOpenedAppsRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C8A50469D3FCA38122099BD4FCE50DE /* EXDevLauncherRecentlyOpenedAppsRegistry.swift */; };
-		73B1AD4A98DCCCF55345A2B65BDE0208 /* EXDevLauncherLoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 72F6965C6A8251DDE995EEED884B4092 /* EXDevLauncherLoadingView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		76144EC39AF5B5DC3892EDBB4C751D85 /* EXDevLauncherRCTBridge.h in Headers */ = {isa = PBXBuildFile; fileRef = E5B2C8FA75F5D60B757CA9197B4CAD9D /* EXDevLauncherRCTBridge.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		8F0104FEBF87B807673630BA13A923D2 /* EXDevLauncherPendingDeepLinkRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87F4CA0DD4DAE1160E8EBE54CDCFA82 /* EXDevLauncherPendingDeepLinkRegistry.swift */; };
-		ADC7ADDBF851D2399746068E3E6E9B65 /* EXDevLauncherDevMenuExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 52DA056B912EEEE6AD8EDACC1169ADFF /* EXDevLauncherDevMenuExtensions.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		BEF789E9FF8998E801202FC07B4CB70C /* EXDevLauncher.h in Headers */ = {isa = PBXBuildFile; fileRef = 3BB191B0EAB560E4ACCCB9FA4EA22F4C /* EXDevLauncher.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		C054B777ABBF351C92D103CCC72E3B2D /* expo-dev-launcher-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E83704419BE815C4F0A5886C5BD27AC /* expo-dev-launcher-dummy.m */; };
-		C11EAE0E9CA2DD787D00C38BF689EEAD /* EXDevLauncherController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FFED5621D5D074B264CBF5BA7847FCC /* EXDevLauncherController.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		C7DC0E63489F44909876581D3F339928 /* EXDevLauncherBundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 67C12B0251ED773E963205C8CC7EE50C /* EXDevLauncherBundle.cpp */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		EE59FF81C6F5C5D90AD7B5F1F960F179 /* EXDevLauncherLoadingView.h in Headers */ = {isa = PBXBuildFile; fileRef = 496F582818B96C379AAF2E127F527F1B /* EXDevLauncherLoadingView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		F5A977B78197FEAB35EC0D8E670A3B95 /* EXDevLauncherManifestParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E31C4785DA11F91B9666AA764020B39 /* EXDevLauncherManifestParser.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		054FCD8EE9A567C8D18AF648B5C8A901 /* EXDevLauncherController.m in Sources */ = {isa = PBXBuildFile; fileRef = C7438E27F1D90F5E79663FDD10F93657 /* EXDevLauncherController.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		15C24FF3984588568C70BAB859DA4C35 /* EXDevLauncherBundleSource.h in Headers */ = {isa = PBXBuildFile; fileRef = F0682A8D1D7AD236200A5873B31F2E5E /* EXDevLauncherBundleSource.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		1D5342E541B7BBD467A5C73D38907138 /* EXDevLauncherController.h in Headers */ = {isa = PBXBuildFile; fileRef = 00EA4964B566458A3F61F8E0FB16CA87 /* EXDevLauncherController.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		254EBE184FED57CB90547AE1F4E3FFE7 /* expo-dev-launcher-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 2D405D980BE7D839035E5305B3E9E801 /* expo-dev-launcher-umbrella.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		372EA89317401A15452248A2332731A7 /* EXDevLauncherPendingDeepLinkListener.h in Headers */ = {isa = PBXBuildFile; fileRef = 21F51F5257754A0D86B145303C48BB91 /* EXDevLauncherPendingDeepLinkListener.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		41C7DAF73726CC273B1BED6173A4C380 /* expo-dev-launcher-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 57AA8C2F003C8E224C22B01675923A1F /* expo-dev-launcher-dummy.m */; };
+		447D83B99C20697FC4930D8CD75779DB /* EXDevLauncherBundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 261E51A077C8ADA2122D80BB2DDE98D8 /* EXDevLauncherBundle.cpp */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		451CB3AF8614D8D5A3E91FC997107345 /* EXDevLauncherLoadingView.h in Headers */ = {isa = PBXBuildFile; fileRef = A2A9306D133913A3C634B27C8D55BBD7 /* EXDevLauncherLoadingView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		4A68BEEBE43A070750137043685CE3AE /* EXDevLauncherPendingDeepLinkRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDD4091A0EF3DAA90D54752AB0915440 /* EXDevLauncherPendingDeepLinkRegistry.swift */; };
+		4B8205F6D31D1303D93B143E67592291 /* EXDevLauncherRCTBridge.h in Headers */ = {isa = PBXBuildFile; fileRef = 971F5FC1B55238A9DE4CF3584D0A4788 /* EXDevLauncherRCTBridge.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		4CF6463886A517954B1A4416F2F08E6E /* EXDevLauncherManifestParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 0CAFEC90DA9045A951D9D5D2115552DC /* EXDevLauncherManifestParser.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		56D22EC6D17559BA9049CC8BB1823EE4 /* EXDevLauncherManifestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 681A159C9A2AB4FE4004729B7BA77C9F /* EXDevLauncherManifestHelper.swift */; };
+		70BFE3688395370080F874607D2D930F /* EXDevLauncher.h in Headers */ = {isa = PBXBuildFile; fileRef = FF5E1F8CC8FB00B693245406974E6C1C /* EXDevLauncher.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		733F0BC92A35E58A843707BF88C26EB7 /* EXDevLauncherController+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = FB4EDA703531866E268624A9380F8861 /* EXDevLauncherController+Private.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		75058CA1E6470026B883EFE644E25B8D /* EXDevLauncherBundle.h in Headers */ = {isa = PBXBuildFile; fileRef = 2853D9BBAE163D4679893469D633E14E /* EXDevLauncherBundle.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		85829659836B9A313ADB70188A70F4E7 /* EXDevLauncherDevMenuExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E92C990A270BFBA51A0517E8ED7D6A3 /* EXDevLauncherDevMenuExtensions.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		9BE28378BFC6170B445C13846BA0D61D /* EXDevLauncher.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A1CA9AD440C1B713DF30B1F5810AFED /* EXDevLauncher.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		A1E3FDC0247DD72B49EE253DACD54FF8 /* EXDevLauncherManifestParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 67DA0E6E000ABEA5F23900957559F896 /* EXDevLauncherManifestParser.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		A8CD5EA6989706269508EADDE43D6BE1 /* EXDevLauncherRCTBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 8A43C82B039D8B98DD23741C06CBA3C7 /* EXDevLauncherRCTBridge.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		B3B7FDDC070199E1E1BC7019B205D448 /* EXDevLauncherRecentlyOpenedAppsRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CFEFF82C0B05B0D5067368C24FD78BA /* EXDevLauncherRecentlyOpenedAppsRegistry.swift */; };
+		B8D9FFD1BDB403118AC426536CEB69DA /* EXDevLauncherLoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = D9C50AC45D5AD005C9BA319F152C9FEC /* EXDevLauncherLoadingView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		B9E3680BBFC52492FF5DB49E075100E4 /* EXDevLauncherBundleSource.m in Sources */ = {isa = PBXBuildFile; fileRef = DF956C26BA62D1C0256CA04CCC16E3B3 /* EXDevLauncherBundleSource.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		BF40D625249751C37DB09A6FC8F44D56 /* expo-dev-launcher-Bridging-Header.h in Headers */ = {isa = PBXBuildFile; fileRef = F753021E37079B41971C9A33486FE6D4 /* expo-dev-launcher-Bridging-Header.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C1643F3714C12E411A271612C82A0C77 /* EXDevLauncherURLHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F370764A55285E203B19A7FFB69151 /* EXDevLauncherURLHelper.swift */; };
+		CAC9A8A1DEFADFCC182900101AFFDAD4 /* EXDevLauncherManifest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D234AE27E8555BFC9234D203D6E230 /* EXDevLauncherManifest.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		1CA38A5A44FFB1106A0BF3E88C87AF80 /* PBXContainerItemProxy */ = {
+		89FC75D107BCE49D2F3409EA40591E8A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 92BEEC1914FDA749D620C72885C49758 /* React.xcodeproj */;
+			containerPortal = 34B59E00CA2CB49441A848A048806DAF /* expo-dev-menu-interface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = EA5CD250B8A6DE0639CB6EC046B239A9;
+			remoteInfo = "expo-dev-menu-interface";
+		};
+		EE0DFCA8156C4984653589513D383CB8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 352BD83886927175B4D09C65EE305E23 /* React.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 94DA87F24FB4B93E5D08FE961D5E5A3E;
 			remoteInfo = React;
 		};
-		D1BBF4D390A3EEEBDEBC3E0E6D8D4869 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D662A08F7C93851468B1B3FB8BE7DAFC /* EXDevMenuInterface.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 4D3A2802599AB5CFD5DCC16429ABBF2C;
-			remoteInfo = EXDevMenuInterface;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1145F48825438AC1B8DB248E0F25AC5C /* EXDevLauncherRCTBridge.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXDevLauncherRCTBridge.m; sourceTree = "<group>"; };
-		1AC6182963D20DE7667912886B0C8AD2 /* EXDevLauncherManifestHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EXDevLauncherManifestHelper.swift; sourceTree = "<group>"; };
-		2E2C252CBE22B7F3E20EAEE757D3EE20 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
-		3BB191B0EAB560E4ACCCB9FA4EA22F4C /* EXDevLauncher.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXDevLauncher.h; path = ios/EXDevLauncher.h; sourceTree = "<group>"; };
-		3E83704419BE815C4F0A5886C5BD27AC /* expo-dev-launcher-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "expo-dev-launcher-dummy.m"; sourceTree = "<group>"; };
-		41275F6B31A690C8C0257EE5FB1CD028 /* expo-dev-launcher-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "expo-dev-launcher-prefix.pch"; sourceTree = "<group>"; };
-		496F582818B96C379AAF2E127F527F1B /* EXDevLauncherLoadingView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXDevLauncherLoadingView.h; sourceTree = "<group>"; };
-		52DA056B912EEEE6AD8EDACC1169ADFF /* EXDevLauncherDevMenuExtensions.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXDevLauncherDevMenuExtensions.m; path = ios/EXDevLauncherDevMenuExtensions.m; sourceTree = "<group>"; };
-		5D7A61551D76C8729DD63F028897F82F /* EXDevLauncherPendingDeepLinkListener.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXDevLauncherPendingDeepLinkListener.h; sourceTree = "<group>"; };
+		00EA4964B566458A3F61F8E0FB16CA87 /* EXDevLauncherController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXDevLauncherController.h; path = ios/EXDevLauncherController.h; sourceTree = "<group>"; };
+		0CAFEC90DA9045A951D9D5D2115552DC /* EXDevLauncherManifestParser.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXDevLauncherManifestParser.h; sourceTree = "<group>"; };
+		1CFEFF82C0B05B0D5067368C24FD78BA /* EXDevLauncherRecentlyOpenedAppsRegistry.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EXDevLauncherRecentlyOpenedAppsRegistry.swift; path = ios/EXDevLauncherRecentlyOpenedAppsRegistry.swift; sourceTree = "<group>"; };
+		21F51F5257754A0D86B145303C48BB91 /* EXDevLauncherPendingDeepLinkListener.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXDevLauncherPendingDeepLinkListener.h; sourceTree = "<group>"; };
+		261E51A077C8ADA2122D80BB2DDE98D8 /* EXDevLauncherBundle.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = EXDevLauncherBundle.cpp; path = ios/EXDevLauncherBundle.cpp; sourceTree = "<group>"; };
+		2853D9BBAE163D4679893469D633E14E /* EXDevLauncherBundle.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXDevLauncherBundle.h; path = ios/EXDevLauncherBundle.h; sourceTree = "<group>"; };
+		2D405D980BE7D839035E5305B3E9E801 /* expo-dev-launcher-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "expo-dev-launcher-umbrella.h"; sourceTree = "<group>"; };
+		34B59E00CA2CB49441A848A048806DAF /* expo-dev-menu-interface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "expo-dev-menu-interface"; path = "expo-dev-menu-interface.xcodeproj"; sourceTree = "<group>"; };
+		352BD83886927175B4D09C65EE305E23 /* React */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React; path = React.xcodeproj; sourceTree = "<group>"; };
+		363102B524477484F4012DA55BE6C4D6 /* expo-dev-launcher.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "expo-dev-launcher.debug.xcconfig"; sourceTree = "<group>"; };
+		472F555F0EDAF80EA0D14675F466AC41 /* expo-dev-launcher.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "expo-dev-launcher.modulemap"; sourceTree = "<group>"; };
+		4F1CE8FA64730D553D8C91AED5D4C448 /* expo-dev-launcher.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = "expo-dev-launcher.podspec"; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		55F370764A55285E203B19A7FFB69151 /* EXDevLauncherURLHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EXDevLauncherURLHelper.swift; path = ios/EXDevLauncherURLHelper.swift; sourceTree = "<group>"; };
+		57AA8C2F003C8E224C22B01675923A1F /* expo-dev-launcher-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "expo-dev-launcher-dummy.m"; sourceTree = "<group>"; };
+		5E92C990A270BFBA51A0517E8ED7D6A3 /* EXDevLauncherDevMenuExtensions.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXDevLauncherDevMenuExtensions.m; path = ios/EXDevLauncherDevMenuExtensions.m; sourceTree = "<group>"; };
 		5FA430ABB107C6CA325A628ED7A4738B /* libexpo-dev-launcher.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libexpo-dev-launcher.a"; path = "libexpo-dev-launcher.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		614DD3255A285C3CC0A130FBB8F5C4BF /* EXDevLauncher.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXDevLauncher.m; path = ios/EXDevLauncher.m; sourceTree = "<group>"; };
-		67C12B0251ED773E963205C8CC7EE50C /* EXDevLauncherBundle.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = EXDevLauncherBundle.cpp; path = ios/EXDevLauncherBundle.cpp; sourceTree = "<group>"; };
-		69EFD9F41AEB6627BB5FC507466B6296 /* EXDevLauncherController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXDevLauncherController.h; path = ios/EXDevLauncherController.h; sourceTree = "<group>"; };
-		72F6965C6A8251DDE995EEED884B4092 /* EXDevLauncherLoadingView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXDevLauncherLoadingView.m; sourceTree = "<group>"; };
-		7C8A50469D3FCA38122099BD4FCE50DE /* EXDevLauncherRecentlyOpenedAppsRegistry.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EXDevLauncherRecentlyOpenedAppsRegistry.swift; path = ios/EXDevLauncherRecentlyOpenedAppsRegistry.swift; sourceTree = "<group>"; };
-		8241808C69091C3FAD8D5F8442AC8033 /* EXDevLauncherController+Private.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "EXDevLauncherController+Private.h"; path = "ios/EXDevLauncherController+Private.h"; sourceTree = "<group>"; };
-		86C06494D57CBA6D233EEF77E415C4AC /* expo-dev-launcher.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "expo-dev-launcher.debug.xcconfig"; sourceTree = "<group>"; };
-		8D7891287784D23C489E26276162FABA /* expo-dev-launcher.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "expo-dev-launcher.release.xcconfig"; sourceTree = "<group>"; };
-		8FFED5621D5D074B264CBF5BA7847FCC /* EXDevLauncherController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXDevLauncherController.m; path = ios/EXDevLauncherController.m; sourceTree = "<group>"; };
-		92BEEC1914FDA749D620C72885C49758 /* React */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React; path = React.xcodeproj; sourceTree = "<group>"; };
-		9E31C4785DA11F91B9666AA764020B39 /* EXDevLauncherManifestParser.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXDevLauncherManifestParser.m; sourceTree = "<group>"; };
-		9F13AF2D3BF039F5DE7019C36C712428 /* EXDevLauncherBundle.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXDevLauncherBundle.h; path = ios/EXDevLauncherBundle.h; sourceTree = "<group>"; };
-		A9829420BEA9482D23562301FFAA185E /* expo-dev-launcher.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = "expo-dev-launcher.podspec"; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		B5CFC87EAA953AA067C8092F69462A7B /* expo-dev-launcher.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "expo-dev-launcher.modulemap"; sourceTree = "<group>"; };
-		B80E030F0E5DC8D50BBB2BBD6724FA95 /* expo-dev-launcher-Bridging-Header.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "expo-dev-launcher-Bridging-Header.h"; path = "ios/expo-dev-launcher-Bridging-Header.h"; sourceTree = "<group>"; };
-		B95762E55F046E0F5D9F8173E311A113 /* EXDevLauncherManifestParser.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXDevLauncherManifestParser.h; sourceTree = "<group>"; };
-		D0305A4F05912B9D9E17F8E79CD90DB8 /* EXDevLauncherBundleSource.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXDevLauncherBundleSource.m; path = ios/EXDevLauncherBundleSource.m; sourceTree = "<group>"; };
-		D662A08F7C93851468B1B3FB8BE7DAFC /* EXDevMenuInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXDevMenuInterface; path = EXDevMenuInterface.xcodeproj; sourceTree = "<group>"; };
-		DE4F238BCD11D23664330ED011281FAA /* EXDevLauncherBundleSource.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXDevLauncherBundleSource.h; path = ios/EXDevLauncherBundleSource.h; sourceTree = "<group>"; };
-		E5B2C8FA75F5D60B757CA9197B4CAD9D /* EXDevLauncherRCTBridge.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXDevLauncherRCTBridge.h; sourceTree = "<group>"; };
-		E87F4CA0DD4DAE1160E8EBE54CDCFA82 /* EXDevLauncherPendingDeepLinkRegistry.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EXDevLauncherPendingDeepLinkRegistry.swift; path = ios/EXDevLauncherPendingDeepLinkRegistry.swift; sourceTree = "<group>"; };
-		FB23926822117E19CBCFBDC7E66B97A2 /* expo-dev-launcher-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "expo-dev-launcher-umbrella.h"; sourceTree = "<group>"; };
-		FD14C7EDBE831007B36C4D28459E92AA /* EXDevLauncherManifest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EXDevLauncherManifest.swift; sourceTree = "<group>"; };
+		67DA0E6E000ABEA5F23900957559F896 /* EXDevLauncherManifestParser.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXDevLauncherManifestParser.m; sourceTree = "<group>"; };
+		681A159C9A2AB4FE4004729B7BA77C9F /* EXDevLauncherManifestHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EXDevLauncherManifestHelper.swift; sourceTree = "<group>"; };
+		6A1CA9AD440C1B713DF30B1F5810AFED /* EXDevLauncher.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXDevLauncher.m; path = ios/EXDevLauncher.m; sourceTree = "<group>"; };
+		8A43C82B039D8B98DD23741C06CBA3C7 /* EXDevLauncherRCTBridge.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXDevLauncherRCTBridge.m; sourceTree = "<group>"; };
+		971F5FC1B55238A9DE4CF3584D0A4788 /* EXDevLauncherRCTBridge.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXDevLauncherRCTBridge.h; sourceTree = "<group>"; };
+		9C933C6FB1E1E01B6EB101AD56EAB99F /* expo-dev-launcher.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "expo-dev-launcher.release.xcconfig"; sourceTree = "<group>"; };
+		A2A9306D133913A3C634B27C8D55BBD7 /* EXDevLauncherLoadingView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXDevLauncherLoadingView.h; sourceTree = "<group>"; };
+		A4BB20288540F6976D50925204272AC2 /* expo-dev-launcher-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "expo-dev-launcher-prefix.pch"; sourceTree = "<group>"; };
+		BDD4091A0EF3DAA90D54752AB0915440 /* EXDevLauncherPendingDeepLinkRegistry.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EXDevLauncherPendingDeepLinkRegistry.swift; path = ios/EXDevLauncherPendingDeepLinkRegistry.swift; sourceTree = "<group>"; };
+		C7438E27F1D90F5E79663FDD10F93657 /* EXDevLauncherController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXDevLauncherController.m; path = ios/EXDevLauncherController.m; sourceTree = "<group>"; };
+		C9D234AE27E8555BFC9234D203D6E230 /* EXDevLauncherManifest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EXDevLauncherManifest.swift; sourceTree = "<group>"; };
+		D9C50AC45D5AD005C9BA319F152C9FEC /* EXDevLauncherLoadingView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXDevLauncherLoadingView.m; sourceTree = "<group>"; };
+		DF956C26BA62D1C0256CA04CCC16E3B3 /* EXDevLauncherBundleSource.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXDevLauncherBundleSource.m; path = ios/EXDevLauncherBundleSource.m; sourceTree = "<group>"; };
+		F0682A8D1D7AD236200A5873B31F2E5E /* EXDevLauncherBundleSource.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXDevLauncherBundleSource.h; path = ios/EXDevLauncherBundleSource.h; sourceTree = "<group>"; };
+		F6419C1A93E88A40A888BAA493A2AE2B /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		F753021E37079B41971C9A33486FE6D4 /* expo-dev-launcher-Bridging-Header.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "expo-dev-launcher-Bridging-Header.h"; path = "ios/expo-dev-launcher-Bridging-Header.h"; sourceTree = "<group>"; };
+		FB4EDA703531866E268624A9380F8861 /* EXDevLauncherController+Private.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "EXDevLauncherController+Private.h"; path = "ios/EXDevLauncherController+Private.h"; sourceTree = "<group>"; };
+		FF5E1F8CC8FB00B693245406974E6C1C /* EXDevLauncher.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXDevLauncher.h; path = ios/EXDevLauncher.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		EF2CD1BA1A94C22F0CAAE918EE8A4879 /* Frameworks */ = {
+		A262D7828A3A42F383C9365044119BCD /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -97,6 +99,27 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		55E335E87D2E8E76CD691A0AE897858E /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				34B59E00CA2CB49441A848A048806DAF /* expo-dev-menu-interface */,
+				352BD83886927175B4D09C65EE305E23 /* React */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		6BA79DEC306FEE1CB99F7A3269281745 /* Manifest */ = {
+			isa = PBXGroup;
+			children = (
+				C9D234AE27E8555BFC9234D203D6E230 /* EXDevLauncherManifest.swift */,
+				681A159C9A2AB4FE4004729B7BA77C9F /* EXDevLauncherManifestHelper.swift */,
+				0CAFEC90DA9045A951D9D5D2115552DC /* EXDevLauncherManifestParser.h */,
+				67DA0E6E000ABEA5F23900957559F896 /* EXDevLauncherManifestParser.m */,
+			);
+			name = Manifest;
+			path = ios/Manifest;
+			sourceTree = "<group>";
+		};
 		7A4FA1C9002DE05DC00448E7026BACCB /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -105,61 +128,59 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		89DA0E1BA896E2DA5DCA80623D302368 /* expo-dev-launcher */ = {
+		85991F976314A427DE96CE1A07D170E4 /* expo-dev-launcher */ = {
 			isa = PBXGroup;
 			children = (
-				3BB191B0EAB560E4ACCCB9FA4EA22F4C /* EXDevLauncher.h */,
-				614DD3255A285C3CC0A130FBB8F5C4BF /* EXDevLauncher.m */,
-				67C12B0251ED773E963205C8CC7EE50C /* EXDevLauncherBundle.cpp */,
-				9F13AF2D3BF039F5DE7019C36C712428 /* EXDevLauncherBundle.h */,
-				DE4F238BCD11D23664330ED011281FAA /* EXDevLauncherBundleSource.h */,
-				D0305A4F05912B9D9E17F8E79CD90DB8 /* EXDevLauncherBundleSource.m */,
-				69EFD9F41AEB6627BB5FC507466B6296 /* EXDevLauncherController.h */,
-				8FFED5621D5D074B264CBF5BA7847FCC /* EXDevLauncherController.m */,
-				8241808C69091C3FAD8D5F8442AC8033 /* EXDevLauncherController+Private.h */,
-				52DA056B912EEEE6AD8EDACC1169ADFF /* EXDevLauncherDevMenuExtensions.m */,
-				E87F4CA0DD4DAE1160E8EBE54CDCFA82 /* EXDevLauncherPendingDeepLinkRegistry.swift */,
-				7C8A50469D3FCA38122099BD4FCE50DE /* EXDevLauncherRecentlyOpenedAppsRegistry.swift */,
-				B80E030F0E5DC8D50BBB2BBD6724FA95 /* expo-dev-launcher-Bridging-Header.h */,
-				904B8421AB80380EC4827414326F128C /* Headers */,
-				CC1E64DCA913E44BD2DEC4A94E7494A2 /* Manifest */,
-				E485ED79F3D9492A3DFBACC32AE0DA03 /* Pod */,
-				A4CB2DF322123256F0F4C82AB7723949 /* ReactNative */,
-				E571C8CC78B0AE61CDDDE1173F55DD29 /* Support Files */,
+				FF5E1F8CC8FB00B693245406974E6C1C /* EXDevLauncher.h */,
+				6A1CA9AD440C1B713DF30B1F5810AFED /* EXDevLauncher.m */,
+				261E51A077C8ADA2122D80BB2DDE98D8 /* EXDevLauncherBundle.cpp */,
+				2853D9BBAE163D4679893469D633E14E /* EXDevLauncherBundle.h */,
+				F0682A8D1D7AD236200A5873B31F2E5E /* EXDevLauncherBundleSource.h */,
+				DF956C26BA62D1C0256CA04CCC16E3B3 /* EXDevLauncherBundleSource.m */,
+				00EA4964B566458A3F61F8E0FB16CA87 /* EXDevLauncherController.h */,
+				C7438E27F1D90F5E79663FDD10F93657 /* EXDevLauncherController.m */,
+				FB4EDA703531866E268624A9380F8861 /* EXDevLauncherController+Private.h */,
+				5E92C990A270BFBA51A0517E8ED7D6A3 /* EXDevLauncherDevMenuExtensions.m */,
+				BDD4091A0EF3DAA90D54752AB0915440 /* EXDevLauncherPendingDeepLinkRegistry.swift */,
+				1CFEFF82C0B05B0D5067368C24FD78BA /* EXDevLauncherRecentlyOpenedAppsRegistry.swift */,
+				55F370764A55285E203B19A7FFB69151 /* EXDevLauncherURLHelper.swift */,
+				F753021E37079B41971C9A33486FE6D4 /* expo-dev-launcher-Bridging-Header.h */,
+				8B36F8D18C9EA865F492F38D1CA8FD74 /* Headers */,
+				6BA79DEC306FEE1CB99F7A3269281745 /* Manifest */,
+				A6D0C12E25798542A87304C00B5C33DC /* Pod */,
+				F7378E279E601244D226C3C1BA78E149 /* ReactNative */,
+				DC58D858F3A17D4F800919A41DDC15EC /* Support Files */,
 			);
 			name = "expo-dev-launcher";
 			path = "../../../../packages/expo-dev-launcher";
 			sourceTree = "<group>";
 		};
-		8B9CB221F926D8A30D4BD93C3F1F8487 = {
+		8B36F8D18C9EA865F492F38D1CA8FD74 /* Headers */ = {
 			isa = PBXGroup;
 			children = (
-				DED22F09028FE8136A16D596CED0FA42 /* Dependencies */,
-				89DA0E1BA896E2DA5DCA80623D302368 /* expo-dev-launcher */,
-				A8445694DFA7AE8EA766AAEA5A5A5A2B /* Frameworks */,
-				7A4FA1C9002DE05DC00448E7026BACCB /* Products */,
-			);
-			sourceTree = "<group>";
-		};
-		904B8421AB80380EC4827414326F128C /* Headers */ = {
-			isa = PBXGroup;
-			children = (
-				5D7A61551D76C8729DD63F028897F82F /* EXDevLauncherPendingDeepLinkListener.h */,
+				21F51F5257754A0D86B145303C48BB91 /* EXDevLauncherPendingDeepLinkListener.h */,
 			);
 			name = Headers;
 			path = ios/Headers;
 			sourceTree = "<group>";
 		};
-		A4CB2DF322123256F0F4C82AB7723949 /* ReactNative */ = {
+		8B9CB221F926D8A30D4BD93C3F1F8487 = {
 			isa = PBXGroup;
 			children = (
-				496F582818B96C379AAF2E127F527F1B /* EXDevLauncherLoadingView.h */,
-				72F6965C6A8251DDE995EEED884B4092 /* EXDevLauncherLoadingView.m */,
-				E5B2C8FA75F5D60B757CA9197B4CAD9D /* EXDevLauncherRCTBridge.h */,
-				1145F48825438AC1B8DB248E0F25AC5C /* EXDevLauncherRCTBridge.m */,
+				55E335E87D2E8E76CD691A0AE897858E /* Dependencies */,
+				85991F976314A427DE96CE1A07D170E4 /* expo-dev-launcher */,
+				A8445694DFA7AE8EA766AAEA5A5A5A2B /* Frameworks */,
+				7A4FA1C9002DE05DC00448E7026BACCB /* Products */,
 			);
-			name = ReactNative;
-			path = ios/ReactNative;
+			sourceTree = "<group>";
+		};
+		A6D0C12E25798542A87304C00B5C33DC /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				4F1CE8FA64730D553D8C91AED5D4C448 /* expo-dev-launcher.podspec */,
+				F6419C1A93E88A40A888BAA493A2AE2B /* README.md */,
+			);
+			name = Pod;
 			sourceTree = "<group>";
 		};
 		A8445694DFA7AE8EA766AAEA5A5A5A2B /* Frameworks */ = {
@@ -169,68 +190,50 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		CC1E64DCA913E44BD2DEC4A94E7494A2 /* Manifest */ = {
+		DC58D858F3A17D4F800919A41DDC15EC /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				FD14C7EDBE831007B36C4D28459E92AA /* EXDevLauncherManifest.swift */,
-				1AC6182963D20DE7667912886B0C8AD2 /* EXDevLauncherManifestHelper.swift */,
-				B95762E55F046E0F5D9F8173E311A113 /* EXDevLauncherManifestParser.h */,
-				9E31C4785DA11F91B9666AA764020B39 /* EXDevLauncherManifestParser.m */,
-			);
-			name = Manifest;
-			path = ios/Manifest;
-			sourceTree = "<group>";
-		};
-		DED22F09028FE8136A16D596CED0FA42 /* Dependencies */ = {
-			isa = PBXGroup;
-			children = (
-				D662A08F7C93851468B1B3FB8BE7DAFC /* EXDevMenuInterface */,
-				92BEEC1914FDA749D620C72885C49758 /* React */,
-			);
-			name = Dependencies;
-			sourceTree = "<group>";
-		};
-		E485ED79F3D9492A3DFBACC32AE0DA03 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				A9829420BEA9482D23562301FFAA185E /* expo-dev-launcher.podspec */,
-				2E2C252CBE22B7F3E20EAEE757D3EE20 /* README.md */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
-		E571C8CC78B0AE61CDDDE1173F55DD29 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				B5CFC87EAA953AA067C8092F69462A7B /* expo-dev-launcher.modulemap */,
-				3E83704419BE815C4F0A5886C5BD27AC /* expo-dev-launcher-dummy.m */,
-				41275F6B31A690C8C0257EE5FB1CD028 /* expo-dev-launcher-prefix.pch */,
-				FB23926822117E19CBCFBDC7E66B97A2 /* expo-dev-launcher-umbrella.h */,
-				86C06494D57CBA6D233EEF77E415C4AC /* expo-dev-launcher.debug.xcconfig */,
-				8D7891287784D23C489E26276162FABA /* expo-dev-launcher.release.xcconfig */,
+				472F555F0EDAF80EA0D14675F466AC41 /* expo-dev-launcher.modulemap */,
+				57AA8C2F003C8E224C22B01675923A1F /* expo-dev-launcher-dummy.m */,
+				A4BB20288540F6976D50925204272AC2 /* expo-dev-launcher-prefix.pch */,
+				2D405D980BE7D839035E5305B3E9E801 /* expo-dev-launcher-umbrella.h */,
+				363102B524477484F4012DA55BE6C4D6 /* expo-dev-launcher.debug.xcconfig */,
+				9C933C6FB1E1E01B6EB101AD56EAB99F /* expo-dev-launcher.release.xcconfig */,
 			);
 			name = "Support Files";
 			path = "../../apps/bare-expo/ios/Pods/Target Support Files/expo-dev-launcher";
 			sourceTree = "<group>";
 		};
+		F7378E279E601244D226C3C1BA78E149 /* ReactNative */ = {
+			isa = PBXGroup;
+			children = (
+				A2A9306D133913A3C634B27C8D55BBD7 /* EXDevLauncherLoadingView.h */,
+				D9C50AC45D5AD005C9BA319F152C9FEC /* EXDevLauncherLoadingView.m */,
+				971F5FC1B55238A9DE4CF3584D0A4788 /* EXDevLauncherRCTBridge.h */,
+				8A43C82B039D8B98DD23741C06CBA3C7 /* EXDevLauncherRCTBridge.m */,
+			);
+			name = ReactNative;
+			path = ios/ReactNative;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		7F7702CFFC2E3B3F8985E9BC9EBE4D52 /* Headers */ = {
+		65E991E19ED854243E2E50B41AD5E27B /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BEF789E9FF8998E801202FC07B4CB70C /* EXDevLauncher.h in Headers */,
-				51E79B5D80620AF7F8BA893EE5FBA3F7 /* EXDevLauncherBundle.h in Headers */,
-				3D7F9EF06A083D31AAE3E4813A9FB4F8 /* EXDevLauncherBundleSource.h in Headers */,
-				219FF4B354BE8BB58C8FE64997CC822B /* EXDevLauncherController+Private.h in Headers */,
-				4261AF0BF2DF7A76A6ACBBA3D8692A69 /* EXDevLauncherController.h in Headers */,
-				EE59FF81C6F5C5D90AD7B5F1F960F179 /* EXDevLauncherLoadingView.h in Headers */,
-				27EDE522B2746CD514B9351A4A2F1DC6 /* EXDevLauncherManifestParser.h in Headers */,
-				4EFB24A0FBA994866714E452072C25FE /* EXDevLauncherPendingDeepLinkListener.h in Headers */,
-				76144EC39AF5B5DC3892EDBB4C751D85 /* EXDevLauncherRCTBridge.h in Headers */,
-				0A1EB9C29FD7F7DA2FAD21E4E759EAA2 /* expo-dev-launcher-Bridging-Header.h in Headers */,
-				53D2429BF4F403180B7930CB552A0FB0 /* expo-dev-launcher-umbrella.h in Headers */,
+				70BFE3688395370080F874607D2D930F /* EXDevLauncher.h in Headers */,
+				75058CA1E6470026B883EFE644E25B8D /* EXDevLauncherBundle.h in Headers */,
+				15C24FF3984588568C70BAB859DA4C35 /* EXDevLauncherBundleSource.h in Headers */,
+				733F0BC92A35E58A843707BF88C26EB7 /* EXDevLauncherController+Private.h in Headers */,
+				1D5342E541B7BBD467A5C73D38907138 /* EXDevLauncherController.h in Headers */,
+				451CB3AF8614D8D5A3E91FC997107345 /* EXDevLauncherLoadingView.h in Headers */,
+				4CF6463886A517954B1A4416F2F08E6E /* EXDevLauncherManifestParser.h in Headers */,
+				372EA89317401A15452248A2332731A7 /* EXDevLauncherPendingDeepLinkListener.h in Headers */,
+				4B8205F6D31D1303D93B143E67592291 /* EXDevLauncherRCTBridge.h in Headers */,
+				BF40D625249751C37DB09A6FC8F44D56 /* expo-dev-launcher-Bridging-Header.h in Headers */,
+				254EBE184FED57CB90547AE1F4E3FFE7 /* expo-dev-launcher-umbrella.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -239,18 +242,18 @@
 /* Begin PBXNativeTarget section */
 		26E7F2DCC5852B236EADEC0282A1217D /* expo-dev-launcher */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = CD418760880DA5B0D8E5998E2418EF5E /* Build configuration list for PBXNativeTarget "expo-dev-launcher" */;
+			buildConfigurationList = BF4F6EF755C8F624E61C3B523701DCB3 /* Build configuration list for PBXNativeTarget "expo-dev-launcher" */;
 			buildPhases = (
-				7F7702CFFC2E3B3F8985E9BC9EBE4D52 /* Headers */,
-				796AE017806F900B21D1AFD8DC7285DE /* Sources */,
-				EF2CD1BA1A94C22F0CAAE918EE8A4879 /* Frameworks */,
-				66283325BBA380B70F340AD2A932892F /* Copy generated compatibility header */,
+				65E991E19ED854243E2E50B41AD5E27B /* Headers */,
+				CE66EFE7353020448A8A646B79235543 /* Sources */,
+				A262D7828A3A42F383C9365044119BCD /* Frameworks */,
+				931F1F11266FEE67758A9E7E5A66BD6B /* Copy generated compatibility header */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				82E53B702DF782CF3424494D43A07215 /* PBXTargetDependency */,
-				9C8313A607B660A4EB88C76AC8A3BDA5 /* PBXTargetDependency */,
+				E60B5045BD888BA7D230AA22CDDC05FC /* PBXTargetDependency */,
+				7B523A7519944D95CF7131673FC8C1F7 /* PBXTargetDependency */,
 			);
 			name = "expo-dev-launcher";
 			productName = "expo-dev-launcher";
@@ -279,10 +282,10 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProjectRef = 92BEEC1914FDA749D620C72885C49758 /* React */;
+					ProjectRef = 352BD83886927175B4D09C65EE305E23 /* React */;
 				},
 				{
-					ProjectRef = D662A08F7C93851468B1B3FB8BE7DAFC /* EXDevMenuInterface */;
+					ProjectRef = 34B59E00CA2CB49441A848A048806DAF /* expo-dev-menu-interface */;
 				},
 			);
 			projectRoot = "";
@@ -293,7 +296,7 @@
 /* End PBXProject section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		66283325BBA380B70F340AD2A932892F /* Copy generated compatibility header */ = {
+		931F1F11266FEE67758A9E7E5A66BD6B /* Copy generated compatibility header */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -302,8 +305,8 @@
 			);
 			inputPaths = (
 				"${DERIVED_SOURCES_DIR}/${PRODUCT_MODULE_NAME}-Swift.h",
-				"${PODS_ROOT}/Headers/Public/expo_dev_launcher/expo-dev-launcher.modulemap",
-				"${PODS_ROOT}/Headers/Public/expo_dev_launcher/expo-dev-launcher-umbrella.h",
+				"${PODS_ROOT}/Headers/Public/EXDevLauncher/expo-dev-launcher.modulemap",
+				"${PODS_ROOT}/Headers/Public/EXDevLauncher/expo-dev-launcher-umbrella.h",
 			);
 			name = "Copy generated compatibility header";
 			outputFileListPaths = (
@@ -315,63 +318,65 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "COMPATIBILITY_HEADER_PATH=\"${BUILT_PRODUCTS_DIR}/Swift Compatibility Header/${PRODUCT_MODULE_NAME}-Swift.h\"\nMODULE_MAP_PATH=\"${BUILT_PRODUCTS_DIR}/${PRODUCT_MODULE_NAME}.modulemap\"\n\nditto \"${DERIVED_SOURCES_DIR}/${PRODUCT_MODULE_NAME}-Swift.h\" \"${COMPATIBILITY_HEADER_PATH}\"\nditto \"${PODS_ROOT}/Headers/Public/expo_dev_launcher/expo-dev-launcher.modulemap\" \"${MODULE_MAP_PATH}\"\nditto \"${PODS_ROOT}/Headers/Public/expo_dev_launcher/expo-dev-launcher-umbrella.h\" \"${BUILT_PRODUCTS_DIR}\"\nprintf \"\\n\\nmodule ${PRODUCT_MODULE_NAME}.Swift {\\n  header \\\"${COMPATIBILITY_HEADER_PATH}\\\"\\n  requires objc\\n}\\n\" >> \"${MODULE_MAP_PATH}\"\n";
+			shellScript = "COMPATIBILITY_HEADER_PATH=\"${BUILT_PRODUCTS_DIR}/Swift Compatibility Header/${PRODUCT_MODULE_NAME}-Swift.h\"\nMODULE_MAP_PATH=\"${BUILT_PRODUCTS_DIR}/${PRODUCT_MODULE_NAME}.modulemap\"\n\nditto \"${DERIVED_SOURCES_DIR}/${PRODUCT_MODULE_NAME}-Swift.h\" \"${COMPATIBILITY_HEADER_PATH}\"\nditto \"${PODS_ROOT}/Headers/Public/EXDevLauncher/expo-dev-launcher.modulemap\" \"${MODULE_MAP_PATH}\"\nditto \"${PODS_ROOT}/Headers/Public/EXDevLauncher/expo-dev-launcher-umbrella.h\" \"${BUILT_PRODUCTS_DIR}\"\nprintf \"\\n\\nmodule ${PRODUCT_MODULE_NAME}.Swift {\\n  header \\\"${COMPATIBILITY_HEADER_PATH}\\\"\\n  requires objc\\n}\\n\" >> \"${MODULE_MAP_PATH}\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		796AE017806F900B21D1AFD8DC7285DE /* Sources */ = {
+		CE66EFE7353020448A8A646B79235543 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				54B6E8751B19F4ECD47A456DA5A06BFD /* EXDevLauncher.m in Sources */,
-				C7DC0E63489F44909876581D3F339928 /* EXDevLauncherBundle.cpp in Sources */,
-				403716AE2E219B251211E277E28A1252 /* EXDevLauncherBundleSource.m in Sources */,
-				C11EAE0E9CA2DD787D00C38BF689EEAD /* EXDevLauncherController.m in Sources */,
-				ADC7ADDBF851D2399746068E3E6E9B65 /* EXDevLauncherDevMenuExtensions.m in Sources */,
-				73B1AD4A98DCCCF55345A2B65BDE0208 /* EXDevLauncherLoadingView.m in Sources */,
-				148EABF11DACC7DB76B460F01F9F48FF /* EXDevLauncherManifest.swift in Sources */,
-				3DE5EFB287074FA2B04455E09DE1CC51 /* EXDevLauncherManifestHelper.swift in Sources */,
-				F5A977B78197FEAB35EC0D8E670A3B95 /* EXDevLauncherManifestParser.m in Sources */,
-				8F0104FEBF87B807673630BA13A923D2 /* EXDevLauncherPendingDeepLinkRegistry.swift in Sources */,
-				18B02B5A798E2D42288FEAD2273EE6C7 /* EXDevLauncherRCTBridge.m in Sources */,
-				5A625707AEDEE53F6550BDB81FA5D949 /* EXDevLauncherRecentlyOpenedAppsRegistry.swift in Sources */,
-				C054B777ABBF351C92D103CCC72E3B2D /* expo-dev-launcher-dummy.m in Sources */,
+				9BE28378BFC6170B445C13846BA0D61D /* EXDevLauncher.m in Sources */,
+				447D83B99C20697FC4930D8CD75779DB /* EXDevLauncherBundle.cpp in Sources */,
+				B9E3680BBFC52492FF5DB49E075100E4 /* EXDevLauncherBundleSource.m in Sources */,
+				054FCD8EE9A567C8D18AF648B5C8A901 /* EXDevLauncherController.m in Sources */,
+				85829659836B9A313ADB70188A70F4E7 /* EXDevLauncherDevMenuExtensions.m in Sources */,
+				B8D9FFD1BDB403118AC426536CEB69DA /* EXDevLauncherLoadingView.m in Sources */,
+				CAC9A8A1DEFADFCC182900101AFFDAD4 /* EXDevLauncherManifest.swift in Sources */,
+				56D22EC6D17559BA9049CC8BB1823EE4 /* EXDevLauncherManifestHelper.swift in Sources */,
+				A1E3FDC0247DD72B49EE253DACD54FF8 /* EXDevLauncherManifestParser.m in Sources */,
+				4A68BEEBE43A070750137043685CE3AE /* EXDevLauncherPendingDeepLinkRegistry.swift in Sources */,
+				A8CD5EA6989706269508EADDE43D6BE1 /* EXDevLauncherRCTBridge.m in Sources */,
+				B3B7FDDC070199E1E1BC7019B205D448 /* EXDevLauncherRecentlyOpenedAppsRegistry.swift in Sources */,
+				C1643F3714C12E411A271612C82A0C77 /* EXDevLauncherURLHelper.swift in Sources */,
+				41C7DAF73726CC273B1BED6173A4C380 /* expo-dev-launcher-dummy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		82E53B702DF782CF3424494D43A07215 /* PBXTargetDependency */ = {
+		7B523A7519944D95CF7131673FC8C1F7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = EXDevMenuInterface;
-			targetProxy = D1BBF4D390A3EEEBDEBC3E0E6D8D4869 /* PBXContainerItemProxy */;
+			name = "expo-dev-menu-interface";
+			targetProxy = 89FC75D107BCE49D2F3409EA40591E8A /* PBXContainerItemProxy */;
 		};
-		9C8313A607B660A4EB88C76AC8A3BDA5 /* PBXTargetDependency */ = {
+		E60B5045BD888BA7D230AA22CDDC05FC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = React;
-			targetProxy = 1CA38A5A44FFB1106A0BF3E88C87AF80 /* PBXContainerItemProxy */;
+			targetProxy = EE0DFCA8156C4984653589513D383CB8 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		6A4061D50CBDFACFFF3AB956E8AF6FA7 /* Debug */ = {
+		0F4B46C5A317B560CCD7F32BFD0532CF /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 86C06494D57CBA6D233EEF77E415C4AC /* expo-dev-launcher.debug.xcconfig */;
+			baseConfigurationReference = 363102B524477484F4012DA55BE6C4D6 /* expo-dev-launcher.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/expo-dev-launcher/expo-dev-launcher-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				MODULEMAP_FILE = "Headers/Public/expo_dev_launcher/expo-dev-launcher.modulemap";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				MODULEMAP_FILE = "Headers/Public/EXDevLauncher/expo-dev-launcher.modulemap";
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = expo_dev_launcher;
+				PRODUCT_MODULE_NAME = EXDevLauncher;
 				PRODUCT_NAME = "expo-dev-launcher";
 				PUBLIC_HEADERS_FOLDER_PATH = "";
 				SDKROOT = iphoneos;
@@ -510,22 +515,23 @@
 			};
 			name = Debug;
 		};
-		E2678EA3049EF1DCC2DF3A861DDD293E /* Release */ = {
+		DE7E8AE7B6CBB1156BE184867987B8CF /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8D7891287784D23C489E26276162FABA /* expo-dev-launcher.release.xcconfig */;
+			baseConfigurationReference = 9C933C6FB1E1E01B6EB101AD56EAB99F /* expo-dev-launcher.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/expo-dev-launcher/expo-dev-launcher-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				MODULEMAP_FILE = "Headers/Public/expo_dev_launcher/expo-dev-launcher.modulemap";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				MODULEMAP_FILE = "Headers/Public/EXDevLauncher/expo-dev-launcher.modulemap";
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = expo_dev_launcher;
+				PRODUCT_MODULE_NAME = EXDevLauncher;
 				PRODUCT_NAME = "expo-dev-launcher";
 				PUBLIC_HEADERS_FOLDER_PATH = "";
 				SDKROOT = iphoneos;
@@ -549,11 +555,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		CD418760880DA5B0D8E5998E2418EF5E /* Build configuration list for PBXNativeTarget "expo-dev-launcher" */ = {
+		BF4F6EF755C8F624E61C3B523701DCB3 /* Build configuration list for PBXNativeTarget "expo-dev-launcher" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				6A4061D50CBDFACFFF3AB956E8AF6FA7 /* Debug */,
-				E2678EA3049EF1DCC2DF3A861DDD293E /* Release */,
+				0F4B46C5A317B560CCD7F32BFD0532CF /* Debug */,
+				DE7E8AE7B6CBB1156BE184867987B8CF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

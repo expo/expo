@@ -128,11 +128,11 @@ android {
     }
 
     defaultConfig {
-        applicationId "dev.expo.payments"
+        applicationId 'dev.expo.payments'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
         manifestPlaceholders = [
             // [Custom]: Required for expo-app-auth
             appAuthRedirectScheme: "dev.expo.payments"

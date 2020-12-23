@@ -43,6 +43,14 @@ PODS:
   - EXCalendar (8.6.0):
     - UMCore
     - UMPermissionsInterface
+  - EXCamera (9.1.1):
+    - UMBarCodeScannerInterface
+    - UMCameraInterface
+    - UMCore
+    - UMFaceDetectorInterface
+    - UMFileSystemInterface
+    - UMImageLoaderInterface
+    - UMPermissionsInterface
   - EXCellular (2.4.0):
     - UMCore
   - EXConstants (9.3.5):
@@ -56,11 +64,6 @@ PODS:
     - UMCore
   - EXDevice (2.4.0):
     - UMCore
-  - EXDevMenu (0.1.0):
-    - EXDevMenuInterface
-    - React
-  - EXDevMenuInterface (0.1.0):
-    - React
   - EXDocumentPicker (8.4.1):
     - UMCore
     - UMFileSystemInterface
@@ -71,6 +74,13 @@ PODS:
     - FBSDKLoginKit (~> 5.8.0)
     - UMConstantsInterface
     - UMCore
+  - EXFaceDetector (8.4.0):
+    - Firebase/Core (= 6.14.0)
+    - Firebase/MLVision (= 6.14.0)
+    - Firebase/MLVisionFaceModel (= 6.14.0)
+    - UMCore
+    - UMFaceDetectorInterface
+    - UMFileSystemInterface
   - EXFileSystem (9.3.0):
     - UMCore
     - UMFileSystemInterface
@@ -143,7 +153,12 @@ PODS:
     - UMCore
     - UMPermissionsInterface
   - expo-dev-launcher (0.1.0):
-    - EXDevMenuInterface
+    - expo-dev-menu-interface
+    - React
+  - expo-dev-menu (0.1.0):
+    - expo-dev-menu-interface
+    - React
+  - expo-dev-menu-interface (0.1.0):
     - React
   - expo-image (1.0.0-alpha.0):
     - React-Core
@@ -213,6 +228,12 @@ PODS:
     - FirebaseAnalytics (= 6.1.7)
   - Firebase/CoreOnly (6.14.0):
     - FirebaseCore (= 6.5.0)
+  - Firebase/MLVision (6.14.0):
+    - Firebase/CoreOnly
+    - FirebaseMLVision (~> 0.19.0)
+  - Firebase/MLVisionFaceModel (6.14.0):
+    - Firebase/CoreOnly
+    - FirebaseMLVisionFaceModel (~> 0.19.0)
   - FirebaseAnalytics (6.1.7):
     - FirebaseCore (~> 6.5)
     - FirebaseInstanceID (~> 4.2)
@@ -238,6 +259,26 @@ PODS:
     - FirebaseCore (~> 6.5)
     - GoogleUtilities/Environment (~> 6.4)
     - GoogleUtilities/UserDefaults (~> 6.4)
+  - FirebaseMLCommon (0.19.0):
+    - FirebaseCore (~> 6.3)
+    - FirebaseInstanceID (~> 4.2)
+    - GoogleToolboxForMac/Logger (~> 2.1)
+    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
+    - "GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)"
+    - GoogleUtilities/UserDefaults (~> 6.0)
+    - GTMSessionFetcher/Core (~> 1.1)
+    - Protobuf (~> 3.5)
+  - FirebaseMLVision (0.19.0):
+    - FirebaseCore (~> 6.3)
+    - FirebaseMLCommon (~> 0.19)
+    - GoogleAPIClientForREST/Core (~> 1.3)
+    - GoogleAPIClientForREST/Vision (~> 1.3)
+    - GoogleToolboxForMac/Logger (~> 2.1)
+    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
+    - GTMSessionFetcher/Core (~> 1.1)
+    - Protobuf (~> 3.5)
+  - FirebaseMLVisionFaceModel (0.19.0):
+    - FirebaseMLVision (~> 0.19)
   - Flipper (0.62.0):
     - Flipper-Folly (~> 2.2)
     - Flipper-RSocket (~> 1.1)
@@ -294,6 +335,11 @@ PODS:
     - DoubleConversion
     - glog
   - glog (0.3.5)
+  - GoogleAPIClientForREST/Core (1.5.1):
+    - GTMSessionFetcher (>= 1.1.7)
+  - GoogleAPIClientForREST/Vision (1.5.1):
+    - GoogleAPIClientForREST/Core
+    - GTMSessionFetcher (>= 1.1.7)
   - GoogleAppMeasurement (6.1.7):
     - GoogleUtilities/AppDelegateSwizzler (~> 6.0)
     - GoogleUtilities/MethodSwizzler (~> 6.0)
@@ -308,6 +354,18 @@ PODS:
     - AppAuth (~> 1.2)
     - GTMAppAuth (~> 1.0)
     - GTMSessionFetcher/Core (~> 1.1)
+  - GoogleToolboxForMac/DebugUtils (2.3.0):
+    - GoogleToolboxForMac/Defines (= 2.3.0)
+  - GoogleToolboxForMac/Defines (2.3.0)
+  - GoogleToolboxForMac/Logger (2.3.0):
+    - GoogleToolboxForMac/Defines (= 2.3.0)
+  - "GoogleToolboxForMac/NSData+zlib (2.3.0)":
+    - GoogleToolboxForMac/Defines (= 2.3.0)
+  - "GoogleToolboxForMac/NSDictionary+URLArguments (2.3.0)":
+    - GoogleToolboxForMac/DebugUtils (= 2.3.0)
+    - GoogleToolboxForMac/Defines (= 2.3.0)
+    - "GoogleToolboxForMac/NSString+URLArguments (= 2.3.0)"
+  - "GoogleToolboxForMac/NSString+URLArguments (2.3.0)"
   - GoogleUtilities/AppDelegateSwizzler (6.6.0):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
@@ -344,6 +402,7 @@ PODS:
     - OpenSSL-Universal/Static (= 1.0.2.20)
   - OpenSSL-Universal/Static (1.0.2.20)
   - PromisesObjC (1.2.9)
+  - Protobuf (3.14.0)
   - RCTRequired (0.63.2)
   - RCTTypeSafety (0.63.2):
     - FBLazyVector (= 0.63.2)
@@ -615,6 +674,7 @@ PODS:
   - UMConstantsInterface (5.4.0):
     - UMCore
   - UMCore (7.0.0)
+  - UMFaceDetectorInterface (5.4.0)
   - UMFileSystemInterface (5.4.0)
   - UMFontInterface (5.4.0)
   - UMImageLoaderInterface (5.4.0)
@@ -649,16 +709,16 @@ DEPENDENCIES:
   - EXBlur (from `../../../packages/expo-blur/ios`)
   - EXBrightness (from `../../../packages/expo-brightness/ios`)
   - EXCalendar (from `../../../packages/expo-calendar/ios`)
+  - EXCamera (from `../../../packages/expo-camera/ios`)
   - EXCellular (from `../../../packages/expo-cellular/ios`)
   - EXConstants (from `../../../packages/expo-constants/ios`)
   - EXContacts (from `../../../packages/expo-contacts/ios`)
   - EXCrypto (from `../../../packages/expo-crypto/ios`)
   - EXDevice (from `../../../packages/expo-device/ios`)
-  - EXDevMenu (from `../../../packages/expo-dev-menu`)
-  - EXDevMenuInterface (from `../../../packages/expo-dev-menu-interface`)
   - EXDocumentPicker (from `../../../packages/expo-document-picker/ios`)
   - EXErrorRecovery (from `../../../packages/expo-error-recovery/ios`)
   - EXFacebook (from `../../../packages/expo-facebook/ios`)
+  - EXFaceDetector (from `../../../packages/expo-face-detector/ios`)
   - EXFileSystem (from `../../../packages/expo-file-system/ios`)
   - EXFirebaseAnalytics (from `../../../packages/expo-firebase-analytics/ios`)
   - EXFirebaseCore (from `../../../packages/expo-firebase-core/ios`)
@@ -683,6 +743,8 @@ DEPENDENCIES:
   - EXNotifications (from `../../../packages/expo-notifications/ios`)
   - EXPermissions (from `../../../packages/expo-permissions/ios`)
   - expo-dev-launcher (from `../../../packages/expo-dev-launcher`)
+  - expo-dev-menu (from `../../../packages/expo-dev-menu`)
+  - expo-dev-menu-interface (from `../../../packages/expo-dev-menu-interface`)
   - expo-image (from `../../../packages/expo-image`)
   - EXPrint (from `../../../packages/expo-print/ios`)
   - EXRandom (from `../../../packages/expo-random/ios`)
@@ -766,6 +828,7 @@ DEPENDENCIES:
   - UMCameraInterface (from `../../../packages/unimodules-camera-interface/ios`)
   - UMConstantsInterface (from `../../../packages/unimodules-constants-interface/ios`)
   - "UMCore (from `../../../packages/@unimodules/core/ios`)"
+  - UMFaceDetectorInterface (from `../../../packages/unimodules-face-detector-interface/ios`)
   - UMFileSystemInterface (from `../../../packages/unimodules-file-system-interface/ios`)
   - UMFontInterface (from `../../../packages/unimodules-font-interface/ios`)
   - UMImageLoaderInterface (from `../../../packages/unimodules-image-loader-interface/ios`)
@@ -791,6 +854,9 @@ SPEC REPOS:
     - FirebaseCoreDiagnostics
     - FirebaseCoreDiagnosticsInterop
     - FirebaseInstanceID
+    - FirebaseMLCommon
+    - FirebaseMLVision
+    - FirebaseMLVisionFaceModel
     - Flipper
     - Flipper-DoubleConversion
     - Flipper-Folly
@@ -798,16 +864,19 @@ SPEC REPOS:
     - Flipper-PeerTalk
     - Flipper-RSocket
     - FlipperKit
+    - GoogleAPIClientForREST
     - GoogleAppMeasurement
     - GoogleDataTransport
     - GoogleDataTransportCCTSupport
     - GoogleSignIn
+    - GoogleToolboxForMac
     - GoogleUtilities
     - GTMAppAuth
     - GTMSessionFetcher
     - nanopb
     - OpenSSL-Universal
     - PromisesObjC
+    - Protobuf
     - SDWebImage
     - YogaKit
     - ZXingObjC
@@ -835,6 +904,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-brightness/ios"
   EXCalendar:
     :path: "../../../packages/expo-calendar/ios"
+  EXCamera:
+    :path: "../../../packages/expo-camera/ios"
   EXCellular:
     :path: "../../../packages/expo-cellular/ios"
   EXConstants:
@@ -845,16 +916,14 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-crypto/ios"
   EXDevice:
     :path: "../../../packages/expo-device/ios"
-  EXDevMenu:
-    :path: "../../../packages/expo-dev-menu"
-  EXDevMenuInterface:
-    :path: "../../../packages/expo-dev-menu-interface"
   EXDocumentPicker:
     :path: "../../../packages/expo-document-picker/ios"
   EXErrorRecovery:
     :path: "../../../packages/expo-error-recovery/ios"
   EXFacebook:
     :path: "../../../packages/expo-facebook/ios"
+  EXFaceDetector:
+    :path: "../../../packages/expo-face-detector/ios"
   EXFileSystem:
     :path: "../../../packages/expo-file-system/ios"
   EXFirebaseAnalytics:
@@ -903,6 +972,10 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-permissions/ios"
   expo-dev-launcher:
     :path: "../../../packages/expo-dev-launcher"
+  expo-dev-menu:
+    :path: "../../../packages/expo-dev-menu"
+  expo-dev-menu-interface:
+    :path: "../../../packages/expo-dev-menu-interface"
   expo-image:
     :path: "../../../packages/expo-image"
   EXPrint:
@@ -1027,6 +1100,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/unimodules-constants-interface/ios"
   UMCore:
     :path: "../../../packages/@unimodules/core/ios"
+  UMFaceDetectorInterface:
+    :path: "../../../packages/unimodules-face-detector-interface/ios"
   UMFileSystemInterface:
     :path: "../../../packages/unimodules-file-system-interface/ios"
   UMFontInterface:
@@ -1062,16 +1137,16 @@ SPEC CHECKSUMS:
   EXBlur: 4044217657dbc3e1267479181a940d4423cf5611
   EXBrightness: 38901fd6804944a36222b6ad6c3c5cbf80f7927a
   EXCalendar: 64d7a6da2ef6c09f3258e188887c3cfbd3a6a59d
+  EXCamera: 11b544bf6d4e94b8c772a3a70064148972e0f02b
   EXCellular: 611767148624d7daa4cbcd8cf315d20662d14c3e
   EXConstants: 8e7d5f068653b4033cc4f883c8c42f1c0eef916e
   EXContacts: af0985f2774788882924cdf58325e5053a85a487
   EXCrypto: b4e71a1766ce80505bd386424ba2d082774a70ed
   EXDevice: b4f128964c602af9ca60025ef232f8970801c3cb
-  EXDevMenu: f61e1c8223e516f670c2a47cf2f24ead2d25d7fb
-  EXDevMenuInterface: 76dff7c65f1b9474b8ab6a37187ed6fcf81fa654
   EXDocumentPicker: a1627dd979adfc601bf2c08f0ab426ab9b003a5e
   EXErrorRecovery: 33d22d8958362d5c457083d5ebfad94e5780add9
   EXFacebook: 54969ee527bec15552addabff4d824605fa8b6b8
+  EXFaceDetector: 668d8cc62b9b91dbad949ee3b07e27367ec2bdc3
   EXFileSystem: 58b0fbdc0c4387c5b83ac9b07bed0ba6bb482202
   EXFirebaseAnalytics: 6118a277043b028c5ee0edd2da2584d0b33cc980
   EXFirebaseCore: e3d818b9624e508fff8a7981b175d93d42eb6bab
@@ -1095,7 +1170,9 @@ SPEC CHECKSUMS:
   EXNetwork: 6f4fb971c3779842387e4744fee288ae0aa58175
   EXNotifications: 557d4875448c003c55031d1430f3edbbd8545d4a
   EXPermissions: c240b4218ffe5e8b6684f47d87ddec46221f7101
-  expo-dev-launcher: ebebf6f7c63cb67d52f529f86250ddd9b2820ec1
+  expo-dev-launcher: 132ef53628b7c74894b3f6b9016b7415571bc1bb
+  expo-dev-menu: e019ac461f4d8269eb22181d33f842f2277148be
+  expo-dev-menu-interface: 4cf17b1680a0939fd347ab59ec92a82171e51227
   expo-image: 07527eb7a57f5ac939c5ded392bcf64c975b9c87
   EXPrint: d2fa3a6ac93758bbb597426b729c9a33e3c5a63b
   EXRandom: 492160fc4833e9557824ec897faded9e297508ec
@@ -1122,6 +1199,9 @@ SPEC CHECKSUMS:
   FirebaseCoreDiagnostics: b59c024493a409f8aecba02c99928d0d8431d159
   FirebaseCoreDiagnosticsInterop: 296e2c5f5314500a850ad0b83e9e7c10b011a850
   FirebaseInstanceID: ce993a3c3670a8f5d47ce371ac5d143c560608c5
+  FirebaseMLCommon: 074a67e05122b1c9f6401a4e33b2cea3b4efd224
+  FirebaseMLVision: 7a456009787690e3b53436092ae9b635563de8f3
+  FirebaseMLVisionFaceModel: 1003e20ab8979cb77d7a39c93faeb58c959a63f1
   Flipper: 8c34da52a467af6171044444c314dbeb8d5a6d35
   Flipper-DoubleConversion: 38631e41ef4f9b12861c67d17cb5518d06badc41
   Flipper-Folly: e4493b013c02d9347d5e0cb4d128680239f6c78a
@@ -1131,16 +1211,19 @@ SPEC CHECKSUMS:
   FlipperKit: 59d616c8b88912d02114f0320fb4824fed54ab35
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
   glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
+  GoogleAPIClientForREST: 4bb409633efcc2e1b3f945afe7e35039b5a61db2
   GoogleAppMeasurement: db118eb61a97dd8c4f7014e368d3c335cbbcf80a
   GoogleDataTransport: 9a8a16f79feffc7f42096743de2a7c4815e84020
   GoogleDataTransportCCTSupport: 0f39025e8cf51f168711bd3fb773938d7e62ddb5
   GoogleSignIn: 7137d297ddc022a7e0aa4619c86d72c909fa7213
+  GoogleToolboxForMac: 1350d40e86a76f7863928d63bcb0b89c84c521c5
   GoogleUtilities: 39530bc0ad980530298e9c4af8549e991fd033b1
   GTMAppAuth: 4deac854479704f348309e7b66189e604cf5e01e
   GTMSessionFetcher: 6f5c8abbab8a9bce4bb3f057e317728ec6182b10
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   OpenSSL-Universal: ff34003318d5e1163e9529b08470708e389ffcdd
   PromisesObjC: b48e0338dbbac2207e611750777895f7a5811b75
+  Protobuf: 0cde852566359049847168e51bd1c690e0f70056
   RCTRequired: f13f25e7b12f925f1f6a6a8c69d929a03c0129fe
   RCTTypeSafety: 44982c5c8e43ff4141eb519a8ddc88059acd1f3a
   React: e1c65dd41cb9db13b99f24608e47dd595f28ca9a
@@ -1184,6 +1267,7 @@ SPEC CHECKSUMS:
   UMCameraInterface: c4ceed954023beeb36e54a7107ceee0e8c00f6c8
   UMConstantsInterface: 4f295088041c9be94d3a2c777b2189f9096747ae
   UMCore: 6d61fd607665328831115744e18e1db6b4a061eb
+  UMFaceDetectorInterface: 72beeead8c494612730939aaef58ebd38725dedb
   UMFileSystemInterface: 05c4255c0b670b7c567abcafaab6ba181f331875
   UMFontInterface: 66a5a5260d08632470bf14aa4fd83c69abf80cbe
   UMImageLoaderInterface: 1161185ac1ddd1993b1109708627c060e0093a3b

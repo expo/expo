@@ -25,8 +25,8 @@
       "silentLaunch": true
     },
     "platforms": ["android", "ios", "web"],
-    "facebookScheme": "fb1201211719949057",
-    "facebookAppId": "1201211719949057",
+    "facebookScheme": "fb629712900716487",
+    "facebookAppId": "629712900716487",
     "facebookDisplayName": "Expo APIs",
     "androidStatusBar": {
       "backgroundColor": "#4630eb"
