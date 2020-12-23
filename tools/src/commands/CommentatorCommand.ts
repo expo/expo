@@ -22,7 +22,12 @@ export default (program: Command) => {
     .alias('comment')
     .option(
       '-p, --payload <payload>',
-      'Serialized and escaped JSON describing what and where to comment.'
+      'Serialized and escaped JSON array describing what and where to comment.'
+    )
+    .description(
+      `To add "Hello!" comment on issue #1234, run it with ${chalk.blue.italic(
+        `--payload "[{\\"issue\\": 1234, \\"body\\": \\"Hello!\\"}]"`
+      )}`
     )
     .asyncAction(main);
 };

@@ -1,4 +1,4 @@
-name: Comments on issues
+name: Comments on GitHub issues
 
 on:
   workflow_dispatch:
@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 1
-      - name: Comment on issues as github-actions bot
+      - name: Comment on GitHub issues as github-actions bot
         run: bin/expotools commentator --payload "${{ github.event.inputs.payload }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
