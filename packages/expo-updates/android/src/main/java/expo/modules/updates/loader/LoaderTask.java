@@ -60,7 +60,8 @@ public class LoaderTask {
   private boolean mHasLaunched = false;
   private boolean mIsUpToDate = false;
   private HandlerThread mHandlerThread;
-  private Launcher mLauncher;
+  private Launcher mCandidateLauncher;
+  private Launcher mFinalizedLauncher;
 
   public LoaderTask(UpdatesConfiguration configuration,
                     DatabaseHolder databaseHolder,
@@ -136,11 +137,11 @@ public class LoaderTask {
 
       @Override
       public void onSuccess() {
-        if (mLauncher.getLaunchedUpdate() != null &&
-          !mCallback.onCachedUpdateLoaded(mLauncher.getLaunchedUpdate())) {
+        if (mCandidateLauncher.getLaunchedUpdate() != null &&
+          !mCallback.onCachedUpdateLoaded(mCandidateLauncher.getLaunchedUpdate())) {
           // ignore timer and other settings and force launch a remote update
           stopTimer();
-          mLauncher = null;
+          mCandidateLauncher = null;
           launchRemoteUpdate();
         } else {
           synchronized (LoaderTask.this) {
@@ -169,11 +170,12 @@ public class LoaderTask {
       return;
     }
     mHasLaunched = true;
+    mFinalizedLauncher = mCandidateLauncher;
 
-    if (!mIsReadyToLaunch || mLauncher == null || mLauncher.getLaunchedUpdate() == null) {
+    if (!mIsReadyToLaunch || mFinalizedLauncher == null || mFinalizedLauncher.getLaunchedUpdate() == null) {
       mCallback.onFailure(e != null ? e : new Exception("LoaderTask encountered an unexpected error and could not launch an update."));
     } else {
-      mCallback.onSuccess(mLauncher, mIsUpToDate);
+      mCallback.onSuccess(mFinalizedLauncher, mIsUpToDate);
     }
 
     if (!mTimeoutFinished) {
@@ -190,7 +192,7 @@ public class LoaderTask {
    * loaded an update to launch and the timer isn't still running, the appropriate callback function
    * will be fired. If not, no callback will be fired.
    */
-  private void maybeFinish() {
+  private synchronized void maybeFinish() {
     if (!mIsReadyToLaunch || !mTimeoutFinished) {
       // too early, bail out
       return;
@@ -214,7 +216,7 @@ public class LoaderTask {
   private void launchFallbackUpdateFromDisk(Context context, Callback diskUpdateCallback) {
     UpdatesDatabase database = mDatabaseHolder.getDatabase();
     DatabaseLauncher launcher = new DatabaseLauncher(mConfiguration, mDirectory, mSelectionPolicy);
-    mLauncher = launcher;
+    mCandidateLauncher = launcher;
 
     if (mConfiguration.hasEmbeddedUpdate()) {
       // if the embedded update should be launched (e.g. if it's newer than any other update we have
@@ -259,7 +261,7 @@ public class LoaderTask {
           public boolean onManifestLoaded(Manifest manifest) {
             if (mSelectionPolicy.shouldLoadNewUpdate(
                   manifest.getUpdateEntity(),
-                  mLauncher == null ? null : mLauncher.getLaunchedUpdate())) {
+                  mCandidateLauncher == null ? null : mCandidateLauncher.getLaunchedUpdate())) {
               mIsUpToDate = false;
               mCallback.onRemoteManifestLoaded(manifest);
               return true;
@@ -286,10 +288,13 @@ public class LoaderTask {
               public void onSuccess() {
                 mDatabaseHolder.releaseDatabase();
 
-                boolean hasLaunched = mHasLaunched;
-                if (!hasLaunched) {
-                  mLauncher = newLauncher;
-                  mIsUpToDate = true;
+                boolean hasLaunched;
+                synchronized (LoaderTask.this) {
+                  hasLaunched = mHasLaunched;
+                  if (!hasLaunched) {
+                    mCandidateLauncher = newLauncher;
+                    mIsUpToDate = true;
+                  }
                 }
 
                 remoteUpdateCallback.onSuccess();
@@ -310,10 +315,12 @@ public class LoaderTask {
 
   private void runReaper() {
     AsyncTask.execute(() -> {
-      if (mLauncher != null && mLauncher.getLaunchedUpdate() != null) {
-        UpdatesDatabase database = mDatabaseHolder.getDatabase();
-        Reaper.reapUnusedUpdates(mConfiguration, database, mDirectory, mLauncher.getLaunchedUpdate(), mSelectionPolicy);
-        mDatabaseHolder.releaseDatabase();
+      synchronized (LoaderTask.this) {
+        if (mFinalizedLauncher != null && mFinalizedLauncher.getLaunchedUpdate() != null) {
+          UpdatesDatabase database = mDatabaseHolder.getDatabase();
+          Reaper.reapUnusedUpdates(mConfiguration, database, mDirectory, mFinalizedLauncher.getLaunchedUpdate(), mSelectionPolicy);
+          mDatabaseHolder.releaseDatabase();
+        }
       }
     });
   }

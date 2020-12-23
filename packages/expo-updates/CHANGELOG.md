@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Improved thread safety around reaping ([#11447](https://github.com/expo/expo/pull/11447) by [@esamelson](https://github.com/esamelson))
+
 ## 0.4.1 — 2020-11-25
 
 ### 🛠 Breaking changes
