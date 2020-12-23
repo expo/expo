@@ -12,7 +12,7 @@ configuration=$1
 # YES or NO
 UseModernBuildSystem=${2:-"NO"}
 
-xcodebuild clean build \
+xcodebuild \
   -workspace ios/BareExpo.xcworkspace \
   -scheme BareExpoDetox \
   -configuration "$configuration" \
