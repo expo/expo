@@ -1,4 +1,4 @@
-package com.expoapis;
+package host.exp.nclexp;
 
 import android.os.Bundle;
 

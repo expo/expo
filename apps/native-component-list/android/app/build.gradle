@@ -132,11 +132,11 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.expoapis"
+        applicationId 'host.exp.nclexp'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 11
+        versionName "40.0.0"
     }
     splits {
         abi {
@@ -217,3 +217,5 @@ task copyDownloadableDepsToLibs(type: Copy) {
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+
+apply plugin: 'com.google.gms.google-services'

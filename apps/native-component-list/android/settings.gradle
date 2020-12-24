@@ -1,4 +1,4 @@
-rootProject.name = 'ExpoAPIs'
+rootProject.name = 'Expo APIs'
 
 apply from: '../node_modules/react-native-unimodules/gradle.groovy'
 includeUnimodulesProjects()
