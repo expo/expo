@@ -14,12 +14,6 @@ project(":expo-dev-menu").projectDir = new File("../../../packages/expo-dev-menu
 include(":expo-dev-menu-interface")
 project(":expo-dev-menu-interface").projectDir = new File("../../../packages/expo-dev-menu-interface/android")
 
-include(":expo-image")
-project(":expo-image").projectDir = new File("../../../packages/expo-image/android")
-
-include(":expo-random")
-project(":expo-random").projectDir = new File("../../../packages/expo-random/android")
-
 include(":unimodules-test-core")
 project(":unimodules-test-core").projectDir = new File("../../../packages/unimodules-test-core/android")
 
@@ -53,9 +47,6 @@ includeUnimodulesProjects(
 // [Custom] To avoid dealing with this error: 
 // 'GADInvalidInitializationException', reason: 'The Google Mobile Ads SDK was initialized without an application ID. Google AdMob publishers, follow instructions here: https://googlemobileadssdk.page.link/admob-ios-update-plist to set GADApplicationIdentifier with a valid App ID. Google Ad Manager publishers, follow instructions here: https://googlemobileadssdk.page.link/ad-manager-ios-update-plist'
 // "expo-ads-admob",
-// [Custom] Remove non-unimodules
-// "expo-video-thumbnails",
-// "expo-module-template"
      exclude      : excludedUnimodules
 )
 

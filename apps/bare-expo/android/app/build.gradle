@@ -197,8 +197,6 @@ dependencies {
 
     implementation project(":expo-dev-launcher")
     implementation project(":expo-dev-menu")
-    implementation project(":expo-image")
-    implementation project(":expo-random")
 
     def packageJsonFile = new File(rootProject.projectDir, '../package.json')
     def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
