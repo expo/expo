@@ -13,7 +13,9 @@ const withAndroidCameraGradle = config => {
 const withCamera = (
   config,
   // Should be able to be used without any parameters for auto configuration via expo-cli.
-  { cameraPermission = 'Allow $(PRODUCT_NAME) to access your camera' } = {}
+  {
+    cameraPermission = ((config.ios || {}).infoPlist || {}).NSCameraUsageDescription || 'Allow $(PRODUCT_NAME) to access your camera',
+  } = {}
 ) => {
   return withPlugins(config, [
     [

@@ -82,3 +82,7 @@ buck-out/
 web-build/
 
 # @end expo-cli
+
+# For Managed EAS
+/ios
+/android
