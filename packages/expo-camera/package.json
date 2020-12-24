@@ -44,6 +44,7 @@
     "unimodules-permissions-interface": "*"
   },
   "dependencies": {
+    "@expo/config-plugins": "~1.0.13",
     "@koale/useworker": "^3.2.1",
     "invariant": "2.2.4",
     "lodash": "^4.6.0"

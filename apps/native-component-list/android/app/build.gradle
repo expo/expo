@@ -135,7 +135,7 @@ android {
         applicationId 'host.exp.nclexp'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
+        versionCode 11
         versionName "40.0.0"
     }
     splits {

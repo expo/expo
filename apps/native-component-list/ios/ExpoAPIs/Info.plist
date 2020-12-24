@@ -90,6 +90,10 @@
     </dict>
     <key>NSMicrophoneUsageDescription</key>
     <string>Allow $(PRODUCT_NAME) to access your microphone</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to access your photo library</string>
+    <key>NSCameraUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to access your camera</string>
     <key>ITSAppUsesNonExemptEncryption</key>
     <false/>
     <key>UIUserInterfaceStyle</key>
@@ -102,9 +106,5 @@
     <string>629712900716487</string>
     <key>FacebookDisplayName</key>
     <string>Expo APIs</string>
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to access your photo library</string>
-    <key>NSCameraUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to access your camera</string>
   </dict>
 </plist>
