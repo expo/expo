@@ -52,10 +52,6 @@
     </array>
     <key>UIViewControllerBasedStatusBarAppearance</key>
     <false/>
-    <key>ITSAppUsesNonExemptEncryption</key>
-    <false/>
-    <key>UIUserInterfaceStyle</key>
-    <string>Light</string>
     <key>CFBundleURLTypes</key>
     <array>
       <dict>
@@ -80,12 +76,6 @@
     </array>
     <key>UIRequiresFullScreen</key>
     <true/>
-    <key>CFBundleDisplayName</key>
-    <string>Expo APIs</string>
-    <key>GADApplicationIdentifier</key>
-    <string>ca-app-pub-3940256099942544~1458002511</string>
-    <key>FacebookAppID</key>
-    <string>629712900716487</string>
     <key>LSApplicationQueriesSchemes</key>
     <array>
       <string>fbapi</string>
@@ -93,12 +83,24 @@
       <string>fbauth2</string>
       <string>fbshareextension</string>
     </array>
-    <key>FacebookDisplayName</key>
-    <string>Expo APIs</string>
     <key>branch_key</key>
     <dict>
       <key>live</key>
       <string>key_live_pcxsCTBguAUqQBd8CjYZ7ogkurnZcQAO</string>
     </dict>
+    <key>ITSAppUsesNonExemptEncryption</key>
+    <false/>
+    <key>UIUserInterfaceStyle</key>
+    <string>Light</string>
+    <key>CFBundleDisplayName</key>
+    <string>Expo APIs</string>
+    <key>GADApplicationIdentifier</key>
+    <string>ca-app-pub-3940256099942544~1458002511</string>
+    <key>FacebookAppID</key>
+    <string>629712900716487</string>
+    <key>FacebookDisplayName</key>
+    <string>Expo APIs</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to access your microphone</string>
   </dict>
 </plist>
