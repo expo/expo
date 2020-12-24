@@ -81,7 +81,6 @@
     "expo-print": "~9.2.0",
     "expo-processing": "2.0.2",
     "expo-progress": "^0.0.2",
-    "expo-random": "^10.0.0",
     "expo-secure-store": "~9.3.0",
     "expo-sensors": "~9.2.0",
     "expo-sharing": "~8.5.0",
@@ -116,6 +115,9 @@
     "uuid": "^8.3.0",
     "victory-native": "^30.4.0"
   },
+  "excludedUnimodules": [
+    "expo-branch"
+  ],
   "devDependencies": {
     "@babel/core": "~7.9.0",
     "babel-jest": "~25.2.6",
