@@ -99,6 +99,16 @@
       <string>location</string>
       <string>fetch</string>
     </array>
+    <key>NSMotionUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to use your device motion</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to use your location</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to use your location</string>
+    <key>NSContactsUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to access your contacts</string>
+    <key>NSCalendarsUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to access your calendar</string>
     <key>ITSAppUsesNonExemptEncryption</key>
     <false/>
     <key>UIUserInterfaceStyle</key>
@@ -111,15 +121,5 @@
     <string>629712900716487</string>
     <key>FacebookDisplayName</key>
     <string>Expo APIs</string>
-    <key>NSMotionUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to use device motion</string>
-    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to use your location</string>
-    <key>NSLocationAlwaysUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to use your location</string>
-    <key>NSContactsUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to access your contacts</string>
-    <key>NSCalendarsUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to access your calendar</string>
   </dict>
 </plist>
