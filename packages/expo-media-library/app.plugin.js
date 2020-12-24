@@ -1,6 +1,7 @@
 const {
   createRunOncePlugin,
   withPlugins,
+  withAndroidManifest,
   AndroidConfig,
   IOSConfig,
 } = require('@expo/config-plugins');

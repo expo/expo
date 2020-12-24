@@ -6,7 +6,7 @@ const {
 const withSensors = (
   config,
   // Should be able to be used without any parameters for auto configuration via expo-cli.
-  { motionPermission = 'Allow $(PRODUCT_NAME) to use device motion' } = {}
+  { motionPermission = 'Allow $(PRODUCT_NAME) to use your device motion' } = {}
 ) => {
   return IOSConfig.Permissions.withPermissions(config, {
     NSMotionUsageDescription: motionPermission || null,

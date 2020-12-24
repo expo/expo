@@ -36,7 +36,7 @@
       </dict>
     </dict>
     <key>NSLocationWhenInUseUsageDescription</key>
-    <string/>
+    <string>Allow $(PRODUCT_NAME) to use your location</string>
     <key>UILaunchStoryboardName</key>
     <string>SplashScreen</string>
     <key>UIRequiredDeviceCapabilities</key>
@@ -94,6 +94,11 @@
     <string>Allow $(PRODUCT_NAME) to access your photo library</string>
     <key>NSCameraUsageDescription</key>
     <string>Allow $(PRODUCT_NAME) to access your camera</string>
+    <key>UIBackgroundModes</key>
+    <array>
+      <string>location</string>
+      <string>fetch</string>
+    </array>
     <key>ITSAppUsesNonExemptEncryption</key>
     <false/>
     <key>UIUserInterfaceStyle</key>
@@ -106,10 +111,15 @@
     <string>629712900716487</string>
     <key>FacebookDisplayName</key>
     <string>Expo APIs</string>
-    <key>UIBackgroundModes</key>
-    <array>
-      <string>location</string>
-      <string>fetch</string>
-    </array>
+    <key>NSMotionUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to use device motion</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to use your location</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to use your location</string>
+    <key>NSContactsUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to access your contacts</string>
+    <key>NSCalendarsUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to access your calendar</string>
   </dict>
 </plist>
