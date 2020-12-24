@@ -1,0 +1,1 @@
+../../../../../../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenController.h

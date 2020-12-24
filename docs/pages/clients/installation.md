@@ -9,15 +9,16 @@ import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
 
 > ⚠️ **Managed Expo projects are not yet supported**, but we are working on bringing the Development Client to the Managed Workflow! If you want to build a managed Expo project with the Development Client, you'll have to eject it first. See the [Ejecting to Bare Workflow](../workflow/customizing.md) page to learn how.
 
+<!-- commenting out until https://github.com/expo/examples/pull/236 lands
 ## Create a new project with the Development Client
 
 The easiest way to get started is to initialize a new project by executing the following command:
 
-<InstallSection packageName="expo-development-client" cmd={["npx crna -t with-development-client"]} hideBareInstructions />
-
+<InstallSection packageName="expo-development-client" cmd={["npx crna -t with-dev-launcher"]} hideBareInstructions />
+-->
 ## Add the Development Client to the existing project
 
-### 1. Installation
+## 1. Installation
 
 Add the Expo Development Client packages to your package.json.
 
@@ -36,7 +37,7 @@ Then you can run the following command to install native code for the Dev Launch
 
 <InstallSection packageName="expo-development-client" cmd={["npx pod-install"]} hideBareInstructions />
 
-### 2. Basic configuration
+## 2. Basic configuration
 
 The Development Client uses deep links to open projects from the QR code. If you had added a custom deep link schema to your project, the Development Client will use it. However, if this isn't the case, you need to configure the deep link support for your application. We know that this process might be difficult. So, we provided a simple command which will do all the work for you:
 
@@ -58,11 +59,9 @@ Make the following changes to allow the Development Client to control project in
 
 <ConfigurationDiff source="/static/diffs/client/main-activity-and-application.diff" />
 
-## 4. Build and Install
+## 3. Build and Install
 
 You're now ready to start developing your project with the Development Client.
-
-## Next Steps
 
 - [EAS Build](eas-build.md) - the easiest way to generate development builds of your application
 
