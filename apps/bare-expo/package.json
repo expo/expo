@@ -72,6 +72,11 @@
     "runner-config": "./e2e/jest.config.json",
     "test-runner": "jest"
   },
+  "expo-yarn-workspaces": {
+    "symlinks": [
+      "expo-camera"
+    ]
+  },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@react-native-community/async-storage": "~1.12.0",
@@ -91,8 +96,8 @@
     "expo-dev-launcher": "0.1.1",
     "expo-image": "~1.0.0-alpha.0",
     "expo-notifications": "~0.8.2",
+    "expo-random": "~10.0.0",
     "expo-splash-screen": "~0.8.1",
-    "expo-yarn-workspaces": "^1.2.1",
     "native-component-list": "*",
     "react": "16.13.1",
     "react-dom": "16.13.1",
