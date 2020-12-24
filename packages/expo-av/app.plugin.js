@@ -1,4 +1,4 @@
-const { withPlugins, AndroidConfig, IOSConfig } = require('@expo/config-plugins');
+const { createRunOncePlugin, withPlugins, AndroidConfig, IOSConfig } = require('@expo/config-plugins');
 
 const withAV = (
   config,
@@ -9,7 +9,7 @@ const withAV = (
     [
       IOSConfig.Permissions.withPermissions,
       {
-        NSMicrophoneUsageDescription: microphonePermission ?? null,
+        NSMicrophoneUsageDescription: microphonePermission || null,
       },
     ],
     [
@@ -19,4 +19,4 @@ const withAV = (
   ]);
 };
 
-module.exports = withAV;
+module.exports = createRunOncePlugin(withAV, 'expo-av');
