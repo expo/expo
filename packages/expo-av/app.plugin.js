@@ -19,4 +19,6 @@ const withAV = (
   ]);
 };
 
-module.exports = createRunOncePlugin(withAV, 'expo-av');
+const pkg = require('./package.json');
+
+module.exports = createRunOncePlugin(withAV, pkg.name, pkg.version);

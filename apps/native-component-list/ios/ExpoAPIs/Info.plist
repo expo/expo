@@ -88,6 +88,8 @@
       <key>live</key>
       <string>key_live_pcxsCTBguAUqQBd8CjYZ7ogkurnZcQAO</string>
     </dict>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to access your microphone</string>
     <key>ITSAppUsesNonExemptEncryption</key>
     <false/>
     <key>UIUserInterfaceStyle</key>
@@ -100,7 +102,5 @@
     <string>629712900716487</string>
     <key>FacebookDisplayName</key>
     <string>Expo APIs</string>
-    <key>NSMicrophoneUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to access your microphone</string>
   </dict>
 </plist>
