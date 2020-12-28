@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 0.1.2 — 2020-12-28
+
+_This version does not introduce any user-facing changes._
+
 ## 0.1.1 — 2020-12-22
 
 ### 🛠 Breaking changes
