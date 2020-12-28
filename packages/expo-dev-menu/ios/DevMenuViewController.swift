@@ -4,6 +4,7 @@ import UIKit
 
 class DevMenuViewController: UIViewController {
   static let JavaScriptDidLoadNotification = Notification.Name("RCTJavaScriptDidLoadNotification")
+  static let ContentDidAppearNotification = Notification.Name("RCTContentDidAppearNotification")
 
   private let manager: DevMenuManager
   private var reactRootView: DevMenuRootView?
