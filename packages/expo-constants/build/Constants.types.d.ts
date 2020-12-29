@@ -16,7 +16,7 @@ export declare enum UserInterfaceIdiom {
 export interface IOSManifest {
     buildNumber: string;
     platform: string;
-    model: string;
+    model: string | null;
     userInterfaceIdiom: UserInterfaceIdiom;
     systemVersion: string;
     [key: string]: any;
