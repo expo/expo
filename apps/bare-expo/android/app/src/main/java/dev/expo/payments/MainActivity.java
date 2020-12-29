@@ -22,7 +22,7 @@ public class MainActivity extends DevMenuAwareReactActivity {
    */
   @Override
   protected String getMainComponentName() {
-    return "BareExpo";
+    return "main";
   }
 
   @Override
