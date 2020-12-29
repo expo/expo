@@ -65,7 +65,12 @@ public class HomeActivity extends BaseExperienceActivity {
     mManifest = mExponentManifest.getKernelManifest();
     mExperienceId = ExperienceId.create(mManifest.optString(ExponentManifest.MANIFEST_ID_KEY));
 
-    ExperienceActivityUtils.overrideUserInterfaceStyle(mExponentManifest.getKernelManifest(), this);
+    // @sjchmiela, @lukmccall: We are consciously not overriding UI mode in Home, because it has no effect.
+    // `ExpoAppearanceModule` with which `ExperienceActivityUtils#overrideUiMode` is compatible
+    // is disabled in Home as of end of 2020, to fix some issues with dev menu, see:
+    // https://github.com/expo/expo/blob/eb9bd274472e646a730fd535a4bcf360039cbd49/android/expoview/src/main/java/versioned/host/exp/exponent/ExponentPackage.java#L200-L207
+    // ExperienceActivityUtils.overrideUiMode(mExponentManifest.getKernelManifest(), this);
+
     ExperienceActivityUtils.configureStatusBar(mExponentManifest.getKernelManifest(), this);
 
     EventBus.getDefault().registerSticky(this);
