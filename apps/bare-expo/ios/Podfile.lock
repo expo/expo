@@ -155,7 +155,7 @@ PODS:
   - expo-dev-launcher (0.1.1):
     - expo-dev-menu-interface
     - React
-  - expo-dev-menu (0.1.1):
+  - expo-dev-menu (0.1.2):
     - expo-dev-menu-interface
     - React
   - expo-dev-menu-interface (0.1.1):
@@ -1177,7 +1177,7 @@ SPEC CHECKSUMS:
   EXNotifications: 557d4875448c003c55031d1430f3edbbd8545d4a
   EXPermissions: c240b4218ffe5e8b6684f47d87ddec46221f7101
   expo-dev-launcher: 6dc7330b56aaf50d71752b4636f4349d8c809c29
-  expo-dev-menu: abf512cc663ded2f1d1d18c40a7725d8e84f8a52
+  expo-dev-menu: 03d796111cbbe837d64cbd20e2430048921f9acf
   expo-dev-menu-interface: e2534e9e6d5c333ef0a0bee02e459f310ddf810b
   expo-image: 07527eb7a57f5ac939c5ded392bcf64c975b9c87
   EXPrint: d2fa3a6ac93758bbb597426b729c9a33e3c5a63b

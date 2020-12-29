@@ -841,7 +841,7 @@ CACHE_KEYS:
       expo-dev-menu:
         :debug: 16f74ad736b93e99f6a6d09d36f79fee
         :release: 16f74ad736b93e99f6a6d09d36f79fee
-    CHECKSUM: abf512cc663ded2f1d1d18c40a7725d8e84f8a52
+    CHECKSUM: 03d796111cbbe837d64cbd20e2430048921f9acf
     FILES:
       - "../../../../packages/expo-dev-menu/assets/dev-menu-packager-host"
       - "../../../../packages/expo-dev-menu/assets/EXDevMenuApp.ios.js"
@@ -967,7 +967,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/RCTConvert+DevMenuREATransition.m"
     PROJECT_NAME: expo-dev-menu
     SPECS:
-      - expo-dev-menu (0.1.1)
+      - expo-dev-menu (0.1.2)
   expo-dev-menu-interface:
     BUILD_SETTINGS_CHECKSUM:
       expo-dev-menu-interface:
