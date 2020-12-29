@@ -600,8 +600,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     // setOptimisticManifest from showing a rogue splash screen
     mShouldShowLoadingViewWithOptimisticManifest = false;
 
-    // To prevents starting application twice, we start react instance only if we know that the current activity won't be restarted.
-    // Restart of the activity could be triggered by dark mode change.
     if (!isDebugModeEnabled()) {
       final boolean finalIsReadyForBundle = mIsReadyForBundle;
       AsyncCondition.wait(READY_FOR_BUNDLE, new AsyncCondition.AsyncConditionListener() {
