@@ -82,7 +82,7 @@ The `Info.plist` value for `CFBundleVersion` on iOS (set with `ios.buildNumber` 
 
   - `model`
 
-  The human-readable model name of this device, e.g. `iPhone 7 Plus` if it can be determined, otherwise will be `null`.
+  The human-readable model name of this device, e.g. `"iPhone 7 Plus"` if it can be determined, otherwise will be `null`.
 
   - `userInterfaceIdiom`
 
