@@ -1,5 +1,11 @@
 export type StringTransform = {
+  /**
+   * A substring or RegExp matching a part of the input that we want to replace.
+   */
   replace: RegExp | string;
+  /**
+   * A string that replaces matched substrings in the input.
+   */
   with: string;
 };
 
