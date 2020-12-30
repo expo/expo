@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import semver from 'semver';
 
-import { spawnAsync } from '../Utils';
+import { arrayize, spawnAsync } from '../Utils';
 import { EXPOTOOLS_DIR, IOS_DIR } from '../Constants';
 import { Podspec } from '../Packages';
 import {
@@ -206,14 +206,4 @@ function podNameToBundleId(podName: string): string {
     .replace(/^EX/, 'expo')
     .replace(/(\_|[^\w\d\.])+/g, '.')
     .replace(/\.*([A-Z]+)/g, (_, p1) => `.${p1.toLowerCase()}`);
-}
-
-/**
- * Ensures the value is an array.
- */
-function arrayize<T>(value: T | T[]): T[] {
-  if (Array.isArray(value)) {
-    return value;
-  }
-  return value != null ? [value] : [];
 }

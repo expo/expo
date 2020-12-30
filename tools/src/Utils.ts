@@ -1,4 +1,6 @@
 import fs from 'fs-extra';
+import { IOptions as GlobOptions } from 'glob';
+import glob from 'glob-promise';
 import chalk from 'chalk';
 import basicSpawnAsync, { SpawnResult, SpawnOptions, SpawnPromise } from '@expo/spawn-async';
 
@@ -134,4 +136,34 @@ export function execAll(rgx: RegExp, str: string, index: number = 0): string[] {
     matches.push(match[index]);
   }
   return matches;
+}
+
+/**
+ * Searches for files matching given glob patterns.
+ */
+export async function searchFilesAsync(
+  base: string,
+  patterns: string | string[],
+  options?: GlobOptions
+): Promise<Set<string>> {
+  const files = await Promise.all(
+    arrayize(patterns).map((pattern) =>
+      glob(pattern, {
+        cwd: base,
+        nodir: true,
+        ...options,
+      })
+    )
+  );
+  return new Set(([] as string[]).concat(...files));
+}
+
+/**
+ * Ensures the value is an array.
+ */
+export function arrayize<T>(value: T | T[]): T[] {
+  if (Array.isArray(value)) {
+    return value;
+  }
+  return value != null ? [value] : [];
 }

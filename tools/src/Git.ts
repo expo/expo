@@ -1,3 +1,4 @@
+import fs from 'fs-extra';
 import path from 'path';
 
 import { spawnAsync, SpawnResult, SpawnOptions } from './Utils';
@@ -50,6 +51,12 @@ export type GitCommitOptions = {
   body?: string;
 };
 
+export type GitFetchOptions = {
+  depth?: number;
+  remote?: string;
+  ref?: string;
+};
+
 /**
  * Helper class that stores the directory inside the repository so we don't have to pass it many times.
  * This directory path doesn't have to be the repo's root path,
@@ -80,6 +87,30 @@ export class GitDirectory {
     } catch (error) {
       return false;
     }
+  }
+
+  /**
+   * Initializes git repository in the directory.
+   */
+  async initAsync() {
+    const dotGitPath = path.join(this.path, '.git');
+    if (!(await fs.pathExists(dotGitPath))) {
+      await this.runAsync(['init']);
+    }
+  }
+
+  /**
+   * Adds a new remote to the local repository.
+   */
+  async addRemoteAsync(name: string, url: string): Promise<void> {
+    await this.runAsync(['remote', 'add', name, url]);
+  }
+
+  /**
+   * Switches to given commit reference.
+   */
+  async checkoutAsync(ref: string) {
+    await this.runAsync(['checkout', ref]);
   }
 
   /**
@@ -128,8 +159,19 @@ export class GitDirectory {
   /**
    * Fetches updates from remote repository.
    */
-  async fetchAsync(): Promise<void> {
-    await this.runAsync(['fetch']);
+  async fetchAsync(options: GitFetchOptions = {}): Promise<void> {
+    const args = ['fetch'];
+
+    if (options.depth) {
+      args.push('--depth', options.depth.toString());
+    }
+    if (options.remote) {
+      args.push(options.remote);
+    }
+    if (options.ref) {
+      args.push(options.ref);
+    }
+    await this.runAsync(args);
   }
 
   /**
@@ -312,6 +354,26 @@ export class GitDirectory {
   async mergeBaseAsync(ref: string): Promise<string> {
     const { stdout } = await this.runAsync(['merge-base', 'HEAD', ref]);
     return stdout.trim();
+  }
+
+  /**
+   * Clones the repository but in a shallow way, which means
+   * it downloads just one commit instead of the entire repository.
+   * Returns `GitDirectory` instance of the cloned repository.
+   */
+  static async shallowCloneAsync(
+    directory: string,
+    remoteUrl: string,
+    ref: string = 'master'
+  ): Promise<GitDirectory> {
+    const git = new GitDirectory(directory);
+
+    await fs.mkdirs(directory);
+    await git.initAsync();
+    await git.addRemoteAsync('origin', remoteUrl);
+    await git.fetchAsync({ depth: 1, remote: 'origin', ref });
+    await git.checkoutAsync('FETCH_HEAD');
+    return git;
   }
 }
 

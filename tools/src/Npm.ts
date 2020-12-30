@@ -5,7 +5,10 @@ export const EXPO_DEVELOPERS_TEAM_NAME = 'expo:developers';
 export type PackageViewType = null | {
   name: string;
   version: string;
-  'dist-tags': { [tag: string]: string };
+  'dist-tags': {
+    latest: string;
+    [tag: string]: string;
+  };
   versions: string[];
   time: {
     created: string;
@@ -17,7 +20,7 @@ export type PackageViewType = null | {
   author: string;
   gitHead: string;
   // and more but these are the basic ones, we shouldn't need more.
-  [key: string]: unknown; 
+  [key: string]: unknown;
 };
 
 /**
