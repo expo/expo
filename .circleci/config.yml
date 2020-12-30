@@ -1,0 +1,13 @@
+version: 2.1
+
+# Intentionally an empty file without which CircleCI integration,
+# enabled on the expo/expo repo, fails checks.
+# TODO: Remove when SDK38 is deprecated and CircleCI integration disabled.
+# See https://github.com/expo/expo/pull/9972#issuecomment-752698471
+
+jobs:
+  build:
+    docker:
+      - image: alpine:3.12.3
+    steps:
+      - run: echo "intentionally nothing to do, see config.yml comment"
