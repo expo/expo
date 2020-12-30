@@ -5,6 +5,8 @@ const baseConfig = createMetroConfiguration(__dirname);
 const assetsLocationsRewrites = {
   // @react-navigation/stack is hoisted to root node_modules
   '/node_modules/@react-navigation/stack': '../../node_modules/@react-navigation/stack',
+  // native-component-list is one level up from bare-expo
+  '/native-component-list': '../native-component-list',
 };
 
 module.exports = {
