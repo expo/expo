@@ -70,7 +70,7 @@ UM_REGISTER_MODULE();
                @"ios": @{
                    @"buildNumber": [self buildVersion],
                    @"platform": [[self class] devicePlatform],
-                   @"model": [[self class] deviceModel],
+                   @"model": UMNullIfNil([[self class] deviceModel]),
                    @"userInterfaceIdiom": [self userInterfaceIdiom],
                    @"systemVersion": [self iosVersion],
                    },
@@ -151,7 +151,7 @@ UM_REGISTER_MODULE();
   return platform;
 }
 
-+ (NSString *)deviceModel
++ (nullable NSString *)deviceModel
 {
   NSString *platform = [self devicePlatform];
   NSDictionary *mapping = @{
@@ -294,6 +294,7 @@ UM_REGISTER_MODULE();
 
                             // Simulator
                             @"i386": @"Simulator",
+                            @"arm64": @"Simulator",
                             @"x86_64": @"Simulator",
                             };
 
