@@ -17,9 +17,21 @@ module.exports = {
       return (req, res, next) => {
         // When an asset is imported outside the project root, it has wrong path on Android
         // This happens for the back button in stack, so we fix the path to correct one
+        let assetLocationAlreadyRewritten = false;
+        const originalUrl = req.url;
         for (const [rewriteFrom, rewriteTo] of Object.entries(assetsLocationsRewrites)) {
+          // While most probably this will never happen, let's guard against it and inform
+          // the developer of any unexpected behavior.
+          if (assetLocationAlreadyRewritten) {
+            console.warn(
+              `Multiple asset location rewrites matched "${originalUrl}". Applying only the first matching rule.`
+            );
+            break;
+          }
+
           if (req.url.startsWith(rewriteFrom)) {
             req.url = req.url.replace(rewriteFrom, `/assets/${rewriteTo}`);
+            assetLocationAlreadyRewritten = true;
           }
         }
 
