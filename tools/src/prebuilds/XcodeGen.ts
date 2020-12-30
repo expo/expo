@@ -4,7 +4,7 @@ import semver from 'semver';
 
 import { arrayize, spawnAsync } from '../Utils';
 import { EXPOTOOLS_DIR, IOS_DIR } from '../Constants';
-import { Podspec } from '../Packages';
+import { Podspec } from '../CocoaPods';
 import {
   ProjectSpec,
   ProjectSpecDependency,
