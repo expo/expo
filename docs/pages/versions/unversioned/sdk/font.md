@@ -25,7 +25,7 @@ import * as Font from 'expo-font';
 ### `useFonts`
 
 ```ts
-const [loaded, error] = useFonts({ ... });
+const [loaded, error] = Font.useFonts({ ... });
 ```
 
 Load a map of fonts with [`loadAsync`](#loadasyncobject). This returns a boolean if the fonts are loaded and ready to use. It also returns an error if something went wrong, to use in development.
@@ -43,7 +43,7 @@ Load a map of fonts with [`loadAsync`](#loadasyncobject). This returns a boolean
 
 ```tsx
 function App() {
-  const [loaded] = useFonts({
+  const [loaded] = Font.useFonts({
     Montserrat: require('./assets/fonts/Montserrat.ttf'),
   });
 
