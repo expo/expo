@@ -44,7 +44,7 @@ class ScopedFontLoaderModule(context: Context?) : FontLoaderModule(context) {
     get() {
       val appOwnership = mModuleRegistry?.getModule(ConstantsInterface::class.java)?.appOwnership
       // If there's no constants module, or app ownership isn't "expo", we're not in Expo Client.
-      return appOwnership == null && "expo" == appOwnership
+      return appOwnership != null && "expo" == appOwnership
     }
 
   class LocationAccessUnauthorizedError(uri: String) : CodedRuntimeException("You aren't authorized to load font file from: $uri") {
