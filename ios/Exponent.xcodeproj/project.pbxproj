@@ -317,8 +317,6 @@
 		B5FABDF420DD920600642528 /* EXAppLoaderConfigurationTestsProdService.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FABDF320DD920600642528 /* EXAppLoaderConfigurationTestsProdService.m */; };
 		B5FABDF620DD926E00642528 /* EXFileDownloaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FABDF520DD926E00642528 /* EXFileDownloaderTests.m */; };
 		B5FABDF820DD942A00642528 /* EXAppLoaderRequestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FABDF720DD942A00642528 /* EXAppLoaderRequestTests.m */; };
-		B5FB745B1FF6DADB001C764B /* EXAnimationViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB72E31FF6DADB001C764B /* EXAnimationViewManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		B5FB745C1FF6DADB001C764B /* EXContainerView.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB72E51FF6DADB001C764B /* EXContainerView.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		B5FB74A11FF6DADC001C764B /* EXConstantsBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73791FF6DADB001C764B /* EXConstantsBinding.m */; };
 		B5FB74AC1FF6DADC001C764B /* EXImageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB738F1FF6DADB001C764B /* EXImageUtils.m */; };
 		B5FB74B51FF6DADC001C764B /* EXUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73A11FF6DADB001C764B /* EXUtil.m */; };
@@ -1038,10 +1036,6 @@
 		B5FABDF320DD920600642528 /* EXAppLoaderConfigurationTestsProdService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppLoaderConfigurationTestsProdService.m; sourceTree = "<group>"; };
 		B5FABDF520DD926E00642528 /* EXFileDownloaderTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXFileDownloaderTests.m; sourceTree = "<group>"; };
 		B5FABDF720DD942A00642528 /* EXAppLoaderRequestTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppLoaderRequestTests.m; sourceTree = "<group>"; };
-		B5FB72E21FF6DADB001C764B /* EXAnimationViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAnimationViewManager.h; sourceTree = "<group>"; };
-		B5FB72E31FF6DADB001C764B /* EXAnimationViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAnimationViewManager.m; sourceTree = "<group>"; };
-		B5FB72E41FF6DADB001C764B /* EXContainerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXContainerView.h; sourceTree = "<group>"; };
-		B5FB72E51FF6DADB001C764B /* EXContainerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXContainerView.m; sourceTree = "<group>"; };
 		B5FB73781FF6DADB001C764B /* EXConstantsBinding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXConstantsBinding.h; sourceTree = "<group>"; };
 		B5FB73791FF6DADB001C764B /* EXConstantsBinding.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXConstantsBinding.m; sourceTree = "<group>"; };
 		B5FB738E1FF6DADB001C764B /* EXImageUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXImageUtils.h; sourceTree = "<group>"; };
@@ -2298,7 +2292,6 @@
 				7043DEF92283303800272D74 /* Svg */,
 				78C832BE23546B6E00448582 /* GestureHandler */,
 				B5FB72BC1FF6DADB001C764B /* GoogleMaps */,
-				B5FB72E11FF6DADB001C764B /* Lottie */,
 				B5FB72E61FF6DADB001C764B /* Maps */,
 				314410BF223BF50E00310599 /* WebView */,
 				65B902B660654403B6731F7E /* SharedElement */,
@@ -2371,17 +2364,6 @@
 				A5B705024D7B4371B0EB68EC /* AIRGoogleMapHeatmapManager.m */,
 			);
 			path = GoogleMaps;
-			sourceTree = "<group>";
-		};
-		B5FB72E11FF6DADB001C764B /* Lottie */ = {
-			isa = PBXGroup;
-			children = (
-				B5FB72E21FF6DADB001C764B /* EXAnimationViewManager.h */,
-				B5FB72E31FF6DADB001C764B /* EXAnimationViewManager.m */,
-				B5FB72E41FF6DADB001C764B /* EXContainerView.h */,
-				B5FB72E51FF6DADB001C764B /* EXContainerView.m */,
-			);
-			path = Lottie;
 			sourceTree = "<group>";
 		};
 		B5FB72E61FF6DADB001C764B /* Maps */ = {
@@ -2924,7 +2906,6 @@
 			files = (
 				31AD9A382285B53100F19090 /* AIRMapPolygon.m in Sources */,
 				B5A72C2120A0D13E00974CCE /* EXCachedResource.m in Sources */,
-				B5FB745C1FF6DADB001C764B /* EXContainerView.m in Sources */,
 				78C832EA23546BD400448582 /* RNLongPressHandler.m in Sources */,
 				BBE8539422B98829001FF9C2 /* EXScopedFontLoader.m in Sources */,
 				7043DF8F2283303800272D74 /* RNSVGRect.m in Sources */,
@@ -2932,7 +2913,6 @@
 				BBD03196200011C9009F0434 /* RNAWSCognito.m in Sources */,
 				31AD9A3B2285B53100F19090 /* AIRMapCalloutSubviewManager.m in Sources */,
 				78C832B523545ECF00448582 /* REABlockNode.m in Sources */,
-				B5FB745B1FF6DADB001C764B /* EXAnimationViewManager.m in Sources */,
 				B5FB74E21FF6DADC001C764B /* EXDisabledDevMenu.mm in Sources */,
 				31AD99EA2285B51100F19090 /* AIRGoogleMapCircleManager.m in Sources */,
 				31AD9A422285B53100F19090 /* AIRMapLocalTileOverlay.m in Sources */,
