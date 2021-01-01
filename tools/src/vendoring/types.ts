@@ -1,10 +1,8 @@
 import { Podspec } from '../CocoaPods';
-import { CopyFilesTransforms } from '../utils/copyFilesWithTransforms';
-
-export type VendoringTransforms = CopyFilesTransforms;
+import { FileTransforms } from '../Transforms.types';
 
 export type VendoringModulePlatformConfig<T = {}> = T & {
-  transforms?: VendoringTransforms;
+  transforms?: FileTransforms;
 };
 
 export type VendoringModuleConfig = {

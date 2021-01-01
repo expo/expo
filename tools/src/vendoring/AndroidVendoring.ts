@@ -12,8 +12,7 @@ export async function vendorAsync(
     ignore: config.excludeFiles,
   });
 
-  await copyVendoredFilesAsync({
-    files,
+  await copyVendoredFilesAsync(files, {
     sourceDirectory,
     targetDirectory,
     transforms: config?.transforms ?? {},
