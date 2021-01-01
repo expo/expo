@@ -153,10 +153,10 @@ export function useAuthRequest(config = {}, redirectUriOptions = {}) {
     const extraParams = useMemo(() => {
         const output = config.extraParams ? { ...config.extraParams } : {};
         if (config.language) {
-            output.hl = output.language;
+            output.hl = config.language;
         }
         if (config.loginHint) {
-            output.login_hint = output.loginHint;
+            output.login_hint = config.loginHint;
         }
         if (config.selectAccount) {
             output.prompt = Prompt.SelectAccount;
