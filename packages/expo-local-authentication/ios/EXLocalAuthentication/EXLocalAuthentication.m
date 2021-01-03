@@ -56,8 +56,14 @@ UM_EXPORT_METHOD_AS(isEnrolledAsync,
   NSError *error = nil;
 
   BOOL isSupported = [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error];
-  BOOL isEnrolled = isSupported && error == nil;
-
+  BOOL isEnrolled;
+  
+  if (@available(iOS 11.0, *)) {
+    isEnrolled = (isSupported && error == nil) || error.code == LAErrorBiometryLockout ;
+  } else {
+    isEnrolled = (isSupported && error == nil) || error.code == LAErrorTouchIDLockout ;
+  }
+  
   resolve(@(isEnrolled));
 }
 
