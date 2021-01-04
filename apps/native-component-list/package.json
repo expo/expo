@@ -123,14 +123,6 @@
     "uuid": "^8.3.0",
     "victory-native": "^30.4.0"
   },
-  "excludedUnimodules": [
-    "expo-branch",
-    "expo-ads-admob",
-    "expo-ads-facebook",
-    "expo-analytics-amplitude",
-    "expo-analytics-segment",
-    "expo-apple-authentication"
-  ],
   "devDependencies": {
     "@babel/core": "~7.9.0",
     "@types/i18n-js": "^3.0.1",
