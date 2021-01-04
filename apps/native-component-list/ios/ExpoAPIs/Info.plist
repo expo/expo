@@ -121,5 +121,9 @@
     <string>629712900716487</string>
     <key>FacebookDisplayName</key>
     <string>Expo APIs</string>
+    <key>FacebookAutoLogAppEventsEnabled</key>
+    <true/>
+    <key>FacebookAdvertiserIDCollectionEnabled</key>
+    <true/>
   </dict>
 </plist>
