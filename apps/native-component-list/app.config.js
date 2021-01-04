@@ -8,6 +8,7 @@ export default ({ config }) => {
   config.plugins = [
     // Add a plugin to modify the AppDelegate
     './plugins/withNotFoundModule',
+  ['./plugins/withPodfileMinVersion', '11.0']
   ];
   return config;
 };

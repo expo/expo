@@ -12,50 +12,28 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
+		3F37C9D2CE0D4B038EB87798 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1B54AC54590D4920852B505B /* GoogleService-Info.plist */; };
 		96905EF65AED1B983A6B3ABC /* libPods-ExpoAPIs.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58EEBF8E8E6FB1BC6CAF49B5 /* libPods-ExpoAPIs.a */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
-		C6932C9689A14EC0A3B7C675 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7225D64A7FAC4CD6B6353084 /* GoogleService-Info.plist */; };
-		0D28268397174DE8BDB914B6 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 53006DCD428244408EAC1AF0 /* GoogleService-Info.plist */; };
-		1B1001747E1B463188219E38 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 745AA5BEFCB446F38A395F1D /* GoogleService-Info.plist */; };
-		95CFBED85FBF4567950C107C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 74F58600EE764191AF917481 /* GoogleService-Info.plist */; };
-		5DA5B11CA5314B12A5F93C16 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 55365CC702694555B0BEE676 /* GoogleService-Info.plist */; };
-		DD8CB892C7E7451E9951F441 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = AC9F2BDB67784ECD99D55900 /* GoogleService-Info.plist */; };
-		38F34572A3344E8A8AC72877 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1877223C68744107AF7255A0 /* GoogleService-Info.plist */; };
-		C4831646880E4F879F304482 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = EED79A53DE08441B8027888D /* GoogleService-Info.plist */; };
-		91DE078CA8784CB3ABF3E415 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BCFF8FFEB7A24E89A0E07468 /* GoogleService-Info.plist */; };
-		D7E3AD0F784E40DF9673669E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = EDE17CF7688A48C792C83FCA /* GoogleService-Info.plist */; };
-		E272C8265E3041D3BBA1E56F /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C1988A563AB44A7AAFA9AD0C /* GoogleService-Info.plist */; };
-		C2723D07D55E4FB7BEABE92C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CE301FF8AB1840DB8950037B /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
-		13B07F961A680F5B00A75B9A /* nclexp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = nclexp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07F961A680F5B00A75B9A /* ExpoAPIs.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ExpoAPIs.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = ExpoAPIs/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = ExpoAPIs/AppDelegate.m; sourceTree = "<group>"; };
 		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = ExpoAPIs/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ExpoAPIs/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = ExpoAPIs/main.m; sourceTree = "<group>"; };
+		1B54AC54590D4920852B505B /* GoogleService-Info.plist */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "ExpoAPIs/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		58EEBF8E8E6FB1BC6CAF49B5 /* libPods-ExpoAPIs.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ExpoAPIs.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6C2E3173556A471DD304B334 /* Pods-ExpoAPIs.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExpoAPIs.debug.xcconfig"; path = "Target Support Files/Pods-ExpoAPIs/Pods-ExpoAPIs.debug.xcconfig"; sourceTree = "<group>"; };
-		7225D64A7FAC4CD6B6353084 /* GoogleService-Info.plist */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "ExpoAPIs/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		7A4D352CD337FB3A3BF06240 /* Pods-ExpoAPIs.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExpoAPIs.release.xcconfig"; path = "Target Support Files/Pods-ExpoAPIs/Pods-ExpoAPIs.release.xcconfig"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = ExpoAPIs/SplashScreen.storyboard; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
-		53006DCD428244408EAC1AF0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; name = "GoogleService-Info.plist"; path = "ExpoAPIs/GoogleService-Info.plist"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = text.plist.xml; explicitFileType = undefined; includeInIndex = 0; };
-		745AA5BEFCB446F38A395F1D /* GoogleService-Info.plist */ = {isa = PBXFileReference; name = "GoogleService-Info.plist"; path = "ExpoAPIs/GoogleService-Info.plist"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = text.plist.xml; explicitFileType = undefined; includeInIndex = 0; };
-		74F58600EE764191AF917481 /* GoogleService-Info.plist */ = {isa = PBXFileReference; name = "GoogleService-Info.plist"; path = "ExpoAPIs/GoogleService-Info.plist"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = text.plist.xml; explicitFileType = undefined; includeInIndex = 0; };
-		55365CC702694555B0BEE676 /* GoogleService-Info.plist */ = {isa = PBXFileReference; name = "GoogleService-Info.plist"; path = "ExpoAPIs/GoogleService-Info.plist"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = text.plist.xml; explicitFileType = undefined; includeInIndex = 0; };
-		AC9F2BDB67784ECD99D55900 /* GoogleService-Info.plist */ = {isa = PBXFileReference; name = "GoogleService-Info.plist"; path = "ExpoAPIs/GoogleService-Info.plist"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = text.plist.xml; explicitFileType = undefined; includeInIndex = 0; };
-		1877223C68744107AF7255A0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; name = "GoogleService-Info.plist"; path = "ExpoAPIs/GoogleService-Info.plist"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = text.plist.xml; explicitFileType = undefined; includeInIndex = 0; };
-		EED79A53DE08441B8027888D /* GoogleService-Info.plist */ = {isa = PBXFileReference; name = "GoogleService-Info.plist"; path = "ExpoAPIs/GoogleService-Info.plist"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = text.plist.xml; explicitFileType = undefined; includeInIndex = 0; };
-		BCFF8FFEB7A24E89A0E07468 /* GoogleService-Info.plist */ = {isa = PBXFileReference; name = "GoogleService-Info.plist"; path = "ExpoAPIs/GoogleService-Info.plist"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = text.plist.xml; explicitFileType = undefined; includeInIndex = 0; };
-		EDE17CF7688A48C792C83FCA /* GoogleService-Info.plist */ = {isa = PBXFileReference; name = "GoogleService-Info.plist"; path = "ExpoAPIs/GoogleService-Info.plist"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = text.plist.xml; explicitFileType = undefined; includeInIndex = 0; };
-		C1988A563AB44A7AAFA9AD0C /* GoogleService-Info.plist */ = {isa = PBXFileReference; name = "GoogleService-Info.plist"; path = "ExpoAPIs/GoogleService-Info.plist"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = text.plist.xml; explicitFileType = undefined; includeInIndex = 0; };
-		CE301FF8AB1840DB8950037B /* GoogleService-Info.plist */ = {isa = PBXFileReference; name = "GoogleService-Info.plist"; path = "ExpoAPIs/GoogleService-Info.plist"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = text.plist.xml; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,18 +60,7 @@
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				7225D64A7FAC4CD6B6353084 /* GoogleService-Info.plist */,
-				53006DCD428244408EAC1AF0 /* GoogleService-Info.plist */,
-				745AA5BEFCB446F38A395F1D /* GoogleService-Info.plist */,
-				74F58600EE764191AF917481 /* GoogleService-Info.plist */,
-				55365CC702694555B0BEE676 /* GoogleService-Info.plist */,
-				AC9F2BDB67784ECD99D55900 /* GoogleService-Info.plist */,
-				1877223C68744107AF7255A0 /* GoogleService-Info.plist */,
-				EED79A53DE08441B8027888D /* GoogleService-Info.plist */,
-				BCFF8FFEB7A24E89A0E07468 /* GoogleService-Info.plist */,
-				EDE17CF7688A48C792C83FCA /* GoogleService-Info.plist */,
-				C1988A563AB44A7AAFA9AD0C /* GoogleService-Info.plist */,
-				CE301FF8AB1840DB8950037B /* GoogleService-Info.plist */,
+				1B54AC54590D4920852B505B /* GoogleService-Info.plist */,
 			);
 			name = ExpoAPIs;
 			sourceTree = "<group>";
@@ -132,7 +99,7 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13B07F961A680F5B00A75B9A /* nclexp.app */,
+				13B07F961A680F5B00A75B9A /* ExpoAPIs.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -176,7 +143,7 @@
 			);
 			name = ExpoAPIs;
 			productName = ExpoAPIs;
-			productReference = 13B07F961A680F5B00A75B9A /* nclexp.app */;
+			productReference = 13B07F961A680F5B00A75B9A /* ExpoAPIs.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -219,18 +186,7 @@
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				C6932C9689A14EC0A3B7C675 /* GoogleService-Info.plist in Resources */,
-				0D28268397174DE8BDB914B6 /* GoogleService-Info.plist in Resources */,
-				1B1001747E1B463188219E38 /* GoogleService-Info.plist in Resources */,
-				95CFBED85FBF4567950C107C /* GoogleService-Info.plist in Resources */,
-				5DA5B11CA5314B12A5F93C16 /* GoogleService-Info.plist in Resources */,
-				DD8CB892C7E7451E9951F441 /* GoogleService-Info.plist in Resources */,
-				38F34572A3344E8A8AC72877 /* GoogleService-Info.plist in Resources */,
-				C4831646880E4F879F304482 /* GoogleService-Info.plist in Resources */,
-				91DE078CA8784CB3ABF3E415 /* GoogleService-Info.plist in Resources */,
-				D7E3AD0F784E40DF9673669E /* GoogleService-Info.plist in Resources */,
-				E272C8265E3041D3BBA1E56F /* GoogleService-Info.plist in Resources */,
-				C2723D07D55E4FB7BEABE92C /* GoogleService-Info.plist in Resources */,
+				3F37C9D2CE0D4B038EB87798 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -355,7 +311,6 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = ExpoAPIs/nclexp.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -363,7 +318,7 @@
 					"FB_SONARKIT_ENABLED=1",
 				);
 				INFOPLIST_FILE = ExpoAPIs/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -374,7 +329,7 @@
 				PRODUCT_NAME = nclexp;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1";
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -387,10 +342,9 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = ExpoAPIs/nclexp.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = ExpoAPIs/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -400,7 +354,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = host.exp.nclexp;
 				PRODUCT_NAME = nclexp;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1";
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
