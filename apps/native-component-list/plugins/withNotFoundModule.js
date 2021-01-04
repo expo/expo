@@ -1,5 +1,6 @@
 const { withDangerousMod, IOSConfig } = require('@expo/config-plugins');
 const fs = require('fs-extra');
+
 module.exports = config => {
   return withDangerousMod(config, [
     'ios',
@@ -7,8 +8,11 @@ module.exports = config => {
       const fileInfo = IOSConfig.Paths.getAppDelegate(config.modRequest.projectRoot);
       let contents = await fs.readFile(fileInfo.path, 'utf-8');
       if (fileInfo.language === 'objc') {
-        if (contents.match(/didNotFindModule:(NSString \*)moduleName/))
-          contents = contents.replace(/@end/, customBlockObjc);
+        if (!contents.match(/didNotFindModule:\(NSString\s?\*\)moduleName/)) {
+            let sections = contents.split('@end');
+            sections[sections.length - 2] += customBlockObjc
+            contents = sections.join('@end');
+        }
       } else {
         throw new Error(
           `Cannot append didNotFindModule method to AppDelegate of language "${fileInfo.language}"`
@@ -29,5 +33,4 @@ const customBlockObjc = `// [Custom]: Fixes \`Unable to find module for DevMenu\
 }
 #endif
 
-@end
 `;

@@ -16,6 +16,16 @@
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
 		C6932C9689A14EC0A3B7C675 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7225D64A7FAC4CD6B6353084 /* GoogleService-Info.plist */; };
 		0D28268397174DE8BDB914B6 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 53006DCD428244408EAC1AF0 /* GoogleService-Info.plist */; };
+		1B1001747E1B463188219E38 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 745AA5BEFCB446F38A395F1D /* GoogleService-Info.plist */; };
+		95CFBED85FBF4567950C107C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 74F58600EE764191AF917481 /* GoogleService-Info.plist */; };
+		5DA5B11CA5314B12A5F93C16 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 55365CC702694555B0BEE676 /* GoogleService-Info.plist */; };
+		DD8CB892C7E7451E9951F441 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = AC9F2BDB67784ECD99D55900 /* GoogleService-Info.plist */; };
+		38F34572A3344E8A8AC72877 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1877223C68744107AF7255A0 /* GoogleService-Info.plist */; };
+		C4831646880E4F879F304482 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = EED79A53DE08441B8027888D /* GoogleService-Info.plist */; };
+		91DE078CA8784CB3ABF3E415 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BCFF8FFEB7A24E89A0E07468 /* GoogleService-Info.plist */; };
+		D7E3AD0F784E40DF9673669E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = EDE17CF7688A48C792C83FCA /* GoogleService-Info.plist */; };
+		E272C8265E3041D3BBA1E56F /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C1988A563AB44A7AAFA9AD0C /* GoogleService-Info.plist */; };
+		C2723D07D55E4FB7BEABE92C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CE301FF8AB1840DB8950037B /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +46,16 @@
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 		53006DCD428244408EAC1AF0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; name = "GoogleService-Info.plist"; path = "ExpoAPIs/GoogleService-Info.plist"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = text.plist.xml; explicitFileType = undefined; includeInIndex = 0; };
+		745AA5BEFCB446F38A395F1D /* GoogleService-Info.plist */ = {isa = PBXFileReference; name = "GoogleService-Info.plist"; path = "ExpoAPIs/GoogleService-Info.plist"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = text.plist.xml; explicitFileType = undefined; includeInIndex = 0; };
+		74F58600EE764191AF917481 /* GoogleService-Info.plist */ = {isa = PBXFileReference; name = "GoogleService-Info.plist"; path = "ExpoAPIs/GoogleService-Info.plist"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = text.plist.xml; explicitFileType = undefined; includeInIndex = 0; };
+		55365CC702694555B0BEE676 /* GoogleService-Info.plist */ = {isa = PBXFileReference; name = "GoogleService-Info.plist"; path = "ExpoAPIs/GoogleService-Info.plist"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = text.plist.xml; explicitFileType = undefined; includeInIndex = 0; };
+		AC9F2BDB67784ECD99D55900 /* GoogleService-Info.plist */ = {isa = PBXFileReference; name = "GoogleService-Info.plist"; path = "ExpoAPIs/GoogleService-Info.plist"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = text.plist.xml; explicitFileType = undefined; includeInIndex = 0; };
+		1877223C68744107AF7255A0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; name = "GoogleService-Info.plist"; path = "ExpoAPIs/GoogleService-Info.plist"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = text.plist.xml; explicitFileType = undefined; includeInIndex = 0; };
+		EED79A53DE08441B8027888D /* GoogleService-Info.plist */ = {isa = PBXFileReference; name = "GoogleService-Info.plist"; path = "ExpoAPIs/GoogleService-Info.plist"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = text.plist.xml; explicitFileType = undefined; includeInIndex = 0; };
+		BCFF8FFEB7A24E89A0E07468 /* GoogleService-Info.plist */ = {isa = PBXFileReference; name = "GoogleService-Info.plist"; path = "ExpoAPIs/GoogleService-Info.plist"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = text.plist.xml; explicitFileType = undefined; includeInIndex = 0; };
+		EDE17CF7688A48C792C83FCA /* GoogleService-Info.plist */ = {isa = PBXFileReference; name = "GoogleService-Info.plist"; path = "ExpoAPIs/GoogleService-Info.plist"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = text.plist.xml; explicitFileType = undefined; includeInIndex = 0; };
+		C1988A563AB44A7AAFA9AD0C /* GoogleService-Info.plist */ = {isa = PBXFileReference; name = "GoogleService-Info.plist"; path = "ExpoAPIs/GoogleService-Info.plist"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = text.plist.xml; explicitFileType = undefined; includeInIndex = 0; };
+		CE301FF8AB1840DB8950037B /* GoogleService-Info.plist */ = {isa = PBXFileReference; name = "GoogleService-Info.plist"; path = "ExpoAPIs/GoogleService-Info.plist"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = text.plist.xml; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,6 +84,16 @@
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
 				7225D64A7FAC4CD6B6353084 /* GoogleService-Info.plist */,
 				53006DCD428244408EAC1AF0 /* GoogleService-Info.plist */,
+				745AA5BEFCB446F38A395F1D /* GoogleService-Info.plist */,
+				74F58600EE764191AF917481 /* GoogleService-Info.plist */,
+				55365CC702694555B0BEE676 /* GoogleService-Info.plist */,
+				AC9F2BDB67784ECD99D55900 /* GoogleService-Info.plist */,
+				1877223C68744107AF7255A0 /* GoogleService-Info.plist */,
+				EED79A53DE08441B8027888D /* GoogleService-Info.plist */,
+				BCFF8FFEB7A24E89A0E07468 /* GoogleService-Info.plist */,
+				EDE17CF7688A48C792C83FCA /* GoogleService-Info.plist */,
+				C1988A563AB44A7AAFA9AD0C /* GoogleService-Info.plist */,
+				CE301FF8AB1840DB8950037B /* GoogleService-Info.plist */,
 			);
 			name = ExpoAPIs;
 			sourceTree = "<group>";
@@ -191,6 +221,16 @@
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
 				C6932C9689A14EC0A3B7C675 /* GoogleService-Info.plist in Resources */,
 				0D28268397174DE8BDB914B6 /* GoogleService-Info.plist in Resources */,
+				1B1001747E1B463188219E38 /* GoogleService-Info.plist in Resources */,
+				95CFBED85FBF4567950C107C /* GoogleService-Info.plist in Resources */,
+				5DA5B11CA5314B12A5F93C16 /* GoogleService-Info.plist in Resources */,
+				DD8CB892C7E7451E9951F441 /* GoogleService-Info.plist in Resources */,
+				38F34572A3344E8A8AC72877 /* GoogleService-Info.plist in Resources */,
+				C4831646880E4F879F304482 /* GoogleService-Info.plist in Resources */,
+				91DE078CA8784CB3ABF3E415 /* GoogleService-Info.plist in Resources */,
+				D7E3AD0F784E40DF9673669E /* GoogleService-Info.plist in Resources */,
+				E272C8265E3041D3BBA1E56F /* GoogleService-Info.plist in Resources */,
+				C2723D07D55E4FB7BEABE92C /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

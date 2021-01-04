@@ -108,7 +108,8 @@ static void InitializeFlipper(UIApplication *application) {
                     restorationHandler:restorationHandler];
 }
 
-// [Custom]: Fixes `Unable to find module for DevMenu` https://stackoverflow.com/a/56160671/4047926
+
+// [Custom]: Fixes `Unable to find module for DevMenu`
 #if RCT_DEV
 - (BOOL)bridge:(RCTBridge *)bridge didNotFindModule:(NSString *)moduleName {
   return YES;
