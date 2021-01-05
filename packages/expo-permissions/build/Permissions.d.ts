@@ -3,12 +3,13 @@ export { PermissionStatus, PermissionResponse, PermissionExpiration, PermissionM
 export declare const CAMERA = "camera";
 export declare const MEDIA_LIBRARY = "mediaLibrary";
 export declare const MEDIA_LIBRARY_WRITE_ONLY = "mediaLibraryWriteOnly";
-/**
- * @deprecated Use `MEDIA_LIBRARY` or `MEDIA_LIBRARY_WRITE_ONLY`
- */
+/** @deprecated Use `MEDIA_LIBRARY` or `MEDIA_LIBRARY_WRITE_ONLY` */
 export declare const CAMERA_ROLL = "mediaLibrary";
 export declare const AUDIO_RECORDING = "audioRecording";
-export declare const LOCATION = "location";
+export declare const LOCATION_BACKGROUND = "locationBackground";
+export declare const LOCATION_FOREGROUND = "locationForeground";
+/** @deprecated Use `LOCATION_FOREGROUND` instead */
+export declare const LOCATION = "locationForeground";
 export declare const USER_FACING_NOTIFICATIONS = "userFacingNotifications";
 export declare const NOTIFICATIONS = "notifications";
 export declare const CONTACTS = "contacts";

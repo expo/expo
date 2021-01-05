@@ -6,12 +6,13 @@ export { PermissionStatus, };
 export const CAMERA = 'camera';
 export const MEDIA_LIBRARY = 'mediaLibrary';
 export const MEDIA_LIBRARY_WRITE_ONLY = 'mediaLibraryWriteOnly';
-/**
- * @deprecated Use `MEDIA_LIBRARY` or `MEDIA_LIBRARY_WRITE_ONLY`
- */
+/** @deprecated Use `MEDIA_LIBRARY` or `MEDIA_LIBRARY_WRITE_ONLY` */
 export const CAMERA_ROLL = MEDIA_LIBRARY;
 export const AUDIO_RECORDING = 'audioRecording';
-export const LOCATION = 'location';
+export const LOCATION_BACKGROUND = 'locationBackground';
+export const LOCATION_FOREGROUND = 'locationForeground';
+/** @deprecated Use `LOCATION_FOREGROUND` instead */
+export const LOCATION = LOCATION_FOREGROUND;
 export const USER_FACING_NOTIFICATIONS = 'userFacingNotifications';
 export const NOTIFICATIONS = 'notifications';
 export const CONTACTS = 'contacts';
@@ -27,6 +28,8 @@ const PERMISSION_MODULE_MAPPING = {
     [MEDIA_LIBRARY_WRITE_ONLY]: 'expo-media-library',
     [AUDIO_RECORDING]: 'expo-av',
     [LOCATION]: 'expo-location',
+    [LOCATION_BACKGROUND]: 'expo-location',
+    [LOCATION_FOREGROUND]: 'expo-location',
     [USER_FACING_NOTIFICATIONS]: 'expo-notifications',
     [NOTIFICATIONS]: 'expo-notifications',
     [CONTACTS]: 'expo-contacts',

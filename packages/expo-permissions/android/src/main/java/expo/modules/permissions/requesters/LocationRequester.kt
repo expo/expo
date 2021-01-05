@@ -16,16 +16,10 @@ import org.unimodules.interfaces.permissions.PermissionsResponse.Companion.STATU
 import org.unimodules.interfaces.permissions.PermissionsStatus
 
 class LocationRequester(val includeBackgroundPermission: Boolean = false) : PermissionRequester {
-  override fun getAndroidPermissions(): List<String> {
-    val list = mutableListOf(
-      Manifest.permission.ACCESS_FINE_LOCATION,
-      Manifest.permission.ACCESS_COARSE_LOCATION
-    )
-    if (includeBackgroundPermission && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-      list.add(0, Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-    }
-    return list
-  }
+  override fun getAndroidPermissions(): List<String> = listOf(
+    Manifest.permission.ACCESS_FINE_LOCATION,
+    Manifest.permission.ACCESS_COARSE_LOCATION
+  )
 
   override fun parseAndroidPermissions(permissionsResponse: Map<String, PermissionsResponse>): Bundle {
     return Bundle().apply {

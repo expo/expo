@@ -239,7 +239,8 @@ async function getPermissionAsync(
         granted: status === PermissionStatus.GRANTED,
       };
     }
-    case 'location':
+    case 'locationBackground':
+    case 'locationForeground':
       {
         const maybeStatus = await getPermissionWithQueryAsync('geolocation');
         if (maybeStatus) {

@@ -1,7 +1,8 @@
 package expo.modules.permissions
 
 enum class PermissionsTypes(val type: String) {
-  LOCATION("location"),
+  LOCATION_BACKGROUND("locationBackground"),
+  LOCATION_FOREGROUND("locationForeground"),
   CAMERA("camera"),
   CONTACTS("contacts"),
   AUDIO_RECORDING("audioRecording"),
