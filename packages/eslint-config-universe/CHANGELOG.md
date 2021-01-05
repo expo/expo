@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Warn when `var` is used by enabling the eslint `no-var` rule.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
