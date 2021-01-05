@@ -33,7 +33,7 @@
     "nuke": "rm -rf node_modules; rm -rf ios/Pods/ && rm -rf ios/build/ && rm -rf android/.gradle",
     "sync:tools": "cp -a ../../../react-native/React/DevSupport/ ../../react-native-lab/react-native/React/DevSupport/"
   },
-  "unimodules": {
+  "react-native-unimodules": {
     "android": {
       "modulesPaths" : [
         "../../../../packages"

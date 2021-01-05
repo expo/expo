@@ -37,7 +37,7 @@ def getProjectPackageJson(File projectRoot) {
 
 def getAndroidConfig(File projectRoot) {
   def packageJson = getProjectPackageJson(projectRoot);
-  def unimodulesConfig = packageJson.unimodules != null ? packageJson.unimodules : {}
+  def unimodulesConfig = packageJson["react-native-unimodules"] != null ? packageJson["react-native-unimodules"] : {}
   def androidConfig = unimodulesConfig.android != null ? unimodulesConfig.android : {}
   return androidConfig
 }

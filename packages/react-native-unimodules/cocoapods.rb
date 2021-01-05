@@ -5,7 +5,7 @@ require 'optparse'
 
 def use_unimodules!(custom_options = {})
   root_package_json = JSON.parse(File.read(find_project_package_json_path))
-  json_options = root_package_json.fetch('unimodules', {}).fetch('ios', {}).transform_keys(&:to_sym)
+  json_options = root_package_json.fetch('react-native-unimodules', {}).fetch('ios', {}).transform_keys(&:to_sym)
 
   options = {
     modules_paths: ['../node_modules'],
