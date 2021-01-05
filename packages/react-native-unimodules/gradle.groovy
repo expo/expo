@@ -35,11 +35,12 @@ def getProjectPackageJson(File projectRoot) {
   return packageJson;
 }
 
-def getAndroidConfig(File projectRoot) {
-  def packageJson = getProjectPackageJson(projectRoot);
-  def unimodulesConfig = packageJson["react-native-unimodules"] != null ? packageJson["react-native-unimodules"] : {}
-  def androidConfig = unimodulesConfig.android != null ? unimodulesConfig.android : {}
-  return androidConfig
+Map getAndroidConfig(File projectRoot) {
+  def packageJson = getProjectPackageJson(projectRoot)
+  if (packageJson == null || packageJson["react-native-unimodules"] == null || packageJson["react-native-unimodules"].android == null) {
+    return [:]
+  }
+  return packageJson["react-native-unimodules"].android
 }
 
 def spawnProcess(String[] cmd, File directory) {
