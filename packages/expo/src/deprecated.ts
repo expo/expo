@@ -1,6 +1,6 @@
 import deprecatedModule from './deprecatedModule';
 
-declare var module: any;
+declare let module: any;
 
 Object.defineProperties(module.exports, {
   Linking: {
