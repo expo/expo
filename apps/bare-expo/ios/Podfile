@@ -1,14 +1,9 @@
-require 'json'
-
 install! 'cocoapods',
          generate_multiple_pod_projects: true,
          incremental_installation: true
 source 'https://cdn.cocoapods.org/'
 platform :ios, '12.0'
 inhibit_all_warnings!
-
-# Get the package.json for the excluded modules
-package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 
 # Import the auto-linking packages
 require_relative '../node_modules/react-native/scripts/react_native_pods'
@@ -17,13 +12,8 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 
 abstract_target 'BareExpoMain' do
   # Auto-linking
-  use_unimodules!(
-    {
-      modules_paths: %w[../../../packages], # [Custom] Prevent the bundling of template code and stripe
-      exclude: package['excludedUnimodules'],
-      flags: { inhibit_warnings: false }
-    }
-  )
+  use_unimodules!
+
   config = use_native_modules!
 
   use_react_native!(path: config['reactNativePath'])
