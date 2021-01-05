@@ -32,6 +32,11 @@
       ],
       "configuration": "api",
       "target": "react-native"
+    },
+    "ios": {
+      "exclude": [
+        "unimodules-test-core"
+      ]
     }
   },
   "dependencies": {

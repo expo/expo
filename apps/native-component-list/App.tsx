@@ -18,7 +18,12 @@ function useSplashScreen(loadingFunction: () => void | Promise<void>) {
   React.useEffect(() => {
     async function loadAsync() {
       try {
-        await SplashScreen.preventAutoHideAsync();
+        try {
+          await SplashScreen.preventAutoHideAsync();
+        } catch (e) {
+          console.warn(e);
+          await SplashScreen.hideAsync();
+        }
         await loadingFunction();
       } catch (e) {
         // We might want to provide this error information to an error reporting service
