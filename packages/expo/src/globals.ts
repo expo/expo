@@ -8,7 +8,7 @@
 
 import deprecatedGlobal from './deprecatedGlobal';
 
-declare var module: any;
+declare let module: any;
 
 Object.defineProperties(module.exports, {
   Asset: {
