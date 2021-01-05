@@ -4,11 +4,16 @@
 
 ### 🛠 Breaking changes
 
-- Warn when `var` is used by enabling the eslint `no-var` rule.
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+## 7.0.0 - 2021-01-05
+
+### 🛠 Breaking changes
+
+- Warn when `var` is used by enabling the eslint `no-var` rule.
+- Upgraded `@typescript-eslint/eslint-plugin` to 4.12.0 and `@typescript-eslint/parser` to 4.12.0. [See the changelog for `typescript-eslint`.](https://github.com/typescript-eslint/typescript-eslint/releases/tag/v4.12.0).
 
 ## 6.0.1 — 2020-10-21
 
