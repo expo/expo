@@ -1,21 +1,19 @@
-const { createRunOncePlugin, withPlugins, AndroidConfig, IOSConfig } = require('@expo/config-plugins');
+const { createRunOncePlugin, withPlugins, AndroidConfig } = require('@expo/config-plugins');
 
 const withAV = (
   config,
   // Should be able to be used without any parameters for auto configuration via expo-cli.
-  { microphonePermission = 'Allow $(PRODUCT_NAME) to access your microphone' } = {}
+  { microphonePermission } = {}
 ) => {
+  if (!config.ios) config.ios = {};
+  if (!config.ios.infoPlist) config.ios.infoPlist = {};
+  config.ios.infoPlist.NSMicrophoneUsageDescription =
+    microphonePermission ||
+    config.ios.infoPlist.NSMicrophoneUsageDescription ||
+    'Allow $(PRODUCT_NAME) to access your microphone';
+
   return withPlugins(config, [
-    [
-      IOSConfig.Permissions.withPermissions,
-      {
-        NSMicrophoneUsageDescription: microphonePermission || null,
-      },
-    ],
-    [
-      AndroidConfig.Permissions.withPermissions,
-      [!!microphonePermission && 'android.permission.RECORD_AUDIO'].filter(Boolean),
-    ],
+    [AndroidConfig.Permissions.withPermissions, ['android.permission.RECORD_AUDIO']],
   ]);
 };
 

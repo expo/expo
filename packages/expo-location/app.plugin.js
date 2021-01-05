@@ -1,28 +1,30 @@
-const {
-  createRunOncePlugin,
-  withPlugins,
-  AndroidConfig,
-  IOSConfig,
-} = require('@expo/config-plugins');
+const { createRunOncePlugin, withPlugins, AndroidConfig } = require('@expo/config-plugins');
 
 const withLocation = (
   config,
   // Should be able to be used without any parameters for auto configuration via expo-cli.
   {
-    locationAlwaysAndWhenInUsePermission = 'Allow $(PRODUCT_NAME) to use your location',
-    locationAlwaysPermission = 'Allow $(PRODUCT_NAME) to use your location',
-    locationWhenInUsePermission = 'Allow $(PRODUCT_NAME) to use your location',
+    locationAlwaysAndWhenInUsePermission,
+    locationAlwaysPermission,
+    locationWhenInUsePermission,
   } = {}
 ) => {
+  if (!config.ios) config.ios = {};
+  if (!config.ios.infoPlist) config.ios.infoPlist = {};
+  config.ios.infoPlist.NSLocationAlwaysAndWhenInUseUsageDescription =
+    locationAlwaysAndWhenInUsePermission ||
+    config.ios.infoPlist.NSLocationAlwaysAndWhenInUseUsageDescription ||
+    'Allow $(PRODUCT_NAME) to use your location';
+  config.ios.infoPlist.NSLocationAlwaysUsageDescription =
+    locationAlwaysPermission ||
+    config.ios.infoPlist.NSLocationAlwaysUsageDescription ||
+    'Allow $(PRODUCT_NAME) to use your location';
+  config.ios.infoPlist.NSLocationWhenInUseUsageDescription =
+    locationWhenInUsePermission ||
+    config.ios.infoPlist.NSLocationWhenInUseUsageDescription ||
+    'Allow $(PRODUCT_NAME) to use your location';
+
   return withPlugins(config, [
-    [
-      IOSConfig.Permissions.withPermissions,
-      {
-        NSLocationAlwaysAndWhenInUseUsageDescription: locationAlwaysAndWhenInUsePermission || null,
-        NSLocationAlwaysUsageDescription: locationAlwaysPermission || null,
-        NSLocationWhenInUseUsageDescription: locationWhenInUsePermission || null,
-      },
-    ],
     [
       AndroidConfig.Permissions.withPermissions,
       [

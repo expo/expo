@@ -3,7 +3,6 @@ const {
   withPlugins,
   withAndroidManifest,
   AndroidConfig,
-  IOSConfig,
 } = require('@expo/config-plugins');
 
 const withMediaLibraryExternalStorage = config => {
@@ -20,15 +19,16 @@ const withMediaLibraryExternalStorage = config => {
 const withMediaLibrary = (
   config,
   // Should be able to be used without any parameters for auto configuration via expo-cli.
-  { photoLibraryPermission = 'Give $(PRODUCT_NAME) permission to save photos' } = {}
+  { photoLibraryPermission } = {}
 ) => {
+  if (!config.ios) config.ios = {};
+  if (!config.ios.infoPlist) config.ios.infoPlist = {};
+  config.ios.infoPlist.NSPhotoLibraryUsageDescription =
+    photoLibraryPermission ||
+    config.ios.infoPlist.NSPhotoLibraryUsageDescription ||
+    'Allow $(PRODUCT_NAME) to access your photos';
+
   return withPlugins(config, [
-    [
-      IOSConfig.Permissions.withPermissions,
-      {
-        NSPhotoLibraryUsageDescription: photoLibraryPermission || null,
-      },
-    ],
     [
       AndroidConfig.Permissions.withPermissions,
       ['android.permission.READ_EXTERNAL_STORAGE', 'android.permission.WRITE_EXTERNAL_STORAGE'],

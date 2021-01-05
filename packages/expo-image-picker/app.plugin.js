@@ -3,7 +3,6 @@ const {
   withAndroidManifest,
   withPlugins,
   AndroidConfig,
-  IOSConfig,
 } = require('@expo/config-plugins');
 
 const withImagePickerManifestActivity = config => {
@@ -33,30 +32,32 @@ const withImagePicker = (
   config,
   // Should be able to be used without any parameters for auto configuration via expo-cli.
 
-  {
-    photoLibraryPermission = 'Allow $(PRODUCT_NAME) to access your photo library',
-    cameraPermission = 'Allow $(PRODUCT_NAME) to access your camera',
-    microphonePermission = 'Allow $(PRODUCT_NAME) to access your microphone',
-  } = {}
+  { photoLibraryPermission, cameraPermission, microphonePermission } = {}
 ) => {
-  // TODO: Use static config to allow overwriting.
+  if (!config.ios) config.ios = {};
+  if (!config.ios.infoPlist) config.ios.infoPlist = {};
+  config.ios.infoPlist.NSPhotoLibraryUsageDescription =
+    photoLibraryPermission ||
+    config.ios.infoPlist.NSPhotoLibraryUsageDescription ||
+    'Allow $(PRODUCT_NAME) to access your photo library';
+  config.ios.infoPlist.NSCameraUsageDescription =
+    cameraPermission ||
+    config.ios.infoPlist.NSCameraUsageDescription ||
+    'Allow $(PRODUCT_NAME) to access your camera';
+  config.ios.infoPlist.NSMicrophoneUsageDescription =
+    microphonePermission ||
+    config.ios.infoPlist.NSMicrophoneUsageDescription ||
+    'Allow $(PRODUCT_NAME) to access your microphone';
+
   return withPlugins(config, [
-    [
-      IOSConfig.Permissions.withPermissions,
-      {
-        NSPhotoLibraryUsageDescription: photoLibraryPermission,
-        NSCameraUsageDescription: cameraPermission,
-        NSMicrophoneUsageDescription: microphonePermission,
-      },
-    ],
     [
       AndroidConfig.Permissions.withPermissions,
       [
         'android.permission.CAMERA',
         'android.permission.READ_EXTERNAL_STORAGE',
         'android.permission.WRITE_EXTERNAL_STORAGE',
-        !!microphonePermission && 'android.permission.RECORD_AUDIO',
-      ].filter(Boolean),
+        'android.permission.RECORD_AUDIO',
+      ],
     ],
     withImagePickerManifestActivity,
   ]);
