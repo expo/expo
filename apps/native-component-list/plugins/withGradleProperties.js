@@ -21,6 +21,7 @@ module.exports = (config, options) => {
           let value;
           if (keyName in options) {
             value = options[keyName];
+            delete options[keyName]
           } else {
             value = line.slice(eok + 1, line.length);
           }
@@ -28,6 +29,11 @@ module.exports = (config, options) => {
         } else {
           results.push(line);
         }
+      }
+
+      // Add the remaining options
+      for (const [key, value] of Object.entries(options)) {
+        results.push(`${key}=${value}`);
       }
       await fs.writeFile(filePath, results.join('\n'));
       return config;
