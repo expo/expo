@@ -6,9 +6,14 @@ export default ({ config }) => {
   config.version = '40.0.0'; // VERSION
   config.sdkVersion = '40.0.0'; //VERSION
   config.plugins = [
+    //// iOS
+
     // Add a plugin to modify the AppDelegate
     './plugins/withNotFoundModule',
     ['./plugins/withPodfileMinVersion', '11.0'],
+
+    //// Android
+
     [
       './plugins/withGradleProperties',
       {
@@ -22,6 +27,7 @@ export default ({ config }) => {
       },
     ],
     [
+      // unimodules-test-core requires Kotlin be added on Android.
       './plugins/withKotlinGradle',
       '1.3.50'
     ],
