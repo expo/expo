@@ -7,23 +7,17 @@ export default ({ config }) => {
   config.sdkVersion = '40.0.0'; //VERSION
   config.plugins = [
     //// iOS
-
     // Add a plugin to modify the AppDelegate
     './plugins/withNotFoundModule',
     ['./plugins/withPodfileMinVersion', '11.0'],
 
     //// Android
-
     [
       './plugins/withGradleProperties',
       {
         // Increase default java VM size so it can handle building all the Expo packages.
         'org.gradle.jvmargs':
           '-Xmx3g -XX:MaxPermSize=2048m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8',
-        // These are general optimizations.
-        // 'org.gradle.daemon': true,
-        // 'org.gradle.parallel': true,
-        // 'org.gradle.configureondemand': true,
       },
     ],
     [
