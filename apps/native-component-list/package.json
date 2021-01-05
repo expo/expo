@@ -18,9 +18,14 @@
   "expo-yarn-workspaces": {
     "symlinks": [
       "expo-constants",
+      "expo-camera",
       "expo-updates"
     ]
   },
+  "excludedUnimodules": [
+    "unimodules-test-core",
+    "expo-module-template"
+  ],
   "dependencies": {
     "@expo/react-native-action-sheet": "^3.8.0",
     "@react-native-community/async-storage": "~1.12.0",
