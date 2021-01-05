@@ -119,6 +119,23 @@ def generateBasePackageList(List<Unimodule> unimodules) {
   javaFileWriter.close()
 }
 
+def getProjectPackageJson(File projectRoot) {
+  String resolveScript = """
+  const findUp = require('find-up');
+  console.log(findUp.sync('package.json'));
+  """
+  String[] nodeCommand = ["node", "-e", resolveScript]
+  String packageJsonPath = spawnProcess(nodeCommand, projectRoot)
+  def packageJsonFile = new File(packageJsonPath)
+  def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
+  return packageJson;
+}
+
+List getAndroidConfig(File projectRoot) {
+  def packageJson = getProjectPackageJson(projectRoot);
+  def unimodulesConfig = packageJson.unimodules != null ? packageJson.unimodules : {}
+  return unimodulesConfig.android || {}
+}
 
 def findUnimodules(String target, List exclude, List modulesPaths) {
   def unimodules = [:]
@@ -135,7 +152,6 @@ def findUnimodules(String target, List exclude, List modulesPaths) {
       def buildGradle = readFromBuildGradle(new File(directory, "android/build.gradle").toString())
       def packageJsonFile = new File(directory, 'package.json')
       def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
-
       def unimodule = new Unimodule()
       unimodule.name = unimoduleJson.name ?: packageJson.name
       unimodule.directory = directory
@@ -215,13 +231,29 @@ def addUnimodulesDependencies(String target, List exclude, List modulesPaths, Cl
   }
 }
 
+def spawnProcess(String[] cmd, File directory) {
+  try {
+    def cmdProcess = Runtime.getRuntime().exec(cmd, null, directory)
+    def bufferedReader = new BufferedReader(new InputStreamReader(cmdProcess.getInputStream()))
+    def buffered = ""
+    def results = new StringBuffer()
+    while ((buffered = bufferedReader.readLine()) != null) {
+      results.append(buffered)
+    }
+    return results.toString()
+  } catch (Exception exception) {
+    rootProject.logger.error "Spawned process '${cmd}' threw an error"
+    throw exception
+  }
+}
+
 ext.addUnimodulesDependencies = { Map customOptions = [:] ->
   def options = [
       modulesPaths : ['../../node_modules'],
       configuration: 'implementation',
       target       : 'react-native',
       exclude      : [],
-  ] << customOptions
+  ] << getAndroidConfig(rootProject.projectDir) << customOptions
   addUnimodulesDependencies(options.target, options.exclude, options.modulesPaths, {unimodule ->
     Object dependency = project.project(':' + unimodule.name)
     project.dependencies.add(options.configuration, dependency)
@@ -234,7 +266,7 @@ ext.addMavenUnimodulesDependencies = { Map customOptions = [:] ->
       configuration: 'implementation',
       target       : 'react-native',
       exclude      : [],
-  ] << customOptions
+  ] << getAndroidConfig(rootProject.projectDir) << customOptions
 
   addUnimodulesDependencies(options.target, options.exclude, options.modulesPaths, {unimodule ->
     project.dependencies.add(
@@ -248,8 +280,8 @@ ext.includeUnimodulesProjects = { Map customOptions = [:] ->
   def options = [
       modulesPaths: ['../../node_modules'],
       target      : 'react-native',
-      exclude     : [],
-  ] << customOptions
+      exclude      : [],
+  ] << getAndroidConfig(rootProject.projectDir) << customOptions
 
   def unimodules = findUnimodules(options.target, options.exclude, options.modulesPaths).unimodules
 

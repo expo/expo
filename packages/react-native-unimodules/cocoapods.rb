@@ -4,12 +4,16 @@ require 'optparse'
 require 'open3'
 
 def use_unimodules!(custom_options = {})
+  root_package_json = JSON.parse(File.read(find_project_root))
+  json_options = root_package_json.fetch('unimodules', {}).fetch('ios', {}).transform_keys(&:to_sym)
+
   options = {
     modules_paths: ['../node_modules', find_workspace_root],
     target: 'react-native',
     exclude: [],
     flags: {}
-  }.deep_merge(custom_options)
+  }.deep_merge(json_options).deep_merge(custom_options)
+  puts options
 
   modules_paths = options.fetch(:modules_paths)
   modules_to_exclude = options.fetch(:exclude)
@@ -92,6 +96,11 @@ def use_unimodules!(custom_options = {})
   end
 
   puts
+end
+
+def find_project_root
+  stdout, stderr, status = Open3.capture3('node -e "const findUp = require(\'find-up\');console.log(findUp.sync(\'package.json\'));"')
+  stdout.strip!
 end
 
 def find_package_root(package_name)
