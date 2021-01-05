@@ -13,7 +13,7 @@ export async function getIpAddressAsync() {
         throw new UnavailabilityError('expo-network', 'getIpAddressAsync');
     }
     let ipAddress = await ExpoNetwork.getIpAddressAsync();
-    if (ipAddress == '0.0.0.0') {
+    if (ipAddress === '0.0.0.0') {
         try {
             const resp = await fetch('https://api.ipify.org?format=json');
             const data = await resp.json();
