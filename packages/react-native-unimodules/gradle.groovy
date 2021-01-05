@@ -131,10 +131,11 @@ def getProjectPackageJson(File projectRoot) {
   return packageJson;
 }
 
-List getAndroidConfig(File projectRoot) {
+def getAndroidConfig(File projectRoot) {
   def packageJson = getProjectPackageJson(projectRoot);
   def unimodulesConfig = packageJson.unimodules != null ? packageJson.unimodules : {}
-  return unimodulesConfig.android || {}
+  def androidConfig = unimodulesConfig.android != null ? unimodulesConfig.android : {}
+  return androidConfig
 }
 
 def findUnimodules(String target, List exclude, List modulesPaths) {

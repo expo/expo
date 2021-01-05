@@ -27,7 +27,12 @@
       "exclude": [
         "unimodules-test-core",
         "expo-module-template"
-      ]
+      ],
+      "modulesPaths" : [
+        "../../../../packages"
+      ],
+    "configuration": "api",
+    "target"       : "react-native"
     }
   },
   "dependencies": {
