@@ -21,6 +21,10 @@ export default ({ config }) => {
         'org.gradle.configureondemand': true,
       },
     ],
+    [
+      './plugins/withKotlinGradle',
+      '1.3.50'
+    ],
   ];
   return config;
 };

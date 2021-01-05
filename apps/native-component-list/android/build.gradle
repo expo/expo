@@ -6,7 +6,6 @@ buildscript {
         minSdkVersion = 21
         compileSdkVersion = 29
         targetSdkVersion = 29
-        supportLibVersion = "29.0.0"
         kotlinVersion = '1.3.50'
     }
     repositories {
@@ -39,8 +38,5 @@ allprojects {
         google()
         jcenter()
         maven { url 'https://www.jitpack.io' }
-
-        // expo-camera
-        maven { url "$rootDir/../node_modules/expo-camera/android/maven" }
     }
 }
