@@ -1,23 +1,27 @@
-const { createRunOncePlugin, withAppBuildGradle } = require('@expo/config-plugins');
+const { createRunOncePlugin, AndroidConfig, withAppBuildGradle } = require('@expo/config-plugins');
 
 // The placeholder scheme doesn't really matter, but sometimes the Android build fails without it being defined.
 function setGradlePlaceholders(buildGradle, placeholder) {
-  if (buildGradle.includes('appAuthRedirectScheme:')) {
-    return buildGradle;
+  const pattern = /appAuthRedirectScheme:\s?(["'])(?:(?=(\\?))\2.)*?\1/g;
+  const replacement = `appAuthRedirectScheme: '${placeholder}'`;
+  if (buildGradle.match(pattern)) {
+    // Select kotlinVersion = '***' and replace the contents between the quotes.
+    return buildGradle.replace(pattern, replacement);
   }
+
   // There's a chance this could fail if another plugin defines `manifestPlaceholders`
   // but AFAIK only app-auth does this in the Expo ecosystem.
   return buildGradle.replace(
     /defaultConfig\s?{/,
     `defaultConfig {
-        manifestPlaceholders = [appAuthRedirectScheme: '${placeholder}']`
+        manifestPlaceholders = [${replacement}]`
   );
 }
 
 const withAppAuth = (
   config,
   // Should be able to be used without any parameters for auto configuration via expo-cli.
-  { placeholder = '' } = {}
+  { placeholder = AndroidConfig.Scheme.getScheme(config)[0] || 'dev.expo.app' } = {}
 ) => {
   return withAppBuildGradle(config, config => {
     if (config.modResults.language === 'groovy') {
