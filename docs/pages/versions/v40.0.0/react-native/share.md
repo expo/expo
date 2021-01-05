@@ -34,8 +34,6 @@ export default function ShareExample() {
     </View>
   );
 }
-
-export default ShareExample;
 ```
 
 # Reference
