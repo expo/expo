@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- `getIpAddressAsync` now falls back to using Ipify Api if the IP address could not be retrieved natively.
+
 ## 2.4.0 — 2020-11-17
 
 _This version does not introduce any user-facing changes._
