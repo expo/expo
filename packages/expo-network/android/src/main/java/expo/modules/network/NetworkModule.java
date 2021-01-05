@@ -161,6 +161,10 @@ public class NetworkModule extends ExportedModule implements RegistryLifecycleLi
   public void getIpAddressAsync(Promise promise) {
     try {
       Integer ipAddress = getWifiInfo().getIpAddress();
+      if (ipAddress == 0) {
+        promise.resolve("0.0.0.0");
+        return;
+      }
       // Convert little-endian to big-endianif needed
       if (ByteOrder.nativeOrder().equals(ByteOrder.LITTLE_ENDIAN)) {
         ipAddress = Integer.reverseBytes(ipAddress);
