@@ -193,10 +193,10 @@ const imageOvefrlowSizeAndPosition = (image: ImageInfo) => {
 };
 
 const calculateImageScale = (image: ImageInfo) => {
-  var scale = 1;
+  let scale = 1;
   const screenMultiplier = PixelRatio.getPixelSizeForLayoutSize(1);
   const imageHeight = image.height / screenMultiplier;
-  var imageWidth = image.width / screenMultiplier;
+  let imageWidth = image.width / screenMultiplier;
   if (imageWidth > imageHeight) {
     scale = imageViewSize / imageWidth;
   } else {
