@@ -23,6 +23,41 @@ class Unimodule {
   }
 }
 
+def getProjectPackageJson(File projectRoot) {
+  String resolveScript = """
+  const findUp = require('find-up');
+  console.log(findUp.sync('package.json'));
+  """
+  String[] nodeCommand = ["node", "-e", resolveScript]
+  String packageJsonPath = spawnProcess(nodeCommand, projectRoot)
+  def packageJsonFile = new File(packageJsonPath)
+  def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
+  return packageJson;
+}
+
+def getAndroidConfig(File projectRoot) {
+  def packageJson = getProjectPackageJson(projectRoot);
+  def unimodulesConfig = packageJson.unimodules != null ? packageJson.unimodules : {}
+  def androidConfig = unimodulesConfig.android != null ? unimodulesConfig.android : {}
+  return androidConfig
+}
+
+def spawnProcess(String[] cmd, File directory) {
+  try {
+    def cmdProcess = Runtime.getRuntime().exec(cmd, null, directory)
+    def bufferedReader = new BufferedReader(new InputStreamReader(cmdProcess.getInputStream()))
+    def buffered = ""
+    def results = new StringBuffer()
+    while ((buffered = bufferedReader.readLine()) != null) {
+      results.append(buffered)
+    }
+    return results.toString()
+  } catch (Exception exception) {
+    rootProject.logger.error "Spawned process '${cmd}' threw an error"
+    throw exception
+  }
+}
+
 def readPackageFromJavaOrKotlinFile(String filePath) {
   def file = new File(filePath)
   def fileReader = new BufferedReader(new FileReader(file))
@@ -221,7 +256,7 @@ ext.addUnimodulesDependencies = { Map customOptions = [:] ->
       configuration: 'implementation',
       target       : 'react-native',
       exclude      : [],
-  ] << customOptions
+  ] << getAndroidConfig(rootProject.projectDir) << customOptions
   addUnimodulesDependencies(options.target, options.exclude, options.modulesPaths, {unimodule ->
     Object dependency = project.project(':' + unimodule.name)
     project.dependencies.add(options.configuration, dependency)
@@ -234,7 +269,7 @@ ext.addMavenUnimodulesDependencies = { Map customOptions = [:] ->
       configuration: 'implementation',
       target       : 'react-native',
       exclude      : [],
-  ] << customOptions
+  ] << getAndroidConfig(rootProject.projectDir) << customOptions
 
   addUnimodulesDependencies(options.target, options.exclude, options.modulesPaths, {unimodule ->
     project.dependencies.add(
@@ -249,7 +284,7 @@ ext.includeUnimodulesProjects = { Map customOptions = [:] ->
       modulesPaths: ['../../node_modules'],
       target      : 'react-native',
       exclude     : [],
-  ] << customOptions
+  ] << getAndroidConfig(rootProject.projectDir) << customOptions
 
   def unimodules = findUnimodules(options.target, options.exclude, options.modulesPaths).unimodules
 
