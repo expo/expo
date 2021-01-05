@@ -82,8 +82,7 @@ public class NetworkModule extends ExportedModule implements RegistryLifecycleLi
   private WifiInfo getWifiInfo() {
     try {
       WifiManager manager = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-      WifiInfo wifiInfo = manager.getConnectionInfo();
-      return wifiInfo;
+      return manager.getConnectionInfo();
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
       throw e;
@@ -110,7 +109,7 @@ public class NetworkModule extends ExportedModule implements RegistryLifecycleLi
     }
   }
 
-  private NetworkStateType getNetworkCapabilities(NetworkCapabilities nc) {
+  private NetworkStateType getConnectionType(NetworkCapabilities nc) {
     if (nc.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) return NetworkStateType.CELLULAR;
     if (nc.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || nc.hasTransport(NetworkCapabilities.TRANSPORT_WIFI_AWARE))
       return NetworkStateType.WIFI;
@@ -140,16 +139,16 @@ public class NetworkModule extends ExportedModule implements RegistryLifecycleLi
       try {
         Network network = cm.getActiveNetwork();
         boolean isInternetReachable = network != null;
-        NetworkStateType mConnectionType = null;
+        NetworkStateType connectionType = null;
         if (isInternetReachable) {
           NetworkCapabilities nc = cm.getNetworkCapabilities(network);
-          mConnectionType = getNetworkCapabilities(nc);
-          result.putString("type", mConnectionType.getValue());
+          connectionType = getConnectionType(nc);
+          result.putString("type", connectionType.getValue());
         } else {
           result.putString("type", NetworkStateType.NONE.getValue());
         }
         result.putBoolean("isInternetReachable", isInternetReachable);
-        result.putBoolean("isConnected", mConnectionType != null && !mConnectionType.equal("NONE") && !mConnectionType.equal("UNKNOWN"));
+        result.putBoolean("isConnected", connectionType != null && !connectionType.equal("NONE") && !connectionType.equal("UNKNOWN"));
         promise.resolve(result);
       } catch (Exception e) {
         promise.reject("ERR_NETWORK_NO_ACCESS_NETWORKINFO", "Unable to access network information", e);
