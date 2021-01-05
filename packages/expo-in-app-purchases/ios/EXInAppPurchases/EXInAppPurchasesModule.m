@@ -324,6 +324,7 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   NSDecimalNumber *priceAmountMicros = [product.price decimalNumberByMultiplyingBy:oneMillion];
   NSString *price = [NSString stringWithFormat:@"%@%@", product.priceLocale.currencySymbol, product.price];
   NSString *description = product.localizedDescription ?: @"";
+  NSString *title = product.localizedTitle ?: @"";
   
   return @{
            @"description": description,
@@ -332,7 +333,7 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
            @"priceCurrencyCode": product.priceLocale.currencyCode,
            @"productId": product.productIdentifier,
            @"subscriptionPeriod": subscriptionPeriod,
-           @"title": product.localizedTitle,
+           @"title": title,
            @"type": type
            };
 }

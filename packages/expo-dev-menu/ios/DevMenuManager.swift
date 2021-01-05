@@ -81,7 +81,7 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
         return
       }
       if bridge.isLoading {
-        NotificationCenter.default.addObserver(self, selector: #selector(DevMenuManager.autoLaunch), name: DevMenuViewController.JavaScriptDidLoadNotification, object: bridge)
+        NotificationCenter.default.addObserver(self, selector: #selector(DevMenuManager.autoLaunch), name: DevMenuViewController.ContentDidAppearNotification, object: nil)
       } else {
         autoLaunch()
       }

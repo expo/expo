@@ -78,7 +78,7 @@
         </provider>
         <provider
             android:name="abi39_0_0.host.exp.exponent.modules.api.components.webview.RNCWebViewFileProvider"
-            android:authorities="abi39_0_0.host.exp.expoview.fileprovider"
+            android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true" >
             <meta-data
@@ -106,7 +106,7 @@
 
         <provider
             android:name="abi39_0_0.expo.modules.filesystem.FileSystemFileProvider"
-            android:authorities="abi39_0_0.expo.modules.filesystem.FileSystemFileProvider"
+            android:authorities="${applicationId}.FileSystemFileProvider"
             android:exported="false"
             android:grantUriPermissions="true"
             tools:replace="android:authorities" >
@@ -117,7 +117,7 @@
         <!-- https://developer.android.com/guide/topics/manifest/provider-element.html -->
         <provider
             android:name="abi39_0_0.expo.modules.imagepicker.ImagePickerFileProvider"
-            android:authorities="abi39_0_0.expo.modules.imagepicker.ImagePickerFileProvider"
+            android:authorities="${applicationId}.ImagePickerFileProvider"
             android:exported="false"
             android:grantUriPermissions="true" >
             <meta-data
@@ -131,7 +131,7 @@
         <!-- https://developer.android.com/guide/topics/manifest/provider-element.html -->
         <provider
             android:name="abi39_0_0.expo.modules.mailcomposer.MailComposerFileProvider"
-            android:authorities="abi39_0_0.expo.modules.mailcomposer.MailComposerFileProvider"
+            android:authorities="${applicationId}.MailComposerFileProvider"
             android:exported="false"
             android:grantUriPermissions="true" >
             <meta-data
@@ -147,7 +147,7 @@
 
         <provider
             android:name="abi39_0_0.expo.modules.sharing.SharingFileProvider"
-            android:authorities="abi39_0_0.expo.modules.sharing.SharingFileProvider"
+            android:authorities="${applicationId}.SharingFileProvider"
             android:exported="false"
             android:grantUriPermissions="true" >
             <meta-data

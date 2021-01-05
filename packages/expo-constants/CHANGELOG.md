@@ -8,9 +8,13 @@
 
 ### 🎉 New features
 
+- Add support for new Apple devices to `platform.ios.deviceModel`. ([#11446](https://github.com/expo/expo/pull/11446) by [@sjchmiela](https://github.com/sjchmiela))
+- Changed `Constants.platform.ios.model` nullability — it can now be `null`, if the value cannot be determined. ([#11445](https://github.com/expo/expo/pull/11445) by [@sjchmiela](https://github.com/sjchmiela))
+
 ### 🐛 Bug fixes
 
 - Removed `fbjs` dependency ([#11396](https://github.com/expo/expo/pull/11396) by [@cruzach](https://github.com/cruzach))
+- Added support for simulators running on Apple ARM64 processors (previously, constants expected to be exported by native code were unavailable). ([#11445](https://github.com/expo/expo/pull/11445) by [@sjchmiela](https://github.com/sjchmiela))
 
 ## 9.3.5 — 2020-12-11
 

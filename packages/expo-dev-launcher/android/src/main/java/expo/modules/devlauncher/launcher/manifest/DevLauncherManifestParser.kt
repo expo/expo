@@ -19,7 +19,7 @@ class DevLauncherManifestParser(
   private suspend fun downloadManifest(): Reader {
     val response = fetch(url, "GET").await(httpClient)
     require(response.isSuccessful)
-    return response.body!!.charStream()
+    return response.body()!!.charStream()
   }
 
   suspend fun parseManifest(): DevelopmentClientManifest {

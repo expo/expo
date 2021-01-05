@@ -46,6 +46,7 @@ done < $TOOLS_DIR/android-packages-to-keep.txt
 java -jar $TOOLS_DIR/android-manifest-merger-3898d3a.jar \
      --main $VERSIONED_ABI_PATH/src/main/AndroidManifest.xml \
      --libs $UNIMODULE_MANIFEST_PATH \
+     --placeholder applicationId=\${applicationId} \
      --out $VERSIONED_ABI_PATH/src/main/AndroidManifest.xml \
      --log WARNING
 
