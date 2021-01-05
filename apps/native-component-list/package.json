@@ -27,11 +27,11 @@
       "exclude": [
         "expo-module-template"
       ],
-      "modulesPaths" : [
+      "modulesPaths": [
         "../../../../packages"
       ],
-    "configuration": "api",
-    "target"       : "react-native"
+      "configuration": "api",
+      "target": "react-native"
     }
   },
   "dependencies": {
