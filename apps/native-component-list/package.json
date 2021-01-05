@@ -25,7 +25,6 @@
   "unimodules": {
     "android": {
       "exclude": [
-        "unimodules-test-core",
         "expo-module-template"
       ],
       "modulesPaths" : [
