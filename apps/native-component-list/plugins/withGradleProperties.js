@@ -10,8 +10,8 @@ module.exports = (config, options) => {
     'android',
     async config => {
       const filePath = path.join(config.modRequest.projectRoot, 'android', 'gradle.properties');
-      let contents = await fs.readFile(filePath, 'utf-8');
-      let results = [];
+      const contents = await fs.readFile(filePath, 'utf-8');
+      const results = [];
       const lines = contents.split('\n');
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i].trim();
