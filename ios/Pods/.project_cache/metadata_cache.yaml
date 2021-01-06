@@ -1978,6 +1978,10 @@ Pods-Tests:
   LABEL: Pods-Tests
   PROJECT_PATH: Pods.xcodeproj
   UUID: 958186CF7D75761173A23E66E0CCAF14
+PromisesObjC:
+  LABEL: PromisesObjC
+  PROJECT_PATH: PromisesObjC.xcodeproj
+  UUID: 615BB6D15EC37D16C898941802F0D251
 Protobuf:
   LABEL: Protobuf
   PROJECT_PATH: Protobuf.xcodeproj

@@ -3,7 +3,7 @@
 
 import removedModule from './removedModule';
 
-declare var module: any;
+declare let module: any;
 
 /* eslint-disable getter-return */
 Object.defineProperties(module.exports, {

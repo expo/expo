@@ -233,6 +233,24 @@ CACHE_KEYS:
     PROJECT_NAME: EXCalendar
     SPECS:
       - EXCalendar (8.6.0)
+  EXCamera:
+    BUILD_SETTINGS_CHECKSUM:
+      EXCamera:
+        :debug: 087720988d2b91aabbef4c3f727835bd
+        :release: 087720988d2b91aabbef4c3f727835bd
+    CHECKSUM: 11b544bf6d4e94b8c772a3a70064148972e0f02b
+    FILES:
+      - "../../../../packages/expo-camera/ios/EXCamera/EXCamera.h"
+      - "../../../../packages/expo-camera/ios/EXCamera/EXCamera.m"
+      - "../../../../packages/expo-camera/ios/EXCamera/EXCameraManager.h"
+      - "../../../../packages/expo-camera/ios/EXCamera/EXCameraManager.m"
+      - "../../../../packages/expo-camera/ios/EXCamera/EXCameraPermissionRequester.h"
+      - "../../../../packages/expo-camera/ios/EXCamera/EXCameraPermissionRequester.m"
+      - "../../../../packages/expo-camera/ios/EXCamera/Utilities/EXCameraUtils.h"
+      - "../../../../packages/expo-camera/ios/EXCamera/Utilities/EXCameraUtils.m"
+    PROJECT_NAME: EXCamera
+    SPECS:
+      - EXCamera (9.1.1)
   EXCellular:
     BUILD_SETTINGS_CHECKSUM:
       EXCellular:
@@ -296,164 +314,13 @@ CACHE_KEYS:
       EXDevice:
         :debug: 29c6c1382722ef66b5adf3744b8cf15c
         :release: 29c6c1382722ef66b5adf3744b8cf15c
-    CHECKSUM: b4f128964c602af9ca60025ef232f8970801c3cb
+    CHECKSUM: 3763c4fe50988ed87206dbf8672ba0d1429cf667
     FILES:
       - "../../../../packages/expo-device/ios/EXDevice/EXDevice.h"
       - "../../../../packages/expo-device/ios/EXDevice/EXDevice.m"
     PROJECT_NAME: EXDevice
     SPECS:
-      - EXDevice (2.4.0)
-  EXDevMenu:
-    BUILD_SETTINGS_CHECKSUM:
-      EXDevMenu:
-        :debug: c66fa0d2cbb00c3a5517658d5d28a97d
-        :release: c66fa0d2cbb00c3a5517658d5d28a97d
-    CHECKSUM: f61e1c8223e516f670c2a47cf2f24ead2d25d7fb
-    FILES:
-      - "../../../../packages/expo-dev-menu/assets/dev-menu-packager-host"
-      - "../../../../packages/expo-dev-menu/assets/EXDevMenuApp.ios.js"
-      - "../../../../packages/expo-dev-menu/assets/Ionicons.ttf"
-      - "../../../../packages/expo-dev-menu/assets/MaterialCommunityIcons.ttf"
-      - "../../../../packages/expo-dev-menu/ios/DevMenuAppInstance.swift"
-      - "../../../../packages/expo-dev-menu/ios/DevMenuGestureRecognizer.swift"
-      - "../../../../packages/expo-dev-menu/ios/DevMenuLoadingView.h"
-      - "../../../../packages/expo-dev-menu/ios/DevMenuLoadingView.m"
-      - "../../../../packages/expo-dev-menu/ios/DevMenuManager.swift"
-      - "../../../../packages/expo-dev-menu/ios/DevMenuRCTBridge.h"
-      - "../../../../packages/expo-dev-menu/ios/DevMenuRCTBridge.m"
-      - "../../../../packages/expo-dev-menu/ios/DevMenuRootView.h"
-      - "../../../../packages/expo-dev-menu/ios/DevMenuRootView.m"
-      - "../../../../packages/expo-dev-menu/ios/DevMenuSession.swift"
-      - "../../../../packages/expo-dev-menu/ios/DevMenuSettings.swift"
-      - "../../../../packages/expo-dev-menu/ios/DevMenuUtils.swift"
-      - "../../../../packages/expo-dev-menu/ios/DevMenuVendoredModulesUtils.h"
-      - "../../../../packages/expo-dev-menu/ios/DevMenuVendoredModulesUtils.m"
-      - "../../../../packages/expo-dev-menu/ios/DevMenuViewController.swift"
-      - "../../../../packages/expo-dev-menu/ios/DevMenuWindow.swift"
-      - "../../../../packages/expo-dev-menu/ios/Headers/EXDevMenu-Bridging-Header.h"
-      - "../../../../packages/expo-dev-menu/ios/Headers/EXDevMenu.h"
-      - "../../../../packages/expo-dev-menu/ios/Headers/RCTPerfMonitor+Private.h"
-      - "../../../../packages/expo-dev-menu/ios/Headers/RCTRootView+Private.h"
-      - "../../../../packages/expo-dev-menu/ios/Interceptors/DevMenuKeyCommandsInterceptor.swift"
-      - "../../../../packages/expo-dev-menu/ios/Interceptors/DevMenuMotionInterceptor.swift"
-      - "../../../../packages/expo-dev-menu/ios/Interceptors/DevMenuTouchInterceptor.swift"
-      - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuExtensions.m"
-      - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuExtensions.swift"
-      - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuInternalModule.m"
-      - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuInternalModule.swift"
-      - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuModule.m"
-      - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuModule.swift"
-      - "../../../../packages/expo-dev-menu/ios/Modules/MockedSafeAreaViewProvider.swift"
-      - "../../../../packages/expo-dev-menu/README.md"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandler.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandler.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerButton.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerButton.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerDirection.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerEvents.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerEvents.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerManager.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerManager.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerModule.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerModule.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerRegistry.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerRegistry.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerState.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNRootViewGestureRecognizer.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNRootViewGestureRecognizer.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNFlingHandler.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNFlingHandler.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNForceTouchHandler.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNForceTouchHandler.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNLongPressHandler.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNLongPressHandler.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNNativeViewHandler.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNNativeViewHandler.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNPanHandler.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNPanHandler.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNPinchHandler.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNPinchHandler.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNRotationHandler.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNRotationHandler.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNTapHandler.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNTapHandler.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/DevMenuREAModule.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/DevMenuREAModule.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/DevMenuREANodesManager.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/DevMenuREANodesManager.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/DevMenuREAUtils.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAAlwaysNode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAAlwaysNode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREABezierNode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREABezierNode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREABlockNode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREABlockNode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREACallFuncNode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREACallFuncNode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAClockNodes.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAClockNodes.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAConcatNode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAConcatNode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREACondNode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREACondNode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREADebugNode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREADebugNode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAEventNode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAEventNode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAFunctionNode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAFunctionNode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAJSCallNode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAJSCallNode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREANode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREANode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAOperatorNode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAOperatorNode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAParamNode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAParamNode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAPropsNode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAPropsNode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREASetNode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREASetNode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAStyleNode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAStyleNode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREATransformNode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREATransformNode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAValueNode.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAValueNode.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREAAllTransitions.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREAAllTransitions.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREATransition.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREATransition.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREATransitionAnimation.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREATransitionAnimation.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREATransitionManager.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREATransitionManager.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREATransitionValues.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREATransitionValues.m"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/RCTConvert+DevMenuREATransition.h"
-      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/RCTConvert+DevMenuREATransition.m"
-    PROJECT_NAME: EXDevMenu
-    SPECS:
-      - EXDevMenu (0.1.0)
-  EXDevMenuInterface:
-    BUILD_SETTINGS_CHECKSUM:
-      EXDevMenuInterface:
-        :debug: 0e0e044bc773ff543113d95f784c8e05
-        :release: 0e0e044bc773ff543113d95f784c8e05
-    CHECKSUM: 76dff7c65f1b9474b8ab6a37187ed6fcf81fa654
-    FILES:
-      - "../../../../packages/expo-dev-menu-interface/ios/DevMenuBridgeProtocol.swift"
-      - "../../../../packages/expo-dev-menu-interface/ios/DevMenuDelegateProtocol.swift"
-      - "../../../../packages/expo-dev-menu-interface/ios/DevMenuExtensionProtocol.swift"
-      - "../../../../packages/expo-dev-menu-interface/ios/DevMenuManagerProtocol.swift"
-      - "../../../../packages/expo-dev-menu-interface/ios/DevMenuUIResponderExtensionProtocol.swift"
-      - "../../../../packages/expo-dev-menu-interface/ios/MenuItems/DevMenuAction.swift"
-      - "../../../../packages/expo-dev-menu-interface/ios/MenuItems/DevMenuGroup.swift"
-      - "../../../../packages/expo-dev-menu-interface/ios/MenuItems/DevMenuItem.swift"
-      - "../../../../packages/expo-dev-menu-interface/README.md"
-    PROJECT_NAME: EXDevMenuInterface
-    SPECS:
-      - EXDevMenuInterface (0.1.0)
+      - EXDevice (3.0.0)
   EXDocumentPicker:
     BUILD_SETTINGS_CHECKSUM:
       EXDocumentPicker:
@@ -492,6 +359,32 @@ CACHE_KEYS:
     PROJECT_NAME: EXFacebook
     SPECS:
       - EXFacebook (9.1.0)
+  EXFaceDetector:
+    BUILD_SETTINGS_CHECKSUM:
+      EXFaceDetector:
+        :debug: bd24f28fb644d96bea27c03e1e35fdb2
+        :release: bd24f28fb644d96bea27c03e1e35fdb2
+    CHECKSUM: 668d8cc62b9b91dbad949ee3b07e27367ec2bdc3
+    FILES:
+      - "../../../../packages/expo-face-detector/ios/EXFaceDetector/EXCSBufferOrientationCalculator.h"
+      - "../../../../packages/expo-face-detector/ios/EXFaceDetector/EXCSBufferOrientationCalculator.m"
+      - "../../../../packages/expo-face-detector/ios/EXFaceDetector/EXFaceDetector.h"
+      - "../../../../packages/expo-face-detector/ios/EXFaceDetector/EXFaceDetector.m"
+      - "../../../../packages/expo-face-detector/ios/EXFaceDetector/EXFaceDetectorAppDelegate.h"
+      - "../../../../packages/expo-face-detector/ios/EXFaceDetector/EXFaceDetectorAppDelegate.m"
+      - "../../../../packages/expo-face-detector/ios/EXFaceDetector/EXFaceDetectorManager.h"
+      - "../../../../packages/expo-face-detector/ios/EXFaceDetector/EXFaceDetectorManager.m"
+      - "../../../../packages/expo-face-detector/ios/EXFaceDetector/EXFaceDetectorManagerProvider.h"
+      - "../../../../packages/expo-face-detector/ios/EXFaceDetector/EXFaceDetectorManagerProvider.m"
+      - "../../../../packages/expo-face-detector/ios/EXFaceDetector/EXFaceDetectorModule.h"
+      - "../../../../packages/expo-face-detector/ios/EXFaceDetector/EXFaceDetectorModule.m"
+      - "../../../../packages/expo-face-detector/ios/EXFaceDetector/EXFaceEncoder.h"
+      - "../../../../packages/expo-face-detector/ios/EXFaceDetector/EXFaceEncoder.m"
+      - "../../../../packages/expo-face-detector/ios/EXFaceDetector/Utilities/EXFaceDetectorUtils.h"
+      - "../../../../packages/expo-face-detector/ios/EXFaceDetector/Utilities/EXFaceDetectorUtils.m"
+    PROJECT_NAME: EXFaceDetector
+    SPECS:
+      - EXFaceDetector (8.4.0)
   EXFileSystem:
     BUILD_SETTINGS_CHECKSUM:
       EXFileSystem:
@@ -529,8 +422,8 @@ CACHE_KEYS:
   EXFirebaseAnalytics:
     BUILD_SETTINGS_CHECKSUM:
       EXFirebaseAnalytics:
-        :debug: 0f7b89f4d68690550a05f82fe1e1d770
-        :release: 0f7b89f4d68690550a05f82fe1e1d770
+        :debug: ba450ae9bc013467e8dfab4720055c58
+        :release: ba450ae9bc013467e8dfab4720055c58
     CHECKSUM: 6118a277043b028c5ee0edd2da2584d0b33cc980
     FILES:
       - "../../../../packages/expo-firebase-analytics/ios/EXFirebaseAnalytics/EXFirebaseAnalytics.h"
@@ -541,8 +434,8 @@ CACHE_KEYS:
   EXFirebaseCore:
     BUILD_SETTINGS_CHECKSUM:
       EXFirebaseCore:
-        :debug: 00d0887080c99b9b933c849048b43c7c
-        :release: 00d0887080c99b9b933c849048b43c7c
+        :debug: 785587cb74df5cd42a78fbfc3310149f
+        :release: 785587cb74df5cd42a78fbfc3310149f
     CHECKSUM: e3d818b9624e508fff8a7981b175d93d42eb6bab
     FILES:
       - "../../../../packages/expo-firebase-core/ios/EXFirebaseCore/EXFirebaseCore+FIROptions.h"
@@ -912,9 +805,9 @@ CACHE_KEYS:
   expo-dev-launcher:
     BUILD_SETTINGS_CHECKSUM:
       expo-dev-launcher:
-        :debug: 22367e25b8294f3c1f9c2b5052cb58d8
-        :release: 22367e25b8294f3c1f9c2b5052cb58d8
-    CHECKSUM: ebebf6f7c63cb67d52f529f86250ddd9b2820ec1
+        :debug: a05154ea236f2285cbdf3359f2424387
+        :release: a05154ea236f2285cbdf3359f2424387
+    CHECKSUM: 5ffc81f9c05b723a494ed6538410b15954a42dd4
     FILES:
       - "../../../../packages/expo-dev-launcher/ios/EXDevLauncher.h"
       - "../../../../packages/expo-dev-launcher/ios/EXDevLauncher.m"
@@ -928,6 +821,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-dev-launcher/ios/EXDevLauncherDevMenuExtensions.m"
       - "../../../../packages/expo-dev-launcher/ios/EXDevLauncherPendingDeepLinkRegistry.swift"
       - "../../../../packages/expo-dev-launcher/ios/EXDevLauncherRecentlyOpenedAppsRegistry.swift"
+      - "../../../../packages/expo-dev-launcher/ios/EXDevLauncherURLHelper.swift"
       - "../../../../packages/expo-dev-launcher/ios/expo-dev-launcher-Bridging-Header.h"
       - "../../../../packages/expo-dev-launcher/ios/Headers/EXDevLauncherPendingDeepLinkListener.h"
       - "../../../../packages/expo-dev-launcher/ios/Manifest/EXDevLauncherManifest.swift"
@@ -941,7 +835,158 @@ CACHE_KEYS:
       - "../../../../packages/expo-dev-launcher/README.md"
     PROJECT_NAME: expo-dev-launcher
     SPECS:
-      - expo-dev-launcher (0.1.0)
+      - expo-dev-launcher (0.1.2)
+  expo-dev-menu:
+    BUILD_SETTINGS_CHECKSUM:
+      expo-dev-menu:
+        :debug: 16f74ad736b93e99f6a6d09d36f79fee
+        :release: 16f74ad736b93e99f6a6d09d36f79fee
+    CHECKSUM: 03d796111cbbe837d64cbd20e2430048921f9acf
+    FILES:
+      - "../../../../packages/expo-dev-menu/assets/dev-menu-packager-host"
+      - "../../../../packages/expo-dev-menu/assets/EXDevMenuApp.ios.js"
+      - "../../../../packages/expo-dev-menu/assets/Ionicons.ttf"
+      - "../../../../packages/expo-dev-menu/assets/MaterialCommunityIcons.ttf"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuAppInstance.swift"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuGestureRecognizer.swift"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuLoadingView.h"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuLoadingView.m"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuManager.swift"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuRCTBridge.h"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuRCTBridge.m"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuRootView.h"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuRootView.m"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuSession.swift"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuSettings.swift"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuUtils.swift"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuVendoredModulesUtils.h"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuVendoredModulesUtils.m"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuViewController.swift"
+      - "../../../../packages/expo-dev-menu/ios/DevMenuWindow.swift"
+      - "../../../../packages/expo-dev-menu/ios/Headers/EXDevMenu-Bridging-Header.h"
+      - "../../../../packages/expo-dev-menu/ios/Headers/EXDevMenu.h"
+      - "../../../../packages/expo-dev-menu/ios/Headers/RCTPerfMonitor+Private.h"
+      - "../../../../packages/expo-dev-menu/ios/Headers/RCTRootView+Private.h"
+      - "../../../../packages/expo-dev-menu/ios/Interceptors/DevMenuKeyCommandsInterceptor.swift"
+      - "../../../../packages/expo-dev-menu/ios/Interceptors/DevMenuMotionInterceptor.swift"
+      - "../../../../packages/expo-dev-menu/ios/Interceptors/DevMenuTouchInterceptor.swift"
+      - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuExtensions.m"
+      - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuExtensions.swift"
+      - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuInternalModule.m"
+      - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuInternalModule.swift"
+      - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuModule.m"
+      - "../../../../packages/expo-dev-menu/ios/Modules/DevMenuModule.swift"
+      - "../../../../packages/expo-dev-menu/ios/Modules/MockedSafeAreaViewProvider.swift"
+      - "../../../../packages/expo-dev-menu/README.md"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandler.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandler.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerButton.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerButton.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerDirection.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerEvents.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerEvents.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerManager.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerManager.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerModule.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerModule.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerRegistry.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerRegistry.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNGestureHandlerState.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNRootViewGestureRecognizer.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/DevMenuRNRootViewGestureRecognizer.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNFlingHandler.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNFlingHandler.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNForceTouchHandler.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNForceTouchHandler.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNLongPressHandler.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNLongPressHandler.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNNativeViewHandler.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNNativeViewHandler.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNPanHandler.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNPanHandler.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNPinchHandler.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNPinchHandler.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNRotationHandler.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNRotationHandler.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNTapHandler.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-gesture-handler/ios/Handlers/DevMenuRNTapHandler.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/DevMenuREAModule.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/DevMenuREAModule.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/DevMenuREANodesManager.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/DevMenuREANodesManager.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/DevMenuREAUtils.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAAlwaysNode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAAlwaysNode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREABezierNode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREABezierNode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREABlockNode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREABlockNode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREACallFuncNode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREACallFuncNode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAClockNodes.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAClockNodes.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAConcatNode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAConcatNode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREACondNode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREACondNode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREADebugNode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREADebugNode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAEventNode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAEventNode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAFunctionNode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAFunctionNode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAJSCallNode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAJSCallNode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREANode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREANode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAOperatorNode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAOperatorNode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAParamNode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAParamNode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAPropsNode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAPropsNode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREASetNode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREASetNode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAStyleNode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAStyleNode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREATransformNode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREATransformNode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAValueNode.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Nodes/DevMenuREAValueNode.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREAAllTransitions.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREAAllTransitions.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREATransition.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREATransition.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREATransitionAnimation.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREATransitionAnimation.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREATransitionManager.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREATransitionManager.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREATransitionValues.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/DevMenuREATransitionValues.m"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/RCTConvert+DevMenuREATransition.h"
+      - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/RCTConvert+DevMenuREATransition.m"
+    PROJECT_NAME: expo-dev-menu
+    SPECS:
+      - expo-dev-menu (0.1.2)
+  expo-dev-menu-interface:
+    BUILD_SETTINGS_CHECKSUM:
+      expo-dev-menu-interface:
+        :debug: 3234bfb07d53670ee5689d5c4868f6be
+        :release: 3234bfb07d53670ee5689d5c4868f6be
+    CHECKSUM: e2534e9e6d5c333ef0a0bee02e459f310ddf810b
+    FILES:
+      - "../../../../packages/expo-dev-menu-interface/ios/DevMenuBridgeProtocol.swift"
+      - "../../../../packages/expo-dev-menu-interface/ios/DevMenuDelegateProtocol.swift"
+      - "../../../../packages/expo-dev-menu-interface/ios/DevMenuExtensionProtocol.swift"
+      - "../../../../packages/expo-dev-menu-interface/ios/DevMenuManagerProtocol.swift"
+      - "../../../../packages/expo-dev-menu-interface/ios/DevMenuUIResponderExtensionProtocol.swift"
+      - "../../../../packages/expo-dev-menu-interface/ios/MenuItems/DevMenuAction.swift"
+      - "../../../../packages/expo-dev-menu-interface/ios/MenuItems/DevMenuGroup.swift"
+      - "../../../../packages/expo-dev-menu-interface/ios/MenuItems/DevMenuItem.swift"
+      - "../../../../packages/expo-dev-menu-interface/README.md"
+    PROJECT_NAME: expo-dev-menu-interface
+    SPECS:
+      - expo-dev-menu-interface (0.1.1)
   expo-image:
     BUILD_SETTINGS_CHECKSUM:
       expo-image:
@@ -1111,6 +1156,25 @@ CACHE_KEYS:
     PROJECT_NAME: EXSpeech
     SPECS:
       - EXSpeech (8.5.0)
+  EXSplashScreen:
+    BUILD_SETTINGS_CHECKSUM:
+      EXSplashScreen:
+        :debug: 869e9e2cbdef7fe98f2d5631b0f81486
+        :release: 869e9e2cbdef7fe98f2d5631b0f81486
+    CHECKSUM: b4e177a13a8016884c813b773b900220fe6a1ad1
+    FILES:
+      - "../../../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenController.h"
+      - "../../../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenController.m"
+      - "../../../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenModule.h"
+      - "../../../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenModule.m"
+      - "../../../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenService.h"
+      - "../../../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenService.m"
+      - "../../../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenViewNativeProvider.h"
+      - "../../../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenViewNativeProvider.m"
+      - "../../../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenViewProvider.h"
+    PROJECT_NAME: EXSplashScreen
+    SPECS:
+      - EXSplashScreen (0.8.1)
   EXSQLite:
     BUILD_SETTINGS_CHECKSUM:
       EXSQLite:
@@ -1182,24 +1246,24 @@ CACHE_KEYS:
   FBLazyVector:
     BUILD_SETTINGS_CHECKSUM:
       FBLazyVector:
-        :debug: fc5b98fe013c5c2802e55d0c8f69f6f1
-        :release: fc5b98fe013c5c2802e55d0c8f69f6f1
+        :debug: a4df308204bf617d98e10678a156165a
+        :release: a4df308204bf617d98e10678a156165a
     CHECKSUM: 3ef4a7f62e7db01092f9d517d2ebc0d0677c4a37
     FILES:
-      - "../../../../react-native-lab/react-native/Libraries/FBLazyVector/FBLazyVector/FBLazyIterator.h"
-      - "../../../../react-native-lab/react-native/Libraries/FBLazyVector/FBLazyVector/FBLazyVector.h"
+      - "../../node_modules/react-native/Libraries/FBLazyVector/FBLazyVector/FBLazyIterator.h"
+      - "../../node_modules/react-native/Libraries/FBLazyVector/FBLazyVector/FBLazyVector.h"
     PROJECT_NAME: FBLazyVector
     SPECS:
       - FBLazyVector (0.63.2)
   FBReactNativeSpec:
     BUILD_SETTINGS_CHECKSUM:
       FBReactNativeSpec:
-        :debug: 611e95cc7d23a796a0895e1bb3263132
-        :release: 611e95cc7d23a796a0895e1bb3263132
+        :debug: f3b88b2cd1c416721d8584dede163cd5
+        :release: f3b88b2cd1c416721d8584dede163cd5
     CHECKSUM: dc7fa9088f0f2a998503a352b0554d69a4391c5a
     FILES:
-      - "../../../../react-native-lab/react-native/Libraries/FBReactNativeSpec/FBReactNativeSpec/FBReactNativeSpec-generated.mm"
-      - "../../../../react-native-lab/react-native/Libraries/FBReactNativeSpec/FBReactNativeSpec/FBReactNativeSpec.h"
+      - "../../node_modules/react-native/Libraries/FBReactNativeSpec/FBReactNativeSpec/FBReactNativeSpec-generated.mm"
+      - "../../node_modules/react-native/Libraries/FBReactNativeSpec/FBReactNativeSpec/FBReactNativeSpec.h"
     PROJECT_NAME: FBReactNativeSpec
     SPECS:
       - FBReactNativeSpec (0.63.2)
@@ -1227,13 +1291,15 @@ CACHE_KEYS:
   Firebase:
     BUILD_SETTINGS_CHECKSUM:
       Firebase:
-        :debug: 4f4040f754677421f8d029e82b98abad
-        :release: 4f4040f754677421f8d029e82b98abad
+        :debug: d8d5ec9415591b961df055bc480bd086
+        :release: d8d5ec9415591b961df055bc480bd086
     CHECKSUM: 0219bb4782eb1406f1b9b0628a2e625484ce910d
     PROJECT_NAME: Firebase
     SPECS:
       - Firebase/Core (6.14.0)
       - Firebase/CoreOnly (6.14.0)
+      - Firebase/MLVision (6.14.0)
+      - Firebase/MLVisionFaceModel (6.14.0)
   FirebaseAnalytics:
     BUILD_SETTINGS_CHECKSUM:
       FirebaseAnalytics:
@@ -1279,6 +1345,33 @@ CACHE_KEYS:
     PROJECT_NAME: FirebaseInstanceID
     SPECS:
       - FirebaseInstanceID (4.2.8)
+  FirebaseMLCommon:
+    BUILD_SETTINGS_CHECKSUM:
+      FirebaseMLCommon:
+        :debug: f0ac843096880cfc9dafd82b62498246
+        :release: f0ac843096880cfc9dafd82b62498246
+    CHECKSUM: 074a67e05122b1c9f6401a4e33b2cea3b4efd224
+    PROJECT_NAME: FirebaseMLCommon
+    SPECS:
+      - FirebaseMLCommon (0.19.0)
+  FirebaseMLVision:
+    BUILD_SETTINGS_CHECKSUM:
+      FirebaseMLVision:
+        :debug: 1c4f5e5a55b3e0ab52e20696a83ab64d
+        :release: 1c4f5e5a55b3e0ab52e20696a83ab64d
+    CHECKSUM: 7a456009787690e3b53436092ae9b635563de8f3
+    PROJECT_NAME: FirebaseMLVision
+    SPECS:
+      - FirebaseMLVision (0.19.0)
+  FirebaseMLVisionFaceModel:
+    BUILD_SETTINGS_CHECKSUM:
+      FirebaseMLVisionFaceModel:
+        :debug: 738d3efc9e6919c8898d918f41db8f0c
+        :release: 738d3efc9e6919c8898d918f41db8f0c
+    CHECKSUM: 1003e20ab8979cb77d7a39c93faeb58c959a63f1
+    PROJECT_NAME: FirebaseMLVisionFaceModel
+    SPECS:
+      - FirebaseMLVisionFaceModel (0.19.0)
   Flipper:
     BUILD_SETTINGS_CHECKSUM:
       Flipper:
@@ -1373,6 +1466,16 @@ CACHE_KEYS:
     PROJECT_NAME: glog
     SPECS:
       - glog (0.3.5)
+  GoogleAPIClientForREST:
+    BUILD_SETTINGS_CHECKSUM:
+      GoogleAPIClientForREST:
+        :debug: 0a9e5a04d822e0268e019bc6a8c74157
+        :release: 0a9e5a04d822e0268e019bc6a8c74157
+    CHECKSUM: 4bb409633efcc2e1b3f945afe7e35039b5a61db2
+    PROJECT_NAME: GoogleAPIClientForREST
+    SPECS:
+      - GoogleAPIClientForREST/Core (1.5.1)
+      - GoogleAPIClientForREST/Vision (1.5.1)
   GoogleAppMeasurement:
     BUILD_SETTINGS_CHECKSUM:
       GoogleAppMeasurement:
@@ -1409,6 +1512,20 @@ CACHE_KEYS:
     PROJECT_NAME: GoogleSignIn
     SPECS:
       - GoogleSignIn (5.0.2)
+  GoogleToolboxForMac:
+    BUILD_SETTINGS_CHECKSUM:
+      GoogleToolboxForMac:
+        :debug: 9060d74b8418e2bf725e4b9e6b9dba35
+        :release: 9060d74b8418e2bf725e4b9e6b9dba35
+    CHECKSUM: 1350d40e86a76f7863928d63bcb0b89c84c521c5
+    PROJECT_NAME: GoogleToolboxForMac
+    SPECS:
+      - GoogleToolboxForMac/DebugUtils (2.3.0)
+      - GoogleToolboxForMac/Defines (2.3.0)
+      - GoogleToolboxForMac/Logger (2.3.0)
+      - "GoogleToolboxForMac/NSData+zlib (2.3.0)"
+      - "GoogleToolboxForMac/NSDictionary+URLArguments (2.3.0)"
+      - "GoogleToolboxForMac/NSString+URLArguments (2.3.0)"
   GoogleUtilities:
     BUILD_SETTINGS_CHECKSUM:
       GoogleUtilities:
@@ -1468,28 +1585,30 @@ CACHE_KEYS:
       - OpenSSL-Universal/Static (1.0.2.20)
   Pods-BareExpoMain-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 714aa748f7f959c2aa50406a21150433
-      Release: 3ec4a899588da68b602f2d7f4c151077
+      Debug: 877ce0e8e6463584617fddce28690ce4
+      Release: 1d4c90d06175ff45bd9e2da0cfb19fd3
     FILES:
-      - "${PODS_CONFIGURATION_BUILD_DIR}/EXDevMenu/EXDevMenu.bundle"
+      - "${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-menu/EXDevMenu.bundle"
+      - "${PODS_CONFIGURATION_BUILD_DIR}/FirebaseMLVisionFaceModel/GoogleMVFaceDetectorResources.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle"
       - "${PODS_ROOT}/Amplitude/Sources/Amplitude/ComodoRsaDomainValidationCA.der"
       - "${PODS_ROOT}/FBSDKCoreKit/FacebookSDKStrings.bundle"
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoMain-BareExpoDetox:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: f4389601193a31df9ef2ab694775b670
-      Release: e63f288222a1d91189a0bbb17e2b4d07
+      Debug: 367aa70f33d76b29ed5101412ee45005
+      Release: 2d0a3e3c4dfa6655b2cc06f970bf2237
     FILES:
-      - "${PODS_CONFIGURATION_BUILD_DIR}/EXDevMenu/EXDevMenu.bundle"
+      - "${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-menu/EXDevMenu.bundle"
+      - "${PODS_CONFIGURATION_BUILD_DIR}/FirebaseMLVisionFaceModel/GoogleMVFaceDetectorResources.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle"
       - "${PODS_ROOT}/Amplitude/Sources/Amplitude/ComodoRsaDomainValidationCA.der"
       - "${PODS_ROOT}/FBSDKCoreKit/FacebookSDKStrings.bundle"
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: c82c8fe26698bfa8082b2b1de709ff25
-      Release: c82c8fe26698bfa8082b2b1de709ff25
+      Debug: f411f8663373fe028066c95ceedf3390
+      Release: f411f8663373fe028066c95ceedf3390
   PromisesObjC:
     BUILD_SETTINGS_CHECKSUM:
       PromisesObjC:
@@ -1499,439 +1618,448 @@ CACHE_KEYS:
     PROJECT_NAME: PromisesObjC
     SPECS:
       - PromisesObjC (1.2.9)
+  Protobuf:
+    BUILD_SETTINGS_CHECKSUM:
+      Protobuf:
+        :debug: f3a63680e8eff9d184081e037d49773d
+        :release: f3a63680e8eff9d184081e037d49773d
+    CHECKSUM: 0cde852566359049847168e51bd1c690e0f70056
+    PROJECT_NAME: Protobuf
+    SPECS:
+      - Protobuf (3.14.0)
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired:
-        :debug: 616d493414af76bf05855cbfbaafdc57
-        :release: 616d493414af76bf05855cbfbaafdc57
+        :debug: 380b927ab41a4d27f1a48f027e32bb50
+        :release: 380b927ab41a4d27f1a48f027e32bb50
     CHECKSUM: f13f25e7b12f925f1f6a6a8c69d929a03c0129fe
     FILES:
-      - "../../../../react-native-lab/react-native/Libraries/RCTRequired/RCTRequired/RCTRequired.h"
+      - "../../node_modules/react-native/Libraries/RCTRequired/RCTRequired/RCTRequired.h"
     PROJECT_NAME: RCTRequired
     SPECS:
       - RCTRequired (0.63.2)
   RCTTypeSafety:
     BUILD_SETTINGS_CHECKSUM:
       RCTTypeSafety:
-        :debug: 3798b49d10d3d0c0fccdd7a8753c3fdd
-        :release: 3798b49d10d3d0c0fccdd7a8753c3fdd
+        :debug: 0601f4b00439009c09abf5fd715a3563
+        :release: 0601f4b00439009c09abf5fd715a3563
     CHECKSUM: 44982c5c8e43ff4141eb519a8ddc88059acd1f3a
     FILES:
-      - "../../../../react-native-lab/react-native/Libraries/TypeSafety/RCTConvertHelpers.h"
-      - "../../../../react-native-lab/react-native/Libraries/TypeSafety/RCTConvertHelpers.mm"
-      - "../../../../react-native-lab/react-native/Libraries/TypeSafety/RCTTypedModuleConstants.h"
-      - "../../../../react-native-lab/react-native/Libraries/TypeSafety/RCTTypedModuleConstants.mm"
+      - "../../node_modules/react-native/Libraries/TypeSafety/RCTConvertHelpers.h"
+      - "../../node_modules/react-native/Libraries/TypeSafety/RCTConvertHelpers.mm"
+      - "../../node_modules/react-native/Libraries/TypeSafety/RCTTypedModuleConstants.h"
+      - "../../node_modules/react-native/Libraries/TypeSafety/RCTTypedModuleConstants.mm"
     PROJECT_NAME: RCTTypeSafety
     SPECS:
       - RCTTypeSafety (0.63.2)
   React:
     BUILD_SETTINGS_CHECKSUM:
       React:
-        :debug: f6d9d03bb5e140ad7812fd2a9ef2ced0
-        :release: f6d9d03bb5e140ad7812fd2a9ef2ced0
+        :debug: 61f9ab8b139f15af720c9b975c54671e
+        :release: 61f9ab8b139f15af720c9b975c54671e
     CHECKSUM: e1c65dd41cb9db13b99f24608e47dd595f28ca9a
     FILES:
-      - "../../../../react-native-lab/react-native/LICENSE"
-      - "../../../../react-native-lab/react-native/LICENSE-docs"
-      - "../../../../react-native-lab/react-native/package.json"
-      - "../../../../react-native-lab/react-native/README.md"
+      - "../../node_modules/react-native/LICENSE"
+      - "../../node_modules/react-native/LICENSE-docs"
+      - "../../node_modules/react-native/package.json"
+      - "../../node_modules/react-native/README.md"
     PROJECT_NAME: React
     SPECS:
       - React (0.63.2)
   React-callinvoker:
     BUILD_SETTINGS_CHECKSUM:
       React-callinvoker:
-        :debug: d386db51e30028300aa603d8e665aebf
-        :release: d386db51e30028300aa603d8e665aebf
+        :debug: 8d2aaee2cb5af881ae9748cf72d4c09c
+        :release: 8d2aaee2cb5af881ae9748cf72d4c09c
     CHECKSUM: 552a6a6bc8b3bb794cf108ad59e5a9e2e3b4fc98
     FILES:
-      - "../../../../react-native-lab/react-native/ReactCommon/callinvoker/ReactCommon/CallInvoker.h"
+      - "../../node_modules/react-native/ReactCommon/callinvoker/ReactCommon/CallInvoker.h"
     PROJECT_NAME: React-callinvoker
     SPECS:
       - React-callinvoker (0.63.2)
   React-Core:
     BUILD_SETTINGS_CHECKSUM:
       React-Core:
-        :debug: b99ef433341e0f98bddc87aae7f6e810
-        :release: b99ef433341e0f98bddc87aae7f6e810
+        :debug: bb88d821585273c0668ae23019774335
+        :release: bb88d821585273c0668ae23019774335
     CHECKSUM: 9d341e725dc9cd2f49e4c49ad1fc4e8776aa2639
     FILES:
-      - "../../../../react-native-lab/react-native/Libraries/Blob/RCTBlobManager.h"
-      - "../../../../react-native-lab/react-native/Libraries/Blob/RCTFileReaderModule.h"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTAnimatedImage.h"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTDisplayWeakRefreshable.h"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTGIFImageDecoder.h"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTImageBlurUtils.h"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTImageCache.h"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTImageDataDecoder.h"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTImageEditingManager.h"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTImageLoader.h"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTImageLoaderProtocol.h"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTImageLoaderWithAttributionProtocol.h"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTImagePlugins.h"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTImageShadowView.h"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTImageStoreManager.h"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTImageURLLoader.h"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTImageURLLoaderWithAttribution.h"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTImageUtils.h"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTImageView.h"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTImageViewManager.h"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTLocalAssetImageLoader.h"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTResizeMode.h"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTUIImageViewAnimated.h"
-      - "../../../../react-native-lab/react-native/Libraries/LinkingIOS/RCTLinkingManager.h"
-      - "../../../../react-native-lab/react-native/Libraries/LinkingIOS/RCTLinkingPlugins.h"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Drivers/RCTAnimationDriver.h"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Drivers/RCTDecayAnimation.h"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Drivers/RCTEventAnimation.h"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Drivers/RCTFrameAnimation.h"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Drivers/RCTSpringAnimation.h"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Nodes/RCTAdditionAnimatedNode.h"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Nodes/RCTAnimatedNode.h"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Nodes/RCTDiffClampAnimatedNode.h"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Nodes/RCTDivisionAnimatedNode.h"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Nodes/RCTInterpolationAnimatedNode.h"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Nodes/RCTModuloAnimatedNode.h"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Nodes/RCTMultiplicationAnimatedNode.h"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Nodes/RCTPropsAnimatedNode.h"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Nodes/RCTStyleAnimatedNode.h"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Nodes/RCTSubtractionAnimatedNode.h"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Nodes/RCTTrackingAnimatedNode.h"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Nodes/RCTTransformAnimatedNode.h"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Nodes/RCTValueAnimatedNode.h"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/RCTAnimationPlugins.h"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/RCTAnimationUtils.h"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/RCTNativeAnimatedModule.h"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/RCTNativeAnimatedNodesManager.h"
-      - "../../../../react-native-lab/react-native/Libraries/Network/RCTDataRequestHandler.h"
-      - "../../../../react-native-lab/react-native/Libraries/Network/RCTFileRequestHandler.h"
-      - "../../../../react-native-lab/react-native/Libraries/Network/RCTHTTPRequestHandler.h"
-      - "../../../../react-native-lab/react-native/Libraries/Network/RCTNetworking.h"
-      - "../../../../react-native-lab/react-native/Libraries/Network/RCTNetworkPlugins.h"
-      - "../../../../react-native-lab/react-native/Libraries/Network/RCTNetworkTask.h"
-      - "../../../../react-native-lab/react-native/Libraries/Settings/RCTSettingsManager.h"
-      - "../../../../react-native-lab/react-native/Libraries/Settings/RCTSettingsPlugins.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/BaseText/RCTBaseTextShadowView.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/BaseText/RCTBaseTextViewManager.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/RawText/RCTRawTextShadowView.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/RawText/RCTRawTextViewManager.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/RCTConvert+Text.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/RCTTextAttributes.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/RCTTextTransform.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/Text/NSTextStorage+FontScaling.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/Text/RCTTextShadowView.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/Text/RCTTextView.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/Text/RCTTextViewManager.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/Multiline/RCTMultilineTextInputView.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/Multiline/RCTMultilineTextInputViewManager.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/Multiline/RCTUITextView.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/RCTBackedTextInputDelegate.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/RCTBackedTextInputDelegateAdapter.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/RCTBackedTextInputViewProtocol.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/RCTBaseTextInputShadowView.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/RCTBaseTextInputView.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/RCTBaseTextInputViewManager.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/RCTInputAccessoryShadowView.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/RCTInputAccessoryView.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/RCTInputAccessoryViewContent.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/RCTInputAccessoryViewManager.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/RCTTextSelection.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/Singleline/RCTSinglelineTextInputView.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/Singleline/RCTSinglelineTextInputViewManager.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/Singleline/RCTUITextField.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/VirtualText/RCTVirtualTextShadowView.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/VirtualText/RCTVirtualTextViewManager.h"
-      - "../../../../react-native-lab/react-native/Libraries/Vibration/RCTVibration.h"
-      - "../../../../react-native-lab/react-native/Libraries/Vibration/RCTVibrationPlugins.h"
-      - "../../../../react-native-lab/react-native/Libraries/WebSocket/RCTReconnectingWebSocket.h"
-      - "../../../../react-native-lab/react-native/Libraries/WebSocket/RCTReconnectingWebSocket.m"
-      - "../../../../react-native-lab/react-native/Libraries/WebSocket/RCTSRWebSocket.h"
-      - "../../../../react-native-lab/react-native/Libraries/WebSocket/RCTSRWebSocket.m"
-      - "../../../../react-native-lab/react-native/LICENSE"
-      - "../../../../react-native-lab/react-native/React/AccessibilityResources/en.lproj"
-      - "../../../../react-native-lab/react-native/React/Base/RCTAssert.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTAssert.m"
-      - "../../../../react-native-lab/react-native/React/Base/RCTBridge+Private.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTBridge.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTBridge.m"
-      - "../../../../react-native-lab/react-native/React/Base/RCTBridgeDelegate.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTBridgeMethod.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTBridgeModule.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTBundleURLProvider.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTBundleURLProvider.m"
-      - "../../../../react-native-lab/react-native/React/Base/RCTComponentEvent.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTComponentEvent.m"
-      - "../../../../react-native-lab/react-native/React/Base/RCTConstants.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTConstants.m"
-      - "../../../../react-native-lab/react-native/React/Base/RCTConvert.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTConvert.m"
-      - "../../../../react-native-lab/react-native/React/Base/RCTCxxConvert.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTCxxConvert.m"
-      - "../../../../react-native-lab/react-native/React/Base/RCTDefines.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTDisplayLink.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTDisplayLink.m"
-      - "../../../../react-native-lab/react-native/React/Base/RCTErrorCustomizer.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTErrorInfo.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTErrorInfo.m"
-      - "../../../../react-native-lab/react-native/React/Base/RCTEventDispatcher.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTEventDispatcher.m"
-      - "../../../../react-native-lab/react-native/React/Base/RCTFrameUpdate.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTFrameUpdate.m"
-      - "../../../../react-native-lab/react-native/React/Base/RCTImageSource.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTImageSource.m"
-      - "../../../../react-native-lab/react-native/React/Base/RCTInvalidating.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTJavaScriptExecutor.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTJavaScriptLoader.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTJavaScriptLoader.mm"
-      - "../../../../react-native-lab/react-native/React/Base/RCTJSInvokerModule.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTJSStackFrame.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTJSStackFrame.m"
-      - "../../../../react-native-lab/react-native/React/Base/RCTKeyCommands.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTKeyCommands.m"
-      - "../../../../react-native-lab/react-native/React/Base/RCTLog.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTLog.mm"
-      - "../../../../react-native-lab/react-native/React/Base/RCTManagedPointer.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTManagedPointer.mm"
-      - "../../../../react-native-lab/react-native/React/Base/RCTModuleData.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTModuleData.mm"
-      - "../../../../react-native-lab/react-native/React/Base/RCTModuleMethod.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTModuleMethod.mm"
-      - "../../../../react-native-lab/react-native/React/Base/RCTMultipartDataTask.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTMultipartDataTask.m"
-      - "../../../../react-native-lab/react-native/React/Base/RCTMultipartStreamReader.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTMultipartStreamReader.m"
-      - "../../../../react-native-lab/react-native/React/Base/RCTNullability.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTParserUtils.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTParserUtils.m"
-      - "../../../../react-native-lab/react-native/React/Base/RCTPerformanceLogger.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTPerformanceLogger.m"
-      - "../../../../react-native-lab/react-native/React/Base/RCTRedBoxSetEnabled.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTRedBoxSetEnabled.m"
-      - "../../../../react-native-lab/react-native/React/Base/RCTReloadCommand.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTReloadCommand.m"
-      - "../../../../react-native-lab/react-native/React/Base/RCTRootContentView.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTRootContentView.m"
-      - "../../../../react-native-lab/react-native/React/Base/RCTRootView.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTRootView.m"
-      - "../../../../react-native-lab/react-native/React/Base/RCTRootViewDelegate.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTRootViewInternal.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTTouchEvent.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTTouchEvent.m"
-      - "../../../../react-native-lab/react-native/React/Base/RCTTouchHandler.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTTouchHandler.m"
-      - "../../../../react-native-lab/react-native/React/Base/RCTURLRequestDelegate.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTURLRequestHandler.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTUtils.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTUtils.m"
-      - "../../../../react-native-lab/react-native/React/Base/RCTUtilsUIOverride.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTUtilsUIOverride.m"
-      - "../../../../react-native-lab/react-native/React/Base/RCTVersion.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTVersion.m"
-      - "../../../../react-native-lab/react-native/React/Base/RCTWeakProxy.h"
-      - "../../../../react-native-lab/react-native/React/Base/RCTWeakProxy.m"
-      - "../../../../react-native-lab/react-native/React/Base/Surface/RCTSurface.h"
-      - "../../../../react-native-lab/react-native/React/Base/Surface/RCTSurface.mm"
-      - "../../../../react-native-lab/react-native/React/Base/Surface/RCTSurfaceDelegate.h"
-      - "../../../../react-native-lab/react-native/React/Base/Surface/RCTSurfaceRootShadowView.h"
-      - "../../../../react-native-lab/react-native/React/Base/Surface/RCTSurfaceRootShadowView.m"
-      - "../../../../react-native-lab/react-native/React/Base/Surface/RCTSurfaceRootShadowViewDelegate.h"
-      - "../../../../react-native-lab/react-native/React/Base/Surface/RCTSurfaceRootView.h"
-      - "../../../../react-native-lab/react-native/React/Base/Surface/RCTSurfaceRootView.mm"
-      - "../../../../react-native-lab/react-native/React/Base/Surface/RCTSurfaceStage.h"
-      - "../../../../react-native-lab/react-native/React/Base/Surface/RCTSurfaceStage.m"
-      - "../../../../react-native-lab/react-native/React/Base/Surface/RCTSurfaceView+Internal.h"
-      - "../../../../react-native-lab/react-native/React/Base/Surface/RCTSurfaceView.h"
-      - "../../../../react-native-lab/react-native/React/Base/Surface/RCTSurfaceView.mm"
-      - "../../../../react-native-lab/react-native/React/Base/Surface/SurfaceHostingView/RCTSurfaceHostingProxyRootView.h"
-      - "../../../../react-native-lab/react-native/React/Base/Surface/SurfaceHostingView/RCTSurfaceHostingProxyRootView.mm"
-      - "../../../../react-native-lab/react-native/React/Base/Surface/SurfaceHostingView/RCTSurfaceHostingView.h"
-      - "../../../../react-native-lab/react-native/React/Base/Surface/SurfaceHostingView/RCTSurfaceHostingView.mm"
-      - "../../../../react-native-lab/react-native/React/Base/Surface/SurfaceHostingView/RCTSurfaceSizeMeasureMode.h"
-      - "../../../../react-native-lab/react-native/React/Base/Surface/SurfaceHostingView/RCTSurfaceSizeMeasureMode.mm"
-      - "../../../../react-native-lab/react-native/React/CoreModules/CoreModulesPlugins.h"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTAccessibilityManager.h"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTActionSheetManager.h"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTAlertManager.h"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTAppearance.h"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTAppState.h"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTAsyncLocalStorage.h"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTClipboard.h"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTDeviceInfo.h"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTDevLoadingView.h"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTDevMenu.h"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTDevSettings.h"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTExceptionsManager.h"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTFPSGraph.h"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTI18nManager.h"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTKeyboardObserver.h"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTLogBox.h"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTPlatform.h"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTRedBox.h"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTSourceCode.h"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTStatusBarManager.h"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTTiming.h"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTTVNavigationEventEmitter.h"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTWebSocketExecutor.h"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTWebSocketModule.h"
-      - "../../../../react-native-lab/react-native/React/CxxBridge/JSCExecutorFactory.h"
-      - "../../../../react-native-lab/react-native/React/CxxBridge/JSCExecutorFactory.mm"
-      - "../../../../react-native-lab/react-native/React/CxxBridge/NSDataBigString.h"
-      - "../../../../react-native-lab/react-native/React/CxxBridge/NSDataBigString.mm"
-      - "../../../../react-native-lab/react-native/React/CxxBridge/RCTCxxBridge.mm"
-      - "../../../../react-native-lab/react-native/React/CxxBridge/RCTCxxBridgeDelegate.h"
-      - "../../../../react-native-lab/react-native/React/CxxBridge/RCTMessageThread.h"
-      - "../../../../react-native-lab/react-native/React/CxxBridge/RCTMessageThread.mm"
-      - "../../../../react-native-lab/react-native/React/CxxBridge/RCTObjcExecutor.h"
-      - "../../../../react-native-lab/react-native/React/CxxBridge/RCTObjcExecutor.mm"
-      - "../../../../react-native-lab/react-native/React/CxxModule/DispatchMessageQueueThread.h"
-      - "../../../../react-native-lab/react-native/React/CxxModule/RCTCxxMethod.h"
-      - "../../../../react-native-lab/react-native/React/CxxModule/RCTCxxMethod.mm"
-      - "../../../../react-native-lab/react-native/React/CxxModule/RCTCxxModule.h"
-      - "../../../../react-native-lab/react-native/React/CxxModule/RCTCxxModule.mm"
-      - "../../../../react-native-lab/react-native/React/CxxModule/RCTCxxUtils.h"
-      - "../../../../react-native-lab/react-native/React/CxxModule/RCTCxxUtils.mm"
-      - "../../../../react-native-lab/react-native/React/CxxModule/RCTNativeModule.h"
-      - "../../../../react-native-lab/react-native/React/CxxModule/RCTNativeModule.mm"
-      - "../../../../react-native-lab/react-native/React/CxxUtils/RCTFollyConvert.h"
-      - "../../../../react-native-lab/react-native/React/CxxUtils/RCTFollyConvert.mm"
-      - "../../../../react-native-lab/react-native/React/DevSupport/RCTDevLoadingViewProtocol.h"
-      - "../../../../react-native-lab/react-native/React/DevSupport/RCTDevLoadingViewSetEnabled.h"
-      - "../../../../react-native-lab/react-native/React/DevSupport/RCTDevLoadingViewSetEnabled.m"
-      - "../../../../react-native-lab/react-native/React/DevSupport/RCTInspectorDevServerHelper.h"
-      - "../../../../react-native-lab/react-native/React/DevSupport/RCTInspectorDevServerHelper.mm"
-      - "../../../../react-native-lab/react-native/React/DevSupport/RCTPackagerClient.h"
-      - "../../../../react-native-lab/react-native/React/DevSupport/RCTPackagerClient.m"
-      - "../../../../react-native-lab/react-native/React/DevSupport/RCTPackagerConnection.h"
-      - "../../../../react-native-lab/react-native/React/DevSupport/RCTPackagerConnection.mm"
-      - "../../../../react-native-lab/react-native/React/Inspector/RCTInspector.h"
-      - "../../../../react-native-lab/react-native/React/Inspector/RCTInspector.mm"
-      - "../../../../react-native-lab/react-native/React/Inspector/RCTInspectorPackagerConnection.h"
-      - "../../../../react-native-lab/react-native/React/Inspector/RCTInspectorPackagerConnection.m"
-      - "../../../../react-native-lab/react-native/React/Modules/RCTEventEmitter.h"
-      - "../../../../react-native-lab/react-native/React/Modules/RCTEventEmitter.m"
-      - "../../../../react-native-lab/react-native/React/Modules/RCTI18nUtil.h"
-      - "../../../../react-native-lab/react-native/React/Modules/RCTI18nUtil.m"
-      - "../../../../react-native-lab/react-native/React/Modules/RCTLayoutAnimation.h"
-      - "../../../../react-native-lab/react-native/React/Modules/RCTLayoutAnimation.m"
-      - "../../../../react-native-lab/react-native/React/Modules/RCTLayoutAnimationGroup.h"
-      - "../../../../react-native-lab/react-native/React/Modules/RCTLayoutAnimationGroup.m"
-      - "../../../../react-native-lab/react-native/React/Modules/RCTRedBoxExtraDataViewController.h"
-      - "../../../../react-native-lab/react-native/React/Modules/RCTRedBoxExtraDataViewController.m"
-      - "../../../../react-native-lab/react-native/React/Modules/RCTSurfacePresenterStub.h"
-      - "../../../../react-native-lab/react-native/React/Modules/RCTSurfacePresenterStub.m"
-      - "../../../../react-native-lab/react-native/React/Modules/RCTUIManager.h"
-      - "../../../../react-native-lab/react-native/React/Modules/RCTUIManager.m"
-      - "../../../../react-native-lab/react-native/React/Modules/RCTUIManagerObserverCoordinator.h"
-      - "../../../../react-native-lab/react-native/React/Modules/RCTUIManagerObserverCoordinator.mm"
-      - "../../../../react-native-lab/react-native/React/Modules/RCTUIManagerUtils.h"
-      - "../../../../react-native-lab/react-native/React/Modules/RCTUIManagerUtils.m"
-      - "../../../../react-native-lab/react-native/React/Profiler/RCTMacros.h"
-      - "../../../../react-native-lab/react-native/React/Profiler/RCTProfile.h"
-      - "../../../../react-native-lab/react-native/React/Profiler/RCTProfile.m"
-      - "../../../../react-native-lab/react-native/React/Profiler/RCTProfileTrampoline-arm.S"
-      - "../../../../react-native-lab/react-native/React/Profiler/RCTProfileTrampoline-arm64.S"
-      - "../../../../react-native-lab/react-native/React/Profiler/RCTProfileTrampoline-i386.S"
-      - "../../../../react-native-lab/react-native/React/Profiler/RCTProfileTrampoline-x86_64.S"
-      - "../../../../react-native-lab/react-native/React/UIUtils/RCTUIUtils.h"
-      - "../../../../react-native-lab/react-native/React/UIUtils/RCTUIUtils.m"
-      - "../../../../react-native-lab/react-native/React/Views/RCTActivityIndicatorView.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTActivityIndicatorView.m"
-      - "../../../../react-native-lab/react-native/React/Views/RCTActivityIndicatorViewManager.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTActivityIndicatorViewManager.m"
-      - "../../../../react-native-lab/react-native/React/Views/RCTAnimationType.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTAutoInsetsProtocol.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTBorderDrawing.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTBorderDrawing.m"
-      - "../../../../react-native-lab/react-native/React/Views/RCTBorderStyle.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTComponent.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTComponentData.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTComponentData.m"
-      - "../../../../react-native-lab/react-native/React/Views/RCTConvert+CoreLocation.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTConvert+CoreLocation.m"
-      - "../../../../react-native-lab/react-native/React/Views/RCTConvert+Transform.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTConvert+Transform.m"
-      - "../../../../react-native-lab/react-native/React/Views/RCTDatePicker.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTDatePicker.m"
-      - "../../../../react-native-lab/react-native/React/Views/RCTDatePickerManager.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTDatePickerManager.m"
-      - "../../../../react-native-lab/react-native/React/Views/RCTFont.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTFont.mm"
-      - "../../../../react-native-lab/react-native/React/Views/RCTLayout.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTLayout.m"
-      - "../../../../react-native-lab/react-native/React/Views/RCTMaskedView.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTMaskedView.m"
-      - "../../../../react-native-lab/react-native/React/Views/RCTMaskedViewManager.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTMaskedViewManager.m"
-      - "../../../../react-native-lab/react-native/React/Views/RCTModalHostView.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTModalHostView.m"
-      - "../../../../react-native-lab/react-native/React/Views/RCTModalHostViewController.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTModalHostViewController.m"
-      - "../../../../react-native-lab/react-native/React/Views/RCTModalHostViewManager.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTModalHostViewManager.m"
-      - "../../../../react-native-lab/react-native/React/Views/RCTPicker.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTPicker.m"
-      - "../../../../react-native-lab/react-native/React/Views/RCTPickerManager.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTPickerManager.m"
-      - "../../../../react-native-lab/react-native/React/Views/RCTPointerEvents.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTProgressViewManager.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTProgressViewManager.m"
-      - "../../../../react-native-lab/react-native/React/Views/RCTRootShadowView.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTRootShadowView.m"
-      - "../../../../react-native-lab/react-native/React/Views/RCTSegmentedControl.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTSegmentedControl.m"
-      - "../../../../react-native-lab/react-native/React/Views/RCTSegmentedControlManager.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTSegmentedControlManager.m"
-      - "../../../../react-native-lab/react-native/React/Views/RCTShadowView+Internal.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTShadowView+Internal.m"
-      - "../../../../react-native-lab/react-native/React/Views/RCTShadowView+Layout.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTShadowView+Layout.m"
-      - "../../../../react-native-lab/react-native/React/Views/RCTShadowView.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTShadowView.m"
-      - "../../../../react-native-lab/react-native/React/Views/RCTSlider.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTSlider.m"
-      - "../../../../react-native-lab/react-native/React/Views/RCTSliderManager.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTSliderManager.m"
-      - "../../../../react-native-lab/react-native/React/Views/RCTSwitch.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTSwitch.m"
-      - "../../../../react-native-lab/react-native/React/Views/RCTSwitchManager.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTSwitchManager.m"
-      - "../../../../react-native-lab/react-native/React/Views/RCTTextDecorationLineType.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTView.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTView.m"
-      - "../../../../react-native-lab/react-native/React/Views/RCTViewManager.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTViewManager.m"
-      - "../../../../react-native-lab/react-native/React/Views/RCTWrapperViewController.h"
-      - "../../../../react-native-lab/react-native/React/Views/RCTWrapperViewController.m"
-      - "../../../../react-native-lab/react-native/React/Views/RefreshControl/RCTRefreshableProtocol.h"
-      - "../../../../react-native-lab/react-native/React/Views/RefreshControl/RCTRefreshControl.h"
-      - "../../../../react-native-lab/react-native/React/Views/RefreshControl/RCTRefreshControl.m"
-      - "../../../../react-native-lab/react-native/React/Views/RefreshControl/RCTRefreshControlManager.h"
-      - "../../../../react-native-lab/react-native/React/Views/RefreshControl/RCTRefreshControlManager.m"
-      - "../../../../react-native-lab/react-native/React/Views/SafeAreaView/RCTSafeAreaShadowView.h"
-      - "../../../../react-native-lab/react-native/React/Views/SafeAreaView/RCTSafeAreaShadowView.m"
-      - "../../../../react-native-lab/react-native/React/Views/SafeAreaView/RCTSafeAreaView.h"
-      - "../../../../react-native-lab/react-native/React/Views/SafeAreaView/RCTSafeAreaView.m"
-      - "../../../../react-native-lab/react-native/React/Views/SafeAreaView/RCTSafeAreaViewLocalData.h"
-      - "../../../../react-native-lab/react-native/React/Views/SafeAreaView/RCTSafeAreaViewLocalData.m"
-      - "../../../../react-native-lab/react-native/React/Views/SafeAreaView/RCTSafeAreaViewManager.h"
-      - "../../../../react-native-lab/react-native/React/Views/SafeAreaView/RCTSafeAreaViewManager.m"
-      - "../../../../react-native-lab/react-native/React/Views/ScrollView/RCTScrollableProtocol.h"
-      - "../../../../react-native-lab/react-native/React/Views/ScrollView/RCTScrollContentShadowView.h"
-      - "../../../../react-native-lab/react-native/React/Views/ScrollView/RCTScrollContentShadowView.m"
-      - "../../../../react-native-lab/react-native/React/Views/ScrollView/RCTScrollContentView.h"
-      - "../../../../react-native-lab/react-native/React/Views/ScrollView/RCTScrollContentView.m"
-      - "../../../../react-native-lab/react-native/React/Views/ScrollView/RCTScrollContentViewManager.h"
-      - "../../../../react-native-lab/react-native/React/Views/ScrollView/RCTScrollContentViewManager.m"
-      - "../../../../react-native-lab/react-native/React/Views/ScrollView/RCTScrollEvent.h"
-      - "../../../../react-native-lab/react-native/React/Views/ScrollView/RCTScrollEvent.m"
-      - "../../../../react-native-lab/react-native/React/Views/ScrollView/RCTScrollView.h"
-      - "../../../../react-native-lab/react-native/React/Views/ScrollView/RCTScrollView.m"
-      - "../../../../react-native-lab/react-native/React/Views/ScrollView/RCTScrollViewManager.h"
-      - "../../../../react-native-lab/react-native/React/Views/ScrollView/RCTScrollViewManager.m"
-      - "../../../../react-native-lab/react-native/React/Views/UIView+Private.h"
-      - "../../../../react-native-lab/react-native/React/Views/UIView+React.h"
-      - "../../../../react-native-lab/react-native/React/Views/UIView+React.m"
-      - "../../../../react-native-lab/react-native/README.md"
+      - "../../node_modules/react-native/Libraries/Blob/RCTBlobManager.h"
+      - "../../node_modules/react-native/Libraries/Blob/RCTFileReaderModule.h"
+      - "../../node_modules/react-native/Libraries/Image/RCTAnimatedImage.h"
+      - "../../node_modules/react-native/Libraries/Image/RCTDisplayWeakRefreshable.h"
+      - "../../node_modules/react-native/Libraries/Image/RCTGIFImageDecoder.h"
+      - "../../node_modules/react-native/Libraries/Image/RCTImageBlurUtils.h"
+      - "../../node_modules/react-native/Libraries/Image/RCTImageCache.h"
+      - "../../node_modules/react-native/Libraries/Image/RCTImageDataDecoder.h"
+      - "../../node_modules/react-native/Libraries/Image/RCTImageEditingManager.h"
+      - "../../node_modules/react-native/Libraries/Image/RCTImageLoader.h"
+      - "../../node_modules/react-native/Libraries/Image/RCTImageLoaderProtocol.h"
+      - "../../node_modules/react-native/Libraries/Image/RCTImageLoaderWithAttributionProtocol.h"
+      - "../../node_modules/react-native/Libraries/Image/RCTImagePlugins.h"
+      - "../../node_modules/react-native/Libraries/Image/RCTImageShadowView.h"
+      - "../../node_modules/react-native/Libraries/Image/RCTImageStoreManager.h"
+      - "../../node_modules/react-native/Libraries/Image/RCTImageURLLoader.h"
+      - "../../node_modules/react-native/Libraries/Image/RCTImageURLLoaderWithAttribution.h"
+      - "../../node_modules/react-native/Libraries/Image/RCTImageUtils.h"
+      - "../../node_modules/react-native/Libraries/Image/RCTImageView.h"
+      - "../../node_modules/react-native/Libraries/Image/RCTImageViewManager.h"
+      - "../../node_modules/react-native/Libraries/Image/RCTLocalAssetImageLoader.h"
+      - "../../node_modules/react-native/Libraries/Image/RCTResizeMode.h"
+      - "../../node_modules/react-native/Libraries/Image/RCTUIImageViewAnimated.h"
+      - "../../node_modules/react-native/Libraries/LinkingIOS/RCTLinkingManager.h"
+      - "../../node_modules/react-native/Libraries/LinkingIOS/RCTLinkingPlugins.h"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/Drivers/RCTAnimationDriver.h"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/Drivers/RCTDecayAnimation.h"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/Drivers/RCTEventAnimation.h"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/Drivers/RCTFrameAnimation.h"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/Drivers/RCTSpringAnimation.h"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/Nodes/RCTAdditionAnimatedNode.h"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/Nodes/RCTAnimatedNode.h"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/Nodes/RCTDiffClampAnimatedNode.h"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/Nodes/RCTDivisionAnimatedNode.h"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/Nodes/RCTInterpolationAnimatedNode.h"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/Nodes/RCTModuloAnimatedNode.h"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/Nodes/RCTMultiplicationAnimatedNode.h"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/Nodes/RCTPropsAnimatedNode.h"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/Nodes/RCTStyleAnimatedNode.h"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/Nodes/RCTSubtractionAnimatedNode.h"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/Nodes/RCTTrackingAnimatedNode.h"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/Nodes/RCTTransformAnimatedNode.h"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/Nodes/RCTValueAnimatedNode.h"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/RCTAnimationPlugins.h"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/RCTAnimationUtils.h"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/RCTNativeAnimatedModule.h"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/RCTNativeAnimatedNodesManager.h"
+      - "../../node_modules/react-native/Libraries/Network/RCTDataRequestHandler.h"
+      - "../../node_modules/react-native/Libraries/Network/RCTFileRequestHandler.h"
+      - "../../node_modules/react-native/Libraries/Network/RCTHTTPRequestHandler.h"
+      - "../../node_modules/react-native/Libraries/Network/RCTNetworking.h"
+      - "../../node_modules/react-native/Libraries/Network/RCTNetworkPlugins.h"
+      - "../../node_modules/react-native/Libraries/Network/RCTNetworkTask.h"
+      - "../../node_modules/react-native/Libraries/Settings/RCTSettingsManager.h"
+      - "../../node_modules/react-native/Libraries/Settings/RCTSettingsPlugins.h"
+      - "../../node_modules/react-native/Libraries/Text/BaseText/RCTBaseTextShadowView.h"
+      - "../../node_modules/react-native/Libraries/Text/BaseText/RCTBaseTextViewManager.h"
+      - "../../node_modules/react-native/Libraries/Text/RawText/RCTRawTextShadowView.h"
+      - "../../node_modules/react-native/Libraries/Text/RawText/RCTRawTextViewManager.h"
+      - "../../node_modules/react-native/Libraries/Text/RCTConvert+Text.h"
+      - "../../node_modules/react-native/Libraries/Text/RCTTextAttributes.h"
+      - "../../node_modules/react-native/Libraries/Text/RCTTextTransform.h"
+      - "../../node_modules/react-native/Libraries/Text/Text/NSTextStorage+FontScaling.h"
+      - "../../node_modules/react-native/Libraries/Text/Text/RCTTextShadowView.h"
+      - "../../node_modules/react-native/Libraries/Text/Text/RCTTextView.h"
+      - "../../node_modules/react-native/Libraries/Text/Text/RCTTextViewManager.h"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/Multiline/RCTMultilineTextInputView.h"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/Multiline/RCTMultilineTextInputViewManager.h"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/Multiline/RCTUITextView.h"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/RCTBackedTextInputDelegate.h"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/RCTBackedTextInputDelegateAdapter.h"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/RCTBackedTextInputViewProtocol.h"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/RCTBaseTextInputShadowView.h"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/RCTBaseTextInputView.h"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/RCTBaseTextInputViewManager.h"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/RCTInputAccessoryShadowView.h"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/RCTInputAccessoryView.h"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/RCTInputAccessoryViewContent.h"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/RCTInputAccessoryViewManager.h"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/RCTTextSelection.h"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/Singleline/RCTSinglelineTextInputView.h"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/Singleline/RCTSinglelineTextInputViewManager.h"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/Singleline/RCTUITextField.h"
+      - "../../node_modules/react-native/Libraries/Text/VirtualText/RCTVirtualTextShadowView.h"
+      - "../../node_modules/react-native/Libraries/Text/VirtualText/RCTVirtualTextViewManager.h"
+      - "../../node_modules/react-native/Libraries/Vibration/RCTVibration.h"
+      - "../../node_modules/react-native/Libraries/Vibration/RCTVibrationPlugins.h"
+      - "../../node_modules/react-native/Libraries/WebSocket/RCTReconnectingWebSocket.h"
+      - "../../node_modules/react-native/Libraries/WebSocket/RCTReconnectingWebSocket.m"
+      - "../../node_modules/react-native/Libraries/WebSocket/RCTSRWebSocket.h"
+      - "../../node_modules/react-native/Libraries/WebSocket/RCTSRWebSocket.m"
+      - "../../node_modules/react-native/LICENSE"
+      - "../../node_modules/react-native/React/AccessibilityResources/en.lproj"
+      - "../../node_modules/react-native/React/Base/RCTAssert.h"
+      - "../../node_modules/react-native/React/Base/RCTAssert.m"
+      - "../../node_modules/react-native/React/Base/RCTBridge+Private.h"
+      - "../../node_modules/react-native/React/Base/RCTBridge.h"
+      - "../../node_modules/react-native/React/Base/RCTBridge.m"
+      - "../../node_modules/react-native/React/Base/RCTBridgeDelegate.h"
+      - "../../node_modules/react-native/React/Base/RCTBridgeMethod.h"
+      - "../../node_modules/react-native/React/Base/RCTBridgeModule.h"
+      - "../../node_modules/react-native/React/Base/RCTBundleURLProvider.h"
+      - "../../node_modules/react-native/React/Base/RCTBundleURLProvider.m"
+      - "../../node_modules/react-native/React/Base/RCTComponentEvent.h"
+      - "../../node_modules/react-native/React/Base/RCTComponentEvent.m"
+      - "../../node_modules/react-native/React/Base/RCTConstants.h"
+      - "../../node_modules/react-native/React/Base/RCTConstants.m"
+      - "../../node_modules/react-native/React/Base/RCTConvert.h"
+      - "../../node_modules/react-native/React/Base/RCTConvert.m"
+      - "../../node_modules/react-native/React/Base/RCTCxxConvert.h"
+      - "../../node_modules/react-native/React/Base/RCTCxxConvert.m"
+      - "../../node_modules/react-native/React/Base/RCTDefines.h"
+      - "../../node_modules/react-native/React/Base/RCTDisplayLink.h"
+      - "../../node_modules/react-native/React/Base/RCTDisplayLink.m"
+      - "../../node_modules/react-native/React/Base/RCTErrorCustomizer.h"
+      - "../../node_modules/react-native/React/Base/RCTErrorInfo.h"
+      - "../../node_modules/react-native/React/Base/RCTErrorInfo.m"
+      - "../../node_modules/react-native/React/Base/RCTEventDispatcher.h"
+      - "../../node_modules/react-native/React/Base/RCTEventDispatcher.m"
+      - "../../node_modules/react-native/React/Base/RCTFrameUpdate.h"
+      - "../../node_modules/react-native/React/Base/RCTFrameUpdate.m"
+      - "../../node_modules/react-native/React/Base/RCTImageSource.h"
+      - "../../node_modules/react-native/React/Base/RCTImageSource.m"
+      - "../../node_modules/react-native/React/Base/RCTInvalidating.h"
+      - "../../node_modules/react-native/React/Base/RCTJavaScriptExecutor.h"
+      - "../../node_modules/react-native/React/Base/RCTJavaScriptLoader.h"
+      - "../../node_modules/react-native/React/Base/RCTJavaScriptLoader.mm"
+      - "../../node_modules/react-native/React/Base/RCTJSInvokerModule.h"
+      - "../../node_modules/react-native/React/Base/RCTJSStackFrame.h"
+      - "../../node_modules/react-native/React/Base/RCTJSStackFrame.m"
+      - "../../node_modules/react-native/React/Base/RCTKeyCommands.h"
+      - "../../node_modules/react-native/React/Base/RCTKeyCommands.m"
+      - "../../node_modules/react-native/React/Base/RCTLog.h"
+      - "../../node_modules/react-native/React/Base/RCTLog.mm"
+      - "../../node_modules/react-native/React/Base/RCTManagedPointer.h"
+      - "../../node_modules/react-native/React/Base/RCTManagedPointer.mm"
+      - "../../node_modules/react-native/React/Base/RCTModuleData.h"
+      - "../../node_modules/react-native/React/Base/RCTModuleData.mm"
+      - "../../node_modules/react-native/React/Base/RCTModuleMethod.h"
+      - "../../node_modules/react-native/React/Base/RCTModuleMethod.mm"
+      - "../../node_modules/react-native/React/Base/RCTMultipartDataTask.h"
+      - "../../node_modules/react-native/React/Base/RCTMultipartDataTask.m"
+      - "../../node_modules/react-native/React/Base/RCTMultipartStreamReader.h"
+      - "../../node_modules/react-native/React/Base/RCTMultipartStreamReader.m"
+      - "../../node_modules/react-native/React/Base/RCTNullability.h"
+      - "../../node_modules/react-native/React/Base/RCTParserUtils.h"
+      - "../../node_modules/react-native/React/Base/RCTParserUtils.m"
+      - "../../node_modules/react-native/React/Base/RCTPerformanceLogger.h"
+      - "../../node_modules/react-native/React/Base/RCTPerformanceLogger.m"
+      - "../../node_modules/react-native/React/Base/RCTRedBoxSetEnabled.h"
+      - "../../node_modules/react-native/React/Base/RCTRedBoxSetEnabled.m"
+      - "../../node_modules/react-native/React/Base/RCTReloadCommand.h"
+      - "../../node_modules/react-native/React/Base/RCTReloadCommand.m"
+      - "../../node_modules/react-native/React/Base/RCTRootContentView.h"
+      - "../../node_modules/react-native/React/Base/RCTRootContentView.m"
+      - "../../node_modules/react-native/React/Base/RCTRootView.h"
+      - "../../node_modules/react-native/React/Base/RCTRootView.m"
+      - "../../node_modules/react-native/React/Base/RCTRootViewDelegate.h"
+      - "../../node_modules/react-native/React/Base/RCTRootViewInternal.h"
+      - "../../node_modules/react-native/React/Base/RCTTouchEvent.h"
+      - "../../node_modules/react-native/React/Base/RCTTouchEvent.m"
+      - "../../node_modules/react-native/React/Base/RCTTouchHandler.h"
+      - "../../node_modules/react-native/React/Base/RCTTouchHandler.m"
+      - "../../node_modules/react-native/React/Base/RCTURLRequestDelegate.h"
+      - "../../node_modules/react-native/React/Base/RCTURLRequestHandler.h"
+      - "../../node_modules/react-native/React/Base/RCTUtils.h"
+      - "../../node_modules/react-native/React/Base/RCTUtils.m"
+      - "../../node_modules/react-native/React/Base/RCTUtilsUIOverride.h"
+      - "../../node_modules/react-native/React/Base/RCTUtilsUIOverride.m"
+      - "../../node_modules/react-native/React/Base/RCTVersion.h"
+      - "../../node_modules/react-native/React/Base/RCTVersion.m"
+      - "../../node_modules/react-native/React/Base/RCTWeakProxy.h"
+      - "../../node_modules/react-native/React/Base/RCTWeakProxy.m"
+      - "../../node_modules/react-native/React/Base/Surface/RCTSurface.h"
+      - "../../node_modules/react-native/React/Base/Surface/RCTSurface.mm"
+      - "../../node_modules/react-native/React/Base/Surface/RCTSurfaceDelegate.h"
+      - "../../node_modules/react-native/React/Base/Surface/RCTSurfaceRootShadowView.h"
+      - "../../node_modules/react-native/React/Base/Surface/RCTSurfaceRootShadowView.m"
+      - "../../node_modules/react-native/React/Base/Surface/RCTSurfaceRootShadowViewDelegate.h"
+      - "../../node_modules/react-native/React/Base/Surface/RCTSurfaceRootView.h"
+      - "../../node_modules/react-native/React/Base/Surface/RCTSurfaceRootView.mm"
+      - "../../node_modules/react-native/React/Base/Surface/RCTSurfaceStage.h"
+      - "../../node_modules/react-native/React/Base/Surface/RCTSurfaceStage.m"
+      - "../../node_modules/react-native/React/Base/Surface/RCTSurfaceView+Internal.h"
+      - "../../node_modules/react-native/React/Base/Surface/RCTSurfaceView.h"
+      - "../../node_modules/react-native/React/Base/Surface/RCTSurfaceView.mm"
+      - "../../node_modules/react-native/React/Base/Surface/SurfaceHostingView/RCTSurfaceHostingProxyRootView.h"
+      - "../../node_modules/react-native/React/Base/Surface/SurfaceHostingView/RCTSurfaceHostingProxyRootView.mm"
+      - "../../node_modules/react-native/React/Base/Surface/SurfaceHostingView/RCTSurfaceHostingView.h"
+      - "../../node_modules/react-native/React/Base/Surface/SurfaceHostingView/RCTSurfaceHostingView.mm"
+      - "../../node_modules/react-native/React/Base/Surface/SurfaceHostingView/RCTSurfaceSizeMeasureMode.h"
+      - "../../node_modules/react-native/React/Base/Surface/SurfaceHostingView/RCTSurfaceSizeMeasureMode.mm"
+      - "../../node_modules/react-native/React/CoreModules/CoreModulesPlugins.h"
+      - "../../node_modules/react-native/React/CoreModules/RCTAccessibilityManager.h"
+      - "../../node_modules/react-native/React/CoreModules/RCTActionSheetManager.h"
+      - "../../node_modules/react-native/React/CoreModules/RCTAlertManager.h"
+      - "../../node_modules/react-native/React/CoreModules/RCTAppearance.h"
+      - "../../node_modules/react-native/React/CoreModules/RCTAppState.h"
+      - "../../node_modules/react-native/React/CoreModules/RCTAsyncLocalStorage.h"
+      - "../../node_modules/react-native/React/CoreModules/RCTClipboard.h"
+      - "../../node_modules/react-native/React/CoreModules/RCTDeviceInfo.h"
+      - "../../node_modules/react-native/React/CoreModules/RCTDevLoadingView.h"
+      - "../../node_modules/react-native/React/CoreModules/RCTDevMenu.h"
+      - "../../node_modules/react-native/React/CoreModules/RCTDevSettings.h"
+      - "../../node_modules/react-native/React/CoreModules/RCTExceptionsManager.h"
+      - "../../node_modules/react-native/React/CoreModules/RCTFPSGraph.h"
+      - "../../node_modules/react-native/React/CoreModules/RCTI18nManager.h"
+      - "../../node_modules/react-native/React/CoreModules/RCTKeyboardObserver.h"
+      - "../../node_modules/react-native/React/CoreModules/RCTLogBox.h"
+      - "../../node_modules/react-native/React/CoreModules/RCTPlatform.h"
+      - "../../node_modules/react-native/React/CoreModules/RCTRedBox.h"
+      - "../../node_modules/react-native/React/CoreModules/RCTSourceCode.h"
+      - "../../node_modules/react-native/React/CoreModules/RCTStatusBarManager.h"
+      - "../../node_modules/react-native/React/CoreModules/RCTTiming.h"
+      - "../../node_modules/react-native/React/CoreModules/RCTTVNavigationEventEmitter.h"
+      - "../../node_modules/react-native/React/CoreModules/RCTWebSocketExecutor.h"
+      - "../../node_modules/react-native/React/CoreModules/RCTWebSocketModule.h"
+      - "../../node_modules/react-native/React/CxxBridge/JSCExecutorFactory.h"
+      - "../../node_modules/react-native/React/CxxBridge/JSCExecutorFactory.mm"
+      - "../../node_modules/react-native/React/CxxBridge/NSDataBigString.h"
+      - "../../node_modules/react-native/React/CxxBridge/NSDataBigString.mm"
+      - "../../node_modules/react-native/React/CxxBridge/RCTCxxBridge.mm"
+      - "../../node_modules/react-native/React/CxxBridge/RCTCxxBridgeDelegate.h"
+      - "../../node_modules/react-native/React/CxxBridge/RCTMessageThread.h"
+      - "../../node_modules/react-native/React/CxxBridge/RCTMessageThread.mm"
+      - "../../node_modules/react-native/React/CxxBridge/RCTObjcExecutor.h"
+      - "../../node_modules/react-native/React/CxxBridge/RCTObjcExecutor.mm"
+      - "../../node_modules/react-native/React/CxxModule/DispatchMessageQueueThread.h"
+      - "../../node_modules/react-native/React/CxxModule/RCTCxxMethod.h"
+      - "../../node_modules/react-native/React/CxxModule/RCTCxxMethod.mm"
+      - "../../node_modules/react-native/React/CxxModule/RCTCxxModule.h"
+      - "../../node_modules/react-native/React/CxxModule/RCTCxxModule.mm"
+      - "../../node_modules/react-native/React/CxxModule/RCTCxxUtils.h"
+      - "../../node_modules/react-native/React/CxxModule/RCTCxxUtils.mm"
+      - "../../node_modules/react-native/React/CxxModule/RCTNativeModule.h"
+      - "../../node_modules/react-native/React/CxxModule/RCTNativeModule.mm"
+      - "../../node_modules/react-native/React/CxxUtils/RCTFollyConvert.h"
+      - "../../node_modules/react-native/React/CxxUtils/RCTFollyConvert.mm"
+      - "../../node_modules/react-native/React/DevSupport/RCTDevLoadingViewProtocol.h"
+      - "../../node_modules/react-native/React/DevSupport/RCTDevLoadingViewSetEnabled.h"
+      - "../../node_modules/react-native/React/DevSupport/RCTDevLoadingViewSetEnabled.m"
+      - "../../node_modules/react-native/React/DevSupport/RCTInspectorDevServerHelper.h"
+      - "../../node_modules/react-native/React/DevSupport/RCTInspectorDevServerHelper.mm"
+      - "../../node_modules/react-native/React/DevSupport/RCTPackagerClient.h"
+      - "../../node_modules/react-native/React/DevSupport/RCTPackagerClient.m"
+      - "../../node_modules/react-native/React/DevSupport/RCTPackagerConnection.h"
+      - "../../node_modules/react-native/React/DevSupport/RCTPackagerConnection.mm"
+      - "../../node_modules/react-native/React/Inspector/RCTInspector.h"
+      - "../../node_modules/react-native/React/Inspector/RCTInspector.mm"
+      - "../../node_modules/react-native/React/Inspector/RCTInspectorPackagerConnection.h"
+      - "../../node_modules/react-native/React/Inspector/RCTInspectorPackagerConnection.m"
+      - "../../node_modules/react-native/React/Modules/RCTEventEmitter.h"
+      - "../../node_modules/react-native/React/Modules/RCTEventEmitter.m"
+      - "../../node_modules/react-native/React/Modules/RCTI18nUtil.h"
+      - "../../node_modules/react-native/React/Modules/RCTI18nUtil.m"
+      - "../../node_modules/react-native/React/Modules/RCTLayoutAnimation.h"
+      - "../../node_modules/react-native/React/Modules/RCTLayoutAnimation.m"
+      - "../../node_modules/react-native/React/Modules/RCTLayoutAnimationGroup.h"
+      - "../../node_modules/react-native/React/Modules/RCTLayoutAnimationGroup.m"
+      - "../../node_modules/react-native/React/Modules/RCTRedBoxExtraDataViewController.h"
+      - "../../node_modules/react-native/React/Modules/RCTRedBoxExtraDataViewController.m"
+      - "../../node_modules/react-native/React/Modules/RCTSurfacePresenterStub.h"
+      - "../../node_modules/react-native/React/Modules/RCTSurfacePresenterStub.m"
+      - "../../node_modules/react-native/React/Modules/RCTUIManager.h"
+      - "../../node_modules/react-native/React/Modules/RCTUIManager.m"
+      - "../../node_modules/react-native/React/Modules/RCTUIManagerObserverCoordinator.h"
+      - "../../node_modules/react-native/React/Modules/RCTUIManagerObserverCoordinator.mm"
+      - "../../node_modules/react-native/React/Modules/RCTUIManagerUtils.h"
+      - "../../node_modules/react-native/React/Modules/RCTUIManagerUtils.m"
+      - "../../node_modules/react-native/React/Profiler/RCTMacros.h"
+      - "../../node_modules/react-native/React/Profiler/RCTProfile.h"
+      - "../../node_modules/react-native/React/Profiler/RCTProfile.m"
+      - "../../node_modules/react-native/React/Profiler/RCTProfileTrampoline-arm.S"
+      - "../../node_modules/react-native/React/Profiler/RCTProfileTrampoline-arm64.S"
+      - "../../node_modules/react-native/React/Profiler/RCTProfileTrampoline-i386.S"
+      - "../../node_modules/react-native/React/Profiler/RCTProfileTrampoline-x86_64.S"
+      - "../../node_modules/react-native/React/UIUtils/RCTUIUtils.h"
+      - "../../node_modules/react-native/React/UIUtils/RCTUIUtils.m"
+      - "../../node_modules/react-native/React/Views/RCTActivityIndicatorView.h"
+      - "../../node_modules/react-native/React/Views/RCTActivityIndicatorView.m"
+      - "../../node_modules/react-native/React/Views/RCTActivityIndicatorViewManager.h"
+      - "../../node_modules/react-native/React/Views/RCTActivityIndicatorViewManager.m"
+      - "../../node_modules/react-native/React/Views/RCTAnimationType.h"
+      - "../../node_modules/react-native/React/Views/RCTAutoInsetsProtocol.h"
+      - "../../node_modules/react-native/React/Views/RCTBorderDrawing.h"
+      - "../../node_modules/react-native/React/Views/RCTBorderDrawing.m"
+      - "../../node_modules/react-native/React/Views/RCTBorderStyle.h"
+      - "../../node_modules/react-native/React/Views/RCTComponent.h"
+      - "../../node_modules/react-native/React/Views/RCTComponentData.h"
+      - "../../node_modules/react-native/React/Views/RCTComponentData.m"
+      - "../../node_modules/react-native/React/Views/RCTConvert+CoreLocation.h"
+      - "../../node_modules/react-native/React/Views/RCTConvert+CoreLocation.m"
+      - "../../node_modules/react-native/React/Views/RCTConvert+Transform.h"
+      - "../../node_modules/react-native/React/Views/RCTConvert+Transform.m"
+      - "../../node_modules/react-native/React/Views/RCTDatePicker.h"
+      - "../../node_modules/react-native/React/Views/RCTDatePicker.m"
+      - "../../node_modules/react-native/React/Views/RCTDatePickerManager.h"
+      - "../../node_modules/react-native/React/Views/RCTDatePickerManager.m"
+      - "../../node_modules/react-native/React/Views/RCTFont.h"
+      - "../../node_modules/react-native/React/Views/RCTFont.mm"
+      - "../../node_modules/react-native/React/Views/RCTLayout.h"
+      - "../../node_modules/react-native/React/Views/RCTLayout.m"
+      - "../../node_modules/react-native/React/Views/RCTMaskedView.h"
+      - "../../node_modules/react-native/React/Views/RCTMaskedView.m"
+      - "../../node_modules/react-native/React/Views/RCTMaskedViewManager.h"
+      - "../../node_modules/react-native/React/Views/RCTMaskedViewManager.m"
+      - "../../node_modules/react-native/React/Views/RCTModalHostView.h"
+      - "../../node_modules/react-native/React/Views/RCTModalHostView.m"
+      - "../../node_modules/react-native/React/Views/RCTModalHostViewController.h"
+      - "../../node_modules/react-native/React/Views/RCTModalHostViewController.m"
+      - "../../node_modules/react-native/React/Views/RCTModalHostViewManager.h"
+      - "../../node_modules/react-native/React/Views/RCTModalHostViewManager.m"
+      - "../../node_modules/react-native/React/Views/RCTPicker.h"
+      - "../../node_modules/react-native/React/Views/RCTPicker.m"
+      - "../../node_modules/react-native/React/Views/RCTPickerManager.h"
+      - "../../node_modules/react-native/React/Views/RCTPickerManager.m"
+      - "../../node_modules/react-native/React/Views/RCTPointerEvents.h"
+      - "../../node_modules/react-native/React/Views/RCTProgressViewManager.h"
+      - "../../node_modules/react-native/React/Views/RCTProgressViewManager.m"
+      - "../../node_modules/react-native/React/Views/RCTRootShadowView.h"
+      - "../../node_modules/react-native/React/Views/RCTRootShadowView.m"
+      - "../../node_modules/react-native/React/Views/RCTSegmentedControl.h"
+      - "../../node_modules/react-native/React/Views/RCTSegmentedControl.m"
+      - "../../node_modules/react-native/React/Views/RCTSegmentedControlManager.h"
+      - "../../node_modules/react-native/React/Views/RCTSegmentedControlManager.m"
+      - "../../node_modules/react-native/React/Views/RCTShadowView+Internal.h"
+      - "../../node_modules/react-native/React/Views/RCTShadowView+Internal.m"
+      - "../../node_modules/react-native/React/Views/RCTShadowView+Layout.h"
+      - "../../node_modules/react-native/React/Views/RCTShadowView+Layout.m"
+      - "../../node_modules/react-native/React/Views/RCTShadowView.h"
+      - "../../node_modules/react-native/React/Views/RCTShadowView.m"
+      - "../../node_modules/react-native/React/Views/RCTSlider.h"
+      - "../../node_modules/react-native/React/Views/RCTSlider.m"
+      - "../../node_modules/react-native/React/Views/RCTSliderManager.h"
+      - "../../node_modules/react-native/React/Views/RCTSliderManager.m"
+      - "../../node_modules/react-native/React/Views/RCTSwitch.h"
+      - "../../node_modules/react-native/React/Views/RCTSwitch.m"
+      - "../../node_modules/react-native/React/Views/RCTSwitchManager.h"
+      - "../../node_modules/react-native/React/Views/RCTSwitchManager.m"
+      - "../../node_modules/react-native/React/Views/RCTTextDecorationLineType.h"
+      - "../../node_modules/react-native/React/Views/RCTView.h"
+      - "../../node_modules/react-native/React/Views/RCTView.m"
+      - "../../node_modules/react-native/React/Views/RCTViewManager.h"
+      - "../../node_modules/react-native/React/Views/RCTViewManager.m"
+      - "../../node_modules/react-native/React/Views/RCTWrapperViewController.h"
+      - "../../node_modules/react-native/React/Views/RCTWrapperViewController.m"
+      - "../../node_modules/react-native/React/Views/RefreshControl/RCTRefreshableProtocol.h"
+      - "../../node_modules/react-native/React/Views/RefreshControl/RCTRefreshControl.h"
+      - "../../node_modules/react-native/React/Views/RefreshControl/RCTRefreshControl.m"
+      - "../../node_modules/react-native/React/Views/RefreshControl/RCTRefreshControlManager.h"
+      - "../../node_modules/react-native/React/Views/RefreshControl/RCTRefreshControlManager.m"
+      - "../../node_modules/react-native/React/Views/SafeAreaView/RCTSafeAreaShadowView.h"
+      - "../../node_modules/react-native/React/Views/SafeAreaView/RCTSafeAreaShadowView.m"
+      - "../../node_modules/react-native/React/Views/SafeAreaView/RCTSafeAreaView.h"
+      - "../../node_modules/react-native/React/Views/SafeAreaView/RCTSafeAreaView.m"
+      - "../../node_modules/react-native/React/Views/SafeAreaView/RCTSafeAreaViewLocalData.h"
+      - "../../node_modules/react-native/React/Views/SafeAreaView/RCTSafeAreaViewLocalData.m"
+      - "../../node_modules/react-native/React/Views/SafeAreaView/RCTSafeAreaViewManager.h"
+      - "../../node_modules/react-native/React/Views/SafeAreaView/RCTSafeAreaViewManager.m"
+      - "../../node_modules/react-native/React/Views/ScrollView/RCTScrollableProtocol.h"
+      - "../../node_modules/react-native/React/Views/ScrollView/RCTScrollContentShadowView.h"
+      - "../../node_modules/react-native/React/Views/ScrollView/RCTScrollContentShadowView.m"
+      - "../../node_modules/react-native/React/Views/ScrollView/RCTScrollContentView.h"
+      - "../../node_modules/react-native/React/Views/ScrollView/RCTScrollContentView.m"
+      - "../../node_modules/react-native/React/Views/ScrollView/RCTScrollContentViewManager.h"
+      - "../../node_modules/react-native/React/Views/ScrollView/RCTScrollContentViewManager.m"
+      - "../../node_modules/react-native/React/Views/ScrollView/RCTScrollEvent.h"
+      - "../../node_modules/react-native/React/Views/ScrollView/RCTScrollEvent.m"
+      - "../../node_modules/react-native/React/Views/ScrollView/RCTScrollView.h"
+      - "../../node_modules/react-native/React/Views/ScrollView/RCTScrollView.m"
+      - "../../node_modules/react-native/React/Views/ScrollView/RCTScrollViewManager.h"
+      - "../../node_modules/react-native/React/Views/ScrollView/RCTScrollViewManager.m"
+      - "../../node_modules/react-native/React/Views/UIView+Private.h"
+      - "../../node_modules/react-native/React/Views/UIView+React.h"
+      - "../../node_modules/react-native/React/Views/UIView+React.m"
+      - "../../node_modules/react-native/README.md"
     PROJECT_NAME: React-Core
     SPECS:
       - React-Core (0.63.2)
@@ -1951,103 +2079,103 @@ CACHE_KEYS:
   React-CoreModules:
     BUILD_SETTINGS_CHECKSUM:
       React-CoreModules:
-        :debug: b24db36b43890d1c73f68e7c29f52533
-        :release: b24db36b43890d1c73f68e7c29f52533
+        :debug: 3994797ea92c4181ee431e03257000e8
+        :release: 3994797ea92c4181ee431e03257000e8
     CHECKSUM: 5335e168165da7f7083ce7147768d36d3e292318
     FILES:
-      - "../../../../react-native-lab/react-native/React/CoreModules/CoreModulesPlugins.mm"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTAccessibilityManager.mm"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTActionSheetManager.mm"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTAlertManager.mm"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTAppearance.mm"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTAppState.mm"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTAsyncLocalStorage.mm"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTClipboard.mm"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTDeviceInfo.mm"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTDevLoadingView.mm"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTDevMenu.mm"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTDevSettings.mm"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTExceptionsManager.mm"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTFPSGraph.m"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTI18nManager.mm"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTKeyboardObserver.mm"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTLogBox.mm"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTPerfMonitor.mm"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTPlatform.mm"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTRedBox.mm"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTSourceCode.mm"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTStatusBarManager.mm"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTTiming.mm"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTTVNavigationEventEmitter.mm"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTWebSocketExecutor.mm"
-      - "../../../../react-native-lab/react-native/React/CoreModules/RCTWebSocketModule.mm"
+      - "../../node_modules/react-native/React/CoreModules/CoreModulesPlugins.mm"
+      - "../../node_modules/react-native/React/CoreModules/RCTAccessibilityManager.mm"
+      - "../../node_modules/react-native/React/CoreModules/RCTActionSheetManager.mm"
+      - "../../node_modules/react-native/React/CoreModules/RCTAlertManager.mm"
+      - "../../node_modules/react-native/React/CoreModules/RCTAppearance.mm"
+      - "../../node_modules/react-native/React/CoreModules/RCTAppState.mm"
+      - "../../node_modules/react-native/React/CoreModules/RCTAsyncLocalStorage.mm"
+      - "../../node_modules/react-native/React/CoreModules/RCTClipboard.mm"
+      - "../../node_modules/react-native/React/CoreModules/RCTDeviceInfo.mm"
+      - "../../node_modules/react-native/React/CoreModules/RCTDevLoadingView.mm"
+      - "../../node_modules/react-native/React/CoreModules/RCTDevMenu.mm"
+      - "../../node_modules/react-native/React/CoreModules/RCTDevSettings.mm"
+      - "../../node_modules/react-native/React/CoreModules/RCTExceptionsManager.mm"
+      - "../../node_modules/react-native/React/CoreModules/RCTFPSGraph.m"
+      - "../../node_modules/react-native/React/CoreModules/RCTI18nManager.mm"
+      - "../../node_modules/react-native/React/CoreModules/RCTKeyboardObserver.mm"
+      - "../../node_modules/react-native/React/CoreModules/RCTLogBox.mm"
+      - "../../node_modules/react-native/React/CoreModules/RCTPerfMonitor.mm"
+      - "../../node_modules/react-native/React/CoreModules/RCTPlatform.mm"
+      - "../../node_modules/react-native/React/CoreModules/RCTRedBox.mm"
+      - "../../node_modules/react-native/React/CoreModules/RCTSourceCode.mm"
+      - "../../node_modules/react-native/React/CoreModules/RCTStatusBarManager.mm"
+      - "../../node_modules/react-native/React/CoreModules/RCTTiming.mm"
+      - "../../node_modules/react-native/React/CoreModules/RCTTVNavigationEventEmitter.mm"
+      - "../../node_modules/react-native/React/CoreModules/RCTWebSocketExecutor.mm"
+      - "../../node_modules/react-native/React/CoreModules/RCTWebSocketModule.mm"
     PROJECT_NAME: React-CoreModules
     SPECS:
       - React-CoreModules (0.63.2)
   React-cxxreact:
     BUILD_SETTINGS_CHECKSUM:
       React-cxxreact:
-        :debug: 28c7431c62ef1bfd614b7c3f07f8ac96
-        :release: 28c7431c62ef1bfd614b7c3f07f8ac96
+        :debug: 3ccc0b53fc72c476039ef7b1dc2285c3
+        :release: 3ccc0b53fc72c476039ef7b1dc2285c3
     CHECKSUM: d3261ec5f7d11743fbf21e263a34ea51d1f13ebc
     FILES:
-      - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/CxxModule.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/CxxNativeModule.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/CxxNativeModule.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/Instance.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/Instance.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/JsArgumentHelpers-inl.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/JsArgumentHelpers.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/JSBigString.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/JSBigString.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/JSBundleType.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/JSBundleType.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/JSDeltaBundleClient.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/JSDeltaBundleClient.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/JSExecutor.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/JSExecutor.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/JSIndexedRAMBundle.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/JSIndexedRAMBundle.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/JSModulesUnbundle.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/MessageQueueThread.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/MethodCall.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/MethodCall.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/ModuleRegistry.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/ModuleRegistry.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/NativeModule.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/NativeToJsBridge.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/NativeToJsBridge.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/RAMBundleRegistry.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/RAMBundleRegistry.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/ReactMarker.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/ReactMarker.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/ReactNativeVersion.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/RecoverableError.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/SharedProxyCxxModule.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/SystraceSection.h"
+      - "../../node_modules/react-native/ReactCommon/cxxreact/CxxModule.h"
+      - "../../node_modules/react-native/ReactCommon/cxxreact/CxxNativeModule.cpp"
+      - "../../node_modules/react-native/ReactCommon/cxxreact/CxxNativeModule.h"
+      - "../../node_modules/react-native/ReactCommon/cxxreact/Instance.cpp"
+      - "../../node_modules/react-native/ReactCommon/cxxreact/Instance.h"
+      - "../../node_modules/react-native/ReactCommon/cxxreact/JsArgumentHelpers-inl.h"
+      - "../../node_modules/react-native/ReactCommon/cxxreact/JsArgumentHelpers.h"
+      - "../../node_modules/react-native/ReactCommon/cxxreact/JSBigString.cpp"
+      - "../../node_modules/react-native/ReactCommon/cxxreact/JSBigString.h"
+      - "../../node_modules/react-native/ReactCommon/cxxreact/JSBundleType.cpp"
+      - "../../node_modules/react-native/ReactCommon/cxxreact/JSBundleType.h"
+      - "../../node_modules/react-native/ReactCommon/cxxreact/JSDeltaBundleClient.cpp"
+      - "../../node_modules/react-native/ReactCommon/cxxreact/JSDeltaBundleClient.h"
+      - "../../node_modules/react-native/ReactCommon/cxxreact/JSExecutor.cpp"
+      - "../../node_modules/react-native/ReactCommon/cxxreact/JSExecutor.h"
+      - "../../node_modules/react-native/ReactCommon/cxxreact/JSIndexedRAMBundle.cpp"
+      - "../../node_modules/react-native/ReactCommon/cxxreact/JSIndexedRAMBundle.h"
+      - "../../node_modules/react-native/ReactCommon/cxxreact/JSModulesUnbundle.h"
+      - "../../node_modules/react-native/ReactCommon/cxxreact/MessageQueueThread.h"
+      - "../../node_modules/react-native/ReactCommon/cxxreact/MethodCall.cpp"
+      - "../../node_modules/react-native/ReactCommon/cxxreact/MethodCall.h"
+      - "../../node_modules/react-native/ReactCommon/cxxreact/ModuleRegistry.cpp"
+      - "../../node_modules/react-native/ReactCommon/cxxreact/ModuleRegistry.h"
+      - "../../node_modules/react-native/ReactCommon/cxxreact/NativeModule.h"
+      - "../../node_modules/react-native/ReactCommon/cxxreact/NativeToJsBridge.cpp"
+      - "../../node_modules/react-native/ReactCommon/cxxreact/NativeToJsBridge.h"
+      - "../../node_modules/react-native/ReactCommon/cxxreact/RAMBundleRegistry.cpp"
+      - "../../node_modules/react-native/ReactCommon/cxxreact/RAMBundleRegistry.h"
+      - "../../node_modules/react-native/ReactCommon/cxxreact/ReactMarker.cpp"
+      - "../../node_modules/react-native/ReactCommon/cxxreact/ReactMarker.h"
+      - "../../node_modules/react-native/ReactCommon/cxxreact/ReactNativeVersion.h"
+      - "../../node_modules/react-native/ReactCommon/cxxreact/RecoverableError.h"
+      - "../../node_modules/react-native/ReactCommon/cxxreact/SharedProxyCxxModule.h"
+      - "../../node_modules/react-native/ReactCommon/cxxreact/SystraceSection.h"
     PROJECT_NAME: React-cxxreact
     SPECS:
       - React-cxxreact (0.63.2)
   React-jsi:
     BUILD_SETTINGS_CHECKSUM:
       React-jsi:
-        :debug: 52e8561f5c63663efa2f431891620148
-        :release: 52e8561f5c63663efa2f431891620148
+        :debug: 8cc5e6619f812f5a66b6e179b8414498
+        :release: 8cc5e6619f812f5a66b6e179b8414498
     CHECKSUM: 54245e1d5f4b690dec614a73a3795964eeef13a8
     FILES:
-      - "../../../../react-native-lab/react-native/ReactCommon/jsi/JSCRuntime.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/jsi/JSCRuntime.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/jsi/jsi/decorator.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/jsi/jsi/instrumentation.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/jsi/jsi/jsi-inl.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/jsi/jsi/jsi.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/jsi/jsi/jsi.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/jsi/jsi/JSIDynamic.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/jsi/jsi/JSIDynamic.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/jsi/jsi/jsilib-posix.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/jsi/jsi/jsilib-windows.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/jsi/jsi/jsilib.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/jsi/jsi/threadsafe.h"
+      - "../../node_modules/react-native/ReactCommon/jsi/JSCRuntime.cpp"
+      - "../../node_modules/react-native/ReactCommon/jsi/JSCRuntime.h"
+      - "../../node_modules/react-native/ReactCommon/jsi/jsi/decorator.h"
+      - "../../node_modules/react-native/ReactCommon/jsi/jsi/instrumentation.h"
+      - "../../node_modules/react-native/ReactCommon/jsi/jsi/jsi-inl.h"
+      - "../../node_modules/react-native/ReactCommon/jsi/jsi/jsi.cpp"
+      - "../../node_modules/react-native/ReactCommon/jsi/jsi/jsi.h"
+      - "../../node_modules/react-native/ReactCommon/jsi/jsi/JSIDynamic.cpp"
+      - "../../node_modules/react-native/ReactCommon/jsi/jsi/JSIDynamic.h"
+      - "../../node_modules/react-native/ReactCommon/jsi/jsi/jsilib-posix.cpp"
+      - "../../node_modules/react-native/ReactCommon/jsi/jsi/jsilib-windows.cpp"
+      - "../../node_modules/react-native/ReactCommon/jsi/jsi/jsilib.h"
+      - "../../node_modules/react-native/ReactCommon/jsi/jsi/threadsafe.h"
     PROJECT_NAME: React-jsi
     SPECS:
       - React-jsi (0.63.2)
@@ -2055,26 +2183,26 @@ CACHE_KEYS:
   React-jsiexecutor:
     BUILD_SETTINGS_CHECKSUM:
       React-jsiexecutor:
-        :debug: 41fc5bfa4467f69e02f9a0b25068afe3
-        :release: 41fc5bfa4467f69e02f9a0b25068afe3
+        :debug: 88b283118387278cc34c23564893f80c
+        :release: 88b283118387278cc34c23564893f80c
     CHECKSUM: 8ca588cc921e70590820ce72b8789b02c67cce38
     FILES:
-      - "../../../../react-native-lab/react-native/ReactCommon/jsiexecutor/jsireact/JSIExecutor.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/jsiexecutor/jsireact/JSIExecutor.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/jsiexecutor/jsireact/JSINativeModules.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/jsiexecutor/jsireact/JSINativeModules.h"
+      - "../../node_modules/react-native/ReactCommon/jsiexecutor/jsireact/JSIExecutor.cpp"
+      - "../../node_modules/react-native/ReactCommon/jsiexecutor/jsireact/JSIExecutor.h"
+      - "../../node_modules/react-native/ReactCommon/jsiexecutor/jsireact/JSINativeModules.cpp"
+      - "../../node_modules/react-native/ReactCommon/jsiexecutor/jsireact/JSINativeModules.h"
     PROJECT_NAME: React-jsiexecutor
     SPECS:
       - React-jsiexecutor (0.63.2)
   React-jsinspector:
     BUILD_SETTINGS_CHECKSUM:
       React-jsinspector:
-        :debug: c51669e3b7d4160b54eb1d32bceda6e1
-        :release: c51669e3b7d4160b54eb1d32bceda6e1
+        :debug: ac7111ae2dae0f02ac26341b1cd7cf78
+        :release: ac7111ae2dae0f02ac26341b1cd7cf78
     CHECKSUM: b14e62ebe7a66e9231e9581279909f2fc3db6606
     FILES:
-      - "../../../../react-native-lab/react-native/ReactCommon/jsinspector/InspectorInterfaces.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/jsinspector/InspectorInterfaces.h"
+      - "../../node_modules/react-native/ReactCommon/jsinspector/InspectorInterfaces.cpp"
+      - "../../node_modules/react-native/ReactCommon/jsinspector/InspectorInterfaces.h"
     PROJECT_NAME: React-jsinspector
     SPECS:
       - React-jsinspector (0.63.2)
@@ -2237,8 +2365,8 @@ CACHE_KEYS:
   React-RCTActionSheet:
     BUILD_SETTINGS_CHECKSUM:
       React-RCTActionSheet:
-        :debug: 4e61953e06bf58bd753c9ad2875af797
-        :release: 4e61953e06bf58bd753c9ad2875af797
+        :debug: 48f13d193dba6bea57e3c6af71b15acd
+        :release: 48f13d193dba6bea57e3c6af71b15acd
     CHECKSUM: 910163b6b09685a35c4ebbc52b66d1bfbbe39fc5
     FILES:
       []
@@ -2248,215 +2376,215 @@ CACHE_KEYS:
   React-RCTAnimation:
     BUILD_SETTINGS_CHECKSUM:
       React-RCTAnimation:
-        :debug: 2b73e4c9bb01a5488d919ab2ea626710
-        :release: 2b73e4c9bb01a5488d919ab2ea626710
+        :debug: 7bfbaf626ecbf2f276d852fdad282773
+        :release: 7bfbaf626ecbf2f276d852fdad282773
     CHECKSUM: 9a883bbe1e9d2e158d4fb53765ed64c8dc2200c6
     FILES:
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Drivers/RCTDecayAnimation.m"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Drivers/RCTEventAnimation.m"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Drivers/RCTFrameAnimation.m"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Drivers/RCTSpringAnimation.m"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Nodes/RCTAdditionAnimatedNode.m"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Nodes/RCTAnimatedNode.m"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Nodes/RCTDiffClampAnimatedNode.m"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Nodes/RCTDivisionAnimatedNode.m"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Nodes/RCTInterpolationAnimatedNode.m"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Nodes/RCTModuloAnimatedNode.m"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Nodes/RCTMultiplicationAnimatedNode.m"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Nodes/RCTPropsAnimatedNode.m"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Nodes/RCTStyleAnimatedNode.m"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Nodes/RCTSubtractionAnimatedNode.m"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Nodes/RCTTrackingAnimatedNode.m"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Nodes/RCTTransformAnimatedNode.m"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Nodes/RCTValueAnimatedNode.m"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/RCTAnimationPlugins.mm"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/RCTAnimationUtils.m"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/RCTNativeAnimatedModule.mm"
-      - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/RCTNativeAnimatedNodesManager.m"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/Drivers/RCTDecayAnimation.m"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/Drivers/RCTEventAnimation.m"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/Drivers/RCTFrameAnimation.m"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/Drivers/RCTSpringAnimation.m"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/Nodes/RCTAdditionAnimatedNode.m"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/Nodes/RCTAnimatedNode.m"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/Nodes/RCTDiffClampAnimatedNode.m"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/Nodes/RCTDivisionAnimatedNode.m"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/Nodes/RCTInterpolationAnimatedNode.m"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/Nodes/RCTModuloAnimatedNode.m"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/Nodes/RCTMultiplicationAnimatedNode.m"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/Nodes/RCTPropsAnimatedNode.m"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/Nodes/RCTStyleAnimatedNode.m"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/Nodes/RCTSubtractionAnimatedNode.m"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/Nodes/RCTTrackingAnimatedNode.m"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/Nodes/RCTTransformAnimatedNode.m"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/Nodes/RCTValueAnimatedNode.m"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/RCTAnimationPlugins.mm"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/RCTAnimationUtils.m"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/RCTNativeAnimatedModule.mm"
+      - "../../node_modules/react-native/Libraries/NativeAnimation/RCTNativeAnimatedNodesManager.m"
     PROJECT_NAME: React-RCTAnimation
     SPECS:
       - React-RCTAnimation (0.63.2)
   React-RCTBlob:
     BUILD_SETTINGS_CHECKSUM:
       React-RCTBlob:
-        :debug: 80379d9c5294927556354a41bdee9537
-        :release: 80379d9c5294927556354a41bdee9537
+        :debug: 7a9e3941d9823233fed58503a2b4c786
+        :release: 7a9e3941d9823233fed58503a2b4c786
     CHECKSUM: 39cf0ece1927996c4466510e25d2105f67010e13
     FILES:
-      - "../../../../react-native-lab/react-native/Libraries/Blob/RCTBlobCollector.mm"
-      - "../../../../react-native-lab/react-native/Libraries/Blob/RCTBlobManager.mm"
-      - "../../../../react-native-lab/react-native/Libraries/Blob/RCTBlobPlugins.mm"
-      - "../../../../react-native-lab/react-native/Libraries/Blob/RCTFileReaderModule.mm"
+      - "../../node_modules/react-native/Libraries/Blob/RCTBlobCollector.mm"
+      - "../../node_modules/react-native/Libraries/Blob/RCTBlobManager.mm"
+      - "../../node_modules/react-native/Libraries/Blob/RCTBlobPlugins.mm"
+      - "../../node_modules/react-native/Libraries/Blob/RCTFileReaderModule.mm"
     PROJECT_NAME: React-RCTBlob
     SPECS:
       - React-RCTBlob (0.63.2)
   React-RCTImage:
     BUILD_SETTINGS_CHECKSUM:
       React-RCTImage:
-        :debug: 84e80fc1ba0f80be567740088db84a78
-        :release: 84e80fc1ba0f80be567740088db84a78
+        :debug: d4f3670826aaa8a744e2b22129fe961e
+        :release: d4f3670826aaa8a744e2b22129fe961e
     CHECKSUM: de355d738727b09ad3692f2a979affbd54b5f378
     FILES:
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTAnimatedImage.m"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTDisplayWeakRefreshable.m"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTGIFImageDecoder.mm"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTImageBlurUtils.m"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTImageCache.m"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTImageEditingManager.mm"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTImageLoader.mm"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTImagePlugins.mm"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTImageShadowView.m"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTImageStoreManager.mm"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTImageURLLoaderWithAttribution.mm"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTImageUtils.m"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTImageView.mm"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTImageViewManager.mm"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTLocalAssetImageLoader.mm"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTResizeMode.m"
-      - "../../../../react-native-lab/react-native/Libraries/Image/RCTUIImageViewAnimated.m"
+      - "../../node_modules/react-native/Libraries/Image/RCTAnimatedImage.m"
+      - "../../node_modules/react-native/Libraries/Image/RCTDisplayWeakRefreshable.m"
+      - "../../node_modules/react-native/Libraries/Image/RCTGIFImageDecoder.mm"
+      - "../../node_modules/react-native/Libraries/Image/RCTImageBlurUtils.m"
+      - "../../node_modules/react-native/Libraries/Image/RCTImageCache.m"
+      - "../../node_modules/react-native/Libraries/Image/RCTImageEditingManager.mm"
+      - "../../node_modules/react-native/Libraries/Image/RCTImageLoader.mm"
+      - "../../node_modules/react-native/Libraries/Image/RCTImagePlugins.mm"
+      - "../../node_modules/react-native/Libraries/Image/RCTImageShadowView.m"
+      - "../../node_modules/react-native/Libraries/Image/RCTImageStoreManager.mm"
+      - "../../node_modules/react-native/Libraries/Image/RCTImageURLLoaderWithAttribution.mm"
+      - "../../node_modules/react-native/Libraries/Image/RCTImageUtils.m"
+      - "../../node_modules/react-native/Libraries/Image/RCTImageView.mm"
+      - "../../node_modules/react-native/Libraries/Image/RCTImageViewManager.mm"
+      - "../../node_modules/react-native/Libraries/Image/RCTLocalAssetImageLoader.mm"
+      - "../../node_modules/react-native/Libraries/Image/RCTResizeMode.m"
+      - "../../node_modules/react-native/Libraries/Image/RCTUIImageViewAnimated.m"
     PROJECT_NAME: React-RCTImage
     SPECS:
       - React-RCTImage (0.63.2)
   React-RCTLinking:
     BUILD_SETTINGS_CHECKSUM:
       React-RCTLinking:
-        :debug: 54a9ed37b8cc964c51f1ea6ba802ae1e
-        :release: 54a9ed37b8cc964c51f1ea6ba802ae1e
+        :debug: 8c6319f41baa692b0b3b8b36f8ec99b8
+        :release: 8c6319f41baa692b0b3b8b36f8ec99b8
     CHECKSUM: 8122f221d395a63364b2c0078ce284214bd04575
     FILES:
-      - "../../../../react-native-lab/react-native/Libraries/LinkingIOS/RCTLinkingManager.mm"
-      - "../../../../react-native-lab/react-native/Libraries/LinkingIOS/RCTLinkingPlugins.mm"
+      - "../../node_modules/react-native/Libraries/LinkingIOS/RCTLinkingManager.mm"
+      - "../../node_modules/react-native/Libraries/LinkingIOS/RCTLinkingPlugins.mm"
     PROJECT_NAME: React-RCTLinking
     SPECS:
       - React-RCTLinking (0.63.2)
   React-RCTNetwork:
     BUILD_SETTINGS_CHECKSUM:
       React-RCTNetwork:
-        :debug: 4f75d21b53feb5de8313f5ef8c61b511
-        :release: 4f75d21b53feb5de8313f5ef8c61b511
+        :debug: 109a18ccfcf18fe0bb72beafca8de091
+        :release: 109a18ccfcf18fe0bb72beafca8de091
     CHECKSUM: 8f96c7b49ea6a0f28f98258f347b6ad218bc0830
     FILES:
-      - "../../../../react-native-lab/react-native/Libraries/Network/RCTDataRequestHandler.mm"
-      - "../../../../react-native-lab/react-native/Libraries/Network/RCTFileRequestHandler.mm"
-      - "../../../../react-native-lab/react-native/Libraries/Network/RCTHTTPRequestHandler.mm"
-      - "../../../../react-native-lab/react-native/Libraries/Network/RCTNetworking.mm"
-      - "../../../../react-native-lab/react-native/Libraries/Network/RCTNetworkPlugins.mm"
-      - "../../../../react-native-lab/react-native/Libraries/Network/RCTNetworkTask.mm"
+      - "../../node_modules/react-native/Libraries/Network/RCTDataRequestHandler.mm"
+      - "../../node_modules/react-native/Libraries/Network/RCTFileRequestHandler.mm"
+      - "../../node_modules/react-native/Libraries/Network/RCTHTTPRequestHandler.mm"
+      - "../../node_modules/react-native/Libraries/Network/RCTNetworking.mm"
+      - "../../node_modules/react-native/Libraries/Network/RCTNetworkPlugins.mm"
+      - "../../node_modules/react-native/Libraries/Network/RCTNetworkTask.mm"
     PROJECT_NAME: React-RCTNetwork
     SPECS:
       - React-RCTNetwork (0.63.2)
   React-RCTSettings:
     BUILD_SETTINGS_CHECKSUM:
       React-RCTSettings:
-        :debug: 2d465acd62f1fa2873daea28b453fc5d
-        :release: 2d465acd62f1fa2873daea28b453fc5d
+        :debug: f4b987859752f01dbed7410e94b5bdff
+        :release: f4b987859752f01dbed7410e94b5bdff
     CHECKSUM: 8a49622aff9c1925f5455fa340b6fe4853d64ab6
     FILES:
-      - "../../../../react-native-lab/react-native/Libraries/Settings/RCTSettingsManager.mm"
-      - "../../../../react-native-lab/react-native/Libraries/Settings/RCTSettingsPlugins.mm"
+      - "../../node_modules/react-native/Libraries/Settings/RCTSettingsManager.mm"
+      - "../../node_modules/react-native/Libraries/Settings/RCTSettingsPlugins.mm"
     PROJECT_NAME: React-RCTSettings
     SPECS:
       - React-RCTSettings (0.63.2)
   React-RCTText:
     BUILD_SETTINGS_CHECKSUM:
       React-RCTText:
-        :debug: 66b55c1b22ac244b683c35292e02ad52
-        :release: 66b55c1b22ac244b683c35292e02ad52
+        :debug: 00a611d6a5d77ffacc53777a036a197f
+        :release: 00a611d6a5d77ffacc53777a036a197f
     CHECKSUM: 1b6773e776e4b33f90468c20fe3b16ca3e224bb8
     FILES:
-      - "../../../../react-native-lab/react-native/Libraries/Text/BaseText/RCTBaseTextShadowView.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/BaseText/RCTBaseTextShadowView.m"
-      - "../../../../react-native-lab/react-native/Libraries/Text/BaseText/RCTBaseTextViewManager.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/BaseText/RCTBaseTextViewManager.m"
-      - "../../../../react-native-lab/react-native/Libraries/Text/RawText/RCTRawTextShadowView.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/RawText/RCTRawTextShadowView.m"
-      - "../../../../react-native-lab/react-native/Libraries/Text/RawText/RCTRawTextViewManager.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/RawText/RCTRawTextViewManager.m"
-      - "../../../../react-native-lab/react-native/Libraries/Text/RCTConvert+Text.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/RCTConvert+Text.m"
-      - "../../../../react-native-lab/react-native/Libraries/Text/RCTTextAttributes.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/RCTTextAttributes.m"
-      - "../../../../react-native-lab/react-native/Libraries/Text/RCTTextTransform.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/Text/NSTextStorage+FontScaling.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/Text/NSTextStorage+FontScaling.m"
-      - "../../../../react-native-lab/react-native/Libraries/Text/Text/RCTTextShadowView.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/Text/RCTTextShadowView.m"
-      - "../../../../react-native-lab/react-native/Libraries/Text/Text/RCTTextView.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/Text/RCTTextView.m"
-      - "../../../../react-native-lab/react-native/Libraries/Text/Text/RCTTextViewManager.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/Text/RCTTextViewManager.m"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/Multiline/RCTMultilineTextInputView.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/Multiline/RCTMultilineTextInputView.m"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/Multiline/RCTMultilineTextInputViewManager.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/Multiline/RCTMultilineTextInputViewManager.m"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/Multiline/RCTUITextView.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/Multiline/RCTUITextView.m"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/RCTBackedTextInputDelegate.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/RCTBackedTextInputDelegateAdapter.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/RCTBackedTextInputDelegateAdapter.m"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/RCTBackedTextInputViewProtocol.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/RCTBaseTextInputShadowView.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/RCTBaseTextInputShadowView.m"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/RCTBaseTextInputView.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/RCTBaseTextInputView.m"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/RCTBaseTextInputViewManager.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/RCTBaseTextInputViewManager.m"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/RCTInputAccessoryShadowView.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/RCTInputAccessoryShadowView.m"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/RCTInputAccessoryView.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/RCTInputAccessoryView.m"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/RCTInputAccessoryViewContent.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/RCTInputAccessoryViewContent.m"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/RCTInputAccessoryViewManager.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/RCTInputAccessoryViewManager.m"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/RCTTextSelection.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/RCTTextSelection.m"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/Singleline/RCTSinglelineTextInputView.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/Singleline/RCTSinglelineTextInputView.m"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/Singleline/RCTSinglelineTextInputViewManager.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/Singleline/RCTSinglelineTextInputViewManager.m"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/Singleline/RCTUITextField.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/TextInput/Singleline/RCTUITextField.m"
-      - "../../../../react-native-lab/react-native/Libraries/Text/VirtualText/RCTVirtualTextShadowView.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/VirtualText/RCTVirtualTextShadowView.m"
-      - "../../../../react-native-lab/react-native/Libraries/Text/VirtualText/RCTVirtualTextViewManager.h"
-      - "../../../../react-native-lab/react-native/Libraries/Text/VirtualText/RCTVirtualTextViewManager.m"
+      - "../../node_modules/react-native/Libraries/Text/BaseText/RCTBaseTextShadowView.h"
+      - "../../node_modules/react-native/Libraries/Text/BaseText/RCTBaseTextShadowView.m"
+      - "../../node_modules/react-native/Libraries/Text/BaseText/RCTBaseTextViewManager.h"
+      - "../../node_modules/react-native/Libraries/Text/BaseText/RCTBaseTextViewManager.m"
+      - "../../node_modules/react-native/Libraries/Text/RawText/RCTRawTextShadowView.h"
+      - "../../node_modules/react-native/Libraries/Text/RawText/RCTRawTextShadowView.m"
+      - "../../node_modules/react-native/Libraries/Text/RawText/RCTRawTextViewManager.h"
+      - "../../node_modules/react-native/Libraries/Text/RawText/RCTRawTextViewManager.m"
+      - "../../node_modules/react-native/Libraries/Text/RCTConvert+Text.h"
+      - "../../node_modules/react-native/Libraries/Text/RCTConvert+Text.m"
+      - "../../node_modules/react-native/Libraries/Text/RCTTextAttributes.h"
+      - "../../node_modules/react-native/Libraries/Text/RCTTextAttributes.m"
+      - "../../node_modules/react-native/Libraries/Text/RCTTextTransform.h"
+      - "../../node_modules/react-native/Libraries/Text/Text/NSTextStorage+FontScaling.h"
+      - "../../node_modules/react-native/Libraries/Text/Text/NSTextStorage+FontScaling.m"
+      - "../../node_modules/react-native/Libraries/Text/Text/RCTTextShadowView.h"
+      - "../../node_modules/react-native/Libraries/Text/Text/RCTTextShadowView.m"
+      - "../../node_modules/react-native/Libraries/Text/Text/RCTTextView.h"
+      - "../../node_modules/react-native/Libraries/Text/Text/RCTTextView.m"
+      - "../../node_modules/react-native/Libraries/Text/Text/RCTTextViewManager.h"
+      - "../../node_modules/react-native/Libraries/Text/Text/RCTTextViewManager.m"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/Multiline/RCTMultilineTextInputView.h"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/Multiline/RCTMultilineTextInputView.m"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/Multiline/RCTMultilineTextInputViewManager.h"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/Multiline/RCTMultilineTextInputViewManager.m"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/Multiline/RCTUITextView.h"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/Multiline/RCTUITextView.m"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/RCTBackedTextInputDelegate.h"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/RCTBackedTextInputDelegateAdapter.h"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/RCTBackedTextInputDelegateAdapter.m"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/RCTBackedTextInputViewProtocol.h"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/RCTBaseTextInputShadowView.h"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/RCTBaseTextInputShadowView.m"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/RCTBaseTextInputView.h"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/RCTBaseTextInputView.m"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/RCTBaseTextInputViewManager.h"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/RCTBaseTextInputViewManager.m"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/RCTInputAccessoryShadowView.h"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/RCTInputAccessoryShadowView.m"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/RCTInputAccessoryView.h"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/RCTInputAccessoryView.m"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/RCTInputAccessoryViewContent.h"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/RCTInputAccessoryViewContent.m"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/RCTInputAccessoryViewManager.h"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/RCTInputAccessoryViewManager.m"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/RCTTextSelection.h"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/RCTTextSelection.m"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/Singleline/RCTSinglelineTextInputView.h"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/Singleline/RCTSinglelineTextInputView.m"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/Singleline/RCTSinglelineTextInputViewManager.h"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/Singleline/RCTSinglelineTextInputViewManager.m"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/Singleline/RCTUITextField.h"
+      - "../../node_modules/react-native/Libraries/Text/TextInput/Singleline/RCTUITextField.m"
+      - "../../node_modules/react-native/Libraries/Text/VirtualText/RCTVirtualTextShadowView.h"
+      - "../../node_modules/react-native/Libraries/Text/VirtualText/RCTVirtualTextShadowView.m"
+      - "../../node_modules/react-native/Libraries/Text/VirtualText/RCTVirtualTextViewManager.h"
+      - "../../node_modules/react-native/Libraries/Text/VirtualText/RCTVirtualTextViewManager.m"
     PROJECT_NAME: React-RCTText
     SPECS:
       - React-RCTText (0.63.2)
   React-RCTVibration:
     BUILD_SETTINGS_CHECKSUM:
       React-RCTVibration:
-        :debug: 6e951c5bf56ed1ab0da6065638442ef8
-        :release: 6e951c5bf56ed1ab0da6065638442ef8
+        :debug: 770edccd4e12f43a22ca700f8f40efbe
+        :release: 770edccd4e12f43a22ca700f8f40efbe
     CHECKSUM: 4d2e726957f4087449739b595f107c0d4b6c2d2d
     FILES:
-      - "../../../../react-native-lab/react-native/Libraries/Vibration/RCTVibration.mm"
-      - "../../../../react-native-lab/react-native/Libraries/Vibration/RCTVibrationPlugins.mm"
+      - "../../node_modules/react-native/Libraries/Vibration/RCTVibration.mm"
+      - "../../node_modules/react-native/Libraries/Vibration/RCTVibrationPlugins.mm"
     PROJECT_NAME: React-RCTVibration
     SPECS:
       - React-RCTVibration (0.63.2)
   ReactCommon:
     BUILD_SETTINGS_CHECKSUM:
       ReactCommon:
-        :debug: 410a44dfc8533ee346c1d55141e4f9c6
-        :release: 410a44dfc8533ee346c1d55141e4f9c6
+        :debug: e2a4b995b252a75fd81fcd2a7ecbda8f
+        :release: e2a4b995b252a75fd81fcd2a7ecbda8f
     CHECKSUM: a0a1edbebcac5e91338371b72ffc66aa822792ce
     FILES:
-      - "../../../../react-native-lab/react-native/ReactCommon/turbomodule/core/LongLivedObject.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/turbomodule/core/LongLivedObject.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/turbomodule/core/platform/ios/RCTTurboModule.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/turbomodule/core/platform/ios/RCTTurboModule.mm"
-      - "../../../../react-native-lab/react-native/ReactCommon/turbomodule/core/platform/ios/RCTTurboModuleManager.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/turbomodule/core/platform/ios/RCTTurboModuleManager.mm"
-      - "../../../../react-native-lab/react-native/ReactCommon/turbomodule/core/TurboCxxModule.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/turbomodule/core/TurboCxxModule.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/turbomodule/core/TurboModule.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/turbomodule/core/TurboModule.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/turbomodule/core/TurboModuleBinding.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/turbomodule/core/TurboModuleBinding.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/turbomodule/core/TurboModuleUtils.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/turbomodule/core/TurboModuleUtils.h"
+      - "../../node_modules/react-native/ReactCommon/turbomodule/core/LongLivedObject.cpp"
+      - "../../node_modules/react-native/ReactCommon/turbomodule/core/LongLivedObject.h"
+      - "../../node_modules/react-native/ReactCommon/turbomodule/core/platform/ios/RCTTurboModule.h"
+      - "../../node_modules/react-native/ReactCommon/turbomodule/core/platform/ios/RCTTurboModule.mm"
+      - "../../node_modules/react-native/ReactCommon/turbomodule/core/platform/ios/RCTTurboModuleManager.h"
+      - "../../node_modules/react-native/ReactCommon/turbomodule/core/platform/ios/RCTTurboModuleManager.mm"
+      - "../../node_modules/react-native/ReactCommon/turbomodule/core/TurboCxxModule.cpp"
+      - "../../node_modules/react-native/ReactCommon/turbomodule/core/TurboCxxModule.h"
+      - "../../node_modules/react-native/ReactCommon/turbomodule/core/TurboModule.cpp"
+      - "../../node_modules/react-native/ReactCommon/turbomodule/core/TurboModule.h"
+      - "../../node_modules/react-native/ReactCommon/turbomodule/core/TurboModuleBinding.cpp"
+      - "../../node_modules/react-native/ReactCommon/turbomodule/core/TurboModuleBinding.h"
+      - "../../node_modules/react-native/ReactCommon/turbomodule/core/TurboModuleUtils.cpp"
+      - "../../node_modules/react-native/ReactCommon/turbomodule/core/TurboModuleUtils.h"
     PROJECT_NAME: ReactCommon
     SPECS:
       - ReactCommon/turbomodule/core (0.63.2)
@@ -2926,6 +3054,18 @@ CACHE_KEYS:
     PROJECT_NAME: UMCore
     SPECS:
       - UMCore (7.0.0)
+  UMFaceDetectorInterface:
+    BUILD_SETTINGS_CHECKSUM:
+      UMFaceDetectorInterface:
+        :debug: 43bdd4a72ca6d0785867448264086b5f
+        :release: 43bdd4a72ca6d0785867448264086b5f
+    CHECKSUM: 72beeead8c494612730939aaef58ebd38725dedb
+    FILES:
+      - "../../../../packages/unimodules-face-detector-interface/ios/UMFaceDetectorInterface/UMFaceDetectorManager.h"
+      - "../../../../packages/unimodules-face-detector-interface/ios/UMFaceDetectorInterface/UMFaceDetectorManagerProvider.h"
+    PROJECT_NAME: UMFaceDetectorInterface
+    SPECS:
+      - UMFaceDetectorInterface (5.4.0)
   UMFileSystemInterface:
     BUILD_SETTINGS_CHECKSUM:
       UMFileSystemInterface:
@@ -3040,40 +3180,40 @@ CACHE_KEYS:
   Yoga:
     BUILD_SETTINGS_CHECKSUM:
       Yoga:
-        :debug: 7b4d1558b74815e7bd578146ed495fa9
-        :release: 7b4d1558b74815e7bd578146ed495fa9
+        :debug: a5a70efcd12f661e5845efb0518f10e2
+        :release: a5a70efcd12f661e5845efb0518f10e2
     CHECKSUM: 7740b94929bbacbddda59bf115b5317e9a161598
     FILES:
-      - "../../../../react-native-lab/react-native/ReactCommon/yoga/yoga/BitUtils.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/yoga/yoga/CompactValue.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/yoga/yoga/event/event.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/yoga/yoga/event/event.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/yoga/yoga/internal/experiments-inl.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/yoga/yoga/internal/experiments.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/yoga/yoga/internal/experiments.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/yoga/yoga/log.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/yoga/yoga/log.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/yoga/yoga/Utils.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/yoga/yoga/Utils.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/yoga/yoga/YGConfig.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/yoga/yoga/YGConfig.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/yoga/yoga/YGEnums.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/yoga/yoga/YGEnums.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/yoga/yoga/YGFloatOptional.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/yoga/yoga/YGLayout.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/yoga/yoga/YGLayout.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/yoga/yoga/YGMacros.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/yoga/yoga/YGNode.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/yoga/yoga/YGNode.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/yoga/yoga/YGNodePrint.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/yoga/yoga/YGNodePrint.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/yoga/yoga/YGStyle.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/yoga/yoga/YGStyle.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/yoga/yoga/YGValue.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/yoga/yoga/YGValue.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/yoga/yoga/Yoga-internal.h"
-      - "../../../../react-native-lab/react-native/ReactCommon/yoga/yoga/Yoga.cpp"
-      - "../../../../react-native-lab/react-native/ReactCommon/yoga/yoga/Yoga.h"
+      - "../../node_modules/react-native/ReactCommon/yoga/yoga/BitUtils.h"
+      - "../../node_modules/react-native/ReactCommon/yoga/yoga/CompactValue.h"
+      - "../../node_modules/react-native/ReactCommon/yoga/yoga/event/event.cpp"
+      - "../../node_modules/react-native/ReactCommon/yoga/yoga/event/event.h"
+      - "../../node_modules/react-native/ReactCommon/yoga/yoga/internal/experiments-inl.h"
+      - "../../node_modules/react-native/ReactCommon/yoga/yoga/internal/experiments.cpp"
+      - "../../node_modules/react-native/ReactCommon/yoga/yoga/internal/experiments.h"
+      - "../../node_modules/react-native/ReactCommon/yoga/yoga/log.cpp"
+      - "../../node_modules/react-native/ReactCommon/yoga/yoga/log.h"
+      - "../../node_modules/react-native/ReactCommon/yoga/yoga/Utils.cpp"
+      - "../../node_modules/react-native/ReactCommon/yoga/yoga/Utils.h"
+      - "../../node_modules/react-native/ReactCommon/yoga/yoga/YGConfig.cpp"
+      - "../../node_modules/react-native/ReactCommon/yoga/yoga/YGConfig.h"
+      - "../../node_modules/react-native/ReactCommon/yoga/yoga/YGEnums.cpp"
+      - "../../node_modules/react-native/ReactCommon/yoga/yoga/YGEnums.h"
+      - "../../node_modules/react-native/ReactCommon/yoga/yoga/YGFloatOptional.h"
+      - "../../node_modules/react-native/ReactCommon/yoga/yoga/YGLayout.cpp"
+      - "../../node_modules/react-native/ReactCommon/yoga/yoga/YGLayout.h"
+      - "../../node_modules/react-native/ReactCommon/yoga/yoga/YGMacros.h"
+      - "../../node_modules/react-native/ReactCommon/yoga/yoga/YGNode.cpp"
+      - "../../node_modules/react-native/ReactCommon/yoga/yoga/YGNode.h"
+      - "../../node_modules/react-native/ReactCommon/yoga/yoga/YGNodePrint.cpp"
+      - "../../node_modules/react-native/ReactCommon/yoga/yoga/YGNodePrint.h"
+      - "../../node_modules/react-native/ReactCommon/yoga/yoga/YGStyle.cpp"
+      - "../../node_modules/react-native/ReactCommon/yoga/yoga/YGStyle.h"
+      - "../../node_modules/react-native/ReactCommon/yoga/yoga/YGValue.cpp"
+      - "../../node_modules/react-native/ReactCommon/yoga/yoga/YGValue.h"
+      - "../../node_modules/react-native/ReactCommon/yoga/yoga/Yoga-internal.h"
+      - "../../node_modules/react-native/ReactCommon/yoga/yoga/Yoga.cpp"
+      - "../../node_modules/react-native/ReactCommon/yoga/yoga/Yoga.h"
     PROJECT_NAME: Yoga
     SPECS:
       - Yoga (1.14.0)

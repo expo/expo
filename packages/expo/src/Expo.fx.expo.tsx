@@ -52,7 +52,7 @@ if (StyleSheet.setStyleAttributePreprocessor) {
 installWebGeolocationPolyfill();
 
 // install globals
-declare var module: any;
+declare let module: any;
 
 if (module && module.exports) {
   if (global) {

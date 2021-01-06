@@ -1,1 +1,1 @@
-../../../GoogleUtilities/GoogleUtilities/Environment/Public/GULSecureCoding.h
+../../../GoogleUtilities/GoogleUtilities/Environment/Private/GULSecureCoding.h

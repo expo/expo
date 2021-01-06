@@ -16,8 +16,8 @@
 				146855F0F3B5ADF38213DFFA1E4C67B2 /* PBXTargetDependency */,
 				9FB72E4CDCD5AE58DBE3DD4857A9D212 /* PBXTargetDependency */,
 				87555E9B03D38F2E91A0C4DC692960A2 /* PBXTargetDependency */,
-				6CC2056AFDB548039B8B5F400A892245 /* PBXTargetDependency */,
-				32F996E6497EFE3985652E23F2821078 /* PBXTargetDependency */,
+				429D4865CC0DEFF9B1E1050783DE9B32 /* PBXTargetDependency */,
+				37CD136865F7E72DC13DC143ECB9BE20 /* PBXTargetDependency */,
 			);
 			name = FirebaseAnalytics;
 		};
@@ -45,14 +45,14 @@
 			remoteGlobalIDString = 828A845A4F63A824ED62A82D61941B85;
 			remoteInfo = FirebaseInstanceID;
 		};
-		C684C4E535D7DE6ACF7C3D60BEFC1480 /* PBXContainerItemProxy */ = {
+		B5F5C21408A33189274B8881F7F03174 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7550AC1E6CED2CF53E5FD2966E9FBAFD /* GoogleUtilities.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 80B861CBFC18436AFD9A3703F00CEEC4;
 			remoteInfo = GoogleUtilities;
 		};
-		D8FA70DFBEF6B08A651BE7FD2E32BA69 /* PBXContainerItemProxy */ = {
+		E632947BEE5B134AE6B13FFD246E17BE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A6484606E929A3565DBA17DE6C3ED22F /* nanopb.xcodeproj */;
 			proxyType = 1;
@@ -189,15 +189,15 @@
 			name = FirebaseCore;
 			targetProxy = 6827952C95E2BAB1AC8916DCAB332B38 /* PBXContainerItemProxy */;
 		};
-		32F996E6497EFE3985652E23F2821078 /* PBXTargetDependency */ = {
+		37CD136865F7E72DC13DC143ECB9BE20 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = nanopb;
-			targetProxy = D8FA70DFBEF6B08A651BE7FD2E32BA69 /* PBXContainerItemProxy */;
+			targetProxy = E632947BEE5B134AE6B13FFD246E17BE /* PBXContainerItemProxy */;
 		};
-		6CC2056AFDB548039B8B5F400A892245 /* PBXTargetDependency */ = {
+		429D4865CC0DEFF9B1E1050783DE9B32 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = GoogleUtilities;
-			targetProxy = C684C4E535D7DE6ACF7C3D60BEFC1480 /* PBXContainerItemProxy */;
+			targetProxy = B5F5C21408A33189274B8881F7F03174 /* PBXContainerItemProxy */;
 		};
 		87555E9B03D38F2E91A0C4DC692960A2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

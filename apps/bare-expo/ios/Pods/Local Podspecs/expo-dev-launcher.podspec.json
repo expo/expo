@@ -1,6 +1,6 @@
 {
   "name": "expo-dev-launcher",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "summary": "Pre-release version of the Expo development launcher package for testing.",
   "description": "Pre-release version of the Expo development launcher package for testing.",
   "license": "MIT",
@@ -17,6 +17,7 @@
   "source_files": "ios/**/*.{h,m,swift,cpp}",
   "preserve_paths": "ios/**/*.{h,m,swift}",
   "requires_arc": true,
+  "header_dir": "EXDevLauncher",
   "pod_target_xcconfig": {
     "DEFINES_MODULE": "YES"
   },
@@ -24,7 +25,7 @@
     "React": [
 
     ],
-    "EXDevMenuInterface": [
+    "expo-dev-menu-interface": [
 
     ]
   },

@@ -1,1 +1,1 @@
-../../../../../../../../react-native-lab/react-native/ReactCommon/jsi/JSCRuntime.h
+../../../../../../node_modules/react-native/ReactCommon/jsi/JSCRuntime.h

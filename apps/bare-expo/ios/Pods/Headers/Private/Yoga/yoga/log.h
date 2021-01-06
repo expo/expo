@@ -1,1 +1,1 @@
-../../../../../../../../react-native-lab/react-native/ReactCommon/yoga/yoga/log.h
+../../../../../../node_modules/react-native/ReactCommon/yoga/yoga/log.h

@@ -15,7 +15,7 @@
 #import "EXDevLauncherManifestParser.h"
 #import "EXDevLauncherLoadingView.h"
 
-#import <expo_dev_launcher-Swift.h>
+#import <EXDevLauncher-Swift.h>
 
 // Uncomment the below and set it to a React Native bundler URL to develop the launcher JS
 //#define DEV_LAUNCHER_URL "http://10.0.0.176:8090/index.bundle?platform=ios&dev=true&minify=false"
@@ -109,8 +109,9 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 - (void)navigateToLauncher {
   [_appBridge invalidate];
 
-
-  [self _applyUserInterfaceStyle:UIUserInterfaceStyleUnspecified];
+  if (@available(iOS 12, *)) {
+    [self _applyUserInterfaceStyle:UIUserInterfaceStyleUnspecified];
+  }
   
   _launcherBridge = [[EXDevLauncherRCTBridge alloc] initWithDelegate:self launchOptions:_launchOptions];
 
@@ -135,18 +136,16 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 }
 
 - (BOOL)onDeepLink:(NSURL *)url options:(NSDictionary *)options {
-  if (![url.host isEqual:@"expo-development-client"]) {
+  if (![EXDevLauncherURLHelper isDevLauncherURL:url]) {
     return [self _handleExternalDeepLink:url options:options];
   }
   
-  NSURLComponents *urlComponets = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:NO];
-  for (NSURLQueryItem *parameter in urlComponets.queryItems) {
-    if ([parameter.name isEqual:@"url"]) {
-      [self loadApp:[parameter.value stringByRemovingPercentEncoding] onSuccess:nil onError:^(NSError *error) {
-        NSLog(error.description);
-      }];
-      return true;
-    }
+  NSURL *appUrl = [EXDevLauncherURLHelper getAppURLFromDevLauncherURL:url];
+  if (appUrl) {
+    [self loadApp:appUrl onSuccess:nil onError:^(NSError *error) {
+      NSLog(error.description);
+    }];
+    return true;
   }
   
   [self navigateToLauncher];
@@ -163,12 +162,9 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   return true;
 }
 
-- (void)loadApp:(NSString *)expoUrl onSuccess:(void (^)())onSuccess onError:(void (^)(NSError *error))onError
+- (void)loadApp:(NSURL *)expoUrl onSuccess:(void (^)())onSuccess onError:(void (^)(NSError *error))onError
 {
-  NSString *sanitizedUrl = [expoUrl stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-  NSURLComponents *urlComponets = [NSURLComponents componentsWithURL:[NSURL URLWithString:sanitizedUrl] resolvingAgainstBaseURL:YES];
-  urlComponets.scheme = @"http";
-  NSURL *url = urlComponets.URL;
+  NSURL *url = [EXDevLauncherURLHelper changeURLScheme:expoUrl to:@"http"];
   
   if (@available(iOS 14, *)) {
     // Try to detect if we're trying to open a local network URL so we can preemptively show the
@@ -190,13 +186,13 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   [manifestParser tryToParseManifest:^(EXDevLauncherManifest * _Nullable manifest) {
     NSURL *bundleUrl = [NSURL URLWithString:manifest.bundleUrl];
     
-    [_recentlyOpenedAppsRegistry appWasOpened:sanitizedUrl name:manifest.name];
+    [_recentlyOpenedAppsRegistry appWasOpened:[expoUrl absoluteString] name:manifest.name];
     [self _initApp:bundleUrl manifest:manifest];
     if (onSuccess) {
       onSuccess();
     }
   } onInvalidManifestURL:^{
-    [_recentlyOpenedAppsRegistry appWasOpened:sanitizedUrl name:nil];
+    [_recentlyOpenedAppsRegistry appWasOpened:[expoUrl absoluteString] name:nil];
     if ([url.path isEqual:@"/"] || [url.path isEqual:@""]) {
       [self _initApp:[NSURL URLWithString:@"index.bundle?platform=ios&dev=true&minify=false" relativeToURL:url] manifest:nil];
     } else {
@@ -217,8 +213,9 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   dispatch_async(dispatch_get_main_queue(), ^{
     self.sourceUrl = bundleUrl;
     
-    [self _applyUserInterfaceStyle:manifest.userInterfaceStyle];
     if (@available(iOS 12, *)) {
+      [self _applyUserInterfaceStyle:manifest.userInterfaceStyle];
+      
       // Fix for the community react-native-appearance.
       // RNC appearance checks the global trait collection and doesn't have another way to override the user interface.
       // So we swap `currentTraitCollection` with one from the root view controller.
@@ -279,18 +276,13 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
                                                     }];
 }
 
-- (void)_applyUserInterfaceStyle:(UIUserInterfaceStyle)userInterfaceStyle
+- (void)_applyUserInterfaceStyle:(UIUserInterfaceStyle)userInterfaceStyle API_AVAILABLE(ios(12.0))
 {
   NSString *colorSchema = nil;
-  if (@available(iOS 12, *)) {
-    if (userInterfaceStyle == UIUserInterfaceStyleDark) {
-      colorSchema = @"dark";
-    } else if (userInterfaceStyle == UIUserInterfaceStyleLight) {
-      colorSchema = @"light";
-    }
-    
-    // change system window appearance
-    _window.overrideUserInterfaceStyle = userInterfaceStyle;
+  if (userInterfaceStyle == UIUserInterfaceStyleDark) {
+    colorSchema = @"dark";
+  } else if (userInterfaceStyle == UIUserInterfaceStyleLight) {
+    colorSchema = @"light";
   }
   
   // change RN appearance

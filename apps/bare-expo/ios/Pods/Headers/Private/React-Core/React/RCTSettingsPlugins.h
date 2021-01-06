@@ -1,1 +1,1 @@
-../../../../../../../../react-native-lab/react-native/Libraries/Settings/RCTSettingsPlugins.h
+../../../../../../node_modules/react-native/Libraries/Settings/RCTSettingsPlugins.h

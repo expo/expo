@@ -87,7 +87,7 @@
   "expo-application": "~2.4.1",
   "expo-battery": "~3.1.0",
   "expo-cellular": "~2.4.0",
-  "expo-device": "~2.4.0",
+  "expo-device": "~3.0.0",
   "expo-network": "~2.4.0",
   "expo-store-review": "~2.3.0",
   "expo-updates": "~0.5.0-rc.0",

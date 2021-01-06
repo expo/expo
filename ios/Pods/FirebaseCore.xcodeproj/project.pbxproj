@@ -51,14 +51,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		476D881DF8C63A5502BEF84B749A5583 /* PBXContainerItemProxy */ = {
+		204C3418C8C7D851F30ABEFDCEEBE064 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0BF32456CCE283898F560016D49D4B30 /* FirebaseCoreDiagnostics.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 0CE453D8DBD3396B4C74B9ACD7A09387;
 			remoteInfo = FirebaseCoreDiagnostics;
 		};
-		4D7E9801D86A0FF82A4EC39E99B5599A /* PBXContainerItemProxy */ = {
+		CEC99C4F26A7CB1806524A95BB0FDBC8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 6D6217D2622ABE4D22275AC28571B3CB /* GoogleUtilities.xcodeproj */;
 			proxyType = 1;
@@ -278,9 +278,9 @@
 			buildRules = (
 			);
 			dependencies = (
-				270339846FEA5EBDAFBC7AA49608D334 /* PBXTargetDependency */,
+				1377FC26D581972C3D7AFCEB2B8C75A1 /* PBXTargetDependency */,
 				957BBAC1338989B9EE1BD2918D16BD0A /* PBXTargetDependency */,
-				89FDE99EA7CD793001C812E36FCBAC76 /* PBXTargetDependency */,
+				BCBC6FE7C6EE60D6305B0A76081BE71D /* PBXTargetDependency */,
 			);
 			name = FirebaseCore;
 			productName = FirebaseCore;
@@ -353,20 +353,20 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		270339846FEA5EBDAFBC7AA49608D334 /* PBXTargetDependency */ = {
+		1377FC26D581972C3D7AFCEB2B8C75A1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = FirebaseCoreDiagnostics;
-			targetProxy = 476D881DF8C63A5502BEF84B749A5583 /* PBXContainerItemProxy */;
-		};
-		89FDE99EA7CD793001C812E36FCBAC76 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = GoogleUtilities;
-			targetProxy = 4D7E9801D86A0FF82A4EC39E99B5599A /* PBXContainerItemProxy */;
+			targetProxy = 204C3418C8C7D851F30ABEFDCEEBE064 /* PBXContainerItemProxy */;
 		};
 		957BBAC1338989B9EE1BD2918D16BD0A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = FirebaseCoreDiagnosticsInterop;
 			targetProxy = FE3931F33EFA4C51039F248938149B88 /* PBXContainerItemProxy */;
+		};
+		BCBC6FE7C6EE60D6305B0A76081BE71D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = GoogleUtilities;
+			targetProxy = CEC99C4F26A7CB1806524A95BB0FDBC8 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

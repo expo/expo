@@ -4,11 +4,19 @@
 
 ### 🛠 Breaking changes
 
-- Dropped support for iOS 10.0 ([#11344](https://github.com/expo/expo/pull/11344) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+## 0.1.2 — 2020-12-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.1 — 2020-12-22
+
+### 🛠 Breaking changes
+
+- Dropped support for iOS 10.0 ([#11344](https://github.com/expo/expo/pull/11344) by [@tsapeta](https://github.com/tsapeta))
 
 ## 0.1.0 — 2020-12-14
 

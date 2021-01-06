@@ -1,1 +1,1 @@
-../../../../../../../../react-native-lab/react-native/Libraries/NativeAnimation/Nodes/RCTInterpolationAnimatedNode.h
+../../../../../../node_modules/react-native/Libraries/NativeAnimation/Nodes/RCTInterpolationAnimatedNode.h

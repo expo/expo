@@ -311,7 +311,11 @@ Note that iOS will download your AASA when your app is first installed and when 
 
 #### Expo configuration
 
-After deploying your AASA, you must also configure your app to use your associated domain. First, you need to add the `associatedDomains` [configuration](../workflow/configuration.md#ios) to your `app.json` (make sure to follow [Apple's specified format](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_associated-domains)). Second, you need to edit your App ID on the Apple developer portal and enable the "Associated Domains" application service. To do so go in the App IDs section and click on your App ID. Select Edit, check the Associated Domains checkbox and click Done. You will also need to regenerate your provisioning profile after adding the service to the App ID. This can be done by running `expo build:ios --clear-provisioning-profile` inside of your app directory. Next time you build your app, it will prompt you to create a new one.
+After deploying your AASA, you must also configure your app to use your associated domain:
+
+1. Add the `associatedDomains` [configuration](/versions/latest/config/app/#associateddomains) to your `app.json`, and make sure to follow [Apple's specified format](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_associated-domains). Make sure _not_ to include the protocol (`https`) in your URL (this is a common mistake, and will result in your universal links not working).
+
+2. Edit your App ID on the Apple developer portal and enable the "Associated Domains" application service. Go into the App IDs section and click on your App ID. Select Edit, check the Associated Domains checkbox and click Done. You will also need to regenerate your provisioning profile _after_ adding the service to the App ID. This can be done by running `expo build:ios --clear-provisioning-profile` inside of your app directory. Next time you build your app, it will prompt you to create a new one.
 
 At this point, opening a link on your mobile device should now open your app! If it doesn't, re-check the previous steps to ensure that your AASA is valid, the path is specified in the AASA, and you have correctly configured your App ID in the Apple developer portal. Once you've got your app opening, move to the [Handling links into your app](#handling-links-into-your-app) section for details on how to handle the inbound link and show the user the content they requested.
 

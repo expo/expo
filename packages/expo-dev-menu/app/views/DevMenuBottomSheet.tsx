@@ -1,5 +1,6 @@
-import { createStackNavigator } from '@react-navigation/stack';
-import * as React from 'react';
+import { useIsFocused } from '@react-navigation/native';
+import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
+import React, { useEffect } from 'react';
 import { Dimensions, Platform, View, LayoutChangeEvent, StyleSheet } from 'react-native';
 import {
   PanGestureHandler,
@@ -8,6 +9,7 @@ import {
 } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 
+import LayoutRuler from '../components/LayoutRuler';
 import DevMenuScreen from './DevMenuScreen';
 
 const Stack = createStackNavigator();
@@ -138,9 +140,6 @@ const {
   decay,
   Clock,
   lessThan,
-  call,
-  lessOrEq,
-  neq,
 } = Animated;
 
 function runDecay(
@@ -252,6 +251,7 @@ export default class BottomSheetBehavior extends React.Component<Props, State> {
   private clampingValue: Animated.Value<number> = new Value(0);
   private screenIndex: Animated.Value<number> = new Value(0);
   private screens = {};
+  private savedScreensHeight = {};
 
   constructor(props: Props) {
     super(props);
@@ -541,7 +541,11 @@ export default class BottomSheetBehavior extends React.Component<Props, State> {
         ],
 
         // Node evaluated on non-matching screens
-        [limitedVal]
+        //
+        [
+          set(diffPres, Animated.min(limitedVal, masterOffseted)),
+          set(rev, Animated.min(limitedVal, masterOffseted)),
+        ]
       ),
     ]);
   }
@@ -562,20 +566,18 @@ export default class BottomSheetBehavior extends React.Component<Props, State> {
     },
   }: LayoutChangeEvent) => requestAnimationFrame(() => this.height.setValue(height));
 
-  private handleLayoutContent = ({
-    nativeEvent: {
-      layout: { height },
-    },
-  }: LayoutChangeEvent) => this.state.heightOfContent.setValue(height - this.state.initSnap);
+  private handleContentHeightChange = (height: number) => {
+    this.state.heightOfContent.setValue(height - this.state.initSnap);
+  };
 
   static renumber = (str: string) => (Number(str.split('%')[0]) * screenHeight) / 100;
 
   static getDerivedStateFromProps(props: Props, state: State | undefined): State {
     let snapPoints;
-    const sortedPropsSnapPoints: Array<{
+    const sortedPropsSnapPoints: {
       val: number;
       ind: number;
-    }> = props.snapPoints
+    }[] = props.snapPoints
       .map((s: number | string, i: number): {
         val: number;
         ind: number;
@@ -631,13 +633,43 @@ export default class BottomSheetBehavior extends React.Component<Props, State> {
         {props => {
           this.navigation = props.navigation;
 
+          // Not always screens are unmounted.
+          // So we need to reset the state of the bottom sheet manually.
+          const isFocused = useIsFocused();
+
+          useEffect(() => {
+            if (!isFocused) {
+              return;
+            }
+
+            if (this.savedScreensHeight[screen.name]) {
+              this.handleContentHeightChange(this.savedScreensHeight[screen.name]);
+            }
+
+            const screenIndex = this.getCurrentScreenIndex();
+            this.screenIndex.setValue(screenIndex);
+          }, [isFocused]);
+
           return (
             <Animated.View
               style={{
-                transform: [{ translateY: this.screens[screen.name].y as any }],
+                transform: [
+                  {
+                    translateY: this.screens[screen.name].y as any,
+                  },
+                ],
               }}
-              onLayout={this.handleLayoutContent}>
-              <DevMenuScreen ScreenComponent={ScreenComponent} {...props} />
+              onLayout={event => {
+                const height = event.nativeEvent.layout.height;
+                if (height === 0) {
+                  return;
+                }
+
+                // We saved screen heigh to apply it when we come back to the same screen later.
+                this.savedScreensHeight[screen.name] = height;
+                this.handleContentHeightChange(height);
+              }}>
+              <DevMenuScreen ScreenComponent={ScreenComponent} {...props} {...screen.props} />
             </Animated.View>
           );
         }}
@@ -674,7 +706,10 @@ export default class BottomSheetBehavior extends React.Component<Props, State> {
                   <View style={styles.fullscreenView}>
                     <Stack.Navigator
                       initialRouteName={this.props.screens[0].name}
-                      headerMode="float">
+                      headerMode="float"
+                      screenOptions={{
+                        ...TransitionPresets.SlideFromRightIOS,
+                      }}>
                       {this.props.screens.map(this.renderScreen)}
                     </Stack.Navigator>
                     {this.props.children}

@@ -27,13 +27,15 @@ UM_EXPORT_MODULE(ExpoUpdates);
 {
   if (!_updatesService.isStarted) {
     return @{
-      @"isEnabled": @(NO)
+      @"isEnabled": @(NO),
+      @"isMissingRuntimeVersion": @(_updatesService.config.isMissingRuntimeVersion)
     };
   }
   EXUpdatesUpdate *launchedUpdate = _updatesService.launchedUpdate;
   if (!launchedUpdate) {
     return @{
-      @"isEnabled": @(NO)
+      @"isEnabled": @(NO),
+      @"isMissingRuntimeVersion": @(_updatesService.config.isMissingRuntimeVersion)
     };
   } else {
     return @{
@@ -43,7 +45,8 @@ UM_EXPORT_MODULE(ExpoUpdates);
       @"manifest": launchedUpdate.rawManifest ?: @{},
       @"releaseChannel": _updatesService.config.releaseChannel,
       @"localAssets": _updatesService.assetFilesMap ?: @{},
-      @"isEmergencyLaunch": @(_updatesService.isEmergencyLaunch)
+      @"isEmergencyLaunch": @(_updatesService.isEmergencyLaunch),
+      @"isMissingRuntimeVersion": @(_updatesService.config.isMissingRuntimeVersion)
     };
   }
   
@@ -79,7 +82,6 @@ UM_EXPORT_METHOD_AS(checkForUpdateAsync,
   EXUpdatesFileDownloader *fileDownloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:_updatesService.config];
   [fileDownloader downloadManifestFromURL:_updatesService.config.updateUrl
                              withDatabase:_updatesService.database
-                           cacheDirectory:_updatesService.directory
                              successBlock:^(EXUpdatesUpdate *update) {
     EXUpdatesUpdate *launchedUpdate = self->_updatesService.launchedUpdate;
     id<EXUpdatesSelectionPolicy> selectionPolicy = self->_updatesService.selectionPolicy;

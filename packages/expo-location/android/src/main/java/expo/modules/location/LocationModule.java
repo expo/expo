@@ -15,6 +15,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 
@@ -517,7 +518,8 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
    * Checks if the background location permission is granted by the user.
    */
   private boolean isMissingBackgroundPermissions() {
-    return mPermissionsManager == null || !mPermissionsManager.hasGrantedPermissions(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+    return mPermissionsManager == null ||
+        (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !mPermissionsManager.hasGrantedPermissions(Manifest.permission.ACCESS_BACKGROUND_LOCATION));
   }
 
   /**

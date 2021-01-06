@@ -15,12 +15,8 @@
  */
 
 #import <Foundation/Foundation.h>
-#import <GoogleUtilities/GULAppDelegateSwizzler.h>
-#import <GoogleUtilities/GULMutableDictionary.h>
-
-#if ((TARGET_OS_IOS || TARGET_OS_TV) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= 130000))
-#define UISCENE_SUPPORTED 1
-#endif
+#import "GoogleUtilities/AppDelegateSwizzler/Private/GULAppDelegateSwizzler.h"
+#import "GoogleUtilities/Network/Private/GULMutableDictionary.h"
 
 @class GULApplication;
 
@@ -53,17 +49,6 @@ NS_ASSUME_NONNULL_BEGIN
  *  @return The original app delegate instance that was proxied.
  */
 + (id<GULApplicationDelegate>)originalDelegate;
-
-#if UISCENE_SUPPORTED
-
-/** ISA Swizzles the given appDelegate as the original app delegate would be.
- *
- *  @param scene The scene whose delegate needs to be isa swizzled. This should conform to the
- *      scene delegate protocol.
- */
-+ (void)proxySceneDelegateIfNeeded:(UIScene *)scene API_AVAILABLE(ios(13.0), tvos(13.0));
-
-#endif  // UISCENE_SUPPORTED
 
 @end
 

@@ -1,1 +1,1 @@
-../../../../../../../../react-native-lab/react-native/React/Base/Surface/RCTSurfaceRootShadowView.h
+../../../../../../node_modules/react-native/React/Base/Surface/RCTSurfaceRootShadowView.h

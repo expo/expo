@@ -31,10 +31,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 /** Returns YES if the uploader can make an upload attempt, NO otherwise.
  *
+ * @param target The target being checked.
  * @param conditions The conditions that the upload attempt is likely to occur under.
  * @return YES if the uploader can make an upload attempt, NO otherwise.
  */
-- (BOOL)readyToUploadWithConditions:(GDTCORUploadConditions)conditions;
+- (BOOL)readyToUploadTarget:(GDTCORTarget)target conditions:(GDTCORUploadConditions)conditions;
 
 /** Uploads events to the backend using this specific backend's chosen format.
  *

@@ -32,7 +32,7 @@ const DIR_MAPPING = {
   'build-reference': 'Reference',
   submit: 'EAS Submit',
   accounts: 'Expo Accounts',
-  client: 'Development Clients',
+  clients: 'Development Clients',
 };
 
 const processUrl = path => {
@@ -130,7 +130,7 @@ const startingDirectories = ['introduction', 'get-started', 'tutorial', 'next-st
 let previewDirectories, easDirectories;
 if (isEasReleased) {
   easDirectories = ['eas', 'build', 'app-signing', 'build-reference', 'submit'];
-  previewDirectories = ['preview', 'client'];
+  previewDirectories = ['preview', 'clients'];
 } else {
   easDirectories = [];
   previewDirectories = [
@@ -140,7 +140,7 @@ if (isEasReleased) {
     'app-signing',
     'build-reference',
     'submit',
-    'client',
+    'clients',
   ];
 }
 

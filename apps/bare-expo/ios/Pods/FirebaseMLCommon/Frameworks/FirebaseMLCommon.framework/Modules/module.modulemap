@@ -1,0 +1,12 @@
+framework module FirebaseMLCommon {
+  umbrella header "FirebaseMLCommon.h"
+  export *
+  module * { export * }
+  link "c++"
+  link "z"
+  link framework "CoreFoundation"
+  link framework "Foundation"
+  link framework "QuartzCore"
+  link framework "Security"
+  link framework "SystemConfiguration"
+}

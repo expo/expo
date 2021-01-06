@@ -1,1 +1,1 @@
-../../../../../../../../react-native-lab/react-native/React/Base/RCTBridgeDelegate.h
+../../../../../../node_modules/react-native/React/Base/RCTBridgeDelegate.h

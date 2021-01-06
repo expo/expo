@@ -6,12 +6,12 @@ on:
     branches: [master, 'sdk-*']
     paths:
       - .github/workflows/expotools.yml
-      - tools/expotools/**
+      - tools/**
   pull_request:
     branches: [master]
     paths:
       - .github/workflows/expotools.yml
-      - tools/expotools/**
+      - tools/**
 
 jobs:
   build:
@@ -24,10 +24,10 @@ jobs:
       - uses: actions/cache@v1
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('tools/expotools/yarn.lock') }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('tools/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: yarn install --ignore-scripts --frozen-lockfile
-        working-directory: tools/expotools
+        working-directory: tools
       - run: yarn tsc
-        working-directory: tools/expotools
+        working-directory: tools

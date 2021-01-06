@@ -25,19 +25,19 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		4417D09BCA7794930808E5D02B1B778B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8D089FF9D6EA9507F9F204CFAE372317 /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
 		B727089DC7CED2A2BFA033AD4EBC3E0E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0202F16D9BF6CB3D361825B358C03E54 /* Google-Mobile-Ads-SDK.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 662B519EDA759B92F78065D8C998C86E;
 			remoteInfo = "Google-Mobile-Ads-SDK";
-		};
-		C39497FAF04A4BA1B47F299EBB43BCE1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8D089FF9D6EA9507F9F204CFAE372317 /* UMCore.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
-			remoteInfo = UMCore;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -187,7 +187,7 @@
 			);
 			dependencies = (
 				78ACB25611E47F18E1CB13BC853F2CCE /* PBXTargetDependency */,
-				3083D33D6813835628AEB5CB2614417F /* PBXTargetDependency */,
+				3B335ED1F662F3FFED39F55FF3483351 /* PBXTargetDependency */,
 			);
 			name = EXAdsAdMob;
 			productName = EXAdsAdMob;
@@ -248,10 +248,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		3083D33D6813835628AEB5CB2614417F /* PBXTargetDependency */ = {
+		3B335ED1F662F3FFED39F55FF3483351 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = C39497FAF04A4BA1B47F299EBB43BCE1 /* PBXContainerItemProxy */;
+			targetProxy = 4417D09BCA7794930808E5D02B1B778B /* PBXContainerItemProxy */;
 		};
 		78ACB25611E47F18E1CB13BC853F2CCE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

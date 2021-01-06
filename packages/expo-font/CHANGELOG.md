@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - Remove Expo.AppLoading reference in error. ([#11204](https://github.com/expo/expo/pull/11204) by [@brentvatne](https://github.com/brentvatne))
+- Removed `fbjs` dependency ([#11396](https://github.com/expo/expo/pull/11396) by [@cruzach](https://github.com/cruzach))
 
 ## 8.4.0 — 2020-11-17
 
