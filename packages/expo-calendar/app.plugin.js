@@ -3,7 +3,7 @@ const { createRunOncePlugin, withPlugins, AndroidConfig } = require('@expo/confi
 const withCalendar = (
   config,
   // Should be able to be used without any parameters for auto configuration via expo-cli.
-  { calendarPermission } = {}
+  { calendarPermission, remindersPermission } = {}
 ) => {
   if (!config.ios) config.ios = {};
   if (!config.ios.infoPlist) config.ios.infoPlist = {};
@@ -11,6 +11,10 @@ const withCalendar = (
     calendarPermission ||
     config.ios.infoPlist.NSCalendarsUsageDescription ||
     'Allow $(PRODUCT_NAME) to access your calendar';
+  config.ios.infoPlist.NSRemindersUsageDescription =
+    remindersPermission ||
+    config.ios.infoPlist.NSRemindersUsageDescription ||
+    'Allow $(PRODUCT_NAME) to access your reminders';
 
   return withPlugins(config, [
     [
