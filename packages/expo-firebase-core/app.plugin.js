@@ -1,5 +1,8 @@
+const pkg = require('./package.json');
 const { withDangerousMod, createRunOncePlugin, IOSConfig } = require('@expo/config-plugins');
 const fs = require('fs-extra');
+
+const methodInvocationBlock = `[FIRApp configure];`;
 
 const withFirebaseAppDelegate = config => {
   return withDangerousMod(config, [
@@ -39,7 +42,4 @@ const withFirebaseAppDelegate = config => {
   ]);
 };
 
-const methodInvocationBlock = `[FIRApp configure];`;
-
-const pkg = require('./package.json');
 module.exports = createRunOncePlugin(withFirebaseAppDelegate, pkg.name, pkg.version);

@@ -1,9 +1,14 @@
+const pkg = require('./package.json');
 const {
   createRunOncePlugin,
   withAndroidManifest,
   withPlugins,
   AndroidConfig,
 } = require('@expo/config-plugins');
+
+const CAMERA_USAGE = 'Allow $(PRODUCT_NAME) to access your camera';
+const MICROPHONE_USAGE = 'Allow $(PRODUCT_NAME) to access your microphone';
+const READ_PHOTOS_USAGE = 'Allow $(PRODUCT_NAME) to access your photos';
 
 const withImagePickerManifestActivity = config => {
   // This plugin has no ability to remove the activity that it adds.
@@ -32,22 +37,16 @@ const withImagePicker = (
   config,
   // Should be able to be used without any parameters for auto configuration via expo-cli.
 
-  { photoLibraryPermission, cameraPermission, microphonePermission } = {}
+  { photosPermission, cameraPermission, microphonePermission } = {}
 ) => {
   if (!config.ios) config.ios = {};
   if (!config.ios.infoPlist) config.ios.infoPlist = {};
   config.ios.infoPlist.NSPhotoLibraryUsageDescription =
-    photoLibraryPermission ||
-    config.ios.infoPlist.NSPhotoLibraryUsageDescription ||
-    'Allow $(PRODUCT_NAME) to access your photo library';
+    photosPermission || config.ios.infoPlist.NSPhotoLibraryUsageDescription || READ_PHOTOS_USAGE;
   config.ios.infoPlist.NSCameraUsageDescription =
-    cameraPermission ||
-    config.ios.infoPlist.NSCameraUsageDescription ||
-    'Allow $(PRODUCT_NAME) to access your camera';
+    cameraPermission || config.ios.infoPlist.NSCameraUsageDescription || CAMERA_USAGE;
   config.ios.infoPlist.NSMicrophoneUsageDescription =
-    microphonePermission ||
-    config.ios.infoPlist.NSMicrophoneUsageDescription ||
-    'Allow $(PRODUCT_NAME) to access your microphone';
+    microphonePermission || config.ios.infoPlist.NSMicrophoneUsageDescription || MICROPHONE_USAGE;
 
   return withPlugins(config, [
     [
@@ -62,7 +61,5 @@ const withImagePicker = (
     withImagePickerManifestActivity,
   ]);
 };
-
-const pkg = require('./package.json');
 
 module.exports = createRunOncePlugin(withImagePicker, pkg.name, pkg.version);

@@ -1,3 +1,4 @@
+const pkg = require('./package.json');
 const { createRunOncePlugin } = require('@expo/config-plugins');
 
 const withTaskManager = config => {
@@ -7,12 +8,10 @@ const withTaskManager = config => {
 
   // TODO: Maybe entitlements are needed
   config.ios.infoPlist.UIBackgroundModes = [
-    ...(new Set(config.ios.infoPlist.UIBackgroundModes.concat(['location', 'fetch']))),
+    ...new Set(config.ios.infoPlist.UIBackgroundModes.concat(['location', 'fetch'])),
   ];
 
   return config;
 };
-
-const pkg = require('./package.json');
 
 module.exports = createRunOncePlugin(withTaskManager, pkg.name, pkg.version);

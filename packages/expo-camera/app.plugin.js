@@ -1,9 +1,19 @@
+const pkg = require('./package.json');
 const {
   createRunOncePlugin,
   withPlugins,
   AndroidConfig,
   withProjectBuildGradle,
 } = require('@expo/config-plugins');
+
+// Because we need the package to be added AFTER the React and Google maven packages, we create a new allprojects.
+// It's ok to have multiple allprojects.repositories, so we create a new one since it's cheaper than tokenizing
+// the existing block to find the correct place to insert our camera maven.
+const gradleMaven =
+  'allprojects { repositories { maven { url "$rootDir/../node_modules/expo-camera/android/maven" } } }';
+
+const CAMERA_USAGE = 'Allow $(PRODUCT_NAME) to access your camera';
+const MICROPHONE_USAGE = 'Allow $(PRODUCT_NAME) to access your microphone';
 
 const withAndroidCameraGradle = config => {
   return withProjectBuildGradle(config, config => {
@@ -15,11 +25,6 @@ const withAndroidCameraGradle = config => {
     return config;
   });
 };
-
-// Because we need the package to be added AFTER the React and Google maven packages, we create a new allprojects.
-// It's ok to have multiple allprojects.repositories, so we create a new one since it's cheaper than tokenizing the existing one.
-const gradleMaven =
-  'allprojects { repositories { maven { url "$rootDir/../node_modules/expo-camera/android/maven" } } }';
 
 function setGradleMaven(buildGradle) {
   // If this specific line is present, skip.
@@ -39,13 +44,9 @@ const withCamera = (
   if (!config.ios) config.ios = {};
   if (!config.ios.infoPlist) config.ios.infoPlist = {};
   config.ios.infoPlist.NSCameraUsageDescription =
-    cameraPermission ||
-    config.ios.infoPlist.NSCameraUsageDescription ||
-    'Allow $(PRODUCT_NAME) to access your camera';
+    cameraPermission || config.ios.infoPlist.NSCameraUsageDescription || CAMERA_USAGE;
   config.ios.infoPlist.NSMicrophoneUsageDescription =
-    microphonePermission ||
-    config.ios.infoPlist.NSMicrophoneUsageDescription ||
-    'Allow $(PRODUCT_NAME) to access your microphone';
+    microphonePermission || config.ios.infoPlist.NSMicrophoneUsageDescription || MICROPHONE_USAGE;
 
   return withPlugins(config, [
     [
@@ -59,7 +60,5 @@ const withCamera = (
     withAndroidCameraGradle,
   ]);
 };
-
-const pkg = require('./package.json');
 
 module.exports = createRunOncePlugin(withCamera, pkg.name, pkg.version);

@@ -1,6 +1,18 @@
+const pkg = require('./package.json');
 const { createRunOncePlugin, withDangerousMod, IOSConfig } = require('@expo/config-plugins');
 const fs = require('fs-extra');
 const assert = require('assert');
+
+const OrientationLock = {
+  DEFAULT: 'UIInterfaceOrientationMaskAllButUpsideDown',
+  ALL: 'UIInterfaceOrientationMaskAll',
+  PORTRAIT: 'UIInterfaceOrientationMaskPortrait',
+  PORTRAIT_UP: 'UIInterfaceOrientationMaskPortrait',
+  PORTRAIT_DOWN: 'UIInterfaceOrientationMaskPortraitUpsideDown',
+  LANDSCAPE: 'UIInterfaceOrientationMaskLandscape',
+  LANDSCAPE_LEFT: 'UIInterfaceOrientationMaskLandscapeLeft',
+  LANDSCAPE_RIGHT: 'UIInterfaceOrientationMaskLandscapeRight',
+};
 
 const withScreenOrientationViewController = (config, { initialOrientation = 'DEFAULT' } = {}) => {
   assert(
@@ -47,16 +59,4 @@ const withScreenOrientationViewController = (config, { initialOrientation = 'DEF
   ]);
 };
 
-const OrientationLock = {
-  DEFAULT: 'UIInterfaceOrientationMaskAllButUpsideDown',
-  ALL: 'UIInterfaceOrientationMaskAll',
-  PORTRAIT: 'UIInterfaceOrientationMaskPortrait',
-  PORTRAIT_UP: 'UIInterfaceOrientationMaskPortrait',
-  PORTRAIT_DOWN: 'UIInterfaceOrientationMaskPortraitUpsideDown',
-  LANDSCAPE: 'UIInterfaceOrientationMaskLandscape',
-  LANDSCAPE_LEFT: 'UIInterfaceOrientationMaskLandscapeLeft',
-  LANDSCAPE_RIGHT: 'UIInterfaceOrientationMaskLandscapeRight',
-};
-
-const pkg = require('./package.json');
 module.exports = createRunOncePlugin(withScreenOrientationViewController, pkg.name, pkg.version);

@@ -1,3 +1,4 @@
+const pkg = require('./package.json');
 const { createRunOncePlugin, AndroidConfig } = require('@expo/config-plugins');
 
 const withBackgroundFetch = config => {
@@ -7,17 +8,15 @@ const withBackgroundFetch = config => {
 
   // TODO: Maybe entitlements are needed
   config.ios.infoPlist.UIBackgroundModes = [
-    ...(new Set(config.ios.infoPlist.UIBackgroundModes.concat(['location', 'fetch']))),
+    ...new Set(config.ios.infoPlist.UIBackgroundModes.concat(['location', 'fetch'])),
   ];
 
   config = AndroidConfig.Permissions.withPermissions(config, [
     'android.permission.RECEIVE_BOOT_COMPLETED',
-    'android.permission.WAKE_LOCK'
-  ])
+    'android.permission.WAKE_LOCK',
+  ]);
 
   return config;
 };
-
-const pkg = require('./package.json');
 
 module.exports = createRunOncePlugin(withBackgroundFetch, pkg.name, pkg.version);

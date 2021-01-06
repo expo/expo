@@ -1,3 +1,4 @@
+const pkg = require('./package.json');
 const { createRunOncePlugin, withPlugins, AndroidConfig } = require('@expo/config-plugins');
 
 const withAV = (
@@ -16,7 +17,5 @@ const withAV = (
     [AndroidConfig.Permissions.withPermissions, ['android.permission.RECORD_AUDIO']],
   ]);
 };
-
-const pkg = require('./package.json');
 
 module.exports = createRunOncePlugin(withAV, pkg.name, pkg.version);

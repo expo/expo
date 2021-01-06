@@ -1,4 +1,7 @@
+const pkg = require('./package.json');
 const { createRunOncePlugin, withPlugins, AndroidConfig } = require('@expo/config-plugins');
+
+const FACE_ID_USAGE = 'Allow $(PRODUCT_NAME) to use Face ID';
 
 const withLocalAuthentication = (
   config,
@@ -8,9 +11,7 @@ const withLocalAuthentication = (
   if (!config.ios) config.ios = {};
   if (!config.ios.infoPlist) config.ios.infoPlist = {};
   config.ios.infoPlist.NSFaceIDUsageDescription =
-    faceIDPermission ||
-    config.ios.infoPlist.NSFaceIDUsageDescription ||
-    'Allow $(PRODUCT_NAME) to use FaceID';
+    faceIDPermission || config.ios.infoPlist.NSFaceIDUsageDescription || FACE_ID_USAGE;
 
   return withPlugins(config, [
     [
@@ -19,7 +20,5 @@ const withLocalAuthentication = (
     ],
   ]);
 };
-
-const pkg = require('./package.json');
 
 module.exports = createRunOncePlugin(withLocalAuthentication, pkg.name, pkg.version);

@@ -1,4 +1,8 @@
+const pkg = require('./package.json');
 const { createRunOncePlugin, withPlugins, AndroidConfig } = require('@expo/config-plugins');
+
+const CALENDARS_USAGE = 'Allow $(PRODUCT_NAME) to access your calendars';
+const REMINDERS_USAGE = 'Allow $(PRODUCT_NAME) to access your reminders';
 
 const withCalendar = (
   config,
@@ -8,13 +12,9 @@ const withCalendar = (
   if (!config.ios) config.ios = {};
   if (!config.ios.infoPlist) config.ios.infoPlist = {};
   config.ios.infoPlist.NSCalendarsUsageDescription =
-    calendarPermission ||
-    config.ios.infoPlist.NSCalendarsUsageDescription ||
-    'Allow $(PRODUCT_NAME) to access your calendar';
+    calendarPermission || config.ios.infoPlist.NSCalendarsUsageDescription || CALENDARS_USAGE;
   config.ios.infoPlist.NSRemindersUsageDescription =
-    remindersPermission ||
-    config.ios.infoPlist.NSRemindersUsageDescription ||
-    'Allow $(PRODUCT_NAME) to access your reminders';
+    remindersPermission || config.ios.infoPlist.NSRemindersUsageDescription || REMINDERS_USAGE;
 
   return withPlugins(config, [
     [
@@ -23,7 +23,5 @@ const withCalendar = (
     ],
   ]);
 };
-
-const pkg = require('./package.json');
 
 module.exports = createRunOncePlugin(withCalendar, pkg.name, pkg.version);

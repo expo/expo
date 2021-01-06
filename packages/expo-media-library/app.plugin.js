@@ -1,9 +1,13 @@
+const pkg = require('./package.json');
 const {
   createRunOncePlugin,
   withPlugins,
   withAndroidManifest,
   AndroidConfig,
 } = require('@expo/config-plugins');
+
+const READ_PHOTOS_USAGE = 'Allow $(PRODUCT_NAME) to access your photos';
+const WRITE_PHOTOS_USAGE = 'Allow $(PRODUCT_NAME) to save photos';
 
 const withMediaLibraryExternalStorage = config => {
   return withAndroidManifest(config, async config => {
@@ -19,18 +23,18 @@ const withMediaLibraryExternalStorage = config => {
 const withMediaLibrary = (
   config,
   // Should be able to be used without any parameters for auto configuration via expo-cli.
-  { photoLibraryPermission, savePhotosPermission } = {}
+  { photosPermission, savePhotosPermission } = {}
 ) => {
   if (!config.ios) config.ios = {};
   if (!config.ios.infoPlist) config.ios.infoPlist = {};
   config.ios.infoPlist.NSPhotoLibraryUsageDescription =
-    photoLibraryPermission ||
+    photosPermission ||
     config.ios.infoPlist.NSPhotoLibraryUsageDescription ||
-    'Allow $(PRODUCT_NAME) to access your photos';
+    READ_PHOTOS_USAGE;
   config.ios.infoPlist.NSPhotoLibraryAddUsageDescription =
     savePhotosPermission ||
     config.ios.infoPlist.NSPhotoLibraryAddUsageDescription ||
-    'Allow $(PRODUCT_NAME) to save photos';
+    WRITE_PHOTOS_USAGE;
 
   return withPlugins(config, [
     [
@@ -40,7 +44,5 @@ const withMediaLibrary = (
     withMediaLibraryExternalStorage,
   ]);
 };
-
-const pkg = require('./package.json');
 
 module.exports = createRunOncePlugin(withMediaLibrary, pkg.name, pkg.version);

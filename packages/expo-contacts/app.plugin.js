@@ -1,4 +1,7 @@
+const pkg = require('./package.json');
 const { createRunOncePlugin, withPlugins, AndroidConfig } = require('@expo/config-plugins');
+
+const CONTACTS_USAGE = 'Allow $(PRODUCT_NAME) to access your contacts';
 
 const withContacts = (
   config,
@@ -8,9 +11,7 @@ const withContacts = (
   if (!config.ios) config.ios = {};
   if (!config.ios.infoPlist) config.ios.infoPlist = {};
   config.ios.infoPlist.NSContactsUsageDescription =
-    contactsPermission ||
-    config.ios.infoPlist.NSContactsUsageDescription ||
-    'Allow $(PRODUCT_NAME) to access your contacts';
+    contactsPermission || config.ios.infoPlist.NSContactsUsageDescription || CONTACTS_USAGE;
 
   return withPlugins(config, [
     [
@@ -19,7 +20,5 @@ const withContacts = (
     ],
   ]);
 };
-
-const pkg = require('./package.json');
 
 module.exports = createRunOncePlugin(withContacts, pkg.name, pkg.version);

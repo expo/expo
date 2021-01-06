@@ -1,3 +1,4 @@
+const pkg = require('./package.json');
 const { createRunOncePlugin, AndroidConfig, withAppBuildGradle } = require('@expo/config-plugins');
 
 // The placeholder scheme doesn't really matter, but sometimes the Android build fails without it being defined.
@@ -34,7 +35,5 @@ const withAppAuth = (
     return config;
   });
 };
-
-const pkg = require('./package.json');
 
 module.exports = createRunOncePlugin(withAppAuth, pkg.name, pkg.version);

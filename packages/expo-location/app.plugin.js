@@ -1,4 +1,7 @@
+const pkg = require('./package.json');
 const { createRunOncePlugin, withPlugins, AndroidConfig } = require('@expo/config-plugins');
+
+const LOCATION_USAGE = 'Allow $(PRODUCT_NAME) to access your location';
 
 const withLocation = (
   config,
@@ -14,15 +17,15 @@ const withLocation = (
   config.ios.infoPlist.NSLocationAlwaysAndWhenInUseUsageDescription =
     locationAlwaysAndWhenInUsePermission ||
     config.ios.infoPlist.NSLocationAlwaysAndWhenInUseUsageDescription ||
-    'Allow $(PRODUCT_NAME) to use your location';
+    LOCATION_USAGE;
   config.ios.infoPlist.NSLocationAlwaysUsageDescription =
     locationAlwaysPermission ||
     config.ios.infoPlist.NSLocationAlwaysUsageDescription ||
-    'Allow $(PRODUCT_NAME) to use your location';
+    LOCATION_USAGE;
   config.ios.infoPlist.NSLocationWhenInUseUsageDescription =
     locationWhenInUsePermission ||
     config.ios.infoPlist.NSLocationWhenInUseUsageDescription ||
-    'Allow $(PRODUCT_NAME) to use your location';
+    LOCATION_USAGE;
 
   return withPlugins(config, [
     [
@@ -37,7 +40,5 @@ const withLocation = (
     ],
   ]);
 };
-
-const pkg = require('./package.json');
 
 module.exports = createRunOncePlugin(withLocation, pkg.name, pkg.version);

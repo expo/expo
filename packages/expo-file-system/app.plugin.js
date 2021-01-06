@@ -1,3 +1,4 @@
+const pkg = require('./package.json');
 const { createRunOncePlugin, AndroidConfig } = require('@expo/config-plugins');
 
 const withFileSystem = (
@@ -10,7 +11,5 @@ const withFileSystem = (
     'android.permission.INTERNET',
   ]);
 };
-
-const pkg = require('./package.json');
 
 module.exports = createRunOncePlugin(withFileSystem, pkg.name, pkg.version);
