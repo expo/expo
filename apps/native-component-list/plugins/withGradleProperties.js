@@ -1,7 +1,7 @@
 const { withDangerousMod } = require('@expo/config-plugins');
+const assert = require('assert');
 const fs = require('fs-extra');
 const path = require('path');
-const assert = require('assert');
 
 // Use this improve gradle builds
 module.exports = (config, options) => {
@@ -21,7 +21,7 @@ module.exports = (config, options) => {
           let value;
           if (keyName in options) {
             value = options[keyName];
-            delete options[keyName]
+            delete options[keyName];
           } else {
             value = line.slice(eok + 1, line.length);
           }
