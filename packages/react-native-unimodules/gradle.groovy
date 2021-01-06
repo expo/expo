@@ -133,6 +133,7 @@ def getProjectPackageJson(File projectRoot) {
 
 def getAndroidConfig(File projectRoot) {
   def packageJson = getProjectPackageJson(projectRoot);
+  if (packageJson.unimodules == null) return [:]
   def unimodulesConfig = packageJson.unimodules != null ? packageJson.unimodules : {}
   def androidConfig = unimodulesConfig.android != null ? unimodulesConfig.android : {}
   return androidConfig

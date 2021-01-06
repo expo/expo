@@ -25,6 +25,14 @@ export default ({ config }) => {
       './plugins/withKotlinGradle',
       '1.3.50'
     ],
+    [
+      // unimodules-test-core must be added manually
+      './plugins/withSettingsImport',
+      {
+        packageName: 'unimodules-test-core',
+        packagePath: '../../../packages/unimodules-test-core/android'
+      }
+    ],
   ];
   return config;
 };
