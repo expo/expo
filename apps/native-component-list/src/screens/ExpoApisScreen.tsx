@@ -11,7 +11,7 @@ import ComponentListScreen from './ComponentListScreen';
 try {
   require('react-native-branch').default.subscribe((bundle: any) => {
     if (bundle && bundle.params && !bundle.error) {
-      Alert.alert('Opened Branch link', JSON.stringify(bundle.params, null, 2));
+      // Alert.alert('Opened Branch link', JSON.stringify(bundle.params, null, 2));
     }
   });
 } catch (e) {
