@@ -39,4 +39,8 @@ function setKotlinClassPath(buildGradle) {
   );
 }
 
-module.exports = withKotlinGradle;
+const withUnimodulesTestCore = (config) => {
+    return withKotlinGradle(config, '1.3.50');
+}
+
+module.exports = withUnimodulesTestCore;

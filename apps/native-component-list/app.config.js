@@ -20,13 +20,10 @@ export default ({ config }) => {
           '-Xmx3g -XX:MaxPermSize=2048m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8',
       },
     ],
+    // unimodules-test-core requires kotlin, so additional setup must be executed.
+    'unimodules-test-core',
     [
-      // unimodules-test-core requires Kotlin be added on Android.
-      './plugins/withKotlinGradle',
-      '1.3.50'
-    ],
-    [
-      // unimodules-test-core must be added manually
+      // unimodules-test-core must be added manually.
       './plugins/withSettingsImport',
       {
         packageName: 'unimodules-test-core',

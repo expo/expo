@@ -40,8 +40,8 @@
       "modules_paths": [
         "../../../packages"
       ],
-      "flags": { 
-        "inhibit_warnings": false 
+      "flags": {
+        "inhibit_warnings": false
       }
     }
   },
@@ -154,7 +154,8 @@
     "three": "^0.115.0",
     "url": "^0.11.0",
     "uuid": "^8.3.0",
-    "victory-native": "^30.4.0"
+    "victory-native": "^30.4.0",
+    "unimodules-test-core": "^0.1.0"
   },
   "devDependencies": {
     "@babel/core": "~7.9.0",
