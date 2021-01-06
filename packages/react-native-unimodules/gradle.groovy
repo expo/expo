@@ -155,25 +155,6 @@ def generateBasePackageList(List<Unimodule> unimodules) {
   javaFileWriter.close()
 }
 
-def getProjectPackageJson(File projectRoot) {
-  String resolveScript = """
-  const findUp = require('find-up');
-  console.log(findUp.sync('package.json'));
-  """
-  String[] nodeCommand = ["node", "-e", resolveScript]
-  String packageJsonPath = spawnProcess(nodeCommand, projectRoot)
-  def packageJsonFile = new File(packageJsonPath)
-  def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
-  return packageJson;
-}
-
-def getAndroidConfig(File projectRoot) {
-  def packageJson = getProjectPackageJson(projectRoot);
-  if (packageJson.unimodules == null) return [:]
-  def unimodulesConfig = packageJson.unimodules != null ? packageJson.unimodules : {}
-  def androidConfig = unimodulesConfig.android != null ? unimodulesConfig.android : {}
-  return androidConfig
-}
 
 def findUnimodules(String target, List exclude, List modulesPaths) {
   def unimodules = [:]
@@ -190,6 +171,7 @@ def findUnimodules(String target, List exclude, List modulesPaths) {
       def buildGradle = readFromBuildGradle(new File(directory, "android/build.gradle").toString())
       def packageJsonFile = new File(directory, 'package.json')
       def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
+
       def unimodule = new Unimodule()
       unimodule.name = unimoduleJson.name ?: packageJson.name
       unimodule.directory = directory
@@ -266,22 +248,6 @@ def addUnimodulesDependencies(String target, List exclude, List modulesPaths, Cl
   } else {
     println()
     println Colors.YELLOW + "No unimodules found. Are you sure you've installed JS dependencies?" + Colors.NORMAL
-  }
-}
-
-def spawnProcess(String[] cmd, File directory) {
-  try {
-    def cmdProcess = Runtime.getRuntime().exec(cmd, null, directory)
-    def bufferedReader = new BufferedReader(new InputStreamReader(cmdProcess.getInputStream()))
-    def buffered = ""
-    def results = new StringBuffer()
-    while ((buffered = bufferedReader.readLine()) != null) {
-      results.append(buffered)
-    }
-    return results.toString()
-  } catch (Exception exception) {
-    rootProject.logger.error "Spawned process '${cmd}' threw an error"
-    throw exception
   }
 }
 
