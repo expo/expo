@@ -9,6 +9,7 @@ export default ({ config }) => {
     //// iOS
     // Add a plugin to modify the AppDelegate
     './plugins/withNotFoundModule',
+    './plugins/withDevMenu',
     ['./plugins/withPodfileMinVersion', '11.0'],
 
     //// Android
@@ -20,6 +21,7 @@ export default ({ config }) => {
           '-Xmx3g -XX:MaxPermSize=2048m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8',
       },
     ],
+    
     // unimodules-test-core requires kotlin, so additional setup must be executed.
     'unimodules-test-core',
     [
