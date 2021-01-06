@@ -107,6 +107,7 @@
     "expo-print": "~9.2.0",
     "expo-processing": "2.0.2",
     "expo-progress": "^0.0.2",
+    "expo-random": "^10.0.0",
     "expo-secure-store": "~9.3.0",
     "expo-sensors": "~9.2.0",
     "expo-sharing": "~8.5.0",
@@ -117,6 +118,7 @@
     "expo-store-review": "~2.3.0",
     "expo-task-manager": "~8.6.0",
     "expo-three": "5.2.0",
+    "expo-updates": "~0.4.0",
     "expo-web-browser": "~8.6.0",
     "fbemitter": "^2.1.1",
     "fuse.js": "^6.4.1",
@@ -130,6 +132,7 @@
     "processing-js": "^1.6.6",
     "react": "16.13.1",
     "react-dom": "16.13.1",
+    "react-native": "~0.63.4",
     "react-native-appearance": "~0.3.4",
     "react-native-gesture-handler": "~1.8.0",
     "react-native-iphone-x-helper": "^1.3.0",
@@ -151,9 +154,7 @@
     "three": "^0.115.0",
     "url": "^0.11.0",
     "uuid": "^8.3.0",
-    "victory-native": "^30.4.0",
-    "expo-updates": "~0.4.0",
-    "react-native": "~0.63.4"
+    "victory-native": "^30.4.0"
   },
   "devDependencies": {
     "@babel/core": "~7.9.0",
