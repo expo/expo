@@ -8,40 +8,59 @@ const withDevMenu = config => {
       const fileInfo = IOSConfig.Paths.getAppDelegate(config.modRequest.projectRoot);
       let contents = await fs.readFile(fileInfo.path, 'utf-8');
       if (fileInfo.language === 'objc') {
-          // Add DevMenu imports
+        // Add DevMenu imports
         if (!contents.includes('#import <React/RCTDevMenu.h>')) {
-            contents = contents.replace(/\#import \"AppDelegate.h\"/g, `#import "AppDelegate.h"
-#import <React/RCTDevMenu.h>`)
+          contents = contents.replace(
+            /\#import \"AppDelegate.h\"/g,
+            `#import "AppDelegate.h"
+#import <React/RCTDevMenu.h>`
+          );
         }
         if (!contents.includes('#import <React/RCTUtils.h>')) {
-            contents = contents.replace(/\#import \"AppDelegate.h\"/g, `#import "AppDelegate.h"
-#import <React/RCTUtils.h>`)
+          contents = contents.replace(
+            /\#import \"AppDelegate.h\"/g,
+            `#import "AppDelegate.h"
+#import <React/RCTUtils.h>`
+          );
         }
 
         // Make the extraModules mutable
-        const modulesRegex = /NSArray<id<RCTBridgeModule>>\s?\*extraModules\s?=\s?\[_moduleRegistryAdapter extraModulesForBridge\:bridge\]\;/
+        const modulesRegex = /NSArray<id<RCTBridgeModule>>\s?\*extraModules\s?=\s?\[_moduleRegistryAdapter extraModulesForBridge\:bridge\]\;/;
         if (contents.match(modulesRegex)) {
-            contents = contents.replace(modulesRegex, 'NSMutableArray<id<RCTBridgeModule>> *extraModules = [NSMutableArray arrayWithArray:[_moduleRegistryAdapter extraModulesForBridge:bridge]];')
+          contents = contents.replace(
+            modulesRegex,
+            'NSMutableArray<id<RCTBridgeModule>> *extraModules = [NSMutableArray arrayWithArray:[_moduleRegistryAdapter extraModulesForBridge:bridge]];'
+          );
         }
 
         // Add DevMenu back
-        if (!contents.includes('[extraModules addObject:(id<RCTBridgeModule>)[[RCTDevMenu alloc] init]];')) {
-            contents = contents.replace(/return extraModules\;/g, `[extraModules addObject:(id<RCTBridgeModule>)[[RCTDevMenu alloc] init]];
-  return extraModules;`)
+        if (
+          !contents.includes(
+            '[extraModules addObject:(id<RCTBridgeModule>)[[RCTDevMenu alloc] init]];'
+          )
+        ) {
+          contents = contents.replace(
+            /return extraModules\;/g,
+            `[extraModules addObject:(id<RCTBridgeModule>)[[RCTDevMenu alloc] init]];
+  return extraModules;`
+          );
         }
-        
+
         // Add swizzling invocation
         if (!contents.includes(swizzleMethodInvocationBlock)) {
-            // self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc]
-            contents = contents.replace(/self\.moduleRegistryAdapter \= \[\[UMModuleRegistryAdapter alloc\]/g, `${swizzleMethodInvocationBlock}
-  self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc]`)
+          // self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc]
+          contents = contents.replace(
+            /self\.moduleRegistryAdapter \= \[\[UMModuleRegistryAdapter alloc\]/g,
+            `${swizzleMethodInvocationBlock}
+  self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc]`
+          );
         }
 
         // Add swizzling method
         if (!contents.match(/\(void\)\s?ensureReactMethodSwizzlingSetUp/g)) {
-            let sections = contents.split('@end');
-            sections[sections.length - 2] += swizzleMethodBlock
-            contents = sections.join('@end');
+          let sections = contents.split('@end');
+          sections[sections.length - 2] += swizzleMethodBlock;
+          contents = sections.join('@end');
         }
       } else {
         throw new Error(
@@ -55,7 +74,7 @@ const withDevMenu = config => {
   ]);
 };
 
-const swizzleMethodInvocationBlock = `[self ensureReactMethodSwizzlingSetUp];`
+const swizzleMethodInvocationBlock = `[self ensureReactMethodSwizzlingSetUp];`;
 
 const swizzleMethodBlock = `
 // Bring back React method swizzling removed from its Pod
@@ -80,6 +99,7 @@ const swizzleMethodBlock = `
     RCTSwapInstanceMethods([UIWindow class], @selector(motionEnded:withEvent:), @selector(RCT_motionEnded:withEvent:));
     #pragma clang diagnostic pop
   });
-}`
+}
+`;
 
-module.exports = withDevMenu
+module.exports = withDevMenu;

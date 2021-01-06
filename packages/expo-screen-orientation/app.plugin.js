@@ -1,4 +1,4 @@
-const { withDangerousMod, IOSConfig } = require('@expo/config-plugins');
+const { createRunOncePlugin, withDangerousMod, IOSConfig } = require('@expo/config-plugins');
 const fs = require('fs-extra');
 const assert = require('assert');
 
@@ -58,4 +58,5 @@ const OrientationLock = {
   LANDSCAPE_RIGHT: 'UIInterfaceOrientationMaskLandscapeRight',
 };
 
-module.exports = withScreenOrientationViewController;
+const pkg = require('./package.json');
+module.exports = createRunOncePlugin(withScreenOrientationViewController, pkg.name, pkg.version);
