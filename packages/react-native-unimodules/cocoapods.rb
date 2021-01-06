@@ -1,14 +1,14 @@
 require 'json'
 require 'pathname'
-require 'optparse'
 require 'open3'
+require 'optparse'
 
 def use_unimodules!(custom_options = {})
-  root_package_json = JSON.parse(File.read(find_project_root))
-  json_options = root_package_json.fetch('unimodules', {}).fetch('ios', {}).transform_keys(&:to_sym)
+  root_package_json = JSON.parse(File.read(find_project_package_json_path))
+  json_options = root_package_json.fetch('react-native-unimodules', {}).fetch('ios', {}).transform_keys(&:to_sym)
 
   options = {
-    modules_paths: ['../node_modules', find_workspace_root],
+    modules_paths: ['../node_modules'],
     target: 'react-native',
     exclude: [],
     flags: {}
@@ -48,7 +48,6 @@ def use_unimodules!(custom_options = {})
           if !unimodules[package_name] || Gem::Version.new(unimodule_version) >= Gem::Version.new(unimodules[package_name][:version])
             unimodules[package_name] = {
               name: package_name,
-              pkg_name: package_json['name'],
               directory: directory,
               version: unimodule_version,
               config: unimodule_config,
@@ -64,8 +63,7 @@ def use_unimodules!(custom_options = {})
     puts brown 'Installing unimodules:'
 
     unimodules.values.sort! { |x, y| x[:name] <=> y[:name] }.each do |unimodule|
-      # directory = unimodule[:directory]
-      directory = find_package_root(unimodule[:pkg_name]) # unimodule[:directory]
+      directory = unimodule[:directory]
       config = unimodule[:config]
 
       subdirectory = config['subdirectory']
@@ -97,18 +95,8 @@ def use_unimodules!(custom_options = {})
   puts
 end
 
-def find_project_root
-  stdout, stderr, status = Open3.capture3('node -e "const findUp = require(\'find-up\');console.log(findUp.sync(\'package.json\'));"')
-  stdout.strip!
-end
-
-def find_package_root(package_name)
-  stdout, stderr, status = Open3.capture3('node ' + __dir__ + '/resolver.js ' + package_name)
-  stdout.strip!
-end
-
-def find_workspace_root
-  stdout, stderr, status = Open3.capture3('node ' + __dir__ + '/workspace-root.js')
+def find_project_package_json_path
+  stdout, _stderr, _status = Open3.capture3('node -e "const findUp = require(\'find-up\'); console.log(findUp.sync(\'package.json\'));"')
   stdout.strip!
 end
 

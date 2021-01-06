@@ -22,7 +22,7 @@
       "expo-updates"
     ]
   },
-  "unimodules": {
+  "react-native-unimodules": {
     "android": {
       "exclude": [
         "expo-module-template"
@@ -35,8 +35,14 @@
     },
     "ios": {
       "exclude": [
-        "unimodules-test-core"
-      ]
+        "expo-module-template"
+      ],
+      "modules_paths": [
+        "../../../packages"
+      ],
+      "flags": { 
+        "inhibit_warnings": false 
+      }
     }
   },
   "dependencies": {
