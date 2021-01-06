@@ -23,11 +23,13 @@ expo install expo-calendar
 
 ### Configure for iOS
 
-Add `NSCalendarsUsageDescription` key to your `Info.plist`:
+Add `NSCalendarsUsageDescription`, and `NSRemindersUsageDescription` keys to your `Info.plist`:
 
 ```xml
 <key>NSCalendarsUsageDescription</key>
 <string>Allow $(PRODUCT_NAME) to access your calendar</string>
+<key>NSRemindersUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to access your reminders</string>
 ```
 
 Run `npx pod-install` after installing the npm package.
