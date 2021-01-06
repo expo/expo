@@ -3,11 +3,7 @@ const { createRunOncePlugin, withPlugins, AndroidConfig } = require('@expo/confi
 
 const CONTACTS_USAGE = 'Allow $(PRODUCT_NAME) to access your contacts';
 
-const withContacts = (
-  config,
-  // Should be able to be used without any parameters for auto configuration via expo-cli.
-  { contactsPermission } = {}
-) => {
+const withContacts = (config, { contactsPermission } = {}) => {
   if (!config.ios) config.ios = {};
   if (!config.ios.infoPlist) config.ios.infoPlist = {};
   config.ios.infoPlist.NSContactsUsageDescription =

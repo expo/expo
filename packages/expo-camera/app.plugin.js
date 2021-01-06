@@ -36,11 +36,7 @@ function setGradleMaven(buildGradle) {
   return buildGradle + `\n${gradleMaven}\n`;
 }
 
-const withCamera = (
-  config,
-  // Should be able to be used without any parameters for auto configuration via expo-cli.
-  { cameraPermission, microphonePermission } = {}
-) => {
+const withCamera = (config, { cameraPermission, microphonePermission } = {}) => {
   if (!config.ios) config.ios = {};
   if (!config.ios.infoPlist) config.ios.infoPlist = {};
   config.ios.infoPlist.NSCameraUsageDescription =

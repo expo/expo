@@ -3,11 +3,7 @@ const { createRunOncePlugin, withPlugins, AndroidConfig } = require('@expo/confi
 
 const FACE_ID_USAGE = 'Allow $(PRODUCT_NAME) to use Face ID';
 
-const withLocalAuthentication = (
-  config,
-  // Should be able to be used without any parameters for auto configuration via expo-cli.
-  { faceIDPermission } = {}
-) => {
+const withLocalAuthentication = (config, { faceIDPermission } = {}) => {
   if (!config.ios) config.ios = {};
   if (!config.ios.infoPlist) config.ios.infoPlist = {};
   config.ios.infoPlist.NSFaceIDUsageDescription =

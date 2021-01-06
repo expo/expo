@@ -5,7 +5,6 @@ const LOCATION_USAGE = 'Allow $(PRODUCT_NAME) to access your location';
 
 const withLocation = (
   config,
-  // Should be able to be used without any parameters for auto configuration via expo-cli.
   {
     locationAlwaysAndWhenInUsePermission,
     locationAlwaysPermission,

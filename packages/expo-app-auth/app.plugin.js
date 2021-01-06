@@ -21,7 +21,6 @@ function setGradlePlaceholders(buildGradle, placeholder) {
 
 const withAppAuth = (
   config,
-  // Should be able to be used without any parameters for auto configuration via expo-cli.
   { placeholder = AndroidConfig.Scheme.getScheme(config)[0] || 'dev.expo.app' } = {}
 ) => {
   return withAppBuildGradle(config, config => {

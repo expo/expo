@@ -4,11 +4,7 @@ const { createRunOncePlugin, withPlugins, AndroidConfig } = require('@expo/confi
 const CAMERA_USAGE = 'Allow $(PRODUCT_NAME) to access your camera';
 const MICROPHONE_USAGE = 'Allow $(PRODUCT_NAME) to access your microphone';
 
-const withBarcodeScanner = (
-  config,
-  // Should be able to be used without any parameters for auto configuration via expo-cli.
-  { microphonePermission, cameraPermission } = {}
-) => {
+const withBarcodeScanner = (config, { microphonePermission, cameraPermission } = {}) => {
   if (!config.ios) config.ios = {};
   if (!config.ios.infoPlist) config.ios.infoPlist = {};
   config.ios.infoPlist.NSCameraUsageDescription =

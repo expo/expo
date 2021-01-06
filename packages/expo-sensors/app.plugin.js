@@ -3,11 +3,7 @@ const { createRunOncePlugin } = require('@expo/config-plugins');
 
 const MOTION_USAGE = 'Allow $(PRODUCT_NAME) to access your device motion';
 
-const withSensors = (
-  config,
-  // Should be able to be used without any parameters for auto configuration via expo-cli.
-  { motionPermission } = {}
-) => {
+const withSensors = (config, { motionPermission } = {}) => {
   if (!config.ios) config.ios = {};
   if (!config.ios.infoPlist) config.ios.infoPlist = {};
   config.ios.infoPlist.NSMotionUsageDescription =

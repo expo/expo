@@ -35,8 +35,6 @@ const withImagePickerManifestActivity = config => {
 
 const withImagePicker = (
   config,
-  // Should be able to be used without any parameters for auto configuration via expo-cli.
-
   { photosPermission, cameraPermission, microphonePermission } = {}
 ) => {
   if (!config.ios) config.ios = {};
