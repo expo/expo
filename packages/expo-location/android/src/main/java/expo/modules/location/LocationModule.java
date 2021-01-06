@@ -55,9 +55,9 @@ import org.unimodules.interfaces.permissions.PermissionsStatus;
 import org.unimodules.interfaces.taskManager.TaskManagerInterface;
 
 import expo.modules.location.exceptions.LocationBackgroundUnauthorizedException;
+import expo.modules.location.exceptions.LocationForegroundUnauthorizedException;
 import expo.modules.location.exceptions.LocationRequestRejectedException;
 import expo.modules.location.exceptions.LocationSettingsUnsatisfiedException;
-import expo.modules.location.exceptions.LocationUnauthorizedException;
 import expo.modules.location.exceptions.LocationUnavailableException;
 import expo.modules.location.taskConsumers.GeofencingTaskConsumer;
 import expo.modules.location.taskConsumers.LocationTaskConsumer;
@@ -149,24 +149,54 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
   //region Expo methods
 
   @ExpoMethod
-  public void requestPermissionsAsync(final Promise promise) {
+  public void requestBackgroundPermissionsAsync(final Promise promise) {
+    if (mPermissionsManager == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
+      return;
+    }
+    if (!shouldAskBackgroundPermissions()) {
+      requestForegroundPermissionsAsync(promise);
+      return;
+    }
+    mPermissionsManager.askForPermissions(result -> {
+      promise.resolve(handleBackgroundLocationPermissions(result));
+    }, Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+  }
+
+  @ExpoMethod
+  public void getBackgroundPermissionsAsync(final Promise promise) {
+    if (mPermissionsManager == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
+      return;
+    }
+    if (!shouldAskBackgroundPermissions()) {
+      getForegroundPermissionsAsync(promise);
+      return;
+    }
+    mPermissionsManager.getPermissions(result -> {
+      promise.resolve(handleBackgroundLocationPermissions(result));
+    }, Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+  }
+
+  @ExpoMethod
+  public void requestForegroundPermissionsAsync(final Promise promise) {
     if (mPermissionsManager == null) {
       promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
       return;
     }
     mPermissionsManager.askForPermissions(result -> {
-      promise.resolve(handleLocationPermissions(result));
+      promise.resolve(handleForegroundLocationPermissions(result));
     }, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION);
   }
 
   @ExpoMethod
-  public void getPermissionsAsync(final Promise promise) {
+  public void getForegroundPermissionsAsync(final Promise promise) {
     if (mPermissionsManager == null) {
       promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
       return;
     }
     mPermissionsManager.getPermissions(result -> {
-      promise.resolve(handleLocationPermissions(result));
+      promise.resolve(handleForegroundLocationPermissions(result));
     }, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION);
   }
 
@@ -176,8 +206,8 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
   @ExpoMethod
   public void getLastKnownPositionAsync(final Map<String, Object> options, final Promise promise) {
     // Check for permissions
-    if (isMissingPermissions()) {
-      promise.reject(new LocationUnauthorizedException());
+    if (isMissingForegroundPermissions()) {
+      promise.reject(new LocationForegroundUnauthorizedException());
       return;
     }
     getLastKnownLocation(location -> {
@@ -200,8 +230,8 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
     boolean showUserSettingsDialog = !options.containsKey(SHOW_USER_SETTINGS_DIALOG_KEY) || (boolean) options.get(SHOW_USER_SETTINGS_DIALOG_KEY);
 
     // Check for permissions
-    if (isMissingPermissions()) {
-      promise.reject(new LocationUnauthorizedException());
+    if (isMissingForegroundPermissions()) {
+      promise.reject(new LocationForegroundUnauthorizedException());
       return;
     }
 
@@ -252,8 +282,8 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
   @ExpoMethod
   public void watchPositionImplAsync(final int watchId, final Map<String, Object> options, final Promise promise) {
     // Check for permissions
-    if (isMissingPermissions()) {
-      promise.reject(new LocationUnauthorizedException());
+    if (isMissingForegroundPermissions()) {
+      promise.reject(new LocationForegroundUnauthorizedException());
       return;
     }
 
@@ -276,8 +306,8 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   @ExpoMethod
   public void removeWatchAsync(final int watchId, final Promise promise) {
-    if (isMissingPermissions()) {
-      promise.reject(new LocationUnauthorizedException());
+    if (isMissingForegroundPermissions()) {
+      promise.reject(new LocationForegroundUnauthorizedException());
       return;
     }
 
@@ -298,8 +328,8 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
       return;
     }
 
-    if (isMissingPermissions()) {
-      promise.reject(new LocationUnauthorizedException());
+    if (isMissingForegroundPermissions()) {
+      promise.reject(new LocationForegroundUnauthorizedException());
       return;
     }
 
@@ -331,8 +361,8 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
       return;
     }
 
-    if (isMissingPermissions()) {
-      promise.reject(new LocationUnauthorizedException());
+    if (isMissingForegroundPermissions()) {
+      promise.reject(new LocationForegroundUnauthorizedException());
       return;
     }
 
@@ -508,18 +538,27 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
   //region private methods
 
   /**
-   * Checks whether all required permissions have been granted by the user.
+   * Checks if the foreground location permission is granted by the user.
    */
-  private boolean isMissingPermissions() {
+  private boolean isMissingForegroundPermissions() {
     return mPermissionsManager == null || !mPermissionsManager.hasGrantedPermissions(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION);
   }
 
   /**
    * Checks if the background location permission is granted by the user.
+   * This is only required from Android 10+, Android <9 contains all location permissions within the foreground.
    */
   private boolean isMissingBackgroundPermissions() {
     return mPermissionsManager == null ||
-        (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !mPermissionsManager.hasGrantedPermissions(Manifest.permission.ACCESS_BACKGROUND_LOCATION));
+        (shouldAskBackgroundPermissions() && !mPermissionsManager.hasGrantedPermissions(Manifest.permission.ACCESS_BACKGROUND_LOCATION));
+  }
+
+  /**
+   * Check if we need to request background location permission separately.
+   * @see https://medium.com/swlh/request-location-permission-correctly-in-android-11-61afe95a11ad
+   */
+  private boolean shouldAskBackgroundPermissions() {
+    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
   }
 
   /**
@@ -704,7 +743,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   private float calcTrueNorth(float magNorth) {
     // Need to request geo location info to calculate true north
-    if (isMissingPermissions() || mGeofield == null) {
+    if (isMissingForegroundPermissions() || mGeofield == null) {
       return -1;
     }
     return magNorth + mGeofield.getDeclination();
@@ -734,7 +773,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
     }
 
     // if permissions not granted it won't work anyway, but this can be invoked when permission dialog disappears
-    if (!isMissingPermissions()) {
+    if (!isMissingForegroundPermissions()) {
       mGeocoderPaused = false;
     }
 
@@ -748,7 +787,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
     }
 
     // if permissions not granted it won't work anyway, but this can be invoked when permission dialog appears
-    if (Geocoder.isPresent() && !isMissingPermissions()) {
+    if (Geocoder.isPresent() && !isMissingForegroundPermissions()) {
       SmartLocation.with(mContext).geocoding().stop();
       mGeocoderPaused = true;
     }
@@ -758,7 +797,31 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
     }
   }
 
-  private Bundle handleLocationPermissions(Map<String, PermissionsResponse> result) {
+  private Bundle handleBackgroundLocationPermissions(Map<String, PermissionsResponse> result) {
+    PermissionsResponse accessBackgroundLocation = result.get(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+    PermissionsStatus status = PermissionsStatus.UNDETERMINED;
+    String scope = "none";
+    Boolean canAskAgain = accessBackgroundLocation.getCanAskAgain();
+
+    if (accessBackgroundLocation.getStatus() == PermissionsStatus.GRANTED) {
+      scope = "always";
+      status = PermissionsStatus.GRANTED;
+    }
+
+    Bundle resultBundle = new Bundle();
+    Bundle scopeBundle = new Bundle();
+
+    scopeBundle.putString("scope", scope);
+    resultBundle.putString(PermissionsResponse.STATUS_KEY, status.getStatus());
+    resultBundle.putString(PermissionsResponse.EXPIRES_KEY, PermissionsResponse.PERMISSION_EXPIRES_NEVER);
+    resultBundle.putBoolean(PermissionsResponse.CAN_ASK_AGAIN_KEY, canAskAgain);
+    resultBundle.putBoolean(PermissionsResponse.GRANTED_KEY, status == PermissionsStatus.GRANTED);
+    resultBundle.putBundle("android", scopeBundle);
+
+    return resultBundle;
+  }
+
+  private Bundle handleForegroundLocationPermissions(Map<String, PermissionsResponse> result) {
     PermissionsResponse accessFineLocation = result.get(Manifest.permission.ACCESS_FINE_LOCATION);
     PermissionsResponse accessCoarseLocation = result.get(Manifest.permission.ACCESS_COARSE_LOCATION);
     PermissionsStatus status = PermissionsStatus.UNDETERMINED;

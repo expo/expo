@@ -21,11 +21,18 @@ function applyMocks() {
     'getCurrentPositionAsync',
     jest.fn(async () => fakeReturnValue)
   );
-  mockProperty(
-    NativeModulesProxy.ExpoLocation,
+
+  [
     'requestPermissionsAsync',
-    jest.fn(async () => {})
-  );
+    'requestBackgroundPermissionsAsync',
+    'requestForegroundPermissionsAsync',
+  ].forEach(method => {
+    mockProperty(
+      NativeModulesProxy.ExpoLocation,
+      method,
+      jest.fn(async () => {})
+    );
+  });
 }
 
 beforeAll(() => {

@@ -1,4 +1,5 @@
 import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
+import { getBackgroundPermissionsAsync } from './Location';
 
 import {
   LocationLastKnownOptions,
@@ -142,8 +143,18 @@ export default {
     });
   },
 
+  /** @deprecated Use `getForegroundPermissionsAsync()` instead */
   getPermissionsAsync,
+  /** @deprecated Use `requestForegroundPermissionsAsync()` instead */
   async requestPermissionsAsync(): Promise<PermissionResponse> {
+    return getPermissionsAsync();
+  },
+  getBackgroundPermissionsAsync: getPermissionsAsync,
+  async requestBackgroundPermissionsAsync(): Promise<PermissionResponse> {
+    return getPermissionsAsync();
+  },
+  getForegroundPermissionsAsync: getPermissionsAsync,
+  async requestForegroundPermissionsAsync(): Promise<PermissionResponse> {
     return getPermissionsAsync();
   },
 
