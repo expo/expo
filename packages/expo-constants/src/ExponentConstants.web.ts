@@ -10,11 +10,11 @@ import {
 
 const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
 
-declare var __DEV__: boolean;
-declare var process: { env: any };
-declare var navigator: Navigator;
-declare var location: Location;
-declare var localStorage: Storage;
+declare let __DEV__: boolean;
+declare let process: { env: any };
+declare let navigator: Navigator;
+declare let location: Location;
+declare let localStorage: Storage;
 
 const _sessionId = uuidv4();
 
