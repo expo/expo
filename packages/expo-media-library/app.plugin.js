@@ -19,7 +19,7 @@ const withMediaLibraryExternalStorage = config => {
 const withMediaLibrary = (
   config,
   // Should be able to be used without any parameters for auto configuration via expo-cli.
-  { photoLibraryPermission } = {}
+  { photoLibraryPermission, savePhotosPermission } = {}
 ) => {
   if (!config.ios) config.ios = {};
   if (!config.ios.infoPlist) config.ios.infoPlist = {};
@@ -27,6 +27,10 @@ const withMediaLibrary = (
     photoLibraryPermission ||
     config.ios.infoPlist.NSPhotoLibraryUsageDescription ||
     'Allow $(PRODUCT_NAME) to access your photos';
+  config.ios.infoPlist.NSPhotoLibraryAddUsageDescription =
+    savePhotosPermission ||
+    config.ios.infoPlist.NSPhotoLibraryAddUsageDescription ||
+    'Allow $(PRODUCT_NAME) to save photos';
 
   return withPlugins(config, [
     [
