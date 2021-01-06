@@ -33,15 +33,37 @@
     "nuke": "rm -rf node_modules; rm -rf ios/Pods/ && rm -rf ios/build/ && rm -rf android/.gradle",
     "sync:tools": "cp -a ../../../react-native/React/DevSupport/ ../../react-native-lab/react-native/React/DevSupport/"
   },
-  "excludedUnimodules": [
-    "expo-branch",
-    "expo-payments-stripe",
-    "expo-ads-facebook",
-    "expo-ads-admob",
-    "expo-apple-authentication",
-    "expo-updates",
-    "expo-module-template"
-  ],
+  "react-native-unimodules": {
+    "android": {
+      "modulesPaths" : [
+        "../../../../packages"
+      ],
+      "configuration": "api",
+      "target": "react-native",
+      "exclude": [
+        "expo-branch",
+        "expo-payments-stripe",
+        "expo-ads-facebook",
+        "expo-ads-admob",
+        "expo-apple-authentication",
+        "expo-updates",
+        "expo-module-template"
+      ]
+    },
+    "ios": {
+      "modules_paths": ["../../../packages"],
+      "flags": { "inhibit_warnings": false },
+      "exclude": [
+        "expo-branch",
+        "expo-payments-stripe",
+        "expo-ads-facebook",
+        "expo-ads-admob",
+        "expo-apple-authentication",
+        "expo-updates",
+        "expo-module-template"
+      ]
+    }
+  },
   "detox": {
     "configurations": {
       "ios.sim.debug": {
