@@ -12,6 +12,8 @@
 
 ### 🎉 New features
 
+- Created config plugins ([#11538](https://github.com/expo/expo/pull/11538) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 - Removed `fbjs` dependency ([#11396](https://github.com/expo/expo/pull/11396) by [@cruzach](https://github.com/cruzach))
