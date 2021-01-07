@@ -196,7 +196,7 @@ const calculateImageScale = (image: ImageInfo) => {
   let scale = 1;
   const screenMultiplier = PixelRatio.getPixelSizeForLayoutSize(1);
   const imageHeight = image.height / screenMultiplier;
-  let imageWidth = image.width / screenMultiplier;
+  const imageWidth = image.width / screenMultiplier;
   if (imageWidth > imageHeight) {
     scale = imageViewSize / imageWidth;
   } else {
