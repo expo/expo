@@ -40,7 +40,6 @@ public class UpdatesUtilsTest {
 
   @Test
   public void testGetRuntimeVersion_neitherDefined() {
-    // should throw if neither are specified
     UpdatesConfiguration neitherConfig = mock(UpdatesConfiguration.class);
     when(neitherConfig.getSdkVersion()).thenReturn(null);
     when(neitherConfig.getRuntimeVersion()).thenReturn(null);
