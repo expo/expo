@@ -39,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
   NSAssert([commitTime isKindOfClass:[NSString class]], @"createdAt should be a string");
   NSAssert([runtimeVersion isKindOfClass:[NSString class]], @"runtimeVersion should be a string");
   NSAssert([launchAsset isKindOfClass:[NSDictionary class]], @"launchAsset should be a dictionary");
-  NSAssert(assets && [assets isKindOfClass:[NSArray class]], @"assets should be a nonnull array");
+  NSAssert(!assets || [assets isKindOfClass:[NSArray class]], @"assets should be null or an array");
 
   NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:(NSString *)updateId];
   NSAssert(uuid, @"update ID should be a valid UUID");

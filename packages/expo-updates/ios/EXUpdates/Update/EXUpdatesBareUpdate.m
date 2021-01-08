@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
   NSAssert([updateId isKindOfClass:[NSString class]], @"update ID should be a string");
   NSAssert([commitTime isKindOfClass:[NSNumber class]], @"commitTime should be a number");
   NSAssert(!metadata || [metadata isKindOfClass:[NSDictionary class]], @"metadata should be null or an object");
-  NSAssert(assets && [assets isKindOfClass:[NSArray class]], @"assets should be a nonnull array");
+  NSAssert(!assets || [assets isKindOfClass:[NSArray class]], @"assets should be null or an array");
 
   NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:(NSString *)updateId];
   NSAssert(uuid, @"update ID should be a valid UUID");
