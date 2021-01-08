@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed possible unsafe call in VideoResultTask. ([#11552](https://github.com/expo/expo/pull/11552) by [@Duell10111](https://github.com/Duell10111))
+
 ## 9.2.1 — 2020-12-09
 
 ### 🐛 Bug fixes
