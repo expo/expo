@@ -51,7 +51,7 @@ const STYLES_LIST_ITEM = css`
     line-height: 0;
     margin: 0 0.5rem 0 -1rem;
     position: relative;
-    color: ${Constants.colors.black80};
+    color: var(--color-black80);
   }
 
   > div {

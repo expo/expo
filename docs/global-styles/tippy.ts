@@ -6,18 +6,18 @@ import * as Constants from '~/constants/theme';
 export const globalTippy = css`
   div.tippy-tooltip {
     text-align: left;
-    background: ${Constants.expoColors.black};
+    background-color: var(--color-black90);
   }
 
   .tippy-popper[x-placement^='top'] .tippy-tooltip .tippy-roundarrow {
-    fill: ${Constants.expoColors.black};
+    fill: var(--color-black90);
   }
 
   .tippy-tooltip.expo-theme .tippy-content {
     ${paragraph};
-    color: ${Constants.colors.white};
+    color: var(--color-white);
     font-family: ${Constants.fonts.book};
-    background: ${Constants.expoColors.black};
+    background-color: var(--color-black90);
     padding: 8px;
   }
 

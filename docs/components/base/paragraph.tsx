@@ -67,7 +67,7 @@ const STYLES_BLOCKQUOTE = css`
   padding: 12px;
   margin-bottom: 1rem;
   border-left: 4px solid ${Constants.expoColors.semantic.border};
-  background: ${Constants.expoColors.gray[100]};
+  background-color: var(--color-gray100);
   border-radius: 4px;
 
   div {
@@ -75,7 +75,7 @@ const STYLES_BLOCKQUOTE = css`
   }
 
   code {
-    background-color: ${Constants.expoColors.gray[200]};
+    background-color: var(--color-gray200);
   }
 `;
 

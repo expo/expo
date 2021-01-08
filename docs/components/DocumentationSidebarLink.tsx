@@ -17,32 +17,29 @@ const STYLES_ACTIVE = css`
   font-size: 15px;
   line-height: 140%;
   font-family: ${Constants.fontFamilies.demi};
-  color: ${Constants.colors.expoLighter};
+  color: var(--color-expoLighter);
   position: relative;
   left: -7px;
 
+  :hover,
   :visited {
-    color: ${Constants.expoColors.primary[500]};
-  }
-
-  :hover {
-    color: ${Constants.expoColors.primary[500]};
+    color: var(--color-primary500);
   }
 `;
 
 const STYLES_DEFAULT = css`
   ${paragraph}
-  color: ${Constants.colors.black80};
+  color: var(--color-black80);
   line-height: 140%;
   transition: 200ms ease color;
   font-size: 15px;
 
   :visited {
-    color: ${Constants.colors.black60};
+    color: var(--color-black80);
   }
 
   :hover {
-    color: ${Constants.expoColors.primary[500]};
+    color: var(--color-primary500);
   }
 `;
 
@@ -56,7 +53,7 @@ const STYLES_ACTIVE_BULLET = css`
   min-width: 6px;
   height: 6px;
   width: 6px;
-  background-color: ${Constants.expoColors.primary[500]};
+  background-color: var(--color-primary500);
   border-radius: 4px;
   position: relative;
   left: -12px;

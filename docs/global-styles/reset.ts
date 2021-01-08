@@ -113,7 +113,7 @@ export const globalReset = css`
 
   a {
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    color: ${Constants.colors.expoLighter};
+    color: var(--color-expoLighter);
   }
 
   body {
@@ -129,7 +129,7 @@ export const globalReset = css`
   }
 
   ::selection {
-    background-color: ${Constants.colors.lila};
-    color: ${Constants.colors.black};
+    background-color: var(--color-primary300);
+    color: var(--color-black90);
   }
 `;

@@ -8,7 +8,7 @@ import * as Constants from '~/constants/theme';
 
 const STYLES_LINK = css`
   ${paragraph}
-  color: ${Constants.expoColors.gray[600]};
+  color: var(--color-gray600);
   transition: 200ms ease color;
   font-size: 14px;
   display: block;
@@ -20,7 +20,7 @@ const STYLES_LINK = css`
   cursor: pointer;
 
   :hover {
-    color: ${Constants.expoColors.primary[500]};
+    color: var(--color-primary500);
   }
 `;
 
@@ -34,13 +34,13 @@ const STYLES_LINK_CODE = css`
 `;
 
 const STYLES_LINK_ACTIVE = css`
-  color: ${Constants.expoColors.primary[500]};
+  color: var(--color-primary500);
 `;
 
 const STYLES_TOOLTIP = css`
   border-radius: 3px;
   position: absolute;
-  background-color: ${Constants.expoColors.white};
+  background-color: var(--color-white);
   font-family: ${Constants.fontFamilies.demi};
   max-width: 400px;
   border: 1px solid black;

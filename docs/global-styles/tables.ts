@@ -15,7 +15,7 @@ export const globalTables = css`
   thead {
     border-radius: 4px;
     text-align: left;
-    background: ${Constants.expoColors.gray[100]};
+    background-color: var(--color-gray100);
   }
 
   td,

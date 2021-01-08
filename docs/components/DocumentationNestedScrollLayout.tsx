@@ -9,7 +9,8 @@ import * as Constants from '~/constants/theme';
 // NOTE(jim): Global styles if and only if this component is used.
 const STYLES_GLOBAL = css`
   body {
-    background: ${Constants.colors.white};
+    background-color: var(--color-white);
+    color: var(--color-black90);
   }
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
@@ -26,13 +27,13 @@ const STYLES_GLOBAL = css`
 
       /* Handle */
       ::-webkit-scrollbar-thumb {
-        background: ${Constants.expoColors.gray[200]};
+        background: var(--color-gray200);
         border-radius: 10px;
       }
 
       /* Handle on hover */
       ::-webkit-scrollbar-thumb:hover {
-        background: ${Constants.expoColors.gray[300]};
+        background: var(--color-gray300);
       }
     }
   }
@@ -106,6 +107,7 @@ const STYLES_SIDEBAR = css`
   overflow: hidden;
   transition: 200ms ease max-width;
   background: ${Constants.expoColors.semantic.background};
+  background: var(--color-white);
 
   @media screen and (max-width: 1200px) {
     max-width: 280px;
@@ -122,11 +124,11 @@ const STYLES_LEFT = css`
 
 const STYLES_RIGHT = css`
   border-left: 1px solid ${Constants.expoColors.semantic.border};
-  background-color: ${Constants.expoColors.white};
+  background: var(--color-white);
 `;
 
 const STYLES_CENTER = css`
-  background: ${Constants.expoColors.white};
+  background: var(--color-white);
   min-width: 5%;
   width: 100%;
   height: 100%;
@@ -162,13 +164,13 @@ const STYLES_SCROLL_CONTAINER = css`
 
   /* Handle */
   ::-webkit-scrollbar-thumb {
-    background: ${Constants.expoColors.gray[200]};
+    background: var(--color-gray200);
     border-radius: 10px;
   }
 
   /* Handle on hover */
   ::-webkit-scrollbar-thumb:hover {
-    background: ${Constants.expoColors.gray[300]};
+    background: var(--color-gray300);
   }
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {

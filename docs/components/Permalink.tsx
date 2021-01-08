@@ -59,6 +59,10 @@ const STYLES_PERMALINK_ICON = css`
   svg {
     width: 100%;
     height: auto;
+
+    path {
+      stroke: var(--color-gray700);
+    }
   }
 `;
 

@@ -6,8 +6,8 @@ import { P } from '~/components/base/paragraph';
 import * as Constants from '~/constants/theme';
 
 const CONTAINER_STYLE = css`
-  background-color: ${Constants.expoColors.yellow[100]};
-  border: 1px solid ${Constants.expoColors.yellow[200]};
+  background-color: var(--color-yellow100);
+  border: 1px solid var(--color-yellow200);
   padding: 16px;
   margin-bottom: 1rem;
   border-radius: 4px;

@@ -4,7 +4,7 @@ import * as React from 'react';
 import * as Constants from '~/constants/theme';
 
 const STYLES_PROMPT = css`
-  background-color: ${Constants.colors.black};
+  background-color: var(--color-codeBlack);
   border-radius: 4px;
   padding: 24px;
   display: flex;
@@ -17,11 +17,11 @@ const STYLES_LINE = css`
   white-space: nowrap;
   font-family: ${Constants.fontFamilies.mono};
   font-size: 13px;
-  color: ${Constants.colors.codeWhite};
+  color: var(--color-codeWhite);
   line-height: 160%;
   ::before {
     content: '$ ';
-    color: ${Constants.colors.lila};
+    color: var(--color-primary300);
   }
 `;
 
@@ -31,7 +31,7 @@ const STYLES_COMMENT = css`
   font-family: ${Constants.fontFamilies.mono};
   opacity: 0.6;
   font-size: 13px;
-  color: ${Constants.colors.codeWhite};
+  color: var(--color-codeWhite);
   line-height: 150%;
 `;
 

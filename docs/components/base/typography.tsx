@@ -4,7 +4,7 @@ import * as Constants from '~/constants/theme';
 
 export const h1 = css`
   font-family: ${Constants.fonts.bold};
-  color: ${Constants.colors.black90};
+  color: var(--color-black90);
   font-size: 48px;
   line-height: 120%;
   letter-spacing: -0.022em;
@@ -13,7 +13,7 @@ export const h1 = css`
 
 export const h2 = css`
   font-family: ${Constants.fonts.demi};
-  color: ${Constants.colors.black90};
+  color: var(--color-black90);
   font-size: 30px;
   line-height: 130%;
   letter-spacing: -0.021em;
@@ -22,7 +22,7 @@ export const h2 = css`
 
 export const h3 = css`
   font-family: ${Constants.fonts.demi};
-  color: ${Constants.colors.black90};
+  color: var(--color-black90);
   font-size: 24px;
   line-height: 130%;
   letter-spacing: -0.019em;
@@ -31,7 +31,7 @@ export const h3 = css`
 
 export const h4 = css`
   font-family: ${Constants.fonts.bold};
-  color: ${Constants.colors.black90};
+  color: var(--color-black90);
   font-size: 18px;
   line-height: 140%;
   letter-spacing: -0.01em;
@@ -40,7 +40,7 @@ export const h4 = css`
 
 export const paragraph = css`
   font-family: ${Constants.fontFamilies.book};
-  color: ${Constants.colors.black90};
+  color: var(--color-black90);
   font-weight: 400;
   font-size: 16px;
   line-height: 160%;

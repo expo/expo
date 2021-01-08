@@ -18,10 +18,10 @@ const STYLES_TITLE = css`
   text-decoration: none;
   font-family: ${Constants.fontFamilies.demi};
   user-select: none;
-  background: ${Constants.expoColors.gray[200]};
+  background-color: var(--color-gray200);
   padding: 8px 16px;
   border-radius: 4px;
-  color: ${Constants.expoColors.black};
+  color: var(--color-black90);
 
   :hover {
     cursor: pointer;

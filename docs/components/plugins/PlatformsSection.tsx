@@ -14,8 +14,9 @@ const STYLES_TITLE = css`
 
 const STYLES_CELL = css`
   transition-duration: 0.2s;
+
   :hover {
-    background-color: ${Constants.colors.grey};
+    background-color: var(--color-grey);
   }
 `;
 

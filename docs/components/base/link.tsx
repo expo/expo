@@ -9,7 +9,7 @@ type LinkProps = {
 };
 
 const STYLES_EXTERNAL_LINK = css`
-  color: ${Constants.expoColors.primary[500]};
+  color: var(--color-primary500);
   font-size: inherit;
 
   :hover {

@@ -32,7 +32,7 @@ const STYLES_INPUT = css`
     height: 40px;
     outline: 0;
     border: none;
-    background-color: ${Constants.expoColors.gray[200]};
+    background-color: var(--color-gray200);
   }
 
   .svg-icons {
@@ -91,6 +91,7 @@ const STYLES_INPUT_MOBILE = css`
     height: 20px;
     width: 20px;
     color: rgba(0, 0, 0, 0.3);
+    color: red;
     right: 8px;
     display: flex;
     align-items: center;

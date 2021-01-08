@@ -31,13 +31,13 @@ export const globalExtras = css`
     font-size: 1.2rem;
     font-weight: 500;
     font-family: ${Constants.fonts.demi};
-    color: ${Constants.colors.black90};
+    color: var(--color-black90);
     display: inline-block;
   }
 
   details summary h4 {
     font-family: ${Constants.fonts.demi};
-    color: ${Constants.colors.black90};
+    color: var(--color-black90);
     font-size: 1rem;
     font-weight: 500;
     display: inline-block;
@@ -71,8 +71,8 @@ export const globalExtras = css`
     margin: 0;
     margin-bottom: 0.5rem;
     text-decoration: none;
-    background: ${Constants.expoColors.primary[500]};
-    color: ${Constants.expoColors.white};
+    background-color: var(--color-primary500);
+    color: var(--color-white);
     font-family: ${Constants.fontFamilies.book};
     font-size: 1rem;
     cursor: pointer;
@@ -113,6 +113,20 @@ export const globalExtras = css`
   .diff-container th {
     border-bottom: none;
     border-right: none;
+  }
+
+  .diff-line {
+    .diff-gutter-delete,
+    .diff-code-delete {
+      background-color: var(--color-red200);
+      color: var(--color-black90);
+    }
+
+    .diff-gutter-insert,
+    .diff-code-insert {
+      background-color: var(--color-green200);
+      color: var(--color-black90);
+    }
   }
 
   // TODO: investigate why some style is forcing nested ordered lists to have

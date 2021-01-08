@@ -20,27 +20,24 @@ const STYLES_TITLE = css`
 `;
 
 const STYLES_ACTIVE = css`
-  color: ${Constants.colors.expoLighter};
+  color: var(--color-expoLighter);
 
+  :hover,
   :visited {
-    color: ${Constants.colors.expo};
-  }
-
-  :hover {
-    color: ${Constants.colors.expo};
+    color: var(--color-expo);
   }
 `;
 
 const STYLES_DEFAULT = css`
-  color: ${Constants.colors.black40};
+  color: var(--color-black40);
   transition: 200ms ease color;
 
   :visited {
-    color: ${Constants.colors.black40};
+    color: var(--color-black40);
   }
 
   :hover {
-    color: ${Constants.colors.expo};
+    color: var(--color-expo);
   }
 `;
 

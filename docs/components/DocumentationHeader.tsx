@@ -52,7 +52,7 @@ const STYLES_NAV = css`
   align-items: center;
   justify-content: space-between;
   position: relative;
-  background-color: ${Constants.expoColors.white};
+  background-color: var(--color-white);
   z-index: 2;
   margin: 0 auto;
   padding: 0 16px;
@@ -66,7 +66,7 @@ const STYLES_NAV = css`
 const STYLES_MOBILE_NAV = css`
   padding: 0px;
   height: 56px;
-  background: ${Constants.expoColors.white};
+  background-color: var(--color-white);
   display: none;
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
@@ -92,7 +92,7 @@ const STYLES_SEARCH_OVERLAY = css`
     right: 0px;
     bottom: 0px;
     opacity: 0.5;
-    background-color: ${Constants.expoColors.black};
+    background-color: var(--color-black90);
   }
 `;
 
@@ -126,7 +126,7 @@ const STYLES_MENU_BUTTON = css`
   border-radius: 4px;
 
   :hover {
-    background-color: ${Constants.expoColors.gray[100]};
+    background-color: var(--color-gray100);
   }
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
@@ -147,7 +147,7 @@ const SECTION_LINK = css`
   border-radius: 4px;
 
   :hover {
-    background-color: ${Constants.expoColors.gray[200]};
+    background-color: var(--color-gray200);
   }
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
@@ -157,11 +157,11 @@ const SECTION_LINK = css`
 `;
 
 const SECTION_LINK_ACTIVE = css`
-  background-color: ${Constants.expoColors.gray[200]};
+  background-color: var(--color-gray200);
 `;
 
 const SECTION_LINK_TEXT = css`
-  color: ${Constants.colors.black90} !important;
+  color: var(--color-black90);
   bottom: 0;
   left: 0;
   right: 0;
@@ -206,7 +206,34 @@ type Props = {
   onHideMenu: () => void;
 };
 
+const DARK_MODE_CLASS = 'dark-mode';
+
 export default class DocumentationHeader extends React.PureComponent<Props> {
+  componentDidMount() {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      console.log('DARK MODE ON PAGE LOAD');
+
+      document.body.classList.add(DARK_MODE_CLASS);
+    }
+
+    window.addEventListener('load', this.themeChangeListener);
+  }
+
+  private themeChangeListener = () => {
+    console.log('themeChangeListener()');
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      console.log('----changeDetected----');
+
+      const classFunc = e.matches ? 'add' : 'remove';
+      document.body.classList[classFunc](DARK_MODE_CLASS);
+    });
+  };
+
+  componentWillUnmount() {
+    window.removeEventListener('load', this.themeChangeListener);
+  }
+
   render() {
     return (
       <div>

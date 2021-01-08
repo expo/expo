@@ -13,7 +13,7 @@ const attributes = {
 };
 
 const STYLES_CODE_BLOCK = css`
-  color: ${Constants.colors.black90};
+  color: var(--color-black90);
   font-family: ${Constants.fontFamilies.mono};
   font-size: 13px;
   line-height: 20px;
@@ -24,8 +24,8 @@ const STYLES_CODE_BLOCK = css`
   .code-annotation {
     transition: 200ms ease all;
     transition-property: text-shadow, opacity;
-    text-shadow: rgba(255, 255, 0, 1) 0px 0px 10px, rgba(255, 255, 0, 1) 0px 0px 10px,
-      rgba(255, 255, 0, 1) 0px 0px 10px, rgba(255, 255, 0, 1) 0px 0px 10px;
+    text-shadow: var(--color-textHighlight) 0px 0px 10px, var(--color-textHighlight) 0px 0px 10px,
+      var(--color-textHighlight) 0px 0px 10px, var(--color-textHighlight) 0px 0px 10px;
   }
 
   .code-annotation:hover {
@@ -44,7 +44,7 @@ const STYLES_CODE_BLOCK = css`
 `;
 
 const STYLES_INLINE_CODE = css`
-  color: ${Constants.expoColors.gray[900]};
+  color: var(--color-gray900);
   font-family: ${Constants.fontFamilies.mono};
   font-size: 0.825em;
   white-space: pre-wrap;
@@ -54,7 +54,7 @@ const STYLES_INLINE_CODE = css`
   max-width: 100%;
 
   word-wrap: break-word;
-  background-color: ${Constants.expoColors.gray[100]};
+  background-color: var(--color-gray100);
   border: 1px solid ${Constants.expoColors.semantic.border};
   border-radius: 4px;
   vertical-align: middle;
@@ -73,7 +73,7 @@ const STYLES_CODE_CONTAINER = css`
   white-space: pre;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
-  background-color: ${Constants.expoColors.gray[100]};
+  background-color: var(--color-gray100);
   line-height: 120%;
   border-radius: 4px;
 `;

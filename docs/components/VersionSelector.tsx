@@ -15,12 +15,12 @@ const STYLES_SELECT = css`
   border-radius: 5px;
   margin-bottom: 15px;
   width: 100%;
-  background-color: ${Constants.expoColors.white};
+  background-color: var(--color-white);
   border: 1px solid ${Constants.expoColors.semantic.border};
   box-shadow: 0 2px 2px 0 rgba(0, 0, 20, 0.015), 0 0 0 1px rgba(0, 0, 20, 0.0075);
 
   :hover {
-    background-color: ${Constants.expoColors.gray[100]};
+    background-color: var(--color-gray100);
   }
 `;
 
@@ -31,7 +31,7 @@ const STYLES_SELECT_TEXT = css`
   flex: 1;
   justify-content: space-between;
   font-family: ${Constants.fontFamilies.demi};
-  color: ${Constants.colors.black};
+  color: var(--color-black90);
   font-size: 14px;
 `;
 

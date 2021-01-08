@@ -21,7 +21,7 @@ import { VERSIONS } from '~/constants/versions';
 import { NavigationRoute, Url } from '~/types/common';
 
 const STYLES_DOCUMENT = css`
-  background: #fff;
+  background: var(--color-white);
   margin: 0 auto;
   padding: 40px 56px;
 

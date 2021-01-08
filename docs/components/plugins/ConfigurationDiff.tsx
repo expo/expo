@@ -4,7 +4,9 @@ import { parseDiff, Diff, Hunk } from 'react-diff-view';
 
 const TITLE_CONTAINER = css`
   padding: 15px;
+  color: var(--color-white);
   background-color: rgba(246, 246, 246, 0.8);
+  background-color: var(--color-black90);
   border-bottom: 1px solid #e3e3e3;
   font-family: monospace;
   font-size: 0.9rem;

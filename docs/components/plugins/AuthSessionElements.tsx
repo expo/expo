@@ -2,6 +2,7 @@ import { css } from '@emotion/core';
 import * as React from 'react';
 
 const STYLES_LINK = css`
+  background-color: var(--color-gray200);
   text-decoration: none;
   transition: box-shadow 0.15s ease 0s, transform 0.15s ease 0s, -webkit-box-shadow 0.15s ease 0s,
     -webkit-transform 0.15s ease 0s;

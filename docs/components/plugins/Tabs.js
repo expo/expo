@@ -2,9 +2,8 @@ import { css } from '@emotion/core';
 import { Tab as ReachTab, TabList, TabPanel, TabPanels, Tabs as ReachTabs } from '@reach/tabs';
 import * as React from 'react';
 
-import * as Constants from '~/constants/theme';
-
 const STYLES_TAB_BUTTON = css`
+  cursor: pointer;
   transition: all 0.15s ease 0s;
 
   padding: 1rem;
@@ -23,15 +22,21 @@ const STYLES_TAB_PANELS = css`
   padding-top: 6;
 `;
 
+const STYLES_TAB_ACTIVE = css`
+  border-color: var(--color-expo);
+  color: var(--color-expo);
+`;
+
+const STYLES_TAB_INACTIVE = css`
+  border-color: transparent;
+  color: var(--color-darkGrey);
+`;
+
 function TabButton({ selected, ...props }) {
   return (
     <ReachTab
       {...props}
-      css={STYLES_TAB_BUTTON}
-      style={{
-        borderColor: selected ? Constants.colors.expo : 'transparent',
-        color: selected ? Constants.colors.expo : Constants.colors.darkGrey,
-      }}
+      css={[STYLES_TAB_BUTTON, selected ? STYLES_TAB_ACTIVE : STYLES_TAB_INACTIVE]}
     />
   );
 }
