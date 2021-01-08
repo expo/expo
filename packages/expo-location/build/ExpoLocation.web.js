@@ -115,8 +115,18 @@ export default {
             resolve(watchId);
         });
     },
+    /** @deprecated Use `getForegroundPermissionsAsync()` instead */
     getPermissionsAsync,
+    /** @deprecated Use `requestForegroundPermissionsAsync()` instead */
     async requestPermissionsAsync() {
+        return getPermissionsAsync();
+    },
+    getBackgroundPermissionsAsync: getPermissionsAsync,
+    async requestBackgroundPermissionsAsync() {
+        return getPermissionsAsync();
+    },
+    getForegroundPermissionsAsync: getPermissionsAsync,
+    async requestForegroundPermissionsAsync() {
         return getPermissionsAsync();
     },
     // no-op

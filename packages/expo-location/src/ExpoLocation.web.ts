@@ -1,5 +1,4 @@
 import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
-import { getBackgroundPermissionsAsync } from './Location';
 
 import {
   LocationLastKnownOptions,

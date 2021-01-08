@@ -104,15 +104,41 @@ export async function reverseGeocodeAsync(location, options) {
 }
 /**
  * Gets the current state of location permissions.
+ * @deprecated Use `getForegroundPermissionsAsync()` instead
  */
-export async function getPermissionsAsync() {
-    return await ExpoLocation.getPermissionsAsync();
+export function getPermissionsAsync() {
+    return getForegroundPermissionsAsync();
 }
 /**
  * Requests the user to grant location permissions.
+ * @deprecated Use `requestForegroundPermissionsAsync()` instead
  */
-export async function requestPermissionsAsync() {
-    return await ExpoLocation.requestPermissionsAsync();
+export function requestPermissionsAsync() {
+    return requestForegroundPermissionsAsync();
+}
+/**
+ * Gets the current state of the location permissions, from app background.
+ */
+export async function getBackgroundPermissionsAsync() {
+    return await ExpoLocation.getBackgroundPermissionsAsync();
+}
+/**
+ * Requests the user to grant location permissions, from app background.
+ */
+export async function requestBackgroundPermissionsAsync() {
+    return await ExpoLocation.requestBackgroundPermissionsAsync();
+}
+/**
+ * Gets the current state of the location permissions, in app foreground.
+ */
+export async function getForegroundPermissionsAsync() {
+    return await ExpoLocation.getForegroundPermissionsAsync();
+}
+/**
+ * Requests the user to grant location permissions, in app foreground.
+ */
+export async function requestForegroundPermissionsAsync() {
+    return await ExpoLocation.requestForegroundPermissionsAsync();
 }
 // --- Location service
 /**

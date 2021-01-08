@@ -18,8 +18,14 @@ declare const _default: {
     geocodeAsync(): Promise<any[]>;
     reverseGeocodeAsync(): Promise<any[]>;
     watchPositionImplAsync(watchId: string, options: LocationOptions): Promise<string>;
+    /** @deprecated Use `getForegroundPermissionsAsync()` instead */
     getPermissionsAsync: typeof getPermissionsAsync;
+    /** @deprecated Use `requestForegroundPermissionsAsync()` instead */
     requestPermissionsAsync(): Promise<PermissionResponse>;
+    getBackgroundPermissionsAsync: typeof getPermissionsAsync;
+    requestBackgroundPermissionsAsync(): Promise<PermissionResponse>;
+    getForegroundPermissionsAsync: typeof getPermissionsAsync;
+    requestForegroundPermissionsAsync(): Promise<PermissionResponse>;
     startObserving(): void;
     stopObserving(): void;
 };
