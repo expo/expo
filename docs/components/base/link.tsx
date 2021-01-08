@@ -2,8 +2,6 @@ import { css } from '@emotion/core';
 import NextLink from 'next/link';
 import * as React from 'react';
 
-import * as Constants from '~/constants/theme';
-
 type LinkProps = {
   href?: string;
 };

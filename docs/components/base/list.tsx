@@ -3,8 +3,6 @@ import * as React from 'react';
 
 import { paragraph } from './typography';
 
-import * as Constants from '~/constants/theme';
-
 const attributes = {
   'data-text': true,
 };

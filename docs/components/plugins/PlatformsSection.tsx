@@ -5,7 +5,6 @@ import { H4 } from '~/components/base/headings';
 import { CheckCircle } from '~/components/icons/CheckCircle';
 import { PendingCircle } from '~/components/icons/PendingCircle';
 import { XCircle } from '~/components/icons/XCircle';
-import * as Constants from '~/constants/theme';
 import { ElementType } from '~/types/common';
 
 const STYLES_TITLE = css`

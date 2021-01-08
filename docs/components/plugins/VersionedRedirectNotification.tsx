@@ -3,7 +3,6 @@ import { useRouter } from 'next/router';
 import * as React from 'react';
 
 import { P } from '~/components/base/paragraph';
-import * as Constants from '~/constants/theme';
 
 const CONTAINER_STYLE = css`
   background-color: var(--color-yellow100);
