@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- Remove side-effect, binding the manifest environment variables to the app's `process.env` ([#11559](https://github.com/expo/expo/pull/11559) by [@EvanBacon](https://github.com/EvanBacon))
 - Dropped support for iOS 10.0 ([#11344](https://github.com/expo/expo/pull/11344) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features

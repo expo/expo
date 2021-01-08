@@ -45,6 +45,7 @@ ABI40_0_0UM_EXPORT_METHOD_AS(requestPermissionsAsync,
                     requester:(ABI40_0_0UMPromiseResolveBlock)resolve
                     rejecter:(ABI40_0_0UMPromiseRejectBlock)reject)
 {
+  [ABI40_0_0EXUserFacingNotificationsPermissionsRequester setRequestedPermissions:requestedPermissions];
   [ABI40_0_0UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
                                                          withRequester:[ABI40_0_0EXUserFacingNotificationsPermissionsRequester class]
                                                                resolve:resolve

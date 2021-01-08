@@ -62,12 +62,19 @@ function symlinkNecessaryPackage(projectPath, packageName) {
   let workspaceRootPath = findYarnWorkspaceRoot(projectPath);
   if (!workspaceRootPath) {
     debug(`Could not find Yarn workspace root; skipping symlinking package`);
+    return;
   }
   let workspacePackagePath = path.join(
     workspaceRootPath,
     'node_modules',
     packageName.replace('/', path.sep)
   );
+
+  stats = getFileStats(workspacePackagePath);
+  if (!stats || !stats.isDirectory()) {
+    debug(`%s does not exist; skipping symlinking package`, workspacePackagePath);
+    return;
+  }
 
   if (packageName.startsWith('@')) {
     let [scope, name] = packageName.split('/');
@@ -80,7 +87,6 @@ function symlinkNecessaryPackage(projectPath, packageName) {
     fs.symlinkSync(relativePackagePath, path.join(scopePath, name));
   } else {
     let relativePackagePath = path.relative(nodeModulesPath, workspacePackagePath);
-    console.log(relativePackagePath);
 
     debug(`Ensuring %s exists`, nodeModulesPath);
     mkdirp.sync(nodeModulesPath);
