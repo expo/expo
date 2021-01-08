@@ -65,8 +65,6 @@ function ensureTrailingSlash(input, shouldAppend) {
  * Create a URL that works for the environment the app is currently running in.
  * The scheme in bare and standalone must be defined in the app.json under `expo.scheme`.
  *
- * @deprecated use `Linking.createURL(path, { queryParams })`
- *
  * **Examples**
  *
  * - Bare: empty string
@@ -79,8 +77,8 @@ function ensureTrailingSlash(input, shouldAppend) {
  * @param path addition path components to append to the base URL.
  * @param queryParams An object of parameters that will be converted into a query string.
  */
-export function makeUrl(path = '', queryParams = {}) {
-    return createURL(path, { queryParams });
+export function makeUrl(path = '', queryParams, scheme) {
+    return createURL(path, { queryParams, scheme });
 }
 /**
  * Create a URL that works for the environment the app is currently running in.
