@@ -58,33 +58,35 @@ NS_ASSUME_NONNULL_BEGIN
   jsBundleAsset.mainBundleFilename = EXUpdatesEmbeddedBundleFilename;
   [processedAssets addObject:jsBundleAsset];
 
-  for (NSDictionary *assetDict in (NSArray *)assets) {
-    NSAssert([assetDict isKindOfClass:[NSDictionary class]], @"assets must be objects");
-    id key = assetDict[@"key"];
-    id urlString = assetDict[@"url"];
-    id type = assetDict[@"contentType"];
-    id metadata = assetDict[@"metadata"];
-    id mainBundleFilename = assetDict[@"mainBundleFilename"];
-    NSAssert(key && [key isKindOfClass:[NSString class]], @"asset key should be a nonnull string");
-    NSAssert(urlString && [urlString isKindOfClass:[NSString class]], @"asset url should be a nonnull string");
-    NSAssert(type && [type isKindOfClass:[NSString class]], @"asset contentType should be a nonnull string");
-    NSURL *url = [NSURL URLWithString:(NSString *)urlString];
-    NSAssert(url, @"asset url should be a valid URL");
+  if (assets) {
+    for (NSDictionary *assetDict in (NSArray *)assets) {
+      NSAssert([assetDict isKindOfClass:[NSDictionary class]], @"assets must be objects");
+      id key = assetDict[@"key"];
+      id urlString = assetDict[@"url"];
+      id type = assetDict[@"contentType"];
+      id metadata = assetDict[@"metadata"];
+      id mainBundleFilename = assetDict[@"mainBundleFilename"];
+      NSAssert(key && [key isKindOfClass:[NSString class]], @"asset key should be a nonnull string");
+      NSAssert(urlString && [urlString isKindOfClass:[NSString class]], @"asset url should be a nonnull string");
+      NSAssert(type && [type isKindOfClass:[NSString class]], @"asset contentType should be a nonnull string");
+      NSURL *url = [NSURL URLWithString:(NSString *)urlString];
+      NSAssert(url, @"asset url should be a valid URL");
 
-    EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithKey:key type:(NSString *)type];
-    asset.url = url;
+      EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithKey:key type:(NSString *)type];
+      asset.url = url;
 
-    if (metadata) {
-      NSAssert([metadata isKindOfClass:[NSDictionary class]], @"asset metadata should be an object");
-      asset.metadata = (NSDictionary *)metadata;
+      if (metadata) {
+        NSAssert([metadata isKindOfClass:[NSDictionary class]], @"asset metadata should be an object");
+        asset.metadata = (NSDictionary *)metadata;
+      }
+
+      if (mainBundleFilename) {
+        NSAssert([mainBundleFilename isKindOfClass:[NSString class]], @"asset localPath should be a string");
+        asset.mainBundleFilename = (NSString *)mainBundleFilename;
+      }
+
+      [processedAssets addObject:asset];
     }
-
-    if (mainBundleFilename) {
-      NSAssert([mainBundleFilename isKindOfClass:[NSString class]], @"asset localPath should be a string");
-      asset.mainBundleFilename = (NSString *)mainBundleFilename;
-    }
-
-    [processedAssets addObject:asset];
   }
 
   update.updateId = uuid;
