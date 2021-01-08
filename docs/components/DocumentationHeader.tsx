@@ -211,8 +211,6 @@ const DARK_MODE_CLASS = 'dark-mode';
 export default class DocumentationHeader extends React.PureComponent<Props> {
   componentDidMount() {
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      console.log('DARK MODE ON PAGE LOAD');
-
       document.body.classList.add(DARK_MODE_CLASS);
     }
 
@@ -220,11 +218,7 @@ export default class DocumentationHeader extends React.PureComponent<Props> {
   }
 
   private themeChangeListener = () => {
-    console.log('themeChangeListener()');
-
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-      console.log('----changeDetected----');
-
       const classFunc = e.matches ? 'add' : 'remove';
       document.body.classList[classFunc](DARK_MODE_CLASS);
     });
