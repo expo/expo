@@ -7,6 +7,7 @@ import * as Analytics from '~/common/analytics';
 import { globalExtras } from '~/global-styles/extras';
 import { globalFonts } from '~/global-styles/fonts';
 import { globalNProgress } from '~/global-styles/nprogress';
+import { globalPalette } from '~/global-styles/palette';
 import { globalPrism } from '~/global-styles/prism';
 import { globalReset } from '~/global-styles/reset';
 import { globalTables } from '~/global-styles/tables';
@@ -40,6 +41,7 @@ export default class MyDocument extends Document<{ css?: string }> {
 
           <Global
             styles={[
+              globalPalette,
               globalFonts,
               globalReset,
               globalNProgress,
