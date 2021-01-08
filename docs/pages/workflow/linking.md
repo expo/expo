@@ -171,13 +171,13 @@ If your app is ejected, note that like some other parts of `app.json`, changing 
 
 ### `Linking` module
 
-To save you the trouble of inserting a bunch of conditionals based on the environment that you're in and hardcoding urls, we provide some helper methods in our extension of the `Linking` module. When you want to provide a service with a url that it needs to redirect back into your app, you can call `Linking.makeUrl()` and it will resolve to the following:
+To save you the trouble of inserting a bunch of conditionals based on the environment that you're in and hardcoding urls, we provide some helper methods in our extension of the `Linking` module. When you want to provide a service with a url that it needs to redirect back into your app, you can call `Linking.createURL()` and it will resolve to the following:
 
 - _Published app in Expo client_: `exp://exp.host/@community/with-webbrowser-redirect`
 - _Published app in standalone_: `myapp://`
 - _Development_: `exp://localhost:19000`
 
-You can also change the returned url by passing optional parameters into `Linking.makeUrl()`. These will be used by your app to receive data, which we will talk about in the next section.
+You can also change the returned url by passing optional parameters into `Linking.createURL()`. These will be used by your app to receive data, which we will talk about in the next section.
 
 ### Handling links into your app
 
@@ -195,10 +195,12 @@ See the examples below to see these in action.
 
 ### Passing data to your app through the URL
 
-To pass some data into your app, you can append it as a path or query string on your url. `Linking.makeUrl(path, queryParams)` will construct a working url automatically for you. You can use it like this:
+To pass some data into your app, you can append it as a path or query string on your url. `Linking.createURL(path, options)` will construct a working url automatically for you. You can use it like this:
 
 ```javascript
-let redirectUrl = Linking.makeUrl('path/into/app', { hello: 'world', goodbye: 'now' });
+let redirectUrl = Linking.createURL('path/into/app', {
+  queryParams: { hello: 'world', goodbye: 'now' },
+});
 ```
 
 This would return something like `myapp:///path/into/app?hello=world&goodbye=now` for a standalone app.

@@ -75,7 +75,7 @@ function ensureTrailingSlash(input: string, shouldAppend: boolean): string {
  * Create a URL that works for the environment the app is currently running in.
  * The scheme in bare and standalone must be defined in the app.json under `expo.scheme`.
  *
- * @deprecated use `Linking.createURL(path, { params })`
+ * @deprecated use `Linking.createURL(path, { queryParams })`
  *
  * **Examples**
  *
@@ -90,7 +90,7 @@ function ensureTrailingSlash(input: string, shouldAppend: boolean): string {
  * @param queryParams An object of parameters that will be converted into a query string.
  */
 export function makeUrl(path: string = '', queryParams: QueryParams = {}): string {
-  return createURL(path, { params: queryParams });
+  return createURL(path, { queryParams });
 }
 
 /**
@@ -108,23 +108,23 @@ export function makeUrl(path: string = '', queryParams: QueryParams = {}): strin
  *
  * @param path addition path components to append to the base URL.
  * @param scheme URI protocol `<scheme>://` that must be built into your native app.
- * @param params An object of parameters that will be converted into a query string.
+ * @param queryParams An object of parameters that will be converted into a query string.
  */
 export function createURL(
   path: string,
   {
     scheme,
-    params = {},
+    queryParams = {},
   }: {
     scheme?: string;
-    params?: QueryParams;
+    queryParams?: QueryParams;
   } = {}
 ): string {
   if (Platform.OS === 'web') {
     if (!Platform.isDOMAvailable) return '';
 
     const origin = ensureLeadingSlash(window.location.origin, false);
-    let queryString = qs.stringify(params);
+    let queryString = qs.stringify(queryParams);
     if (queryString) {
       queryString = `?${queryString}`;
     }
@@ -168,12 +168,12 @@ export function createURL(
         paramsFromHostUri = parsedParams;
       }
     } catch (e) {}
-    params = {
-      ...params,
+    queryParams = {
+      ...queryParams,
       ...paramsFromHostUri,
     };
   }
-  queryString = qs.stringify(params);
+  queryString = qs.stringify(queryParams);
   if (queryString) {
     queryString = `?${queryString}`;
   }

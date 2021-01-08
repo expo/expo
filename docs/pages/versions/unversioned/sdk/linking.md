@@ -26,13 +26,14 @@ import * as Linking from 'expo-linking';
 
 ## Methods
 
-### `Linking.makeUrl(path, queryParams)`
+### `Linking.createURL(path, options)`
 
 Helper method for constructing a deep link into your app, given an optional path and set of query parameters.
 
 #### Arguments
 
 - **path (_string_)** -- Any path into your app.
+- **scheme (_string_)** -- Optional URI protocol to use in the URL `<scheme>://`, when undefined the scheme will be chosen from the Expo config (app.config.js or app.json).
 - **queryParams (_object_)** -- An object with a set of query parameters. These will be merged with any Expo-specific parameters that are needed (e.g. release channel) and then appended to the url as a query string.
 
 #### Returns
@@ -45,7 +46,7 @@ Helper method for parsing out deep link information from a URL.
 
 #### Arguments
 
-- **url (_string_)** -- A URL that points to the currently running experience (e.g. an output of `Linking.makeUrl()`).
+- **url (_string_)** -- A URL that points to the currently running experience (e.g. an output of `Linking.createURL()`).
 
 #### Returns
 

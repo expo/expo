@@ -54,7 +54,7 @@ describe(Linking.createURL, () => {
       { undefinedParam: undefined },
       { lotsOfSlashes: '/////' },
     ])(`makes url %p`, queryParams => {
-      expect(Linking.createURL('some/path', { params: queryParams })).toMatchSnapshot();
+      expect(Linking.createURL('some/path', { queryParams })).toMatchSnapshot();
     });
 
     test.each<string>(['path/into/app', ''])(`makes url %p`, path => {
@@ -85,7 +85,7 @@ describe(Linking.createURL, () => {
       { undefinedParam: undefined },
       { lotsOfSlashes: '/////' },
     ])(`makes url %p`, queryParams => {
-      expect(Linking.createURL('some/path', { params: queryParams })).toMatchSnapshot();
+      expect(Linking.createURL('some/path', { queryParams })).toMatchSnapshot();
     });
 
     test.each<string>(['path/into/app', ''])(`makes url %p`, path => {

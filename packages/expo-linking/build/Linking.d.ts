@@ -3,7 +3,7 @@ import { ParsedURL, QueryParams, URLListener } from './Linking.types';
  * Create a URL that works for the environment the app is currently running in.
  * The scheme in bare and standalone must be defined in the app.json under `expo.scheme`.
  *
- * @deprecated use `Linking.createURL(path, { params })`
+ * @deprecated use `Linking.createURL(path, { queryParams })`
  *
  * **Examples**
  *
@@ -33,11 +33,11 @@ export declare function makeUrl(path?: string, queryParams?: QueryParams): strin
  *
  * @param path addition path components to append to the base URL.
  * @param scheme URI protocol `<scheme>://` that must be built into your native app.
- * @param params An object of parameters that will be converted into a query string.
+ * @param queryParams An object of parameters that will be converted into a query string.
  */
-export declare function createURL(path: string, { scheme, params, }?: {
+export declare function createURL(path: string, { scheme, queryParams, }?: {
     scheme?: string;
-    params?: QueryParams;
+    queryParams?: QueryParams;
 }): string;
 /**
  * Returns the components and query parameters for a given URL.
