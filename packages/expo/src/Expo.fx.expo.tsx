@@ -6,7 +6,6 @@ import './environment/react-native-logs.fx';
 // load expo-asset immediately to set a custom `source` transformer in React Native
 import 'expo-asset';
 
-import Constants from 'expo-constants';
 import * as Font from 'expo-font';
 import { installWebGeolocationPolyfill } from 'expo-location';
 import * as React from 'react';
