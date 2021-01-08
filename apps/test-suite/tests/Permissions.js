@@ -150,8 +150,14 @@ export function test(t) {
     });
 
     t.describe('of Permissions.LOCATION', () => {
+      t.it('is equal to Permissions.LOCATION_FOREGROUND', () => {
+        t.expect(Permissions.LOCATION).toEqual(Permissions.LOCATION_FOREGROUND);
+      });
+    });
+
+    t.describe('of Permissions.LOCATION_FOREGROUND', () => {
       t.it('has proper shape', async () => {
-        const result = await Permissions.getAsync(Permissions.LOCATION);
+        const result = await Permissions.getAsync(Permissions.LOCATION_FOREGROUND);
         const keys = Object.keys(result);
         const permissionsKeys = Object.keys(result.permissions);
 
@@ -160,8 +166,10 @@ export function test(t) {
         t.expect(keys).toContain('expires');
         t.expect(keys).toContain('permissions');
 
-        t.expect(permissionsKeys).toContain(Permissions.LOCATION);
-        const locationPermissionKeys = Object.keys(result.permissions[Permissions.LOCATION]);
+        t.expect(permissionsKeys).toContain(Permissions.LOCATION_FOREGROUND);
+        const locationPermissionKeys = Object.keys(
+          result.permissions[Permissions.LOCATION_FOREGROUND]
+        );
         t.expect(locationPermissionKeys).toContain('status');
         t.expect(locationPermissionKeys).toContain('canAskAgain');
         t.expect(locationPermissionKeys).toContain('granted');
@@ -170,7 +178,37 @@ export function test(t) {
         if (Platform.OS === 'android') {
           t.expect(locationPermissionKeys).toContain('android');
           const androidLocationPermissionKeys = Object.keys(
-            result.permissions[Permissions.LOCATION]['android']
+            result.permissions[Permissions.LOCATION_FOREGROUND]['android']
+          );
+          t.expect(androidLocationPermissionKeys).toContain('accuracy');
+        }
+      });
+    });
+
+    t.describe('of Permissions.LOCATION_BACKGROUND', () => {
+      t.it('has proper shape', async () => {
+        const result = await Permissions.getAsync(Permissions.LOCATION_BACKGROUND);
+        const keys = Object.keys(result);
+        const permissionsKeys = Object.keys(result.permissions);
+
+        // check top-level
+        t.expect(keys).toContain('status');
+        t.expect(keys).toContain('expires');
+        t.expect(keys).toContain('permissions');
+
+        t.expect(permissionsKeys).toContain(Permissions.LOCATION_BACKGROUND);
+        const locationPermissionKeys = Object.keys(
+          result.permissions[Permissions.LOCATION_BACKGROUND]
+        );
+        t.expect(locationPermissionKeys).toContain('status');
+        t.expect(locationPermissionKeys).toContain('canAskAgain');
+        t.expect(locationPermissionKeys).toContain('granted');
+        t.expect(locationPermissionKeys).toContain('expires');
+
+        if (Platform.OS === 'android') {
+          t.expect(locationPermissionKeys).toContain('android');
+          const androidLocationPermissionKeys = Object.keys(
+            result.permissions[Permissions.LOCATION_BACKGROUND]['android']
           );
           t.expect(androidLocationPermissionKeys).toContain('accuracy');
         }
