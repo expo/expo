@@ -142,14 +142,14 @@ export function execAll(rgx: RegExp, str: string, index: number = 0): string[] {
  * Searches for files matching given glob patterns.
  */
 export async function searchFilesAsync(
-  base: string,
+  rootPath: string,
   patterns: string | string[],
   options?: GlobOptions
 ): Promise<Set<string>> {
   const files = await Promise.all(
     arrayize(patterns).map((pattern) =>
       glob(pattern, {
-        cwd: base,
+        cwd: rootPath,
         nodir: true,
         ...options,
       })

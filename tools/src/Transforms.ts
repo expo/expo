@@ -9,7 +9,6 @@ export * from './Transforms.types';
 
 /**
  * Transforms input string according to the given transform rules.
- * Returns an object with the `output` and `matches`.
  */
 export function transformString(
   input: string,
@@ -20,7 +19,7 @@ export function transformString(
   }
   return transforms.reduce(
     // @ts-ignore @tsapeta: TS gets crazy on `replaceWith` being a function.
-    (acc, transform) => acc.replace(transform.find, transform.replaceWith),
+    (acc, { find, replaceWith }) => acc.replace(find, replaceWith),
     input
   );
 }
@@ -41,11 +40,9 @@ export async function copyFileWithTransformsAsync(
   // Filter out transforms that don't match paths patterns.
   const filteredContentTransforms =
     transforms.content?.filter(
-      (transform) =>
-        !transform.paths ||
-        arrayize(transform.paths).some((pattern) =>
-          minimatch(sourceFile, pattern, { matchBase: true })
-        )
+      ({ paths }) =>
+        !paths ||
+        arrayize(paths).some((pattern) => minimatch(sourceFile, pattern, { matchBase: true }))
     ) ?? [];
 
   // Transform source content.
