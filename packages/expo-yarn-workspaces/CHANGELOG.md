@@ -2,11 +2,13 @@
 
 ## Unpublished
 
-### ⚠️ Notices
-
 ### 🛠 Breaking changes
 
 ### 🎉 New features
+
+### 🐛 Bug fixes
+
+## 1.3.1 — 2021-01-08
 
 ### 🐛 Bug fixes
 
