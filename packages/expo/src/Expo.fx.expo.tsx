@@ -14,10 +14,6 @@ import { AppRegistry, Platform, StyleSheet } from 'react-native';
 
 import DevAppContainer from './environment/DevAppContainer';
 
-if (Constants.manifest && typeof Constants.manifest.env === 'object') {
-  Object.assign(process.env, Constants.manifest.env);
-}
-
 // add the dev app container wrapper component on ios
 if (__DEV__) {
   if (Platform.OS === 'ios') {
