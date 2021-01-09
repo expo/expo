@@ -16,9 +16,11 @@ export default async function checkPackageAsync(
   options: ActionOptions & { isPlugin?: boolean }
 ): Promise<boolean> {
   try {
-    logger.info(
-      `🔍 Checking ${green.bold(pkg.packageName)} ${options.isPlugin ? 'plugin' : 'package'}`
-    );
+    if (options.isPlugin) {
+      logger.info(`🔌 Checking ${green.bold(pkg.packageName)} plugin`);
+    } else {
+      logger.info(`🔍 Checking ${green.bold(pkg.packageName)} package`);
+    }
 
     const args = options.isPlugin ? ['plugin'] : [];
     if (options.build) {
@@ -31,7 +33,9 @@ export default async function checkPackageAsync(
     }
     if (options.test) {
       const args = ['--watch', 'false', '--passWithNoTests'];
-
+      if (options.isPlugin) {
+        args.unshift('plugin');
+      }
       if (process.env.CI) {
         // Limit to one worker on CIs
         args.push('--maxWorkers', '1');
