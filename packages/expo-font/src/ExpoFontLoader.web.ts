@@ -110,7 +110,7 @@ function getStyleElement(): HTMLStyleElement {
 function _createWebStyle(fontFamily: string, resource: FontResource): HTMLStyleElement {
   const fontStyle = `@font-face {
     font-family: "${fontFamily}";
-    src: url("${resource.uri}");
+    src: url(${resource.uri});
     font-display: ${resource.display || FontDisplay.AUTO};
   }`;
 
