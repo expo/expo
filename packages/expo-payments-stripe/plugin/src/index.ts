@@ -121,7 +121,7 @@ const withStripeAndroid: ConfigPlugin<{ scheme: string }> = (config, { scheme })
     let mainApplication = getMainApplicationOrThrow(config.modResults);
     mainApplication = ensureStripeActivity({ mainApplication, scheme });
 
-    if (!!scheme) {
+    if (scheme) {
       mainApplication = addMetaDataItemToMainApplication(mainApplication, META_WALLET, 'true');
     } else {
       mainApplication = removeMetaDataItemFromMainApplication(mainApplication, META_WALLET);
