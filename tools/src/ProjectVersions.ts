@@ -4,13 +4,15 @@ import plist from 'plist';
 import semver from 'semver';
 import JsonFile from '@expo/json-file';
 
-import { EXPO_DIR, ANDROID_DIR } from './Constants';
+import { EXPO_DIR, ANDROID_DIR, PACKAGES_DIR } from './Constants';
 
 export type Platform = 'ios' | 'android';
 
 export type SDKVersionsObject = {
   sdkVersions: string[];
 };
+
+const BUNDLED_NATIVE_MODULES_PATH = path.join(PACKAGES_DIR, 'expo', 'bundledNativeModules.json');
 
 export async function sdkVersionAsync(): Promise<string> {
   const packageJson = await JsonFile.readAsync(path.join(EXPO_DIR, 'packages/expo/package.json'));
@@ -80,4 +82,18 @@ export async function getNextSDKVersionAsync(platform: Platform): Promise<string
     return;
   }
   return `${semver.major(semver.inc(newestVersion, 'major')!)}.0.0`;
+}
+
+/**
+ * Returns an object with versions of bundled native modules.
+ */
+export async function getBundledVersionsAsync(): Promise<Record<string, string>> {
+  return require(BUNDLED_NATIVE_MODULES_PATH) as Record<string, string>;
+}
+
+/**
+ * Updates bundled native modules versions.
+ */
+export async function updateBundledVersionsAsync(patch: Record<string, string>): Promise<void> {
+  await JsonFile.mergeAsync(BUNDLED_NATIVE_MODULES_PATH, patch);
 }

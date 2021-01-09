@@ -1,7 +1,7 @@
 import { Task } from './steps/Task';
 import chalk from 'chalk';
 
-import logger from '../Logger';
+import logger from '../../Logger';
 
 export type Platform = 'ios' | 'android' | 'all';
 
