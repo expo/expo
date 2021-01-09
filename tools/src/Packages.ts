@@ -6,7 +6,7 @@ import IosUnversionablePackages from './versioning/ios/unversionablePackages.jso
 import AndroidUnversionablePackages from './versioning/android/unversionablePackages.json';
 import * as Directories from './Directories';
 import * as Npm from './Npm';
-import { spawnJSONCommandAsync } from './Utils';
+import { Podspec, readPodspecAsync } from './CocoaPods';
 
 const ANDROID_DIR = Directories.getAndroidDir();
 const IOS_DIR = Directories.getIosDir();
@@ -55,19 +55,6 @@ export type UnimoduleJson = {
   android?: {
     subdirectory?: string;
   };
-};
-
-export type Podspec = {
-  name: string;
-  version: string;
-  platforms: Record<string, string>;
-  source_files: string | string[];
-  exclude_files: string | string[];
-  compiler_flags: string;
-  frameworks: string | string[];
-  pod_target_xcconfig: Record<string, string>;
-  dependencies: Record<string, any>;
-  info_plist: Record<string, string>;
 };
 
 /**
@@ -308,7 +295,7 @@ export class Package {
     if (!podspecName) {
       return null;
     }
-    return await spawnJSONCommandAsync('pod', ['ipc', 'spec', podspecPath]);
+    return await readPodspecAsync(podspecPath);
   }
 }
 

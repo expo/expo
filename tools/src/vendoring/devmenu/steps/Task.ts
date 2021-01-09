@@ -1,4 +1,4 @@
-import logger from '../../Logger';
+import logger from '../../../Logger';
 import { toRepoPath } from '../utils';
 
 /**
