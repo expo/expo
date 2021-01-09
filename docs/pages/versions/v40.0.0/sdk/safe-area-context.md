@@ -30,7 +30,7 @@ import {
 
 If you set your own padding on the view, it will be added to the padding from the safe area.
 
-**If you are targeting web, you must set up `SafeAreaProvider` in as described in the hooks section**. You do not need to for native platforms.
+**If you are targeting web, you must set up `SafeAreaProvider` as described in the hooks section**. You do not need to for native platforms.
 
 ```js
 import { SafeAreaView } from 'react-native-safe-area-context';
