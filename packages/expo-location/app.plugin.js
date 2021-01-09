@@ -9,6 +9,7 @@ const withLocation = (
     locationAlwaysAndWhenInUsePermission,
     locationAlwaysPermission,
     locationWhenInUsePermission,
+    isAndroidBackgroundLocationEnabled
   } = {}
 ) => {
   if (!config.ios) config.ios = {};
@@ -34,8 +35,8 @@ const withLocation = (
         'android.permission.ACCESS_FINE_LOCATION',
         'android.permission.FOREGROUND_SERVICE',
         // Optional
-        'android.permission.ACCESS_BACKGROUND_LOCATION',
-      ],
+        isAndroidBackgroundLocationEnabled && 'android.permission.ACCESS_BACKGROUND_LOCATION',
+      ].filter(Boolean),
     ],
   ]);
 };
