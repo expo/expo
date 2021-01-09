@@ -1,9 +1,11 @@
 import {
   withXcodeProject,
   withAndroidManifest,
+  withRunOnce,
   IOSConfig,
   AndroidConfig,
   ConfigPlugin,
+  createRunOncePlugin,
 } from '@expo/config-plugins';
 
 const {
@@ -12,6 +14,10 @@ const {
   addMetaDataItemToMainApplication,
   removeMetaDataItemFromMainApplication,
 } = AndroidConfig.Manifest;
+
+const pkg = require('expo-payments-stripe/package.json');
+
+type StripePluginProps = { scheme: string };
 
 const CUSTOM_TAB_ACTIVITY = 'expo.modules.payments.stripe.RedirectUriReceiver';
 const META_WALLET = 'com.google.android.gms.wallet.api.enabled';
@@ -26,14 +32,14 @@ function buildXMLItem({
   return { ...(children || {}), $: head };
 }
 
-function buildAndroidItem(datum: string | Record<string, any>) {
-  const item = typeof datum === 'string' ? { name: datum } : datum;
+function buildAndroidItem(name: string | Record<string, any>) {
+  const item = typeof name === 'string' ? { name: name } : name;
   const head = prefixAndroidKeys(item);
   return buildXMLItem({ head });
 }
 
 // From Android.Facebook
-function getStripeSchemeActivity(scheme: string) {
+function getStripeSchemeActivity(scheme: string): AndroidConfig.Manifest.ManifestActivity {
   /**
      <activity
         android:name="expo.modules.payments.stripe.RedirectUriReceiver"
@@ -76,7 +82,7 @@ export function ensureStripeActivity({
 }: {
   mainApplication: AndroidConfig.Manifest.ManifestApplication;
   scheme: string;
-}) {
+}): AndroidConfig.Manifest.ManifestApplication {
   if (Array.isArray(mainApplication.activity)) {
     // Remove all Facebook CustomTabActivities first
     mainApplication.activity = mainApplication.activity.filter(activity => {
@@ -93,7 +99,7 @@ export function ensureStripeActivity({
   return mainApplication;
 }
 
-export const withStripeIos: ConfigPlugin<{ scheme: string }> = (config, { scheme }) => {
+export const withStripeIos: ConfigPlugin<StripePluginProps> = (config, { scheme }) => {
   // Add the scheme on iOS
   if (!config.ios) {
     config.ios = {};
@@ -116,7 +122,7 @@ export const withStripeIos: ConfigPlugin<{ scheme: string }> = (config, { scheme
   return config;
 };
 
-const withStripeAndroid: ConfigPlugin<{ scheme: string }> = (config, { scheme }) => {
+const withStripeAndroid: ConfigPlugin<StripePluginProps> = (config, { scheme }) => {
   return withAndroidManifest(config, config => {
     let mainApplication = getMainApplicationOrThrow(config.modResults);
     mainApplication = ensureStripeActivity({ mainApplication, scheme });
@@ -131,7 +137,7 @@ const withStripeAndroid: ConfigPlugin<{ scheme: string }> = (config, { scheme })
   });
 };
 
-const withStripe: ConfigPlugin<{ scheme: string }> = (config, { scheme }) => {
+const withStripe: ConfigPlugin<StripePluginProps> = (config, { scheme }) => {
   config = withStripeIos(config, { scheme });
   // Add the custom scheme and meta on Android
   config = withStripeAndroid(config, { scheme });
@@ -151,4 +157,4 @@ const withStoreKit: ConfigPlugin = config => {
   });
 };
 
-export default withStripe;
+export default createRunOncePlugin(withStripe, pkg.name, pkg.version);

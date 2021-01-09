@@ -1,8 +1,9 @@
-import { withStripeIos, ensureStripeActivity } from '../index';
+import { withStripeIos, ensureStripeActivity } from '../withStripe';
 
 describe(withStripeIos, () => {
   it(`adds uri schemes`, () => {
     expect(
+      // @ts-ignore: not on type yet
       withStripeIos({ name: 'foo', slug: 'bar' }, { scheme: 'custom' }).ios?.scheme
     ).toStrictEqual(['custom']);
   });

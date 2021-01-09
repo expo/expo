@@ -3,13 +3,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.withStripeIos = exports.ensureStripeActivity = void 0;
 const config_plugins_1 = require("@expo/config-plugins");
 const { prefixAndroidKeys, getMainApplicationOrThrow, addMetaDataItemToMainApplication, removeMetaDataItemFromMainApplication, } = config_plugins_1.AndroidConfig.Manifest;
+const pkg = require('expo-payments-stripe/package.json');
 const CUSTOM_TAB_ACTIVITY = 'expo.modules.payments.stripe.RedirectUriReceiver';
 const META_WALLET = 'com.google.android.gms.wallet.api.enabled';
 function buildXMLItem({ head, children, }) {
     return { ...(children || {}), $: head };
 }
-function buildAndroidItem(datum) {
-    const item = typeof datum === 'string' ? { name: datum } : datum;
+function buildAndroidItem(name) {
+    const item = typeof name === 'string' ? { name: name } : name;
     const head = prefixAndroidKeys(item);
     return buildXMLItem({ head });
 }
@@ -91,7 +92,7 @@ const withStripeAndroid = (config, { scheme }) => {
     return config_plugins_1.withAndroidManifest(config, config => {
         let mainApplication = getMainApplicationOrThrow(config.modResults);
         mainApplication = ensureStripeActivity({ mainApplication, scheme });
-        if (!!scheme) {
+        if (scheme) {
             mainApplication = addMetaDataItemToMainApplication(mainApplication, META_WALLET, 'true');
         }
         else {
@@ -117,4 +118,4 @@ const withStoreKit = config => {
         return config;
     });
 };
-exports.default = withStripe;
+exports.default = config_plugins_1.createRunOncePlugin(withStripe, pkg.name, pkg.version);
