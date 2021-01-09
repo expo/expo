@@ -2432,6 +2432,13 @@
 			remoteGlobalIDString = D3EDC857F54600110A41515815A00E86;
 			remoteInfo = ABI40_0_0EXTaskManager;
 		};
+		3C6FFB0DFD095EF43DFAED5356CDDE5B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FBE96D95738A2A03C52A7251FA3C9C78 /* lottie-ios.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 2FFD4CF15B40CE17E04F3BC6AAF7035A;
+			remoteInfo = "lottie-ios";
+		};
 		3C80C2E2453C5E8D0BCD8C933536D40F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BB8BC85E7C8E685CA0C44DE0803D5E4E /* Project object */;
@@ -3565,13 +3572,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 15B99218A87324F316F0E937B3DAAC8B;
 			remoteInfo = Firebase;
-		};
-		B469CCBA215852FA98C3D8712BD6A9D7 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FBE96D95738A2A03C52A7251FA3C9C78 /* lottie-ios.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 2FFD4CF15B40CE17E04F3BC6AAF7035A;
-			remoteInfo = "lottie-ios";
 		};
 		B4717319C1739A4498A8C9D57E823E35 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -16108,7 +16108,7 @@
 				34701684AC3C427543B9946EBC2120D1 /* PBXTargetDependency */,
 				9DA86038ECA396B42ED749C313869C53 /* PBXTargetDependency */,
 				A294E24CA0D1CDFA935815A21971974D /* PBXTargetDependency */,
-				A349B5772D8B776066C977F9E43CEBF9 /* PBXTargetDependency */,
+				5C19896F71D488F8B7721311D44B1220 /* PBXTargetDependency */,
 			);
 			name = ABI40_0_0ExpoKit;
 			productName = ABI40_0_0ExpoKit;
@@ -18693,6 +18693,11 @@
 			target = 1791219DE4146DF164AD0E1E6B564184 /* ABI40_0_0UMFileSystemInterface */;
 			targetProxy = A521F99F55B5639009D4B7E17587FA45 /* PBXContainerItemProxy */;
 		};
+		5C19896F71D488F8B7721311D44B1220 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "lottie-ios";
+			targetProxy = 3C6FFB0DFD095EF43DFAED5356CDDE5B /* PBXContainerItemProxy */;
+		};
 		5D43AE60A9E397689088DAED208DE970 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = ABI40_0_0EXFaceDetector;
@@ -19225,11 +19230,6 @@
 			name = ABI40_0_0UMTaskManagerInterface;
 			target = 3694E34BB369B3EFECFDDD11A1318250 /* ABI40_0_0UMTaskManagerInterface */;
 			targetProxy = 52CF2640A5D08582DE8B48642DB86980 /* PBXContainerItemProxy */;
-		};
-		A349B5772D8B776066C977F9E43CEBF9 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "lottie-ios";
-			targetProxy = B469CCBA215852FA98C3D8712BD6A9D7 /* PBXContainerItemProxy */;
 		};
 		A34C2654D0A84D0DA1D700DB6880E08A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

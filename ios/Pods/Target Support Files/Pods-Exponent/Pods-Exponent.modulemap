@@ -1,0 +1,6 @@
+module Pods_Exponent {
+  umbrella header "Pods-Exponent-umbrella.h"
+
+  export *
+  module * { export * }
+}
