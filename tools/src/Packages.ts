@@ -85,6 +85,10 @@ export class Package {
     this.unimoduleJson = readUnimoduleJsonAtDirectory(rootPath);
   }
 
+  get hasPlugin(): boolean {
+    return fs.pathExistsSync(path.join(this.path, 'plugin'));
+  }
+
   get packageName(): string {
     return this.packageJson.name;
   }

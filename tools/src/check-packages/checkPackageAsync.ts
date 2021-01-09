@@ -13,14 +13,17 @@ const { green } = chalk;
  */
 export default async function checkPackageAsync(
   pkg: Package,
-  options: ActionOptions
+  options: ActionOptions & { isPlugin?: boolean }
 ): Promise<boolean> {
   try {
-    logger.info(`🔍 Checking ${green.bold(pkg.packageName)} package`);
+    logger.info(
+      `🔍 Checking ${green.bold(pkg.packageName)} ${options.isPlugin ? 'plugin' : 'package'}`
+    );
 
+    const args = options.isPlugin ? ['plugin'] : [];
     if (options.build) {
-      await runPackageScriptAsync(pkg, 'clean');
-      await runPackageScriptAsync(pkg, 'build');
+      await runPackageScriptAsync(pkg, 'clean', args);
+      await runPackageScriptAsync(pkg, 'build', args);
 
       if (options.uniformityCheck) {
         await checkBuildUniformityAsync(pkg);
@@ -37,12 +40,19 @@ export default async function checkPackageAsync(
     }
     if (options.lint) {
       const args = ['--max-warnings', '0'];
+      if (options.isPlugin) {
+        args.unshift('plugin');
+      }
       if (options.fixLint) {
         args.push('--fix');
       }
       await runPackageScriptAsync(pkg, 'lint', args);
     }
     logger.log(`✨ ${green.bold(pkg.packageName)} checks passed`);
+
+    if (!options.isPlugin && pkg.hasPlugin) {
+      return await checkPackageAsync(pkg, { ...options, isPlugin: true });
+    }
     return true;
   } catch {
     // runPackageScriptAsync is intentionally written to handle errors and make it safe to suppress errors in the caller

@@ -1,11 +1,10 @@
 import {
-  withXcodeProject,
-  withAndroidManifest,
-  withRunOnce,
-  IOSConfig,
   AndroidConfig,
   ConfigPlugin,
   createRunOncePlugin,
+  IOSConfig,
+  withAndroidManifest,
+  withXcodeProject,
 } from '@expo/config-plugins';
 
 const {
@@ -33,7 +32,7 @@ function buildXMLItem({
 }
 
 function buildAndroidItem(name: string | Record<string, any>) {
-  const item = typeof name === 'string' ? { name: name } : name;
+  const item = typeof name === 'string' ? { name } : name;
   const head = prefixAndroidKeys(item);
   return buildXMLItem({ head });
 }
@@ -128,9 +127,9 @@ const withStripeAndroid: ConfigPlugin<StripePluginProps> = (config, { scheme }) 
     mainApplication = ensureStripeActivity({ mainApplication, scheme });
 
     if (scheme) {
-      mainApplication = addMetaDataItemToMainApplication(mainApplication, META_WALLET, 'true');
+      addMetaDataItemToMainApplication(mainApplication, META_WALLET, 'true');
     } else {
-      mainApplication = removeMetaDataItemFromMainApplication(mainApplication, META_WALLET);
+      removeMetaDataItemFromMainApplication(mainApplication, META_WALLET);
     }
 
     return config;

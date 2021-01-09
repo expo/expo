@@ -10,7 +10,7 @@ function buildXMLItem({ head, children, }) {
     return { ...(children || {}), $: head };
 }
 function buildAndroidItem(name) {
-    const item = typeof name === 'string' ? { name: name } : name;
+    const item = typeof name === 'string' ? { name } : name;
     const head = prefixAndroidKeys(item);
     return buildXMLItem({ head });
 }
@@ -93,10 +93,10 @@ const withStripeAndroid = (config, { scheme }) => {
         let mainApplication = getMainApplicationOrThrow(config.modResults);
         mainApplication = ensureStripeActivity({ mainApplication, scheme });
         if (scheme) {
-            mainApplication = addMetaDataItemToMainApplication(mainApplication, META_WALLET, 'true');
+            addMetaDataItemToMainApplication(mainApplication, META_WALLET, 'true');
         }
         else {
-            mainApplication = removeMetaDataItemFromMainApplication(mainApplication, META_WALLET);
+            removeMetaDataItemFromMainApplication(mainApplication, META_WALLET);
         }
         return config;
     });
