@@ -71,6 +71,6 @@ describe(ensureStripeActivity, () => {
       scheme: 'other',
     });
 
-    expect(app.activity.length).toBe(1);
+    expect(app.activity?.length).toBe(1);
   });
 });

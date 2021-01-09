@@ -87,6 +87,7 @@ The following files are required for a TypeScript plugin:
 ╰── plugin/ ➡️ All code related to the plugin
     ├── __tests__/ ➡️ Optional: Folder for tests related to the plugin
     ├── tsconfig.json ➡️ The TypeScript config for transpiling the plugin to JavaScript
+    ├── jest.config.js ➡️ Optional: The Jest preset
     ╰── src/index.ts ➡️ The TypeScript entry point for your plugin
 ```
 
@@ -125,12 +126,19 @@ export default withNewName;
 
 > 💡 Tip: Using named functions makes debugging easier with `EXPO_DEBUG=true`
 
+Optionally, you can add `plugin/jest.config.js` to override the default project Jest preset.
+
+```ts
+module.exports = require('expo-module-scripts/jest-preset-plugin');
+```
+
 Use the following scripts to interact with it:
 
-- `yarn build plugin`: build the plugin
-- `yarn clean plugin`: delete the `plugin/build` folder
-- `yarn lint plugin`: lint the `plugin/src` folder
-- `yarn prepare`: prepare the plugin and module for publishing
+- `yarn build plugin`: Build the plugin.
+- `yarn clean plugin`: Delete the `plugin/build` folder.
+- `yarn lint plugin`: Lint the `plugin/src` folder.
+- `yarn test plugin`: Alias for `npx jest --rootDir ./plugin --config ./plugin/jest.config.js`, uses the project jest preset if `plugin/jest.config.js` doesn't exist.
+- `yarn prepare`: Prepare the plugin and module for publishing.
 
 ### 🤡 Jest
 
