@@ -21,7 +21,7 @@ For bare React Native projects, you must ensure that you have [installed and con
 expo install expo-payments-stripe
 ```
 
-Then include the config plugin in your `app.config.js` or `app.json`
+- Include the config plugin in your `app.config.js` or `app.json`
 
 ```json
 {
@@ -29,7 +29,8 @@ Then include the config plugin in your `app.config.js` or `app.json`
 }
 ```
 
-Be sure to sync the changes with `expo eject`, and rebuild the native project with `eas build`.
+- Regenerate the native folders with `expo eject`
+- Build the project with `yarn ios` and `yarn android`
 
 ### Configure for iOS
 
