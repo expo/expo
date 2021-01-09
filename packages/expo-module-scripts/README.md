@@ -69,7 +69,7 @@ You should also add the following fields to your `package.json`:
 
 ### 🔌 Config plugin
 
-To create a [config plugin](https://github.com/expo/expo-cli/blob/master/packages/config-plugins/README.md) that automatically configures your native code, you have two options.
+To create a [config plugin](https://github.com/expo/expo-cli/blob/master/packages/config-plugins/README.md) that automatically configures your native code, you have two options:
 
 1. Create a `plugin` folder and write your plugin in TypeScript (Recommended).
 2. Create an `app.plugin.js` and write the plugin in pure Node.js compliant JavaScript
