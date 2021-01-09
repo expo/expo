@@ -6,6 +6,7 @@ This package contains a collection of common scripts for all Expo modules and th
 
 - [Getting Started](#getting-started)
 - [Setup](#setup)
+  - [🔌 Config plugin](#-config-plugin)
   - [🤡 Jest](#-jest)
   - [📝 LICENSE](#-license)
   - [Side Effects](#side-effects)
@@ -38,16 +39,16 @@ npm install --save-dev expo-module-scripts
 
 Add the following scripts to your `package.json` and run `yarn`
 
-```json5
+```json
 {
   "scripts": {
-      "build": "expo-module build",
-      "clean": "expo-module clean",
-      "test": "expo-module test",
-      "prepare": "expo-module prepare",
-      "prepublishOnly": "expo-module prepublishOnly",
-      "expo-module": "expo-module"
-  },
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  }
 }
 ```
 
@@ -66,27 +67,92 @@ Running `yarn` will now run the `prepare` script, which generates any missing fi
 
 You should also add the following fields to your `package.json`:
 
+### 🔌 Config plugin
+
+To create a [config plugin](https://github.com/expo/expo-cli/blob/master/packages/config-plugins/README.md) that automatically configures your native code, you have two options.
+
+1. Create a `plugin` folder and write your plugin in TypeScript (Recommended).
+2. Create an `app.plugin.js` and write the plugin in pure Node.js compliant JavaScript
+
+Config plugins must be transpiled for Node.js (LTS) which is slightly different to native React modules which support features like the import/export keywords. This means we'll need two different `tsconfig.json` files and two different `src` (and `build`) folders.
+
+This can quickly become complex, so we've created a system for easily targeting the plugin folder.
+
+#### Plugin setup
+
+The following files are required for a TypeScript plugin:
+
+```
+╭── app.plugin.js ➡️ Entry file
+╰── plugin/ ➡️ All code related to the plugin
+    ├── __tests__/ ➡️ Optional: Folder for tests related to the plugin
+    ├── tsconfig.json ➡️ The TypeScript config for transpiling the plugin to JavaScript
+    ╰── src/index.ts ➡️ The TypeScript entry point for your plugin
+```
+
+Create a `app.config.js` (the entry point for a config plugin):
+
+```js
+module.exports = require('./plugin/build');
+```
+
+Create a `plugin/tsconfig.json` file, notice that this uses `tsconfig.plugin` as the base config:
+
+```json
+{
+  "extends": "expo-module-scripts/tsconfig.plugin",
+  "compilerOptions": {
+    "outDir": "build",
+    "rootDir": "src"
+  },
+  "include": ["./src"],
+  "exclude": ["**/__mocks__/*", "**/__tests__/*"]
+}
+```
+
+In your `plugin/src/index.ts` write your TypeScript config plugin:
+
+```ts
+import { ConfigPlugin } from '@expo/config-plugins';
+
+const withNewName: ConfigPlugin<{ name?: string }> = (config, { name = 'my-app' } = {}) => {
+  config.name = name;
+  return config;
+};
+
+export default withNewName;
+```
+
+> 💡 Tip: Using named functions makes debugging easier with `EXPO_DEBUG=true`
+
+Use the following scripts to interact with it:
+
+- `yarn build plugin`: build the plugin
+- `yarn clean plugin`: delete the `plugin/build` folder
+- `yarn lint plugin`: lint the `plugin/src` folder
+- `yarn prepare`: prepare the plugin and module for publishing
+
 ### 🤡 Jest
 
 The Jest preset extends [`jest-expo`](https://github.com/expo/expo/tree/master/packages/jest-expo) or [`jest-expo-enzyme`](https://github.com/expo/expo/tree/master/packages/jest-expo-enzyme) and adds proper TypeScript support and type declarations to the presets.
 
 **For unit testing API-based modules:**
 
-```json5
+```json
 {
   "jest": {
     "preset": "expo-module-scripts/universal"
-  },
+  }
 }
 ```
 
 **For unit testing component-based modules:**
 
-```json5
+```json
 {
   "jest": {
     "preset": "expo-module-scripts/enzyme"
-  },
+  }
 }
 ```
 
@@ -94,9 +160,9 @@ The Jest preset extends [`jest-expo`](https://github.com/expo/expo/tree/master/p
 
 This makes it easier for other members of the community to work with your package. Expo usually has the **MIT** license.
 
-```json5
+```json
 {
-  "license": "MIT",
+  "license": "MIT"
 }
 ```
 
@@ -106,9 +172,9 @@ The [`@expo/webpack-config`](https://www.npmjs.com/package/@expo/webpack-config)
 
 [**Learn more about side effects**](https://webpack.js.org/guides/tree-shaking/)
 
-```json5
+```json
 {
-  "sideEffects": false,
+  "sideEffects": false
 }
 ```
 
@@ -120,10 +186,10 @@ We recommend you name the initial file after the module for easier searching. Be
 
 [**Learn more about "types" field**](https://webpack.js.org/guides/tree-shaking/)
 
-```json5
+```json
 {
   "main": "build/Camera.js",
-  "types": "build/Camera.d.ts",
+  "types": "build/Camera.d.ts"
 }
 ```
 
@@ -139,7 +205,7 @@ Expo modules use the long form object when possible to better accommodate monore
 - [bugs docs](https://docs.npmjs.com/files/package.json#bugs)
 - [repository docs](https://docs.npmjs.com/files/package.json#repository)
 
-```json5
+```json
 {
   "homepage": "https://github.com/YOU/expo-YOUR_PACKAGE#readme",
   "repository": {
@@ -148,7 +214,7 @@ Expo modules use the long form object when possible to better accommodate monore
   },
   "bugs": {
     "url": "https://github.com/YOU/expo-YOUR_PACKAGE/issues"
-  },
+  }
 }
 ```
 
@@ -170,7 +236,7 @@ For scripts that need to run as part of the npm lifecycle, you'd invoke the comm
 {
   "scripts": {
     "prepare": "expo-module prepare",
-    "prepublishOnly": "expo-module prepublishOnly",
+    "prepublishOnly": "expo-module prepublishOnly"
   }
 }
 ```
@@ -191,6 +257,10 @@ This compiles the source JS or TypeScript to "compiled" JS that Expo can load. W
 
 If we wished to switch to using just Babel with the TypeScript plugin, this package would let us change the implementation of the `build` command and apply it to all packages automatically.
 
+#### build plugin
+
+Running `build plugin` will cause it to build the project at `plugin/src`.
+
 ### test
 
 We run tests using Jest with ts-jest, which runs TypeScript and Babel. This setup type checks test files and mimics the `build` command's approach of running `tsc` followed by Babel.
@@ -210,9 +280,17 @@ Replacements for common `fbjs` uses-cases are listed below:
 - `invariant`- replace with [`invariant`](https://www.npmjs.com/package/invariant)
 - `ExecutionEnvironment`- replace with [`Platform` from `@unimodules/core`](https://github.com/expo/expo/blob/master/packages/%40unimodules/react-native-adapter/src/Platform.ts)
 
+#### lint plugin
+
+Running `lint plugin` will cause it to lint the project at `plugin/src`.
+
 ### clean
 
 This deletes the build directory.
+
+#### clean plugin
+
+Running `clean plugin` will delete the `plugin/build` directory.
 
 ## Lifecycle Commands
 
