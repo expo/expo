@@ -108,3 +108,7 @@ Expo makes a best effort to deliver notifications to the push notification servi
 After a notification has been handed off to an underlying push notification service, Expo creates a "push receipt" that records whether the handoff was successful; a push receipt denotes whether the underlying push notification service received the notification.
 
 Finally, the push notification services from Apple, Google, etc... make a best effort to deliver the notification to the device according to their own policies.
+
+### My notification icon on Android is a grey or white square
+
+This indicates an issue with the image asset you're providing. The image should be all white with a transparent background (this is required and enforced by Google, not Expo). [See here for more information](https://clevertap.com/blog/fixing-notification-icon-for-android-lollipop-and-above/).
