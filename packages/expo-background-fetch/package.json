@@ -37,6 +37,7 @@
     "unimodules-task-manager-interface": "*"
   },
   "dependencies": {
+    "@expo/config-plugins": "~1.0.13",
     "expo-task-manager": "~8.6.0"
   },
   "devDependencies": {
