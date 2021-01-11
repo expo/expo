@@ -2436,13 +2436,6 @@
 			remoteGlobalIDString = 815CF1C4554EA97002576D9AA57464B7;
 			remoteInfo = ABI38_0_0UMCore;
 		};
-		57B5808696A6CFEC8C188535A5F2003C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 563288F2DD1DAD19DC6092773B143E90 /* lottie-ios.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 2FFD4CF15B40CE17E04F3BC6AAF7035A;
-			remoteInfo = "lottie-ios";
-		};
 		5856FC2201B72643D29BCBF8270DB9AD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = CC4A11BFEA3106C96A1D3449205B7B4B /* Project object */;
@@ -3653,6 +3646,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 0636080DE2463DC4E64F1AE3BBEAD665;
 			remoteInfo = "ABI38_0_0React-jsi";
+		};
+		DE548EC0DDCF259ED928425987AF29A1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 563288F2DD1DAD19DC6092773B143E90 /* lottie-ios.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 2FFD4CF15B40CE17E04F3BC6AAF7035A;
+			remoteInfo = "lottie-ios";
 		};
 		DE8504D55A5C517615D8FB8818C7BDAF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -15053,7 +15053,7 @@
 				B6A3A8C6B39ABEC84ADBBFFB2FFE7CE0 /* PBXTargetDependency */,
 				C7DAD6FE68F803328289C026B6745AEC /* PBXTargetDependency */,
 				212F8FC0B213A52779960786C418D174 /* PBXTargetDependency */,
-				4E79E6CCE16113112B42B62B623DCA9B /* PBXTargetDependency */,
+				5B4DF0A688958AACA9FEADF928559F74 /* PBXTargetDependency */,
 			);
 			name = ABI38_0_0ExpoKit;
 			productName = ABI38_0_0ExpoKit;
@@ -17905,11 +17905,6 @@
 			target = 33183591ECC665084E62A0294129B7B7 /* ABI38_0_0React-cxxreact */;
 			targetProxy = 012CB92DD615159E7DE1E8B64B748963 /* PBXContainerItemProxy */;
 		};
-		4E79E6CCE16113112B42B62B623DCA9B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "lottie-ios";
-			targetProxy = 57B5808696A6CFEC8C188535A5F2003C /* PBXContainerItemProxy */;
-		};
 		4F2776F42055FA77FF78DFAC908A9A08 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Branch;
@@ -17979,6 +17974,11 @@
 			name = "ABI38_0_0React-Core";
 			target = 63D2D395DBEE079B1F09C74C0A3D8330 /* ABI38_0_0React-Core */;
 			targetProxy = 43F054E27B7AB82C5574D72E163E9B59 /* PBXContainerItemProxy */;
+		};
+		5B4DF0A688958AACA9FEADF928559F74 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "lottie-ios";
+			targetProxy = DE548EC0DDCF259ED928425987AF29A1 /* PBXContainerItemProxy */;
 		};
 		5BD50D6FEE335C93ED9BE3D25E561D7A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

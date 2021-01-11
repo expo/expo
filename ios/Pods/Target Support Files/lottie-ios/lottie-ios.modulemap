@@ -1,0 +1,6 @@
+module Lottie {
+  umbrella header "lottie-ios-umbrella.h"
+
+  export *
+  module * { export * }
+}

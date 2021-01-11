@@ -1,0 +1,6 @@
+module lottie_react_native {
+  umbrella header "lottie-react-native-umbrella.h"
+
+  export *
+  module * { export * }
+}

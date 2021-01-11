@@ -2605,13 +2605,6 @@
 			remoteGlobalIDString = 61868FA2C7123277487489AA8AB323ED;
 			remoteInfo = ABI39_0_0EXVideoThumbnails;
 		};
-		4D09E0D211BD45BD3890212C4DE01940 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E45CA367D659A292E83CFBDE1EBD1A12 /* lottie-ios.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 2FFD4CF15B40CE17E04F3BC6AAF7035A;
-			remoteInfo = "lottie-ios";
-		};
 		4EA313E7E713AAA89A833118DBBBCDB3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A57459B5C352B2319DF76E363682572B /* Project object */;
@@ -3444,6 +3437,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 322040CF2C7D2642650A8BFCDB4B2AD3;
 			remoteInfo = FBSDKCoreKit;
+		};
+		A69E60DD1210B19D7D3FA98C0B60552C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E45CA367D659A292E83CFBDE1EBD1A12 /* lottie-ios.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 2FFD4CF15B40CE17E04F3BC6AAF7035A;
+			remoteInfo = "lottie-ios";
 		};
 		A7B24217216E6C4F1541F3E68CD1CC14 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -14654,7 +14654,7 @@
 				4585D11497906D50F024C0A489AA8F06 /* PBXTargetDependency */,
 				8830C81B7BB7EC304D5885AA2C7761D6 /* PBXTargetDependency */,
 				9BE59C14D7CB39C917CB754AFD72C9F6 /* PBXTargetDependency */,
-				C32B8995A1790848F7E90AF8C15BE013 /* PBXTargetDependency */,
+				4230163D51C24FCC7DA220B4B77F6A81 /* PBXTargetDependency */,
 			);
 			name = ABI39_0_0ExpoKit;
 			productName = ABI39_0_0ExpoKit;
@@ -18465,6 +18465,11 @@
 			target = 3EA9E1384C6A684D0183648AD85C758C /* ABI39_0_0React-jsinspector */;
 			targetProxy = CD0DD491404BEB76687C7065E200D14A /* PBXContainerItemProxy */;
 		};
+		4230163D51C24FCC7DA220B4B77F6A81 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "lottie-ios";
+			targetProxy = A69E60DD1210B19D7D3FA98C0B60552C /* PBXContainerItemProxy */;
+		};
 		42671392BF5DF15FA9CC071640C03516 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Firebase;
@@ -19410,11 +19415,6 @@
 			name = ABI39_0_0UMCore;
 			target = A122804A096EDB7B4EE07F7438676739 /* ABI39_0_0UMCore */;
 			targetProxy = 870D66A61AC43186770C8A3F4712B6A6 /* PBXContainerItemProxy */;
-		};
-		C32B8995A1790848F7E90AF8C15BE013 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "lottie-ios";
-			targetProxy = 4D09E0D211BD45BD3890212C4DE01940 /* PBXContainerItemProxy */;
 		};
 		C3BC94AE447A6C989CC3AC012BA1AECC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
