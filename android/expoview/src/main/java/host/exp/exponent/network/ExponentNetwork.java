@@ -5,6 +5,7 @@ package host.exp.exponent.network;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,12 +22,15 @@ import host.exp.expoview.ExpoViewBuildConfig;
 @Singleton
 public class ExponentNetwork {
 
+  private static final String TAG = ExponentNetwork.class.getSimpleName();
+
   public static final String IGNORE_INTERCEPTORS_HEADER = "exponentignoreinterceptors";
 
   private static final String CACHE_DIR = "http-cache";
   private static final String LEGACY_CACHE_DIR = "okhttp";
 
   private Context mContext;
+  private ExponentSharedPreferences mExponentSharedPreferences;
   private ExponentHttpClient mClient;
   private ExponentHttpClient mLongTimeoutClient;
   private OkHttpClient mNoCacheClient;
@@ -43,6 +47,7 @@ public class ExponentNetwork {
   @Inject
   public ExponentNetwork(Context context, ExponentSharedPreferences exponentSharedPreferences) {
     mContext = context.getApplicationContext();
+    mExponentSharedPreferences = exponentSharedPreferences;
 
     mClient = new ExponentHttpClient(mContext, exponentSharedPreferences, new OkHttpClientFactory() {
       @Override
@@ -62,6 +67,8 @@ public class ExponentNetwork {
     });
 
     mNoCacheClient = new OkHttpClient.Builder().build();
+
+    clearLegacyCache();
   }
 
   private OkHttpClient.Builder createHttpClientBuilder() {
@@ -92,6 +99,24 @@ public class ExponentNetwork {
     int cacheSize = 50 * 1024 * 1024; // 50 MiB
     final File directory = new File(mContext.getCacheDir(), CACHE_DIR);
     return new Cache(directory, cacheSize);
+  }
+
+  private void clearLegacyCache() {
+    if (mExponentSharedPreferences.getBoolean(ExponentSharedPreferences.HAS_CLEARED_LEGACY_OKHTTP_CACHE_KEY)) {
+      return;
+    }
+
+    try {
+      File directory = new File(mContext.getFilesDir(), LEGACY_CACHE_DIR);
+      Cache legacyCache = new Cache(directory, 40 * 1024 * 1024);
+      legacyCache.delete();
+      if (directory.exists()) {
+        directory.delete();
+      }
+      mExponentSharedPreferences.setBoolean(ExponentSharedPreferences.HAS_CLEARED_LEGACY_OKHTTP_CACHE_KEY, true);
+    } catch (Exception e) {
+      Log.e(TAG, "Failed to clear legacy OkHttp class", e);
+    }
   }
 
   public boolean isNetworkAvailable() {
