@@ -165,7 +165,6 @@ public class Kernel extends KernelInterface {
       // clientBuilder.addNetworkInterceptor(new StethoInterceptor());
     }
 
-    mExponentNetwork.addInterceptors(client);
     ReactNativeStaticHelpers.setExponentNetwork(mExponentNetwork);
   }
 
