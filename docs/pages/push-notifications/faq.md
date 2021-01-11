@@ -84,3 +84,27 @@ This is likely due to the `priority` level of the notifications you're sending. 
 - (priority omitted): treated exactly as if `default` were specified
 
 And setting the priority to `high` gives your notification the greatest likelihood that the Android OS will display the notification.
+
+### Does Expo store the contents of push notifications?
+
+Expo does not store the contents of push notifications any longer than it takes to deliver the notifications to the push notification services operated by Apple, Google, etc... Push notifications are stored only in memory and in message queues and **not** stored in databases.
+
+### Does Expo read or share the contents of push notifications?
+
+Expo does not read or share the contents of push notifications and our services keep push notifications only as long as needed to deliver them to push notification services run by Apple and Google. If the Expo team is actively debugging the push notifications service, we may see notification contents (ex: at a breakpoint) but Expo cannot see push notification contents otherwise.
+
+### How does Expo encrypt connections to push notification services, like Apple's and Google's?
+
+Expo's connections to Apple and Google are encrypted and use HTTPS.
+
+### How do I handle expired push notification credentials?
+
+When your push notification credentials have expired, run `expo credentials:manager -p ios` which will provide a list of actions to choose from. Select the removal of your expired credentials and then select "Add new Push Notifications Key".
+
+### What delivery guarantees are there for push notifications?
+
+Expo makes a best effort to deliver notifications to the push notification services operated by Apple and Google. Expo's infrastructure is designed for at-least-once delivery to the underlying push notification services; it is more likely for a notification to be delivered to Apple or Google more than once rather than not at all, though both are uncommon but possible.
+
+After a notification has been handed off to an underlying push notification service, Expo creates a "push receipt" that records whether the handoff was successful; a push receipt denotes whether the underlying push notification service received the notification.
+
+Finally, the push notification services from Apple, Google, etc... make a best effort to deliver the notification to the device according to their own policies.
