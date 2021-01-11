@@ -24,6 +24,7 @@ import org.unimodules.core.interfaces.RegistryLifecycleListener;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.UnknownHostException;
 import java.nio.ByteOrder;
 import java.util.Collections;
 import java.util.List;
@@ -119,6 +120,19 @@ public class NetworkModule extends ExportedModule implements RegistryLifecycleLi
     return NetworkStateType.UNKNOWN;
   }
 
+  private String rawIpToString(Integer ip) {
+    // Convert little-endian to big-endian if needed
+    if (ByteOrder.nativeOrder().equals(ByteOrder.LITTLE_ENDIAN)) {
+      ip = Integer.reverseBytes(ip);
+    }
+    byte[] ipByteArray = BigInteger.valueOf(ip).toByteArray();
+    try {
+      return InetAddress.getByAddress(ipByteArray).getHostAddress();
+    } catch (UnknownHostException e) {
+      return "0.0.0.0";
+    }
+  }
+
   @ExpoMethod
   public void getNetworkStateAsync(Promise promise) {
     Bundle result = new Bundle();
@@ -160,16 +174,7 @@ public class NetworkModule extends ExportedModule implements RegistryLifecycleLi
   public void getIpAddressAsync(Promise promise) {
     try {
       Integer ipAddress = getWifiInfo().getIpAddress();
-      if (ipAddress == 0) {
-        promise.resolve("0.0.0.0");
-        return;
-      }
-      // Convert little-endian to big-endianif needed
-      if (ByteOrder.nativeOrder().equals(ByteOrder.LITTLE_ENDIAN)) {
-        ipAddress = Integer.reverseBytes(ipAddress);
-      }
-      byte[] ipByteArray = BigInteger.valueOf(ipAddress).toByteArray();
-      String ipAddressString = InetAddress.getByAddress(ipByteArray).getHostAddress();
+      String ipAddressString = rawIpToString(ipAddress);
       promise.resolve(ipAddressString);
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());

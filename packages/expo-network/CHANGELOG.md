@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- `getIpAddressAsync` now falls back to using Ipify Api if the IP address could not be retrieved natively.
+- Fixed issue on Android where apps would crash when calling `getIpAddressAsync` when using cellular data.
 
 ## 2.4.0 — 2020-11-17
 
