@@ -16,17 +16,7 @@ export async function getIpAddressAsync(): Promise<string> {
   if (!ExpoNetwork.getIpAddressAsync) {
     throw new UnavailabilityError('expo-network', 'getIpAddressAsync');
   }
-  let ipAddress = await ExpoNetwork.getIpAddressAsync();
-  if (ipAddress === '0.0.0.0') {
-    try {
-      const resp = await fetch('https://api.ipify.org?format=json');
-      const data = await resp.json();
-      ipAddress = data.ip;
-    } catch (e) {
-      throw e;
-    }
-  }
-  return ipAddress;
+  return await ExpoNetwork.getIpAddressAsync();
 }
 
 export async function getMacAddressAsync(interfaceName: string | null = null): Promise<string> {
