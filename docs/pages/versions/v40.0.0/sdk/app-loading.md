@@ -3,6 +3,7 @@ title: AppLoading
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-40/packages/expo/src/launch'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-app-loading`** tells `expo-splash-screen` to keep the splash screen visible while the AppLoading component is mounted.
