@@ -23,7 +23,8 @@ public class ExponentNetwork {
 
   public static final String IGNORE_INTERCEPTORS_HEADER = "exponentignoreinterceptors";
 
-  private static final String CACHE_DIR = "okhttp";
+  private static final String CACHE_DIR = "http-cache";
+  private static final String LEGACY_CACHE_DIR = "okhttp";
 
   private Context mContext;
   private ExponentHttpClient mClient;
@@ -88,10 +89,8 @@ public class ExponentNetwork {
   }
 
   public Cache getCache() {
-    int cacheSize = 40 * 1024 * 1024; // 40 MiB
-
-    // Use getFilesDir() because it gives us much more space than getCacheDir()
-    final File directory = new File(mContext.getFilesDir(), CACHE_DIR);
+    int cacheSize = 50 * 1024 * 1024; // 50 MiB
+    final File directory = new File(mContext.getCacheDir(), CACHE_DIR);
     return new Cache(directory, cacheSize);
   }
 
