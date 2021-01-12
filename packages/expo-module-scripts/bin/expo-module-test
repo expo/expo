@@ -6,9 +6,8 @@ script_dir="$(dirname "$0")"
 
 args=("$@")
 
-# If the command is used like `yarn test plugin` then set the rootDir flag to point to the `/plugin`
+# If the command is used like `yarn test plugin`, set the --rootDir option to the `plugin` directory
 if [ "$1" == "plugin" ]; then
-  # 
   args=()
   args+=("--rootDir")
   args+=("plugin")

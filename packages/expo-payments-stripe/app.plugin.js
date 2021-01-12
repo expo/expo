@@ -1,1 +1,1 @@
-module.exports = require('./plugin/build/withStripe')
+module.exports = require('./plugin/build/withStripe');
