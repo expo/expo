@@ -31,12 +31,12 @@ const META_WALLET = 'com.google.android.gms.wallet.api.enabled';
 
 function buildXMLItem({
   head,
-  children,
+  children = {},
 }: {
   head: Record<string, string>;
   children?: Record<string, string | any[]>;
 }) {
-  return { ...(children || {}), $: head };
+  return { ...children, $: head };
 }
 
 function buildAndroidItem(name: string | Record<string, any>) {
@@ -93,7 +93,7 @@ export function ensureStripeActivity({
   if (Array.isArray(mainApplication.activity)) {
     // Remove all Facebook CustomTabActivities first
     mainApplication.activity = mainApplication.activity.filter(activity => {
-      return (activity.$ || {})['android:name'] !== CUSTOM_TAB_ACTIVITY;
+      return activity.$?.['android:name'] !== CUSTOM_TAB_ACTIVITY;
     });
   } else {
     mainApplication.activity = [];
@@ -124,7 +124,7 @@ export const withStripeIos: ConfigPlugin<StripePluginProps> = (config, { scheme,
   // @ts-ignore: not on type yet
   config.ios.scheme.push(scheme);
 
-  // Append store kit
+  // Append StoreKit framework
   config = withStoreKit(config);
 
   // Add the Merchant ID to the entitlements
@@ -180,12 +180,14 @@ const withInAppPurchases: ConfigPlugin<Pick<StripePluginProps, 'merchantId'>> = 
   return withEntitlementsPlist(config, config => {
     const key = 'com.apple.developer.in-app-payments';
 
-    if (!Array.isArray(config.modResults[key])) {
-      config.modResults[key] = [];
+    // @ts-ignore
+    const merchants: string[] = config.modResults[key] ?? [];
+
+    if (!merchants.includes(props.merchantId)) {
+      merchants.push(props.merchantId);
     }
 
-    // @ts-ignore
-    config.modResults[key].push(props.merchantId);
+    config.modResults[key] = merchants;
 
     return config;
   });

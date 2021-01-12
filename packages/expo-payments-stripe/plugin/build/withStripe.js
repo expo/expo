@@ -6,8 +6,8 @@ const { prefixAndroidKeys, getMainApplicationOrThrow, addMetaDataItemToMainAppli
 const pkg = require('expo-payments-stripe/package.json');
 const CUSTOM_TAB_ACTIVITY = 'expo.modules.payments.stripe.RedirectUriReceiver';
 const META_WALLET = 'com.google.android.gms.wallet.api.enabled';
-function buildXMLItem({ head, children, }) {
-    return { ...(children || {}), $: head };
+function buildXMLItem({ head, children = {}, }) {
+    return { ...children, $: head };
 }
 function buildAndroidItem(name) {
     const item = typeof name === 'string' ? { name } : name;
@@ -54,7 +54,8 @@ function ensureStripeActivity({ mainApplication, scheme, }) {
     if (Array.isArray(mainApplication.activity)) {
         // Remove all Facebook CustomTabActivities first
         mainApplication.activity = mainApplication.activity.filter(activity => {
-            return (activity.$ || {})['android:name'] !== CUSTOM_TAB_ACTIVITY;
+            var _a;
+            return ((_a = activity.$) === null || _a === void 0 ? void 0 : _a['android:name']) !== CUSTOM_TAB_ACTIVITY;
         });
     }
     else {
@@ -84,7 +85,7 @@ exports.withStripeIos = (config, { scheme, merchantId }) => {
     }
     // @ts-ignore: not on type yet
     config.ios.scheme.push(scheme);
-    // Append store kit
+    // Append StoreKit framework
     config = withStoreKit(config);
     // Add the Merchant ID to the entitlements
     config = withInAppPurchases(config, { merchantId });
@@ -130,12 +131,14 @@ const withInAppPurchases = (config, props) => {
      * </array>
      */
     return config_plugins_1.withEntitlementsPlist(config, config => {
+        var _a;
         const key = 'com.apple.developer.in-app-payments';
-        if (!Array.isArray(config.modResults[key])) {
-            config.modResults[key] = [];
-        }
         // @ts-ignore
-        config.modResults[key].push(props.merchantId);
+        const merchants = (_a = config.modResults[key]) !== null && _a !== void 0 ? _a : [];
+        if (!merchants.includes(props.merchantId)) {
+            merchants.push(props.merchantId);
+        }
+        config.modResults[key] = merchants;
         return config;
     });
 };
