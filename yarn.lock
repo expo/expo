@@ -1306,7 +1306,7 @@
     mv "~2"
     safe-json-stringify "~1"
 
-"@expo/config-plugins@~1.0.13":
+"@expo/config-plugins@^1.0.12", "@expo/config-plugins@~1.0.13":
   version "1.0.13"
   resolved "https://registry.yarnpkg.com/@expo/config-plugins/-/config-plugins-1.0.13.tgz#26dab0e6280f32512492305ff1eddc5a1dc5142c"
   integrity sha512-/Wt1uZJlwMSi20GlKX4FOijX8wYMj7zVVp091M9hXeIc7btq84nkhhtdwa60qnM0RACHWqv25uVTQochjNQrfw==
@@ -3551,10 +3551,10 @@
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"
   integrity sha512-RbzJvlNzmRq5c3O09UipeuXno4tA1FE6ikOjxZK0tuxVv3412l64l5t1W5pj4+rJq9vpkm/kwiR07aZXnsKPxw==
 
-"@tsconfig/node12@^1.0.7":
+"@tsconfig/node10@^1.0.7":
   version "1.0.7"
-  resolved "https://registry.yarnpkg.com/@tsconfig/node12/-/node12-1.0.7.tgz#677bd9117e8164dc319987dd6ff5fc1ba6fbf18b"
-  integrity sha512-dgasobK/Y0wVMswcipr3k0HpevxFJLijN03A8mYfEPvWvOs14v0ZlYTR4kIgMx8g4+fTyTFv8/jLCIfRqLDJ4A==
+  resolved "https://registry.yarnpkg.com/@tsconfig/node10/-/node10-1.0.7.tgz#1eb1de36c73478a2479cc661ef5af1c16d86d606"
+  integrity sha512-aBvUmXLQbayM4w3A8TrjwrXs4DZ8iduJnuJLLRGdkWlyakCf1q6uHZJBzXoRA/huAEknG5tcUyQxN3A+In5euQ==
 
 "@types/anymatch@*":
   version "1.3.1"
