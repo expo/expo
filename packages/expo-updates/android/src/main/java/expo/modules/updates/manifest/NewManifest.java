@@ -12,6 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
@@ -67,7 +68,7 @@ public class NewManifest implements Manifest {
     Date commitTime;
     try {
       commitTime = UpdatesUtils.parseDateString(manifestJson.getString("createdAt"));
-    } catch (Exception e) {
+    } catch (ParseException e) {
       Log.e(TAG, "Could not parse manifest createdAt string; falling back to current time", e);
       commitTime = new Date();
     }
