@@ -1,11 +1,10 @@
 import { PaymentsStripe as Payments } from 'expo-payments-stripe';
 import { AndroidToken, AppleToken } from 'expo-payments-stripe/build/utils/types';
-
 import * as React from 'react';
 import { StyleSheet, Switch, Text, View } from 'react-native';
-import { useResolvedValue } from '../utilities/useResolvedValue';
 
 import Button from '../components/Button';
+import { useResolvedValue } from '../utilities/useResolvedValue';
 
 Payments.setOptionsAsync({
   publishableKey: 'pk_test_u0d2z2Q308KUGR02U7A3JjIs00RYjHOfRB',
@@ -48,6 +47,7 @@ type State = {
   status: null | string;
   token: null | AndroidToken | AppleToken;
 };
+
 const initialState: State = {
   isComplete: true,
   isLoading: true,
@@ -87,16 +87,16 @@ export default function PaymentsScreen() {
            * Array either should contain at least one valid value or should not be specified to disable.
            */
           requiredShippingAddressFields: ['all'],
-          // /**
-          //  * An array of `ShippingMethod` objects that describe the supported shipping methods.
-          //  */
+          /**
+           * An array of `ShippingMethod` objects that describe the supported shipping methods.
+           */
           shippingMethods: [
-              {
-                id: 'zebra',
-                label: 'An actual Zebra 🦓',
-                detail: 'A real zebra will bring you the package 😳',
-                amount: '250.00',
-              },
+            {
+              id: 'zebra',
+              label: 'An actual Zebra 🦓',
+              detail: 'A real zebra will bring you the package 😳',
+              amount: '250.00',
+            },
             {
               id: 'fedex',
               label: 'FedEX',
@@ -104,18 +104,6 @@ export default function PaymentsScreen() {
               amount: '10.00',
             },
           ],
-          // /**
-          //  * The three-letter ISO 4217 currency code. Default is USD.
-          //  */
-          // currencyCode?: string;
-          // /**
-          //  * The two-letter code for the country where the payment will be processed. Default is US.
-          //  */
-          // countryCode?: string;
-          // /**
-          //  * An optional value that indicates how purchased items are to be shipped. Default is shipping.
-          //  */
-          // shippingType?: ShippingType;
         },
         [
           {
@@ -151,7 +139,7 @@ export default function PaymentsScreen() {
     }
   };
 
-  const { isLoading, isComplete, status, token } = state;
+  const { isComplete, status, token } = state;
 
   return (
     <View style={styles.container}>
@@ -165,7 +153,7 @@ export default function PaymentsScreen() {
       <Text style={styles.instruction}>Complete the operation on token</Text>
       <Switch style={styles.switch} value={isComplete} onValueChange={handleCompleteChange} />
       <View>
-        {token && <Text style={styles.instruction}>Token: {token.tokenId}</Text>}
+        {token && <Text style={styles.instruction}>Token: {(token as any).tokenId}</Text>}
         {status && <Text style={styles.instruction}>{status}</Text>}
       </View>
       <View style={styles.hintContainer}>
