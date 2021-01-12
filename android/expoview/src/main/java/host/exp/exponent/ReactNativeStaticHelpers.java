@@ -126,8 +126,6 @@ public class ReactNativeStaticHelpers {
         .cookieJar((CookieJar) cookieJar)
         .cache(sExponentNetwork.getCache());
 
-    sExponentNetwork.addInterceptors(client);
-
     // pass the builder through MainApplication so that detached apps can customize it
     try {
       Method m = Class.forName("host.exp.exponent.MainApplication").getMethod("okHttpClientBuilder", OkHttpClient.Builder.class);
