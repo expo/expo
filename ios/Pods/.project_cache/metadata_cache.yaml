@@ -1962,6 +1962,10 @@ lottie-ios:
   LABEL: lottie-ios
   PROJECT_PATH: lottie-ios.xcodeproj
   UUID: 2FFD4CF15B40CE17E04F3BC6AAF7035A
+lottie-react-native:
+  LABEL: lottie-react-native
+  PROJECT_PATH: lottie-react-native.xcodeproj
+  UUID: 23D6E497826E93838FFEEFEB6FE9C252
 nanopb:
   LABEL: nanopb
   PROJECT_PATH: nanopb.xcodeproj

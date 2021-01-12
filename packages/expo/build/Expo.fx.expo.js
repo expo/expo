@@ -4,15 +4,11 @@ import './environment/LogBox.fx'; // This must be imported exactly here
 import './environment/react-native-logs.fx';
 // load expo-asset immediately to set a custom `source` transformer in React Native
 import 'expo-asset';
-import Constants from 'expo-constants';
 import * as Font from 'expo-font';
 import { installWebGeolocationPolyfill } from 'expo-location';
 import * as React from 'react';
 import { AppRegistry, Platform, StyleSheet } from 'react-native';
 import DevAppContainer from './environment/DevAppContainer';
-if (Constants.manifest && typeof Constants.manifest.env === 'object') {
-    Object.assign(process.env, Constants.manifest.env);
-}
 // add the dev app container wrapper component on ios
 if (__DEV__) {
     if (Platform.OS === 'ios') {

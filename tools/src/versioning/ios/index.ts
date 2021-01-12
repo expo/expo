@@ -326,10 +326,13 @@ async function generateReactNativePodspecsAsync(
 }
 
 /**
- * @param versionName 
+ * @param versionName
  * @param versionNumber format "XX.X.X"
  */
-async function generateVersionedExpoAsync(versionName: string, versionNumber: string): Promise<void> {
+async function generateVersionedExpoAsync(
+  versionName: string,
+  versionNumber: string
+): Promise<void> {
   const versionedExpoPath = getVersionedExpoPath(versionName);
   const versionedExpoKitPath = getVersionedExpoKitPath(versionName);
   const versionedUnimodulePods = await getVersionedUnimodulePodsAsync(versionName);
@@ -425,7 +428,12 @@ async function generateVersionedExpoAsync(versionName: string, versionNumber: st
 
   console.log(`Generating podspec for ${chalk.green('ExpoKit')} ...`);
 
-  await generateExpoKitPodspecAsync(versionedExpoKitPath, versionedUnimodulePods, versionName, versionNumber);
+  await generateExpoKitPodspecAsync(
+    versionedExpoKitPath,
+    versionedUnimodulePods,
+    versionName,
+    versionNumber
+  );
 }
 
 /**
@@ -494,14 +502,19 @@ async function generateExpoKitPodspecAsync(
     // correct version number
     fileString = fileString.replace(/(?<=s.version = ").*?(?=")/g, versionNumber);
 
-    // add Reanimated V2 Folly dependency  
+    // add Reanimated V2 Folly dependency
     fileString = fileString
-      .replace(/(?=Pod::Spec.new do \|s\|)/, `
+      .replace(
+        /(?=Pod::Spec.new do \|s\|)/,
+        `
 folly_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'
 folly_compiler_flags = folly_flags + ' ' + '-Wno-comma -Wno-shorten-64-to-32'
 folly_version = '2020.01.13.00'
-boost_compiler_flags = '-Wno-documentation'\n\n`)
-      .replace(/(?=  s.subspec "Expo" do \|ss\|)/g, `
+boost_compiler_flags = '-Wno-documentation'\n\n`
+      )
+      .replace(
+        /(?=  s.subspec "Expo" do \|ss\|)/g,
+        `
   s.pod_target_xcconfig    = {
     "USE_HEADERMAP"       => "YES",
     "HEADER_SEARCH_PATHS" => "\\"$(PODS_TARGET_SRCROOT)/ReactCommon\\" \\"$(PODS_TARGET_SRCROOT)\\" \\"$(PODS_ROOT)/Folly\\" \\"$(PODS_ROOT)/boost-for-react-native\\" \\"$(PODS_ROOT)/DoubleConversion\\" \\"$(PODS_ROOT)/Headers/Private/React-Core\\" "
@@ -510,7 +523,8 @@ boost_compiler_flags = '-Wno-documentation'\n\n`)
   s.xcconfig               = { 
     "HEADER_SEARCH_PATHS" => "\\"$(PODS_ROOT)/boost-for-react-native\\" \\"$(PODS_ROOT)/glog\\" \\"$(PODS_ROOT)/Folly\\" \\"$(PODS_ROOT)/Headers/Private/${versionName}React-Core\\"",
     "OTHER_CFLAGS"        => "$(inherited)" + " " + folly_flags
-  }\n\n`);
+  }\n\n`
+      );
 
     return fileString;
   });
@@ -1249,7 +1263,10 @@ function _isDirectory(dir) {
 }
 
 // TODO: use the one in XDL
-async function _transformFileContentsAsync(filename: string, transform: (fileString: string) => Promise<string> | string | null) {
+async function _transformFileContentsAsync(
+  filename: string,
+  transform: (fileString: string) => Promise<string> | string | null
+) {
   let fileString = await fs.readFile(filename, 'utf8');
   let newFileString = await transform(fileString);
   if (newFileString !== null) {

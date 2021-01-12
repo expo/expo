@@ -1,3 +1,4 @@
+import JsonFile from '@expo/json-file';
 import path from 'path';
 
 import { Package } from './Packages';
@@ -44,4 +45,30 @@ export async function installAsync(): Promise<void> {
  */
 export function getNativeApps(): Package[] {
   return NATIVE_APPS_PATHS.map((appPath) => new Package(appPath));
+}
+
+/**
+ * Updates the dependency across all workspace projects to given version range.
+ */
+export async function updateDependencyAsync(dependencyName: string, versionRange: string) {
+  const projectLocations = Object.values(await getInfoAsync()).map(
+    (projectInfo) => projectInfo.location
+  );
+
+  await Promise.all(
+    projectLocations.map(async (location) => {
+      const jsonFile = new JsonFile(path.join(EXPO_DIR, location, 'package.json'));
+      const packageJson = await jsonFile.readAsync();
+
+      for (const dependencyType of ['dependencies', 'devDependencies', 'peerDependencies']) {
+        const dependencies = packageJson[dependencyType];
+        const currentVersion = dependencies?.[dependencyName];
+
+        if (dependencies && currentVersion && currentVersion !== '*') {
+          dependencies[dependencyName] = versionRange;
+        }
+      }
+      await jsonFile.writeAsync(packageJson);
+    })
+  );
 }
