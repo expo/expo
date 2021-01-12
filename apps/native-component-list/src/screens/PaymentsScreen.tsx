@@ -12,35 +12,6 @@ Payments.setOptionsAsync({
   androidPayMode: 'test',
 });
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  header: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instruction: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
-  switch: {
-    marginBottom: 10,
-  },
-  hintContainer: {
-    marginTop: 10,
-  },
-  hint: {
-    fontSize: 12,
-    textAlign: 'center',
-    color: 'gray',
-  },
-});
-
 type State = {
   isComplete: boolean;
   isLoading: boolean;
@@ -56,11 +27,8 @@ const initialState: State = {
 };
 
 export default function PaymentsScreen() {
-  const [isAvailable, error] = useResolvedValue(Payments.deviceSupportsNativePayAsync);
+  const [isAvailable] = useResolvedValue(Payments.deviceSupportsNativePayAsync);
 
-  React.useEffect(() => {
-    error && alert(error);
-  }, [error]);
   const [state, setState] = React.useReducer(
     (state: State, action: Partial<State>) => ({ ...state, ...action }),
     initialState
@@ -167,3 +135,32 @@ export default function PaymentsScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  header: {
+    fontSize: 20,
+    textAlign: 'center',
+    margin: 10,
+  },
+  instruction: {
+    textAlign: 'center',
+    color: '#333333',
+    marginBottom: 5,
+  },
+  switch: {
+    marginBottom: 10,
+  },
+  hintContainer: {
+    marginTop: 10,
+  },
+  hint: {
+    fontSize: 12,
+    textAlign: 'center',
+    color: 'gray',
+  },
+});
