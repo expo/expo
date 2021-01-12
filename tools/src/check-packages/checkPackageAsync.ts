@@ -13,7 +13,7 @@ const { green } = chalk;
  */
 export default async function checkPackageAsync(
   pkg: Package,
-  options: ActionOptions & { isPlugin?: boolean }
+  options: ActionOptions
 ): Promise<boolean> {
   try {
     if (options.isPlugin) {
