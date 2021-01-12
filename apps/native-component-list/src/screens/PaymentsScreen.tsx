@@ -9,6 +9,8 @@ import Button from '../components/Button';
 
 Payments.setOptionsAsync({
   publishableKey: 'pk_test_u0d2z2Q308KUGR02U7A3JjIs00RYjHOfRB',
+  merchantId: 'merchant.com.example.development',
+  androidPayMode: 'test',
 });
 
 const styles = StyleSheet.create({
@@ -89,6 +91,12 @@ export default function PaymentsScreen() {
           //  * An array of `ShippingMethod` objects that describe the supported shipping methods.
           //  */
           shippingMethods: [
+              {
+                id: 'zebra',
+                label: 'An actual Zebra 🦓',
+                detail: 'A real zebra will bring you the package 😳',
+                amount: '250.00',
+              },
             {
               id: 'fedex',
               label: 'FedEX',
