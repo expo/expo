@@ -31,5 +31,7 @@ export default ({ config }) => {
       },
     ],
   ];
+
+  config.plugins.push(['expo-payments-stripe', { scheme: 'ncl-payments'}])
   return config;
 };
