@@ -18,33 +18,33 @@ public class NewManifestTest {
   @Test
   public void testFromManifestJson_AllFields() throws JSONException {
     // production manifests should require the id, createdAt, runtimeVersion, and launchAsset fields
-    String manifestJson = "{\"runtimeVersion\":\"1\",\"id\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"createdAt\":\"2020-11-11T00:17:54.797Z\",\"launchAsset\":{\"url\":\"https://url.to/bundle.js\",\"contentType\":\"js\"}}";
+    String manifestJson = "{\"runtimeVersion\":\"1\",\"id\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"createdAt\":\"2020-11-11T00:17:54.797Z\",\"launchAsset\":{\"url\":\"https://url.to/bundle.js\",\"contentType\":\"application/javascript\"}}";
     JSONObject manifest = new JSONObject(manifestJson);
     Assert.assertNotNull(NewManifest.fromManifestJson(manifest, createConfig()));
   }
 
-  @Test(expected = Exception.class)
+  @Test(expected = JSONException.class)
   public void testFromManifestJson_NoId() throws JSONException {
-    String manifestJson = "{\"runtimeVersion\":\"1\",\"createdAt\":\"2020-11-11T00:17:54.797Z\",\"launchAsset\":{\"url\":\"https://url.to/bundle.js\",\"contentType\":\"js\"}}";
+    String manifestJson = "{\"runtimeVersion\":\"1\",\"createdAt\":\"2020-11-11T00:17:54.797Z\",\"launchAsset\":{\"url\":\"https://url.to/bundle.js\",\"contentType\":\"application/javascript\"}}";
     JSONObject manifest = new JSONObject(manifestJson);
     NewManifest.fromManifestJson(manifest, createConfig());
   }
 
-  @Test(expected = Exception.class)
+  @Test(expected = JSONException.class)
   public void testFromManifestJson_NoCreatedAt() throws JSONException {
-    String manifestJson = "{\"runtimeVersion\":\"1\",\"id\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"launchAsset\":{\"url\":\"https://url.to/bundle.js\",\"contentType\":\"js\"}}";
+    String manifestJson = "{\"runtimeVersion\":\"1\",\"id\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"launchAsset\":{\"url\":\"https://url.to/bundle.js\",\"contentType\":\"application/javascript\"}}";
     JSONObject manifest = new JSONObject(manifestJson);
     NewManifest.fromManifestJson(manifest, createConfig());
   }
 
-  @Test(expected = Exception.class)
+  @Test(expected = JSONException.class)
   public void testFromManifestJson_NoRuntimeVersion() throws JSONException {
-    String manifestJson = "{\"id\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"createdAt\":\"2020-11-11T00:17:54.797Z\",\"launchAsset\":{\"url\":\"https://url.to/bundle.js\",\"contentType\":\"js\"}}";
+    String manifestJson = "{\"id\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"createdAt\":\"2020-11-11T00:17:54.797Z\",\"launchAsset\":{\"url\":\"https://url.to/bundle.js\",\"contentType\":\"application/javascript\"}}";
     JSONObject manifest = new JSONObject(manifestJson);
     NewManifest.fromManifestJson(manifest, createConfig());
   }
 
-  @Test(expected = Exception.class)
+  @Test(expected = JSONException.class)
   public void testFromManifestJson_NoLaunchAsset() throws JSONException {
     String manifestJson = "{\"runtimeVersion\":\"1\",\"id\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"createdAt\":\"2020-11-11T00:17:54.797Z\",}";
     JSONObject manifest = new JSONObject(manifestJson);
@@ -53,10 +53,10 @@ public class NewManifestTest {
 
   @Test
   public void testFromManifestJson_StripsOptionalRootLevelKeys() throws JSONException {
-    String manifestJsonWithRootLevelKeys = "{\"data\":{\"publicManifest\":{\"manifest\":{\"runtimeVersion\":\"1\",\"id\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"createdAt\":\"2020-11-11T00:17:54.797Z\",\"launchAsset\":{\"url\":\"https://url.to/bundle.js\",\"contentType\":\"js\"}}}}}";
+    String manifestJsonWithRootLevelKeys = "{\"data\":{\"publicManifest\":{\"manifest\":{\"runtimeVersion\":\"1\",\"id\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"createdAt\":\"2020-11-11T00:17:54.797Z\",\"launchAsset\":{\"url\":\"https://url.to/bundle.js\",\"contentType\":\"application/javascript\"}}}}}";
     Manifest manifest1 = NewManifest.fromManifestJson(new JSONObject(manifestJsonWithRootLevelKeys), createConfig());
 
-    String manifestJsonNoRootLevelKeys = "{\"runtimeVersion\":\"1\",\"id\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"createdAt\":\"2020-11-11T00:17:54.797Z\",\"launchAsset\":{\"url\":\"https://url.to/bundle.js\",\"contentType\":\"js\"}}";
+    String manifestJsonNoRootLevelKeys = "{\"runtimeVersion\":\"1\",\"id\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"createdAt\":\"2020-11-11T00:17:54.797Z\",\"launchAsset\":{\"url\":\"https://url.to/bundle.js\",\"contentType\":\"application/javascript\"}}";
     Manifest manifest2 = NewManifest.fromManifestJson(new JSONObject(manifestJsonNoRootLevelKeys), createConfig());
 
     Assert.assertEquals(manifest1.getRawManifestJson().getString("id"), manifest2.getRawManifestJson().getString("id"));

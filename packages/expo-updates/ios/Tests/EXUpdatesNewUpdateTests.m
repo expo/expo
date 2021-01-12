@@ -38,7 +38,7 @@
     @"runtimeVersion": @"1",
     @"id": @"0eef8214-4833-4089-9dff-b4138a14f196",
     @"createdAt": @"2020-11-11T00:17:54.797Z",
-    @"launchAsset": @{@"url": @"https://url.to/bundle.js", @"contentType": @"js"}
+    @"launchAsset": @{@"url": @"https://url.to/bundle.js", @"contentType": @"application/javascript"}
   };
   XCTAssert([EXUpdatesNewUpdate updateWithNewManifest:manifest config:_config database:_database] != nil);
 }
@@ -48,7 +48,7 @@
   NSDictionary *manifest = @{
     @"id": @"0eef8214-4833-4089-9dff-b4138a14f196",
     @"createdAt": @"2020-11-11T00:17:54.797Z",
-    @"launchAsset": @{@"url": @"https://url.to/bundle.js", @"contentType": @"js"}
+    @"launchAsset": @{@"url": @"https://url.to/bundle.js", @"contentType": @"application/javascript"}
   };
   XCTAssertThrows([EXUpdatesNewUpdate updateWithNewManifest:manifest config:_config database:_database]);
 }
@@ -58,7 +58,7 @@
   NSDictionary *manifest = @{
     @"runtimeVersion": @"1",
     @"createdAt": @"2020-11-11T00:17:54.797Z",
-    @"launchAsset": @{@"url": @"https://url.to/bundle.js", @"contentType": @"js"}
+    @"launchAsset": @{@"url": @"https://url.to/bundle.js", @"contentType": @"application/javascript"}
   };
   XCTAssertThrows([EXUpdatesNewUpdate updateWithNewManifest:manifest config:_config database:_database]);
 }
@@ -68,7 +68,7 @@
   NSDictionary *manifest = @{
     @"runtimeVersion": @"1",
     @"id": @"0eef8214-4833-4089-9dff-b4138a14f196",
-    @"launchAsset": @{@"url": @"https://url.to/bundle.js", @"contentType": @"js"}
+    @"launchAsset": @{@"url": @"https://url.to/bundle.js", @"contentType": @"application/javascript"}
   };
   XCTAssertThrows([EXUpdatesNewUpdate updateWithNewManifest:manifest config:_config database:_database]);
 }
@@ -89,7 +89,7 @@
     @"runtimeVersion": @"1",
     @"id": @"0eef8214-4833-4089-9dff-b4138a14f196",
     @"createdAt": @"2020-11-11T00:17:54.797Z",
-    @"launchAsset": @{@"url": @"https://url.to/bundle.js", @"contentType": @"js"}
+    @"launchAsset": @{@"url": @"https://url.to/bundle.js", @"contentType": @"application/javascript"}
   };
   NSDictionary *manifestWithRootLevelKeys = @{
     @"data": @{
