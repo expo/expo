@@ -6,7 +6,7 @@ This package contains a collection of common scripts for all Expo modules and th
 
 - [Getting Started](#getting-started)
 - [Setup](#setup)
-  - [🔌 Config plugin](#-config-plugin)
+  - [🔌 Config Plugin](#-config-plugin)
   - [🤡 Jest](#-jest)
   - [📝 LICENSE](#-license)
   - [Side Effects](#side-effects)
@@ -67,14 +67,14 @@ Running `yarn` will now run the `prepare` script, which generates any missing fi
 
 You should also add the following fields to your `package.json`:
 
-### 🔌 Config plugin
+### 🔌 Config Plugin
 
 To create a [config plugin](https://github.com/expo/expo-cli/blob/master/packages/config-plugins/README.md) that automatically configures your native code, you have two options:
 
-1. Create a `plugin` folder and write your plugin in TypeScript (Recommended).
-2. Create an `app.plugin.js` and write the plugin in pure Node.js compliant JavaScript
+1. Create a `plugin` folder and write your plugin in TypeScript (recommended).
+2. Create an `app.plugin.js` file in the project root and write the plugin in pure Node.js-compliant JavaScript.
 
-Config plugins must be transpiled for Node.js (LTS) which is slightly different to native React modules which support features like the import/export keywords. This means we'll need two different `tsconfig.json` files and two different `src` (and `build`) folders.
+Config plugins must be transpiled for compatibility with Node.js (LTS). The features supported in Node.js are slightly different from those in Expo or React Native modules, which support ES6 import/export keywords and JSX, for example. This means we'll need two different `tsconfig.json` files and two different `src` (and `build`) folders — one for the code that will execute in an Expo or React Native app and the other for the plugin that executes in Node.js.
 
 This can quickly become complex, so we've created a system for easily targeting the plugin folder.
 
@@ -97,7 +97,7 @@ Create a `app.config.js` (the entry point for a config plugin):
 module.exports = require('./plugin/build');
 ```
 
-Create a `plugin/tsconfig.json` file, notice that this uses `tsconfig.plugin` as the base config:
+Create a `plugin/tsconfig.json` file. Notice that this uses `tsconfig.plugin` as the base config:
 
 ```json
 {
@@ -111,7 +111,7 @@ Create a `plugin/tsconfig.json` file, notice that this uses `tsconfig.plugin` as
 }
 ```
 
-In your `plugin/src/index.ts` write your TypeScript config plugin:
+In your `plugin/src/index.ts` file, write your TypeScript config plugin:
 
 ```ts
 import { ConfigPlugin } from '@expo/config-plugins';
@@ -132,7 +132,7 @@ Optionally, you can add `plugin/jest.config.js` to override the default project 
 module.exports = require('expo-module-scripts/jest-preset-plugin');
 ```
 
-Use the following scripts to interact with it:
+Use the following scripts to interact with the plugin:
 
 - `yarn build plugin`: Build the plugin.
 - `yarn clean plugin`: Delete the `plugin/build` folder.
@@ -267,7 +267,7 @@ If we wished to switch to using just Babel with the TypeScript plugin, this pack
 
 #### build plugin
 
-Running `build plugin` will cause it to build the project at `plugin/src`.
+Running `build plugin` builds the plugin source code in `plugin/src`.
 
 ### test
 
@@ -290,7 +290,7 @@ Replacements for common `fbjs` uses-cases are listed below:
 
 #### lint plugin
 
-Running `lint plugin` will cause it to lint the project at `plugin/src`.
+Running `lint plugin` will lints the plugin source code in `plugin/src`.
 
 ### clean
 
