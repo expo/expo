@@ -34,7 +34,7 @@ import * as Amplitude from 'expo-analytics-amplitude';
 
 ## Methods
 
-### `Amplitude.initializeAsync(apiKey)`
+### `Amplitude.initialize(apiKey)`
 
 Initializes Amplitude with your Amplitude API key. If you're having trouble finding your API key, see [step 4 of these instructions](https://amplitude.zendesk.com/hc/en-us/articles/207108137-Introduction-Getting-Started#getting-started).
 
