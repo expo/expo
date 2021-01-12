@@ -56,6 +56,17 @@ public class LegacyManifestTest {
   }
 
   @Test
+  public void testGetAssetsUrlBase_assetUrlOverride_originRelativeUrl() throws JSONException {
+    Uri manifestUrl = Uri.parse("https://esamelson.github.io/self-hosting-test/android-index.json");
+    JSONObject manifestJson = new JSONObject();
+    manifestJson.put("assetUrlOverride", "/my_assets");
+
+    Uri expected = Uri.parse("https://esamelson.github.io/my_assets");
+    Uri actual = LegacyManifest.getAssetsUrlBase(manifestUrl, manifestJson);
+    Assert.assertEquals(expected, actual);
+  }
+
+  @Test
   public void testGetAssetsUrlBase_assetUrlOverride_relativeUrlDotSlash() throws JSONException {
     Uri manifestUrl = Uri.parse("https://esamelson.github.io/self-hosting-test/android-index.json");
     JSONObject manifestJson = new JSONObject();
