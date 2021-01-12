@@ -4,6 +4,7 @@ import {
   createRunOncePlugin,
   IOSConfig,
   withAndroidManifest,
+  withEntitlementsPlist,
   withXcodeProject,
 } from '@expo/config-plugins';
 
@@ -16,7 +17,14 @@ const {
 
 const pkg = require('expo-payments-stripe/package.json');
 
-type StripePluginProps = { scheme: string };
+type StripePluginProps = {
+  scheme: string;
+  /**
+   * The iOS merchant ID used for enabling Apple Pay.
+   * Without this, the error "Missing merchant identifier" will be thrown on iOS.
+   */
+  merchantId: string;
+};
 
 const CUSTOM_TAB_ACTIVITY = 'expo.modules.payments.stripe.RedirectUriReceiver';
 const META_WALLET = 'com.google.android.gms.wallet.api.enabled';
@@ -98,7 +106,7 @@ export function ensureStripeActivity({
   return mainApplication;
 }
 
-export const withStripeIos: ConfigPlugin<StripePluginProps> = (config, { scheme }) => {
+export const withStripeIos: ConfigPlugin<StripePluginProps> = (config, { scheme, merchantId }) => {
   // Add the scheme on iOS
   if (!config.ios) {
     config.ios = {};
@@ -118,10 +126,14 @@ export const withStripeIos: ConfigPlugin<StripePluginProps> = (config, { scheme 
 
   // Append store kit
   config = withStoreKit(config);
+
+  // Add the Merchant ID to the entitlements
+  config = withInAppPurchases(config, { merchantId });
+
   return config;
 };
 
-const withStripeAndroid: ConfigPlugin<StripePluginProps> = (config, { scheme }) => {
+const withStripeAndroid: ConfigPlugin<Pick<StripePluginProps, 'scheme'>> = (config, { scheme }) => {
   return withAndroidManifest(config, config => {
     let mainApplication = getMainApplicationOrThrow(config.modResults);
     mainApplication = ensureStripeActivity({ mainApplication, scheme });
@@ -136,10 +148,10 @@ const withStripeAndroid: ConfigPlugin<StripePluginProps> = (config, { scheme }) 
   });
 };
 
-const withStripe: ConfigPlugin<StripePluginProps> = (config, { scheme }) => {
-  config = withStripeIos(config, { scheme });
+const withStripe: ConfigPlugin<StripePluginProps> = (config, props) => {
+  config = withStripeIos(config, props);
   // Add the custom scheme and meta on Android
-  config = withStripeAndroid(config, { scheme });
+  config = withStripeAndroid(config, props);
   return config;
 };
 
@@ -151,6 +163,29 @@ const withStoreKit: ConfigPlugin = config => {
       projectName: config.modRequest.projectName!,
       framework: 'StoreKit.framework',
     });
+
+    return config;
+  });
+};
+
+const withInAppPurchases: ConfigPlugin<Pick<StripePluginProps, 'merchantId'>> = (config, props) => {
+  /**
+   * Add the following to the entitlements:
+   *
+   * <key>com.apple.developer.in-app-payments</key>
+   * <array>
+   *	 <string>[MERCHANT_ID]</string>
+   * </array>
+   */
+  return withEntitlementsPlist(config, config => {
+    const key = 'com.apple.developer.in-app-payments';
+
+    if (!Array.isArray(config.modResults[key])) {
+      config.modResults[key] = [];
+    }
+
+    // @ts-ignore
+    config.modResults[key].push(props.merchantId);
 
     return config;
   });

@@ -67,7 +67,7 @@ function ensureStripeActivity({ mainApplication, scheme, }) {
     return mainApplication;
 }
 exports.ensureStripeActivity = ensureStripeActivity;
-exports.withStripeIos = (config, { scheme }) => {
+exports.withStripeIos = (config, { scheme, merchantId }) => {
     // Add the scheme on iOS
     if (!config.ios) {
         config.ios = {};
@@ -86,6 +86,8 @@ exports.withStripeIos = (config, { scheme }) => {
     config.ios.scheme.push(scheme);
     // Append store kit
     config = withStoreKit(config);
+    // Add the Merchant ID to the entitlements
+    config = withInAppPurchases(config, { merchantId });
     return config;
 };
 const withStripeAndroid = (config, { scheme }) => {
@@ -101,10 +103,10 @@ const withStripeAndroid = (config, { scheme }) => {
         return config;
     });
 };
-const withStripe = (config, { scheme }) => {
-    config = exports.withStripeIos(config, { scheme });
+const withStripe = (config, props) => {
+    config = exports.withStripeIos(config, props);
     // Add the custom scheme and meta on Android
-    config = withStripeAndroid(config, { scheme });
+    config = withStripeAndroid(config, props);
     return config;
 };
 const withStoreKit = config => {
@@ -115,6 +117,25 @@ const withStoreKit = config => {
             projectName: config.modRequest.projectName,
             framework: 'StoreKit.framework',
         });
+        return config;
+    });
+};
+const withInAppPurchases = (config, props) => {
+    /**
+     * Add the following to the entitlements:
+     *
+     * <key>com.apple.developer.in-app-payments</key>
+     * <array>
+     *	 <string>[MERCHANT_ID]</string>
+     * </array>
+     */
+    return config_plugins_1.withEntitlementsPlist(config, config => {
+        const key = 'com.apple.developer.in-app-payments';
+        if (!Array.isArray(config.modResults[key])) {
+            config.modResults[key] = [];
+        }
+        // @ts-ignore
+        config.modResults[key].push(props.merchantId);
         return config;
     });
 };
