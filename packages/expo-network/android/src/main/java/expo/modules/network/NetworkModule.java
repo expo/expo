@@ -126,11 +126,20 @@ public class NetworkModule extends ExportedModule implements RegistryLifecycleLi
       ip = Integer.reverseBytes(ip);
     }
     byte[] ipByteArray = BigInteger.valueOf(ip).toByteArray();
+    if (ipByteArray.length < 4) {
+      ipByteArray = frontPadWithZeros(ipByteArray);
+    }
     try {
       return InetAddress.getByAddress(ipByteArray).getHostAddress();
     } catch (UnknownHostException e) {
       return "0.0.0.0";
     }
+  }
+
+  private static byte[] frontPadWithZeros(byte [] inputArr) {
+    byte[] newByteArray = { 0, 0, 0, 0 };
+    System.arraycopy(inputArr, 0, newByteArray, 4 - inputArr.length, inputArr.length);
+    return newByteArray;
   }
 
   @ExpoMethod
