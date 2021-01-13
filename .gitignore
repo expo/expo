@@ -133,4 +133,3 @@ docs/pages/versions/*/react-native/*.diff
 /packages/**/*.xcframework
 /packages/**/*.spec.json
 /packages/**/Info-generated.plist
-/packages/**/plugin/build/
