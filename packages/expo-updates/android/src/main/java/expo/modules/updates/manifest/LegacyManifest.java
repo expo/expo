@@ -17,7 +17,6 @@ import java.net.URI;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 import static expo.modules.updates.loader.EmbeddedLoader.BUNDLE_FILENAME;
@@ -171,29 +170,15 @@ public class LegacyManifest implements Manifest {
 
       // assetUrlOverride may be an absolute or relative URL
       // if relative, we should resolve with respect to the manifest URL
+      // java.net.URI's resolve method does this for us
       String assetsPathOrUrl = manifestJson.optString("assetUrlOverride", "assets");
-      Uri maybeAssetsUrl = Uri.parse(assetsPathOrUrl);
-      if (maybeAssetsUrl != null && maybeAssetsUrl.isAbsolute()) {
-        return maybeAssetsUrl;
-      } else {
-        String normalizedAssetsPath;
-        try {
-          URI assetsPathURI = new URI(assetsPathOrUrl);
-          normalizedAssetsPath = assetsPathURI.normalize().toString();
-        } catch (Exception e) {
-          Log.e(TAG, "Failed to normalize assetUrlOverride", e);
-          normalizedAssetsPath = assetsPathOrUrl;
-        }
-
-        // use manifest URL as the base
-        Uri.Builder assetsBaseUrlBuilder = manifestUrl.buildUpon();
-        List<String> segments = manifestUrl.getPathSegments();
-        assetsBaseUrlBuilder.path("");
-        for (int i = 0; i < segments.size() - 1; i++) {
-          assetsBaseUrlBuilder.appendPath(segments.get(i));
-        }
-        assetsBaseUrlBuilder.appendPath(normalizedAssetsPath);
-        return assetsBaseUrlBuilder.build();
+      try {
+        URI assetsURI = new URI(assetsPathOrUrl);
+        URI manifestURI = new URI(manifestUrl.toString());
+        return Uri.parse(manifestURI.resolve(assetsURI).toString());
+      } catch (Exception e) {
+        Log.e(TAG, "Failed to parse assetUrlOverride, falling back to default asset path", e);
+        return manifestUrl.buildUpon().appendPath("assets").build();
       }
     }
   }
