@@ -100,6 +100,17 @@ public class LegacyManifestTest {
   }
 
   @Test
+  public void testGetAssetsUrlBase_AssetUrlOverride_NormalizePastHostname() throws JSONException {
+    Uri manifestUrl = Uri.parse("https://esamelson.github.io/self-hosting-test/android-index.json");
+    JSONObject manifestJson = new JSONObject();
+    manifestJson.put("assetUrlOverride", "../../b");
+
+    Uri expected = Uri.parse("https://esamelson.github.io/b");
+    Uri actual = LegacyManifest.getAssetsUrlBase(manifestUrl, manifestJson);
+    Assert.assertEquals(expected, actual);
+  }
+
+  @Test
   public void testGetAssetsUrlBase_AssetUrlOverride_Default() {
     Uri manifestUrl = Uri.parse("https://esamelson.github.io/self-hosting-test/android-index.json");
     JSONObject manifestJson = new JSONObject();
