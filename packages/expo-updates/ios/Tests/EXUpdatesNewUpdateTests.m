@@ -92,11 +92,7 @@
     @"launchAsset": @{@"url": @"https://url.to/bundle.js", @"contentType": @"application/javascript"}
   };
   NSDictionary *manifestWithRootLevelKeys = @{
-    @"data": @{
-      @"publicManifest": @{
-        @"manifest": manifestNoRootLevelKeys
-      }
-    }
+    @"manifest": manifestNoRootLevelKeys
   };
 
   EXUpdatesUpdate *update1 = [EXUpdatesNewUpdate updateWithNewManifest:manifestNoRootLevelKeys config:_config database:_database];

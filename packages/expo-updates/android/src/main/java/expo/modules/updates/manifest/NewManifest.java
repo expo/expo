@@ -50,12 +50,6 @@ public class NewManifest implements Manifest {
 
   public static NewManifest fromManifestJson(JSONObject rootManifestJson, UpdatesConfiguration configuration) throws JSONException {
     JSONObject manifestJson = rootManifestJson;
-    if (rootManifestJson.has("data")) {
-      manifestJson = rootManifestJson.getJSONObject("data");
-    }
-    if (manifestJson.has("publicManifest")) {
-      manifestJson = manifestJson.getJSONObject("publicManifest");
-    }
     if (manifestJson.has("manifest")) {
       manifestJson = manifestJson.getJSONObject("manifest");
     }
