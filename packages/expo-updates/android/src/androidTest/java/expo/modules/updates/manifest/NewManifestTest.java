@@ -53,7 +53,7 @@ public class NewManifestTest {
 
   @Test
   public void testFromManifestJson_StripsOptionalRootLevelKeys() throws JSONException {
-    String manifestJsonWithRootLevelKeys = "{\"data\":{\"publicManifest\":{\"manifest\":{\"runtimeVersion\":\"1\",\"id\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"createdAt\":\"2020-11-11T00:17:54.797Z\",\"launchAsset\":{\"url\":\"https://url.to/bundle.js\",\"contentType\":\"application/javascript\"}}}}}";
+    String manifestJsonWithRootLevelKeys = "{\"manifest\":{\"runtimeVersion\":\"1\",\"id\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"createdAt\":\"2020-11-11T00:17:54.797Z\",\"launchAsset\":{\"url\":\"https://url.to/bundle.js\",\"contentType\":\"application/javascript\"}}}";
     Manifest manifest1 = NewManifest.fromManifestJson(new JSONObject(manifestJsonWithRootLevelKeys), createConfig());
 
     String manifestJsonNoRootLevelKeys = "{\"runtimeVersion\":\"1\",\"id\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"createdAt\":\"2020-11-11T00:17:54.797Z\",\"launchAsset\":{\"url\":\"https://url.to/bundle.js\",\"contentType\":\"application/javascript\"}}";
