@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed issue on Android where apps would crash when calling `getIpAddressAsync` when using cellular data or on certain IP addresses.
+
 ## 2.4.0 — 2020-11-17
 
 _This version does not introduce any user-facing changes._
