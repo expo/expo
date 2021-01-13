@@ -56,7 +56,7 @@ public class ExponentSharedPreferences {
   public static final String SAFE_MANIFEST_KEY = "safe_manifest";
   public static final String EXPO_AUTH_SESSION = "expo_auth_session";
   public static final String EXPO_AUTH_SESSION_SECRET_KEY = "sessionSecret";
-  public static final String HAS_CLEARED_LEGACY_OKHTTP_CACHE_KEY = "has_cleared_legacy_okhttp_cache";
+  public static final String OKHTTP_CACHE_VERSION_KEY = "okhttp_cache_version";
 
   // Metadata
   public static final String EXPERIENCE_METADATA_PREFIX = "experience_metadata_";
@@ -76,7 +76,6 @@ public class ExponentSharedPreferences {
     DEFAULT_VALUES.put(IS_ONBOARDING_FINISHED_KEY, false);
     DEFAULT_VALUES.put(NUX_HAS_FINISHED_FIRST_RUN_KEY, false);
     DEFAULT_VALUES.put(SHOULD_NOT_USE_KERNEL_CACHE, false);
-    DEFAULT_VALUES.put(HAS_CLEARED_LEGACY_OKHTTP_CACHE_KEY, false);
   }
 
   private SharedPreferences mSharedPreferences;
@@ -110,6 +109,18 @@ public class ExponentSharedPreferences {
 
   public void setBoolean(String key, boolean value) {
     mSharedPreferences.edit().putBoolean(key, value).apply();
+  }
+
+  public int getInteger(String key) {
+    return getInteger(key, 0);
+  }
+
+  public int getInteger(String key, int defaultValue) {
+    return mSharedPreferences.getInt(key, defaultValue);
+  }
+
+  public void setInteger(String key, int value) {
+    mSharedPreferences.edit().putInt(key, value).apply();
   }
 
   public String getString(String key) {
