@@ -101,6 +101,7 @@ public class ExponentNetwork {
     return new Cache(directory, cacheSize);
   }
 
+  // TODO: can remove this after most apps have upgraded to SDK 41 or later
   private void clearLegacyCache() {
     if (mExponentSharedPreferences.getBoolean(ExponentSharedPreferences.HAS_CLEARED_LEGACY_OKHTTP_CACHE_KEY)) {
       return;
@@ -115,7 +116,7 @@ public class ExponentNetwork {
       }
       mExponentSharedPreferences.setBoolean(ExponentSharedPreferences.HAS_CLEARED_LEGACY_OKHTTP_CACHE_KEY, true);
     } catch (Exception e) {
-      Log.e(TAG, "Failed to clear legacy OkHttp class", e);
+      Log.e(TAG, "Failed to clear legacy OkHttp cache", e);
     }
   }
 
