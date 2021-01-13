@@ -137,7 +137,7 @@ Use the following scripts to interact with the plugin:
 - `yarn build plugin`: Build the plugin.
 - `yarn clean plugin`: Delete the `plugin/build` folder.
 - `yarn lint plugin`: Lint the `plugin/src` folder.
-- `yarn test plugin`: Alias for `npx jest --rootDir ./plugin --config ./plugin/jest.config.js`, uses the project jest preset if `plugin/jest.config.js` doesn't exist.
+- `yarn test plugin`: Alias for `npx jest --rootDir ./plugin --config ./plugin/jest.config.js`, uses the project's Jest preset if `plugin/jest.config.js` doesn't exist.
 - `yarn prepare`: Prepare the plugin and module for publishing.
 
 ### 🤡 Jest
