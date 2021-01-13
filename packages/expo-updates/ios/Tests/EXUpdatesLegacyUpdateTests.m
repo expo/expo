@@ -65,49 +65,49 @@
 {
   NSURL *relativeExpected = [NSURL URLWithString:@"https://esamelson.github.io/self-hosting-test/my_assets"];
   NSURL *relativeActual = [EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:@{ @"assetUrlOverride": @"my_assets" } config:_selfHostedConfig];
-  XCTAssert([relativeActual.absoluteString isEqualToString:relativeExpected.absoluteString], @"should return a URL relative to manifest URL base if it's a relative URL");
+  XCTAssert([relativeActual isEqual:relativeExpected], @"should return a URL relative to manifest URL base if it's a relative URL");
 }
 
 - (void)testBundledAssetBaseUrl_AssetUrlOverride_OriginRelativeUrl
 {
   NSURL *originRelativeExpected = [NSURL URLWithString:@"https://esamelson.github.io/my_assets"];
   NSURL *originRelativeActual = [EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:@{ @"assetUrlOverride": @"/my_assets" } config:_selfHostedConfig];
-  XCTAssert([originRelativeActual.absoluteString isEqualToString:originRelativeExpected.absoluteString], @"should return a URL relative to manifest URL base if it's an origin-relative URL");
+  XCTAssert([originRelativeActual isEqual:originRelativeExpected], @"should return a URL relative to manifest URL base if it's an origin-relative URL");
 }
 
 - (void)testBundledAssetBaseUrl_AssetUrlOverride_RelativeUrlDotSlash
 {
   NSURL *relativeDotSlashExpected = [NSURL URLWithString:@"https://esamelson.github.io/self-hosting-test/my_assets"];
   NSURL *relativeDotSlashActual = [EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:@{ @"assetUrlOverride": @"./my_assets" } config:_selfHostedConfig];
-  XCTAssert([relativeDotSlashActual.absoluteString isEqualToString:relativeDotSlashExpected.absoluteString], @"should return a URL relative to manifest URL base with `./` resolved correctly if it's a relative URL");
+  XCTAssert([relativeDotSlashActual isEqual:relativeDotSlashExpected], @"should return a URL relative to manifest URL base with `./` resolved correctly if it's a relative URL");
 }
 
 - (void)testBundledAssetBaseUrl_AssetUrlOverride_Normalize
 {
   NSURL *expected = [NSURL URLWithString:@"https://esamelson.github.io/self-hosting-test/b"];
   NSURL *actual = [EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:@{ @"assetUrlOverride": @"./a/../b" } config:_selfHostedConfig];
-  XCTAssert([actual.absoluteString isEqualToString:expected.absoluteString], @"should return a correctly normalized URL relative to manifest URL base");
+  XCTAssert([actual isEqual:expected], @"should return a correctly normalized URL relative to manifest URL base");
 }
 
 - (void)testBundledAssetBaseUrl_AssetUrlOverride_NormalizeToHostname
 {
   NSURL *expected = [NSURL URLWithString:@"https://esamelson.github.io/b"];
   NSURL *actual = [EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:@{ @"assetUrlOverride": @"../b" } config:_selfHostedConfig];
-  XCTAssert([actual.absoluteString isEqualToString:expected.absoluteString], @"should return a correctly normalized URL relative to manifest URL base if the relative path goes back to the hostname");
+  XCTAssert([actual isEqual:expected], @"should return a correctly normalized URL relative to manifest URL base if the relative path goes back to the hostname");
 }
 
 - (void)testBundledAssetBaseUrl_AssetUrlOverride_NormalizePastHostname
 {
   NSURL *expected = [NSURL URLWithString:@"https://esamelson.github.io/b"];
   NSURL *actual = [EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:@{ @"assetUrlOverride": @"../../b" } config:_selfHostedConfig];
-  XCTAssert([actual.absoluteString isEqualToString:expected.absoluteString], @"should return a correctly normalized URL relative to manifest URL base if the relative path goes back past the hostname");
+  XCTAssert([actual isEqual:expected], @"should return a correctly normalized URL relative to manifest URL base if the relative path goes back past the hostname");
 }
 
 - (void)testBundledAssetBaseUrl_AssetUrlOverride_Default
 {
   NSURL *defaultExpected = [NSURL URLWithString:@"https://esamelson.github.io/self-hosting-test/assets"];
   NSURL *defaultActual = [EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:@{} config:_selfHostedConfig];
-  XCTAssert([defaultActual.absoluteString isEqualToString:defaultExpected.absoluteString], @"should return a URL with `assets` relative to manifest URL base if unspecified");
+  XCTAssert([defaultActual isEqual:defaultExpected], @"should return a URL with `assets` relative to manifest URL base if unspecified");
 }
 
 - (void)testUpdateWithLegacyManifest_Development
