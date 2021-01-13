@@ -72,7 +72,7 @@ await Network.getNetworkStateAsync();
 
 Gets the device's current IPv4 address. Returns `0.0.0.0` if the IP address could not be retrieved.
 
-On web, this method uses [`Ipify Api`](https://www.ipify.org/) to get public ip address of current device via http request.
+On web, this method uses the third-party [`ipify service`](https://www.ipify.org/) to get the public IP address of the current device.
 
 #### Returns
 
