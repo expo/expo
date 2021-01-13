@@ -56,6 +56,7 @@ public class ExponentSharedPreferences {
   public static final String SAFE_MANIFEST_KEY = "safe_manifest";
   public static final String EXPO_AUTH_SESSION = "expo_auth_session";
   public static final String EXPO_AUTH_SESSION_SECRET_KEY = "sessionSecret";
+  public static final String OKHTTP_CACHE_VERSION_KEY = "okhttp_cache_version";
 
   // Metadata
   public static final String EXPERIENCE_METADATA_PREFIX = "experience_metadata_";
@@ -108,6 +109,18 @@ public class ExponentSharedPreferences {
 
   public void setBoolean(String key, boolean value) {
     mSharedPreferences.edit().putBoolean(key, value).apply();
+  }
+
+  public int getInteger(String key) {
+    return getInteger(key, 0);
+  }
+
+  public int getInteger(String key, int defaultValue) {
+    return mSharedPreferences.getInt(key, defaultValue);
+  }
+
+  public void setInteger(String key, int value) {
+    mSharedPreferences.edit().putInt(key, value).apply();
   }
 
   public String getString(String key) {
