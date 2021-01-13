@@ -136,9 +136,9 @@ public class NetworkModule extends ExportedModule implements RegistryLifecycleLi
     }
   }
 
-  private static byte[] frontPadWithZeros(byte [] inputArr) {
+  private static byte[] frontPadWithZeros(byte [] inputArray) {
     byte[] newByteArray = { 0, 0, 0, 0 };
-    System.arraycopy(inputArr, 0, newByteArray, 4 - inputArr.length, inputArr.length);
+    System.arraycopy(inputArray, 0, newByteArray, 4 - inputArray.length, inputArray.length);
     return newByteArray;
   }
 
