@@ -15,12 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
                                   database:(EXUpdatesDatabase *)database
 {
   NSDictionary *manifest = rootManifest;
-  if (rootManifest[@"data"]) {
-    manifest = rootManifest[@"data"];
-  }
-  if (manifest[@"publicManifest"]) {
-    manifest = manifest[@"publicManifest"];
-  }
   if (manifest[@"manifest"]) {
     manifest = manifest[@"manifest"];
   }
