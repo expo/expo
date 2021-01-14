@@ -16,6 +16,8 @@
 
 ### 🐛 Bug fixes
 
+- remove ts-ignore from plugin. ([#11633](https://github.com/expo/expo/pull/11633) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 3.0.0 — 2020-11-17
 
 ### 🛠 Breaking changes
