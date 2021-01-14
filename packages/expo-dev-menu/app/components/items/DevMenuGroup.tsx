@@ -3,6 +3,7 @@ import { StyleSheet, PixelRatio, View } from 'react-native';
 
 import { DevMenuItemAnyType, DevMenuItemProps, DevMenuItemEnum } from '../../DevMenuInternal';
 import DevMenuItemAction from './DevMenuAction';
+import DevMenuItemLink from './DevMenuLink';
 
 type Props = {
   items: DevMenuItemAnyType[];
@@ -17,6 +18,8 @@ class DevMenuItem extends React.PureComponent<DevMenuItemProps> {
         return <DevMenuItemAction item={item} />;
       case DevMenuItemEnum.GROUP:
         return <DevMenuItemsList items={item.items} />;
+      case DevMenuItemEnum.LINK:
+        return <DevMenuItemLink item={item} />;
       default:
         return null;
     }
@@ -43,7 +46,7 @@ const pixel = 2 / PixelRatio.get();
 
 const styles = StyleSheet.create({
   group: {
-    marginVertical: 7,
+    marginTop: 14,
     marginHorizontal: -pixel,
   },
 });

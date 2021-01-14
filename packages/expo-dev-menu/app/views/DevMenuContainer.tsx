@@ -10,6 +10,7 @@ import DevMenuTestScreen from '../screens/DevMenuTestScreen';
 import DevMenuBottomSheet from './DevMenuBottomSheet';
 import DevMenuOnboarding from './DevMenuOnboarding';
 import NavigationHeaderButton from '../components/NavigationHeaderButton';
+import DevMenuScreen from '../components/items/DevMenuScreen';
 
 type Props = {
   uuid: string;
@@ -110,6 +111,18 @@ export default class DevMenuContainer extends React.PureComponent<Props, any> {
       ...this.providedContext,
     };
 
+    const devMenuScreens = (this.props.devMenuScreens as {
+      screenName: string;
+      items: any;
+    }[]).map(screenInfo => {
+      return {
+        name: screenInfo.screenName,
+        component: DevMenuScreen,
+        options: applyNavigationSettings(DevMenuScreen.navigationOptions),
+        props: { items: screenInfo.items },
+      };
+    });
+
     return (
       <DevMenuContext.Provider value={providedContext}>
         <View style={styles.bottomSheetContainer}>
@@ -123,7 +136,7 @@ export default class DevMenuContainer extends React.PureComponent<Props, any> {
             initialSnap={0}
             snapPoints={this.snapPoints}
             callbackNode={this.callbackNode}
-            screens={this.screens}>
+            screens={[...this.screens, ...devMenuScreens]}>
             <DevMenuOnboarding show={this.props.showOnboardingView} />
           </DevMenuBottomSheet>
         </View>

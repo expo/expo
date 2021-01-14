@@ -13,20 +13,35 @@ export type DevMenuAppInfoType = {
 export enum DevMenuItemEnum {
   ACTION = 1,
   GROUP = 2,
+  SCREEN = 3,
+  LINK = 4,
 }
 
 type DevMenuItemBaseType<T extends DevMenuItemEnum> = {
   type: T;
+};
+
+export type DevMenuScreenType = DevMenuItemBaseType<DevMenuItemEnum.SCREEN> & {
+  screenName: string;
+  items: DevMenuItemAnyType[];
+};
+
+export type DevMenuItemActionType = DevMenuItemBaseType<DevMenuItemEnum.ACTION> & {
+  actionId: string;
+
   isAvailable: boolean;
   isEnabled: boolean;
   label: string;
   detail?: string | null;
   glyphName?: string | null;
+
+  keyCommand: DevMenuKeyCommand;
 };
 
-export type DevMenuItemActionType = DevMenuItemBaseType<DevMenuItemEnum.ACTION> & {
-  actionId: string;
-  keyCommand: DevMenuKeyCommand;
+export type DevMenuItemLinkType = DevMenuItemBaseType<DevMenuItemEnum.LINK> & {
+  target: string;
+  label: string;
+  glyphName?: string | null;
 };
 
 export type DevMenuItemGroupType = DevMenuItemBaseType<DevMenuItemEnum.GROUP> & {
@@ -34,7 +49,7 @@ export type DevMenuItemGroupType = DevMenuItemBaseType<DevMenuItemEnum.GROUP> & 
   items: DevMenuItemAnyType[];
 };
 
-export type DevMenuItemAnyType = DevMenuItemActionType | DevMenuItemGroupType;
+export type DevMenuItemAnyType = DevMenuItemActionType | DevMenuItemGroupType | DevMenuItemLinkType;
 
 export type DevMenuItemProps<ItemType = DevMenuItemAnyType> = {
   item: ItemType;
@@ -91,4 +106,8 @@ export async function loadFontsAsync(): Promise<void> {
 
 export function openDevMenuFromReactNative() {
   DevMenu.openDevMenuFromReactNative();
+}
+
+export async function onScreenChangeAsync(currentScreen: string | null): Promise<void> {
+  return await DevMenu.onScreenChangeAsync(currentScreen);
 }
