@@ -18,6 +18,7 @@ sealed class DevMenuItem {
    *  2 - [DevMenuGroup]
    *  3 - [DevMenuScreen]
    *  4 - [DevMenuLink]
+   *  5 - [DevMenuSelectionList]
    */
   abstract fun getExportedType(): Int
 
@@ -98,5 +99,46 @@ class DevMenuLink(private val target: String) : DevMenuScreenItem() {
     putString("target", target)
     putString("label", label())
     putString("glyphName", glyphName())
+  }
+}
+
+class DevMenuSelectionList : DevMenuScreenItem() {
+  class Item {
+    class Tag {
+      var glyphName = { "" }
+      var text = { "" }
+
+      internal fun serialize() = Bundle().apply {
+        putString("text", text())
+        putString("glyphName", glyphName())
+      }
+    }
+
+    var title = { "" }
+    var tags: () -> List<Tag> = { emptyList() }
+    var warning: () -> String? = { null }
+    var isChecked = { false }
+
+    internal fun serialize() = Bundle().apply {
+      putString("title", title())
+      putString("warning", warning())
+      putBoolean("isChecked", isChecked())
+      putParcelableArray("tags", tags().map { it.serialize() }.toTypedArray())
+
+    }
+  }
+
+  private var items = ArrayList<Item>()
+
+  fun addItem(item: Item) {
+    items.add(item)
+  }
+
+  override fun getExportedType(): Int {
+    return 5
+  }
+
+  override fun serialize() = super.serialize().apply {
+    putParcelableArray("items", items.map { it.serialize() }.toTypedArray())
   }
 }

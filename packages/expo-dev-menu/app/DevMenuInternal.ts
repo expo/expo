@@ -15,6 +15,7 @@ export enum DevMenuItemEnum {
   GROUP = 2,
   SCREEN = 3,
   LINK = 4,
+  SELECTION_LIST = 5,
 }
 
 type DevMenuItemBaseType<T extends DevMenuItemEnum> = {
@@ -49,7 +50,27 @@ export type DevMenuItemGroupType = DevMenuItemBaseType<DevMenuItemEnum.GROUP> & 
   items: DevMenuItemAnyType[];
 };
 
-export type DevMenuItemAnyType = DevMenuItemActionType | DevMenuItemGroupType | DevMenuItemLinkType;
+export type DevMenuSelectionListItemTag = {
+  glyphName?: string | null;
+  text: string;
+};
+
+export type DevMenuSelectionListItem = {
+  title: string;
+  warning?: string;
+  isChecked: boolean;
+  tags: DevMenuSelectionListItemTag[];
+};
+
+export type DevMenuSelectionListType = DevMenuItemBaseType<DevMenuItemEnum.SELECTION_LIST> & {
+  items: DevMenuSelectionListItem[];
+};
+
+export type DevMenuItemAnyType =
+  | DevMenuItemActionType
+  | DevMenuItemGroupType
+  | DevMenuItemLinkType
+  | DevMenuSelectionListType;
 
 export type DevMenuItemProps<ItemType = DevMenuItemAnyType> = {
   item: ItemType;

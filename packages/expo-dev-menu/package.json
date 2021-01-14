@@ -41,7 +41,8 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "expo-dev-menu-interface": "0.1.1"
+    "expo-dev-menu-interface": "0.1.1",
+    "fuse.js": "^6.4.6"
   },
   "peerDependencies": {
     "react-native": ">=0.62.0"

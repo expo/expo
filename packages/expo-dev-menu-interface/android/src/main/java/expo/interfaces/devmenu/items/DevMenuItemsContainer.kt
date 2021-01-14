@@ -35,6 +35,8 @@ open class DevMenuItemsContainer : DevMenuDSLItemsContainerInterface {
 
   override fun link(target: String, init: DevMenuLink.() -> Unit) = addItem(DevMenuLink(target), init)
 
+  override fun selectionList(init: DevMenuSelectionList.() -> Unit) = addItem(DevMenuSelectionList(), init)
+
   override fun serializeItems() =
     getRootItems()
       .map { it.serialize() }
