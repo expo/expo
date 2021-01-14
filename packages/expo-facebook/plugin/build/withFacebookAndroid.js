@@ -165,6 +165,7 @@ function setFacebookConfig(config, androidManifest) {
         mainApplication = addMetaDataItemToMainApplication(mainApplication, META_AD_ID_COLLECTION, advertiserIdCollection ? 'true' : 'false');
     }
     else {
+        // eslint-disable-next-line
         mainApplication = removeMetaDataItemFromMainApplication(mainApplication, META_AD_ID_COLLECTION);
     }
     return androidManifest;

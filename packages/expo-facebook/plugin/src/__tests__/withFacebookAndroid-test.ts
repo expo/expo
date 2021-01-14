@@ -1,3 +1,4 @@
+import { AndroidConfig } from '@expo/config-plugins';
 import { resolve } from 'path';
 import { Parser } from 'xml2js';
 
@@ -10,7 +11,7 @@ import {
   getFacebookScheme,
   setFacebookConfig,
 } from '../withFacebookAndroid';
-import { AndroidConfig } from '@expo/config-plugins';
+
 const { getMainApplication, readAndroidManifestAsync } = AndroidConfig.Manifest;
 
 const fixturesPath = resolve(__dirname, 'fixtures');

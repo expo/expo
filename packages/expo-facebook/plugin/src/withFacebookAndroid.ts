@@ -234,6 +234,7 @@ export function setFacebookConfig(
       advertiserIdCollection ? 'true' : 'false'
     );
   } else {
+    // eslint-disable-next-line
     mainApplication = removeMetaDataItemFromMainApplication(mainApplication, META_AD_ID_COLLECTION);
   }
 
