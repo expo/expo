@@ -53,6 +53,7 @@ const MediaLibraryScreens = optionalRequire(() =>
 );
 const NetInfo = optionalRequire(() => require('../screens/NetInfoScreen'));
 const Notification = optionalRequire(() => require('../screens/NotificationScreen'));
+const Payments = optionalRequire(() => require('../screens/PaymentsScreen'));
 const Pedometer = optionalRequire(() => require('../screens/PedometerScreen'));
 const Permissions = optionalRequire(() => require('../screens/PermissionsScreen'));
 const Print = optionalRequire(() => require('../screens/PrintScreen'));
@@ -121,6 +122,7 @@ const optionalScreens: {
   Notification,
   LocalAuthentication,
   ...LocationScreens,
+  Payments,
   Pedometer,
   Permissions,
   Print,

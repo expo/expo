@@ -16,11 +16,16 @@ export default async function checkPackageAsync(
   options: ActionOptions
 ): Promise<boolean> {
   try {
-    logger.info(`🔍 Checking ${green.bold(pkg.packageName)} package`);
+    if (options.isPlugin) {
+      logger.info(`🔌 Checking ${green.bold(pkg.packageName)} plugin`);
+    } else {
+      logger.info(`🔍 Checking ${green.bold(pkg.packageName)} package`);
+    }
 
+    const args = options.isPlugin ? ['plugin'] : [];
     if (options.build) {
-      await runPackageScriptAsync(pkg, 'clean');
-      await runPackageScriptAsync(pkg, 'build');
+      await runPackageScriptAsync(pkg, 'clean', args);
+      await runPackageScriptAsync(pkg, 'build', args);
 
       if (options.uniformityCheck) {
         await checkBuildUniformityAsync(pkg);
@@ -28,7 +33,9 @@ export default async function checkPackageAsync(
     }
     if (options.test) {
       const args = ['--watch', 'false', '--passWithNoTests'];
-
+      if (options.isPlugin) {
+        args.unshift('plugin');
+      }
       if (process.env.CI) {
         // Limit to one worker on CIs
         args.push('--maxWorkers', '1');
@@ -37,12 +44,19 @@ export default async function checkPackageAsync(
     }
     if (options.lint) {
       const args = ['--max-warnings', '0'];
+      if (options.isPlugin) {
+        args.unshift('plugin');
+      }
       if (options.fixLint) {
         args.push('--fix');
       }
       await runPackageScriptAsync(pkg, 'lint', args);
     }
     logger.log(`✨ ${green.bold(pkg.packageName)} checks passed`);
+
+    if (!options.isPlugin && pkg.hasPlugin) {
+      return await checkPackageAsync(pkg, { ...options, isPlugin: true });
+    }
     return true;
   } catch {
     // runPackageScriptAsync is intentionally written to handle errors and make it safe to suppress errors in the caller
