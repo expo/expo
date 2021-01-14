@@ -20,9 +20,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isPlistVersionConfigurationSynced = exports.isPlistConfigurationSynced = exports.isPlistConfigurationSet = exports.isShellScriptBuildPhaseConfigured = exports.ensureBundleReactNativePhaseContainsConfigurationScript = exports.setVersionsConfig = exports.setUpdatesConfig = exports.withUpdatesIOS = exports.getUpdatesCheckOnLaunch = exports.getUpdatesTimeout = exports.getUpdatesEnabled = exports.getSDKVersion = exports.getRuntimeVersion = exports.getUpdateUrl = exports.Config = void 0;
-const path = __importStar(require("path"));
 const config_plugins_1 = require("@expo/config-plugins");
 const modules_1 = require("@expo/config-plugins/build/utils/modules");
+const path = __importStar(require("path"));
 var Config;
 (function (Config) {
     Config["ENABLED"] = "EXUpdatesEnabled";

@@ -1,6 +1,6 @@
-import { ExpoConfig } from '@expo/config-types';
 import { ConfigPlugin } from '@expo/config-plugins';
 import { ExpoPlist } from '@expo/config-plugins/build/ios/IosConfig.types';
+import { ExpoConfig } from '@expo/config-types';
 declare type XcodeProject = any;
 declare type ExpoConfigUpdates = Pick<ExpoConfig, 'sdkVersion' | 'owner' | 'runtimeVersion' | 'nodeModulesPath' | 'updates' | 'slug'>;
 export declare enum Config {

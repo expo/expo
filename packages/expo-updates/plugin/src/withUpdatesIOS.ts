@@ -1,9 +1,8 @@
+import { ConfigPlugin, withExpoPlist } from '@expo/config-plugins';
+import { ExpoPlist } from '@expo/config-plugins/build/ios/IosConfig.types';
+import { projectHasModule } from '@expo/config-plugins/build/utils/modules';
 import { ExpoConfig } from '@expo/config-types';
 import * as path from 'path';
-
-import { ConfigPlugin, withExpoPlist } from '@expo/config-plugins';
-import { projectHasModule } from '@expo/config-plugins/build/utils/modules';
-import { ExpoPlist } from '@expo/config-plugins/build/ios/IosConfig.types';
 
 // TODO: Export type from expo/config-plugins
 type XcodeProject = any;
