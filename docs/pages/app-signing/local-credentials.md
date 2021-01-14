@@ -110,9 +110,42 @@ Create (or edit) `credentials.json` and configure it with the credentials:
 - `distributionCertificate.path` points to where the Distribution Certificate is located on your computer. Both relative (to the project root) and absolute paths are supported.
 - `distributionCertificate.password` is the password for the Distribution Certificate located at `distributionCertificate.path`.
 
+#### Multi-target project
+
+> 👉 **Currently, building multi-target iOS projects is only supported via `credentials.json`. Managing multiple sets of credentials for multi-target projects will be available in EAS CLI in the future.**
+
+If your iOS app is using [App Extensions](https://developer.apple.com/app-extensions/) like Share Extension, Widget Extension, and so on, you need to provide credentials for every target of the Xcode project. This is necessary because each extension is identified by an individual bundle identifier.
+
+Let's say that your project consists of a main application target (named `multitarget`) and a Share Extension target (named `shareextension`).
+
+<center><img src="/static/images/eas-build/multi-target.png" style={{maxWidth: 360}} /></center>
+
+In this case your `credentials.json` should like like this:
+
+```json
+{
+  "ios": {
+    "multitarget": {
+      "provisioningProfilePath": "ios/certs/multitarget-profile.mobileprovision",
+      "distributionCertificate": {
+        "path": "ios/certs/dist.p12",
+        "password": "DISTRIBUTION_CERTIFICATE_PASSWORD"
+      }
+    },
+    "shareextension": {
+      "provisioningProfilePath": "ios/certs/shareextension-profile.mobileprovision",
+      "distributionCertificate": {
+        "path": "ios/certs/another-dist.p12",
+        "password": "ANOTHER_DISTRIBUTION_CERTIFICATE_PASSWORD"
+      }
+    }
+  }
+}
+```
+
 ## Setting a credentials source (optional)
 
-You can tell EAS Build how it should resolve credentials by specifying `"credentialsSource": "local"` or `"credentialsSource:" "remote"` on a build profile. 
+You can tell EAS Build how it should resolve credentials by specifying `"credentialsSource": "local"` or `"credentialsSource:" "remote"` on a build profile.
 
 - If `"local"` is provided, then `credentials.json` will always be used.
 - If `"remote"` is provided, then credentials will always be resolved from EAS servers.
