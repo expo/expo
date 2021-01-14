@@ -43,8 +43,9 @@
     "unimodules-permissions-interface": "*"
   },
   "dependencies": {
-    "fs-extra": "^9.0.1",
     "@expo/config-plugins": "^1.0.14",
+    "@expo/image-utils": "^0.3.10",
+    "fs-extra": "^9.0.1",
     "@ide/backoff": "^1.0.0",
     "abort-controller": "^3.0.0",
     "assert": "^2.0.0",
