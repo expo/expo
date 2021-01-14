@@ -31,5 +31,14 @@ export default ({ config }) => {
       },
     ],
   ];
+
+  config.plugins.push([
+    'expo-payments-stripe',
+    {
+      scheme: 'ncl-payments',
+      merchantId: 'merchant.com.example.development',
+    },
+  ]);
+
   return config;
 };
