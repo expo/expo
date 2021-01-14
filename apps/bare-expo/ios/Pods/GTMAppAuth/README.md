@@ -1,11 +1,12 @@
-# GTMAppAuth for iOS and macOS
+# GTMAppAuth for Apple Platforms
 
 GTMAppAuth enables you to use [AppAuth](http://openid.github.io/AppAuth-iOS)
 with the
 [Google Toolbox for Mac - Session Fetcher](https://github.com/google/gtm-session-fetcher)
 and
 [Google APIs Client Library for Objective-C For REST](https://github.com/google/google-api-objectivec-client-for-rest)
-libraries by providing an implementation of `GTMFetcherAuthorizationProtocol`
+libraries on iOS, macOS, tvOS, and watchOS by providing an implementation of
+[`GTMFetcherAuthorizationProtocol`](https://github.com/google/gtm-session-fetcher/blob/2a3b5264108e80d62003b770ff02eb7364ff1365/Source/GTMSessionFetcher.h#L660)
 for authorizing requests with AppAuth.
 
 GTMAppAuth is an alternative authorizer to GTMOAuth2. The key differentiator is

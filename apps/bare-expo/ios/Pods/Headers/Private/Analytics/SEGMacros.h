@@ -1,1 +1,1 @@
-../../../Analytics/Analytics/Internal/SEGMacros.h
+../../../Analytics/Segment/Internal/SEGMacros.h

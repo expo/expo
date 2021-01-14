@@ -8245,7 +8245,7 @@ CACHE_KEYS:
       EXAV:
         :debug: 49085726fc2aa149a672acb7a1f9f275
         :release: 49085726fc2aa149a672acb7a1f9f275
-    CHECKSUM: d9703b0176a008c728bf2b50932399ac59ba680b
+    CHECKSUM: 5fd81d380626cfea59d68c4a9b34c46232fb679c
     FILES:
       - "../../packages/expo-av/ios/EXAV/EXAudioRecordingPermissionRequester.h"
       - "../../packages/expo-av/ios/EXAV/EXAudioRecordingPermissionRequester.m"
@@ -8265,7 +8265,7 @@ CACHE_KEYS:
       - "../../packages/expo-av/ios/EXAV/Video/EXVideoView.m"
     PROJECT_NAME: EXAV
     SPECS:
-      - EXAV (8.7.0)
+      - EXAV (9.0.0)
   EXBackgroundFetch:
     BUILD_SETTINGS_CHECKSUM:
       EXBackgroundFetch:

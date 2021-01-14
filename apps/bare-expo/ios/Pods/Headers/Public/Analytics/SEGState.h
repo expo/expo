@@ -1,1 +1,1 @@
-../../../Analytics/Analytics/Internal/SEGState.h
+../../../Analytics/Segment/Internal/SEGState.h

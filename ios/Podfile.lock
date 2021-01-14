@@ -1656,7 +1656,7 @@ PODS:
     - UMCore
   - EXApplication (2.4.1):
     - UMCore
-  - EXAV (8.7.0):
+  - EXAV (9.0.0):
     - UMCore
     - UMFileSystemInterface
     - UMPermissionsInterface
@@ -3836,7 +3836,7 @@ SPEC CHECKSUMS:
   EXAppAuth: 0f1d0d7582d87fc700910907ab6b85a15e3d7d5f
   EXAppleAuthentication: 0ce2041af102f57af5788d76b7d1a2257c8609ae
   EXApplication: 59dd6d1e8a7b4bfa4153eb34fc0a4c3b2173b7e0
-  EXAV: d9703b0176a008c728bf2b50932399ac59ba680b
+  EXAV: 5fd81d380626cfea59d68c4a9b34c46232fb679c
   EXBackgroundFetch: 9dfd9571957508a11ed2c57eca67f6d142c8c5f5
   EXBarCodeScanner: f606c76d7f313c7bab85be7d7533d3bce8b6bac3
   EXBattery: 82d4ddff351207b3788853826f302b757efa96c3

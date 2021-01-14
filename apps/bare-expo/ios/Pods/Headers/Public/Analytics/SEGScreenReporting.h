@@ -1,1 +1,1 @@
-../../../Analytics/Analytics/Classes/SEGScreenReporting.h
+../../../Analytics/Segment/Classes/SEGScreenReporting.h
