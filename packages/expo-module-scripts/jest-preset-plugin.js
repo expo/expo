@@ -1,5 +1,10 @@
-const createJestPreset = require('./createJestPreset');
+const nodePreset = {
+  testEnvironment: 'node',
+  testRegex: '/__tests__/.*(test|spec)\\.[jt]sx?$',
+  transform: {
+    '^.+\\.[jt]sx?$': ['babel-jest', { configFile: require.resolve('./babel.config.base.js') }],
+  },
+  watchPlugins: ['jest-watch-typeahead/filename', 'jest-watch-typeahead/testname'],
+};
 
-const nodePreset = createJestPreset(require('jest-expo/node/jest-preset'));
-
-module.exports = nodePreset
+module.exports = nodePreset;
