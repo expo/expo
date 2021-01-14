@@ -1,1 +1,1 @@
-module.exports = require('./plugin/build/withFacebook');
+module.exports = require('./plugin/build/withNotifications');
