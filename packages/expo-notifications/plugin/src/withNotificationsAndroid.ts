@@ -1,10 +1,14 @@
+import { AndroidConfig, ConfigPlugin, withDangerousMod } from '@expo/config-plugins';
+import {
+  buildResourceItem,
+  readResourcesXMLAsync,
+} from '@expo/config-plugins/build/android/Resources';
+import { writeXMLAsync } from '@expo/config-plugins/build/android/XML';
+import { createAndroidManifestPlugin } from '@expo/config-plugins/build/plugins/android-plugins';
 import { ExpoConfig } from '@expo/config-types';
 import { generateImageAsync } from '@expo/image-utils';
 import fs from 'fs-extra';
 import path from 'path';
-
-import { AndroidConfig, withDangerousMod, ConfigPlugin } from '@expo/config-plugins';
-import { createAndroidManifestPlugin } from '@expo/config-plugins/build/plugins/android-plugins';
 
 const { Colors } = AndroidConfig;
 const { ANDROID_RES_PATH, dpiValues } = AndroidConfig.Icon;
@@ -13,12 +17,6 @@ const {
   getMainApplicationOrThrow,
   removeMetaDataItemFromMainApplication,
 } = AndroidConfig.Manifest;
-import {
-  buildResourceItem,
-  readResourcesXMLAsync,
-} from '@expo/config-plugins/build/android/Resources';
-import { writeXMLAsync } from '@expo/config-plugins/build/android/XML';
-
 const BASELINE_PIXEL_SIZE = 24;
 export const META_DATA_NOTIFICATION_ICON = 'expo.modules.notifications.default_notification_icon';
 export const META_DATA_NOTIFICATION_ICON_COLOR =
