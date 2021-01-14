@@ -1,19 +1,4 @@
-import { ExpoConfig } from '@expo/config-types';
-
-import {
-  createAndroidManifestPlugin,
-  createStringsXmlPlugin,
-} from '@expo/config-plugins/build/plugins/android-plugins';
-import { assert } from '@expo/config-plugins/build/utils/errors';
 import { AndroidConfig } from '@expo/config-plugins';
-const {
-  addMetaDataItemToMainApplication,
-  getMainApplicationOrThrow,
-
-  prefixAndroidKeys,
-  removeMetaDataItemFromMainApplication,
-} = AndroidConfig.Manifest;
-
 import {
   buildResourceItem,
   readResourcesXMLAsync,
@@ -25,6 +10,20 @@ import {
   setStringItem,
 } from '@expo/config-plugins/build/android/Strings';
 import { writeXMLAsync } from '@expo/config-plugins/build/android/XML';
+import {
+  createAndroidManifestPlugin,
+  createStringsXmlPlugin,
+} from '@expo/config-plugins/build/plugins/android-plugins';
+import { assert } from '@expo/config-plugins/build/utils/errors';
+import { ExpoConfig } from '@expo/config-types';
+
+const {
+  addMetaDataItemToMainApplication,
+  getMainApplicationOrThrow,
+
+  prefixAndroidKeys,
+  removeMetaDataItemFromMainApplication,
+} = AndroidConfig.Manifest;
 
 const CUSTOM_TAB_ACTIVITY = 'com.facebook.CustomTabActivity';
 const STRING_FACEBOOK_APP_ID = 'facebook_app_id';
