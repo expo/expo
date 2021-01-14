@@ -1,1 +1,1 @@
-../../../Analytics/Analytics/Classes/SEGCrypto.h
+../../../Analytics/Segment/Classes/SEGCrypto.h

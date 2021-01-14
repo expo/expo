@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#import "GoogleUtilities/NSData+zlib/GULNSData+zlib.h"
+#import "GoogleUtilities/NSData+zlib/Public/GULNSData+zlib.h"
 
 #import <zlib.h>
 

@@ -18,13 +18,15 @@
 
 #import "GTMOAuth2KeychainCompatibility.h"
 
-#ifndef GTMAPPAUTH_USER_IMPORTS
-#import <AppAuth/AppAuthCore.h>
-#else // GTMAPPAUTH_USER_IMPORTS
+#if SWIFT_PACKAGE || GTMAPPAUTH_USE_MODULAR_IMPORT
+@import AppAuthCore;
+#elif GTMAPPAUTH_USER_IMPORTS
 #import "AppAuthCore.h"
-#endif // GTMAPPAUTH_USER_IMPORTS
+#else
+#import <AppAuth/AppAuthCore.h>
+#endif
 
-#import "GTMKeychain.h"
+#import "../GTMKeychain.h"
 
 // standard OAuth keys
 static NSString *const kOAuth2AccessTokenKey = @"access_token";

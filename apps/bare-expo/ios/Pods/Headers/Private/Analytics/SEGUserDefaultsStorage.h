@@ -1,1 +1,1 @@
-../../../Analytics/Analytics/Internal/SEGUserDefaultsStorage.h
+../../../Analytics/Segment/Internal/SEGUserDefaultsStorage.h

@@ -1,1 +1,1 @@
-../../../Analytics/Analytics/Classes/SEGHTTPClient.h
+../../../Analytics/Segment/Classes/SEGHTTPClient.h
