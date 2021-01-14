@@ -12,6 +12,8 @@
 
 ### 🎉 New features
 
+- Created config plugin. ([#11623](https://github.com/expo/expo/pull/11623) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ## 3.0.0 — 2020-11-17

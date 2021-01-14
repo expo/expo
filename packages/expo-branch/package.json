@@ -36,6 +36,7 @@
     "@unimodules/react-native-adapter": "*"
   },
   "dependencies": {
+    "@expo/config-plugins": "^1.0.13",
     "react-native-branch": "5.0.0"
   },
   "devDependencies": {
