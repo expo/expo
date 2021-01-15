@@ -6,8 +6,7 @@ import InstallSection from '~/components/plugins/InstallSection';
 
 import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
 
-
-> ⚠️ An macOS machine and an Apple Developer account are required to build the development client locally. 
+> ⚠️ A macOS machine and an Apple Developer account are required to build the development client locally.
 
 ## Building for iOS
 
