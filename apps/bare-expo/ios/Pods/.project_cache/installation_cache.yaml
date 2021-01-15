@@ -14,8 +14,8 @@ CACHE_KEYS:
   Analytics:
     BUILD_SETTINGS_CHECKSUM:
       Analytics:
-        :debug: c886d3696ec61ba6a184d7e9c535ef82
-        :release: c886d3696ec61ba6a184d7e9c535ef82
+        :debug: b365cc884d9f7aa1eac7fd5381727331
+        :release: b365cc884d9f7aa1eac7fd5381727331
     CHECKSUM: 231b01fdaa9704105881dc82def7b7b1d6571edb
     PROJECT_NAME: Analytics
     SPECS:
@@ -1083,8 +1083,8 @@ CACHE_KEYS:
   EXSegment:
     BUILD_SETTINGS_CHECKSUM:
       EXSegment:
-        :debug: ce8851585cf61253b2616d0297445515
-        :release: ce8851585cf61253b2616d0297445515
+        :debug: b2ca603d9f22cee6cebb55d093804aa2
+        :release: b2ca603d9f22cee6cebb55d093804aa2
     CHECKSUM: 6c54f471601537874077a8c4d856d2b9a2b20ea6
     FILES:
       - "../../../../packages/expo-analytics-segment/ios/EXSegment/EXSegment.h"
@@ -1585,8 +1585,8 @@ CACHE_KEYS:
       - OpenSSL-Universal/Static (1.0.2.20)
   Pods-BareExpoMain-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 1edf2fe7e9c1cc77a118e1eaafd678a6
-      Release: fc8bf0e60ad9637fb66ff3d0542b3954
+      Debug: 0d2ce6e175e395d6d22e381c6149021f
+      Release: 1e629b9a61e5243a08df84b124496a0f
     FILES:
       - "${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-menu/EXDevMenu.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/FirebaseMLVisionFaceModel/GoogleMVFaceDetectorResources.bundle"
@@ -1596,8 +1596,8 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoMain-BareExpoDetox:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 870208804ff24e409ec938df604195ac
-      Release: 9648d730a7f7223ddb08ac7e9773ec1e
+      Debug: 5ed7e6e08249fdf5ebfca4222cd639c9
+      Release: 85e2fe5ea5bc955ef6c9fe19aa6ddf9f
     FILES:
       - "${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-menu/EXDevMenu.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/FirebaseMLVisionFaceModel/GoogleMVFaceDetectorResources.bundle"
@@ -1607,8 +1607,8 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 60d40e47f2eee7ef8336dc80b43c2ba8
-      Release: 60d40e47f2eee7ef8336dc80b43c2ba8
+      Debug: f411f8663373fe028066c95ceedf3390
+      Release: f411f8663373fe028066c95ceedf3390
   PromisesObjC:
     BUILD_SETTINGS_CHECKSUM:
       PromisesObjC:

@@ -701,13 +701,6 @@
 			remoteGlobalIDString = E2467C029EBD31A567D815A97DFFBB51;
 			remoteInfo = "react-native-view-shot";
 		};
-		55DE0F42DDA0C718A52CAB0042CD9E5F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4CF05C83A74DCCE5C251A2A7EDEE2797 /* Analytics.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 428EE321470913F61A7C253ACF3B4D53;
-			remoteInfo = Analytics;
-		};
 		561D660FA045C4F9A69E99FF00813FCA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 797B417447F0EE365A7C39CA6CBE739D /* React-cxxreact.xcodeproj */;
@@ -777,13 +770,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = C4DBAA5ED98E7A037D09674FF42AF66F;
 			remoteInfo = EXSecureStore;
-		};
-		5C197994400796539993ECFE47B719AE /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4CF05C83A74DCCE5C251A2A7EDEE2797 /* Analytics.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 428EE321470913F61A7C253ACF3B4D53;
-			remoteInfo = Analytics;
 		};
 		5CE1A0BF9B565CCCCAC7BB5C118B6F3F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1821,6 +1807,13 @@
 			remoteGlobalIDString = AF5113FDFEF2ECEBDD58149C34DD4634;
 			remoteInfo = EXLinearGradient;
 		};
+		D42D446FCCFEDAA5E8FE8114893A69D3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4CF05C83A74DCCE5C251A2A7EDEE2797 /* Analytics.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 428EE321470913F61A7C253ACF3B4D53;
+			remoteInfo = Analytics;
+		};
 		D45794C1C8B6F8DB3E6E777B42BAFAF6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E92D97BEA1A69C4554EA819A105EBB31 /* nanopb.xcodeproj */;
@@ -1869,6 +1862,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 4C66693C554B15E2593FB1F665F8BA01;
 			remoteInfo = EXGL_CPP;
+		};
+		DBF5BF7E1E335F614C7ABD462F222749 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4CF05C83A74DCCE5C251A2A7EDEE2797 /* Analytics.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 428EE321470913F61A7C253ACF3B4D53;
+			remoteInfo = Analytics;
 		};
 		DC558A4EFF8CA06BA6D3E1DEDBDA829F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -2693,7 +2693,7 @@
 			);
 			dependencies = (
 				69A415197CCE8E69E2537137814D6812 /* PBXTargetDependency */,
-				26EA72809B6461B8CE61DF8A0D54E80D /* PBXTargetDependency */,
+				2EB187372425B2AABE8E90A2E6A9C962 /* PBXTargetDependency */,
 				CDA119622477A99BDC0F34CA2D1CE5DE /* PBXTargetDependency */,
 				3C82310E7FBEE875B81171F5887279BC /* PBXTargetDependency */,
 				5F3308776A4C9739EB9AA60FD7CFAEB9 /* PBXTargetDependency */,
@@ -2869,7 +2869,7 @@
 			);
 			dependencies = (
 				B77CF0CD8B7B67A731CB56913105F766 /* PBXTargetDependency */,
-				B17A0293BF675D78E856D928665B9F77 /* PBXTargetDependency */,
+				FAB6DF07CB06C9EC2A49B97E7114C5B4 /* PBXTargetDependency */,
 				DF47EA54BDFCA29C3CB45A21DA81301D /* PBXTargetDependency */,
 				99FB53E7200BB7C1288FB660F59C0D41 /* PBXTargetDependency */,
 				B9DCF8AC1D512FE4029103F0DFC7CDAE /* PBXTargetDependency */,
@@ -3748,11 +3748,6 @@
 			name = EXImageManipulator;
 			targetProxy = 1E58F1749F071EE4A729C9675092BF53 /* PBXContainerItemProxy */;
 		};
-		26EA72809B6461B8CE61DF8A0D54E80D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Analytics;
-			targetProxy = 5C197994400796539993ECFE47B719AE /* PBXContainerItemProxy */;
-		};
 		28B39810CFF261D7A42B9A4C21FC3EFE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "OpenSSL-Universal";
@@ -3802,6 +3797,11 @@
 			isa = PBXTargetDependency;
 			name = UMFileSystemInterface;
 			targetProxy = 728DF5EC0BCF198A48B857D892E2F499 /* PBXContainerItemProxy */;
+		};
+		2EB187372425B2AABE8E90A2E6A9C962 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Analytics;
+			targetProxy = D42D446FCCFEDAA5E8FE8114893A69D3 /* PBXContainerItemProxy */;
 		};
 		316F0F606D30B3CAD49BE7381E04DEF1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -4603,11 +4603,6 @@
 			name = RNCMaskedView;
 			targetProxy = B14263FE07A263C2708F374E65E5F519 /* PBXContainerItemProxy */;
 		};
-		B17A0293BF675D78E856D928665B9F77 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Analytics;
-			targetProxy = 55DE0F42DDA0C718A52CAB0042CD9E5F /* PBXContainerItemProxy */;
-		};
 		B18F8A1EBB129D1E6FBF527128131095 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = FBLazyVector;
@@ -5042,6 +5037,11 @@
 			isa = PBXTargetDependency;
 			name = "react-native-webview";
 			targetProxy = 52624D97AF97BE59A76FF145797C5419 /* PBXContainerItemProxy */;
+		};
+		FAB6DF07CB06C9EC2A49B97E7114C5B4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Analytics;
+			targetProxy = DBF5BF7E1E335F614C7ABD462F222749 /* PBXContainerItemProxy */;
 		};
 		FAD2F4997C51C63C4C3E1876795E3D14 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
