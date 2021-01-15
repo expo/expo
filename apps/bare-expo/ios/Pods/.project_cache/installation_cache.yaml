@@ -314,37 +314,37 @@ CACHE_KEYS:
       EXDevice:
         :debug: 29c6c1382722ef66b5adf3744b8cf15c
         :release: 29c6c1382722ef66b5adf3744b8cf15c
-    CHECKSUM: 9e87f5a0f535f5f65fcba47c97e2f5cc57ccd7af
+    CHECKSUM: 101eddd9bc28faba8246ba0c499a65a4821a6b5e
     FILES:
       - "../../../../packages/expo-device/ios/EXDevice/EXDevice.h"
       - "../../../../packages/expo-device/ios/EXDevice/EXDevice.m"
     PROJECT_NAME: EXDevice
     SPECS:
-      - EXDevice (3.1.0)
+      - EXDevice (3.1.1)
   EXDocumentPicker:
     BUILD_SETTINGS_CHECKSUM:
       EXDocumentPicker:
         :debug: 596391212786af2a8fff807d4607cd44
         :release: 596391212786af2a8fff807d4607cd44
-    CHECKSUM: 3196d9d8e216ee6ccc4bf745cd07b9ebfa979c6e
+    CHECKSUM: 5cef8a8593a9232961a2a0e9aa9349a723cafdc7
     FILES:
       - "../../../../packages/expo-document-picker/ios/EXDocumentPicker/EXDocumentPickerModule.h"
       - "../../../../packages/expo-document-picker/ios/EXDocumentPicker/EXDocumentPickerModule.m"
     PROJECT_NAME: EXDocumentPicker
     SPECS:
-      - EXDocumentPicker (9.0.0)
+      - EXDocumentPicker (9.0.1)
   EXErrorRecovery:
     BUILD_SETTINGS_CHECKSUM:
       EXErrorRecovery:
         :debug: 6821f444ebca1721d44a7db49c1fd095
         :release: 6821f444ebca1721d44a7db49c1fd095
-    CHECKSUM: 3c3118b9847a9bb1fa04648ceb39dd3c6a73c4be
+    CHECKSUM: f2dd13f3cc0b99edf47570b19a323d6c69687d6b
     FILES:
       - "../../../../packages/expo-error-recovery/ios/EXErrorRecovery/EXErrorRecoveryModule.h"
       - "../../../../packages/expo-error-recovery/ios/EXErrorRecovery/EXErrorRecoveryModule.m"
     PROJECT_NAME: EXErrorRecovery
     SPECS:
-      - EXErrorRecovery (2.0.0)
+      - EXErrorRecovery (2.0.1)
   EXFacebook:
     BUILD_SETTINGS_CHECKSUM:
       EXFacebook:
@@ -364,7 +364,7 @@ CACHE_KEYS:
       EXFaceDetector:
         :debug: bd24f28fb644d96bea27c03e1e35fdb2
         :release: bd24f28fb644d96bea27c03e1e35fdb2
-    CHECKSUM: 38666df7672423abd587d816c832d08bc6f9643f
+    CHECKSUM: 8c6c88864a8f9420190aae8a7c19ba569792d0df
     FILES:
       - "../../../../packages/expo-face-detector/ios/EXFaceDetector/EXCSBufferOrientationCalculator.h"
       - "../../../../packages/expo-face-detector/ios/EXFaceDetector/EXCSBufferOrientationCalculator.m"
@@ -384,7 +384,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-face-detector/ios/EXFaceDetector/Utilities/EXFaceDetectorUtils.m"
     PROJECT_NAME: EXFaceDetector
     SPECS:
-      - EXFaceDetector (9.0.0)
+      - EXFaceDetector (9.0.1)
   EXFileSystem:
     BUILD_SETTINGS_CHECKSUM:
       EXFileSystem:
@@ -841,7 +841,7 @@ CACHE_KEYS:
       expo-dev-menu:
         :debug: 16f74ad736b93e99f6a6d09d36f79fee
         :release: 16f74ad736b93e99f6a6d09d36f79fee
-    CHECKSUM: 7a44de241132e1b3a4d4fb4938b25354c5a769e9
+    CHECKSUM: d9152667934a3f4db739a151031a32c07832fcd1
     FILES:
       - "../../../../packages/expo-dev-menu/assets/dev-menu-packager-host"
       - "../../../../packages/expo-dev-menu/assets/EXDevMenuApp.ios.js"
@@ -967,7 +967,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/RCTConvert+DevMenuREATransition.m"
     PROJECT_NAME: expo-dev-menu
     SPECS:
-      - expo-dev-menu (0.2.0)
+      - expo-dev-menu (0.2.1)
   expo-dev-menu-interface:
     BUILD_SETTINGS_CHECKSUM:
       expo-dev-menu-interface:

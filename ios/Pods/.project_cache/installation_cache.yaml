@@ -8477,37 +8477,37 @@ CACHE_KEYS:
       EXDevice:
         :debug: e79829305cd6710464c7fcca3a84778e
         :release: e79829305cd6710464c7fcca3a84778e
-    CHECKSUM: 9e87f5a0f535f5f65fcba47c97e2f5cc57ccd7af
+    CHECKSUM: 101eddd9bc28faba8246ba0c499a65a4821a6b5e
     FILES:
       - "../../packages/expo-device/ios/EXDevice/EXDevice.h"
       - "../../packages/expo-device/ios/EXDevice/EXDevice.m"
     PROJECT_NAME: EXDevice
     SPECS:
-      - EXDevice (3.1.0)
+      - EXDevice (3.1.1)
   EXDocumentPicker:
     BUILD_SETTINGS_CHECKSUM:
       EXDocumentPicker:
         :debug: 90cbfdc0e95b07c1dc9876ffac86e4d0
         :release: 90cbfdc0e95b07c1dc9876ffac86e4d0
-    CHECKSUM: 3196d9d8e216ee6ccc4bf745cd07b9ebfa979c6e
+    CHECKSUM: 5cef8a8593a9232961a2a0e9aa9349a723cafdc7
     FILES:
       - "../../packages/expo-document-picker/ios/EXDocumentPicker/EXDocumentPickerModule.h"
       - "../../packages/expo-document-picker/ios/EXDocumentPicker/EXDocumentPickerModule.m"
     PROJECT_NAME: EXDocumentPicker
     SPECS:
-      - EXDocumentPicker (9.0.0)
+      - EXDocumentPicker (9.0.1)
   EXErrorRecovery:
     BUILD_SETTINGS_CHECKSUM:
       EXErrorRecovery:
         :debug: 76865a00009fbc21c2fa5ea7d8cf40d7
         :release: 76865a00009fbc21c2fa5ea7d8cf40d7
-    CHECKSUM: 3c3118b9847a9bb1fa04648ceb39dd3c6a73c4be
+    CHECKSUM: f2dd13f3cc0b99edf47570b19a323d6c69687d6b
     FILES:
       - "../../packages/expo-error-recovery/ios/EXErrorRecovery/EXErrorRecoveryModule.h"
       - "../../packages/expo-error-recovery/ios/EXErrorRecovery/EXErrorRecoveryModule.m"
     PROJECT_NAME: EXErrorRecovery
     SPECS:
-      - EXErrorRecovery (2.0.0)
+      - EXErrorRecovery (2.0.1)
   EXFacebook:
     BUILD_SETTINGS_CHECKSUM:
       EXFacebook:
@@ -8527,7 +8527,7 @@ CACHE_KEYS:
       EXFaceDetector:
         :debug: 3fc6f31e022483c6c174ecd2bc3a7469
         :release: 3fc6f31e022483c6c174ecd2bc3a7469
-    CHECKSUM: 38666df7672423abd587d816c832d08bc6f9643f
+    CHECKSUM: 8c6c88864a8f9420190aae8a7c19ba569792d0df
     FILES:
       - "../../packages/expo-face-detector/ios/EXFaceDetector/EXCSBufferOrientationCalculator.h"
       - "../../packages/expo-face-detector/ios/EXFaceDetector/EXCSBufferOrientationCalculator.m"
@@ -8547,7 +8547,7 @@ CACHE_KEYS:
       - "../../packages/expo-face-detector/ios/EXFaceDetector/Utilities/EXFaceDetectorUtils.m"
     PROJECT_NAME: EXFaceDetector
     SPECS:
-      - EXFaceDetector (9.0.0)
+      - EXFaceDetector (9.0.1)
   EXFileSystem:
     BUILD_SETTINGS_CHECKSUM:
       EXFileSystem:

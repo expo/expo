@@ -26,7 +26,7 @@
     "expo-constants": "~10.0.0",
     "expo-contacts": "~9.0.0",
     "expo-crypto": "~9.0.0",
-    "expo-device": "~3.1.0",
+    "expo-device": "~3.1.1",
     "expo-file-system": "~10.0.0",
     "expo-gl": "~10.1.0",
     "expo-google-sign-in": "~9.0.0",

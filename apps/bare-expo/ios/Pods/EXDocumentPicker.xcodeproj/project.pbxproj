@@ -13,19 +13,19 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		2CB4116C35E8C8CFE278A12E581179BE /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AD20ACE0E10710598CC896AE306FCD6B /* UMFileSystemInterface.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
-			remoteInfo = UMFileSystemInterface;
-		};
 		58B70A0676D35043C95ED3C10BA4A063 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7AE9EC1AFE0FC150D12091A7EA69D9B4 /* UMCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
+		};
+		D3170217B176E4E58111535341F591E5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AD20ACE0E10710598CC896AE306FCD6B /* UMFileSystemInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
+			remoteInfo = UMFileSystemInterface;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -145,7 +145,7 @@
 			);
 			dependencies = (
 				4AD3ABE145AC29064C1010A4D7C24E75 /* PBXTargetDependency */,
-				1B2218293B0806E4D5A5D7F3A359A725 /* PBXTargetDependency */,
+				2580C0038654644B2914C10F7EF0E421 /* PBXTargetDependency */,
 			);
 			name = EXDocumentPicker;
 			productName = EXDocumentPicker;
@@ -200,10 +200,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		1B2218293B0806E4D5A5D7F3A359A725 /* PBXTargetDependency */ = {
+		2580C0038654644B2914C10F7EF0E421 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMFileSystemInterface;
-			targetProxy = 2CB4116C35E8C8CFE278A12E581179BE /* PBXContainerItemProxy */;
+			targetProxy = D3170217B176E4E58111535341F591E5 /* PBXContainerItemProxy */;
 		};
 		4AD3ABE145AC29064C1010A4D7C24E75 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
