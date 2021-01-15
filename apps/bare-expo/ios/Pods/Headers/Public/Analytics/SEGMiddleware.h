@@ -1,1 +1,1 @@
-../../../Analytics/Segment/Classes/SEGMiddleware.h
+../../../Analytics/Analytics/Classes/SEGMiddleware.h

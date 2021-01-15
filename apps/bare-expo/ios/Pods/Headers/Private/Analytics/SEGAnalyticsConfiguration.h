@@ -1,1 +1,1 @@
-../../../Analytics/Segment/Classes/SEGAnalyticsConfiguration.h
+../../../Analytics/Analytics/Classes/SEGAnalyticsConfiguration.h

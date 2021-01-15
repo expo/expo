@@ -1,1 +1,1 @@
-../../../Analytics/Segment/Internal/NSData+SEGGZIP.h
+../../../Analytics/Analytics/Internal/NSData+SEGGZIP.h

@@ -1,1 +1,1 @@
-../../../Analytics/Segment/Classes/SEGScreenPayload.h
+../../../Analytics/Analytics/Classes/SEGScreenPayload.h

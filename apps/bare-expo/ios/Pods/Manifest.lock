@@ -1,6 +1,6 @@
 PODS:
   - Amplitude (6.0.0)
-  - Analytics (4.1.1)
+  - Analytics (4.0.4)
   - AppAuth (1.4.0):
     - AppAuth/Core (= 1.4.0)
     - AppAuth/ExternalUserAgent (= 1.4.0)
@@ -176,7 +176,7 @@ PODS:
   - EXSecureStore (9.3.0):
     - UMCore
   - EXSegment (9.1.0):
-    - Analytics (~> 4.0)
+    - Analytics (= 4.0.4)
     - UMConstantsInterface
     - UMCore
   - EXSensors (9.2.0):
@@ -404,8 +404,8 @@ PODS:
   - OpenSSL-Universal (1.0.2.20):
     - OpenSSL-Universal/Static (= 1.0.2.20)
   - OpenSSL-Universal/Static (1.0.2.20)
-  - PromisesObjC (1.2.11)
-  - Protobuf (3.13.0)
+  - PromisesObjC (1.2.12)
+  - Protobuf (3.14.0)
   - RCTRequired (0.63.2)
   - RCTTypeSafety (0.63.2):
     - FBLazyVector (= 0.63.2)
@@ -1198,7 +1198,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Amplitude: cc34fcd8dfffc3470bc2e05f3a4abb0178f6d963
-  Analytics: 952eac761f84ba0a508a4cf691598654073f9e3d
+  Analytics: 231b01fdaa9704105881dc82def7b7b1d6571edb
   AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   CocoaAsyncSocket: 694058e7c0ed05a9e217d1b3c7ded962f4180845
@@ -1256,7 +1256,7 @@ SPEC CHECKSUMS:
   EXScreenCapture: 9cbb3995e4dec9a74d3d6b117761acde41cf3557
   EXScreenOrientation: 43ecdc1c3410c60c6d9a72eeb69b24d49a8350ea
   EXSecureStore: dac88c52a0df042282545278a0bdc347266a95d1
-  EXSegment: 5ae19ad49ea03cf9aa5df07916ab66580b1061b6
+  EXSegment: 6c54f471601537874077a8c4d856d2b9a2b20ea6
   EXSensors: e32f3764530071ca587911b0b020f23b675f9fc1
   EXSharing: 1ad40d163cda9af8b49b08b0a838a60d6f4c8651
   EXSMS: 1323e327e81c95da53737f5fadd8b68efea05ef6
@@ -1300,8 +1300,8 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: b3503b20a988c4e20cc189aa798fd18220133f52
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   OpenSSL-Universal: ff34003318d5e1163e9529b08470708e389ffcdd
-  PromisesObjC: 8c196f5a328c2cba3e74624585467a557dcb482f
-  Protobuf: 3dac39b34a08151c6d949560efe3f86134a3f748
+  PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
+  Protobuf: 0cde852566359049847168e51bd1c690e0f70056
   RCTRequired: f13f25e7b12f925f1f6a6a8c69d929a03c0129fe
   RCTTypeSafety: 44982c5c8e43ff4141eb519a8ddc88059acd1f3a
   React: e1c65dd41cb9db13b99f24608e47dd595f28ca9a
