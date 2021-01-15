@@ -1,4 +1,4 @@
-export declare function usesCustomScheme(): boolean;
+export declare function hasCustomScheme(): boolean;
 /**
  * Collect a list of platform schemes from the manifest.
  *

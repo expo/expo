@@ -1,6 +1,6 @@
 import { Platform } from '@unimodules/core';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
-export function usesCustomScheme() {
+export function hasCustomScheme() {
     if (Constants.executionEnvironment === ExecutionEnvironment.Bare) {
         // Bare always uses a custom scheme.
         return true;

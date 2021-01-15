@@ -1,4 +1,4 @@
-import { UnavailabilityError, Platform } from '@unimodules/core';
+import { Platform, UnavailabilityError } from '@unimodules/core';
 import Constants from 'expo-constants';
 import invariant from 'invariant';
 import qs from 'qs';
@@ -7,7 +7,7 @@ import URL from 'url-parse';
 
 import NativeLinking from './ExpoLinking';
 import { ParsedURL, QueryParams, URLListener } from './Linking.types';
-import { resolveScheme, usesCustomScheme } from './Schemes';
+import { hasCustomScheme, resolveScheme } from './Schemes';
 
 function validateURL(url: string): void {
   invariant(typeof url === 'string', 'Invalid URL: should be a string. Was: ' + url);
@@ -17,7 +17,7 @@ function validateURL(url: string): void {
 function getHostUri(): string | null {
   if (Constants.manifest?.hostUri) {
     return Constants.manifest.hostUri;
-  } else if (!Constants.manifest?.hostUri && !usesCustomScheme()) {
+  } else if (!Constants.manifest?.hostUri && !hasCustomScheme()) {
     // we're probably not using up-to-date xdl, so just fake it for now
     // we have to remove the /--/ on the end since this will be inserted again later
     return removeScheme(Constants.linkingUri).replace(/\/--($|\/.*$)/, '');
@@ -137,7 +137,7 @@ export function createURL(
 
   let hostUri = getHostUri() || '';
 
-  if (usesCustomScheme() && isExpoHosted()) {
+  if (hasCustomScheme() && isExpoHosted()) {
     hostUri = '';
   }
 
@@ -220,7 +220,7 @@ export function parse(url: string): ParsedURL {
         .join('/');
     }
 
-    if (isExpoHosted() && !usesCustomScheme() && expoPrefix && path.startsWith(expoPrefix)) {
+    if (isExpoHosted() && !hasCustomScheme() && expoPrefix && path.startsWith(expoPrefix)) {
       path = path.substring(expoPrefix.length);
       hostname = null;
     } else if (path.indexOf('+') > -1) {

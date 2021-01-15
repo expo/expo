@@ -2006,7 +2006,7 @@ Here are a few examples of some common redirect URI patterns you may end up usin
 - **Environment:** Production projects that you `expo publish`'d and opened in the Expo client.
 - **Create:** Use `AuthSession.makeRedirectUri({ useProxy: false })` to create this URI.
   - The link is constructed from your Expo username and the Expo app name, which are appended to the Expo client URI scheme.
-  - You could also create this link with using `Linking.createURL()` from `expo-linking`.
+  - You could also create this link with using `Linking.makeUrl()` from `expo-linking`.
 - **Usage:** `promptAsync({ redirectUri })`
 
 #### Development project in the Expo client
@@ -2016,7 +2016,7 @@ Here are a few examples of some common redirect URI patterns you may end up usin
 - **Environment:** Development projects in the Expo client when you run `expo start`.
 - **Create:** Use `AuthSession.makeRedirectUri({ useProxy: false })` to create this URI.
   - This link is built from your Expo server's `port` + `host`.
-  - You could also create this link with using `Linking.createURL()` from `expo-linking`.
+  - You could also create this link with using `Linking.makeUrl()` from `expo-linking`.
 - **Usage:** `promptAsync({ redirectUri })`
 
 #### Standalone, Bare, or Custom
