@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Created config plugin. ([#11636](https://github.com/expo/expo/pull/11636) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ## 8.4.0 — 2020-11-17
