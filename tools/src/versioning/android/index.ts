@@ -262,7 +262,9 @@ async function processMkFileAsync(filename: string, abiVersion: string) {
 async function processJavaCodeAsync(libName: string, abiVersion: string) {
   const abiName = `abi${abiVersion}`;
   return spawnAsync(
-    `find ${versionedReactAndroidJavaPath} ${versionedExpoviewAbiPath(abiName)} -iname '*.java' -type f -print0 | ` +
+    `find ${versionedReactAndroidJavaPath} ${versionedExpoviewAbiPath(
+      abiName
+    )} -iname '*.java' -type f -print0 | ` +
       `xargs -0 sed -i '' 's/"${libName}"/"${libName}_abi${abiVersion}"/g'`,
     [],
     { shell: true }
@@ -278,11 +280,11 @@ async function updateVersionedReactNativeAsync() {
 
 async function renameJniLibsAsync(version: string) {
   const abiVersion = version.replace(/\./g, '_');
-  const abiPrefix = `abi${abiVersion}`
+  const abiPrefix = `abi${abiVersion}`;
   const versionedAbiPath = path.join(
     Directories.getAndroidDir(),
-    'versioned-abis', 
-    `expoview-${abiPrefix}`,
+    'versioned-abis',
+    `expoview-${abiPrefix}`
   );
 
   // Update JNI methods
@@ -298,7 +300,8 @@ async function renameJniLibsAsync(version: string) {
     );
 
     // reanimated
-    const oldJNIReanimatedPackage = 'versioned\\/host\\/exp\\/exponent\\/modules\\/api\\/reanimated\\/';
+    const oldJNIReanimatedPackage =
+      'versioned\\/host\\/exp\\/exponent\\/modules\\/api\\/reanimated\\/';
     const newJNIReanimatedPackage = 'host\\/exp\\/exponent\\/modules\\/api\\/reanimated\\/';
     await spawnAsync(
       `find ${versionedAbiPath} -type f ` +
@@ -310,14 +313,12 @@ async function renameJniLibsAsync(version: string) {
   }
 
   // Update LOCAL_MODULE, LOCAL_SHARED_LIBRARIES, LOCAL_STATIC_LIBRARIES fields in .mk files
-  let [reactCommonMkFiles, 
-    reactAndroidMkFiles,
-    reanimatedMKFiles] = await Promise.all([
+  let [reactCommonMkFiles, reactAndroidMkFiles, reanimatedMKFiles] = await Promise.all([
     glob(path.join(versionedReactCommonPath, '**/*.mk')),
     glob(path.join(versionedReactAndroidJniPath, '**/*.mk')),
     glob(path.join(versionedAbiPath, '**/*.mk')),
   ]);
-  let filenames = [...reactCommonMkFiles, ...reactAndroidMkFiles, ...reanimatedMKFiles]; 
+  let filenames = [...reactCommonMkFiles, ...reactAndroidMkFiles, ...reanimatedMKFiles];
   await Promise.all(filenames.map((filename) => processMkFileAsync(filename, abiVersion)));
 
   // Rename references to JNI libs in Java code
@@ -532,15 +533,15 @@ async function prepareReanimatedAsync(version: string): Promise<void> {
       cwd: path.join(versionedExpoviewPath, '../../'),
       stdio: 'inherit',
     });
-  }
+  };
 
   const removeLeftoverDirectories = async () => {
     const mainPath = path.join(versionedExpoviewPath, 'src', 'main');
     const toRemove = ['Common', 'JNI', 'cpp'];
     for (let dir of toRemove) {
       await fs.remove(path.join(mainPath, dir));
-    }    
-  }
+    }
+  };
 
   const removeLeftoversFromGradle = async () => {
     await spawnAsync('./android-remove-reanimated-code-from-gradle.sh', [version], {
@@ -548,7 +549,7 @@ async function prepareReanimatedAsync(version: string): Promise<void> {
       cwd: SCRIPT_DIR,
       stdio: 'inherit',
     });
-  }
+  };
 
   await buildReanimatedSO();
   await removeLeftoverDirectories();
@@ -565,7 +566,7 @@ export async function addVersionAsync(version: string) {
     shell: true,
     cwd: SCRIPT_DIR,
   });
-  
+
   console.log(' ✅  2/9: Finished\n\n');
 
   console.log(' 🛠   3/9: Renaming JNI libs in android/versioned-react-native and Reanimated...');

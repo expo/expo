@@ -6,7 +6,7 @@ import IosUnversionablePackages from './versioning/ios/unversionablePackages.jso
 import AndroidUnversionablePackages from './versioning/android/unversionablePackages.json';
 import * as Directories from './Directories';
 import * as Npm from './Npm';
-import { spawnJSONCommandAsync } from './Utils';
+import { Podspec, readPodspecAsync } from './CocoaPods';
 
 const ANDROID_DIR = Directories.getAndroidDir();
 const IOS_DIR = Directories.getIosDir();
@@ -57,19 +57,6 @@ export type UnimoduleJson = {
   };
 };
 
-export type Podspec = {
-  name: string;
-  version: string;
-  platforms: Record<string, string>;
-  source_files: string | string[];
-  exclude_files: string | string[];
-  compiler_flags: string;
-  frameworks: string | string[];
-  pod_target_xcconfig: Record<string, string>;
-  dependencies: Record<string, any>;
-  info_plist: Record<string, string>;
-};
-
 /**
  * Represents a package in the monorepo.
  */
@@ -83,6 +70,10 @@ export class Package {
     this.path = rootPath;
     this.packageJson = packageJson || require(path.join(rootPath, 'package.json'));
     this.unimoduleJson = readUnimoduleJsonAtDirectory(rootPath);
+  }
+
+  get hasPlugin(): boolean {
+    return fs.pathExistsSync(path.join(this.path, 'plugin'));
   }
 
   get packageName(): string {
@@ -308,7 +299,7 @@ export class Package {
     if (!podspecName) {
       return null;
     }
-    return await spawnJSONCommandAsync('pod', ['ipc', 'spec', podspecPath]);
+    return await readPodspecAsync(podspecPath);
   }
 }
 

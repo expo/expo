@@ -2,6 +2,14 @@
 
 ## Unpublished
 
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+## 9.0.0 — 2021-01-14
+
 ### ⚠️ Notices
 
 - The package is now shipped with prebuilt binaries on iOS. You can read more about it on [expo.fyi/prebuilt-modules](https://expo.fyi/prebuilt-modules). ([#11224](https://github.com/expo/expo/pull/11224) by [@tsapeta](https://github.com/tsapeta))
@@ -12,6 +20,7 @@
 
 ### 🎉 New features
 
+- Created config plugins ([#11538](https://github.com/expo/expo/pull/11538) by [@EvanBacon](https://github.com/EvanBacon))
 - Add optional sound level information in `RecordingStatus` object described with `metering` key. Add `isMeteringEnabled` flag in `RecordingOptions` to enable computing this information. The flag is set to `true` by default in `RecordingOptions` presets (`RECORDING_OPTIONS_PRESET_HIGH_QUALITY`, `RECORDING_OPTIONS_PRESET_LOW_QUALITY`). ([#10759](https://github.com/expo/expo/pull/10759) by [@danieloi](https://github.com/danieloi))
 
 ### 🐛 Bug fixes
@@ -19,7 +28,6 @@
 - Fixed minor syntax error in `AVManager`. ([#11375](https://github.com/expo/expo/pull/11375) by [@sjchmiela](https://github.com/sjchmiela))
 
 ## 8.7.0 — 2020-11-17
-
 
 ### 🐛 Bug fixes
 

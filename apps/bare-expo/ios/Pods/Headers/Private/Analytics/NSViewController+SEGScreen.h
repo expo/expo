@@ -1,1 +1,1 @@
-../../../Analytics/Analytics/Internal/NSViewController+SEGScreen.h
+../../../Analytics/Segment/Internal/NSViewController+SEGScreen.h

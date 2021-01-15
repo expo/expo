@@ -1,1 +1,1 @@
-../../../Analytics/Analytics/Internal/SEGStoreKitTracker.h
+../../../Analytics/Segment/Internal/SEGStoreKitTracker.h

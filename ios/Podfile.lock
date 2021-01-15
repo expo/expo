@@ -1656,7 +1656,7 @@ PODS:
     - UMCore
   - EXApplication (2.4.1):
     - UMCore
-  - EXAV (8.7.0):
+  - EXAV (9.0.0):
     - UMCore
     - UMFileSystemInterface
     - UMPermissionsInterface
@@ -2007,7 +2007,10 @@ PODS:
   - GTMSessionFetcher/Full (1.5.0):
     - GTMSessionFetcher/Core (= 1.5.0)
   - JKBigInteger2 (0.0.5)
-  - lottie-ios (2.5.3)
+  - lottie-ios (3.1.9)
+  - lottie-react-native (3.4.0):
+    - lottie-ios (~> 3.1.8)
+    - React
   - nanopb (0.3.9011):
     - nanopb/decode (= 0.3.9011)
     - nanopb/encode (= 0.3.9011)
@@ -2649,7 +2652,7 @@ DEPENDENCIES:
   - Google-Maps-iOS-Utils (~> 2.1.0)
   - GoogleMaps (~> 3.6)
   - JKBigInteger2 (= 0.0.5)
-  - lottie-ios (~> 2.5.0)
+  - lottie-react-native (from `./vendored/unversioned/lottie-react-native`)
   - RCTRequired (from `../react-native-lab/react-native/Libraries/RCTRequired`)
   - RCTTypeSafety (from `../react-native-lab/react-native/Libraries/TypeSafety`)
   - React (from `../react-native-lab/react-native/`)
@@ -3453,6 +3456,8 @@ EXTERNAL SOURCES:
     :podspec: "../react-native-lab/react-native/third-party-podspecs/Folly.podspec"
   glog:
     :podspec: "../react-native-lab/react-native/third-party-podspecs/glog.podspec"
+  lottie-react-native:
+    :path: "./vendored/unversioned/lottie-react-native"
   RCTRequired:
     :path: "../react-native-lab/react-native/Libraries/RCTRequired"
   RCTTypeSafety:
@@ -3831,7 +3836,7 @@ SPEC CHECKSUMS:
   EXAppAuth: 0f1d0d7582d87fc700910907ab6b85a15e3d7d5f
   EXAppleAuthentication: 0ce2041af102f57af5788d76b7d1a2257c8609ae
   EXApplication: 59dd6d1e8a7b4bfa4153eb34fc0a4c3b2173b7e0
-  EXAV: d9703b0176a008c728bf2b50932399ac59ba680b
+  EXAV: 5fd81d380626cfea59d68c4a9b34c46232fb679c
   EXBackgroundFetch: 9dfd9571957508a11ed2c57eca67f6d142c8c5f5
   EXBarCodeScanner: f606c76d7f313c7bab85be7d7533d3bce8b6bac3
   EXBattery: 82d4ddff351207b3788853826f302b757efa96c3
@@ -3917,7 +3922,8 @@ SPEC CHECKSUMS:
   GTMAppAuth: 197a8dabfea5d665224aa00d17f164fc2248dab9
   GTMSessionFetcher: b3503b20a988c4e20cc189aa798fd18220133f52
   JKBigInteger2: e91672035c42328c48b7dd015b66812ddf40ca9b
-  lottie-ios: a50d5c0160425cd4b01b852bb9578963e6d92d31
+  lottie-ios: 3a3758ef5a008e762faec9c9d50a39842f26d124
+  lottie-react-native: 55abec29d1a068cd43fdd2e7353e409fdaee8389
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   PromisesObjC: 8c196f5a328c2cba3e74624585467a557dcb482f
   Protobuf: 3dac39b34a08151c6d949560efe3f86134a3f748
@@ -3957,6 +3963,6 @@ SPEC CHECKSUMS:
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 14804f204a0e8e0a0acf8bc6bca4fcb472dc427e
+PODFILE CHECKSUM: c7891da53e29cdba441e5429169cb5f1e167ae7e
 
 COCOAPODS: 1.10.0

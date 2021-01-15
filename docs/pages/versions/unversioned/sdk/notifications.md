@@ -194,7 +194,6 @@ Check out the Snack below to see Notifications in action, but be sure to use a p
 ```js
 import Constants from 'expo-constants';
 import * as Notifications from 'expo-notifications';
-import * as Permissions from 'expo-permissions';
 import React, { useState, useEffect, useRef } from 'react';
 import { Text, View, Button, Platform } from 'react-native';
 
@@ -266,10 +265,10 @@ async function schedulePushNotification() {
 async function registerForPushNotificationsAsync() {
   let token;
   if (Constants.isDevice) {
-    const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
     if (existingStatus !== 'granted') {
-      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+      const { status } = await Notifications.requestPermissionsAsync();
       finalStatus = status;
     }
     if (finalStatus !== 'granted') {
@@ -681,7 +680,7 @@ export async function allowsNotificationsAsync() {
 
 ### `requestPermissionsAsync(request?: NotificationPermissionsRequest): Promise<NotificationPermissionsStatus>`
 
-Prompts the user for notification permissions according to request. Request defaults to asking the user to allow displaying alerts, setting badge count and playing sounds.
+Prompts the user for notification permissions according to request. **Request defaults to asking the user to allow displaying alerts, setting badge count and playing sounds**.
 
 #### Arguments
 

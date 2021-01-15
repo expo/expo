@@ -1,1 +1,1 @@
-../../../Analytics/Analytics/Classes/SEGAliasPayload.h
+../../../Analytics/Segment/Classes/SEGAliasPayload.h

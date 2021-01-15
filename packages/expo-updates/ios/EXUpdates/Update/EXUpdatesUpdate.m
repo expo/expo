@@ -84,7 +84,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                 database:database];
     }
   } else {
-    if (manifest[@"data"] || manifest[@"publicManifest"] || manifest[@"manifest"]) {
+    // bare (embedded) manifests should never have a runtimeVersion field
+    if (manifest[@"manifest"] || manifest[@"runtimeVersion"]) {
       return [EXUpdatesNewUpdate updateWithNewManifest:manifest
                                                 config:config
                                               database:database];

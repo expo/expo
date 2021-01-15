@@ -16,7 +16,7 @@ import {
   Platform,
   renameClass,
   Append,
-} from '../vendoring';
+} from '../vendoring/devmenu';
 
 const CONFIGURATIONS = {
   '[dev-menu] reanimated': getReanimatedPipe(),

@@ -16,10 +16,10 @@ CACHE_KEYS:
       Analytics:
         :debug: b365cc884d9f7aa1eac7fd5381727331
         :release: b365cc884d9f7aa1eac7fd5381727331
-    CHECKSUM: 231b01fdaa9704105881dc82def7b7b1d6571edb
+    CHECKSUM: 952eac761f84ba0a508a4cf691598654073f9e3d
     PROJECT_NAME: Analytics
     SPECS:
-      - Analytics (4.0.4)
+      - Analytics (4.1.1)
   AppAuth:
     BUILD_SETTINGS_CHECKSUM:
       AppAuth:
@@ -116,7 +116,7 @@ CACHE_KEYS:
       EXAV:
         :debug: 2e94ccd99a5958e8763d10c21f5b2342
         :release: 2e94ccd99a5958e8763d10c21f5b2342
-    CHECKSUM: d9703b0176a008c728bf2b50932399ac59ba680b
+    CHECKSUM: 5fd81d380626cfea59d68c4a9b34c46232fb679c
     FILES:
       - "../../../../packages/expo-av/ios/EXAV/EXAudioRecordingPermissionRequester.h"
       - "../../../../packages/expo-av/ios/EXAV/EXAudioRecordingPermissionRequester.m"
@@ -136,7 +136,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-av/ios/EXAV/Video/EXVideoView.m"
     PROJECT_NAME: EXAV
     SPECS:
-      - EXAV (8.7.0)
+      - EXAV (9.0.0)
   EXBackgroundFetch:
     BUILD_SETTINGS_CHECKSUM:
       EXBackgroundFetch:
@@ -1531,37 +1531,37 @@ CACHE_KEYS:
       GoogleUtilities:
         :debug: 9c785ddf88aa0d25de563e336d8593ca
         :release: 9c785ddf88aa0d25de563e336d8593ca
-    CHECKSUM: 39530bc0ad980530298e9c4af8549e991fd033b1
+    CHECKSUM: 7f2f5a07f888cdb145101d6042bc4422f57e70b3
     PROJECT_NAME: GoogleUtilities
     SPECS:
-      - GoogleUtilities/AppDelegateSwizzler (6.6.0)
-      - GoogleUtilities/Environment (6.6.0)
-      - GoogleUtilities/Logger (6.6.0)
-      - GoogleUtilities/MethodSwizzler (6.6.0)
-      - GoogleUtilities/Network (6.6.0)
-      - "GoogleUtilities/NSData+zlib (6.6.0)"
-      - GoogleUtilities/Reachability (6.6.0)
-      - GoogleUtilities/UserDefaults (6.6.0)
+      - GoogleUtilities/AppDelegateSwizzler (6.7.2)
+      - GoogleUtilities/Environment (6.7.2)
+      - GoogleUtilities/Logger (6.7.2)
+      - GoogleUtilities/MethodSwizzler (6.7.2)
+      - GoogleUtilities/Network (6.7.2)
+      - "GoogleUtilities/NSData+zlib (6.7.2)"
+      - GoogleUtilities/Reachability (6.7.2)
+      - GoogleUtilities/UserDefaults (6.7.2)
   GTMAppAuth:
     BUILD_SETTINGS_CHECKSUM:
       GTMAppAuth:
         :debug: 3dbdce209cbdf3f54542c579714ee0f4
         :release: 3dbdce209cbdf3f54542c579714ee0f4
-    CHECKSUM: 4deac854479704f348309e7b66189e604cf5e01e
+    CHECKSUM: 197a8dabfea5d665224aa00d17f164fc2248dab9
     PROJECT_NAME: GTMAppAuth
     SPECS:
-      - GTMAppAuth (1.0.0)
+      - GTMAppAuth (1.1.0)
   GTMSessionFetcher:
     BUILD_SETTINGS_CHECKSUM:
       GTMSessionFetcher:
         :debug: cffb254b0942761c260b726e8c2ab020
         :release: cffb254b0942761c260b726e8c2ab020
-    CHECKSUM: 6f5c8abbab8a9bce4bb3f057e317728ec6182b10
+    CHECKSUM: b3503b20a988c4e20cc189aa798fd18220133f52
     PROJECT_NAME: GTMSessionFetcher
     SPECS:
-      - GTMSessionFetcher (1.4.0)
-      - GTMSessionFetcher/Core (1.4.0)
-      - GTMSessionFetcher/Full (1.4.0)
+      - GTMSessionFetcher (1.5.0)
+      - GTMSessionFetcher/Core (1.5.0)
+      - GTMSessionFetcher/Full (1.5.0)
   nanopb:
     BUILD_SETTINGS_CHECKSUM:
       nanopb:
@@ -1585,8 +1585,8 @@ CACHE_KEYS:
       - OpenSSL-Universal/Static (1.0.2.20)
   Pods-BareExpoMain-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 877ce0e8e6463584617fddce28690ce4
-      Release: 1d4c90d06175ff45bd9e2da0cfb19fd3
+      Debug: 0d2ce6e175e395d6d22e381c6149021f
+      Release: a96c7b6c01f02b964aa3949f6662da5b
     FILES:
       - "${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-menu/EXDevMenu.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/FirebaseMLVisionFaceModel/GoogleMVFaceDetectorResources.bundle"
@@ -1596,8 +1596,8 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoMain-BareExpoDetox:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 367aa70f33d76b29ed5101412ee45005
-      Release: 2d0a3e3c4dfa6655b2cc06f970bf2237
+      Debug: 5ed7e6e08249fdf5ebfca4222cd639c9
+      Release: c9ab993e1a914ae473a3cb9f3ad842c7
     FILES:
       - "${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-menu/EXDevMenu.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/FirebaseMLVisionFaceModel/GoogleMVFaceDetectorResources.bundle"
@@ -1614,19 +1614,19 @@ CACHE_KEYS:
       PromisesObjC:
         :debug: 7a1c46cae8d9ee9cf2ead693d8f27698
         :release: 7a1c46cae8d9ee9cf2ead693d8f27698
-    CHECKSUM: b48e0338dbbac2207e611750777895f7a5811b75
+    CHECKSUM: 8c196f5a328c2cba3e74624585467a557dcb482f
     PROJECT_NAME: PromisesObjC
     SPECS:
-      - PromisesObjC (1.2.9)
+      - PromisesObjC (1.2.11)
   Protobuf:
     BUILD_SETTINGS_CHECKSUM:
       Protobuf:
         :debug: f3a63680e8eff9d184081e037d49773d
         :release: f3a63680e8eff9d184081e037d49773d
-    CHECKSUM: 0cde852566359049847168e51bd1c690e0f70056
+    CHECKSUM: 3dac39b34a08151c6d949560efe3f86134a3f748
     PROJECT_NAME: Protobuf
     SPECS:
-      - Protobuf (3.14.0)
+      - Protobuf (3.13.0)
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired:

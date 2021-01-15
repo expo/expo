@@ -25,7 +25,8 @@ public class ManifestFactory {
         return BareManifest.fromManifestJson(manifestJson, configuration);
       }
     } else {
-      if (manifestJson.has("data") || manifestJson.has("publicManifest") || manifestJson.has("manifest")) {
+      // bare (embedded) manifests should never have a runtimeVersion field
+      if (manifestJson.has("manifest") || manifestJson.has("runtimeVersion")) {
         return NewManifest.fromManifestJson(manifestJson, configuration);
       } else {
         return BareManifest.fromManifestJson(manifestJson, configuration);

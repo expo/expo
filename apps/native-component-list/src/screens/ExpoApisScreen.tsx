@@ -2,7 +2,6 @@ import { Platform } from '@unimodules/core';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import * as Notifications from 'expo-notifications';
 import React from 'react';
-import { Alert } from 'react-native';
 
 import ExpoAPIIcon from '../components/ExpoAPIIcon';
 import { Screens } from '../navigation/ExpoApis';
@@ -11,7 +10,7 @@ import ComponentListScreen from './ComponentListScreen';
 try {
   require('react-native-branch').default.subscribe((bundle: any) => {
     if (bundle && bundle.params && !bundle.error) {
-      Alert.alert('Opened Branch link', JSON.stringify(bundle.params, null, 2));
+      // Alert.alert('Opened Branch link', JSON.stringify(bundle.params, null, 2));
     }
   });
 } catch (e) {
@@ -91,6 +90,7 @@ const screens = [
 
 if (Constants.executionEnvironment !== ExecutionEnvironment.StoreClient) {
   screens.push('InAppPurchases');
+  screens.push('Payments');
 }
 
 export const ScreenItems = screens.map(name => ({

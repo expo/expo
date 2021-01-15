@@ -12,6 +12,8 @@
 
 @implementation ABI40_0_0EXUserFacingNotificationsPermissionsRequester
 
+static NSDictionary *_requestedPermissions;
+
 + (NSString *)permissionType
 {
   return @"userFacingNotifications";
@@ -79,15 +81,14 @@
 
 - (void)requestPermissionsWithResolver:(ABI40_0_0UMPromiseResolveBlock)resolve rejecter:(ABI40_0_0UMPromiseRejectBlock)reject
 {
-  static NSDictionary *defaultPermissions;
-  if (!defaultPermissions) {
-    defaultPermissions = @{
-                           @"allowAlert": @(YES),
-                           @"allowBadge": @(YES),
-                           @"allowSound": @(YES)
-                           };
+  if (!_requestedPermissions || [_requestedPermissions count] == 0) {
+    _requestedPermissions = @{
+                              @"allowAlert": @(YES),
+                              @"allowBadge": @(YES),
+                              @"allowSound": @(YES)
+                            };
   }
-  [self requestPermissions:defaultPermissions withResolver:resolve rejecter:reject];
+  [self requestPermissions:_requestedPermissions withResolver:resolve rejecter:reject];
 }
 
 - (void)requestPermissions:(NSDictionary *)permissions withResolver:(ABI40_0_0UMPromiseResolveBlock)resolve rejecter:(ABI40_0_0UMPromiseRejectBlock)reject
@@ -193,6 +194,11 @@
     case UNNotificationSettingNotSupported:
       return nil;
   }
+}
+
++ (void)setRequestedPermissions:(NSDictionary *)permissions
+{
+  _requestedPermissions = permissions;
 }
 
 @end

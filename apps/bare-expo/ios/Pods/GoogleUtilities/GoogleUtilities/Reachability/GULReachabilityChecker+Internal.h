@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#import <GoogleUtilities/GULReachabilityChecker.h>
+#import "GoogleUtilities/Reachability/Private/GULReachabilityChecker.h"
 #if !TARGET_OS_WATCH
 typedef SCNetworkReachabilityRef (*GULReachabilityCreateWithNameFn)(CFAllocatorRef allocator,
                                                                     const char *host);

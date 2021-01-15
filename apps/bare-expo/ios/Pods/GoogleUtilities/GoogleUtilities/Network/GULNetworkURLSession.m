@@ -16,7 +16,7 @@
 
 #import "GoogleUtilities/Network/Private/GULNetworkURLSession.h"
 
-#import <GoogleUtilities/GULLogger.h>
+#import "GoogleUtilities/Logger/Private/GULLogger.h"
 #import "GoogleUtilities/Network/Private/GULMutableDictionary.h"
 #import "GoogleUtilities/Network/Private/GULNetworkConstants.h"
 #import "GoogleUtilities/Network/Private/GULNetworkMessageCode.h"
