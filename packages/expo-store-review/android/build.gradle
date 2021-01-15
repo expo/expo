@@ -14,7 +14,7 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet("kotlinVersion", "1.3.50")}")
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet("kotlinVersion", "1.4.21")}")
   }
 }
 
@@ -74,7 +74,7 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 
 dependencies {
   unimodule "unimodules-core"
-  api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet("kotlinVersion", "1.3.50")}"
+  api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet("kotlinVersion", "1.4.21")}"
   api 'com.google.android.gms:play-services-base:17.3.0'
   api 'com.google.android.play:core:1.8.0'
 }

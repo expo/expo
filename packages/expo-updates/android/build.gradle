@@ -66,6 +66,7 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 
 dependencies {
   unimodule 'unimodules-core'
+  //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"
 
   def room_version = "2.1.0"
