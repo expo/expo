@@ -7,25 +7,25 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2796DC275493FD5F32F9C93D6DF3CD91 /* EXVideoThumbnailsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF58797B509585FEA0CD4E55C485F88 /* EXVideoThumbnailsModule.m */; };
-		56B96BBF49FCAD4457A4B0820E3BB4AD /* EXVideoThumbnails-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 30C3A7BCC96AFBF2B5E36957F083A9D6 /* EXVideoThumbnails-dummy.m */; };
+		0353B9CA77D32C7FCA18FD045D7B73E6 /* EXVideoThumbnails-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 30C3A7BCC96AFBF2B5E36957F083A9D6 /* EXVideoThumbnails-dummy.m */; };
 		79A9A90F7C6283A0F23E80759E9FAEB0 /* EXVideoThumbnailsModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 7F06D87E3754EF2A11B4738D8FA760D5 /* EXVideoThumbnailsModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		F64FBF71730A82A631BE974782B35D3B /* EXVideoThumbnailsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF58797B509585FEA0CD4E55C485F88 /* EXVideoThumbnailsModule.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		37E39E5C2E7DD47F3A8FF345280B6463 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5DAC50812CE3AE7B2163C4E17E8A4D30 /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
 		938AFC761C730600E01E85450EEA72F1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B77444528BEEDC29D2F616A4C3E94C6E /* UMFileSystemInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
 			remoteInfo = UMFileSystemInterface;
-		};
-		B3144328B63CECA0688836A39F66E315 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 5DAC50812CE3AE7B2163C4E17E8A4D30 /* UMCore.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
-			remoteInfo = UMCore;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -138,13 +138,13 @@
 			buildConfigurationList = 571AE34882D80214F2AF263A7696DF66 /* Build configuration list for PBXNativeTarget "EXVideoThumbnails" */;
 			buildPhases = (
 				98E476D97BEF904D4EF3C6057851B58D /* Headers */,
-				FA4822468B375636975E763D43E56A8E /* Sources */,
+				26062E674812BA6847FD0CAB1B2318E6 /* Sources */,
 				AC0C80DE21553C2CD98355797185DDF2 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				31C7C48165D4438EEB5AEA9D09F651DA /* PBXTargetDependency */,
+				ADA8DDEB5499100F3BC8C4261132D4FE /* PBXTargetDependency */,
 				66C4367739F94BCBE69EB1532967B6DF /* PBXTargetDependency */,
 			);
 			name = EXVideoThumbnails;
@@ -188,42 +188,43 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		FA4822468B375636975E763D43E56A8E /* Sources */ = {
+		26062E674812BA6847FD0CAB1B2318E6 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				56B96BBF49FCAD4457A4B0820E3BB4AD /* EXVideoThumbnails-dummy.m in Sources */,
-				2796DC275493FD5F32F9C93D6DF3CD91 /* EXVideoThumbnailsModule.m in Sources */,
+				0353B9CA77D32C7FCA18FD045D7B73E6 /* EXVideoThumbnails-dummy.m in Sources */,
+				F64FBF71730A82A631BE974782B35D3B /* EXVideoThumbnailsModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		31C7C48165D4438EEB5AEA9D09F651DA /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMCore;
-			targetProxy = B3144328B63CECA0688836A39F66E315 /* PBXContainerItemProxy */;
-		};
 		66C4367739F94BCBE69EB1532967B6DF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMFileSystemInterface;
 			targetProxy = 938AFC761C730600E01E85450EEA72F1 /* PBXContainerItemProxy */;
 		};
+		ADA8DDEB5499100F3BC8C4261132D4FE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = 37E39E5C2E7DD47F3A8FF345280B6463 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		4ABDA4EEF00CE49EAF62E9C9711240FF /* Debug */ = {
+		0C25F95567F7A4698A84FD3E6FDA3A26 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 48B3321902F08F749D6CBA94758B6533 /* EXVideoThumbnails.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/EXVideoThumbnails/EXVideoThumbnails-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -237,6 +238,33 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
+		};
+		4F6C883D0656FAFA111EE2D24B3574BA /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = FE0842B13C675703F3C3553BB8C01972 /* EXVideoThumbnails.release.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/EXVideoThumbnails/EXVideoThumbnails-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXVideoThumbnails;
+				PRODUCT_NAME = EXVideoThumbnails;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
 		};
 		9079F0D0D5AEAC9925240509657B5B9D /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -297,32 +325,6 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
-			};
-			name = Release;
-		};
-		AB64A1DDEC699D29985CBA9A927DDF43 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = FE0842B13C675703F3C3553BB8C01972 /* EXVideoThumbnails.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/EXVideoThumbnails/EXVideoThumbnails-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXVideoThumbnails;
-				PRODUCT_NAME = EXVideoThumbnails;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
@@ -398,8 +400,8 @@
 		571AE34882D80214F2AF263A7696DF66 /* Build configuration list for PBXNativeTarget "EXVideoThumbnails" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				4ABDA4EEF00CE49EAF62E9C9711240FF /* Debug */,
-				AB64A1DDEC699D29985CBA9A927DDF43 /* Release */,
+				0C25F95567F7A4698A84FD3E6FDA3A26 /* Debug */,
+				4F6C883D0656FAFA111EE2D24B3574BA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

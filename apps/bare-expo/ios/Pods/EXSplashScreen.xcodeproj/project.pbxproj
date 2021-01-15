@@ -8,14 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		22031BB1FDEE1A9906ECCA6DC9CE4D7A /* EXSplashScreenModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 773EA2CA75BCBC7F3D15DED871226998 /* EXSplashScreenModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3AF4D178C281F478F7116E6F5F7ED02E /* EXSplashScreenController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88D538D13FE7CB756217100D655285AA /* EXSplashScreenController.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		431227FF75F10472D77461528C44C748 /* EXSplashScreenViewNativeProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = B1EF6E9CE69F20BD5CDA8C8A44C24248 /* EXSplashScreenViewNativeProvider.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		4BF21E4196DCD5E196CFD912D57C9705 /* EXSplashScreenService.h in Headers */ = {isa = PBXBuildFile; fileRef = BC223AD4E506015CCB3867C19083F5AE /* EXSplashScreenService.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		54F5C2E9A7C12B7177951EDC224E9745 /* EXSplashScreen-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = E2D7A1C1FC30F626D63331A3685665B4 /* EXSplashScreen-dummy.m */; };
-		7A410CA0DAD9D66CDF34D1BA4C38E836 /* EXSplashScreenModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C8D018583662DCBBC5669988FD3785C /* EXSplashScreenModule.m */; };
-		878DE0719CB9A5F1E7183076E3880DD8 /* EXSplashScreenViewNativeProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = F49E2456F0F67642D94B1C6753D78346 /* EXSplashScreenViewNativeProvider.m */; };
+		5D73A37FEE676F548E5A4AA7F3709C68 /* EXSplashScreenModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C8D018583662DCBBC5669988FD3785C /* EXSplashScreenModule.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		758FDCAF3972FB582B3AA86244D7EA47 /* EXSplashScreen-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = E2D7A1C1FC30F626D63331A3685665B4 /* EXSplashScreen-dummy.m */; };
 		A3C1293B7354176B07E3EA8B046B2767 /* EXSplashScreenViewProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = CB09FF8FAD5AA3F82F29969FD8E620CC /* EXSplashScreenViewProvider.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		DE76F0A3AC22B19291B07B01C6E528FB /* EXSplashScreenController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88D538D13FE7CB756217100D655285AA /* EXSplashScreenController.m */; };
-		E4C83888EEBA1B78ECCE302D018072BD /* EXSplashScreenService.m in Sources */ = {isa = PBXBuildFile; fileRef = EC3860C1A19B7FD3217280C24CB6E4DC /* EXSplashScreenService.m */; };
+		CF0E4096C9B5F966EFD44F35EAD3ABFD /* EXSplashScreenViewNativeProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = F49E2456F0F67642D94B1C6753D78346 /* EXSplashScreenViewNativeProvider.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		D99B72635ADACFA5D40C23839A300157 /* EXSplashScreenService.m in Sources */ = {isa = PBXBuildFile; fileRef = EC3860C1A19B7FD3217280C24CB6E4DC /* EXSplashScreenService.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		F4E1582199B36AC1C4C49CCF300A618F /* EXSplashScreenController.h in Headers */ = {isa = PBXBuildFile; fileRef = C7390541C3E1D2D21BF57316CDFE16B5 /* EXSplashScreenController.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
@@ -163,7 +163,7 @@
 			buildConfigurationList = 8189B39DB90DB88F101D20FF8BA6AD75 /* Build configuration list for PBXNativeTarget "EXSplashScreen" */;
 			buildPhases = (
 				C6D3CF891CC10B91228D19E51F388D7E /* Headers */,
-				8AAB63FA0124DEBCCE47F876EF3BB732 /* Sources */,
+				021C556B88283FF42D2E86235DA1759F /* Sources */,
 				8D0F8D77F6AACC254FF34F8A7CFD61E4 /* Frameworks */,
 			);
 			buildRules = (
@@ -213,15 +213,15 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		8AAB63FA0124DEBCCE47F876EF3BB732 /* Sources */ = {
+		021C556B88283FF42D2E86235DA1759F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				54F5C2E9A7C12B7177951EDC224E9745 /* EXSplashScreen-dummy.m in Sources */,
-				DE76F0A3AC22B19291B07B01C6E528FB /* EXSplashScreenController.m in Sources */,
-				7A410CA0DAD9D66CDF34D1BA4C38E836 /* EXSplashScreenModule.m in Sources */,
-				E4C83888EEBA1B78ECCE302D018072BD /* EXSplashScreenService.m in Sources */,
-				878DE0719CB9A5F1E7183076E3880DD8 /* EXSplashScreenViewNativeProvider.m in Sources */,
+				758FDCAF3972FB582B3AA86244D7EA47 /* EXSplashScreen-dummy.m in Sources */,
+				3AF4D178C281F478F7116E6F5F7ED02E /* EXSplashScreenController.m in Sources */,
+				5D73A37FEE676F548E5A4AA7F3709C68 /* EXSplashScreenModule.m in Sources */,
+				D99B72635ADACFA5D40C23839A300157 /* EXSplashScreenService.m in Sources */,
+				CF0E4096C9B5F966EFD44F35EAD3ABFD /* EXSplashScreenViewNativeProvider.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

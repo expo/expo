@@ -6,9 +6,13 @@
 
 ### 🎉 New features
 
-- Added `Platform.canUseEventListeners` and `Platform.canUseViewport` methods. ([#11398](https://github.com/expo/expo/pull/11398) by [@cruzach](https://github.com/cruzach))
-
 ### 🐛 Bug fixes
+
+## 6.1.0 — 2021-01-15
+
+### 🎉 New features
+
+- Added `Platform.canUseEventListeners` and `Platform.canUseViewport` methods. ([#11398](https://github.com/expo/expo/pull/11398) by [@cruzach](https://github.com/cruzach))
 
 ## 6.0.0 — 2020-12-15
 

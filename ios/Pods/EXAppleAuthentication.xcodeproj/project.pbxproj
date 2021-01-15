@@ -20,7 +20,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		2C7B73DE776FABB033EE403F0B3A3270 /* PBXContainerItemProxy */ = {
+		0D2B038894D34B24753F0C3C42F899FF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3EF949863822776DBF9218B43233DCD0 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -159,7 +159,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				A39E110564B26C1F02961808AAE52C90 /* PBXTargetDependency */,
+				770EE969CC1C1F4DBD365A27AC270696 /* PBXTargetDependency */,
 			);
 			name = EXAppleAuthentication;
 			productName = EXAppleAuthentication;
@@ -215,10 +215,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		A39E110564B26C1F02961808AAE52C90 /* PBXTargetDependency */ = {
+		770EE969CC1C1F4DBD365A27AC270696 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 2C7B73DE776FABB033EE403F0B3A3270 /* PBXContainerItemProxy */;
+			targetProxy = 0D2B038894D34B24753F0C3C42F899FF /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

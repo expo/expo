@@ -20,7 +20,7 @@
 			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
 			remoteInfo = UMFileSystemInterface;
 		};
-		C7A601CFB38144E1036CEC7CDCB63FD2 /* PBXContainerItemProxy */ = {
+		C551AA7C933A1D7ED2EE00EBF2AA0095 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0BE026E50B27274472C84DA2A53C9F51 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -144,7 +144,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				119E31ADB89774D44A0E6583461C23F5 /* PBXTargetDependency */,
+				AEE29B44539FD4444A9BC9621582CF96 /* PBXTargetDependency */,
 				2CFF92CEE5F831747CDFE1E957355AD8 /* PBXTargetDependency */,
 			);
 			name = EXSharing;
@@ -200,15 +200,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		119E31ADB89774D44A0E6583461C23F5 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMCore;
-			targetProxy = C7A601CFB38144E1036CEC7CDCB63FD2 /* PBXContainerItemProxy */;
-		};
 		2CFF92CEE5F831747CDFE1E957355AD8 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMFileSystemInterface;
 			targetProxy = 07CC1B216B28D3698DFC3A98613BC1A3 /* PBXContainerItemProxy */;
+		};
+		AEE29B44539FD4444A9BC9621582CF96 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = C551AA7C933A1D7ED2EE00EBF2AA0095 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

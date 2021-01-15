@@ -49,7 +49,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		42FE50F1144D54FBB504A8739E8D3ECF /* PBXContainerItemProxy */ = {
+		BDC15F19B9D55AD89FB5712C80ABEC7D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2F5A0DDE9B7BB2A766FEBB787708F208 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -352,7 +352,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				18A789EEA06B378FF3D5053CFE6F6D58 /* PBXTargetDependency */,
+				3AF73BAE6F040AFB78AD59D16B1071DF /* PBXTargetDependency */,
 				35E1DE8112601638C72782987007E9B2 /* PBXTargetDependency */,
 			);
 			name = EXNotifications;
@@ -425,15 +425,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		18A789EEA06B378FF3D5053CFE6F6D58 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMCore;
-			targetProxy = 42FE50F1144D54FBB504A8739E8D3ECF /* PBXContainerItemProxy */;
-		};
 		35E1DE8112601638C72782987007E9B2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMPermissionsInterface;
 			targetProxy = F8C254C17D75CEE15F15CA8AEF9D8B5E /* PBXContainerItemProxy */;
+		};
+		3AF73BAE6F040AFB78AD59D16B1071DF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = BDC15F19B9D55AD89FB5712C80ABEC7D /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

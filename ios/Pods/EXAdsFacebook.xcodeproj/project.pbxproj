@@ -36,7 +36,7 @@
 			remoteGlobalIDString = 51D72679DE0FCD549F01BCDBBF19E2B0;
 			remoteInfo = FBAudienceNetwork;
 		};
-		EBA1D0F85BD4DAC869AAD6592ADA2DC3 /* PBXContainerItemProxy */ = {
+		96452842109371747A567B3C195588A7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2E646D36A8FBC620CEC35887639914D6 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -201,7 +201,7 @@
 			);
 			dependencies = (
 				9F1AD47F5C2A5B2AD4234D653966AA4C /* PBXTargetDependency */,
-				4175BBA1E7C327419900F9014A3268FC /* PBXTargetDependency */,
+				3827441D3DD268DF80D3BCEADD457093 /* PBXTargetDependency */,
 			);
 			name = EXAdsFacebook;
 			productName = EXAdsFacebook;
@@ -264,10 +264,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		4175BBA1E7C327419900F9014A3268FC /* PBXTargetDependency */ = {
+		3827441D3DD268DF80D3BCEADD457093 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = EBA1D0F85BD4DAC869AAD6592ADA2DC3 /* PBXContainerItemProxy */;
+			targetProxy = 96452842109371747A567B3C195588A7 /* PBXContainerItemProxy */;
 		};
 		9F1AD47F5C2A5B2AD4234D653966AA4C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

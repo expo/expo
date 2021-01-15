@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2B7D2EF405B140A8A63AD5B371740D13 /* EXHaptics-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = D75A18B2442BD17D5A8A0A7EDD3BA160 /* EXHaptics-dummy.m */; };
+		8CAD4C25F008FE181DED5F4F19007215 /* EXHapticsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 0056BD031D0F550B527E04A4FC5D45DE /* EXHapticsModule.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		A7E8D97A522EBBAAAB964A56DDE3B9F1 /* EXHapticsModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 68A1D8004D04AF409D8688AAB41B96E6 /* EXHapticsModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		C52EBB09E01646B98A276057CC4AADB3 /* EXHapticsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 0056BD031D0F550B527E04A4FC5D45DE /* EXHapticsModule.m */; };
+		D3EC6B97A2EF609ADB117A5CB36C4266 /* EXHaptics-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = D75A18B2442BD17D5A8A0A7EDD3BA160 /* EXHaptics-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		BE8B662552389C3AD38622E34DFA1F51 /* PBXContainerItemProxy */ = {
+		E2C311A08ED71B09FB1CD8F52A2B5E08 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B263F67BE259022AB2BF22C25BB0D60B /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -129,13 +129,13 @@
 			buildConfigurationList = ECB65E3D2C21234C1F5148004C6DED23 /* Build configuration list for PBXNativeTarget "EXHaptics" */;
 			buildPhases = (
 				7C5C54A70D74E8F84FC1DEFAAFD5EA56 /* Headers */,
-				B54DCDB60F2AF5F963BF851B1B5685C0 /* Sources */,
+				C5DBD356A18B52265BE1D71A831EF230 /* Sources */,
 				CB249403217B4DA9C4C7D665FDD4915A /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				2EA08C4F148391DC6247533AC64A0A8C /* PBXTargetDependency */,
+				9085A3AFD436FB8291BEFB4A22946106 /* PBXTargetDependency */,
 			);
 			name = EXHaptics;
 			productName = EXHaptics;
@@ -175,26 +175,53 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		B54DCDB60F2AF5F963BF851B1B5685C0 /* Sources */ = {
+		C5DBD356A18B52265BE1D71A831EF230 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2B7D2EF405B140A8A63AD5B371740D13 /* EXHaptics-dummy.m in Sources */,
-				C52EBB09E01646B98A276057CC4AADB3 /* EXHapticsModule.m in Sources */,
+				D3EC6B97A2EF609ADB117A5CB36C4266 /* EXHaptics-dummy.m in Sources */,
+				8CAD4C25F008FE181DED5F4F19007215 /* EXHapticsModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		2EA08C4F148391DC6247533AC64A0A8C /* PBXTargetDependency */ = {
+		9085A3AFD436FB8291BEFB4A22946106 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = BE8B662552389C3AD38622E34DFA1F51 /* PBXContainerItemProxy */;
+			targetProxy = E2C311A08ED71B09FB1CD8F52A2B5E08 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		0AB43458463E5A70CE672EC8284831B2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E8EA935BD2A1A33A6E655AF0317AA505 /* EXHaptics.release.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/EXHaptics/EXHaptics-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXHaptics;
+				PRODUCT_NAME = EXHaptics;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		0D5C6F7782D7476E0E1043891992C31C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -254,32 +281,6 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
-			};
-			name = Release;
-		};
-		0DD62DA56164CA387136798381752500 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = E8EA935BD2A1A33A6E655AF0317AA505 /* EXHaptics.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/EXHaptics/EXHaptics-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXHaptics;
-				PRODUCT_NAME = EXHaptics;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
@@ -349,17 +350,18 @@
 			};
 			name = Debug;
 		};
-		82ABE9897A9CCE71E6EFAA4A7FBFDC8C /* Debug */ = {
+		F12FF6040FB705DAA9FA7317ED7A5914 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 07BBF23F7017AB21C3628EA2A1335CD2 /* EXHaptics.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/EXHaptics/EXHaptics-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -389,8 +391,8 @@
 		ECB65E3D2C21234C1F5148004C6DED23 /* Build configuration list for PBXNativeTarget "EXHaptics" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				82ABE9897A9CCE71E6EFAA4A7FBFDC8C /* Debug */,
-				0DD62DA56164CA387136798381752500 /* Release */,
+				F12FF6040FB705DAA9FA7317ED7A5914 /* Debug */,
+				0AB43458463E5A70CE672EC8284831B2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

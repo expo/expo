@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1127CE0020F9058D7D82DC426B030D3E /* EXNetwork.m in Sources */ = {isa = PBXBuildFile; fileRef = 705545C6ACDB5250154CA372C77BFA80 /* EXNetwork.m */; };
-		201E8573D1DE540BAEF29A764C014C84 /* EXNetwork-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = C84A9D8780BB39BFC714CD27D957BBFA /* EXNetwork-dummy.m */; };
+		4D3ADE4077DB42F523196E291975C5E9 /* EXNetwork-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = C84A9D8780BB39BFC714CD27D957BBFA /* EXNetwork-dummy.m */; };
 		79384E44E3A31DD506E5C07766007E23 /* EXNetwork.h in Headers */ = {isa = PBXBuildFile; fileRef = 81243AE73BE4D9F4D04C7E1573812978 /* EXNetwork.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		888DC2E3A063BFF974656EA218087492 /* EXNetwork.m in Sources */ = {isa = PBXBuildFile; fileRef = 705545C6ACDB5250154CA372C77BFA80 /* EXNetwork.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		38E8A65C222F2E5A5FB66405311E0E21 /* PBXContainerItemProxy */ = {
+		F167E47DBE72296FBF5FF7AD9ABE4D77 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D950A541FE3459760B4EFE7B8D21736A /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -129,13 +129,13 @@
 			buildConfigurationList = C2ABB2F6BB88B38BF8C8482B1E3024D4 /* Build configuration list for PBXNativeTarget "EXNetwork" */;
 			buildPhases = (
 				88DC10D20C42F3180CD7634E2A57A6F3 /* Headers */,
-				7A08A0AFA8746F0082C9B1DB449BB102 /* Sources */,
+				A311C2DA0A9EBAE7924876D87AC9FA6F /* Sources */,
 				AEDF4A7ACE4C7B90A5EFC896996C77C1 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				EF4FC71AECAE251F499270F4B544710A /* PBXTargetDependency */,
+				4C65B1849C5D9A4C3723B2BE98DFEBDC /* PBXTargetDependency */,
 			);
 			name = EXNetwork;
 			productName = EXNetwork;
@@ -175,37 +175,64 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		7A08A0AFA8746F0082C9B1DB449BB102 /* Sources */ = {
+		A311C2DA0A9EBAE7924876D87AC9FA6F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				201E8573D1DE540BAEF29A764C014C84 /* EXNetwork-dummy.m in Sources */,
-				1127CE0020F9058D7D82DC426B030D3E /* EXNetwork.m in Sources */,
+				4D3ADE4077DB42F523196E291975C5E9 /* EXNetwork-dummy.m in Sources */,
+				888DC2E3A063BFF974656EA218087492 /* EXNetwork.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		EF4FC71AECAE251F499270F4B544710A /* PBXTargetDependency */ = {
+		4C65B1849C5D9A4C3723B2BE98DFEBDC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 38E8A65C222F2E5A5FB66405311E0E21 /* PBXContainerItemProxy */;
+			targetProxy = F167E47DBE72296FBF5FF7AD9ABE4D77 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		7C049D4CFFCD99B95AB0A3C445BB1AF5 /* Release */ = {
+		01BAE857A0515270AE3D7CC74272BE51 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E334B99F7FFA07517603F2F746F46CC3 /* EXNetwork.release.xcconfig */;
+			baseConfigurationReference = DC0E36B249FABAF349CDBBF5CDBA24EC /* EXNetwork.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/EXNetwork/EXNetwork-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXNetwork;
+				PRODUCT_NAME = EXNetwork;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		11815071CE3339C6271DBCDE65748641 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E334B99F7FFA07517603F2F746F46CC3 /* EXNetwork.release.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/EXNetwork/EXNetwork-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -220,31 +247,6 @@
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
-		};
-		9CFCC1FB32A346F3CF270F21FDAFA016 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = DC0E36B249FABAF349CDBBF5CDBA24EC /* EXNetwork.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/EXNetwork/EXNetwork-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXNetwork;
-				PRODUCT_NAME = EXNetwork;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
 		};
 		E187B7EFCC6609826B4254CA92A7BD98 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -380,8 +382,8 @@
 		C2ABB2F6BB88B38BF8C8482B1E3024D4 /* Build configuration list for PBXNativeTarget "EXNetwork" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				9CFCC1FB32A346F3CF270F21FDAFA016 /* Debug */,
-				7C049D4CFFCD99B95AB0A3C445BB1AF5 /* Release */,
+				01BAE857A0515270AE3D7CC74272BE51 /* Debug */,
+				11815071CE3339C6271DBCDE65748641 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

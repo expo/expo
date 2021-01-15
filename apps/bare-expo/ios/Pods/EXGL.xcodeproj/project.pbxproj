@@ -8,48 +8,48 @@
 
 /* Begin PBXBuildFile section */
 		01372821A39C50732BD722421139504B /* EXGLView.h in Headers */ = {isa = PBXBuildFile; fileRef = 2A3E8176F978750718B14D725776C20F /* EXGLView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		2D40A65EEE5E2B6CC657EDE59208E4A2 /* EXGL-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 544786B86B04BE1E41304E2695D71980 /* EXGL-dummy.m */; };
-		32D09D1FAE3A1ECE5DED68DE1FE23560 /* EXGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = D088CFF15F329ADF6C866B39290399F0 /* EXGLView.m */; };
-		3F75A79CE9CED819E4E48626AA1F5A0D /* EXGLObject.m in Sources */ = {isa = PBXBuildFile; fileRef = FF74544C594B752C85742D8CE8C811F3 /* EXGLObject.m */; };
+		0910965731B9C1631EE14B687F2E1C43 /* EXGLObjectManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B38BC8AAA81C5C73D7EC54A68C55C3F /* EXGLObjectManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		3C9F7483C2321D39FDABC785C2FE87C3 /* EXGLObject.m in Sources */ = {isa = PBXBuildFile; fileRef = FF74544C594B752C85742D8CE8C811F3 /* EXGLObject.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		433C489924099B7090E1559D3A8FC755 /* EXGLObjectManager.h in Headers */ = {isa = PBXBuildFile; fileRef = B01929B86FCDB271E306C113EE0F130C /* EXGLObjectManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		46DD716F40E3A1FCA6F4DFDF36D9A998 /* EXGLViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D362F96A0BBCE2DAF132745D0A8348D4 /* EXGLViewManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		4E7BEE3504E0A13B7E4F2943D7A09560 /* EXGLCameraObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B4B284A2985F85DBA73A22BB1877498 /* EXGLCameraObject.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		4EEEF4C49271623B5DAA2C44E0A10D24 /* EXGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = D088CFF15F329ADF6C866B39290399F0 /* EXGLView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		64D5C6B84EA4663EBFC2BABCFA99C87B /* EXGLCameraObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 742E7E8F00C18321220FF5290C447760 /* EXGLCameraObject.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		86A1B948E116DBAAD3B26CB147E60979 /* EXGLCameraObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B4B284A2985F85DBA73A22BB1877498 /* EXGLCameraObject.m */; };
-		8DF223AC705C53C0DD4E03C50DDD0EC9 /* EXGLViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D362F96A0BBCE2DAF132745D0A8348D4 /* EXGLViewManager.m */; };
-		923E695B9CC3C556FB3D4F453E20195A /* EXGLContext.m in Sources */ = {isa = PBXBuildFile; fileRef = A46245CF35CB5A2A7901C63DBEDD5C29 /* EXGLContext.m */; };
+		8AA36A3DDFB8B0C9FE438955EEEA1308 /* EXGL-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 544786B86B04BE1E41304E2695D71980 /* EXGL-dummy.m */; };
+		AB3EFC16E72F2481CD2029DB719F965F /* EXGLContext.m in Sources */ = {isa = PBXBuildFile; fileRef = A46245CF35CB5A2A7901C63DBEDD5C29 /* EXGLContext.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		B1831AEAAC4003C147DD2C7BBF98F108 /* EXGLObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 62D6DFE039EDD57B0014927B409BBCE1 /* EXGLObject.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		C9BB3E98D9E6A944F9ABAD2FA1C9BB53 /* EXGLContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 8FEE11C614E289947CAE8737462CB57A /* EXGLContext.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		D3FF2A51984756EB848072EF5B98CA7F /* EXGLObjectManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B38BC8AAA81C5C73D7EC54A68C55C3F /* EXGLObjectManager.m */; };
 		F062259BB8C90D77DA0F477EAF22FCAA /* EXGLViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E63A7CEB1EBF34016F2433FB4AF3B3F1 /* EXGLViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		265A318F1488119533FFA6E4E292A637 /* PBXContainerItemProxy */ = {
+		09516128833661E5D3C73E9ABE1E0F1F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 1A0B08FBB3286A7C4199C9505C3C5950 /* UMCameraInterface.xcodeproj */;
+			containerPortal = DB4A0F497B6034FF71F2BB59C784EF4E /* UMCore.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 86372E925D4E10D72894E239CC18BCD9;
-			remoteInfo = UMCameraInterface;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
 		};
-		482753E12DD4F70A831F249EFD51D0FE /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = C1646364459A7CCA805460100EADDBB3 /* EXGL_CPP.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 4C66693C554B15E2593FB1F665F8BA01;
-			remoteInfo = EXGL_CPP;
-		};
-		6FF74C1650BECC3F1457BA2555EE1D3D /* PBXContainerItemProxy */ = {
+		EB397DD6D24638F45AB4AC429F9B6DAC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 321D5C6B61F36B2BB6731261A0D6D46E /* UMFileSystemInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
 			remoteInfo = UMFileSystemInterface;
 		};
-		B6513585EA5627A2F8CF91D280B6AD97 /* PBXContainerItemProxy */ = {
+		EDACA3D5A85B51FD0A38A011A27C1C6C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = DB4A0F497B6034FF71F2BB59C784EF4E /* UMCore.xcodeproj */;
+			containerPortal = 1A0B08FBB3286A7C4199C9505C3C5950 /* UMCameraInterface.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
-			remoteInfo = UMCore;
+			remoteGlobalIDString = 86372E925D4E10D72894E239CC18BCD9;
+			remoteInfo = UMCameraInterface;
+		};
+		F5F94012823A6310BB8EBC5679FF1416 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C1646364459A7CCA805460100EADDBB3 /* EXGL_CPP.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 4C66693C554B15E2593FB1F665F8BA01;
+			remoteInfo = EXGL_CPP;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -191,16 +191,16 @@
 			buildConfigurationList = 9842AB987060ADB0F3E61DE02A5BFD6B /* Build configuration list for PBXNativeTarget "EXGL" */;
 			buildPhases = (
 				286651175C5B4A884D596DF99C6B0AB0 /* Headers */,
-				D3E56945F07AE0C15B5742CC3DE9488A /* Sources */,
+				9E210C8FA7CE8057D0EA887E84B82FC4 /* Sources */,
 				B11BB80E4135650B9809BFC02F63E2B6 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				1DBBC8DE5633FA2B9F62E53533D1436B /* PBXTargetDependency */,
-				DEA852E3A664A506958283266246A7A8 /* PBXTargetDependency */,
-				9DBA60581DF61389F354295F9228D4E4 /* PBXTargetDependency */,
-				1B0F9BD52E30869A6DE69F655AB9A617 /* PBXTargetDependency */,
+				D301183A3738227942E549F20CC974F3 /* PBXTargetDependency */,
+				057DDCDB035E797947887F2888F2B072 /* PBXTargetDependency */,
+				525E78FAD4DA2F643687DBC6445CDFE9 /* PBXTargetDependency */,
+				08729781979EE26C4937F320C215E607 /* PBXTargetDependency */,
 			);
 			name = EXGL;
 			productName = EXGL;
@@ -249,42 +249,42 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		D3E56945F07AE0C15B5742CC3DE9488A /* Sources */ = {
+		9E210C8FA7CE8057D0EA887E84B82FC4 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2D40A65EEE5E2B6CC657EDE59208E4A2 /* EXGL-dummy.m in Sources */,
-				86A1B948E116DBAAD3B26CB147E60979 /* EXGLCameraObject.m in Sources */,
-				923E695B9CC3C556FB3D4F453E20195A /* EXGLContext.m in Sources */,
-				3F75A79CE9CED819E4E48626AA1F5A0D /* EXGLObject.m in Sources */,
-				D3FF2A51984756EB848072EF5B98CA7F /* EXGLObjectManager.m in Sources */,
-				32D09D1FAE3A1ECE5DED68DE1FE23560 /* EXGLView.m in Sources */,
-				8DF223AC705C53C0DD4E03C50DDD0EC9 /* EXGLViewManager.m in Sources */,
+				8AA36A3DDFB8B0C9FE438955EEEA1308 /* EXGL-dummy.m in Sources */,
+				4E7BEE3504E0A13B7E4F2943D7A09560 /* EXGLCameraObject.m in Sources */,
+				AB3EFC16E72F2481CD2029DB719F965F /* EXGLContext.m in Sources */,
+				3C9F7483C2321D39FDABC785C2FE87C3 /* EXGLObject.m in Sources */,
+				0910965731B9C1631EE14B687F2E1C43 /* EXGLObjectManager.m in Sources */,
+				4EEEF4C49271623B5DAA2C44E0A10D24 /* EXGLView.m in Sources */,
+				46DD716F40E3A1FCA6F4DFDF36D9A998 /* EXGLViewManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		1B0F9BD52E30869A6DE69F655AB9A617 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMFileSystemInterface;
-			targetProxy = 6FF74C1650BECC3F1457BA2555EE1D3D /* PBXContainerItemProxy */;
-		};
-		1DBBC8DE5633FA2B9F62E53533D1436B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXGL_CPP;
-			targetProxy = 482753E12DD4F70A831F249EFD51D0FE /* PBXContainerItemProxy */;
-		};
-		9DBA60581DF61389F354295F9228D4E4 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMCore;
-			targetProxy = B6513585EA5627A2F8CF91D280B6AD97 /* PBXContainerItemProxy */;
-		};
-		DEA852E3A664A506958283266246A7A8 /* PBXTargetDependency */ = {
+		057DDCDB035E797947887F2888F2B072 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCameraInterface;
-			targetProxy = 265A318F1488119533FFA6E4E292A637 /* PBXContainerItemProxy */;
+			targetProxy = EDACA3D5A85B51FD0A38A011A27C1C6C /* PBXContainerItemProxy */;
+		};
+		08729781979EE26C4937F320C215E607 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMFileSystemInterface;
+			targetProxy = EB397DD6D24638F45AB4AC429F9B6DAC /* PBXContainerItemProxy */;
+		};
+		525E78FAD4DA2F643687DBC6445CDFE9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = 09516128833661E5D3C73E9ABE1E0F1F /* PBXContainerItemProxy */;
+		};
+		D301183A3738227942E549F20CC974F3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXGL_CPP;
+			targetProxy = F5F94012823A6310BB8EBC5679FF1416 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

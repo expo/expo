@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		401B44021D0FCDAAE9C58257D3628692 /* EXLocalization-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F938B82CF0A996F9F1B32FD35ABE71C /* EXLocalization-dummy.m */; };
+		2630A15767EFA5BFB274523E785C1F4D /* EXLocalization-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F938B82CF0A996F9F1B32FD35ABE71C /* EXLocalization-dummy.m */; };
+		54C3048E0E97F9C002D17D4CC1F10FAB /* EXLocalization.m in Sources */ = {isa = PBXBuildFile; fileRef = F1E7640A96378320A4FB0541F81B7B59 /* EXLocalization.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		B3C0E849A2C068733DFD8653C7472CD7 /* EXLocalization.h in Headers */ = {isa = PBXBuildFile; fileRef = 45E66F1F7A9B12CC13C78CFE6880EB77 /* EXLocalization.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		D435C48C963DFB69F42B548F78930D37 /* EXLocalization.m in Sources */ = {isa = PBXBuildFile; fileRef = F1E7640A96378320A4FB0541F81B7B59 /* EXLocalization.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		4795083F48286209BCC2F94C9819C6ED /* PBXContainerItemProxy */ = {
+		DEE2506B5331B443AEA66318735A242F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 778B65EAF31FB30C54A4915BA6DF7A4B /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -129,13 +129,13 @@
 			buildConfigurationList = EA553291441334C476BE89C56426AD15 /* Build configuration list for PBXNativeTarget "EXLocalization" */;
 			buildPhases = (
 				5B107C8A9AE10E2732B08B4C36142C02 /* Headers */,
-				BD9E8D36FB2F42B4D5388D6A88E2D9C7 /* Sources */,
+				38F39F918CA5D4FCABE58AF3F3DB2992 /* Sources */,
 				7F036A199AD53CC70F2784704318CE51 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				2EAE1A5A6EE02F90701E49F647C68170 /* PBXTargetDependency */,
+				C5F8FB4ECDBE2687F50F4225A319F870 /* PBXTargetDependency */,
 			);
 			name = EXLocalization;
 			productName = EXLocalization;
@@ -175,62 +175,38 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		BD9E8D36FB2F42B4D5388D6A88E2D9C7 /* Sources */ = {
+		38F39F918CA5D4FCABE58AF3F3DB2992 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				401B44021D0FCDAAE9C58257D3628692 /* EXLocalization-dummy.m in Sources */,
-				D435C48C963DFB69F42B548F78930D37 /* EXLocalization.m in Sources */,
+				2630A15767EFA5BFB274523E785C1F4D /* EXLocalization-dummy.m in Sources */,
+				54C3048E0E97F9C002D17D4CC1F10FAB /* EXLocalization.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		2EAE1A5A6EE02F90701E49F647C68170 /* PBXTargetDependency */ = {
+		C5F8FB4ECDBE2687F50F4225A319F870 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 4795083F48286209BCC2F94C9819C6ED /* PBXContainerItemProxy */;
+			targetProxy = DEE2506B5331B443AEA66318735A242F /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		3073471B95232291B0096181205D55FB /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8B0967CDBD4601ED329F55AE2C050E5D /* EXLocalization.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/EXLocalization/EXLocalization-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXLocalization;
-				PRODUCT_NAME = EXLocalization;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		A6257F7D8BC65DB4EBEB78180A96B8C8 /* Release */ = {
+		B6F09176F59F4CFA4F830B1950C27B18 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2312154BD5E69BC7DEE067E8EAEB7896 /* EXLocalization.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/EXLocalization/EXLocalization-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -245,6 +221,32 @@
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
+		};
+		B70EEF45D20F499C128DC66292475B8F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8B0967CDBD4601ED329F55AE2C050E5D /* EXLocalization.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/EXLocalization/EXLocalization-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXLocalization;
+				PRODUCT_NAME = EXLocalization;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
 		};
 		C583B0933C783AC0C07BB3D10FB4AC43 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -389,8 +391,8 @@
 		EA553291441334C476BE89C56426AD15 /* Build configuration list for PBXNativeTarget "EXLocalization" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				3073471B95232291B0096181205D55FB /* Debug */,
-				A6257F7D8BC65DB4EBEB78180A96B8C8 /* Release */,
+				B70EEF45D20F499C128DC66292475B8F /* Debug */,
+				B6F09176F59F4CFA4F830B1950C27B18 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

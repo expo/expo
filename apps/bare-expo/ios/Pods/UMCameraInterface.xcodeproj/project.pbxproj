@@ -13,14 +13,14 @@
 			buildPhases = (
 			);
 			dependencies = (
-				F6A04149065B3B46D55EB8F9E38CFE96 /* PBXTargetDependency */,
+				212BCEB7FE73EAA249D3E8673106B85D /* PBXTargetDependency */,
 			);
 			name = UMCameraInterface;
 		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXContainerItemProxy section */
-		E743CF923212E7244112C3900ADBC9B5 /* PBXContainerItemProxy */ = {
+		0EAD808C6F58C748FCFF395C8EAFC9B3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F450A8205F4D3F4F57983B0F75FDF265 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -132,14 +132,47 @@
 /* End PBXProject section */
 
 /* Begin PBXTargetDependency section */
-		F6A04149065B3B46D55EB8F9E38CFE96 /* PBXTargetDependency */ = {
+		212BCEB7FE73EAA249D3E8673106B85D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = E743CF923212E7244112C3900ADBC9B5 /* PBXContainerItemProxy */;
+			targetProxy = 0EAD808C6F58C748FCFF395C8EAFC9B3 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		29F590734B93F91DB20C0C6CCFC5C25B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D3D5E3E3C10E3343EFD5D703AD02575F /* UMCameraInterface.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		53E8E4CD8745F8ED5950B38418C08B94 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E0C4EF714903A2544D15ED1321DFAAA1 /* UMCameraInterface.release.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		66CF4773FBACD7A60F36D5B57F09D4E1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -268,37 +301,6 @@
 			};
 			name = Debug;
 		};
-		CAC9C414DD57EBA5C7E9890BC75374DA /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = D3D5E3E3C10E3343EFD5D703AD02575F /* UMCameraInterface.debug.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		F71017A583DDC9032BF50B0BD351AF1A /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = E0C4EF714903A2544D15ED1321DFAAA1 /* UMCameraInterface.release.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -314,8 +316,8 @@
 		DF7FD37847E72ED7DD762970B5C19EDB /* Build configuration list for PBXAggregateTarget "UMCameraInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				CAC9C414DD57EBA5C7E9890BC75374DA /* Debug */,
-				F71017A583DDC9032BF50B0BD351AF1A /* Release */,
+				29F590734B93F91DB20C0C6CCFC5C25B /* Debug */,
+				53E8E4CD8745F8ED5950B38418C08B94 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

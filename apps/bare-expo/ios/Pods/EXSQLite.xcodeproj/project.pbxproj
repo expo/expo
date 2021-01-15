@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0C5551053E1BE98210EC9D02A4AD8959 /* EXSQLite-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D5987FBCB36FF49D169283B58732D45 /* EXSQLite-dummy.m */; };
-		C86E413DD770B9D84B3FA7B0ECD13EEC /* EXSQLite.m in Sources */ = {isa = PBXBuildFile; fileRef = F9DA0DE9148028311B878BF024BCB650 /* EXSQLite.m */; };
+		0A67294038143A1ABF7A1B793F6FF5FB /* EXSQLite.m in Sources */ = {isa = PBXBuildFile; fileRef = F9DA0DE9148028311B878BF024BCB650 /* EXSQLite.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		B63651F357D483043B33D40B26C8D422 /* EXSQLite-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D5987FBCB36FF49D169283B58732D45 /* EXSQLite-dummy.m */; };
 		D267B616F500F2D9B191094324172E50 /* EXSQLite.h in Headers */ = {isa = PBXBuildFile; fileRef = 628AA4A67F8FE0BAC045C3A4DA4BB20A /* EXSQLite.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
@@ -20,7 +20,7 @@
 			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
 			remoteInfo = UMFileSystemInterface;
 		};
-		A3368A0E2E39F44D6776A4D7E44BF208 /* PBXContainerItemProxy */ = {
+		F57947180A0D917F023C85A4E25C28AF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 94911D5E1E8F28CF3885A99F2F267235 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -138,13 +138,13 @@
 			buildConfigurationList = 024B6D12B9F1F990A54B0868B394EA13 /* Build configuration list for PBXNativeTarget "EXSQLite" */;
 			buildPhases = (
 				C1E6F2ED5C204FCF5F4D140BBABF5667 /* Headers */,
-				9B169B271E2AF7997A06151D4698D2BD /* Sources */,
+				FD17900EAD48BB6EFB1C60325295CBD4 /* Sources */,
 				CDCFBD2D62413D017012EB494E728E78 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				5C5D8B2628801F9EEA53425605C61A16 /* PBXTargetDependency */,
+				0F43B6FFE06C53695668DF3F3CB596D2 /* PBXTargetDependency */,
 				E3A691093ED39BC61A8BBB55895A3C90 /* PBXTargetDependency */,
 			);
 			name = EXSQLite;
@@ -188,22 +188,22 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		9B169B271E2AF7997A06151D4698D2BD /* Sources */ = {
+		FD17900EAD48BB6EFB1C60325295CBD4 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0C5551053E1BE98210EC9D02A4AD8959 /* EXSQLite-dummy.m in Sources */,
-				C86E413DD770B9D84B3FA7B0ECD13EEC /* EXSQLite.m in Sources */,
+				B63651F357D483043B33D40B26C8D422 /* EXSQLite-dummy.m in Sources */,
+				0A67294038143A1ABF7A1B793F6FF5FB /* EXSQLite.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		5C5D8B2628801F9EEA53425605C61A16 /* PBXTargetDependency */ = {
+		0F43B6FFE06C53695668DF3F3CB596D2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = A3368A0E2E39F44D6776A4D7E44BF208 /* PBXContainerItemProxy */;
+			targetProxy = F57947180A0D917F023C85A4E25C28AF /* PBXContainerItemProxy */;
 		};
 		E3A691093ED39BC61A8BBB55895A3C90 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -213,43 +213,18 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		2A0BEE20F0399ACE305CFAFD4722CF33 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = EBBDECC4E6055A6B35BF3DFB89392DF7 /* EXSQLite.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/EXSQLite/EXSQLite-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXSQLite;
-				PRODUCT_NAME = EXSQLite;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		787FC1AD909ED22C1A4D1CB3B4F24B0A /* Debug */ = {
+		12E8E9CDF5FFE3001696A41D1DC37E1C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 42C880B8C4A37AB3025F70F560AA83AE /* EXSQLite.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/EXSQLite/EXSQLite-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -392,14 +367,41 @@
 			};
 			name = Release;
 		};
+		E741ACBD79CF997F530E2C20852C8604 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = EBBDECC4E6055A6B35BF3DFB89392DF7 /* EXSQLite.release.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/EXSQLite/EXSQLite-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXSQLite;
+				PRODUCT_NAME = EXSQLite;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		024B6D12B9F1F990A54B0868B394EA13 /* Build configuration list for PBXNativeTarget "EXSQLite" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				787FC1AD909ED22C1A4D1CB3B4F24B0A /* Debug */,
-				2A0BEE20F0399ACE305CFAFD4722CF33 /* Release */,
+				12E8E9CDF5FFE3001696A41D1DC37E1C /* Debug */,
+				E741ACBD79CF997F530E2C20852C8604 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

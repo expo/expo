@@ -7,17 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0C77141D2AE26635FD924FA78F9141EC /* EXLinearGradientLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 022565A4BEAF4A9EACCA89DEE3892DBC /* EXLinearGradientLayer.m */; };
-		36C1AC969DB25F3974CDF3F22C4DD5E5 /* EXLinearGradient-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 46B330446C53B326736EFFA3C3B066F0 /* EXLinearGradient-dummy.m */; };
-		4369F7FEA9CB2ABFC27845D01F39CBD2 /* EXLinearGradientManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D873A9A57EF8BD4A360EE511DB6723E /* EXLinearGradientManager.m */; };
-		B097FD23E7D7629565B4959B313DACD8 /* EXLinearGradient.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D699F9B36DFF56DEC0D7BEDF24EBFAC /* EXLinearGradient.m */; };
+		031D0B491BA1471C6B1657650E166DB9 /* EXLinearGradient-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 46B330446C53B326736EFFA3C3B066F0 /* EXLinearGradient-dummy.m */; };
+		5A3E3F7D3128BE3880832437584738FC /* EXLinearGradientManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D873A9A57EF8BD4A360EE511DB6723E /* EXLinearGradientManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		B832FDED2529E225F402D997AB5087E5 /* EXLinearGradient.h in Headers */ = {isa = PBXBuildFile; fileRef = 90B0879E2A8CF5B97D532D9A23F1A747 /* EXLinearGradient.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B84D8300F54F39F0385A9DED1C7980D8 /* EXLinearGradientLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 022565A4BEAF4A9EACCA89DEE3892DBC /* EXLinearGradientLayer.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		BB53EA472EEBDB795811257171297346 /* EXLinearGradientManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 4687D2F74269BAC9542BC14D0B5E11A6 /* EXLinearGradientManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		BE5085E1C61FEE2F57CFCDAE90DF930D /* EXLinearGradientLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 246C5D6D0CBB6FAD45C502061D01398E /* EXLinearGradientLayer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C2738486FBC8278A1ECB86951C27FBC0 /* EXLinearGradient.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D699F9B36DFF56DEC0D7BEDF24EBFAC /* EXLinearGradient.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		269C125E9E7F223319FED7EBBA3A6284 /* PBXContainerItemProxy */ = {
+		9C2284EB1DEA1F6EFD70F812E3F87F45 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C23B7DAF674C172C6F889FB6794E22E0 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -143,13 +143,13 @@
 			buildConfigurationList = EE35D099DEA4AB92CFFD863EBFEAC315 /* Build configuration list for PBXNativeTarget "EXLinearGradient" */;
 			buildPhases = (
 				A02BD73321521587F4834F03D2C13CF1 /* Headers */,
-				72D7568E1D040B4CECF198AFBA38217B /* Sources */,
+				61342696599A867A86FED0FFBF93C352 /* Sources */,
 				B9D3271E0D7FE5B9DDA911911F560674 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				BC2B5C2416823FE1B5750CA17EB2435D /* PBXTargetDependency */,
+				E946E76214B4CE3AF29C1EDDA12923D7 /* PBXTargetDependency */,
 			);
 			name = EXLinearGradient;
 			productName = EXLinearGradient;
@@ -189,39 +189,66 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		72D7568E1D040B4CECF198AFBA38217B /* Sources */ = {
+		61342696599A867A86FED0FFBF93C352 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				36C1AC969DB25F3974CDF3F22C4DD5E5 /* EXLinearGradient-dummy.m in Sources */,
-				B097FD23E7D7629565B4959B313DACD8 /* EXLinearGradient.m in Sources */,
-				0C77141D2AE26635FD924FA78F9141EC /* EXLinearGradientLayer.m in Sources */,
-				4369F7FEA9CB2ABFC27845D01F39CBD2 /* EXLinearGradientManager.m in Sources */,
+				031D0B491BA1471C6B1657650E166DB9 /* EXLinearGradient-dummy.m in Sources */,
+				C2738486FBC8278A1ECB86951C27FBC0 /* EXLinearGradient.m in Sources */,
+				B84D8300F54F39F0385A9DED1C7980D8 /* EXLinearGradientLayer.m in Sources */,
+				5A3E3F7D3128BE3880832437584738FC /* EXLinearGradientManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		BC2B5C2416823FE1B5750CA17EB2435D /* PBXTargetDependency */ = {
+		E946E76214B4CE3AF29C1EDDA12923D7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 269C125E9E7F223319FED7EBBA3A6284 /* PBXContainerItemProxy */;
+			targetProxy = 9C2284EB1DEA1F6EFD70F812E3F87F45 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		5A63E6E195F966CA4AC75EDFD374D420 /* Release */ = {
+		1B76BCFB8CE79D19A6639C1732A6832A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7CF39F6F3B1BFABFF48BDAA115640287 /* EXLinearGradient.release.xcconfig */;
+			baseConfigurationReference = F8B177D203FB185C3F891BFA484C6626 /* EXLinearGradient.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/EXLinearGradient/EXLinearGradient-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXLinearGradient;
+				PRODUCT_NAME = EXLinearGradient;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		1F0CF4ADA3CC3BB821BD4364DEA78501 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7CF39F6F3B1BFABFF48BDAA115640287 /* EXLinearGradient.release.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/EXLinearGradient/EXLinearGradient-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -365,31 +392,6 @@
 			};
 			name = Release;
 		};
-		D4FA1ACBA4FE04271E90CEF661184BC8 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = F8B177D203FB185C3F891BFA484C6626 /* EXLinearGradient.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/EXLinearGradient/EXLinearGradient-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXLinearGradient;
-				PRODUCT_NAME = EXLinearGradient;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -405,8 +407,8 @@
 		EE35D099DEA4AB92CFFD863EBFEAC315 /* Build configuration list for PBXNativeTarget "EXLinearGradient" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D4FA1ACBA4FE04271E90CEF661184BC8 /* Debug */,
-				5A63E6E195F966CA4AC75EDFD374D420 /* Release */,
+				1B76BCFB8CE79D19A6639C1732A6832A /* Debug */,
+				1F0CF4ADA3CC3BB821BD4364DEA78501 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

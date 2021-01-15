@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C2B57292541DD378B61419374B4DE0EC /* EXSpeech.m in Sources */ = {isa = PBXBuildFile; fileRef = 01996B7D02F88C330A42BE462E92D1DA /* EXSpeech.m */; };
-		CADCFB58663D1C12192F22862C2A7E6D /* EXSpeech-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 79C214E55600227C2A6B71352F187FD4 /* EXSpeech-dummy.m */; };
+		770CF12B3BA2572364FC5BAE1E23AC94 /* EXSpeech-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 79C214E55600227C2A6B71352F187FD4 /* EXSpeech-dummy.m */; };
 		CCDF2B251CA6B34DE9A6DA35E677E775 /* EXSpeech.h in Headers */ = {isa = PBXBuildFile; fileRef = 0FC3E0376C85C36A933D1CC2A4967360 /* EXSpeech.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		DCAEA4F126ABE6BD4DFEAD8FB8F909F1 /* EXSpeech.m in Sources */ = {isa = PBXBuildFile; fileRef = 01996B7D02F88C330A42BE462E92D1DA /* EXSpeech.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		88B98B3904B9FD931E4CC91061E082EC /* PBXContainerItemProxy */ = {
+		F7DD3C54292FB8F6EB859D2693E8F27B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E3422DCAA36451BC562729CADA1B60B4 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -129,13 +129,13 @@
 			buildConfigurationList = 4238B6C7356289E689B34FB9D77FF929 /* Build configuration list for PBXNativeTarget "EXSpeech" */;
 			buildPhases = (
 				1C480F1034846D208C3BF92B8F629B65 /* Headers */,
-				50FB866C811146BE6DF1443825177A7A /* Sources */,
+				3842F6392C9CCC17EC226B5F92C3728F /* Sources */,
 				DB7D6D0D481C2611D0238A7E1A8196EC /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				2A5412030F4DE6C89361F1B107C94176 /* PBXTargetDependency */,
+				EF6BEF168116E4254A2E6505578C83D7 /* PBXTargetDependency */,
 			);
 			name = EXSpeech;
 			productName = EXSpeech;
@@ -175,37 +175,38 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		50FB866C811146BE6DF1443825177A7A /* Sources */ = {
+		3842F6392C9CCC17EC226B5F92C3728F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CADCFB58663D1C12192F22862C2A7E6D /* EXSpeech-dummy.m in Sources */,
-				C2B57292541DD378B61419374B4DE0EC /* EXSpeech.m in Sources */,
+				770CF12B3BA2572364FC5BAE1E23AC94 /* EXSpeech-dummy.m in Sources */,
+				DCAEA4F126ABE6BD4DFEAD8FB8F909F1 /* EXSpeech.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		2A5412030F4DE6C89361F1B107C94176 /* PBXTargetDependency */ = {
+		EF6BEF168116E4254A2E6505578C83D7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 88B98B3904B9FD931E4CC91061E082EC /* PBXContainerItemProxy */;
+			targetProxy = F7DD3C54292FB8F6EB859D2693E8F27B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		6507C9896FB8BC3314E5F8D24F56E39D /* Release */ = {
+		4309DA43A2A5F235C621EA83264AC2D1 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9F1AB2E15C17478A56DA9CF584FE942A /* EXSpeech.release.xcconfig */;
+			baseConfigurationReference = 7B63CEF7CE4D7DE3D2445127302D2766 /* EXSpeech.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/EXSpeech/EXSpeech-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -217,9 +218,8 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
 		700DD8FAA09754C171E9946204433CC3 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -282,31 +282,6 @@
 				SYMROOT = "${SRCROOT}/../build";
 			};
 			name = Release;
-		};
-		C721E83D4F031856AAF377CE7A842C7D /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7B63CEF7CE4D7DE3D2445127302D2766 /* EXSpeech.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/EXSpeech/EXSpeech-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXSpeech;
-				PRODUCT_NAME = EXSpeech;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
 		};
 		DEC45A95C384A84738BAB4D1C51F5086 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -374,14 +349,41 @@
 			};
 			name = Debug;
 		};
+		E05124882918A8961F1526B29DA5C5BE /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9F1AB2E15C17478A56DA9CF584FE942A /* EXSpeech.release.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/EXSpeech/EXSpeech-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXSpeech;
+				PRODUCT_NAME = EXSpeech;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		4238B6C7356289E689B34FB9D77FF929 /* Build configuration list for PBXNativeTarget "EXSpeech" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C721E83D4F031856AAF377CE7A842C7D /* Debug */,
-				6507C9896FB8BC3314E5F8D24F56E39D /* Release */,
+				4309DA43A2A5F235C621EA83264AC2D1 /* Debug */,
+				E05124882918A8961F1526B29DA5C5BE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
