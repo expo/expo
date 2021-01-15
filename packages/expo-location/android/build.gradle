@@ -35,11 +35,11 @@ uploadArchives {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 29)
+  compileSdkVersion safeExtGet("compileSdkVersion", 30)
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 29)
+    targetSdkVersion safeExtGet("targetSdkVersion", 30)
     versionCode 29
     versionName "11.0.0"
   }
