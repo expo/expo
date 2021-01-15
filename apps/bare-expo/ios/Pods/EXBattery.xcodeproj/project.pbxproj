@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0F2ABF47A90A8C2AD49354EEDB020F69 /* EXBattery-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE855699389B092D72FABABFEB65314C /* EXBattery-dummy.m */; };
+		00711AD306FF01A723106CAB3A03DDE7 /* EXBattery.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E9D83D0B176ED031DCA9F350A291AA5 /* EXBattery.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		81F9213F1418F7AFEDAA805D29E4D4F8 /* EXBattery.h in Headers */ = {isa = PBXBuildFile; fileRef = 89164E6077B30A59C224960A2340FFC8 /* EXBattery.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		DA5EB788D80E5EEEDC87113D3B94FC7B /* EXBattery.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E9D83D0B176ED031DCA9F350A291AA5 /* EXBattery.m */; };
+		F11EC406F02322097BB287E2C3F46C8C /* EXBattery-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = DE855699389B092D72FABABFEB65314C /* EXBattery-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		72760B1783A8B3688D2B6EC8C50908A0 /* PBXContainerItemProxy */ = {
+		FCB11763A02963D8B044F20D5206E148 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D7DF10BF51F3DEC97C1E4C73C51A2869 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -129,13 +129,13 @@
 			buildConfigurationList = EFB3CECA3C40D635E9DAB3FDCD53DCFA /* Build configuration list for PBXNativeTarget "EXBattery" */;
 			buildPhases = (
 				4423B169540AD25A2349D3CD180D46BC /* Headers */,
-				D757692FFAD18D9279F088B1AB855B73 /* Sources */,
+				07A3AA7F422323204D30A7FDC2F7D297 /* Sources */,
 				5495F3A9A76025EF92377831934D5D69 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				372F0EAC7DF31B94737951AD1D96E01D /* PBXTargetDependency */,
+				445C654B2B0744BFCEB18C6AD264F2C7 /* PBXTargetDependency */,
 			);
 			name = EXBattery;
 			productName = EXBattery;
@@ -175,52 +175,26 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		D757692FFAD18D9279F088B1AB855B73 /* Sources */ = {
+		07A3AA7F422323204D30A7FDC2F7D297 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0F2ABF47A90A8C2AD49354EEDB020F69 /* EXBattery-dummy.m in Sources */,
-				DA5EB788D80E5EEEDC87113D3B94FC7B /* EXBattery.m in Sources */,
+				F11EC406F02322097BB287E2C3F46C8C /* EXBattery-dummy.m in Sources */,
+				00711AD306FF01A723106CAB3A03DDE7 /* EXBattery.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		372F0EAC7DF31B94737951AD1D96E01D /* PBXTargetDependency */ = {
+		445C654B2B0744BFCEB18C6AD264F2C7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 72760B1783A8B3688D2B6EC8C50908A0 /* PBXContainerItemProxy */;
+			targetProxy = FCB11763A02963D8B044F20D5206E148 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		2C5F7A7207243F142DEAA20DFB124025 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = A196C2FEC868CAA932F5A085559CB880 /* EXBattery.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/EXBattery/EXBattery-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXBattery;
-				PRODUCT_NAME = EXBattery;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 		388244B4E0069A7CF3D2425E6DEBC98B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -287,17 +261,18 @@
 			};
 			name = Debug;
 		};
-		47CF03A8E1139A0D43E3C4AB9B4A88DE /* Debug */ = {
+		69F9D0A79408590DC37AC77A6E46FEC9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 0CDFD63B82CE0CFA1533549C7F958134 /* EXBattery.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/EXBattery/EXBattery-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -374,6 +349,33 @@
 			};
 			name = Release;
 		};
+		D7842CA19E1D0D2D95E1D4D5ACB0C5AD /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A196C2FEC868CAA932F5A085559CB880 /* EXBattery.release.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/EXBattery/EXBattery-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXBattery;
+				PRODUCT_NAME = EXBattery;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -389,8 +391,8 @@
 		EFB3CECA3C40D635E9DAB3FDCD53DCFA /* Build configuration list for PBXNativeTarget "EXBattery" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				47CF03A8E1139A0D43E3C4AB9B4A88DE /* Debug */,
-				2C5F7A7207243F142DEAA20DFB124025 /* Release */,
+				69F9D0A79408590DC37AC77A6E46FEC9 /* Debug */,
+				D7842CA19E1D0D2D95E1D4D5ACB0C5AD /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

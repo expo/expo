@@ -7,12 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		268ADDC6263474FB80C7B7600BF0C6E9 /* EXFirebaseCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 546BFDC65B9D3BF879440EE91B2465AB /* EXFirebaseCore.m */; };
 		270DAB6F60A62B6934E2039313021D6F /* UMFirebaseCoreInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 7CE6B4995A9BF8B23A81D6D2DB8DA19A /* UMFirebaseCoreInterface.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		4BAC01F8F0E18B8F86ACFDFB9D1F0B01 /* EXFirebaseCore-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 23275EAB2BFDE146CF2546FBDF175ED8 /* EXFirebaseCore-dummy.m */; };
 		586FF3793E099E195BEDB99763B41701 /* EXFirebaseCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 7282BDA821CAE519A68D3E87D709C1DB /* EXFirebaseCore.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		9395E12183FCBEED6F2C03D28995175C /* EXFirebaseCore-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 23275EAB2BFDE146CF2546FBDF175ED8 /* EXFirebaseCore-dummy.m */; };
+		9666311570C8E525DC1442F1D15E08AD /* EXFirebaseCore+FIROptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B74088EEA827BBC5821F9EC219E57C7 /* EXFirebaseCore+FIROptions.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		A2A59287DAB7D8B278138D7D7B36E3B3 /* EXFirebaseCore+FIROptions.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E950B93F8955CDFCE79AC9D5A51BF98 /* EXFirebaseCore+FIROptions.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		E67BE266D35D8F01B511848D21C6F3AA /* EXFirebaseCore+FIROptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B74088EEA827BBC5821F9EC219E57C7 /* EXFirebaseCore+FIROptions.m */; };
+		A9E778E0331CCD604C7A933E3A47C4F1 /* EXFirebaseCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 546BFDC65B9D3BF879440EE91B2465AB /* EXFirebaseCore.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -23,7 +23,7 @@
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
 		};
-		FACF6CAB1639AB934CE6537E691FFC11 /* PBXContainerItemProxy */ = {
+		7DCF50EAD8B39A3AD42CC1BA2367325F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 6D7BDFAFD7CB44FAC83E19F637A6B6B4 /* Firebase.xcodeproj */;
 			proxyType = 1;
@@ -149,13 +149,13 @@
 			buildConfigurationList = 5140C7426C7CE892163D356B371BC4EA /* Build configuration list for PBXNativeTarget "EXFirebaseCore" */;
 			buildPhases = (
 				0958D788C4C019D52CE3556D1B3BF233 /* Headers */,
-				DB523C0F6FD0E757840B2A532393BCD3 /* Sources */,
+				E55627C3369C2800AE35AF305F3BD8EA /* Sources */,
 				38107A502E691389224685D992FA872E /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				7E84A6AEB60CACC81B771A8C4668B919 /* PBXTargetDependency */,
+				5F6F913C9AFFC53B3E1C84631EDBC6E7 /* PBXTargetDependency */,
 				B31145A33740BC83B97C4EB52C7D7455 /* PBXTargetDependency */,
 			);
 			name = EXFirebaseCore;
@@ -199,23 +199,23 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		DB523C0F6FD0E757840B2A532393BCD3 /* Sources */ = {
+		E55627C3369C2800AE35AF305F3BD8EA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E67BE266D35D8F01B511848D21C6F3AA /* EXFirebaseCore+FIROptions.m in Sources */,
-				9395E12183FCBEED6F2C03D28995175C /* EXFirebaseCore-dummy.m in Sources */,
-				268ADDC6263474FB80C7B7600BF0C6E9 /* EXFirebaseCore.m in Sources */,
+				9666311570C8E525DC1442F1D15E08AD /* EXFirebaseCore+FIROptions.m in Sources */,
+				4BAC01F8F0E18B8F86ACFDFB9D1F0B01 /* EXFirebaseCore-dummy.m in Sources */,
+				A9E778E0331CCD604C7A933E3A47C4F1 /* EXFirebaseCore.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		7E84A6AEB60CACC81B771A8C4668B919 /* PBXTargetDependency */ = {
+		5F6F913C9AFFC53B3E1C84631EDBC6E7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Firebase;
-			targetProxy = FACF6CAB1639AB934CE6537E691FFC11 /* PBXContainerItemProxy */;
+			targetProxy = 7DCF50EAD8B39A3AD42CC1BA2367325F /* PBXContainerItemProxy */;
 		};
 		B31145A33740BC83B97C4EB52C7D7455 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

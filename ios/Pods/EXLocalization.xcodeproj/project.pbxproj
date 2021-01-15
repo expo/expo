@@ -13,7 +13,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		4795083F48286209BCC2F94C9819C6ED /* PBXContainerItemProxy */ = {
+		DEE2506B5331B443AEA66318735A242F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 778B65EAF31FB30C54A4915BA6DF7A4B /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -135,7 +135,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				2EAE1A5A6EE02F90701E49F647C68170 /* PBXTargetDependency */,
+				C5F8FB4ECDBE2687F50F4225A319F870 /* PBXTargetDependency */,
 			);
 			name = EXLocalization;
 			productName = EXLocalization;
@@ -187,10 +187,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		2EAE1A5A6EE02F90701E49F647C68170 /* PBXTargetDependency */ = {
+		C5F8FB4ECDBE2687F50F4225A319F870 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 4795083F48286209BCC2F94C9819C6ED /* PBXContainerItemProxy */;
+			targetProxy = DEE2506B5331B443AEA66318735A242F /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

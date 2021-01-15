@@ -1,6 +1,6 @@
 {
   "name": "EXSegment",
-  "version": "9.1.0",
+  "version": "10.0.0",
   "summary": "Expo module that provides access to Segment mobile analytics",
   "description": "Expo module that provides access to Segment mobile analytics",
   "license": "MIT",
@@ -20,7 +20,7 @@
 
     ],
     "Analytics": [
-      "~> 4.0"
+      "4.0.4"
     ]
   },
   "source_files": "EXSegment/**/*.{h,m}"

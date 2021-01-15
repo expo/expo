@@ -2,6 +2,14 @@
 
 ## Unpublished
 
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+## 4.0.0 — 2021-01-15
+
 ### ⚠️ Notices
 
 - The package is now shipped with prebuilt binaries on iOS. You can read more about it on [expo.fyi/prebuilt-modules](https://expo.fyi/prebuilt-modules). ([#11224](https://github.com/expo/expo/pull/11224) by [@tsapeta](https://github.com/tsapeta))
@@ -15,6 +23,8 @@
 - Created config plugin. ([#11623](https://github.com/expo/expo/pull/11623) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
+
+- remove ts-ignore from plugin. ([#11633](https://github.com/expo/expo/pull/11633) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 3.0.0 — 2020-11-17
 

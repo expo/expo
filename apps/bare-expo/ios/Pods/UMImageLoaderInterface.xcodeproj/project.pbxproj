@@ -172,20 +172,22 @@
 			};
 			name = Debug;
 		};
-		5B2A6DCE8116766D253666620A5F4325 /* Debug */ = {
+		823CF377228BE6E961EB0312CC3642AF /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 23070AF4D843D21B579BB6F0660EA5CD /* UMImageLoaderInterface.debug.xcconfig */;
+			baseConfigurationReference = A6E0C4C4220BBB4C9CAE668051D12CCC /* UMImageLoaderInterface.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
 		A1D3FD61738AD3E5CCF4243E4E0ED6C1 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -249,21 +251,21 @@
 			};
 			name = Release;
 		};
-		D50684A422FBC9AA23E7BE040A5D49C6 /* Release */ = {
+		C85898DD9AFDA9FBC7715E10CFCE7C7A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A6E0C4C4220BBB4C9CAE668051D12CCC /* UMImageLoaderInterface.release.xcconfig */;
+			baseConfigurationReference = 23070AF4D843D21B579BB6F0660EA5CD /* UMImageLoaderInterface.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
 /* End XCBuildConfiguration section */
 
@@ -271,8 +273,8 @@
 		74301DFD6973EA54F668249306CC5B41 /* Build configuration list for PBXAggregateTarget "UMImageLoaderInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				5B2A6DCE8116766D253666620A5F4325 /* Debug */,
-				D50684A422FBC9AA23E7BE040A5D49C6 /* Release */,
+				C85898DD9AFDA9FBC7715E10CFCE7C7A /* Debug */,
+				823CF377228BE6E961EB0312CC3642AF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

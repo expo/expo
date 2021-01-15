@@ -19,6 +19,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		03F34054009DFFD507D87B5C3D3D0AE7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E088899686C9D7D827042963BC774398 /* UMFaceDetectorInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8DC606D9CFDD04C553C81728629364B3;
+			remoteInfo = UMFaceDetectorInterface;
+		};
 		16BA1946299A3EEA40C7837049631EF4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BE518697D537208788E18E01848F9FCA /* UMCore.xcodeproj */;
@@ -26,42 +33,35 @@
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
 		};
-		309A8695A964CD20D6A2275F75F78241 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E3113329CD2CA8839AC57B5047B34E8E /* UMPermissionsInterface.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 12FF61416C5E794E9DEAC78D381D9726;
-			remoteInfo = UMPermissionsInterface;
-		};
-		3E4091B95035632973BDD24B37A9C79F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = EE13457D10FB2FBCB7F81491D4CF4366 /* UMCameraInterface.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 86372E925D4E10D72894E239CC18BCD9;
-			remoteInfo = UMCameraInterface;
-		};
-		87F3F2D33DB664A6DC5B2852C002F5C6 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E088899686C9D7D827042963BC774398 /* UMFaceDetectorInterface.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8DC606D9CFDD04C553C81728629364B3;
-			remoteInfo = UMFaceDetectorInterface;
-		};
-		97D0C3A48B803B74077C3AE55BA89010 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 72F6B8D50028A0D21A922478C6A9938A /* UMBarCodeScannerInterface.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 971E60E1AF9163E7E08105622FC91C16;
-			remoteInfo = UMBarCodeScannerInterface;
-		};
-		A24D7A8C0A3FB44B41CFA5AD12B86693 /* PBXContainerItemProxy */ = {
+		50EDBD7227ECEFEBAB665C8EF1EB5678 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 52918480E9C9E3E91C08001DA6851B91 /* UMFileSystemInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
 			remoteInfo = UMFileSystemInterface;
 		};
-		C6CAF3267A6EF2C54AA05F04F709EE10 /* PBXContainerItemProxy */ = {
+		A2B003009D8610F33B71B8ACA342E127 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 72F6B8D50028A0D21A922478C6A9938A /* UMBarCodeScannerInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 971E60E1AF9163E7E08105622FC91C16;
+			remoteInfo = UMBarCodeScannerInterface;
+		};
+		A4DA441B672287EF2D5CC3F40FE54BEA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E3113329CD2CA8839AC57B5047B34E8E /* UMPermissionsInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 12FF61416C5E794E9DEAC78D381D9726;
+			remoteInfo = UMPermissionsInterface;
+		};
+		C1D406FBAEFE702A4BC452F855E1F2CC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EE13457D10FB2FBCB7F81491D4CF4366 /* UMCameraInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 86372E925D4E10D72894E239CC18BCD9;
+			remoteInfo = UMCameraInterface;
+		};
+		E2E2A615BF4BB5C63523C0A7E863F72B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 6BA9F0E830B1F18BFFD63D333C96C650 /* UMImageLoaderInterface.xcodeproj */;
 			proxyType = 1;
@@ -219,13 +219,13 @@
 			buildRules = (
 			);
 			dependencies = (
-				D6B3DE243252650E3B9A6ECFD99477DE /* PBXTargetDependency */,
-				03B739840BC543F3C22C011F49060052 /* PBXTargetDependency */,
+				565B49105B56700DABEC988A5F087FB6 /* PBXTargetDependency */,
+				A63EFF3618B25C06853823C7353120CE /* PBXTargetDependency */,
 				7B1A1B4218169157B418670EF2F81153 /* PBXTargetDependency */,
-				2C5C6ECE9EEACEE906A7224623404E3F /* PBXTargetDependency */,
-				6E9BB344B5A21DB118B257DFCA0AFDFA /* PBXTargetDependency */,
-				C491C22F1211FBB9BBE3B128D6F75481 /* PBXTargetDependency */,
-				22AE638CB521EE3F618388F4916665F1 /* PBXTargetDependency */,
+				34304C6C5CE24105CD0EA79BA3E58723 /* PBXTargetDependency */,
+				708CE2C1FA20A31336B7B42231864CE2 /* PBXTargetDependency */,
+				45219FB7685502753B1C5B04CF1313A2 /* PBXTargetDependency */,
+				C9D8FD50D4BAA4B2968E8FAA99E086B6 /* PBXTargetDependency */,
 			);
 			name = EXCamera;
 			productName = EXCamera;
@@ -298,40 +298,40 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		03B739840BC543F3C22C011F49060052 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMCameraInterface;
-			targetProxy = 3E4091B95035632973BDD24B37A9C79F /* PBXContainerItemProxy */;
-		};
-		22AE638CB521EE3F618388F4916665F1 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMPermissionsInterface;
-			targetProxy = 309A8695A964CD20D6A2275F75F78241 /* PBXContainerItemProxy */;
-		};
-		2C5C6ECE9EEACEE906A7224623404E3F /* PBXTargetDependency */ = {
+		34304C6C5CE24105CD0EA79BA3E58723 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMFaceDetectorInterface;
-			targetProxy = 87F3F2D33DB664A6DC5B2852C002F5C6 /* PBXContainerItemProxy */;
+			targetProxy = 03F34054009DFFD507D87B5C3D3D0AE7 /* PBXContainerItemProxy */;
 		};
-		6E9BB344B5A21DB118B257DFCA0AFDFA /* PBXTargetDependency */ = {
+		45219FB7685502753B1C5B04CF1313A2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMImageLoaderInterface;
+			targetProxy = E2E2A615BF4BB5C63523C0A7E863F72B /* PBXContainerItemProxy */;
+		};
+		565B49105B56700DABEC988A5F087FB6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMBarCodeScannerInterface;
+			targetProxy = A2B003009D8610F33B71B8ACA342E127 /* PBXContainerItemProxy */;
+		};
+		708CE2C1FA20A31336B7B42231864CE2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMFileSystemInterface;
-			targetProxy = A24D7A8C0A3FB44B41CFA5AD12B86693 /* PBXContainerItemProxy */;
+			targetProxy = 50EDBD7227ECEFEBAB665C8EF1EB5678 /* PBXContainerItemProxy */;
 		};
 		7B1A1B4218169157B418670EF2F81153 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
 			targetProxy = 16BA1946299A3EEA40C7837049631EF4 /* PBXContainerItemProxy */;
 		};
-		C491C22F1211FBB9BBE3B128D6F75481 /* PBXTargetDependency */ = {
+		A63EFF3618B25C06853823C7353120CE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = UMImageLoaderInterface;
-			targetProxy = C6CAF3267A6EF2C54AA05F04F709EE10 /* PBXContainerItemProxy */;
+			name = UMCameraInterface;
+			targetProxy = C1D406FBAEFE702A4BC452F855E1F2CC /* PBXContainerItemProxy */;
 		};
-		D6B3DE243252650E3B9A6ECFD99477DE /* PBXTargetDependency */ = {
+		C9D8FD50D4BAA4B2968E8FAA99E086B6 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = UMBarCodeScannerInterface;
-			targetProxy = 97D0C3A48B803B74077C3AE55BA89010 /* PBXContainerItemProxy */;
+			name = UMPermissionsInterface;
+			targetProxy = A4DA441B672287EF2D5CC3F40FE54BEA /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

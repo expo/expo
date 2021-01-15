@@ -13,14 +13,14 @@
 			buildPhases = (
 			);
 			dependencies = (
-				F6A04149065B3B46D55EB8F9E38CFE96 /* PBXTargetDependency */,
+				212BCEB7FE73EAA249D3E8673106B85D /* PBXTargetDependency */,
 			);
 			name = UMCameraInterface;
 		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXContainerItemProxy section */
-		E743CF923212E7244112C3900ADBC9B5 /* PBXContainerItemProxy */ = {
+		0EAD808C6F58C748FCFF395C8EAFC9B3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F450A8205F4D3F4F57983B0F75FDF265 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -132,10 +132,10 @@
 /* End PBXProject section */
 
 /* Begin PBXTargetDependency section */
-		F6A04149065B3B46D55EB8F9E38CFE96 /* PBXTargetDependency */ = {
+		212BCEB7FE73EAA249D3E8673106B85D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = E743CF923212E7244112C3900ADBC9B5 /* PBXContainerItemProxy */;
+			targetProxy = 0EAD808C6F58C748FCFF395C8EAFC9B3 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

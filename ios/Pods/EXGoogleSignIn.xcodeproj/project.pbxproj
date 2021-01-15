@@ -26,7 +26,7 @@
 			remoteGlobalIDString = 70D52585A9FA4EEA343010638ADABC11;
 			remoteInfo = GoogleSignIn;
 		};
-		736EAED9FE72C26C64E8BF9FD0D63AA2 /* PBXContainerItemProxy */ = {
+		56B147101AC289D2A295940EC3755CA2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 877123A470C772B0261DC3C2D6B29AB9 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -166,7 +166,7 @@
 			);
 			dependencies = (
 				40E56470F180CA8C3D2D98E6DA31C56C /* PBXTargetDependency */,
-				DBB4DBF206219514150D67DD325FE2D0 /* PBXTargetDependency */,
+				DE4AA5187FCCF228116A8F6B959EE1CB /* PBXTargetDependency */,
 			);
 			name = EXGoogleSignIn;
 			productName = EXGoogleSignIn;
@@ -229,10 +229,10 @@
 			name = GoogleSignIn;
 			targetProxy = 530669DB0AF6A47507444B7BAB1A1BE0 /* PBXContainerItemProxy */;
 		};
-		DBB4DBF206219514150D67DD325FE2D0 /* PBXTargetDependency */ = {
+		DE4AA5187FCCF228116A8F6B959EE1CB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 736EAED9FE72C26C64E8BF9FD0D63AA2 /* PBXContainerItemProxy */;
+			targetProxy = 56B147101AC289D2A295940EC3755CA2 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

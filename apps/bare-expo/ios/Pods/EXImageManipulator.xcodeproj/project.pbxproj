@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		51BEE717E6506FF13AEB4A1262D47188 /* EXImageManipulator-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E16B55E5521C0043C8DEC3C2FC64DAB /* EXImageManipulator-dummy.m */; };
-		CE31686F8B115B21B9E851EB4BDDAA6C /* EXImageManipulatorModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AA110F6A37A1413967F3821743383B /* EXImageManipulatorModule.m */; };
+		A18D68BAD095C90EB258288F80568F25 /* EXImageManipulator-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E16B55E5521C0043C8DEC3C2FC64DAB /* EXImageManipulator-dummy.m */; };
+		ED3BCEC913D04B0DBA9FAAB79D1A833B /* EXImageManipulatorModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AA110F6A37A1413967F3821743383B /* EXImageManipulatorModule.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		F953A296B0EE17CBCC1E7A64A14D5BBF /* EXImageManipulatorModule.h in Headers */ = {isa = PBXBuildFile; fileRef = A3EF6ED545EE88CBFD1EE5840025DD04 /* EXImageManipulatorModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
@@ -20,19 +20,19 @@
 			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
 			remoteInfo = UMFileSystemInterface;
 		};
+		9135620D4A93F16E040A44ECDCD25CF5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D68E48115F7A10E5EEB7521064DE026D /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
 		C415B92FBFB7D919CAFED656D80B9339 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A4B23D3DBA08004FB36B07E39B931295 /* UMImageLoaderInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = A734124238F83C1FEE81C0FEDC5CDC5C;
 			remoteInfo = UMImageLoaderInterface;
-		};
-		C47CAEF8055E40AD505CE9B39A51BDCE /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D68E48115F7A10E5EEB7521064DE026D /* UMCore.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
-			remoteInfo = UMCore;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -147,13 +147,13 @@
 			buildConfigurationList = 3DEC945CB49CF025D595DE0E84050A0E /* Build configuration list for PBXNativeTarget "EXImageManipulator" */;
 			buildPhases = (
 				BB24F607B84CD3B4A6C1489FD6A04E4A /* Headers */,
-				580239AAF5ECD3146AA98788D30B6FCC /* Sources */,
+				E35821613233EE586050F09495753617 /* Sources */,
 				264F0DD48E8B2A5E7D4C0AA9E964CABB /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				5811DFD7D297A1BB2F47EBFA2FC7E283 /* PBXTargetDependency */,
+				624797D7FF166F9BC74E9259109281AA /* PBXTargetDependency */,
 				549227B53BA47FBD623E66939AD0F0B9 /* PBXTargetDependency */,
 				EC91C2002D35215528C56F27350565F7 /* PBXTargetDependency */,
 			);
@@ -201,12 +201,12 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		580239AAF5ECD3146AA98788D30B6FCC /* Sources */ = {
+		E35821613233EE586050F09495753617 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				51BEE717E6506FF13AEB4A1262D47188 /* EXImageManipulator-dummy.m in Sources */,
-				CE31686F8B115B21B9E851EB4BDDAA6C /* EXImageManipulatorModule.m in Sources */,
+				A18D68BAD095C90EB258288F80568F25 /* EXImageManipulator-dummy.m in Sources */,
+				ED3BCEC913D04B0DBA9FAAB79D1A833B /* EXImageManipulatorModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -218,10 +218,10 @@
 			name = UMFileSystemInterface;
 			targetProxy = 445F0368A62B7BBBB48EA64AFA3C4115 /* PBXContainerItemProxy */;
 		};
-		5811DFD7D297A1BB2F47EBFA2FC7E283 /* PBXTargetDependency */ = {
+		624797D7FF166F9BC74E9259109281AA /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = C47CAEF8055E40AD505CE9B39A51BDCE /* PBXContainerItemProxy */;
+			targetProxy = 9135620D4A93F16E040A44ECDCD25CF5 /* PBXContainerItemProxy */;
 		};
 		EC91C2002D35215528C56F27350565F7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -231,31 +231,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		25CD134FD9AB346549956BAA38CE0A36 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 123A65CB7345BADED809AF5C9D15A8DB /* EXImageManipulator.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/EXImageManipulator/EXImageManipulator-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXImageManipulator;
-				PRODUCT_NAME = EXImageManipulator;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		520E91BDAE01A050A1E776E633656341 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -318,17 +293,18 @@
 			};
 			name = Release;
 		};
-		C29BE89E9517E4A74AF5DFE653F2C222 /* Release */ = {
+		54BC2CEE291E62E924465E5CD643F396 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 77A6FAFEE0AAEAED78EE1E0ECA3DE9FB /* EXImageManipulator.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/EXImageManipulator/EXImageManipulator-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -343,6 +319,32 @@
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
+		};
+		C0A841EC396EA37AC7B82A8838825A2A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 123A65CB7345BADED809AF5C9D15A8DB /* EXImageManipulator.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/EXImageManipulator/EXImageManipulator-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXImageManipulator;
+				PRODUCT_NAME = EXImageManipulator;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
 		};
 		EAB2577DA40CADC793F937A11810B3E6 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -425,8 +427,8 @@
 		3DEC945CB49CF025D595DE0E84050A0E /* Build configuration list for PBXNativeTarget "EXImageManipulator" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				25CD134FD9AB346549956BAA38CE0A36 /* Debug */,
-				C29BE89E9517E4A74AF5DFE653F2C222 /* Release */,
+				C0A841EC396EA37AC7B82A8838825A2A /* Debug */,
+				54BC2CEE291E62E924465E5CD643F396 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -108,6 +108,22 @@
 /* End PBXProject section */
 
 /* Begin XCBuildConfiguration section */
+		155F1CCFA615697621F8095878094613 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 730CC3086F5C7D3022F2F4FF61671A0D /* UMFileSystemInterface.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		16FAF048130FCA6B13CAD38F51724123 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -236,30 +252,16 @@
 			};
 			name = Release;
 		};
-		BEDDFE7D00233651A7D5402D48DB6FED /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 730CC3086F5C7D3022F2F4FF61671A0D /* UMFileSystemInterface.debug.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		CB99B87F034A6D6B97FE93A54C807803 /* Release */ = {
+		D946EA1641765AE92A06886C999FCC59 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 696003AF47EAABAA9099381875477D94 /* UMFileSystemInterface.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -282,8 +284,8 @@
 		5A5EA4FBBE7CD0F4A941C19E64580979 /* Build configuration list for PBXAggregateTarget "UMFileSystemInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				BEDDFE7D00233651A7D5402D48DB6FED /* Debug */,
-				CB99B87F034A6D6B97FE93A54C807803 /* Release */,
+				155F1CCFA615697621F8095878094613 /* Debug */,
+				D946EA1641765AE92A06886C999FCC59 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

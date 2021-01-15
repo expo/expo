@@ -20,7 +20,7 @@
 			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
 			remoteInfo = UMFileSystemInterface;
 		};
-		A3368A0E2E39F44D6776A4D7E44BF208 /* PBXContainerItemProxy */ = {
+		F57947180A0D917F023C85A4E25C28AF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 94911D5E1E8F28CF3885A99F2F267235 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -144,7 +144,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				5C5D8B2628801F9EEA53425605C61A16 /* PBXTargetDependency */,
+				0F43B6FFE06C53695668DF3F3CB596D2 /* PBXTargetDependency */,
 				E3A691093ED39BC61A8BBB55895A3C90 /* PBXTargetDependency */,
 			);
 			name = EXSQLite;
@@ -200,10 +200,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		5C5D8B2628801F9EEA53425605C61A16 /* PBXTargetDependency */ = {
+		0F43B6FFE06C53695668DF3F3CB596D2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = A3368A0E2E39F44D6776A4D7E44BF208 /* PBXContainerItemProxy */;
+			targetProxy = F57947180A0D917F023C85A4E25C28AF /* PBXContainerItemProxy */;
 		};
 		E3A691093ED39BC61A8BBB55895A3C90 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

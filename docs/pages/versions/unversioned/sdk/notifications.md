@@ -1110,7 +1110,7 @@ Calling one of the following methods is a no-op on Web.
 
 #### Arguments
 
-- `identifier`: A string to associate as the ID of this category. You will pass this string in as the `categoryIdentifier` in your [`NotificationContent`](#notificationcontent) to associate a notification with this category.
+- `identifier`: A string to associate as the ID of this category. You will pass this string in as the `categoryIdentifier` in your [`NotificationContent`](#notificationcontent) to associate a notification with this category. **Don't use the characters `:` or `-` in your category identifier. If you do, categories might not work as expected.**
 - `actions`: An array of [`NotificationAction`s](#notificationaction), which describe the actions associated with this category. Each of these actions takes the shape:
   - `identifier`: A unique string that identifies this action. If a user takes this action (i.e. selects this button in the system's Notification UI), your app will receive this `actionIdentifier` via the [`NotificationResponseReceivedListener`](#addnotificationresponsereceivedlistenerlistener-event-notificationresponse--void-void).
   - `buttonTitle`: The title of the button triggering this action.

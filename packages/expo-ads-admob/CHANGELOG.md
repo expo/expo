@@ -4,11 +4,19 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+## 9.0.0 — 2021-01-15
+
+### 🛠 Breaking changes
+
 - Dropped support for iOS 10.0 ([#11344](https://github.com/expo/expo/pull/11344) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
 
-### 🐛 Bug fixes
+- Created config plugin. ([#11636](https://github.com/expo/expo/pull/11636) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 8.4.0 — 2020-11-17
 

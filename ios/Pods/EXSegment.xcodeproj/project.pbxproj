@@ -13,7 +13,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		6C4B4EA7D0EF1C26A22632A0793235F0 /* PBXContainerItemProxy */ = {
+		432B13401BC174A29EC4E5DAE5C73B26 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = CFCF55B7910F570D4C311BA7AA328B58 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -155,7 +155,7 @@
 			dependencies = (
 				8FF2FBDFC8876E89600C3D026031D74D /* PBXTargetDependency */,
 				193DE2FEDFC5AC9ED2A2A655BD53CA11 /* PBXTargetDependency */,
-				647FB38FCBE83AE81C591EA2D6266333 /* PBXTargetDependency */,
+				EA3DD934AEBC7F33F9F90D79B8D28D4D /* PBXTargetDependency */,
 			);
 			name = EXSegment;
 			productName = EXSegment;
@@ -218,15 +218,15 @@
 			name = UMConstantsInterface;
 			targetProxy = A5CC58EA2A8208C7B866ADA755A7B634 /* PBXContainerItemProxy */;
 		};
-		647FB38FCBE83AE81C591EA2D6266333 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMCore;
-			targetProxy = 6C4B4EA7D0EF1C26A22632A0793235F0 /* PBXContainerItemProxy */;
-		};
 		8FF2FBDFC8876E89600C3D026031D74D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Analytics;
 			targetProxy = BA9C983B3B265E482788BCAA90992788 /* PBXContainerItemProxy */;
+		};
+		EA3DD934AEBC7F33F9F90D79B8D28D4D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = 432B13401BC174A29EC4E5DAE5C73B26 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

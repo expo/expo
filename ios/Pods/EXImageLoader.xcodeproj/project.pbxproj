@@ -20,19 +20,19 @@
 			remoteGlobalIDString = A734124238F83C1FEE81C0FEDC5CDC5C;
 			remoteInfo = UMImageLoaderInterface;
 		};
-		63A831BD4B4882E2D33D702091B08C4D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 94E9A140D8BF40A34C7617D262635874 /* UMCore.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
-			remoteInfo = UMCore;
-		};
 		A9F137FFE19E200662F9AB2A00C1044B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 32B62E17B3CFA1FDA8D2A03C77FB8409 /* React-Core.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 5DA1A74647F652AE8E4DE074AFC4C6B7;
 			remoteInfo = "React-Core";
+		};
+		AE94418A685584D5C59E6B152C8BDFF1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 94E9A140D8BF40A34C7617D262635874 /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -154,7 +154,7 @@
 			);
 			dependencies = (
 				306AB8E18E4BD8CB5655004228555FA9 /* PBXTargetDependency */,
-				81BDEB0017C81EB8ED250269D94FD6DE /* PBXTargetDependency */,
+				C732D57FC6934357992C7DE7C893AD3C /* PBXTargetDependency */,
 				32431CF1C3B8773D7374D58717B60136 /* PBXTargetDependency */,
 			);
 			name = EXImageLoader;
@@ -223,10 +223,10 @@
 			name = UMImageLoaderInterface;
 			targetProxy = 06BFD33D9753FE51ABAAFE94077325E3 /* PBXContainerItemProxy */;
 		};
-		81BDEB0017C81EB8ED250269D94FD6DE /* PBXTargetDependency */ = {
+		C732D57FC6934357992C7DE7C893AD3C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 63A831BD4B4882E2D33D702091B08C4D /* PBXContainerItemProxy */;
+			targetProxy = AE94418A685584D5C59E6B152C8BDFF1 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

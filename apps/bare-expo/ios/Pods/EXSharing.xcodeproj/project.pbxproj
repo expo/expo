@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8EB1D4359A9CB385FB8CB6B5C2C3B193 /* EXSharingModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 8835781D240C10AA86CE9A5980022C3D /* EXSharingModule.m */; };
-		E10F83508445AD716054ED165EE41CBD /* EXSharing-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = DD37D017B0654883C0E26420A0193054 /* EXSharing-dummy.m */; };
+		13F6464C7311D7E00EB177150A1F599B /* EXSharingModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 8835781D240C10AA86CE9A5980022C3D /* EXSharingModule.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		B0410391A7427F99D55C4A83D2A6A4EB /* EXSharing-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = DD37D017B0654883C0E26420A0193054 /* EXSharing-dummy.m */; };
 		EB37B84D34C5428875CD6C7EE6DA0268 /* EXSharingModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 990583AB09941F2D1DFC0D02C1F19A9E /* EXSharingModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
@@ -20,7 +20,7 @@
 			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
 			remoteInfo = UMFileSystemInterface;
 		};
-		C7A601CFB38144E1036CEC7CDCB63FD2 /* PBXContainerItemProxy */ = {
+		C551AA7C933A1D7ED2EE00EBF2AA0095 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0BE026E50B27274472C84DA2A53C9F51 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -138,13 +138,13 @@
 			buildConfigurationList = 489FC4730ABE913EE66E1B8558F18D87 /* Build configuration list for PBXNativeTarget "EXSharing" */;
 			buildPhases = (
 				EAAB034FE6B6EF7CD8AD4EBFE9BAA7DE /* Headers */,
-				3E672927E720648346661D84796D817E /* Sources */,
+				90454076C1F8CEF2A601F126DC1D95CC /* Sources */,
 				7C7ECBCA01E3D9DE7305D0F4B45EA093 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				119E31ADB89774D44A0E6583461C23F5 /* PBXTargetDependency */,
+				AEE29B44539FD4444A9BC9621582CF96 /* PBXTargetDependency */,
 				2CFF92CEE5F831747CDFE1E957355AD8 /* PBXTargetDependency */,
 			);
 			name = EXSharing;
@@ -188,27 +188,27 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		3E672927E720648346661D84796D817E /* Sources */ = {
+		90454076C1F8CEF2A601F126DC1D95CC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E10F83508445AD716054ED165EE41CBD /* EXSharing-dummy.m in Sources */,
-				8EB1D4359A9CB385FB8CB6B5C2C3B193 /* EXSharingModule.m in Sources */,
+				B0410391A7427F99D55C4A83D2A6A4EB /* EXSharing-dummy.m in Sources */,
+				13F6464C7311D7E00EB177150A1F599B /* EXSharingModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		119E31ADB89774D44A0E6583461C23F5 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMCore;
-			targetProxy = C7A601CFB38144E1036CEC7CDCB63FD2 /* PBXContainerItemProxy */;
-		};
 		2CFF92CEE5F831747CDFE1E957355AD8 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMFileSystemInterface;
 			targetProxy = 07CC1B216B28D3698DFC3A98613BC1A3 /* PBXContainerItemProxy */;
+		};
+		AEE29B44539FD4444A9BC9621582CF96 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = C551AA7C933A1D7ED2EE00EBF2AA0095 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -341,17 +341,18 @@
 			};
 			name = Release;
 		};
-		AFAB1DD26B9838480769E7F92218DB82 /* Release */ = {
+		6B34833C3708021A36AD16F7AF1C996C /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 05AD695E9110583DEF72C8ECC4CF96DF /* EXSharing.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/EXSharing/EXSharing-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -367,17 +368,18 @@
 			};
 			name = Release;
 		};
-		EDA242E519E25D23687D08EDDB7E1E0F /* Debug */ = {
+		78572B562D6DDB7BDA4B1A1140744525 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = AAD65B4AE1A2442C3AB8868E43F01838 /* EXSharing.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/EXSharing/EXSharing-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -398,8 +400,8 @@
 		489FC4730ABE913EE66E1B8558F18D87 /* Build configuration list for PBXNativeTarget "EXSharing" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				EDA242E519E25D23687D08EDDB7E1E0F /* Debug */,
-				AFAB1DD26B9838480769E7F92218DB82 /* Release */,
+				78572B562D6DDB7BDA4B1A1140744525 /* Debug */,
+				6B34833C3708021A36AD16F7AF1C996C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

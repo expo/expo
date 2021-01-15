@@ -8,28 +8,28 @@
 
 /* Begin PBXBuildFile section */
 		067EEB224AB50761F0E691A86135F896 /* EXConstantsService.h in Headers */ = {isa = PBXBuildFile; fileRef = 38D1F1D208967AAE0878AE94A3ED2830 /* EXConstantsService.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		43F58C78D4A85067E4AA811F822096A2 /* EXConstantsService.m in Sources */ = {isa = PBXBuildFile; fileRef = E281B914856926BE1128B37757DA998B /* EXConstantsService.m */; };
+		4F92364E8AB75BD069331F503A49965D /* EXConstantsService.m in Sources */ = {isa = PBXBuildFile; fileRef = E281B914856926BE1128B37757DA998B /* EXConstantsService.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		50C0B1B03FB9D51F554449B6DE3D0EEE /* EXConstantsInstallationIdProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C57305BDF4A02614DD25D341BF669BA /* EXConstantsInstallationIdProvider.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		5EED28EE62F6927DECD520CBF6842FD5 /* EXConstantsInstallationIdProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = 31EB3A597BA75495B0865C82A884466C /* EXConstantsInstallationIdProvider.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		6365EC780F6623C915D9B39866903217 /* EXConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = DBC916B470F34A49879155D88A78AF8A /* EXConstants.m */; };
-		6A99D9B8CFEE2ED1BE47BEB6829715D7 /* EXConstants-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F935FEF541AD2EF2769100CACA410CE /* EXConstants-dummy.m */; };
-		D0F5046394AE27E54BF17EB9A38A6F5B /* EXConstantsInstallationIdProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C57305BDF4A02614DD25D341BF669BA /* EXConstantsInstallationIdProvider.m */; };
+		8A9A9F7BAC4BEFAC058CD3087761B54D /* EXConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = DBC916B470F34A49879155D88A78AF8A /* EXConstants.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		D2120EDD501EE5ABCF3953189F42084C /* EXConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = 4E4A2776B886FACCDBCAC81AE299E504 /* EXConstants.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		F16C864074A4E56043DD71507B3F6BA9 /* EXConstants-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F935FEF541AD2EF2769100CACA410CE /* EXConstants-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		13973B80CF3C7871B5F02585F3A70F75 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F0ED445550D24F900F94F09FC6ABB7FD /* UMCore.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
-			remoteInfo = UMCore;
-		};
 		900BCF607B12E4EE30F6F86503DA4996 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 6D5E7F2B56664D6D18561E66865DF25B /* UMConstantsInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 46F82E84687582F366B907E2BD5F1EA2;
 			remoteInfo = UMConstantsInterface;
+		};
+		B35CFA70D8DF802DE730210D49472313 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F0ED445550D24F900F94F09FC6ABB7FD /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -152,14 +152,14 @@
 			buildConfigurationList = 5B0809B5D253F1AA4BEE6B7D4C3491C0 /* Build configuration list for PBXNativeTarget "EXConstants" */;
 			buildPhases = (
 				33E545FC1BB45392E9F7772150E6E817 /* Headers */,
-				8ED71F75ED0BE374E7AA5B3B3767B26C /* Sources */,
+				F3DBB374AE78D526B39D5F6B143EDEFA /* Sources */,
 				AF8CDFFB6A8A2BA95C983204ACF98650 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				9741C09DEBCDD9400BA13D9B8E1BFB30 /* PBXTargetDependency */,
-				3AD6335E288B1E65965466C85AE83DE8 /* PBXTargetDependency */,
+				45F6E94BC7083EB775F773119224C9CC /* PBXTargetDependency */,
 			);
 			name = EXConstants;
 			productName = EXConstants;
@@ -202,24 +202,24 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		8ED71F75ED0BE374E7AA5B3B3767B26C /* Sources */ = {
+		F3DBB374AE78D526B39D5F6B143EDEFA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6A99D9B8CFEE2ED1BE47BEB6829715D7 /* EXConstants-dummy.m in Sources */,
-				6365EC780F6623C915D9B39866903217 /* EXConstants.m in Sources */,
-				D0F5046394AE27E54BF17EB9A38A6F5B /* EXConstantsInstallationIdProvider.m in Sources */,
-				43F58C78D4A85067E4AA811F822096A2 /* EXConstantsService.m in Sources */,
+				F16C864074A4E56043DD71507B3F6BA9 /* EXConstants-dummy.m in Sources */,
+				8A9A9F7BAC4BEFAC058CD3087761B54D /* EXConstants.m in Sources */,
+				50C0B1B03FB9D51F554449B6DE3D0EEE /* EXConstantsInstallationIdProvider.m in Sources */,
+				4F92364E8AB75BD069331F503A49965D /* EXConstantsService.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		3AD6335E288B1E65965466C85AE83DE8 /* PBXTargetDependency */ = {
+		45F6E94BC7083EB775F773119224C9CC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 13973B80CF3C7871B5F02585F3A70F75 /* PBXContainerItemProxy */;
+			targetProxy = B35CFA70D8DF802DE730210D49472313 /* PBXContainerItemProxy */;
 		};
 		9741C09DEBCDD9400BA13D9B8E1BFB30 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -229,17 +229,18 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		2B2A257DB5CEDA14BB88C0789A388F46 /* Debug */ = {
+		1D1041165AAF391F39F41B3CF1E2DD0F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2606F858E9C87676D951B569FD13D10D /* EXConstants.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/EXConstants/EXConstants-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -320,32 +321,6 @@
 			};
 			name = Debug;
 		};
-		87CAB82C373ED28994E3894675588962 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0356124ACEE587C44297C679AAEFF35A /* EXConstants.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/EXConstants/EXConstants-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXConstants;
-				PRODUCT_NAME = EXConstants;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 		CDFF67EB6F21328078B4400343D5E7D3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -408,14 +383,41 @@
 			};
 			name = Release;
 		};
+		D9F04738A52CA4CE532F708EEF5E8696 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0356124ACEE587C44297C679AAEFF35A /* EXConstants.release.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/EXConstants/EXConstants-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXConstants;
+				PRODUCT_NAME = EXConstants;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		5B0809B5D253F1AA4BEE6B7D4C3491C0 /* Build configuration list for PBXNativeTarget "EXConstants" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				2B2A257DB5CEDA14BB88C0789A388F46 /* Debug */,
-				87CAB82C373ED28994E3894675588962 /* Release */,
+				1D1041165AAF391F39F41B3CF1E2DD0F /* Debug */,
+				D9F04738A52CA4CE532F708EEF5E8696 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

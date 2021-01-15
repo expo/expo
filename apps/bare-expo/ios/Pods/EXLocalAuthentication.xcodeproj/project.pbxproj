@@ -8,12 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		008AAB5463D50F60AD4785A3CD4DC0E4 /* EXLocalAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B33F8160C5AB7C6396CFA6BAE7475CC /* EXLocalAuthentication.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		A68CD9A3E91D189788FD1E975C17ED58 /* EXLocalAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = EFC33B1675E43B3BCE2EDCDBF208FD42 /* EXLocalAuthentication.m */; };
-		FDAD489483F5A4FBB90A0C885ED27779 /* EXLocalAuthentication-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F2BA795ACBAF5BC94093579AA616DC47 /* EXLocalAuthentication-dummy.m */; };
+		52508F995EBAEF31CDCAEA6586F00C37 /* EXLocalAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = EFC33B1675E43B3BCE2EDCDBF208FD42 /* EXLocalAuthentication.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		5EF045D032EA2332313D6C2AE659AE38 /* EXLocalAuthentication-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F2BA795ACBAF5BC94093579AA616DC47 /* EXLocalAuthentication-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		89E28D9FAD20D3631AB04F68DAA71772 /* PBXContainerItemProxy */ = {
+		10C915087610ACF94AAF2408A8AAEFFB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3DEF00518FD4CB9CD86A45E2307D43BB /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -138,14 +138,14 @@
 			buildConfigurationList = E904FA9D582CAB8B67E8CBE89749A179 /* Build configuration list for PBXNativeTarget "EXLocalAuthentication" */;
 			buildPhases = (
 				A49A62B50F4D1EBBD4E413487761618E /* Headers */,
-				0F9248AFF72D457CD55510B0B5C587EB /* Sources */,
+				3EB82ED7F404F644F65C504789A7C6F2 /* Sources */,
 				921848C074D980B5C1DD143A708EE107 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				7D4E75611F4D83794BD38D44B4BFD10C /* PBXTargetDependency */,
-				580CDA7B01020507C7AF22FB41766592 /* PBXTargetDependency */,
+				3A8488251D16B3E25E2B709EEBC3A2A1 /* PBXTargetDependency */,
 			);
 			name = EXLocalAuthentication;
 			productName = EXLocalAuthentication;
@@ -188,22 +188,22 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		0F9248AFF72D457CD55510B0B5C587EB /* Sources */ = {
+		3EB82ED7F404F644F65C504789A7C6F2 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FDAD489483F5A4FBB90A0C885ED27779 /* EXLocalAuthentication-dummy.m in Sources */,
-				A68CD9A3E91D189788FD1E975C17ED58 /* EXLocalAuthentication.m in Sources */,
+				5EF045D032EA2332313D6C2AE659AE38 /* EXLocalAuthentication-dummy.m in Sources */,
+				52508F995EBAEF31CDCAEA6586F00C37 /* EXLocalAuthentication.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		580CDA7B01020507C7AF22FB41766592 /* PBXTargetDependency */ = {
+		3A8488251D16B3E25E2B709EEBC3A2A1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 89E28D9FAD20D3631AB04F68DAA71772 /* PBXContainerItemProxy */;
+			targetProxy = 10C915087610ACF94AAF2408A8AAEFFB /* PBXContainerItemProxy */;
 		};
 		7D4E75611F4D83794BD38D44B4BFD10C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -213,32 +213,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		259C8062FC42C3FE8D41BE97CE669E89 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = CD8F4F8803C653DE75B23DCB704F784B /* EXLocalAuthentication.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/EXLocalAuthentication/EXLocalAuthentication-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXLocalAuthentication;
-				PRODUCT_NAME = EXLocalAuthentication;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 		6320D9840E278B8670C2A95C975D436C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -301,17 +275,45 @@
 			};
 			name = Release;
 		};
-		E1B6D27CE0CB0776195B1E016B11ED32 /* Debug */ = {
+		67529449701CE3CDAC08244D8A49BB85 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D9DDCA0541815731E489C05CA88A6680 /* EXLocalAuthentication.debug.xcconfig */;
+			baseConfigurationReference = CD8F4F8803C653DE75B23DCB704F784B /* EXLocalAuthentication.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/EXLocalAuthentication/EXLocalAuthentication-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXLocalAuthentication;
+				PRODUCT_NAME = EXLocalAuthentication;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		DD46A18D2789912CF6628019194741B8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D9DDCA0541815731E489C05CA88A6680 /* EXLocalAuthentication.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/EXLocalAuthentication/EXLocalAuthentication-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -398,8 +400,8 @@
 		E904FA9D582CAB8B67E8CBE89749A179 /* Build configuration list for PBXNativeTarget "EXLocalAuthentication" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E1B6D27CE0CB0776195B1E016B11ED32 /* Debug */,
-				259C8062FC42C3FE8D41BE97CE669E89 /* Release */,
+				DD46A18D2789912CF6628019194741B8 /* Debug */,
+				67529449701CE3CDAC08244D8A49BB85 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

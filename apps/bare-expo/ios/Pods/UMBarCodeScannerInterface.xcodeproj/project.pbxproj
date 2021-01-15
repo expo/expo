@@ -13,14 +13,14 @@
 			buildPhases = (
 			);
 			dependencies = (
-				CA8ABB98DE8AFAAB20C5D2D571E83516 /* PBXTargetDependency */,
+				A13CF5D3AD4CC8CEF4FD778B084E057A /* PBXTargetDependency */,
 			);
 			name = UMBarCodeScannerInterface;
 		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXContainerItemProxy section */
-		DE6AEC2E384670ECF3F86ABFD252A68F /* PBXContainerItemProxy */ = {
+		D677E284D5DF466A68245007E8661B0E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08F7A21521840C04ED96FDB3445F4D1C /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -134,10 +134,10 @@
 /* End PBXProject section */
 
 /* Begin PBXTargetDependency section */
-		CA8ABB98DE8AFAAB20C5D2D571E83516 /* PBXTargetDependency */ = {
+		A13CF5D3AD4CC8CEF4FD778B084E057A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = DE6AEC2E384670ECF3F86ABFD252A68F /* PBXContainerItemProxy */;
+			targetProxy = D677E284D5DF466A68245007E8661B0E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -208,31 +208,16 @@
 			};
 			name = Debug;
 		};
-		0545BB91C0754A164F40969CC7549C4C /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 94CDB7AA54EB34C07525A2B0A4EECFA5 /* UMBarCodeScannerInterface.release.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		1543A1710C7BEFBB0FEFBF8CB732CCEF /* Debug */ = {
+		4019D94F59771B069006264F536252B3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 783674230970F414E406A81D3D3C6FF0 /* UMBarCodeScannerInterface.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -301,14 +286,31 @@
 			};
 			name = Release;
 		};
+		8184C4A47B38C78BE0BB7277BDAFB649 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 94CDB7AA54EB34C07525A2B0A4EECFA5 /* UMBarCodeScannerInterface.release.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		1312B3E8C1B15C3796DD24C304C2382E /* Build configuration list for PBXAggregateTarget "UMBarCodeScannerInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1543A1710C7BEFBB0FEFBF8CB732CCEF /* Debug */,
-				0545BB91C0754A164F40969CC7549C4C /* Release */,
+				4019D94F59771B069006264F536252B3 /* Debug */,
+				8184C4A47B38C78BE0BB7277BDAFB649 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

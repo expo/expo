@@ -4,6 +4,14 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+## 10.0.0 — 2021-01-15
+
+### 🛠 Breaking changes
+
 - Dropped support for iOS 10.0 ([#11344](https://github.com/expo/expo/pull/11344) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features

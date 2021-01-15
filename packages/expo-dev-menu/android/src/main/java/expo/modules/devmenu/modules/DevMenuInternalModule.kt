@@ -49,7 +49,7 @@ class DevMenuInternalModule(reactContext: ReactApplicationContext)
     fonts.map { (familyName, fontFile) ->
       val font = Typeface.createFromAsset(assets, fontFile)
       if (font == null) {
-        promise.reject("ERR_DEVMENU_CANNOT_CRAETE_FONT", "Couldn't create $familyName font.")
+        promise.reject("ERR_DEVMENU_CANNOT_CREATE_FONT", "Couldn't create $familyName font.")
         return
       }
       ReactFontManager.getInstance().setTypeface(familyName, Typeface.NORMAL, font)

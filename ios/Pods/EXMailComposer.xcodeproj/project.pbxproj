@@ -20,7 +20,7 @@
 			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
 			remoteInfo = UMFileSystemInterface;
 		};
-		984CDA4F226301336AA4B490896AA906 /* PBXContainerItemProxy */ = {
+		3170CD4AD5351A7F212DF783F0B4D5B3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0C730C301ED2FFBAF8027878DCB8A9F3 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -144,7 +144,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				5497E4DE65EA1E6D2D56A9FE11802885 /* PBXTargetDependency */,
+				91ADFA3AF1393763D6F0BA95ABE81A86 /* PBXTargetDependency */,
 				25686DD3AD0AB4609E3015F9FFA0432E /* PBXTargetDependency */,
 			);
 			name = EXMailComposer;
@@ -205,10 +205,10 @@
 			name = UMFileSystemInterface;
 			targetProxy = 1579F808A7F7781458304799D53E03CE /* PBXContainerItemProxy */;
 		};
-		5497E4DE65EA1E6D2D56A9FE11802885 /* PBXTargetDependency */ = {
+		91ADFA3AF1393763D6F0BA95ABE81A86 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 984CDA4F226301336AA4B490896AA906 /* PBXContainerItemProxy */;
+			targetProxy = 3170CD4AD5351A7F212DF783F0B4D5B3 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

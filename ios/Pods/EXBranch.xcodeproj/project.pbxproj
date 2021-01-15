@@ -35,19 +35,19 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		3F3A6D5BA1ED935E896A8A7843BEE3EE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D59B76833E1193B71DFE585C78867FCF /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
 		4C67702C82B813F359BFCADAA134BB83 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A0160E0E485AF7DD3E4EAC1994CFEB81 /* Branch.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 32AB2597F26D238AAF12A9F8A95B992E;
 			remoteInfo = Branch;
-		};
-		4D61907930648935ADD72224B45204DD /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D59B76833E1193B71DFE585C78867FCF /* UMCore.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
-			remoteInfo = UMCore;
 		};
 		F0002ECEE93F2E68FB3BD8CFE4C548AC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -241,7 +241,7 @@
 			dependencies = (
 				D6929ECB55036F516455844FCA38EDEA /* PBXTargetDependency */,
 				731FFDF861E2BBC42618DA96CD50B570 /* PBXTargetDependency */,
-				CA32AAC33DF5AFDFBDDA9EE1BB5BCA0B /* PBXTargetDependency */,
+				1DFDDE84E454ABE1BDC1AB159B4CB2BE /* PBXTargetDependency */,
 			);
 			name = EXBranch;
 			productName = EXBranch;
@@ -310,15 +310,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		1DFDDE84E454ABE1BDC1AB159B4CB2BE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = 3F3A6D5BA1ED935E896A8A7843BEE3EE /* PBXContainerItemProxy */;
+		};
 		731FFDF861E2BBC42618DA96CD50B570 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-Core";
 			targetProxy = F0002ECEE93F2E68FB3BD8CFE4C548AC /* PBXContainerItemProxy */;
-		};
-		CA32AAC33DF5AFDFBDDA9EE1BB5BCA0B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMCore;
-			targetProxy = 4D61907930648935ADD72224B45204DD /* PBXContainerItemProxy */;
 		};
 		D6929ECB55036F516455844FCA38EDEA /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

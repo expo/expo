@@ -13,14 +13,14 @@
 			buildPhases = (
 			);
 			dependencies = (
-				CA8ABB98DE8AFAAB20C5D2D571E83516 /* PBXTargetDependency */,
+				A13CF5D3AD4CC8CEF4FD778B084E057A /* PBXTargetDependency */,
 			);
 			name = UMBarCodeScannerInterface;
 		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXContainerItemProxy section */
-		DE6AEC2E384670ECF3F86ABFD252A68F /* PBXContainerItemProxy */ = {
+		D677E284D5DF466A68245007E8661B0E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08F7A21521840C04ED96FDB3445F4D1C /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -134,10 +134,10 @@
 /* End PBXProject section */
 
 /* Begin PBXTargetDependency section */
-		CA8ABB98DE8AFAAB20C5D2D571E83516 /* PBXTargetDependency */ = {
+		A13CF5D3AD4CC8CEF4FD778B084E057A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = DE6AEC2E384670ECF3F86ABFD252A68F /* PBXContainerItemProxy */;
+			targetProxy = D677E284D5DF466A68245007E8661B0E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

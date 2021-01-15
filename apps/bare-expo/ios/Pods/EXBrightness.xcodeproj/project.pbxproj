@@ -7,27 +7,27 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		10CE87802E864DFBCB5F0C4A86FBDE1A /* EXBrightness-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 15D205CFCA31D1785011491E7719E5E9 /* EXBrightness-dummy.m */; };
-		2C50C4FAAF1CA43385B82210D1D7BA3B /* EXSystemBrightnessPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = A2EE1DFC95F48A8DC2216E42446472FA /* EXSystemBrightnessPermissionRequester.m */; };
+		17B42BA64C60822085A0C5258A9C2953 /* EXSystemBrightnessPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = A2EE1DFC95F48A8DC2216E42446472FA /* EXSystemBrightnessPermissionRequester.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		51250F1769D48E741C6F2D0441C951A4 /* EXSystemBrightnessPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 27E33511BCF1EAB83E4EE7F1BE1B403F /* EXSystemBrightnessPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		D2C90D7C5086700A1CC0E82815DD85BA /* EXBrightness.m in Sources */ = {isa = PBXBuildFile; fileRef = F0C9D1D0FADEBD8382DFC3C2A29F1391 /* EXBrightness.m */; };
+		C783E01579A18672B314FE5DF1B7DF85 /* EXBrightness.m in Sources */ = {isa = PBXBuildFile; fileRef = F0C9D1D0FADEBD8382DFC3C2A29F1391 /* EXBrightness.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		CE9065E91AB1046478FDFDF1CA9F3B75 /* EXBrightness-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 15D205CFCA31D1785011491E7719E5E9 /* EXBrightness-dummy.m */; };
 		F694F63889C27C7E165F45A067724008 /* EXBrightness.h in Headers */ = {isa = PBXBuildFile; fileRef = C19FCBB0E6759CED62251A5B1E2A4E6D /* EXBrightness.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		0BA6EB3CD0172C2154B29994CDFB02D6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 059DB79AFAF343E5E34BFD79BAB0C76B /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
 		2D4059F5DB706F58013E5967F6C3B373 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EE0D3A0E84E24292C58EC3938B349E15 /* UMPermissionsInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 12FF61416C5E794E9DEAC78D381D9726;
 			remoteInfo = UMPermissionsInterface;
-		};
-		D414681D53499114D233A7C56F102351 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 059DB79AFAF343E5E34BFD79BAB0C76B /* UMCore.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
-			remoteInfo = UMCore;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -145,13 +145,13 @@
 			buildConfigurationList = E35104858FA546B379A9E03C7BB16F67 /* Build configuration list for PBXNativeTarget "EXBrightness" */;
 			buildPhases = (
 				A5EA5B616C88A8BB6E7FB12A8D6054CA /* Headers */,
-				348C0403EC77365D1B0AEBD11930151A /* Sources */,
+				D6FD06C7080FB25F16A7679ADE5D0B7E /* Sources */,
 				4E8435CDA054CE41A94C31EAF7C10913 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				38CB7B41FBB894DEF2CD7CFD6F5B1B49 /* PBXTargetDependency */,
+				3B0A3FC1259B1D260A8E274394C9F884 /* PBXTargetDependency */,
 				7FF8CBCBD097DA9D492739127A98F61B /* PBXTargetDependency */,
 			);
 			name = EXBrightness;
@@ -195,23 +195,23 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		348C0403EC77365D1B0AEBD11930151A /* Sources */ = {
+		D6FD06C7080FB25F16A7679ADE5D0B7E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				10CE87802E864DFBCB5F0C4A86FBDE1A /* EXBrightness-dummy.m in Sources */,
-				D2C90D7C5086700A1CC0E82815DD85BA /* EXBrightness.m in Sources */,
-				2C50C4FAAF1CA43385B82210D1D7BA3B /* EXSystemBrightnessPermissionRequester.m in Sources */,
+				CE9065E91AB1046478FDFDF1CA9F3B75 /* EXBrightness-dummy.m in Sources */,
+				C783E01579A18672B314FE5DF1B7DF85 /* EXBrightness.m in Sources */,
+				17B42BA64C60822085A0C5258A9C2953 /* EXSystemBrightnessPermissionRequester.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		38CB7B41FBB894DEF2CD7CFD6F5B1B49 /* PBXTargetDependency */ = {
+		3B0A3FC1259B1D260A8E274394C9F884 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = D414681D53499114D233A7C56F102351 /* PBXContainerItemProxy */;
+			targetProxy = 0BA6EB3CD0172C2154B29994CDFB02D6 /* PBXContainerItemProxy */;
 		};
 		7FF8CBCBD097DA9D492739127A98F61B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -221,43 +221,18 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		1110FF25616EC3DBFFD08F37285A4CCC /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4BEB65F81DE0F5D708053B25B2974A30 /* EXBrightness.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/EXBrightness/EXBrightness-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXBrightness;
-				PRODUCT_NAME = EXBrightness;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		302FAC9B8B50C190D7B6C72BF275AAA0 /* Debug */ = {
+		224221EF34C60BA3F3203C5AD19B1C80 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 57A37FA876DC3FC6922956EF1D494D99 /* EXBrightness.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/EXBrightness/EXBrightness-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -400,14 +375,41 @@
 			};
 			name = Debug;
 		};
+		F5731EEF5E8738D49DF66C488E05767A /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4BEB65F81DE0F5D708053B25B2974A30 /* EXBrightness.release.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/EXBrightness/EXBrightness-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXBrightness;
+				PRODUCT_NAME = EXBrightness;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		E35104858FA546B379A9E03C7BB16F67 /* Build configuration list for PBXNativeTarget "EXBrightness" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				302FAC9B8B50C190D7B6C72BF275AAA0 /* Debug */,
-				1110FF25616EC3DBFFD08F37285A4CCC /* Release */,
+				224221EF34C60BA3F3203C5AD19B1C80 /* Debug */,
+				F5731EEF5E8738D49DF66C488E05767A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

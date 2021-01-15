@@ -13,14 +13,14 @@
 			buildPhases = (
 			);
 			dependencies = (
-				FCEFAB3FA7E08247A9BAD5B048D0443A /* PBXTargetDependency */,
+				98097324E3DFE4E4F6204D85F7AE2645 /* PBXTargetDependency */,
 			);
 			name = UMTaskManagerInterface;
 		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXContainerItemProxy section */
-		E447C147CB67895020EC8B88E5A98402 /* PBXContainerItemProxy */ = {
+		BE7AF08D5A0FF5EC0B15AA46EDE90264 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 8E0983B5911DB1B2478D991A142C6072 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -140,28 +140,30 @@
 /* End PBXProject section */
 
 /* Begin PBXTargetDependency section */
-		FCEFAB3FA7E08247A9BAD5B048D0443A /* PBXTargetDependency */ = {
+		98097324E3DFE4E4F6204D85F7AE2645 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = E447C147CB67895020EC8B88E5A98402 /* PBXContainerItemProxy */;
+			targetProxy = BE7AF08D5A0FF5EC0B15AA46EDE90264 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		1396444D872573F91D1CE4AC51FBF1E6 /* Debug */ = {
+		2BCC8D7AA813B4D233F1BDBEE2F1F585 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5CDD746C13C9E5BAF1C1FBF029FA9039 /* UMTaskManagerInterface.debug.xcconfig */;
+			baseConfigurationReference = 31958379626F47CD42A34D55FFEB67FF /* UMTaskManagerInterface.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
 		6DB5DA9C3A432A4382A9E38C9E9969CD /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -229,6 +231,22 @@
 			};
 			name = Debug;
 		};
+		8D20405DF757193F6601D87689F5C68D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5CDD746C13C9E5BAF1C1FBF029FA9039 /* UMTaskManagerInterface.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		91B98442CA3B2396AD03EED4B1006B48 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -291,22 +309,6 @@
 			};
 			name = Release;
 		};
-		A4B5B5368450A693ED557ACFA6060ABF /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 31958379626F47CD42A34D55FFEB67FF /* UMTaskManagerInterface.release.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -322,8 +324,8 @@
 		E471BFC35B623622E6CAF81EAF81586A /* Build configuration list for PBXAggregateTarget "UMTaskManagerInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1396444D872573F91D1CE4AC51FBF1E6 /* Debug */,
-				A4B5B5368450A693ED557ACFA6060ABF /* Release */,
+				8D20405DF757193F6601D87689F5C68D /* Debug */,
+				2BCC8D7AA813B4D233F1BDBEE2F1F585 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
