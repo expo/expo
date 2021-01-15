@@ -10,11 +10,7 @@ const {
 
 const META_BRANCH_KEY = 'io.branch.sdk.BranchKey';
 
-export const withBranchAndroid = createAndroidManifestPlugin(
-  // @ts-ignore: @expo/config-types version mismatch
-  setBranchApiKey,
-  'withBranchAndroid'
-);
+export const withBranchAndroid = createAndroidManifestPlugin(setBranchApiKey, 'withBranchAndroid');
 
 export function getBranchApiKey(config: ExpoConfig) {
   return config.android?.config?.branch?.apiKey ?? null;

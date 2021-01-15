@@ -13,6 +13,8 @@
 
 ### 🎉 New features
 
+- Created config plugin. ([#11633](https://github.com/expo/expo/pull/11633) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 - Fixed a case where `requestPermissionsAsync` would ignore the provided `NotificationPermissionsRequest`. ([#11548](https://github.com/expo/expo/pull/11548) by [@cruzach](https://github.com/cruzach))
