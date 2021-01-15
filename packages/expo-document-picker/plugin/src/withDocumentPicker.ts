@@ -3,19 +3,17 @@ import assert from 'assert';
 
 const pkg = require('expo-document-picker/package.json');
 
-const withDocumentPicker: ConfigPlugin<{ appleTeamId: string }> = (
-  config,
-  // This cannot be a default plugin because it has required properties.
-  props
-) => {
+const withDocumentPicker: ConfigPlugin = config => {
   const { bundleIdentifier } = config.ios ?? {};
   assert(
     bundleIdentifier,
     'expo-document-picker plugin requires `ios.bundleIdentifier` to be defined for iCloud entitlements. Learn more: https://docs.expo.io/versions/latest/sdk/document-picker/#configuration'
   );
+
+  const appleTeamId = process.env.EXPO_APPLE_TEAM_ID;
   assert(
-    props.appleTeamId,
-    'expo-document-picker plugin requires the property `appleTeamId` to be defined for iCloud entitlements. Learn more: https://docs.expo.io/versions/latest/sdk/document-picker/#configuration'
+    appleTeamId,
+    'expo-document-picker plugin requires the environment variable `EXPO_APPLE_TEAM_ID` to be defined for iCloud entitlements. Learn more: https://docs.expo.io/versions/latest/sdk/document-picker/#configuration'
   );
   // TODO: Should we ignore if `config.ios?.usesIcloudStorage` is false?
   return withEntitlementsPlist(config, config => {
@@ -28,7 +26,7 @@ const withDocumentPicker: ConfigPlugin<{ appleTeamId: string }> = (
       'iCloud.' + bundleIdentifier,
     ];
     entitlements['com.apple.developer.ubiquity-kvstore-identifier'] =
-      props.appleTeamId + '.' + bundleIdentifier;
+      appleTeamId + '.' + bundleIdentifier;
 
     entitlements['com.apple.developer.icloud-services'] = ['CloudDocuments'];
 
