@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 0.2.1 — 2021-01-15
+
+_This version does not introduce any user-facing changes._
+
 ## 0.2.0 — 2021-01-15
 
 _This version does not introduce any user-facing changes._
