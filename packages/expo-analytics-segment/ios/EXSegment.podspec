@@ -2,7 +2,7 @@ require 'json'
 
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 
-segment_analytics_version = '~> 4.0'
+segment_analytics_version = '4.0.4'
 using_custom_segment_analytics_version = defined? $AnalyticsVersion
 if using_custom_segment_analytics_version
   segment_analytics_version = $AnalyticsVersion

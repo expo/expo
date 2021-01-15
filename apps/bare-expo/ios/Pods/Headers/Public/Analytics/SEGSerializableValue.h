@@ -1,1 +1,1 @@
-../../../Analytics/Segment/Classes/SEGSerializableValue.h
+../../../Analytics/Analytics/Classes/SEGSerializableValue.h

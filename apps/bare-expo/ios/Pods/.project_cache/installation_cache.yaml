@@ -16,10 +16,10 @@ CACHE_KEYS:
       Analytics:
         :debug: b365cc884d9f7aa1eac7fd5381727331
         :release: b365cc884d9f7aa1eac7fd5381727331
-    CHECKSUM: 952eac761f84ba0a508a4cf691598654073f9e3d
+    CHECKSUM: 231b01fdaa9704105881dc82def7b7b1d6571edb
     PROJECT_NAME: Analytics
     SPECS:
-      - Analytics (4.1.1)
+      - Analytics (4.0.4)
   AppAuth:
     BUILD_SETTINGS_CHECKSUM:
       AppAuth:
@@ -1085,7 +1085,7 @@ CACHE_KEYS:
       EXSegment:
         :debug: b2ca603d9f22cee6cebb55d093804aa2
         :release: b2ca603d9f22cee6cebb55d093804aa2
-    CHECKSUM: 5ae19ad49ea03cf9aa5df07916ab66580b1061b6
+    CHECKSUM: 6c54f471601537874077a8c4d856d2b9a2b20ea6
     FILES:
       - "../../../../packages/expo-analytics-segment/ios/EXSegment/EXSegment.h"
       - "../../../../packages/expo-analytics-segment/ios/EXSegment/EXSegment.m"
@@ -1614,19 +1614,19 @@ CACHE_KEYS:
       PromisesObjC:
         :debug: 7a1c46cae8d9ee9cf2ead693d8f27698
         :release: 7a1c46cae8d9ee9cf2ead693d8f27698
-    CHECKSUM: 8c196f5a328c2cba3e74624585467a557dcb482f
+    CHECKSUM: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
     PROJECT_NAME: PromisesObjC
     SPECS:
-      - PromisesObjC (1.2.11)
+      - PromisesObjC (1.2.12)
   Protobuf:
     BUILD_SETTINGS_CHECKSUM:
       Protobuf:
         :debug: f3a63680e8eff9d184081e037d49773d
         :release: f3a63680e8eff9d184081e037d49773d
-    CHECKSUM: 3dac39b34a08151c6d949560efe3f86134a3f748
+    CHECKSUM: 0cde852566359049847168e51bd1c690e0f70056
     PROJECT_NAME: Protobuf
     SPECS:
-      - Protobuf (3.13.0)
+      - Protobuf (3.14.0)
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired:

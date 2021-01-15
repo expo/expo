@@ -9030,7 +9030,7 @@ CACHE_KEYS:
       EXSegment:
         :debug: 28f26246d44ca2f8e82306d76053137f
         :release: 28f26246d44ca2f8e82306d76053137f
-    CHECKSUM: 5ae19ad49ea03cf9aa5df07916ab66580b1061b6
+    CHECKSUM: 6c54f471601537874077a8c4d856d2b9a2b20ea6
     FILES:
       - "../../packages/expo-analytics-segment/ios/EXSegment/EXSegment.h"
       - "../../packages/expo-analytics-segment/ios/EXSegment/EXSegment.m"

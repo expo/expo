@@ -1,1 +1,1 @@
-../../../Analytics/Segment/Classes/SEGContext.h
+../../../Analytics/Analytics/Classes/SEGContext.h

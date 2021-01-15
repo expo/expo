@@ -20,7 +20,7 @@
 
     ],
     "Analytics": [
-      "~> 4.0"
+      "4.0.4"
     ]
   },
   "source_files": "EXSegment/**/*.{h,m}"

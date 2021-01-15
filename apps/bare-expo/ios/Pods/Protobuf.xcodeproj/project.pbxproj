@@ -431,7 +431,7 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		01DC343AC6FAEF2163D4A5D189E39029 /* Release */ = {
+		3A5CCB678C4A5FBC8D2C19C157D20B65 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E3766F33ACE5031A923F643D24C2E712 /* Protobuf.release.xcconfig */;
 			buildSettings = {
@@ -457,7 +457,7 @@
 			};
 			name = Release;
 		};
-		08AED47C21402C87308DBA6BBAB48347 /* Release */ = {
+		4DA4C2B9D2E67DE0B482388FC7522341 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -507,7 +507,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -519,7 +519,7 @@
 			};
 			name = Release;
 		};
-		32CCAA90DA901B0B9BD2E1C232E5C946 /* Debug */ = {
+		621D2E6CA7F07EB893300A1DED46DBC4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -572,7 +572,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -585,7 +585,7 @@
 			};
 			name = Debug;
 		};
-		721DFA2A1F09B046554F17D2866EB40D /* Debug */ = {
+		D54BA43F2B1E0F4CDE9D65A26A948E7B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = B810C00DBE6A6309D9A093373B37338C /* Protobuf.debug.xcconfig */;
 			buildSettings = {
@@ -616,8 +616,8 @@
 		3B2E7548B5A1F31A679C208EED787468 /* Build configuration list for PBXNativeTarget "Protobuf" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				721DFA2A1F09B046554F17D2866EB40D /* Debug */,
-				01DC343AC6FAEF2163D4A5D189E39029 /* Release */,
+				D54BA43F2B1E0F4CDE9D65A26A948E7B /* Debug */,
+				3A5CCB678C4A5FBC8D2C19C157D20B65 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -625,8 +625,8 @@
 		89990320524EDFCEF6CA0EB07AE5D91B /* Build configuration list for PBXProject "Protobuf" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				32CCAA90DA901B0B9BD2E1C232E5C946 /* Debug */,
-				08AED47C21402C87308DBA6BBAB48347 /* Release */,
+				621D2E6CA7F07EB893300A1DED46DBC4 /* Debug */,
+				4DA4C2B9D2E67DE0B482388FC7522341 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
