@@ -133,7 +133,15 @@ export function resolveScheme(props) {
     // i.e. `scheme: ['foo', 'bar']` (unimplemented functionality).
     const [scheme, ...extraSchemes] = manifestSchemes;
     if (!scheme) {
-        throw new Error(`Linking requires a build-time setting \`scheme\` in the project's Expo config (app.config.js or app.json) for bare or production apps. Manually providing a \`scheme\` property can circumvent this warning. Learn more: https://docs.expo.io/versions/latest/workflow/linking/`);
+        const errorMessage = `Linking requires a build-time setting \`scheme\` in the project's Expo config (app.config.js or app.json) for bare or production apps. Manually providing a \`scheme\` property can circumvent this error. Learn more: https://docs.expo.io/versions/latest/workflow/linking/`;
+        if (__DEV__) {
+            // Assert a config warning if no scheme is setup yet.
+            console.warn(errorMessage);
+        }
+        else {
+            // Throw in production, use the __DEV__ flag so users can test this functionality with `expo start --no-dev`
+            throw new Error(errorMessage);
+        }
     }
     if (extraSchemes.length) {
         console.warn(`Linking found multiple possible URI schemes in your Expo config.\nUsing '${scheme}'. Ignoring: ${[
