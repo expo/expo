@@ -155,7 +155,7 @@
 #endif
   
 #if __has_include(<EXNotifications/EXNotificationsHandlerModule.h>)
-  EXScopedNotificationBuilder *notificationsBuilder = [[EXScopedNotificationBuilder alloc] initWithExperienceId:experienceId];
+  EXScopedNotificationBuilder *notificationsBuilder = [[EXScopedNotificationBuilder alloc] initWithExperienceId:experienceId andConstantsBinding:constantsBinding];
   [moduleRegistry registerInternalModule:notificationsBuilder];
 #endif
   
@@ -170,8 +170,11 @@
 #endif
   
 #if __has_include(<EXNotifications/EXNotificationCategoriesModule.h>)
-  EXScopedNotificationCategoriesModule *categoriesModule = [[EXScopedNotificationCategoriesModule alloc] initWithExperienceId:experienceId];
-  [moduleRegistry registerExportedModule:categoriesModule];
+  // only override in Expo Go
+  if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
+    EXScopedNotificationCategoriesModule *scopedCategoriesModule = [[EXScopedNotificationCategoriesModule alloc] initWithExperienceId:experienceId];
+    [moduleRegistry registerExportedModule:scopedCategoriesModule];
+  }
 #endif
   
 #if __has_include(<EXNotifications/EXServerRegistrationModule.h>)
