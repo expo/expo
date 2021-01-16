@@ -23,9 +23,11 @@ export async function versionVendoredModulesAsync(
   const baseTransforms = baseTransformsFactory(prefix);
   const unversionedDir = path.join(IOS_VENDORED_DIR, 'unversioned');
   const versionedDir = path.join(IOS_VENDORED_DIR, `sdk${sdkNumber}`);
-  const sourceDirents = (await readDirents(unversionedDir)).filter((dirent) => {
-    return dirent.isDirectory() && (!filterModules || filterModules.includes(dirent.name));
-  });
+  const sourceDirents = (await fs.readdir(unversionedDir, { withFileTypes: true })).filter(
+    (dirent) => {
+      return dirent.isDirectory() && (!filterModules || filterModules.includes(dirent.name));
+    }
+  );
 
   for (const { name } of sourceDirents) {
     logger.info('🔃 Versioning vendored module %s', chalk.green(name));
@@ -83,15 +85,4 @@ function baseTransformsFactory(prefix: string): Required<FileTransforms> {
       },
     ],
   };
-}
-
-// fs-extra doesn't have type definitions for `readdir` with options.
-type ReadDirWithOptions = (
-  path: string | Buffer,
-  options: { withFileTypes: boolean }
-) => Promise<fs.Dirent[]>;
-
-async function readDirents(path: string): Promise<fs.Dirent[]> {
-  const readdir = (fs.readdir as unknown) as ReadDirWithOptions;
-  return await readdir(path, { withFileTypes: true });
 }
