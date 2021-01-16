@@ -160,6 +160,13 @@ describe(resolveScheme, () => {
       ...Constants.manifest,
       scheme: undefined,
     };
+
     expect(() => resolveScheme({})).toThrow();
+  });
+  it(`throws when no manifest is linked in bare`, () => {
+    Constants.executionEnvironment = ExecutionEnvironment.Bare;
+    // @ts-ignore: invalid manifest for test
+    Constants.manifest = {};
+    expect(() => resolveScheme({})).toThrow('expo-constants manifest');
   });
 });

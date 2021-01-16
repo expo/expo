@@ -9,6 +9,7 @@ export declare function hasCustomScheme(): boolean;
  * - Android: scheme -> android.scheme -> android.package
  */
 export declare function collectManifestSchemes(): string[];
+export declare function hasConstantsManifest(): boolean;
 export declare function resolveScheme(props: {
     scheme?: string;
 }): string;
