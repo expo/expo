@@ -47,7 +47,7 @@ To create a scheme that is appropriate for the environment, be sure to use `Link
 ```js
 import { Linking } from 'expo';
 
-const prefix = Linking.makeUrl('/');
+const prefix = Linking.createURL('/');
 // Expo client: `exp://ADDRESS:PORT`
 // Standalone: `myapp://`
 ```
