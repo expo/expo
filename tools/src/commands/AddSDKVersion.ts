@@ -11,6 +11,7 @@ type ActionOptions = {
   platform: Platform;
   sdkVersion?: string;
   filenames?: string;
+  vendored: string[];
   reinstall?: boolean;
 };
 
@@ -51,15 +52,19 @@ async function action(options: ActionOptions) {
   if (!sdkVersion) {
     throw new Error('Next SDK version not found. Try to run with `--sdkVersion <SDK version>`.');
   }
+  const sdkNumber = semver.major(sdkVersion);
 
   switch (options.platform) {
     case 'ios':
-      if (options.filenames) {
+      if (options.vendored.length > 0) {
+        await IosVersioning.versionVendoredModulesAsync(sdkNumber, options.vendored);
+      } else if (options.filenames) {
         await IosVersioning.versionReactNativeIOSFilesAsync(options.filenames, sdkVersion);
       } else {
+        await IosVersioning.versionVendoredModulesAsync(sdkNumber, null);
         await IosVersioning.addVersionAsync(sdkVersion);
-        await IosVersioning.reinstallPodsAsync(options.reinstall);
       }
+      await IosVersioning.reinstallPodsAsync(options.reinstall);
       return;
     case 'android':
       return AndroidVersioning.addVersionAsync(sdkVersion);
@@ -97,6 +102,12 @@ ${chalk.gray('>')} ${chalk.italic.cyan(
     .option(
       '-f, --filenames [string]',
       'Glob pattern of file paths to version. Useful when you want to backport unversioned code into already versioned SDK. Optional. When provided, option `--sdkVersion` is required.'
+    )
+    .option(
+      '-v, --vendored <string>',
+      'Name of the vendored module to (re)version. iOS only.',
+      (value, previous) => (previous ?? []).concat(value),
+      []
     )
     .option(
       '-r, --reinstall',

@@ -5,6 +5,7 @@ import glob from 'glob-promise';
 import inquirer from 'inquirer';
 import { TaskQueue } from 'cwait';
 import spawnAsync from '@expo/spawn-async';
+import semver from 'semver';
 
 import { runTransformPipelineAsync } from './transforms';
 import { injectMacros } from './transforms/injectMacros';
@@ -14,6 +15,8 @@ import { podspecTransforms } from './transforms/podspecTransforms';
 
 import { getListOfPackagesAsync } from '../../Packages';
 import { EXPO_DIR, IOS_DIR, VERSIONED_RN_IOS_DIR } from '../../Constants';
+
+export { versionVendoredModulesAsync } from './versionVendoredModules';
 
 const UNVERSIONED_PLACEHOLDER = '__UNVERSIONED__';
 const RELATIVE_RN_PATH = './react-native-lab/react-native';
@@ -614,14 +617,17 @@ function getCFlagsToPrefixGlobals(prefix, globals) {
 }
 
 /**
- *  @param templatesPath location to write template files, e.g. $UNIVERSE/exponent/template-files/ios
- *  @param versionedPodNames mapping from pod names to versioned pod names, e.g. React -> ReactABI99_0_0
- *  @param versionedReactPodPath path of the new react pod
+ * Generates `dependencies.rb` and `postinstalls.rb` files for versioned code.
+ * @param versionNumber Semver-compliant version of the SDK/ABI
+ * @param versionName Version prefix used for versioned files, e.g. ABI99_0_0
+ * @param versionedPodNames mapping from pod names to versioned pod names, e.g. React -> ReactABI99_0_0
+ * @param versionedReactPodPath path of the new react pod
  */
 async function generatePodfileSubscriptsAsync(
-  versionName,
-  versionedPodNames,
-  versionedReactPodPath
+  versionNumber: string,
+  versionName: string,
+  versionedPodNames: Record<string, string>,
+  versionedReactPodPath: string
 ) {
   if (!versionedPodNames.React) {
     throw new Error(
@@ -654,6 +660,8 @@ pod '${getVersionedExpoKitPodName(versionName)}',
   :path => './${relativeExpoKitPath}',
   :project_name => '${versionName}',
   :subspecs => ['Expo', 'ExpoOptional']
+
+use_pods! 'vendored/sdk${semver.major(versionNumber)}/*/*.podspec.json', '${versionName}'
 
 ${versionableUnimodulesPods}
 `;
@@ -712,7 +720,6 @@ if pod_name.start_with?('${versionedPodNames.React}') || pod_name == '${versione
 end
 `;
   await fs.writeFile(path.join(versionedReactPodPath, 'postinstalls.rb'), config);
-  return;
 }
 
 /**
@@ -946,7 +953,12 @@ export async function addVersionAsync(versionNumber: string) {
 
   // Generate Ruby scripts with versioned dependencies and postinstall actions that will be evaluated in the Expo client's Podfile.
   console.log('Adding dependency to root Podfile...');
-  await generatePodfileSubscriptsAsync(versionName, versionedPodNames, newVersionPath);
+  await generatePodfileSubscriptsAsync(
+    versionNumber,
+    versionName,
+    versionedPodNames,
+    newVersionPath
+  );
 
   // Add the new version to the iOS config list of available versions
   console.log('Registering new version under sdkVersions config...');
