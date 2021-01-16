@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added bare workflow support. ([#11560](https://github.com/expo/expo/pull/11560) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ## 2.1.0 — 2021-01-15

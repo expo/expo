@@ -100,7 +100,9 @@
   },
   "expo-yarn-workspaces": {
     "symlinks": [
-      "expo-camera"
+      "expo-constants",
+      "expo-camera",
+      "expo-updates"
     ]
   },
   "dependencies": {
