@@ -1,4 +1,3 @@
-import fs from 'fs-extra';
 import { IOptions as GlobOptions } from 'glob';
 import glob from 'glob-promise';
 import chalk from 'chalk';
@@ -48,32 +47,6 @@ export function deepCloneObject<ObjectType extends object = object>(
   object: ObjectType
 ): ObjectType {
   return JSON.parse(JSON.stringify(object));
-}
-
-/**
- * Type of allowed transform rules used by `transformFileAsync`.
- */
-export type FileTransformRule = {
-  pattern: string | RegExp;
-  replaceWith: string | ((substring: string, ...args: any[]) => string);
-};
-
-/**
- * Handy method transforming file's content according to given transform rules.
- */
-export async function transformFileAsync(
-  filePath: string,
-  transforms: FileTransformRule[]
-): Promise<void> {
-  fs.access(filePath, fs.constants.R_OK | fs.constants.W_OK);
-
-  const fileContent = transforms.reduce(
-    // @ts-ignore @tsapeta: I don't really know why, but TS gets crazy on `replaceWith`.
-    (acc, transform) => acc.replace(transform.pattern, transform.replaceWith),
-    await fs.readFile(filePath, 'utf8')
-  );
-
-  await fs.writeFile(filePath, fileContent);
 }
 
 /**

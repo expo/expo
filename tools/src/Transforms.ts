@@ -25,6 +25,17 @@ export function transformString(
 }
 
 /**
+ * Transforms file's content in-place.
+ */
+export async function transformFileAsync(
+  filePath: string,
+  transforms: StringTransform[] | null | undefined
+): Promise<void> {
+  const content = await fs.readFile(filePath, 'utf8');
+  await fs.outputFile(filePath, transformString(content, transforms));
+}
+
+/**
  * Copies a file from source directory to target directory with transformed relative path and content.
  */
 export async function copyFileWithTransformsAsync(
