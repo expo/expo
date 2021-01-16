@@ -84,7 +84,7 @@ export function hasConstantsManifest() {
 export function resolveScheme(props) {
     if (Constants.executionEnvironment !== ExecutionEnvironment.StoreClient &&
         !hasConstantsManifest()) {
-        throw new Error(`expo-linking needs access to the expo-constants manifest (app.json or app.config.js) to determine what URI scheme to use. Setup the manifest and rebuild: https://github.com/expo/expo/blob/master/packages/expo-constants/README.md#optional-set-up-script-to-get-app-config`);
+        throw new Error(`expo-linking needs access to the expo-constants manifest (app.json or app.config.js) to determine what URI scheme to use. Setup the manifest and rebuild: https://github.com/expo/expo/blob/master/packages/expo-constants/README.md`);
     }
     const manifestSchemes = collectManifestSchemes();
     const nativeAppId = getNativeAppIdScheme();
