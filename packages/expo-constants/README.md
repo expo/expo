@@ -40,7 +40,7 @@ To set up the script on Android, apply the following diff to `android/app/build.
 
 #### Monorepo Support
 
-In a monorepo, the expo-constants package might be in a different folder than the native scripts are expecting. You can easily symlink the node module to your app's local `node_modules` folder by doing the following:
+In a monorepo, the `expo-constants` package might be in a different folder than the native scripts are expecting. You can easily symlink the node module to your app's local `node_modules` folder by doing the following:
  
 - Follow the setup instructions for [`expo-yarn-workspaces`](https://github.com/expo/expo/tree/master/packages/expo-yarn-workspaces). 
 - Add the following configuration to your app's `package.json`:
