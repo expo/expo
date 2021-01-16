@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Implemented support for `getInternalformatParameter` ([#11614](https://github.com/expo/expo/pull/11614) by [@zenios](https://github.com/zenios))
+
 ### 🐛 Bug fixes
 
 ## 10.1.0 — 2021-01-15

@@ -500,7 +500,21 @@ NATIVE_METHOD(renderbufferStorage) {
 // Renderbuffers (WebGL2)
 // ----------------------
 
-UNIMPL_NATIVE_METHOD(getInternalformatParameter)
+NATIVE_METHOD(getInternalformatParameter) {
+  auto target = ARG(0, GLenum);
+  auto internalformat = ARG(1, GLenum);
+  auto pname = ARG(2, GLenum);
+
+  std::vector<TypedArrayBase::ContentType<TypedArrayKind::Int32Array>> glResults;
+  addBlockingToNextBatch([&] {
+    GLint count;
+    glGetInternalformativ(target, internalformat, GL_NUM_SAMPLE_COUNTS, 1, &count);
+    glResults.resize(count);
+    glGetInternalformativ(target, internalformat, pname, count, glResults.data());
+  });
+
+  return TypedArray<TypedArrayKind::Int32Array>(runtime, glResults);
+}
 
 UNIMPL_NATIVE_METHOD(renderbufferStorageMultisample)
 
