@@ -93,3 +93,15 @@ export async function grantReadWriteAccessAsync(
 ): Promise<void> {
   await spawnAsync('npm', ['access', 'grant', 'read-write', teamName, packageName]);
 }
+
+/**
+ * Returns a name of the currently logged in user or `null` if logged out.
+ */
+export async function whoamiAsync(): Promise<string | null> {
+  try {
+    const { stdout } = await spawnAsync('npm', ['whoami']);
+    return stdout.trim();
+  } catch (e) {
+    return null;
+  }
+}

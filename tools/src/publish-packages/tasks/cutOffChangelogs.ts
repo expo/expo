@@ -1,5 +1,4 @@
 import chalk from 'chalk';
-import semver from 'semver';
 
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
@@ -23,18 +22,28 @@ export const cutOffChangelogs = new Task<TaskArgs>(
 
     await Promise.all(
       parcels.map(async ({ pkg, changelog, state }) => {
-        if (!(await changelog.fileExistsAsync())) {
-          logger.log('  ', green(pkg.packageName), gray(`- skipped, no changelog file.`));
+        if (!state.releaseVersion) {
           return;
         }
 
-        if (state.releaseVersion && !semver.prerelease(state.releaseVersion)) {
-          logger.log('  ', green(pkg.packageName) + '...');
-          await changelog.cutOffAsync(state.releaseVersion);
-          await changelog.saveAsync();
+        let skipReason = '';
+
+        if (await changelog.fileExistsAsync()) {
+          const versions = await changelog.getVersionsAsync();
+
+          // This prevents unnecessary cut-offs when that version was already cutted off.
+          // Maybe we should move "unpublished" entries to this version? It's probably too rare to worry about it.
+          if (!versions.includes(state.releaseVersion)) {
+            logger.log('  ', green(pkg.packageName) + '...');
+            await changelog.cutOffAsync(state.releaseVersion);
+            await changelog.saveAsync();
+            return;
+          }
+          skipReason = 'version already exists';
         } else {
-          logger.log('  ', green(pkg.packageName), gray(`- skipped, it's a prerelease version.`));
+          skipReason = 'no changelog file';
         }
+        logger.log('  ', green(pkg.packageName), gray(`- skipped, ${skipReason}`));
       })
     );
   }

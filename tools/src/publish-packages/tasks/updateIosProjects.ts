@@ -1,9 +1,10 @@
 import chalk from 'chalk';
 import path from 'path';
 
+import { podInstallAsync } from '../../CocoaPods';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
-import { spawnAsync, filterAsync } from '../../Utils';
+import { filterAsync } from '../../Utils';
 import * as Workspace from '../../Workspace';
 import { Parcel, TaskArgs } from '../types';
 import { selectPackagesToPublish } from './selectPackagesToPublish';
@@ -41,9 +42,15 @@ export const updateIosProjects = new Task<TaskArgs>(
 
         logger.log('  ', `${green(nativeApp.packageName)}: Reinstalling pods...`);
 
-        await spawnAsync('pod', ['install', '--no-repo-update'], {
-          cwd: path.join(nativeApp.path, 'ios'),
-        });
+        // `pod install` sometimes fails, but it's not needed to properly
+        // publish packages, so let's just continue if that happens.
+        try {
+          await podInstallAsync(path.join(nativeApp.path, 'ios'), { noRepoUpdate: true });
+        } catch (e) {
+          logger.debug(e.stderr || e.stdout);
+          logger.error('🍎 Failed to install pods in', green(nativeApp.packageName));
+          logger.error('🍎 Please review the output above and fix it once the publish completes');
+        }
       })
     );
   }

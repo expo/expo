@@ -22,31 +22,40 @@ export const grantTeamAccessToPackages = new Task<TaskArgs>(
     // so let's get all team members and check if they all are declared as maintainers.
     // If they don't, grant access for the team.
     const teamMembers = await Npm.getTeamMembersAsync(Npm.EXPO_DEVELOPERS_TEAM_NAME);
-    const packagesToGrantAccess = parcels.filter(
-      ({ pkgView, state }) =>
-        (pkgView || state.published) && doesSomeoneHaveNoAccessToPackage(teamMembers, pkgView)
-    );
+    const packagesToGrantAccess = parcels
+      .filter(filterPackagesToGrantAccess(teamMembers))
+      .map(({ pkg }) => pkg.packageName);
 
     if (packagesToGrantAccess.length === 0) {
       logger.success('\n🎖  Granting team access not required.');
       return;
     }
 
-    if (!options.dry) {
-      logger.info('\n🎖  Granting team access...');
+    logger.info(
+      `\n🎖  ${options.dry ? 'Team access would be granted to' : 'Granting team access to'}`,
+      packagesToGrantAccess.map((name) => green(name)).join(' ')
+    );
 
-      for (const { pkg } of packagesToGrantAccess) {
-        logger.log('  ', green(pkg.packageName));
-        await Npm.grantReadWriteAccessAsync(pkg.packageName, Npm.EXPO_DEVELOPERS_TEAM_NAME);
+    if (!options.dry) {
+      for (const packageName of packagesToGrantAccess) {
+        try {
+          await Npm.grantReadWriteAccessAsync(packageName, Npm.EXPO_DEVELOPERS_TEAM_NAME);
+        } catch (e) {
+          logger.debug(e.stderr || e.stdout);
+          logger.error(`🎖  Granting access to ${green(packageName)} failed`);
+        }
       }
-    } else {
-      logger.info(
-        '\n🎖  Team access would be granted to',
-        packagesToGrantAccess.map(({ pkg }) => green(pkg.packageName)).join(', ')
-      );
     }
   }
 );
+
+/**
+ * Returns filter function that when called returns a boolean whether to grant access or not.
+ */
+function filterPackagesToGrantAccess(teamMembers: string[]) {
+  return ({ pkgView, state }) =>
+    (pkgView || state.published) && doesSomeoneHaveNoAccessToPackage(teamMembers, pkgView);
+}
 
 /**
  * Returns boolean value determining if someone from given users list is not a maintainer of the package.
@@ -62,5 +71,5 @@ function doesSomeoneHaveNoAccessToPackage(
   const maintainers = pkgView.maintainers.map((maintainer) =>
     maintainer.replace(/^(.+)\s.*$/, '$1')
   );
-  return users.every((user) => maintainers.includes(user));
+  return users.some((user) => !maintainers.includes(user));
 }
