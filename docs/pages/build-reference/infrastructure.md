@@ -22,12 +22,11 @@ The software components will become customizable, but they aren't yet. So there 
 - NPM cache deployed with Kubernetes
 - Maven cache deployed with Kubernetes, cached repositories:
   - `maven-central` - [https://repo1.maven.org/maven2/](https://repo1.maven.org/maven2/)
-    <!-- the following repos are not yet cached -->
-    <!--
-    - `google` - [https://maven.google.com/](https://maven.google.com/)
-    - `android-tools` - [https://dl.bintray.com/android/android-tools/](https://dl.bintray.com/android/android-tools/)
-    - `jcenter` - [https://jcenter.bintray.com/](https://jcenter.bintray.com/)
-    -->
+  - `google` - [https://maven.google.com/](https://maven.google.com/)
+  - `android-tools` - [https://dl.bintray.com/android/android-tools/](https://dl.bintray.com/android/android-tools/)
+  - `jcenter` - [https://jcenter.bintray.com/](https://jcenter.bintray.com/)
+  - `plugins` - [https://plugins.gradle.org/m2/](https://plugins.gradle.org/m2/)
+
 - Global gradle configuration in `~/.gradle/gradle.properties`:
 
   ```jsx
