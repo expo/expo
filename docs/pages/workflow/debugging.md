@@ -103,7 +103,7 @@ brew cask install react-native-debugger
 
 ### Startup
 
-After firing up React Native Debugger, you'll need to specify the port (shortcuts: `Command+T` on macOS, `Ctrl+T` on Linux/Windows) to `19001`. After that, run your project with `expo start`, and select `Debug remote JS` from the Developer Menu. The debugger should automatically connect.
+After firing up React Native Debugger, you'll need to specify the port (shortcuts: `Command+T` on macOS, `Ctrl+T` on Linux/Windows) to `19000` (if you use SDK <= 39, the port should be `19001`>). After that, run your project with `expo start`, and select `Debug remote JS` from the Developer Menu. The debugger should automatically connect.
 
 In the debugger console, you can see the Element tree, as well as the props, state, and children of whatever element you select. You also have the Chrome console on the right, and if you type `$r` in the console, you will see the breakdown of your selected element.
 
@@ -115,16 +115,18 @@ If you right-click anywhere in the React Native Debugger, you'll get some handy 
 
 It's easy to use the React Native Debugger to debug your network requests. Simple right-click to `Enable Network Inspect`, which allows you to open the Network tab and inspect requests of `fetch` and `XMLHttpRequest`. There are [some limitations](https://github.com/jhen0409/react-native-debugger/blob/master/docs/network-inspect-of-chrome-devtools.md#limitations), so there are a few other alternatives, all require using a proxy. The following options will all work:
 
-- [Charles Proxy](https://www.charlesproxy.com/documentation/configuration/browser-and-system-configuration/) (\$50 USD, our preferred tool)
+- [Charles Proxy](https://www.charlesproxy.com/documentation/configuration/browser-and-system-configuration/) (~$50 USD, our preferred tool)
 - [mitmproxy](https://medium.com/@rotxed/how-to-debug-http-s-traffic-on-android-7fbe5d2a34#.hnhanhyoz)
 - [Fiddler](http://www.telerik.com/fiddler)
+
+> 💡 In bare workflow apps you can use [Flipper](https://fbflipper.com/) to inspect network traffic.
 
 ## Debugging Redux
 
 [Redux](https://redux.js.org/) is a popular library for managing the state of your app that doesn't belong to any single component, and instead it shared throughout the app. You can use the React Native Debugger (told you this tool does it all), the set up is as follows:
 
 1. Download React Native Debugger from the [releases page](https://github.com/jhen0409/react-native-debugger/releases).
-2. Open the app, press `⌘+t`/`ctrl+t` to open new window, then set the port to 19001.
+2. Open the app, press `⌘+t`/`ctrl+t` to open new window, then set the port to 19000.
 3. Start your app, open the in-app developer menu, and select “Debug JS Remotely.”
 4. Configure `__REDUX_DEVTOOLS_EXTENSION__` as [shown here](https://github.com/zalmoxisus/redux-devtools-extension#11-basic-store).
 
@@ -155,13 +157,13 @@ You can debug Expo apps using the Chrome debugger tools. Rather than running you
 
 - If you are using `LAN`, make sure your device is on the same wifi network as your development machine. This may not work on some public networks. `localhost` will not work for iOS unless you are in the simulator, and it only work on Android if your device is connected to your machine via usb.
 
-- Open the app on your device, reveal the developer menu then tap on `Debug JS Remotely`. This should open up a Chrome tab with the URL `http://localhost:19001/debugger-ui`. From there, you can set breakpoints and interact through the JavaScript console. Shake the device and stop Chrome debugging when you're done.
+- Open the app on your device, reveal the developer menu then tap on `Debug JS Remotely`. This should open up a Chrome tab with the URL `http://localhost:19000/debugger-ui`. From there, you can set breakpoints and interact through the JavaScript console. Shake the device and stop Chrome debugging when you're done.
 
 - Line numbers for `console.log` statements don't work by default when using Chrome debugging. To get correct line numbers open up the Chrome Dev Tools settings, go to the "Blackboxing" tab, make sure that "Blackbox content scripts" is checked, and add `expo/build/logs/RemoteConsole.js` as a pattern with "Blackbox" selected.
 
 ### Troubleshooting localhost debugging
 
-When you start a project with Expo CLI and when you press `Run on Android device/emulator` in Expo Dev Tools (or `a` in the terminal), Expo CLI will automatically tell your device to forward `localhost:19000` and `19001` to your development machine, as long as your device is plugged in or emulator is running. If you are using `localhost` for debugging and it isn't working, close the app and open it up again using `Open on Android`. Alternatively, you can manually forward the ports using the following command if you have the Android developer tools installed: `adb reverse tcp:19000 tcp:19000` - `adb reverse tcp:19001 tcp:19001`
+When you start a project with Expo CLI and when you press `Run on Android device/emulator` in Expo Dev Tools (or `a` in the terminal), Expo CLI will automatically tell your device to forward `localhost:19000` to your development machine, as long as your device is plugged in or emulator is running. If you are using `localhost` for debugging and it isn't working, close the app and open it up again using `Open on Android`. Alternatively, you can use the following `adb` command if you have the Android developer tools installed: `adb reverse tcp:19000 tcp:19000`.
 
 ### Source maps and async functions
 
