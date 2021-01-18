@@ -2,6 +2,20 @@ BUILD_CONFIGURATIONS:
   Debug: :debug
   Release: :release
 CACHE_KEYS:
+  ABI38_0_0-lottie-react-native:
+    BUILD_SETTINGS_CHECKSUM:
+      ABI38_0_0-lottie-react-native:
+        :debug: 901f3e9e6cab6268931fe09a05819657
+        :release: 901f3e9e6cab6268931fe09a05819657
+    CHECKSUM: b9b005825715f16de7666983998fad689abb8cd9
+    FILES:
+      - "../vendored/sdk38/lottie-react-native/src/ios/LottieReactNative/AnimationViewManagerModule.swift"
+      - "../vendored/sdk38/lottie-react-native/src/ios/LottieReactNative/Bridging.h"
+      - "../vendored/sdk38/lottie-react-native/src/ios/LottieReactNative/ContainerView.swift"
+      - "../vendored/sdk38/lottie-react-native/src/ios/LottieReactNative/LRNAnimationViewManagerObjC.m"
+    PROJECT_NAME: ABI38_0_0
+    SPECS:
+      - ABI38_0_0-lottie-react-native (3.4.0)
   ABI38_0_0EXAdsAdMob:
     BUILD_SETTINGS_CHECKSUM:
       ABI38_0_0EXAdsAdMob:
@@ -2606,6 +2620,20 @@ CACHE_KEYS:
     PROJECT_NAME: ABI38_0_0
     SPECS:
       - ABI38_0_0Yoga (1.14.0)
+  ABI39_0_0-lottie-react-native:
+    BUILD_SETTINGS_CHECKSUM:
+      ABI39_0_0-lottie-react-native:
+        :debug: 8c373e55a797f95291531020b6fdf8a0
+        :release: 8c373e55a797f95291531020b6fdf8a0
+    CHECKSUM: f67bc5229cd919107137b81045e1a72e18afc597
+    FILES:
+      - "../vendored/sdk39/lottie-react-native/src/ios/LottieReactNative/AnimationViewManagerModule.swift"
+      - "../vendored/sdk39/lottie-react-native/src/ios/LottieReactNative/Bridging.h"
+      - "../vendored/sdk39/lottie-react-native/src/ios/LottieReactNative/ContainerView.swift"
+      - "../vendored/sdk39/lottie-react-native/src/ios/LottieReactNative/LRNAnimationViewManagerObjC.m"
+    PROJECT_NAME: ABI39_0_0
+    SPECS:
+      - ABI39_0_0-lottie-react-native (3.4.0)
   ABI39_0_0EXAdsAdMob:
     BUILD_SETTINGS_CHECKSUM:
       ABI39_0_0EXAdsAdMob:
@@ -5324,6 +5352,20 @@ CACHE_KEYS:
     PROJECT_NAME: ABI39_0_0
     SPECS:
       - ABI39_0_0Yoga (1.14.0)
+  ABI40_0_0-lottie-react-native:
+    BUILD_SETTINGS_CHECKSUM:
+      ABI40_0_0-lottie-react-native:
+        :debug: b8c8714673081867324ac21bd675a6c7
+        :release: b8c8714673081867324ac21bd675a6c7
+    CHECKSUM: 26e0e92bec37b7d428d850d6d33c0327df520bf7
+    FILES:
+      - "../vendored/sdk40/lottie-react-native/src/ios/LottieReactNative/AnimationViewManagerModule.swift"
+      - "../vendored/sdk40/lottie-react-native/src/ios/LottieReactNative/Bridging.h"
+      - "../vendored/sdk40/lottie-react-native/src/ios/LottieReactNative/ContainerView.swift"
+      - "../vendored/sdk40/lottie-react-native/src/ios/LottieReactNative/LRNAnimationViewManagerObjC.m"
+    PROJECT_NAME: ABI40_0_0
+    SPECS:
+      - ABI40_0_0-lottie-react-native (3.4.0)
   ABI40_0_0EXAdsAdMob:
     BUILD_SETTINGS_CHECKSUM:
       ABI40_0_0EXAdsAdMob:
@@ -9575,8 +9617,8 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-Exponent:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 88a444d930037778b576a77f02e4f788
-      Release: 88a444d930037778b576a77f02e4f788
+      Debug: dbfcf01f366401ae819b1907d727e513
+      Release: dbfcf01f366401ae819b1907d727e513
     FILES:
       - "${PODS_CONFIGURATION_BUILD_DIR}/ABI39_0_0React-Core/ABI39_0_0AccessibilityResources.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/ABI40_0_0React-Core/ABI40_0_0AccessibilityResources.bundle"
@@ -9588,12 +9630,12 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-ExponentIntegrationTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: fb18ad4ba67288d27c65775d21058c28
-      Release: fb18ad4ba67288d27c65775d21058c28
+      Debug: 494eda6c6ce29b3f9d73a465ea8fa4fb
+      Release: 494eda6c6ce29b3f9d73a465ea8fa4fb
   Pods-Tests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: fb18ad4ba67288d27c65775d21058c28
-      Release: fb18ad4ba67288d27c65775d21058c28
+      Debug: 494eda6c6ce29b3f9d73a465ea8fa4fb
+      Release: 494eda6c6ce29b3f9d73a465ea8fa4fb
   PromisesObjC:
     BUILD_SETTINGS_CHECKSUM:
       PromisesObjC:
