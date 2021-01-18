@@ -40,6 +40,11 @@ If you need to exclude some of the unimodules that you are not using but they go
 </p>
 </details>
 
+<br />
+Install the missing pods to finish configuration for iOS:
+
+<InstallSection packageName="react-native-unimodules" cmd={["npx pod-install"]} hideBareInstructions />
+
 <div style={{marginTop: 50}} />
 
 ## Configuration for Android
