@@ -9,7 +9,6 @@ import {
 } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 
-import LayoutRuler from '../components/LayoutRuler';
 import DevMenuScreen from './DevMenuScreen';
 
 const Stack = createStackNavigator();
@@ -706,7 +705,7 @@ export default class BottomSheetBehavior extends React.Component<Props, State> {
                   <View style={styles.fullscreenView}>
                     <Stack.Navigator
                       initialRouteName={this.props.screens[0].name}
-                      headerMode="float"
+                      headerMode="screen"
                       screenOptions={{
                         ...TransitionPresets.SlideFromRightIOS,
                       }}>

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
 import { NavigationContainer, DarkTheme, DefaultTheme } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, useColorScheme } from 'react-native';
 
 import { loadFontsAsync } from '../DevMenuInternal';
