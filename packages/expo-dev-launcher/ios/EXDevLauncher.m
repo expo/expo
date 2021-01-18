@@ -64,7 +64,7 @@ RCT_EXPORT_METHOD(loadApp:(NSString *)urlString
   [controller loadApp:url onSuccess:^{
     resolve(nil);
   } onError:^(NSError *error) {
-    reject(@"ERR_DEV_LAUNCHER_CANNOT_LOAD_APP", error.description, error);
+    reject(@"ERR_DEV_LAUNCHER_CANNOT_LOAD_APP", error.localizedDescription, error);
   }];
 }
 
