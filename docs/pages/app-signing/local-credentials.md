@@ -134,10 +134,10 @@ In this case your `credentials.json` should like like this:
     },
     "shareextension": {
       "provisioningProfilePath": "ios/certs/shareextension-profile.mobileprovision",
-      "distributionCertificate": {
+      /* @info You can use either the same distribution certificate (as for the first target) or a new one */ "distributionCertificate": {
         "path": "ios/certs/another-dist.p12",
         "password": "ANOTHER_DISTRIBUTION_CERTIFICATE_PASSWORD"
-      }
+      } /* @end */
     }
   }
 }
