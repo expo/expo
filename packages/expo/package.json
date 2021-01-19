@@ -16,7 +16,7 @@
     "bin",
     "build",
     "tools",
-    "tsconfig.app.json",
+    "tsconfig.base.json",
     "bundledNativeModules.json",
     "requiresExtraSetup.json",
     "AppEntry.js"
