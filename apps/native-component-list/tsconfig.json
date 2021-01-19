@@ -8,10 +8,7 @@
       "@expo/vector-icons": ["react-native-vector-icons"]
     },
     "types": ["jest"],
-    "typeRoots": [
-      "./ts-declarations",
-      "node_modules/@types"
-    ],
+    "typeRoots": ["./ts-declarations", "node_modules/@types"],
     "sourceMap": true,
     "declaration": true,
     "inlineSources": true,
@@ -21,6 +18,5 @@
     "noImplicitThis": true,
     "noImplicitReturns": true
   },
-  "include": ["App.tsx", "src/**/*", "ts-declarations/**/*"],
-  "exclude": ["node_modules"]
+  "include": ["App.tsx", "src/**/*", "ts-declarations/**/*"]
 }
