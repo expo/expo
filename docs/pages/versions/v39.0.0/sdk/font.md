@@ -5,6 +5,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-39/packages/expo-font'
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-font`** allows loading fonts from the web and using them in React Native components. See more detailed usage information in the [Using Custom Fonts](../../../guides/using-custom-fonts.md#using-custom-fonts) guide.
 
@@ -25,6 +26,8 @@ import * as Font from 'expo-font';
 ### `useFonts`
 
 ```ts
+import { useFonts } from 'expo-font';
+
 const [loaded, error] = useFonts({ ... });
 ```
 
@@ -41,23 +44,52 @@ Load a map of fonts with [`loadAsync`](#loadasyncobject). This returns a boolean
 
 #### Example: hook
 
+<SnackInline
+label='useFonts'
+dependencies={['expo-font']}
+files={{
+    'assets/fonts/Montserrat.ttf': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/ee6539921d713482b8ccd4d0d23961bb'
+  }}>
+
 ```tsx
-function App() {
-  const [loaded] = useFonts({
+import * as React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { useFonts } from 'expo-font';
+
+export default function App() {
+  /* @info */ const [loaded] = useFonts({
     Montserrat: require('./assets/fonts/Montserrat.ttf'),
   });
+  /* @end */
 
   if (!loaded) {
     return null;
   }
 
-  return <Text style={{ fontFamily: 'Montserrat' }} />;
+  return (
+    <View style={styles.container}>
+      <Text style={{ fontFamily: 'Montserrat', fontSize: 30 }}>Montserrat</Text>
+    </View>
+  );
 }
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+/* @end */
 ```
+
+</SnackInline>
 
 ## Methods
 
-### `loadAsync(object)`
+### `Font.loadAsync(object)`
 
 Highly efficient method for loading fonts from static or remote resources which can then be used with the platform's native text elements. In the browser this generates a `@font-face` block in a shared style sheet for fonts. No CSS is needed to use this method.
 
@@ -67,28 +99,80 @@ Highly efficient method for loading fonts from static or remote resources which 
 
 #### Example: functions
 
-```tsx
-await loadAsync({
-  // Load a font `Montserrat` from a static resource
-  Montserrat: require('./assets/fonts/Montserrat.ttf'),
+<SnackInline
+label='Font.loadAsync'
+dependencies={['expo-font']}
+files={{
+    'assets/fonts/Montserrat.ttf': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/ee6539921d713482b8ccd4d0d23961bb',
+    'assets/fonts/Montserrat-SemiBold.ttf': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/c641dbee1d75892e4d88bdc31560c91b'
+  }}>
 
-  // Any string can be used as the fontFamily name. Here we use an object to provide more control
-  'Montserrat-SemiBold': {
-    uri: require('./assets/fonts/Montserrat-SemiBold.ttf'),
-    fontDisplay: FontDisplay.FALLBACK,
+```tsx
+import * as React from 'react';
+import { Text, View, StyleSheet } from 'react-native';
+import * as Font from 'expo-font';
+
+export default class App extends React.Component {
+  state = {
+    fontsLoaded: false,
+  };
+
+  async loadFonts() {
+    /* @info */ await Font.loadAsync({
+      // Load a font `Montserrat` from a static resource
+      Montserrat: require('./assets/fonts/Montserrat.ttf'),
+
+      // Any string can be used as the fontFamily name. Here we use an object to provide more control
+      'Montserrat-SemiBold': {
+        uri: require('./assets/fonts/Montserrat-SemiBold.ttf'),
+        fontDisplay: Font.FontDisplay.FALLBACK,
+      },
+    });
+    /* @end */
+    this.setState({ fontsLoaded: true });
+  }
+
+  componentDidMount() {
+    this.loadFonts();
+  }
+
+  render() {
+    // Use the font with the fontFamily property after loading
+    if (this.state.fontsLoaded) {
+      return (
+        <View style={styles.container}>
+          <Text style={{ fontSize: 20 }}>Default Font</Text>
+          <Text style={{ fontFamily: 'Montserrat', fontSize: 20 }}>Montserrat</Text>
+          <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 20 }}>
+            Montserrat-SemiBold
+          </Text>
+        </View>
+      );
+    } else {
+      return null;
+    }
+  }
+}
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
-
-// Use the font with the fontFamily property
-
-return <Text style={{ fontFamily: 'Montserrat' }} />;
+/* @end */
 ```
+
+</SnackInline>
 
 #### Returns
 
 Returns a promise that resolves when the font has loaded. Often you may want to wrap the method in a `try/catch/finally` to ensure the app continues if the font fails to load.
 
-### `isLoaded`
+### `Font.isLoaded(fontFamily)`
 
 Synchronously detect if the font for `fontFamily` has finished loading.
 
@@ -100,7 +184,7 @@ Synchronously detect if the font for `fontFamily` has finished loading.
 
 `true` if the the font has fully loaded.
 
-### `isLoading`
+### `Font.isLoading(fontFamily)`
 
 Synchronously detect if the font for `fontFamily` is still being loaded
 
@@ -136,7 +220,7 @@ enum FontDisplay {
   OPTIONAL = 'optional',
 }
 
-await loadAsync({
+await Font.loadAsync({
   roboto: {
     uri: require('./roboto.ttf'),
     // Only effects web
