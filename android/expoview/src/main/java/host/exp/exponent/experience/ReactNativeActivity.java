@@ -40,7 +40,6 @@ import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import de.greenrobot.event.EventBus;
-import host.exp.exponent.ABIVersion;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.experience.splashscreen.LoadingView;
@@ -58,7 +57,6 @@ import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry;
 import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.ExperienceActivityUtils;
-import host.exp.exponent.utils.JSONBundleConverter;
 import host.exp.exponent.utils.ScopedPermissionsRequester;
 import host.exp.expoview.Exponent;
 import host.exp.expoview.R;
@@ -508,7 +506,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
       mExponentSharedPreferences.updateExperienceMetadata(mExperienceIdString, metadata);
     }
 
-    bundle.putBundle("exp", JSONBundleConverter.JSONToBundle(exponentProps));
+    bundle.putString("exp", exponentProps.toString());
 
     if (!delegate.isInForeground()) {
       return new RNObject("com.facebook.react.ReactInstanceManager");
