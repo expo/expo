@@ -22,5 +22,5 @@
     "noImplicitReturns": true
   },
   "include": ["App.tsx", "src/**/*", "ts-declarations/**/*"],
-  "exclude": ["node_modules", "babel.config.js", "metro.config.js"]
+  "exclude": ["node_modules"]
 }

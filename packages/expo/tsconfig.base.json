@@ -12,5 +12,5 @@
     "moduleResolution": "node",
     "jsx": "react-native"
   },
-  "exclude": ["node_modules", "babel.config.js", "metro.config.js"]
+  "exclude": ["node_modules"]
 }
