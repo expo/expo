@@ -28,7 +28,7 @@ const loadAppFromUrl = async (urlString: string, setLoading: (boolean) => void) 
     await DevLauncher.loadApp(urlString);
   } catch (e) {
     setLoading(false);
-    Alert.alert('Error loading app', e.toString());
+    Alert.alert('Error loading app', e.message);
   }
 };
 
