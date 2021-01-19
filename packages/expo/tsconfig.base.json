@@ -9,7 +9,6 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "isolatedModules": true,
     "moduleResolution": "node",
     "jsx": "react-native"
   },
