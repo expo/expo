@@ -29,7 +29,7 @@
 
 - (BOOL)onDeepLink:(NSURL *)url options:(NSDictionary *)options;
 
-- (void)loadApp:(NSString *)url onSuccess:(void (^)())onSuccess onError:(void (^)(NSError *error))onError;
+- (void)loadApp:(NSURL *)url onSuccess:(void (^)())onSuccess onError:(void (^)(NSError *error))onError;
 
 - (NSDictionary *)recentlyOpenedApps;
 

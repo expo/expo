@@ -64,7 +64,7 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
   /**
    `DevMenuAppInstance` instance that is responsible for initializing and managing React Native context for the dev menu.
    */
-  var appInstance: DevMenuAppInstance?
+  lazy var appInstance: DevMenuAppInstance = DevMenuAppInstance(manager: self)
 
   /**
    Instance of `DevMenuSession` that keeps the details of the currently opened dev menu session.
@@ -109,8 +109,7 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
   override init() {
     super.init()
     self.window = DevMenuWindow(manager: self)
-    self.appInstance = DevMenuAppInstance(manager: self)
-
+    
     DevMenuSettings.setup()
   }
 
@@ -137,11 +136,12 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
   @objc
   @discardableResult
   public func closeMenu() -> Bool {
-    guard let appInstance = appInstance else {
-      return false
+    if (isVisible) {
+      appInstance.sendCloseEvent()
+      return true
     }
-    appInstance.sendCloseEvent()
-    return true
+    
+    return false
   }
 
   /**
