@@ -35,7 +35,7 @@ In the bare workflow the developer has complete control, along with the complexi
 | Feature                                                      | Managed workflow | Bare workflow                                                      |
 | ------------------------------------------------------------ | ---------------- | ------------------------------------------------------------------ |
 | Develop apps with **only** JavaScript/TypeScript             | ✅               |                                                                    |
-| Use Expo build service to create your iOS and Android builds | ✅               | ⏱ (in progress)                                                    |
+| Use Expo build service to create your iOS and Android builds | ✅               | ✅ ([with EAS Build](/build/introduction.md))                      |
 | Use Expo's push notification service                         | ✅               | ✅                                                                 |
 | Use Expo's over the air updates features                     | ✅               | ✅                                                                 |
 | Develop with the Expo client app                             | ✅               | ✅ (if you follow [these guidlines](../bare/using-expo-client.md)) |
