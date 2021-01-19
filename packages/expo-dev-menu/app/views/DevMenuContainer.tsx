@@ -4,12 +4,12 @@ import Animated from 'react-native-reanimated';
 
 import DevMenuContext from '../DevMenuContext';
 import * as DevMenuInternal from '../DevMenuInternal';
+import NavigationHeaderButton from '../components/NavigationHeaderButton';
 import DevMenuMainScreen from '../screens/DevMenuMainScreen';
 import DevMenuSettingsScreen from '../screens/DevMenuSettingsScreen';
 import DevMenuTestScreen from '../screens/DevMenuTestScreen';
 import DevMenuBottomSheet from './DevMenuBottomSheet';
 import DevMenuOnboarding from './DevMenuOnboarding';
-import NavigationHeaderButton from '../components/NavigationHeaderButton';
 
 type Props = {
   uuid: string;
@@ -21,6 +21,18 @@ const { call, cond, eq, onChange } = Animated;
 function applyNavigationSettings(navigationOptions) {
   return ({ navigation }) => ({
     headerTitleAlign: 'center',
+    headerStyle: {
+      height: 60,
+    },
+    headerTitleStyle: {
+      fontSize: 16,
+    },
+    safeAreaInsets: {
+      top: 5,
+      right: 0,
+      bottom: 0,
+      left: 0,
+    },
     headerLeft: () => <NavigationHeaderButton onPress={() => navigation.pop()} />,
     ...navigationOptions,
   });

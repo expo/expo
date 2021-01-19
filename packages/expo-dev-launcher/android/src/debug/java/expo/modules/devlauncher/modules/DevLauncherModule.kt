@@ -54,7 +54,7 @@ class DevLauncherModule(reactContext: ReactApplicationContext?) : ReactContextBa
         }
         instance.loadApp(appUrl)
       } catch (e: Exception) {
-        promise.reject(e)
+        promise.reject("ERR_DEV_LAUNCHER_CANNOT_LOAD_APP", e.message, e)
       }
       promise.resolve(null)
     }

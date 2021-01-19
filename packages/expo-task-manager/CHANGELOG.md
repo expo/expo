@@ -15,8 +15,9 @@
 - Dropped support for iOS 10.0 ([#11344](https://github.com/expo/expo/pull/11344) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
-- iOS: Improve TypeScript defintion of TaskManagerTaskBody to have `appState` parameter. ([#11670](https://github.com/expo/expo/pull/11670) by [@Noitidart](https://github.com/Noitidart))
 
+- iOS: Improve TypeScript defintion of TaskManagerTaskBody to have `appState` parameter. ([#11670](https://github.com/expo/expo/pull/11670) by [@Noitidart](https://github.com/Noitidart))
+- Improve TypeScript defintion of TaskManagerTaskBody to accept generic ([#11669](https://github.com/expo/expo/pull/11669) by [@Noitidart](https://github.com/Noitidart))
 - Created config plugins ([#11538](https://github.com/expo/expo/pull/11538) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 8.6.0 — 2020-11-17

@@ -24,7 +24,11 @@ import Constants from 'expo-constants';
 
 ### `Constants.appOwnership`
 
-Returns `expo`, `standalone`, or `guest`. If `expo`, the experience is running inside of the Expo client. If `standalone`, it is a [standalone app](../../../distribution/building-standalone-apps.md#building-standalone-apps). If `guest`, it has been opened through a link from a standalone app.
+Returns `expo`, `standalone`, or `guest`. This property only applies to the managed workflow; in bare, the result is always `null`.
+
+- `expo`: The experience is running inside of the Expo client app.
+- `standalone`: It is a [standalone app](../../../distribution/building-standalone-apps.md#building-standalone-apps).
+- `guest`: It has been opened through a link from a standalone app.
 
 ### `Constants.deviceName`
 
