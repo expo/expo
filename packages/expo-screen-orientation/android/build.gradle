@@ -70,5 +70,5 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 dependencies {
   unimodule 'unimodules-core'
 
-  api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.4.21"
+  api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet("kotlinVersion", "1.4.21")}"
 }
