@@ -28,6 +28,9 @@ export interface TaskManagerTaskBody<T = object> {
    * Additional details containing unique ID of task event and name of the task.
    */
   executionInfo: {
+    // iOS only
+    appState?: 'active' | 'background' | 'inactive';
+
     eventId: string;
     taskName: string;
   };
