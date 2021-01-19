@@ -14,13 +14,9 @@ To get started, create a `tsconfig.json` in your project root:
 
 Running `expo start` will prompt you to install the required dependencies (`typescript`, `@types/react`, `@types/react-native`), and automatically configure your `tsconfig.json`.
 
-<TerminalBlock cmd={['yarn add --dev typescript @types/react @types/react-native']} />
-
-Rename files to convert them to TypeScript. For example, you would rename `App.js` to `App.tsx`.
+Rename files to convert them to TypeScript. For example, you would rename `App.js` to `App.tsx`. Use the `.tsx` extension if the file includes React components (JSX). If the file did not include any JSX, you can use the `.ts` file extension.
 
 <TerminalBlock cmd={['mv App.js App.tsx']} />
-
-Use the `.tsx` extension if the file includes React components (JSX). If the file did not include any JSX, you can use the `.ts` file extension.
 
 You can now run `yarn tsc` or `npx tsc` to typecheck the project.
 
@@ -62,8 +58,7 @@ Expo CLI will automatically modify your `tsconfig.json` to the preferred default
 ```json
 {
   "extends": "expo/tsconfig.base",
-  "compilerOptions": {},
-  "exclude": ["node_modules"]
+  "compilerOptions": {}
 }
 ```
 
