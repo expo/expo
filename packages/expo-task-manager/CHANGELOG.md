@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- Add TypeScript definition of `executionInfo.appState`. ([#11670](https://github.com/expo/expo/pull/11670) by [@Noitidart](https://github.com/Noitidart))
+- Accept generic data type of task body objects. ([#11669](https://github.com/expo/expo/pull/11669) by [@Noitidart](https://github.com/Noitidart))
+
 ## 9.0.0 — 2021-01-15
 
 ### 🛠 Breaking changes
@@ -16,8 +19,6 @@
 
 ### 🎉 New features
 
-- iOS: Improve TypeScript defintion of TaskManagerTaskBody to have `appState` parameter. ([#11670](https://github.com/expo/expo/pull/11670) by [@Noitidart](https://github.com/Noitidart))
-- Improve TypeScript defintion of TaskManagerTaskBody to accept generic ([#11669](https://github.com/expo/expo/pull/11669) by [@Noitidart](https://github.com/Noitidart))
 - Created config plugins ([#11538](https://github.com/expo/expo/pull/11538) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 8.6.0 — 2020-11-17
