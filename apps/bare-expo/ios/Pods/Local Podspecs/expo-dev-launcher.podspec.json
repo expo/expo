@@ -18,6 +18,9 @@
   "preserve_paths": "ios/**/*.{h,m,swift}",
   "requires_arc": true,
   "header_dir": "EXDevLauncher",
+  "xcconfig": {
+    "GCC_PREPROCESSOR_DEFINITIONS": "EX_DEV_LAUNCHER_ENABLED=1"
+  },
   "pod_target_xcconfig": {
     "DEFINES_MODULE": "YES"
   },

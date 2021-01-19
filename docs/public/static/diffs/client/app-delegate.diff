@@ -6,11 +6,11 @@ index 9cb91ea..a25372c 100644
  #import <EXSplashScreen/EXSplashScreenService.h>
  #import <UMCore/UMModuleRegistryProvider.h>
  
-+#if __has_include(<EXDevMenu/EXDevMenu.h>)
++#if defined(EX_DEV_MENU_ENABLED)
 +@import EXDevMenu;
 +#endif
 +
-+#if __has_include(<EXDevLauncher/EXDevLauncherController.h>)
++#if defined(EX_DEV_LAUNCHER_ENABLED)
 +#include <EXDevLauncher/EXDevLauncherController.h>
 +#endif
 +
@@ -22,7 +22,7 @@ index 9cb91ea..a25372c 100644
    self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
    #ifdef DEBUG
 -    [self initializeReactNativeApp];
-+    #if __has_include(<EXDevLauncher/EXDevLauncherController.h>)
++    #if defined(EX_DEV_LAUNCHER_ENABLED)
 +      EXDevLauncherController *contoller = [EXDevLauncherController sharedInstance];
 +      [contoller startWithWindow:self.window delegate:self launchOptions:launchOptions];
 +    #else
@@ -36,7 +36,7 @@ index 9cb91ea..a25372c 100644
  - (RCTBridge *)initializeReactNativeApp
  {
 -  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:self.launchOptions];
-+#if __has_include(<EXDevLauncher/EXDevLauncherController.h>)
++#if defined(EX_DEV_LAUNCHER_ENABLED)
 +    NSDictionary *launchOptions = [EXDevLauncherController.sharedInstance getLaunchOptions];
 +#else
 +    NSDictionary *launchOptions = self.launchOptions;
@@ -46,7 +46,7 @@ index 9cb91ea..a25372c 100644
    RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"main" initialProperties:nil];
    rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
  
-+#if __has_include(<EXDevMenu/EXDevMenu.h>)
++#if defined(EX_DEV_MENU_ENABLED)
 +  [DevMenuManager configureWithBridge:bridge];
 +#endif
 +
@@ -61,7 +61,7 @@ index 9cb91ea..a25372c 100644
 -  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
 - #else
 +#ifdef DEBUG
-+  #if __has_include(<EXDevLauncher/EXDevLauncherController.h>)
++  #if defined(EX_DEV_LAUNCHER_ENABLED)
 +    return [[EXDevLauncherController sharedInstance] sourceUrl];
 +  #else
 +    return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
@@ -77,7 +77,7 @@ index 9cb91ea..a25372c 100644
  
  // Linking API
  - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
-+#if __has_include(<EXDevLauncher/EXDevLauncherController.h>)
++#if defined(EX_DEV_LAUNCHER_ENABLED)
 +  if ([EXDevLauncherController.sharedInstance onDeepLink:url options:options]) {
 +      return true;
 +  }
@@ -90,7 +90,7 @@ index 9cb91ea..a25372c 100644
  
  @end
 +
-+#if __has_include(<EXDevLauncher/EXDevLauncherController.h>)
++#if defined(EX_DEV_LAUNCHER_ENABLED)
 +@implementation AppDelegate (EXDevLauncherControllerDelegate)
 +
 +- (void)devLauncherController:(EXDevLauncherController *)developmentClientController
