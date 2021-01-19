@@ -1,5 +1,5 @@
 {
-  "extends": "expo-module-scripts/tsconfig.base",
+  "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "noImplicitAny": true,
     "experimentalDecorators": true,
@@ -9,5 +9,5 @@
     }
   },
   "include": ["App.tsx", "src/**/*", "ts-declarations/**/*"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "babel.config.js", "metro.config.js"]
 }
