@@ -20,12 +20,12 @@ Rename files to convert them to TypeScript. For example, you would rename `App.j
 
 You can now run `yarn tsc` or `npx tsc` to typecheck the project.
 
-## Preset
+## Base Config
 
 An Expo app's `tsconfig.json` should extend the `expo/tsconfig.base` by default. This sets the following default [compiler options][tsc-compileroptions] (which can be overwritten in your project's `tsconfig.json`):
 
 - [`jsx`][tsc-jsx]: -- `"react-native"`
-  - Preserves JSX, and converts the extension `jsx` to `js`. This is because Metro bundler (default) is responsible for transforming the JSX.
+  - Preserves JSX, and converts the extension `jsx` to `js`. This is optimized for bundlers that transform the JSX internally (like Metro).
 - `allowJs`: -- `true`
   - Allow JavaScript files to be compiled. If you project requires more strictness, you can disable this.
 - `resolveJsonModule`: -- `true`
