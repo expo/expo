@@ -8,33 +8,36 @@ export { Localization };
 const parseLocale = (locale: string): string => locale.replace('_', '-');
 
 /**
- * Native device language, returned in standard format.
+ * Three character ISO 4217 currency code. Returns `null` on web.
  *
- * @example `en`, `en-US`, `es-US`
+ * @example `USD`, `EUR`, `CNY`, null
  */
-export const locale = parseLocale(ExpoLocalization.locale);
+export const currency = ExpoLocalization.currency;
+
 /**
- * List of all the native languages provided by the user settings.
- * These are returned in the order the user defines in their native settings.
- */
-export const locales = ExpoLocalization.locales.map(parseLocale);
-/**
- * The current timezone in display format.
- * On Web timezone is calculated with Intl.DateTimeFormat().resolvedOptions().timeZone. For a better estimation you could use the moment-timezone package but it will add significant bloat to your website's bundle size.
+ * Decimal separator used for formatting numbers.
  *
- * @example `America/Los_Angeles`
+ * @example `,`, '.'
  */
-export const timezone = ExpoLocalization.timezone;
+export const decimalSeparator = ExpoLocalization.decimalSeparator;
+
+/**
+ * Grouping separator used when formatting numbers larger than 1000.
+ *
+ * @example `.`, '', ','
+ */
+export const groupingSeparator = ExpoLocalization.groupingSeparator;
+
 /**
  * A list of all the supported language ISO codes.
  */
 export const isoCurrencyCodes = ExpoLocalization.isoCurrencyCodes;
+
 /**
- * **Available on iOS and web**: Region code for your device which came from Region setting in Language & Region.
- *
- * @example `US`, `NZ`
+ * Boolean value that indicates whether the system uses the metric system.
  */
-export const region = ExpoLocalization.region;
+export const isMetric = ExpoLocalization.isMetric;
+
 /**
  * Returns if the system's language is written from Right-to-Left.
  * This can be used to build features like [bidirectional icons](https://material.io/design/usability/bidirectionality.html).
@@ -42,6 +45,35 @@ export const region = ExpoLocalization.region;
  * Returns `false` in Server Side Rendering (SSR) environments.
  */
 export const isRTL = ExpoLocalization.isRTL;
+
+/**
+ * Device locale (Unicode BCP 47 identifier), consisting of a language-code and optional script, region and variant codes.
+ *
+ * @example `en`, `en-US`, `zh-Hans`, `zh-Hans-CN`, `en-emodeng`
+ */
+export const locale = parseLocale(ExpoLocalization.locale);
+
+/**
+ * List of all the native languages provided by the user settings.
+ * These are returned in the order the user defines in their native settings.
+ */
+export const locales = ExpoLocalization.locales.map(parseLocale);
+
+/**
+ * The current timezone in display format.
+ * On Web timezone is calculated with Intl.DateTimeFormat().resolvedOptions().timeZone. For a better estimation you could use the moment-timezone package but it will add significant bloat to your website's bundle size.
+ *
+ * @example `America/Los_Angeles`
+ */
+export const timezone = ExpoLocalization.timezone;
+
+/**
+ * Region code for your device which came from Region setting in Language & Region.
+ * This value is always available on iOS, but might return `null` on Android or web.
+ *
+ * @example `US`, `NZ`, null
+ */
+export const region = ExpoLocalization.region;
 
 /**
  * Get the latest native values from the device.

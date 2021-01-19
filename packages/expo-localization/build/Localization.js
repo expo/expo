@@ -3,9 +3,42 @@ import ExpoLocalization from './ExpoLocalization';
 // https://github.com/expo/expo/blob/21ae94bae2e8369992050c433a00699d425b35bd/packages/expo/src/Localization.ts#L112-L114
 const parseLocale = (locale) => locale.replace('_', '-');
 /**
- * Native device language, returned in standard format.
+ * Three character ISO 4217 currency code. Returns `null` on web.
  *
- * @example `en`, `en-US`, `es-US`
+ * @example `USD`, `EUR`, `CNY`, null
+ */
+export const currency = ExpoLocalization.currency;
+/**
+ * Decimal separator used for formatting numbers.
+ *
+ * @example `,`, '.'
+ */
+export const decimalSeparator = ExpoLocalization.decimalSeparator;
+/**
+ * Grouping separator used when formatting numbers larger than 1000.
+ *
+ * @example `.`, '', ','
+ */
+export const groupingSeparator = ExpoLocalization.groupingSeparator;
+/**
+ * A list of all the supported language ISO codes.
+ */
+export const isoCurrencyCodes = ExpoLocalization.isoCurrencyCodes;
+/**
+ * Boolean value that indicates whether the system uses the metric system.
+ */
+export const isMetric = ExpoLocalization.isMetric;
+/**
+ * Returns if the system's language is written from Right-to-Left.
+ * This can be used to build features like [bidirectional icons](https://material.io/design/usability/bidirectionality.html).
+ *
+ * Returns `false` in Server Side Rendering (SSR) environments.
+ */
+export const isRTL = ExpoLocalization.isRTL;
+/**
+ * Device locale (Unicode BCP 47 identifier), consisting of a language-code and optional script, region and variant codes.
+ *
+ * @example `en`, `en-US`, `zh-Hans`, `zh-Hans-CN`, `en-emodeng`
  */
 export const locale = parseLocale(ExpoLocalization.locale);
 /**
@@ -21,22 +54,12 @@ export const locales = ExpoLocalization.locales.map(parseLocale);
  */
 export const timezone = ExpoLocalization.timezone;
 /**
- * A list of all the supported language ISO codes.
- */
-export const isoCurrencyCodes = ExpoLocalization.isoCurrencyCodes;
-/**
- * **Available on iOS and web**: Region code for your device which came from Region setting in Language & Region.
+ * Region code for your device which came from Region setting in Language & Region.
+ * This value is always available on iOS, but might return `null` on Android or web.
  *
- * @example `US`, `NZ`
+ * @example `US`, `NZ`, null
  */
 export const region = ExpoLocalization.region;
-/**
- * Returns if the system's language is written from Right-to-Left.
- * This can be used to build features like [bidirectional icons](https://material.io/design/usability/bidirectionality.html).
- *
- * Returns `false` in Server Side Rendering (SSR) environments.
- */
-export const isRTL = ExpoLocalization.isRTL;
 /**
  * Get the latest native values from the device.
  * Locale can be changed on some Android devices without resetting the app.
