@@ -136,8 +136,12 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
   @objc
   @discardableResult
   public func closeMenu() -> Bool {
-    appInstance.sendCloseEvent()
-    return true
+    if (isVisible) {
+      appInstance.sendCloseEvent()
+      return true
+    }
+    
+    return false
   }
 
   /**
