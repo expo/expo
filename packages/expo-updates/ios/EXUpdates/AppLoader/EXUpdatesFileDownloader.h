@@ -26,6 +26,7 @@ typedef void (^EXUpdatesFileDownloaderErrorBlock)(NSError *error, NSURLResponse 
 
 - (void)downloadManifestFromURL:(NSURL *)url
                    withDatabase:(EXUpdatesDatabase *)database
+             withLaunchedUpdate:(nullable EXUpdatesUpdate *)launchedUpdate
                    successBlock:(EXUpdatesFileDownloaderManifestSuccessBlock)successBlock
                      errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock;
 
