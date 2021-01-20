@@ -1,5 +1,10 @@
 const pkg = require('./package.json');
-const { createRunOncePlugin, AndroidConfig, withAppBuildGradle } = require('@expo/config-plugins');
+const {
+  createRunOncePlugin,
+  AndroidConfig,
+  withAppBuildGradle,
+  withInfoPlist,
+} = require('@expo/config-plugins');
 
 // The placeholder scheme doesn't really matter, but sometimes the Android build fails without it being defined.
 function setGradlePlaceholders(buildGradle, placeholder) {
@@ -23,7 +28,7 @@ const withAppAuth = (
   config,
   { placeholder = AndroidConfig.Scheme.getScheme(config)[0] || 'dev.expo.app' } = {}
 ) => {
-  return withAppBuildGradle(config, config => {
+  config = withAppBuildGradle(config, config => {
     if (config.modResults.language === 'groovy') {
       config.modResults.contents = setGradlePlaceholders(config.modResults.contents, placeholder);
     } else {
@@ -33,6 +38,20 @@ const withAppAuth = (
     }
     return config;
   });
+  config = withInfoPlist(config, config => {
+    const infoPlist = config.modResults;
+    const existingUrlTypes = infoPlist.CFBundleURLTypes;
+    infoPlist.CFBundleURLTypes = [
+      ...(existingUrlTypes ?? []),
+      {
+        CFBundleURLName: 'OAuthRedirect',
+        CFBundleURLSchemes: [infoPlist.CFBundleIdentifier],
+      },
+    ];
+
+    return config;
+  });
+  return config;
 };
 
 module.exports = createRunOncePlugin(withAppAuth, pkg.name, pkg.version);
