@@ -41,7 +41,8 @@ If you need to exclude some of the unimodules that you are not using but they go
 </details>
 
 <br />
-Install the missing pods to finish configuration for iOS:
+
+The last step is to install the project's CocoaPods again in order to pull in unimodules that are deteced by `use_unimodules!` directive that we added to the `Podfile`:
 
 <InstallSection packageName="react-native-unimodules" cmd={["npx pod-install"]} hideBareInstructions />
 
