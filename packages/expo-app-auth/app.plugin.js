@@ -40,14 +40,22 @@ const withAppAuth = (
   });
   config = withInfoPlist(config, config => {
     const infoPlist = config.modResults;
+    if (!Array.isArray(infoPlist.CFBundleURLTypes)) {
+      infoPlist.CFBundleURLTypes = [];
+    }
     const existingUrlTypes = infoPlist.CFBundleURLTypes;
-    infoPlist.CFBundleURLTypes = [
-      ...(existingUrlTypes ?? []),
-      {
-        CFBundleURLName: 'OAuthRedirect',
-        CFBundleURLSchemes: [infoPlist.CFBundleIdentifier],
-      },
-    ];
+    const OAuthRedirectSchemeExists =
+      existingUrlTypes.filter(urlType => urlType.CFBundleURLName === 'OAuthRedirect').length > 0;
+
+    if (!OAuthRedirectSchemeExists) {
+      infoPlist.CFBundleURLTypes = [
+        ...(existingUrlTypes || []),
+        {
+          CFBundleURLName: 'OAuthRedirect',
+          CFBundleURLSchemes: [infoPlist.CFBundleIdentifier],
+        },
+      ];
+    }
 
     return config;
   });
