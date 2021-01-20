@@ -22,23 +22,20 @@ public class SelectionPolicyFilterAware implements SelectionPolicy {
   private static final String TAG = SelectionPolicyFilterAware.class.getSimpleName();
 
   private List<String> mRuntimeVersions;
-  // TODO: decide if we need to be able to update this field
-  private JSONObject mManifestFilters;
 
-  public SelectionPolicyFilterAware(List<String> runtimeVersions, JSONObject manifestFilters) {
+  public SelectionPolicyFilterAware(List<String> runtimeVersions) {
     mRuntimeVersions = runtimeVersions;
-    mManifestFilters = manifestFilters;
   }
 
-  public SelectionPolicyFilterAware(String runtimeVersion, JSONObject manifestFilters) {
-    this(Collections.singletonList(runtimeVersion), manifestFilters);
+  public SelectionPolicyFilterAware(String runtimeVersion) {
+    this(Collections.singletonList(runtimeVersion));
   }
 
   @Override
-  public UpdateEntity selectUpdateToLaunch(List<UpdateEntity> updates) {
+  public UpdateEntity selectUpdateToLaunch(List<UpdateEntity> updates, JSONObject filters) {
     UpdateEntity updateToLaunch = null;
     for (UpdateEntity update : updates) {
-      if (!mRuntimeVersions.contains(update.runtimeVersion) || isUpdateManifestFiltered(update, mManifestFilters)) {
+      if (!mRuntimeVersions.contains(update.runtimeVersion) || isUpdateManifestFiltered(update, filters)) {
         continue;
       }
       if (updateToLaunch == null || updateToLaunch.commitTime.before(update.commitTime)) {
@@ -49,7 +46,7 @@ public class SelectionPolicyFilterAware implements SelectionPolicy {
   }
 
   @Override
-  public List<UpdateEntity> selectUpdatesToDelete(List<UpdateEntity> updates, UpdateEntity launchedUpdate) {
+  public List<UpdateEntity> selectUpdatesToDelete(List<UpdateEntity> updates, UpdateEntity launchedUpdate, JSONObject filters) {
     if (launchedUpdate == null) {
       return new ArrayList<>();
     }
@@ -66,7 +63,7 @@ public class SelectionPolicyFilterAware implements SelectionPolicy {
         if (nextNewestUpdate == null || nextNewestUpdate.commitTime.before(update.commitTime)) {
           nextNewestUpdate = update;
         }
-        if (!isUpdateManifestFiltered(update, mManifestFilters) &&
+        if (!isUpdateManifestFiltered(update, filters) &&
           (nextNewestUpdateMatchingFilters == null ||  nextNewestUpdateMatchingFilters.commitTime.before(update.commitTime))) {
           nextNewestUpdateMatchingFilters = update;
         }
@@ -82,28 +79,16 @@ public class SelectionPolicyFilterAware implements SelectionPolicy {
   }
 
   @Override
-  public boolean shouldLoadNewUpdate(UpdateEntity newUpdate, UpdateEntity launchedUpdate) {
-    if (launchedUpdate == null) {
-      return true;
-    }
+  public boolean shouldLoadNewUpdate(UpdateEntity newUpdate, UpdateEntity launchedUpdate, JSONObject filters) {
     if (newUpdate == null) {
-      return false;
-    }
-    return newUpdate.commitTime.after(launchedUpdate.commitTime);
-  }
-
-  @Override
-  public boolean shouldLoadNewUpdate(Manifest newManifest, UpdateEntity launchedUpdate) {
-    // TODO: reset mManifestFilters? -- should probably do this on reload
-    if (newManifest == null) {
       return false;
     }
     // if the current update doesn't pass the manifest filters
     // we should load the new update no matter the commitTime
-    if (launchedUpdate == null || isUpdateManifestFiltered(launchedUpdate, newManifest.getManifestFilters())) {
+    if (launchedUpdate == null || isUpdateManifestFiltered(launchedUpdate, filters)) {
       return true;
     }
-    return newManifest.getUpdateEntity().commitTime.after(launchedUpdate.commitTime);
+    return newUpdate.commitTime.after(launchedUpdate.commitTime);
   }
 
   private boolean isUpdateManifestFiltered(UpdateEntity update, JSONObject manifestFilters) {

@@ -1,13 +1,13 @@
 package expo.modules.updates.launcher;
 
+import org.json.JSONObject;
+
 import expo.modules.updates.db.entity.UpdateEntity;
-import expo.modules.updates.manifest.Manifest;
 
 import java.util.List;
 
 public interface SelectionPolicy {
-  UpdateEntity selectUpdateToLaunch(List<UpdateEntity> updates);
-  List<UpdateEntity> selectUpdatesToDelete(List<UpdateEntity> updates, UpdateEntity launchedUpdate);
-  boolean shouldLoadNewUpdate(UpdateEntity newUpdate, UpdateEntity launchedUpdate);
-  boolean shouldLoadNewUpdate(Manifest newManifest, UpdateEntity launchedUpdate);
+  UpdateEntity selectUpdateToLaunch(List<UpdateEntity> updates, JSONObject filters);
+  List<UpdateEntity> selectUpdatesToDelete(List<UpdateEntity> updates, UpdateEntity launchedUpdate, JSONObject filters);
+  boolean shouldLoadNewUpdate(UpdateEntity newUpdate, UpdateEntity launchedUpdate, JSONObject filters);
 }

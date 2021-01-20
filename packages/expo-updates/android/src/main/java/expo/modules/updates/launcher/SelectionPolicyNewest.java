@@ -1,7 +1,8 @@
 package expo.modules.updates.launcher;
 
+import org.json.JSONObject;
+
 import expo.modules.updates.db.entity.UpdateEntity;
-import expo.modules.updates.manifest.Manifest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,7 +30,7 @@ public class SelectionPolicyNewest implements SelectionPolicy {
   }
 
   @Override
-  public UpdateEntity selectUpdateToLaunch(List<UpdateEntity> updates) {
+  public UpdateEntity selectUpdateToLaunch(List<UpdateEntity> updates, JSONObject filters) {
     UpdateEntity updateToLaunch = null;
     for (UpdateEntity update : updates) {
       if (!mRuntimeVersions.contains(update.runtimeVersion)) {
@@ -43,7 +44,7 @@ public class SelectionPolicyNewest implements SelectionPolicy {
   }
 
   @Override
-  public List<UpdateEntity> selectUpdatesToDelete(List<UpdateEntity> updates, UpdateEntity launchedUpdate) {
+  public List<UpdateEntity> selectUpdatesToDelete(List<UpdateEntity> updates, UpdateEntity launchedUpdate, JSONObject filters) {
     if (launchedUpdate == null) {
       return new ArrayList<>();
     }
@@ -67,7 +68,7 @@ public class SelectionPolicyNewest implements SelectionPolicy {
   }
 
   @Override
-  public boolean shouldLoadNewUpdate(UpdateEntity newUpdate, UpdateEntity launchedUpdate) {
+  public boolean shouldLoadNewUpdate(UpdateEntity newUpdate, UpdateEntity launchedUpdate, JSONObject filters) {
     if (launchedUpdate == null) {
       return true;
     }
@@ -75,16 +76,5 @@ public class SelectionPolicyNewest implements SelectionPolicy {
       return false;
     }
     return newUpdate.commitTime.after(launchedUpdate.commitTime);
-  }
-
-  @Override
-  public boolean shouldLoadNewUpdate(Manifest newManifest, UpdateEntity launchedUpdate) {
-    if (launchedUpdate == null) {
-      return true;
-    }
-    if (newManifest == null) {
-      return false;
-    }
-    return newManifest.getUpdateEntity().commitTime.after(launchedUpdate.commitTime);
   }
 }
