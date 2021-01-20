@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Configure the OAuthRedirect scheme for iOS via config plugin ([#11701](https://github.com/expo/expo/pull/11701) by [@cruzach](https://github.com/cruzach))
+
 ## 10.0.0 — 2021-01-15
 
 ### 🛠 Breaking changes
