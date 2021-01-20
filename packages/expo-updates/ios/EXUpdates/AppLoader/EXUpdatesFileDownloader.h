@@ -30,6 +30,9 @@ typedef void (^EXUpdatesFileDownloaderErrorBlock)(NSError *error, NSURLResponse 
                    successBlock:(EXUpdatesFileDownloaderManifestSuccessBlock)successBlock
                      errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock;
 
+- (void)setManifestHTTPHeaderFields:(NSMutableURLRequest *)request
+                 withLaunchedUpdate:(nullable EXUpdatesUpdate *)launchedUpdate;
+
 + (dispatch_queue_t)assetFilesQueue;
 
 @end

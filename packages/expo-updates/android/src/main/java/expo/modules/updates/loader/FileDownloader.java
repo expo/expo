@@ -244,7 +244,7 @@ public class FileDownloader {
     return requestBuilder.build();
   }
 
-  private static Request setHeadersForManifestUrl(UpdatesConfiguration configuration, UpdateEntity launchedUpdate, Context context) {
+  /* package */ static Request setHeadersForManifestUrl(UpdatesConfiguration configuration, UpdateEntity launchedUpdate, Context context) {
     Request.Builder requestBuilder = new Request.Builder()
             .url(configuration.getUpdateUrl().toString())
             .header("Accept", "application/expo+json,application/json")

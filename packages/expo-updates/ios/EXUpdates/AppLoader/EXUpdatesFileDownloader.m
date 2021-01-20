@@ -83,7 +83,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
                                                          cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
                                                      timeoutInterval:EXUpdatesDefaultTimeoutInterval];
-  [self _setManifestHTTPHeaderFields:request withLaunchedUpdate:launchedUpdate];
+  [self setManifestHTTPHeaderFields:request withLaunchedUpdate:launchedUpdate];
   [self _downloadDataWithRequest:request successBlock:^(NSData *data, NSURLResponse *response) {
     NSError *err;
     id parsedJson = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&err];
@@ -220,7 +220,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
   }
 }
 
-- (void)_setManifestHTTPHeaderFields:(NSMutableURLRequest *)request withLaunchedUpdate:(nullable EXUpdatesUpdate *)launchedUpdate
+- (void)setManifestHTTPHeaderFields:(NSMutableURLRequest *)request withLaunchedUpdate:(nullable EXUpdatesUpdate *)launchedUpdate
 {
   [request setValue:@"application/expo+json,application/json" forHTTPHeaderField:@"Accept"];
   [request setValue:@"true" forHTTPHeaderField:@"Expo-JSON-Error"];
