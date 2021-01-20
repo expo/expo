@@ -16,6 +16,9 @@ NS_ASSUME_NONNULL_BEGIN
 static NSString * const EXUpdatesDatabaseErrorDomain = @"EXUpdatesDatabase";
 static NSString * const EXUpdatesDatabaseFilename = @"expo-v4.db";
 
+static NSString * const EXUpdatesDatabaseManifestFiltersKey = @"manifestFilters";
+static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefinedHeaders";
+
 @implementation EXUpdatesDatabase
 
 # pragma mark - lifecycle
@@ -447,6 +450,50 @@ static NSString * const EXUpdatesDatabaseFilename = @"expo-v4.db";
   } else {
     return [self _assetWithRow:rows[0]];
   }
+}
+
+# pragma mark - json data
+
+- (nullable NSDictionary *)_jsonDataWithKey:(NSString *)key scopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error
+{
+  NSString * const sql = @"SELECT * FROM json_data WHERE \"key\" = ?1 AND \"scope_key\" = 2";
+  NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:@[key, scopeKey] error:error];
+  if (rows && [rows count]) {
+    id value = rows[0][@"value"];
+    if (value && [value isKindOfClass:[NSString class]]) {
+      NSDictionary *serverDefinedHeaders = [NSJSONSerialization JSONObjectWithData:[(NSString *)value dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:error];
+      if (!error && serverDefinedHeaders && [serverDefinedHeaders isKindOfClass:[NSDictionary class]]) {
+        return serverDefinedHeaders;
+      }
+    }
+  }
+  return nil;
+}
+
+- (void)_setJsonData:(NSDictionary *)data withKey:(NSString *)key scopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error
+{
+  NSString * const sql = @"INSERT OR REPLACE INTO json_data (\"key\", \"value\", \"last_updated\", \"scope_key\") VALUES (?1, ?2, ?3, ?4);";
+  [self _executeSql:sql withArgs:@[key, data, @(NSDate.date.timeIntervalSince1970 * 1000), scopeKey] error:error];
+}
+
+- (nullable NSDictionary *)serverDefinedHeadersWithScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error
+{
+  return [self _jsonDataWithKey:EXUpdatesDatabaseServerDefinedHeadersKey scopeKey:scopeKey error:error];
+}
+
+- (nullable NSDictionary *)manifestFiltersWithScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error
+{
+  return [self _jsonDataWithKey:EXUpdatesDatabaseManifestFiltersKey scopeKey:scopeKey error:error];
+}
+
+- (void)setServerDefinedHeaders:(NSDictionary *)serverDefinedHeaders withScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error
+{
+  [self _setJsonData:serverDefinedHeaders withKey:EXUpdatesDatabaseServerDefinedHeadersKey scopeKey:scopeKey error:error];
+}
+
+- (void)setManifestFilters:(NSDictionary *)manifestFilters withScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error
+{
+  [self _setJsonData:manifestFilters withKey:EXUpdatesDatabaseManifestFiltersKey scopeKey:scopeKey error:error];
 }
 
 # pragma mark - helper methods

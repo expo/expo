@@ -15,8 +15,12 @@ NS_ASSUME_NONNULL_BEGIN
                                   database:(EXUpdatesDatabase *)database
 {
   NSDictionary *manifest = rootManifest;
+  NSDictionary *serverDefinedHeaders;
+  NSDictionary *manifestFilters;
   if (manifest[@"manifest"]) {
     manifest = manifest[@"manifest"];
+    serverDefinedHeaders = manifest[@"serverDefinedHeaders"];
+    manifestFilters = manifest[@"manifestFilters"];
   }
 
   EXUpdatesUpdate *update = [[EXUpdatesUpdate alloc] initWithRawManifest:manifest
@@ -91,6 +95,13 @@ NS_ASSUME_NONNULL_BEGIN
   update.bundleUrl = bundleUrl;
   update.assets = processedAssets;
   update.metadata = manifest;
+
+  if (serverDefinedHeaders && [serverDefinedHeaders isKindOfClass:[NSDictionary class]]) {
+    update.serverDefinedHeaders = serverDefinedHeaders;
+  }
+  if (manifestFilters && [manifestFilters isKindOfClass:[NSDictionary class]]) {
+    update.manifestFilters = manifestFilters;
+  }
 
   return update;
 }

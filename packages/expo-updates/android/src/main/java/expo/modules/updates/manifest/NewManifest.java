@@ -3,6 +3,7 @@ package expo.modules.updates.manifest;
 import android.net.Uri;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
 import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.UpdatesUtils;
 import expo.modules.updates.db.entity.AssetEntity;
@@ -80,11 +81,11 @@ public class NewManifest implements Manifest {
     return new NewManifest(manifestJson, id, configuration.getScopeKey(), commitTime, runtimeVersion, launchAsset, assets, serverDefinedHeaders, manifestFilters);
   }
 
-  public JSONObject getServerDefinedHeaders() {
+  public @Nullable JSONObject getServerDefinedHeaders() {
     return mServerDefinedHeaders;
   }
 
-  public JSONObject getManifestFilters() {
+  public @Nullable JSONObject getManifestFilters() {
     return mManifestFilters;
   }
 

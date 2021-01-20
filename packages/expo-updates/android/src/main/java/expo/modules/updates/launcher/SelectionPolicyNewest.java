@@ -1,6 +1,7 @@
 package expo.modules.updates.launcher;
 
 import expo.modules.updates.db.entity.UpdateEntity;
+import expo.modules.updates.manifest.Manifest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -74,5 +75,16 @@ public class SelectionPolicyNewest implements SelectionPolicy {
       return false;
     }
     return newUpdate.commitTime.after(launchedUpdate.commitTime);
+  }
+
+  @Override
+  public boolean shouldLoadNewUpdate(Manifest newManifest, UpdateEntity launchedUpdate) {
+    if (launchedUpdate == null) {
+      return true;
+    }
+    if (newManifest == null) {
+      return false;
+    }
+    return newManifest.getUpdateEntity().commitTime.after(launchedUpdate.commitTime);
   }
 }
