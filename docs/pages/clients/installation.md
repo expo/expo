@@ -16,6 +16,7 @@ The easiest way to get started is to initialize a new project by executing the f
 
 <InstallSection packageName="expo-development-client" cmd={["npx crna -t with-dev-launcher"]} hideBareInstructions />
 -->
+
 ## Add the Development Client to the existing project
 
 ## 1. Installation
@@ -36,6 +37,11 @@ Change your `Podfile` to make sure that the Development Client will be removed i
 Then you can run the following command to install native code for the Dev Launcher via Cocoapods.
 
 <InstallSection packageName="expo-development-client" cmd={["npx pod-install"]} hideBareInstructions />
+
+Also, make sure that your project is configured to deploy on iOS **above 10**.
+To do that you need open the XCode, go to `Project settings` > `General` > `Deployment info` and select iOS version above 10.
+
+<img src="/static/images/client/check_ios_version.png" style={{maxWidth: "100%" }}/>
 
 ## 2. Basic configuration
 
@@ -62,6 +68,14 @@ Make the following changes to allow the Development Client to control project in
 ## 3. Build and Install
 
 You're now ready to start developing your project with the Development Client.
+
+## 4. Optional configuration
+
+### 🍏 iOS
+
+When you start your project on iOS, the metro bundler will be started automatically. This behavior might not be ideal when you want to use `expo start`. Our recommended solution is to remove the `Start Packager` action from building scripts. To do that you need to open the XCode, go to `Project settings` > `Build Phases` and remove the `Start Packager` action.
+
+<img src="/static/images/client/remove_start_packager.png" style={{maxWidth: "100%" }}/>
 
 - [EAS Build](eas-build.md) - the easiest way to generate development builds of your application
 
