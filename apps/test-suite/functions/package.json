@@ -16,8 +16,8 @@
   },
   "main": "lib/index.js",
   "dependencies": {
-    "firebase-admin": "^9.2.0",
-    "firebase-functions": "^3.11.0"
+    "firebase-admin": "^9.4.2",
+    "firebase-functions": "^3.13.1"
   },
   "devDependencies": {
     "firebase-functions-test": "^0.2.0",
