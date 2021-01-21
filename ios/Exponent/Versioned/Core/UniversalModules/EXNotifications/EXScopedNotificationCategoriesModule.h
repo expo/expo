@@ -3,12 +3,14 @@
 #if __has_include(<EXNotifications/EXNotificationCategoriesModule.h>)
 
 #import <EXNotifications/EXNotificationCategoriesModule.h>
+#import "EXConstantsBinding.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXScopedNotificationCategoriesModule : EXNotificationCategoriesModule
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId;
+- (instancetype)initWithExperienceId:(NSString *)experienceId
+                 andConstantsBinding:(EXConstantsBinding *)constantsBinding;
 
 @end
 
