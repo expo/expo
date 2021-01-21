@@ -70,8 +70,8 @@ PODS:
   - EXErrorRecovery (2.0.1):
     - UMCore
   - EXFacebook (10.0.0):
-    - FBSDKCoreKit (~> 5.8.0)
-    - FBSDKLoginKit (~> 5.8.0)
+    - FacebookSDK/CoreKit (~> 9.0)
+    - FacebookSDK/LoginKit (~> 9.0)
     - UMConstantsInterface
     - UMCore
   - EXFaceDetector (9.0.1):
@@ -210,6 +210,10 @@ PODS:
     - UMFileSystemInterface
   - EXWebBrowser (9.0.0):
     - UMCore
+  - FacebookSDK/CoreKit (9.0.0):
+    - FBSDKCoreKit (~> 9.0.0)
+  - FacebookSDK/LoginKit (9.0.0):
+    - FacebookSDK/CoreKit
   - FBLazyVector (0.63.2)
   - FBReactNativeSpec (0.63.2):
     - Folly (= 2020.01.13.00)
@@ -218,16 +222,12 @@ PODS:
     - React-Core (= 0.63.2)
     - React-jsi (= 0.63.2)
     - ReactCommon/turbomodule/core (= 0.63.2)
-  - FBSDKCoreKit (5.8.0):
-    - FBSDKCoreKit/Basics (= 5.8.0)
-    - FBSDKCoreKit/Core (= 5.8.0)
-  - FBSDKCoreKit/Basics (5.8.0)
-  - FBSDKCoreKit/Core (5.8.0):
+  - FBSDKCoreKit (9.0.0):
+    - FBSDKCoreKit/Basics (= 9.0.0)
+    - FBSDKCoreKit/Core (= 9.0.0)
+  - FBSDKCoreKit/Basics (9.0.0)
+  - FBSDKCoreKit/Core (9.0.0):
     - FBSDKCoreKit/Basics
-  - FBSDKLoginKit (5.8.0):
-    - FBSDKLoginKit/Login (= 5.8.0)
-  - FBSDKLoginKit/Login (5.8.0):
-    - FBSDKCoreKit (~> 5.0)
   - Firebase/Core (6.14.0):
     - Firebase/CoreOnly
     - FirebaseAnalytics (= 6.1.7)
@@ -853,8 +853,8 @@ SPEC REPOS:
     - boost-for-react-native
     - CocoaAsyncSocket
     - CocoaLibEvent
+    - FacebookSDK
     - FBSDKCoreKit
-    - FBSDKLoginKit
     - Firebase
     - FirebaseAnalytics
     - FirebaseCore
@@ -1228,7 +1228,7 @@ SPEC CHECKSUMS:
   EXDevice: 101eddd9bc28faba8246ba0c499a65a4821a6b5e
   EXDocumentPicker: 5cef8a8593a9232961a2a0e9aa9349a723cafdc7
   EXErrorRecovery: f2dd13f3cc0b99edf47570b19a323d6c69687d6b
-  EXFacebook: 591900736492e32f78f0690121abcc9721f7b807
+  EXFacebook: 004a91b08a7cf2870b8522f3089d7b1178634470
   EXFaceDetector: 8c6c88864a8f9420190aae8a7c19ba569792d0df
   EXFileSystem: 9bdb09527eda7fa19ef8f5b3f490ca3887840f31
   EXFirebaseAnalytics: db3028d0b0b87e4f2a6605947f943417befcad72
@@ -1274,10 +1274,10 @@ SPEC CHECKSUMS:
   EXTaskManager: e1956fd45bc301cbe852ebffccb9fd0b4ab78494
   EXVideoThumbnails: 0be939563a5d46ce0d1fa9baea7d454b99475763
   EXWebBrowser: 2e708935a91ae0f51f5f8ffc85ba673950f34833
+  FacebookSDK: b2a78314964a43f3775c700968750d45eac0d065
   FBLazyVector: 3ef4a7f62e7db01092f9d517d2ebc0d0677c4a37
   FBReactNativeSpec: dc7fa9088f0f2a998503a352b0554d69a4391c5a
-  FBSDKCoreKit: e7dcac0aabcfb09d0166998edd95fe3b05a0ce5d
-  FBSDKLoginKit: 1b0cf04df0370b37404213157b060d6666ede814
+  FBSDKCoreKit: ac6cc500b8e104bb9a4dd20b1527b5d199123c2e
   Firebase: 0219bb4782eb1406f1b9b0628a2e625484ce910d
   FirebaseAnalytics: f68b9f3f1241385129ae0a83b63627fc420c05e5
   FirebaseCore: 632e05cc5e1199d9147122c16d92305eb04c34bd
