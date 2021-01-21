@@ -7,7 +7,6 @@
     "lib": ["dom", "es6", "es2016.array.include", "es2017.object"],
     "allowJs": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
