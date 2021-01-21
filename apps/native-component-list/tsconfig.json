@@ -9,7 +9,6 @@
     },
     "types": ["jest"],
     "typeRoots": ["./ts-declarations", "node_modules/@types"],
-    "inlineSources": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "strictFunctionTypes": true,
