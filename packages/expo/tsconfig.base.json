@@ -12,7 +12,6 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "moduleResolution": "node",
-    "baseUrl": "./",
     "jsx": "react-native"
   },
 
