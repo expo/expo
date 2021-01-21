@@ -91,5 +91,9 @@ describe(Linking.createURL, () => {
     test.each<string>(['path/into/app', ''])(`makes url %p`, path => {
       expect(Linking.createURL(path)).toMatchSnapshot();
     });
+
+    it(`uses triple slashes`, () => {
+      expect(Linking.createURL('some/path', { isTripleSlashed: true })).toMatchSnapshot();
+    });
   });
 });
