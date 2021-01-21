@@ -1,7 +1,7 @@
 /*
  * This class allows you to intercept and mutate incoming remote notifications.
  * didReceive() has ~30 seconds to modify the payload and call the contentHandler,
- * otherwise serviceExtensionTimeWillExpire() will be triggered.
+ * otherwise the system will display the notification’s original content.
  *
  * The notification payload must contain:
  *    "mutable-content" : 1
@@ -25,13 +25,6 @@ class NotificationService: UNNotificationServiceExtension {
       if (!request.content.categoryIdentifier.isEmpty && (request.content.userInfo["experienceId"]) != nil) {
         bestAttemptContent.categoryIdentifier = "\(request.content.userInfo["experienceId"] as! String)-\(request.content.categoryIdentifier)"
       }
-      contentHandler(bestAttemptContent)
-    }
-  }
-  
-  override func serviceExtensionTimeWillExpire() {
-    // Called just before the extension will be terminated by the system.
-    if let contentHandler = contentHandler, let bestAttemptContent =  bestAttemptContent {
       contentHandler(bestAttemptContent)
     }
   }
