@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Notify all listeners of pending notification responses. ([#11536](https://github.com/expo/expo/pull/11536) by [@esamelson](https://github.com/esamelson))
+
 ## 0.9.0 — 2021-01-15
 
 ### ⚠️ Notices
