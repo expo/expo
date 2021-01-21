@@ -22,6 +22,8 @@ You can now run `yarn tsc` or `npx tsc` to typecheck the project.
 
 ## Base Config
 
+> 💡 You can disable the TypeScript setup in Expo CLI with the environment variable `EXPO_NO_TYPESCRIPT_SETUP=1`
+
 An Expo app's `tsconfig.json` should extend the `expo/tsconfig.base` by default. This sets the following default [compiler options][tsc-compileroptions] (which can be overwritten in your project's `tsconfig.json`):
 
 - [`jsx`][tsc-jsx]: -- `"react-native"`
