@@ -33,7 +33,7 @@ export default function App() {
     (async () => {
       const { status } = await Calendar.requestCalendarPermissionsAsync();
       if (status === 'granted') {
-        const calendars = await Calendar.getCalendarsAsync();
+        const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
         console.log('Here are all your calendars:');
         console.log({ calendars });
       }
@@ -55,7 +55,7 @@ export default function App() {
 }
 
 async function getDefaultCalendarSource() {
-  const calendars = await Calendar.getCalendarsAsync();
+  const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
   const defaultCalendars = calendars.filter(each => each.source.name === 'Default');
   return defaultCalendars[0].source;
 }
