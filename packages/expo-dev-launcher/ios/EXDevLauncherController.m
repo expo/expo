@@ -117,7 +117,14 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:_launcherBridge
                                                    moduleName:@"main"
-                                            initialProperties:nil];
+                                            initialProperties:@{
+                                              @"isSimulator":
+                                                              #if TARGET_IPHONE_SIMULATOR
+                                                              @YES
+                                                              #else
+                                                              @NO
+                                                              #endif
+                                            }];
 
   [self _ensureUserInterfaceStyleIsInSyncWithViewController:rootView];
   
