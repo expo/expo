@@ -103,7 +103,7 @@ Gets an array of calendar objects with details about the different calendars sto
 
 #### Arguments
 
-- **entityType (_string_)** -- (iOS only) Not required, but if defined, filters the returned calendars to a specific entity type. Possible values are `Calendar.EntityTypes.EVENT` (for calendars shown in the Calendar app) and `Calendar.EntityTypes.REMINDER` (for the Reminders app).
+- **entityType (_string_)** -- (iOS only) Not required, but if defined, filters the returned calendars to a specific entity type. Possible values are `Calendar.EntityTypes.EVENT` (for calendars shown in the Calendar app) and `Calendar.EntityTypes.REMINDER` (for the Reminders app). **Note:** if not defined, you will need both permissions: **CALENDAR** and **REMINDERS**.
 
 #### Returns
 
