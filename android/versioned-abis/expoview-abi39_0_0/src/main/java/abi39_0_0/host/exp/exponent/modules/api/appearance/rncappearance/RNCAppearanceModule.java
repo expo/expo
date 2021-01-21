@@ -50,7 +50,7 @@ public class RNCAppearanceModule extends ReactContextBaseJavaModule implements L
         return REACT_CLASS;
     }
 
-    // `protected` to allow overriding in Expo client for scoping purposes
+    // `protected` to allow overriding in Expo Go for scoping purposes
     protected String getColorScheme(Configuration config) {
         String colorScheme = "no-preference";
 

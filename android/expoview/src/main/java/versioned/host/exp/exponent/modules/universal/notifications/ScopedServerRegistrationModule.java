@@ -22,7 +22,7 @@ public class ScopedServerRegistrationModule extends ServerRegistrationModule {
   @Override
   public void getInstallationIdAsync(Promise promise) {
     // If there is an existing installation ID, so if:
-    // - we're in Expo client and running an experience
+    // - we're in Expo Go and running an experience
     //   which has previously been run on an older SDK
     //   (where it persisted an installation ID in
     //   the legacy storage) or

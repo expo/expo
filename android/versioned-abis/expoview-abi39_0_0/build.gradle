@@ -141,7 +141,7 @@ dependencies {
   annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
   // Remember to update DetachAppTemplate build.gradle if you add any excludes or transitive = false here!
 
-  // Used only in Expo client, see Analytics.java
+  // Used only in Expo Go, see Analytics.java
   compileOnly 'com.amplitude:android-sdk:2.23.2'
 
   // expo-file-system
