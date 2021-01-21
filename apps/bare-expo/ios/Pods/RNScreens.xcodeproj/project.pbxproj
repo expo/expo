@@ -21,7 +21,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		9922294BD1C922D6EDBABF87CF151CE2 /* PBXContainerItemProxy */ = {
+		FDD5E59482DDC7DEFC1ADF9AAA745279 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 840C8BA93AA8C668309541566C1103A5 /* React-Core.xcodeproj */;
 			proxyType = 1;
@@ -167,7 +167,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				EE682BC7FB43EC94A5885634DB985508 /* PBXTargetDependency */,
+				555B710765E6325AC68638D2625A5B8A /* PBXTargetDependency */,
 			);
 			name = RNScreens;
 			productName = RNScreens;
@@ -223,10 +223,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		EE682BC7FB43EC94A5885634DB985508 /* PBXTargetDependency */ = {
+		555B710765E6325AC68638D2625A5B8A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-Core";
-			targetProxy = 9922294BD1C922D6EDBABF87CF151CE2 /* PBXContainerItemProxy */;
+			targetProxy = FDD5E59482DDC7DEFC1ADF9AAA745279 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -359,16 +359,17 @@
 			};
 			name = Release;
 		};
-		BF81960AF3E5F3CEBC70EB9D1C910D53 /* Debug */ = {
+		A7E40D34488EABBFA563D19BCF2139AE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 83485CE2322FDCE08A9FB5ABBE76BD61 /* RNScreens.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/RNScreens/RNScreens-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -383,16 +384,17 @@
 			};
 			name = Debug;
 		};
-		DC250A5728DFE70A7E10237E009BD9D6 /* Release */ = {
+		C3BB1E278E15062AF92B5872D27A01A8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C9446F716826C67E8F9ABEC19FAA2683 /* RNScreens.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/RNScreens/RNScreens-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -423,8 +425,8 @@
 		726A83B5CE19DF6C61CA828445E83A21 /* Build configuration list for PBXNativeTarget "RNScreens" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				BF81960AF3E5F3CEBC70EB9D1C910D53 /* Debug */,
-				DC250A5728DFE70A7E10237E009BD9D6 /* Release */,
+				A7E40D34488EABBFA563D19BCF2139AE /* Debug */,
+				C3BB1E278E15062AF92B5872D27A01A8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

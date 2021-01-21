@@ -290,6 +290,10 @@ EXWebBrowser:
   LABEL: EXWebBrowser
   PROJECT_PATH: EXWebBrowser.xcodeproj
   UUID: 026359A12CA511AF12897ED05A83462C
+FacebookSDK:
+  LABEL: FacebookSDK
+  PROJECT_PATH: FacebookSDK.xcodeproj
+  UUID: 5E4E18D34A90F67EF015BC6C80458877
 FBLazyVector:
   LABEL: FBLazyVector
   PROJECT_PATH: FBLazyVector.xcodeproj

@@ -1,0 +1,11 @@
+framework module FBSDKCoreKit {
+    umbrella header "FBSDKCoreKit.h"
+
+    export *
+    module * { export * }
+}
+
+module FBSDKCoreKit.Swift {
+    header "FBSDKCoreKit-Swift.h"
+    requires objc
+}

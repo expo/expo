@@ -1,0 +1,74 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.3.1 (swiftlang-1200.0.41 clang-1200.0.32.8)
+// swift-module-flags: -target armv7-apple-ios9.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name FBSDKCoreKit
+@_exported import FBSDKCoreKit
+import Foundation
+import Swift
+public enum Permission : Swift.Hashable, Swift.ExpressibleByStringLiteral {
+  case publicProfile
+  case userFriends
+  case email
+  case userAboutMe
+  case userActionsBooks
+  case userActionsFitness
+  case userActionsMusic
+  case userActionsNews
+  case userActionsVideo
+  case userBirthday
+  case userEducationHistory
+  case userEvents
+  case userGamesActivity
+  case userGender
+  case userHometown
+  case userLikes
+  case userLocation
+  case userManagedGroups
+  case userPhotos
+  case userPosts
+  case userRelationships
+  case userRelationshipDetails
+  case userReligionPolitics
+  case userTaggedPlaces
+  case userVideos
+  case userWebsite
+  case userWorkHistory
+  case readCustomFriendlists
+  case readInsights
+  case readAudienceNetworkInsights
+  case readPageMailboxes
+  case pagesShowList
+  case pagesManageCta
+  case pagesManageInstantArticles
+  case adsRead
+  case custom(Swift.String)
+  public init(stringLiteral value: Swift.String)
+  public var name: Swift.String {
+    get
+  }
+  public var hashValue: Swift.Int {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public typealias StringLiteralType = Swift.String
+  public static func == (a: FBSDKCoreKit.Permission, b: FBSDKCoreKit.Permission) -> Swift.Bool
+  public typealias ExtendedGraphemeClusterLiteralType = Swift.String
+  public typealias UnicodeScalarLiteralType = Swift.String
+}
+extension Settings {
+  public static var loggingBehaviors: Swift.Set<FBSDKCoreKit.LoggingBehavior> {
+    get
+    set
+  }
+}
+extension AccessToken {
+  public var permissions: Swift.Set<FBSDKCoreKit.Permission> {
+    get
+  }
+  public var declinedPermissions: Swift.Set<FBSDKCoreKit.Permission> {
+    get
+  }
+  public var expiredPermissions: Swift.Set<FBSDKCoreKit.Permission> {
+    get
+  }
+  public func hasGranted(_ permission: FBSDKCoreKit.Permission) -> Swift.Bool
+}

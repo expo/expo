@@ -1,0 +1,11 @@
+framework module FBSDKLoginKit {
+    umbrella header "FBSDKLoginKit.h"
+
+    export *
+    module * { export * }
+}
+
+module FBSDKLoginKit.Swift {
+    header "FBSDKLoginKit-Swift.h"
+    requires objc
+}

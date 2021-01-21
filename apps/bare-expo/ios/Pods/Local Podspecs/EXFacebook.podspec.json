@@ -19,11 +19,11 @@
     "UMConstantsInterface": [
 
     ],
-    "FBSDKCoreKit": [
-      "~> 5.8.0"
+    "FacebookSDK/CoreKit": [
+      "~> 9.0"
     ],
-    "FBSDKLoginKit": [
-      "~> 5.8.0"
+    "FacebookSDK/LoginKit": [
+      "~> 9.0"
     ]
   },
   "source_files": "EXFacebook/**/*.{h,m}"

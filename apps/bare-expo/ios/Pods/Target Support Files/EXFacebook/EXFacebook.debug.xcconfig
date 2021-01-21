@@ -1,7 +1,8 @@
 CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO
 CONFIGURATION_BUILD_DIR = ${PODS_CONFIGURATION_BUILD_DIR}/EXFacebook
+FRAMEWORK_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/FacebookSDK" "${PODS_XCFRAMEWORKS_BUILD_DIR}/FBSDKCoreKit" "${PODS_XCFRAMEWORKS_BUILD_DIR}/FBSDKLoginKit"
 GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
-HEADER_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/Headers/Private" "${PODS_ROOT}/Headers/Private/EXFacebook" "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/EXFacebook" "${PODS_ROOT}/Headers/Public/FBSDKCoreKit" "${PODS_ROOT}/Headers/Public/FBSDKLoginKit" "${PODS_ROOT}/Headers/Public/UMConstantsInterface" "${PODS_ROOT}/Headers/Public/UMCore"
+HEADER_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/Headers/Private" "${PODS_ROOT}/Headers/Private/EXFacebook" "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/EXFacebook" "${PODS_ROOT}/Headers/Public/UMConstantsInterface" "${PODS_ROOT}/Headers/Public/UMCore"
 PODS_BUILD_DIR = ${BUILD_DIR}
 PODS_CONFIGURATION_BUILD_DIR = ${PODS_BUILD_DIR}/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)
 PODS_ROOT = ${SRCROOT}

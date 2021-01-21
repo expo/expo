@@ -348,9 +348,9 @@ CACHE_KEYS:
   EXFacebook:
     BUILD_SETTINGS_CHECKSUM:
       EXFacebook:
-        :debug: 9b0f4d0af7e809156667b3d31bbd5170
-        :release: 9b0f4d0af7e809156667b3d31bbd5170
-    CHECKSUM: 591900736492e32f78f0690121abcc9721f7b807
+        :debug: bf61fa1cbfd0da11c3e1d7e6bfe41c53
+        :release: bf61fa1cbfd0da11c3e1d7e6bfe41c53
+    CHECKSUM: 004a91b08a7cf2870b8522f3089d7b1178634470
     FILES:
       - "../../../../packages/expo-facebook/ios/EXFacebook/EXFacebook.h"
       - "../../../../packages/expo-facebook/ios/EXFacebook/EXFacebook.m"
@@ -1243,6 +1243,16 @@ CACHE_KEYS:
     PROJECT_NAME: EXWebBrowser
     SPECS:
       - EXWebBrowser (9.0.0)
+  FacebookSDK:
+    BUILD_SETTINGS_CHECKSUM:
+      FacebookSDK:
+        :debug: 43de8b7256ac0c80abaa27e9cd0ec7b3
+        :release: 43de8b7256ac0c80abaa27e9cd0ec7b3
+    CHECKSUM: bf72fd600a9e58703fe1ab21ee35c961b416e4f6
+    PROJECT_NAME: FacebookSDK
+    SPECS:
+      - FacebookSDK/CoreKit (9.0.0)
+      - FacebookSDK/LoginKit (9.0.0)
   FBLazyVector:
     BUILD_SETTINGS_CHECKSUM:
       FBLazyVector:
@@ -1267,27 +1277,6 @@ CACHE_KEYS:
     PROJECT_NAME: FBReactNativeSpec
     SPECS:
       - FBReactNativeSpec (0.63.2)
-  FBSDKCoreKit:
-    BUILD_SETTINGS_CHECKSUM:
-      FBSDKCoreKit:
-        :debug: cd83b2685dd6596f90ffa80761a23505
-        :release: cd83b2685dd6596f90ffa80761a23505
-    CHECKSUM: e7dcac0aabcfb09d0166998edd95fe3b05a0ce5d
-    PROJECT_NAME: FBSDKCoreKit
-    SPECS:
-      - FBSDKCoreKit (5.8.0)
-      - FBSDKCoreKit/Basics (5.8.0)
-      - FBSDKCoreKit/Core (5.8.0)
-  FBSDKLoginKit:
-    BUILD_SETTINGS_CHECKSUM:
-      FBSDKLoginKit:
-        :debug: 19dd09298ce88ba4363a8e078e808972
-        :release: 19dd09298ce88ba4363a8e078e808972
-    CHECKSUM: 1b0cf04df0370b37404213157b060d6666ede814
-    PROJECT_NAME: FBSDKLoginKit
-    SPECS:
-      - FBSDKLoginKit (5.8.0)
-      - FBSDKLoginKit/Login (5.8.0)
   Firebase:
     BUILD_SETTINGS_CHECKSUM:
       Firebase:
@@ -1585,30 +1574,28 @@ CACHE_KEYS:
       - OpenSSL-Universal/Static (1.0.2.20)
   Pods-BareExpoMain-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 0d2ce6e175e395d6d22e381c6149021f
-      Release: 1e629b9a61e5243a08df84b124496a0f
+      Debug: 7deaa95f4ff521f53acacf18fd907de3
+      Release: f7b22c19b66056321ced316e8a220531
     FILES:
       - "${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-menu/EXDevMenu.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/FirebaseMLVisionFaceModel/GoogleMVFaceDetectorResources.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle"
       - "${PODS_ROOT}/Amplitude/Sources/Amplitude/ComodoRsaDomainValidationCA.der"
-      - "${PODS_ROOT}/FBSDKCoreKit/FacebookSDKStrings.bundle"
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoMain-BareExpoDetox:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 5ed7e6e08249fdf5ebfca4222cd639c9
-      Release: 85e2fe5ea5bc955ef6c9fe19aa6ddf9f
+      Debug: dbb13760bf2fbacbdf3bf5a59a004a6c
+      Release: ca844fe6af589babfde7208f4a7bc00f
     FILES:
       - "${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-menu/EXDevMenu.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/FirebaseMLVisionFaceModel/GoogleMVFaceDetectorResources.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle"
       - "${PODS_ROOT}/Amplitude/Sources/Amplitude/ComodoRsaDomainValidationCA.der"
-      - "${PODS_ROOT}/FBSDKCoreKit/FacebookSDKStrings.bundle"
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: f411f8663373fe028066c95ceedf3390
-      Release: f411f8663373fe028066c95ceedf3390
+      Debug: a7acd1356654357cc3fc2344c4085523
+      Release: a7acd1356654357cc3fc2344c4085523
   PromisesObjC:
     BUILD_SETTINGS_CHECKSUM:
       PromisesObjC:
@@ -2766,7 +2753,7 @@ CACHE_KEYS:
       RNScreens:
         :debug: d0fa3ec9dce26fc684c0023724454a3b
         :release: d0fa3ec9dce26fc684c0023724454a3b
-    CHECKSUM: 2ad555d4d9fa10b91bb765ca07fe9b29d59573f0
+    CHECKSUM: 8aca37f78a2c5d8b50e400612618d00c03695a8c
     FILES:
       - "../../../../node_modules/react-native-screens/ios/RNSScreen.h"
       - "../../../../node_modules/react-native-screens/ios/RNSScreen.m"
@@ -2782,7 +2769,7 @@ CACHE_KEYS:
       - "../../../../node_modules/react-native-screens/README.md"
     PROJECT_NAME: RNScreens
     SPECS:
-      - RNScreens (2.15.0)
+      - RNScreens (2.15.1)
   RNSharedElement:
     BUILD_SETTINGS_CHECKSUM:
       RNSharedElement:

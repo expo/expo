@@ -14,6 +14,15 @@ NSString * const EXFacebookLoginErrorDomain = @"ERR_FACEBOOK_LOGIN";
 
 UM_EXPORT_MODULE(ExponentFacebook)
 
+UM_EXPORT_METHOD_AS(setAdvertiserTrackingEnabledAsync,
+                    setAdvertiserTrackingEnabled:(BOOL)enabled
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  BOOL result = [FBSDKSettings setAdvertiserTrackingEnabled:enabled];
+  resolve(@(result));
+}
+
 UM_EXPORT_METHOD_AS(setAutoLogAppEventsEnabledAsync,
                     setAutoLogAppEventsEnabled:(BOOL)enabled
                     resolver:(UMPromiseResolveBlock)resolve
@@ -34,7 +43,7 @@ UM_EXPORT_METHOD_AS(setAutoInitEnabledAsync,
   // and to mitigate this difference we will NOT add initializing
   // to the respective method on Android, but we will instruct users
   // to initialize the SDK manually on both platforms instead.
-  [FBSDKSettings setAutoInitEnabled:enabled];
+  // [FBSDKSettings setAutoInitEnabled:enabled];
   resolve(nil);
 }
 
