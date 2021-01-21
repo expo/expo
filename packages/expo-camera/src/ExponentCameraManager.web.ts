@@ -110,17 +110,16 @@ export default {
     return await camera.getAvailablePictureSizes(ratio);
   },
   /* async getSupportedRatios(camera: ExponentCameraRef): Promise<string[]> {
-    // TODO: Can this be supported on web?
-  }, */
-  /* TODO(Bacon): Is video possible?
+    // TODO: Support on web
+  },
   async record(
     options?: CameraRecordingOptions,
     camera: ExponentCameraRef
   ): Promise<{ uri: string }> {
-    // TODO
+    // TODO: Support on web
   },
   async stopRecording(camera: ExponentCameraRef): Promise<void> {
-    // TODO
+    // TODO: Support on web
   }, */
   async getPermissionsAsync(): Promise<PermissionResponse> {
     if (!navigator?.permissions?.query) {
@@ -167,7 +166,6 @@ export default {
       // name: NotAllowedError
       // code: 0
       if (message === 'Permission dismissed') {
-        // message: Permission dismissed
         return {
           status: PermissionStatus.UNDETERMINED,
           expires: 'never',
@@ -177,7 +175,6 @@ export default {
       } else {
         // TODO: Bacon: [OSX] The system could deny access to chrome.
         // TODO: Bacon: add: { status: 'unimplemented' }
-        // message: Permission denied
         return {
           status: PermissionStatus.DENIED,
           expires: 'never',
