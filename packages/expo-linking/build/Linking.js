@@ -78,7 +78,7 @@ function ensureTrailingSlash(input, shouldAppend) {
  * @param queryParams An object of parameters that will be converted into a query string.
  */
 export function makeUrl(path = '', queryParams, scheme) {
-    return createURL(path, { queryParams, scheme });
+    return createURL(path, { queryParams, scheme, isTripleSlashed: true });
 }
 /**
  * Create a URL that works for the environment the app is currently running in.
@@ -86,8 +86,8 @@ export function makeUrl(path = '', queryParams, scheme) {
  *
  * **Examples**
  *
- * - Bare: `<scheme>:///path` -- uses provided scheme or scheme from Expo config `scheme`.
- * - Standalone, Custom: `yourscheme:///path`
+ * - Bare: `<scheme>://path` -- uses provided scheme or scheme from Expo config `scheme`.
+ * - Standalone, Custom: `yourscheme://path`
  * - Web (dev): `https://localhost:19006/path`
  * - Web (prod): `https://myapp.com/path`
  * - Expo Client (dev): `exp://128.0.0.1:19000/--/path`
@@ -97,7 +97,7 @@ export function makeUrl(path = '', queryParams, scheme) {
  * @param scheme URI protocol `<scheme>://` that must be built into your native app.
  * @param queryParams An object of parameters that will be converted into a query string.
  */
-export function createURL(path, { scheme, queryParams = {}, } = {}) {
+export function createURL(path, { scheme, queryParams = {}, isTripleSlashed = false, } = {}) {
     if (Platform.OS === 'web') {
         if (!Platform.isDOMAvailable)
             return '';
@@ -120,7 +120,7 @@ export function createURL(path, { scheme, queryParams = {}, } = {}) {
         if (isExpoHosted() && hostUri) {
             path = `/--/${removeLeadingSlash(path)}`;
         }
-        if (!path.startsWith('/')) {
+        if (isTripleSlashed && !path.startsWith('/')) {
             path = `/${path}`;
         }
     }
@@ -151,8 +151,8 @@ export function createURL(path, { scheme, queryParams = {}, } = {}) {
     if (queryString) {
         queryString = `?${queryString}`;
     }
-    hostUri = ensureTrailingSlash(hostUri, false);
-    return encodeURI(`${resolvedScheme}://${hostUri}${path}${queryString}`);
+    hostUri = ensureTrailingSlash(hostUri, !isTripleSlashed);
+    return encodeURI(`${resolvedScheme}:${isTripleSlashed ? '/' : ''}/${hostUri}${path}${queryString}`);
 }
 /**
  * Returns the components and query parameters for a given URL.
