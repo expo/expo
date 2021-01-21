@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add requestPermissionsAsync and getPermissionsAsync for web. ([#11694](https://github.com/expo/expo/pull/11694) by [@IjzerenHein](https://github.com/IjzerenHein))
+
 ### 🐛 Bug fixes
 
 ## 10.0.0 — 2021-01-15
