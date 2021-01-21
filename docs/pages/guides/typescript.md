@@ -29,19 +29,17 @@ An Expo app's `tsconfig.json` should extend the `expo/tsconfig.base` by default.
 - `allowJs`: -- `true`
   - Allow JavaScript files to be compiled. If you project requires more strictness, you can disable this.
 - `resolveJsonModule`: -- `true`
-  - Enables importing `.json` files.
+  - Enables importing `.json` files. Metro's default behavior is to allow importing json files as JS objects. If your `metro.config.js` has `assetExts: ['json']` then this rule should be disabled.
 - `noEmit`: -- `true`
   - Only typecheck, and skip generating transpiled code. Metro bundler is responsible for doing this.
 - [`moduleResolution`][tsc-moduleresolution]: -- `"node"`
   - Emulates how Metro and Webpack resolve modules.
 - `target`: -- `"esnext"`
   - The latest [TC39 proposed features](https://github.com/tc39/proposals).
-- `lib`: -- `["dom", "esnext"]`
+- `lib`: -- `["dom", "es6", "es2016.array.include", "es2017.object"]`
   - List of library files to be included in the compilation.
 - `skipLibCheck`: -- `true`
   - Skip type checking of all declaration files (`*.d.ts`).
-- `forceConsistentCasingInFileNames`: -- `true`
-  - Disallow inconsistently-cased references to the same file.
 - `allowSyntheticDefaultImports`: -- `true`
   - Allow default imports from modules with no default export. This does not affect code emit, just typechecking.
 - `esModuleInterop`: -- `true`
