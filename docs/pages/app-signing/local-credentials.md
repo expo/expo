@@ -2,7 +2,7 @@
 title: Using local credentials
 ---
 
-You can usually get away with not being a codesigning expert by [letting EAS handle it for you](managed-credentials.md). However, there are cases where some users might want to manage their project keystore, certificates and profiles on their own.
+You can usually get away with not being a code signing expert by [letting EAS handle it for you](managed-credentials.md). However, there are cases where some users might want to manage their project keystore, certificates and profiles on their own.
 
 If you would like to manage your own app signing credentials, you can use `credentials.json` to give EAS Build relative paths to the credentials on your local filesystem and their associated passwords in order to use them to sign your builds.
 
