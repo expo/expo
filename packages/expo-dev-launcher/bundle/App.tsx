@@ -71,28 +71,32 @@ const portsToCheck = [
   19010,
 ];
 
-const detectLocalPackagers = async setLocalPackagers => {
-  const onlinePackagers = [];
-  for (const port of portsToCheck) {
-    try {
-      const address = `${baseAddress}:${port}`;
-      const { status } = await fetch(`${address}/${statusPage}`);
-      if (status === 200) {
-        onlinePackagers.push(address);
-      }
-    } catch (e) {}
-  }
-
-  setLocalPackagers(onlinePackagers);
-};
-
-const App = () => {
+const App = ({ isSimulator }) => {
   const [loading, setLoading] = useState(false);
   const [textInputUrl, setTextInputUrl] = useState('');
   const [recentlyOpenedApps, setRecentlyOpenedApps] = useState({});
   const [pendingDeepLink, setPendingDeepLink] = useState<string | null>(null);
   const [refreshing, setRefreshing] = React.useState(false);
   const [localPackagers, setLocalPackagers] = useState([]);
+
+  const detectLocalPackagers = async setLocalPackagers => {
+    if (!isSimulator) {
+      return [];
+    }
+
+    const onlinePackagers = [];
+    for (const port of portsToCheck) {
+      try {
+        const address = `${baseAddress}:${port}`;
+        const { status } = await fetch(`${address}/${statusPage}`);
+        if (status === 200) {
+          onlinePackagers.push(address);
+        }
+      } catch (e) {}
+    }
+
+    setLocalPackagers(onlinePackagers);
+  };
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
