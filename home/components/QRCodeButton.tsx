@@ -1,6 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
 import * as React from 'react';
-import { Platform } from 'react-native';
 
 import requestCameraPermissionsAsync from '../utils/requestCameraPermissionsAsync';
 import ListItem from './ListItem';
