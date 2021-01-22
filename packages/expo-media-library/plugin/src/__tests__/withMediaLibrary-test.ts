@@ -1,6 +1,7 @@
-import { modifyAndroidManifest } from '../withMediaLibrary';
 import { AndroidConfig } from '@expo/config-plugins';
 import { resolve } from 'path';
+
+import { modifyAndroidManifest } from '../withMediaLibrary';
 
 const fixturesPath = resolve(__dirname, 'fixtures');
 const sampleManifestPath = resolve(fixturesPath, 'react-native-AndroidManifest.xml');

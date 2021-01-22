@@ -1,6 +1,7 @@
-import { setImagePickerManifestActivity } from '../withImagePicker';
 import { AndroidConfig } from '@expo/config-plugins';
 import { resolve } from 'path';
+
+import { setImagePickerManifestActivity } from '../withImagePicker';
 
 const fixturesPath = resolve(__dirname, 'fixtures');
 const sampleManifestPath = resolve(fixturesPath, 'react-native-AndroidManifest.xml');
@@ -14,6 +15,11 @@ describe(setImagePickerManifestActivity, () => {
     androidManifestJson = setImagePickerManifestActivity(androidManifestJson);
 
     const app = AndroidConfig.Manifest.getMainApplicationOrThrow(androidManifestJson);
-    expect(app.activity[0]).toStrictEqual({});
+    expect(app.activity[2]).toStrictEqual({
+      $: {
+        'android:name': 'com.theartofdev.edmodo.cropper.CropImageActivity',
+        'android:theme': '@style/Base.Theme.AppCompat',
+      },
+    });
   });
 });

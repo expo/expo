@@ -14,7 +14,7 @@ export function modifyObjcAppDelegate(contents: string): string {
   // Add import
   if (!contents.includes('@import Firebase;')) {
     contents = contents.replace(
-      /\#import \"AppDelegate.h\"/g,
+      /#import "AppDelegate.h"/g,
       `#import "AppDelegate.h"
 @import Firebase;`
     );
@@ -24,7 +24,7 @@ export function modifyObjcAppDelegate(contents: string): string {
   if (!contents.includes(methodInvocationBlock)) {
     // self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc]
     contents = contents.replace(
-      /self\.moduleRegistryAdapter \= \[\[UMModuleRegistryAdapter alloc\]/g,
+      /self\.moduleRegistryAdapter = \[\[UMModuleRegistryAdapter alloc\]/g,
       `${methodInvocationBlock}
 self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc]`
     );

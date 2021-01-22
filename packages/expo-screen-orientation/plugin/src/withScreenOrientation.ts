@@ -24,7 +24,7 @@ export function modifyObjcAppDelegate(contents: string, mask: string): string {
   // Add import
   if (!contents.includes('#import <EXScreenOrientation/EXScreenOrientationViewController.h>')) {
     contents = contents.replace(
-      /\#import \"AppDelegate.h\"/g,
+      /#import "AppDelegate.h"/g,
       `#import "AppDelegate.h"
 #import <EXScreenOrientation/EXScreenOrientationViewController.h>`
     );
@@ -33,7 +33,7 @@ export function modifyObjcAppDelegate(contents: string, mask: string): string {
   // Change View Controller
   if (!contents.includes('[EXScreenOrientationViewController alloc]')) {
     contents = contents.replace(
-      /UIViewController\s?\*\s?rootViewController\s?=\s?\[UIViewController new\]\;/g,
+      /UIViewController\s?\*\s?rootViewController\s?=\s?\[UIViewController new\];/g,
       `UIViewController *rootViewController = [[EXScreenOrientationViewController alloc] initWithDefaultScreenOrientationMask:${mask}];`
     );
   }
