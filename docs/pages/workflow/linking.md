@@ -195,6 +195,8 @@ See the examples below to see these in action.
 
 ### Passing data to your app through the URL
 
+> `Linking.createURL()` is available in `expo-linking@2.0.1` and higher. If you are using an older version, use `Linking.makeUrl()` instead.
+
 To pass some data into your app, you can append it as a path or query string on your url. `Linking.createURL(path, { queryParams })` will construct a working url automatically for you. You can use it like this:
 
 ```javascript
