@@ -23,6 +23,7 @@ jobs:
       - run: git lfs pull
       - run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - run: echo "EXPO_ROOT_DIR=$(pwd)" >> $GITHUB_ENV
+      - run: sudo apt-get update && sudo apt-get install awscli
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
@@ -66,7 +67,6 @@ jobs:
         with:
           name: android-shell-app
           path: artifacts/android-shell-builder.tar.gz
-      - run: sudo apt-get update && sudo apt-get install awscli
       - name: Upload shell app tarball to S3
         if: ${{ github.event_name == 'workflow_dispatch' }}
         env:
