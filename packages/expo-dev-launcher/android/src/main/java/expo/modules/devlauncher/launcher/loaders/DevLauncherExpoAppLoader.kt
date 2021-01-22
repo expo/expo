@@ -13,10 +13,10 @@ import expo.modules.devlauncher.helpers.isValidColor
 import expo.modules.devlauncher.helpers.setProtectedDeclaredField
 import expo.modules.devlauncher.launcher.configurators.DevLauncherExpoActivityConfigurator
 import expo.modules.devlauncher.launcher.manifest.DevLauncherUserInterface
-import expo.modules.devlauncher.launcher.manifest.DevelopmentClientManifest
+import expo.modules.devlauncher.launcher.manifest.DevLauncherManifest
 
 class DevLauncherExpoAppLoader(
-  private val manifest: DevelopmentClientManifest,
+  private val manifest: DevLauncherManifest,
   appHost: ReactNativeHost,
   context: Context,
   private val activityConfigurator: DevLauncherExpoActivityConfigurator =

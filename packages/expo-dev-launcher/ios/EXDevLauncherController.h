@@ -4,8 +4,8 @@
 #import <UIKit/UIKit.h>
 
 @class EXDevLauncherPendingDeepLinkRegistry;
-
 @class EXDevLauncherController;
+@class EXDevLauncherManifest;
 
 @protocol EXDevLauncherControllerDelegate <NSObject>
 
@@ -34,5 +34,7 @@
 - (NSDictionary *)recentlyOpenedApps;
 
 - (NSDictionary<UIApplicationLaunchOptionsKey, NSObject*> *)getLaunchOptions;
+
+- (EXDevLauncherManifest *)appManifest;
 
 @end

@@ -15,6 +15,7 @@
 #import "EXDevLauncher/EXDevLauncherBundleSource.h"
 #import "EXDevLauncher/EXDevLauncherController+Private.h"
 #import "EXDevLauncher/EXDevLauncherController.h"
+#import "EXDevLauncher/EXDevLauncherInternal.h"
 #import "EXDevLauncher/expo-dev-launcher-Bridging-Header.h"
 #import "EXDevLauncher/EXDevLauncherPendingDeepLinkListener.h"
 #import "EXDevLauncher/EXDevLauncherManifestParser.h"
