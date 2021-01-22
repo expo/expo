@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Converted plugin to TypeScript. ([#11715](https://github.com/expo/expo/pull/11715) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ## 11.0.0 — 2021-01-15
