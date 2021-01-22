@@ -3,6 +3,8 @@ package expo.modules.updates.launcher;
 import android.content.Context;
 import android.util.Log;
 
+import org.json.JSONObject;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,6 +21,7 @@ import expo.modules.updates.db.enums.UpdateStatus;
 import expo.modules.updates.loader.EmbeddedLoader;
 import expo.modules.updates.loader.FileDownloader;
 import expo.modules.updates.manifest.Manifest;
+import expo.modules.updates.manifest.ManifestServerData;
 
 public class DatabaseLauncher implements Launcher {
 
@@ -129,6 +132,8 @@ public class DatabaseLauncher implements Launcher {
   public UpdateEntity getLaunchableUpdate(UpdatesDatabase database, Context context) {
     List<UpdateEntity> launchableUpdates = database.updateDao().loadLaunchableUpdatesForScope(mConfiguration.getScopeKey());
 
+    JSONObject manifestFilters = ManifestServerData.getManifestFilters(database, mConfiguration);
+
     // We can only run an update marked as embedded if it's actually the update embedded in the
     // current binary. We might have an older update from a previous binary still listed as
     // "EMBEDDED" in the database so we need to do this check.
@@ -143,7 +148,7 @@ public class DatabaseLauncher implements Launcher {
       filteredLaunchableUpdates.add(update);
     }
 
-    return mSelectionPolicy.selectUpdateToLaunch(filteredLaunchableUpdates, null);
+    return mSelectionPolicy.selectUpdateToLaunch(filteredLaunchableUpdates, manifestFilters);
   }
 
   private File ensureAssetExists(AssetEntity asset, UpdatesDatabase database, Context context) {

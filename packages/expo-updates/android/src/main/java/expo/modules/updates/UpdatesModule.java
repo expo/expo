@@ -152,6 +152,7 @@ public class UpdatesModule extends ExportedModule {
             return;
           }
 
+          // TODO: use NEW manifest filters
           if (updatesService.getSelectionPolicy().shouldLoadNewUpdate(manifest.getUpdateEntity(), launchedUpdate, null)) {
             updateInfo.putBoolean("isAvailable", true);
             updateInfo.putString("manifestString", manifest.getRawManifestJson().toString());
@@ -193,6 +194,7 @@ public class UpdatesModule extends ExportedModule {
 
               @Override
               public boolean onManifestLoaded(Manifest manifest) {
+                // TODO: use NEW manifest filters
                 return updatesService.getSelectionPolicy().shouldLoadNewUpdate(
                   manifest.getUpdateEntity(),
                   updatesService.getLaunchedUpdate(),

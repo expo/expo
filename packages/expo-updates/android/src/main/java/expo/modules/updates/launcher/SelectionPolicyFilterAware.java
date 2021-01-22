@@ -92,7 +92,7 @@ public class SelectionPolicyFilterAware implements SelectionPolicy {
   }
 
   private boolean isUpdateManifestFiltered(UpdateEntity update, JSONObject manifestFilters) {
-    if (update.metadata == null || !update.metadata.has("updateMetadata")) {
+    if (manifestFilters == null || update.metadata == null || !update.metadata.has("updateMetadata")) {
       return false;
     }
     try {
