@@ -805,9 +805,9 @@ CACHE_KEYS:
   expo-dev-launcher:
     BUILD_SETTINGS_CHECKSUM:
       expo-dev-launcher:
-        :debug: a05154ea236f2285cbdf3359f2424387
-        :release: a05154ea236f2285cbdf3359f2424387
-    CHECKSUM: 12ea7ec25b0eda37a4994d8e2c5f9dae56dbe4a3
+        :debug: 143e97f4a9bd031b9e86ad6b807df879
+        :release: 143e97f4a9bd031b9e86ad6b807df879
+    CHECKSUM: f6034ab274d022d3289c447b031a71cc3f314539
     FILES:
       - "../../../../packages/expo-dev-launcher/ios/EXDevLauncher.h"
       - "../../../../packages/expo-dev-launcher/ios/EXDevLauncher.m"
@@ -839,9 +839,9 @@ CACHE_KEYS:
   expo-dev-menu:
     BUILD_SETTINGS_CHECKSUM:
       expo-dev-menu:
-        :debug: 16f74ad736b93e99f6a6d09d36f79fee
-        :release: 16f74ad736b93e99f6a6d09d36f79fee
-    CHECKSUM: d9152667934a3f4db739a151031a32c07832fcd1
+        :debug: 529c432f5ef8893636d0d24560fc5ef9
+        :release: 529c432f5ef8893636d0d24560fc5ef9
+    CHECKSUM: 15419a8f1ef2aab9c40cab47f90e819f2603c295
     FILES:
       - "../../../../packages/expo-dev-menu/assets/dev-menu-packager-host"
       - "../../../../packages/expo-dev-menu/assets/EXDevMenuApp.ios.js"
@@ -1585,7 +1585,7 @@ CACHE_KEYS:
       - OpenSSL-Universal/Static (1.0.2.20)
   Pods-BareExpoMain-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 0d2ce6e175e395d6d22e381c6149021f
+      Debug: d0f1c9bb61c3938222e59d8d7f7b541b
       Release: 1e629b9a61e5243a08df84b124496a0f
     FILES:
       - "${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-menu/EXDevMenu.bundle"
@@ -1596,7 +1596,7 @@ CACHE_KEYS:
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoMain-BareExpoDetox:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 5ed7e6e08249fdf5ebfca4222cd639c9
+      Debug: e46579b9cb846dfcfa3572d0ea4fd300
       Release: 85e2fe5ea5bc955ef6c9fe19aa6ddf9f
     FILES:
       - "${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-menu/EXDevMenu.bundle"

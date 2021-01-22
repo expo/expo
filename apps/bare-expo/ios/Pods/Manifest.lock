@@ -1247,8 +1247,8 @@ SPEC CHECKSUMS:
   EXNetwork: 4575670ffeea0854a6c5232ab7f215c485f0a457
   EXNotifications: 39b642b1ded0f26e614fd5ce313decfb93401b6d
   EXPermissions: 015f1129f80266f6c38e3691102546232b641614
-  expo-dev-launcher: 12ea7ec25b0eda37a4994d8e2c5f9dae56dbe4a3
-  expo-dev-menu: d9152667934a3f4db739a151031a32c07832fcd1
+  expo-dev-launcher: f6034ab274d022d3289c447b031a71cc3f314539
+  expo-dev-menu: 15419a8f1ef2aab9c40cab47f90e819f2603c295
   expo-dev-menu-interface: e2534e9e6d5c333ef0a0bee02e459f310ddf810b
   expo-image: 07527eb7a57f5ac939c5ded392bcf64c975b9c87
   EXPrint: 32f0f7745534b710cfd5ed67fc3bd7416b6353c6
