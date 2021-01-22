@@ -51,6 +51,7 @@ const styles = StyleSheet.create({
   container: {
     width: size,
     height: size,
+    overflow: 'hidden',
     borderRadius: size / 2,
     justifyContent: 'center',
     alignItems: 'center',
