@@ -16,7 +16,6 @@ import java.util.List;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.db.entity.UpdateEntity;
-import expo.modules.updates.manifest.Manifest;
 import expo.modules.updates.manifest.NewManifest;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
@@ -28,6 +27,7 @@ public class SelectionPolicyFilterAwareTest {
   UpdateEntity updateDefault2;
   UpdateEntity updateRollout1;
   UpdateEntity updateRollout2;
+  UpdateEntity updateNested;
 
   @Before
   public void setup() throws JSONException {
@@ -38,17 +38,20 @@ public class SelectionPolicyFilterAwareTest {
     configMap.put("updateUrl", Uri.parse("https://exp.host/@test/test"));
     UpdatesConfiguration config = new UpdatesConfiguration().loadValuesFromMap(configMap);
 
-    JSONObject manifestJsonDefault1 = new JSONObject("{\"manifest\":{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e72\",\"createdAt\":\"2021-01-11T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"updateMetadata\":{\"releaseName\":\"default\"}},\"manifestFilters\":{\"releaseName\":\"default\"},\"protocolVersion\":0}");
+    JSONObject manifestJsonDefault1 = new JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e72\",\"createdAt\":\"2021-01-11T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"updateMetadata\":{\"releaseName\":\"default\"}}");
     updateDefault1 = NewManifest.fromManifestJson(manifestJsonDefault1, config).getUpdateEntity();
 
-    JSONObject manifestJsonRollout1 = new JSONObject("{\"manifest\":{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e73\",\"createdAt\":\"2021-01-12T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"updateMetadata\":{\"releaseName\":\"rollout\"}},\"manifestFilters\":{\"releaseName\":\"rollout\"},\"protocolVersion\":0}");
+    JSONObject manifestJsonRollout1 = new JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e73\",\"createdAt\":\"2021-01-12T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"updateMetadata\":{\"releaseName\":\"rollout\"}}");
     updateRollout1 = NewManifest.fromManifestJson(manifestJsonRollout1, config).getUpdateEntity();
 
-    JSONObject manifestJsonDefault2 = new JSONObject("{\"manifest\":{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e74\",\"createdAt\":\"2021-01-13T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"updateMetadata\":{\"releaseName\":\"default\"}},\"manifestFilters\":{\"releaseName\":\"default\"},\"protocolVersion\":0}");
+    JSONObject manifestJsonDefault2 = new JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e74\",\"createdAt\":\"2021-01-13T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"updateMetadata\":{\"releaseName\":\"default\"}}");
     updateDefault2 = NewManifest.fromManifestJson(manifestJsonDefault2, config).getUpdateEntity();
 
-    JSONObject manifestJsonRollout2 = new JSONObject("{\"manifest\":{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e75\",\"createdAt\":\"2021-01-14T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"updateMetadata\":{\"releaseName\":\"rollout\"}},\"manifestFilters\":{\"releaseName\":\"rollout\"},\"protocolVersion\":0}");
+    JSONObject manifestJsonRollout2 = new JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e75\",\"createdAt\":\"2021-01-14T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"updateMetadata\":{\"releaseName\":\"rollout\"}}");
     updateRollout2 = NewManifest.fromManifestJson(manifestJsonRollout2, config).getUpdateEntity();
+
+    JSONObject manifestJsonNested = new JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e72\",\"createdAt\":\"2021-01-11T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"updateMetadata\":{\"nested\":{\"object\":{\"key\": \"value\"}}}}");
+    updateNested = NewManifest.fromManifestJson(manifestJsonNested, config).getUpdateEntity();
   }
 
   @Test
@@ -83,6 +86,18 @@ public class SelectionPolicyFilterAwareTest {
   }
 
   @Test
+  public void testShouldLoadNewUpdate_NormalCase_NewUpdate() {
+    boolean actual = selectionPolicy.shouldLoadNewUpdate(updateRollout2, updateRollout1, manifestFilters);
+    Assert.assertTrue(actual);
+  }
+
+  @Test
+  public void testShouldLoadNewUpdate_NormalCase_NoUpdate() {
+    boolean actual = selectionPolicy.shouldLoadNewUpdate(updateRollout1, updateRollout1, manifestFilters);
+    Assert.assertFalse(actual);
+  }
+
+  @Test
   public void testShouldLoadNewUpdate_NoneMatchingFilters() {
     // should choose to load an older update if the current update doesn't match the manifest filters
     boolean actual = selectionPolicy.shouldLoadNewUpdate(updateRollout1, updateDefault2, manifestFilters);
@@ -104,10 +119,29 @@ public class SelectionPolicyFilterAwareTest {
   }
 
   @Test
-  public void testShouldLoadNewUpdate_NoneExistsMatchingFilters() {
+  public void testShouldLoadNewUpdate_NoneExistsMatchingCurrentFilters() {
     // should choose to load a new update that doesn't match the manifest filters
     // if no existing updates match the manifest filters
-    boolean actual = selectionPolicy.shouldLoadNewUpdate(updateDefault1, null, manifestFilters);
+    boolean actual = selectionPolicy.shouldLoadNewUpdate(updateDefault2, null, manifestFilters);
     Assert.assertTrue(actual);
+  }
+
+  @Test
+  public void testShouldLoadNewUpdate_NoneExistsMatchingNewFilters() {
+    // should choose to load a new update that doesn't match the manifest filters
+    // if no existing updates match the manifest filters
+    boolean actual = selectionPolicy.shouldLoadNewUpdate(updateDefault2, updateDefault1, manifestFilters);
+    Assert.assertTrue(actual);
+  }
+
+  @Test
+  public void testIsUpdateManifestFiltered_Nested() throws JSONException {
+    JSONObject nestedManifestFilters = new JSONObject("{\"nested.object.key\": \"different-value\"}");
+
+    // an update that has the matching key with a different value should be filtered out
+    Assert.assertTrue(selectionPolicy.isUpdateManifestFiltered(updateNested, nestedManifestFilters));
+
+    // an update that doesn't have the key should not be filtered out
+    Assert.assertFalse(selectionPolicy.isUpdateManifestFiltered(updateDefault1, nestedManifestFilters));
   }
 }

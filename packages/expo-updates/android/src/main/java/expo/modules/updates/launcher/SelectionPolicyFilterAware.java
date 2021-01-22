@@ -83,15 +83,24 @@ public class SelectionPolicyFilterAware implements SelectionPolicy {
     if (newUpdate == null) {
       return false;
     }
+    if (launchedUpdate == null) {
+      return true;
+    }
     // if the current update doesn't pass the manifest filters
     // we should load the new update no matter the commitTime
-    if (launchedUpdate == null || isUpdateManifestFiltered(launchedUpdate, filters)) {
+    if (isUpdateManifestFiltered(launchedUpdate, filters)) {
       return true;
+    } else {
+      // if the new update doesn't pass the manifest filters AND the launched update does
+      // (i.e. we're sure we have an update that passes), we should not load the new update
+      if (isUpdateManifestFiltered(newUpdate, filters)) {
+        return false;
+      }
     }
     return newUpdate.commitTime.after(launchedUpdate.commitTime);
   }
 
-  private boolean isUpdateManifestFiltered(UpdateEntity update, JSONObject manifestFilters) {
+  /* package */ boolean isUpdateManifestFiltered(UpdateEntity update, JSONObject manifestFilters) {
     if (manifestFilters == null || update.metadata == null || !update.metadata.has("updateMetadata")) {
       return false;
     }
@@ -105,20 +114,27 @@ public class SelectionPolicyFilterAware implements SelectionPolicy {
           passes = manifestFilters.get(key).equals(updateMetadata.get(key));
         } else if (key.indexOf('.') > -1) {
           // manifest filters might have nested keys
-          String[] nestedKeys = key.split(".");
+          String[] nestedKeys = key.split("\\.");
           JSONObject nestedObject = updateMetadata;
           for (int i = 0; i < nestedKeys.length; i++) {
             String nestedKey = nestedKeys[i];
-            if (!nestedObject.has(nestedKey) || !(nestedObject.get(nestedKey) instanceof JSONObject)) {
+            if (!nestedObject.has(nestedKey)) {
+              // if the nested key doesn't exist in the manifest, just skip this filter
               passes = true;
+              break;
             } else if (i + 1 == nestedKeys.length) {
               passes = manifestFilters.get(key).equals(nestedObject.get(nestedKey));
+            } else if (!(nestedObject.get(nestedKey) instanceof JSONObject)) {
+              // if the full nested key doesn't exist/is cut short in the manifest, skip the filter
+              passes = true;
+              break;
             } else {
               nestedObject = nestedObject.getJSONObject(nestedKey);
             }
           }
         }
 
+        // once an update fails one filter, break early; we don't need to check the rest
         if (!passes) {
           return true;
         }
