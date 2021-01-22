@@ -8,7 +8,7 @@
 
 import Foundation
 import EXDevMenuInterface
-#if canImport(EXDevMenu)
+#if EX_DEV_MENU_ENABLED
 import EXDevMenu
 #endif
 
@@ -54,7 +54,7 @@ class AppDelegate: UMAppDelegateWrapper {
       window?.makeKeyAndVisible()
       self.bridge = bridge
 
-      #if canImport(EXDevMenu)
+      #if EX_DEV_MENU_ENABLED
       DevMenuManager.configure(withBridge: bridge)
       #endif
       return bridge;
