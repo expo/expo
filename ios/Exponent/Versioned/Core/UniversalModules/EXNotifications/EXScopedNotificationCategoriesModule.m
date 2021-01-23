@@ -37,7 +37,7 @@
                                       resolve:(UMPromiseResolveBlock)resolve 
                                        reject:(UMPromiseRejectBlock)reject
 {
-  NSString *scopedCategoryIdentifier = [NSString stringWithFormat:@"%@-%@", _experienceId, categoryId];
+  NSString *scopedCategoryIdentifier = [NSString stringWithFormat:@"%@/%@", _experienceId, categoryId];
   [super setNotificationCategoryWithCategoryId:scopedCategoryIdentifier actions:actions options:options resolve:resolve reject:reject];
 }
 
@@ -45,14 +45,14 @@
                                          resolve:(UMPromiseResolveBlock)resolve 
                                           reject:(UMPromiseRejectBlock)reject
 {
-  NSString *scopedCategoryIdentifier = [NSString stringWithFormat:@"%@-%@", _experienceId, categoryId];
+  NSString *scopedCategoryIdentifier = [NSString stringWithFormat:@"%@/%@", _experienceId, categoryId];
   [super deleteNotificationCategoryWithCategoryId:scopedCategoryIdentifier resolve:resolve reject:reject];
 }
 
 - (NSMutableDictionary *)serializeCategory:(UNNotificationCategory *)category
 {
   NSMutableDictionary* serializedCategory = [NSMutableDictionary dictionary];
-  NSString* experienceIdPrefix = [NSString stringWithFormat:@"%@-", _experienceId];
+  NSString* experienceIdPrefix = [NSString stringWithFormat:@"%@/", _experienceId];
   serializedCategory[@"identifier"] = [category.identifier stringByReplacingOccurrencesOfString:experienceIdPrefix withString:@""];
   serializedCategory[@"actions"] = [super serializeActions: category.actions];
   serializedCategory[@"options"] = [super serializeCategoryOptions: category];

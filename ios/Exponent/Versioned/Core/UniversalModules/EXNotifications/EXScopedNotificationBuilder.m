@@ -33,7 +33,7 @@
   [content setUserInfo:userInfo];
   
   if (content.categoryIdentifier && _isInExpoGo) {
-    NSString *categoryIdentifier = [NSString stringWithFormat:@"%@-%@", _experienceId, content.categoryIdentifier];
+    NSString *categoryIdentifier = [NSString stringWithFormat:@"%@/%@", _experienceId, content.categoryIdentifier];
     [content setCategoryIdentifier:categoryIdentifier];
   }
   
