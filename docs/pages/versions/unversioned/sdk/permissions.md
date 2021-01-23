@@ -300,7 +300,7 @@ The permission type for user-facing notifications **and** remote push notificati
 The permission type for user-facing notifications. This does **not** register your app to receive remote push notifications; see the `NOTIFICATIONS` permission.
 
 - **Android:** _this permission is the same as `NOTIFICATIONS` and returns the status from that permission._
-  \_ **iOS:** it requires the `expo-notifications` module and doesn't require a message.
+- **iOS:** it requires the `expo-notifications` module and doesn't require a message.
 
 > **Note (iOS):** It provides more detailed permissions, so the permission status will contain not only `status` and `expires`, but also Boolean values for `allowsSound`, `allowsAlert` and `allowsBadge`.
 
