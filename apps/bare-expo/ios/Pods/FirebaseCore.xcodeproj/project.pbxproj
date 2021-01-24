@@ -58,7 +58,7 @@
 			remoteGlobalIDString = 0CE453D8DBD3396B4C74B9ACD7A09387;
 			remoteInfo = FirebaseCoreDiagnostics;
 		};
-		9CD0BB7962D923732F84AB0E0617D98B /* PBXContainerItemProxy */ = {
+		CEC99C4F26A7CB1806524A95BB0FDBC8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 6D6217D2622ABE4D22275AC28571B3CB /* GoogleUtilities.xcodeproj */;
 			proxyType = 1;
@@ -280,7 +280,7 @@
 			dependencies = (
 				1377FC26D581972C3D7AFCEB2B8C75A1 /* PBXTargetDependency */,
 				957BBAC1338989B9EE1BD2918D16BD0A /* PBXTargetDependency */,
-				E913AE7A14E54C0769C8AED78904E211 /* PBXTargetDependency */,
+				BCBC6FE7C6EE60D6305B0A76081BE71D /* PBXTargetDependency */,
 			);
 			name = FirebaseCore;
 			productName = FirebaseCore;
@@ -363,23 +363,24 @@
 			name = FirebaseCoreDiagnosticsInterop;
 			targetProxy = FE3931F33EFA4C51039F248938149B88 /* PBXContainerItemProxy */;
 		};
-		E913AE7A14E54C0769C8AED78904E211 /* PBXTargetDependency */ = {
+		BCBC6FE7C6EE60D6305B0A76081BE71D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = GoogleUtilities;
-			targetProxy = 9CD0BB7962D923732F84AB0E0617D98B /* PBXContainerItemProxy */;
+			targetProxy = CEC99C4F26A7CB1806524A95BB0FDBC8 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		39FAF7C01E5912F758D380B2D240AB0D /* Release */ = {
+		0314C8ADD04663AD5AB6CCC071F2994D /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4DD78EE9FA2DA6E18BBE549E0C43558B /* FirebaseCore.release.xcconfig */;
+			baseConfigurationReference = B0DB3D3582E0AFEF0D5C72AFCCFEFCB3 /* FirebaseCore.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -391,9 +392,8 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
 		4B237500093085EA1F92E4D3383D928C /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -523,15 +523,16 @@
 			};
 			name = Debug;
 		};
-		B34AADC61D2003BB8C6EA95E792CED5F /* Debug */ = {
+		FB47512F7646309480EEE40B8F7991C6 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B0DB3D3582E0AFEF0D5C72AFCCFEFCB3 /* FirebaseCore.debug.xcconfig */;
+			baseConfigurationReference = 4DD78EE9FA2DA6E18BBE549E0C43558B /* FirebaseCore.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -543,8 +544,9 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
@@ -561,8 +563,8 @@
 		EA624771FB5455E109B1ACE25C5C5B56 /* Build configuration list for PBXNativeTarget "FirebaseCore" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B34AADC61D2003BB8C6EA95E792CED5F /* Debug */,
-				39FAF7C01E5912F758D380B2D240AB0D /* Release */,
+				0314C8ADD04663AD5AB6CCC071F2994D /* Debug */,
+				FB47512F7646309480EEE40B8F7991C6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

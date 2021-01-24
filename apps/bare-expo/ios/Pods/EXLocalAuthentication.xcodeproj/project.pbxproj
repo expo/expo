@@ -13,7 +13,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		10C915087610ACF94AAF2408A8AAEFFB /* PBXContainerItemProxy */ = {
+		89E28D9FAD20D3631AB04F68DAA71772 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3DEF00518FD4CB9CD86A45E2307D43BB /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -145,7 +145,7 @@
 			);
 			dependencies = (
 				7D4E75611F4D83794BD38D44B4BFD10C /* PBXTargetDependency */,
-				3A8488251D16B3E25E2B709EEBC3A2A1 /* PBXTargetDependency */,
+				580CDA7B01020507C7AF22FB41766592 /* PBXTargetDependency */,
 			);
 			name = EXLocalAuthentication;
 			productName = EXLocalAuthentication;
@@ -200,10 +200,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		3A8488251D16B3E25E2B709EEBC3A2A1 /* PBXTargetDependency */ = {
+		580CDA7B01020507C7AF22FB41766592 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 10C915087610ACF94AAF2408A8AAEFFB /* PBXContainerItemProxy */;
+			targetProxy = 89E28D9FAD20D3631AB04F68DAA71772 /* PBXContainerItemProxy */;
 		};
 		7D4E75611F4D83794BD38D44B4BFD10C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

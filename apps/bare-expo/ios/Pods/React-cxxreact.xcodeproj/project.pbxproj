@@ -52,20 +52,6 @@
 			remoteGlobalIDString = 704FBB32EAA23CE28E7EE270C43D6624;
 			remoteInfo = "React-callinvoker";
 		};
-		2B662CD661DA8D812751C8FBD21934EA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DECB2B37576FC52B02B58AF1F3B7D032 /* glog.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 86F597DC3D8F3D7A34EC5A5C413F7255;
-			remoteInfo = glog;
-		};
-		3F15847F19D4466EB43CF68116F19C38 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8AF57CD928A1A30AFE446B41F2BC9ECD /* boost-for-react-native.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = AA4CE39926C0C12D02F874C1C48A5710;
-			remoteInfo = "boost-for-react-native";
-		};
 		3F35E5731C15E64B71C99C0204718294 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 04882ABC11DDD193A7E242731A586B5A /* React-jsinspector.xcodeproj */;
@@ -73,14 +59,28 @@
 			remoteGlobalIDString = 1AC0EAF3E808B6AA276E43B30A5B20AA;
 			remoteInfo = "React-jsinspector";
 		};
-		4185F8416688344A2F0B74E771818456 /* PBXContainerItemProxy */ = {
+		7385EC817FE784A65ADADEA0BFCDA724 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8AF57CD928A1A30AFE446B41F2BC9ECD /* boost-for-react-native.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = AA4CE39926C0C12D02F874C1C48A5710;
+			remoteInfo = "boost-for-react-native";
+		};
+		A1B3C74A2520BBEBB6A53E1D5D3175E1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DECB2B37576FC52B02B58AF1F3B7D032 /* glog.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 86F597DC3D8F3D7A34EC5A5C413F7255;
+			remoteInfo = glog;
+		};
+		CACC7C9C811F97DCE2C0EE0B3734D3F0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 62B6EF76E0D55A9B9677130A4938E3DD /* DoubleConversion.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 725D0E8C1060F8939288E8C91236BA4F;
 			remoteInfo = DoubleConversion;
 		};
-		BB89BFD209EB285EFDFA08C29A87DCDC /* PBXContainerItemProxy */ = {
+		D4AEC7B6C0F13B688FD46CFDC4B2A961 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 37C7D007450424E48504C697A85FF732 /* Folly.xcodeproj */;
 			proxyType = 1;
@@ -387,12 +387,12 @@
 			buildRules = (
 			);
 			dependencies = (
-				6458D439C42153557B992EE8CCBC9F99 /* PBXTargetDependency */,
-				4615312931B64458EC32BB6B38FE7C73 /* PBXTargetDependency */,
+				B499AC17DD9D4D9703B0FC33BCEF4DDA /* PBXTargetDependency */,
+				931A6C857B3E95621C19D545AB56C4F8 /* PBXTargetDependency */,
 				19B1821028932298FF2E144E43490BE4 /* PBXTargetDependency */,
 				DF931BFE3E569166D3822EEC38ED08EA /* PBXTargetDependency */,
-				B5D8D9B8215ABC93AAC27A372C9CCD04 /* PBXTargetDependency */,
-				D91E11A28E8473D8BD0223049F85E2C3 /* PBXTargetDependency */,
+				8185FDAEE91C26C46D807F5115B01B35 /* PBXTargetDependency */,
+				27C2FDA6CD18E2B2454033098EECEDA7 /* PBXTargetDependency */,
 			);
 			name = "React-cxxreact";
 			productName = "React-cxxreact";
@@ -475,25 +475,25 @@
 			name = "React-callinvoker";
 			targetProxy = 25129AB47294838750371E5619C7D441 /* PBXContainerItemProxy */;
 		};
-		4615312931B64458EC32BB6B38FE7C73 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Folly;
-			targetProxy = BB89BFD209EB285EFDFA08C29A87DCDC /* PBXContainerItemProxy */;
-		};
-		6458D439C42153557B992EE8CCBC9F99 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = DoubleConversion;
-			targetProxy = 4185F8416688344A2F0B74E771818456 /* PBXContainerItemProxy */;
-		};
-		B5D8D9B8215ABC93AAC27A372C9CCD04 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "boost-for-react-native";
-			targetProxy = 3F15847F19D4466EB43CF68116F19C38 /* PBXContainerItemProxy */;
-		};
-		D91E11A28E8473D8BD0223049F85E2C3 /* PBXTargetDependency */ = {
+		27C2FDA6CD18E2B2454033098EECEDA7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = glog;
-			targetProxy = 2B662CD661DA8D812751C8FBD21934EA /* PBXContainerItemProxy */;
+			targetProxy = A1B3C74A2520BBEBB6A53E1D5D3175E1 /* PBXContainerItemProxy */;
+		};
+		8185FDAEE91C26C46D807F5115B01B35 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "boost-for-react-native";
+			targetProxy = 7385EC817FE784A65ADADEA0BFCDA724 /* PBXContainerItemProxy */;
+		};
+		931A6C857B3E95621C19D545AB56C4F8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Folly;
+			targetProxy = D4AEC7B6C0F13B688FD46CFDC4B2A961 /* PBXContainerItemProxy */;
+		};
+		B499AC17DD9D4D9703B0FC33BCEF4DDA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = DoubleConversion;
+			targetProxy = CACC7C9C811F97DCE2C0EE0B3734D3F0 /* PBXContainerItemProxy */;
 		};
 		DF931BFE3E569166D3822EEC38ED08EA /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

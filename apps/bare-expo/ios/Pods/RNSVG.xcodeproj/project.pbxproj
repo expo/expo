@@ -765,16 +765,17 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		77EE4C8C81ECE4378EC6F6A0E122A88D /* Debug */ = {
+		4A2D768A3F882E935805DFEA5EA9DA00 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C9B25B4ABE41039162258CEA0043882F /* RNSVG.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/RNSVG/RNSVG-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -789,16 +790,17 @@
 			};
 			name = Debug;
 		};
-		9F453FF6E6D6E327786FFAF8BFCF4A60 /* Release */ = {
+		99A49D2AB8738BF47ED1408F9512F8A1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 413F9E71E8265373840A00A64E46C1F1 /* RNSVG.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/RNSVG/RNSVG-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -957,8 +959,8 @@
 		F0D56FF652CBE85ED74DD577504E65B1 /* Build configuration list for PBXNativeTarget "RNSVG" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				77EE4C8C81ECE4378EC6F6A0E122A88D /* Debug */,
-				9F453FF6E6D6E327786FFAF8BFCF4A60 /* Release */,
+				4A2D768A3F882E935805DFEA5EA9DA00 /* Debug */,
+				99A49D2AB8738BF47ED1408F9512F8A1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

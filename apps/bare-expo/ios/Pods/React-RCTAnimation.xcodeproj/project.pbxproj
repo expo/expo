@@ -46,7 +46,7 @@
 			remoteGlobalIDString = 2610D146B211EB79FECF83D4FA5AB36D;
 			remoteInfo = ReactCommon;
 		};
-		A44F4DAE2696C5D7601BDF8A9A19F3D9 /* PBXContainerItemProxy */ = {
+		81683F8C0BD5AAA696E0BE21F0BF2904 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0D7C7C34C28946A1384A6A80049255E8 /* Folly.xcodeproj */;
 			proxyType = 1;
@@ -345,7 +345,7 @@
 			);
 			dependencies = (
 				EDF1C0069DA48D65255DB45AB8D1DCC9 /* PBXTargetDependency */,
-				3546A5D0473964D6D0C2FB2152851D9A /* PBXTargetDependency */,
+				DFAA5AFBC7DDAA7B440A9B7289D0BCD0 /* PBXTargetDependency */,
 				A2052B808E69BC0E7BF0148410200190 /* PBXTargetDependency */,
 				23BF1CDE13B59A2E2F68A31434AF687C /* PBXTargetDependency */,
 				74E0088782BCF577EEE964BE4420540A /* PBXTargetDependency */,
@@ -441,11 +441,6 @@
 			name = "React-Core";
 			targetProxy = FE18C61A89A7F8C8D9CC92F8EE9A185A /* PBXContainerItemProxy */;
 		};
-		3546A5D0473964D6D0C2FB2152851D9A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Folly;
-			targetProxy = A44F4DAE2696C5D7601BDF8A9A19F3D9 /* PBXContainerItemProxy */;
-		};
 		74E0088782BCF577EEE964BE4420540A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-jsi";
@@ -460,6 +455,11 @@
 			isa = PBXTargetDependency;
 			name = RCTTypeSafety;
 			targetProxy = E636D0F62D531C5D1DD684FE6BA9DDDB /* PBXContainerItemProxy */;
+		};
+		DFAA5AFBC7DDAA7B440A9B7289D0BCD0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Folly;
+			targetProxy = 81683F8C0BD5AAA696E0BE21F0BF2904 /* PBXContainerItemProxy */;
 		};
 		EDF1C0069DA48D65255DB45AB8D1DCC9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

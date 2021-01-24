@@ -391,16 +391,42 @@
 			};
 			name = Debug;
 		};
-		B90AF3DBC9AB9B52B505C1B856AE16D9 /* Release */ = {
+		A37CB16C0854F86DB12A47E2B133CD7B /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4F010EA0D4127CC8D30036C6537C3B53 /* RNSharedElement.release.xcconfig */;
+			baseConfigurationReference = 7D8A4422C8C708EDACF852BA214DCAA0 /* RNSharedElement.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/RNSharedElement/RNSharedElement-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RNSharedElement;
+				PRODUCT_NAME = RNSharedElement;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		BE5C363C62C9DB8E3726F4BA0852695F /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4F010EA0D4127CC8D30036C6537C3B53 /* RNSharedElement.release.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/RNSharedElement/RNSharedElement-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -416,38 +442,14 @@
 			};
 			name = Release;
 		};
-		E7A9E3E76A5453DE97F5CB6E85BF3FFD /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7D8A4422C8C708EDACF852BA214DCAA0 /* RNSharedElement.debug.xcconfig */;
-			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/RNSharedElement/RNSharedElement-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = RNSharedElement;
-				PRODUCT_NAME = RNSharedElement;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		82BBE8B8CA29593EA79AC13CAE5F9C36 /* Build configuration list for PBXNativeTarget "RNSharedElement" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E7A9E3E76A5453DE97F5CB6E85BF3FFD /* Debug */,
-				B90AF3DBC9AB9B52B505C1B856AE16D9 /* Release */,
+				A37CB16C0854F86DB12A47E2B133CD7B /* Debug */,
+				BE5C363C62C9DB8E3726F4BA0852695F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

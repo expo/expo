@@ -331,16 +331,17 @@
 			};
 			name = Release;
 		};
-		98BDEF19DE79BB76112C197EAA243D62 /* Debug */ = {
+		5E8C3053D29C87DE5843C7789B95F010 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = FD5AEF29C0119F402489EC08FB4F3D77 /* react-native-slider.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/react-native-slider/react-native-slider-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -355,16 +356,17 @@
 			};
 			name = Debug;
 		};
-		D480F13C227AD599E20CCCAB26B1DBE3 /* Release */ = {
+		B31E9AD86E4B63772CF0B8F790B914CC /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 0B209C2DECB5D870C37E0BE14A826772 /* react-native-slider.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/react-native-slider/react-native-slider-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -395,8 +397,8 @@
 		40AF5D360DBAE97EC4B4B9A30EE14E95 /* Build configuration list for PBXNativeTarget "react-native-slider" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				98BDEF19DE79BB76112C197EAA243D62 /* Debug */,
-				D480F13C227AD599E20CCCAB26B1DBE3 /* Release */,
+				5E8C3053D29C87DE5843C7789B95F010 /* Debug */,
+				B31E9AD86E4B63772CF0B8F790B914CC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -26,19 +26,19 @@
 			remoteGlobalIDString = 8DC606D9CFDD04C553C81728629364B3;
 			remoteInfo = UMFaceDetectorInterface;
 		};
-		16BA1946299A3EEA40C7837049631EF4 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BE518697D537208788E18E01848F9FCA /* UMCore.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
-			remoteInfo = UMCore;
-		};
 		50EDBD7227ECEFEBAB665C8EF1EB5678 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 52918480E9C9E3E91C08001DA6851B91 /* UMFileSystemInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
 			remoteInfo = UMFileSystemInterface;
+		};
+		6126C161119FF836CB75518F4E53C11F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BE518697D537208788E18E01848F9FCA /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
 		};
 		A2B003009D8610F33B71B8ACA342E127 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -221,7 +221,7 @@
 			dependencies = (
 				565B49105B56700DABEC988A5F087FB6 /* PBXTargetDependency */,
 				A63EFF3618B25C06853823C7353120CE /* PBXTargetDependency */,
-				7B1A1B4218169157B418670EF2F81153 /* PBXTargetDependency */,
+				CEFB4428101ECC6D2FD06257ABFDC53E /* PBXTargetDependency */,
 				34304C6C5CE24105CD0EA79BA3E58723 /* PBXTargetDependency */,
 				708CE2C1FA20A31336B7B42231864CE2 /* PBXTargetDependency */,
 				45219FB7685502753B1C5B04CF1313A2 /* PBXTargetDependency */,
@@ -318,11 +318,6 @@
 			name = UMFileSystemInterface;
 			targetProxy = 50EDBD7227ECEFEBAB665C8EF1EB5678 /* PBXContainerItemProxy */;
 		};
-		7B1A1B4218169157B418670EF2F81153 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMCore;
-			targetProxy = 16BA1946299A3EEA40C7837049631EF4 /* PBXContainerItemProxy */;
-		};
 		A63EFF3618B25C06853823C7353120CE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCameraInterface;
@@ -332,6 +327,11 @@
 			isa = PBXTargetDependency;
 			name = UMPermissionsInterface;
 			targetProxy = A4DA441B672287EF2D5CC3F40FE54BEA /* PBXContainerItemProxy */;
+		};
+		CEFB4428101ECC6D2FD06257ABFDC53E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = 6126C161119FF836CB75518F4E53C11F /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

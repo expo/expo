@@ -16,14 +16,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		5C734D6A4491B240F177641767077A1A /* PBXContainerItemProxy */ = {
+		8ECC1CA4762FAF5B25B60E3FE741368A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B53CDD009FA913CFF50104926B465EAB /* UMCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
 		};
-		7DCF50EAD8B39A3AD42CC1BA2367325F /* PBXContainerItemProxy */ = {
+		FACF6CAB1639AB934CE6537E691FFC11 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 6D7BDFAFD7CB44FAC83E19F637A6B6B4 /* Firebase.xcodeproj */;
 			proxyType = 1;
@@ -155,8 +155,8 @@
 			buildRules = (
 			);
 			dependencies = (
-				5F6F913C9AFFC53B3E1C84631EDBC6E7 /* PBXTargetDependency */,
-				B31145A33740BC83B97C4EB52C7D7455 /* PBXTargetDependency */,
+				7E84A6AEB60CACC81B771A8C4668B919 /* PBXTargetDependency */,
+				73232EB7B9D3C9AD52BED55A8B4B8C93 /* PBXTargetDependency */,
 			);
 			name = EXFirebaseCore;
 			productName = EXFirebaseCore;
@@ -212,15 +212,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		5F6F913C9AFFC53B3E1C84631EDBC6E7 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Firebase;
-			targetProxy = 7DCF50EAD8B39A3AD42CC1BA2367325F /* PBXContainerItemProxy */;
-		};
-		B31145A33740BC83B97C4EB52C7D7455 /* PBXTargetDependency */ = {
+		73232EB7B9D3C9AD52BED55A8B4B8C93 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 5C734D6A4491B240F177641767077A1A /* PBXContainerItemProxy */;
+			targetProxy = 8ECC1CA4762FAF5B25B60E3FE741368A /* PBXContainerItemProxy */;
+		};
+		7E84A6AEB60CACC81B771A8C4668B919 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Firebase;
+			targetProxy = FACF6CAB1639AB934CE6537E691FFC11 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

@@ -47,7 +47,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		3CA02211F78396A93083504ED80CE353 /* PBXContainerItemProxy */ = {
+		9EA164683B042CBF3FBCD2A4C5772A1E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A8E04363EAC63999209AF96AD95102CB /* GTMSessionFetcher.xcodeproj */;
 			proxyType = 1;
@@ -261,7 +261,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				1CAE57D00350C145CE5A278E2F608733 /* PBXTargetDependency */,
+				F62DD1006832894C8D23F024659C02A7 /* PBXTargetDependency */,
 			);
 			name = GoogleAPIClientForREST;
 			productName = GoogleAPIClientForREST;
@@ -329,10 +329,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		1CAE57D00350C145CE5A278E2F608733 /* PBXTargetDependency */ = {
+		F62DD1006832894C8D23F024659C02A7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = GTMSessionFetcher;
-			targetProxy = 3CA02211F78396A93083504ED80CE353 /* PBXContainerItemProxy */;
+			targetProxy = 9EA164683B042CBF3FBCD2A4C5772A1E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

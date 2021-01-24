@@ -2807,34 +2807,11 @@
 			};
 			name = Debug;
 		};
-		395D0F6BB58DA977C5529789BD710089 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = F4E3B11A1301ECA5137A8AC00DECF251 /* Flipper-Folly.debug.xcconfig */;
-			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/Flipper-Folly/Flipper-Folly-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = folly;
-				PRODUCT_NAME = "Flipper-Folly";
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		3FADD19DF3768F08828C24C4E5DCFBC4 /* Release */ = {
+		6907E5C8CA5B0D626A4B91A088A91F40 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9B428F92815AB509E2005D34B822A3BF /* Flipper-Folly.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
@@ -2855,6 +2832,31 @@
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
+		};
+		7DE7BF5C095C4A67A6D27A23292A8FD8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F4E3B11A1301ECA5137A8AC00DECF251 /* Flipper-Folly.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/Flipper-Folly/Flipper-Folly-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = folly;
+				PRODUCT_NAME = "Flipper-Folly";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
 		};
 		D2CFA048AD7465517705F4F7BC57B283 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -2933,8 +2935,8 @@
 		A0775C3424F80E78A3F3EADADA9C1830 /* Build configuration list for PBXNativeTarget "Flipper-Folly" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				395D0F6BB58DA977C5529789BD710089 /* Debug */,
-				3FADD19DF3768F08828C24C4E5DCFBC4 /* Release */,
+				7DE7BF5C095C4A67A6D27A23292A8FD8 /* Debug */,
+				6907E5C8CA5B0D626A4B91A088A91F40 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -19,19 +19,19 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		530669DB0AF6A47507444B7BAB1A1BE0 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = B0C0FB2CB5C0086F4B7BEB61D507FDC6 /* GoogleSignIn.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 70D52585A9FA4EEA343010638ADABC11;
-			remoteInfo = GoogleSignIn;
-		};
-		56B147101AC289D2A295940EC3755CA2 /* PBXContainerItemProxy */ = {
+		736EAED9FE72C26C64E8BF9FD0D63AA2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 877123A470C772B0261DC3C2D6B29AB9 /* UMCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
+		};
+		E3B65140A3A634CED96F2B9A3B59C278 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B0C0FB2CB5C0086F4B7BEB61D507FDC6 /* GoogleSignIn.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 70D52585A9FA4EEA343010638ADABC11;
+			remoteInfo = GoogleSignIn;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -165,8 +165,8 @@
 			buildRules = (
 			);
 			dependencies = (
-				40E56470F180CA8C3D2D98E6DA31C56C /* PBXTargetDependency */,
-				DE4AA5187FCCF228116A8F6B959EE1CB /* PBXTargetDependency */,
+				40AB4DFA889FBC4D9E3F58A694004257 /* PBXTargetDependency */,
+				DBB4DBF206219514150D67DD325FE2D0 /* PBXTargetDependency */,
 			);
 			name = EXGoogleSignIn;
 			productName = EXGoogleSignIn;
@@ -224,15 +224,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		40E56470F180CA8C3D2D98E6DA31C56C /* PBXTargetDependency */ = {
+		40AB4DFA889FBC4D9E3F58A694004257 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = GoogleSignIn;
-			targetProxy = 530669DB0AF6A47507444B7BAB1A1BE0 /* PBXContainerItemProxy */;
+			targetProxy = E3B65140A3A634CED96F2B9A3B59C278 /* PBXContainerItemProxy */;
 		};
-		DE4AA5187FCCF228116A8F6B959EE1CB /* PBXTargetDependency */ = {
+		DBB4DBF206219514150D67DD325FE2D0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 56B147101AC289D2A295940EC3755CA2 /* PBXContainerItemProxy */;
+			targetProxy = 736EAED9FE72C26C64E8BF9FD0D63AA2 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

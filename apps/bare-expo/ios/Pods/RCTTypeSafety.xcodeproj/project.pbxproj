@@ -22,6 +22,13 @@
 			remoteGlobalIDString = 4B95F1280DBD545D036916608691C3EF;
 			remoteInfo = FBLazyVector;
 		};
+		946E256FE4008472FDE15F5A65DFA17C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 71217326F34DBC7C5956ABC1E7B023EA /* Folly.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 14BB2B7275726942E762F076FA966088;
+			remoteInfo = Folly;
+		};
 		A0EF27DA82CE690DB28FE1804C0A3027 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B9675F2F4D9BBBE48CC6AAB81E79C5D9 /* RCTRequired.xcodeproj */;
@@ -35,13 +42,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 5DA1A74647F652AE8E4DE074AFC4C6B7;
 			remoteInfo = "React-Core";
-		};
-		D63669C6276EBC3D680D96F5A1A7197F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 71217326F34DBC7C5956ABC1E7B023EA /* Folly.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 14BB2B7275726942E762F076FA966088;
-			remoteInfo = Folly;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -260,7 +260,7 @@
 			);
 			dependencies = (
 				B81835B8897E407B35B8F30FE3B48534 /* PBXTargetDependency */,
-				50449B34F22E177B338705F15BF8FE36 /* PBXTargetDependency */,
+				24FA7C75B6806C9B269632C422658C8A /* PBXTargetDependency */,
 				8218DAA091C45EC3EA0B79E8A2046BF4 /* PBXTargetDependency */,
 				B2EAAE816555CA32436D9BA0CA55452C /* PBXTargetDependency */,
 			);
@@ -324,10 +324,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		50449B34F22E177B338705F15BF8FE36 /* PBXTargetDependency */ = {
+		24FA7C75B6806C9B269632C422658C8A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Folly;
-			targetProxy = D63669C6276EBC3D680D96F5A1A7197F /* PBXContainerItemProxy */;
+			targetProxy = 946E256FE4008472FDE15F5A65DFA17C /* PBXContainerItemProxy */;
 		};
 		8218DAA091C45EC3EA0B79E8A2046BF4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

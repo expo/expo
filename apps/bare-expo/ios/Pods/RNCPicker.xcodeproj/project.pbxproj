@@ -15,7 +15,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		4543A8B077F38CF3F6826CD150C7C912 /* PBXContainerItemProxy */ = {
+		81C003F96FFDB7B0250B414C04B7073D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 8C117E96A5B4744CCBEB989F2096DAD5 /* React-Core.xcodeproj */;
 			proxyType = 1;
@@ -146,7 +146,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				419BC668E71C162BC314CEDED65A37B5 /* PBXTargetDependency */,
+				E2C0DF1A0DD94366D5E0258906287992 /* PBXTargetDependency */,
 			);
 			name = RNCPicker;
 			productName = RNCPicker;
@@ -199,10 +199,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		419BC668E71C162BC314CEDED65A37B5 /* PBXTargetDependency */ = {
+		E2C0DF1A0DD94366D5E0258906287992 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-Core";
-			targetProxy = 4543A8B077F38CF3F6826CD150C7C912 /* PBXContainerItemProxy */;
+			targetProxy = 81C003F96FFDB7B0250B414C04B7073D /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -269,16 +269,17 @@
 			};
 			name = Release;
 		};
-		14098CB876BDD13C1672A8FABF146777 /* Debug */ = {
+		35F9B4FA253E0E3E0846450F40C9F8F7 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 07841D204B200DB8C37AF0FF82572D63 /* RNCPicker.debug.xcconfig */;
+			baseConfigurationReference = 9875237842A5BD8467D9ED100206F6E6 /* RNCPicker.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/RNCPicker/RNCPicker-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -290,8 +291,9 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
 		596C25C16A1A8F3BBD378527AD9A6808 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -359,16 +361,17 @@
 			};
 			name = Debug;
 		};
-		67358A1CA50B22A4C5E0B4B1830FA158 /* Release */ = {
+		78656E4BB5829C6FCDB155E5A9336F95 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9875237842A5BD8467D9ED100206F6E6 /* RNCPicker.release.xcconfig */;
+			baseConfigurationReference = 07841D204B200DB8C37AF0FF82572D63 /* RNCPicker.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/RNCPicker/RNCPicker-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -380,9 +383,8 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
 /* End XCBuildConfiguration section */
 
@@ -399,8 +401,8 @@
 		BA5C10C0D39E369F5BF25ACD010465A6 /* Build configuration list for PBXNativeTarget "RNCPicker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				14098CB876BDD13C1672A8FABF146777 /* Debug */,
-				67358A1CA50B22A4C5E0B4B1830FA158 /* Release */,
+				78656E4BB5829C6FCDB155E5A9336F95 /* Debug */,
+				35F9B4FA253E0E3E0846450F40C9F8F7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

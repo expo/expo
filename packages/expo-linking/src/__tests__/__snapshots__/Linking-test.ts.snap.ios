@@ -2,17 +2,19 @@
 
 exports[`createURL bare makes url "" 1`] = `"demo://"`;
 
-exports[`createURL bare makes url "path/into/app" 1`] = `"demo:///path/into/app"`;
+exports[`createURL bare makes url "path/into/app" 1`] = `"demo://path/into/app"`;
 
-exports[`createURL bare makes url {"emptyParam": ""} 1`] = `"demo:///some/path?emptyParam="`;
+exports[`createURL bare makes url {"emptyParam": ""} 1`] = `"demo://some/path?emptyParam="`;
 
-exports[`createURL bare makes url {"escapePluses": "email+with+plus@whatever.com"} 1`] = `"demo:///some/path?escapePluses=email%252Bwith%252Bplus%2540whatever.com"`;
+exports[`createURL bare makes url {"escapePluses": "email+with+plus@whatever.com"} 1`] = `"demo://some/path?escapePluses=email%252Bwith%252Bplus%2540whatever.com"`;
 
-exports[`createURL bare makes url {"lotsOfSlashes": "/////"} 1`] = `"demo:///some/path?lotsOfSlashes=%252F%252F%252F%252F%252F"`;
+exports[`createURL bare makes url {"lotsOfSlashes": "/////"} 1`] = `"demo://some/path?lotsOfSlashes=%252F%252F%252F%252F%252F"`;
 
-exports[`createURL bare makes url {"shouldEscape": "%2b%20"} 1`] = `"demo:///some/path?shouldEscape=%25252b%252520"`;
+exports[`createURL bare makes url {"shouldEscape": "%2b%20"} 1`] = `"demo://some/path?shouldEscape=%25252b%252520"`;
 
-exports[`createURL bare makes url {"undefinedParam": undefined} 1`] = `"demo:///some/path"`;
+exports[`createURL bare makes url {"undefinedParam": undefined} 1`] = `"demo://some/path"`;
+
+exports[`createURL bare uses triple slashes 1`] = `"demo:///some/path"`;
 
 exports[`createURL queries makes url "" 1`] = `"exp://exp.host/@test/test"`;
 

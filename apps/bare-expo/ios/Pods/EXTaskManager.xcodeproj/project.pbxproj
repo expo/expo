@@ -28,7 +28,7 @@
 			remoteGlobalIDString = AD914734744A00B4515A3E7A846EDC15;
 			remoteInfo = UMAppLoader;
 		};
-		A115FC6D7CFEFB76F0D7EBF6855F1F5B /* PBXContainerItemProxy */ = {
+		A9B0C6B940C9C2DF6ED3B1DE19EDE178 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4195E20AD3069378B10DF814EC28FDD5 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -192,7 +192,7 @@
 			dependencies = (
 				2EA9D2FA71C4D8F90EA46FE2AF48DFB9 /* PBXTargetDependency */,
 				B24CE032A778C78C31A1357E7F2FDBFE /* PBXTargetDependency */,
-				F1CA91C296A5A18189D28A1F68DCB83F /* PBXTargetDependency */,
+				18F462563F12917D6D798011A5D8EA3D /* PBXTargetDependency */,
 				EE3DAD1E45C604F57B7544E6121FAB10 /* PBXTargetDependency */,
 			);
 			name = EXTaskManager;
@@ -258,6 +258,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		18F462563F12917D6D798011A5D8EA3D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = A9B0C6B940C9C2DF6ED3B1DE19EDE178 /* PBXContainerItemProxy */;
+		};
 		2EA9D2FA71C4D8F90EA46FE2AF48DFB9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMAppLoader;
@@ -272,11 +277,6 @@
 			isa = PBXTargetDependency;
 			name = UMTaskManagerInterface;
 			targetProxy = F8BC485802F5DDA1E7679D66E81E6F7B /* PBXContainerItemProxy */;
-		};
-		F1CA91C296A5A18189D28A1F68DCB83F /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMCore;
-			targetProxy = A115FC6D7CFEFB76F0D7EBF6855F1F5B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

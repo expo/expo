@@ -28,7 +28,7 @@
 			remoteGlobalIDString = 82BE183BB67FD85793E8A161FAEDC1AF;
 			remoteInfo = FirebaseCoreDiagnosticsInterop;
 		};
-		64477B38E04DDEC6B2FED3A90D0CE4B6 /* PBXContainerItemProxy */ = {
+		9A43479F0F7AB1B107BB4124CF5E63BE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2CB4B6550B3EC7890130FA81A9FAF524 /* GoogleUtilities.xcodeproj */;
 			proxyType = 1;
@@ -155,7 +155,7 @@
 			dependencies = (
 				B3ED6C5D497CEE394E25F08F6920AC62 /* PBXTargetDependency */,
 				F8D4323ADAAFCCC53D7202E144D74E6B /* PBXTargetDependency */,
-				021D0D876F0A30545E5EAB1FF36B97A8 /* PBXTargetDependency */,
+				E0B52318B6A93A8BF4615F745230B99C /* PBXTargetDependency */,
 				1A74928E630E852183727116B5500060 /* PBXTargetDependency */,
 			);
 			name = FirebaseCoreDiagnostics;
@@ -218,11 +218,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		021D0D876F0A30545E5EAB1FF36B97A8 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = GoogleUtilities;
-			targetProxy = 64477B38E04DDEC6B2FED3A90D0CE4B6 /* PBXContainerItemProxy */;
-		};
 		1A74928E630E852183727116B5500060 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = nanopb;
@@ -233,6 +228,11 @@
 			name = FirebaseCoreDiagnosticsInterop;
 			targetProxy = 383097FB798A24B638F888AA5530BD19 /* PBXContainerItemProxy */;
 		};
+		E0B52318B6A93A8BF4615F745230B99C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = GoogleUtilities;
+			targetProxy = 9A43479F0F7AB1B107BB4124CF5E63BE /* PBXContainerItemProxy */;
+		};
 		F8D4323ADAAFCCC53D7202E144D74E6B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = GoogleDataTransportCCTSupport;
@@ -241,30 +241,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		1B73B8AAACA0D1A1EF59EF25EB6E2DC2 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7FB9747489DBEAE380A27E8C0B6615C4 /* FirebaseCoreDiagnostics.release.xcconfig */;
-			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = FirebaseCoreDiagnostics;
-				PRODUCT_NAME = FirebaseCoreDiagnostics;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 		45F32B20092F2868E239DE4A231A5F32 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -393,15 +369,41 @@
 			};
 			name = Debug;
 		};
-		B1158360991DE9F3CB9B5B66DC7828C1 /* Debug */ = {
+		ADC02853547EAB8E94D8B37FD4A8605B /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8952C110663CAF8C65A5F8126A535B4E /* FirebaseCoreDiagnostics.debug.xcconfig */;
+			baseConfigurationReference = 7FB9747489DBEAE380A27E8C0B6615C4 /* FirebaseCoreDiagnostics.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = FirebaseCoreDiagnostics;
+				PRODUCT_NAME = FirebaseCoreDiagnostics;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		B55FCD3E925389E128B2F449D61A9645 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8952C110663CAF8C65A5F8126A535B4E /* FirebaseCoreDiagnostics.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -431,8 +433,8 @@
 		DDE0B5D3CE8205D65933AB5CBD0E2446 /* Build configuration list for PBXNativeTarget "FirebaseCoreDiagnostics" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B1158360991DE9F3CB9B5B66DC7828C1 /* Debug */,
-				1B73B8AAACA0D1A1EF59EF25EB6E2DC2 /* Release */,
+				B55FCD3E925389E128B2F449D61A9645 /* Debug */,
+				ADC02853547EAB8E94D8B37FD4A8605B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

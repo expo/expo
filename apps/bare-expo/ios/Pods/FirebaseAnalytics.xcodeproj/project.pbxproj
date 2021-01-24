@@ -16,7 +16,7 @@
 				146855F0F3B5ADF38213DFFA1E4C67B2 /* PBXTargetDependency */,
 				9FB72E4CDCD5AE58DBE3DD4857A9D212 /* PBXTargetDependency */,
 				87555E9B03D38F2E91A0C4DC692960A2 /* PBXTargetDependency */,
-				745D424B407493882751FF05F97B4479 /* PBXTargetDependency */,
+				429D4865CC0DEFF9B1E1050783DE9B32 /* PBXTargetDependency */,
 				32F996E6497EFE3985652E23F2821078 /* PBXTargetDependency */,
 			);
 			name = FirebaseAnalytics;
@@ -45,19 +45,19 @@
 			remoteGlobalIDString = 828A845A4F63A824ED62A82D61941B85;
 			remoteInfo = FirebaseInstanceID;
 		};
+		B5F5C21408A33189274B8881F7F03174 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7550AC1E6CED2CF53E5FD2966E9FBAFD /* GoogleUtilities.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 80B861CBFC18436AFD9A3703F00CEEC4;
+			remoteInfo = GoogleUtilities;
+		};
 		D8FA70DFBEF6B08A651BE7FD2E32BA69 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A6484606E929A3565DBA17DE6C3ED22F /* nanopb.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 052B66B57BF269A4B160A5659F7D46D4;
 			remoteInfo = nanopb;
-		};
-		EF10A9C59A8F84885C605A02E8340A63 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7550AC1E6CED2CF53E5FD2966E9FBAFD /* GoogleUtilities.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 80B861CBFC18436AFD9A3703F00CEEC4;
-			remoteInfo = GoogleUtilities;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -194,10 +194,10 @@
 			name = nanopb;
 			targetProxy = D8FA70DFBEF6B08A651BE7FD2E32BA69 /* PBXContainerItemProxy */;
 		};
-		745D424B407493882751FF05F97B4479 /* PBXTargetDependency */ = {
+		429D4865CC0DEFF9B1E1050783DE9B32 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = GoogleUtilities;
-			targetProxy = EF10A9C59A8F84885C605A02E8340A63 /* PBXContainerItemProxy */;
+			targetProxy = B5F5C21408A33189274B8881F7F03174 /* PBXContainerItemProxy */;
 		};
 		87555E9B03D38F2E91A0C4DC692960A2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -212,14 +212,15 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		1E521E4F3E4E61645EE3557E4243B4FD /* Release */ = {
+		0F539D773A62EE237652AB0C3CD894D9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1963669BE92F113AF5EB52C3F578DC9A /* FirebaseAnalytics.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -227,14 +228,15 @@
 			};
 			name = Release;
 		};
-		314FA73B6D5B3E1BE569194C47F0732E /* Debug */ = {
+		283FB762EBE0FD91951D524EFFB8D525 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4C912F062131F7BBC6B7BD49E8B5CC1E /* FirebaseAnalytics.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -384,8 +386,8 @@
 		DCD6CF5E4B4830400E93573BCC4D868E /* Build configuration list for PBXAggregateTarget "FirebaseAnalytics" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				314FA73B6D5B3E1BE569194C47F0732E /* Debug */,
-				1E521E4F3E4E61645EE3557E4243B4FD /* Release */,
+				283FB762EBE0FD91951D524EFFB8D525 /* Debug */,
+				0F539D773A62EE237652AB0C3CD894D9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -27,13 +27,6 @@
 			remoteGlobalIDString = 9C3601DE72183D42B9DC3FF333D35CF7;
 			remoteInfo = RCTTypeSafety;
 		};
-		880847B93A4E87BD311F9C2D72AAF392 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9EB29FFC2FA99D53B566CCF96AB5FB76 /* Folly.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 14BB2B7275726942E762F076FA966088;
-			remoteInfo = Folly;
-		};
 		AA383211CB36841087BAC0EC29C789D0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 483B29A8047CEB595F37FE736A8BCAFD /* React-Core.xcodeproj */;
@@ -54,6 +47,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = D0DB82AB65D33935072718EA2468992F;
 			remoteInfo = "React-jsi";
+		};
+		DE4C8BF5E340DB1EADA043164BDEF5FD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9EB29FFC2FA99D53B566CCF96AB5FB76 /* Folly.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 14BB2B7275726942E762F076FA966088;
+			remoteInfo = Folly;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -288,7 +288,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				145BB37D72D87CE027E4004971159FE4 /* PBXTargetDependency */,
+				730A6E2CF741652E9C57CF11D34429DF /* PBXTargetDependency */,
 				7E8493440B83010D253B2FB1260666FD /* PBXTargetDependency */,
 				B96A4DE78965E93F30844025E5B64BFE /* PBXTargetDependency */,
 				53D4DE48570862E662B64D7FC5AABF76 /* PBXTargetDependency */,
@@ -360,11 +360,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		145BB37D72D87CE027E4004971159FE4 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Folly;
-			targetProxy = 880847B93A4E87BD311F9C2D72AAF392 /* PBXContainerItemProxy */;
-		};
 		50F5AAA9B6B5A2C7002A75E98D629FB2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-jsi";
@@ -374,6 +369,11 @@
 			isa = PBXTargetDependency;
 			name = "React-Core";
 			targetProxy = AA383211CB36841087BAC0EC29C789D0 /* PBXContainerItemProxy */;
+		};
+		730A6E2CF741652E9C57CF11D34429DF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Folly;
+			targetProxy = DE4C8BF5E340DB1EADA043164BDEF5FD /* PBXContainerItemProxy */;
 		};
 		7E8493440B83010D253B2FB1260666FD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

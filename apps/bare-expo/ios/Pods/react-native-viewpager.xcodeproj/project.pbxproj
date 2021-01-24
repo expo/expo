@@ -27,7 +27,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		FC6384BE8C393DB86704B3B6A5477C8E /* PBXContainerItemProxy */ = {
+		314BD30BDB74C667CD295D8F840CA58F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 460372599D8A22C4E3B419D60919FCDA /* React-Core.xcodeproj */;
 			proxyType = 1;
@@ -188,7 +188,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				E78EE5BCDA14D79275650B3BDB88E786 /* PBXTargetDependency */,
+				6433180FEA061EFE56420A1EA3A80021 /* PBXTargetDependency */,
 			);
 			name = "react-native-viewpager";
 			productName = "react-native-viewpager";
@@ -247,10 +247,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		E78EE5BCDA14D79275650B3BDB88E786 /* PBXTargetDependency */ = {
+		6433180FEA061EFE56420A1EA3A80021 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-Core";
-			targetProxy = FC6384BE8C393DB86704B3B6A5477C8E /* PBXContainerItemProxy */;
+			targetProxy = 314BD30BDB74C667CD295D8F840CA58F /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -321,16 +321,17 @@
 			};
 			name = Debug;
 		};
-		47209BD0279F21CF1116FCF96BE45169 /* Debug */ = {
+		92E090372BEC4A37B42116E57B5A5EA4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 09438710E40CB3B506F8411F95B2EC62 /* react-native-viewpager.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/react-native-viewpager/react-native-viewpager-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -344,31 +345,6 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
-		};
-		4F60047A15A6D3D77BC22231CD1EDEE4 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = A5B3D63148A045781F71C169EECE64B1 /* react-native-viewpager.release.xcconfig */;
-			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/react-native-viewpager/react-native-viewpager-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = react_native_viewpager;
-				PRODUCT_NAME = "react-native-viewpager";
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
 		};
 		C5A46DFC455DB80C7B1F18C8F919144D /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -432,6 +408,32 @@
 			};
 			name = Release;
 		};
+		D83B3E1FE544364E2E9338E15864F54F /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A5B3D63148A045781F71C169EECE64B1 /* react-native-viewpager.release.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/react-native-viewpager/react-native-viewpager-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = react_native_viewpager;
+				PRODUCT_NAME = "react-native-viewpager";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -447,8 +449,8 @@
 		DAB44C1905FE1AE502473D290124B5C2 /* Build configuration list for PBXNativeTarget "react-native-viewpager" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				47209BD0279F21CF1116FCF96BE45169 /* Debug */,
-				4F60047A15A6D3D77BC22231CD1EDEE4 /* Release */,
+				92E090372BEC4A37B42116E57B5A5EA4 /* Debug */,
+				D83B3E1FE544364E2E9338E15864F54F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

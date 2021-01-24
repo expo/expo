@@ -13,7 +13,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		2A8C9C4FD62E645E2814E72C839EAE70 /* PBXContainerItemProxy */ = {
+		0EE88A426E101CFCB3B1EB5C80E7DBFB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 246263F9ABA741672441EABF1B006F05 /* Firebase.xcodeproj */;
 			proxyType = 1;
@@ -27,7 +27,7 @@
 			remoteGlobalIDString = DCC8E69A56EE37BAFC3269F2C48FBBF8;
 			remoteInfo = EXFirebaseCore;
 		};
-		ECE8BCB3AAE7DE7891EC4DBFC6C5B3A1 /* PBXContainerItemProxy */ = {
+		E9090E766172E7D4A7E7E1959434F765 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 023FDF20D5E11290968FDE731FF5800B /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -154,8 +154,8 @@
 			);
 			dependencies = (
 				00EAE305207808EBFFBE65D6E0C0870F /* PBXTargetDependency */,
-				125D48B65095569E437CF6F091251F42 /* PBXTargetDependency */,
-				65B9043F153683992122D5B87FCA7A0F /* PBXTargetDependency */,
+				034C0D6CCAE8BB692B4750ADF363DF96 /* PBXTargetDependency */,
+				52971B11E0BD8AABAB2B123AF0C61D51 /* PBXTargetDependency */,
 			);
 			name = EXFirebaseAnalytics;
 			productName = EXFirebaseAnalytics;
@@ -218,15 +218,15 @@
 			name = EXFirebaseCore;
 			targetProxy = BD85332C4695A0AC0132FF9D38AEC364 /* PBXContainerItemProxy */;
 		};
-		125D48B65095569E437CF6F091251F42 /* PBXTargetDependency */ = {
+		034C0D6CCAE8BB692B4750ADF363DF96 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Firebase;
-			targetProxy = 2A8C9C4FD62E645E2814E72C839EAE70 /* PBXContainerItemProxy */;
+			targetProxy = 0EE88A426E101CFCB3B1EB5C80E7DBFB /* PBXContainerItemProxy */;
 		};
-		65B9043F153683992122D5B87FCA7A0F /* PBXTargetDependency */ = {
+		52971B11E0BD8AABAB2B123AF0C61D51 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = ECE8BCB3AAE7DE7891EC4DBFC6C5B3A1 /* PBXContainerItemProxy */;
+			targetProxy = E9090E766172E7D4A7E7E1959434F765 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

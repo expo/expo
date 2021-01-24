@@ -20,19 +20,19 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		59215D95A2D1E815E1BB10A704CCB0A4 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7CA3E8879B5A9958E5CC343E2B60A1CB /* AppAuth.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 4EFA7E4CE531453CF475A9A4322A84F8;
-			remoteInfo = AppAuth;
-		};
 		772EFF852A54DB5BD03F33680CAC7C9E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 62B62CED66FC4D4F569E3827EF1D0F63 /* GTMSessionFetcher.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = BD7A8A3BC22FD28DCB40568BE43D7C70;
 			remoteInfo = GTMSessionFetcher;
+		};
+		819F4DDDC900C6C5523536DF5CC0AC4B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7CA3E8879B5A9958E5CC343E2B60A1CB /* AppAuth.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 4EFA7E4CE531453CF475A9A4322A84F8;
+			remoteInfo = AppAuth;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -159,7 +159,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				5F59D43ACEE83CFC8122C5F2BAE24456 /* PBXTargetDependency */,
+				206CA219E419485CF06B0E4F218BC9CC /* PBXTargetDependency */,
 				C1D7938CC0C13383231789C17EA7166B /* PBXTargetDependency */,
 			);
 			name = GTMAppAuth;
@@ -218,10 +218,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		5F59D43ACEE83CFC8122C5F2BAE24456 /* PBXTargetDependency */ = {
+		206CA219E419485CF06B0E4F218BC9CC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = AppAuth;
-			targetProxy = 59215D95A2D1E815E1BB10A704CCB0A4 /* PBXContainerItemProxy */;
+			targetProxy = 819F4DDDC900C6C5523536DF5CC0AC4B /* PBXContainerItemProxy */;
 		};
 		C1D7938CC0C13383231789C17EA7166B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

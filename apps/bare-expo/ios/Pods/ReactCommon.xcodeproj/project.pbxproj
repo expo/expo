@@ -25,12 +25,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		3D749BC9655FBB4731EE65D017B4309E /* PBXContainerItemProxy */ = {
+		4EA8E8D52F6D009E0554BB2C520DBE72 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 18B7450163EA83AEA64C16812C20AA11 /* Folly.xcodeproj */;
+			containerPortal = 79943E89F263F96D6A9ABADD9A88C499 /* DoubleConversion.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 14BB2B7275726942E762F076FA966088;
-			remoteInfo = Folly;
+			remoteGlobalIDString = 725D0E8C1060F8939288E8C91236BA4F;
+			remoteInfo = DoubleConversion;
 		};
 		66553CC2E03719EA7A7E9F3900E4D181 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -39,12 +39,12 @@
 			remoteGlobalIDString = 5DA1A74647F652AE8E4DE074AFC4C6B7;
 			remoteInfo = "React-Core";
 		};
-		99403B055FDB311CC2189DF282CDDECB /* PBXContainerItemProxy */ = {
+		9519DA1CAA40CF5B3ECDA7392F6677D0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 79943E89F263F96D6A9ABADD9A88C499 /* DoubleConversion.xcodeproj */;
+			containerPortal = 1BF0A3A2E430AB9A6638F15C66C70F9E /* glog.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 725D0E8C1060F8939288E8C91236BA4F;
-			remoteInfo = DoubleConversion;
+			remoteGlobalIDString = 86F597DC3D8F3D7A34EC5A5C413F7255;
+			remoteInfo = glog;
 		};
 		AE7E9DE6190599F587C7BAD9F2CC816E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -60,12 +60,12 @@
 			remoteGlobalIDString = BD509719D4F0C3D8910F2BED0B6AB5F3;
 			remoteInfo = "React-cxxreact";
 		};
-		D96AB2B961BCAF072E62CF68C28A522C /* PBXContainerItemProxy */ = {
+		C324C347DA560F0259CFB9F9992594E0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 1BF0A3A2E430AB9A6638F15C66C70F9E /* glog.xcodeproj */;
+			containerPortal = 18B7450163EA83AEA64C16812C20AA11 /* Folly.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 86F597DC3D8F3D7A34EC5A5C413F7255;
-			remoteInfo = glog;
+			remoteGlobalIDString = 14BB2B7275726942E762F076FA966088;
+			remoteInfo = Folly;
 		};
 		E7EF4FEE356177E95F8EF1CF16A0AFCB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -363,13 +363,13 @@
 			buildRules = (
 			);
 			dependencies = (
-				9D9521B3CFAA191D48FFC3959A8024BF /* PBXTargetDependency */,
-				9B6D259BAE91918CA4AB817B14452F56 /* PBXTargetDependency */,
+				A74DAA2289003E2D2721E26536A0A950 /* PBXTargetDependency */,
+				7FEEF84DB3DD694641C3011581C7708F /* PBXTargetDependency */,
 				549067BFB5D8861014287900254731B0 /* PBXTargetDependency */,
 				475BAD034F36A86F8AF6873B0ADC022D /* PBXTargetDependency */,
 				57BFDE645E8112152097AF98E4184AE0 /* PBXTargetDependency */,
 				1B2FB19AEB98912BE1C9994C820EA20A /* PBXTargetDependency */,
-				5A2B3E14167817E5C11426264537379B /* PBXTargetDependency */,
+				3B0E5C69537B58809D66516D9AA9416F /* PBXTargetDependency */,
 			);
 			name = ReactCommon;
 			productName = ReactCommon;
@@ -450,6 +450,11 @@
 			name = "React-jsi";
 			targetProxy = AE7E9DE6190599F587C7BAD9F2CC816E /* PBXContainerItemProxy */;
 		};
+		3B0E5C69537B58809D66516D9AA9416F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = glog;
+			targetProxy = 9519DA1CAA40CF5B3ECDA7392F6677D0 /* PBXContainerItemProxy */;
+		};
 		475BAD034F36A86F8AF6873B0ADC022D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-callinvoker";
@@ -465,20 +470,15 @@
 			name = "React-cxxreact";
 			targetProxy = B3EAD4902D83B951EFD185793E219B52 /* PBXContainerItemProxy */;
 		};
-		5A2B3E14167817E5C11426264537379B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = glog;
-			targetProxy = D96AB2B961BCAF072E62CF68C28A522C /* PBXContainerItemProxy */;
-		};
-		9B6D259BAE91918CA4AB817B14452F56 /* PBXTargetDependency */ = {
+		7FEEF84DB3DD694641C3011581C7708F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Folly;
-			targetProxy = 3D749BC9655FBB4731EE65D017B4309E /* PBXContainerItemProxy */;
+			targetProxy = C324C347DA560F0259CFB9F9992594E0 /* PBXContainerItemProxy */;
 		};
-		9D9521B3CFAA191D48FFC3959A8024BF /* PBXTargetDependency */ = {
+		A74DAA2289003E2D2721E26536A0A950 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = DoubleConversion;
-			targetProxy = 99403B055FDB311CC2189DF282CDDECB /* PBXContainerItemProxy */;
+			targetProxy = 4EA8E8D52F6D009E0554BB2C520DBE72 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

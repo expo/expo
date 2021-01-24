@@ -159,16 +159,17 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		1ACF410AED76549B3E9B4E42406C0290 /* Debug */ = {
+		6BC47DC283F41220B96CCF623E92DECE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BC12E7D1BD958F62E18F25282B77AC8E /* CocoaAsyncSocket.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/CocoaAsyncSocket/CocoaAsyncSocket-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -183,16 +184,17 @@
 			};
 			name = Debug;
 		};
-		82279BAC5ACAA770253C8ED3C475B317 /* Release */ = {
+		6D4816BEF06A09123B6BD3EBA7A396A5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = EDDE3C46ABC99F8014B3322848C4B62D /* CocoaAsyncSocket.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/CocoaAsyncSocket/CocoaAsyncSocket-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -342,8 +344,8 @@
 		125D71678C3E966FB0FBAA714D786812 /* Build configuration list for PBXNativeTarget "CocoaAsyncSocket" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1ACF410AED76549B3E9B4E42406C0290 /* Debug */,
-				82279BAC5ACAA770253C8ED3C475B317 /* Release */,
+				6BC47DC283F41220B96CCF623E92DECE /* Debug */,
+				6D4816BEF06A09123B6BD3EBA7A396A5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

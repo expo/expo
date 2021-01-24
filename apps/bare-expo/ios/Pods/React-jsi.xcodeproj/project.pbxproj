@@ -24,33 +24,33 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		0FD47E442A96A0D62C430AD8AB48709B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E4E62F93F6DFB7D5502CFEB2ADCA5874 /* DoubleConversion.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 725D0E8C1060F8939288E8C91236BA4F;
-			remoteInfo = DoubleConversion;
-		};
-		3E049E7747734D65AEF008C704395418 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8A55C1112A214E39F264533540A5646F /* boost-for-react-native.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = AA4CE39926C0C12D02F874C1C48A5710;
-			remoteInfo = "boost-for-react-native";
-		};
-		B2DE735A9AD7B79B204DF0D9B509DFC8 /* PBXContainerItemProxy */ = {
+		6E773ECA806A7A42E6E23029087E5E32 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 221454AEC8BAF287E3C8DC5E1F274FBE /* glog.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 86F597DC3D8F3D7A34EC5A5C413F7255;
 			remoteInfo = glog;
 		};
-		BF45108D27B30EA2387D84AAACFB1C9F /* PBXContainerItemProxy */ = {
+		AAEAD8B574BC01B299218569F5D28B98 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E4E62F93F6DFB7D5502CFEB2ADCA5874 /* DoubleConversion.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 725D0E8C1060F8939288E8C91236BA4F;
+			remoteInfo = DoubleConversion;
+		};
+		B98861F8A35A46F5F81806C1509DF18B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F6FE744C4562368AE63E0E317710B84A /* Folly.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 14BB2B7275726942E762F076FA966088;
 			remoteInfo = Folly;
+		};
+		EC5C74F0FEB3056065DBB5C518C4B29B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8A55C1112A214E39F264533540A5646F /* boost-for-react-native.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = AA4CE39926C0C12D02F874C1C48A5710;
+			remoteInfo = "boost-for-react-native";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -301,10 +301,10 @@
 			buildRules = (
 			);
 			dependencies = (
-				D7BBBFBC09BC836CC84461D1BF95CB40 /* PBXTargetDependency */,
-				194B631025A2BA32F0853AE20A414DF2 /* PBXTargetDependency */,
-				69074EFFD215B30F4023D833173BE8A1 /* PBXTargetDependency */,
-				D45C5C7C642ACB2987C31F51C0658BEF /* PBXTargetDependency */,
+				457C61DF0C5E44C003F8E51DEAB6EAF8 /* PBXTargetDependency */,
+				7531232A341A88AA8FD969C7CBD5B929 /* PBXTargetDependency */,
+				FCE6B58C072EA9DAD326B7801C09A654 /* PBXTargetDependency */,
+				BE215E37B0768AD78EB30FCC100CB035 /* PBXTargetDependency */,
 			);
 			name = "React-jsi";
 			productName = "React-jsi";
@@ -369,25 +369,25 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		194B631025A2BA32F0853AE20A414DF2 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Folly;
-			targetProxy = BF45108D27B30EA2387D84AAACFB1C9F /* PBXContainerItemProxy */;
-		};
-		69074EFFD215B30F4023D833173BE8A1 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "boost-for-react-native";
-			targetProxy = 3E049E7747734D65AEF008C704395418 /* PBXContainerItemProxy */;
-		};
-		D45C5C7C642ACB2987C31F51C0658BEF /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = glog;
-			targetProxy = B2DE735A9AD7B79B204DF0D9B509DFC8 /* PBXContainerItemProxy */;
-		};
-		D7BBBFBC09BC836CC84461D1BF95CB40 /* PBXTargetDependency */ = {
+		457C61DF0C5E44C003F8E51DEAB6EAF8 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = DoubleConversion;
-			targetProxy = 0FD47E442A96A0D62C430AD8AB48709B /* PBXContainerItemProxy */;
+			targetProxy = AAEAD8B574BC01B299218569F5D28B98 /* PBXContainerItemProxy */;
+		};
+		7531232A341A88AA8FD969C7CBD5B929 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Folly;
+			targetProxy = B98861F8A35A46F5F81806C1509DF18B /* PBXContainerItemProxy */;
+		};
+		BE215E37B0768AD78EB30FCC100CB035 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = glog;
+			targetProxy = 6E773ECA806A7A42E6E23029087E5E32 /* PBXContainerItemProxy */;
+		};
+		FCE6B58C072EA9DAD326B7801C09A654 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "boost-for-react-native";
+			targetProxy = EC5C74F0FEB3056065DBB5C518C4B29B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

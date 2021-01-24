@@ -140,14 +140,14 @@
 			remoteGlobalIDString = 1483A1ABA94FED5751D976C0F328C911;
 			remoteInfo = "expo-dev-menu-EXDevMenu";
 		};
-		8A0DBE0DE97CBE9C545256F6F8728533 /* PBXContainerItemProxy */ = {
+		1A0BF84616AAB1186E60FB9E913A64AF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 6FEE2902F8717B0EDE085E6E0BB12238 /* React.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 94DA87F24FB4B93E5D08FE961D5E5A3E;
 			remoteInfo = React;
 		};
-		BF6ED3E43BE66E5142839812699A7910 /* PBXContainerItemProxy */ = {
+		EFEAAF836F411649403299E216420B86 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A84F23CF263DF32FE13DB7ED244C7731 /* expo-dev-menu-interface.xcodeproj */;
 			proxyType = 1;
@@ -705,9 +705,9 @@
 			buildRules = (
 			);
 			dependencies = (
-				9B7EA302061E7CAFBED752D1BCD5CBC5 /* PBXTargetDependency */,
+				07096CD5004B238006757AD910A03F22 /* PBXTargetDependency */,
 				E67BFFCAD4ECC0DC8A47159F66EA3496 /* PBXTargetDependency */,
-				5E5D675080ECDF7791E5B84E1F05D1C3 /* PBXTargetDependency */,
+				62A15A7530A9019B7358FDBD11241F0D /* PBXTargetDependency */,
 			);
 			name = "expo-dev-menu";
 			productName = "expo-dev-menu";
@@ -874,15 +874,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		5E5D675080ECDF7791E5B84E1F05D1C3 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "expo-dev-menu-interface";
-			targetProxy = BF6ED3E43BE66E5142839812699A7910 /* PBXContainerItemProxy */;
-		};
-		9B7EA302061E7CAFBED752D1BCD5CBC5 /* PBXTargetDependency */ = {
+		07096CD5004B238006757AD910A03F22 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = React;
-			targetProxy = 8A0DBE0DE97CBE9C545256F6F8728533 /* PBXContainerItemProxy */;
+			targetProxy = 1A0BF84616AAB1186E60FB9E913A64AF /* PBXContainerItemProxy */;
+		};
+		62A15A7530A9019B7358FDBD11241F0D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "expo-dev-menu-interface";
+			targetProxy = EFEAAF836F411649403299E216420B86 /* PBXContainerItemProxy */;
 		};
 		E67BFFCAD4ECC0DC8A47159F66EA3496 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

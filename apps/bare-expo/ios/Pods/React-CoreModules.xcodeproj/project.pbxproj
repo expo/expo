@@ -37,7 +37,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		30E285E9608D1B4B6AC17924E74C1475 /* PBXContainerItemProxy */ = {
+		1E3475A67E5C53171DBB8AF5739843A2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D317D0E7265181E2C4FF150F57444324 /* Folly.xcodeproj */;
 			proxyType = 1;
@@ -351,7 +351,7 @@
 			);
 			dependencies = (
 				A7F865A63F3A7E8CDB3BDA058F555CFE /* PBXTargetDependency */,
-				D839F83845B8D74B3541E1F8BCE7A745 /* PBXTargetDependency */,
+				AEBBE82904CC81BCB5CE767207518BD2 /* PBXTargetDependency */,
 				D6C811146210C548328FB0E1B53024BF /* PBXTargetDependency */,
 				6964E168AE2536E5C941849EDF48F019 /* PBXTargetDependency */,
 				1302B0E9C90041249136F1A02E359371 /* PBXTargetDependency */,
@@ -476,15 +476,15 @@
 			name = FBReactNativeSpec;
 			targetProxy = 6828AE975BF9312CBC29F31853F1D1E5 /* PBXContainerItemProxy */;
 		};
+		AEBBE82904CC81BCB5CE767207518BD2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Folly;
+			targetProxy = 1E3475A67E5C53171DBB8AF5739843A2 /* PBXContainerItemProxy */;
+		};
 		D6C811146210C548328FB0E1B53024BF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = RCTTypeSafety;
 			targetProxy = 577DFD8BAC9FB425E42F52BD25E6F396 /* PBXContainerItemProxy */;
-		};
-		D839F83845B8D74B3541E1F8BCE7A745 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Folly;
-			targetProxy = 30E285E9608D1B4B6AC17924E74C1475 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

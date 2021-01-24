@@ -23,7 +23,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		09516128833661E5D3C73E9ABE1E0F1F /* PBXContainerItemProxy */ = {
+		482753E12DD4F70A831F249EFD51D0FE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C1646364459A7CCA805460100EADDBB3 /* EXGL_CPP.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 4C66693C554B15E2593FB1F665F8BA01;
+			remoteInfo = EXGL_CPP;
+		};
+		B6513585EA5627A2F8CF91D280B6AD97 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DB4A0F497B6034FF71F2BB59C784EF4E /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -43,13 +50,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 86372E925D4E10D72894E239CC18BCD9;
 			remoteInfo = UMCameraInterface;
-		};
-		F5F94012823A6310BB8EBC5679FF1416 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = C1646364459A7CCA805460100EADDBB3 /* EXGL_CPP.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 4C66693C554B15E2593FB1F665F8BA01;
-			remoteInfo = EXGL_CPP;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -197,9 +197,9 @@
 			buildRules = (
 			);
 			dependencies = (
-				D301183A3738227942E549F20CC974F3 /* PBXTargetDependency */,
+				1DBBC8DE5633FA2B9F62E53533D1436B /* PBXTargetDependency */,
 				057DDCDB035E797947887F2888F2B072 /* PBXTargetDependency */,
-				525E78FAD4DA2F643687DBC6445CDFE9 /* PBXTargetDependency */,
+				9DBA60581DF61389F354295F9228D4E4 /* PBXTargetDependency */,
 				08729781979EE26C4937F320C215E607 /* PBXTargetDependency */,
 			);
 			name = EXGL;
@@ -276,15 +276,15 @@
 			name = UMFileSystemInterface;
 			targetProxy = EB397DD6D24638F45AB4AC429F9B6DAC /* PBXContainerItemProxy */;
 		};
-		525E78FAD4DA2F643687DBC6445CDFE9 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMCore;
-			targetProxy = 09516128833661E5D3C73E9ABE1E0F1F /* PBXContainerItemProxy */;
-		};
-		D301183A3738227942E549F20CC974F3 /* PBXTargetDependency */ = {
+		1DBBC8DE5633FA2B9F62E53533D1436B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = EXGL_CPP;
-			targetProxy = F5F94012823A6310BB8EBC5679FF1416 /* PBXContainerItemProxy */;
+			targetProxy = 482753E12DD4F70A831F249EFD51D0FE /* PBXContainerItemProxy */;
+		};
+		9DBA60581DF61389F354295F9228D4E4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = B6513585EA5627A2F8CF91D280B6AD97 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

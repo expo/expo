@@ -29,7 +29,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		6DBF1C186B2CE2F3678CCCE034158DFD /* PBXContainerItemProxy */ = {
+		FBBA95D2A366B34DAF676F8D5A019C5A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AD68EA8BE8CC636A808DE22B42073D29 /* React-Core.xcodeproj */;
 			proxyType = 1;
@@ -195,7 +195,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				D04AD8B0080EC225EDB90AE430C563A2 /* PBXTargetDependency */,
+				C3E7F438171ABA4160D9CACB556123C6 /* PBXTargetDependency */,
 			);
 			name = "react-native-safe-area-context";
 			productName = "react-native-safe-area-context";
@@ -255,10 +255,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		D04AD8B0080EC225EDB90AE430C563A2 /* PBXTargetDependency */ = {
+		C3E7F438171ABA4160D9CACB556123C6 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-Core";
-			targetProxy = 6DBF1C186B2CE2F3678CCCE034158DFD /* PBXContainerItemProxy */;
+			targetProxy = FBBA95D2A366B34DAF676F8D5A019C5A /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -329,55 +329,6 @@
 			};
 			name = Debug;
 		};
-		0951E6573A2E5CA91750FD724ADE2ABF /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 67F0F094753F94FFD49042E6831D52EE /* react-native-safe-area-context.release.xcconfig */;
-			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/react-native-safe-area-context/react-native-safe-area-context-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = react_native_safe_area_context;
-				PRODUCT_NAME = "react-native-safe-area-context";
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		0E47CFABB233BE6D51424712AB3665A1 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 87371CDEF0C2CA89AA44936042C06BED /* react-native-safe-area-context.debug.xcconfig */;
-			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/react-native-safe-area-context/react-native-safe-area-context-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = react_native_safe_area_context;
-				PRODUCT_NAME = "react-native-safe-area-context";
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		505D9955D06E6D7C5104AD01741FB6A5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -440,6 +391,57 @@
 			};
 			name = Release;
 		};
+		CA701BE8055F37FDAD7E4904F5F3304A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 87371CDEF0C2CA89AA44936042C06BED /* react-native-safe-area-context.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/react-native-safe-area-context/react-native-safe-area-context-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = react_native_safe_area_context;
+				PRODUCT_NAME = "react-native-safe-area-context";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		CAF14C125804AE4ABA34AA28DE0A4492 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 67F0F094753F94FFD49042E6831D52EE /* react-native-safe-area-context.release.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/react-native-safe-area-context/react-native-safe-area-context-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = react_native_safe_area_context;
+				PRODUCT_NAME = "react-native-safe-area-context";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -455,8 +457,8 @@
 		9D3B254980DF2334831FC3CE136DBE12 /* Build configuration list for PBXNativeTarget "react-native-safe-area-context" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				0E47CFABB233BE6D51424712AB3665A1 /* Debug */,
-				0951E6573A2E5CA91750FD724ADE2ABF /* Release */,
+				CA701BE8055F37FDAD7E4904F5F3304A /* Debug */,
+				CAF14C125804AE4ABA34AA28DE0A4492 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

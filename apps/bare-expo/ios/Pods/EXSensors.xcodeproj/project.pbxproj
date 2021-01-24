@@ -29,19 +29,19 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		6FCF76CECC686D25983D93FE84FF958C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0FAD82EF40B7398F8CCB5B43B3AEB6E2 /* UMCore.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
-			remoteInfo = UMCore;
-		};
 		966656FBF4AE22D9ED94BFFB37B41954 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B91E89A2D7FCE9F93BEF9E0FDE9D7BCE /* UMSensorsInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 1FDCE556B997E87DAB0DA2727CC69285;
 			remoteInfo = UMSensorsInterface;
+		};
+		CA626A09205468FC6D9176F72F37AE58 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0FAD82EF40B7398F8CCB5B43B3AEB6E2 /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -218,7 +218,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				D2D9FBDFCBC55A59FE9A0C8327B2028A /* PBXTargetDependency */,
+				9720BDC9BCC6CD516B5532769CC6AF41 /* PBXTargetDependency */,
 				5643A9F86ED6B4727FFDAFE9A9D11E4B /* PBXTargetDependency */,
 			);
 			name = EXSensors;
@@ -287,10 +287,10 @@
 			name = UMSensorsInterface;
 			targetProxy = 966656FBF4AE22D9ED94BFFB37B41954 /* PBXContainerItemProxy */;
 		};
-		D2D9FBDFCBC55A59FE9A0C8327B2028A /* PBXTargetDependency */ = {
+		9720BDC9BCC6CD516B5532769CC6AF41 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 6FCF76CECC686D25983D93FE84FF958C /* PBXContainerItemProxy */;
+			targetProxy = CA626A09205468FC6D9176F72F37AE58 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

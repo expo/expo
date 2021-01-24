@@ -28,19 +28,19 @@
 			remoteGlobalIDString = 12FF61416C5E794E9DEAC78D381D9726;
 			remoteInfo = UMPermissionsInterface;
 		};
-		B718F578FB8A0B52A2D2265E4131D4C3 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7723D2334F2341264CE5E50BCAF01347 /* UMCore.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
-			remoteInfo = UMCore;
-		};
-		E754545665001EF2AE321F41CBB9F9AE /* PBXContainerItemProxy */ = {
+		988B70968F914589E930C68DE91598C9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 8D781B1A63954C2C00515B355326EB4D /* React-Core.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 5DA1A74647F652AE8E4DE074AFC4C6B7;
 			remoteInfo = "React-Core";
+		};
+		AB4343840CA9C782C2B51C8551107E26 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7723D2334F2341264CE5E50BCAF01347 /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
 		};
 		F0518424A2BA8F1E000EA87E54EF1BFE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -199,8 +199,8 @@
 			buildRules = (
 			);
 			dependencies = (
-				3C129B200924375ED18F9853CABEDCC6 /* PBXTargetDependency */,
-				10E065D3FC5F5CD65CB14F7BB9285287 /* PBXTargetDependency */,
+				07161CBC9DDEDF9429B03D5FFC50F98B /* PBXTargetDependency */,
+				86C319D6D9B1F49082F25967DC282D90 /* PBXTargetDependency */,
 				368D9D3AE7FF94CE4B96D3D1C019B838 /* PBXTargetDependency */,
 				FC473397EADA744CCB2DC20CD6F27118 /* PBXTargetDependency */,
 			);
@@ -267,20 +267,20 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		10E065D3FC5F5CD65CB14F7BB9285287 /* PBXTargetDependency */ = {
+		07161CBC9DDEDF9429B03D5FFC50F98B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = UMCore;
-			targetProxy = B718F578FB8A0B52A2D2265E4131D4C3 /* PBXContainerItemProxy */;
+			name = "React-Core";
+			targetProxy = 988B70968F914589E930C68DE91598C9 /* PBXContainerItemProxy */;
 		};
 		368D9D3AE7FF94CE4B96D3D1C019B838 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMFileSystemInterface;
 			targetProxy = F0518424A2BA8F1E000EA87E54EF1BFE /* PBXContainerItemProxy */;
 		};
-		3C129B200924375ED18F9853CABEDCC6 /* PBXTargetDependency */ = {
+		86C319D6D9B1F49082F25967DC282D90 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = "React-Core";
-			targetProxy = E754545665001EF2AE321F41CBB9F9AE /* PBXContainerItemProxy */;
+			name = UMCore;
+			targetProxy = AB4343840CA9C782C2B51C8551107E26 /* PBXContainerItemProxy */;
 		};
 		FC473397EADA744CCB2DC20CD6F27118 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

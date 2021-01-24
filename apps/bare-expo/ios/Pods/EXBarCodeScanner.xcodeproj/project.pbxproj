@@ -32,6 +32,13 @@
 			remoteGlobalIDString = 971E60E1AF9163E7E08105622FC91C16;
 			remoteInfo = UMBarCodeScannerInterface;
 		};
+		75A0A49B4D41715C0BA31691E3D6EAD6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 55BFADB3534A5BC72E8DA0E7D2A2A8BD /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
 		C85A841131A901B9767EEDB9E066058D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F2F38E4212CE4DE7C3FC2C0A7C8DF52D /* UMImageLoaderInterface.xcodeproj */;
@@ -39,19 +46,12 @@
 			remoteGlobalIDString = A734124238F83C1FEE81C0FEDC5CDC5C;
 			remoteInfo = UMImageLoaderInterface;
 		};
-		D6E52759E4250365730BBFF31C71EBAA /* PBXContainerItemProxy */ = {
+		D3EE76E8267BB84FA0165117559E12BA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 91CDC2D87BDC8A16F684255328548C7B /* ZXingObjC.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = F1A98E99C5291C55C29C32D889990685;
 			remoteInfo = ZXingObjC;
-		};
-		E25FA0D9FDFE9F6A6A887475223735FB /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 55BFADB3534A5BC72E8DA0E7D2A2A8BD /* UMCore.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
-			remoteInfo = UMCore;
 		};
 		EA0CB56D5C8CBBBD7CE0DE526F25AE85 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -223,10 +223,10 @@
 			);
 			dependencies = (
 				59A81A1A958E2736A161481C612C9C1B /* PBXTargetDependency */,
-				A3DFBBA30B3AA033B7C3E0A1C1AA97F1 /* PBXTargetDependency */,
+				871429AD989E3186599EF699CF08201F /* PBXTargetDependency */,
 				2BFB8A4440E89548F4955C56DE0E01A4 /* PBXTargetDependency */,
 				93A68390C96CEA9E7ECF62A558D62E30 /* PBXTargetDependency */,
-				08552FB1D2FD48B2272E67CFBEB442F7 /* PBXTargetDependency */,
+				4E99D2036D135BAE3FAAB0AAAAC827B7 /* PBXTargetDependency */,
 			);
 			name = EXBarCodeScanner;
 			productName = EXBarCodeScanner;
@@ -296,30 +296,30 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		08552FB1D2FD48B2272E67CFBEB442F7 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = ZXingObjC;
-			targetProxy = D6E52759E4250365730BBFF31C71EBAA /* PBXContainerItemProxy */;
-		};
 		2BFB8A4440E89548F4955C56DE0E01A4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMImageLoaderInterface;
 			targetProxy = C85A841131A901B9767EEDB9E066058D /* PBXContainerItemProxy */;
+		};
+		4E99D2036D135BAE3FAAB0AAAAC827B7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ZXingObjC;
+			targetProxy = D3EE76E8267BB84FA0165117559E12BA /* PBXContainerItemProxy */;
 		};
 		59A81A1A958E2736A161481C612C9C1B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMBarCodeScannerInterface;
 			targetProxy = 520FF10D9A853294882017091F17106D /* PBXContainerItemProxy */;
 		};
+		871429AD989E3186599EF699CF08201F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = 75A0A49B4D41715C0BA31691E3D6EAD6 /* PBXContainerItemProxy */;
+		};
 		93A68390C96CEA9E7ECF62A558D62E30 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMPermissionsInterface;
 			targetProxy = EA0CB56D5C8CBBBD7CE0DE526F25AE85 /* PBXContainerItemProxy */;
-		};
-		A3DFBBA30B3AA033B7C3E0A1C1AA97F1 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMCore;
-			targetProxy = E25FA0D9FDFE9F6A6A887475223735FB /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

@@ -9,15 +9,15 @@
 /* Begin PBXBuildFile section */
 		104B43705A61C6491493848AEE2EFF61 /* EXiOSUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 23793C033A42C5051849032392E4D477 /* EXiOSUtils.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		1A4324F52E233C0ED1B20E2545AA313D /* UEXGL.h in Headers */ = {isa = PBXBuildFile; fileRef = 54A9DED1AA9115F668317FDA315AF866 /* UEXGL.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		1BCA8FD7E3D3C3D87A72F6DEAF7F73F1 /* EXGLInstallConstants.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9529C9C136DF925543C4C697C83E022 /* EXGLInstallConstants.cpp */; settings = {COMPILER_FLAGS = "-x objective-c++"; }; };
-		3C78DB18DCA81995DFF81A17F4121C6A /* EXGLContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45369CA82FCDD65BE4C695957D2A935 /* EXGLContext.cpp */; settings = {COMPILER_FLAGS = "-x objective-c++"; }; };
-		495E1D112F2A90A0D6540190E8BFC169 /* EXGL_CPP_LEGACY-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 990A723B7A2224BEB8D92145CA60DA40 /* EXGL_CPP_LEGACY-dummy.m */; };
-		6458D73B30417A61E70A0AC0068508BF /* UEXGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E18B5B31738A9470F686503B92629CF2 /* UEXGL.cpp */; settings = {COMPILER_FLAGS = "-x objective-c++"; }; };
-		6D0DAB6B047BA47C8617E4F8D36F47E0 /* EXGLNativeMethods.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50059255672D582180863E6C346EAAF5 /* EXGLNativeMethods.cpp */; settings = {COMPILER_FLAGS = "-x objective-c++"; }; };
-		71516E5DEBF1E22A5C4A07A22D6F7282 /* EXJSUtils.c in Sources */ = {isa = PBXBuildFile; fileRef = 335A835CD0819E76D60B92866A759BF4 /* EXJSUtils.c */; };
-		75C562F0ABB22B74DE5F8B300F18CFC5 /* EXGLInstallMethods.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D2C47D63ECDD63EAA1E46E66D5B1193A /* EXGLInstallMethods.cpp */; settings = {COMPILER_FLAGS = "-x objective-c++"; }; };
-		86614F5F9E494468F076E0038565DA61 /* EXJSConvertTypedArray.c in Sources */ = {isa = PBXBuildFile; fileRef = 52751805E0B4A7A0499BB1615D741C56 /* EXJSConvertTypedArray.c */; };
-		B3A1C0C63D14354F497E3388B534B1F1 /* EXiOSUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = 61F96C8DB1DA7DC166BEEA64B78D55FE /* EXiOSUtils.mm */; };
+		21DBEA7DAE67327D3123FE241883D9A8 /* EXJSUtils.c in Sources */ = {isa = PBXBuildFile; fileRef = 335A835CD0819E76D60B92866A759BF4 /* EXJSUtils.c */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		31C65C6EACDD3AB4D3189C830F2F6B8A /* UEXGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E18B5B31738A9470F686503B92629CF2 /* UEXGL.cpp */; settings = {COMPILER_FLAGS = "-x objective-c++ -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		41783408A1FEB15A35483B766C427B84 /* EXiOSUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = 61F96C8DB1DA7DC166BEEA64B78D55FE /* EXiOSUtils.mm */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		5554422F5D2C586EBE05C49838F2A91B /* EXGLInstallConstants.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9529C9C136DF925543C4C697C83E022 /* EXGLInstallConstants.cpp */; settings = {COMPILER_FLAGS = "-x objective-c++ -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		57AF9E8A6D2DC752D31602E2290EDC37 /* EXGLInstallMethods.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D2C47D63ECDD63EAA1E46E66D5B1193A /* EXGLInstallMethods.cpp */; settings = {COMPILER_FLAGS = "-x objective-c++ -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		7B7133FEF0ABA383D992EDE33D7F7F7D /* EXGLContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45369CA82FCDD65BE4C695957D2A935 /* EXGLContext.cpp */; settings = {COMPILER_FLAGS = "-x objective-c++ -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		B314246CDF6E20EDBCD676F1D49225A9 /* EXGL_CPP_LEGACY-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 990A723B7A2224BEB8D92145CA60DA40 /* EXGL_CPP_LEGACY-dummy.m */; };
+		B78CA078E778D81C0F944D0AF2BF1B96 /* EXJSConvertTypedArray.c in Sources */ = {isa = PBXBuildFile; fileRef = 52751805E0B4A7A0499BB1615D741C56 /* EXJSConvertTypedArray.c */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		BB4C71AFDE43E7FF11AA125E8D5E0E2C /* EXGLNativeMethods.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50059255672D582180863E6C346EAAF5 /* EXGLNativeMethods.cpp */; settings = {COMPILER_FLAGS = "-x objective-c++ -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		C4626665B2880F6FC52A775C044693DA /* EXJSUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 6A946A1C8B1769121AA065009538FC7D /* EXJSUtils.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		DB863F707214DCDF855231D3F716C26A /* EXGLContext.h in Headers */ = {isa = PBXBuildFile; fileRef = B4204CA962FBB4FBF5232CF538290854 /* EXGLContext.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		E46CF0B9BD473A1C7FAD9679B92A9FB3 /* stb_image.h in Headers */ = {isa = PBXBuildFile; fileRef = 175676DA7D256D81E1BA2ABA07BD2772 /* stb_image.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -158,7 +158,7 @@
 			buildConfigurationList = 0FB398BB341FEC4AF3E50A16D094D4C6 /* Build configuration list for PBXNativeTarget "EXGL_CPP_LEGACY" */;
 			buildPhases = (
 				4A33D4740F3E751AACD2D7FD7C559587 /* Headers */,
-				0F1A0F95804E0B49C12F4BB696A1DA30 /* Sources */,
+				D2DA91BF57868F612184D2865323DA11 /* Sources */,
 				69EC6673C2A49D4797B6578CAFB759E0 /* Frameworks */,
 			);
 			buildRules = (
@@ -198,19 +198,19 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		0F1A0F95804E0B49C12F4BB696A1DA30 /* Sources */ = {
+		D2DA91BF57868F612184D2865323DA11 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				495E1D112F2A90A0D6540190E8BFC169 /* EXGL_CPP_LEGACY-dummy.m in Sources */,
-				3C78DB18DCA81995DFF81A17F4121C6A /* EXGLContext.cpp in Sources */,
-				1BCA8FD7E3D3C3D87A72F6DEAF7F73F1 /* EXGLInstallConstants.cpp in Sources */,
-				75C562F0ABB22B74DE5F8B300F18CFC5 /* EXGLInstallMethods.cpp in Sources */,
-				6D0DAB6B047BA47C8617E4F8D36F47E0 /* EXGLNativeMethods.cpp in Sources */,
-				B3A1C0C63D14354F497E3388B534B1F1 /* EXiOSUtils.mm in Sources */,
-				86614F5F9E494468F076E0038565DA61 /* EXJSConvertTypedArray.c in Sources */,
-				71516E5DEBF1E22A5C4A07A22D6F7282 /* EXJSUtils.c in Sources */,
-				6458D73B30417A61E70A0AC0068508BF /* UEXGL.cpp in Sources */,
+				B314246CDF6E20EDBCD676F1D49225A9 /* EXGL_CPP_LEGACY-dummy.m in Sources */,
+				7B7133FEF0ABA383D992EDE33D7F7F7D /* EXGLContext.cpp in Sources */,
+				5554422F5D2C586EBE05C49838F2A91B /* EXGLInstallConstants.cpp in Sources */,
+				57AF9E8A6D2DC752D31602E2290EDC37 /* EXGLInstallMethods.cpp in Sources */,
+				BB4C71AFDE43E7FF11AA125E8D5E0E2C /* EXGLNativeMethods.cpp in Sources */,
+				41783408A1FEB15A35483B766C427B84 /* EXiOSUtils.mm in Sources */,
+				B78CA078E778D81C0F944D0AF2BF1B96 /* EXJSConvertTypedArray.c in Sources */,
+				21DBEA7DAE67327D3123FE241883D9A8 /* EXJSUtils.c in Sources */,
+				31C65C6EACDD3AB4D3189C830F2F6B8A /* UEXGL.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

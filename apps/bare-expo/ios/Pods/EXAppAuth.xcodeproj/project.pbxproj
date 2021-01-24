@@ -19,19 +19,19 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		6846FAB8B664B28841FA2061B7411ADF /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D88854D1C59679E3B4787C34B2BDCD61 /* UMCore.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
-			remoteInfo = UMCore;
-		};
-		B34CBF14D7A38717EC5A529C14CCB6AA /* PBXContainerItemProxy */ = {
+		9E5DFD85AACB33E7E6A3A357DB78D29D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 93AAEAC3460313DBEA51D918D0B627CC /* AppAuth.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 4EFA7E4CE531453CF475A9A4322A84F8;
 			remoteInfo = AppAuth;
+		};
+		E8C797FDAAB630CC83E88AEA82E9C959 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D88854D1C59679E3B4787C34B2BDCD61 /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -165,8 +165,8 @@
 			buildRules = (
 			);
 			dependencies = (
-				6015D69E06060F23887C7A33E711424B /* PBXTargetDependency */,
-				9FBE469A921C250B01220E11923E445E /* PBXTargetDependency */,
+				5B7CDCFFCA53E9CD70E8F27D5B59FEE8 /* PBXTargetDependency */,
+				4D3127BCE232DF9892754F95C067EAB1 /* PBXTargetDependency */,
 			);
 			name = EXAppAuth;
 			productName = EXAppAuth;
@@ -224,15 +224,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		6015D69E06060F23887C7A33E711424B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = AppAuth;
-			targetProxy = B34CBF14D7A38717EC5A529C14CCB6AA /* PBXContainerItemProxy */;
-		};
-		9FBE469A921C250B01220E11923E445E /* PBXTargetDependency */ = {
+		4D3127BCE232DF9892754F95C067EAB1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 6846FAB8B664B28841FA2061B7411ADF /* PBXContainerItemProxy */;
+			targetProxy = E8C797FDAAB630CC83E88AEA82E9C959 /* PBXContainerItemProxy */;
+		};
+		5B7CDCFFCA53E9CD70E8F27D5B59FEE8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = AppAuth;
+			targetProxy = 9E5DFD85AACB33E7E6A3A357DB78D29D /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

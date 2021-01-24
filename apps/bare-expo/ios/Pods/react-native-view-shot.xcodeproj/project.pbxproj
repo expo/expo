@@ -199,16 +199,17 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		1C332E63786E2C68323D080E7CC795DC /* Release */ = {
+		28C6B6A3EACAAB113C966AA30FF2E127 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 23AC13F1A14F70FEF5B917A4711D658C /* react-native-view-shot.release.xcconfig */;
+			baseConfigurationReference = 0C300C52D5307246D60845E57B077320 /* react-native-view-shot.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/react-native-view-shot/react-native-view-shot-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -220,9 +221,8 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
 		4B2193967CD1098A65C27547A9883039 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -290,16 +290,17 @@
 			};
 			name = Debug;
 		};
-		7E38B22532A6ED9A8B9E884025B5D897 /* Debug */ = {
+		C2475DC2436C96936022A064EB523129 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0C300C52D5307246D60845E57B077320 /* react-native-view-shot.debug.xcconfig */;
+			baseConfigurationReference = 23AC13F1A14F70FEF5B917A4711D658C /* react-native-view-shot.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/react-native-view-shot/react-native-view-shot-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -311,8 +312,9 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
 		FD025F3ADC27ECC02DF6585F0E144DC6 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -382,8 +384,8 @@
 		5E957A285262288C77CDE6B97578A4DE /* Build configuration list for PBXNativeTarget "react-native-view-shot" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				7E38B22532A6ED9A8B9E884025B5D897 /* Debug */,
-				1C332E63786E2C68323D080E7CC795DC /* Release */,
+				28C6B6A3EACAAB113C966AA30FF2E127 /* Debug */,
+				C2475DC2436C96936022A064EB523129 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

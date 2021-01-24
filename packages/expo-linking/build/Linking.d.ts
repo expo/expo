@@ -22,8 +22,8 @@ export declare function makeUrl(path?: string, queryParams?: QueryParams, scheme
  *
  * **Examples**
  *
- * - Bare: `<scheme>:///path` -- uses provided scheme or scheme from Expo config `scheme`.
- * - Standalone, Custom: `yourscheme:///path`
+ * - Bare: `<scheme>://path` -- uses provided scheme or scheme from Expo config `scheme`.
+ * - Standalone, Custom: `yourscheme://path`
  * - Web (dev): `https://localhost:19006/path`
  * - Web (prod): `https://myapp.com/path`
  * - Expo Client (dev): `exp://128.0.0.1:19000/--/path`
@@ -33,9 +33,10 @@ export declare function makeUrl(path?: string, queryParams?: QueryParams, scheme
  * @param scheme URI protocol `<scheme>://` that must be built into your native app.
  * @param queryParams An object of parameters that will be converted into a query string.
  */
-export declare function createURL(path: string, { scheme, queryParams, }?: {
+export declare function createURL(path: string, { scheme, queryParams, isTripleSlashed, }?: {
     scheme?: string;
     queryParams?: QueryParams;
+    isTripleSlashed?: boolean;
 }): string;
 /**
  * Returns the components and query parameters for a given URL.

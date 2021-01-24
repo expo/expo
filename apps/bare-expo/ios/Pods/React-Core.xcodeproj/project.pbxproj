@@ -392,6 +392,13 @@
 			remoteGlobalIDString = 1F3758C0B42A99B5513562A12D0C2FF1;
 			remoteInfo = "React-Core-AccessibilityResources";
 		};
+		39B7E6406D2FD53EA21827A70604D477 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 19EACAD34A4236485CFF9D43F927F4E9 /* Folly.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 14BB2B7275726942E762F076FA966088;
+			remoteInfo = Folly;
+		};
 		808B9BE78BB706125315032B5297961E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2AD1C8145CE341B6029B8BAB99DB2221 /* React-cxxreact.xcodeproj */;
@@ -399,19 +406,19 @@
 			remoteGlobalIDString = BD509719D4F0C3D8910F2BED0B6AB5F3;
 			remoteInfo = "React-cxxreact";
 		};
-		995BC21C78F3C5A128ACA03180E7C840 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 19EACAD34A4236485CFF9D43F927F4E9 /* Folly.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 14BB2B7275726942E762F076FA966088;
-			remoteInfo = Folly;
-		};
 		9D02A8ECF5E3DE7A67A953608BA29E8D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7142899A2B5B89BC02364A471B614CF2 /* React-jsiexecutor.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 7F7693C84AD2D676CE4E5741F508C198;
 			remoteInfo = "React-jsiexecutor";
+		};
+		AD2A6231FEB7D881DDD1E727290E8F1E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 45CFCAAEF75A9C80668475C02319E4B0 /* glog.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 86F597DC3D8F3D7A34EC5A5C413F7255;
+			remoteInfo = glog;
 		};
 		D606FC96CDF0473B5C7EB9914871AFC6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -433,13 +440,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = D0DB82AB65D33935072718EA2468992F;
 			remoteInfo = "React-jsi";
-		};
-		F6A355342750AC1E15C2841431478D43 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 45CFCAAEF75A9C80668475C02319E4B0 /* glog.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 86F597DC3D8F3D7A34EC5A5C413F7255;
-			remoteInfo = glog;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -3040,14 +3040,14 @@
 			buildRules = (
 			);
 			dependencies = (
-				16B60343CEEFFBCAF2C5160653E4B478 /* PBXTargetDependency */,
+				3D1DEF59E63F6A8D1633D2C858644875 /* PBXTargetDependency */,
 				3D476E61A3117B253735881FFF832066 /* PBXTargetDependency */,
 				585D67FBBDCA6C8E7CABB231BDBCBC68 /* PBXTargetDependency */,
 				B691118AE4ACC03D772DCE950C6F7C3E /* PBXTargetDependency */,
 				8387F7790AC2ED417916D5C97A7F33D3 /* PBXTargetDependency */,
 				A6F315FDE3A325EA6AD24B96E48CA43D /* PBXTargetDependency */,
 				26D52EDA1F989F243A438DF895025246 /* PBXTargetDependency */,
-				479FCECC3ABE39B4EFB1B9F234DB4B0D /* PBXTargetDependency */,
+				0F7654766FFD5ADF8D33CDF7FFCF1A6D /* PBXTargetDependency */,
 			);
 			name = "React-Core";
 			productName = "React-Core";
@@ -3253,26 +3253,26 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		16B60343CEEFFBCAF2C5160653E4B478 /* PBXTargetDependency */ = {
+		0F7654766FFD5ADF8D33CDF7FFCF1A6D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = Folly;
-			targetProxy = 995BC21C78F3C5A128ACA03180E7C840 /* PBXContainerItemProxy */;
+			name = glog;
+			targetProxy = AD2A6231FEB7D881DDD1E727290E8F1E /* PBXContainerItemProxy */;
 		};
 		26D52EDA1F989F243A438DF895025246 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Yoga;
 			targetProxy = D606FC96CDF0473B5C7EB9914871AFC6 /* PBXContainerItemProxy */;
 		};
+		3D1DEF59E63F6A8D1633D2C858644875 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Folly;
+			targetProxy = 39B7E6406D2FD53EA21827A70604D477 /* PBXContainerItemProxy */;
+		};
 		3D476E61A3117B253735881FFF832066 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-Core-AccessibilityResources";
 			target = 1F3758C0B42A99B5513562A12D0C2FF1 /* React-Core-AccessibilityResources */;
 			targetProxy = 1680058662E9E00E5371F8F2EA91B471 /* PBXContainerItemProxy */;
-		};
-		479FCECC3ABE39B4EFB1B9F234DB4B0D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = glog;
-			targetProxy = F6A355342750AC1E15C2841431478D43 /* PBXContainerItemProxy */;
 		};
 		585D67FBBDCA6C8E7CABB231BDBCBC68 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

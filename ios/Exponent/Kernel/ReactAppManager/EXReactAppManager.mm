@@ -703,7 +703,18 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     expProps[@"notification"] = initialNotification.properties;
   }
 
-  expProps[@"manifest"] = _appRecord.appLoader.manifest;
+  NSString *manifestString = nil;
+  if (_appRecord.appLoader.manifest && [NSJSONSerialization isValidJSONObject:_appRecord.appLoader.manifest]) {
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:_appRecord.appLoader.manifest options:0 error:&error];
+    if (jsonData) {
+      manifestString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    } else {
+      DDLogWarn(@"Failed to serialize JSON manifest: %@", error);
+    }
+  }
+
+  expProps[@"manifestString"] = manifestString;
   if (_appRecord.appLoader.manifestUrl) {
     expProps[@"initialUri"] = [_appRecord.appLoader.manifestUrl absoluteString];
   }

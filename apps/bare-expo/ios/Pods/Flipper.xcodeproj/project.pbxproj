@@ -373,10 +373,11 @@
 			};
 			name = Debug;
 		};
-		A767B739745D55B13FBD82477B84906D /* Debug */ = {
+		5C9E5AF13E322C4484FFA1B853471AE2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 126B5F176BB1DCCC775B76B746BC358A /* Flipper.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
@@ -396,6 +397,32 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
+		};
+		7A7F7CE67A9901D6E4F3E7F9433EEBE3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BBF329C6A380B2C8CB8736C7EF63EFC8 /* Flipper.release.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/Flipper/Flipper-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = Flipper;
+				PRODUCT_NAME = Flipper;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
 		};
 		AEA601E0A90954F4F60CC4975B76F5AF /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -459,31 +486,6 @@
 			};
 			name = Release;
 		};
-		DFDC2FE8F2773528FDAA691474EB2864 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = BBF329C6A380B2C8CB8736C7EF63EFC8 /* Flipper.release.xcconfig */;
-			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/Flipper/Flipper-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = Flipper;
-				PRODUCT_NAME = Flipper;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -499,8 +501,8 @@
 		EE2478FCF43BC51613257DDD3DAE09BA /* Build configuration list for PBXNativeTarget "Flipper" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				A767B739745D55B13FBD82477B84906D /* Debug */,
-				DFDC2FE8F2773528FDAA691474EB2864 /* Release */,
+				5C9E5AF13E322C4484FFA1B853471AE2 /* Debug */,
+				7A7F7CE67A9901D6E4F3E7F9433EEBE3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

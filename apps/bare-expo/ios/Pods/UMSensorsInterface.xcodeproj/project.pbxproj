@@ -13,14 +13,14 @@
 			buildPhases = (
 			);
 			dependencies = (
-				97E63CFC2911B4E720B10BCFA92C7D40 /* PBXTargetDependency */,
+				B8071BA1991836C19F0764AFCE1CFD33 /* PBXTargetDependency */,
 			);
 			name = UMSensorsInterface;
 		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXContainerItemProxy section */
-		4461D81B74889C433C9DDDB25A9CA770 /* PBXContainerItemProxy */ = {
+		95B3C45E56233AB21C7956976DE34A0E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B21904055EB3DEEA4DD2E9F075D43A70 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -142,10 +142,10 @@
 /* End PBXProject section */
 
 /* Begin PBXTargetDependency section */
-		97E63CFC2911B4E720B10BCFA92C7D40 /* PBXTargetDependency */ = {
+		B8071BA1991836C19F0764AFCE1CFD33 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 4461D81B74889C433C9DDDB25A9CA770 /* PBXContainerItemProxy */;
+			targetProxy = 95B3C45E56233AB21C7956976DE34A0E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

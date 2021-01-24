@@ -20,19 +20,19 @@
 			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
 			remoteInfo = UMFileSystemInterface;
 		};
-		9135620D4A93F16E040A44ECDCD25CF5 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D68E48115F7A10E5EEB7521064DE026D /* UMCore.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
-			remoteInfo = UMCore;
-		};
 		C415B92FBFB7D919CAFED656D80B9339 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A4B23D3DBA08004FB36B07E39B931295 /* UMImageLoaderInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = A734124238F83C1FEE81C0FEDC5CDC5C;
 			remoteInfo = UMImageLoaderInterface;
+		};
+		C47CAEF8055E40AD505CE9B39A51BDCE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D68E48115F7A10E5EEB7521064DE026D /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -153,7 +153,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				624797D7FF166F9BC74E9259109281AA /* PBXTargetDependency */,
+				5811DFD7D297A1BB2F47EBFA2FC7E283 /* PBXTargetDependency */,
 				549227B53BA47FBD623E66939AD0F0B9 /* PBXTargetDependency */,
 				EC91C2002D35215528C56F27350565F7 /* PBXTargetDependency */,
 			);
@@ -218,10 +218,10 @@
 			name = UMFileSystemInterface;
 			targetProxy = 445F0368A62B7BBBB48EA64AFA3C4115 /* PBXContainerItemProxy */;
 		};
-		624797D7FF166F9BC74E9259109281AA /* PBXTargetDependency */ = {
+		5811DFD7D297A1BB2F47EBFA2FC7E283 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 9135620D4A93F16E040A44ECDCD25CF5 /* PBXContainerItemProxy */;
+			targetProxy = C47CAEF8055E40AD505CE9B39A51BDCE /* PBXContainerItemProxy */;
 		};
 		EC91C2002D35215528C56F27350565F7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

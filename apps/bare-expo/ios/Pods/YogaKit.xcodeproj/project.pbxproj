@@ -18,7 +18,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		5F97DAF15DAF3090FBA159B6C0EEE436 /* PBXContainerItemProxy */ = {
+		A8D398FD665BD8C51753ACEDD0E70A42 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7D0FA9DB016DA8000BD89112202440DE /* Yoga.xcodeproj */;
 			proxyType = 1;
@@ -146,7 +146,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				2A2865ACAB79E92905C9E6FEA59223DB /* PBXTargetDependency */,
+				842A9F189CC2B81FDAD4092CD7A4B389 /* PBXTargetDependency */,
 			);
 			name = YogaKit;
 			productName = YogaKit;
@@ -227,49 +227,25 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		2A2865ACAB79E92905C9E6FEA59223DB /* PBXTargetDependency */ = {
+		842A9F189CC2B81FDAD4092CD7A4B389 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Yoga;
-			targetProxy = 5F97DAF15DAF3090FBA159B6C0EEE436 /* PBXContainerItemProxy */;
+			targetProxy = A8D398FD665BD8C51753ACEDD0E70A42 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		180CCD329D866FA98F7719E99EC736C3 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0F06691A661347C930D90916B8B28356 /* YogaKit.debug.xcconfig */;
-			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/YogaKit/YogaKit-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				MODULEMAP_FILE = Headers/Public/YogaKit/YogaKit.modulemap;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = YogaKit;
-				PRODUCT_NAME = YogaKit;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.1;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		2BCABF8A3D7B826016C32F3EEB0125D8 /* Release */ = {
+		3F1A9C355DA80FA607EA705200C7420E /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 8677F4D2C81CAB14C94308A1C26C8A38 /* YogaKit.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/YogaKit/YogaKit-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MODULEMAP_FILE = Headers/Public/YogaKit/YogaKit.modulemap;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
@@ -414,14 +390,40 @@
 			};
 			name = Debug;
 		};
+		E63B70401A6F482A4C8610A227371F72 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0F06691A661347C930D90916B8B28356 /* YogaKit.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/YogaKit/YogaKit-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				MODULEMAP_FILE = Headers/Public/YogaKit/YogaKit.modulemap;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = YogaKit;
+				PRODUCT_NAME = YogaKit;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.1;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		6C91627573A48E05A748A66EB0F6A1D8 /* Build configuration list for PBXNativeTarget "YogaKit" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				180CCD329D866FA98F7719E99EC736C3 /* Debug */,
-				2BCABF8A3D7B826016C32F3EEB0125D8 /* Release */,
+				E63B70401A6F482A4C8610A227371F72 /* Debug */,
+				3F1A9C355DA80FA607EA705200C7420E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

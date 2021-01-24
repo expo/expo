@@ -17,7 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		D04B7654FCB6A3CB4980BFECB0878E7A /* PBXContainerItemProxy */ = {
+		5565FC44459391A1653C450BF24CF182 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 8EB2AC4A45EDDFADE7549C8363A22B18 /* React-Core.xcodeproj */;
 			proxyType = 1;
@@ -153,7 +153,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				4CB131BF8B370BCE22DEEAAF21BA5428 /* PBXTargetDependency */,
+				B6EB0EE7E618C5E04C68430A488E7AE9 /* PBXTargetDependency */,
 			);
 			name = "react-native-webview";
 			productName = "react-native-webview";
@@ -207,24 +207,25 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		4CB131BF8B370BCE22DEEAAF21BA5428 /* PBXTargetDependency */ = {
+		B6EB0EE7E618C5E04C68430A488E7AE9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-Core";
-			targetProxy = D04B7654FCB6A3CB4980BFECB0878E7A /* PBXContainerItemProxy */;
+			targetProxy = 5565FC44459391A1653C450BF24CF182 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		027CFCD28631B84CC91DB9B897008B6D /* Debug */ = {
+		62CD7F47C9E2432DE52CC898F168825B /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 039DE1F18B5345712648B1ACB965C45F /* react-native-webview.debug.xcconfig */;
+			baseConfigurationReference = 63B9E1B389448E9701C1E8E783690647 /* react-native-webview.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/react-native-webview/react-native-webview-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -236,8 +237,9 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
 		8AAC9924547377A9D67CBE3BC364DB80 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -367,16 +369,17 @@
 			};
 			name = Release;
 		};
-		D3B2ECA3C3120B8925486F1A96557BA1 /* Release */ = {
+		A77A44EACF9C240ABF6A60900BC4E4BA /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 63B9E1B389448E9701C1E8E783690647 /* react-native-webview.release.xcconfig */;
+			baseConfigurationReference = 039DE1F18B5345712648B1ACB965C45F /* react-native-webview.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/react-native-webview/react-native-webview-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -388,9 +391,8 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
 /* End XCBuildConfiguration section */
 
@@ -398,8 +400,8 @@
 		1071B9FB32EBC525DAB75B47697EDD92 /* Build configuration list for PBXNativeTarget "react-native-webview" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				027CFCD28631B84CC91DB9B897008B6D /* Debug */,
-				D3B2ECA3C3120B8925486F1A96557BA1 /* Release */,
+				A77A44EACF9C240ABF6A60900BC4E4BA /* Debug */,
+				62CD7F47C9E2432DE52CC898F168825B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

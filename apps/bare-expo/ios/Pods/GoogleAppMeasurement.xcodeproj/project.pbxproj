@@ -13,7 +13,7 @@
 			buildPhases = (
 			);
 			dependencies = (
-				F482BCD2D1963552A9686C8DBB948BC2 /* PBXTargetDependency */,
+				3A391CA63B7860014C3F2A5D4FF5B993 /* PBXTargetDependency */,
 				0A04BDE67A70D396702FDC031687FA10 /* PBXTargetDependency */,
 			);
 			name = GoogleAppMeasurement;
@@ -21,7 +21,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXContainerItemProxy section */
-		08027D98DC8C9F1E8E3D011E8BAED247 /* PBXContainerItemProxy */ = {
+		011657059C01A8361C86D2EF55AD3FFE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B14A6E5D41DC74FF5FB1D41790DF8C06 /* GoogleUtilities.xcodeproj */;
 			proxyType = 1;
@@ -148,10 +148,10 @@
 			name = nanopb;
 			targetProxy = 9D958842553F52AC288820321656E2A5 /* PBXContainerItemProxy */;
 		};
-		F482BCD2D1963552A9686C8DBB948BC2 /* PBXTargetDependency */ = {
+		3A391CA63B7860014C3F2A5D4FF5B993 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = GoogleUtilities;
-			targetProxy = 08027D98DC8C9F1E8E3D011E8BAED247 /* PBXContainerItemProxy */;
+			targetProxy = 011657059C01A8361C86D2EF55AD3FFE /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -218,14 +218,15 @@
 			};
 			name = Release;
 		};
-		4473C26CBFF65ACCE8297A3AE27F816E /* Release */ = {
+		1B8D7F68712E6FCC441686448649C64E /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 592442F389ACEEC9F19EC017010D2C6F /* GoogleAppMeasurement.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -299,14 +300,15 @@
 			};
 			name = Debug;
 		};
-		B267B46196338DC52EC03249A50F23CA /* Debug */ = {
+		69D36BFCF8166285AD3589DCA3D0A320 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BCF9098EBC5D5A318CF7964F16F0C55A /* GoogleAppMeasurement.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -328,8 +330,8 @@
 		9D930273FF666F4C8EBE68EE19ED0063 /* Build configuration list for PBXAggregateTarget "GoogleAppMeasurement" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B267B46196338DC52EC03249A50F23CA /* Debug */,
-				4473C26CBFF65ACCE8297A3AE27F816E /* Release */,
+				69D36BFCF8166285AD3589DCA3D0A320 /* Debug */,
+				1B8D7F68712E6FCC441686448649C64E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

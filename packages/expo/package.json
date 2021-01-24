@@ -16,6 +16,7 @@
     "bin",
     "build",
     "tools",
+    "tsconfig.base.json",
     "bundledNativeModules.json",
     "requiresExtraSetup.json",
     "AppEntry.js"
@@ -64,7 +65,7 @@
     "expo-font": "~9.0.0",
     "expo-keep-awake": "~9.0.0",
     "expo-linear-gradient": "~9.0.0",
-    "expo-linking": "~2.1.0",
+    "expo-linking": "~2.1.1",
     "expo-location": "~11.0.0",
     "expo-permissions": "~11.0.0",
     "expo-secure-store": "~10.0.0",

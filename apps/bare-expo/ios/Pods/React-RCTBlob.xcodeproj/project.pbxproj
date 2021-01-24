@@ -50,7 +50,7 @@
 			remoteGlobalIDString = B42CC4F102742853C37E7C4841756DBE;
 			remoteInfo = "React-RCTNetwork";
 		};
-		CE26297C1714ECA5345DBCA79817C045 /* PBXContainerItemProxy */ = {
+		B78827ACEEF6B1E49B5EA0DB00B02448 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C41699E0EA9F8E866BFF05CE6C2A3CDF /* Folly.xcodeproj */;
 			proxyType = 1;
@@ -276,7 +276,7 @@
 			);
 			dependencies = (
 				8763C3817A4E30CBDBE86023B12805FC /* PBXTargetDependency */,
-				2AE9F30860B3FCFCE7AF3711A60BABF1 /* PBXTargetDependency */,
+				5BD843CBF14389D7D1B26E507C91BB95 /* PBXTargetDependency */,
 				E15BC481B0B2C541290376A5A4903537 /* PBXTargetDependency */,
 				C81C4EEF147D2E2D36D9D2C3792D934C /* PBXTargetDependency */,
 				16591E13D83C0A7E0041EF8ABDB34BFD /* PBXTargetDependency */,
@@ -355,10 +355,10 @@
 			name = "React-jsi";
 			targetProxy = 4B581C6FC6F4D977AF2976B3EC2F22BE /* PBXContainerItemProxy */;
 		};
-		2AE9F30860B3FCFCE7AF3711A60BABF1 /* PBXTargetDependency */ = {
+		5BD843CBF14389D7D1B26E507C91BB95 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Folly;
-			targetProxy = CE26297C1714ECA5345DBCA79817C045 /* PBXContainerItemProxy */;
+			targetProxy = B78827ACEEF6B1E49B5EA0DB00B02448 /* PBXContainerItemProxy */;
 		};
 		64156A4CB2D242686FE34AC81FF900B3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

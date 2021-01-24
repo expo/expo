@@ -184,20 +184,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		17CC85339BC34F6E2FB721FEB018180F /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = B2834995F8CF458535DB0C40EAF13F62 /* GoogleSignIn.debug.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		3CF9D49426FD72D50FDF0207B58DBE89 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -264,14 +250,30 @@
 			};
 			name = Debug;
 		};
-		A19003B1EC665CA4E1736F306D09FFE5 /* Release */ = {
+		3E8CCE971BEFEE4286F0AAB249C4D336 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0A7DA241E4A685E1B4FC100CC912B3A1 /* GoogleSignIn.release.xcconfig */;
+			baseConfigurationReference = B2834995F8CF458535DB0C40EAF13F62 /* GoogleSignIn.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		46D9BDDB7A84E9D82C19ECF614411A0E /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0A7DA241E4A685E1B4FC100CC912B3A1 /* GoogleSignIn.release.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -347,8 +349,8 @@
 		ADD282AC3C4DE0B355F28C1FB62B5DDB /* Build configuration list for PBXAggregateTarget "GoogleSignIn" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				17CC85339BC34F6E2FB721FEB018180F /* Debug */,
-				A19003B1EC665CA4E1736F306D09FFE5 /* Release */,
+				3E8CCE971BEFEE4286F0AAB249C4D336 /* Debug */,
+				46D9BDDB7A84E9D82C19ECF614411A0E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

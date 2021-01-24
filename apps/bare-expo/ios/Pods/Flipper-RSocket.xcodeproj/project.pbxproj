@@ -817,10 +817,11 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		3FECC00616E870FC5512B855BCC418A6 /* Release */ = {
+		02F4F8A7C1DED3820718DE2BD4E2E3F8 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4AF9360C546018DA6E90BC263AC339FA /* Flipper-RSocket.release.xcconfig */;
+			baseConfigurationReference = 7DA8727189D49FFCDB8A1F3A2C8B0993 /* Flipper-RSocket.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
@@ -838,9 +839,8 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
 		41F62DF45C525DCC239699466CF881D3 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -970,10 +970,11 @@
 			};
 			name = Debug;
 		};
-		B1D1DACE959B6D067922AF30AE0C5640 /* Debug */ = {
+		81CBF6CC13A4B229B29DD3F3B16F1642 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7DA8727189D49FFCDB8A1F3A2C8B0993 /* Flipper-RSocket.debug.xcconfig */;
+			baseConfigurationReference = 4AF9360C546018DA6E90BC263AC339FA /* Flipper-RSocket.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
@@ -991,8 +992,9 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
@@ -1009,8 +1011,8 @@
 		6520EEFEAF742AA7324897B0C1E50D9E /* Build configuration list for PBXNativeTarget "Flipper-RSocket" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B1D1DACE959B6D067922AF30AE0C5640 /* Debug */,
-				3FECC00616E870FC5512B855BCC418A6 /* Release */,
+				02F4F8A7C1DED3820718DE2BD4E2E3F8 /* Debug */,
+				81CBF6CC13A4B229B29DD3F3B16F1642 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

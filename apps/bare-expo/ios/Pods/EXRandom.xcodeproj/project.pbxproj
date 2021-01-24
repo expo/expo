@@ -13,7 +13,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		4FAC2C02BCD3E9B5ECA0DC5F2939FFA1 /* PBXContainerItemProxy */ = {
+		8781727C3AAD2434992A368BB30FF522 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9DDDB13AA58636D6DDFAC7B60DBD3F9B /* React-Core.xcodeproj */;
 			proxyType = 1;
@@ -135,7 +135,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				B4606CF6923E0C45B6409710E8635933 /* PBXTargetDependency */,
+				BB43948DEE873E1EFDB319643BF43B2C /* PBXTargetDependency */,
 			);
 			name = EXRandom;
 			productName = EXRandom;
@@ -187,10 +187,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		B4606CF6923E0C45B6409710E8635933 /* PBXTargetDependency */ = {
+		BB43948DEE873E1EFDB319643BF43B2C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-Core";
-			targetProxy = 4FAC2C02BCD3E9B5ECA0DC5F2939FFA1 /* PBXContainerItemProxy */;
+			targetProxy = 8781727C3AAD2434992A368BB30FF522 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

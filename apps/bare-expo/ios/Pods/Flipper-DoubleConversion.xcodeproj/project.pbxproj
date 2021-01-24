@@ -215,30 +215,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		044ECEAE0128FD4F90DE12B393FEDBD1 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 568BCAFACB7B74EAC360A79FEFC3F306 /* Flipper-DoubleConversion.debug.xcconfig */;
-			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/Flipper-DoubleConversion/Flipper-DoubleConversion-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = DoubleConversion;
-				PRODUCT_NAME = "Flipper-DoubleConversion";
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		41DDAAE81D457BBBF024D24C80DBFCDE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -301,16 +277,42 @@
 			};
 			name = Release;
 		};
-		5EA8B93DCDDC65180BD781913132A07B /* Release */ = {
+		5F21BE569FEEEBF6D1B6120A99F1E7C3 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E9B83EF640CFDB63F2A0058BD380789B /* Flipper-DoubleConversion.release.xcconfig */;
+			baseConfigurationReference = 568BCAFACB7B74EAC360A79FEFC3F306 /* Flipper-DoubleConversion.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/Flipper-DoubleConversion/Flipper-DoubleConversion-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = DoubleConversion;
+				PRODUCT_NAME = "Flipper-DoubleConversion";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		EB03B555B4BEBF44BE798DB23A5C08FF /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E9B83EF640CFDB63F2A0058BD380789B /* Flipper-DoubleConversion.release.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/Flipper-DoubleConversion/Flipper-DoubleConversion-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -398,8 +400,8 @@
 		4A10891D5BC40809EF48E9BFC24E50B6 /* Build configuration list for PBXNativeTarget "Flipper-DoubleConversion" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				044ECEAE0128FD4F90DE12B393FEDBD1 /* Debug */,
-				5EA8B93DCDDC65180BD781913132A07B /* Release */,
+				5F21BE569FEEEBF6D1B6120A99F1E7C3 /* Debug */,
+				EB03B555B4BEBF44BE798DB23A5C08FF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

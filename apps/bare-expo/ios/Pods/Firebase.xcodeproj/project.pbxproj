@@ -13,8 +13,8 @@
 			buildPhases = (
 			);
 			dependencies = (
-				6A849941208C5B912B3DE474B9679B88 /* PBXTargetDependency */,
-				310C8DE9DC0FBF7F787185B28228AE3D /* PBXTargetDependency */,
+				553E89EA1BCCE8E10CD9099765658D85 /* PBXTargetDependency */,
+				BB3AD9EA3E1330ADBE9D40413D5838CE /* PBXTargetDependency */,
 				6F97101E4CD1BB59B6BC6CC104B0F645 /* PBXTargetDependency */,
 				C321BBE577E3D9D2285299EE467BE798 /* PBXTargetDependency */,
 			);
@@ -30,14 +30,14 @@
 			remoteGlobalIDString = 3D5358053745F186EF3299093007AD97;
 			remoteInfo = FirebaseMLVision;
 		};
-		9529D32F03A7835AC0FECA395D6278CD /* PBXContainerItemProxy */ = {
+		21B4B48EFFEAD0D8B79C830D1D0BF593 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 91ACC218D124FC41D8CFDADD30E247D3 /* FirebaseCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 4BD5DE1E00ED67A59118DB4A3CD5F288;
 			remoteInfo = FirebaseCore;
 		};
-		D13ADB58B7B6FECBDFF0A09725A1619F /* PBXContainerItemProxy */ = {
+		86B1B91AAA8C59E4ACD7784CB9CC7186 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4FC0CA1100ACC8BD372AC48AD285F645 /* FirebaseAnalytics.xcodeproj */;
 			proxyType = 1;
@@ -169,20 +169,20 @@
 /* End PBXProject section */
 
 /* Begin PBXTargetDependency section */
-		310C8DE9DC0FBF7F787185B28228AE3D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = FirebaseCore;
-			targetProxy = 9529D32F03A7835AC0FECA395D6278CD /* PBXContainerItemProxy */;
-		};
-		6A849941208C5B912B3DE474B9679B88 /* PBXTargetDependency */ = {
+		553E89EA1BCCE8E10CD9099765658D85 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = FirebaseAnalytics;
-			targetProxy = D13ADB58B7B6FECBDFF0A09725A1619F /* PBXContainerItemProxy */;
+			targetProxy = 86B1B91AAA8C59E4ACD7784CB9CC7186 /* PBXContainerItemProxy */;
 		};
 		6F97101E4CD1BB59B6BC6CC104B0F645 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = FirebaseMLVision;
 			targetProxy = 084C9223B106CDEDBCF2BBA2FC0F1266 /* PBXContainerItemProxy */;
+		};
+		BB3AD9EA3E1330ADBE9D40413D5838CE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = FirebaseCore;
+			targetProxy = 21B4B48EFFEAD0D8B79C830D1D0BF593 /* PBXContainerItemProxy */;
 		};
 		C321BBE577E3D9D2285299EE467BE798 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

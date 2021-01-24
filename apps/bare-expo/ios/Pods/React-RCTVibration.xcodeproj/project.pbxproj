@@ -13,6 +13,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		1C68E03D56469466C70D1BD8F473736F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 59E4C0BB43BA177A5F16201CF280C26C /* Folly.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 14BB2B7275726942E762F076FA966088;
+			remoteInfo = Folly;
+		};
 		66E95894E8B7BA7BAC660C3803F396F0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 057B63365123FDD32AF4A2448ED5E208 /* React-jsi.xcodeproj */;
@@ -26,13 +33,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 5DA1A74647F652AE8E4DE074AFC4C6B7;
 			remoteInfo = "React-Core";
-		};
-		96C34E1DC5701B9CC9C5A9BE57FA1C25 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 59E4C0BB43BA177A5F16201CF280C26C /* Folly.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 14BB2B7275726942E762F076FA966088;
-			remoteInfo = Folly;
 		};
 		98B328B36CAD2CEB88ECACCA86A63DE2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -261,7 +261,7 @@
 			);
 			dependencies = (
 				95E72F2096DA4EE377E640603F2E9095 /* PBXTargetDependency */,
-				D2B103D3AD2A1A8995FFF46A609BCCB5 /* PBXTargetDependency */,
+				C27EDFBB98CDA2F603A260B2AA493022 /* PBXTargetDependency */,
 				BDA6F7EB082D9A52998F33B5264C6F46 /* PBXTargetDependency */,
 				1FFD7ECA4828BF412C5B7B8583C58CA6 /* PBXTargetDependency */,
 				A2C6CE49AAD461316A2FF6A80E69663F /* PBXTargetDependency */,
@@ -349,10 +349,10 @@
 			name = "React-Core";
 			targetProxy = 7A20BE9BE539483FA0107F31851EDA52 /* PBXContainerItemProxy */;
 		};
-		D2B103D3AD2A1A8995FFF46A609BCCB5 /* PBXTargetDependency */ = {
+		C27EDFBB98CDA2F603A260B2AA493022 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Folly;
-			targetProxy = 96C34E1DC5701B9CC9C5A9BE57FA1C25 /* PBXContainerItemProxy */;
+			targetProxy = 1C68E03D56469466C70D1BD8F473736F /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

@@ -281,17 +281,18 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		3E58B5BC10562300B705580933E9F640 /* Release */ = {
+		3E7BEDFE1298D2230E12ECEC41076F3A /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4927ABA243E70430592E51AF2340DD33 /* Amplitude.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/Amplitude/Amplitude-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -306,6 +307,32 @@
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
+		};
+		3FD3DD1B0A3A8194AE75904E1926437B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3EFB78B05A147874A4FB66D0ECBF0261 /* Amplitude.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/Amplitude/Amplitude-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = Amplitude;
+				PRODUCT_NAME = Amplitude;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
 		};
 		44C603AD77ECEACD87094C07C60DDAFE /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -368,31 +395,6 @@
 				SYMROOT = "${SRCROOT}/../build";
 			};
 			name = Release;
-		};
-		5C90A0FBB00A0F3C017128B0975655D1 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3EFB78B05A147874A4FB66D0ECBF0261 /* Amplitude.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/Amplitude/Amplitude-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = Amplitude;
-				PRODUCT_NAME = Amplitude;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
 		};
 		D532B8468B91C327C9934757A7DF366E /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -475,8 +477,8 @@
 		D11443933C1E65F36A2E467F39B621EF /* Build configuration list for PBXNativeTarget "Amplitude" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				5C90A0FBB00A0F3C017128B0975655D1 /* Debug */,
-				3E58B5BC10562300B705580933E9F640 /* Release */,
+				3FD3DD1B0A3A8194AE75904E1926437B /* Debug */,
+				3E7BEDFE1298D2230E12ECEC41076F3A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

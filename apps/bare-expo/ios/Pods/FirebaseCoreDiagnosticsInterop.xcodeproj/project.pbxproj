@@ -226,34 +226,36 @@
 			};
 			name = Release;
 		};
-		7E481BAFDC32068D2F4099977AA4C5DA /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 75C4FB6AB87970D931BACE3D8ECAD5EE /* FirebaseCoreDiagnosticsInterop.debug.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		A1BBBE8788F92872F527AA657ABCDC5A /* Release */ = {
+		709A03131E7A6A591D55663B63FFF623 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 72AF77FA9BE883892AECD589DE3B9230 /* FirebaseCoreDiagnosticsInterop.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
+		};
+		928703139D58CFAF4E7D29DF8D4C10FF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 75C4FB6AB87970D931BACE3D8ECAD5EE /* FirebaseCoreDiagnosticsInterop.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
 		};
 /* End XCBuildConfiguration section */
 
@@ -270,8 +272,8 @@
 		F26ECD83F786E848C4B3B59D808E165A /* Build configuration list for PBXAggregateTarget "FirebaseCoreDiagnosticsInterop" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				7E481BAFDC32068D2F4099977AA4C5DA /* Debug */,
-				A1BBBE8788F92872F527AA657ABCDC5A /* Release */,
+				928703139D58CFAF4E7D29DF8D4C10FF /* Debug */,
+				709A03131E7A6A591D55663B63FFF623 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -195,13 +195,17 @@ See the examples below to see these in action.
 
 ### Passing data to your app through the URL
 
-To pass some data into your app, you can append it as a path or query string on your url. `Linking.makeUrl(path, queryParams)` will construct a working url automatically for you. You can use it like this:
+> `Linking.createURL()` is available in `expo-linking@2.0.1` and higher. If you are using an older version, use `Linking.makeUrl()` instead.
+
+To pass some data into your app, you can append it as a path or query string on your url. `Linking.createURL(path, { queryParams })` will construct a working url automatically for you. You can use it like this:
 
 ```javascript
-let redirectUrl = Linking.makeUrl('path/into/app', { hello: 'world', goodbye: 'now' });
+let redirectUrl = Linking.createURL('path/into/app', {
+  queryParams: { hello: 'world', goodbye: 'now' },
+});
 ```
 
-This would return something like `myapp:///path/into/app?hello=world&goodbye=now` for a standalone app.
+This would return something like `myapp://path/into/app?hello=world&goodbye=now` for a standalone app.
 
 When your app is opened using the deep link, you can parse the link with `Linking.parse()` to get back the path and query parameters you passed in.
 
@@ -216,7 +220,7 @@ _handleUrl = url => {
 ```
 
 If you opened a URL like
-`myapp:///path/into/app?hello=world&goodbye=now`, this would alert
+`myapp://path/into/app?hello=world&goodbye=now`, this would alert
 `Linked to app with path: path/into/app and data: {hello: 'world', goodbye: 'now'}`.
 
 ### Example: linking back to your app from WebBrowser

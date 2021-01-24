@@ -26,7 +26,7 @@
 			remoteGlobalIDString = 12FF61416C5E794E9DEAC78D381D9726;
 			remoteInfo = UMPermissionsInterface;
 		};
-		E3622F517B6550174B8FBAE4506F2442 /* PBXContainerItemProxy */ = {
+		31F110EF5DCDAE78D305B45935494F24 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0700B2590EA29CE592442333236A8EC2 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -165,7 +165,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				5C46459895E8AE40A020E0F0C388664E /* PBXTargetDependency */,
+				675B24AF35224740804F0D7D4143413E /* PBXTargetDependency */,
 				FEDC8EDD4A7BEB318E176E74C18E6480 /* PBXTargetDependency */,
 			);
 			name = EXCalendar;
@@ -224,10 +224,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		5C46459895E8AE40A020E0F0C388664E /* PBXTargetDependency */ = {
+		675B24AF35224740804F0D7D4143413E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = E3622F517B6550174B8FBAE4506F2442 /* PBXContainerItemProxy */;
+			targetProxy = 31F110EF5DCDAE78D305B45935494F24 /* PBXContainerItemProxy */;
 		};
 		FEDC8EDD4A7BEB318E176E74C18E6480 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

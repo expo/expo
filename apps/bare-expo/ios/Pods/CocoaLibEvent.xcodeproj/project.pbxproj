@@ -172,6 +172,22 @@
 /* End PBXProject section */
 
 /* Begin XCBuildConfiguration section */
+		04028F4201024B61112877FF7D03C091 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6A0005A76E49471AFCFEAAE279BA5331 /* CocoaLibEvent.release.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		95CB253BD918E7BDC730CD723FA652E2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -234,34 +250,20 @@
 			};
 			name = Release;
 		};
-		A30A8C68E327A60BF53CD2A03247D432 /* Debug */ = {
+		A4EC8B4272812786F99D5FA4DA03D2F8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 30F5E583FA5740987B261B1BB43C9AE8 /* CocoaLibEvent.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
-		};
-		DB15B2FED1626B23CDD8A535C972DC95 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6A0005A76E49471AFCFEAAE279BA5331 /* CocoaLibEvent.release.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
 		};
 		FBFBBBFB6A581C087B08669A356C92DC /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -335,8 +337,8 @@
 		6983F5BBC9BE6B4EB74BDFEB86FD5874 /* Build configuration list for PBXAggregateTarget "CocoaLibEvent" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				A30A8C68E327A60BF53CD2A03247D432 /* Debug */,
-				DB15B2FED1626B23CDD8A535C972DC95 /* Release */,
+				A4EC8B4272812786F99D5FA4DA03D2F8 /* Debug */,
+				04028F4201024B61112877FF7D03C091 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

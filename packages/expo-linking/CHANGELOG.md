@@ -6,9 +6,14 @@
 
 ### 🎉 New features
 
-- Added bare workflow support. ([#11560](https://github.com/expo/expo/pull/11560) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🐛 Bug fixes
+
+## 2.1.1 — 2021-01-21
+
+### 🎉 New features
+
+- Added bare workflow support. ([#11560](https://github.com/expo/expo/pull/11560) by [@EvanBacon](https://github.com/EvanBacon))
+- `Linking.createURL` creates URLs with two slashes in bare workflow. ([#11702](https://github.com/expo/expo/pull/11702) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 2.1.0 — 2021-01-15
 

@@ -1,6 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
 import * as React from 'react';
-import { Platform } from 'react-native';
 
 import requestCameraPermissionsAsync from '../utils/requestCameraPermissionsAsync';
 import ListItem from './ListItem';
@@ -19,7 +18,7 @@ function QRCodeButton(props: Props) {
   };
   return (
     <ListItem
-      icon={Platform.OS === 'ios' ? 'ios-qr-scanner' : 'qr-code-outline'}
+      icon="qr-code-outline"
       title="Scan QR Code"
       subtitle="Open your projects without typing"
       onPress={handlePressAsync}

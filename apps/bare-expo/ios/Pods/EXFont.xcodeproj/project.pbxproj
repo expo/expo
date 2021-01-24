@@ -30,7 +30,7 @@
 			remoteGlobalIDString = 7F4112A673122B6D50845D9BC1D9AFDB;
 			remoteInfo = UMFontInterface;
 		};
-		CF5B25D05E9E488FF569B6EACC9AEE6A /* PBXContainerItemProxy */ = {
+		C41650F0F686B533E551E37D8715AEF3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 34704263A4A835CC7A8F6261B9436524 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -188,7 +188,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				080D01937A06150432F2F94D390FF3D1 /* PBXTargetDependency */,
+				416926C45D1A30E9C80041E4B021DB39 /* PBXTargetDependency */,
 				B3DA527564EC6DB33F59699BFD77175E /* PBXTargetDependency */,
 			);
 			name = EXFont;
@@ -249,10 +249,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		080D01937A06150432F2F94D390FF3D1 /* PBXTargetDependency */ = {
+		416926C45D1A30E9C80041E4B021DB39 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = CF5B25D05E9E488FF569B6EACC9AEE6A /* PBXContainerItemProxy */;
+			targetProxy = C41650F0F686B533E551E37D8715AEF3 /* PBXContainerItemProxy */;
 		};
 		B3DA527564EC6DB33F59699BFD77175E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

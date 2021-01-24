@@ -13,7 +13,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		8EF8CD653CE93B5901B783AEFEFE4033 /* PBXContainerItemProxy */ = {
+		D0583D20759D90F2879ED0EA46CF96A8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = FD9323749311E011A55B78BA04C6B9FB /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -135,7 +135,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				0B582955B376A7977EE13F235D4DDBD8 /* PBXTargetDependency */,
+				4F87E8E63987058DD54F3D84A7E8B11F /* PBXTargetDependency */,
 			);
 			name = EXWebBrowser;
 			productName = EXWebBrowser;
@@ -187,10 +187,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		0B582955B376A7977EE13F235D4DDBD8 /* PBXTargetDependency */ = {
+		4F87E8E63987058DD54F3D84A7E8B11F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 8EF8CD653CE93B5901B783AEFEFE4033 /* PBXContainerItemProxy */;
+			targetProxy = D0583D20759D90F2879ED0EA46CF96A8 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
