@@ -1,3 +1,32 @@
+#!/usr/bin/env node
+'use strict';
+
+const childProcess = require('child_process');
+const fs = require('fs');
+const path = require('path');
+const process = require('process');
+
+const args = process.argv.slice(2);
+
+// If the command is used like `yarn test plugin`, set the --rootDir option to the `plugin` directory
+if (args[0] === 'plugin') {
+  args.unshift();
+  args.push('--rootDir', 'plugin');
+
+  const jestPath = path.join(process.cwd(), 'plugin', 'jest.config.js');
+  if (fs.existsSync(jestPath)) {
+    args.push('--config', 'plugin/jest.config.js');
+  }
+}
+
+// Run in watch mode when not running on CI or in not in non-interactive
+if (!process.env.CI && !process.env.EXPO_NONINTERACTIVE && require.main === module.parent) {
+  args.push('--watch');
+}
+
+childProcess.spawnSync(path.join(__dirname, 'expo-module-jest'), args, { stdio: 'inherit' });
+
+/*
 #!/usr/bin/env bash
 
 set -eo pipefail
@@ -26,3 +55,4 @@ if [[ -t 1 && (-z "$CI" && -z "$EXPO_NONINTERACTIVE") ]]; then
 fi
 
 "$script_dir/expo-module-jest" "${args[@]}"
+*/

@@ -1,3 +1,23 @@
+#!/usr/bin/env node
+'use strict';
+
+const childProcess = require('child_process');
+const fs = require('fs');
+const path = require('path');
+const process = require('process');
+
+console.log('Configuring module');
+childProcess.spawnSync(path.join(__dirname, 'expo-module-clean'), { stdio: 'inherit' });
+childProcess.spawnSync(path.join(__dirname, 'expo-module-configure'), { stdio: 'inherit' });
+childProcess.spawnSync(path.join(__dirname, 'expo-module-build'), { stdio: 'inherit' });
+
+if (fs.existsSync(path.join(process.cwd(), 'plugin'))) {
+  console.log('Configuring plugin');
+  childProcess.spawnSync(path.join(__dirname, 'expo-module-clean'), ['plugin'], { stdio: 'inherit' });
+  childProcess.spawnSync(path.join(__dirname, 'expo-module-build'), ['plugin'], { stdio: 'inherit' });
+}
+
+/*
 #!/usr/bin/env bash
 
 set -eo pipefail
@@ -12,8 +32,9 @@ echo "Configuring module"
 "$script_dir/expo-module-configure"
 "$script_dir/expo-module-build"
 
-if [[ -d "$(pwd)/plugin" ]]; then 
+if [[ -d "$(pwd)/plugin" ]]; then
   echo "Configuring plugin"
   "$script_dir/expo-module-clean" "plugin"
   "$script_dir/expo-module-build" "plugin"
 fi
+*/

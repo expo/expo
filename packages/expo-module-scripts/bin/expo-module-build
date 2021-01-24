@@ -1,3 +1,26 @@
+#!/usr/bin/env node
+'use strict';
+
+const childProcess = require('child_process');
+const path = require('path');
+const process = require('process');
+
+const args = process.argv.slice(2);
+
+// If the command is used like `yarn build plugin`, set the --build option to point to plugin/tsconfig.json
+if (args[0] === 'plugin') {
+  args.shift();
+  args.unshift('--build', `${process.cwd()}/plugin`);
+}
+
+// Run in watch mode when not running on CI or in not in non-interactive
+if (!process.env.CI && !process.env.EXPO_NONINTERACTIVE && require.main === module.parent) {
+  args.push('--watch');
+}
+
+childProcess.spawnSync(path.join(__dirname, 'expo-module-tsc'), args, { stdio: 'inherit' });
+
+/*
 #!/usr/bin/env bash
 
 set -eo pipefail
@@ -21,3 +44,4 @@ if [[ -t 1 && (-z "$CI" && -z "$EXPO_NONINTERACTIVE") ]]; then
 fi
 
 "$script_dir/expo-module-tsc" "${args[@]}"
+*/

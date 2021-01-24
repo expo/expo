@@ -1,3 +1,35 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+const process = require('process');
+
+const args = process.argv.slice(2);
+
+if (!fs.existsSync('./package.json', { cwd: process.cwd() })) {
+  console.log(`The current working directory is not a package's root directory`);
+  process.exit(1);
+}
+
+// Support `yarn clean plugin` to delete ./plugin/build/
+if (args[0]) {
+  rmSync(path.join(args[0], 'build'));
+} else {
+  rmSync('build');
+}
+
+function rmSync(path) {
+  try {
+    fs.rmSync(path, { cwd: process.cwd(), recursive: true, force: true });
+  } catch (error) {
+    if (error.code !== 'ENOENT') {
+      throw error;
+    }
+  }
+}
+
+/*
 #!/usr/bin/env bash
 
 set -eo pipefail
@@ -14,5 +46,4 @@ if [[ -n $directory ]]; then
 else
   rm -rf build
 fi
-
-
+*/

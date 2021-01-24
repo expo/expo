@@ -1,3 +1,17 @@
+#!/usr/bin/env node
+'use strict';
+
+const childProcess = require('child_process');
+const path = require('path');
+const process = require('process');
+
+const args = process.argv.slice(2);
+
+args.unshift('tsc');
+
+childProcess.spawnSync(path.join(__dirname, 'npx'), args, { stdio: 'inherit' });
+
+/*
 #!/usr/bin/env bash
 
 set -eo pipefail
@@ -5,3 +19,4 @@ set -eo pipefail
 script_dir="$(dirname "$0")"
 
 "$script_dir/npx" tsc "$@"
+*/

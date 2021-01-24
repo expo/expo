@@ -1,3 +1,22 @@
+#!/usr/bin/env node
+'use strict';
+
+const childProcess = require('child_process');
+const process = require('process');
+
+// Runs `npx` through Yarn if necessary so that the environment variables are set up similarly across
+// Yarn and npm.
+
+const userAgent = String(process.env.npm_config_user_agent);
+const args = process.argv.slice(2);
+
+if (!userAgent.includes('yarn')) {
+  childProcess.execSync(`yarn exec --silent -- npx ${args.join(' ')}`, { stdio: 'inherit' });
+} else {
+  childProcess.execSync(`npx ${args.join(' ')}`, { stdio: 'inherit' });
+}
+
+/*
 #!/usr/bin/env bash
 
 # Runs `npx` through Yarn if necessary so that the environment variables are set up similarly across
@@ -9,3 +28,4 @@ if [[ ! "$npm_config_user_agent" =~ yarn ]]; then
 else
   npx "$@"
 fi
+*/

@@ -1,3 +1,32 @@
+#!/usr/bin/env node
+'use strict';
+
+const childProcess = require('child_process');
+const fs = require('fs');
+const path = require('path');
+const process = require('process');
+
+const args = process.argv.slice(2);
+
+// If the command is used like `yarn lint plugin` then set the target to `plugin/src`
+if (args[0] === 'plugin') {
+  args.shift();
+  args.push('plugins/src');
+
+  if (!fs.existsSync(path.join(process.cwd(), 'plugin'))) {
+    // Good DX cuz Expo
+    console.log(
+      `\n\x1b[33mThe \`plugin/src\` folder does not exist in this project; please create it and try again.\x1b[0m\n\n`
+    );
+    process.exit();
+  }
+} else {
+  args.unshift('src');
+}
+
+childProcess.spawnSync(path.join(__dirname, 'expo-module-eslint'), args, { stdio: 'inherit' });
+
+/*
 #!/usr/bin/env bash
 
 set -eo pipefail
@@ -17,9 +46,10 @@ if [ "$1" == "plugin" ]; then
     exit 0
   fi
 else
-  args+=("src") 
-  args+=("$@") 
+  args+=("src")
+  args+=("$@")
 fi
 
 
-"$script_dir/expo-module-eslint" "${args[@]}" 
+"$script_dir/expo-module-eslint" "${args[@]}"
+*/
