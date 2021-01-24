@@ -4,7 +4,11 @@
 
 ### 🛠 Breaking changes
 
+- Upgraded Facebook iOS SDK to 9.0.0
+
 ### 🎉 New features
+
+- Exposed `setAdvertiserTrackingEnabled` function in iOS SDK
 
 ### 🐛 Bug fixes
 
