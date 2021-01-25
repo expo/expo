@@ -24,7 +24,7 @@ Pod::Spec.new do |s|
     'assets/*.ttf'
   ]}
 
-  s.xcconfig = { 'GCC_PREPROCESSOR_DEFINITIONS' => 'EX_DEV_MENU_ENABLED=1' }
+  s.xcconfig = { 'GCC_PREPROCESSOR_DEFINITIONS' => 'EX_DEV_MENU_ENABLED=1', 'OTHER_SWIFT_FLAGS' => '-DEX_DEV_MENU_ENABLED=1' }
   
   # EXDevMenu
   # Swift/Objective-C compatibility

@@ -13,19 +13,19 @@ import kotlin.reflect.full.declaredMemberProperties
 /**
  * A representation of the android specific properties such as `primaryColor` or status bar configuration.
  * Note that this class doesn't contain fields which are also defined in the main section of `app.json`
- * and can be overridden by the [DevelopmentClientManifest.android] section, like [DevelopmentClientManifest.backgroundColor].
- * Those fields are combined during deserialization and the final value is written to the [DevelopmentClientManifest] object.
+ * and can be overridden by the [DevLauncherManifest.android] section, like [DevLauncherManifest.backgroundColor].
+ * Those fields are combined during deserialization and the final value is written to the [DevLauncherManifest] object.
  */
-class DevelopmentClientAndroidManifestSection
+class DevLauncherAndroidManifestSection
 
-data class DevelopmentClientStatusBarSection(
+data class DevLauncherStatusBarSection(
   val barStyle: DevLauncherStatusBarStyle?,
   val backgroundColor: String?,
   val hidden: Boolean?,
   val translucent: Boolean?
 )
 
-data class DevelopmentClientManifest(
+data class DevLauncherManifest(
   val name: String,
   val slug: String,
   val bundleUrl: String,
@@ -34,37 +34,41 @@ data class DevelopmentClientManifest(
 
   val orientation: DevLauncherOrientation?,
 
-  val android: DevelopmentClientAndroidManifestSection?,
+  val android: DevLauncherAndroidManifestSection?,
 
   val userInterfaceStyle: DevLauncherUserInterface?,
   val backgroundColor: String?,
   val primaryColor: String?,
 
-  val androidStatusBar: DevelopmentClientStatusBarSection?
+  val androidStatusBar: DevLauncherStatusBarSection?
 ) {
+  var rawData: String? = null
+    private set
+
   /**
    * Class which contains all fields that the user can override in the android section.
    */
-  private data class DevelopmentClientOverriddenProperties(
+  private data class DevLauncherOverriddenProperties(
     val userInterfaceStyle: DevLauncherUserInterface?,
     val backgroundColor: String?
   )
 
-  private class DevelopmentClientManifestDeserializer : JsonDeserializer<DevelopmentClientManifest> {
-    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): DevelopmentClientManifest {
+  private class DevLauncherManifestDeserializer : JsonDeserializer<DevLauncherManifest> {
+
+    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): DevLauncherManifest {
       with(Gson()) {
         val jsonObject = json.asJsonObject
-        val baseManifest = fromJson(jsonObject, DevelopmentClientManifest::class.java)
+        val baseManifest = fromJson(jsonObject, DevLauncherManifest::class.java)
         if (jsonObject.has("android")) {
-          val overriddenProperties = fromJson(jsonObject.getAsJsonObject("android"), DevelopmentClientOverriddenProperties::class.java)
+          val overriddenProperties = fromJson(jsonObject.getAsJsonObject("android"), DevLauncherOverriddenProperties::class.java)
           applyOverriddenProperties(baseManifest, overriddenProperties)
         }
         return baseManifest
       }
     }
 
-    private fun applyOverriddenProperties(baseManifest: DevelopmentClientManifest, overriddenProperties: DevelopmentClientOverriddenProperties) {
-      for (field in DevelopmentClientOverriddenProperties::class.declaredMemberProperties) {
+    private fun applyOverriddenProperties(baseManifest: DevLauncherManifest, overriddenProperties: DevLauncherOverriddenProperties) {
+      for (field in DevLauncherOverriddenProperties::class.declaredMemberProperties) {
         try {
           val overriddenValue = field.get(overriddenProperties) ?: continue
           val baseField = baseManifest::class.java.getDeclaredField(field.name)
@@ -78,11 +82,15 @@ data class DevelopmentClientManifest(
   }
 
   companion object {
-    fun fromJson(jsonReader: Reader): DevelopmentClientManifest {
+    fun fromJson(jsonReader: Reader): DevLauncherManifest {
+      val manifestString = jsonReader.readText()
       return GsonBuilder()
-        .registerTypeAdapter(DevelopmentClientManifest::class.java, DevelopmentClientManifestDeserializer())
+        .registerTypeAdapter(DevLauncherManifest::class.java, DevLauncherManifestDeserializer())
         .create()
-        .fromJson(jsonReader, DevelopmentClientManifest::class.java)
+        .fromJson(manifestString, DevLauncherManifest::class.java)
+        .apply {
+          rawData = manifestString
+        }
     }
   }
 }

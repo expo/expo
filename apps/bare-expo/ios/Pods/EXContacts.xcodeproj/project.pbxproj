@@ -21,21 +21,42 @@
 /* Begin PBXContainerItemProxy section */
 		0F975015C98F3320B162FEA4BD2067C0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = D442B20761D3ED25D42E24D8290AD7E8 /* UMCore.xcodeproj */;
+			containerPortal = D442B20761D3ED25D42E24D8290AD7E8 /* UMCore */;
 			proxyType = 1;
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
 		};
 		1C71FC68D9878D4A9A9109A9D824CE75 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = AE923B3D56C15590FE3DF2ECDF7CC468 /* UMPermissionsInterface.xcodeproj */;
+			containerPortal = AE923B3D56C15590FE3DF2ECDF7CC468 /* UMPermissionsInterface */;
 			proxyType = 1;
 			remoteGlobalIDString = 12FF61416C5E794E9DEAC78D381D9726;
 			remoteInfo = UMPermissionsInterface;
 		};
+		B2C5786F25BB45B500E22C57 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B2C5786B25BB45B500E22C57 /* EXBackgroundFetch.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = FDB0AE0BD07538DBE1EBB6C9C5D33BD4;
+			remoteInfo = EXBackgroundFetch;
+		};
+		B2C5787125BB45B500E22C57 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D442B20761D3ED25D42E24D8290AD7E8 /* UMCore */;
+			proxyType = 2;
+			remoteGlobalIDString = B028FE6A90DCDB619E0BA9877EB50D3B;
+			remoteInfo = UMCore;
+		};
+		B2C5787325BB45B500E22C57 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AE923B3D56C15590FE3DF2ECDF7CC468 /* UMPermissionsInterface */;
+			proxyType = 2;
+			remoteGlobalIDString = 9E2F177113BEC898A58C443565B4AE40;
+			remoteInfo = UMPermissionsInterface;
+		};
 		C5BFD2D2E12BC6650EED9644B9BD891B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = DD43B4DDA0345AD3F08AF2B929E1AB25 /* UMFileSystemInterface.xcodeproj */;
+			containerPortal = DD43B4DDA0345AD3F08AF2B929E1AB25 /* UMFileSystemInterface */;
 			proxyType = 1;
 			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
 			remoteInfo = UMFileSystemInterface;
@@ -48,13 +69,14 @@
 		0D80EBABDD69C3527698BE8BF8DDA50F /* EXContactsViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXContactsViewController.m; path = EXContacts/EXContactsViewController.m; sourceTree = "<group>"; };
 		559BED45FD28064352CE59E29DE0C71F /* EXContacts.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXContacts.release.xcconfig; sourceTree = "<group>"; };
 		5DEC5A126E9B90656EE43B4EE93C8C35 /* EXContacts.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXContacts.debug.xcconfig; sourceTree = "<group>"; };
-		87823B5E015401028EC30F7B964E5F59 /* EXContacts.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXContacts.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		87823B5E015401028EC30F7B964E5F59 /* EXContacts.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = EXContacts.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		AE923B3D56C15590FE3DF2ECDF7CC468 /* UMPermissionsInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMPermissionsInterface; path = UMPermissionsInterface.xcodeproj; sourceTree = "<group>"; };
 		AF5428ED54905FFFC4361D4A76E28D53 /* EXContacts+Serialization.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "EXContacts+Serialization.h"; path = "EXContacts/EXContacts+Serialization.h"; sourceTree = "<group>"; };
+		B2C5786B25BB45B500E22C57 /* EXBackgroundFetch.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXBackgroundFetch.xcodeproj; path = "../../../apps/bare-expo/ios/Pods/EXBackgroundFetch.xcodeproj"; sourceTree = "<group>"; };
 		B81DD5657B1FD44C8D4733C316520A01 /* EXContactsPermissionRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXContactsPermissionRequester.m; path = EXContacts/EXContactsPermissionRequester.m; sourceTree = "<group>"; };
 		BD76EB6A63373B13C52CF4B86CBBF5FF /* EXContacts.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXContacts.h; path = EXContacts/EXContacts.h; sourceTree = "<group>"; };
 		C8EBA5FFB1FDEE3DF78EF25D385C059F /* EXContactsViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXContactsViewController.h; path = EXContacts/EXContactsViewController.h; sourceTree = "<group>"; };
-		CF9D4F3C50FAF99803D925DE18E424E6 /* libEXContacts.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXContacts.a; path = libEXContacts.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		CF9D4F3C50FAF99803D925DE18E424E6 /* libEXContacts.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libEXContacts.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D442B20761D3ED25D42E24D8290AD7E8 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
 		DD43B4DDA0345AD3F08AF2B929E1AB25 /* UMFileSystemInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMFileSystemInterface; path = UMFileSystemInterface.xcodeproj; sourceTree = "<group>"; };
 		E32BB3718814DBA4D4E860AE0A0BE98A /* EXContacts-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXContacts-prefix.pch"; sourceTree = "<group>"; };
@@ -88,6 +110,7 @@
 				E4DB884CD551FBFF41B724EDDB00CFE6 /* EXContacts.m */,
 				AF5428ED54905FFFC4361D4A76E28D53 /* EXContacts+Serialization.h */,
 				07B2DFE0C4511EE1653604E171536B90 /* EXContacts+Serialization.m */,
+				B2C5786B25BB45B500E22C57 /* EXBackgroundFetch.xcodeproj */,
 				02000C46431DF85A134280F359D00B1D /* EXContactsPermissionRequester.h */,
 				B81DD5657B1FD44C8D4733C316520A01 /* EXContactsPermissionRequester.m */,
 				C8EBA5FFB1FDEE3DF78EF25D385C059F /* EXContactsViewController.h */,
@@ -97,6 +120,37 @@
 			);
 			name = EXContacts;
 			path = "../../../../packages/expo-contacts/ios";
+			sourceTree = "<group>";
+		};
+		B2C577A725BB453000E22C57 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B2C5787425BB45B500E22C57 /* libUMPermissionsInterface.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B2C577A925BB453000E22C57 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B2C5787225BB45B500E22C57 /* libUMCore.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B2C577AB25BB453000E22C57 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B2C5786C25BB45B500E22C57 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B2C5787025BB45B500E22C57 /* libEXBackgroundFetch.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		C0189A280154DAF792E25A53EE0F7996 /* Frameworks */ = {
@@ -205,12 +259,19 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
+					ProductGroup = B2C5786C25BB45B500E22C57 /* Products */;
+					ProjectRef = B2C5786B25BB45B500E22C57 /* EXBackgroundFetch.xcodeproj */;
+				},
+				{
+					ProductGroup = B2C577A925BB453000E22C57 /* Products */;
 					ProjectRef = D442B20761D3ED25D42E24D8290AD7E8 /* UMCore */;
 				},
 				{
+					ProductGroup = B2C577AB25BB453000E22C57 /* Products */;
 					ProjectRef = DD43B4DDA0345AD3F08AF2B929E1AB25 /* UMFileSystemInterface */;
 				},
 				{
+					ProductGroup = B2C577A725BB453000E22C57 /* Products */;
 					ProjectRef = AE923B3D56C15590FE3DF2ECDF7CC468 /* UMPermissionsInterface */;
 				},
 			);
@@ -220,6 +281,30 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		B2C5787025BB45B500E22C57 /* libEXBackgroundFetch.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libEXBackgroundFetch.a;
+			remoteRef = B2C5786F25BB45B500E22C57 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		B2C5787225BB45B500E22C57 /* libUMCore.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libUMCore.a;
+			remoteRef = B2C5787125BB45B500E22C57 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		B2C5787425BB45B500E22C57 /* libUMPermissionsInterface.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libUMPermissionsInterface.a;
+			remoteRef = B2C5787325BB45B500E22C57 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXSourcesBuildPhase section */
 		7FE5B572CDAFEFE1B7290B92599ABF5F /* Sources */ = {
@@ -337,8 +422,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
 			};

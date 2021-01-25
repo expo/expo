@@ -960,13 +960,6 @@
 			remoteGlobalIDString = 5CDFFFDA1BEA16A0D3629FE9F761022A;
 			remoteInfo = FBReactNativeSpec;
 		};
-		794FF06BF960FA50CDBD3C2AFA17B88A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 305EFD19B149C3CCAD3ED9E136CBF362 /* expo-dev-launcher.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 26E7F2DCC5852B236EADEC0282A1217D;
-			remoteInfo = "expo-dev-launcher";
-		};
 		7A1AC294FFD9A3809621E5B5D6960982 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F89965C3740D48B87FE9621F956A6D94 /* react-native-webview.xcodeproj */;
@@ -1267,13 +1260,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 41748256BF35CA80D3CE24FFC0C6012B;
 			remoteInfo = EXScreenCapture;
-		};
-		9F0AB531B03718F14643CF5D61339347 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 305EFD19B149C3CCAD3ED9E136CBF362 /* expo-dev-launcher.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 26E7F2DCC5852B236EADEC0282A1217D;
-			remoteInfo = "expo-dev-launcher";
 		};
 		9F9991025C1D725BC482D5535B9F3C57 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1751,6 +1737,13 @@
 			remoteGlobalIDString = F3E96ACB94E2361FA9D83BE599DEC427;
 			remoteInfo = EXConstants;
 		};
+		D40FED8EFB3B2949B9721B615F932268 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 305EFD19B149C3CCAD3ED9E136CBF362 /* expo-dev-launcher.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 26E7F2DCC5852B236EADEC0282A1217D;
+			remoteInfo = "expo-dev-launcher";
+		};
 		D45794C1C8B6F8DB3E6E777B42BAFAF6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9F57AAFD273AD7F5CEB049068E1D6EAE /* nanopb.xcodeproj */;
@@ -1876,6 +1869,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = DCC8E69A56EE37BAFC3269F2C48FBBF8;
 			remoteInfo = EXFirebaseCore;
+		};
+		DEF4D7D1098C255C215A78C23175D214 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 305EFD19B149C3CCAD3ED9E136CBF362 /* expo-dev-launcher.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 26E7F2DCC5852B236EADEC0282A1217D;
+			remoteInfo = "expo-dev-launcher";
 		};
 		DF1953C0DB8C060456DD767B7B163E29 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -2837,7 +2837,7 @@
 				D552786AD0802476BDDE9AE49E4CEF53 /* PBXTargetDependency */,
 				F87953321973201887837E38CB212EB6 /* PBXTargetDependency */,
 				A28009F07FF3E124A92342E40A40E4D8 /* PBXTargetDependency */,
-				7D44F087C5732CF252489247D823EB03 /* PBXTargetDependency */,
+				4B9D4F18CC465304D5E657AF746FD1C1 /* PBXTargetDependency */,
 				55982ED662379C1562F33C79148B2A0D /* PBXTargetDependency */,
 				A621390AC2BF233B2A6F83898256C25A /* PBXTargetDependency */,
 				CAFFF8D89250DED5D52788E7C1AC3C98 /* PBXTargetDependency */,
@@ -3002,7 +3002,7 @@
 				E635F3E2EC57585C249D0EF1B6237B03 /* PBXTargetDependency */,
 				EFD224835BEBBBC5E22A71E1522B955E /* PBXTargetDependency */,
 				2C4DE02A6BC869D577A25E406C1D4548 /* PBXTargetDependency */,
-				E3541249B926D71781171EE296E34E6F /* PBXTargetDependency */,
+				25A044B62430E0A917882E81A526B665 /* PBXTargetDependency */,
 				E1958B2093471CEDE864AEB3ACCB2C04 /* PBXTargetDependency */,
 				A1169F61AB0D73C40D599629B1571301 /* PBXTargetDependency */,
 				966284E8FB5BE2058F49CA7965210172 /* PBXTargetDependency */,
@@ -3773,6 +3773,11 @@
 			name = EXSMS;
 			targetProxy = 7014E7112A683611AF998CF9EE8653D4 /* PBXContainerItemProxy */;
 		};
+		25A044B62430E0A917882E81A526B665 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "expo-dev-launcher";
+			targetProxy = DEF4D7D1098C255C215A78C23175D214 /* PBXContainerItemProxy */;
+		};
 		25E13D66ABBC7F53463A947A3F76D53F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = EXNotifications;
@@ -3997,6 +4002,11 @@
 			isa = PBXTargetDependency;
 			name = UMTaskManagerInterface;
 			targetProxy = C96CCAF47A54E1B955A34BF3BB85E6CE /* PBXContainerItemProxy */;
+		};
+		4B9D4F18CC465304D5E657AF746FD1C1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "expo-dev-launcher";
+			targetProxy = D40FED8EFB3B2949B9721B615F932268 /* PBXContainerItemProxy */;
 		};
 		4D1F49EB90054AE45720DBFB4B65BB0A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -4267,11 +4277,6 @@
 			isa = PBXTargetDependency;
 			name = EXFaceDetector;
 			targetProxy = 4111D1C4E82DD199EBE5E3C40F250818 /* PBXContainerItemProxy */;
-		};
-		7D44F087C5732CF252489247D823EB03 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "expo-dev-launcher";
-			targetProxy = 794FF06BF960FA50CDBD3C2AFA17B88A /* PBXContainerItemProxy */;
 		};
 		7DCD84F0ED5F9EDAC4B25FCCDD8D152F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -4867,11 +4872,6 @@
 			isa = PBXTargetDependency;
 			name = EXAppAuth;
 			targetProxy = AC6904F87D1A98C655C5A915B736A512 /* PBXContainerItemProxy */;
-		};
-		E3541249B926D71781171EE296E34E6F /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "expo-dev-launcher";
-			targetProxy = 9F0AB531B03718F14643CF5D61339347 /* PBXContainerItemProxy */;
 		};
 		E3B7460439DBB6371993CC0A828B0952 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
