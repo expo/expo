@@ -18,7 +18,7 @@ import {
 } from 'react-native';
 
 import ListItem from './ListItem';
-const DevLauncher = NativeModules.EXDevLauncher;
+const DevLauncher = NativeModules.EXDevLauncherInternal;
 
 // Use development client native module to load app at given URL, notifying of
 // errors
