@@ -10,7 +10,7 @@ buildscript {
     buildToolsVersion = '29.0.2'
     supportLibVersion = '29.0.0'
     kotlinVersion = '1.4.21'
-    gradlePluginVersion = '4.1.1'
+    gradlePluginVersion = '4.1.2'
     gradleDownloadTaskVersion = '3.4.3'
     repositoryUrl = "file:${System.env.HOME}/.m2/repository/"
   }

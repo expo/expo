@@ -179,7 +179,7 @@ task prepareJSC {
         def jscPackagePath = findNodeModulePath(projectDir, "jsc-android")
         if (!jscPackagePath) {
             throw new GradleScriptException("Could not find the jsc-android npm package")
-        } 
+        }
 
         def jscDist = file("$jscPackagePath/dist")
         if (!jscDist.exists()) {
@@ -236,7 +236,7 @@ task downloadNdkBuildDependencies {
 def findNodeModulePath(baseDir, packageName) {
     def basePath = baseDir.toPath().normalize()
     // Node's module resolution algorithm searches up to the root directory,
-    // after which the base path will be null 
+    // after which the base path will be null
     while (basePath) {
         def candidatePath = Paths.get(basePath.toString(), "node_modules", packageName)
         if (candidatePath.toFile().exists()) {
@@ -256,27 +256,40 @@ def getNdkBuildName() {
 }
 
 def findNdkBuildFullPath() {
-    // we allow to provide full path to ndk-build tool
-    if (hasProperty("ndk.command")) {
-        return property("ndk.command")
-    }
-    // or just a path to the containing directory
-    if (hasProperty("ndk.path")) {
-        def ndkDir = property("ndk.path")
-        return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
-    }
+  // we allow to provide full path to ndk-build tool
+  if (hasProperty("ndk.command")) {
+    return property("ndk.command")
+  }
+  // or just a path to the containing directory
+  if (hasProperty("ndk.path")) {
+    def ndkDir = property("ndk.path")
+    return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
+  }
 
-    if (System.getenv("ANDROID_NDK") != null) {
-        def ndkDir = System.getenv("ANDROID_NDK")
-        return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
-    }
+  if (System.getenv("ANDROID_NDK_HOME") != null) {
+    def ndkDir = System.getenv("ANDROID_NDK_HOME")
+    return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
+  }
 
-    def ndkDir = android.ndkDirectory ? android.ndkDirectory.absolutePath : null
+  // Left for the legacy reasons, use the previous one.
+  if (System.getenv("ANDROID_NDK") != null) {
+    def ndkDir = System.getenv("ANDROID_NDK")
+    return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
+  }
 
+  try {
+    def ndkDir = android.ndkDirectory.absolutePath
     if (ndkDir) {
-        return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
+      return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
     }
-    return null
+  } catch (InvalidUserDataException e) {
+    throw new GradleScriptException(
+        "Default side-by-side NDK installation is not found.\n" +
+        "Set \$ANDROID_NDK_HOME environment variable correctly or setup ndk.dir in local.properties.", e
+    )
+  }
+
+  return null
 }
 
 def reactNativeDevServerPort() {
@@ -294,14 +307,14 @@ def getNdkBuildFullPath() {
     if (ndkBuildFullPath == null) {
         throw new GradleScriptException(
                 "ndk-build binary cannot be found, check if you've set " +
-                        "\$ANDROID_NDK environment variable correctly or if ndk.dir is " +
+                        "\$ANDROID_NDK_HOME environment variable correctly or if ndk.dir is " +
                         "setup in local.properties",
                 null)
     }
     if (!new File(ndkBuildFullPath).canExecute()) {
         throw new GradleScriptException(
                 "ndk-build binary " + ndkBuildFullPath + " doesn't exist or isn't executable.\n" +
-                        "Check that the \$ANDROID_NDK environment variable, or ndk.dir in local.properties, is set correctly.\n" +
+                        "Check that the \$ANDROID_NDK_HOME environment variable, or ndk.dir in local.properties, is set correctly.\n" +
                         "(On Windows, make sure you escape backslashes in local.properties or use forward slashes, e.g. C:\\\\ndk or C:/ndk rather than C:\\ndk)",
                 null)
     }
