@@ -6,6 +6,7 @@ import { FirebaseAuthApplicationVerifier } from './FirebaseRecaptcha.types';
 interface Props {
   attemptInvisibleVerification?: boolean;
   appVerificationDisabledForTesting?: boolean;
+  languageCode?: string;
   innerRef: React.MutableRefObject<FirebaseAuthApplicationVerifier | null>;
 }
 
@@ -17,6 +18,9 @@ class FirebaseRecaptchaVerifierModal extends React.Component<Props> {
       if (this.props.appVerificationDisabledForTesting !== undefined) {
         firebase.auth().settings.appVerificationDisabledForTesting = !!this.props
           .appVerificationDisabledForTesting;
+      }
+      if (this.props.languageCode) {
+        firebase.auth().languageCode = this.props.languageCode;
       }
       this.verifier = new firebase.auth.RecaptchaVerifier(ref, {
         size: this.props.attemptInvisibleVerification ? 'invisible' : 'normal',
@@ -33,7 +37,8 @@ class FirebaseRecaptchaVerifierModal extends React.Component<Props> {
     return (
       this.props.appVerificationDisabledForTesting !==
         nextProps.appVerificationDisabledForTesting ||
-      this.props.attemptInvisibleVerification !== nextProps.attemptInvisibleVerification
+      this.props.attemptInvisibleVerification !== nextProps.attemptInvisibleVerification ||
+      this.props.languageCode !== nextProps.languageCode
     );
   }
 
@@ -46,13 +51,17 @@ class FirebaseRecaptchaVerifierModal extends React.Component<Props> {
   }
 
   render() {
-    const { attemptInvisibleVerification, appVerificationDisabledForTesting } = this.props;
+    const {
+      attemptInvisibleVerification,
+      appVerificationDisabledForTesting,
+      languageCode,
+    } = this.props;
     return (
       <div
         style={styles.container}
         key={`${attemptInvisibleVerification ? 'invisible' : 'visible'}-${
           appVerificationDisabledForTesting ? 'testing' : 'regular'
-        }`}
+        }-${languageCode ?? ''}`}
         id="recaptcha-container"
         ref={this.setRef}
         dangerouslySetInnerHTML={{ __html: '' }}
