@@ -23,7 +23,7 @@ class NotificationService: UNNotificationServiceExtension {
     if let bestAttemptContent = bestAttemptContent {
       // Modify notification content here...
       if (!request.content.categoryIdentifier.isEmpty && (request.content.userInfo["experienceId"]) != nil) {
-        bestAttemptContent.categoryIdentifier = "\(request.content.userInfo["experienceId"] as! String)-\(request.content.categoryIdentifier)"
+        bestAttemptContent.categoryIdentifier = "\(request.content.userInfo["experienceId"] as! String)/\(request.content.categoryIdentifier)"
       }
       contentHandler(bestAttemptContent)
     }

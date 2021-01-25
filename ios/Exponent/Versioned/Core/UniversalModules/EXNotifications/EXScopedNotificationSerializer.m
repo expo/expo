@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   NSString *experienceId = userInfo[@"experienceId"] ?: [NSNull null];
   if (experienceId) {
-    NSString *scopedCategoryPrefix = [NSString stringWithFormat:@"%@-", experienceId];
+    NSString *scopedCategoryPrefix = [NSString stringWithFormat:@"%@/", experienceId];
     return [identifier stringByReplacingOccurrencesOfString:scopedCategoryPrefix withString:@""];
   }
   return identifier;

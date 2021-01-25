@@ -18,27 +18,43 @@
     _experienceId = experienceId;
     _isInExpoGo = [@"expo" isEqualToString:constantsBinding.appOwnership];
     if (!_isInExpoGo) {
-      [self unscopeExistingNotificationCategories];
+      // Since it is possible to skip the upgrade to SDK 41 in standalone apps (go straight from 39 -> 42),
+      // we must look for both "experienceId-" and "experienceId/" prefixes.
+      NSString *pattern = [NSString stringWithFormat:@"^%@(/|-)", self->_experienceId];
+      [self replaceAllCategoryIdPrefixesMatching:pattern withString:@""];
+    } else {
+      // Used to prefix with "experienceId-", but as of SDK 41 we prefix with "experienceId/"
+      NSString *pattern = [NSString stringWithFormat:@"^%@-", self->_experienceId];
+      [self replaceAllCategoryIdPrefixesMatching:pattern withString:[NSString stringWithFormat:@"%@/", _experienceId]];
     }
   }
   return self;
 }
 
-- (void)unscopeExistingNotificationCategories
+- (void)replaceAllCategoryIdPrefixesMatching:(NSString *)pattern
+                                  withString:(NSString *)newPrefix
 {
   [[UNUserNotificationCenter currentNotificationCenter] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
     NSMutableSet<UNNotificationCategory *> *newCategories = [categories mutableCopy];
-    for (UNNotificationCategory *previousCategory in newCategories) {
-      if ([previousCategory.identifier hasPrefix:self->_experienceId]) {
-        NSMutableDictionary *unscopedSerializedCategory = [self serializeCategory:previousCategory];
-        UNNotificationCategory *newCategory = [super createCategoryWithId:unscopedSerializedCategory[@"identifier"]
-                                                                  actions:unscopedSerializedCategory[@"actions"]
-                                                                  options:unscopedSerializedCategory[@"options"]];
+    NSError *error = nil;
+    BOOL didChangeCategories = NO;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:&error];
+    for (UNNotificationCategory *previousCategory in categories) {
+      if ([regex firstMatchInString:previousCategory.identifier options:0 range:NSMakeRange(0, [previousCategory.identifier length])]) {
+        // Serialized categories do not contain the scoping prefix
+        NSMutableDictionary *serializedCategory = [self serializeCategory:previousCategory];
+        NSString *newCategoryId = [NSString stringWithFormat: @"%@%@", newPrefix, serializedCategory[@"identifier"]];
+        UNNotificationCategory *newCategory = [super createCategoryWithId:newCategoryId
+                                                                  actions:serializedCategory[@"actions"]
+                                                                  options:serializedCategory[@"options"]];
         [newCategories removeObject:previousCategory];
         [newCategories addObject:newCategory];
+        didChangeCategories = YES;
       }
     }
-    [[UNUserNotificationCenter currentNotificationCenter] setNotificationCategories:newCategories];
+    if (didChangeCategories) {
+      [[UNUserNotificationCenter currentNotificationCenter] setNotificationCategories:newCategories];
+    }
   }];
 }
 
@@ -65,7 +81,7 @@
                                       resolve:(UMPromiseResolveBlock)resolve
                                        reject:(UMPromiseRejectBlock)reject
 {
-  NSString *scopedCategoryIdentifier = [NSString stringWithFormat:@"%@-%@", _experienceId, categoryId];
+  NSString *scopedCategoryIdentifier = [NSString stringWithFormat:@"%@/%@", _experienceId, categoryId];
   [super setNotificationCategoryWithCategoryId:_isInExpoGo ? scopedCategoryIdentifier : categoryId actions:actions options:options resolve:resolve reject:reject];
 }
 
@@ -73,15 +89,17 @@
                                          resolve:(UMPromiseResolveBlock)resolve
                                           reject:(UMPromiseRejectBlock)reject
 {
-  NSString *scopedCategoryIdentifier = [NSString stringWithFormat:@"%@-%@", _experienceId, categoryId];
+  NSString *scopedCategoryIdentifier = [NSString stringWithFormat:@"%@/%@", _experienceId, categoryId];
   [super deleteNotificationCategoryWithCategoryId:_isInExpoGo ? scopedCategoryIdentifier : categoryId resolve:resolve reject:reject];
 }
 
 - (NSMutableDictionary *)serializeCategory:(UNNotificationCategory *)category
 {
   NSMutableDictionary* serializedCategory = [NSMutableDictionary dictionary];
-  NSString* experienceIdPrefix = [NSString stringWithFormat:@"%@-", _experienceId];
-  serializedCategory[@"identifier"] = [category.identifier stringByReplacingOccurrencesOfString:experienceIdPrefix withString:@""];
+  NSString* scopingPrefixPattern = [NSString stringWithFormat:@"^%@(/|-)", _experienceId];
+  NSError *error = nil;
+  NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:scopingPrefixPattern options:NSRegularExpressionCaseInsensitive error:&error];
+  serializedCategory[@"identifier"] = [regex stringByReplacingMatchesInString:category.identifier options:0 range:NSMakeRange(0, [category.identifier length]) withTemplate:@""];
   serializedCategory[@"actions"] = [super serializeActions: category.actions];
   serializedCategory[@"options"] = [super serializeCategoryOptions: category];
   return serializedCategory;
