@@ -14,7 +14,7 @@ Once this is done, you will need to set the `Build Configuration` for your Devel
 
 ## Setting up EAS
 
-You can set up your project to use EAS by [following the instructions here](/build/walkthrough/#configure-your-project-for-eas-build)
+You can set up your project to use EAS by [following the instructions here](/build/setup/#3-configure-the-project)
 
 ## Modifying your EAS.json
 
@@ -30,7 +30,8 @@ Assuming you named your new XCode scheme `Project - Development Client`, edit yo
       },
       "development": {
         "workflow": "generic",
-        "gradleCommand": ":app:bundleDebug"
+        "distribution": "internal",
+        "gradleCommand": ":app:assembleDebug"
       }
     },
     "ios": {
@@ -40,6 +41,7 @@ Assuming you named your new XCode scheme `Project - Development Client`, edit yo
       },
       "development": {
         "workflow": "generic",
+        "distribution": "internal",
         "scheme": "Project - Development Client"
       }
     }
@@ -47,18 +49,24 @@ Assuming you named your new XCode scheme `Project - Development Client`, edit yo
 }
 ```
 
-## Running your first build
+## Generating your first build
 
 You can now generate a new build of your project from any commit through EAS.
 
-For iOS simulators:
+### For iOS simulators:
 
-<InstallSection packageName="expo-dev-launcher" cmd={["expo eas:build --profile development --platform android"]} hideBareInstructions />
+<InstallSection packageName="expo-dev-launcher" cmd={["eas build --profile development --platform ios"]} hideBareInstructions />
 
-For iOS devices:
+### For iOS devices:
 
-> ⚠️ **Coming Soon**
+Register any devices you would like to use your development client on to your ad hoc provisioning profile
+<InstallSection packageName="expo-dev-launcher" cmd={["eas device:create"]} hideBareInstructions />
 
-For Android:
+Generate the build signed with your ad hoc provisioning profile.
+<InstallSection packageName="expo-dev-launcher" cmd={["eas build --profile development --platform ios"]} hideBareInstructions />
 
-<InstallSection packageName="expo-dev-launcher" cmd={["expo eas:build --profile development --platform ios"]} hideBareInstructions />
+You will need to generate a new build to install successfully on any new builds added to your provisioning profile.  [You can find more guidance on distributing your app to your team here.](https://docs.expo.io/build/internal-distribution/)
+
+### For Android:
+
+<InstallSection packageName="expo-dev-launcher" cmd={["eas build --profile development --platform android"]} hideBareInstructions />
