@@ -11,9 +11,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 > Firebase phone authentication is not possible out of the box using the Firebase JS SDK. This because an Application Verifier object (reCAPTCHA) is needed as an additional security measure to verify that the user is real and not a bot.
 
-<PlatformsSection android emulator ios simulator />
-
-> On web, you can use the [browser based reCAPTCHA verifier](https://firebase.google.com/docs/auth/web/phone-auth#set-up-the-recaptcha-verifier).
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
@@ -58,8 +56,7 @@ const authResult = await firebase.auth().signInWithCredential(credential);
 
 <SnackInline
 label='Firebase Phone Auth'
-dependencies={['expo-firebase-recaptcha', 'firebase', 'react-native-webview']}
-platforms={['ios', 'android']}>
+dependencies={['expo-firebase-recaptcha', 'firebase', 'react-native-webview']}>
 
 ```js
 import * as React from 'react';
@@ -195,8 +192,7 @@ export default function App() {
 contentHidden
 buttonTitle='Or try the Full Phone Authentication on Snack'
 label='Firebase Full Phone Auth'
-dependencies={['expo-firebase-recaptcha', 'firebase', 'react-native-webview']}
-platforms={['ios', 'android']}>
+dependencies={['expo-firebase-recaptcha', 'firebase', 'react-native-webview']}>
 
 ```tsx
 import * as React from 'react';

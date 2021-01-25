@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add web-support for FirebaseRecaptchaVerifierModal. ([#11695](https://github.com/expo/expo/pull/11695) by [@IjzerenHein](https://github.com/IjzerenHein))
+
 ### 🐛 Bug fixes
 
 ## 1.3.0 — 2020-11-23
