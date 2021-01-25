@@ -18,12 +18,11 @@
     _experienceId = experienceId;
     _isInExpoGo = [@"expo" isEqualToString:constantsBinding.appOwnership];
     if (!_isInExpoGo) {
-      // Since it is possible to skip the upgrade to SDK 41 in standalone apps (go straight from 39 -> 42),
-      // we must look for both "experienceId-" and "experienceId/" prefixes.
-      NSString *pattern = [NSString stringWithFormat:@"^%@(/|-)", self->_experienceId];
+      // Used to prefix with "experienceId-" even in standalone apps in SDKs <= 40, so we need to unscope those
+      NSString *pattern = [NSString stringWithFormat:@"^%@-", self->_experienceId];
       [self replaceAllCategoryIdPrefixesMatching:pattern withString:@""];
     } else {
-      // Used to prefix with "experienceId-", but as of SDK 41 we prefix with "experienceId/"
+      // Changed scoping prefix in SDK 41 FROM "experienceId-" TO "experienceId/"
       NSString *pattern = [NSString stringWithFormat:@"^%@-", self->_experienceId];
       [self replaceAllCategoryIdPrefixesMatching:pattern withString:[NSString stringWithFormat:@"%@/", _experienceId]];
     }
