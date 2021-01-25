@@ -8,7 +8,7 @@
 @interface UMReactNativeEventEmitter ()
 
 @property (nonatomic, assign) int listenersCount;
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) UMModuleRegistry *umModuleRegistry;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *modulesListenersCounts;
 
 @end
@@ -39,7 +39,7 @@ UM_REGISTER_MODULE();
 - (NSArray<NSString *> *)supportedEvents
 {
   NSMutableSet<NSString *> *eventsAccumulator = [NSMutableSet set];
-  for (UMExportedModule *exportedModule in [_moduleRegistry getAllExportedModules]) {
+  for (UMExportedModule *exportedModule in [_umModuleRegistry getAllExportedModules]) {
     if ([exportedModule conformsToProtocol:@protocol(UMEventEmitter)]) {
       id<UMEventEmitter> eventEmitter = (id<UMEventEmitter>)exportedModule;
       [eventsAccumulator addObjectsFromArray:[eventEmitter supportedEvents]];
@@ -52,8 +52,8 @@ RCT_EXPORT_METHOD(addProxiedListener:(NSString *)moduleName eventName:(NSString 
 {
   [self addListener:eventName];
   // Validate module
-  UMExportedModule *module = [_moduleRegistry getExportedModuleForName:moduleName];
-  
+  UMExportedModule *module = [_umModuleRegistry getExportedModuleForName:moduleName];
+
   if (RCT_DEBUG && module == nil) {
     UMLogError(@"Module for name `%@` has not been found.", moduleName);
     return;
@@ -88,8 +88,8 @@ RCT_EXPORT_METHOD(removeProxiedListeners:(NSString *)moduleName count:(double)co
 {
   [self removeListeners:count];
   // Validate module
-  UMExportedModule *module = [_moduleRegistry getExportedModuleForName:moduleName];
-  
+  UMExportedModule *module = [_umModuleRegistry getExportedModuleForName:moduleName];
+
   if (RCT_DEBUG && module == nil) {
     UMLogError(@"Module for name `%@` has not been found.", moduleName);
     return;
@@ -139,7 +139,7 @@ RCT_EXPORT_METHOD(removeProxiedListeners:(NSString *)moduleName count:(double)co
 
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
-  _moduleRegistry = moduleRegistry;
+  _umModuleRegistry = moduleRegistry;
 }
 
 @end

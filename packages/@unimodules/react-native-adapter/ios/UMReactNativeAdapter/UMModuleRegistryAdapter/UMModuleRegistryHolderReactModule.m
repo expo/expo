@@ -4,7 +4,7 @@
 
 @interface UMModuleRegistryHolderReactModule ()
 
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) UMModuleRegistry *umModuleRegistry;
 
 @end
 
@@ -13,14 +13,14 @@
 - (instancetype)initWithModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   if (self = [super init]) {
-    _moduleRegistry = moduleRegistry;
+    _umModuleRegistry = moduleRegistry;
   }
   return self;
 }
 
-- (UMModuleRegistry *)moduleRegistry
+- (UMModuleRegistry *)umModuleRegistry
 {
-  return _moduleRegistry;
+  return _umModuleRegistry;
 }
 
 + (NSString *)moduleName {
