@@ -1,0 +1,1 @@
+Rename to Expo Go, small bugfixes and improvements
