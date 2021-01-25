@@ -268,7 +268,7 @@ CACHE_KEYS:
       EXConstants:
         :debug: 9d9d8728b1b0afc838ae324607eba432
         :release: 9d9d8728b1b0afc838ae324607eba432
-    CHECKSUM: 07a3effb73d2f73b61079703f810bbdd5364a1c5
+    CHECKSUM: d9483a8fe0a963dd7ee3389f371303773e6ecd37
     FILES:
       - "../../../../packages/expo-constants/ios/EXConstants/EXConstants.h"
       - "../../../../packages/expo-constants/ios/EXConstants/EXConstants.m"
@@ -278,7 +278,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-constants/ios/EXConstants/EXConstantsService.m"
     PROJECT_NAME: EXConstants
     SPECS:
-      - EXConstants (10.0.0)
+      - EXConstants (10.0.1)
   EXContacts:
     BUILD_SETTINGS_CHECKSUM:
       EXContacts:
@@ -843,7 +843,7 @@ CACHE_KEYS:
       expo-dev-menu:
         :debug: 9aef77ac703efa43ebffa65d122b2160
         :release: 9aef77ac703efa43ebffa65d122b2160
-    CHECKSUM: ad7ce6065ef3ceedbfca505018f390fd96d61c42
+    CHECKSUM: a8a1e0fa182d04702d690f39ceae3de03007e257
     FILES:
       - "../../../../packages/expo-dev-menu/assets/dev-menu-packager-host"
       - "../../../../packages/expo-dev-menu/assets/EXDevMenuApp.ios.js"
@@ -969,7 +969,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/RCTConvert+DevMenuREATransition.m"
     PROJECT_NAME: expo-dev-menu
     SPECS:
-      - expo-dev-menu (0.2.1)
+      - expo-dev-menu (0.2.2)
   expo-dev-menu-interface:
     BUILD_SETTINGS_CHECKSUM:
       expo-dev-menu-interface:

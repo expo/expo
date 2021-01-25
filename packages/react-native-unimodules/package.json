@@ -40,7 +40,7 @@
     "@unimodules/react-native-adapter": "~6.1.0",
     "chalk": "^2.4.2",
     "expo-asset": "~8.2.2",
-    "expo-constants": "~10.0.0",
+    "expo-constants": "~10.0.1",
     "expo-file-system": "~10.0.0",
     "expo-image-loader": "~2.0.0",
     "expo-permissions": "~11.0.0",
