@@ -145,7 +145,7 @@ If you don't specify this list, `Linking.canOpenURL` may return `false` regardle
 
 ### In the Expo Go app
 
-Before continuing it's worth taking a moment to learn how to link to your app within the Expo Go app. the Expo Go app uses the `exp://` scheme, but if we link to `exp://` without any address afterwards, it will open the app to the main screen.
+Before continuing it's worth taking a moment to learn how to link to your app within the Expo Go app. Expo Go uses the `exp://` scheme, but if we link to `exp://` without any address afterwards, it will open the app to the main screen.
 
 In development, your app will live at a url like `exp://wg-qka.community.app.exp.direct:80`. When it's deployed, it will be at a URL like `exp://exp.host/@community/with-webbrowser-redirect`. If you create a website with a link like `<a href="exp://expo.io/@community/with-webbrowser-redirect">Open my project</a>`, then open that site on your device and click the link, it will open your app within the Expo Go app. You can link to it from another app by using `Linking.openURL` too.
 

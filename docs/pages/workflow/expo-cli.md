@@ -274,7 +274,7 @@ Alias: `expo web`
 
 <details>
 <summary>
-<h4>Expo Go:install:ios</h4>
+<h4>expo client:install:ios</h4>
 <p>Install the Expo Go app for iOS on the simulator</p>
 </summary>
 <p>
@@ -288,7 +288,7 @@ Alias: `expo web`
 
 <details>
 <summary>
-<h4>Expo Go:install:android</h4>
+<h4>expo client:install:android</h4>
 <p>Install the Expo Go app for Android on a connected device or emulator</p>
 </summary>
 <p>
@@ -879,7 +879,7 @@ Alias: `expo ui`
 
 <details>
 <summary>
-<h4>Expo Go:ios</h4>
+<h4>expo client:ios</h4>
 <p>Experimental: build a custom version of the Expo Go app for iOS using your own Apple credentials</p>
 </summary>
 <p>

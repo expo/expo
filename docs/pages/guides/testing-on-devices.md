@@ -6,14 +6,14 @@ The best way to interactively test and verify the behavior and feel of your app 
 
 There are several ways to get the client app into a test environment.
 
-## Install Expo Go App from a device's App Store
+## Install Expo Go from a device's App Store
 
 This is the simplest and easiest way, and the one we recommend for all developers.
 
-## Build Expo Go App on your computer and side-load it onto a device
+## Build Expo Go on your computer and side-load it onto a device
 
 [The client apps are open-source](https://github.com/expo/expo), and their readme contains instructions on how to compile them locally and install them onto devices attached to your computer by a USB cable.
 
-## Run Expo Go App on your computer in a device Emulator/Simulator
+## Run Expo Go on your computer in a device emulator/simulator
 
-[The client apps github repository](https://github.com/expo/expo) also includes instruction on how to build and run the iOS Client App in the Xcode Device Simulator, and the Android Client App in the Android Studio Device Emulator.
+[The Expo Go GitHub repository](https://github.com/expo/expo) also includes instruction on how to build and run Expo Go for iOS on the Xcode device simulator, and Expo Go for Android on the Android Studio device emulator.

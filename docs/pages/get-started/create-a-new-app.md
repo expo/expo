@@ -57,7 +57,7 @@ Open up `App.js` and change the text to "Hello, world!". You should see it updat
 <details style={{paddingTop: 0}}><summary><h4>Are the changes not showing up on your device?</h4></summary>
 <p>
 
-the Expo Go app is configured by default to automatically reload the app whenever a file is changed, but let's just make sure we go over the steps to enable it in case somehow things just aren't working.
+Expo Go is configured by default to automatically reload the app whenever a file is changed, but let's just make sure we go over the steps to enable it in case somehow things just aren't working.
 
 - First, make sure you have [development mode enabled in Expo CLI](../workflow/development-mode.md#development-mode).
 - Next, close the app and reopen it.

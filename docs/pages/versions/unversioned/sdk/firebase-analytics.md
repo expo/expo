@@ -28,9 +28,9 @@ To use this package, the native Firebase configurations need to be added to your
 
 ## Expo Go: Limitations & configuration
 
-The use of Native Firebase Analytics requires that the google-services configuration is bundled and linked into your app. Since the standard Expo Go loads projects on demand, it does not have the google-services configuration linked into its app-bundle.
+The use of Native Firebase Analytics requires that the google-services configuration is bundled and linked into your app. Since Expo Go loads projects on demand, it does not have the google-services configuration linked into its app-bundle.
 
-Instead, the standard Expo Go relies on a JavaScript-based implementation of Firebase Analytics to log events. This means that certain native life-cycle events are not recorded in the standard client, but you can still use `logEvent` to record events.
+Instead, Expo Go relies on a JavaScript-based implementation of Firebase Analytics to log events. This means that certain native life-cycle events are not recorded in the standard client, but you can still use `logEvent` to record events.
 
 You may want to use Firebase Analytics in Expo Go to verify that you are logging events at the time you intend to and with the data that you want to attach without having to do a standalone app build. To set this up, ensure that the Firebase web configuration is set in `app.json` and that `measurementId` exists in your firebase config. If `measurementId` doesn't exist, then you need to enable or update Google Analytics in your Firebase project.
 
@@ -309,7 +309,7 @@ setDebugModeEnabled(isEnabled: boolean): Promise<void>
 
 Enables debug mode _(Expo Go only)_ so events can be tracked using the [DebugView in the Analytics dashboard](https://firebase.google.com/docs/analytics/debugview#reporting).
 
-This option is **only available on the standard Expo Go**. When using a standalone build, the bare workflow or web, use the [natively available options](https://firebase.google.com/docs/analytics/debugview).
+This option is **only available in Expo Go**. When using a standalone build, the bare workflow, or web, use the [natively available options](https://firebase.google.com/docs/analytics/debugview).
 
 # Examples
 

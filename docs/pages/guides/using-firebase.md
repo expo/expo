@@ -230,7 +230,7 @@ In order to record analytics events, the Expo Firebase Core and Analytics packag
 
 `expo install expo-firebase-analytics`
 
-This package uses the native Firebase SDK in standalone apps and bare apps and a JavaScript based implementation on the standard Expo Go.
+This package uses the native Firebase SDK in standalone apps and bare apps and a JavaScript based implementation on Expo Go.
 
 To configure native Firebase, please follow the configuration instructions for the [expo-firebase-analytics](/versions/latest/sdk/firebase-analytics) package.
 

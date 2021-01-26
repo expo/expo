@@ -185,7 +185,7 @@ The [`AuthSession`](auth-session.md) API is built on top of [`expo-web-browser`]
 
 ### react-native-app-auth
 
-The `expo-app-auth` module is based on [react-native-app-auth](https://github.com/FormidableLabs/react-native-app-auth) by the incredible React.js consulting firm [Formidable](https://formidable.com/). The documentation and questions there may prove helpful. `expo-app-auth` provides a few extra features to make native app auth work inside a sand-boxed Expo Go environment.
+The `expo-app-auth` module is based on [react-native-app-auth](https://github.com/FormidableLabs/react-native-app-auth) by the incredible React.js consulting firm [Formidable](https://formidable.com/). The documentation and questions there may prove helpful. `expo-app-auth` provides a few extra features to make native app auth work inside a sandboxed Expo Go environment.
 
 ## API
 

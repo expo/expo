@@ -26,7 +26,7 @@ Follow [Facebook's developer documentation](https://developers.facebook.com/docs
 
 Then follow these steps based on the platforms you're targetting. This will need to be done from the [Facebook developer site](https://developers.facebook.com/).
 
-The Android Play Store Expo Go will use the Facebook App ID that you provide, however, all Facebook API calls in the **iOS App Store Expo Go will use Expo's own Facebook App ID**. This is due to underlying configuration limitations, but the good news is it means less setup for you! The slight downside to this is that you can't customize which permissions your app requests from Facebook (like `user_photos` or `user_friends`), or integrate Facebook login with other services like Firebase auth. If you need that functionality on iOS, you have two options:
+Expo Go from the Android Play Store will use the Facebook App ID that you provide, however, all Facebook API calls in the **Expo Go from the iOS App Store will use Expo's own Facebook App ID**. This is due to underlying configuration limitations, but the good news is it means less setup for you! The slight downside to this is that you can't customize which permissions your app requests from Facebook (like `user_photos` or `user_friends`), or integrate Facebook login with other services like Firebase auth. If you need that functionality on iOS, you have two options:
 
 - Build a [custom Expo Go app](../../../guides/adhoc-builds.md)
 - Build a [standalone app](../../../distribution/building-standalone-apps.md)

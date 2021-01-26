@@ -2,7 +2,7 @@
 title: Installing a Custom iOS Expo Go
 ---
 
-Build and install a custom version of the [Expo Go](../get-started/installation.md#2-mobile-app-expo-client-for-ios) with your own Apple Credentials using our build service. This custom version of the Expo Go app contains features that were previously only available on the Android versions. Our build service will prepare your custom Expo Go, and you can install it to your iOS device directly from our website.
+Build and install a custom version of [Expo Go](../get-started/installation.md#2-mobile-app-expo-client-for-ios) with your own Apple Credentials using our build service. This custom version of the Expo Go app contains features that were previously only available on the Android versions. Our build service will prepare your custom Expo Go app, and you can install it to your iOS device directly from our website.
 
 #### Installation overview
 
@@ -24,7 +24,7 @@ Push Notifications are currently unavailable with ad hoc clients until we comple
 
 #### Google Maps
 
-You will need to run `Expo Go:ios` in a project directory with a valid `app.json`, or pass in the flag to your custom configuration file with `--config <path-to-file.json>`. Make sure you set your Google API key in `ios.config.googleMapsApiKey` as described [here](../versions/latest/sdk/map-view.md#deploying-google-maps-to-a-standalone-app).
+You will need to run `expo client:ios` in a project directory with a valid `app.json`, or pass in the flag to your custom configuration file with `--config <path-to-file.json>`. Make sure you set your Google API key in `ios.config.googleMapsApiKey` as described [here](../versions/latest/sdk/map-view.md#deploying-google-maps-to-a-standalone-app).
 
 #### Facebook
 
@@ -40,7 +40,7 @@ Then, after following steps 1 & 2 below, your bundle ID (it should look somethin
 
 ## 1. Start the build
 
-Run `Expo Go:ios`
+Run `expo client:ios`
 
 ### 1a. Provide Apple Credentials
 
@@ -49,7 +49,7 @@ You are given a choice of letting `expo-cli` create the necessary credentials fo
 Letting Expo handle credentials for you will greatly simplify the build process. Learn more [here](../distribution/security.md) on what these credentials are and how we store them.
 
 ```sh
-$ Expo Go:ios
+$ expo client:ios
 [16:44:37] Checking if current build exists...
 
 [16:44:37] No currently active or previous builds for this project.

@@ -99,9 +99,9 @@ get the new version the first time they open your app after an update.
 
 The `sdkVersion` of an Expo app indicates what version of the compiled ObjC/Java/C layer of Expo to use. Each `sdkVersion` roughly corresponds to a release of React Native plus the Expo libraries in the SDK section of these docs.
 
-the Expo Go app supports many versions of the Expo SDK, but an app can only use one at a time. This allows you to publish your app today and still have it work a year from now without any changes, even if we have completely revamped or removed an API your app depends on in a new version. This is possible because your app will always be running against the same compiled code as the day that you published it.
+Expo Go supports many versions of the Expo SDK, but a project can only use one at a time. This allows you to publish your project today and still have it work a year from now without any changes, even if we have completely revamped or removed an API your project depends on in a new version. This is possible because your project will always be running against the same compiled code as the day that you published it.
 
-If you publish an update to your app with a new `sdkVersion`, if a user has yet to update to the latest Expo Go then they will still be able to use the previous `sdkVersion`.
+If you publish an update to your app with a new `sdkVersion`, if a user has yet to update to the latest version of Expo Go then they will still be able to use the previous `sdkVersion`.
 
 > **Note:** It's likely that eventually we will formulate a policy for how long we want to keep around sdkVersions and begin pruning very old versions of the sdk from the client, but until we do that, everything will remain backwards compatible.
 
@@ -113,7 +113,7 @@ The process is essentially the same as opening an Expo app in development, only 
 
 ## Opening Expo Apps Offline
 
-the Expo Go app will automatically cache the most recent version of every app it has opened. When you try to open an Expo app, it will always try and fetch the latest version, but if that fails for whatever reason (including being totally offline) then it will load the most recent cached version.
+Expo Go will automatically cache the most recent update of every project it has opened. When you try to open an Expo project, it will always try and fetch the latest update, but if that fails for whatever reason (including being totally offline) then it will load the most recent cached update.
 
 If you build a standalone app with Expo, that standalone binary will also ship with a "pre-cached" version of your JavaScript so that it can cold launch the very first time with no internet. Continue reading for more information about standalone apps.
 

@@ -923,7 +923,7 @@ This can only be used in Standalone, custom clients, and bare workflow apps. Thi
   - _Bare workflow_: Run `npx uri-scheme add <your bundle id> --ios`
 - To test this you can:
   1. Eject to bare: `expo eject` and run `yarn ios`
-  2. Create a custom client: `Expo Go:ios`
+  2. Create a custom client: `expo client:ios`
   3. Build a production IPA: `expo build:ios`
 - Whenever you change the values in `app.json` you'll need to rebuild the native app.
 

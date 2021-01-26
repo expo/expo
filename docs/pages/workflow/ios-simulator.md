@@ -53,8 +53,8 @@ The first time you install the app in the simulator, iOS will ask if you'd like 
 
 ### How do I force an update to the latest version?
 
-Run `Expo Go:install:ios` to download and install the latest Expo Go version in the simulator.
+Run `expo client:install:ios` to download and install the latest Expo Go version in the simulator.
 
 ### expo-cli is printing an error message about xcrun, what do I do?
 
-Run `Expo Go:install:ios` again to uninstall and reinstall the Expo Go app. If that doesn't help, focus the simulator window and in the Mac toolbar choose Hardware &rarr; Erase All Content and Settings... This will reinitialize your simulator from a blank image. Good to go!
+Run `expo client:install:ios` again to uninstall and reinstall the Expo Go app. If that doesn't help, focus the simulator window and in the Mac toolbar choose Hardware &rarr; Erase All Content and Settings... This will reinitialize your simulator from a blank image. Good to go!
