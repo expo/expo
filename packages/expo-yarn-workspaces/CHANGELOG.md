@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Use junction symlinks on Windows to avoid admin privileges ([#11739](https://github.com/expo/expo/pull/11739) by [@byCedric](https://github.com/byCedric))
+
 ## 1.3.1 — 2021-01-08
 
 ### 🐛 Bug fixes
