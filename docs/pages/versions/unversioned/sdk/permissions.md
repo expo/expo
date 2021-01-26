@@ -16,7 +16,9 @@ Please read the [permissions on iOS](#permissions-on-ios) and [permissions on An
 
 <InstallSection packageName="expo-permissions" />
 
-### Permissions on iOS
+## Permissions on iOS
+
+### Managed workflow
 
 To request permissions on iOS, you have to describe why the permissions are requested and [install the library](#permissions-and-required-packages-on-ios) that can request this permission. In the managed workflow, you can do that by customizing the `ios.infoPlist` property in your [`app.json` file](../../../workflow/configuration.md#ios). When using the bare workflow, you have to edit the `info.plist` file directly.
 
@@ -24,23 +26,35 @@ See the [`Permission types`](#permission-types) below to learn about what `infoP
 
 > **Note:** apps using permissions without descriptions _may be rejected from the App Store_. (see the [App Store Deployment Guide](../../../distribution/app-stores.md#system-permissions-dialogs-on-ios))
 
-### Permissions on Android
+### Bare workflow
+
+To request permissions on iOS, you have to describe why the permissions are requested and [install the library](#permissions-and-required-packages-on-ios) that can request this permission. When using the bare workflow, you have to edit the project `Info.plist`.
+
+See the [`Permission types`](#permission-types) below to learn about what `Info.plist` property you need for each permission. You can find the full list of available properties in [Apple's InfoPlistKeyReference](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW1). Apple also documents the basic guidelines for the structure of the message in the [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/ios/app-architecture/requesting-permission/).
+
+## Permissions on Android
+
+### Managed workflow
 
 On Android, permissions are little bit simpler than iOS. In the managed workflow, permissions are controlled via the `android.permissions` property in your [`app.json` file](../../../workflow/configuration.md#android). In the bare workflow, they have to be defined in your `AndroidManifest.xml`.
 
-> Some Expo and React Native modules include permissions by default. If you use `expo-location`, for example, both the `ACCESS_COARSE_LOCATION` and `ACCESS_FINE_LOCATION` are implied and added to your app's permissions automatically.
+Some Expo and React Native modules include permissions by default. If you use `expo-location`, for example, both the `ACCESS_COARSE_LOCATION` and `ACCESS_FINE_LOCATION` are implied and added to your app's permissions automatically.
 
-To limit the permissions your managed workflow app requires, set the `android.permissions` property in your [`app.json` file](../../../workflow/configuration.md#android) to list only the permissions you need, and Expo will also include the minimum permissions it requires to run. If you leave this property out, all permissions will be included in your app. When using the bare workflow, you have to [blacklist permissions in your `AndroidManifest.xml`](#excluding-android-permissions-in-bare-workflow) manually.
+To limit the permissions your managed workflow app requires, set the `android.permissions` property in your [`app.json` file](../../../workflow/configuration.md#android) to list only the permissions you need, and Expo will also include the minimum permissions it requires to run. See the [`Permission types`](#permission-types) below to learn about which Android permissions are added. You can find a full list of all available permissions in the [Android Manifest.permissions reference](https://developer.android.com/reference/android/Manifest.permission).
 
-See the [`Permission types`](#permission-types) below to learn about which Android permissions are added. You can find a full list of all available permissions in the [Android Manifest.permissions reference](https://developer.android.com/reference/android/Manifest.permission).
+- [See the `android.permissions` documentation](../config/app.md#permissions) to learn about which permissions are always included.
+- Apps using dangerous or signature permissions without valid reasons _may be rejected by Google_. Make sure you follow the [Android permissions best practices](https://developer.android.com/training/permissions/usage-notes) when submitting your app.
+- By default, the permissions implied by the modules you installed are added to the `AndroidManifest.xml` at build time. To exclude permissions, you have to define the `android.permissions` manifest property.
 
-> **Note:** [see the `android.permissions` documentation](../config/app.md#permissions) to learn about which permissions are always included.
+### Bare workflow
 
-> **Note:** apps using dangerous or signature permissions without valid reasons _may be rejected by Google_. Make sure you follow the [Android permissions best practices](https://developer.android.com/training/permissions/usage-notes) when submitting your app.
+In the bare workflow, permissions are controlled in your project `AndroidManifest.xml`.
 
-> **Note:** by default, the permissions implied by the modules you installed are added to the `AndroidManifest.xml`. To exclude permissions, you have to define the `android.permissions` manifest property or [blacklist them in the bare workflow](#excluding-android-permissions-in-bare-workflow).
+Some Expo and React Native modules include permissions by default. If you use `expo-location`, for example, both the `ACCESS_COARSE_LOCATION` and `ACCESS_FINE_LOCATION` are implied and added to your app's permissions automatically. To limit the permissions your managed workflow app requires, add them them to a [list of explicitly excluded permissions](#excluding-android-permissions-in-bare-workflow).
 
-### Permissions on Web
+Apps using dangerous or signature permissions without valid reasons _may be rejected by Google_. Make sure you follow the [Android permissions best practices](https://developer.android.com/training/permissions/usage-notes) when submitting your app.
+
+## Permissions on Web
 
 On web permissions like the `Camera` and `Location` can only be requested from a [secure context](https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts#When_is_a_context_considered_secure), e.g. using `https://` or `http://localhost`. This limitation is similar to Android's manifest permissions and iOS's infoPlist usage messages and enforced to increase privacy.
 
