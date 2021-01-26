@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Add web-support for FirebaseRecaptchaVerifierModal. ([#11695](https://github.com/expo/expo/pull/11695) by [@IjzerenHein](https://github.com/IjzerenHein))
+- Add `languageCode` prop for setting the language. ([#11737](https://github.com/expo/expo/pull/11737) by [@IjzerenHein](https://github.com/IjzerenHein))
 
 ### 🐛 Bug fixes
 

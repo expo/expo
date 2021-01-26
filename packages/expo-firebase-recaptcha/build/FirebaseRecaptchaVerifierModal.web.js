@@ -10,6 +10,9 @@ class FirebaseRecaptchaVerifierModal extends React.Component {
                     firebase.auth().settings.appVerificationDisabledForTesting = !!this.props
                         .appVerificationDisabledForTesting;
                 }
+                if (this.props.languageCode) {
+                    firebase.auth().languageCode = this.props.languageCode;
+                }
                 this.verifier = new firebase.auth.RecaptchaVerifier(ref, {
                     size: this.props.attemptInvisibleVerification ? 'invisible' : 'normal',
                 });
@@ -25,7 +28,8 @@ class FirebaseRecaptchaVerifierModal extends React.Component {
     shouldComponentUpdate(nextProps) {
         return (this.props.appVerificationDisabledForTesting !==
             nextProps.appVerificationDisabledForTesting ||
-            this.props.attemptInvisibleVerification !== nextProps.attemptInvisibleVerification);
+            this.props.attemptInvisibleVerification !== nextProps.attemptInvisibleVerification ||
+            this.props.languageCode !== nextProps.languageCode);
     }
     componentDidUpdate(prevProps) {
         if (this.props.innerRef !== prevProps.innerRef) {
@@ -35,8 +39,8 @@ class FirebaseRecaptchaVerifierModal extends React.Component {
         }
     }
     render() {
-        const { attemptInvisibleVerification, appVerificationDisabledForTesting } = this.props;
-        return (React.createElement("div", { style: styles.container, key: `${attemptInvisibleVerification ? 'invisible' : 'visible'}-${appVerificationDisabledForTesting ? 'testing' : 'regular'}`, id: "recaptcha-container", ref: this.setRef, dangerouslySetInnerHTML: { __html: '' } }));
+        const { attemptInvisibleVerification, appVerificationDisabledForTesting, languageCode, } = this.props;
+        return (React.createElement("div", { style: styles.container, key: `${attemptInvisibleVerification ? 'invisible' : 'visible'}-${appVerificationDisabledForTesting ? 'testing' : 'regular'}-${languageCode ?? ''}`, id: "recaptcha-container", ref: this.setRef, dangerouslySetInnerHTML: { __html: '' } }));
     }
 }
 export default React.forwardRef((props, ref) => (React.createElement(FirebaseRecaptchaVerifierModal, Object.assign({}, props, { innerRef: ref }))));

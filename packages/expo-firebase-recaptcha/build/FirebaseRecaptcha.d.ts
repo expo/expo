@@ -5,6 +5,7 @@ interface Props extends React.ComponentProps<typeof WebView> {
     firebaseConfig?: IFirebaseOptions;
     firebaseVersion?: string;
     appVerificationDisabledForTesting?: boolean;
+    languageCode?: string;
     onLoad?: () => any;
     onError?: () => any;
     onVerify: (token: string) => any;

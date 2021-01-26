@@ -3,7 +3,8 @@ import { FirebaseAuthApplicationVerifier } from './FirebaseRecaptcha.types';
 interface Props {
     attemptInvisibleVerification?: boolean;
     appVerificationDisabledForTesting?: boolean;
+    languageCode?: string;
     innerRef: React.MutableRefObject<FirebaseAuthApplicationVerifier | null>;
 }
-declare const _default: React.ForwardRefExoticComponent<Pick<Props, "appVerificationDisabledForTesting" | "attemptInvisibleVerification"> & React.RefAttributes<unknown>>;
+declare const _default: React.ForwardRefExoticComponent<Pick<Props, "appVerificationDisabledForTesting" | "languageCode" | "attemptInvisibleVerification"> & React.RefAttributes<unknown>>;
 export default _default;
