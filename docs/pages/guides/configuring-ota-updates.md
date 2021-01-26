@@ -39,10 +39,10 @@ try {
 }
 ```
 
-Note that `checkAutomatically: "ON_ERROR_RECOVERY"` will be ignored in the Expo client, although the imperative Updates methods will still function normally.
+Note that `checkAutomatically: "ON_ERROR_RECOVERY"` will be ignored in Expo Go, although the imperative Updates methods will still function normally.
 
 ## Disabling Updates
 
 It is possible to entirely disable OTA JavaScript updates in a standalone app, by setting `updates.enabled` to `false` in app.json. This will ignore all code paths that fetch app bundles from Expo's servers. In this case, all updates to your app will need to be routed through the iOS App Store and/or Google Play Store.
 
-This setting is ignored in the Expo client.
+This setting is ignored in the Expo Go app.

@@ -139,15 +139,15 @@ On iOS, `Linking.canOpenURL` requires additional configuration to query other ap
   }
 ```
 
-If you don't specify this list, `Linking.canOpenURL` may return `false` regardless of whether the device has the app installed. Note that this configuration can only be tested in standalone apps, because it requires native changes that will not be applied when testing in Expo client.
+If you don't specify this list, `Linking.canOpenURL` may return `false` regardless of whether the device has the app installed. Note that this configuration can only be tested in standalone apps, because it requires native changes that will not be applied when testing in Expo Go.
 
 ## Linking to your app
 
-### In the Expo client
+### In the Expo Go app
 
-Before continuing it's worth taking a moment to learn how to link to your app within the Expo client. The Expo client uses the `exp://` scheme, but if we link to `exp://` without any address afterwards, it will open the app to the main screen.
+Before continuing it's worth taking a moment to learn how to link to your app within the Expo Go app. the Expo Go app uses the `exp://` scheme, but if we link to `exp://` without any address afterwards, it will open the app to the main screen.
 
-In development, your app will live at a url like `exp://wg-qka.community.app.exp.direct:80`. When it's deployed, it will be at a URL like `exp://exp.host/@community/with-webbrowser-redirect`. If you create a website with a link like `<a href="exp://expo.io/@community/with-webbrowser-redirect">Open my project</a>`, then open that site on your device and click the link, it will open your app within the Expo client. You can link to it from another app by using `Linking.openURL` too.
+In development, your app will live at a url like `exp://wg-qka.community.app.exp.direct:80`. When it's deployed, it will be at a URL like `exp://exp.host/@community/with-webbrowser-redirect`. If you create a website with a link like `<a href="exp://expo.io/@community/with-webbrowser-redirect">Open my project</a>`, then open that site on your device and click the link, it will open your app within the Expo Go app. You can link to it from another app by using `Linking.openURL` too.
 
 ### In a standalone app
 
@@ -173,7 +173,7 @@ If your app is ejected, note that like some other parts of `app.json`, changing 
 
 To save you the trouble of inserting a bunch of conditionals based on the environment that you're in and hardcoding urls, we provide some helper methods in our extension of the `Linking` module. When you want to provide a service with a url that it needs to redirect back into your app, you can call `Linking.makeUrl()` and it will resolve to the following:
 
-- _Published app in Expo client_: `exp://exp.host/@community/with-webbrowser-redirect`
+- _Published app in Expo Go_: `exp://exp.host/@community/with-webbrowser-redirect`
 - _Published app in standalone_: `myapp://`
 - _Development_: `exp://localhost:19000`
 

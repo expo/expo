@@ -47,14 +47,14 @@ Sometimes the iOS simulator doesn't respond to commands to open. If it seems to 
 
 You can also use this menu to open any version of the simulator that you like. You can open multiple simulators at the same time but `expo-cli` will always act on the most recently opened on.
 
-### The simulator opened but the Expo client app isn't opening inside of it
+### The simulator opened but the Expo Go app isn't opening inside of it
 
-The first time you install the app in the simulator, iOS will ask if you'd like to open the Expo client app. You may need to interact with the simulator (click around, drag something) for this prompt to show up, then press `OK`.
+The first time you install the app in the simulator, iOS will ask if you'd like to open the Expo Go app. You may need to interact with the simulator (click around, drag something) for this prompt to show up, then press `OK`.
 
 ### How do I force an update to the latest version?
 
-Run `expo client:install:ios` to download and install the latest Expo client version in the simulator.
+Run `Expo Go:install:ios` to download and install the latest Expo Go version in the simulator.
 
 ### expo-cli is printing an error message about xcrun, what do I do?
 
-Run `expo client:install:ios` again to uninstall and reinstall the Expo client app. If that doesn't help, focus the simulator window and in the Mac toolbar choose Hardware &rarr; Erase All Content and Settings... This will reinitialize your simulator from a blank image. Good to go!
+Run `Expo Go:install:ios` again to uninstall and reinstall the Expo Go app. If that doesn't help, focus the simulator window and in the Mac toolbar choose Hardware &rarr; Erase All Content and Settings... This will reinitialize your simulator from a blank image. Good to go!

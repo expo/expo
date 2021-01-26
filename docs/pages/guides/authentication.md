@@ -634,8 +634,8 @@ export default function App() {
 [c-fitbit]: https://dev.fitbit.com/apps/new
 
 - Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
-  - Expo client: `exp://localhost:19000/--/*`
-  - Expo client + Proxy: `https://auth.expo.io/@you/your-app`
+  - Expo Go: `exp://localhost:19000/--/*`
+  - Expo Go + Proxy: `https://auth.expo.io/@you/your-app`
   - Standalone or Bare: `com.your.app://*`
   - Web: `https://yourwebsite.com/*`
 - The `redirectUri` requires 2 slashes (`://`).
@@ -790,8 +790,8 @@ export default function App() {
 [c-github]: https://github.com/settings/developers
 
 - Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
-  - Expo client: `exp://localhost:19000/--/*`
-  - Expo client + Proxy: `https://auth.expo.io/@you/your-app`
+  - Expo Go: `exp://localhost:19000/--/*`
+  - Expo Go + Proxy: `https://auth.expo.io/@you/your-app`
   - Standalone or Bare: `com.your.app://*`
   - Web: `https://yourwebsite.com/*`
 - The `redirectUri` requires 2 slashes (`://`).
@@ -886,7 +886,7 @@ export default function App() {
 
 There are 4 different types of client IDs you can provide:
 
-- `expoClientId`: Proxy client ID for use in the **Expo client** on iOS and Android.
+- `expoClientId`: Proxy client ID for use in the **Expo Go** on iOS and Android.
 - `iosClientId`: iOS native client ID for use in standalone, bare-workflow, and custom clients.
 - `androidClientId`: Android native client ID for use in standalone, bare-workflow, and custom clients.
 - `webClientId`: Expo web client ID for use in the browser.
@@ -896,22 +896,22 @@ To create a client ID, go to the [Credentials Page][c-google]:
 - Create an app for your project if you haven't already.
 - Once that's done, click "Create Credentials" and then "OAuth client ID." You will be prompted to set the product name on the consent screen, go ahead and do that.
 
-#### Development in the Expo client
+#### Development in the Expo Go app
 
-While developing in the Expo client, you cannot use proper native authentication. Instead you must use web login during development. Be sure to follow the **standalone** guide below for setting up production apps.
+While developing in Expo Go, you cannot use proper native authentication. Instead you must use web login during development. Be sure to follow the **standalone** guide below for setting up production apps.
 
 First, be sure to login to your Expo account `expo login`. This will be part of the redirect URL.
 
 [Create a new Google Client ID][c-google] that will be used with `expoClientId`.
 
 - **Application Type**: Web Application
-- Give it a name (e.g. "Expo client Proxy").
+- Give it a name (e.g. "Expo Go Proxy").
 - **URIs** (Authorized JavaScript origins): https://auth.expo.io
 - **Authorized redirect URIs**: https://auth.expo.io/@your-username/your-project-slug
 
 #### iOS Native
 
-This can only be used in Standalone, custom clients, and bare workflow apps. This method cannot be used in the Expo client.
+This can only be used in Standalone, custom clients, and bare workflow apps. This method cannot be used in the Expo Go app.
 
 [Create a new Google Client ID][c-google] that will be used with `iosClientId`.
 
@@ -923,13 +923,13 @@ This can only be used in Standalone, custom clients, and bare workflow apps. Thi
   - _Bare workflow_: Run `npx uri-scheme add <your bundle id> --ios`
 - To test this you can:
   1. Eject to bare: `expo eject` and run `yarn ios`
-  2. Create a custom client: `expo client:ios`
+  2. Create a custom client: `Expo Go:ios`
   3. Build a production IPA: `expo build:ios`
 - Whenever you change the values in `app.json` you'll need to rebuild the native app.
 
 #### Android Native
 
-This can only be used in Standalone, and bare workflow apps. This method cannot be used in the Expo client.
+This can only be used in Standalone, and bare workflow apps. This method cannot be used in the Expo Go app.
 
 [Create a new Google Client ID][c-google] that will be used with `androidClientId`.
 
@@ -1022,10 +1022,10 @@ export default function App() {
   - https://console.developers.google.com/apis/credentials/oauthclient/YOUR_GUID.apps.googleusercontent.com
 - Under "URIs" add your hosts URLs
   - Web dev: https://localhost:19006
-  - Expo client Proxy: https://auth.expo.io
+  - Expo Go Proxy: https://auth.expo.io
 - Under "Authorized redirect URIs"
   - Web dev: https://localhost:19006 -- this is assuming you want to invoke `WebBrowser.maybeCompleteAuthSession();` from the root URL of your app.
-  - Expo client Proxy: https://auth.expo.io/@yourname/your-app
+  - Expo Go Proxy: https://auth.expo.io/@yourname/your-app
 
 <img alt="Google Firebase Console for URIs" src="/static/images/sdk/auth-session/guide/google-firebase-auth-console.png" />
 
@@ -1341,8 +1341,8 @@ export default function App() {
 [c-reddit]: https://www.reddit.com/prefs/apps
 
 - Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
-  - Expo client: `exp://localhost:19000/--/*`
-  - Expo client + Proxy: `https://auth.expo.io/@you/your-app`
+  - Expo Go: `exp://localhost:19000/--/*`
+  - Expo Go + Proxy: `https://auth.expo.io/@you/your-app`
   - Standalone or Bare: `com.your.app://*`
   - Web: `https://yourwebsite.com/*`
 - The `redirectUri` requires 2 slashes (`://`).
@@ -2140,26 +2140,26 @@ Here are a few examples of some common redirect URI patterns you may end up usin
 
 > `https://auth.expo.io/@yourname/your-app`
 
-- **Environment:** Development or production projects in the Expo client, or in a standalone build.
+- **Environment:** Development or production projects in Expo Go, or in a standalone build.
 - **Create:** Use `AuthSession.makeRedirectUri({ useProxy: true })` to create this URI.
   - The link is constructed from your Expo username and the Expo app name, which are appended to the proxy website.
 - **Usage:** `promptAsync({ useProxy: true, redirectUri })`
 
-#### Published project in the Expo client
+#### Published project in the Expo Go app
 
 > `exp://exp.host/@yourname/your-app`
 
-- **Environment:** Production projects that you `expo publish`'d and opened in the Expo client.
+- **Environment:** Production projects that you `expo publish`'d and opened in the Expo Go app.
 - **Create:** Use `AuthSession.makeRedirectUri({ useProxy: false })` to create this URI.
-  - The link is constructed from your Expo username and the Expo app name, which are appended to the Expo client URI scheme.
+  - The link is constructed from your Expo username and the Expo app name, which are appended to the Expo Go app URI scheme.
   - You could also create this link with using `Linking.makeUrl()` from `expo-linking`.
 - **Usage:** `promptAsync({ redirectUri })`
 
-#### Development project in the Expo client
+#### Development project in the Expo Go app
 
 > `exp://localhost:19000`
 
-- **Environment:** Development projects in the Expo client when you run `expo start`.
+- **Environment:** Development projects in the Expo Go app when you run `expo start`.
 - **Create:** Use `AuthSession.makeRedirectUri({ useProxy: false })` to create this URI.
   - This link is built from your Expo server's `port` + `host`.
   - You could also create this link with using `Linking.makeUrl()` from `expo-linking`.
@@ -2176,8 +2176,8 @@ In some cases there will be anywhere between 1 to 3 slashes (`/`).
     - `npx create-react-native-app` or `expo eject`
   - Standalone builds in the App or Play Store
     - `expo build:ios` or `expo build:android`
-  - Custom Expo client builds
-    - `expo client:ios`
+  - Custom Expo Go builds
+    - `Expo Go:ios`
 - **Create:** Use `AuthSession.makeRedirectUri({ native: '<YOUR_URI>' })` to select native when running in the correct environment.
   - This link must be hard coded because it cannot be inferred from the config reliably, with exception for Standalone builds using `scheme` from `app.config.js` or `app.json`. Often this will be used for providers like Google or Okta which require you to use a custom native URI redirect. You can add, list, and open URI schemes using `npx uri-scheme`.
   - If you change the `expo.scheme` after ejecting then you'll need to use the `expo apply` command to apply the changes to your native project, then rebuild them (`yarn ios`, `yarn android`).

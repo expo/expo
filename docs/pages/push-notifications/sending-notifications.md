@@ -30,7 +30,7 @@ Check out the source if you would like to implement it in another language.
 
 > **Note:**
 >
-> If you're **not** testing in the Expo client app, make sure you've [generated the proper push credentials](push-notifications-setup.md#credentials) before proceeding! If you haven't, push notifications will not work.
+> If you're **not** testing in the Expo Go app, make sure you've [generated the proper push credentials](push-notifications-setup.md#credentials) before proceeding! If you haven't, push notifications will not work.
 
 ## HTTP/2 API
 
