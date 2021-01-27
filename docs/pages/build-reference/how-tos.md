@@ -8,7 +8,7 @@ This document outlines how to configure EAS Build for some common scenarios, suc
 
 There are three EAS Build-specific npm hooks that you can set in your package.json. See the [Android build process](android-builds.md) and [iOS build process](ios-builds.md) docs to get a better understanding about the internals of the build process.
 
-- `eas-build-pre-install` - it's executed before EAS Build runs `yarn install`
+- `eas-build-pre-install` - executed before EAS Build runs `yarn install`
 - `eas-build-post-install` - the behavior depends on the platform:
   - for Android, after `yarn install` has completed
   - for iOS, after `yarn install` and `pod install` have completed
