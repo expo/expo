@@ -138,7 +138,10 @@ const withDevLauncherApplication = config => {
 const withDevLauncherActivity = config => {
     return config_plugins_1.withMainActivity(config, config => {
         if (config.modResults.language === 'java') {
-            let content = addJavaImports(config.modResults.contents, [DEV_LAUNCHER_ANDROID_IMPORT]);
+            let content = addJavaImports(config.modResults.contents, [
+                DEV_LAUNCHER_ANDROID_IMPORT,
+                'android.content.Intent',
+            ]);
             if (!content.includes(DEV_LAUNCHER_ON_NEW_INTENT)) {
                 const lines = content.split('\n');
                 const onCreateIndex = lines.findIndex(line => line.includes('public class MainActivity'));
