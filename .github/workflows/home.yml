@@ -37,6 +37,8 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn jest --maxWorkers 1
         working-directory: home
+      - run: yarn tsc
+        working-directory: home
       - run: yarn lint --max-warnings 0
         working-directory: home
       - uses: 8398a7/action-slack@v3

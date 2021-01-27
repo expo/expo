@@ -74,6 +74,7 @@
     "url": "^0.11.0"
   },
   "devDependencies": {
+    "@types/jest": "^26.0.20",
     "jest-expo": "~40.0.2",
     "react-native-bundle-visualizer": "^2.2.1",
     "uuid": "^3.3.2"
