@@ -10,6 +10,7 @@ const STYLES_FOOTER = css`
 `;
 
 const STYLES_FOOTER_LINK = css`
+  font-size: 18px;
   display: block;
   text-decoration: none;
   margin-bottom: 12px;
@@ -39,8 +40,8 @@ function githubUrl(path: string) {
   return `https://github.com/expo/expo/edit/master/docs/pages${pathAsMarkdown}`;
 }
 
-// Add any page in the /sdk/ section that should not have an issues link to this
-const ISSUES_BLACKLIST = ['Overview'];
+// Add any page in the /sdk/ section that is not an actual Expo API
+const SDK_BLACKLIST = ['Overview'];
 
 type Props = {
   asPath: string;
@@ -53,42 +54,70 @@ export default class DocumentationFooter extends React.PureComponent<Props> {
   render() {
     return (
       <footer css={STYLES_FOOTER}>
-        <a css={STYLES_FOOTER_LINK} target="_blank" rel="noopener" href="https://forums.expo.io/">
-          Ask a question on the forums
-        </a>
-        {this.maybeRenderIssuesLink()}
-        {this.maybeRenderSourceCodeLink()}
-        {this.maybeRenderGithubUrl()}
+        <ul>
+          {this.renderForumsLink()}
+          {this.maybeRenderIssuesLink()}
+          {this.maybeRenderSourceCodeLink()}
+          {this.maybeRenderGithubUrl()}
+        </ul>
       </footer>
+    );
+  }
+
+  private renderForumsLink() {
+    if (!this.props.asPath.includes('/sdk/') || SDK_BLACKLIST.includes(this.props.title)) {
+      return (
+        <li>
+          <a css={STYLES_FOOTER_LINK} target="_blank" rel="noopener" href="https://forums.expo.io/">
+            Ask a question on the forums
+          </a>
+        </li>
+      );
+    }
+
+    return (
+      <li>
+        <a
+          css={STYLES_FOOTER_LINK}
+          target="_blank"
+          rel="noopener"
+          href={'https://forums.expo.io/tag/' + this.props.title}>
+          Get help from the community and ask questions about {this.props.title}
+        </a>
+      </li>
     );
   }
 
   private maybeRenderGithubUrl() {
     if (this.props.url) {
       return (
-        <a
-          css={STYLES_FOOTER_LINK}
-          target="_blank"
-          rel="noopener"
-          href={githubUrl(this.props.url.pathname)}>
-          Edit this page
-        </a>
+        <li>
+          <a
+            css={STYLES_FOOTER_LINK}
+            target="_blank"
+            rel="noopener"
+            href={githubUrl(this.props.url.pathname)}>
+            Edit this page
+          </a>
+        </li>
       );
     }
   }
 
   private maybeRenderIssuesLink = () => {
-    if (!this.props.asPath.includes('/sdk/') || ISSUES_BLACKLIST.includes(this.props.title)) {
+    if (!this.props.asPath.includes('/sdk/') || SDK_BLACKLIST.includes(this.props.title)) {
       return;
     }
 
     return (
-      <a
-        css={STYLES_FOOTER_LINK}
-        target="_blank"
-        href={`https://github.com/expo/expo/labels/${this.props.title}`}>
-        View open issues for {this.props.title}
-      </a>
+      <li>
+        <a
+          css={STYLES_FOOTER_LINK}
+          target="_blank"
+          href={`https://github.com/expo/expo/labels/${this.props.title}`}>
+          View open bug reports for {this.props.title}
+        </a>
+      </li>
     );
   };
 
@@ -98,9 +127,11 @@ export default class DocumentationFooter extends React.PureComponent<Props> {
     }
 
     return (
-      <a css={STYLES_FOOTER_LINK} target="_blank" href={`${this.props.sourceCodeUrl}`}>
-        View source code for {this.props.title}
-      </a>
+      <li>
+        <a css={STYLES_FOOTER_LINK} target="_blank" href={`${this.props.sourceCodeUrl}`}>
+          View source code for {this.props.title}
+        </a>
+      </li>
     );
   };
 }
