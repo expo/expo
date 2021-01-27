@@ -11,4 +11,3 @@ class ScreenCapturePackage : BasePackage() {
     return listOf(ScreenCaptureModule(context) as ExportedModule)
   }
 }
-

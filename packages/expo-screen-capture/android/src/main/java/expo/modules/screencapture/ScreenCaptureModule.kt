@@ -31,7 +31,7 @@ class ScreenCaptureModule(context: Context) : ExportedModule(context) {
     activity.runOnUiThread{
       try {
         activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE)
-      } catch (exception: Exception) { 
+      } catch (exception: Exception) {
         promise.reject(ERROR_CODE_PREVENTION, "Failed to prevent screen capture: " + exception)
       }
     }
@@ -41,11 +41,11 @@ class ScreenCaptureModule(context: Context) : ExportedModule(context) {
   @ExpoMethod
   fun allowScreenCapture(promise: Promise) {
     val activity = getCurrentActivity()
-      
+
     activity.runOnUiThread{
       try {
         activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
-      } catch (exception: Exception) { 
+      } catch (exception: Exception) {
         promise.reject(ERROR_CODE_PREVENTION, "Failed to reallow screen capture: " + exception)
       }
     }
