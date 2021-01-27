@@ -1,0 +1,49 @@
+name: SDK Bug Report
+about: Report a reproducible bug in the Expo SDK
+labels: "needs review"
+issue_body: true
+inputs:
+- type: description
+  attributes:
+    value: Thanks for taking the time to file a bug report! Please fill out this form as completely as possible.
+- type: description
+  attributes:
+    value: If you leave out sections there is a high likelihood your issue will be closed. If you have a question, not a bug report, please post it on our [forums](https://forums.expo.io/) instead.
+- type: textarea
+  attributes:
+    label: Summary
+    required: true
+    description: Describe the issue in 1 or 2 sentences
+- type: dropdown
+  attributes:
+    label: Managed or bare workflow? Hint: If you have `ios/` or `android/` directories in your project, the answer is bare!
+    required: true
+    choices:
+      - managed
+      - bare
+- type: multi_select
+  attributes:
+    label: What platform(s) does this occur on?
+    required: true
+    choices:
+      - Android
+      - iOS
+      - Web
+- type: input
+  attributes: 
+    label: SDK Version (managed workflow only)
+    required: false
+    description: What version of the Expo SDK are you using?
+- type: textarea
+  attributes:
+    label: Environment
+    required: true
+    placeholder: Run `expo diagnostics` and paste the output here
+- type: textarea
+  attributes:
+    label: Reproducible demo or steps to reproduce from a blank project
+    required: true
+    description: description: This should include as little code as possible, do not simply link your entire project. Sharing a link to a [Snack](https://snack.expo.io/) is a GREAT way to provide a reproducible demo :) If a reproducible demo, or a complete list of steps from blank project to bug, are not provided, it is very likely your issue will be closed. Read [here more guidance](https://stackoverflow.com/help/mcve).
+- type: description
+  attributes: 
+    value: Before posting the issue go through the steps you've written down to make sure the steps provided are detailed and clear.\nContributors should be able to follow the steps provided in order to reproduce the bug.
