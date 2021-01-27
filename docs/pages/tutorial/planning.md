@@ -6,7 +6,7 @@ In this tutorial we are going to build an app for iOS, Android, and web that all
 
 ## Before we get started
 
-- ✅ This tutorial assumes that you have installed Expo CLI and the Expo client app, and that you have initialized and run a simple app successfully. If this is you, please continue reading this page!
+- ✅ This tutorial assumes that you have installed Expo CLI and the Expo Go app, and that you have initialized and run a simple app successfully. If this is you, please continue reading this page!
 - 🛑 If you don't have a "Hello, world!" app running on your machine yet, please refer back to the ["Installation"](../get-started/installation.md) and ["Create a new app"](../get-started/create-a-new-app.md) guides.
 
 ## Initialize a new app
