@@ -8,7 +8,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 import SnackInline from '~/components/plugins/SnackInline';
 
-**`expo-file-system`** provides access to a file system stored locally on the device. Within the Expo client, each app has a separate file system and has no access to the file system of other Expo apps. However, it can save content shared by other apps to local filesystem, as well as share local files to other apps. It is also capable of uploading and downloading files from network URLs.
+**`expo-file-system`** provides access to a file system stored locally on the device. Within Expo Go, each project has a separate file system and has no access to the file system of other Expo projects. However, it can save content shared by other projects to the local filesystem, as well as share local files with other projects. It is also capable of uploading and downloading files from network URLs.
 
 <img src="/static/images/sdk/file-system/file-system-diagram.png" style={{maxWidth: 850, maxHeight: 600, marginBottom:"5em", display: "block", marginLeft: "auto", marginRight: "auto"}} />
 

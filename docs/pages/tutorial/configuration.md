@@ -80,7 +80,7 @@ Our designer provided us with this 1024px width x 1024px height app icon:
 <br />
 <br />
 
-Save this image to the `assets` directory inside of your project and call it `icon.png` &mdash; replace the existing file. Reload the app. That's all you need to do! You will see the icon in various places in the Expo client, and when you do a standalone app build for submission to the stores it will be used as the icon on the users' home screens.
+Save this image to the `assets` directory inside of your project and call it `icon.png` &mdash; replace the existing file. Reload the app. That's all you need to do! You will see the icon in various places in Expo Go, and when you do a standalone app build for submission to the stores it will be used as the icon on the users' home screens.
 
 ## We have completed our app!
 
