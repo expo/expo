@@ -13,7 +13,7 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🐛 Bug fixes
 
-- Fix Expo CLI logging not limiting length of strings to 10 kB. ([#](https://github.com/expo/expo/pull/) by [@fson](https://github.com/fson))
+- Fix Expo CLI logging not limiting length of strings to 10 KiB. ([#11776](https://github.com/expo/expo/pull/11776) by [@fson](https://github.com/fson))
 
 ## 40.0.0 — 2020-11-17
 
