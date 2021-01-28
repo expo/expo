@@ -180,29 +180,7 @@ When building tests for your application, you want to assert that the right flow
 
 [`sentry-testkit`](https://wix.github.io/sentry-testkit) enables Sentry to work natively in your application, and by overriding the default Sentry transport mechanism, the report is not really sent but rather logged locally into memory. In this way, the logged reports can be fetched later for your own usage, verification, or any other use you may have in your local developing/testing environment.
 
-**Installation**
-
-`npm install sentry-testkit --save-dev` or `yarn add sentry-testkit --dev`
-
-**Using in tests**
-```javascript
-const sentryTestkit = require('sentry-testkit')
-
-const {testkit, sentryTransport} = sentryTestkit()
-
-// initialize your Sentry instance with sentryTransport
-Sentry.init({
-    dsn: 'YOUR DSN HERE',
-    transport: sentryTransport,
-    //... other configurations
-})
-
-// then run any scenario that should call Sentry.catchException(...)
-
-expect(testkit.reports()).toHaveLength(1)
-const report = testkit.reports()[0]
-expect(report).toHaveProperty(...)
-```
+See how to get started with `sentry-testkit` in their [documentation site here](https://wix.github.io/sentry-testkit/)
 
 > If you're using `Jest`, make sure to add `@sentry/.*` and `sentry-expo` to your `transformIgnorePatterns`.
 
