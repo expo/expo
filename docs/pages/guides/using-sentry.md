@@ -174,7 +174,7 @@ Sentry.init({
 });
 ```
 
-### Testing Sentry and Using [`sentry-testkit`](https://wix.github.io/sentry-testkit)
+### Testing Sentry
 
 When building tests for your application, you want to assert that the right flow-tracking or error is being sent to Sentry, but without really sending it to Sentry servers. This way you won't swamp Sentry with false reports during test running and other CI operations.
 
