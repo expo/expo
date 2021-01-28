@@ -5,6 +5,9 @@ inputs:
   - type: description
     attributes:
       value: If you have a question about Expo or want to discuss about related aspects, please post it on our forums at https://forums.expo.io/.
-  - type: description
+  - type: dropdown
     attributes:
-      value: Discussions or questions opened as issues in the core Expo repository will be closed.
+      label: Do you understand that any discussions or questions opened as issues in the core Expo repository will be closed?
+      required: true
+      choices:
+        - Yes
