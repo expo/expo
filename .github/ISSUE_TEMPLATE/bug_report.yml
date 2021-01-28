@@ -14,6 +14,7 @@ inputs:
     label: Summary
     required: true
     description: Describe the issue in 1 or 2 sentences
+    placeholder: Clearly describe what the expected behavior is vs. what is actually happening. This should be as short as possible, while still communicating all the necessary information. If your summary is just 'X library/method isn't working', then you need to continue debugging yourself and provide more information.
 - type: dropdown
   attributes:
     label: Managed or bare workflow? If you have `ios/` or `android/` directories in your project, the answer is bare!
@@ -46,7 +47,7 @@ inputs:
     description: "This should include as little code as possible, do not simply link your entire project. Sharing a link to a [Snack](https://snack.expo.io/) is a GREAT way to provide a reproducible demo :) If a reproducible demo, or a complete list of steps from blank project to bug, are not provided, it is very likely your issue will be closed. Read [here more guidance](https://stackoverflow.com/help/mcve)."
 - type: description
   attributes: 
-    value: Before posting the issue go through the steps you've written down to make sure the steps provided are detailed and clear.
+    value: Please make sure contributors can follow the steps your provided in order to reproduce the bug.
 - type: description
   attributes: 
-    value: Contributors should be able to follow the steps provided in order to reproduce the bug.
+    value: "**Realize that it is up to you to debug your code and be as certain as possible that the bug is with Expo, not with your own app.** [Here's an excellent guide to debugging you can follow](https://www.highshortinterest.com/)."
