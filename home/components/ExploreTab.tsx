@@ -63,9 +63,11 @@ export default function ExploreTab(props: QueryProps) {
     [navigation]
   );
 
-  if (loading || (isRefetching && !data?.apps)) {
+  const apps = data?.apps;
+
+  if (loading || (isRefetching && !apps)) {
     return <Loading />;
-  } else if (error && !data?.apps) {
+  } else if (error && !apps) {
     // Error
     // NOTE(brentvatne): sorry for this
     const isConnectionError = error.message.includes('No connection available');
@@ -129,7 +131,7 @@ export default function ExploreTab(props: QueryProps) {
 
   return (
     <FlatList
-      data={data.apps!}
+      data={apps}
       renderItem={renderItem}
       style={[
         styles.container,
@@ -152,6 +154,7 @@ export default function ExploreTab(props: QueryProps) {
           return <InfiniteScrollView {...props} />;
         }
       }}
+      // @ts-expect-error typescript cannot infer that props should include infinite-scroll-view props
       onLoadMoreAsync={handleLoadMoreAsync}
       canLoadMore={!loading && FeatureFlags.INFINITE_SCROLL_EXPLORE_TABS}
     />

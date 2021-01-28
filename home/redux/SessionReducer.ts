@@ -4,7 +4,7 @@ export type SessionObject = {
   sessionSecret: string | null;
 };
 
-export type SessionType = Record<SessionObject>;
+export type SessionType = Record<SessionObject> & Readonly<SessionObject>;
 
 const SessionState = Record<SessionObject>({
   sessionSecret: null,
