@@ -80,7 +80,7 @@ class SignInView extends React.Component<Props, State> {
   componentDidUpdate(prevProps: Props) {
     const hasNewUserSession = this.props.session.sessionSecret && !prevProps.session.sessionSecret;
     if (hasNewUserSession) {
-      TextInput.State.blurTextInput(TextInput.State.currentlyFocusedField());
+      TextInput.State.blurTextInput(TextInput.State.currentlyFocusedInput());
       this.props.navigation.pop();
     }
   }
@@ -92,7 +92,7 @@ class SignInView extends React.Component<Props, State> {
         autoCorrect={false}
         textContentType="oneTimeCode"
         ref={view => {
-          this._otpInput = view;
+          this._otpInput = view as TextInput;
         }}
         keyboardType="default"
         label="One-time Password"
@@ -136,7 +136,7 @@ class SignInView extends React.Component<Props, State> {
             label="Password"
             textContentType="password"
             ref={view => {
-              this._passwordInput = view;
+              this._passwordInput = view as TextInput;
             }}
             onChangeText={this._handleChangePassword}
             onSubmitEditing={this._handleSubmitPassword}

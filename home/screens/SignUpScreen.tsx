@@ -76,7 +76,7 @@ class SignUpView extends React.Component<Props, State> {
 
   componentDidUpdate(prevProps: Props) {
     if (this.props.session.sessionSecret && !prevProps.session.sessionSecret) {
-      TextInput.State.blurTextInput(TextInput.State.currentlyFocusedField());
+      TextInput.State.blurTextInput(TextInput.State.currentlyFocusedInput());
       this.props.navigation.pop();
     }
   }
