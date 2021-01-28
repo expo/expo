@@ -151,6 +151,7 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   NSMutableArray *result = [NSMutableArray array];
   
   for (SKProduct *validProduct in response.products) {
+    if(!validProduct.localizedDescription) { continue; } // skip this product - this can happen if the its is in review "rejected" state
     NSDictionary *productData = [self getProductData:validProduct];
     [result addObject:productData];
   }
@@ -167,6 +168,7 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   }
   
   for (SKProduct *validProduct in response.products) {
+    if(!validProduct.localizedDescription) { continue; } // skip this product - this can happen if the its is in review "rejected" state
     [self purchase:validProduct];
   }
 }
@@ -422,12 +424,14 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
     case SKErrorPaymentInvalid:
     case SKErrorPaymentNotAllowed:
     case SKErrorPaymentCancelled:
+    case SKErrorOverlayCancelled:
       return 1;
     case SKErrorStoreProductNotAvailable:
       return 6;
     case SKErrorCloudServiceRevoked:
     case SKErrorCloudServicePermissionDenied:
     case SKErrorCloudServiceNetworkConnectionFailed:
+    case SKErrorOverlayTimeout:
       return 10;
     case SKErrorPrivacyAcknowledgementRequired:
       return 11;
@@ -436,8 +440,11 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
     case SKErrorInvalidSignature:
     case SKErrorInvalidOfferPrice:
     case SKErrorInvalidOfferIdentifier:
+    case SKErrorOverlayInvalidConfiguration:
+    case SKErrorIneligibleForOffer:
       return 13;
     case SKErrorMissingOfferParams:
+    case SKErrorUnsupportedPlatform:
       return 14;
     default:
       return 0;
