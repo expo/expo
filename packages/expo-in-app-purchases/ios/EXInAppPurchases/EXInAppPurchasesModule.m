@@ -151,7 +151,7 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   NSMutableArray *result = [NSMutableArray array];
   
   for (SKProduct *validProduct in response.products) {
-    if(!validProduct.localizedDescription) { continue; } // skip this product - this can happen if the its is in review "rejected" state
+    if(!validProduct.localizedDescription) { continue; } // skip product with nil values - this can happen if it is in review "rejected" state
     NSDictionary *productData = [self getProductData:validProduct];
     [result addObject:productData];
   }
@@ -168,7 +168,7 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   }
   
   for (SKProduct *validProduct in response.products) {
-    if(!validProduct.localizedDescription) { continue; } // skip this product - this can happen if the its is in review "rejected" state
+    if(!validProduct.localizedDescription) { continue; } // skip product with nil values - this can happen if it is in review "rejected" state
     [self purchase:validProduct];
   }
 }
