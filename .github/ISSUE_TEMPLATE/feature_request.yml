@@ -5,6 +5,9 @@ inputs:
   - type: description
     attributes:
       value: Thanks for helping us make Expo even better! 😀 Unfortunately, this is not the right place for feature requests. Please find and upvote your feature (or create a new one) at https://expo.canny.io instead.
-  - type: description
+  - type: dropdown
     attributes:
-      value: Feature requests opened in the core Expo repository will be closed.
+      label: Do you understand that any feature requests opened in the core Expo repository will be closed?
+      required: true
+      choices:
+        - Yes
