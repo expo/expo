@@ -5,6 +5,7 @@
 @interface EXScopedNotificationCategoriesModule ()
 
 @property (nonatomic, strong) NSString *experienceId;
+@property (nonatomic, strong) NSString *escapedExperienceId;
 @property (nonatomic, assign) BOOL isInExpoGo;
 
 @end
@@ -16,15 +17,16 @@
 {
   if (self = [super init]) {
     _experienceId = experienceId;
+    _escapedExperienceId = [NSRegularExpression escapedPatternForString: experienceId];
     _isInExpoGo = [@"expo" isEqualToString:constantsBinding.appOwnership];
     if (!_isInExpoGo) {
       // Used to prefix with "experienceId-" even in standalone apps in SDKs <= 40, so we need to unscope those
-      NSString *pattern = [NSString stringWithFormat:@"^%@-", self->_experienceId];
+      NSString *pattern = [NSString stringWithFormat:@"^%@-", experienceId];
       [self replaceAllCategoryIdPrefixesMatching:pattern withString:@""];
     } else {
-      // Changed scoping prefix in SDK 41 FROM "experienceId-" TO "experienceId/"
-      NSString *pattern = [NSString stringWithFormat:@"^%@-", self->_experienceId];
-      [self replaceAllCategoryIdPrefixesMatching:pattern withString:[NSString stringWithFormat:@"%@/", _experienceId]];
+      // Changed scoping prefix in SDK 41 FROM "experienceId-" to ESCAPED "experienceId/"
+      NSString *pattern = [NSString stringWithFormat:@"^%@-", experienceId];
+      [self replaceAllCategoryIdPrefixesMatching:pattern withString:[NSString stringWithFormat:@"%@/", _escapedExperienceId]];
     }
   }
   return self;
@@ -41,7 +43,7 @@
     for (UNNotificationCategory *previousCategory in categories) {
       if ([regex firstMatchInString:previousCategory.identifier options:0 range:NSMakeRange(0, [previousCategory.identifier length])]) {
         // Serialized categories do not contain the scoping prefix
-        NSMutableDictionary *serializedCategory = [self serializeCategory:previousCategory];
+        NSMutableDictionary *serializedCategory = [self serializeLegacyCategory:previousCategory];
         NSString *newCategoryId = [NSString stringWithFormat: @"%@%@", newPrefix, serializedCategory[@"identifier"]];
         UNNotificationCategory *newCategory = [super createCategoryWithId:newCategoryId
                                                                   actions:serializedCategory[@"actions"]
@@ -63,7 +65,7 @@
     [[UNUserNotificationCenter currentNotificationCenter] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
       NSMutableArray* existingCategories = [NSMutableArray new];
       for (UNNotificationCategory *category in categories) {
-        if ([category.identifier hasPrefix:self->_experienceId]) {
+        if ([category.identifier hasPrefix:self->_escapedExperienceId]) {
           [existingCategories addObject:[self serializeCategory:category]];
         }
       }
@@ -80,7 +82,7 @@
                                       resolve:(UMPromiseResolveBlock)resolve
                                        reject:(UMPromiseRejectBlock)reject
 {
-  NSString *scopedCategoryIdentifier = [NSString stringWithFormat:@"%@/%@", _experienceId, categoryId];
+  NSString *scopedCategoryIdentifier = [NSString stringWithFormat:@"%@/%@", _escapedExperienceId, categoryId];
   [super setNotificationCategoryWithCategoryId:scopedCategoryIdentifier actions:actions options:options resolve:resolve reject:reject];
 }
 
@@ -88,14 +90,28 @@
                                          resolve:(UMPromiseResolveBlock)resolve
                                           reject:(UMPromiseRejectBlock)reject
 {
-  NSString *scopedCategoryIdentifier = [NSString stringWithFormat:@"%@/%@", _experienceId, categoryId];
+  NSString *scopedCategoryIdentifier = [NSString stringWithFormat:@"%@/%@", _escapedExperienceId, categoryId];
   [super deleteNotificationCategoryWithCategoryId:scopedCategoryIdentifier resolve:resolve reject:reject];
 }
 
 - (NSMutableDictionary *)serializeCategory:(UNNotificationCategory *)category
 {
   NSMutableDictionary* serializedCategory = [NSMutableDictionary dictionary];
-  NSString* scopingPrefixPattern = [NSString stringWithFormat:@"^%@(/|-)", _experienceId];
+  // Double-escape experienceId for regex pattern
+  NSString* scopingPrefixPattern = [NSString stringWithFormat:@"^%@(/|-)", [NSRegularExpression escapedPatternForString: _escapedExperienceId]];
+  NSError *error = nil;
+  NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:scopingPrefixPattern options:NSRegularExpressionCaseInsensitive error:&error];
+  serializedCategory[@"identifier"] = [regex stringByReplacingMatchesInString:category.identifier options:0 range:NSMakeRange(0, [category.identifier length]) withTemplate:@""];
+  serializedCategory[@"actions"] = [super serializeActions: category.actions];
+  serializedCategory[@"options"] = [super serializeCategoryOptions: category];
+  return serializedCategory;
+}
+
+// legacy categories were stored under an unescaped experienceId
+- (NSMutableDictionary *)serializeLegacyCategory:(UNNotificationCategory *)category
+{
+  NSMutableDictionary* serializedCategory = [NSMutableDictionary dictionary];
+  NSString* scopingPrefixPattern = [NSString stringWithFormat:@"^%@(/|-)", [NSRegularExpression escapedPatternForString: _experienceId]];
   NSError *error = nil;
   NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:scopingPrefixPattern options:NSRegularExpressionCaseInsensitive error:&error];
   serializedCategory[@"identifier"] = [regex stringByReplacingMatchesInString:category.identifier options:0 range:NSMakeRange(0, [category.identifier length]) withTemplate:@""];
