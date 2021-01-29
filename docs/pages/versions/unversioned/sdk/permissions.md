@@ -62,7 +62,7 @@ On web permissions like the `Camera` and `Location` can only be requested from a
 
 ### Manually testing permissions
 
-Often you want to be able to test what happens when a user rejects a permission, to ensure that it has the desired behavior. An operating-system level restriction on both iOS and Android prohibits an app from asking for the same permission more than once (you can imagine how this could be annoying for the user to be repeatedly prompted for permissions). So in order to test different flows involving permissions in development, you may need to uninstall and reinstall the Expo client app. In the simulator this is as easy as deleting the app, and `expo-cli` will automatically install it again next time you launch the project.
+Often you want to be able to test what happens when a user rejects a permission, to ensure that it has the desired behavior. An operating-system level restriction on both iOS and Android prohibits an app from asking for the same permission more than once (you can imagine how this could be annoying for the user to be repeatedly prompted for permissions). So in order to test different flows involving permissions in development, you may need to uninstall and reinstall the Expo Go app. In the simulator this is as easy as deleting the app, and `expo-cli` will automatically install it again next time you launch the project.
 
 ### Permissions and required packages on iOS
 
@@ -333,7 +333,7 @@ The permission type for location access. It contains additional field when retur
 > **Note (iOS):** This is not working with this permission being not individually, `Permissions.askAsync(Permissions.SOME_PERMISSIONS, Permissions.LOCATION, Permissions.CAMERA, ...)` would throw.
 > On iOS ask for this permission type individually.
 
-> **Note (iOS):** In Expo client on iOS this permission will always ask the user for permission to access location data while the app is in use.
+> **Note (iOS):** In Expo Go on iOS this permission will always ask the user for permission to access location data while the app is in use.
 
 > If you would like to access location data in a standalone app, note that you'll need to provide location usage descriptions in `app.json`. For more information see [Deploying to App Stores guide](../../../distribution/app-stores.md#system-permissions-dialogs-on-ios).
 

@@ -189,8 +189,8 @@ Alias: `expo p`
 | `-s, --send-to [dest]` | Email address to send the URL to                                                                               |
 | `--dev-client`         | Experimental: Starts the bundler for use with the expo-development-client                                      |
 | `--scheme [scheme]`    | Custom URI protocol to use with a dev client                                                                   |
-| `-a, --android`        | Opens your app in Expo client on a connected Android device                                                    |
-| `-i, --ios`            | Opens your app in Expo client in a currently running iOS simulator on your computer                            |
+| `-a, --android`        | Opens your app in Expo Go on a connected Android device                                                    |
+| `-i, --ios`            | Opens your app in Expo Go in a currently running iOS simulator on your computer                            |
 | `-w, --web`            | Opens your app in a web browser                                                                                |
 | `-m, --host [mode]`    | lan (default), tunnel, localhost. Type of host to use. "tunnel" allows you to view your link on other networks |
 | `--tunnel`             | Same as --host tunnel                                                                                          |
@@ -223,8 +223,8 @@ Alias: `expo r`
 | `--no-https`           | To start webpack with http protocol                                                                            |
 | `--dev-client`         | Experimental: Starts the bundler for use with the expo-development-client                                      |
 | `--scheme [scheme]`    | Custom URI protocol to use with a dev client                                                                   |
-| `-a, --android`        | Opens your app in Expo client on a connected Android device                                                    |
-| `-i, --ios`            | Opens your app in Expo client in a currently running iOS simulator on your computer                            |
+| `-a, --android`        | Opens your app in Expo Go on a connected Android device                                                    |
+| `-i, --ios`            | Opens your app in Expo Go in a currently running iOS simulator on your computer                            |
 | `-w, --web`            | Opens your app in a web browser                                                                                |
 | `-m, --host [mode]`    | lan (default), tunnel, localhost. Type of host to use. "tunnel" allows you to view your link on other networks |
 | `--tunnel`             | Same as --host tunnel                                                                                          |
@@ -255,8 +255,8 @@ Alias: `expo web`
 | `--no-https`        | To start webpack with http protocol                                                                            |
 | `--dev-client`      | Experimental: Starts the bundler for use with the expo-development-client                                      |
 | `--scheme [scheme]` | Custom URI protocol to use with a dev client                                                                   |
-| `-a, --android`     | Opens your app in Expo client on a connected Android device                                                    |
-| `-i, --ios`         | Opens your app in Expo client in a currently running iOS simulator on your computer                            |
+| `-a, --android`     | Opens your app in Expo Go on a connected Android device                                                    |
+| `-i, --ios`         | Opens your app in Expo Go in a currently running iOS simulator on your computer                            |
 | `-w, --web`         | Opens your app in a web browser                                                                                |
 | `-m, --host [mode]` | lan (default), tunnel, localhost. Type of host to use. "tunnel" allows you to view your link on other networks |
 | `--tunnel`          | Same as --host tunnel                                                                                          |
@@ -275,13 +275,13 @@ Alias: `expo web`
 <details>
 <summary>
 <h4>expo client:install:ios</h4>
-<p>Install the Expo client for iOS on the simulator</p>
+<p>Install the Expo Go app for iOS on the simulator</p>
 </summary>
 <p>
 
 | Option     | Description                                                                      |
 | ---------- | -------------------------------------------------------------------------------- |
-| `--latest` | Install the latest version of Expo client, ignoring the current project version. |
+| `--latest` | Install the latest version of Expo Go, ignoring the current project version. |
 
 </p>
 </details>
@@ -289,13 +289,13 @@ Alias: `expo web`
 <details>
 <summary>
 <h4>expo client:install:android</h4>
-<p>Install the Expo client for Android on a connected device or emulator</p>
+<p>Install the Expo Go app for Android on a connected device or emulator</p>
 </summary>
 <p>
 
 | Option     | Description                                                                    |
 | ---------- | ------------------------------------------------------------------------------ |
-| `--latest` | Install the latest version of Expo client, ignore the current project version. |
+| `--latest` | Install the latest version of Expo Go, ignore the current project version. |
 
 </p>
 </details>
@@ -656,7 +656,7 @@ Alias: `expo bs`
 <details>
 <summary>
 <h4>expo url</h4>
-<p>Log a URL for opening the project in the Expo client</p>
+<p>Log a URL for opening the project in the Expo Go app</p>
 </summary>
 <p>
 
@@ -667,8 +667,8 @@ Alias: `expo u`
 | `-w, --web`         | Return the URL of the web app                                                                                  |
 | `--dev-client`      | Experimental: Starts the bundler for use with the expo-development-client                                      |
 | `--scheme [scheme]` | Custom URI protocol to use with a dev client                                                                   |
-| `-a, --android`     | Opens your app in Expo client on a connected Android device                                                    |
-| `-i, --ios`         | Opens your app in Expo client in a currently running iOS simulator on your computer                            |
+| `-a, --android`     | Opens your app in Expo Go on a connected Android device                                                    |
+| `-i, --ios`         | Opens your app in Expo Go in a currently running iOS simulator on your computer                            |
 | `-w, --web`         | Opens your app in a web browser                                                                                |
 | `-m, --host [mode]` | lan (default), tunnel, localhost. Type of host to use. "tunnel" allows you to view your link on other networks |
 | `--tunnel`          | Same as --host tunnel                                                                                          |
@@ -880,7 +880,7 @@ Alias: `expo ui`
 <details>
 <summary>
 <h4>expo client:ios</h4>
-<p>Experimental: build a custom version of the Expo client for iOS using your own Apple credentials</p>
+<p>Experimental: build a custom version of the Expo Go app for iOS using your own Apple credentials</p>
 </summary>
 <p>
 

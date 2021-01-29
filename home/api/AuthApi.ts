@@ -2,13 +2,13 @@ import ApiV2HttpClient from './ApiV2HttpClient';
 
 type SignInResult = {
   id: string;
-  sessionSecret: boolean;
+  sessionSecret: string;
 };
 
 export async function signInAsync(
   username: string,
   password: string,
-  otp: string | undefined
+  otp?: string
 ): Promise<SignInResult> {
   const api = new ApiV2HttpClient();
   return await api.postAsync('auth/loginAsync', {
