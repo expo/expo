@@ -21,6 +21,12 @@ export async function isEnrolledAsync() {
     }
     return await ExpoLocalAuthentication.isEnrolledAsync();
 }
+export async function getEnrolledLevelAsync() {
+    if (!ExpoLocalAuthentication.getEnrolledLevelAsync) {
+        throw new UnavailabilityError('expo-local-authentication', 'getEnrolledLevelAsync');
+    }
+    return await ExpoLocalAuthentication.getEnrolledLevelAsync();
+}
 export async function authenticateAsync(options = {}) {
     if (!ExpoLocalAuthentication.authenticateAsync) {
         throw new UnavailabilityError('expo-local-authentication', 'authenticateAsync');
