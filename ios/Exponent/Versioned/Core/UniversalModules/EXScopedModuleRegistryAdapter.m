@@ -170,11 +170,8 @@
 #endif
   
 #if __has_include(<EXNotifications/EXNotificationCategoriesModule.h>)
-  // only override in Expo Go
-  if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
-    EXScopedNotificationCategoriesModule *scopedCategoriesModule = [[EXScopedNotificationCategoriesModule alloc] initWithExperienceId:experienceId];
-    [moduleRegistry registerExportedModule:scopedCategoriesModule];
-  }
+  EXScopedNotificationCategoriesModule *scopedCategoriesModule = [[EXScopedNotificationCategoriesModule alloc] initWithExperienceId:experienceId andConstantsBinding:constantsBinding];
+  [moduleRegistry registerExportedModule:scopedCategoriesModule];
 #endif
   
 #if __has_include(<EXNotifications/EXServerRegistrationModule.h>)
