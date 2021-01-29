@@ -34,23 +34,25 @@ class SplashScreenModule(context: Context) : ExportedModule(context) {
   override fun onCreate(moduleRegistry: ModuleRegistry) {
     activityProvider = moduleRegistry.getModule(ActivityProvider::class.java)
     val activity = activityProvider.currentActivity
-    if (activity != null) {
-      try {
-        val ai = context.packageManager.getApplicationInfo(context.packageName, PackageManager.GET_META_DATA);
-
-        val isEnabled = ai.metaData.getBoolean("expo.modules.splashscreen.ENABLED", false);
-        if (isEnabled) {
-          var resizeMode = SplashScreenImageResizeMode.fromString(ai.metaData.getString("expo.modules.splashscreen.RESIZE_MODE"));
-          if (resizeMode == null) {
-            resizeMode = SplashScreenImageResizeMode.CONTAIN
-          }
-
-          val statusBarTranslucent = ai.metaData.getBoolean("expo.modules.splashscreen.STATUS_BAR_TRANSLUCENT", false);
-
-          SplashScreen.show(activity, resizeMode, ReactRootView::class.java, statusBarTranslucent);
-        }
-      } catch (error: Exception) {}
+    if (activity == null) {
+      return
     }
+    try {
+      val ai = context.packageManager.getApplicationInfo(context.packageName, PackageManager.GET_META_DATA);
+
+      val isEnabled = ai.metaData.getBoolean("expo.modules.splashscreen.ENABLED", false);
+      if (isEnabled) {
+        var resizeMode = SplashScreenImageResizeMode.fromString(ai.metaData.getString("expo.modules.splashscreen.RESIZE_MODE"));
+        if (resizeMode == null) {
+          resizeMode = SplashScreenImageResizeMode.CONTAIN
+        }
+
+        val statusBarTranslucent = ai.metaData.getBoolean("expo.modules.splashscreen.STATUS_BAR_TRANSLUCENT", false);
+
+        SplashScreen.show(activity, resizeMode, ReactRootView::class.java, statusBarTranslucent);
+      }
+    } catch (error: Exception) {}
+    
   }
 
   @ExpoMethod
