@@ -6,6 +6,7 @@ import {
   LocalAuthenticationOptions,
   AuthenticationType,
   LocalAuthenticationResult,
+  SecurityLevel,
 } from './LocalAuthentication.types';
 
 export { LocalAuthenticationOptions, AuthenticationType, LocalAuthenticationResult };
@@ -29,6 +30,13 @@ export async function isEnrolledAsync(): Promise<boolean> {
     throw new UnavailabilityError('expo-local-authentication', 'isEnrolledAsync');
   }
   return await ExpoLocalAuthentication.isEnrolledAsync();
+}
+
+export async function getEnrolledLevelAsync(): Promise<SecurityLevel> {
+  if (!ExpoLocalAuthentication.getEnrolledLevelAsync) {
+    throw new UnavailabilityError('expo-local-authentication', 'getEnrolledLevelAsync');
+  }
+  return await ExpoLocalAuthentication.getEnrolledLevelAsync();
 }
 
 export async function authenticateAsync(
