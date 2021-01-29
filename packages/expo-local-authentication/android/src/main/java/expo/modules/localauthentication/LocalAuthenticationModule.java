@@ -39,6 +39,10 @@ public class LocalAuthenticationModule extends ExportedModule {
   private static final int AUTHENTICATION_TYPE_FACIAL_RECOGNITION = 2;
   private static final int AUTHENTICATION_TYPE_IRIS = 3;
 
+  private static final int SECURITY_LEVEL_NONE = 0;
+  private static final int SECURITY_LEVEL_SECRET = 1;
+  private static final int SECURITY_LEVEL_BIOMETRIC = 2;
+
   private final BiometricPrompt.AuthenticationCallback mAuthenticationCallback =
           new BiometricPrompt.AuthenticationCallback () {
             @Override
@@ -121,6 +125,21 @@ public class LocalAuthenticationModule extends ExportedModule {
   public void isEnrolledAsync(final Promise promise) {
     int result = mBiometricManager.canAuthenticate();
     promise.resolve(result == BiometricManager.BIOMETRIC_SUCCESS);
+  }
+
+  @ExpoMethod
+  public void getEnrolledLevelAsync(final Promise promise) {
+    int level = SECURITY_LEVEL_NONE;
+
+    if (isDeviceSecure()) {
+      level = SECURITY_LEVEL_SECRET;
+    }
+
+    int result = mBiometricManager.canAuthenticate();
+    if (result == BiometricManager.BIOMETRIC_SUCCESS) {
+      level = SECURITY_LEVEL_BIOMETRIC;
+    }
+    promise.resolve(level);
   }
 
   @ExpoMethod
@@ -214,6 +233,22 @@ public class LocalAuthenticationModule extends ExportedModule {
         safeCancel();
       }
     });
+  }
+
+  private boolean isDeviceSecure() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      return getKeyguardManager().isDeviceSecure();
+    } else {
+      // NOTE: `KeyguardManager#isKeyguardSecure()` considers SIM locked state,
+      // but it will be ignored on falling-back to device credential on biometric authentication.
+      // That means, setting level to `SECURITY_LEVEL_SECRET` might be misleading for some users.
+      // But there is no equivalent APIs prior to M.
+      // Newer version (>= 1.1.0-alpha01) of `androidx.biometric` library has an introduced
+      // `BiometricManager#canAuthenticate(int)` which will be an alternative of `KeyguardManager#isDeviceSecure()`,
+      // it is not a stable release version yet though.
+      // https://developer.android.com/reference/androidx/biometric/BiometricManager#canAuthenticate(int)
+      return getKeyguardManager().isKeyguardSecure();
+    }
   }
 
   private void safeCancel() {
