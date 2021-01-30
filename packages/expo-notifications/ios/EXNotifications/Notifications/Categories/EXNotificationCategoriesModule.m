@@ -15,7 +15,7 @@ UM_EXPORT_METHOD_AS(getNotificationCategoriesAsync,
   [[UNUserNotificationCenter currentNotificationCenter] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
     NSMutableArray* existingCategories = [NSMutableArray new];
     for (UNNotificationCategory *category in categories) {
-      [existingCategories addObject:[self serializeCategory:category]];
+      [existingCategories addObject:[EXNotificationCategoriesModule serializeCategory:category]];
     }
     resolve(existingCategories);
   }];
@@ -27,7 +27,9 @@ UM_EXPORT_METHOD_AS(setNotificationCategoryAsync,
                  options:(NSDictionary *)options
                  resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject)
 {
-  UNNotificationCategory *newCategory = [self createCategoryWithId:categoryId actions:actions options:options];
+  UNNotificationCategory *newCategory = [EXNotificationCategoriesModule createCategoryWithId:categoryId
+                                                                                     actions:actions
+                                                                                     options:options];
   
   [[UNUserNotificationCenter currentNotificationCenter] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
     NSMutableSet<UNNotificationCategory *> *newCategories = [categories mutableCopy] ?: [[NSMutableSet alloc] init];
@@ -39,7 +41,7 @@ UM_EXPORT_METHOD_AS(setNotificationCategoryAsync,
     }
     [newCategories addObject:newCategory];
     [[UNUserNotificationCenter currentNotificationCenter] setNotificationCategories:newCategories];
-    resolve([self serializeCategory:newCategory]);
+    resolve([EXNotificationCategoriesModule serializeCategory:newCategory]);
   }];
 }
 
@@ -64,7 +66,7 @@ UM_EXPORT_METHOD_AS(deleteNotificationCategoryAsync,
 
 # pragma mark- Internal
 
-- (UNNotificationCategory *)createCategoryWithId:(NSString*)categoryId
++ (UNNotificationCategory *)createCategoryWithId:(NSString*)categoryId
                                          actions:(NSArray *)actions
                                          options:(NSDictionary *)options
 {
@@ -100,7 +102,7 @@ UM_EXPORT_METHOD_AS(deleteNotificationCategoryAsync,
   return newCategory;
 }
 
-- (UNNotificationAction *)parseNotificationActionFromParams:(NSDictionary *)params
++ (UNNotificationAction *)parseNotificationActionFromParams:(NSDictionary *)params
 {
   NSString *identifier = params[@"identifier"];
   NSString *buttonTitle = params[@"buttonTitle"];
@@ -127,7 +129,7 @@ UM_EXPORT_METHOD_AS(deleteNotificationCategoryAsync,
   return [UNNotificationAction actionWithIdentifier:identifier title:buttonTitle options:options];
 }
 
-- (UNNotificationCategoryOptions )parseNotificationCategoryOptionsFromParams:(NSDictionary *)params
++ (UNNotificationCategoryOptions )parseNotificationCategoryOptionsFromParams:(NSDictionary *)params
 {
   UNNotificationCategoryOptions options = UNNotificationCategoryOptionNone;
   if ([params[@"customDismissAction"] boolValue]) {
@@ -153,7 +155,7 @@ UM_EXPORT_METHOD_AS(deleteNotificationCategoryAsync,
   return options;
 }
 
-- (NSMutableDictionary *)serializeCategory:(UNNotificationCategory *)category
++ (NSMutableDictionary *)serializeCategory:(UNNotificationCategory *)category
 {
   NSMutableDictionary* serializedCategory = [NSMutableDictionary dictionary];
   serializedCategory[@"identifier"] = category.identifier;
@@ -162,7 +164,7 @@ UM_EXPORT_METHOD_AS(deleteNotificationCategoryAsync,
   return serializedCategory;
 }
 
-- (NSMutableDictionary *)serializeCategoryOptions:(UNNotificationCategory *)category
++ (NSMutableDictionary *)serializeCategoryOptions:(UNNotificationCategory *)category
 {
   NSMutableDictionary* serializedOptions = [NSMutableDictionary dictionary];
   serializedOptions[@"intentIdentifiers"] = category.intentIdentifiers;
@@ -182,7 +184,7 @@ UM_EXPORT_METHOD_AS(deleteNotificationCategoryAsync,
   return serializedOptions;
 }
 
-- (NSMutableArray *)serializeActions:(NSArray<UNNotificationAction *>*)actions
++ (NSMutableArray *)serializeActions:(NSArray<UNNotificationAction *>*)actions
 {
   NSMutableArray* serializedActions = [NSMutableArray new];
   for (NSUInteger i = 0; i < [actions count]; i++)
@@ -203,7 +205,7 @@ UM_EXPORT_METHOD_AS(deleteNotificationCategoryAsync,
   return serializedActions;
 }
 
-- (NSMutableDictionary *)serializeActionOptions:(NSUInteger)options
++ (NSMutableDictionary *)serializeActionOptions:(NSUInteger)options
 {
   NSMutableDictionary* serializedOptions = [NSMutableDictionary dictionary];
   serializedOptions[@"opensAppToForeground"] =  [NSNumber numberWithBool:((options & UNNotificationActionOptionForeground) != 0)];
