@@ -53,28 +53,38 @@
                                       resolve:(UMPromiseResolveBlock)resolve
                                        reject:(UMPromiseRejectBlock)reject
 {
-  NSString *scopedCategoryIdentifier = [NSString stringWithFormat:@"%@/%@", _escapedExperienceId, categoryId];
-  [super setNotificationCategoryWithCategoryId:scopedCategoryIdentifier actions:actions options:options resolve:resolve reject:reject];
+  [super setNotificationCategoryWithCategoryId:_isInExpoGo ? [self scopeIdentifier:categoryId] : categoryId
+                                       actions:actions
+                                       options:options
+                                       resolve:resolve
+                                        reject:reject];
 }
 
 - (void)deleteNotificationCategoryWithCategoryId:(NSString *)categoryId
                                          resolve:(UMPromiseResolveBlock)resolve
                                           reject:(UMPromiseRejectBlock)reject
 {
-  NSString *scopedCategoryIdentifier = [NSString stringWithFormat:@"%@/%@", _escapedExperienceId, categoryId];
-  [super deleteNotificationCategoryWithCategoryId:scopedCategoryIdentifier resolve:resolve reject:reject];
+  [super deleteNotificationCategoryWithCategoryId: _isInExpoGo ? [self scopeIdentifier:categoryId] : categoryId
+                                          resolve:resolve
+                                           reject:reject];
+}
+
+- (NSString *)scopeIdentifier:(NSString *)categoryId
+{
+  NSString *escapedCategoryId = [NSRegularExpression escapedPatternForString:categoryId];
+  return [NSString stringWithFormat:@"%@/%@", _escapedExperienceId, escapedCategoryId];
 }
 
 - (NSMutableDictionary *)serializeCategory:(UNNotificationCategory *)category
 {
-  NSMutableDictionary* serializedCategory = [NSMutableDictionary dictionary];
-  // Double-escape experienceId for regex pattern
-  NSString* scopingPrefixPattern = [NSString stringWithFormat:@"^%@(/|-)", [NSRegularExpression escapedPatternForString: _escapedExperienceId]];
-  NSError *error = nil;
-  NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:scopingPrefixPattern options:NSRegularExpressionCaseInsensitive error:&error];
-  serializedCategory[@"identifier"] = [regex stringByReplacingMatchesInString:category.identifier options:0 range:NSMakeRange(0, [category.identifier length]) withTemplate:@""];
-  serializedCategory[@"actions"] = [EXNotificationCategoriesModule serializeActions: category.actions];
-  serializedCategory[@"options"] = [EXNotificationCategoriesModule serializeCategoryOptions: category];
+  NSMutableDictionary* serializedCategory = [EXNotificationCategoriesModule serializeCategory:category];
+  if (_isInExpoGo) {
+    // Double-escape experienceId for regex pattern
+    NSString* scopingPrefixPattern = [NSString stringWithFormat:@"^%@(/|-)", [NSRegularExpression escapedPatternForString: _escapedExperienceId]];
+    NSError *error = nil;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:scopingPrefixPattern options:NSRegularExpressionCaseInsensitive error:&error];
+    serializedCategory[@"identifier"] = [regex stringByReplacingMatchesInString:category.identifier options:0 range:NSMakeRange(0, [category.identifier length]) withTemplate:@""];
+  }
   return serializedCategory;
 }
 

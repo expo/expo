@@ -56,7 +56,7 @@
                                 withExperienceId:(NSString *) experienceId
 {
   NSMutableDictionary* serializedCategory = [NSMutableDictionary dictionary];
-  NSString* scopingPrefixPattern = [NSString stringWithFormat:@"^%@(/|-)", [NSRegularExpression escapedPatternForString: experienceId]];
+  NSString* scopingPrefixPattern = [NSString stringWithFormat:@"^%@-", [NSRegularExpression escapedPatternForString: experienceId]];
   NSError *error = nil;
   NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:scopingPrefixPattern options:NSRegularExpressionCaseInsensitive error:&error];
   serializedCategory[@"identifier"] = [regex stringByReplacingMatchesInString:category.identifier options:0 range:NSMakeRange(0, [category.identifier length]) withTemplate:@""];
