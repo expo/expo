@@ -160,8 +160,11 @@
 #endif
   
 #if __has_include(<EXNotifications/EXNotificationSchedulerModule.h>)
-  EXScopedNotificationSchedulerModule *schedulerModule = [[EXScopedNotificationSchedulerModule alloc] initWithExperienceId:experienceId];
-  [moduleRegistry registerExportedModule:schedulerModule];
+  // only override in Expo Go
+  if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
+    EXScopedNotificationSchedulerModule *schedulerModule = [[EXScopedNotificationSchedulerModule alloc] initWithExperienceId:experienceId];
+    [moduleRegistry registerExportedModule:schedulerModule];
+  }
 #endif
     
 #if __has_include(<EXNotifications/EXNotificationPresentationModule.h>)
