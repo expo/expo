@@ -1,13 +1,14 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
 #import "EXScopedNotificationCategoryMigrator.h"
+#import "EXScopedNotificationsUtils.h"
 
 @implementation EXScopedNotificationCategoryMigrator
 
 + (void)migrateCategoriesToNewScopingPrefix:(NSString *)experienceId
 {
   NSString *prefixToReplace = [NSString stringWithFormat:@"^%@-", experienceId];
-  NSString *escapedExperienceId = [NSRegularExpression escapedPatternForString:experienceId];
+  NSString *escapedExperienceId = [EXScopedNotificationsUtils escapedString:experienceId];
   NSString *newScopingPrefix = [NSString stringWithFormat:@"%@/", escapedExperienceId];
   [EXScopedNotificationCategoryMigrator replaceAllCategoryIdPrefixesMatching:prefixToReplace
                                                                           withString:newScopingPrefix
@@ -24,7 +25,7 @@
 
 + (void)replaceAllCategoryIdPrefixesMatching:(NSString *)pattern
                                   withString:(NSString *)newPrefix
-                               forExperience:(NSString *)experienceId<
+                               forExperience:(NSString *)experienceId
 {
   [[UNUserNotificationCenter currentNotificationCenter] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
     NSMutableSet<UNNotificationCategory *> *newCategories = [categories mutableCopy];
@@ -55,13 +56,10 @@
 + (NSMutableDictionary *)serializeLegacyCategory:(UNNotificationCategory *)category
                                 withExperienceId:(NSString *) experienceId
 {
-  NSMutableDictionary* serializedCategory = [NSMutableDictionary dictionary];
-  NSString* scopingPrefixPattern = [NSString stringWithFormat:@"^%@-", [NSRegularExpression escapedPatternForString: experienceId]];
-  NSError *error = nil;
-  NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:scopingPrefixPattern options:NSRegularExpressionCaseInsensitive error:&error];
-  serializedCategory[@"identifier"] = [regex stringByReplacingMatchesInString:category.identifier options:0 range:NSMakeRange(0, [category.identifier length]) withTemplate:@""];
-  serializedCategory[@"actions"] = [EXNotificationCategoriesModule serializeActions: category.actions];
-  serializedCategory[@"options"] = [EXNotificationCategoriesModule serializeCategoryOptions: category];
+  NSMutableDictionary* serializedCategory = [EXNotificationCategoriesModule serializeCategory:category];
+  NSString* legacyScopingPrefix = [NSString stringWithFormat:@"%@-", experienceId];
+  serializedCategory[@"identifier"] = [serializedCategory[@"identifier"] stringByReplacingOccurrencesOfString:legacyScopingPrefix
+                                                                                                   withString:@""];
   return serializedCategory;
 }
 

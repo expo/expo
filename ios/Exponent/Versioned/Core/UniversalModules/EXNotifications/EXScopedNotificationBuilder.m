@@ -1,6 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import "EXScopedNotificationBuilder.h"
+#import "EXScopedNotificationsUtils.h"
 
 @interface EXScopedNotificationBuilder ()
 
@@ -33,8 +34,8 @@
   [content setUserInfo:userInfo];
   
   if (content.categoryIdentifier && _isInExpoGo) {
-    NSString *escapedExperienceId = [NSRegularExpression escapedPatternForString: _experienceId];
-    NSString *scopedCategoryIdentifier = [NSString stringWithFormat:@"%@/%@", escapedExperienceId, content.categoryIdentifier];
+    NSString *scopedCategoryIdentifier = [EXScopedNotificationsUtils scopedCategoryIdentifierWithId:content.categoryIdentifier
+                                                                                      forExperience:_experienceId];
     [content setCategoryIdentifier:scopedCategoryIdentifier];
   }
   

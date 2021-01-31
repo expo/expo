@@ -1,6 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import "EXScopedNotificationSerializer.h"
+#import "EXScopedNotificationsUtils.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -37,9 +38,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
   NSString *experienceId = userInfo[@"experienceId"] ?: [NSNull null];
   if (experienceId) {
-    NSString *escapedExperienceId = [NSRegularExpression escapedPatternForString: experienceId];
-    NSString *scopedCategoryPrefix = [NSString stringWithFormat:@"%@/", escapedExperienceId];
-    return [identifier stringByReplacingOccurrencesOfString:scopedCategoryPrefix withString:@""];
+    return [EXScopedNotificationsUtils unscopedCategoryIdentifierWithId:identifier
+                                                          forExperience:experienceId];
   }
   return identifier;
 }

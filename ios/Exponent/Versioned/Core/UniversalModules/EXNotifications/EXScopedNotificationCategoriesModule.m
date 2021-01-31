@@ -2,11 +2,11 @@
 
 #import "EXScopedNotificationCategoriesModule.h"
 #import "EXScopedNotificationCategoryMigrator.h"
+#import "EXScopedNotificationsUtils.h"
 
 @interface EXScopedNotificationCategoriesModule ()
 
 @property (nonatomic, strong) NSString *experienceId;
-@property (nonatomic, strong) NSString *escapedExperienceId;
 @property (nonatomic, assign) BOOL isInExpoGo;
 
 @end
@@ -17,7 +17,7 @@
                  andConstantsBinding:(EXConstantsBinding *)constantsBinding
 {
   if (self = [super init]) {
-    _escapedExperienceId = [NSRegularExpression escapedPatternForString: experienceId];
+    _experienceId = experienceId;
     _isInExpoGo = [@"expo" isEqualToString:constantsBinding.appOwnership];
     if (_isInExpoGo) {
       // Changed scoping prefix in SDK 41 FROM "experienceId-" to ESCAPED "experienceId/"
@@ -35,8 +35,9 @@
   if (_isInExpoGo) {
     [[UNUserNotificationCenter currentNotificationCenter] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
       NSMutableArray* existingCategories = [NSMutableArray new];
+      NSString *escapedExperienceId = [EXScopedNotificationsUtils escapedString:self->_experienceId];
       for (UNNotificationCategory *category in categories) {
-        if ([category.identifier hasPrefix:self->_escapedExperienceId]) {
+        if ([category.identifier hasPrefix:escapedExperienceId]) {
           [existingCategories addObject:[self serializeCategory:category]];
         }
       }
@@ -53,7 +54,9 @@
                                       resolve:(UMPromiseResolveBlock)resolve
                                        reject:(UMPromiseRejectBlock)reject
 {
-  [super setNotificationCategoryWithCategoryId:_isInExpoGo ? [self scopeIdentifier:categoryId] : categoryId
+  NSString *scopedCategoryIdentifier = [EXScopedNotificationsUtils scopedCategoryIdentifierWithId:categoryId
+                                                                                    forExperience:_experienceId];
+  [super setNotificationCategoryWithCategoryId:_isInExpoGo ? scopedCategoryIdentifier : categoryId
                                        actions:actions
                                        options:options
                                        resolve:resolve
@@ -64,26 +67,19 @@
                                          resolve:(UMPromiseResolveBlock)resolve
                                           reject:(UMPromiseRejectBlock)reject
 {
-  [super deleteNotificationCategoryWithCategoryId: _isInExpoGo ? [self scopeIdentifier:categoryId] : categoryId
+  NSString *scopedCategoryIdentifier = [EXScopedNotificationsUtils scopedCategoryIdentifierWithId:categoryId
+                                                                                    forExperience:_experienceId];
+  [super deleteNotificationCategoryWithCategoryId: _isInExpoGo ? scopedCategoryIdentifier : categoryId
                                           resolve:resolve
                                            reject:reject];
-}
-
-- (NSString *)scopeIdentifier:(NSString *)categoryId
-{
-  NSString *escapedCategoryId = [NSRegularExpression escapedPatternForString:categoryId];
-  return [NSString stringWithFormat:@"%@/%@", _escapedExperienceId, escapedCategoryId];
 }
 
 - (NSMutableDictionary *)serializeCategory:(UNNotificationCategory *)category
 {
   NSMutableDictionary* serializedCategory = [EXNotificationCategoriesModule serializeCategory:category];
   if (_isInExpoGo) {
-    // Double-escape experienceId for regex pattern
-    NSString* scopingPrefixPattern = [NSString stringWithFormat:@"^%@(/|-)", [NSRegularExpression escapedPatternForString: _escapedExperienceId]];
-    NSError *error = nil;
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:scopingPrefixPattern options:NSRegularExpressionCaseInsensitive error:&error];
-    serializedCategory[@"identifier"] = [regex stringByReplacingMatchesInString:category.identifier options:0 range:NSMakeRange(0, [category.identifier length]) withTemplate:@""];
+    serializedCategory[@"identifier"] = [EXScopedNotificationsUtils unscopedCategoryIdentifierWithId:serializedCategory[@"identifier"]
+                                                                                       forExperience:_experienceId];
   }
   return serializedCategory;
 }
