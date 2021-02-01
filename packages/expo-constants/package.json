@@ -42,7 +42,6 @@
   },
   "dependencies": {
     "@expo/config": "^3.3.18",
-    "@expo/config-types": "^40.0.0",
     "uuid": "^3.3.2"
   }
 }
