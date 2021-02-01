@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed copying movies from assets not working on iOS. ([#11749](https://github.com/expo/expo/pull/11749) by [@lukmccall](https://github.com/lukmccall))
+
 ## 10.0.0 — 2021-01-15
 
 ### ⚠️ Notices
