@@ -6,9 +6,13 @@
 
 ### 🎉 New features
 
-- Updated Android build configuration to target Android 11 (added support for Android SDK 30). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
-
 ### 🐛 Bug fixes
+
+## 0.3.0 — 2021-02-01
+
+### 🎉 New features
+
+- Updated Android build configuration to target Android 11 (added support for Android SDK 30). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
 
 ## 0.2.2 — 2021-01-25
 
