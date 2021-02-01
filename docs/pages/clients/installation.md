@@ -39,7 +39,7 @@ Then you can run the following command to install native code for the Dev Launch
 <InstallSection packageName="expo-development-client" cmd={["npx pod-install"]} hideBareInstructions />
 
 Also, make sure that your project is configured to deploy on iOS **above 10**.
-To do that you need open the XCode, go to `Project settings` > `General` > `Deployment info` and select iOS version above 10.
+To do that you need open the XCode, go to `Project settings` > `General` > `Deployment info` and select iOS version is at least 11.
 
 <img src="/static/images/client/check_ios_version.png" style={{maxWidth: "100%" }}/>
 
