@@ -6,7 +6,7 @@ on:
     branches: [master]
     paths:
       - .github/workflows/development-client.yml
-      - packages/dev-*/**
+      - packages/expo-dev-*/**
 
 jobs:
   android:
