@@ -665,7 +665,7 @@ export default {
       },
       useNextNotificationsApi: {
         description:
-          'A Boolean value that indicates whether the app should use the new notifications API.',
+          'A Boolean value that indicates whether the app should use the new notifications API. Only applies to SDK 40 and below- in SDK 41, you must use the new API.',
         type: 'boolean',
         fallback: false,
       },

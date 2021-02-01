@@ -35,20 +35,6 @@ The **`expo-notifications`** provides an API to fetch push notification tokens a
 
 ### Android
 
-Open your `app.json` and add the following inside of the "expo" field:
-
-```
-{
-  "expo": {
-    ...
-    "android": {
-      ...
-      "useNextNotificationsApi": true,
-    }
-  }
-}
-```
-
 On Android, this module requires permission to subscribe to device boot. It's used to setup the scheduled notifications right after the device (re)starts. The `RECEIVE_BOOT_COMPLETED` permission is added automatically.
 
 Unless you're still running your project in the Expo Go app, Firebase Cloud Messaging is required for all [managed](../../../push-notifications/sending-notifications.md) and [bare workflow](../../../push-notifications/sending-notifications-custom.md) Android apps made with Expo. To set up your Expo Android app to get push notifications using your own FCM credentials, [follow this guide closely](../../../push-notifications/using-fcm.md).
@@ -280,8 +266,6 @@ async function registerForPushNotificationsAsync() {
 ```
 
 </SnackInline>
-
-> **Note** this demo will not work with **remote** notifications (sent via the Expo Notifications service) on Android when you run it from the snack, because `app.json` needs to contain the `useNextNotificationsApi` flag. Unfortunately, Snack doesn't support custom `app.json` files.
 
 ## Custom notification icon and colors (Android only)
 
