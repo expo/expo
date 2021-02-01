@@ -23,9 +23,7 @@ class NotificationService: UNNotificationServiceExtension {
     if let bestAttemptContent = bestAttemptContent {
       // Modify notification content here...
       if (!request.content.categoryIdentifier.isEmpty && (request.content.userInfo["experienceId"]) != nil) {
-        let escapedExperienceId = NSRegularExpression.escapedPattern(for: request.content.userInfo["experienceId"] as! String)
-        let escapedCategoryIdentifier = NSRegularExpression.escapedPattern(for: request.content.categoryIdentifier)
-        bestAttemptContent.categoryIdentifier = "\(escapedExperienceId)/\(escapedCategoryIdentifier)"
+        bestAttemptContent.categoryIdentifier = EXScopedNotificationsUtils.scopedCategoryIdentifier(withId: request.content.categoryIdentifier, forExperience: request.content.userInfo["experienceId"] as! String)
       }
       contentHandler(bestAttemptContent)
     }
