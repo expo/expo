@@ -37,7 +37,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		1C799D31022938DC1BF478E44106B164 /* PBXContainerItemProxy */ = {
+		515D5A8EF9D690A88B20E95861ABE635 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 34B59E00CA2CB49441A848A048806DAF /* expo-dev-menu-interface.xcodeproj */;
 			proxyType = 1;
@@ -260,7 +260,7 @@
 			);
 			dependencies = (
 				55826DB8A30F5698F1CE6AE0ECE3E62D /* PBXTargetDependency */,
-				CFD89C50E528214F7F9ED5BE54B1830F /* PBXTargetDependency */,
+				60F000DED642763D95A185E09D5DDC4A /* PBXTargetDependency */,
 			);
 			name = "expo-dev-launcher";
 			productName = "expo-dev-launcher";
@@ -360,10 +360,10 @@
 			name = React;
 			targetProxy = 69922982928569571B300CDCDA242E1B /* PBXContainerItemProxy */;
 		};
-		CFD89C50E528214F7F9ED5BE54B1830F /* PBXTargetDependency */ = {
+		60F000DED642763D95A185E09D5DDC4A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "expo-dev-menu-interface";
-			targetProxy = 1C799D31022938DC1BF478E44106B164 /* PBXContainerItemProxy */;
+			targetProxy = 515D5A8EF9D690A88B20E95861ABE635 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

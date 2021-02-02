@@ -121,7 +121,7 @@ PODS:
     - UMCore
     - UMFileSystemInterface
     - UMPermissionsInterface
-  - EXInAppPurchases (10.1.0):
+  - EXInAppPurchases (10.0.0):
     - UMCore
   - EXKeepAwake (9.0.0):
     - UMCore
@@ -152,13 +152,13 @@ PODS:
   - EXPermissions (11.0.0):
     - UMCore
     - UMPermissionsInterface
-  - expo-dev-launcher (0.2.0):
+  - expo-dev-launcher (0.1.3):
     - expo-dev-menu-interface
     - React
-  - expo-dev-menu (0.3.0):
+  - expo-dev-menu (0.2.2):
     - expo-dev-menu-interface
     - React
-  - expo-dev-menu-interface (0.1.2):
+  - expo-dev-menu-interface (0.1.1):
     - React
   - expo-image (1.0.0-alpha.0):
     - React-Core
@@ -660,7 +660,7 @@ PODS:
     - React
   - RNReanimated (1.13.1):
     - React
-  - RNScreens (2.15.2):
+  - RNScreens (2.15.1):
     - React-Core
   - RNSharedElement (0.7.0):
     - React
@@ -1236,7 +1236,7 @@ SPEC CHECKSUMS:
   EXImageLoader: ec038ed0e3653c4c914f68e92b3153cfd3752d4e
   EXImageManipulator: f1c9cddaf6aa42dbfe9d2485d29eca374f45d454
   EXImagePicker: 50e8688af1278af72d3235753a825a49465b4a84
-  EXInAppPurchases: d6de21ee4097c092afe41a64b844fa67976cd688
+  EXInAppPurchases: 51a31eaf75728768ce0f7cf28cc09f078932f71b
   EXKeepAwake: 77180c8bdb7187c2bbd59170d2878d8b301b19e2
   EXLinearGradient: ffc008d7ddcce356534cfdf9bd7fbcdedec4c438
   EXLocalAuthentication: fee862d288cefd30480d2c0e8fa50a5721ce0dfd
@@ -1247,9 +1247,9 @@ SPEC CHECKSUMS:
   EXNetwork: 4575670ffeea0854a6c5232ab7f215c485f0a457
   EXNotifications: 39b642b1ded0f26e614fd5ce313decfb93401b6d
   EXPermissions: 015f1129f80266f6c38e3691102546232b641614
-  expo-dev-launcher: 0351bdeef423c28146573adbdeb822ed42b941b8
-  expo-dev-menu: 23458ea380b3d67685db766bde78925be00627ed
-  expo-dev-menu-interface: 3c93377ecf505dc4aba68e61685d30353c39b335
+  expo-dev-launcher: b9e66a58901da8e570beb5324aadc070eedcad67
+  expo-dev-menu: a8a1e0fa182d04702d690f39ceae3de03007e257
+  expo-dev-menu-interface: e2534e9e6d5c333ef0a0bee02e459f310ddf810b
   expo-image: 07527eb7a57f5ac939c5ded392bcf64c975b9c87
   EXPrint: 32f0f7745534b710cfd5ed67fc3bd7416b6353c6
   EXRandom: 4f71ea72eaeea674c4597e536e3014b4387af21a
@@ -1336,7 +1336,7 @@ SPEC CHECKSUMS:
   RNDateTimePicker: 3d1931e387248cb8f1d1d33740d4a1a82dfe622a
   RNGestureHandler: 7a5833d0f788dbd107fbb913e09aa0c1ff333c39
   RNReanimated: dd8c286ab5dd4ba36d3a7fef8bff7e08711b5476
-  RNScreens: 3d682bcaba69a4f8e55543d90818704f34338db1
+  RNScreens: 8aca37f78a2c5d8b50e400612618d00c03695a8c
   RNSharedElement: 00b1a1420d213a34459bb9a5aacabb38107d7948
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
   SDWebImage: e3eae2eda88578db0685a0c88597fdadd9433f05
