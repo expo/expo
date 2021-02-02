@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Updated Android build configuration to target Android 11 (added support for Android SDK 30). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
+- Use `@expo/config-types` package for `ExpoConfig` type. ([#11810](https://github.com/expo/expo/pull/11810) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
