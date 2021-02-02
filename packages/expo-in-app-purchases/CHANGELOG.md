@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Map more iOS error codes to JS/TS error codes ([#11773](https://github.com/expo/expo/pull/11773)) by @danmaas
+- Add defensive null checks so that bugs in the Android payments API do not cause crashes ([#11773](https://github.com/expo/expo/pull/11773)) by @danmaas
 - Updated Android build configuration to target Android 11 (added support for Android SDK 30). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
 
 ### 🐛 Bug fixes
