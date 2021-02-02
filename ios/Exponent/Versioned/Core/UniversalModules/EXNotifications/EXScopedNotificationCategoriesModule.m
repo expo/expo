@@ -69,7 +69,7 @@
   return serializedCategory;
 }
 
-#pragma mark - static method for migrating categories in both Expo Go and standalones. Added in SDK 41
+#pragma mark - static method for migrating categories in both Expo Go and standalones. Added in SDK 41. TODO(Cruzan): Remove in SDK 47
 
 + (void)maybeMigrateLegacyCategoryIdentifiersForProject:(NSString *)experienceId isInExpoGo:(BOOL)isInExpoGo
 {
