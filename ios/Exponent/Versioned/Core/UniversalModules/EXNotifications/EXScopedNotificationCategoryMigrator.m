@@ -7,7 +7,7 @@
 
 + (void)migrateCategoriesToNewScopingPrefix:(NSString *)experienceId
 {
-  NSString *prefixToReplace = [NSString stringWithFormat:@"^%@-", experienceId];
+  NSString *prefixToReplace = [NSString stringWithFormat:@"%@-", experienceId];
   NSString *escapedExperienceId = [EXScopedNotificationsUtils escapedString:experienceId];
   NSString *newScopingPrefix = [NSString stringWithFormat:@"%@/", escapedExperienceId];
   [EXScopedNotificationCategoryMigrator replaceAllCategoryIdPrefixesMatching:prefixToReplace
@@ -17,23 +17,21 @@
 
 + (void)migrateCategoriesToUnscopedIdentifiers:(NSString *)experienceId
 {
-  NSString *prefixToReplace = [NSString stringWithFormat:@"^%@-", experienceId];
+  NSString *prefixToReplace = [NSString stringWithFormat:@"%@-", experienceId];
   [EXScopedNotificationCategoryMigrator replaceAllCategoryIdPrefixesMatching:prefixToReplace
                                                                           withString:@""
                                                                        forExperience:experienceId];
 }
 
-+ (void)replaceAllCategoryIdPrefixesMatching:(NSString *)pattern
++ (void)replaceAllCategoryIdPrefixesMatching:(NSString *)oldPrefix
                                   withString:(NSString *)newPrefix
                                forExperience:(NSString *)experienceId
 {
   [[UNUserNotificationCenter currentNotificationCenter] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
     NSMutableSet<UNNotificationCategory *> *newCategories = [categories mutableCopy];
-    NSError *error = nil;
     BOOL didChangeCategories = NO;
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:&error];
     for (UNNotificationCategory *previousCategory in categories) {
-      if ([regex firstMatchInString:previousCategory.identifier options:0 range:NSMakeRange(0, [previousCategory.identifier length])]) {
+      if ([previousCategory.identifier containsString:oldPrefix]) {
         // Serialized categories do not contain the scoping prefix
         NSMutableDictionary *serializedCategory = [self serializeLegacyCategory:previousCategory
                                                                withExperienceId:experienceId];
