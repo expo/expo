@@ -14,7 +14,6 @@
     UNNotificationCategory *newCategory = [EXScopedNotificationCategoryMigrator createNewCategoryFrom:oldCategory withNewIdentifier:newCategoryId];
     return newCategory;
   }];
-  
 }
 
 + (void)unscopeLegacyCategoryIdentifiersForProject:(NSString *)experienceId

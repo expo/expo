@@ -20,7 +20,7 @@
 
 + (NSString *)scopedCategoryIdentifierWithId:(NSString *)categoryId forExperience:(NSString *)experienceId
 {
-  NSString *escapedExperienceId = [EXScopedNotificationsUtils escapedString: experienceId];
+  NSString *escapedExperienceId = [EXScopedNotificationsUtils escapedString:experienceId];
   NSString *escapedCategoryId = [EXScopedNotificationsUtils escapedString:categoryId];
   return [NSString stringWithFormat:@"%@/%@", escapedExperienceId, escapedCategoryId];
 }
@@ -30,15 +30,22 @@
   NSString* scopingPrefix = [NSString stringWithFormat:@"%@/", [EXScopedNotificationsUtils escapedString:experienceId]];
   NSString* unscopedEscapedCategoryId = [scopedCategoryId stringByReplacingOccurrencesOfString:scopingPrefix
                                                                                     withString:@""];
-  // We are certain that this string was already percent encoded
-  return [unscopedEscapedCategoryId stringByRemovingPercentEncoding];
+  return [EXScopedNotificationsUtils unescapedString:unscopedEscapedCategoryId];
 }
 
 + (NSString *)escapedString:(NSString*)string
 {
-  NSString *charactersToEscape = @"!*'();:@&=+$,/?%#[]";
-  NSCharacterSet *allowedCharacters = [[NSCharacterSet characterSetWithCharactersInString:charactersToEscape] invertedSet];
-  return [string stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
+  return [NSRegularExpression escapedPatternForString:string];
+}
+
++ (NSString *)unescapedString:(NSString*)string
+{
+  NSMutableString* mutableString = [string mutableCopy];
+  NSSet *escapedCharacters = [NSSet setWithArray:@[@"*",@"?",@"+",@"[",@"(",@")",@"{",@"}",@"^",@"$",@"|",@"\\",@".",@"/"]];
+  for (NSString *character in escapedCharacters) {
+    mutableString = [[mutableString stringByReplacingOccurrencesOfString: [NSString stringWithFormat:@"\\%@", character] withString:character] mutableCopy];
+  }
+  return mutableString;
 }
 
 // legacy categories were stored under an unescaped experienceId
