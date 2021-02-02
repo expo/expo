@@ -80,7 +80,7 @@ In the bare workflow, the firebase configuration needs to be added according to 
 for [iOS](https://firebase.google.com/docs/ios/setup) and [Android](https://firebase.google.com/docs/android/setup).
 Below you will find a tailored instruction for use with react-native and the Expo Bare Workflow.
 
-You are free to use any native Firebase packages such as [react-native-firebase](https://invertase.io/oss/react-native-firebase/) in the bare workflow.
+You are free to use any native Firebase packages such as [react-native-firebase](https://rnfirebase.io/) in the bare workflow.
 
 ### Android
 
@@ -145,4 +145,4 @@ After following the iOS and Android setup, you can optionally configure your pro
 
 - Install the pods on iOS
 
-Continue further on the [react-native-firebase](https://invertase.io/oss/react-native-firebase/) website.
+Continue further on the [react-native-firebase](https://rnfirebase.io/) website.

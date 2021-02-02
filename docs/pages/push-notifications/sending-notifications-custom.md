@@ -120,7 +120,7 @@ request.write(
         body: 'Hello world! \uD83C\uDF10',
       },
     },
-    experienceId: '@yourExpoUsername/yourProjectSlug', // Required when testing in the Expo client app
+    experienceId: '@yourExpoUsername/yourProjectSlug', // Required when testing in the Expo Go app
   })
 );
 request.end();

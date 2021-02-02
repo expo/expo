@@ -1,6 +1,6 @@
 {
   "name": "expo-dev-launcher",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "summary": "Pre-release version of the Expo development launcher package for testing.",
   "description": "Pre-release version of the Expo development launcher package for testing.",
   "license": "MIT",
@@ -19,7 +19,8 @@
   "requires_arc": true,
   "header_dir": "EXDevLauncher",
   "xcconfig": {
-    "GCC_PREPROCESSOR_DEFINITIONS": "EX_DEV_LAUNCHER_ENABLED=1"
+    "GCC_PREPROCESSOR_DEFINITIONS": "EX_DEV_LAUNCHER_ENABLED=1",
+    "OTHER_SWIFT_FLAGS": "-DEX_DEV_LAUNCHER_ENABLED=1"
   },
   "pod_target_xcconfig": {
     "DEFINES_MODULE": "YES"

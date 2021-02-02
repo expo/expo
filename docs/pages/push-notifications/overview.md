@@ -90,7 +90,7 @@ async function sendPushNotification(expoPushToken) {
     sound: 'default',
     title: 'Original Title',
     body: 'And here is the body!',
-    data: { data: 'goes here' },
+    data: { someData: 'goes here' },
   };
 
   await fetch('https://exp.host/--/api/v2/push/send', {

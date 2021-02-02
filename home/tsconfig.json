@@ -3,6 +3,7 @@
   "compilerOptions": {
     "resolveJsonModule": true,
     "baseUrl": ".",
+    "noEmit": true,
     "paths": {
       "@expo/vector-icons": ["react-native-vector-icons"]
     }

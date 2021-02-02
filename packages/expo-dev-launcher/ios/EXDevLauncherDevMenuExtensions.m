@@ -15,6 +15,7 @@ RCT_EXTERN void RCTRegisterModule(Class);
 {
   return @"ExpoDevelopmentClientDevMenuExtensions";
 }
+
 +(void)load
 {
   RCTRegisterModule(self);

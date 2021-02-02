@@ -97,6 +97,11 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   };
 }
 
+- (EXDevLauncherManifest *)appManifest
+{
+  return self.manifest;
+}
+
 - (void)startWithWindow:(UIWindow *)window delegate:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
 {
   _delegate = delegate;
@@ -106,8 +111,10 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   [self navigateToLauncher];
 }
 
-- (void)navigateToLauncher {
+- (void)navigateToLauncher
+{
   [_appBridge invalidate];
+  self.manifest = nil;
 
   if (@available(iOS 12, *)) {
     [self _applyUserInterfaceStyle:UIUserInterfaceStyleUnspecified];
@@ -214,6 +221,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 
 - (void)_initApp:(NSURL *)bundleUrl manifest:(EXDevLauncherManifest * _Nullable)manifest
 {
+  self.manifest = manifest;
   __block UIInterfaceOrientation orientation = manifest.orientation;
   __block UIColor *backgroundColor = manifest.backgroundColor;
   

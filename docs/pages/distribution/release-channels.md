@@ -15,7 +15,7 @@ Publish your release by running:
 
 `expo publish --release-channel <your-channel>`
 
-with the Expo CLI. Your users can see this release in the Expo client app with a parameterized URL `https://exp.host/@username/yourApp?release-channel=<your-channel>`. If you do not specify a channel, you will publish to the `default` channel.
+with the Expo CLI. Your users can see this release in the Expo Go app with a parameterized URL `https://exp.host/@username/yourApp?release-channel=<your-channel>`. If you do not specify a channel, you will publish to the `default` channel.
 
 ## Build with Channels
 
@@ -35,9 +35,9 @@ You can access the channel your release is published under with the `releaseChan
 
 ## Example Workflow
 
-Consider a situation where you have a Staging stack for testing on Expo client, and a Production stack for pushing through TestFlight, then promoting to the AppStore.
+Consider a situation where you have a Staging stack for testing on Expo Go, and a Production stack for pushing through TestFlight, then promoting to the AppStore.
 
-On the staging stack, run `expo publish --release-channel staging`. Your test users can see the staging version of your app by specifying the channel in the query parameter of the URL (ie)`https://exp.host/@username/yourApp?release-channel=staging`, then opening the URL in their web browser, and finally scanning the QR code with the Expo client. Alternatively, they can open that URL directly on their mobile device.
+On the staging stack, run `expo publish --release-channel staging`. Your test users can see the staging version of your app by specifying the channel in the query parameter of the URL (ie)`https://exp.host/@username/yourApp?release-channel=staging`, then opening the URL in their web browser, and finally scanning the QR code with the Expo Go app. Alternatively, they can open that URL directly on their mobile device.
 
 On the production stack, release v1 of your app by running `expo publish --release-channel prod-v1`. You can build this version of your app into a standalone ipa by running `expo build:ios --release-channel prod-v1`. You can push updates to your app by publishing to the `prod-v1` channel. The standalone app will update with the most recent compatible version of your app on the `prod-v1` channel.
 

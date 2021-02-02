@@ -11,7 +11,7 @@ def safeExtGet(prop, fallback) {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 29)
+  compileSdkVersion safeExtGet("compileSdkVersion", 30)
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
@@ -21,7 +21,7 @@ android {
   defaultConfig {
     applicationId 'host.exp.exponent'
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 29)
+    targetSdkVersion safeExtGet("targetSdkVersion", 30)
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
     versionCode 143

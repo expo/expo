@@ -26,7 +26,7 @@ import Constants from 'expo-constants';
 
 Returns `expo`, `standalone`, or `guest`. This property only applies to the managed workflow; in bare, the result is always `null`.
 
-- `expo`: The experience is running inside of the Expo client app.
+- `expo`: The experience is running inside of the Expo Go app.
 - `standalone`: It is a [standalone app](../../../distribution/building-standalone-apps.md#building-standalone-apps).
 - `guest`: It has been opened through a link from a standalone app.
 
@@ -40,7 +40,7 @@ The [device year class](https://github.com/facebook/device-year-class) of this d
 
 ### `Constants.expoVersion`
 
-The version string of the Expo client currently running.
+The version string of the Expo Go app currently running.
 
 ### `Constants.getWebViewUserAgentAsync()`
 
@@ -48,7 +48,7 @@ Gets the user agent string which would be included in requests sent by a web vie
 
 ### `Constants.installationId`
 
-An identifier that is unique to this particular device and installation of the Expo client.
+An identifier that is unique to this particular device and installation of the Expo Go app.
 
 ### `Constants.isDevice`
 
@@ -76,7 +76,7 @@ The `Info.plist` value for `CFBundleVersion` on iOS (set with `ios.buildNumber` 
     In a standalone app, you can set this with the `ios.buildNumber` value in `app.json`. This
     may differ from the value in `Constants.manifest.ios.buildNumber` because the manifest
     can be updated over the air, whereas this value will never change for a given native binary.
-    The value is set to `null` in case you run your app in Expo client.
+    The value is set to `null` in case you run your app in Expo Go.
 
   - `platform`
 
@@ -99,7 +99,7 @@ The `Info.plist` value for `CFBundleVersion` on iOS (set with `ios.buildNumber` 
   - `versionCode`
 
     The version code set by `android.versionCode` in app.json.
-    The value is set to `null` in case you run your app in Expo client.
+    The value is set to `null` in case you run your app in Expo Go.
 
 ### `Constants.sessionId`
 

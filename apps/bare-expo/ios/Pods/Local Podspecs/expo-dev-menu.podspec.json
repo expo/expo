@@ -1,6 +1,6 @@
 {
   "name": "expo-dev-menu",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "summary": "Expo/React Native module with the developer menu.",
   "description": "Expo/React Native module with the developer menu.",
   "license": "MIT",
@@ -28,7 +28,8 @@
     ]
   },
   "xcconfig": {
-    "GCC_PREPROCESSOR_DEFINITIONS": "EX_DEV_MENU_ENABLED=1"
+    "GCC_PREPROCESSOR_DEFINITIONS": "EX_DEV_MENU_ENABLED=1",
+    "OTHER_SWIFT_FLAGS": "-DEX_DEV_MENU_ENABLED=1"
   },
   "pod_target_xcconfig": {
     "DEFINES_MODULE": "YES"

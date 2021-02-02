@@ -22,7 +22,7 @@
   "expo-camera": "~10.0.0",
   "expo-checkbox": "~1.0.2",
   "expo-clipboard": "~1.0.1",
-  "expo-constants": "~10.0.0",
+  "expo-constants": "~10.0.1",
   "expo-contacts": "~9.0.0",
   "expo-crypto": "~9.0.0",
   "expo-document-picker": "~9.0.1",

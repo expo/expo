@@ -13,6 +13,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🐛 Bug fixes
 
+- Fix Expo CLI logging, which was not always limiting the length of strings to 10k characters. ([#11776](https://github.com/expo/expo/pull/11776) by [@fson](https://github.com/fson))
+
 ## 40.0.0 — 2020-11-17
 
 ### 📚 3rd party library updates

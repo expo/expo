@@ -26,15 +26,15 @@ import java.lang.Exception
 class ScreenshotEventEmitter(val context: Context, moduleRegistry: ModuleRegistry) : LifecycleEventListener {
   private val onScreenshotEventName: String = "onScreenshot"
   private var isListening: Boolean = true
-  private lateinit var eventEmitter: EventEmitter
+  private var eventEmitter: EventEmitter
   private var previousPath: String = ""
 
   init {
     moduleRegistry.getModule(UIManager::class.java).registerLifecycleEventListener(this)
     eventEmitter = moduleRegistry.getModule(EventEmitter::class.java)
 
-    var contentObserver: ContentObserver = object : ContentObserver(Handler()) {
-      override fun onChange(selfChange: Boolean, uri: Uri) {
+    val contentObserver: ContentObserver = object : ContentObserver(Handler()) {
+      override fun onChange(selfChange: Boolean, uri: Uri?) {
         super.onChange(selfChange, uri)
         if (isListening) {
           if (!hasReadExternalStoragePermission(context)) {
@@ -68,7 +68,10 @@ class ScreenshotEventEmitter(val context: Context, moduleRegistry: ModuleRegistr
     return ContextCompat.checkSelfPermission(context, permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
   }
 
-  private @Nullable fun getFilePathFromContentResolver(context: Context, uri: Uri): String? {
+  @Nullable private fun getFilePathFromContentResolver(context: Context, uri: Uri?): String? {
+    if (uri == null) {
+      return null
+    }
     try {
       val cursor = context.contentResolver.query(uri, arrayOf(MediaStore.Images.Media.DATA), null, null, null)
       if (cursor != null && cursor.moveToFirst()) {
@@ -77,7 +80,7 @@ class ScreenshotEventEmitter(val context: Context, moduleRegistry: ModuleRegistr
         return path
       }
     } catch (err: Exception) {
-      Log.e("expo-screen-capture", "Error retrieving filepath: " + err)
+      Log.e("expo-screen-capture", "Error retrieving filepath: $err")
     }
     return null
   }
