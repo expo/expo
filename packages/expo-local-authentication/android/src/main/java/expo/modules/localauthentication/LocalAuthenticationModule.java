@@ -210,10 +210,14 @@ public class LocalAuthenticationModule extends ExportedModule {
         mBiometricPrompt = new BiometricPrompt(fragmentActivity, executor, mAuthenticationCallback);
 
         BiometricPrompt.PromptInfo.Builder promptInfoBuilder = new BiometricPrompt.PromptInfo.Builder()
-                .setDeviceCredentialAllowed(!disableDeviceFallback)
                 .setTitle(promptMessage);
-        if (cancelLabel != null && disableDeviceFallback) {
+        if (disableDeviceFallback) {
           promptInfoBuilder.setNegativeButtonText(cancelLabel);
+        } else {
+          promptInfoBuilder.setAllowedAuthenticators(
+                  BiometricManager.Authenticators.BIOMETRIC_WEAK
+                | BiometricManager.Authenticators.DEVICE_CREDENTIAL
+          );
         }
         BiometricPrompt.PromptInfo promptInfo = promptInfoBuilder.build();
         try {
