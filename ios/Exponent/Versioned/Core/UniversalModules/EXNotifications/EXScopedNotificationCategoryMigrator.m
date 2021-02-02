@@ -8,37 +8,41 @@
 + (void)migrateCategoriesToNewScopingPrefix:(NSString *)experienceId
 {
   NSString *prefixToReplace = [NSString stringWithFormat:@"%@-", experienceId];
-  NSString *escapedExperienceId = [EXScopedNotificationsUtils escapedString:experienceId];
-  NSString *newScopingPrefix = [NSString stringWithFormat:@"%@/", escapedExperienceId];
-  [EXScopedNotificationCategoryMigrator replaceAllCategoryIdPrefixesMatching:prefixToReplace
-                                                                          withString:newScopingPrefix
-                                                                       forExperience:experienceId];
+  [EXScopedNotificationCategoryMigrator renameCategoryIdentifiersWithPrefix:prefixToReplace withBlock:^(UNNotificationCategory *category){
+    // Serialized categories do not contain the scoping prefix
+    NSMutableDictionary *serializedCategory = [self serializeLegacyCategory:category
+                                                           withExperienceId:experienceId];
+    NSString *newCategoryId = [EXScopedNotificationsUtils scopedCategoryIdentifierWithId:serializedCategory[@"identifier"] forExperience:experienceId];
+    UNNotificationCategory *newCategory = [EXNotificationCategoriesModule createCategoryWithId:newCategoryId
+                                                                                       actions:serializedCategory[@"actions"]
+                                                                                       options:serializedCategory[@"options"]];
+    return newCategory;
+  }];
+  
 }
 
 + (void)migrateCategoriesToUnscopedIdentifiers:(NSString *)experienceId
 {
   NSString *prefixToReplace = [NSString stringWithFormat:@"%@-", experienceId];
-  [EXScopedNotificationCategoryMigrator replaceAllCategoryIdPrefixesMatching:prefixToReplace
-                                                                          withString:@""
-                                                                       forExperience:experienceId];
+  [EXScopedNotificationCategoryMigrator renameCategoryIdentifiersWithPrefix:prefixToReplace withBlock:^(UNNotificationCategory *category){
+    // Serialized categories do not contain the scoping prefix
+    NSMutableDictionary *serializedCategory = [self serializeLegacyCategory:category
+                                                           withExperienceId:experienceId];
+    UNNotificationCategory *newCategory = [EXNotificationCategoriesModule createCategoryWithId:serializedCategory[@"identifier"]
+                                                                                       actions:serializedCategory[@"actions"]
+                                                                                       options:serializedCategory[@"options"]];
+    return newCategory;
+  }];
 }
 
-+ (void)replaceAllCategoryIdPrefixesMatching:(NSString *)oldPrefix
-                                  withString:(NSString *)newPrefix
-                               forExperience:(NSString *)experienceId
++ (void)renameCategoryIdentifiersWithPrefix:(NSString *)oldPrefix withBlock:(UNNotificationCategory *(^)(UNNotificationCategory *category))renameCategoryBlock
 {
   [[UNUserNotificationCenter currentNotificationCenter] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
     NSMutableSet<UNNotificationCategory *> *newCategories = [categories mutableCopy];
     BOOL didChangeCategories = NO;
     for (UNNotificationCategory *previousCategory in categories) {
       if ([previousCategory.identifier containsString:oldPrefix]) {
-        // Serialized categories do not contain the scoping prefix
-        NSMutableDictionary *serializedCategory = [self serializeLegacyCategory:previousCategory
-                                                               withExperienceId:experienceId];
-        NSString *newCategoryId = [NSString stringWithFormat: @"%@%@", newPrefix, serializedCategory[@"identifier"]];
-        UNNotificationCategory *newCategory = [EXNotificationCategoriesModule createCategoryWithId:newCategoryId
-                                                                                           actions:serializedCategory[@"actions"]
-                                                                                           options:serializedCategory[@"options"]];
+        UNNotificationCategory *newCategory = renameCategoryBlock(previousCategory);
         [newCategories removeObject:previousCategory];
         [newCategories addObject:newCategory];
         didChangeCategories = YES;
