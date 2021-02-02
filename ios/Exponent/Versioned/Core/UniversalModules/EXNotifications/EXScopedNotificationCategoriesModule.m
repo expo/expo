@@ -7,7 +7,6 @@
 @interface EXScopedNotificationCategoriesModule ()
 
 @property (nonatomic, strong) NSString *experienceId;
-@property (nonatomic, assign) BOOL isInExpoGo;
 
 @end
 
@@ -18,34 +17,22 @@
 {
   if (self = [super init]) {
     _experienceId = experienceId;
-    _isInExpoGo = [@"expo" isEqualToString:constantsBinding.appOwnership];
-    if (_isInExpoGo) {
-      // Changed scoping prefix in SDK 41 FROM "experienceId-" to ESCAPED "experienceId/"
-      [EXScopedNotificationCategoryMigrator migrateCategoriesToNewScopingPrefix:experienceId];
-    } else {
-      // Used to prefix with "experienceId-" even in standalone apps in SDKs <= 40, so we need to unscope those
-      [EXScopedNotificationCategoryMigrator migrateCategoriesToUnscopedIdentifiers:experienceId];
-    }
   }
   return self;
 }
 
 - (void)getNotificationCategoriesAsyncWithResolver:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject
 {
-  if (_isInExpoGo) {
-    [[UNUserNotificationCenter currentNotificationCenter] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
-      NSMutableArray* existingCategories = [NSMutableArray new];
-      NSString *escapedExperienceId = [EXScopedNotificationsUtils escapedString:self->_experienceId];
-      for (UNNotificationCategory *category in categories) {
-        if ([category.identifier hasPrefix:escapedExperienceId]) {
-          [existingCategories addObject:[self serializeCategory:category]];
-        }
+  [[UNUserNotificationCenter currentNotificationCenter] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
+    NSMutableArray* existingCategories = [NSMutableArray new];
+    NSString *escapedExperienceId = [EXScopedNotificationsUtils escapedString:self->_experienceId];
+    for (UNNotificationCategory *category in categories) {
+      if ([category.identifier hasPrefix:escapedExperienceId]) {
+        [existingCategories addObject:[self serializeCategory:category]];
       }
-      resolve(existingCategories);
-    }];
-  } else {
-    [super getNotificationCategoriesAsyncWithResolver:resolve reject:reject];
-  }
+    }
+    resolve(existingCategories);
+  }];
 }
 
 - (void)setNotificationCategoryWithCategoryId:(NSString *)categoryId
@@ -56,7 +43,7 @@
 {
   NSString *scopedCategoryIdentifier = [EXScopedNotificationsUtils scopedCategoryIdentifierWithId:categoryId
                                                                                     forExperience:_experienceId];
-  [super setNotificationCategoryWithCategoryId:_isInExpoGo ? scopedCategoryIdentifier : categoryId
+  [super setNotificationCategoryWithCategoryId:scopedCategoryIdentifier
                                        actions:actions
                                        options:options
                                        resolve:resolve
@@ -69,7 +56,7 @@
 {
   NSString *scopedCategoryIdentifier = [EXScopedNotificationsUtils scopedCategoryIdentifierWithId:categoryId
                                                                                     forExperience:_experienceId];
-  [super deleteNotificationCategoryWithCategoryId: _isInExpoGo ? scopedCategoryIdentifier : categoryId
+  [super deleteNotificationCategoryWithCategoryId:scopedCategoryIdentifier
                                           resolve:resolve
                                            reject:reject];
 }
@@ -77,11 +64,22 @@
 - (NSMutableDictionary *)serializeCategory:(UNNotificationCategory *)category
 {
   NSMutableDictionary* serializedCategory = [EXNotificationCategoriesModule serializeCategory:category];
-  if (_isInExpoGo) {
-    serializedCategory[@"identifier"] = [EXScopedNotificationsUtils unscopedCategoryIdentifierWithId:serializedCategory[@"identifier"]
-                                                                                       forExperience:_experienceId];
-  }
+  serializedCategory[@"identifier"] = [EXScopedNotificationsUtils unscopedCategoryIdentifierWithId:serializedCategory[@"identifier"]
+                                                                                     forExperience:_experienceId];
   return serializedCategory;
+}
+
+#pragma mark - static method for migrating categories in both Expo Go and standalones. Added in SDK 41
+
++ (void)maybeMigrateLegacyCategoryIdentifiersForProject:(NSString *)experienceId isInExpoGo:(BOOL)isInExpoGo
+{
+  if (isInExpoGo) {
+    // Changed scoping prefix in SDK 41 FROM "experienceId-" to ESCAPED "experienceId/"
+    [EXScopedNotificationCategoryMigrator migrateCategoriesToNewScopingPrefix:experienceId];
+  } else {
+    // Used to prefix with "experienceId-" even in standalone apps in SDKs <= 40, so we need to unscope those
+    [EXScopedNotificationCategoryMigrator migrateCategoriesToUnscopedIdentifiers:experienceId];
+  }
 }
 
 @end

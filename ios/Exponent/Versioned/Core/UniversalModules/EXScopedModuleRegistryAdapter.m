@@ -173,8 +173,12 @@
 #endif
   
 #if __has_include(<EXNotifications/EXNotificationCategoriesModule.h>)
-  EXScopedNotificationCategoriesModule *scopedCategoriesModule = [[EXScopedNotificationCategoriesModule alloc] initWithExperienceId:experienceId andConstantsBinding:constantsBinding];
-  [moduleRegistry registerExportedModule:scopedCategoriesModule];
+  if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
+    EXScopedNotificationCategoriesModule *scopedCategoriesModule = [[EXScopedNotificationCategoriesModule alloc] initWithExperienceId:experienceId andConstantsBinding:constantsBinding];
+    [moduleRegistry registerExportedModule:scopedCategoriesModule];
+  }
+  [EXScopedNotificationCategoriesModule maybeMigrateLegacyCategoryIdentifiersForProject:experienceId
+                                                                             isInExpoGo:[params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]];
 #endif
   
 #if __has_include(<EXNotifications/EXServerRegistrationModule.h>)

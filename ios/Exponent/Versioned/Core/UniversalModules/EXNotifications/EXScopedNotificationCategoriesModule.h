@@ -12,6 +12,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithExperienceId:(NSString *)experienceId
                  andConstantsBinding:(EXConstantsBinding *)constantsBinding;
 
++ (void)maybeMigrateLegacyCategoryIdentifiersForProject:(NSString *)experienceId
+                                             isInExpoGo:(BOOL)isInExpoGo;
+
 @end
 
 NS_ASSUME_NONNULL_END
