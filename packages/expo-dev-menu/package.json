@@ -10,7 +10,7 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
+    "prepare": "expo-module prepare && git update-index --no-skip-worktree ./assets/dev-menu-packager-host && git checkout HEAD -- ./assets/dev-menu-packager-host",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
     "start": "./scripts/start.sh",
