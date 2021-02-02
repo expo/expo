@@ -86,7 +86,7 @@ public class LocalAuthenticationModule extends ExportedModule {
 
   @ExpoMethod
   public void supportedAuthenticationTypesAsync(final Promise promise) {
-    int result = mBiometricManager.canAuthenticate();
+    int result = mBiometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK);
     List<Integer> results = new ArrayList<>();
     if (result == BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE) {
       promise.resolve(results);
@@ -117,13 +117,13 @@ public class LocalAuthenticationModule extends ExportedModule {
 
   @ExpoMethod
   public void hasHardwareAsync(final Promise promise) {
-    int result = mBiometricManager.canAuthenticate();
+    int result = mBiometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK);
     promise.resolve(result != BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE);
   }
 
   @ExpoMethod
   public void isEnrolledAsync(final Promise promise) {
-    int result = mBiometricManager.canAuthenticate();
+    int result = mBiometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK);
     promise.resolve(result == BiometricManager.BIOMETRIC_SUCCESS);
   }
 
