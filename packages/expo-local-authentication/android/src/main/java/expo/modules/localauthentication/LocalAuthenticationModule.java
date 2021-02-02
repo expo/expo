@@ -247,9 +247,9 @@ public class LocalAuthenticationModule extends ExportedModule {
       // but it will be ignored on falling-back to device credential on biometric authentication.
       // That means, setting level to `SECURITY_LEVEL_SECRET` might be misleading for some users.
       // But there is no equivalent APIs prior to M.
-      // Newer version (>= 1.1.0-alpha01) of `androidx.biometric` library has an introduced
-      // `BiometricManager#canAuthenticate(int)` which will be an alternative of `KeyguardManager#isDeviceSecure()`,
-      // it is not a stable release version yet though.
+      // `andriodx.biometric.BiometricManager#canAuthenticate(int)` looks like an alternative,
+      // but specifying `BiometricManager.Authenticators.DEVICE_CREDENTIAL` alone is not
+      // supported prior to API 30.
       // https://developer.android.com/reference/androidx/biometric/BiometricManager#canAuthenticate(int)
       return getKeyguardManager().isKeyguardSecure();
     }
