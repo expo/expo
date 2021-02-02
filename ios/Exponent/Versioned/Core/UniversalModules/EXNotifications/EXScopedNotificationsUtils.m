@@ -41,4 +41,12 @@
   return [string stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
 }
 
+// legacy categories were stored under an unescaped experienceId
++ (NSString *)unscopedLegacyCategoryIdentifierWithId:(NSString *) scopedCategoryId
+                                       forExperience:(NSString *) experienceId
+{
+  NSString* legacyScopingPrefix = [NSString stringWithFormat:@"%@-", experienceId];
+  return [scopedCategoryId stringByReplacingOccurrencesOfString:legacyScopingPrefix withString:@""];
+}
+
 @end

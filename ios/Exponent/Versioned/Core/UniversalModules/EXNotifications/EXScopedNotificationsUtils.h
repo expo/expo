@@ -16,6 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)escapedString:(NSString*)string;
 
++ (NSString *)unscopedLegacyCategoryIdentifierWithId:(NSString *) scopedCategoryId forExperience:(NSString *) experienceId;
+
 @end
 
 NS_ASSUME_NONNULL_END

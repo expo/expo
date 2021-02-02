@@ -5,32 +5,24 @@
 
 @implementation EXScopedNotificationCategoryMigrator
 
-+ (void)migrateCategoriesToNewScopingPrefix:(NSString *)experienceId
++ (void)migrateLegacyScopedCategoryIdentifiersForProject:(NSString *)experienceId
 {
   NSString *prefixToReplace = [NSString stringWithFormat:@"%@-", experienceId];
-  [EXScopedNotificationCategoryMigrator renameCategoryIdentifiersWithPrefix:prefixToReplace withBlock:^(UNNotificationCategory *category){
-    // Serialized categories do not contain the scoping prefix
-    NSMutableDictionary *serializedCategory = [self serializeLegacyCategory:category
-                                                           withExperienceId:experienceId];
-    NSString *newCategoryId = [EXScopedNotificationsUtils scopedCategoryIdentifierWithId:serializedCategory[@"identifier"] forExperience:experienceId];
-    UNNotificationCategory *newCategory = [EXNotificationCategoriesModule createCategoryWithId:newCategoryId
-                                                                                       actions:serializedCategory[@"actions"]
-                                                                                       options:serializedCategory[@"options"]];
+  [EXScopedNotificationCategoryMigrator renameCategoryIdentifiersWithPrefix:prefixToReplace withBlock:^(UNNotificationCategory *oldCategory){
+    NSString *oldCategoryId = [EXScopedNotificationsUtils unscopedLegacyCategoryIdentifierWithId:oldCategory.identifier forExperience:experienceId];
+    NSString *newCategoryId = [EXScopedNotificationsUtils scopedCategoryIdentifierWithId:oldCategoryId forExperience:experienceId];
+    UNNotificationCategory *newCategory = [EXScopedNotificationCategoryMigrator createNewCategoryFrom:oldCategory withNewIdentifier:newCategoryId];
     return newCategory;
   }];
   
 }
 
-+ (void)migrateCategoriesToUnscopedIdentifiers:(NSString *)experienceId
++ (void)unscopeLegacyCategoryIdentifiersForProject:(NSString *)experienceId
 {
   NSString *prefixToReplace = [NSString stringWithFormat:@"%@-", experienceId];
-  [EXScopedNotificationCategoryMigrator renameCategoryIdentifiersWithPrefix:prefixToReplace withBlock:^(UNNotificationCategory *category){
-    // Serialized categories do not contain the scoping prefix
-    NSMutableDictionary *serializedCategory = [self serializeLegacyCategory:category
-                                                           withExperienceId:experienceId];
-    UNNotificationCategory *newCategory = [EXNotificationCategoriesModule createCategoryWithId:serializedCategory[@"identifier"]
-                                                                                       actions:serializedCategory[@"actions"]
-                                                                                       options:serializedCategory[@"options"]];
+  [EXScopedNotificationCategoryMigrator renameCategoryIdentifiersWithPrefix:prefixToReplace withBlock:^(UNNotificationCategory *oldCategory){
+    NSString *unscopedCategoryId = [EXScopedNotificationsUtils unscopedLegacyCategoryIdentifierWithId:oldCategory.identifier forExperience:experienceId];
+    UNNotificationCategory *newCategory = [EXScopedNotificationCategoryMigrator createNewCategoryFrom:oldCategory withNewIdentifier:unscopedCategoryId];
     return newCategory;
   }];
 }
@@ -54,15 +46,27 @@
   }];
 }
 
-// legacy categories were stored under an unescaped experienceId
-+ (NSMutableDictionary *)serializeLegacyCategory:(UNNotificationCategory *)category
-                                withExperienceId:(NSString *) experienceId
++ (UNNotificationCategory *)createNewCategoryFrom:(UNNotificationCategory *)originalCategory withNewIdentifier:(NSString *)newCategoryId
 {
-  NSMutableDictionary* serializedCategory = [EXNotificationCategoriesModule serializeCategory:category];
-  NSString* legacyScopingPrefix = [NSString stringWithFormat:@"%@-", experienceId];
-  serializedCategory[@"identifier"] = [serializedCategory[@"identifier"] stringByReplacingOccurrencesOfString:legacyScopingPrefix
-                                                                                                   withString:@""];
-  return serializedCategory;
+  if (@available(iOS 12, *)) {
+    return [UNNotificationCategory categoryWithIdentifier:newCategoryId
+                                                         actions:originalCategory.actions
+                                               intentIdentifiers:originalCategory.intentIdentifiers
+                                   hiddenPreviewsBodyPlaceholder:originalCategory.hiddenPreviewsBodyPlaceholder
+                                           categorySummaryFormat:originalCategory.categorySummaryFormat
+                                                         options:originalCategory.options];
+  } else if (@available(iOS 11, *)) {
+    return [UNNotificationCategory categoryWithIdentifier:newCategoryId
+                                                         actions:originalCategory.actions
+                                               intentIdentifiers:originalCategory.intentIdentifiers
+                                   hiddenPreviewsBodyPlaceholder:originalCategory.hiddenPreviewsBodyPlaceholder
+                                                         options:originalCategory.options];
+  } else {
+    return [UNNotificationCategory categoryWithIdentifier:newCategoryId
+                                                         actions:originalCategory.actions
+                                               intentIdentifiers:originalCategory.intentIdentifiers
+                                                         options:originalCategory.options];
+  }
 }
 
 @end

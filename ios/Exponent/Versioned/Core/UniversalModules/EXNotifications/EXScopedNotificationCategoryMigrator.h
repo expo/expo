@@ -5,7 +5,7 @@
 
 @interface EXScopedNotificationCategoryMigrator : NSObject <EXNotificationsDelegate>
 
-+ (void)migrateCategoriesToUnscopedIdentifiers:(NSString *)experienceId;
-+ (void)migrateCategoriesToNewScopingPrefix:(NSString *)experienceId;
++ (void)unscopeLegacyCategoryIdentifiersForProject:(NSString *)experienceId;
++ (void)migrateLegacyScopedCategoryIdentifiersForProject:(NSString *)experienceId;
 
 @end
