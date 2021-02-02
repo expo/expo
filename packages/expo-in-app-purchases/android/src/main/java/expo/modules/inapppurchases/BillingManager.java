@@ -502,10 +502,10 @@ public class BillingManager implements PurchasesUpdatedListener {
         public void onSkuDetailsResponse(BillingResult billingResult, List<SkuDetails> skuDetailsList) {
           ArrayList<Bundle> results = new ArrayList<>();
           if (skuDetailsList != null) {
-              for (SkuDetails skuDetails : skuDetailsList) {
-                mSkuDetailsMap.put(skuDetails.getSku(), skuDetails);
-                results.add(skuToBundle(skuDetails));
-              }
+            for (SkuDetails skuDetails : skuDetailsList) {
+              mSkuDetailsMap.put(skuDetails.getSku(), skuDetails);
+              results.add(skuToBundle(skuDetails));
+            }
           }
           Bundle response = formatResponse(billingResult, results);
           promise.resolve(response);
