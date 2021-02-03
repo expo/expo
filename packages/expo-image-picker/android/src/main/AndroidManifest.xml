@@ -20,4 +20,14 @@
                 android:resource="@xml/image_picker_provider_paths"/>
         </provider>
     </application>
+
+    <queries>
+      <intent>
+        <action android:name="android.media.action.IMAGE_CAPTURE" />
+      </intent>
+
+      <intent>
+        <action android:name="android.media.action.ACTION_VIDEO_CAPTURE" />
+      </intent>
+    </queries>
 </manifest>
