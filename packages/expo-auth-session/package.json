@@ -33,7 +33,7 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/auth-session",
-  "peerDependencies": {
+  "unimodulePeerDependencies": {
     "@unimodules/core": "~5.1.2",
     "expo-application": "~2.2.1"
   },
