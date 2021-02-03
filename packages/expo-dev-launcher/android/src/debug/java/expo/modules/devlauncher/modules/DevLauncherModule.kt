@@ -9,7 +9,15 @@ class DevLauncherModule(reactContext: ReactApplicationContext?) : ReactContextBa
 
   override fun hasConstants() = true
 
-  override fun getConstants() = mapOf<String, Any?>(
-    "manifestString" to DevLauncherController.instance.manifest?.rawData
-  )
+  override fun getConstants(): Map<String, Any?> {
+    val manifestString = try {
+      DevLauncherController.instance.manifest?.rawData
+    } catch (_: IllegalStateException) {
+      null
+    }
+
+    return mapOf<String, Any?>(
+      "manifestString" to manifestString
+    )
+  }
 }
