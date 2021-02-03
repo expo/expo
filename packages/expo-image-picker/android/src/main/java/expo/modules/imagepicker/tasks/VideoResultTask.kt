@@ -25,7 +25,7 @@ class VideoResultTask(private val promise: Promise,
       val outputFile = fileProvider.generateFile()
       saveVideo(outputFile)
       val response = Bundle().apply {
-        putString("uri", outputFile.toURI().toString())
+        putString("uri", outputFile.toURL().toString())
         putBoolean("cancelled", false)
         putString("type", "video")
         putInt("width", mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)!!.toInt())

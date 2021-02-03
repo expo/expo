@@ -31,7 +31,7 @@ open class ImageResultTask(private val promise: Promise,
       val imageExporterHandler = object : Listener {
         override fun onResult(out: ByteArrayOutputStream?, width: Int, height: Int) {
           val response = Bundle().apply {
-            putString("uri", outputFile.toURI().toString())
+            putString("uri", outputFile.toURL().toString())
             putInt("width", width)
             putInt("height", height)
             putBoolean("cancelled", false)
