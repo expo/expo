@@ -11,7 +11,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix incorrect file URI on Android. ([#11823](https://github.com/expo/expo/pull/11823) by [@lukmccall](https://github.com/lukmccall))
+- Fixed incorrect file URI on Android. ([#11823](https://github.com/expo/expo/pull/11823) by [@lukmccall](https://github.com/lukmccall))
 
 ## 10.0.0 — 2021-01-15
 
