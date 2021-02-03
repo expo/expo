@@ -1,6 +1,6 @@
 {
   "name": "expo-auth-session",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Expo module for browser-based authentication",
   "main": "build/AuthSession.js",
   "types": "build/AuthSession.d.ts",
@@ -40,7 +40,7 @@
   "dependencies": {
     "expo-constants": "~9.2.0",
     "expo-crypto": "~8.3.0",
-    "expo-linking": "1.0.5",
+    "expo-linking": "1.0.7",
     "expo-random": "~9.0.0",
     "expo-web-browser": "~8.5.0",
     "invariant": "^2.2.4",

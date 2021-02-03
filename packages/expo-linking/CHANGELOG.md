@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 1.0.7 — 2021-02-03
+
+_This version does not introduce any user-facing changes._
+
 ## 1.0.5 — 2020-10-22
 
 ### 🐛 Bug fixes
