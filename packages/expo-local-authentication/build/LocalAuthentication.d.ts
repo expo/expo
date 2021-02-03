@@ -1,5 +1,5 @@
 import { LocalAuthenticationOptions, AuthenticationType, LocalAuthenticationResult, SecurityLevel } from './LocalAuthentication.types';
-export { LocalAuthenticationOptions, AuthenticationType, LocalAuthenticationResult };
+export { LocalAuthenticationOptions, AuthenticationType, LocalAuthenticationResult, SecurityLevel };
 export declare function hasHardwareAsync(): Promise<boolean>;
 export declare function supportedAuthenticationTypesAsync(): Promise<AuthenticationType[]>;
 export declare function isEnrolledAsync(): Promise<boolean>;

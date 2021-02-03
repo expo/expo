@@ -1,8 +1,8 @@
 import { UnavailabilityError } from '@unimodules/core';
 import invariant from 'invariant';
 import ExpoLocalAuthentication from './ExpoLocalAuthentication';
-import { AuthenticationType, } from './LocalAuthentication.types';
-export { AuthenticationType };
+import { AuthenticationType, SecurityLevel, } from './LocalAuthentication.types';
+export { AuthenticationType, SecurityLevel };
 export async function hasHardwareAsync() {
     if (!ExpoLocalAuthentication.hasHardwareAsync) {
         throw new UnavailabilityError('expo-local-authentication', 'hasHardwareAsync');
