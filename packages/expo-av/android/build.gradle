@@ -89,8 +89,8 @@ dependencies {
 
   api 'com.yqritc:android-scalablevideoview:1.0.1'
 
-  api "com.squareup.okhttp3:okhttp:3.10.0"
-  api "com.squareup.okhttp3:okhttp-urlconnection:3.10.0"
+  api "com.squareup.okhttp3:okhttp:3.14.9"
+  api "com.squareup.okhttp3:okhttp-urlconnection:3.14.9"
 
   api "com.android.support:support-annotations:${safeExtGet("supportLibVersion", "29.0.0")}"
 
