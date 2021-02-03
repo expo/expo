@@ -57,6 +57,10 @@ export default function ProfileUnauthenticated() {
         const sessionSecret = resultURL.query['session_secret'] as string;
         const usernameOrEmail = resultURL.query['username_or_email'] as string;
 
+        if (!sessionSecret) {
+          throw new Error('session_secret is missing in auth redirect query');
+        }
+
         const trackingOpts = {
           usernameOrEmail,
         };
