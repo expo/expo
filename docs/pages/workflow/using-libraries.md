@@ -1,5 +1,5 @@
 ---
-title: Using Libraries
+title: Using libraries
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
