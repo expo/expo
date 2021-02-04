@@ -1,5 +1,5 @@
 ---
-title: Common Development Errors
+title: Common development errors
 ---
 
 Here you will find a list of errors that are commonly encountered by developers using Expo. For each error, the first bullet provides an explanation for why the error occurs and the second bullet contains debugging suggestions. If there is an error you think belongs here, we welcome and encourage you to [create a PR!](https://github.com/expo/expo/pulls)
