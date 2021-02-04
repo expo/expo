@@ -35,17 +35,12 @@
 
 + (NSString *)escapedString:(NSString*)string
 {
-  return [NSRegularExpression escapedPatternForString:string];
+  return [string stringByReplacingOccurrencesOfString:@"/" withString:@"\\/"];
 }
 
 + (NSString *)unescapedString:(NSString*)string
 {
-  NSMutableString* mutableString = [string mutableCopy];
-  NSSet *escapedCharacters = [NSSet setWithArray:@[@"*",@"?",@"+",@"[",@"(",@")",@"{",@"}",@"^",@"$",@"|",@"\\",@".",@"/"]];
-  for (NSString *character in escapedCharacters) {
-    mutableString = [[mutableString stringByReplacingOccurrencesOfString: [NSString stringWithFormat:@"\\%@", character] withString:character] mutableCopy];
-  }
-  return mutableString;
+  return [string stringByReplacingOccurrencesOfString:@"\\/" withString:@"/"];
 }
 
 // legacy categories were stored under an unescaped experienceId
