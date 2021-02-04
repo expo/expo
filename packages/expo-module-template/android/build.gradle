@@ -2,6 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'maven-publish'
+apply plugin: 'com.github.ben-manes.versions'
 
 group = '<%- project.package %>'
 version = '<%- project.version %>'

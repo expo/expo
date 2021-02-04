@@ -15,6 +15,7 @@ buildscript {
 }
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'com.github.ben-manes.versions'
 
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 30)

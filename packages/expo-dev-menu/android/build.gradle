@@ -5,6 +5,7 @@ import java.util.regex.Pattern
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
+apply plugin: 'com.github.ben-manes.versions'
 
 group = 'host.exp.exponent'
 version = '0.9.1'
