@@ -17,8 +17,7 @@ class NotificationService: UNNotificationServiceExtension {
     if let bestAttemptContent = request.content.mutableCopy() as? UNMutableNotificationContent {
       // Modify notification content here...
       if (!request.content.categoryIdentifier.isEmpty && (request.content.userInfo["experienceId"]) != nil) {
-        // Will be added in stacked PR (but will break tests if included now):
-        // bestAttemptContent.categoryIdentifier = EXScopedNotificationsUtils.scopedCategoryIdentifier(withId: request.content.categoryIdentifier, forExperience: request.content.userInfo["experienceId"] as! String)
+        bestAttemptContent.categoryIdentifier = EXScopedNotificationsUtils.scopedCategoryIdentifier(withId: request.content.categoryIdentifier, forExperience: request.content.userInfo["experienceId"] as! String)
       }
       contentHandler(bestAttemptContent)
     }
