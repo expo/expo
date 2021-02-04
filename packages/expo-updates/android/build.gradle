@@ -2,6 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'maven-publish'
+apply plugin: 'com.github.ben-manes.versions'
 
 group = 'host.exp.exponent'
 version = '0.11.2'

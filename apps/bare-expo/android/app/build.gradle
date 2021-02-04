@@ -1,4 +1,5 @@
 apply plugin: "com.android.application"
+apply plugin: 'com.github.ben-manes.versions'
 import com.android.build.OutputFile
 
 /**

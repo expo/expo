@@ -22,6 +22,7 @@ buildscript {
     classpath 'com.google.gms:google-services:4.3.5'
     classpath "de.undercouch:gradle-download-task:$gradleDownloadTaskVersion"
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+    classpath "com.github.ben-manes:gradle-versions-plugin:0.36.0"
   }
 }
 
