@@ -1,10 +1,10 @@
 ---
-title: Using TypeScript
+title: TypeScript
 ---
 
 import TerminalBlock from '~/components/plugins/TerminalBlock';
 
-> 💡 Example: [TypeScript](https://github.com/expo/examples/tree/master/with-typescript)
+> 💡 Example project: [with-typescript](https://github.com/expo/examples/tree/master/with-typescript)
 
 Expo has first-class support for [TypeScript](https://www.typescriptlang.org/). The JavaScript interface of the Expo SDK is completely written in TypeScript.
 
@@ -20,7 +20,7 @@ Rename files to convert them to TypeScript. For example, you would rename `App.j
 
 You can now run `yarn tsc` or `npx tsc` to typecheck the project.
 
-## Base Config
+## Base configuration
 
 > 💡 You can disable the TypeScript setup in Expo CLI with the environment variable `EXPO_NO_TYPESCRIPT_SETUP=1`
 
@@ -51,7 +51,7 @@ An Expo app's `tsconfig.json` should extend the `expo/tsconfig.base` by default.
 [tsc-compileroptions]: https://www.typescriptlang.org/docs/handbook/compiler-options.html
 [tsc-moduleresolution]: https://www.typescriptlang.org/docs/handbook/module-resolution.html
 
-## Project Config
+## Project configuration
 
 Expo CLI will automatically modify your `tsconfig.json` to the preferred default which is optimized for universal React development:
 

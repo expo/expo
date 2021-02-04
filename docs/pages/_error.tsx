@@ -318,4 +318,8 @@ const RENAMED_PAGES: Record<string, string> = {
   // Renaming a submit section
   '/submit/submit-ios': '/submit/ios/',
   '/submit/submit-android': '/submit/android/',
+
+  // Fundamentals had too many things
+  '/workflow/linking/': '/guides/linking/',
+  '/workflow/how-expo-works/': '/guides/how-expo-works/',
 };
