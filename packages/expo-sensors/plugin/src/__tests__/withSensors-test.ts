@@ -12,6 +12,7 @@ describe(setAndroidManifestFeatures, () => {
     );
 
     // Tests that running twice doesn't add a more than one feature.
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     for (const i of [0, 1]) {
       androidManifestJson = await setAndroidManifestFeatures(androidManifestJson);
 

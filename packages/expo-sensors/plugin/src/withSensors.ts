@@ -4,7 +4,6 @@ import {
   createRunOncePlugin,
   withAndroidManifest,
 } from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
 
 const pkg = require('expo-sensors/package.json');
 const MOTION_USAGE = 'Allow $(PRODUCT_NAME) to access your device motion';
