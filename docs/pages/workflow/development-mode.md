@@ -1,8 +1,6 @@
 ---
 title: Development and Production Mode
-old_permalink: /versions/v12.0.0/guides/development-mode.html
-previous___FILE: ./up-and-running.md
-next___FILE: ./configuration.md
+sidebar_title: Development and Production
 ---
 
 import Video from '~/components/plugins/Video'
