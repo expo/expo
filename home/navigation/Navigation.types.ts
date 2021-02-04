@@ -1,6 +1,4 @@
 type ModalStackRoutes = {
-  SignIn: object;
-  SignUp: object;
   QRCode: object;
 };
 
