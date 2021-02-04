@@ -14,7 +14,7 @@ const GROUPS = {
     'Expo Accounts',
     'Regulatory Compliance',
   ],
-  Deprecated: ['ExpoKit'],
+  Deprecated: ['ExpoKit', 'Archived'],
   'Bare Workflow': ['Essentials'],
   'Expo SDK': ['Expo SDK'],
   'Configuration Files': ['Configuration Files'],
@@ -40,6 +40,12 @@ const sections = [
       'Over-the-air updates',
       'Internal distribution',
       'Triggering builds from CI',
+    ],
+  },
+  {
+    name: 'Archived',
+    reference: [
+      // Order doesn't matter probably, but put something here if you want to order it
     ],
   },
   {
@@ -159,8 +165,8 @@ const sections = [
       'Managed Workflow Walkthrough',
       'Up and Running',
       'Expo CLI',
-      'Using Libraries',
-      'Viewing Logs',
+      'Using libraries',
+      'Viewing logs',
       'Development and Production Mode',
       'iOS Simulator',
       'Android Studio Emulator',
@@ -172,7 +178,6 @@ const sections = [
       'Developing for Web',
       'Ejecting to Bare Workflow',
       'Glossary of terms',
-      'exp Command-Line Interface',
     ],
   },
   {
