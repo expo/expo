@@ -19,7 +19,7 @@ export default function withExpoRoot<P extends InitialProps>(
 
     const combinedProps = {
       ...props,
-      exp: { ...props.exp, errorRecovery: ErrorRecovery.recoveredProps },
+      exp: { ...(props.exp || {}), errorRecovery: ErrorRecovery.recoveredProps },
     };
 
     return <AppRootComponent {...combinedProps} />;

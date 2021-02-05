@@ -14,39 +14,37 @@ import { AppRegistry, StyleSheet } from 'react-native';
 declare let module: any;
 
 import DevAppContainer from './environment/DevAppContainer';
-
+import { installWebGeolocationPolyfill } from 'expo-location';
+import * as Font from 'expo-font';
 // Represents an app running in the store client or an app built with the legacy `expo build` command.
 // `false` when running in bare workflow, custom dev clients, or `eas build`s (managed or bare).
 // This should be used to ensure code that _should_ exist is treated as such.
-const isLegacyManagedWorkflow = Constants.executionEnvironment === ExecutionEnvironment.Standalone || Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
+const isManagedEnvironment =
+  Constants.executionEnvironment === ExecutionEnvironment.Standalone ||
+  Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
+
+// Legacy convenience warning, this will be stripped in production.
+if (__DEV__) {
+  if (Constants.manifest?.experiments?.redesignedLogBox) {
+    console.warn(
+      'LogBox is enabled by default on SDK 39 and higher. You can now remove the experiments.redesignedLogBox from your app configuration to get rid of this warning.'
+    );
+  }
+}
 
 // If expo-font is installed and the style preprocessor is available, use it to parse fonts.
 if (StyleSheet.setStyleAttributePreprocessor) {
-  try {
-    const Font = require('expo-font');
-    StyleSheet.setStyleAttributePreprocessor('fontFamily', Font.processFontFamily);
-  } catch (error) {
-    if (isLegacyManagedWorkflow) {
-      // If the packages should exist, then surface the error for debugging.
-      throw error;
-    }
-  }
+  StyleSheet.setStyleAttributePreprocessor('fontFamily', Font.processFontFamily);
 }
 
-try {
-  const { installWebGeolocationPolyfill } = require('expo-location');
-  // polyfill navigator.geolocation
-  installWebGeolocationPolyfill();
-} catch (error) {
-  if (isLegacyManagedWorkflow) {
-    throw error
-  }
-  // Package isn't installed so don't install the polyfill.
-  // TODO: Deprecate this in the future because the side effect is just a convenience.
-}
+// polyfill navigator.geolocation
+// TODO: Deprecate this in the future because the side effect is just a convenience.
+installWebGeolocationPolyfill();
 
 if (module && module.exports && global) {
   try {
+    // This is more risky so we wrap it in a try/catch in bare workflow. 
+    // No one should be using this global anymore and it'll be deprecated.
     const globals = require('./globals');
 
     // @ts-ignore
@@ -56,16 +54,14 @@ if (module && module.exports && global) {
     // @ts-ignore
     global.Expo = globals;
   } catch (error) {
-    if (isLegacyManagedWorkflow) {
-      throw error
+    if (isManagedEnvironment) {
+      throw error;
     }
-    // Package isn't installed so don't install the polyfill.
-    // TODO: Deprecate this in the future because the side effect is just a convenience.
   }
 }
 
 // TODO(NO_MERGE): In theory, shouldn't this also run in managed workflow so there is no unexpected error being thrown in a managed `eas build`?
-if (!isLegacyManagedWorkflow) {
+if (!isManagedEnvironment) {
   if (NativeModulesProxy.ExpoUpdates?.isMissingRuntimeVersion) {
     const message =
       'expo-updates is installed but there is no runtime or SDK version configured. ' +
@@ -80,31 +76,29 @@ if (!isLegacyManagedWorkflow) {
   }
 }
 
-// Disable the blue loading box because `NativeModules.DevLoadingView` is not available in bare workflow.
-if (isLegacyManagedWorkflow) {
+// Disable the blue loading box because `NativeModules.DevLoadingView` is not fully available in bare workflow.
+if (isManagedEnvironment) {
   // add the dev app container wrapper component on ios
-  if (__DEV__) {
-    if (Platform.OS === 'ios') {
-      // @ts-ignore
-      AppRegistry.setWrapperComponentProvider(() => DevAppContainer);
+  if (__DEV__ && Platform.OS === 'ios') {
+    // @ts-ignore
+    AppRegistry.setWrapperComponentProvider(() => DevAppContainer);
 
-      // @ts-ignore
-      const originalSetWrapperComponentProvider = AppRegistry.setWrapperComponentProvider;
+    // @ts-ignore
+    const originalSetWrapperComponentProvider = AppRegistry.setWrapperComponentProvider;
 
-      // @ts-ignore
-      AppRegistry.setWrapperComponentProvider = provider => {
-        function PatchedProviderComponent(props: any) {
-          const ProviderComponent = provider();
+    // @ts-ignore
+    AppRegistry.setWrapperComponentProvider = provider => {
+      function PatchedProviderComponent(props: any) {
+        const ProviderComponent = provider();
 
-          return (
-            <DevAppContainer>
-              <ProviderComponent {...props} />
-            </DevAppContainer>
-          );
-        }
+        return (
+          <DevAppContainer>
+            <ProviderComponent {...props} />
+          </DevAppContainer>
+        );
+      }
 
-        originalSetWrapperComponentProvider(() => PatchedProviderComponent);
-      };
-    }
+      originalSetWrapperComponentProvider(() => PatchedProviderComponent);
+    };
   }
 }
