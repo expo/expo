@@ -81,7 +81,7 @@ dependencies {
   unimodule 'unimodules-image-loader-interface'
 
   api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet("kotlinVersion", "1.4.21")}"
-  api 'com.theartofdev.edmodo:android-image-cropper:2.7.0'
+  api 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
   api "androidx.legacy:legacy-support-v4:1.0.0"
   api 'commons-codec:commons-codec:1.10'
   api 'commons-io:commons-io:2.6'
