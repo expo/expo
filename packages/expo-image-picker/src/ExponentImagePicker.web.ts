@@ -109,11 +109,16 @@ function openFileBrowserAsync<T extends OpenFileBrowserOptions>({
             selected: imgs,
           } as ExpandImagePickerResult<T>);
         }
-      } else {
-        resolve({ cancelled: true } as ExpandImagePickerResult<T>);
       }
       document.body.removeChild(input);
     });
+
+    document.body.onfocus = () => {
+      if (!input.value.length) {
+        resolve({ cancelled: true } as ExpandImagePickerResult<T>);
+        document.body.onfocus = null;
+      }
+    };
 
     const event = new MouseEvent('click');
     input.dispatchEvent(event);

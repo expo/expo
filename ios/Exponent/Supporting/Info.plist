@@ -32,6 +32,7 @@
 				<string>exp</string>
 				<string>exps</string>
 				<string>fb1696089354000816</string>
+				<string>expauth</string>
 			</array>
 		</dict>
 		<dict>
@@ -101,7 +102,7 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow Expo projects to access your microphone</string>
 	<key>NSMotionUsageDescription</key>
-	<string>Allow Expo projects to access your device's accelerometer</string>
+	<string>Allow Expo projects to access your device&apos;s accelerometer</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Give Expo projects permission to save photos</string>
 	<key>NSPhotoLibraryUsageDescription</key>

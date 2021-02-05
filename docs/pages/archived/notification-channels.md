@@ -2,6 +2,8 @@
 title: Notification Channels
 ---
 
+> 🚨 This page is archived. Please refer to the [Push Notifications guide](../../push-notifications/overview.md) for up-to-date information.
+
 Notification channels are a new feature in Android Oreo that give users more control over the notifications they receive. Starting in Android Oreo, every local and push notification must be assigned to a single channel. Users can see all notification channels in their OS Settings, and they can customize the behavior of alerts on a per-channel basis.
 
 Notification channels have no effect and are ignored on all iOS devices.
