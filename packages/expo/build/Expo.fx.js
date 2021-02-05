@@ -71,7 +71,7 @@ if (!isLegacyManagedWorkflow) {
         }
     }
 }
-// TODO(NO_MERGE): Wouldn't this break in a "managed `eas build` with dev client"? Is there a reason this cannot be used in bare workflow?
+// Disable the blue loading box because `NativeModules.DevLoadingView` is not available in bare workflow.
 if (isLegacyManagedWorkflow) {
     // add the dev app container wrapper component on ios
     if (__DEV__) {
