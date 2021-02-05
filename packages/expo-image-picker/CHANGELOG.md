@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `launchCameraAsync()` with `allowsEditing` option crashing for some android users. ([#11825](https://github.com/expo/expo/pull/11825) by [@lukmccall](https://github.com/lukmccall))
+
 ## 10.0.0 — 2021-01-15
 
 ### 🛠 Breaking changes
