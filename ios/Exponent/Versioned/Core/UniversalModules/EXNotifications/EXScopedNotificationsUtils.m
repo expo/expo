@@ -20,17 +20,48 @@
 
 + (NSString *)scopedCategoryIdentifierWithId:(NSString *)categoryId forExperience:(NSString *)experienceId
 {
-  NSString *escapedExperienceId = [EXScopedNotificationsUtils escapedString:experienceId];
+  NSString *scope = [EXScopedNotificationsUtils escapedString:experienceId];
   NSString *escapedCategoryId = [EXScopedNotificationsUtils escapedString:categoryId];
-  return [NSString stringWithFormat:@"%@/%@", escapedExperienceId, escapedCategoryId];
+  return [NSString stringWithFormat:@"%@//%@", scope, escapedCategoryId];
 }
 
-+ (NSString *)unscopedCategoryIdentifierWithId:(NSString *)scopedCategoryId forExperience:(NSString *)experienceId
++ (BOOL)isCategoryId:(NSString *)identifier scopedByExperience:(NSString *)experienceId
 {
-  NSString* scopingPrefix = [NSString stringWithFormat:@"%@/", [EXScopedNotificationsUtils escapedString:experienceId]];
-  NSString* unscopedEscapedCategoryId = [scopedCategoryId stringByReplacingOccurrencesOfString:scopingPrefix
-                                                                                    withString:@""];
-  return [EXScopedNotificationsUtils unescapedString:unscopedEscapedCategoryId];
+  NSString *scopeFromCategoryId = [EXScopedNotificationsUtils getScopeAndIdentifierFromScopedIdentifier:identifier].scopeKey;
+  return [scopeFromCategoryId isEqualToString:experienceId];
+}
+
++ (ScopedCategoryIdentifierComponents)getScopeAndIdentifierFromScopedIdentifier:(NSString *)scopedIdentifier
+{
+  NSArray *indecesOfDelimiter = [EXScopedNotificationsUtils indecesOfDelimiterInString:scopedIdentifier];
+  NSString *scope = @"";
+  NSString *identifier = @"";
+  if (indecesOfDelimiter == nil) {
+    // No delimiter found, so no scope associated with this identifier
+    identifier = scopedIdentifier;
+  } else {
+    scope = [scopedIdentifier substringToIndex:[indecesOfDelimiter[0] integerValue]];
+    identifier = [scopedIdentifier substringFromIndex:[indecesOfDelimiter[1] integerValue] + 1];
+  }
+  ScopedCategoryIdentifierComponents components;
+  components.scopeKey = [EXScopedNotificationsUtils unescapedString:scope];
+  components.categoryIdentifier = [EXScopedNotificationsUtils unescapedString:identifier];
+  return components;
+}
+
+// Returns an array where the first element is the index where the
+// delimiter begins, and the second is the index where it ends.
++ (NSArray *)indecesOfDelimiterInString:(NSString *)scopedCategoryId
+{
+  for (NSUInteger i = 1; i < [scopedCategoryId length] - 1; i++) {
+    if ([scopedCategoryId characterAtIndex:i] == '/' &&
+        [scopedCategoryId characterAtIndex:i-1] == '/' &&
+        [scopedCategoryId characterAtIndex:i+1] != '/'
+        ) {
+      return @[[NSNumber numberWithUnsignedInteger:i-1], [NSNumber numberWithUnsignedInteger:i]];
+    }
+  }
+  return nil;
 }
 
 + (NSString *)escapedString:(NSString*)string

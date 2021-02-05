@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
   NSDictionary *serializedResponse = [super serializedNotificationResponse:response];
   NSMutableDictionary *serializedResponseMutable = [serializedResponse mutableCopy];
   serializedResponseMutable[@"notification"] = [self serializedNotification:response.notification];
-
+  
   return [serializedResponseMutable copy];
 }
 
@@ -29,19 +29,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
   NSDictionary *serializedContent = [super serializedNotificationContent:request];
   NSMutableDictionary *serializedContentMutable = [serializedContent mutableCopy];
-  serializedContentMutable[@"categoryIdentifier"] = request.content.categoryIdentifier ? [self removeCategoryIdentifierPrefix: request.content.categoryIdentifier userInfo:request.content.userInfo] : [NSNull null];
-
+  serializedContentMutable[@"categoryIdentifier"] = request.content.categoryIdentifier ? [EXScopedNotificationsUtils getScopeAndIdentifierFromScopedIdentifier:request.content.categoryIdentifier].categoryIdentifier : [NSNull null];
+  
   return [serializedContentMutable copy];
-}
-
-+ (NSString *)removeCategoryIdentifierPrefix:(NSString *)identifier userInfo:(NSDictionary *)userInfo
-{
-  NSString *experienceId = userInfo[@"experienceId"] ?: [NSNull null];
-  if (experienceId) {
-    return [EXScopedNotificationsUtils unscopedCategoryIdentifierWithId:identifier
-                                                          forExperience:experienceId];
-  }
-  return identifier;
 }
 
 @end

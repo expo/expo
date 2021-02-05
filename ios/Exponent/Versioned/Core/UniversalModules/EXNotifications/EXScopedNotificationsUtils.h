@@ -4,6 +4,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef struct {
+    NSString *scopeKey;
+    NSString *categoryIdentifier;
+} ScopedCategoryIdentifierComponents;
+
 @interface EXScopedNotificationsUtils : NSObject
 
 + (BOOL)shouldNotificationRequest:(UNNotificationRequest *)request beHandledByExperience:(NSString *)experienceId;
@@ -12,9 +17,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)scopedCategoryIdentifierWithId:(NSString *)categoryId forExperience:(NSString *)experienceId;
 
-+ (NSString *)unscopedCategoryIdentifierWithId:(NSString *)scopedCategoryId forExperience:(NSString *)experienceId;
++ (BOOL)isCategoryId:(NSString *)identifier scopedByExperience:(NSString *)experienceId;
 
-+ (NSString *)escapedString:(NSString*)string;
++ (ScopedCategoryIdentifierComponents)getScopeAndIdentifierFromScopedIdentifier:(NSString *)scopedIdentifier;
 
 + (NSString *)unscopedLegacyCategoryIdentifierWithId:(NSString *) scopedCategoryId forExperience:(NSString *) experienceId;
 

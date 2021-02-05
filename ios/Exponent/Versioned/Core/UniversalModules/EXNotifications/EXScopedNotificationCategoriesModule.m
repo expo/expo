@@ -25,9 +25,8 @@
 {
   [[UNUserNotificationCenter currentNotificationCenter] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
     NSMutableArray* existingCategories = [NSMutableArray new];
-    NSString *escapedExperienceId = [EXScopedNotificationsUtils escapedString:self->_experienceId];
     for (UNNotificationCategory *category in categories) {
-      if ([category.identifier hasPrefix:escapedExperienceId]) {
+      if ([EXScopedNotificationsUtils isCategoryId:category.identifier scopedByExperience:self->_experienceId]) {
         [existingCategories addObject:[self serializeCategory:category]];
       }
     }
@@ -64,8 +63,8 @@
 - (NSMutableDictionary *)serializeCategory:(UNNotificationCategory *)category
 {
   NSMutableDictionary* serializedCategory = [EXNotificationCategoriesModule serializeCategory:category];
-  serializedCategory[@"identifier"] = [EXScopedNotificationsUtils unscopedCategoryIdentifierWithId:serializedCategory[@"identifier"]
-                                                                                     forExperience:_experienceId];
+  serializedCategory[@"identifier"] = [EXScopedNotificationsUtils getScopeAndIdentifierFromScopedIdentifier:serializedCategory[@"identifier"]].categoryIdentifier;
+
   return serializedCategory;
 }
 
