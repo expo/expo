@@ -78,4 +78,9 @@ dependencies {
 
   testImplementation project(':unimodules-test-core')
   testImplementation 'org.robolectric:robolectric:4.3.1'
+
+  testImplementation 'junit:junit:4.13.1'
+  testImplementation 'commons-codec:commons-codec:1.14'
+  testImplementation 'org.apache.johnzon:johnzon-core:1.2.5'
+  testImplementation 'org.apache.geronimo.specs:geronimo-json_1.1_spec:1.4'
 }
