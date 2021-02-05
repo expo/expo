@@ -9186,6 +9186,17 @@ CACHE_KEYS:
     PROJECT_NAME: EXStoreReview
     SPECS:
       - EXStoreReview (3.0.0)
+  EXStructuredHeaders:
+    BUILD_SETTINGS_CHECKSUM:
+      EXStructuredHeaders:
+        :debug: 02d84a7019f6f5684b821abe9a60ccd3
+        :release: 02d84a7019f6f5684b821abe9a60ccd3
+    CHECKSUM: 59b675aa92ef51781cc7f513d25f99c2a3f51de5
+    FILES:
+      []
+    PROJECT_NAME: EXStructuredHeaders
+    SPECS:
+      - EXStructuredHeaders (1.0.0)
   EXTaskManager:
     BUILD_SETTINGS_CHECKSUM:
       EXTaskManager:

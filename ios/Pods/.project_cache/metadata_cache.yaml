@@ -1838,6 +1838,10 @@ EXStoreReview:
   LABEL: EXStoreReview
   PROJECT_PATH: EXStoreReview.xcodeproj
   UUID: F2C74458D282DA74DB95F8A7FE6A5207
+EXStructuredHeaders:
+  LABEL: EXStructuredHeaders
+  PROJECT_PATH: EXStructuredHeaders.xcodeproj
+  UUID: 207145D213ADEF7068E8FBAC9EC3FD04
 EXTaskManager:
   LABEL: EXTaskManager
   PROJECT_PATH: EXTaskManager.xcodeproj
