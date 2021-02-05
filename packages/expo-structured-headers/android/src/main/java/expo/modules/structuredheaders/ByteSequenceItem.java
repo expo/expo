@@ -1,7 +1,8 @@
 package expo.modules.structuredheaders;
 
+import android.util.Base64;
+
 import java.nio.ByteBuffer;
-import java.util.Base64;
 import java.util.Objects;
 
 /**
@@ -15,8 +16,6 @@ public class ByteSequenceItem implements Item<ByteBuffer> {
 
     private final byte[] value;
     private final Parameters params;
-
-    private static Base64.Encoder ENCODER = Base64.getEncoder();
 
     private ByteSequenceItem(byte[] value, Parameters params) {
         this.value = Objects.requireNonNull(value, "value must not be null");
@@ -52,7 +51,7 @@ public class ByteSequenceItem implements Item<ByteBuffer> {
     @Override
     public StringBuilder serializeTo(StringBuilder sb) {
         sb.append(':');
-        sb.append(ENCODER.encodeToString(this.value));
+        sb.append(Base64.encodeToString(this.value, Base64.DEFAULT));
         sb.append(':');
         params.serializeTo(sb);
         return sb;

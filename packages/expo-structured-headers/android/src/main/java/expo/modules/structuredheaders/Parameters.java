@@ -1,5 +1,7 @@
 package expo.modules.structuredheaders;
 
+import android.os.Build;
+
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Collections;
@@ -10,6 +12,8 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+
+import androidx.annotation.RequiresApi;
 
 /**
  * Represents the Parameters of an Item or an Inner List.
@@ -96,18 +100,21 @@ public class Parameters implements Map<String, Item<? extends Object>> {
         delegate.clear();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public Item<? extends Object> compute(String key,
-            BiFunction<? super String, ? super Item<? extends Object>, ? extends Item<? extends Object>> remappingFunction) {
+                                          BiFunction<? super String, ? super Item<? extends Object>, ? extends Item<? extends Object>> remappingFunction) {
         return delegate.compute(key, remappingFunction);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public Item<? extends Object> computeIfAbsent(String key,
-            Function<? super String, ? extends Item<? extends Object>> mappingFunction) {
+                                                  Function<? super String, ? extends Item<? extends Object>> mappingFunction) {
         return delegate.computeIfAbsent(key, mappingFunction);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public Item<? extends Object> computeIfPresent(String key,
-            BiFunction<? super String, ? super Item<? extends Object>, ? extends Item<? extends Object>> remappingFunction) {
+                                                   BiFunction<? super String, ? super Item<? extends Object>, ? extends Item<? extends Object>> remappingFunction) {
         return delegate.computeIfPresent(key, remappingFunction);
     }
 
@@ -127,6 +134,7 @@ public class Parameters implements Map<String, Item<? extends Object>> {
         return delegate.equals(o);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public void forEach(BiConsumer<? super String, ? super Item<? extends Object>> action) {
         delegate.forEach(action);
     }
@@ -135,6 +143,7 @@ public class Parameters implements Map<String, Item<? extends Object>> {
         return delegate.get(key);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public Item<? extends Object> getOrDefault(Object key, Item<? extends Object> defaultValue) {
         return delegate.getOrDefault(key, defaultValue);
     }
@@ -151,8 +160,9 @@ public class Parameters implements Map<String, Item<? extends Object>> {
         return delegate.keySet();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public Item<? extends Object> merge(String key, Item<? extends Object> value,
-            BiFunction<? super Item<? extends Object>, ? super Item<? extends Object>, ? extends Item<? extends Object>> remappingFunction) {
+                                        BiFunction<? super Item<? extends Object>, ? super Item<? extends Object>, ? extends Item<? extends Object>> remappingFunction) {
         return delegate.merge(key, value, remappingFunction);
     }
 
@@ -164,6 +174,7 @@ public class Parameters implements Map<String, Item<? extends Object>> {
         delegate.putAll(m);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public Item<? extends Object> putIfAbsent(String key, Item<? extends Object> value) {
         return delegate.putIfAbsent(key, value);
     }
@@ -176,14 +187,17 @@ public class Parameters implements Map<String, Item<? extends Object>> {
         return delegate.remove(key);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public boolean replace(String key, Item<? extends Object> oldValue, Item<? extends Object> newValue) {
         return delegate.replace(key, oldValue, newValue);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public Item<? extends Object> replace(String key, Item<? extends Object> value) {
         return delegate.replace(key, value);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public void replaceAll(BiFunction<? super String, ? super Item<? extends Object>, ? extends Item<? extends Object>> function) {
         delegate.replaceAll(function);
     }

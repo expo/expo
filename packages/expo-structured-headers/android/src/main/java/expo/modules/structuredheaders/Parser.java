@@ -1,9 +1,10 @@
 package expo.modules.structuredheaders;
 
+import android.util.Base64;
+
 import java.nio.CharBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -233,8 +234,6 @@ public class Parser {
         return result.withParams(params);
     }
 
-    private static Base64.Decoder BASE64DECODER = Base64.getDecoder();
-
     private static boolean isBase64Char(char c) {
         return Utils.isAlpha(c) || Utils.isDigit(c) || c == '+' || c == '/' || c == '=';
     }
@@ -264,7 +263,7 @@ public class Parser {
         }
 
         try {
-            return ByteSequenceItem.valueOf(BASE64DECODER.decode(outputString.toString()));
+            return ByteSequenceItem.valueOf(Base64.decode(outputString.toString(), Base64.DEFAULT));
         } catch (IllegalArgumentException ex) {
             throw complaint(ex.getMessage(), ex);
         }

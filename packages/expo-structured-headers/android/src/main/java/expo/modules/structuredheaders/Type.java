@@ -1,6 +1,6 @@
 package expo.modules.structuredheaders;
 
-import java.util.function.Supplier;
+import androidx.core.util.Supplier;
 
 /**
  * Base interface for Structured Data Types.

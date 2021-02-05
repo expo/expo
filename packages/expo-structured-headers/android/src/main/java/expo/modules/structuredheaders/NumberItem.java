@@ -1,7 +1,5 @@
 package expo.modules.structuredheaders;
 
-import java.util.function.LongSupplier;
-
 /**
  * Common interface for all {@link Type}s that can carry numbers.
  * 
