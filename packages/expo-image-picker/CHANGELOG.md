@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed cancelled picker dialog not resolving with expected result on web. ([#11847](https://github.com/expo/expo/pull/11847) by [@jayprado](https://github.com/jayprado))
+
 ## 10.0.0 — 2021-01-15
 
 ### 🛠 Breaking changes

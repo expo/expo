@@ -83,11 +83,14 @@ function openFileBrowserAsync({ mediaTypes, capture = false, allowsMultipleSelec
                     });
                 }
             }
-            else {
-                resolve({ cancelled: true });
-            }
             document.body.removeChild(input);
         });
+        document.body.onfocus = () => {
+            if (!input.value.length) {
+                resolve({ cancelled: true });
+                document.body.onfocus = null;
+            }
+        };
         const event = new MouseEvent('click');
         input.dispatchEvent(event);
     });
