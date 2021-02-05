@@ -1,5 +1,6 @@
 ---
 title: Using Preact with Expo for Web
+sidebar_title: Using Preact
 ---
 
 > Warning: Preact is not a first-class feature of React Native for web, if you run into any problems please open an issue at [expo-cli/issues](https://github.com/expo/expo-cli/issues).
