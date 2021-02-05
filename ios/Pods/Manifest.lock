@@ -1835,6 +1835,8 @@ PODS:
     - UMFileSystemInterface
   - EXStoreReview (3.0.0):
     - UMCore
+  - EXStructuredHeaders (1.0.0):
+    - UMCore
   - EXTaskManager (9.0.0):
     - UMAppLoader
     - UMConstantsInterface
@@ -2653,6 +2655,7 @@ DEPENDENCIES:
   - EXSplashScreen (from `../packages/expo-splash-screen/ios`)
   - EXSQLite (from `../packages/expo-sqlite/ios`)
   - EXStoreReview (from `../packages/expo-store-review/ios`)
+  - EXStructuredHeaders (from `../packages/expo-structured-headers/ios`)
   - EXTaskManager (from `../packages/expo-task-manager/ios`)
   - EXUpdates (from `../packages/expo-updates/ios`)
   - EXVideoThumbnails (from `../packages/expo-video-thumbnails/ios`)
@@ -3458,6 +3461,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-sqlite/ios"
   EXStoreReview:
     :path: "../packages/expo-store-review/ios"
+  EXStructuredHeaders:
+    :path: "../packages/expo-structured-headers/ios"
   EXTaskManager:
     :path: "../packages/expo-task-manager/ios"
   EXUpdates:
@@ -3910,6 +3915,7 @@ SPEC CHECKSUMS:
   EXSplashScreen: 29c266c9f15e70805a540894f74bd9fa9cd48358
   EXSQLite: 379304a143cb33855a61ef66844c75af9ef67a58
   EXStoreReview: b552c0d512e1b5c2c7371041a033a2827dc01d46
+  EXStructuredHeaders: 59b675aa92ef51781cc7f513d25f99c2a3f51de5
   EXTaskManager: e1956fd45bc301cbe852ebffccb9fd0b4ab78494
   EXUpdates: b6fd75d347a9ca61b198a80a77164e33f71b0ee7
   EXVideoThumbnails: 0be939563a5d46ce0d1fa9baea7d454b99475763
