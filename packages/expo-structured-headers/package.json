@@ -1,7 +1,7 @@
 {
   "name": "expo-structured-headers",
   "version": "1.0.0",
-  "description": "ExpoStructuredHeaders standalone module",
+  "description": "Expo module implementation of a parser based on https://httpwg.org/http-extensions/draft-ietf-httpbis-header-structure.html",
   "main": "index.js",
   "keywords": [
     "react-native",
@@ -18,5 +18,5 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/module-template"
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-structured-headers"
 }
