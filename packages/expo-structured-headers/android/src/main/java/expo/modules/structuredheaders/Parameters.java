@@ -22,7 +22,7 @@ public class Parameters implements Map<String, Item<? extends Object>> {
 
     private final Map<String, Item<? extends Object>> delegate;
 
-    public static final Parameters EMPTY = new Parameters(Collections.emptyMap());
+    public static final Parameters EMPTY = new Parameters(Collections.<String, Object>emptyMap());
 
     private Parameters(Map<String, Object> value) {
         this.delegate = Collections.unmodifiableMap(checkAndTransformMap(value));
