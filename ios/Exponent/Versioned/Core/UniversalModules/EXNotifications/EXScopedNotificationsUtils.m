@@ -79,7 +79,10 @@
                                        forExperience:(NSString *) experienceId
 {
   NSString* legacyScopingPrefix = [NSString stringWithFormat:@"%@-", experienceId];
-  return [scopedCategoryId stringByReplacingOccurrencesOfString:legacyScopingPrefix withString:@""];
+  return [scopedCategoryId stringByReplacingOccurrencesOfString:legacyScopingPrefix
+                                                     withString:@""
+                                                        options:NSAnchoredSearch
+                                                          range:NSMakeRange(0, [scopedCategoryId length])];
 }
 
 @end
