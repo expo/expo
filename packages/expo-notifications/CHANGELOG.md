@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Notification categories will no longer be lost after ejecting to the bare workflow (if ejecting after SDK 41). ([#11651](https://github.com/expo/expo/pull/11651) by [@cruzach](https://github.com/cruzach))
+
 ## 0.9.0 — 2021-01-15
 
 ### ⚠️ Notices
