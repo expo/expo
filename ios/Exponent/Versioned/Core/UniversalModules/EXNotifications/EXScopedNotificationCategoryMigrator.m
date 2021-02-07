@@ -7,8 +7,7 @@
 
 + (void)migrateLegacyScopedCategoryIdentifiersForProject:(NSString *)experienceId
 {
-  NSString *prefixToReplace = [NSString stringWithFormat:@"%@-", experienceId];
-  [EXScopedNotificationCategoryMigrator renameLegacyCategoryIdentifiersWithPrefix:prefixToReplace withBlock:^(UNNotificationCategory *oldCategory) {
+  [EXScopedNotificationCategoryMigrator renameLegacyCategoryIdentifiersForExperience:experienceId withBlock:^(UNNotificationCategory *oldCategory) {
     NSString *unscopedLegacyCategoryId = [EXScopedNotificationsUtils unscopedLegacyCategoryIdentifierWithId:oldCategory.identifier forExperience:experienceId];
     NSString *newCategoryId = [EXScopedNotificationsUtils scopedCategoryIdentifierWithId:unscopedLegacyCategoryId forExperience:experienceId];
     UNNotificationCategory *newCategory = [EXScopedNotificationCategoryMigrator createNewCategoryFrom:oldCategory withNewIdentifier:newCategoryId];
@@ -18,21 +17,20 @@
 
 + (void)unscopeLegacyCategoryIdentifiersForProject:(NSString *)experienceId
 {
-  NSString *prefixToReplace = [NSString stringWithFormat:@"%@-", experienceId];
-  [EXScopedNotificationCategoryMigrator renameLegacyCategoryIdentifiersWithPrefix:prefixToReplace withBlock:^(UNNotificationCategory *oldCategory) {
+  [EXScopedNotificationCategoryMigrator renameLegacyCategoryIdentifiersForExperience:experienceId withBlock:^(UNNotificationCategory *oldCategory) {
     NSString *unscopedCategoryId = [EXScopedNotificationsUtils unscopedLegacyCategoryIdentifierWithId:oldCategory.identifier forExperience:experienceId];
     UNNotificationCategory *newCategory = [EXScopedNotificationCategoryMigrator createNewCategoryFrom:oldCategory withNewIdentifier:unscopedCategoryId];
     return newCategory;
   }];
 }
 
-+ (void)renameLegacyCategoryIdentifiersWithPrefix:(NSString *)oldPrefix withBlock:(UNNotificationCategory *(^)(UNNotificationCategory *category))renameCategoryBlock
++ (void)renameLegacyCategoryIdentifiersForExperience:(NSString *)experienceId withBlock:(UNNotificationCategory *(^)(UNNotificationCategory *category))renameCategoryBlock
 {
   [[UNUserNotificationCenter currentNotificationCenter] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
     NSMutableSet<UNNotificationCategory *> *newCategories = [categories mutableCopy];
     BOOL didChangeCategories = NO;
     for (UNNotificationCategory *previousCategory in categories) {
-      if ([previousCategory.identifier containsString:oldPrefix]) {
+      if ([EXScopedNotificationsUtils isLegacyCategoryId:previousCategory.identifier scopedByExperience:experienceId]) {
         UNNotificationCategory *newCategory = renameCategoryBlock(previousCategory);
         [newCategories removeObject:previousCategory];
         [newCategories addObject:newCategory];

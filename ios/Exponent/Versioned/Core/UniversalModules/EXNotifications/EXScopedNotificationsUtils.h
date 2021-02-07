@@ -21,6 +21,8 @@ typedef struct {
 
 + (ScopedCategoryIdentifierComponents)getScopeAndIdentifierFromScopedIdentifier:(NSString *)scopedIdentifier;
 
++ (BOOL)isLegacyCategoryId:(NSString *) scopedCategoryId scopedByExperience:(NSString *) experienceId;
+
 + (NSString *)unscopedLegacyCategoryIdentifierWithId:(NSString *) scopedCategoryId forExperience:(NSString *) experienceId;
 
 @end

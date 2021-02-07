@@ -66,6 +66,14 @@
           stringByReplacingOccurrencesOfString:@"\\\\" withString:@"\\"];
 }
 
+# pragma mark Legacy notification category scoping
+
++ (BOOL)isLegacyCategoryId:(NSString *) scopedCategoryId scopedByExperience:(NSString *) experienceId
+{
+  NSString* legacyScopingPrefix = [NSString stringWithFormat:@"%@-", experienceId];
+  return [scopedCategoryId hasPrefix:legacyScopingPrefix];
+}
+
 // legacy categories were stored under an unescaped experienceId
 + (NSString *)unscopedLegacyCategoryIdentifierWithId:(NSString *) scopedCategoryId
                                        forExperience:(NSString *) experienceId
