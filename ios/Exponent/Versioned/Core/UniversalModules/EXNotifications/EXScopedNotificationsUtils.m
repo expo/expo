@@ -22,7 +22,7 @@
 {
   NSString *scope = [EXScopedNotificationsUtils escapedString:experienceId];
   NSString *escapedCategoryId = [EXScopedNotificationsUtils escapedString:categoryId];
-  return [NSString stringWithFormat:@"%@//%@", scope, escapedCategoryId];
+  return [NSString stringWithFormat:@"%@/%@", scope, escapedCategoryId];
 }
 
 + (BOOL)isCategoryId:(NSString *)identifier scopedByExperience:(NSString *)experienceId
@@ -33,15 +33,20 @@
 
 + (ScopedCategoryIdentifierComponents)getScopeAndIdentifierFromScopedIdentifier:(NSString *)scopedIdentifier
 {
-  NSArray *indecesOfDelimiter = [EXScopedNotificationsUtils indecesOfDelimiterInString:scopedIdentifier];
   NSString *scope = @"";
   NSString *identifier = @"";
-  if (indecesOfDelimiter == nil) {
+  NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^(.*(?<!\\\\)|.*(?:\\\\\\\\)+)/(.*)$"
+                                                                         options:0
+                                                                           error:nil];
+  NSTextCheckingResult *match = [regex firstMatchInString:scopedIdentifier
+                                                  options:0
+                                                    range:NSMakeRange(0, scopedIdentifier.length)];
+  if (!match) {
     // No delimiter found, so no scope associated with this identifier
     identifier = scopedIdentifier;
   } else {
-    scope = [scopedIdentifier substringToIndex:[indecesOfDelimiter[0] integerValue]];
-    identifier = [scopedIdentifier substringFromIndex:[indecesOfDelimiter[1] integerValue] + 1];
+    scope = [scopedIdentifier substringWithRange:[match rangeAtIndex:1]];
+    identifier = [scopedIdentifier substringWithRange:[match rangeAtIndex:2]];
   }
   ScopedCategoryIdentifierComponents components;
   components.scopeKey = [EXScopedNotificationsUtils unescapedString:scope];
@@ -49,29 +54,16 @@
   return components;
 }
 
-// Returns an array where the first element is the index where the
-// delimiter begins, and the second is the index where it ends.
-+ (NSArray *)indecesOfDelimiterInString:(NSString *)scopedCategoryId
-{
-  for (NSUInteger i = 1; i < [scopedCategoryId length] - 1; i++) {
-    if ([scopedCategoryId characterAtIndex:i] == '/' &&
-        [scopedCategoryId characterAtIndex:i-1] == '/' &&
-        [scopedCategoryId characterAtIndex:i+1] != '/'
-        ) {
-      return @[[NSNumber numberWithUnsignedInteger:i-1], [NSNumber numberWithUnsignedInteger:i]];
-    }
-  }
-  return nil;
-}
-
 + (NSString *)escapedString:(NSString*)string
 {
-  return [string stringByReplacingOccurrencesOfString:@"/" withString:@"\\/"];
+  return [[string stringByReplacingOccurrencesOfString:@"\\" withString:@"\\\\"]
+    stringByReplacingOccurrencesOfString:@"/" withString:@"\\/"];
 }
 
 + (NSString *)unescapedString:(NSString*)string
 {
-  return [string stringByReplacingOccurrencesOfString:@"\\/" withString:@"/"];
+  return [[string stringByReplacingOccurrencesOfString:@"\\/" withString:@"/"]
+          stringByReplacingOccurrencesOfString:@"\\\\" withString:@"\\"];
 }
 
 // legacy categories were stored under an unescaped experienceId
