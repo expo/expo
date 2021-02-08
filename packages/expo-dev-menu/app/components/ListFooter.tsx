@@ -1,8 +1,8 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { StyledText } from './Text';
 import Colors from '../constants/Colors';
+import { StyledText } from './Text';
 
 export type ListFooterProps = {
   label: string;

@@ -20,13 +20,15 @@ import expo.interfaces.devmenu.DevMenuExtensionInterface
 import expo.interfaces.devmenu.DevMenuManagerInterface
 import expo.interfaces.devmenu.DevMenuSettingsInterface
 import expo.interfaces.devmenu.items.DevMenuAction
-import expo.interfaces.devmenu.items.DevMenuItem
+import expo.interfaces.devmenu.items.DevMenuItemsContainerInterface
+import expo.interfaces.devmenu.items.DevMenuScreen
+import expo.interfaces.devmenu.items.DevMenuScreenItem
 import expo.interfaces.devmenu.items.KeyCommand
+import expo.interfaces.devmenu.items.getItemsOfType
 import expo.modules.devmenu.detectors.ShakeDetector
 import expo.modules.devmenu.detectors.ThreeFingerLongPressDetector
 import expo.modules.devmenu.modules.DevMenuSettings
 import java.lang.ref.WeakReference
-import java.util.*
 
 object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   private var shakeDetector: ShakeDetector? = null
@@ -36,8 +38,8 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   private var delegate: DevMenuDelegateInterface? = null
   private var shouldLaunchDevMenuOnStart: Boolean = false
   private lateinit var devMenuHost: DevMenuHost
-  private val cachedDevMenuItems = WeakHashMap<ReactInstanceManager, List<DevMenuItem>>()
   private var currentReactInstanceManager: WeakReference<ReactInstanceManager?> = WeakReference(null)
+  private var currentScreenName: String? = null
 
   //region helpers
 
@@ -72,22 +74,48 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
         }
     }
 
-  private val delegateMenuItems: List<DevMenuItem>
+  private val cachedDevMenuScreens by KeyValueCachedProperty<ReactInstanceManager, List<DevMenuScreen>> {
+    delegateExtensions
+      .map { it.devMenuScreens() ?: emptyList() }
+      .flatten()
+  }
+
+  private val delegateScreens: List<DevMenuScreen>
     get() {
       val delegateBridge = delegate?.reactInstanceManager() ?: return emptyList()
-
-      if (!cachedDevMenuItems.containsKey(delegateBridge)) {
-        cachedDevMenuItems[delegateBridge] = delegateExtensions
-          .map { it.devMenuItems() ?: emptyList() }
-          .flatten()
-          .sortedWith(compareBy({ -it.importance }, { it.label() }))
-      }
-
-      return cachedDevMenuItems.getOrDefault(delegateBridge, emptyList())
+      return cachedDevMenuScreens[delegateBridge]
     }
 
-  private val delegateActions: List<DevMenuAction>
-    get() = delegateMenuItems.filterIsInstance<DevMenuAction>()
+  private val cachedDevMenuItems by KeyValueCachedProperty<ReactInstanceManager, List<DevMenuItemsContainerInterface>> {
+    delegateExtensions
+      .mapNotNull { it.devMenuItems() }
+  }
+
+  private val delegateMenuItemsContainers: List<DevMenuItemsContainerInterface>
+    get() {
+      val delegateBridge = delegate?.reactInstanceManager() ?: return emptyList()
+      return cachedDevMenuItems[delegateBridge]
+    }
+
+  private val delegateRootMenuItems: List<DevMenuScreenItem>
+    get() =
+      delegateMenuItemsContainers
+        .map { it.getRootItems() }
+        .flatten()
+        .sortedBy { -it.importance }
+
+  private fun getActions(): List<DevMenuAction> {
+    if (currentScreenName == null) {
+      return delegateMenuItemsContainers
+        .map {
+          it.getItemsOfType<DevMenuAction>()
+        }
+        .flatten()
+    }
+
+    val screen = delegateScreens.find { it.screenName == currentScreenName } ?: return emptyList()
+    return screen.getItemsOfType()
+  }
 
   //endregion
 
@@ -210,6 +238,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   //region DevMenuManagerProtocol
 
   override fun openMenu(activity: Activity) {
+    setCurrentScreen(null)
     session = DevMenuSession(delegate!!.reactInstanceManager(), delegate!!.appInfo())
     activity.startActivity(Intent(activity, DevMenuActivity::class.java))
   }
@@ -224,6 +253,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   }
 
   override fun hideMenu() {
+    setCurrentScreen(null)
     hostActivity?.finish()
   }
 
@@ -253,7 +283,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
       code = keyCode,
       withShift = event.modifiers and KeyEvent.META_SHIFT_MASK > 0
     )
-    return delegateActions
+    return getActions()
       .find { it.keyCommand == keyCommand }
       ?.run {
         action()
@@ -276,12 +306,14 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   }
 
   override fun dispatchAction(actionId: String) {
-    delegateActions
+    getActions()
       .find { it.actionId == actionId }
       ?.run { action() }
   }
 
-  override fun serializedItems(): List<Bundle> = delegateMenuItems.map { it.serialize() }
+  override fun serializedItems(): List<Bundle> = delegateRootMenuItems.map { it.serialize() }
+
+  override fun serializedScreens(): List<Bundle> = delegateScreens.map { it.serialize() }
 
   override fun getSession(): DevMenuSession? = session
 
@@ -295,6 +327,11 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
       setUpReactInstanceManager(newReactInstanceManager)
     }
   }
+
+  override fun setCurrentScreen(screen: String?) {
+    currentScreenName = screen
+  }
+
   //endregion
 }
 

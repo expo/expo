@@ -8,13 +8,13 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.List;
 
 import expo.interfaces.devmenu.DevMenuExtensionInterface;
-import expo.interfaces.devmenu.items.DevMenuAction;
-import expo.interfaces.devmenu.items.DevMenuItem;
 import expo.interfaces.devmenu.items.DevMenuItemImportance;
+import expo.interfaces.devmenu.items.DevMenuItemsContainer;
+import expo.interfaces.devmenu.items.DevMenuItemsContainerInterface;
+import expo.interfaces.devmenu.items.DevMenuScreen;
 import expo.interfaces.devmenu.items.KeyCommand;
 import expo.modules.devlauncher.DevLauncherController;
 import kotlin.Unit;
@@ -32,16 +32,28 @@ public class DevLauncherDevMenuExtensions extends ReactContextBaseJavaModule imp
 
   @Nullable
   @Override
-  public List<DevMenuItem> devMenuItems() {
-    DevMenuAction backToLauncher = new DevMenuAction("dev-launcher-back-to-launcher", () -> {
+  public DevMenuItemsContainerInterface devMenuItems() {
+    DevMenuItemsContainer container = new DevMenuItemsContainer();
+
+    container.action("dev-launcher-back-to-launcher", () -> {
       DevLauncherController.getInstance().navigateToLauncher();
       return Unit.INSTANCE;
+    }, devMenuAction -> {
+
+      devMenuAction.setEnabled(() -> true);
+      devMenuAction.setLabel(() -> "Back to launcher");
+      devMenuAction.setGlyphName(() -> "exit-to-app");
+      devMenuAction.setImportance(DevMenuItemImportance.HIGH.getValue());
+      devMenuAction.setKeyCommand(new KeyCommand(KeyEvent.KEYCODE_L, false));
+
+      return Unit.INSTANCE;
     });
-    backToLauncher.setEnabled(() -> true);
-    backToLauncher.setLabel(() -> "Back to launcher");
-    backToLauncher.setGlyphName(() -> "exit-to-app");
-    backToLauncher.setImportance(DevMenuItemImportance.HIGH.getValue());
-    backToLauncher.setKeyCommand(new KeyCommand(KeyEvent.KEYCODE_L, false));
-    return Collections.singletonList(backToLauncher);
+    return container;
+  }
+
+  @Nullable
+  @Override
+  public List<DevMenuScreen> devMenuScreens() {
+    return null;
   }
 }

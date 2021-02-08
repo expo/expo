@@ -1,18 +1,9 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 @objc
-open class DevMenuGroup: DevMenuScreenItem, DevMenuItemsContainerProtocol {
+public class DevMenuScreen : DevMenuItem, DevMenuItemsContainerProtocol {
   let container = DevMenuItemsContainer()
-  
-  @objc
-  public init() {
-    super.init(type: .Group)
-  }
-
-  @objc
-  public func addItem(_ item: DevMenuScreenItem) {
-    container.addItem(item)
-  }
+  public private(set) var screenName: String
   
   public func getRootItems() -> [DevMenuScreenItem] {
     return container.getRootItems()
@@ -22,13 +13,22 @@ open class DevMenuGroup: DevMenuScreenItem, DevMenuItemsContainerProtocol {
     return container.getAllItems()
   }
   
+  public func addItem(_ item: DevMenuScreenItem) {
+    container.addItem(item)
+  }
+  
   public func serializeItems() -> [[String : Any]] {
     return container.serializeItems()
   }
-
-  @objc
+  
+  public init(_ screenName: String) {
+    self.screenName = screenName
+    super.init(type: .Screen)
+  }
+  
   public override func serialize() -> [String : Any] {
     var dict = super.serialize()
+    dict["screenName"] = screenName
     dict["items"] = serializeItems()
     return dict
   }
