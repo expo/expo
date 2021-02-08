@@ -133,6 +133,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		17ADE2BA7F62570F14B1097AC303B7D2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A84F23CF263DF32FE13DB7ED244C7731 /* expo-dev-menu-interface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = EA5CD250B8A6DE0639CB6EC046B239A9;
+			remoteInfo = "expo-dev-menu-interface";
+		};
 		188B275DCECA76439CA747FCA658B926 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 8D7598CD0BD637D1CF1D629CE0122E53 /* Project object */;
@@ -146,13 +153,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 94DA87F24FB4B93E5D08FE961D5E5A3E;
 			remoteInfo = React;
-		};
-		EFEAAF836F411649403299E216420B86 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A84F23CF263DF32FE13DB7ED244C7731 /* expo-dev-menu-interface.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = EA5CD250B8A6DE0639CB6EC046B239A9;
-			remoteInfo = "expo-dev-menu-interface";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -707,7 +707,7 @@
 			dependencies = (
 				9B7EA302061E7CAFBED752D1BCD5CBC5 /* PBXTargetDependency */,
 				E67BFFCAD4ECC0DC8A47159F66EA3496 /* PBXTargetDependency */,
-				62A15A7530A9019B7358FDBD11241F0D /* PBXTargetDependency */,
+				DDAA9EECB1AB7C56C4FEF3304D4E4DAF /* PBXTargetDependency */,
 			);
 			name = "expo-dev-menu";
 			productName = "expo-dev-menu";
@@ -874,15 +874,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		62A15A7530A9019B7358FDBD11241F0D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "expo-dev-menu-interface";
-			targetProxy = EFEAAF836F411649403299E216420B86 /* PBXContainerItemProxy */;
-		};
 		9B7EA302061E7CAFBED752D1BCD5CBC5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = React;
 			targetProxy = 8A0DBE0DE97CBE9C545256F6F8728533 /* PBXContainerItemProxy */;
+		};
+		DDAA9EECB1AB7C56C4FEF3304D4E4DAF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "expo-dev-menu-interface";
+			targetProxy = 17ADE2BA7F62570F14B1097AC303B7D2 /* PBXContainerItemProxy */;
 		};
 		E67BFFCAD4ECC0DC8A47159F66EA3496 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
