@@ -77,7 +77,7 @@ if (!isManagedEnvironment) {
   }
 }
 
-// Disable the blue loading box because `NativeModules.DevLoadingView` is not fully available in bare workflow.
+// Only enable the fast refresh indicator for managed iOS apps in dev mode.
 if (isManagedEnvironment) {
   // add the dev app container wrapper component on ios
   if (__DEV__ && Platform.OS === 'ios') {
