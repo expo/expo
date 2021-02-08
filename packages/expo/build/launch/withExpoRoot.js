@@ -12,7 +12,7 @@ export default function withExpoRoot(AppRootComponent) {
         }
         const combinedProps = {
             ...props,
-            exp: { ...(props.exp || {}), errorRecovery: ErrorRecovery.recoveredProps },
+            exp: { ...props.exp, errorRecovery: ErrorRecovery.recoveredProps },
         };
         return React.createElement(AppRootComponent, Object.assign({}, combinedProps));
     };

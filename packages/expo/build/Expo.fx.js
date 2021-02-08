@@ -1,5 +1,5 @@
-// load remote logging for compatibility with custom development clients
 import './environment/validate.fx';
+// load remote logging for compatibility with custom development clients
 import './environment/logging.fx';
 import './environment/react-native-logs.fx';
 // load expo-asset immediately to set a custom `source` transformer in React Native
@@ -48,38 +48,34 @@ if (module && module.exports && global) {
         }
     }
 }
-// TODO(NO_MERGE): In theory, shouldn't this also run in managed workflow so there is no unexpected error being thrown in a managed `eas build`?
-if (!isManagedEnvironment) {
-    if (NativeModulesProxy.ExpoUpdates?.isMissingRuntimeVersion) {
-        const message = 'expo-updates is installed but there is no runtime or SDK version configured. ' +
-            "You'll need to configure one of these two properties in " +
-            Platform.select({ ios: 'Expo.plist', android: 'AndroidManifest.xml' }) +
-            ' before OTA updates will work properly.';
-        if (__DEV__) {
-            console.warn(message);
-        }
-        else {
-            throw new Error(message);
-        }
+// Asserts if bare workflow isn't setup correctly.
+if (NativeModulesProxy.ExpoUpdates?.isMissingRuntimeVersion) {
+    const message = 'expo-updates is installed but there is no runtime or SDK version configured. ' +
+        "You'll need to configure one of these two properties in " +
+        Platform.select({ ios: 'Expo.plist', android: 'AndroidManifest.xml' }) +
+        ' before OTA updates will work properly.';
+    if (__DEV__) {
+        console.warn(message);
+    }
+    else {
+        throw new Error(message);
     }
 }
-// Disable the blue loading box because `NativeModules.DevLoadingView` is not fully available in bare workflow.
-if (isManagedEnvironment) {
+// Only enable the fast refresh indicator for managed iOS apps in dev mode.
+if (isManagedEnvironment && __DEV__ && Platform.OS === 'ios') {
     // add the dev app container wrapper component on ios
-    if (__DEV__ && Platform.OS === 'ios') {
-        // @ts-ignore
-        AppRegistry.setWrapperComponentProvider(() => DevAppContainer);
-        // @ts-ignore
-        const originalSetWrapperComponentProvider = AppRegistry.setWrapperComponentProvider;
-        // @ts-ignore
-        AppRegistry.setWrapperComponentProvider = provider => {
-            function PatchedProviderComponent(props) {
-                const ProviderComponent = provider();
-                return (React.createElement(DevAppContainer, null,
-                    React.createElement(ProviderComponent, Object.assign({}, props))));
-            }
-            originalSetWrapperComponentProvider(() => PatchedProviderComponent);
-        };
-    }
+    // @ts-ignore
+    AppRegistry.setWrapperComponentProvider(() => DevAppContainer);
+    // @ts-ignore
+    const originalSetWrapperComponentProvider = AppRegistry.setWrapperComponentProvider;
+    // @ts-ignore
+    AppRegistry.setWrapperComponentProvider = provider => {
+        function PatchedProviderComponent(props) {
+            const ProviderComponent = provider();
+            return (React.createElement(DevAppContainer, null,
+                React.createElement(ProviderComponent, Object.assign({}, props))));
+        }
+        originalSetWrapperComponentProvider(() => PatchedProviderComponent);
+    };
 }
 //# sourceMappingURL=Expo.fx.js.map

@@ -61,45 +61,41 @@ if (module && module.exports && global) {
   }
 }
 
-// TODO(NO_MERGE): In theory, shouldn't this also run in managed workflow so there is no unexpected error being thrown in a managed `eas build`?
-if (!isManagedEnvironment) {
-  if (NativeModulesProxy.ExpoUpdates?.isMissingRuntimeVersion) {
-    const message =
-      'expo-updates is installed but there is no runtime or SDK version configured. ' +
-      "You'll need to configure one of these two properties in " +
-      Platform.select({ ios: 'Expo.plist', android: 'AndroidManifest.xml' }) +
-      ' before OTA updates will work properly.';
-    if (__DEV__) {
-      console.warn(message);
-    } else {
-      throw new Error(message);
-    }
+// Asserts if bare workflow isn't setup correctly.
+if (NativeModulesProxy.ExpoUpdates?.isMissingRuntimeVersion) {
+  const message =
+    'expo-updates is installed but there is no runtime or SDK version configured. ' +
+    "You'll need to configure one of these two properties in " +
+    Platform.select({ ios: 'Expo.plist', android: 'AndroidManifest.xml' }) +
+    ' before OTA updates will work properly.';
+  if (__DEV__) {
+    console.warn(message);
+  } else {
+    throw new Error(message);
   }
 }
 
 // Only enable the fast refresh indicator for managed iOS apps in dev mode.
-if (isManagedEnvironment) {
+if (isManagedEnvironment && __DEV__ && Platform.OS === 'ios') {
   // add the dev app container wrapper component on ios
-  if (__DEV__ && Platform.OS === 'ios') {
-    // @ts-ignore
-    AppRegistry.setWrapperComponentProvider(() => DevAppContainer);
+  // @ts-ignore
+  AppRegistry.setWrapperComponentProvider(() => DevAppContainer);
 
-    // @ts-ignore
-    const originalSetWrapperComponentProvider = AppRegistry.setWrapperComponentProvider;
+  // @ts-ignore
+  const originalSetWrapperComponentProvider = AppRegistry.setWrapperComponentProvider;
 
-    // @ts-ignore
-    AppRegistry.setWrapperComponentProvider = provider => {
-      function PatchedProviderComponent(props: any) {
-        const ProviderComponent = provider();
+  // @ts-ignore
+  AppRegistry.setWrapperComponentProvider = provider => {
+    function PatchedProviderComponent(props: any) {
+      const ProviderComponent = provider();
 
-        return (
-          <DevAppContainer>
-            <ProviderComponent {...props} />
-          </DevAppContainer>
-        );
-      }
+      return (
+        <DevAppContainer>
+          <ProviderComponent {...props} />
+        </DevAppContainer>
+      );
+    }
 
-      originalSetWrapperComponentProvider(() => PatchedProviderComponent);
-    };
-  }
+    originalSetWrapperComponentProvider(() => PatchedProviderComponent);
+  };
 }
