@@ -5,7 +5,7 @@ import path from 'path';
 import { EXPO_DIR } from '../../Constants';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
-import { transformFileAsync } from '../../Utils';
+import { transformFileAsync } from '../../Transforms';
 import { Parcel, TaskArgs } from '../types';
 import { selectPackagesToPublish } from './selectPackagesToPublish';
 
@@ -33,25 +33,13 @@ export const updateAndroidProjects = new Task<TaskArgs>(
 
       const relativeGradlePath = path.relative(EXPO_DIR, gradlePath);
 
-      logger.log(
-        '  ',
-        `Updating ${yellow('version')} and ${yellow('versionCode')} in ${magenta(
-          relativeGradlePath
-        )}`
-      );
+      logger.log('  ', `Updating ${yellow('version')} in ${magenta(relativeGradlePath)}`);
 
       await transformFileAsync(gradlePath, [
         {
           // update version and versionName in android/build.gradle
-          pattern: /\b(version\s*=\s*|versionName\s+)(['"])(.*?)\2/g,
+          find: /\b(version\s*=\s*|versionName\s+)(['"])(.*?)\2/g,
           replaceWith: `$1$2${state.releaseVersion}$2`,
-        },
-        {
-          pattern: /\bversionCode\s+(\d+)\b/g,
-          replaceWith: (match, p1) => {
-            const versionCode = parseInt(p1, 10);
-            return `versionCode ${versionCode + 1}`;
-          },
         },
       ]);
     }

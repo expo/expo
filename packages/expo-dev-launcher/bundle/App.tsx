@@ -14,10 +14,11 @@ import {
   Platform,
   TouchableOpacity,
   NativeEventEmitter,
+  RefreshControl,
 } from 'react-native';
 
 import ListItem from './ListItem';
-const DevLauncher = NativeModules.EXDevLauncher;
+const DevLauncher = NativeModules.EXDevLauncherInternal;
 
 // Use development client native module to load app at given URL, notifying of
 // errors
@@ -28,7 +29,7 @@ const loadAppFromUrl = async (urlString: string, setLoading: (boolean) => void) 
     await DevLauncher.loadApp(urlString);
   } catch (e) {
     setLoading(false);
-    Alert.alert('Error loading app', e.toString());
+    Alert.alert('Error loading app', e.message);
   }
 };
 
@@ -50,11 +51,58 @@ const Button = ({ label, onPress }) => (
 
 const ON_NEW_DEEP_LINK_EVENT = 'expo.modules.devlauncher.onnewdeeplink';
 
-const App = () => {
+const baseAddress = Platform.select({
+  ios: 'http://localhost',
+  android: 'http://10.0.2.2',
+});
+const statusPage = 'status';
+const portsToCheck = [
+  8081,
+  19000,
+  19001,
+  19002,
+  19003,
+  19004,
+  19005,
+  19006,
+  19007,
+  19008,
+  19009,
+  19010,
+];
+
+const App = ({ isSimulator }) => {
   const [loading, setLoading] = useState(false);
   const [textInputUrl, setTextInputUrl] = useState('');
   const [recentlyOpenedApps, setRecentlyOpenedApps] = useState({});
   const [pendingDeepLink, setPendingDeepLink] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = React.useState(false);
+  const [localPackagers, setLocalPackagers] = useState([]);
+
+  const detectLocalPackagers = async setLocalPackagers => {
+    if (!isSimulator) {
+      return [];
+    }
+
+    const onlinePackagers = [];
+    for (const port of portsToCheck) {
+      try {
+        const address = `${baseAddress}:${port}`;
+        const { status } = await fetch(`${address}/${statusPage}`);
+        if (status === 200) {
+          onlinePackagers.push(address);
+        }
+      } catch (e) {}
+    }
+
+    setLocalPackagers(onlinePackagers);
+  };
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    detectLocalPackagers(setLocalPackagers);
+    setRefreshing(false);
+  }, []);
 
   useEffect(() => {
     const getPendingDeepLink = async () => {
@@ -74,6 +122,7 @@ const App = () => {
 
     getRecentlyOpenedApps();
     getPendingDeepLink();
+    detectLocalPackagers(setLocalPackagers);
 
     return () => {
       onNewDeepLinkListener.remove();
@@ -114,7 +163,9 @@ const App = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" />
-      <ScrollView style={styles.container}>
+      <ScrollView
+        style={styles.container}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
         <>
           {pendingDeepLink && (
             <View style={styles.pendingDeepLinkContainer}>
@@ -160,6 +211,15 @@ const App = () => {
               onChangeText={text => setTextInputUrl(text)}
             />
             <Button onPress={onPressGoToUrl} label="Connect to URL" />
+            {localPackagers.length > 0 && (
+              <>
+                <Text style={[styles.infoText, { marginTop: 12 }]}>Running packagers:</Text>
+                {localPackagers.map(url => (
+                  <ListItem key={url} title={url} onPress={() => loadAppFromUrl(url, setLoading)} />
+                ))}
+              </>
+            )}
+
             {recentlyProjects.length > 0 && (
               <>
                 <Text style={[styles.infoText, { marginTop: 12 }]}>Recently opened projects:</Text>
@@ -183,20 +243,7 @@ const styles = StyleSheet.create({
   },
 
   homeContainer: {
-    paddingTop: 24,
     paddingHorizontal: 24,
-  },
-
-  barCodeScannerContainer: {
-    paddingTop: 24,
-    width: '100%',
-    aspectRatio: 1,
-    borderRadius: 8,
-    overflow: 'hidden',
-    paddingHorizontal: 24,
-  },
-  barCodeScanner: {
-    flex: 1,
   },
 
   pendingDeepLinkContainer: {

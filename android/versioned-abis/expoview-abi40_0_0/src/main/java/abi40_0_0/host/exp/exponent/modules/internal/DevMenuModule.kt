@@ -18,7 +18,6 @@ import host.exp.exponent.experience.ReactNativeActivity
 import host.exp.exponent.kernel.DevMenuManager
 import host.exp.exponent.kernel.DevMenuModuleInterface
 import host.exp.exponent.kernel.KernelConstants
-import host.exp.exponent.utils.JSONBundleConverter
 import host.exp.expoview.R
 import org.json.JSONException
 import org.json.JSONObject
@@ -58,7 +57,7 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
     val taskBundle = Bundle()
 
     taskBundle.putString("manifestUrl", getManifestUrl())
-    taskBundle.putBundle("manifest", JSONBundleConverter.JSONToBundle(manifest))
+    taskBundle.putString("manifestString", manifest.toString())
 
     bundle.putBundle("task", taskBundle)
     bundle.putString("uuid", UUID.randomUUID().toString())

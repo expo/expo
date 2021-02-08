@@ -1,0 +1,1 @@
+../../../../vendored/sdk39/lottie-react-native/src/ios/LottieReactNative/Bridging.h

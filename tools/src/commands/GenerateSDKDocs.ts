@@ -4,8 +4,8 @@ import chalk from 'chalk';
 import fs from 'fs-extra';
 import path from 'path';
 
-import { transformFileAsync } from '../Utils';
-import { Directories } from '../expotools';
+import * as Directories from '../Directories';
+import { transformFileAsync } from '../Transforms';
 
 const EXPO_DIR = Directories.getExpoRepositoryRootDir();
 const DOCS_DIR = path.join(EXPO_DIR, 'docs');
@@ -72,7 +72,7 @@ async function action(options) {
         const apiFilePath = path.join(targetSdkDirectory, 'sdk', api);
         await transformFileAsync(apiFilePath, [
           {
-            pattern: /(sourceCodeUrl:.*?\/tree\/)(master)(\/packages[^\n]*)/,
+            find: /(sourceCodeUrl:.*?\/tree\/)(master)(\/packages[^\n]*)/,
             replaceWith: `$1sdk-${sdk.substring(0, 2)}$3`,
           },
         ]);
@@ -95,8 +95,14 @@ async function action(options) {
     await fs.copy(path.join(STATIC_EXAMPLES_DIR, 'unversioned'), targetExampleDirectory);
   }
 
-  console.log(`\nDocs version ${chalk.red(sdk)} created successfully. By default, it will not be included in the production build.` +
-    `\nWhen the new version is ready to deploy, set version to ${chalk.red(sdk)} in ${chalk.yellow('docs/package.json')}`);
+  console.log(
+    `\nDocs version ${chalk.red(
+      sdk
+    )} created successfully. By default, it will not be included in the production build.` +
+      `\nWhen the new version is ready to deploy, set version to ${chalk.red(
+        sdk
+      )} in ${chalk.yellow('docs/package.json')}`
+  );
 }
 
 export default (program) => {

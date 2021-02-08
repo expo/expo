@@ -22,6 +22,7 @@ import expo.modules.devlauncher.launcher.DevLauncherRecentlyOpenedAppsRegistry
 import expo.modules.devlauncher.launcher.loaders.DevLauncherExpoAppLoader
 import expo.modules.devlauncher.launcher.loaders.DevLauncherReactNativeAppLoader
 import expo.modules.devlauncher.launcher.manifest.DevLauncherManifestParser
+import expo.modules.devlauncher.launcher.manifest.DevLauncherManifest
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityNOPDelegate
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityRedirectDelegate
 import kotlinx.coroutines.GlobalScope
@@ -43,6 +44,8 @@ class DevLauncherController private constructor(
   private val httpClient = OkHttpClient()
   private val lifecycle = DevLauncherLifecycle()
   private val recentlyOpedAppsRegistry = DevLauncherRecentlyOpenedAppsRegistry(mContext)
+  var manifest: DevLauncherManifest? = null
+    private set
   val pendingIntentRegistry = DevLauncherIntentRegistry()
 
   enum class Mode {
@@ -63,7 +66,8 @@ class DevLauncherController private constructor(
       // It's (maybe) a raw React Native bundle
       DevLauncherReactNativeAppLoader(url, mAppHost, mContext)
     } else {
-      DevLauncherExpoAppLoader(manifestParser.parseManifest(), mAppHost, mContext)
+      manifest = manifestParser.parseManifest()
+      DevLauncherExpoAppLoader(manifest!!, mAppHost, mContext)
     }
 
     val appLoaderListener = appLoader.createOnDelegateWillBeCreatedListener()
@@ -78,6 +82,7 @@ class DevLauncherController private constructor(
     } else {
       // The app couldn't be loaded. For now, we just return to the launcher.
       mode = Mode.LAUNCHER
+      manifest = null
     }
   }
 
@@ -87,6 +92,7 @@ class DevLauncherController private constructor(
     ensureHostWasCleared(mAppHost)
 
     mode = Mode.LAUNCHER
+    manifest = null
     mContext.applicationContext.startActivity(createLauncherIntent())
   }
 

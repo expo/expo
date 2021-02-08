@@ -16,6 +16,9 @@ public protocol DevMenuExtensionProtocol {
    It's called only once for the extension instance — results are being cached on first dev menu launch.
    */
   @objc
-  optional func devMenuItems() -> [DevMenuItem]?
+  optional func devMenuItems() -> DevMenuItemsContainerProtocol?
+  
+  @objc
+  optional func devMenuScreens() -> [DevMenuScreen]?
 }
  

@@ -6,6 +6,9 @@
 
 ### 🎉 New features
 
+- Converted plugin to TypeScript. ([#11715](https://github.com/expo/expo/pull/11715) by [@EvanBacon](https://github.com/EvanBacon))
+- Updated Android build configuration to target Android 11 (added support for Android SDK 30). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
+
 ### 🐛 Bug fixes
 
 ## 2.0.0 — 2021-01-15

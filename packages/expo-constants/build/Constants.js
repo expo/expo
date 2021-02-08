@@ -1,5 +1,5 @@
 import { CodedError, NativeModulesProxy } from '@unimodules/core';
-import { Platform } from 'react-native';
+import { Platform, NativeModules } from 'react-native';
 import { AppOwnership, ExecutionEnvironment, UserInterfaceIdiom, } from './Constants.types';
 import ExponentConstants from './ExponentConstants';
 export { AppOwnership, ExecutionEnvironment, UserInterfaceIdiom, };
@@ -18,6 +18,16 @@ if (NativeModulesProxy.ExpoUpdates) {
     }
     if (updatesManifest && Object.keys(updatesManifest).length > 0) {
         manifest = updatesManifest;
+    }
+}
+// If dev-launcher defines a non-empty manifest, prefer that one
+if (NativeModules.EXDevLauncher) {
+    let devLauncherManifest;
+    if (NativeModules.EXDevLauncher.manifestString) {
+        devLauncherManifest = JSON.parse(NativeModules.EXDevLauncher.manifestString);
+    }
+    if (devLauncherManifest && Object.keys(devLauncherManifest).length > 0) {
+        manifest = devLauncherManifest;
     }
 }
 // Fall back to ExponentConstants.manifest if we don't have one from Updates

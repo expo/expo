@@ -8,7 +8,7 @@ As trendy as it is these days, not every app has to use emoji for all icons 😳
 
 ## @expo/vector-icons
 
-This library is installed by default on the template project that get through `expo init` -- it is part of the `expo` package. It includes popular icon sets and you can browse all of the icons using the [@expo/vector-icons directory](https://expo.github.io/vector-icons/).
+This library is installed by default on the template project that get through `expo init` -- it is part of the `expo` package. It includes popular icon sets and you can browse all of the icons using [icons.expo.fyi](https://icons.expo.fyi).
 
 <SnackInline label='Vector icons' dependencies={['@expo/vector-icons']}>
 
@@ -20,7 +20,9 @@ import { Ionicons } from '@expo/vector-icons';
 export default function App() {
   return (
     <View style={styles.container}>
-      /* @info */<Ionicons name="md-checkmark-circle" size={32} color="green" />/* @end */ 
+      /* @info */
+      <Ionicons name="md-checkmark-circle" size={32} color="green" />
+      /* @end */
     </View>
   );
 }
@@ -31,7 +33,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  }
+  },
 });
 /* @end */
 ```
@@ -84,12 +86,12 @@ const Icon = createIconSetFromFontello(fontelloConfig, 'fontello', 'fontello.ttf
 Convenience method to create a custom font based on an [IcoMoon](https://icomoon.io/) config file. Don't forget to import the font as described above and drop the `config.json` somewhere convenient in your project, using `Font.loadAsync`.
 
 <SnackInline
-  label='Icomoon Icons'
-  files={{
+label='Icomoon Icons'
+files={{
     'assets/icomoon/icomoon.ttf': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/71ce651cbddbee5366aef87c456a80bb',
     'assets/icomoon/selection.json': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/a06aa5b6e7eb1df1fa1c8d06d4ab8463'
   }}
-  dependencies={['@expo/vector-icons', 'expo-font', 'expo-app-loading']}>
+dependencies={['@expo/vector-icons', 'expo-font', 'expo-app-loading']}>
 
 ```jsx
 import React from 'react';
@@ -102,19 +104,22 @@ import { createIconSetFromIcoMoon } from '@expo/vector-icons';
 const Icon = createIconSetFromIcoMoon(
   require('./assets/icomoon/selection.json'),
   'IcoMoon',
-  'icomoon.ttf');
+  'icomoon.ttf'
+);
 /* @end */
 
 export default function App() {
   // Load the icon font before using it
-  const [fontsLoaded] = useFonts({ 'IcoMoon': require('./assets/icomoon/icomoon.ttf') });
+  const [fontsLoaded] = useFonts({ IcoMoon: require('./assets/icomoon/icomoon.ttf') });
   if (!fontsLoaded) {
     return <AppLoading />;
   }
 
   return (
     <View style={styles.container}>
-      /* @info */<Icon name='pacman' size={50} color='red' />/* @end */ 
+      /* @info */
+      <Icon name="pacman" size={50} color="red" />
+      /* @end */
     </View>
   );
 }
@@ -125,7 +130,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  }
+  },
 });
 /* @end */
 ```
@@ -137,8 +142,8 @@ const styles = StyleSheet.create({
 If you know how to use the react-native `<Image>` component this will be a breeze.
 
 <SnackInline
-  label='Icon images'
-  files={{
+label='Icon images'
+files={{
     'assets/images/slack-icon.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/0397c8d3e7445a4e826705f08abdd8ef'
   }}>
 
@@ -164,7 +169,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  }
+  },
 });
 /* @end */
 ```
@@ -190,14 +195,16 @@ export default function App() {
   /* @hide const loginWithFacebook = () => { ... } */
   const loginWithFacebook = () => {
     console.log('Button pressed');
-  }
+  };
   /* @end */
 
   return (
     <View style={styles.container}>
-      /* @info */<FontAwesome.Button name="facebook" backgroundColor="#3b5998" onPress={loginWithFacebook}>/* @end */ 
-        Login with Facebook
-      /* @info */</FontAwesome.Button>/* @end */ 
+      /* @info */
+      <FontAwesome.Button name="facebook" backgroundColor="#3b5998" onPress={loginWithFacebook}>
+        /* @end */ Login with Facebook /* @info */
+      </FontAwesome.Button>
+      /* @end */
     </View>
   );
 }
@@ -208,7 +215,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  }
+  },
 });
 /* @end */
 ```

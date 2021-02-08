@@ -29,21 +29,26 @@ class Dispatch {
 }
 
 /**
- A container for dev menu items array.
- NSMapTable requires the second generic type to be a class, so `[DevMenuItem]` is not allowed.
+ A container for dev menu screens array.
+ NSMapTable requires the second generic type to be a class, so `[DevMenuScreen]` is not allowed.
  */
-class DevMenuItemsContainer {
-  fileprivate let items: [DevMenuItem]
+class DevMenuScreensContainer {
+  fileprivate let screens: [DevMenuScreen]
 
-  fileprivate init(items: [DevMenuItem]) {
-    self.items = items
+  fileprivate init(screens: [DevMenuScreen]) {
+    self.screens = screens
   }
 }
 
 /**
  A hash map storing an array of dev menu items for specific extension.
  */
-private let extensionToDevMenuItemsMap = NSMapTable<DevMenuExtensionProtocol, DevMenuItemsContainer>.weakToStrongObjects()
+private let extensionToDevMenuItemsMap = NSMapTable<DevMenuExtensionProtocol, DevMenuItemsContainerProtocol>.weakToStrongObjects()
+
+/**
+ A hash map storing an array of dev menu screens for specific extension.
+ */
+private let extensionToDevMenuScreensMap = NSMapTable<DevMenuExtensionProtocol, DevMenuScreensContainer>.weakToStrongObjects()
 
 /**
  Manages the dev menu and provides most of the public API.
@@ -64,13 +69,15 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
   /**
    `DevMenuAppInstance` instance that is responsible for initializing and managing React Native context for the dev menu.
    */
-  var appInstance: DevMenuAppInstance?
+  lazy var appInstance: DevMenuAppInstance = DevMenuAppInstance(manager: self)
 
   /**
    Instance of `DevMenuSession` that keeps the details of the currently opened dev menu session.
    */
   public private(set) var session: DevMenuSession?
 
+  var currentScreen: String?
+  
   /**
    The delegate of `DevMenuManager` implementing `DevMenuDelegateProtocol`.
    */
@@ -109,8 +116,7 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
   override init() {
     super.init()
     self.window = DevMenuWindow(manager: self)
-    self.appInstance = DevMenuAppInstance(manager: self)
-
+    
     DevMenuSettings.setup()
   }
 
@@ -137,11 +143,12 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
   @objc
   @discardableResult
   public func closeMenu() -> Bool {
-    guard let appInstance = appInstance else {
-      return false
+    if (isVisible) {
+      appInstance.sendCloseEvent()
+      return true
     }
-    appInstance.sendCloseEvent()
-    return true
+    
+    return false
   }
 
   /**
@@ -161,24 +168,22 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
   public func toggleMenu() -> Bool {
     return isVisible ? closeMenu() : openMenu()
   }
+  
+  @objc
+  public func setCurrentScreen(_ screenName: String?) {
+    currentScreen = screenName
+  }
 
   // MARK: internals
 
   func dispatchAction(withId actionId: String) {
-    guard let extensions = extensions else {
-      return
-    }
-    for ext in extensions {
-      guard let devMenuItems = loadDevMenuItems(forExtension: ext) else {
-        continue
-      }
-      for item in devMenuItems {
-        if let action = item as? DevMenuAction, action.actionId == actionId {
-          if delegate?.devMenuManager?(self, willDispatchAction: action) ?? true {
-            action.action()
-          }
-          return
+    for action in devMenuActions {
+      if (action.actionId == actionId) {
+        if delegate?.devMenuManager?(self, willDispatchAction: action) ?? true {
+          action.action()
         }
+        
+        return
       }
     }
   }
@@ -202,34 +207,51 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
   /**
    Gathers `DevMenuItem`s from all dev menu extensions and returns them as an array.
    */
-  var devMenuItems: [DevMenuItem] {
-    var items: [DevMenuItem] = []
-
-    extensions?.forEach({ ext in
-      if let extensionItems = loadDevMenuItems(forExtension: ext) {
-        items.append(contentsOf: extensionItems)
-      }
-    })
-    return items.sorted {
-      if $0.importance == $1.importance {
-        return $0.label().localizedCaseInsensitiveCompare($1.label()) == .orderedAscending
-      }
-      return $0.importance > $1.importance
-    }
+  var devMenuItems: [DevMenuScreenItem] {
+    return extensions?.map { loadDevMenuItems(forExtension: $0)?.getAllItems() ?? [] }.flatMap { $0 } ?? []
   }
-
+  
+  /**
+   Gathers root `DevMenuItem`s (elements on the main screen) from all dev menu extensions and returns them as an array.
+   */
+  var devMenuRootItems: [DevMenuScreenItem] {
+    return extensions?.map { loadDevMenuItems(forExtension: $0)?.getRootItems() ?? [] }.flatMap { $0 } ?? []
+  }
+  
+  /**
+   Gathers `DevMenuScreen`s from all dev menu extensions and returns them as an array.
+   */
+  var devMenuScreens: [DevMenuScreen] {
+    return extensions?.map { loadDevMenuScreens(forExtension: $0) ?? [] }.flatMap {$0} ?? []
+  }
+  
   /**
    Returns an array of `DevMenuAction`s returned by the dev menu extensions.
    */
   var devMenuActions: [DevMenuAction] {
-    return devMenuItems.filter { $0 is DevMenuAction } as! [DevMenuAction]
+    if currentScreen == nil {
+      return devMenuItems.filter { $0 is DevMenuAction } as! [DevMenuAction]
+    }
+    
+    return (devMenuScreens.first { $0.screenName == currentScreen }?.getAllItems() ?? [])
+      .filter { $0 is DevMenuAction } as! [DevMenuAction]
   }
 
   /**
    Returns an array of dev menu items serialized to the dictionary.
    */
   func serializedDevMenuItems() -> [[String : Any]] {
-    return devMenuItems.map({ $0.serialize() })
+    return devMenuRootItems
+      .sorted(by: { $0.importance > $1.importance })
+      .map({ $0.serialize() })
+  }
+  
+  /**
+   Returns an array of dev menu screens serialized to the dictionary.
+   */
+  func serializedDevMenuScreens() -> [[String : Any]] {
+    return devMenuScreens
+      .map({ $0.serialize() })
   }
 
   // MARK: delegate stubs
@@ -259,16 +281,31 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
 
   // MARK: private
 
-  private func loadDevMenuItems(forExtension ext: DevMenuExtensionProtocol) -> [DevMenuItem]? {
+  private func loadDevMenuItems(forExtension ext: DevMenuExtensionProtocol) -> DevMenuItemsContainerProtocol? {
     if let itemsContainer = extensionToDevMenuItemsMap.object(forKey: ext) {
-      return itemsContainer.items
+      return itemsContainer
     }
-    if let items = ext.devMenuItems?() {
-      let container = DevMenuItemsContainer(items: items)
-      extensionToDevMenuItemsMap.setObject(container, forKey: ext)
-      return items
+    
+    if let itemsContainer = ext.devMenuItems?() {
+      extensionToDevMenuItemsMap.setObject(itemsContainer, forKey: ext)
+      return itemsContainer
     }
+    
     return nil
+  }
+  
+  private func loadDevMenuScreens(forExtension ext: DevMenuExtensionProtocol) -> [DevMenuScreen]? {
+    if let screenContainer = extensionToDevMenuScreensMap.object(forKey: ext) {
+      return screenContainer.screens
+    }
+    
+    if let screens = ext.devMenuScreens?() {
+      let container = DevMenuScreensContainer(screens: screens)
+      extensionToDevMenuScreensMap.setObject(container, forKey: ext)
+      return screens
+    }
+    
+    return nil;
   }
 
   private func setVisibility(_ visible: Bool) -> Bool {

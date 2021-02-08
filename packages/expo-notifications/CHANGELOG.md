@@ -6,9 +6,12 @@
 
 ### 🎉 New features
 
+- Updated Android build configuration to target Android 11 (added support for Android SDK 30). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
+
 ### 🐛 Bug fixes
 
 - Notification categories will no longer be lost after ejecting to the bare workflow (if ejecting after SDK 41). ([#11651](https://github.com/expo/expo/pull/11651) by [@cruzach](https://github.com/cruzach))
+- Notify all listeners of pending notification responses. ([#11536](https://github.com/expo/expo/pull/11536) by [@esamelson](https://github.com/esamelson))
 
 ## 0.9.0 — 2021-01-15
 

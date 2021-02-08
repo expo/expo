@@ -22,8 +22,8 @@ class DevLauncherManifestParser(
     return response.body()!!.charStream()
   }
 
-  suspend fun parseManifest(): DevelopmentClientManifest {
+  suspend fun parseManifest(): DevLauncherManifest {
     val manifestReader = downloadManifest()
-    return DevelopmentClientManifest.fromJson(manifestReader)
+    return DevLauncherManifest.fromJson(manifestReader)
   }
 }

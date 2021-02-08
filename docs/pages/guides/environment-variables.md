@@ -1,5 +1,6 @@
 ---
 title: Environment variables in Expo
+sidebar_title: Environment variables
 ---
 
 Environment variables are global values that are defined in your system. Without these variables, your operating system wouldn't know what to do when you execute a command like `expo start`. Under the hood, it uses the [`PATH`](http://www.linfo.org/path_env_var.html) variable to fetch a list of directories to search for the `expo` executable.

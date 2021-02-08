@@ -88,7 +88,7 @@ function ensureTrailingSlash(input: string, shouldAppend: boolean): string {
  * @param queryParams An object of parameters that will be converted into a query string.
  */
 export function makeUrl(path: string = '', queryParams?: QueryParams, scheme?: string): string {
-  return createURL(path, { queryParams, scheme });
+  return createURL(path, { queryParams, scheme, isTripleSlashed: true });
 }
 
 /**
@@ -97,8 +97,8 @@ export function makeUrl(path: string = '', queryParams?: QueryParams, scheme?: s
  *
  * **Examples**
  *
- * - Bare: `<scheme>:///path` -- uses provided scheme or scheme from Expo config `scheme`.
- * - Standalone, Custom: `yourscheme:///path`
+ * - Bare: `<scheme>://path` -- uses provided scheme or scheme from Expo config `scheme`.
+ * - Standalone, Custom: `yourscheme://path`
  * - Web (dev): `https://localhost:19006/path`
  * - Web (prod): `https://myapp.com/path`
  * - Expo Client (dev): `exp://128.0.0.1:19000/--/path`
@@ -113,9 +113,11 @@ export function createURL(
   {
     scheme,
     queryParams = {},
+    isTripleSlashed = false,
   }: {
     scheme?: string;
     queryParams?: QueryParams;
+    isTripleSlashed?: boolean;
   } = {}
 ): string {
   if (Platform.OS === 'web') {
@@ -145,7 +147,7 @@ export function createURL(
     if (isExpoHosted() && hostUri) {
       path = `/--/${removeLeadingSlash(path)}`;
     }
-    if (!path.startsWith('/')) {
+    if (isTripleSlashed && !path.startsWith('/')) {
       path = `/${path}`;
     }
   } else {
@@ -176,9 +178,11 @@ export function createURL(
     queryString = `?${queryString}`;
   }
 
-  hostUri = ensureTrailingSlash(hostUri, false);
+  hostUri = ensureTrailingSlash(hostUri, !isTripleSlashed);
 
-  return encodeURI(`${resolvedScheme}://${hostUri}${path}${queryString}`);
+  return encodeURI(
+    `${resolvedScheme}:${isTripleSlashed ? '/' : ''}/${hostUri}${path}${queryString}`
+  );
 }
 
 /**

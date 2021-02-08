@@ -8,7 +8,7 @@ import com.facebook.react.ReactNativeHost
 import expo.modules.devlauncher.launcher.DevLauncherClientHost
 import expo.modules.devlauncher.launcher.DevLauncherReactActivityDelegateSupplier
 
-private const val DEV_LAUNCHER_IS_NOT_AVAILABLE = "DevLauncher isn't available in release builds"
+const val DEV_LAUNCHER_IS_NOT_AVAILABLE = "DevLauncher isn't available in release builds"
 
 class DevLauncherController private constructor() {
   val devClientHost: DevLauncherClientHost

@@ -1,7 +1,6 @@
 import gql from 'graphql-tag';
 import uuid from 'uuid';
 
-jest.mock('../ApiV2HttpClient');
 jest.mock('@react-native-community/async-storage', () => ({
   setItem: jest.fn(() => new Promise(resolve => resolve(null))),
   getItem: jest.fn(() => new Promise(resolve => resolve(null))),
@@ -9,8 +8,6 @@ jest.mock('@react-native-community/async-storage', () => ({
 }));
 
 describe('User Authentication Flow', () => {
-  let ApiV2HttpClient;
-  let AuthApi;
   let Store;
   let SessionActions;
 
@@ -20,8 +17,6 @@ describe('User Authentication Flow', () => {
     originalFetch = global.fetch;
     global.fetch = jest.fn();
 
-    ApiV2HttpClient = require('../ApiV2HttpClient').default;
-    AuthApi = require('../AuthApi');
     Store = require('../../redux/Store').default;
     SessionActions = require('../../redux/SessionActions').default;
 
@@ -37,18 +32,7 @@ describe('User Authentication Flow', () => {
   });
 
   it(`logs in and stores session tokens correctly`, async () => {
-    const mockSignInResult = { sessionSecret: uuid.v4() };
-    ApiV2HttpClient.mockImplementationOnce(() => {
-      const AutomockedApiV2HttpClient = jest.genMockFromModule('../ApiV2HttpClient').default;
-      const mockClient = new AutomockedApiV2HttpClient();
-      mockClient.postAsync.mockReturnValueOnce(Promise.resolve(mockSignInResult));
-      return mockClient;
-    });
-
-    // sign in
-    const signInResult = await AuthApi.signInAsync('testuser', 't3stp4ssw0rd');
-    expect(signInResult).toMatchObject(mockSignInResult);
-    const { sessionSecret } = signInResult;
+    const { sessionSecret } = { sessionSecret: uuid.v4() };
 
     // store session token
     await Store.dispatch(SessionActions.setSession({ sessionSecret }));
@@ -66,18 +50,7 @@ describe('User Authentication Flow', () => {
     const ApolloClient = require('../ApolloClient').default;
     const apolloLinkRequest = jest.spyOn(ApolloClient.link, 'request');
 
-    const mockSignInResult = { sessionSecret: uuid.v4() };
-    ApiV2HttpClient.mockImplementationOnce(() => {
-      // since we use mockImplementationOnce, this constructor call is not recursive
-      const mockClient = new ApiV2HttpClient();
-      mockClient.postAsync.mockReturnValueOnce(Promise.resolve(mockSignInResult));
-      return mockClient;
-    });
-
-    // sign in
-    const signInResult = await AuthApi.signInAsync('testuser', 't3stp4ssw0rd');
-    expect(signInResult).toMatchObject(mockSignInResult);
-    const { sessionSecret } = signInResult;
+    const { sessionSecret } = { sessionSecret: uuid.v4() };
 
     // store session token
     await Store.dispatch(SessionActions.setSession({ sessionSecret }));
@@ -117,7 +90,7 @@ describe('User Authentication Flow', () => {
     expect(apolloLinkRequest).toHaveBeenCalledTimes(1);
     const operation = apolloLinkRequest.mock.calls[0][0];
     expect(operation.getContext().headers).toMatchObject({
-      'expo-session': mockSignInResult.sessionSecret,
+      'expo-session': sessionSecret,
     });
   });
 });

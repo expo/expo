@@ -14,6 +14,8 @@ exports[`createURL bare makes url {"shouldEscape": "%2b%20"} 1`] = `"http://loca
 
 exports[`createURL bare makes url {"undefinedParam": undefined} 1`] = `"http://localhost/some/path"`;
 
+exports[`createURL bare uses triple slashes 1`] = `"http://localhost/some/path"`;
+
 exports[`createURL queries makes url "" 1`] = `"http://localhost"`;
 
 exports[`createURL queries makes url "path/into/app" 1`] = `"http://localhost/path/into/app"`;

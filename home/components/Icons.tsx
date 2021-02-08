@@ -13,6 +13,7 @@ type Props = {
   style?: any;
   lightColor?: string;
   darkColor?: string;
+  color?: string;
 };
 
 export const Ionicons = (props: Props) => {

@@ -84,7 +84,7 @@ function symlinkNecessaryPackage(projectPath, packageName) {
     debug(`Ensuring %s exists`, scopePath);
     mkdirp.sync(scopePath);
     debug(`Creating symlink from %s to %s`, path.join(scopePath, name), relativePackagePath);
-    fs.symlinkSync(relativePackagePath, path.join(scopePath, name));
+    fs.symlinkSync(relativePackagePath, path.join(scopePath, name), 'junction');
   } else {
     let relativePackagePath = path.relative(nodeModulesPath, workspacePackagePath);
 
@@ -95,7 +95,7 @@ function symlinkNecessaryPackage(projectPath, packageName) {
       path.join(nodeModulesPath, packageName),
       relativePackagePath
     );
-    fs.symlinkSync(relativePackagePath, path.join(nodeModulesPath, packageName));
+    fs.symlinkSync(relativePackagePath, path.join(nodeModulesPath, packageName), 'junction');
   }
 }
 
