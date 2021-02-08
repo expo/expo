@@ -7,6 +7,7 @@ import withExpoRoot from './withExpoRoot';
 import { InitialProps } from './withExpoRoot.types';
 
 if (__DEV__) {
+  // TODO: Make this not a side-effect
   activateKeepAwake();
 }
 
