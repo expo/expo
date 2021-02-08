@@ -61,6 +61,11 @@ interface DevMenuManagerInterface {
   fun serializedItems(): List<Bundle>
 
   /**
+   * @return a list of dev menu screens serialized to the [Bundle].
+   */
+  fun serializedScreens(): List<Bundle>
+
+  /**
    * @return a instance of [DevMenuSessionInterface] that keeps the details of the currently opened dev menu session,
    * or `null` if menu isn't opened.
    */
@@ -81,4 +86,9 @@ interface DevMenuManagerInterface {
    * Synchronizes [ReactInstanceManager] from delegate with one saved in [DevMenuManger].
    */
   fun synchronizeDelegate()
+
+  /**
+   * Set the current screen on which all action will be dispatched.
+   */
+  fun setCurrentScreen(screen: String?)
 }

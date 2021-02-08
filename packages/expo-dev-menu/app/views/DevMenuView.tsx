@@ -41,7 +41,7 @@ class DevMenuView extends React.PureComponent<Props, undefined> {
     return (
       <>
         <DevMenuAppInfo appInfo={appInfo} />
-        <View style={styles.itemsContainer}>{this.renderItems()}</View>
+        {this.renderItems()}
       </>
     );
   }
@@ -79,9 +79,6 @@ const styles = StyleSheet.create({
   },
   appInfo: {
     borderBottomWidth: 2 / PixelRatio.get(),
-  },
-  itemsContainer: {
-    marginTop: 7,
   },
 });
 

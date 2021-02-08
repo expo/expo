@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 @objc
-open class DevMenuAction: DevMenuItem {
+open class DevMenuAction: DevMenuScreenItem {
   @objc
   public let actionId: String
 
@@ -10,6 +10,21 @@ open class DevMenuAction: DevMenuItem {
 
   @objc
   public var keyCommand: UIKeyCommand?
+  
+  @objc
+  open var isAvailable: () -> Bool = { true }
+
+  @objc
+  open var isEnabled: () -> Bool = { false }
+
+  @objc
+  open var label: () -> String = { "" }
+
+  @objc
+  open var detail: () -> String = { "" }
+
+  @objc
+  open var glyphName: () -> String = { "" }
 
   @objc
   public init(withId id: String) {
@@ -24,6 +39,11 @@ open class DevMenuAction: DevMenuItem {
   }
 
   @objc
+  open func registerKeyCommand(input: String, modifiers: UIKeyModifierFlags) {
+    keyCommand = UIKeyCommand(input: input, modifierFlags: modifiers, action: #selector(DevMenuUIResponderExtensionProtocol.EXDevMenu_handleKeyCommand(_:)))
+  }
+  
+  @objc
   open override func serialize() -> [String : Any] {
     var dict = super.serialize()
     dict["actionId"] = actionId
@@ -31,12 +51,14 @@ open class DevMenuAction: DevMenuItem {
       "input": keyCommand!.input,
       "modifiers": exportKeyCommandModifiers()
     ]
-    return dict
-  }
+    
+    dict["isAvailable"] = isAvailable()
+    dict["isEnabled"] = isAvailable()
+    dict["label"] = label()
+    dict["detail"] = detail()
+    dict["glyphName"] = glyphName()
 
-  @objc
-  open func registerKeyCommand(input: String, modifiers: UIKeyModifierFlags) {
-    keyCommand = UIKeyCommand(input: input, modifierFlags: modifiers, action: #selector(DevMenuUIResponderExtensionProtocol.EXDevMenu_handleKeyCommand(_:)))
+    return dict
   }
   
   private func exportKeyCommandModifiers() -> Int {
