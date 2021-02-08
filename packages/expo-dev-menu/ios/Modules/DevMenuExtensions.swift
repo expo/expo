@@ -93,42 +93,42 @@ open class DevMenuExtensions: NSObject, RCTBridgeModule, DevMenuExtensionProtoco
     let testScreen = DevMenuScreen("testScreen")
 
     let selectionList = DevMenuSelectionList()
-    let relase10 = DevMenuSelectionList.Item()
-    relase10.isChecked = { true }
-    relase10.title = { "release-1.0" }
-    relase10.warning = { "You are currently running an older development client version than the latest \"release-1.0\" update. To get the latest, upgrade this development client app." }
-    let relase10ProductionTag = DevMenuSelectionList.Item.Tag()
-    relase10ProductionTag.glyphName = { "ios-git-network" }
-    relase10ProductionTag.text = { "production" }
+    let release10 = DevMenuSelectionList.Item()
+    release10.isChecked = { true }
+    release10.title = { "release-1.0" }
+    release10.warning = { "You are currently running an older development client version than the latest \"release-1.0\" update. To get the latest, upgrade this development client app." }
+    let release10ProductionTag = DevMenuSelectionList.Item.Tag()
+    release10ProductionTag.glyphName = { "ios-git-network" }
+    release10ProductionTag.text = { "production" }
     
-    let relase10ProgressTag = DevMenuSelectionList.Item.Tag()
-    relase10ProgressTag.glyphName = { "ios-cloud" }
-    relase10ProgressTag.text = { "90%" }
+    let release10ProgressTag = DevMenuSelectionList.Item.Tag()
+    release10ProgressTag.glyphName = { "ios-cloud" }
+    release10ProgressTag.text = { "90%" }
     
-    relase10.tags = { [relase10ProductionTag, relase10ProgressTag] }
+    release10.tags = { [release10ProductionTag, release10ProgressTag] }
     
     let pr134 = DevMenuSelectionList.Item()
     pr134.title = { "pr-134" }
     
-    let relase11 = DevMenuSelectionList.Item()
-    relase11.isChecked = { false }
-    relase11.title = { "release-1.1" }
-    let relase11ProductionTag = DevMenuSelectionList.Item.Tag()
-    relase11ProductionTag.glyphName = { "ios-git-network" }
-    relase11ProductionTag.text = { "production" }
+    let release11 = DevMenuSelectionList.Item()
+    release11.isChecked = { false }
+    release11.title = { "release-1.1" }
+    let release11ProductionTag = DevMenuSelectionList.Item.Tag()
+    release11ProductionTag.glyphName = { "ios-git-network" }
+    release11ProductionTag.text = { "production" }
     
-    let relase11ProgressTag = DevMenuSelectionList.Item.Tag()
-    relase11ProgressTag.glyphName = { "ios-cloud" }
-    relase11ProgressTag.text = { "10%" }
+    let release11ProgressTag = DevMenuSelectionList.Item.Tag()
+    release11ProgressTag.glyphName = { "ios-cloud" }
+    release11ProgressTag.text = { "10%" }
     
-    relase11.tags = { [relase11ProductionTag, relase11ProgressTag] }
+    release11.tags = { [release11ProductionTag, release11ProgressTag] }
     
     let pr21 = DevMenuSelectionList.Item()
     pr21.title = { "pr-21" }
     
-    selectionList.addItem(relase10)
+    selectionList.addItem(release10)
     selectionList.addItem(pr134)
-    selectionList.addItem(relase11)
+    selectionList.addItem(release11)
     selectionList.addItem(pr21)
     
     testScreen.addItem(selectionList)
