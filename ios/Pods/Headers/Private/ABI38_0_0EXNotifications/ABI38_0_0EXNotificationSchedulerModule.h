@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI38_0_0/Expo/EXNotifications/ABI38_0_0EXNotifications/Notifications/Scheduling/ABI38_0_0EXNotificationSchedulerModule.h

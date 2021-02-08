@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI38_0_0/Expo/EXSegment/ABI38_0_0EXSegment/ABI38_0_0EXSegment.h

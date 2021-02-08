@@ -1,1 +1,0 @@
-../../../../../versioned-react-native/ABI38_0_0/ReactNative/Libraries/Network/ABI38_0_0RCTNetworkPlugins.h

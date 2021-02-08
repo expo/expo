@@ -1,1 +1,0 @@
-../../../../../packages/unimodules-camera-interface/ios/UMCameraInterface/UMCameraInterface.h
