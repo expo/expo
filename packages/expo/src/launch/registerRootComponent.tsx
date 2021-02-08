@@ -1,7 +1,18 @@
 import 'expo/build/Expo.fx';
+import { activateKeepAwake } from 'expo-keep-awake';
 import * as React from 'react';
 import { AppRegistry } from 'react-native';
 
-export default function registerRootComponent<P>(component: React.ComponentType<P>): void {
-  AppRegistry.registerComponent('main', () => component);
+import withExpoRoot from './withExpoRoot';
+import { InitialProps } from './withExpoRoot.types';
+
+if (__DEV__) {
+  // TODO: Make this not a side-effect
+  activateKeepAwake();
+}
+
+export default function registerRootComponent<P extends InitialProps>(
+  component: React.ComponentType<P>
+): void {
+  AppRegistry.registerComponent('main', () => withExpoRoot(component));
 }
