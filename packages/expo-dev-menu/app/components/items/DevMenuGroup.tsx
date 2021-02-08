@@ -4,6 +4,7 @@ import { StyleSheet, PixelRatio, View } from 'react-native';
 import { DevMenuItemAnyType, DevMenuItemProps, DevMenuItemEnum } from '../../DevMenuInternal';
 import DevMenuItemAction from './DevMenuAction';
 import DevMenuItemLink from './DevMenuLink';
+import DevMenuSelectionList from './DevMenuSelectionList';
 
 type Props = {
   items: DevMenuItemAnyType[];
@@ -20,6 +21,8 @@ class DevMenuItem extends React.PureComponent<DevMenuItemProps> {
         return <DevMenuItemsList items={item.items} />;
       case DevMenuItemEnum.LINK:
         return <DevMenuItemLink item={item} />;
+      case DevMenuItemEnum.SELECTION_LIST:
+        return <DevMenuSelectionList item={item} />;
       default:
         return null;
     }

@@ -91,7 +91,48 @@ open class DevMenuExtensions: NSObject, RCTBridgeModule, DevMenuExtensionProtoco
   @objc
   open func devMenuScreens() -> [DevMenuScreen]? {
     let testScreen = DevMenuScreen("testScreen")
-    testScreen.addItem(DevMenuExtensions.reloadAction {})
+
+    let selectionList = DevMenuSelectionList()
+    let relase10 = DevMenuSelectionList.Item()
+    relase10.isChecked = { true }
+    relase10.title = { "release-1.0" }
+    relase10.warning = { "You are currently running an older development client version than the latest \"release-1.0\" update. To get the latest, upgrade this development client app." }
+    let relase10ProductionTag = DevMenuSelectionList.Item.Tag()
+    relase10ProductionTag.glyphName = { "ios-git-network" }
+    relase10ProductionTag.text = { "production" }
+    
+    let relase10ProgressTag = DevMenuSelectionList.Item.Tag()
+    relase10ProgressTag.glyphName = { "ios-cloud" }
+    relase10ProgressTag.text = { "90%" }
+    
+    relase10.tags = { [relase10ProductionTag, relase10ProgressTag] }
+    
+    let pr134 = DevMenuSelectionList.Item()
+    pr134.title = { "pr-134" }
+    
+    let relase11 = DevMenuSelectionList.Item()
+    relase11.isChecked = { false }
+    relase11.title = { "release-1.1" }
+    let relase11ProductionTag = DevMenuSelectionList.Item.Tag()
+    relase11ProductionTag.glyphName = { "ios-git-network" }
+    relase11ProductionTag.text = { "production" }
+    
+    let relase11ProgressTag = DevMenuSelectionList.Item.Tag()
+    relase11ProgressTag.glyphName = { "ios-cloud" }
+    relase11ProgressTag.text = { "10%" }
+    
+    relase11.tags = { [relase11ProductionTag, relase11ProgressTag] }
+    
+    let pr21 = DevMenuSelectionList.Item()
+    pr21.title = { "pr-21" }
+    
+    selectionList.addItem(relase10)
+    selectionList.addItem(pr134)
+    selectionList.addItem(relase11)
+    selectionList.addItem(pr21)
+    
+    testScreen.addItem(selectionList)
+    
     return [testScreen]
   }
 

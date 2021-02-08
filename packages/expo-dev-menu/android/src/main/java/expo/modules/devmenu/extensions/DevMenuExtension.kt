@@ -15,6 +15,7 @@ import expo.interfaces.devmenu.DevMenuExtensionInterface
 import expo.interfaces.devmenu.items.DevMenuItemImportance
 import expo.interfaces.devmenu.items.DevMenuItemsContainer
 import expo.interfaces.devmenu.items.DevMenuScreen
+import expo.interfaces.devmenu.items.DevMenuSelectionList
 import expo.interfaces.devmenu.items.KeyCommand
 import expo.interfaces.devmenu.items.screen
 import expo.modules.devmenu.DEV_MENU_TAG
@@ -137,18 +138,51 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
   override fun devMenuScreens(): List<DevMenuScreen>? {
     return listOf(
       screen("testScreen") {
-        action("reload", {}) {
-          label = { "Reload" }
-          glyphName = { "reload" }
-          keyCommand = KeyCommand(KeyEvent.KEYCODE_R)
-          importance = DevMenuItemImportance.HIGHEST.value
-        }
+        group {
+          selectionList {
+            addItem(DevMenuSelectionList.Item().apply {
+              isChecked = { true }
+              title = { "release-1.0" }
+              warning = { "You are currently running an older development client version than the latest \"release-1.0\" update. To get the latest, upgrade this development client app." }
+              tags = {
+                listOf(
+                  DevMenuSelectionList.Item.Tag().apply {
+                    glyphName = { "ios-git-network" }
+                    text = { "production" }
+                  },
+                  DevMenuSelectionList.Item.Tag().apply {
+                    glyphName = { "ios-cloud" }
+                    text = { "90%" }
+                  }
+                )
+              }
+            })
 
-        action("reload", {}) {
-          label = { "Reload" }
-          glyphName = { "reload" }
-          keyCommand = KeyCommand(KeyEvent.KEYCODE_R)
-          importance = DevMenuItemImportance.HIGHEST.value
+            addItem(DevMenuSelectionList.Item().apply {
+              title = { "pr-134" }
+            })
+
+            addItem(DevMenuSelectionList.Item().apply {
+              title = { "release-1.1" }
+              warning = { "You are currently running an older development client version than the latest \"release-1.0\" update. To get the latest, upgrade this development client app." }
+              tags = {
+                listOf(
+                  DevMenuSelectionList.Item.Tag().apply {
+                    glyphName = { "ios-git-network" }
+                    text = { "production" }
+                  },
+                  DevMenuSelectionList.Item.Tag().apply {
+                    glyphName = { "ios-cloud" }
+                    text = { "10%" }
+                  }
+                )
+              }
+            })
+
+            addItem(DevMenuSelectionList.Item().apply {
+              title = { "pr-21" }
+            })
+          }
         }
       }
     )

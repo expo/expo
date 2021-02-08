@@ -8,6 +8,7 @@ open class DevMenuItem: NSObject {
     case Group = 2
     case Screen = 3
     case Link = 4
+    case SelectionList = 5
   }
 
   @objc

@@ -17,6 +17,7 @@ interface DevMenuDSLItemsContainerInterface : DevMenuItemsContainerInterface {
   fun group(init: DevMenuGroup.() -> Unit): DevMenuGroup
   fun action(actionId: String, action: () -> Unit, init: DevMenuAction.() -> Unit): DevMenuAction
   fun link(target: String, init: DevMenuLink.() -> Unit): DevMenuLink
+  fun selectionList(init: DevMenuSelectionList.() -> Unit): DevMenuSelectionList
 }
 
 fun screen(name: String, init: DevMenuScreen.() -> Unit): DevMenuScreen {
