@@ -119,4 +119,10 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
       rctDevMenu.show()
     }
   }
+  
+  @objc
+  func onScreenChangeAsync(_ currentScreen: String?, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    manager.setCurrentScreen(currentScreen)
+    resolve(nil)
+  }
 }
