@@ -10,7 +10,7 @@ interface DevMenuExtensionInterface {
   fun getName(): String
 
   /**
-   * Returns an `DevMenuItemsContainer` that contains the dev menu items to show on the main screen.
+   * Returns a `DevMenuItemsContainer` that contains the dev menu items to show on the main screen.
    * It's called only once for the extension instance — results are being cached on first dev menu launch.
    */
   fun devMenuItems(): DevMenuItemsContainerInterface?
