@@ -386,7 +386,6 @@ export default {
           "Build number for your iOS standalone app. Corresponds to `CFBundleVersion` and must match Apple's [specified format](https://developer.apple.com/library/content/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html#//apple_ref/doc/uid/20001431-102364). (Note: Transporter will pull the value for `Version Number` from `expo.version` and NOT from `expo.ios.buildNumber`.)",
         type: 'string',
         pattern: '^[A-Za-z0-9\\.]+$',
-        meta: { bareWorkflow: 'Set this value in `info.plist` under `CFBundleIdentifier`' },
       },
       backgroundColor: {
         description:
