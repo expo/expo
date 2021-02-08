@@ -35,7 +35,12 @@
 {
   NSString *scope = @"";
   NSString *identifier = @"";
-  NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^(.*(?<!\\\\)|.*(?:\\\\\\\\)+)/(.*)$"
+  NSString *pattern = @"^"
+                       "((?:[^/\\\\]|\\\\[/\\\\])*)" // escaped scope key
+                       "/"                           // delimiter
+                       "((?:[^/\\\\]|\\\\[/\\\\])*)" // escaped original category identifier
+                       "$";
+  NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern
                                                                          options:0
                                                                            error:nil];
   NSTextCheckingResult *match = [regex firstMatchInString:scopedIdentifier
