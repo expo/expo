@@ -1,6 +1,7 @@
 ---
 id: clipboard
 title: Clipboard
+searchable: false
 ---
 
 `Clipboard` gives you an interface for setting and getting content from Clipboard on both Android and iOS
