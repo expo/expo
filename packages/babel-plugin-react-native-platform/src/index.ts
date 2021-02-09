@@ -76,7 +76,7 @@ export default function(api: any, options: UniversalPlatformPluginOptions) {
     visitor: {
       IfStatement: destroyBranch,
       ConditionalExpression: destroyBranch,
-      // Catch remaining refs such as: console.log("Dev: ", __DEV__);
+      // Catch remaining refs such as: console.log("Platform: ", Platform.OS);
       Identifier: collapseTestVisitor.Identifier,
       MemberExpression: collapseTestVisitor.MemberExpression,
       CallExpression(path: NodePath<t.CallExpression>) {
