@@ -7,6 +7,6 @@
 @interface UMModuleRegistryHolderReactModule : NSObject <RCTBridgeModule>
 
 - (instancetype)initWithModuleRegistry:(UMModuleRegistry *)moduleRegistry;
-- (UMModuleRegistry *)moduleRegistry;
+- (UMModuleRegistry *)umModuleRegistry;
 
 @end
