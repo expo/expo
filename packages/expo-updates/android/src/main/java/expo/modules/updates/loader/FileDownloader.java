@@ -252,7 +252,7 @@ public class FileDownloader {
     return requestBuilder.build();
   }
 
-  private static Request setHeadersForManifestUrl(UpdatesConfiguration configuration, Context context) {
+  /* package */ static Request setHeadersForManifestUrl(UpdatesConfiguration configuration, Context context) {
     Request.Builder requestBuilder = new Request.Builder()
             .url(configuration.getUpdateUrl().toString())
             .header("Accept", "application/expo+json,application/json")
@@ -261,8 +261,12 @@ public class FileDownloader {
             .header("Expo-Updates-Environment", "BARE")
             .header("Expo-JSON-Error", "true")
             // as of 2020-11-25, the EAS Update alpha returns an error if Expo-Accept-Signature: true is included in the request
-            .header("Expo-Accept-Signature", String.valueOf(configuration.usesLegacyManifest()))
-            .cacheControl(CacheControl.FORCE_NETWORK);
+            .header("Expo-Accept-Signature", String.valueOf(configuration.usesLegacyManifest()));
+
+    // legacy manifest loads should ignore cache-control headers from the server and always load remotely
+    if (configuration.usesLegacyManifest()) {
+      requestBuilder = requestBuilder.cacheControl(CacheControl.FORCE_NETWORK);
+    }
 
     String runtimeVersion = configuration.getRuntimeVersion();
     String sdkVersion = configuration.getSdkVersion();
