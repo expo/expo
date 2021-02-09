@@ -13,7 +13,7 @@ function default_1(api, options) {
     const { platform, mode } = options;
     const isDevelopment = mode !== 'production';
     if (!platform) {
-        throw new Error('babel-plugin-universal-platforms: "platform" option must be defined');
+        throw new Error('babel-plugin-react-native-platform: "platform" option must be defined');
     }
     const collapseTestVisitor = {
         /**
@@ -47,7 +47,7 @@ function default_1(api, options) {
                     p.replaceWith(core_1.types.stringLiteral(mode));
                 }
             }
-        }
+        },
     };
     function destroyBranch(p) {
         // @ts-ignore
@@ -71,7 +71,7 @@ function default_1(api, options) {
         }
     }
     return {
-        name: 'Remove unused platforms from the Platform module of unimodules/core',
+        name: 'Remove unused platforms from the Platform module of react-native',
         visitor: {
             IfStatement: destroyBranch,
             ConditionalExpression: destroyBranch,

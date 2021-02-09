@@ -13,10 +13,10 @@ export function transform(input: string, options: UniversalPlatformPluginOptions
   });
 
   const transpiled = value == null ? '' : (value.code as string);
-  return transpiled
+  return transpiled;
 }
 
-export function compress(input: string ): MinifyOutput {
+export function compress(input: string): MinifyOutput {
   return terser(input, {
     mangle: false,
     compress: {
@@ -24,14 +24,14 @@ export function compress(input: string ): MinifyOutput {
     },
     output: {
       beautify: true,
-    }
+    },
   });
 }
 
-export function testCompressed(input:string): string {
+export function testCompressed(input: string): string {
   const { warnings, error, code } = compress(input);
-  expect(warnings).not.toBeDefined()
-  expect(error).not.toBeDefined()
+  expect(warnings).not.toBeDefined();
+  expect(error).not.toBeDefined();
   expect(code).toMatchSnapshot();
   return code as string;
 }

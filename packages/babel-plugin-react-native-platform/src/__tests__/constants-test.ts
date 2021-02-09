@@ -1,7 +1,8 @@
 import { testCompressed, transform } from './utils';
 
 it(`removes __DEV__ and process.env.NODE_ENV`, () => {
-  const transpiledCode = transform(`
+  const transpiledCode = transform(
+    `
   if (__DEV__) {
     console.log("DEV MODE")
   } else {
@@ -12,12 +13,14 @@ it(`removes __DEV__ and process.env.NODE_ENV`, () => {
   } else {
     console.log("PROD MODE")
   }
-  `, {
-    platform: `ios`,
-    mode: 'development',
-  });
+  `,
+    {
+      platform: `ios`,
+      mode: 'development',
+    }
+  );
   expect(transpiledCode).toMatchSnapshot();
-  const minifiedCode = testCompressed(transpiledCode)
+  const minifiedCode = testCompressed(transpiledCode);
   expect(minifiedCode).toMatch('DEV');
   expect(minifiedCode).not.toMatch('PROD');
 });
@@ -37,7 +40,7 @@ it(`keeps __DEV__ redefinition`, () => {
 
   expect(transpiledCode).toMatch('__DEV__');
   expect(transpiledCode).not.toMatch('process.env.NODE_ENV');
-  testCompressed(transpiledCode)
+  testCompressed(transpiledCode);
 });
 
 // react-native-web redefines this value.
@@ -53,5 +56,5 @@ it(`should pass over process.env.NODE_ENV redefinition`, () => {
     }
   );
   expect(transpiledCode).toMatch(`process.env.NODE_ENV = 'production'`);
-  testCompressed(transpiledCode)
+  testCompressed(transpiledCode);
 });

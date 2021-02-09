@@ -18,7 +18,7 @@ it(`converts switch-statement predicates for Terser`, () => {
     }
   );
   expect(transpiledCode).toMatch('switch ("web")');
-  testCompressed(transpiledCode)
+  testCompressed(transpiledCode);
 });
 
 describe(`if statements`, () => {
@@ -43,7 +43,7 @@ describe(`if statements`, () => {
 
       expect(transpiledCode).not.toMatch('Platform.OS');
       expect(transpiledCode).toMatchSnapshot();
-      testCompressed(transpiledCode)
+      testCompressed(transpiledCode);
     });
   }
 });
