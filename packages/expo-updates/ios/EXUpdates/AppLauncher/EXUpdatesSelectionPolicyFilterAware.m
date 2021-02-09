@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
   EXUpdatesUpdate *runnableUpdate;
   NSDate *runnableUpdateCommitTime;
   for (EXUpdatesUpdate *update in updates) {
-    if (![_runtimeVersions containsObject:update.runtimeVersion] || [self isUpdate:update filteredWithFilters:filters]) {
+    if (![_runtimeVersions containsObject:update.runtimeVersion] || ![self doesUpdate:update matchFilters:filters]) {
       continue;
     }
     NSDate *commitTime = update.commitTime;
@@ -61,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
       if (!nextNewestUpdate || [update.commitTime compare:nextNewestUpdate.commitTime] == NSOrderedDescending) {
         nextNewestUpdate = update;
       }
-      if (![self isUpdate:update filteredWithFilters:filters] &&
+      if ([self doesUpdate:update matchFilters:filters] &&
           (!nextNewestUpdateMatchingFilters || [update.commitTime compare:nextNewestUpdateMatchingFilters.commitTime] == NSOrderedDescending)) {
         nextNewestUpdateMatchingFilters = update;
       }
@@ -86,19 +86,19 @@ NS_ASSUME_NONNULL_BEGIN
   }
   // if the current update doesn't pass the manifest filters
   // we should load the new update no matter the commitTime
-  if ([self isUpdate:launchedUpdate filteredWithFilters:filters]) {
+  if (![self doesUpdate:launchedUpdate matchFilters:filters]) {
     return YES;
   } else {
     // if the new update doesn't pass the manifest filters AND the launched update does
     // (i.e. we're sure we have an update that passes), we should not load the new update
-    if ([self isUpdate:newUpdate filteredWithFilters:filters]) {
+    if (![self doesUpdate:newUpdate matchFilters:filters]) {
       return NO;
     }
   }
   return [launchedUpdate.commitTime compare:newUpdate.commitTime] == NSOrderedAscending;
 }
 
-- (BOOL)isUpdate:(EXUpdatesUpdate *)update filteredWithFilters:(nullable NSDictionary *)filters
+- (BOOL)doesUpdate:(EXUpdatesUpdate *)update matchFilters:(nullable NSDictionary *)filters
 {
   if (!filters || !update.metadata) {
     return NO;
@@ -114,26 +114,6 @@ NS_ASSUME_NONNULL_BEGIN
     id valueFromManifest = updateMetadata[key];
     if (valueFromManifest) {
       passes = [obj isEqual:valueFromManifest];
-    } else if ([key isKindOfClass:[NSString class]] && [(NSString *)key containsString:@"."]) {
-      NSArray<NSString *> *components = [(NSString *)key componentsSeparatedByString:@"."];
-      NSDictionary *nestedObject = updateMetadata;
-      for (NSUInteger i = 0; i < components.count; i++) {
-        NSString *component = components[i];
-        id value = nestedObject[component];
-        if (!value) {
-          // if the nested key doesn't exist in the manifest, just skip this filter
-          passes = YES;
-          break;
-        } else if (i + 1 == components.count) {
-          passes = [obj isEqual:value];
-        } else if (![value isKindOfClass:[NSDictionary class]]) {
-          // if the full nested key doesn't exist/is cut short in the manifest, skip the filter
-          passes = YES;
-          break;
-        } else {
-          nestedObject = (NSDictionary *)value;
-        }
-      }
     }
 
     // once an update fails one filter, break early; we don't need to check the rest
@@ -142,7 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
   }];
 
-  return !passes;
+  return passes;
 }
 
 @end

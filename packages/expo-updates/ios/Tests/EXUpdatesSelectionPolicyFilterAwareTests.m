@@ -14,7 +14,7 @@
 @property (nonatomic, strong) EXUpdatesUpdate *updateDefault2;
 @property (nonatomic, strong) EXUpdatesUpdate *updateRollout1;
 @property (nonatomic, strong) EXUpdatesUpdate *updateRollout2;
-@property (nonatomic, strong) EXUpdatesUpdate *updateNested;
+@property (nonatomic, strong) EXUpdatesUpdate *updateMultipleFilters;
 @property (nonatomic, strong) EXUpdatesSelectionPolicyFilterAware *selectionPolicy;
 @property (nonatomic, strong) NSDictionary *manifestFilters;
 
@@ -79,13 +79,13 @@
     @"updateMetadata": @{@"releaseName": @"rollout"}
   } config:config database:database];
 
-  _updateNested = [EXUpdatesNewUpdate updateWithNewManifest:@{
+  _updateMultipleFilters = [EXUpdatesNewUpdate updateWithNewManifest:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e72",
     @"createdAt": @"2021-01-11T19:39:22.480Z",
     @"runtimeVersion": @"1.0",
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
-    @"updateMetadata": @{@"nested":@{@"object":@{@"key": @"value"}}}
+    @"updateMetadata": @{@"key1": @"value1", @"key2": @"value2"}
   } config:config database:database];
 
   _selectionPolicy = [[EXUpdatesSelectionPolicyFilterAware alloc] initWithRuntimeVersion:runtimeVersion];
@@ -157,15 +157,24 @@
   XCTAssertTrue([_selectionPolicy shouldLoadNewUpdate:_updateDefault2 withLaunchedUpdate:_updateDefault1 filters:_manifestFilters], @"should choose to load a new update that doesn't match the manifest filters if no existing updates match the manifest filters");
 }
 
-- (void)testIsUpdateFiltered_Nested
+- (void)testDoesUpdateMatchFilters_MultipleFilters
 {
-  NSDictionary *nestedManifestFilters = @{@"nested.object.key": @"different-value"};
+  NSDictionary *filtersBadMatch = @{
+    @"key1": @"value1",
+    @"key2": @"wrong-value"
+  };
+  XCTAssertFalse([_selectionPolicy doesUpdate:_updateMultipleFilters matchFilters:filtersBadMatch], @"should fail unless all filters pass");
 
-  // an update that has the matching key with a different value should be filtered out
-  XCTAssertTrue([_selectionPolicy isUpdate:_updateNested filteredWithFilters:nestedManifestFilters]);
+  NSDictionary *filtersGoodMatch = @{
+    @"key1": @"value1",
+    @"key2": @"value2"
+  };
+  XCTAssertTrue([_selectionPolicy doesUpdate:_updateMultipleFilters matchFilters:filtersGoodMatch], @"should pass if all filters pass");
+}
 
-  // an update that doesn't have the key should not be filtered out
-  XCTAssertFalse([_selectionPolicy isUpdate:_updateDefault1 filteredWithFilters:nestedManifestFilters]);
+- (void)testDoesUpdateMatchFilters_EmptyMatchesAll
+{
+  XCTAssertTrue([_selectionPolicy doesUpdate:_updateDefault1 matchFilters:@{@"fieldThatUpdateDoesntHave": @"value"}], @"no field counts as a match");
 }
 
 @end
