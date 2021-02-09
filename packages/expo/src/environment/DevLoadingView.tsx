@@ -1,16 +1,25 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { Animated, StyleSheet, Text, NativeModules, NativeEventEmitter, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-const NativeDevLoadingView = NativeModules.DevLoadingView;
-const nativeDevLoadingViewEventEmitter = new NativeEventEmitter(NativeDevLoadingView);
 
 export default function DevLoadingView() {
   const [isDevLoading, setIsDevLoading] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const translateY = useRef(new Animated.Value(0)).current;
+  const emitter = useMemo<NativeEventEmitter>(() => {
+    try {
+      return new NativeEventEmitter(NativeModules.DevLoadingView);
+    } catch (error) {
+      throw new Error(
+        'Failed to instantiate native emitter in `DevLoadingView` because the native module `DevLoadingView` is undefined: ' +
+          error.message
+      );
+    }
+  }, []);
 
   useEffect(() => {
+    if (!emitter) return;
+
     function handleShowMessage({ message }) {
       // "Refreshing..." is the standard fast refresh message and it's the
       // only time we want to display this overlay.
@@ -45,17 +54,14 @@ export default function DevLoadingView() {
       });
     }
 
-    nativeDevLoadingViewEventEmitter.addListener('devLoadingView:showMessage', handleShowMessage);
-    nativeDevLoadingViewEventEmitter.addListener('devLoadingView:hide', handleHide);
+    emitter.addListener('devLoadingView:showMessage', handleShowMessage);
+    emitter.addListener('devLoadingView:hide', handleHide);
 
     return function cleanup() {
-      nativeDevLoadingViewEventEmitter.removeListener(
-        'devLoadingView:showMessage',
-        handleShowMessage
-      );
-      nativeDevLoadingViewEventEmitter.removeListener('devLoadingView:hide', handleHide);
+      emitter.removeListener('devLoadingView:showMessage', handleShowMessage);
+      emitter.removeListener('devLoadingView:hide', handleHide);
     };
-  }, [translateY]);
+  }, [translateY, emitter]);
 
   if (isDevLoading || isAnimating) {
     return (
