@@ -1,7 +1,7 @@
 import { testCompressed, transform } from './utils';
 
 it(`converts switch-statement predicates for Terser`, () => {
-  const transpiledCode = transform(
+  const code = transform(
     `
     switch (Platform.OS) {
       case 'web':
@@ -16,8 +16,8 @@ it(`converts switch-statement predicates for Terser`, () => {
       platform: `web`,
     }
   );
-  expect(transpiledCode).toMatch('switch ("web")');
-  testCompressed(transpiledCode);
+  expect(code).toMatch('switch ("web")');
+  testCompressed(code);
 });
 
 describe(`if statements`, () => {
@@ -35,13 +35,13 @@ describe(`if statements`, () => {
 
   for (const platform of ['iOS', 'Android', 'web', 'custom']) {
     it(`only saves ${platform} code`, () => {
-      const transpiledCode = transform(DEFAULT_BLOCK, {
+      const code = transform(DEFAULT_BLOCK, {
         platform: platform.toLowerCase(),
       });
 
-      expect(transpiledCode).not.toMatch('Platform.OS');
-      expect(transpiledCode).toMatchSnapshot();
-      testCompressed(transpiledCode);
+      expect(code).not.toMatch('Platform.OS');
+      expect(code).toMatchSnapshot();
+      testCompressed(code);
     });
   }
 });

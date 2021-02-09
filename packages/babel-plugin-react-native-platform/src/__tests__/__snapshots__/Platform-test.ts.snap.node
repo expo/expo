@@ -88,3 +88,5 @@ exports[`replaces Platform.select with the value for the matching platform 2`] =
     default: \\"default\\"
 }, value = () => {};"
 `;
+
+exports[`skips non-matching RNPlatform.OS 1`] = `"const value = RNPlatform.OS;"`;

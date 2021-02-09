@@ -12,8 +12,8 @@ export function transform(input: string, options: UniversalPlatformPluginOptions
     configFile: false,
   });
 
-  const transpiled = value == null ? '' : (value.code as string);
-  return transpiled;
+  const code = value == null ? '' : (value.code as string);
+  return code;
 }
 
 export function compress(input: string): MinifyOutput {

@@ -10,8 +10,7 @@ function isPlatformSelect(path) {
         core_1.types.isObjectExpression(path.node.arguments[0]));
 }
 function default_1(api, options) {
-    const { platform, mode } = options;
-    const isDevelopment = mode !== 'production';
+    const { platform } = options;
     if (!platform) {
         throw new Error('babel-plugin-react-native-platform: "platform" option must be defined');
     }
@@ -28,9 +27,6 @@ function default_1(api, options) {
                 if (p.node.name === '__PLATFORM__') {
                     p.replaceWith(core_1.types.stringLiteral(platform));
                 }
-                else if (p.node.name === '__DEV__') {
-                    p.replaceWith(core_1.types.booleanLiteral(isDevelopment));
-                }
             }
         },
         /**
@@ -42,9 +38,6 @@ function default_1(api, options) {
             if (!core_1.types.isAssignmentExpression(p.parent)) {
                 if (p.matchesPattern('Platform.OS')) {
                     p.replaceWith(core_1.types.stringLiteral(platform));
-                }
-                else if (p.matchesPattern('process.env.NODE_ENV')) {
-                    p.replaceWith(core_1.types.stringLiteral(mode));
                 }
             }
         },
@@ -75,7 +68,7 @@ function default_1(api, options) {
         visitor: {
             IfStatement: destroyBranch,
             ConditionalExpression: destroyBranch,
-            // Catch remaining refs such as: console.log("Dev: ", __DEV__);
+            // Catch remaining refs such as: console.log("Platform: ", Platform.OS);
             Identifier: collapseTestVisitor.Identifier,
             MemberExpression: collapseTestVisitor.MemberExpression,
             CallExpression(path) {

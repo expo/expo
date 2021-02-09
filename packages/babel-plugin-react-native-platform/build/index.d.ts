@@ -1,7 +1,6 @@
 import { NodePath, types as t } from '@babel/core';
 export declare type UniversalPlatformPluginOptions = {
     platform: string;
-    mode: string;
 };
 export default function (api: any, options: UniversalPlatformPluginOptions): {
     name: string;

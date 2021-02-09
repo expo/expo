@@ -1,7 +1,7 @@
 import { testCompressed, transform } from './utils';
 
 it(`converts Platform.OS to a static value for Terser`, () => {
-  const transpiledCode = transform(
+  const code = transform(
     `
     const value = Platform.OS;
     `,
@@ -10,13 +10,27 @@ it(`converts Platform.OS to a static value for Terser`, () => {
     }
   );
 
-  expect(transpiledCode).not.toMatch('Platform.OS');
-  expect(transpiledCode).toMatchSnapshot();
-  testCompressed(transpiledCode);
+  expect(code).not.toMatch('Platform.OS');
+  expect(code).toMatchSnapshot();
+  testCompressed(code);
+});
+
+it(`skips non-matching RNPlatform.OS`, () => {
+  const code = transform(
+    `
+    const value = RNPlatform.OS;
+    `,
+    {
+      platform: `ios`,
+    }
+  );
+
+  expect(code).toMatch('const value = RNPlatform.OS;');
+  testCompressed(code);
 });
 
 it(`replaces Platform.select with the default value if no platform matches`, () => {
-  const transpiledCode = transform(
+  const code = transform(
     `
       const value = Platform.select({
         android: 'android',
@@ -30,14 +44,14 @@ it(`replaces Platform.select with the default value if no platform matches`, () 
     }
   );
 
-  expect(transpiledCode).toMatch(/const value = {\s*test: true\s*}/);
-  expect(transpiledCode).not.toMatch('Platform.select');
-  expect(transpiledCode).toMatchSnapshot();
-  testCompressed(transpiledCode);
+  expect(code).toMatch(/const value = {\s*test: true\s*}/);
+  expect(code).not.toMatch('Platform.select');
+  expect(code).toMatchSnapshot();
+  testCompressed(code);
 });
 
 it(`replaces Platform.select with the value for the matching platform`, () => {
-  const transpiledCode = transform(
+  const code = transform(
     `
       const defaults = { default: 'default' };
       const value = Platform.select({
@@ -50,14 +64,14 @@ it(`replaces Platform.select with the value for the matching platform`, () => {
     }
   );
 
-  expect(transpiledCode).toMatch('const value = () => {};');
-  expect(transpiledCode).not.toMatch('Platform.select');
-  expect(transpiledCode).toMatchSnapshot();
-  testCompressed(transpiledCode);
+  expect(code).toMatch('const value = () => {};');
+  expect(code).not.toMatch('Platform.select');
+  expect(code).toMatchSnapshot();
+  testCompressed(code);
 });
 
 it(`removes unmatched platforms but leaves Platform.select if other platforms may match at runtime`, () => {
-  const transpiledCode = transform(
+  const code = transform(
     `
       const defaults = { default: 'default' };
       const value = Platform.select({
@@ -70,15 +84,15 @@ it(`removes unmatched platforms but leaves Platform.select if other platforms ma
     }
   );
 
-  expect(transpiledCode).toMatch('...defaults');
-  expect(transpiledCode).toMatch('Platform.select');
-  expect(transpiledCode).not.toMatch('ios');
-  expect(transpiledCode).toMatchSnapshot();
-  testCompressed(transpiledCode);
+  expect(code).toMatch('...defaults');
+  expect(code).toMatch('Platform.select');
+  expect(code).not.toMatch('ios');
+  expect(code).toMatchSnapshot();
+  testCompressed(code);
 });
 
 it(`replaces Platform.select with "undefined" if no platforms match`, () => {
-  const transpiledCode = transform(
+  const code = transform(
     `
       const value = Platform.select({
         android: () => {},
@@ -89,12 +103,12 @@ it(`replaces Platform.select with "undefined" if no platforms match`, () => {
     }
   );
 
-  expect(transpiledCode).toEqual('const value = undefined;');
-  testCompressed(transpiledCode);
+  expect(code).toEqual('const value = undefined;');
+  testCompressed(code);
 });
 
 it(`removes unmatched platforms but leaves Platform.select with indeterminate platforms`, () => {
-  const transpiledCode = transform(
+  const code = transform(
     `
       const value = Platform.select({
         ios: false,
@@ -106,15 +120,15 @@ it(`removes unmatched platforms but leaves Platform.select with indeterminate pl
     }
   );
 
-  expect(transpiledCode).toMatch("['andr' + 'oid']: () => {}");
-  expect(transpiledCode).toMatch('Platform.select');
-  expect(transpiledCode).not.toMatch('ios');
-  expect(transpiledCode).toMatchSnapshot();
-  testCompressed(transpiledCode);
+  expect(code).toMatch("['andr' + 'oid']: () => {}");
+  expect(code).toMatch('Platform.select');
+  expect(code).not.toMatch('ios');
+  expect(code).toMatchSnapshot();
+  testCompressed(code);
 });
 
 it(`removes unmatched platforms but leaves Platform.select with indeterminate platforms and the default case`, () => {
-  const transpiledCode = transform(
+  const code = transform(
     `
       const value = Platform.select({
         default: 'default',
@@ -124,15 +138,15 @@ it(`removes unmatched platforms but leaves Platform.select with indeterminate pl
     { platform: 'web' }
   );
 
-  expect(transpiledCode).toMatch(`['w' + 'eb']() {}`);
-  expect(transpiledCode).toMatch('Platform.select');
-  expect(transpiledCode).toMatch(`default: 'default',`);
-  expect(transpiledCode).toMatchSnapshot();
-  testCompressed(transpiledCode);
+  expect(code).toMatch(`['w' + 'eb']() {}`);
+  expect(code).toMatch('Platform.select');
+  expect(code).toMatch(`default: 'default',`);
+  expect(code).toMatchSnapshot();
+  testCompressed(code);
 });
 
 it(`leaves Platform.select if the matching platform's value is a method`, () => {
-  const transpiledCode = transform(
+  const code = transform(
     `
       const value = Platform.select({
         ios: false,
@@ -145,10 +159,10 @@ it(`leaves Platform.select if the matching platform's value is a method`, () => 
     }
   );
 
-  expect(transpiledCode).toMatch('android() {}');
-  expect(transpiledCode).toMatch('Platform.select');
-  expect(transpiledCode).not.toMatch('ios');
-  expect(transpiledCode).not.toMatch('web');
-  expect(transpiledCode).toMatchSnapshot();
-  testCompressed(transpiledCode);
+  expect(code).toMatch('android() {}');
+  expect(code).toMatch('Platform.select');
+  expect(code).not.toMatch('ios');
+  expect(code).not.toMatch('web');
+  expect(code).toMatchSnapshot();
+  testCompressed(code);
 });
