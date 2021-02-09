@@ -50,7 +50,7 @@
     @"runtimeVersion": @"1.0",
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
-    @"updateMetadata": @{@"releaseName": @"rollout"}
+    @"updateMetadata": @{@"branchName": @"rollout"}
   } config:config database:database];
 
   _updateDefault1 = [EXUpdatesNewUpdate updateWithNewManifest:@{
@@ -59,7 +59,7 @@
     @"runtimeVersion": @"1.0",
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
-    @"updateMetadata": @{@"releaseName": @"default"}
+    @"updateMetadata": @{@"branchName": @"default"}
   } config:config database:database];
   
   _updateRollout1 = [EXUpdatesNewUpdate updateWithNewManifest:@{
@@ -68,7 +68,7 @@
     @"runtimeVersion": @"1.0",
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
-    @"updateMetadata": @{@"releaseName": @"rollout"}
+    @"updateMetadata": @{@"branchName": @"rollout"}
   } config:config database:database];
   
   _updateDefault2 = [EXUpdatesNewUpdate updateWithNewManifest:@{
@@ -77,7 +77,7 @@
     @"runtimeVersion": @"1.0",
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
-    @"updateMetadata": @{@"releaseName": @"default"}
+    @"updateMetadata": @{@"branchName": @"default"}
   } config:config database:database];
   
   _updateRollout2 = [EXUpdatesNewUpdate updateWithNewManifest:@{
@@ -86,7 +86,7 @@
     @"runtimeVersion": @"1.0",
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
-    @"updateMetadata": @{@"releaseName": @"rollout"}
+    @"updateMetadata": @{@"branchName": @"rollout"}
   } config:config database:database];
 
   _updateMultipleFilters = [EXUpdatesNewUpdate updateWithNewManifest:@{
@@ -99,7 +99,7 @@
   } config:config database:database];
 
   _selectionPolicy = [[EXUpdatesSelectionPolicyFilterAware alloc] initWithRuntimeVersion:runtimeVersion];
-  _manifestFilters = @{@"releaseName": @"rollout"};
+  _manifestFilters = @{@"branchName": @"rollout"};
 }
 
 - (void)tearDown
