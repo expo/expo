@@ -13,12 +13,10 @@ function isPlatformSelect(path: NodePath<t.CallExpression>): boolean {
 
 export type UniversalPlatformPluginOptions = {
   platform: string;
-  mode: string;
 };
 
 export default function(api: any, options: UniversalPlatformPluginOptions) {
-  const { platform, mode } = options;
-  const isDevelopment = mode !== 'production';
+  const { platform } = options;
   if (!platform) {
     throw new Error('babel-plugin-react-native-platform: "platform" option must be defined');
   }
@@ -35,8 +33,6 @@ export default function(api: any, options: UniversalPlatformPluginOptions) {
       if (!t.isVariableDeclarator(p.parent)) {
         if (p.node.name === '__PLATFORM__') {
           p.replaceWith(t.stringLiteral(platform));
-        } else if (p.node.name === '__DEV__') {
-          p.replaceWith(t.booleanLiteral(isDevelopment));
         }
       }
     },
@@ -49,8 +45,6 @@ export default function(api: any, options: UniversalPlatformPluginOptions) {
       if (!t.isAssignmentExpression(p.parent)) {
         if (p.matchesPattern('Platform.OS')) {
           p.replaceWith(t.stringLiteral(platform));
-        } else if (p.matchesPattern('process.env.NODE_ENV')) {
-          p.replaceWith(t.stringLiteral(mode));
         }
       }
     },

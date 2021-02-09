@@ -7,7 +7,6 @@ it(`converts Platform.OS to a static value for Terser`, () => {
     `,
     {
       platform: `ios`,
-      mode: 'development',
     }
   );
 
@@ -28,7 +27,6 @@ it(`replaces Platform.select with the default value if no platform matches`, () 
       `,
     {
       platform: 'custom',
-      mode: 'development',
     }
   );
 
@@ -49,7 +47,6 @@ it(`replaces Platform.select with the value for the matching platform`, () => {
       `,
     {
       platform: 'ios',
-      mode: 'development',
     }
   );
 
@@ -70,7 +67,6 @@ it(`removes unmatched platforms but leaves Platform.select if other platforms ma
       `,
     {
       platform: 'android',
-      mode: 'development',
     }
   );
 
@@ -90,7 +86,6 @@ it(`replaces Platform.select with "undefined" if no platforms match`, () => {
       `,
     {
       platform: 'ios',
-      mode: 'development',
     }
   );
 
@@ -108,7 +103,6 @@ it(`removes unmatched platforms but leaves Platform.select with indeterminate pl
       `,
     {
       platform: 'android',
-      mode: 'development',
     }
   );
 
@@ -127,7 +121,7 @@ it(`removes unmatched platforms but leaves Platform.select with indeterminate pl
         ['w' + 'eb']() {}
       });
       `,
-    { platform: 'web', mode: 'development' }
+    { platform: 'web' }
   );
 
   expect(transpiledCode).toMatch(`['w' + 'eb']() {}`);
@@ -148,7 +142,6 @@ it(`leaves Platform.select if the matching platform's value is a method`, () => 
       `,
     {
       platform: 'android',
-      mode: 'development',
     }
   );
 

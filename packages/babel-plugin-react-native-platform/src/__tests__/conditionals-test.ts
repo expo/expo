@@ -14,7 +14,6 @@ it(`converts switch-statement predicates for Terser`, () => {
   `,
     {
       platform: `web`,
-      mode: 'development',
     }
   );
   expect(transpiledCode).toMatch('switch ("web")');
@@ -38,7 +37,6 @@ describe(`if statements`, () => {
     it(`only saves ${platform} code`, () => {
       const transpiledCode = transform(DEFAULT_BLOCK, {
         platform: platform.toLowerCase(),
-        mode: 'development',
       });
 
       expect(transpiledCode).not.toMatch('Platform.OS');
