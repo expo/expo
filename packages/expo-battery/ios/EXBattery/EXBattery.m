@@ -16,6 +16,17 @@
 
 UM_EXPORT_MODULE(ExpoBattery);
 
+- (NSDictionary *)constantsToExport
+{
+  BOOL _isSupported = YES;
+  
+  #if TARGET_OS_SIMULATOR
+    _isSupported = NO;
+  #endif
+  
+  return @{ @"isSupported": @(_isSupported) };
+}
+
 - (dispatch_queue_t)methodQueue
 {
   return dispatch_get_main_queue();
@@ -107,7 +118,6 @@ UM_EXPORT_MODULE(ExpoBattery);
   [_eventEmitter sendEventWithName:@"Expo.powerModeDidChange" body:result];
 }
 
-
 UM_EXPORT_METHOD_AS(getBatteryLevelAsync,
                     getBatteryLevelAsyncWithResolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
@@ -126,16 +136,6 @@ UM_EXPORT_METHOD_AS(isLowPowerModeEnabledAsync,
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   resolve(@(NSProcessInfo.processInfo.isLowPowerModeEnabled));
-}
-
-UM_EXPORT_METHOD_AS(getPowerStateAsync,
-                    getPowerStateAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
-{
-  resolve(@{
-            @"batteryLevel": @(UIDevice.currentDevice.batteryLevel),
-            @"batteryState": @(self.batteryState),
-            @"lowPowerMode": @(NSProcessInfo.processInfo.isLowPowerModeEnabled)
-            });
 }
 
 - (EXBatteryState)batteryState

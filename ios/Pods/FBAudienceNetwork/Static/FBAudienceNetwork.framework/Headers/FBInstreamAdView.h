@@ -28,8 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  A customized UIView to display an instream video ad by Facebook.
  */
-FB_CLASS_EXPORT FB_SUBCLASSING_RESTRICTED
-@interface FBInstreamAdView : UIView
+FB_CLASS_EXPORT FB_SUBCLASSING_RESTRICTED @interface FBInstreamAdView : UIView
 
 /**
  Returns YES if the instream ad has been successfully loaded.

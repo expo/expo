@@ -12,14 +12,17 @@ import org.unimodules.core.interfaces.RegistryLifecycleListener;
 import java.util.List;
 import java.util.Map;
 
-import host.exp.exponent.ExponentManifest;
+import expo.modules.notifications.notifications.categories.ExpoNotificationCategoriesModule;
+import expo.modules.notifications.notifications.handling.NotificationsHandler;
+import expo.modules.notifications.notifications.scheduling.NotificationScheduler;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.utils.ScopedContext;
 import versioned.host.exp.exponent.modules.universal.ConstantsBinding;
 import versioned.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter;
 import versioned.host.exp.exponent.modules.universal.ScopedFileSystemModule;
 import versioned.host.exp.exponent.modules.universal.ScopedUIManagerModuleWrapper;
-import versioned.host.exp.exponent.modules.universal.SecureStoreModuleBinding;
+import versioned.host.exp.exponent.modules.universal.UpdatesBinding;
+import versioned.host.exp.exponent.modules.universal.notifications.ScopedServerRegistrationModule;
 
 public class DetachedModuleRegistryAdapter extends ExpoModuleRegistryAdapter {
   public DetachedModuleRegistryAdapter(ReactModuleRegistryProvider moduleRegistryProvider) {
@@ -35,6 +38,9 @@ public class DetachedModuleRegistryAdapter extends ExpoModuleRegistryAdapter {
 
     moduleRegistry.registerInternalModule(new ConstantsBinding(scopedContext, experienceProperties, manifest));
 
+    // Overriding expo-updates UpdatesService
+    moduleRegistry.registerInternalModule(new UpdatesBinding(scopedContext, experienceProperties));
+
     // ReactAdapterPackage requires ReactContext
     ReactApplicationContext reactContext = (ReactApplicationContext) scopedContext.getContext();
     for (InternalModule internalModule : mReactAdapterPackage.createInternalModules(reactContext)) {
@@ -42,19 +48,19 @@ public class DetachedModuleRegistryAdapter extends ExpoModuleRegistryAdapter {
     }
 
     // Overriding ScopedUIManagerModuleWrapper from ReactAdapterPackage
-    moduleRegistry.registerInternalModule(new ScopedUIManagerModuleWrapper(reactContext, experienceId, manifest.optString(ExponentManifest.MANIFEST_NAME_KEY)));
+    moduleRegistry.registerInternalModule(new ScopedUIManagerModuleWrapper(reactContext));
 
     // Overriding expo-file-system FileSystemModule
     moduleRegistry.registerExportedModule(new ScopedFileSystemModule(scopedContext));
 
-    // Add SpongyCastle integration
-    try {
-      // If this doesn't throw an exception, we can instantiate the binding.
-      Class.forName("expo.modules.securestore.SecureStoreModule");
-      moduleRegistry.registerExportedModule(new SecureStoreModuleBinding(scopedContext));
-    } catch (ClassNotFoundException e) {
-      // do nothing, if there's no SecureStoreModule we don't need to override it
-    }
+    // Certain notifications classes should share `SharedPreferences` object with the notifications services, so we don't want to use scoped context.
+    moduleRegistry.registerExportedModule(new NotificationScheduler(scopedContext.getBaseContext()));
+    moduleRegistry.registerExportedModule(new ExpoNotificationCategoriesModule(scopedContext.getBaseContext()));
+    moduleRegistry.registerExportedModule(new NotificationsHandler(scopedContext.getBaseContext()));
+    // We consciously pass scoped context to ScopedServerRegistrationModule
+    // so it can access legacy scoped backed-up storage and migrates
+    // the legacy UUID to scoped non-backed-up storage.
+    moduleRegistry.registerExportedModule(new ScopedServerRegistrationModule(scopedContext));
 
     // Adding other modules (not universal) to module registry as consumers.
     // It allows these modules to refer to universal modules.

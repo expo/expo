@@ -1,62 +1,46 @@
-import React from 'react';
-import { Image, Text, TouchableOpacity, StyleSheet, StyleProp, ViewStyle } from 'react-native';
+import * as React from 'react';
+import { Image, StyleProp, StyleSheet, Text, TouchableOpacity, ViewStyle } from 'react-native';
 
 import Colors from '../../constants/Colors';
 
-export default class Avatar extends React.PureComponent<{
+type Props = {
   image: (() => void) | string | any;
   onPress: () => void;
   name: string;
   style: StyleProp<ViewStyle>;
-}> {
-  get image(): JSX.Element {
-    const { image } = this.props;
-    const source = image;
+};
+export default function Avatar({ image, name = '', style, onPress }: Props) {
+  const getImage = (): JSX.Element => {
     if (typeof image === 'string') {
       return <Image style={styles.image} source={{ uri: image }} />;
     } else if (typeof image === 'function') {
       return image();
     }
     return <Image source={{}} />;
-  }
+  };
 
-  get initials() {
-    const _name = this.props.name || '';
-    const name = _name.toUpperCase().split(' ');
+  const getInitials = () => {
+    const _name = name.toUpperCase().split(' ');
     let initials;
-    if (name.length === 1) {
-      initials = `${name[0].charAt(0)}`;
-    } else if (name.length > 1) {
-      initials = `${name[0].charAt(0)}${name[1].charAt(0)}`;
+    if (_name.length === 1) {
+      initials = `${_name[0].charAt(0)}`;
+    } else if (_name.length > 1) {
+      initials = `${_name[0].charAt(0)}${_name[1].charAt(0)}`;
     } else {
       initials = '';
     }
     return initials;
-  }
-  get text() {
-    return <Text style={styles.text}>{this.initials}</Text>;
-  }
+  };
 
-  onPress: () => void = () => this.props.onPress && this.props.onPress();
-
-  get contents() {
-    return this.props.image ? this.image : this.text;
-  }
-
-  render() {
-    const { onPress, style } = this.props;
-
-    return (
-      <TouchableOpacity
-        disabled={!onPress}
-        onPress={this.onPress}
-        accessibilityTraits="image"
-        style={[styles.container, style]}
-      >
-        {this.contents}
-      </TouchableOpacity>
-    );
-  }
+  return (
+    <TouchableOpacity
+      disabled={!onPress}
+      onPress={() => onPress?.()}
+      accessibilityTraits="image"
+      style={[styles.container, style]}>
+      {image ? getImage() : <Text style={styles.text}>{getInitials()}</Text>}
+    </TouchableOpacity>
+  );
 }
 
 const DEFAULT_SIZE = 120;

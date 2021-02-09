@@ -1,1 +1,0 @@
-../../../GoogleDataTransport/GoogleDataTransport/GDTLibrary/Private/GDTUploadCoordinator.h

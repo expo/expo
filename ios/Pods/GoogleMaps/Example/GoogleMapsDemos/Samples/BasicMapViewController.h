@@ -15,6 +15,8 @@
 
 #import <UIKit/UIKit.h>
 
-@interface BasicMapViewController : UIViewController
+#import <GoogleMaps/GoogleMaps.h>
+
+@interface BasicMapViewController : UIViewController <GMSMapViewDelegate>
 
 @end

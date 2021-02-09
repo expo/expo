@@ -2,12 +2,12 @@ package host.exp.exponent;
 
 import com.facebook.react.ReactPackage;
 
+import org.unimodules.apploader.AppLoaderPackagesProviderInterface;
 import org.unimodules.core.interfaces.Package;
 
 import java.util.Arrays;
 import java.util.List;
 
-import expo.loaders.provider.interfaces.AppLoaderPackagesProviderInterface;
 import host.exp.exponent.generated.BasePackageList;
 import okhttp3.OkHttpClient;
 
@@ -24,25 +24,15 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
   // Needed for `react-native link`
   public List<ReactPackage> getPackages() {
     return Arrays.<ReactPackage>asList(
-        // Add your own packages here!
-        // TODO: add native modules!
+      // Add your own packages here!
+      // TODO: add native modules!
 
-        // Needed for `react-native link`
-        // new MainReactPackage()
+      // Needed for `react-native link`
+      // new MainReactPackage()
     );
   }
 
   public List<Package> getExpoPackages() {
     return new BasePackageList().getPackageList();
-  }
-
-  @Override
-  public String gcmSenderId() {
-    return getString(R.string.gcm_defaultSenderId);
-  }
-
-  public static OkHttpClient.Builder okHttpClientBuilder(OkHttpClient.Builder builder) {
-    // Customize/override OkHttp client here
-    return builder;
   }
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -6,6 +6,7 @@
  */
 
 #include "Color.h"
+#include <cassert>
 
 namespace facebook {
 namespace react {
@@ -26,7 +27,7 @@ ColorComponents colorComponentsFromColor(SharedColor color) {
     return ColorComponents{0, 0, 0, 0};
   }
 
-  auto numberOfComponents = CGColorGetNumberOfComponents(color.get());
+  auto numberOfComponents __unused = CGColorGetNumberOfComponents(color.get());
   assert(numberOfComponents == 4);
   const CGFloat *components = CGColorGetComponents(color.get());
   return ColorComponents{(float)components[0],

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -10,24 +10,31 @@
 namespace facebook {
 namespace react {
 
-SharedProps &ShadowNodeFragment::nullSharedProps() {
-  static auto &instance = *new SharedProps();
+Props::Shared const &ShadowNodeFragment::propsPlaceholder() {
+  static auto &instance = *new Props::Shared();
   return instance;
 }
 
-SharedEventEmitter &ShadowNodeFragment::nullSharedEventEmitter() {
-  static auto &instance = *new SharedEventEmitter();
+ShadowNode::SharedListOfShared const &
+ShadowNodeFragment::childrenPlaceholder() {
+  static auto &instance = *new ShadowNode::SharedListOfShared();
   return instance;
 }
 
-SharedShadowNodeSharedList &ShadowNodeFragment::nullSharedChildren() {
-  static auto &instance = *new SharedShadowNodeSharedList();
+State::Shared const &ShadowNodeFragment::statePlaceholder() {
+  static auto &instance = *new State::Shared();
   return instance;
 }
 
-SharedLocalData &ShadowNodeFragment::nullLocalData() {
-  static auto &instance = *new SharedLocalData();
-  return instance;
+using Value = ShadowNodeFragment::Value;
+
+Value::Value(ShadowNodeFragment const &fragment)
+    : props_(fragment.props),
+      children_(fragment.children),
+      state_(fragment.state) {}
+
+Value::operator ShadowNodeFragment() const {
+  return ShadowNodeFragment{props_, children_, state_};
 }
 
 } // namespace react

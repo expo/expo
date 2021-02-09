@@ -1,29 +1,32 @@
 ---
 title: KeepAwake
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-keep-awake'
 ---
 
-A React hook that prevents the screen from sleeping and a pair of functions to enable this behavior imperatively.
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+import SnackInline from '~/components/plugins/SnackInline';
+
+**`expo-keep-awake`** provides a React hook that prevents the screen from sleeping and a pair of functions to enable this behavior imperatively.
+
+<PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/6889' }} />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-keep-awake`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-keep-awake).
-
-> **Note**: Not compatible with web.
+<InstallSection packageName="expo-keep-awake" />
 
 ## Usage
 
-```js
-import KeepAwake from 'expo-keep-awake';
-```
-
 ### Example: hook
+
+<SnackInline label='Keep Awake hook' dependencies={['expo-keep-awake']}>
 
 ```javascript
 import { useKeepAwake } from 'expo-keep-awake';
 import React from 'react';
 import { Text, View } from 'react-native';
 
-export default function KeepAwakeExample {
+export default function KeepAwakeExample() {
   /* @info As long as this component is mounted, the screen will not turn off from being idle. */
   useKeepAwake();
   /* @end */
@@ -35,7 +38,11 @@ export default function KeepAwakeExample {
 }
 ```
 
+</SnackInline>
+
 ### Example: functions
+
+<SnackInline label='Keep Awake functions' dependencies={['expo-keep-awake']}>
 
 ```javascript
 import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
@@ -46,31 +53,41 @@ export default class KeepAwakeExample extends React.Component {
   render() {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Button onPress={this._activate}>Activate</Button>
-        <Button onPress={this._deactivate}>Deactivate</Button>
+        <Button onPress={this._activate} title="Activate" />
+        <Button onPress={this._deactivate} title="Deactivate" />
       </View>
     );
   }
 
   _activate = () => {
-    /* @info Screen will remain on after called until <strong>deactivateKeepAwake()</strong> is called. */ 
-    activateKeepAwake();
-  /* @end */
+    /* @info Screen will remain on after called until <strong>deactivateKeepAwake()</strong> is called. */ activateKeepAwake(); /* @end */
+
+    alert('Activated!');
   };
 
   _deactivate = () => {
-    /* @info Deactivates KeepAwake, or does nothing if it was never activated. */
-    deactivateKeepAwake();
-  /* @end */
+    /* @info Deactivates KeepAwake, or does nothing if it was never activated. */ deactivateKeepAwake(); /* @end */
+
+    alert('Deactivated!');
   };
 }
 ```
 
-### `useKeepAwake(tag?: string): void`
+</SnackInline>
+
+## API
+
+```js
+import KeepAwake from 'expo-keep-awake';
+```
+
+## Methods
+
+### `useKeepAwake(tag?)`
 
 A React hook to keep the screen awake for as long as the owner component is mounted. The optionally provided `tag` argument is used when activating and deactivating the keep-awake feature. If unspecified, the default tag is used. See the documentation for `activateKeepAwake` below to learn more about the `tag` argument.
 
-### `activateKeepAwake(tag?: string): void`
+### `activateKeepAwake(tag?)`
 
 Prevents the screen from sleeping until `deactivateKeepAwake` is called with the same `tag` value.
 
@@ -80,7 +97,7 @@ If the `tag` argument is specified, the screen will not sleep until you call `de
 
 - **tag (_string_)** -- **optional** -- Tag to lock screen sleep prevention. If not provided, the default tag is used.
 
-### `deactivateKeepAwake(tag?: string): void`
+### `deactivateKeepAwake(tag?)`
 
 Releases the lock on screen-sleep prevention associated with the given `tag` value. If `tag` is unspecified, it defaults to the same default tag that `activateKeepAwake` uses.
 

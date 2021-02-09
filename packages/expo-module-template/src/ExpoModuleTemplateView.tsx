@@ -1,13 +1,29 @@
 import * as React from 'react';
 
-import { requireNativeViewManager } from '@unimodules/core';
+import NativeView from './ExpoModuleTemplateNativeView';
 
-export default class ExpoModuleTemplateView extends React.Component {
-  static NativeView = requireNativeViewManager('ExpoModuleTemplateView');
+export interface ExpoModuleTemplateViewProps {
+  greatProp: string;
+}
 
+interface ExpoModuleTemplateViewState {
+
+}
+
+/**
+ * Great view that would suit your needs!
+ *
+ * @example
+ * ```tsx
+ * <ExpoModuleTemplateNativeView
+ *   greatProp="great"
+ * />
+ * ```
+ */
+export default class ExpoModuleTemplateView extends React.Component<ExpoModuleTemplateViewProps, ExpoModuleTemplateViewState> {
   render() {
     return (
-      <ExpoModuleTemplateView.NativeView />
+      <NativeView />
     );
   }
 }

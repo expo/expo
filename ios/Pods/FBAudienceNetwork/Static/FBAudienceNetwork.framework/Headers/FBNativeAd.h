@@ -32,8 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
  The FBNativeAd represents ad metadata to allow you to construct custom ad views.
   See the AdUnitsSample in the sample apps section of the Audience Network framework.
  */
-FB_CLASS_EXPORT FB_SUBCLASSING_RESTRICTED
-@interface FBNativeAd: FBNativeAdBase
+FB_CLASS_EXPORT FB_SUBCLASSING_RESTRICTED @interface FBNativeAd : FBNativeAdBase
 
 /**
  the delegate
@@ -49,8 +48,8 @@ FB_CLASS_EXPORT FB_SUBCLASSING_RESTRICTED
  @param mediaView The FBMediaView you created to render the media (cover image / video / carousel)
  @param iconView The FBMediaView you created to render the icon
  @param viewController The UIViewController that will be used to present SKStoreProductViewController
- (iTunes Store product information) or the in-app browser. If nil is passed, the top view controller currently shown will be used.
- The whole area of the UIView will be clickable.
+ (iTunes Store product information) or the in-app browser. If nil is passed, the top view controller currently shown
+ will be used. The whole area of the UIView will be clickable.
  */
 - (void)registerViewForInteraction:(UIView *)view
                          mediaView:(FBMediaView *)mediaView
@@ -75,7 +74,6 @@ FB_CLASS_EXPORT FB_SUBCLASSING_RESTRICTED
                     viewController:(nullable UIViewController *)viewController
                     clickableViews:(nullable NSArray<UIView *> *)clickableViews;
 
-
 /**
  This is a method to associate a FBNativeAd with the UIView you will use to display the native ads.
 
@@ -83,8 +81,8 @@ FB_CLASS_EXPORT FB_SUBCLASSING_RESTRICTED
  @param mediaView The FBMediaView you created to render the media (cover image / video / carousel)
  @param iconImageView The UIImageView you created to render the icon
  @param viewController The UIViewController that will be used to present SKStoreProductViewController
- (iTunes Store product information) or the in-app browser. If nil is passed, the top view controller currently shown will be used.
- The whole area of the UIView will be clickable.
+ (iTunes Store product information) or the in-app browser. If nil is passed, the top view controller currently shown
+ will be used. The whole area of the UIView will be clickable.
  */
 - (void)registerViewForInteraction:(UIView *)view
                          mediaView:(FBMediaView *)mediaView
@@ -97,7 +95,7 @@ FB_CLASS_EXPORT FB_SUBCLASSING_RESTRICTED
 
  @param view The UIView you created to render all the native ads data elements.
  @param mediaView The FBMediaView you created to render the media (cover image / video / carousel)
- @param iconImageView The UIImageView you created to render the icon
+ @param iconImageView The UIImageView you created to render the icon. Image will be set
  @param viewController The UIViewController that will be used to present SKStoreProductViewController
  (iTunes Store product information). If nil is passed, the top view controller currently shown will be used.
  @param clickableViews An array of UIView you created to render the native ads data element, e.g.

@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,7 +22,6 @@
 
 #include <type_traits>
 
-#include <boost/noncopyable.hpp>
 #include <folly/Portability.h>
 #include <folly/concurrency/CacheLocality.h>
 #include <folly/portability/SysMman.h>
@@ -156,17 +155,24 @@ template <
     uint32_t LocalListLimit_ = 200,
     template <typename> class Atom = std::atomic,
     typename Traits = IndexedMemPoolTraits<T>>
-struct IndexedMemPool : boost::noncopyable {
+struct IndexedMemPool {
   typedef T value_type;
 
   typedef std::unique_ptr<T, detail::IndexedMemPoolRecycler<IndexedMemPool>>
       UniquePtr;
+
+  IndexedMemPool(const IndexedMemPool&) = delete;
+  IndexedMemPool& operator=(const IndexedMemPool&) = delete;
 
   static_assert(LocalListLimit_ <= 255, "LocalListLimit must fit in 8 bits");
   enum {
     NumLocalLists = NumLocalLists_,
     LocalListLimit = LocalListLimit_,
   };
+
+  static_assert(
+      std::is_nothrow_default_constructible<Atom<uint32_t>>::value,
+      "Atom must be nothrow default constructible");
 
   // these are public because clients may need to reason about the number
   // of bits required to hold indices from a pool, given its capacity
@@ -210,8 +216,11 @@ struct IndexedMemPool : boost::noncopyable {
 
   /// Destroys all of the contained elements
   ~IndexedMemPool() {
+    using A = Atom<uint32_t>;
     for (uint32_t i = maxAllocatedIndex(); i > 0; --i) {
       Traits::cleanup(&slots_[i].elem);
+      slots_[i].localNext.~A();
+      slots_[i].globalNext.~A();
     }
     munmap(slots_, mmapLength_);
   }
@@ -424,9 +433,13 @@ struct IndexedMemPool : boost::noncopyable {
   void localPush(AtomicStruct<TaggedPtr, Atom>& head, uint32_t idx) {
     Slot& s = slot(idx);
     TaggedPtr h = head.load(std::memory_order_acquire);
+    bool recycled = false;
     while (true) {
       s.localNext.store(h.idx, std::memory_order_release);
-      Traits::onRecycle(&slot(idx).elem);
+      if (!recycled) {
+        Traits::onRecycle(&slot(idx).elem);
+        recycled = true;
+      }
 
       if (h.size() == LocalListLimit) {
         // push will overflow local list, steal it instead
@@ -484,7 +497,14 @@ struct IndexedMemPool : boost::noncopyable {
           // allocation failed
           return 0;
         }
-        Traits::initialize(&slot(idx).elem);
+        Slot& s = slot(idx);
+        // Atom is enforced above to be nothrow-default-constructible
+        // As an optimization, use default-initialization (no parens) rather
+        // than direct-initialization (with parens): these locations are
+        // stored-to before they are loaded-from
+        new (&s.localNext) Atom<uint32_t>;
+        new (&s.globalNext) Atom<uint32_t>;
+        Traits::initialize(&s.elem);
         return idx;
       }
 

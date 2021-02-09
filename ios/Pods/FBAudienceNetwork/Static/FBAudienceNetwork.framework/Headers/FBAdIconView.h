@@ -22,7 +22,10 @@
 #import <FBAudienceNetwork/FBMediaView.h>
 #import <FBAudienceNetwork/UIView+FBNativeAdViewTag.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 FB_CLASS_EXPORT
+FB_DEPRECATED_WITH_MESSAGE("This class will be removed in a future release. Use FBMediaView instead.")
 @interface FBAdIconView : FBMediaView
 
 /**
@@ -31,3 +34,5 @@ FB_CLASS_EXPORT
 @property (nonatomic, assign, readonly) FBNativeAdViewTag nativeAdViewTag;
 
 @end
+
+NS_ASSUME_NONNULL_END

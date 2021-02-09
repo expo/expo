@@ -8,6 +8,14 @@ export const ALWAYS_THIS_DEVICE_ONLY = ExpoSecureStore.ALWAYS_THIS_DEVICE_ONLY;
 export const WHEN_UNLOCKED = ExpoSecureStore.WHEN_UNLOCKED;
 export const WHEN_UNLOCKED_THIS_DEVICE_ONLY = ExpoSecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY;
 const VALUE_BYTES_LIMIT = 2048;
+/**
+ * Returns whether the SecureStore API is enabled on the current device. This does not check the app permissions.
+ *
+ * @returns Async `boolean`, indicating whether the SecureStore API is available on the current device. Currently this resolves `true` on iOS and Android only.
+ */
+export async function isAvailableAsync() {
+    return !!ExpoSecureStore.getValueWithKeyAsync;
+}
 export async function deleteItemAsync(key, options = {}) {
     _ensureValidKey(key);
     if (!ExpoSecureStore.deleteValueWithKeyAsync) {
@@ -52,17 +60,17 @@ function _byteCount(value) {
     for (let i = 0; i < value.length; i++) {
         const codePoint = value.charCodeAt(i);
         // Lone surrogates cannot be passed to encodeURI
-        if (codePoint >= 0xD800 && codePoint < 0xE000) {
-            if (codePoint < 0xDC00 && i + 1 < value.length) {
+        if (codePoint >= 0xd800 && codePoint < 0xe000) {
+            if (codePoint < 0xdc00 && i + 1 < value.length) {
                 const next = value.charCodeAt(i + 1);
-                if (next >= 0xDC00 && next < 0xE000) {
+                if (next >= 0xdc00 && next < 0xe000) {
                     bytes += 4;
                     i++;
                     continue;
                 }
             }
         }
-        bytes += (codePoint < 0x80 ? 1 : (codePoint < 0x800 ? 2 : 3));
+        bytes += codePoint < 0x80 ? 1 : codePoint < 0x800 ? 2 : 3;
     }
     return bytes;
 }

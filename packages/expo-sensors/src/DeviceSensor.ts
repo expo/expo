@@ -22,7 +22,7 @@ export default class DeviceSensor<M> {
   }
 
   addListener(listener: Listener<M>): Subscription {
-    let subscription = this._nativeEmitter.addListener(this._nativeEventName, listener);
+    const subscription = this._nativeEmitter.addListener(this._nativeEventName, listener);
     subscription.remove = () => this.removeSubscription(subscription);
     this._listenerCount++;
     return subscription;

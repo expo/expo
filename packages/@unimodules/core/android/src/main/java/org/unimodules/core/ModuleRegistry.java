@@ -12,19 +12,19 @@ import java.util.List;
 import java.util.Map;
 
 public class ModuleRegistry {
-  private volatile boolean mIsInitialized = false;
   private final Map<Class, InternalModule> mInternalModulesMap = new HashMap<>();
   private final Map<String, ViewManager> mViewManagersMap = new HashMap<>();
   private final Map<String, ExportedModule> mExportedModulesMap = new HashMap<>();
   private final Map<Class, ExportedModule> mExportedModulesByClassMap = new HashMap<>();
   private final Map<String, SingletonModule> mSingletonModulesMap = new HashMap<>();
   private final List<WeakReference<RegistryLifecycleListener>> mExtraRegistryLifecycleListeners = new ArrayList<>();
+  private volatile boolean mIsInitialized = false;
 
   public ModuleRegistry(
-      Collection<InternalModule> internalModules,
-      Collection<ExportedModule> exportedModules,
-      Collection<ViewManager> viewManagers,
-      Collection<SingletonModule> singletonModules) {
+    Collection<InternalModule> internalModules,
+    Collection<ExportedModule> exportedModules,
+    Collection<ViewManager> viewManagers,
+    Collection<SingletonModule> singletonModules) {
     for (InternalModule internalModule : internalModules) {
       registerInternalModule(internalModule);
     }

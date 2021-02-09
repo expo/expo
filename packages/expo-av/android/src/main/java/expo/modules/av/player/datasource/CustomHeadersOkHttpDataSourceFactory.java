@@ -1,7 +1,7 @@
 package expo.modules.av.player.datasource;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.android.exoplayer2.ext.okhttp.OkHttpDataSource;
 import com.google.android.exoplayer2.upstream.DataSource;
@@ -21,15 +21,12 @@ public class CustomHeadersOkHttpDataSourceFactory extends HttpDataSource.BaseFac
   @Nullable
   private final String mUserAgent;
   @Nullable
-  private final TransferListener mListener;
-  @Nullable
   private final CacheControl mCacheControl;
 
   public CustomHeadersOkHttpDataSourceFactory(@NonNull Call.Factory callFactory, @Nullable String userAgent, @Nullable Map<String, Object> requestHeaders) {
     super();
     mCallFactory = callFactory;
     mUserAgent = userAgent;
-    mListener = null;
     mCacheControl = null;
     updateRequestProperties(getDefaultRequestProperties(), requestHeaders);
   }

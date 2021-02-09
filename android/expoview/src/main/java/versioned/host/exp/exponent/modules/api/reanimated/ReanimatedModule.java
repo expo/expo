@@ -1,5 +1,6 @@
 package versioned.host.exp.exponent.modules.api.reanimated;
 
+import com.facebook.fbreact.specs.NativeWebSocketModuleSpec;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -24,7 +25,7 @@ import javax.annotation.Nullable;
 public class ReanimatedModule extends ReactContextBaseJavaModule implements
         LifecycleEventListener, UIManagerModuleListener {
 
-  protected static final String NAME = "ReanimatedModule";
+  public static final String NAME = "ReanimatedModule";
 
   private interface UIThreadOperation {
     void execute(NodesManager nodesManager);
@@ -34,6 +35,8 @@ public class ReanimatedModule extends ReactContextBaseJavaModule implements
 
   private @Nullable NodesManager mNodesManager;
   private @Nullable TransitionModule mTransitionManager;
+
+  private UIManagerModule mUIManager;
 
   public ReanimatedModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -46,6 +49,8 @@ public class ReanimatedModule extends ReactContextBaseJavaModule implements
     reactCtx.addLifecycleEventListener(this);
     uiManager.addUIManagerListener(this);
     mTransitionManager = new TransitionModule(uiManager);
+
+    mUIManager = uiManager;
   }
 
   @Override
@@ -90,7 +95,7 @@ public class ReanimatedModule extends ReactContextBaseJavaModule implements
     return NAME;
   }
 
-  private NodesManager getNodesManager() {
+  /*package*/ NodesManager getNodesManager() {
     if (mNodesManager == null) {
       mNodesManager = new NodesManager(getReactApplicationContext());
     }
@@ -212,5 +217,24 @@ public class ReanimatedModule extends ReactContextBaseJavaModule implements
         nodesManager.getValue(nodeID, callback);
       }
     });
+  }
+
+  @ReactMethod
+  public void setValue(final int nodeID, final Double newValue) {
+    mOperations.add(new UIThreadOperation() {
+      @Override
+      public void execute(NodesManager nodesManager) {
+        nodesManager.setValue(nodeID, newValue);
+      }
+    });
+  }
+
+  @Override
+  public void onCatalystInstanceDestroy() {
+    super.onCatalystInstanceDestroy();
+
+    if (mNodesManager != null) {
+      mNodesManager.onCatalystInstanceDestroy();
+    }
   }
 }

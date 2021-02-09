@@ -3,34 +3,32 @@
 package host.exp.exponent.experience;
 
 import android.content.Intent;
-import android.os.Build;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Pair;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.Constants;
-import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.fcm.FcmRegistrationIntentService;
-import host.exp.exponent.gcm.GcmRegistrationIntentService;
-import host.exp.exponent.kernel.ExperienceId;
-import host.exp.exponent.kernel.KernelConstants;
-import host.exp.exponent.utils.AsyncCondition;
-import host.exp.expoview.BuildConfig;
-import host.exp.expoview.Exponent;
 import host.exp.exponent.RNObject;
+import host.exp.exponent.di.NativeModuleDepsProvider;
+import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.ExponentError;
 import host.exp.exponent.kernel.ExponentErrorMessage;
 import host.exp.exponent.kernel.Kernel;
+import host.exp.exponent.kernel.KernelConstants;
+import host.exp.exponent.utils.AsyncCondition;
+import host.exp.expoview.Exponent;
 
 public abstract class BaseExperienceActivity extends MultipleVersionReactNativeActivity {
+  private static String TAG = BaseExperienceActivity.class.getSimpleName();
+
   private static abstract class ExperienceEvent {
     private ExperienceId mExperienceId;
+
     ExperienceEvent(ExperienceId experienceId) {
       this.mExperienceId = experienceId;
     }
@@ -39,20 +37,29 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
       return mExperienceId;
     }
   }
+
   public static class ExperienceForegroundedEvent extends ExperienceEvent {
-    ExperienceForegroundedEvent(ExperienceId experienceId) { super(experienceId); }
+    ExperienceForegroundedEvent(ExperienceId experienceId) {
+      super(experienceId);
+    }
   }
+
   public static class ExperienceBackgroundedEvent extends ExperienceEvent {
-    ExperienceBackgroundedEvent(ExperienceId experienceId) { super(experienceId); }
+    ExperienceBackgroundedEvent(ExperienceId experienceId) {
+      super(experienceId);
+    }
   }
+
   public static class ExperienceContentLoaded extends ExperienceEvent {
-    public ExperienceContentLoaded(ExperienceId experienceId) { super(experienceId); }
+    public ExperienceContentLoaded(ExperienceId experienceId) {
+      super(experienceId);
+    }
   }
 
   private static BaseExperienceActivity sVisibleActivity;
 
   @Inject
-  Kernel mKernel;
+  protected Kernel mKernel;
 
   private long mOnResumeTime;
 
@@ -166,49 +173,61 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
     // TODO: OkHttpClientProvider leaks Activity. Clean it up.
   }
 
+  @Override
+  public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+
+    if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed) {
+      mReactInstanceManager.call("onConfigurationChanged", this, newConfig);
+    }
+  }
+
   protected void consumeErrorQueue() {
     if (sErrorQueue.isEmpty()) {
       return;
     }
 
-    runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        if (sErrorQueue.isEmpty()) {
-          return;
-        }
-
-        Pair<Boolean, ExponentErrorMessage> result = sendErrorsToErrorActivity();
-        boolean isFatal = result.first;
-        ExponentErrorMessage errorMessage = result.second;
-
-        if (!shouldShowErrorScreen(errorMessage)) {
-          return;
-        }
-
-        if (!isFatal) {
-          return;
-        }
-
-        if (!isDebugModeEnabled()) {
-          removeViews();
-          mReactInstanceManager.assign(null);
-          mReactRootView.assign(null);
-        }
-
-        mIsCrashed = true;
-        mIsLoading = false;
-
-        Intent intent = new Intent(BaseExperienceActivity.this, ErrorActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        onError(intent);
-        intent.putExtra(ErrorActivity.DEBUG_MODE_KEY, isDebugModeEnabled());
-        intent.putExtra(ErrorActivity.USER_ERROR_MESSAGE_KEY, errorMessage.userErrorMessage());
-        intent.putExtra(ErrorActivity.DEVELOPER_ERROR_MESSAGE_KEY, errorMessage.developerErrorMessage());
-        startActivity(intent);
-
-        EventBus.getDefault().post(new ExperienceDoneLoadingEvent());
+    runOnUiThread(() -> {
+      if (sErrorQueue.isEmpty()) {
+        return;
       }
+
+      Pair<Boolean, ExponentErrorMessage> result = sendErrorsToErrorActivity();
+      boolean isFatal = result.first;
+      ExponentErrorMessage errorMessage = result.second;
+
+      if (!shouldShowErrorScreen(errorMessage)) {
+        return;
+      }
+
+      if (!isFatal) {
+        return;
+      }
+
+      // we don't ever want to show any Expo UI in a production standalone app
+      // so hard crash in this case
+      if (Constants.isStandaloneApp() && !isDebugModeEnabled()) {
+        throw new RuntimeException("Expo encountered a fatal error: " + errorMessage.developerErrorMessage());
+      }
+
+      if (!isDebugModeEnabled()) {
+        removeAllViewsFromContainer();
+        mReactInstanceManager.assign(null);
+        mReactRootView.assign(null);
+      }
+
+      mIsCrashed = true;
+      mIsLoading = false;
+
+      Intent intent = new Intent(BaseExperienceActivity.this, ErrorActivity.class);
+      intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+      onError(intent);
+      intent.putExtra(ErrorActivity.DEBUG_MODE_KEY, isDebugModeEnabled());
+      intent.putExtra(ErrorActivity.USER_ERROR_MESSAGE_KEY, errorMessage.userErrorMessage());
+      intent.putExtra(ErrorActivity.DEVELOPER_ERROR_MESSAGE_KEY, errorMessage.developerErrorMessage());
+      startActivity(intent);
+
+      EventBus.getDefault().post(new ExperienceDoneLoadingEvent(this));
     });
   }
 
@@ -248,23 +267,5 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
   // Override
   protected void onError(final ExponentError error) {
     // Called for each JS error
-  }
-
-  protected void registerForNotifications() {
-    int googlePlayServicesCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
-    if (googlePlayServicesCode == ConnectionResult.SUCCESS) {
-      if (!Constants.FCM_ENABLED) {
-        Intent intent = new Intent(this, GcmRegistrationIntentService.class);
-        startService(intent);
-      }
-    } else if (!BuildConfig.DEBUG) {
-      // TODO: should we actually show an error or fail silently?
-      // GoogleApiAvailability.getInstance().getErrorDialog(this, googlePlayServicesCode, 0).show();
-    }
-  }
-
-  @Override
-  public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-    Exponent.getInstance().onRequestPermissionsResult(requestCode, permissions, grantResults);
   }
 }

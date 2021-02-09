@@ -1,5 +1,2 @@
 node_modules/*
 .expo
-
-/web-build/
-/web-stats.json

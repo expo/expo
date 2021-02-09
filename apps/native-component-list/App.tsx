@@ -1,86 +1,55 @@
+import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
-import { AppLoading } from 'expo';
-import * as Font from 'expo-font';
-import { Asset } from 'expo-asset';
-import { Entypo, Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { Platform, StatusBar, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-navigation';
-import { Assets as StackAssets } from 'react-navigation-stack';
-import { useScreens } from 'react-native-screens';
+import { Platform, StatusBar } from 'react-native';
+import { AppearanceProvider } from 'react-native-appearance';
+import { enableScreens } from 'react-native-screens';
 
-import Icons from './src/constants/Icons';
 import RootNavigation from './src/navigation/RootNavigation';
+import loadAssetsAsync from './src/utilities/loadAssetsAsync';
 
-// workaround for large android status bar in react-nav beta.27
 if (Platform.OS === 'android') {
-  useScreens();
-  // @ts-ignore
-  SafeAreaView.setStatusBarHeight(0);
+  enableScreens(true);
 }
 
-const initialState = {
-  appIsReady: false,
-};
+function useSplashScreen(loadingFunction: () => void | Promise<void>) {
+  const [isLoadingCompleted, setLoadingComplete] = React.useState(false);
 
-type State = typeof initialState;
-
-export default class App extends React.Component<{}, State> {
-  readonly state: State = initialState;
-
-  componentWillMount() {
-    this._loadAssetsAsync();
-  }
-
-  async _loadAssetsAsync() {
-    try {
-      const iconRequires = Object.keys(Icons).map(key => Icons[key]);
-      await Promise.all([
-        Asset.loadAsync(iconRequires),
-        Asset.loadAsync(StackAssets),
-        // @ts-ignore
-        Font.loadAsync(Ionicons.font),
-        // @ts-ignore
-        Font.loadAsync(Entypo.font),
-        // @ts-ignore
-        Font.loadAsync(MaterialIcons.font),
-        Font.loadAsync({
-          'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf'),
-        }),
-        Font.loadAsync({
-          Roboto: 'https://github.com/google/fonts/raw/master/apache/roboto/Roboto-Regular.ttf',
-        }),
-      ]);
-    } catch (e) {
-      console.log({ e });
-    } finally {
-      this.setState({ appIsReady: true });
+  // Load any resources or data that we need prior to rendering the app
+  React.useEffect(() => {
+    async function loadAsync() {
+      try {
+        await SplashScreen.preventAutoHideAsync();
+        await loadingFunction();
+      } catch (e) {
+        // We might want to provide this error information to an error reporting service
+        console.warn(e);
+      } finally {
+        setLoadingComplete(true);
+        SplashScreen.hideAsync();
+      }
     }
-  }
 
-  render() {
-    if (this.state.appIsReady) {
-      return (
-        <View style={styles.container} testID="native_component_list">
-          {Platform.OS === 'android' && (
-            <View style={styles.statusBarUnderlay} />
-          )}
-          <RootNavigation />
-          {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-        </View>
-      );
-    } else {
-      return <AppLoading />;
-    }
-  }
+    loadAsync();
+  }, []);
+
+  return isLoadingCompleted;
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  statusBarUnderlay: {
-    height: 24,
-    backgroundColor: 'rgba(0,0,0,0.2)',
-  },
-});
+export default function App(props: any) {
+  const isLoadingCompleted = useSplashScreen(async () => {
+    if (Platform.OS === 'ios') {
+      StatusBar.setBarStyle('dark-content', false);
+    }
+    await loadAssetsAsync();
+  });
+
+  if (!isLoadingCompleted) {
+    return null;
+  }
+
+  return (
+    <AppearanceProvider>
+      <RootNavigation {...props} />
+    </AppearanceProvider>
+  );
+}

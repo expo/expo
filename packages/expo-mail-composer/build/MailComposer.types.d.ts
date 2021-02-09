@@ -1,4 +1,4 @@
-export declare type ComposeOptions = {
+export declare type MailComposerOptions = {
     recipients?: string[];
     ccRecipients?: string[];
     bccRecipients?: string[];
@@ -7,7 +7,12 @@ export declare type ComposeOptions = {
     isHtml?: boolean;
     attachments?: string[];
 };
-export declare type ComposeResult = {
-    status: ComposeStatus;
+export declare type MailComposerResult = {
+    status: MailComposerStatus;
 };
-export declare type ComposeStatus = 'undetermined' | 'sent' | 'saved' | 'cancelled';
+export declare enum MailComposerStatus {
+    UNDETERMINED = "undetermined",
+    SENT = "sent",
+    SAVED = "saved",
+    CANCELLED = "cancelled"
+}

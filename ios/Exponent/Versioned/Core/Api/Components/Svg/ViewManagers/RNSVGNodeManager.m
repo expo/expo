@@ -163,6 +163,9 @@ RCT_CUSTOM_VIEW_PROPERTY(transform, CATransform3D, RNSVGNode)
     [view invalidate];
 }
 RCT_EXPORT_VIEW_PROPERTY(mask, NSString)
+RCT_EXPORT_VIEW_PROPERTY(markerStart, NSString)
+RCT_EXPORT_VIEW_PROPERTY(markerMid, NSString)
+RCT_EXPORT_VIEW_PROPERTY(markerEnd, NSString)
 RCT_EXPORT_VIEW_PROPERTY(clipPath, NSString)
 RCT_EXPORT_VIEW_PROPERTY(clipRule, RNSVGCGFCRule)
 RCT_EXPORT_VIEW_PROPERTY(responsible, BOOL)
@@ -226,7 +229,16 @@ RCT_CUSTOM_SHADOW_PROPERTY(aspectRatio, id, RNSVGNode) {}
 
 RCT_CUSTOM_SHADOW_PROPERTY(overflow, id, RNSVGNode) {}
 RCT_CUSTOM_SHADOW_PROPERTY(display, id, RNSVGNode) {}
+RCT_CUSTOM_VIEW_PROPERTY(display, id, RNSVGNode)
+{
+    view.display = json;
+}
 
 RCT_CUSTOM_SHADOW_PROPERTY(direction, id, RNSVGNode) {}
+
+RCT_CUSTOM_VIEW_PROPERTY(pointerEvents, RCTPointerEvents, RNSVGNode)
+{
+    view.pointerEvents = json ? [RCTConvert RCTPointerEvents:json] : defaultView.pointerEvents;
+}
 
 @end

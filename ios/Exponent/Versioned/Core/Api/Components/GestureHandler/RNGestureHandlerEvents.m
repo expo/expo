@@ -106,18 +106,18 @@
 @synthesize viewTag = _viewTag;
 @synthesize coalescingKey = _coalescingKey;
 
-- (instancetype)initWithRactTag:(NSNumber *)reactTag
-                     handlerTag:(NSNumber *)handlerTag
-                          state:(RNGestureHandlerState)state
-                      extraData:(RNGestureHandlerEventExtraData *)extraData
+- (instancetype)initWithReactTag:(NSNumber *)reactTag
+                      handlerTag:(NSNumber *)handlerTag
+                           state:(RNGestureHandlerState)state
+                       extraData:(RNGestureHandlerEventExtraData *)extraData
+                   coalescingKey:(uint16_t)coalescingKey
 {
-    static uint16_t coalescingKey = 0;
     if ((self = [super init])) {
         _viewTag = reactTag;
         _handlerTag = handlerTag;
         _state = state;
         _extraData = extraData;
-        _coalescingKey = coalescingKey++;
+        _coalescingKey = coalescingKey;
     }
     return self;
 }
@@ -131,8 +131,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (BOOL)canCoalesce
 {
-    // TODO: event coalescing
-    return NO;
+    return YES;
 }
 
 - (id<RCTEvent>)coalesceWithEvent:(id<RCTEvent>)newEvent;
@@ -168,11 +167,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 @synthesize viewTag = _viewTag;
 @synthesize coalescingKey = _coalescingKey;
 
-- (instancetype)initWithRactTag:(NSNumber *)reactTag
-                     handlerTag:(NSNumber *)handlerTag
-                          state:(RNGestureHandlerState)state
-                      prevState:(RNGestureHandlerState)prevState
-                      extraData:(RNGestureHandlerEventExtraData *)extraData
+- (instancetype)initWithReactTag:(NSNumber *)reactTag
+                      handlerTag:(NSNumber *)handlerTag
+                           state:(RNGestureHandlerState)state
+                       prevState:(RNGestureHandlerState)prevState
+                       extraData:(RNGestureHandlerEventExtraData *)extraData
 {
     static uint16_t coalescingKey = 0;
     if ((self = [super init])) {

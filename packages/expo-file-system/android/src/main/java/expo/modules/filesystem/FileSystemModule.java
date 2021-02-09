@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StatFs;
@@ -36,6 +37,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.math.BigInteger;
 import java.net.CookieHandler;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -43,14 +45,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.Nullable;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Headers;
 import okhttp3.Interceptor;
 import okhttp3.JavaNetCookieJar;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okio.Buffer;
@@ -63,7 +68,7 @@ import okio.Source;
 public class FileSystemModule extends ExportedModule {
   private static final String NAME = "ExponentFileSystem";
   private static final String TAG = FileSystemModule.class.getSimpleName();
-  private static final String EXDownloadProgressEventName = "Exponent.downloadProgress";
+  private static final String EXDownloadProgressEventName = "expo-file-system.downloadProgress";
   private static final long MIN_EVENT_DT_MS = 100;
   private static final String HEADER_KEY = "headers";
 
@@ -71,6 +76,28 @@ public class FileSystemModule extends ExportedModule {
   private OkHttpClient mClient;
 
   private final Map<String, DownloadResumable> mDownloadResumableMap = new HashMap<>();
+
+  private enum UploadType {
+    INVALID(-1),
+    BINARY_CONTENT(0),
+    MULTIPART(1);
+
+    private int value;
+
+    UploadType(int value) {
+      this.value = value;
+    }
+
+    public static UploadType fromInt(int value) {
+
+      for (UploadType method : values()) {
+        if (value == method.value) {
+          return method;
+        }
+      }
+      return INVALID;
+    }
+  }
 
   public FileSystemModule(Context context) {
     super(context);
@@ -80,7 +107,6 @@ public class FileSystemModule extends ExportedModule {
     } catch (IOException e) {
       e.printStackTrace();
     }
-
   }
 
   @Override
@@ -107,11 +133,18 @@ public class FileSystemModule extends ExportedModule {
     return new File(uri.getPath());
   }
 
+  private void checkIfFileExists(Uri uri) throws IOException {
+    File file = uriToFile(uri);
+    if (!file.exists()) {
+      throw new IOException("Directory for " + file.getPath() + " doesn't exist.");
+    }
+  }
+
   private void checkIfFileDirExists(Uri uri) throws IOException {
     File file = uriToFile(uri);
     File dir = file.getParentFile();
     if (!dir.exists()) {
-      throw new IOException("Directory for " + file.getPath() + " doesn't exist.");
+      throw new IOException("Directory for " + file.getPath() + " doesn't exist. Please make sure directory '" + file.getParent() + "' exists before calling downloadAsync.");
     }
   }
 
@@ -128,6 +161,10 @@ public class FileSystemModule extends ExportedModule {
     }
     if ("file".equals(uri.getScheme())) {
       return permissionsForPath(uri.getPath());
+    }
+    if (uri.getScheme() == null) {
+      // this is probably an asset embedded by the packager in resources
+      return EnumSet.of(Permission.READ);
     }
     return EnumSet.noneOf(Permission.class);
   }
@@ -157,6 +194,18 @@ public class FileSystemModule extends ExportedModule {
     return getContext().getAssets().open(asset);
   }
 
+  private InputStream openResourceInputStream(String resourceName) throws IOException {
+    int resourceId = getContext().getResources().getIdentifier(resourceName, "raw", getContext().getPackageName());
+    if (resourceId == 0) {
+      // this resource doesn't exist in the raw folder, so try drawable
+      resourceId = getContext().getResources().getIdentifier(resourceName, "drawable", getContext().getPackageName());
+      if (resourceId == 0) {
+        throw new FileNotFoundException("No resource found with the name " + resourceName);
+      }
+    }
+    return getContext().getResources().openRawResource(resourceId);
+  }
+
   @ExpoMethod
   public void getInfoAsync(String uriStr, Map<String, Object> options, Promise promise) {
     try {
@@ -172,7 +221,7 @@ public class FileSystemModule extends ExportedModule {
           if (options.containsKey("md5") && (Boolean) options.get("md5")) {
             result.putString("md5", md5(file));
           }
-          result.putDouble("size", file.length());
+          result.putDouble("size", getFileSize(file));
           result.putDouble("modificationTime", 0.001 * file.lastModified());
           promise.resolve(result);
         } else {
@@ -180,12 +229,17 @@ public class FileSystemModule extends ExportedModule {
           result.putBoolean("isDirectory", false);
           promise.resolve(result);
         }
-      } else if ("content".equals(uri.getScheme()) || "asset".equals(uri.getScheme())) {
+      } else if ("content".equals(uri.getScheme()) || "asset".equals(uri.getScheme()) || uri.getScheme() == null) {
         Bundle result = new Bundle();
         try {
-          InputStream is = "content".equals(uri.getScheme()) ?
-              getContext().getContentResolver().openInputStream(uri) :
-              openAssetInputStream(uri);
+          InputStream is;
+          if ("content".equals(uri.getScheme())) {
+            is = getContext().getContentResolver().openInputStream(uri);
+          } else if ("asset".equals(uri.getScheme())) {
+            is = openAssetInputStream(uri);
+          } else {
+            is = openResourceInputStream(uriStr);
+          }
           if (is == null) {
             throw new FileNotFoundException();
           }
@@ -252,6 +306,9 @@ public class FileSystemModule extends ExportedModule {
           contents = IOUtils.toString(new FileInputStream(uriToFile(uri)));
         } else if ("asset".equals(uri.getScheme())) {
           contents = IOUtils.toString(openAssetInputStream(uri));
+        } else if (uri.getScheme() == null) {
+          // this is probably an asset embedded by the packager in resources
+          contents = IOUtils.toString(openResourceInputStream(uriStr));
         } else {
           throw new IOException("Unsupported scheme for location '" + uri + "'.");
         }
@@ -304,14 +361,19 @@ public class FileSystemModule extends ExportedModule {
       if ("file".equals(uri.getScheme())) {
         File file = uriToFile(uri);
         if (file.exists()) {
-          FileUtils.forceDelete(file);
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            FileUtils.forceDelete(file);
+          } else {
+            // to be removed once Android SDK 25 support is dropped
+            forceDelete(file);
+          }
           promise.resolve(null);
         } else {
           if (options.containsKey("idempotent") && (Boolean) options.get("idempotent")) {
             promise.resolve(null);
           } else {
-            promise.reject("E_FILE_NOT_FOUND",
-                "File '" + uri + "' could not be deleted because it could not be found");
+            promise.reject("ERR_FILESYSTEM_CANNOT_FIND_FILE",
+              "File '" + uri + "' could not be deleted because it could not be found");
           }
         }
       } else {
@@ -327,13 +389,13 @@ public class FileSystemModule extends ExportedModule {
   public void moveAsync(Map<String, Object> options, Promise promise) {
     try {
       if (!options.containsKey("from")) {
-        promise.reject("E_MISSING_PARAMETER", "`FileSystem.moveAsync` needs a `from` path.");
+        promise.reject("ERR_FILESYSTEM_MISSING_PARAMETER", "`FileSystem.moveAsync` needs a `from` path.");
         return;
       }
       Uri fromUri = Uri.parse((String) options.get("from"));
       ensurePermission(Uri.withAppendedPath(fromUri, ".."), Permission.WRITE, "Location '" + fromUri + "' isn't movable.");
       if (!options.containsKey("to")) {
-        promise.reject("E_MISSING_PARAMETER", "`FileSystem.moveAsync` needs a `to` path.");
+        promise.reject("ERR_FILESYSTEM_MISSING_PARAMETER", "`FileSystem.moveAsync` needs a `to` path.");
         return;
       }
       Uri toUri = Uri.parse((String) options.get("to"));
@@ -345,8 +407,8 @@ public class FileSystemModule extends ExportedModule {
         if (from.renameTo(to)) {
           promise.resolve(null);
         } else {
-          promise.reject("E_FILE_NOT_MOVED",
-              "File '" + fromUri + "' could not be moved to '" + toUri + "'");
+          promise.reject("ERR_FILESYSTEM_CANNOT_MOVE_FILE",
+            "File '" + fromUri + "' could not be moved to '" + toUri + "'");
         }
       } else {
         throw new IOException("Unsupported scheme for location '" + fromUri + "'.");
@@ -361,13 +423,13 @@ public class FileSystemModule extends ExportedModule {
   public void copyAsync(Map<String, Object> options, Promise promise) {
     try {
       if (!options.containsKey("from")) {
-        promise.reject("E_MISSING_PARAMETER", "`FileSystem.moveAsync` needs a `from` path.");
+        promise.reject("ERR_FILESYSTEM_MISSING_PARAMETER", "`FileSystem.moveAsync` needs a `from` path.");
         return;
       }
       Uri fromUri = Uri.parse((String) options.get("from"));
       ensurePermission(fromUri, Permission.READ);
       if (!options.containsKey("to")) {
-        promise.reject("E_MISSING_PARAMETER", "`FileSystem.moveAsync` needs a `to` path.");
+        promise.reject("ERR_FILESYSTEM_MISSING_PARAMETER", "`FileSystem.moveAsync` needs a `to` path.");
         return;
       }
       Uri toUri = Uri.parse((String) options.get("to"));
@@ -393,6 +455,12 @@ public class FileSystemModule extends ExportedModule {
         OutputStream out = new FileOutputStream(uriToFile(toUri));
         IOUtils.copy(in, out);
         promise.resolve(null);
+      } else if (fromUri.getScheme() == null) {
+        // this is probably an asset embedded by the packager in resources
+        InputStream in = openResourceInputStream((String) options.get("from"));
+        OutputStream out = new FileOutputStream(uriToFile(toUri));
+        IOUtils.copy(in, out);
+        promise.resolve(null);
       } else {
         throw new IOException("Unsupported scheme for location '" + fromUri + "'.");
       }
@@ -415,8 +483,8 @@ public class FileSystemModule extends ExportedModule {
         if (success || (setIntermediates && previouslyCreated)) {
           promise.resolve(null);
         } else {
-          promise.reject("E_DIRECTORY_NOT_CREATED",
-              "Directory '" + uri + "' could not be created or already exists.");
+          promise.reject("ERR_FILESYSTEM_CANNOT_CREATE_DIRECTORY",
+            "Directory '" + uri + "' could not be created or already exists.");
         }
       } else {
         throw new IOException("Unsupported scheme for location '" + uri + "'.");
@@ -442,12 +510,104 @@ public class FileSystemModule extends ExportedModule {
           }
           promise.resolve(result);
         } else {
-          promise.reject("E_DIRECTORY_NOT_READ",
-              "Directory '" + uri + "' could not be read.");
+          promise.reject("ERR_FILESYSTEM_CANNOT_READ_DIRECTORY",
+            "Directory '" + uri + "' could not be read.");
         }
       } else {
         throw new IOException("Unsupported scheme for location '" + uri + "'.");
       }
+    } catch (Exception e) {
+      Log.e(TAG, e.getMessage());
+      promise.reject(e);
+    }
+  }
+
+  @ExpoMethod
+  public void uploadAsync(final String url, final String fileUriString, final Map<String, Object> options, final Promise promise) {
+    try {
+      final Uri fileUri = Uri.parse(fileUriString);
+      ensurePermission(fileUri, Permission.READ);
+      checkIfFileExists(fileUri);
+
+      if (!options.containsKey("httpMethod")) {
+        promise.reject("ERR_FILESYSTEM_MISSING_HTTP_METHOD", "Missing HTTP method.", null);
+        return;
+      }
+      String method = (String) options.get("httpMethod");
+
+      if (!options.containsKey("uploadType")) {
+        promise.reject("ERR_FILESYSTEM_MISSING_UPLOAD_TYPE", "Missing upload type.", null);
+        return;
+      }
+      UploadType uploadType = UploadType.fromInt(((Double) options.get("uploadType")).intValue());
+
+      Request.Builder requestBuilder = new Request.Builder().url(url);
+      if (options.containsKey(HEADER_KEY)) {
+        final Map<String, Object> headers = (Map<String, Object>) options.get(HEADER_KEY);
+        for (String key : headers.keySet()) {
+          requestBuilder.addHeader(key, headers.get(key).toString());
+        }
+      }
+
+      File file = uriToFile(fileUri);
+      if (uploadType == UploadType.BINARY_CONTENT) {
+        RequestBody body = RequestBody.create(null, file);
+        requestBuilder.method(method, body);
+      } else if (uploadType == UploadType.MULTIPART) {
+        MultipartBody.Builder bodyBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+
+        if (options.containsKey("parameters")) {
+          Map<String, Object> parametersMap = (Map<String, Object>) options.get("parameters");
+          for (String key : parametersMap.keySet()) {
+            bodyBuilder.addFormDataPart(key, String.valueOf(parametersMap.get(key)));
+          }
+        }
+
+        String mimeType;
+        if (options.containsKey("mimeType")) {
+          mimeType = (String) options.get("mimeType");
+        } else {
+          mimeType = URLConnection.guessContentTypeFromName(file.getName());
+        }
+
+        String fieldName = file.getName();
+        if (options.containsKey("fieldName")) {
+          fieldName = (String) options.get("fieldName");
+        }
+
+        bodyBuilder.addFormDataPart(fieldName, file.getName(), RequestBody.create(mimeType != null ? MediaType.parse(mimeType) : null, file));
+        requestBuilder.method(method, bodyBuilder.build());
+      } else {
+        promise.reject("ERR_FILESYSTEM_INVALID_UPLOAD_TYPE", String.format("Invalid upload type: %s.", options.get("uploadType")), null);
+        return;
+      }
+
+      getOkHttpClient().newCall(requestBuilder.build()).enqueue(new Callback() {
+        @Override
+        public void onFailure(Call call, IOException e) {
+          Log.e(TAG, String.valueOf(e.getMessage()));
+          promise.reject(e);
+        }
+
+        @Override
+        public void onResponse(Call call, Response response) {
+          Bundle result = new Bundle();
+          try {
+            if (response.body() != null) {
+              result.putString("body", response.body().string());
+            } else {
+              result.putString("body", null);
+            }
+          } catch (IOException exception) {
+            promise.reject(exception);
+            return;
+          }
+          result.putInt("status", response.code());
+          result.putBundle("headers", translateHeaders(response.headers()));
+          response.close();
+          promise.resolve(result);
+        }
+      });
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
       promise.reject(e);
@@ -483,15 +643,20 @@ public class FileSystemModule extends ExportedModule {
       } else if ("file".equals(uri.getScheme())) {
         Request.Builder requestBuilder = new Request.Builder().url(url);
         if (options != null && options.containsKey(HEADER_KEY)) {
-          final Map<String, Object> headers = (Map<String, Object>) options.get(HEADER_KEY);
-          for (String key : headers.keySet()) {
-            requestBuilder.addHeader(key, headers.get(key).toString());
+          try {
+            final Map<String, Object> headers = (Map<String, Object>) options.get(HEADER_KEY);
+            for (String key : headers.keySet()) {
+              requestBuilder.addHeader(key, (String) headers.get(key));
+            }
+          } catch (ClassCastException exception) {
+            promise.reject("ERR_FILESYSTEM_INVALID_HEADERS", "Invalid headers dictionary. Keys and values should be strings.", exception);
+            return;
           }
         }
         getOkHttpClient().newCall(requestBuilder.build()).enqueue(new Callback() {
           @Override
           public void onFailure(Call call, IOException e) {
-            Log.e(TAG, e.getMessage());
+            Log.e(TAG, String.valueOf(e.getMessage()));
             promise.reject(e);
           }
 
@@ -510,6 +675,7 @@ public class FileSystemModule extends ExportedModule {
             }
             result.putInt("status", response.code());
             result.putBundle("headers", translateHeaders(response.headers()));
+            response.close();
             promise.resolve(result);
           }
         });
@@ -530,11 +696,11 @@ public class FileSystemModule extends ExportedModule {
       long blockSize = root.getBlockSizeLong();
       BigInteger capacity = BigInteger.valueOf(blockCount).multiply(BigInteger.valueOf(blockSize));
       //cast down to avoid overflow
-      Double capacityDouble = Math.max(capacity.doubleValue(), Math.pow(2, 53) - 1);
+      Double capacityDouble = Math.min(capacity.doubleValue(), Math.pow(2, 53) - 1);
       promise.resolve(capacityDouble);
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
-      promise.reject("ERR_FILESYSTEM", "Unable to access total disk capacity", e);
+      promise.reject("ERR_FILESYSTEM_CANNOT_DETERMINE_DISK_CAPACITY", "Unable to access total disk capacity", e);
     }
   }
 
@@ -546,15 +712,12 @@ public class FileSystemModule extends ExportedModule {
       long blockSize = external.getBlockSizeLong();
 
       BigInteger storage = BigInteger.valueOf(availableBlocks).multiply(BigInteger.valueOf(blockSize));
-      Double storageDouble = Math.max(storage.doubleValue(), Math.pow(2, 53) - 1);
       //cast down to avoid overflow
-      if (storage.longValue() > Math.pow(2, 53) - 1) {
-        storageDouble = Math.pow(2, 53) - 1;
-      }
+      Double storageDouble = Math.min(storage.doubleValue(), Math.pow(2, 53) - 1);
       promise.resolve(storageDouble);
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
-      promise.reject("ERR_FILESYSTEM", "Unable to determine free disk storage capacity", e);
+      promise.reject("ERR_FILESYSTEM_CANNOT_DETERMINE_DISK_CAPACITY", "Unable to determine free disk storage capacity", e);
     }
   }
 
@@ -567,11 +730,9 @@ public class FileSystemModule extends ExportedModule {
       checkIfFileDirExists(fileUri);
       if ("file".equals(fileUri.getScheme())) {
         File file = uriToFile(fileUri);
-        Bundle result = new Bundle();
-        result.putString("uri", contentUriFromFile(file).toString());
-        promise.resolve(result);
+        promise.resolve(contentUriFromFile(file).toString());
       } else {
-        promise.reject("E_DIRECTORY_NOT_READ", "No readable files with the uri: " + uri + ". Please use other uri.");
+        promise.reject("ERR_FILESYSTEM_CANNOT_READ_DIRECTORY", "No readable files with the uri: " + uri + ". Please use other uri.");
       }
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
@@ -628,17 +789,17 @@ public class FileSystemModule extends ExportedModule {
       };
 
       OkHttpClient client =
-          getOkHttpClient().newBuilder()
-              .addNetworkInterceptor(new Interceptor() {
-                @Override
-                public Response intercept(Chain chain) throws IOException {
-                  Response originalResponse = chain.proceed(chain.request());
-                  return originalResponse.newBuilder()
-                      .body(new ProgressResponseBody(originalResponse.body(), progressListener))
-                      .build();
-                }
-              })
-              .build();
+        getOkHttpClient().newBuilder()
+          .addNetworkInterceptor(new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+              Response originalResponse = chain.proceed(chain.request());
+              return originalResponse.newBuilder()
+                .body(new ProgressResponseBody(originalResponse.body(), progressListener))
+                .build();
+            }
+          })
+          .build();
 
       Request.Builder requestBuilder = new Request.Builder();
       if (isResume) {
@@ -760,6 +921,7 @@ public class FileSystemModule extends ExportedModule {
         result.putInt("status", response.code());
         result.putBundle("headers", translateHeaders(response.headers()));
 
+        response.close();
         promise.resolve(result);
         return null;
       } catch (Exception e) {
@@ -778,8 +940,8 @@ public class FileSystemModule extends ExportedModule {
       // multiple values for the same header
       if (responseHeaders.get(headerName) != null) {
         responseHeaders.putString(
-            headerName,
-            responseHeaders.getString(headerName) + ", " + headers.value(i));
+          headerName,
+          responseHeaders.getString(headerName) + ", " + headers.value(i));
       } else {
         responseHeaders.putString(headerName, headers.value(i));
       }
@@ -854,10 +1016,10 @@ public class FileSystemModule extends ExportedModule {
   private synchronized OkHttpClient getOkHttpClient() {
     if (mClient == null) {
       OkHttpClient.Builder builder =
-          new OkHttpClient.Builder()
-              .connectTimeout(60, TimeUnit.SECONDS)
-              .readTimeout(60, TimeUnit.SECONDS)
-              .writeTimeout(60, TimeUnit.SECONDS);
+        new OkHttpClient.Builder()
+          .connectTimeout(60, TimeUnit.SECONDS)
+          .readTimeout(60, TimeUnit.SECONDS)
+          .writeTimeout(60, TimeUnit.SECONDS);
 
       CookieHandler cookieHandler = mModuleRegistry.getModule(CookieHandler.class);
       if (cookieHandler != null) {
@@ -882,5 +1044,56 @@ public class FileSystemModule extends ExportedModule {
     if (!(dir.isDirectory() || dir.mkdirs())) {
       throw new IOException("Couldn't create directory '" + dir + "'");
     }
+  }
+
+  /**
+   * Concatenated copy of org.apache.commons.io@1.4.0#FileUtils#forceDelete
+   * Newer version of commons-io uses File#toPath() under the hood that unsupported below Android SDK 26
+   * See docs for reference https://commons.apache.org/proper/commons-io/javadocs/api-1.4/index.html
+   */
+  private void forceDelete(File file) throws IOException {
+    if (file.isDirectory()) {
+      File[] files = file.listFiles();
+      if (files == null) {
+        throw new IOException("Failed to list contents of " + file);
+      }
+
+      IOException exception = null;
+      for (File f : files) {
+        try {
+          forceDelete(f);
+        } catch (IOException ioe) {
+          exception = ioe;
+        }
+      }
+
+      if (null != exception) {
+        throw exception;
+      }
+
+      if (!file.delete()) {
+        throw new IOException("Unable to delete directory " + file + ".");
+      }
+    } else if (!file.delete()) {
+      throw new IOException("Unable to delete file: " + file);
+    }
+  }
+
+  private long getFileSize(File file) {
+    if (!file.isDirectory()) {
+      return file.length();
+    }
+
+    File[] content = file.listFiles();
+    if (content == null) {
+      return 0;
+    }
+
+    long size = 0;
+    for (File item : content) {
+      size += getFileSize(item);
+    }
+
+    return size;
   }
 }

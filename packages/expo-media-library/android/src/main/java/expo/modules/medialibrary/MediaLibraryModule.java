@@ -1,9 +1,7 @@
 package expo.modules.medialibrary;
 
-import android.Manifest;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
@@ -14,11 +12,6 @@ import android.provider.MediaStore;
 import android.provider.MediaStore.Files;
 import android.provider.MediaStore.Images.Media;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
@@ -26,13 +19,16 @@ import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.services.EventEmitter;
 import org.unimodules.interfaces.permissions.Permissions;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_PERMISSIONS;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_PERMISSIONS_MESSAGE;
-import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_PERMISSIONS_MODULE;
-import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_PERMISSIONS_MODULE_MESSAGE;
+import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_WRITE_PERMISSION_MESSAGE;
 import static expo.modules.medialibrary.MediaLibraryConstants.EXTERNAL_CONTENT;
 import static expo.modules.medialibrary.MediaLibraryConstants.LIBRARY_DID_CHANGE_EVENT;
 import static expo.modules.medialibrary.MediaLibraryConstants.MEDIA_TYPE_ALL;
@@ -100,45 +96,25 @@ public class MediaLibraryModule extends ExportedModule {
     mModuleRegistry = moduleRegistry;
   }
 
-  // TODO(@tsapeta): refactor together with expo-permissions
   @ExpoMethod
-  public void requestPermissionsAsync(final Promise promise) {
-    Permissions permissionsModule = mModuleRegistry.getModule(Permissions.class);
-
-    if (permissionsModule == null) {
-      promise.reject(ERROR_NO_PERMISSIONS_MODULE, ERROR_NO_PERMISSIONS_MODULE_MESSAGE);
-      return;
-    }
-    String[] permissions = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
-
-    permissionsModule.askForPermissions(permissions, new Permissions.PermissionsRequestListener() {
-      @Override
-      public void onPermissionsResult(int[] results) {
-        boolean isGranted = results[0] == PackageManager.PERMISSION_GRANTED;
-        Bundle response = new Bundle();
-
-        response.putString("status", isGranted ? "granted" : "denied");
-        response.putBoolean("granted", isGranted);
-        promise.resolve(response);
-      }
-    });
+  public void requestPermissionsAsync(boolean writeOnly, final Promise promise) {
+    Permissions.askForPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, getManifestPermissions(writeOnly));
   }
 
-  // TODO(@tsapeta): refactor together with expo-permissions
   @ExpoMethod
-  public void getPermissionsAsync(final Promise promise) {
-    Permissions permissionsModule = mModuleRegistry.getModule(Permissions.class);
+  public void getPermissionsAsync(boolean writeOnly, final Promise promise) {
+    Permissions.getPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, getManifestPermissions(writeOnly));
+  }
 
-    if (permissionsModule == null) {
-      promise.reject(ERROR_NO_PERMISSIONS_MODULE, ERROR_NO_PERMISSIONS_MODULE_MESSAGE);
+  @ExpoMethod
+  public void saveToLibraryAsync(String localUri, Promise promise) {
+    if (isMissingWritePermission()) {
+      promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_WRITE_PERMISSION_MESSAGE);
       return;
     }
-    boolean isGranted = !isMissingPermissions();
-    Bundle response = new Bundle();
 
-    response.putString("status", isGranted ? "granted" : "denied");
-    response.putBoolean("granted", isGranted);
-    promise.resolve(response);
+    new CreateAsset(mContext, localUri, promise, false)
+      .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   @ExpoMethod
@@ -149,7 +125,7 @@ public class MediaLibraryModule extends ExportedModule {
     }
 
     new CreateAsset(mContext, localUri, promise)
-        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+      .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   @ExpoMethod
@@ -160,7 +136,7 @@ public class MediaLibraryModule extends ExportedModule {
     }
 
     new AddAssetsToAlbum(mContext,
-        assetsId.toArray(new String[0]), albumId, copyToAlbum, promise).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+      assetsId.toArray(new String[0]), albumId, copyToAlbum, promise).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
 
@@ -172,7 +148,7 @@ public class MediaLibraryModule extends ExportedModule {
     }
 
     new RemoveAssetsFromAlbum(mContext,
-        assetsId.toArray(new String[0]), albumId, promise).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+      assetsId.toArray(new String[0]), albumId, promise).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   @ExpoMethod
@@ -183,18 +159,18 @@ public class MediaLibraryModule extends ExportedModule {
     }
 
     new DeleteAssets(mContext, assetsId.toArray(new String[0]), promise)
-        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+      .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   @ExpoMethod
-  public void getAssetInfoAsync(String assetId, Promise promise) {
+  public void getAssetInfoAsync(String assetId, Map<String, Object> options /* unused on android atm */, Promise promise) {
     if (isMissingPermissions()) {
       promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
       return;
     }
 
     new GetAssetInfo(mContext, assetId, promise).
-        executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+      executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
 
@@ -217,7 +193,7 @@ public class MediaLibraryModule extends ExportedModule {
     }
 
     new GetAlbum(mContext, albumName, promise)
-        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+      .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   @ExpoMethod
@@ -228,7 +204,7 @@ public class MediaLibraryModule extends ExportedModule {
     }
 
     new CreateAlbum(mContext, albumName, assetId, copyAsset, promise)
-        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+      .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   @ExpoMethod
@@ -239,7 +215,7 @@ public class MediaLibraryModule extends ExportedModule {
     }
 
     new DeleteAlbums(mContext, albumIds, promise)
-        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+      .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
   }
 
@@ -251,7 +227,7 @@ public class MediaLibraryModule extends ExportedModule {
     }
 
     new GetAssets(mContext, assetOptions, promise)
-        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+      .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   // Library change observer
@@ -274,14 +250,14 @@ public class MediaLibraryModule extends ExportedModule {
     ContentResolver contentResolver = mContext.getContentResolver();
 
     contentResolver.registerContentObserver(
-        Media.EXTERNAL_CONTENT_URI,
-        true,
-        mImagesObserver
+      Media.EXTERNAL_CONTENT_URI,
+      true,
+      mImagesObserver
     );
     contentResolver.registerContentObserver(
-        MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-        true,
-        mVideosObserver
+      MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+      true,
+      mVideosObserver
     );
     promise.resolve(null);
   }
@@ -305,9 +281,29 @@ public class MediaLibraryModule extends ExportedModule {
     if (permissionsManager == null) {
       return false;
     }
-    int[] grantResults = permissionsManager.getPermissions(new String[]{READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE});
 
-    return grantResults.equals(new int[]{PERMISSION_GRANTED, PERMISSION_GRANTED});
+    return !permissionsManager.hasGrantedPermissions(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE);
+  }
+
+  private boolean isMissingWritePermission() {
+    Permissions permissionsManager = mModuleRegistry.getModule(Permissions.class);
+    if (permissionsManager == null) {
+      return false;
+    }
+
+    return !permissionsManager.hasGrantedPermissions(WRITE_EXTERNAL_STORAGE);
+  }
+
+  private String[] getManifestPermissions(boolean writeOnly) {
+    if (writeOnly) {
+      return new String[]{
+        WRITE_EXTERNAL_STORAGE
+      };
+    }
+    return new String[]{
+      READ_EXTERNAL_STORAGE,
+      WRITE_EXTERNAL_STORAGE
+    };
   }
 
   private class MediaStoreContentObserver extends ContentObserver {
@@ -339,16 +335,14 @@ public class MediaLibraryModule extends ExportedModule {
 
     private int getAssetsTotalCount(int mediaType) {
       Cursor countCursor = mContext.getContentResolver().query(
-          EXTERNAL_CONTENT,
-          new String[]{"count(*) AS count"},
-          Files.FileColumns.MEDIA_TYPE + " == " + mediaType,
-          null,
-          null
+        EXTERNAL_CONTENT,
+        null,
+        Files.FileColumns.MEDIA_TYPE + " == " + mediaType,
+        null,
+        null
       );
 
-      countCursor.moveToFirst();
-
-      return countCursor.getInt(0);
+      return countCursor != null ? countCursor.getCount() : 0;
     }
   }
 }

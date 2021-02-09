@@ -1,6 +1,6 @@
 {
   "name": "expo-contacts",
-  "version": "6.0.0",
+  "version": "9.0.0",
   "description": "Provides access to the phone's system contacts.",
   "main": "build/Contacts.js",
   "types": "build/Contacts.d.ts",
@@ -8,6 +8,7 @@
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
+    "lint": "expo-module lint",
     "test": "expo-module test",
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
@@ -20,7 +21,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/expo/expo.git"
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-contacts"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
@@ -32,13 +34,19 @@
     "preset": "expo-module-scripts"
   },
   "unimodulePeerDependencies": {
-    "@unimodules/core": "*"
+    "@unimodules/core": "*",
+    "unimodules-permissions-interface": "*"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
   },
   "dependencies": {
-    "uuid-js": "^0.7.5"
+    "@expo/config-plugins": "~1.0.13",
+    "uuid": "^3.4.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "^1.0.0"
-  },
-  "gitHead": "9518929d6f2ba9cf8e0aae81d34cc1eb52f7093a"
+    "@types/uuid": "^3.4.7",
+    "expo-module-scripts": "~1.2.0"
+  }
 }

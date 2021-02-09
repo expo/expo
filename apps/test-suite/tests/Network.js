@@ -60,7 +60,7 @@ export async function test(t) {
   });
   t.describe(`Network.getMacAddressAsync()`, () => {
     if (!isDeviceFarm()) {
-      t.it(`returns valid Mac address when pass in no network interface name`, async () => {
+      t.it(`returns valid Mac address when pass in null as network interface name`, async () => {
         let macAddress;
         let error;
         try {

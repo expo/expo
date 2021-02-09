@@ -1,0 +1,65 @@
+// Gradle script for generating serialized public app config (from app.config.js/ts or app.json) and bundling it into the APK 
+
+import org.apache.tools.ant.taskdefs.condition.Os
+import org.gradle.util.GradleVersion
+
+void runBefore(String dependentTaskName, Task task) {
+  Task dependentTask = tasks.findByPath(dependentTaskName);
+  if (dependentTask != null) {
+    dependentTask.dependsOn task
+  }
+}
+
+def expoConstantsDir = ["node", "-e", "console.log(require('path').dirname(require.resolve('expo-constants/package.json')));"].execute([], projectDir).text.trim()
+
+def config = project.hasProperty("react") ? project.react : [];
+def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]
+
+afterEvaluate {
+  def projectRoot = file("../../")
+  def inputExcludes = ["android/**", "ios/**"]
+
+  android.applicationVariants.each { variant ->
+    def folderName = variant.name
+    def targetName = folderName.capitalize()
+
+    def assetsDir = file("$buildDir/intermediates/merged_assets/${folderName}/out")
+
+    GradleVersion gradleVersion = GradleVersion.current()
+    if (gradleVersion < GradleVersion.version('5.0')) {
+      assetsDir = file("$buildDir/intermediates/merged_assets/${folderName}/merge${targetName}Assets/out")
+    }
+
+    // Bundle task name for variant
+    def bundleAppConfigTaskName = "bundle${targetName}ExpoConfig"
+
+    def currentBundleTask = tasks.create(
+        name: bundleAppConfigTaskName,
+        type: Exec) {
+      description = "expo-constants: Bundle app config for ${targetName}."
+
+      // Create dirs if they are not there (e.g. the "clean" task just ran)
+      doFirst {
+        assetsDir.mkdirs()
+      }
+
+      // Set up inputs and outputs so gradle can cache the result
+      inputs.files fileTree(dir: projectRoot, excludes: inputExcludes)
+      outputs.dir assetsDir
+
+      // Switch to project root and generate the app config
+      workingDir projectRoot
+
+      if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        commandLine("cmd", "/c", *nodeExecutableAndArgs, "$expoConstantsDir/scripts/getAppConfig.js", projectRoot, assetsDir)
+      } else {
+        commandLine(*nodeExecutableAndArgs, "$expoConstantsDir/scripts/getAppConfig.js", projectRoot, assetsDir)
+      }
+    }
+
+    currentBundleTask.dependsOn("merge${targetName}Resources")
+    currentBundleTask.dependsOn("merge${targetName}Assets")
+
+    runBefore("process${targetName}Resources", currentBundleTask)
+  }
+}

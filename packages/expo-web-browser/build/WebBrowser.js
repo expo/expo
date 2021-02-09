@@ -1,6 +1,8 @@
-import { AppState, Linking, Platform } from 'react-native';
 import { UnavailabilityError } from '@unimodules/core';
+import { AppState, Linking, Platform } from 'react-native';
 import ExponentWebBrowser from './ExpoWebBrowser';
+import { WebBrowserResultType, } from './WebBrowser.types';
+export { WebBrowserResultType, };
 const emptyCustomTabsPackages = {
     defaultBrowserPackage: undefined,
     preferredBrowserPackage: undefined,
@@ -51,11 +53,29 @@ export async function coolDownAsync(browserPackage) {
         return await ExponentWebBrowser.coolDownAsync(browserPackage);
     }
 }
+let browserLocked = false;
 export async function openBrowserAsync(url, browserParams = {}) {
     if (!ExponentWebBrowser.openBrowserAsync) {
         throw new UnavailabilityError('WebBrowser', 'openBrowserAsync');
     }
-    return await ExponentWebBrowser.openBrowserAsync(url, browserParams);
+    if (browserLocked) {
+        // Prevent multiple sessions from running at the same time, WebBrowser doesn't
+        // support it this makes the behavior predictable.
+        if (__DEV__) {
+            console.warn('Attempted to call WebBrowser.openBrowserAsync multiple times while already active. Only one WebBrowser controller can be active at any given time.');
+        }
+        return { type: WebBrowserResultType.LOCKED };
+    }
+    browserLocked = true;
+    let result;
+    try {
+        result = await ExponentWebBrowser.openBrowserAsync(url, browserParams);
+    }
+    finally {
+        // WebBrowser session complete, unset lock
+        browserLocked = false;
+    }
+    return result;
 }
 export function dismissBrowser() {
     if (!ExponentWebBrowser.dismissBrowser) {
@@ -63,15 +83,18 @@ export function dismissBrowser() {
     }
     ExponentWebBrowser.dismissBrowser();
 }
-export async function openAuthSessionAsync(url, redirectUrl) {
+export async function openAuthSessionAsync(url, redirectUrl, browserParams = {}) {
     if (_authSessionIsNativelySupported()) {
         if (!ExponentWebBrowser.openAuthSessionAsync) {
             throw new UnavailabilityError('WebBrowser', 'openAuthSessionAsync');
         }
+        if (Platform.OS === 'web') {
+            return ExponentWebBrowser.openAuthSessionAsync(url, redirectUrl, browserParams);
+        }
         return ExponentWebBrowser.openAuthSessionAsync(url, redirectUrl);
     }
     else {
-        return _openAuthSessionPolyfillAsync(url, redirectUrl);
+        return _openAuthSessionPolyfillAsync(url, redirectUrl, browserParams);
     }
 }
 export function dismissAuthSession() {
@@ -88,10 +111,24 @@ export function dismissAuthSession() {
         ExponentWebBrowser.dismissBrowser();
     }
 }
+/**
+ * Attempts to complete an auth session in the browser.
+ *
+ * @param options
+ */
+export function maybeCompleteAuthSession(options = {}) {
+    if (ExponentWebBrowser.maybeCompleteAuthSession) {
+        return ExponentWebBrowser.maybeCompleteAuthSession(options);
+    }
+    return { type: 'failed', message: 'Not supported on this platform' };
+}
 /* iOS <= 10 and Android polyfill for SFAuthenticationSession flow */
 function _authSessionIsNativelySupported() {
     if (Platform.OS === 'android') {
         return false;
+    }
+    else if (Platform.OS === 'web') {
+        return true;
     }
     const versionNumber = parseInt(String(Platform.Version), 10);
     return versionNumber >= 11;
@@ -104,27 +141,36 @@ let _redirectHandler = null;
 // Store the `resolve` function from a Promise to fire when the AppState
 // returns to active
 let _onWebBrowserCloseAndroid = null;
+// If the initial AppState.currentState is null, we assume that the first call to
+// AppState#change event is not actually triggered by a real change,
+// is triggered instead by the bridge capturing the current state
+// (https://reactnative.dev/docs/appstate#basic-usage)
+let _isAppStateAvailable = AppState.currentState !== null;
 function _onAppStateChangeAndroid(state) {
+    if (!_isAppStateAvailable) {
+        _isAppStateAvailable = true;
+        return;
+    }
     if (state === 'active' && _onWebBrowserCloseAndroid) {
         _onWebBrowserCloseAndroid();
     }
 }
-async function _openBrowserAndWaitAndroidAsync(startUrl) {
-    let appStateChangedToActive = new Promise(resolve => {
+async function _openBrowserAndWaitAndroidAsync(startUrl, browserParams = {}) {
+    const appStateChangedToActive = new Promise(resolve => {
         _onWebBrowserCloseAndroid = resolve;
         AppState.addEventListener('change', _onAppStateChangeAndroid);
     });
-    let result = { type: 'cancel' };
-    let { type } = await openBrowserAsync(startUrl);
+    let result = { type: WebBrowserResultType.CANCEL };
+    const { type } = await openBrowserAsync(startUrl, browserParams);
     if (type === 'opened') {
         await appStateChangedToActive;
-        result = { type: 'dismiss' };
+        result = { type: WebBrowserResultType.DISMISS };
     }
     AppState.removeEventListener('change', _onAppStateChangeAndroid);
     _onWebBrowserCloseAndroid = null;
     return result;
 }
-async function _openAuthSessionPolyfillAsync(startUrl, returnUrl) {
+async function _openAuthSessionPolyfillAsync(startUrl, returnUrl, browserParams = {}) {
     if (_redirectHandler) {
         throw new Error(`The WebBrowser's auth session is in an invalid state with a redirect handler set when it should not be`);
     }
@@ -134,12 +180,15 @@ async function _openAuthSessionPolyfillAsync(startUrl, returnUrl) {
     try {
         if (Platform.OS === 'android') {
             return await Promise.race([
-                _openBrowserAndWaitAndroidAsync(startUrl),
+                _openBrowserAndWaitAndroidAsync(startUrl, browserParams),
                 _waitForRedirectAsync(returnUrl),
             ]);
         }
         else {
-            return await Promise.race([openBrowserAsync(startUrl), _waitForRedirectAsync(returnUrl)]);
+            return await Promise.race([
+                openBrowserAsync(startUrl, browserParams),
+                _waitForRedirectAsync(returnUrl),
+            ]);
         }
     }
     finally {

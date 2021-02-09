@@ -1,7 +1,6 @@
 // tslint:disable max-classes-per-file
 import React, { Component } from 'react';
 import { Animated, StyleSheet, View, StyleProp, ViewStyle } from 'react-native';
-
 import {
   PanGestureHandler,
   RotationGestureHandler,
@@ -31,7 +30,7 @@ class Snappable extends Component {
         useNativeDriver: USE_NATIVE_DRIVER,
       }).start();
     }
-  }
+  };
   render() {
     const { children } = this.props;
     return (
@@ -39,8 +38,7 @@ class Snappable extends Component {
         {...this.props}
         maxPointers={1}
         onGestureEvent={this._onGestureEvent}
-        onHandlerStateChange={this._onHandlerStateChange}
-      >
+        onHandlerStateChange={this._onHandlerStateChange}>
         <Animated.View style={{ transform: [{ translateX: this._transX }] }}>
           {children}
         </Animated.View>
@@ -76,15 +74,14 @@ class Twistable extends Component {
         useNativeDriver: USE_NATIVE_DRIVER,
       }).start();
     }
-  }
+  };
   render() {
     const { children } = this.props;
     return (
       <RotationGestureHandler
         {...this.props}
         onGestureEvent={this._onGestureEvent}
-        onHandlerStateChange={this._onHandlerStateChange}
-      >
+        onHandlerStateChange={this._onHandlerStateChange}>
         <Animated.View style={{ transform: [{ rotate: this._rot }] }}>{children}</Animated.View>
       </RotationGestureHandler>
     );

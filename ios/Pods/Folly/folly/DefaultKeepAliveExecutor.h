@@ -1,11 +1,11 @@
 /*
- * Copyright 2018-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -44,6 +44,15 @@ class DefaultKeepAliveExecutor : public virtual Executor {
     DCHECK(keepAlive_);
     keepAlive_.reset();
     keepAliveReleaseBaton_.wait();
+  }
+
+  void joinAndResetKeepAlive() {
+    joinKeepAlive();
+    auto keepAliveCount =
+        controlBlock_->keepAliveCount_.exchange(1, std::memory_order_relaxed);
+    DCHECK_EQ(keepAliveCount, 0);
+    keepAliveReleaseBaton_.reset();
+    keepAlive_ = makeKeepAlive(this);
   }
 
  private:
@@ -143,8 +152,7 @@ class DefaultKeepAliveExecutor : public virtual Executor {
 
   std::shared_ptr<ControlBlock> controlBlock_{std::make_shared<ControlBlock>()};
   Baton<> keepAliveReleaseBaton_;
-  KeepAlive<DefaultKeepAliveExecutor> keepAlive_{
-      makeKeepAlive<DefaultKeepAliveExecutor>(this)};
+  KeepAlive<DefaultKeepAliveExecutor> keepAlive_{makeKeepAlive(this)};
 };
 
 } // namespace folly

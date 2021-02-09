@@ -1,12 +1,12 @@
-import { EventEmitter } from '@unimodules/core';
+import { EventEmitter, UnavailabilityError } from '@unimodules/core';
 import invariant from 'invariant';
-import { UnavailabilityError } from '@unimodules/core';
+
 import ExponentPedometer from './ExponentPedometer';
 
 const PedometerEventEmitter = new EventEmitter(ExponentPedometer);
 
-type PedometerResult = { steps: number };
-type PedometerUpdateCallback = (result: PedometerResult) => void;
+export type PedometerResult = { steps: number };
+export type PedometerUpdateCallback = (result: PedometerResult) => void;
 export interface PedometerListener {
   remove: () => void;
 }

@@ -1,7 +1,10 @@
 package versioned.host.exp.exponent.modules.api.reanimated.nodes;
 
+import com.facebook.react.bridge.JSApplicationCausedNativeException;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.react.bridge.NoSuchKeyException;
 import com.facebook.react.bridge.ReadableMap;
+import versioned.host.exp.exponent.modules.api.reanimated.MapUtils;
 import versioned.host.exp.exponent.modules.api.reanimated.NodesManager;
 
 public class SetNode extends Node {
@@ -10,8 +13,8 @@ public class SetNode extends Node {
 
   public SetNode(int nodeID, ReadableMap config, NodesManager nodesManager) {
     super(nodeID, config, nodesManager);
-    mWhatNodeID = config.getInt("what");
-    mValueNodeID = config.getInt("value");
+    mWhatNodeID = MapUtils.getInt(config, "what", "Reanimated: First argument passed to set node is either of wrong type or is missing.");
+    mValueNodeID = MapUtils.getInt(config, "value", "Reanimated: Second argument passed to set node is either of wrong type or is missing.");
   }
 
   @Override

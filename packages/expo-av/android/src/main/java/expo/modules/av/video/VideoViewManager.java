@@ -101,7 +101,7 @@ public class VideoViewManager extends ViewManager<VideoViewWrapper> {
 
   @ExpoProp(name = PROP_SOURCE)
   public void setSource(final VideoViewWrapper videoViewWrapper, final ReadableArguments source) {
-    videoViewWrapper.getVideoViewInstance().setSource(source, null, null);
+    videoViewWrapper.getVideoViewInstance().setSource(source);
   }
 
   @ExpoProp(name = PROP_NATIVE_RESIZE_MODE)

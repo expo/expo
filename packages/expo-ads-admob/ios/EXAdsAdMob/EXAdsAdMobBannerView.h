@@ -6,7 +6,6 @@
 
 @property (nonatomic, copy) NSString *bannerSize;
 @property (nonatomic, copy) NSString *adUnitID;
-@property (nonatomic, copy) NSString *testDeviceID;
 @property (nonatomic, copy) NSDictionary *additionalRequestParams;
 
 @property (nonatomic, copy) UMDirectEventBlock onSizeChange;
@@ -21,6 +20,5 @@
 - (void)loadBanner;
 
 - (void)setAdUnitID:(NSString *)adUnitID;
-- (void)setTestDeviceID:(NSString *)testDeviceID;
 
 @end

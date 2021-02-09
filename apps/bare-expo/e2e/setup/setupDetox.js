@@ -7,7 +7,7 @@ const { launchWithPermissionsAsync } = require('../Utils');
 const config = require('../../package.json').detox;
 
 // Set the default timeout
-jest.setTimeout(120000);
+jest.setTimeout(160000);
 jasmine.getEnv().addReporter(adapter);
 
 // This takes care of generating status logs on a per-spec basis. By default, jest only reports at file-level.

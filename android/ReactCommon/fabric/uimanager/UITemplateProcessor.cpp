@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -34,7 +34,7 @@ struct RBCContext {
 // TODO: use RBCContext instead of all the separate arguments.
 SharedShadowNode UITemplateProcessor::runCommand(
     const folly::dynamic &command,
-    Tag rootTag,
+    SurfaceId surfaceId,
     std::vector<SharedShadowNode> &nodes,
     std::vector<folly::dynamic> &registers,
     const ComponentDescriptorRegistry &componentDescriptorRegistry,
@@ -49,16 +49,18 @@ SharedShadowNode UITemplateProcessor::runCommand(
     const auto parentTag = command[3].asInt();
     const auto &props = command[4];
     nodes[tag] = componentDescriptorRegistry.createNode(
-        tag + tagOffset, type, rootTag, props, nullptr);
+        tag + tagOffset, type, surfaceId, props, nullptr);
     if (parentTag > -1) { // parentTag == -1 indicates root node
       auto parentShadowNode = nodes[parentTag];
-      const SharedComponentDescriptor &componentDescriptor =
-          componentDescriptorRegistry[parentShadowNode];
-      componentDescriptor->appendChild(parentShadowNode, nodes[tag]);
+      auto const &componentDescriptor = componentDescriptorRegistry.at(
+          parentShadowNode->getComponentHandle());
+      componentDescriptor.appendChild(parentShadowNode, nodes[tag]);
     }
   } else if (opcode == "returnRoot") {
-    LOG(INFO)
-        << "(stop) UITemplateProcessor inject serialized 'server rendered' view tree";
+    if (DEBUG_FLY) {
+      LOG(INFO)
+          << "(stop) UITemplateProcessor inject serialized 'server rendered' view tree";
+    }
     return nodes[command[1].asInt()];
   } else if (opcode == "loadNativeBool") {
     int registerNumber = command[1].asInt();
@@ -85,7 +87,7 @@ SharedShadowNode UITemplateProcessor::runCommand(
     for (const auto &nextCommand : nextCommands) {
       runCommand(
           nextCommand,
-          rootTag,
+          surfaceId,
           nodes,
           registers,
           componentDescriptorRegistry,
@@ -100,13 +102,15 @@ SharedShadowNode UITemplateProcessor::runCommand(
 
 SharedShadowNode UITemplateProcessor::buildShadowTree(
     const std::string &jsonStr,
-    Tag rootTag,
+    SurfaceId surfaceId,
     const folly::dynamic &params,
     const ComponentDescriptorRegistry &componentDescriptorRegistry,
     const NativeModuleRegistry &nativeModuleRegistry,
     const std::shared_ptr<const ReactNativeConfig> reactNativeConfig) {
-  LOG(INFO)
-      << "(strt) UITemplateProcessor inject hardcoded 'server rendered' view tree";
+  if (DEBUG_FLY) {
+    LOG(INFO)
+        << "(strt) UITemplateProcessor inject hardcoded 'server rendered' view tree";
+  }
 
   std::string content = jsonStr;
   for (const auto &param : params.items()) {
@@ -127,7 +131,7 @@ SharedShadowNode UITemplateProcessor::buildShadowTree(
       }
       auto ret = runCommand(
           command,
-          rootTag,
+          surfaceId,
           nodes,
           registers,
           componentDescriptorRegistry,

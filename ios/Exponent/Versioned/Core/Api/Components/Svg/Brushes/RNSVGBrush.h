@@ -8,7 +8,6 @@
 
 #import <CoreGraphics/CoreGraphics.h>
 #import <Foundation/Foundation.h>
-#import "RNSVGPercentageConverter.h"
 #import "RNSVGPainter.h"
 
 @interface RNSVGBrush : NSObject
@@ -16,7 +15,7 @@
 @property (nonatomic, strong) NSString* brushRef;
 
 /* @abstract */
-- (instancetype)initWithArray:(NSArray *)data NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithArray:(NSArray *)data;
 
 /**
  * @abstract
@@ -29,6 +28,8 @@
 - (BOOL)applyFillColor:(CGContextRef)context opacity:(CGFloat)opacity;
 
 - (BOOL)applyStrokeColor:(CGContextRef)context opacity:(CGFloat)opacity;
+
+- (CGColorRef)getColorWithOpacity:(CGFloat)opacity;
 
 /**
  * @abstract

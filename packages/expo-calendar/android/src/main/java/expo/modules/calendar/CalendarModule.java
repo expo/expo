@@ -6,7 +6,6 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -36,7 +35,7 @@ public class CalendarModule extends ExportedModule implements RegistryLifecycleL
   private static final String TAG = CalendarModule.class.getSimpleName();
 
   private Context mContext;
-  private Permissions mPermissionsModule;
+  private Permissions mPermissionsManager;
 
   public CalendarModule(Context context) {
     super(context);
@@ -50,7 +49,7 @@ public class CalendarModule extends ExportedModule implements RegistryLifecycleL
 
   @Override
   public void onCreate(ModuleRegistry moduleRegistry) {
-    mPermissionsModule = moduleRegistry.getModule(Permissions.class);
+    mPermissionsManager = moduleRegistry.getModule(Permissions.class);
   }
 
   //region Exported methods
@@ -252,24 +251,13 @@ public class CalendarModule extends ExportedModule implements RegistryLifecycleL
   }
 
   @ExpoMethod
-  public void requestPermissionsAsync(final Promise promise) {
-    if (mPermissionsModule == null) {
-      promise.reject("E_NO_PERMISSIONS", "Permissions module not found. Are you sure that Expo modules are properly linked?");
-      return;
-    }
-    String[] permissions = new String[]{Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR};
+  public void requestCalendarPermissionsAsync(final Promise promise) {
+    Permissions.askForPermissionsWithPermissionsManager(mPermissionsManager, promise, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR);
+  }
 
-    mPermissionsModule.askForPermissions(permissions, new Permissions.PermissionsRequestListener() {
-      @Override
-      public void onPermissionsResult(int[] results) {
-        boolean isGranted = results[0] == PackageManager.PERMISSION_GRANTED;
-        Bundle response = new Bundle();
-
-        response.putString("status", isGranted ? "granted" : "denied");
-        response.putBoolean("granted", isGranted);
-        promise.resolve(response);
-      }
-    });
+  @ExpoMethod
+  public void getCalendarPermissionsAsync(final Promise promise) {
+    Permissions.getPermissionsWithPermissionsManager(mPermissionsManager, promise, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR);
   }
 
   //endregion
@@ -672,6 +660,17 @@ public class CalendarModule extends ExportedModule implements RegistryLifecycleL
             calendar.setTimeInMillis(((Number) endDateObj).longValue());
             endDate = format.format(calendar.getTime());
           }
+        }
+
+        if (endDate == null && occurrence == null) {
+          long eventStartDate = eventValues.getAsLong(CalendarContract.Events.DTSTART);
+          long eventEndDate = eventValues.getAsLong(CalendarContract.Events.DTEND);
+          long duration = (eventEndDate - eventStartDate) / 1000;
+
+          eventValues.putNull(CalendarContract.Events.LAST_DATE);
+          eventValues.putNull(CalendarContract.Events.DTEND);
+
+          eventValues.put(CalendarContract.Events.DURATION, String.format("PT%dS", duration));
         }
 
         String rule = createRecurrenceRule(frequency, interval, endDate, occurrence);
@@ -1236,16 +1235,19 @@ public class CalendarModule extends ExportedModule implements RegistryLifecycleL
       }
 
       if (recurrenceRules.length >= 3) {
-        if (recurrenceRules[2].split("=")[0].equals("UNTIL")) {
-          try {
-            recurrenceRule.putString("endDate", sdf.format(format.parse(recurrenceRules[2].split("=")[1])));
-          } catch (ParseException e) {
-            Log.e(TAG, "error", e);
+        String[] terminationRules = recurrenceRules[2].split("=");
+        if (terminationRules.length >= 2) {
+          if (terminationRules[0].equals("UNTIL")) {
+            try {
+              recurrenceRule.putString("endDate", sdf.format(format.parse(terminationRules[1])));
+            } catch (ParseException e) {
+              Log.e(TAG, "Couldn't parse the `endDate` property.", e);
+            }
+          } else if (terminationRules[0].equals("COUNT")) {
+            recurrenceRule.putInt("occurrence", Integer.parseInt(recurrenceRules[2].split("=")[1]));
           }
-        } else if (recurrenceRules[2].split("=")[0].equals("COUNT")) {
-          recurrenceRule.putInt("occurrence", Integer.parseInt(recurrenceRules[2].split("=")[1]));
         }
-
+        Log.e(TAG, String.format("Couldn't parse termination rules: '%s'.", recurrenceRules[2]), null);
       }
 
       event.putBundle("recurrenceRule", recurrenceRule);
@@ -1392,11 +1394,11 @@ public class CalendarModule extends ExportedModule implements RegistryLifecycleL
   }
 
   private boolean checkPermissions(Promise promise) {
-    if (mPermissionsModule == null) {
+    if (mPermissionsManager == null) {
       promise.reject("E_NO_PERMISSIONS", "Permissions module not found. Are you sure that Expo modules are properly linked?");
       return false;
     }
-    if (!mPermissionsModule.hasPermissions(new String[]{Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR})) {
+    if (!mPermissionsManager.hasGrantedPermissions(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)) {
       promise.reject("E_MISSING_PERMISSIONS", "CALENDAR permission is required to do this operation.");
       return false;
     }

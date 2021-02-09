@@ -1,7 +1,7 @@
 import { UnavailabilityError } from '@unimodules/core';
 
-import ExpoCellular from './ExpoCellular';
 import { CellularGeneration } from './Cellular.types';
+import ExpoCellular from './ExpoCellular';
 
 export { CellularGeneration };
 

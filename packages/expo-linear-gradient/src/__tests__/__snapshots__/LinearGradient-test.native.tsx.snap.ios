@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders a complex gradient 1`] = `
+Object {
+  "colors": Array [
+    4294901760,
+    4278190335,
+  ],
+  "endPoint": Array [
+    1,
+    1,
+  ],
+  "locations": Array [
+    0.5,
+    1,
+  ],
+  "startPoint": Array [
+    0,
+    0,
+  ],
+}
+`;

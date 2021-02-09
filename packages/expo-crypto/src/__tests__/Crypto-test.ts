@@ -1,20 +1,4 @@
-import ExpoCrypto from '../ExpoCrypto';
 import * as Crypto from '../Crypto';
-
-it(`invokes native method correctly`, async () => {
-  ExpoCrypto.digestStringAsync.mockImplementationOnce(() => '');
-  const value = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA1, '<DEBUG>', {
-    encoding: Crypto.CryptoEncoding.HEX,
-  });
-  expect(typeof value).toBe('string');
-  expect(ExpoCrypto.digestStringAsync).toHaveBeenLastCalledWith(
-    Crypto.CryptoDigestAlgorithm.SHA1,
-    '<DEBUG>',
-    {
-      encoding: Crypto.CryptoEncoding.HEX,
-    }
-  );
-});
 
 it(`asserts invalid algorithm errors`, async () => {
   await expect(Crypto.digestStringAsync(null as any, '<DEBUG>')).rejects.toThrowError(TypeError);

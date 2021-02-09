@@ -1,8 +1,12 @@
 ---
 title: Haptics
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-haptics'
 ---
 
-Provides haptic feedback for
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
+**`expo-haptics`** provides haptic (touch) feedback for
 
 - iOS 10+ devices using the Taptic Engine
 - Android devices using Vibrator system service.
@@ -16,17 +20,23 @@ On iOS, _the Taptic engine will do nothing if any of the following conditions ar
 - iOS version is less than 10 (iPhone 7 is the first phone to support this)
   - This could be found through: `Constants.platform.ios.systemVersion` or `Constants.platform.ios.platform`
 
+<PlatformsSection android emulator ios simulator />
+
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-haptics`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-haptics).
+<InstallSection packageName="expo-haptics" />
 
-> **Note**: Not compatible with web.
+## Configuration
+
+On Android, this module requires permission to control vibration on the device. The `VIBRATE` permission is added automatically.
 
 ## API
 
 ```js
 import * as Haptics from 'expo-haptics';
 ```
+
+## Methods
 
 ### `Haptics.selectionAsync()`
 

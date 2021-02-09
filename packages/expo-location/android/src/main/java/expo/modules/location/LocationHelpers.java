@@ -5,6 +5,7 @@ import android.location.Address;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.BaseBundle;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.util.Log;
@@ -15,7 +16,6 @@ import java.util.Map;
 
 import org.unimodules.core.Promise;
 import org.unimodules.core.errors.CodedException;
-import expo.modules.location.utils.TimeoutObject;
 import io.nlopez.smartlocation.location.config.LocationAccuracy;
 import io.nlopez.smartlocation.location.config.LocationParams;
 
@@ -43,6 +43,9 @@ public class LocationHelpers {
   }
 
   public static <BundleType extends BaseBundle> BundleType locationToBundle(Location location, Class<BundleType> bundleTypeClass) {
+    if (location == null) {
+      return null;
+    }
     try {
       BundleType map = bundleTypeClass.newInstance();
       BundleType coords = locationToCoordsBundle(location, bundleTypeClass);
@@ -76,6 +79,11 @@ public class LocationHelpers {
       coords.putDouble("heading", location.getBearing());
       coords.putDouble("speed", location.getSpeed());
 
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        coords.putDouble("altitudeAccuracy", location.getVerticalAccuracyMeters());
+      } else {
+        coords.putString("altitudeAccuracy", null);
+      }
       return coords;
     } catch (IllegalAccessException | InstantiationException e) {
       Log.e(TAG, "Unexpected exception was thrown when converting location to coords bundle: " + e.toString());
@@ -87,12 +95,15 @@ public class LocationHelpers {
     Bundle map = new Bundle();
 
     map.putString("city", address.getLocality());
+    map.putString("district", address.getSubLocality());
     map.putString("street", address.getThoroughfare());
     map.putString("region", address.getAdminArea());
+    map.putString("subregion", address.getSubAdminArea());
     map.putString("country", address.getCountryName());
     map.putString("postalCode", address.getPostalCode());
     map.putString("name", address.getFeatureName());
     map.putString("isoCountryCode", address.getCountryCode());
+    map.putString("timezone", null);
 
     return map;
   }
@@ -135,30 +146,24 @@ public class LocationHelpers {
     return locationParamsBuilder.build();
   }
 
-  static void requestSingleLocation(final LocationModule locationModule, final LocationRequest locationRequest, final TimeoutObject timeoutObject, final Promise promise) {
+  static void requestSingleLocation(final LocationModule locationModule, final LocationRequest locationRequest, final Promise promise) {
     // we want just one update
     locationRequest.setNumUpdates(1);
 
     locationModule.requestLocationUpdates(locationRequest, null, new LocationRequestCallbacks() {
       @Override
       public void onLocationChanged(Location location) {
-        if (timeoutObject.markDoneIfNotTimedOut()) {
-          promise.resolve(LocationHelpers.locationToBundle(location, Bundle.class));
-        }
+        promise.resolve(LocationHelpers.locationToBundle(location, Bundle.class));
       }
 
       @Override
       public void onLocationError(CodedException exception) {
-        if (timeoutObject.markDoneIfNotTimedOut()) {
-          promise.reject(exception);
-        }
+        promise.reject(exception);
       }
 
       @Override
       public void onRequestFailed(CodedException exception) {
-        if (timeoutObject.markDoneIfNotTimedOut()) {
-          promise.reject(exception);
-        }
+        promise.reject(exception);
       }
     });
   }
@@ -185,18 +190,27 @@ public class LocationHelpers {
     });
   }
 
+  /**
+   * Checks whether given location didn't exceed given `maxAge` and fits in the required accuracy.
+   */
+  public static boolean isLocationValid(Location location, final Map<String, Object> options) {
+    if (location == null) {
+      return false;
+    }
+    double maxAge = options.containsKey("maxAge") ? (double) options.get("maxAge") : Double.MAX_VALUE;
+    double requiredAccuracy = options.containsKey("requiredAccuracy") ? (double) options.get("requiredAccuracy") : Double.MAX_VALUE;
+    double timeDiff = System.currentTimeMillis() - location.getTime();
+
+    return timeDiff <= maxAge && location.getAccuracy() <= requiredAccuracy;
+  }
+
   //endregion
   //region private methods
 
   private static int getAccuracyFromOptions(Map<String, Object> options) {
-    // (2018-12): `enableHighAccuracy` is deprecated - use `accuracy` instead.
-    // However, don't remove that option as it must be still supported in navigator.geolocation polyfills.
-    boolean highAccuracy = options.containsKey("enableHighAccuracy") && (Boolean) options.get("enableHighAccuracy");
-
-    return options.containsKey("accuracy")
-        ? ((Number) options.get("accuracy")).intValue()
-        : highAccuracy ? ACCURACY_HIGH : ACCURACY_BALANCED;
+    return options.containsKey("accuracy") ? ((Number) options.get("accuracy")).intValue() : ACCURACY_BALANCED;
   }
+
   private static LocationParams.Builder buildLocationParamsForAccuracy(int accuracy) {
     switch (accuracy) {
       case ACCURACY_LOWEST:
@@ -240,12 +254,11 @@ public class LocationHelpers {
       case LocationModule.ACCURACY_HIGH:
         return LocationRequest.PRIORITY_HIGH_ACCURACY;
       case LocationModule.ACCURACY_BALANCED:
+      case LocationModule.ACCURACY_LOW:
       default:
         return LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY;
-      case LocationModule.ACCURACY_LOW:
-        return LocationRequest.PRIORITY_LOW_POWER;
       case LocationModule.ACCURACY_LOWEST:
-        return LocationRequest.PRIORITY_NO_POWER;
+        return LocationRequest.PRIORITY_LOW_POWER;
     }
   }
 

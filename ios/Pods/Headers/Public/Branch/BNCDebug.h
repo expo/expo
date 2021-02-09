@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BNCDebug.h
+../../../Branch/Branch-SDK/BNCDebug.h

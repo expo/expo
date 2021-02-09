@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -42,6 +42,8 @@ class ParagraphAttributes : public DebugStringConvertible {
    */
   EllipsizeMode ellipsizeMode{};
 
+  TextBreakStrategy textBreakStrategy{};
+
   /*
    * Enables font size adjustment to fit constrained boundaries.
    */
@@ -73,15 +75,14 @@ template <>
 struct hash<facebook::react::ParagraphAttributes> {
   size_t operator()(
       const facebook::react::ParagraphAttributes &attributes) const {
-    auto seed = size_t{0};
-    folly::hash::hash_combine(
-        seed,
+    return folly::hash::hash_combine(
+        0,
         attributes.maximumNumberOfLines,
         attributes.ellipsizeMode,
+        attributes.textBreakStrategy,
         attributes.adjustsFontSizeToFit,
         attributes.minimumFontSize,
         attributes.maximumFontSize);
-    return seed;
   }
 };
 } // namespace std

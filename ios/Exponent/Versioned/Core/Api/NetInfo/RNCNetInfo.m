@@ -6,64 +6,43 @@
  */
 
 #import "RNCNetInfo.h"
+#import "RNCConnectionStateWatcher.h"
+
+#include <ifaddrs.h>
+#include <arpa/inet.h>
 
 #if !TARGET_OS_TV
-  #import <CoreTelephony/CTTelephonyNetworkInfo.h>
+@import CoreTelephony;
 #endif
+@import SystemConfiguration.CaptiveNetwork;
+
 #import <React/RCTAssert.h>
 #import <React/RCTBridge.h>
 #import <React/RCTEventDispatcher.h>
 
-// Based on the ConnectionType enum described in the W3C Network Information API spec
-// (https://wicg.github.io/netinfo/).
-static NSString *const RNCConnectionTypeUnknown = @"unknown";
-static NSString *const RNCConnectionTypeNone = @"none";
-static NSString *const RNCConnectionTypeWifi = @"wifi";
-static NSString *const RNCConnectionTypeCellular = @"cellular";
+@interface RNCNetInfo () <RNCConnectionStateWatcherDelegate>
 
-// Based on the EffectiveConnectionType enum described in the W3C Network Information API spec
-// (https://wicg.github.io/netinfo/).
-static NSString *const RNCCellularGeneration2g = @"2g";
-static NSString *const RNCCellularGeneration3g = @"3g";
-static NSString *const RNCCellularGeneration4g = @"4g";
+@property (nonatomic, strong) RNCConnectionStateWatcher *connectionStateWatcher;
+@property (nonatomic) BOOL isObserving;
+
+@end
 
 @implementation RNCNetInfo
-{
-  SCNetworkReachabilityRef _firstTimeReachability;
-  SCNetworkReachabilityRef _reachability;
-  NSString *_connectionType;
-  BOOL _connectionExpensive;
-  NSString *_effectiveConnectionType;
-  BOOL _isObserving;
-  NSMutableSet<RCTPromiseResolveBlock> *_firstTimeReachabilityResolvers;
-}
+
+#pragma mark - Module setup
 
 RCT_EXPORT_MODULE()
-
-static void RNCReachabilityCallback(__unused SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void *info)
-{
-  RNCNetInfo *self = (__bridge id)info;
-  BOOL didSetReachabilityFlags = [self setReachabilityStatus:flags];
-
-  if (self->_firstTimeReachability) {
-    [self->_firstTimeReachabilityResolvers enumerateObjectsUsingBlock:^(RCTPromiseResolveBlock resolver, BOOL *stop) {
-      resolver([self currentState]);
-    }];
-
-    [self cleanUpFirstTimeReachability];
-    [self->_firstTimeReachabilityResolvers removeAllObjects];
-  }
-
-  if (didSetReachabilityFlags && self->_isObserving) {
-    [self sendEventWithName:@"netInfo.networkStatusDidChange" body:[self currentState]];
-  }
-}
 
 // We need RNCReachabilityCallback's and module methods to be called on the same thread so that we can have
 // guarantees about when we mess with the reachability callbacks.
 - (dispatch_queue_t)methodQueue
 {
   return dispatch_get_main_queue();
+}
+
++ (BOOL)requiresMainQueueSetup
+{
+  return YES;
 }
 
 #pragma mark - Lifecycle
@@ -75,137 +54,196 @@ static void RNCReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
 
 - (void)startObserving
 {
-  _isObserving = YES;
-  _connectionType = RNCConnectionTypeUnknown;
-  _effectiveConnectionType = nil;
-  _reachability = [self getReachabilityRef];
+  self.isObserving = YES;
 }
 
 - (void)stopObserving
 {
-  _isObserving = NO;
-  if (_reachability) {
-    SCNetworkReachabilityUnscheduleFromRunLoop(_reachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);
-    CFRelease(_reachability);
+  self.isObserving = NO;
+}
+
+- (instancetype)init
+{
+  self = [super init];
+  if (self) {
+    _connectionStateWatcher = [[RNCConnectionStateWatcher alloc] initWithDelegate:self];
   }
+  return self;
 }
 
 - (void)dealloc
 {
-  [self cleanUpFirstTimeReachability];
+  self.connectionStateWatcher = nil;
 }
 
-- (SCNetworkReachabilityRef)getReachabilityRef
-{
-  SCNetworkReachabilityRef reachability = SCNetworkReachabilityCreateWithName(kCFAllocatorDefault, "apple.com");
-  SCNetworkReachabilityContext context = { 0, ( __bridge void *)self, NULL, NULL, NULL };
-  SCNetworkReachabilitySetCallback(reachability, RNCReachabilityCallback, &context);
-  SCNetworkReachabilityScheduleWithRunLoop(reachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);
-    
-  return reachability;
-}
+#pragma mark - RNCConnectionStateWatcherDelegate
 
-- (BOOL)setReachabilityStatus:(SCNetworkReachabilityFlags)flags
+- (void)connectionStateWatcher:(RNCConnectionStateWatcher *)connectionStateWatcher didUpdateState:(RNCConnectionState *)state
 {
-  NSString *connectionType = RNCConnectionTypeUnknown;
-  bool connectionExpensive = false;
-  NSString *effectiveConnectionType = nil;
-  if ((flags & kSCNetworkReachabilityFlagsReachable) == 0 ||
-      (flags & kSCNetworkReachabilityFlagsConnectionRequired) != 0) {
-    connectionType = RNCConnectionTypeNone;
+  if (self.isObserving) {
+    NSDictionary *dictionary = [self currentDictionaryFromUpdateState:state withInterface:NULL];
+    [self sendEventWithName:@"netInfo.networkStatusDidChange" body:dictionary];
   }
-  
-#if !TARGET_OS_TV
-  
-  else if ((flags & kSCNetworkReachabilityFlagsIsWWAN) != 0) {
-    connectionType = RNCConnectionTypeCellular;
-    connectionExpensive = true;
-    
-    CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
-    if (netinfo) {
-      if ([netinfo.currentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyGPRS] ||
-          [netinfo.currentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyEdge] ||
-          [netinfo.currentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyCDMA1x]) {
-        effectiveConnectionType = RNCCellularGeneration2g;
-      } else if ([netinfo.currentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyWCDMA] ||
-                 [netinfo.currentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyHSDPA] ||
-                 [netinfo.currentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyHSUPA] ||
-                 [netinfo.currentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyCDMAEVDORev0] ||
-                 [netinfo.currentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyCDMAEVDORevA] ||
-                 [netinfo.currentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyCDMAEVDORevB] ||
-                 [netinfo.currentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyeHRPD]) {
-        effectiveConnectionType = RNCCellularGeneration3g;
-      } else if ([netinfo.currentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyLTE]) {
-        effectiveConnectionType = RNCCellularGeneration4g;
-      }
-    }
-  }
-  
-#endif
-  
-  else {
-    connectionType = RNCConnectionTypeWifi;
-  }
-  
-  if (![connectionType isEqualToString:self->_connectionType] ||
-      ![effectiveConnectionType isEqualToString:self->_effectiveConnectionType]) {
-    self->_connectionType = connectionType;
-    self->_connectionExpensive = connectionExpensive;
-    self->_effectiveConnectionType = effectiveConnectionType;
-    return YES;
-  }
-  
-  return NO;
-}
-
-- (void)cleanUpFirstTimeReachability
-{
-  if (_firstTimeReachability) {
-    SCNetworkReachabilityUnscheduleFromRunLoop(self->_firstTimeReachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);
-    CFRelease(self->_firstTimeReachability);
-    _firstTimeReachability = nil;
-  }
-}
-
-- (id)currentState
-{
-  NSString *connectionType = self->_connectionType ?: RNCConnectionTypeUnknown;
-  NSString *effectiveConnectionType = self->_effectiveConnectionType;
-  
-  BOOL isConnected = ![connectionType isEqualToString:RNCConnectionTypeNone] && ![connectionType isEqualToString:RNCConnectionTypeUnknown];
-  
-  NSMutableDictionary *details = nil;
-  if (isConnected) {
-    details = [NSMutableDictionary new];
-    details[@"isConnectionExpensive"] = @(self->_connectionExpensive ?: false);
-
-    if ([connectionType isEqualToString:RNCConnectionTypeCellular]) {
-      details[@"cellularGeneration"] = effectiveConnectionType ?: [NSNull null];
-    }
-  }
-  
-  return @{
-           @"type": connectionType,
-           @"isConnected": @(isConnected),
-           @"details": details ?: [NSNull null]
-           };
 }
 
 #pragma mark - Public API
 
-RCT_EXPORT_METHOD(getCurrentState:(RCTPromiseResolveBlock)resolve
+RCT_EXPORT_METHOD(getCurrentState:(nullable NSString *)requestedInterface resolve:(RCTPromiseResolveBlock)resolve
                   reject:(__unused RCTPromiseRejectBlock)reject)
 {
-  // Setup the reacability listener if needed
-  if (!_firstTimeReachability) {
-    _firstTimeReachability = [self getReachabilityRef];
+  RNCConnectionState *state = [self.connectionStateWatcher currentState];
+  resolve([self currentDictionaryFromUpdateState:state withInterface:requestedInterface]);
+}
+
+#pragma mark - Utilities
+
+// Converts the state into a dictionary to send over the bridge
+- (NSDictionary *)currentDictionaryFromUpdateState:(RNCConnectionState *)state withInterface:(nullable NSString *)requestedInterface
+{
+  NSString *selectedInterface = requestedInterface ?: state.type;
+  NSMutableDictionary *details = [self detailsFromInterface:selectedInterface withState:state];
+  bool connected = [state.type isEqualToString:selectedInterface] && state.connected;
+  if (connected) {
+    details[@"isConnectionExpensive"] = @(state.expensive);
   }
 
-  // Add our resolver to the set of those to be notified
-  if (!_firstTimeReachabilityResolvers) {
-    _firstTimeReachabilityResolvers = [NSMutableSet set];
-  }
-  [_firstTimeReachabilityResolvers addObject:resolve];
+  return @{
+    @"type": selectedInterface,
+    @"isConnected": @(connected),
+    @"details": details ?: NSNull.null
+  };
 }
+
+- (NSMutableDictionary *)detailsFromInterface:(nonnull NSString *)requestedInterface withState:(RNCConnectionState *)state
+{
+  NSMutableDictionary *details = [NSMutableDictionary new];
+  if ([requestedInterface isEqualToString: RNCConnectionTypeCellular]) {
+    details[@"cellularGeneration"] = state.cellularGeneration ?: NSNull.null;
+    details[@"carrier"] = [self carrier] ?: NSNull.null;
+  } else if ([requestedInterface isEqualToString: RNCConnectionTypeWifi] || [requestedInterface isEqualToString: RNCConnectionTypeEthernet]) {
+    details[@"ipAddress"] = [self ipAddress] ?: NSNull.null;
+    details[@"subnet"] = [self subnet] ?: NSNull.null;
+    #if !TARGET_OS_TV && !TARGET_OS_OSX
+    details[@"ssid"] = [self ssid] ?: NSNull.null;
+    details[@"bssid"] = [self bssid] ?: NSNull.null;
+    #endif
+  }
+  return details;
+}
+
+- (NSString *)carrier
+{
+#if (TARGET_OS_TV || TARGET_OS_OSX)
+  return nil;
+#else
+  CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
+  CTCarrier *carrier = [netinfo subscriberCellularProvider];
+  return carrier.carrierName;
+#endif
+}
+
+- (NSString *)ipAddress
+{
+  NSString *address = @"0.0.0.0";
+  struct ifaddrs *interfaces = NULL;
+  struct ifaddrs *temp_addr = NULL;
+  int success = 0;
+  // retrieve the current interfaces - returns 0 on success
+  success = getifaddrs(&interfaces);
+  if (success == 0) {
+    // Loop through linked list of interfaces
+    temp_addr = interfaces;
+    while (temp_addr != NULL) {
+      if (temp_addr->ifa_addr->sa_family == AF_INET) {
+        NSString* ifname = [NSString stringWithUTF8String:temp_addr->ifa_name];
+        if (
+          // Check if interface is en0 which is the wifi connection on the iPhone
+          // and the ethernet connection on the Apple TV
+          [ifname isEqualToString:@"en0"] ||
+          // Check if interface is en1 which is the wifi connection on the Apple TV
+          [ifname isEqualToString:@"en1"]
+        ) {
+          // Get NSString from C String
+          address = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_addr)->sin_addr)];
+        }
+      }
+
+      temp_addr = temp_addr->ifa_next;
+    }
+  }
+  // Free memory
+  freeifaddrs(interfaces);
+  return address;
+}
+
+- (NSString *)subnet
+{
+  NSString *subnet = @"0.0.0.0";
+  struct ifaddrs *interfaces = NULL;
+  struct ifaddrs *temp_addr = NULL;
+  int success = 0;
+  // retrieve the current interfaces - returns 0 on success
+  success = getifaddrs(&interfaces);
+  if (success == 0) {
+    // Loop through linked list of interfaces
+    temp_addr = interfaces;
+    while (temp_addr != NULL) {
+      if (temp_addr->ifa_addr->sa_family == AF_INET) {
+        NSString* ifname = [NSString stringWithUTF8String:temp_addr->ifa_name];
+        if (
+          // Check if interface is en0 which is the wifi connection on the iPhone
+          // and the ethernet connection on the Apple TV
+          [ifname isEqualToString:@"en0"] ||
+          // Check if interface is en1 which is the wifi connection on the Apple TV
+          [ifname isEqualToString:@"en1"]
+        ) {
+          // Get NSString from C String
+          subnet = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_netmask)->sin_addr)];
+        }
+      }
+
+      temp_addr = temp_addr->ifa_next;
+    }
+  }
+  // Free memory
+  freeifaddrs(interfaces);
+  return subnet;
+}
+
+#if !TARGET_OS_TV && !TARGET_OS_OSX
+- (NSString *)ssid
+{
+  NSArray *interfaceNames = CFBridgingRelease(CNCopySupportedInterfaces());
+  NSDictionary *SSIDInfo;
+  NSString *SSID = NULL;
+  for (NSString *interfaceName in interfaceNames) {
+    SSIDInfo = CFBridgingRelease(CNCopyCurrentNetworkInfo((__bridge CFStringRef)interfaceName));
+    if (SSIDInfo.count > 0) {
+        SSID = SSIDInfo[@"SSID"];
+        if ([SSID isEqualToString:@"Wi-Fi"] || [SSID isEqualToString:@"WLAN"]){
+          SSID = NULL;
+        }
+        break;
+    }
+  }
+  return SSID;
+}
+
+- (NSString *)bssid
+{
+  NSArray *interfaceNames = CFBridgingRelease(CNCopySupportedInterfaces());
+  NSDictionary *networkDetails;
+  NSString *BSSID = NULL;
+  for (NSString *interfaceName in interfaceNames) {
+      networkDetails = CFBridgingRelease(CNCopyCurrentNetworkInfo((__bridge CFStringRef)interfaceName));
+      if (networkDetails.count > 0)
+      {
+          BSSID = networkDetails[(NSString *) kCNNetworkInfoKeyBSSID];
+          break;
+      }
+  }
+  return BSSID;
+}
+#endif
 
 @end

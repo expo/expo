@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 #include "Utils.h"
 
 using namespace facebook;
@@ -31,7 +32,7 @@ float YGFloatMin(const float a, const float b) {
   return yoga::isUndefined(a) ? b : a;
 }
 
-bool YGValueEqual(const YGValue a, const YGValue b) {
+bool YGValueEqual(const YGValue& a, const YGValue& b) {
   if (a.unit != b.unit) {
     return false;
   }

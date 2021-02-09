@@ -1,6 +1,6 @@
-import React from 'react';
-import { StyleSheet, View, Button, TextInput, Text } from 'react-native';
 import * as SMS from 'expo-sms';
+import React from 'react';
+import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
 
 interface State {
   phoneNumbers: string[];
@@ -9,6 +9,8 @@ interface State {
   result?: string;
 }
 
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
 export default class SMSScreen extends React.Component<{}, State> {
   static navigationOptions = {
     title: 'SMS',
@@ -29,10 +31,7 @@ export default class SMSScreen extends React.Component<{}, State> {
     }
     try {
       if (this.state.message) {
-        const { result } = await SMS.sendSMSAsync(
-          this.state.phoneNumbers,
-          this.state.message
-        );
+        const { result } = await SMS.sendSMSAsync(this.state.phoneNumbers, this.state.message);
         this.setState({ phoneNumbers: [], message: undefined, result });
         setTimeout(() => this.setState({ result: undefined }), 5000);
       }
@@ -40,7 +39,7 @@ export default class SMSScreen extends React.Component<{}, State> {
       this.setState({ error: e.message });
       setTimeout(() => this.setState({ error: undefined }), 10000);
     }
-  }
+  };
 
   render() {
     return (
@@ -61,11 +60,7 @@ export default class SMSScreen extends React.Component<{}, State> {
           value={this.state.message}
           onChangeText={message => this.setState({ message })}
         />
-        <Button
-          title="Send"
-          disabled={!this.state.message}
-          onPress={this._sendSMS}
-        >
+        <Button title="Send" disabled={!this.state.message} onPress={this._sendSMS}>
           Send SMS
         </Button>
         {this.state.error && (

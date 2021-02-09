@@ -10,6 +10,7 @@
 
 #import "RNSVGPainterBrush.h"
 #import "RNSVGSolidColorBrush.h"
+#import "RNSVGContextBrush.h"
 #import <React/RCTLog.h>
 #import <React/RCTFont.h>
 
@@ -35,6 +36,9 @@ RCT_ENUM_CONVERTER(RNSVGUnits, (@{
 
 + (RNSVGBrush *)RNSVGBrush:(id)json
 {
+    if ([json isKindOfClass:[NSNumber class]]) {
+        return [[RNSVGSolidColorBrush alloc] initWithNumber:json];
+    }
     if ([json isKindOfClass:[NSString class]]) {
         NSString *value = [self NSString:json];
         if (!RNSVGDigitRegEx) {
@@ -65,6 +69,10 @@ RCT_ENUM_CONVERTER(RNSVGUnits, (@{
             return [[RNSVGPainterBrush alloc] initWithArray:arr];
         case 2: // currentColor
             return [[RNSVGBrush alloc] initWithArray:nil];
+        case 3: // context-fill
+            return [[RNSVGContextBrush alloc] initFill];
+        case 4: // context-stroke
+            return [[RNSVGContextBrush alloc] initStroke];
         default:
             RCTLogError(@"Unknown brush type: %zd", (unsigned long)type);
             return nil;
@@ -158,7 +166,7 @@ RCT_ENUM_CONVERTER(RNSVGUnits, (@{
         colorsAndOffsets[colorIndex + 2] = b;
         colorsAndOffsets[colorIndex + 3] = a;
 
-        colorsAndOffsets[offsetIndex + i] = offset;
+        colorsAndOffsets[offsetIndex + i] = fmax(0, fmin(offset, 1));
     }
 
     CGColorSpaceRef rgb = CGColorSpaceCreateDeviceRGB();

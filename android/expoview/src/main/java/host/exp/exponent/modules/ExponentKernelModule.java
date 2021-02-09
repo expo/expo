@@ -2,9 +2,9 @@
 
 package host.exp.exponent.modules;
 
-import android.app.Activity;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
+import com.facebook.internal.BundleJSONConverter;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -25,15 +25,14 @@ import javax.inject.Inject;
 
 import host.exp.exponent.Constants;
 import host.exp.exponent.analytics.EXL;
+import host.exp.exponent.kernel.DevMenuManager;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.experience.ErrorActivity;
-import host.exp.exponent.experience.ExperienceActivity;
 import host.exp.exponent.kernel.ExponentKernelModuleInterface;
 import host.exp.exponent.kernel.ExponentKernelModuleProvider;
 import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
-import host.exp.exponent.utils.JSONBundleConverter;
 
 public class ExponentKernelModule extends ReactContextBaseJavaModule implements ExponentKernelModuleInterface {
 
@@ -49,6 +48,9 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
 
   @Inject
   ExponentNetwork mExponentNetwork;
+
+  @Inject
+  DevMenuManager mDevMenuManager;
 
   private static Map<String, ExponentKernelModuleProvider.KernelEventCallback> sKernelEventCallbacks = new HashMap<>();
 
@@ -100,19 +102,25 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
       sKernelEventCallbacks.put(eventId, event.callback);
     }
 
-    getReactApplicationContext()
+    try {
+      getReactApplicationContext()
         .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
         .emit(event.name, event.data);
+    } catch (Exception e) {
+      onEventFailure(eventId, e.getMessage());
+    }
 
     consumeEventQueue();
   }
+
+  //region Exported methods
 
   @ReactMethod
   public void getSessionAsync(Promise promise) {
     String sessionString = mExponentSharedPreferences.getString(ExponentSharedPreferences.EXPO_AUTH_SESSION);
     try {
       JSONObject sessionJsonObject = new JSONObject(sessionString);
-      WritableMap session = Arguments.fromBundle(JSONBundleConverter.JSONToBundle(sessionJsonObject));
+      WritableMap session = Arguments.fromBundle(BundleJSONConverter.convertToBundle(sessionJsonObject));
       promise.resolve(session);
     } catch (Exception e) {
       promise.resolve(null);
@@ -141,18 +149,6 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
       promise.reject("ERR_SESSION_NOT_REMOVED", "Could not remove session secret", e);
       EXL.e(TAG, e);
     }
-  }
-
-  @ReactMethod
-  public void createShortcutAsync(String manifestUrl, ReadableMap manifest, String bundleUrl, Promise promise) {
-    mKernel.installShortcut(manifestUrl, manifest, bundleUrl);
-
-    promise.resolve(true);
-  }
-
-  @ReactMethod
-  public void addDevMenu() {
-    mKernel.addDevMenu();
   }
 
   @ReactMethod
@@ -199,13 +195,57 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
     callback.onEventFailure(errorMessage);
   }
 
+  //region DevMenu
+
   @ReactMethod
-  public void dismissNuxAsync(Promise promise) {
-    Activity kernelActivityContext = mKernel.getActivityContext();
-    if (kernelActivityContext instanceof ExperienceActivity) {
-      ExperienceActivity currentExperienceActivity = (ExperienceActivity) kernelActivityContext;
-      currentExperienceActivity.dismissNuxViewIfVisible(false);
-    }
+  public void doesCurrentTaskEnableDevtoolsAsync(Promise promise) {
+    promise.resolve(mDevMenuManager.isDevSupportEnabledByCurrentActivity());
+  }
+
+  @ReactMethod
+  public void getIsOnboardingFinishedAsync(Promise promise) {
+    promise.resolve(mDevMenuManager.isOnboardingFinished());
+  }
+
+  @ReactMethod
+  public void setIsOnboardingFinishedAsync(boolean isOnboardingFinished, Promise promise) {
+    mDevMenuManager.setIsOnboardingFinished(isOnboardingFinished);
+    promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void closeDevMenuAsync(Promise promise) {
+    mDevMenuManager.hideInCurrentActivity();
     promise.resolve(true);
   }
+
+  @ReactMethod
+  public void getDevMenuItemsToShowAsync(Promise promise) {
+    WritableMap devMenuItems = mDevMenuManager.getMenuItems();
+    promise.resolve(devMenuItems);
+  }
+
+  @ReactMethod
+  public void selectDevMenuItemWithKeyAsync(String itemKey, Promise promise) {
+    mDevMenuManager.selectItemWithKey(itemKey);
+    mDevMenuManager.requestToClose();
+    promise.resolve(true);
+  }
+
+  @ReactMethod
+  public void reloadAppAsync(Promise promise) {
+    mDevMenuManager.reloadApp();
+    mDevMenuManager.requestToClose();
+    promise.resolve(true);
+  }
+
+  @ReactMethod
+  public void goToHomeAsync(Promise promise) {
+    mKernel.openHomeActivity();
+    mDevMenuManager.requestToClose();
+    promise.resolve(true);
+  }
+
+  //endregion DevMenu
+  //endregion Exported methods
 }

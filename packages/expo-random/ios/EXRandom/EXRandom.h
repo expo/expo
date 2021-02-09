@@ -1,8 +1,9 @@
-// Copyright 2019-present 650 Industries. All rights reserved.
+#if __has_include("RCTBridgeModule.h")
+#import "RCTBridgeModule.h"
+#else
+#import <React/RCTBridgeModule.h>
+#endif
 
-#import <UMCore/UMModuleRegistry.h>
-#import <UIKit/UIKit.h>
-
-@interface EXRandom : UMExportedModule
+@interface EXRandom : NSObject <RCTBridgeModule>
 
 @end

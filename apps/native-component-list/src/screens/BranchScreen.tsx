@@ -1,19 +1,17 @@
-import React from 'react';
-import { Alert, Button, StyleSheet, Text, View } from 'react-native';
 import Constants from 'expo-constants';
+import React from 'react';
+import { Alert, Button, Platform, StyleSheet, Text, View } from 'react-native';
 
-let Branch = null;
-try {
-  Branch = require('react-native-branch').default;
-} catch (e) {
-  console.log('Branch is not supported on this platform.', e);
+let Branch: any = null;
+if (Platform.OS !== 'web') {
+  try {
+    Branch = require('react-native-branch').default;
+  } catch (e) {
+    console.log('Branch is not supported on this platform.', e);
+  }
 }
 
 export default class BranchScreen extends React.Component {
-  static navigationOptions = {
-    title: 'Branch',
-  };
-
   _branchUniversalObject?: any;
 
   async _getOrCreateBranchObjectAsync() {
@@ -48,13 +46,13 @@ export default class BranchScreen extends React.Component {
     const branchUniversalObject = await this._getOrCreateBranchObjectAsync();
     const { completed, error } = await branchUniversalObject.showShareSheet({}, {});
     if (error) {
-      Alert.alert('Oups', 'Something bad happened: ' + error.message);
+      Alert.alert('Oops', 'Something bad happened: ' + error.message);
     } else if (completed) {
       Alert.alert('Share completed!');
     } else {
       Alert.alert('Share canceled');
     }
-  }
+  };
 
   render() {
     if (Constants.appOwnership !== 'standalone') {
@@ -62,8 +60,8 @@ export default class BranchScreen extends React.Component {
         <View style={styles.container}>
           <Text style={styles.oopsTitle}>Hello, developer person!</Text>
           <Text style={styles.oopsText}>
-            Branch only works for standalone apps. If you want to use this example you can build it
-            build native-component-list as a standalone app.
+            Branch only works for standalone apps. If you want to use this example you can build
+            native-component-list as a standalone app.
           </Text>
         </View>
       );

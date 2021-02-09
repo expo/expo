@@ -20,13 +20,13 @@ Then `cd` into the `docs` directory and install dependencies with:
 yarn
 ```
 
-Then you can run the app with (make sure you have no server running on port `3000`):
+Then you can run the app with (make sure you have no server running on port `3002`):
 
 ```sh
 yarn run dev
 ```
 
-Now the documentation is running at http://localhost:3000
+Now the documentation is running at http://localhost:3002
 
 ### Running in production mode
 
@@ -38,6 +38,32 @@ yarn run export-server
 ### Editing Docs Content
 
 You can find the source of the documentation inside the `pages/versions` directory. Documentation is mostly written in markdown with the help of some React components (for Snack embeds, etc). The routes and navbar are automatically inferred from the directory structure within `versions`.
+
+### Editing Code
+
+The docs are written with Next.js and TypeScript. If you need to make code changes, follow steps from the [Running locally](#running-locally) section, then open a separate terminal and run the TypeScript compiler in watch mode - it will watch your code changes and notify you about errors.
+
+```sh
+yarn watch
+```
+
+When you are done, you should run _prettier_ to format your code. Also, don't forget to run tests and linter before committing your changes.
+
+```sh
+yarn prettier
+yarn test
+yarn lint
+```
+
+### Internal linking
+
+If you need to link from one MDX file to another, please use the path-reference to this file including extension.
+This allows us to automatically validate these links and see if the file and/or headers still exists.
+
+- from: `tutorial/button.md`, to: `/workflow/guides/` -> `../workflow/guides.md`
+- from: `index.md`, to: `/guides/errors/#tracking-js-errors` -> `./guides/errors.md#tracking-js-errors` (or without `./`)
+
+You can validate all current links by running `$ yarn lint-links`.
 
 ### Redirects
 
@@ -60,7 +86,7 @@ You can add your own client-side redirect rules in `pages/_error.js`.
 
 ### Adding Images and Assets
 
-You can add images and assets to the `static` directory.  They'll be served by the production and staging servers at `/static`.
+You can add images and assets to the `public/static` directory. They'll be served by the production and staging servers at `/static`.
 
 ### New Components
 
@@ -68,8 +94,8 @@ Always try to use the existing components and features in markdown. Create a new
 
 ### Quirks
 
-* You can't have curly brace without quotes: \`{}\` -> `{}`
-* Make sure to leave a empty newline between a table and following content
+- You can't have curly brace without quotes: \`{}\` -> `{}`
+- Make sure to leave a empty newline between a table and following content
 
 ## A note about versioning
 
@@ -78,7 +104,7 @@ when new SDKs are relased. The website documents previous SDK versions too.
 
 Version names correspond to directory names under `versions`.
 
-`unversioned` is a special version for the next SDK release. It is not included in production output
+`unversioned` is a special version for the next SDK release. It is not included in production output. Additionally, any versions greater than the package.json `version` number are not included in production output, so that it's possible to generate, test, and make changes to new SDK version docs during the release process.
 
 `latest` is an untracked folder which duplicates the contents of the folder matching the version number in `package.json`.
 
@@ -103,7 +129,13 @@ Make sure to also grab the upgrade instructions from the release notes blog post
 
 That's all you need to do. The `versions` directory is listed on server start to find all available versions. The routes and navbar contents are automatically inferred from the directory structure within `versions`.
 
-Because the navbar is automatically generated from the directory structure, the default ordering of the links under each section is alphabetical. However, for many sections, this is not ideal UX. So, if you wish to override the alphabetical ordering, manipulate page titles in `sidebar-navigation-order.js`.
+Because the navbar is automatically generated from the directory structure, the default ordering of the links under each section is alphabetical. However, for many sections, this is not ideal UX. So, if you wish to override the alphabetical ordering, manipulate page titles in `navigation.js`.
+
+#### Syncing app.json / app.config.js with the schema
+
+To render the app.json / app.config.js properties table, we currently store a local copy of the appropriate version of the schema.
+
+If the schema is updated, in order to sync and rewrite our local copy, run `yarn run schema-sync 39` (or relevant version number) or `yarn run schema-sync unversioned`.
 
 #### Importing from the React Native docs
 
@@ -117,7 +149,4 @@ You may need to tweak the script as the source docs change; the script hackily t
 
 The React Native docs are actually versioned but we currently read off of master.
 
-TODOs:
-    - Handle image sizing in imports better
-    - Read from the appropriate version (configurable) of the React Native docs, not just master
-    - Make Snack embeds work; these are marked in some of the React Native docs but they are just imported as plain JS code blocks
+TODOs: - Handle image sizing in imports better - Read from the appropriate version (configurable) of the React Native docs, not just master - Make Snack embeds work; these are marked in some of the React Native docs but they are just imported as plain JS code blocks

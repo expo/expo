@@ -27,7 +27,7 @@ describe('selectAssetSource', () => {
   it(`returns a production CDN URI using the asset file hash`, () => {
     const AssetSources = require('../AssetSources');
 
-    let source = AssetSources.selectAssetSource(mockFontMetadata);
+    const source = AssetSources.selectAssetSource(mockFontMetadata);
     expect(source.uri).toBe(
       'https://d1wp6m56sqw74a.cloudfront.net/~assets/cafecafecafecafecafecafecafecafe'
     );
@@ -44,11 +44,9 @@ describe('selectAssetSource', () => {
 
     const AssetSources = require('../AssetSources');
 
-    let source = AssetSources.selectAssetSource(mockFontMetadata);
+    const source = AssetSources.selectAssetSource(mockFontMetadata);
     expect(source.uri).toBe(
-      `https://exp.direct:19001/assets/test.ttf?platform=${
-        Platform.OS
-      }&hash=cafecafecafecafecafecafecafecafe`
+      `https://exp.direct:19001/assets/test.ttf?platform=${Platform.OS}&hash=cafecafecafecafecafecafecafecafe`
     );
     expect(source.hash).toBe('cafecafecafecafecafecafecafecafe');
   });
@@ -56,7 +54,7 @@ describe('selectAssetSource', () => {
   it(`returns a file URI from the asset metadata if specified`, () => {
     const AssetSources = require('../AssetSources');
 
-    let source = AssetSources.selectAssetSource({
+    const source = AssetSources.selectAssetSource({
       ...mockFontMetadata,
       fileUris: ['https://example.com/example.ttf'],
     });
@@ -68,7 +66,7 @@ describe('selectAssetSource', () => {
   it(`returns a URI based on an absolute server location if specified`, () => {
     const AssetSources = require('../AssetSources');
 
-    let source = AssetSources.selectAssetSource({
+    const source = AssetSources.selectAssetSource({
       ...mockFontMetadata,
       httpServerLocation: 'https://example.com',
     });
@@ -83,7 +81,7 @@ describe('selectAssetSource', () => {
     const AssetSources = require('../AssetSources');
 
     // The mocked pixel ratio is from a retina device or higher
-    let source = AssetSources.selectAssetSource({
+    const source = AssetSources.selectAssetSource({
       hash: 'cafecafecafecafecafecafecafecafe',
       name: 'test',
       type: 'png',
@@ -105,7 +103,7 @@ describe('selectAssetSource', () => {
   it(`applies overrides if an asset's hash matches`, () => {
     const AssetSources = require('../AssetSources');
 
-    let source = AssetSources.selectAssetSource({
+    const source = AssetSources.selectAssetSource({
       hash: 'd00dd00dd00dd00dd00dd00dd00dd00d',
       name: 'test',
       type: 'ttf',
@@ -114,9 +112,7 @@ describe('selectAssetSource', () => {
     });
 
     expect(source.uri).toBe(
-      `https://example.com/overridden.mp4?platform=${
-        Platform.OS
-      }&hash=d00dd00dd00dd00dd00dd00dd00dd00d`
+      `https://example.com/overridden.mp4?platform=${Platform.OS}&hash=d00dd00dd00dd00dd00dd00dd00dd00d`
     );
     expect(source.hash).toBe('d00dd00dd00dd00dd00dd00dd00dd00d');
   });
@@ -132,7 +128,7 @@ describe('resolveUri', () => {
     const Constants = require('expo-constants');
     const AssetSources = require('../AssetSources');
 
-    let url = AssetSources.resolveUri('./icon.png');
+    const url = AssetSources.resolveUri('./icon.png');
     expect(Constants.experienceUrl).not.toBeDefined();
     expect(url).toBe('./icon.png');
   });
@@ -141,7 +137,7 @@ describe('resolveUri', () => {
     _mockConstants({ experienceUrl: 'https://example.com/app/expo-manifest.json' });
     const AssetSources = require('../AssetSources');
 
-    let url = AssetSources.resolveUri('https://example.com/icon.png?q=1#hash');
+    const url = AssetSources.resolveUri('https://example.com/icon.png?q=1#hash');
     expect(url).toBe('https://example.com/icon.png?q=1#hash');
   });
 
@@ -149,7 +145,7 @@ describe('resolveUri', () => {
     _mockConstants({ experienceUrl: 'https://expo.io/@user/app/index.exp' });
     const AssetSources = require('../AssetSources');
 
-    let url = AssetSources.resolveUri('./icon.png');
+    const url = AssetSources.resolveUri('./icon.png');
     expect(url).toBe('https://expo.io/@user/app/icon.png');
   });
 
@@ -157,7 +153,7 @@ describe('resolveUri', () => {
     _mockConstants({ experienceUrl: 'https://example.com/app/expo-manifest.json' });
     const AssetSources = require('../AssetSources');
 
-    let url = AssetSources.resolveUri('.././test/../icon.png');
+    const url = AssetSources.resolveUri('.././test/../icon.png');
     expect(url).toBe('https://example.com/icon.png');
   });
 
@@ -165,7 +161,7 @@ describe('resolveUri', () => {
     _mockConstants({ experienceUrl: 'https://example.com/app/expo-manifest.json' });
     const AssetSources = require('../AssetSources');
 
-    let url = AssetSources.resolveUri('../../../../../icon.png');
+    const url = AssetSources.resolveUri('../../../../../icon.png');
     expect(url).toBe('https://example.com/icon.png');
   });
 
@@ -173,7 +169,7 @@ describe('resolveUri', () => {
     _mockConstants({ experienceUrl: 'https://example.com/app/expo-manifest.json' });
     const AssetSources = require('../AssetSources');
 
-    let url = AssetSources.resolveUri('/icon.png');
+    const url = AssetSources.resolveUri('/icon.png');
     expect(url).toBe('https://example.com/icon.png');
   });
 
@@ -181,14 +177,14 @@ describe('resolveUri', () => {
     _mockConstants({ experienceUrl: 'https://example.com/app/expo-manifest.json' });
     const AssetSources = require('../AssetSources');
 
-    let url = AssetSources.resolveUri('./icon.png?q=1#hash');
+    const url = AssetSources.resolveUri('./icon.png?q=1#hash');
     expect(url).toBe('https://example.com/app/icon.png?q=1#hash');
   });
 });
 
 function _mockConstants(constants: { [key: string]: any }): void {
   jest.doMock('expo-constants', () => {
-    const Constants = require.requireActual('expo-constants');
+    const Constants = jest.requireActual('expo-constants');
     return {
       ...Constants,
       ...constants,

@@ -33,9 +33,9 @@ typedef NS_ENUM(NSInteger, FBNativeBannerAdViewType) {
     /// Fixed height view, 100 points (banner equivalent)
     FBNativeBannerAdViewTypeGenericHeight100 = 1,
     /// Fixed height view, 120 points (banner equivalent)
-    FBNativeBannerAdViewTypeGenericHeight120,
+    FBNativeBannerAdViewTypeGenericHeight120 = 2,
     /// Fixed height view, 50 points (banner equivalent)
-    FBNativeBannerAdViewTypeGenericHeight50,
+    FBNativeBannerAdViewTypeGenericHeight50 = 5,
 };
 
 /**
@@ -54,7 +54,8 @@ FB_CLASS_EXPORT
  @param nativeBannerAd The native banner ad to use to create this view.
  @param type The type of this native banner ad template. For more information, consult FBNativeAdBannerViewType.
  */
-+ (instancetype)nativeBannerAdViewWithNativeBannerAd:(FBNativeBannerAd *)nativeBannerAd withType:(FBNativeBannerAdViewType)type;
++ (instancetype)nativeBannerAdViewWithNativeBannerAd:(FBNativeBannerAd *)nativeBannerAd
+                                            withType:(FBNativeBannerAdViewType)type;
 
 /**
  This is a method to create a native ad template using the given placement id and type.
@@ -62,7 +63,9 @@ FB_CLASS_EXPORT
  @param type The type of this native banner ad template. For more information, consult FBNativeAdBannerViewType.
  @param attributes The attributes to render this native ad template with.
  */
-+ (instancetype)nativeBannerAdViewWithNativeBannerAd:(FBNativeBannerAd *)nativeBannerAd withType:(FBNativeBannerAdViewType)type withAttributes:(FBNativeAdViewAttributes *)attributes;
++ (instancetype)nativeBannerAdViewWithNativeBannerAd:(FBNativeBannerAd *)nativeBannerAd
+                                            withType:(FBNativeBannerAdViewType)type
+                                      withAttributes:(FBNativeAdViewAttributes *)attributes;
 
 @end
 

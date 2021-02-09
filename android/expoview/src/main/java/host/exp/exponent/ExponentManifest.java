@@ -9,9 +9,12 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Debug;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.LruCache;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 import okhttp3.CacheControl;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
@@ -73,25 +76,28 @@ public class ExponentManifest {
   public static final String MANIFEST_SDK_VERSION_KEY = "sdkVersion";
   public static final String MANIFEST_IS_VERIFIED_KEY = "isVerified";
   public static final String MANIFEST_ICON_URL_KEY = "iconUrl";
+  public static final String MANIFEST_BACKGROUND_COLOR_KEY = "backgroundColor";
   public static final String MANIFEST_PRIMARY_COLOR_KEY = "primaryColor";
   public static final String MANIFEST_ORIENTATION_KEY = "orientation";
   public static final String MANIFEST_DEVELOPER_KEY = "developer";
+  public static final String MANIFEST_DEVELOPER_TOOL_KEY = "tool";
   public static final String MANIFEST_PACKAGER_OPTS_KEY = "packagerOpts";
   public static final String MANIFEST_PACKAGER_OPTS_DEV_KEY = "dev";
   public static final String MANIFEST_BUNDLE_URL_KEY = "bundleUrl";
-  public static final String MANIFEST_SHOW_EXPONENT_NOTIFICATION_KEY = "androidShowExponentNotificationInShellApp";
   public static final String MANIFEST_REVISION_ID_KEY = "revisionId";
   public static final String MANIFEST_PUBLISHED_TIME_KEY = "publishedTime";
   public static final String MANIFEST_COMMIT_TIME_KEY = "commitTime";
   public static final String MANIFEST_LOADED_FROM_CACHE_KEY = "loadedFromCache";
   public static final String MANIFEST_SLUG = "slug";
+  public static final String MANIFEST_ANDROID_INFO_KEY = "android";
+  public static final String MANIFEST_KEYBOARD_LAYOUT_MODE_KEY = "softwareKeyboardLayoutMode";
 
   // Statusbar
   public static final String MANIFEST_STATUS_BAR_KEY = "androidStatusBar";
   public static final String MANIFEST_STATUS_BAR_APPEARANCE = "barStyle";
   public static final String MANIFEST_STATUS_BAR_BACKGROUND_COLOR = "backgroundColor";
-  @Deprecated
-  public static final String MANIFEST_STATUS_BAR_COLOR = "androidStatusBarColor";
+  public static final String MANIFEST_STATUS_BAR_HIDDEN = "hidden";
+  public static final String MANIFEST_STATUS_BAR_TRANSLUCENT = "translucent";
 
   // NavigationBar
   public static final String MANIFEST_NAVIGATION_BAR_KEY = "androidNavigationBar";
@@ -110,19 +116,11 @@ public class ExponentManifest {
   public static final String MANIFEST_DEBUGGER_HOST_KEY = "debuggerHost";
   public static final String MANIFEST_MAIN_MODULE_NAME_KEY = "mainModuleName";
 
-  // Loading
-  public static final String MANIFEST_LOADING_INFO_KEY = "loading";
-  public static final String MANIFEST_LOADING_ICON_URL = "iconUrl";
-  public static final String MANIFEST_LOADING_EXPONENT_ICON_COLOR = "exponentIconColor";
-  public static final String MANIFEST_LOADING_EXPONENT_ICON_GRAYSCALE = "exponentIconGrayscale";
-  public static final String MANIFEST_LOADING_BACKGROUND_IMAGE_URL = "backgroundImageUrl";
-  public static final String MANIFEST_LOADING_BACKGROUND_COLOR = "backgroundColor";
-
   // Splash
   public static final String MANIFEST_SPLASH_INFO_KEY = "splash";
-  public static final String MANIFEST_SPLASH_IMAGE_URL = "imageUrl";
-  public static final String MANIFEST_SPLASH_RESIZE_MODE = "resizeMode";
-  public static final String MANIFEST_SPLASH_BACKGROUND_COLOR = "backgroundColor";
+  public static final String MANIFEST_SPLASH_IMAGE_URL_KEY = "imageUrl";
+  public static final String MANIFEST_SPLASH_RESIZE_MODE_KEY = "resizeMode";
+  public static final String MANIFEST_SPLASH_BACKGROUND_COLOR_KEY = "backgroundColor";
 
   // Updates
   public static final String MANIFEST_UPDATES_INFO_KEY = "updates";
@@ -130,6 +128,10 @@ public class ExponentManifest {
   public static final String MANIFEST_UPDATES_CHECK_AUTOMATICALLY_KEY = "checkAutomatically";
   public static final String MANIFEST_UPDATES_CHECK_AUTOMATICALLY_ON_LOAD = "ON_LOAD";
   public static final String MANIFEST_UPDATES_CHECK_AUTOMATICALLY_ON_ERROR = "ON_ERROR_RECOVERY";
+
+  // Development client
+  public static final String MANIFEST_DEVELOPMENT_CLIENT_KEY = "developmentClient";
+  public static final String MANIFEST_DEVELOPMENT_CLIENT_SILENT_LAUNCH_KEY = "silentLaunch";
 
   public static final String DEEP_LINK_SEPARATOR = "--";
   public static final String DEEP_LINK_SEPARATOR_WITH_SLASH = "--/";
@@ -165,6 +167,10 @@ public class ExponentManifest {
         return bitmap.getByteCount() / 1024;
       }
     };
+  }
+
+  public Uri httpManifestUrl(String manifestUrl) {
+    return httpManifestUrlBuilder(manifestUrl).build();
   }
 
   private Uri.Builder httpManifestUrlBuilder(String manifestUrl) {
@@ -401,6 +407,20 @@ public class ExponentManifest {
     }
   }
 
+  private boolean isManifestSDKVersionValid(JSONObject manifest) {
+    String sdkVersion = manifest.optString(MANIFEST_SDK_VERSION_KEY);
+    if (RNObject.UNVERSIONED.equals(sdkVersion)) {
+      return true;
+    } else {
+      for (String version : Constants.SDK_VERSIONS_LIST) {
+        if (version.equals(sdkVersion)) {
+          return true;
+        }
+      }
+      return false;
+    }
+  }
+
   private JSONObject extractManifest(final String manifestString) throws IOException {
       try {
           return new JSONObject(manifestString);
@@ -453,7 +473,14 @@ public class ExponentManifest {
       if (embeddedResponse != null) {
         try {
           JSONObject embeddedManifest = new JSONObject(embeddedResponse);
-          manifest = newerManifest(embeddedManifest, manifest);
+          if (!isManifestSDKVersionValid(manifest)) {
+            // if we somehow try to load a cached manifest with an invalid SDK version,
+            // fall back immediately to the embedded manifest, which should never have an
+            // invalid SDK version.
+            manifest = embeddedManifest;
+          } else {
+            manifest = newerManifest(embeddedManifest, manifest);
+          }
           isUsingEmbeddedManifest = embeddedManifest == manifest;
         } catch (Exception e) {
           EXL.e(TAG, e);
@@ -573,57 +600,75 @@ public class ExponentManifest {
     return manifest;
   }
 
+  @WorkerThread
+  public Bitmap loadIconBitmapSync(final String iconUrl) {
+    Bitmap icon = getIconFromCache(iconUrl);
+    if (icon != null) {
+      return icon;
+    }
+
+    return loadIconTask(iconUrl);
+  }
+
   public void loadIconBitmap(final String iconUrl, final BitmapListener listener) {
-    if (iconUrl != null && !iconUrl.isEmpty()) {
-      Bitmap cachedBitmap = mMemoryCache.get(iconUrl);
-      if (cachedBitmap != null) {
-        listener.onLoadBitmap(cachedBitmap);
-        return;
+    Bitmap icon = getIconFromCache(iconUrl);
+    if (icon != null) {
+      listener.onLoadBitmap(icon);
+      return;
+    }
+
+    new AsyncTask<Void, Void, Bitmap>() {
+      @Override
+      protected Bitmap doInBackground(Void... params) {
+        return loadIconTask(iconUrl);
       }
 
-      new AsyncTask<Void, Void, Bitmap>() {
+      @Override
+      protected void onPostExecute(Bitmap result) {
+        listener.onLoadBitmap(result);
+      }
+    }.execute();
+  }
 
-        @Override
-        protected Bitmap doInBackground(Void... params) {
-          try {
-            // TODO: inject shared OkHttp client
-            URL url = new URL(iconUrl);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream input = connection.getInputStream();
+  @Nullable
+  private Bitmap getIconFromCache(@Nullable final String iconUrl) {
+    if (TextUtils.isEmpty(iconUrl)) {
+      return BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.ic_launcher);
+    }
 
-            Bitmap bitmap = BitmapFactory.decodeStream(input);
-            int width = bitmap.getWidth();
-            int height = bitmap.getHeight();
-            if (width <= MAX_BITMAP_SIZE && height <= MAX_BITMAP_SIZE) {
-              mMemoryCache.put(iconUrl, bitmap);
-              return bitmap;
-            }
+    return mMemoryCache.get(iconUrl);
+  }
 
-            int maxDimension = Math.max(width, height);
-            float scaledWidth = (((float) width) * MAX_BITMAP_SIZE) / maxDimension;
-            float scaledHeight = (((float) height) * MAX_BITMAP_SIZE) / maxDimension;
-            Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, (int) scaledWidth, (int) scaledHeight, true);
-            mMemoryCache.put(iconUrl, scaledBitmap);
-            return scaledBitmap;
-          } catch (IOException e) {
-            EXL.e(TAG, e);
-            return BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.ic_launcher);
-          } catch (Throwable e) {
-            EXL.e(TAG, e);
-            return BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.ic_launcher);
-          }
-        }
 
-        @Override
-        protected void onPostExecute(Bitmap result) {
-          listener.onLoadBitmap(result);
-        }
-      }.execute();
-    } else {
-      Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.ic_launcher);
-      listener.onLoadBitmap(bitmap);
+  private Bitmap loadIconTask(final String iconUrl) {
+    try {
+      // TODO: inject shared OkHttp client
+      URL url = new URL(iconUrl);
+      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+      connection.setDoInput(true);
+      connection.connect();
+      InputStream input = connection.getInputStream();
+
+      Bitmap bitmap = BitmapFactory.decodeStream(input);
+      int width = bitmap.getWidth();
+      int height = bitmap.getHeight();
+      if (width <= MAX_BITMAP_SIZE && height <= MAX_BITMAP_SIZE) {
+        mMemoryCache.put(iconUrl, bitmap);
+        return bitmap;
+      }
+
+      int maxDimension = Math.max(width, height);
+      float scaledWidth = (((float) width) * MAX_BITMAP_SIZE) / maxDimension;
+      float scaledHeight = (((float) height) * MAX_BITMAP_SIZE) / maxDimension;
+      Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, (int) scaledWidth, (int) scaledHeight, true);
+      mMemoryCache.put(iconUrl, scaledBitmap);
+      return scaledBitmap;
+    } catch (IOException e) {
+      EXL.e(TAG, e);
+      return BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.ic_launcher);
+    } catch (Throwable e) {
+      EXL.e(TAG, e);
+      return BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.ic_launcher);
     }
   }
 
@@ -636,7 +681,7 @@ public class ExponentManifest {
     }
   }
 
-  private boolean isAnonymousExperience(final JSONObject manifest) {
+  public boolean isAnonymousExperience(final JSONObject manifest) {
     if (manifest.has(MANIFEST_ID_KEY)) {
       final String id = manifest.optString(MANIFEST_ID_KEY);
       if (id != null && id.startsWith(ANONYMOUS_EXPERIENCE_PREFIX)) {

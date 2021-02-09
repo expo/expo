@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -47,7 +47,13 @@ public class ReactSettingsForTests implements DeveloperSettings {
   }
 
   @Override
-  public void setRemoteJSDebugEnabled(boolean remoteJSDebugEnabled) {
+  public void setRemoteJSDebugEnabled(boolean remoteJSDebugEnabled) {}
 
+  @Override
+  public boolean isStartSamplingProfilerOnInit() {
+    return false;
   }
+
+  @Override
+  public void addMenuItem(String title) {}
 }

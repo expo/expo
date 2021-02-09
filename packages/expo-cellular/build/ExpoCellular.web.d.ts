@@ -5,6 +5,6 @@ declare const _default: {
     readonly isoCountryCode: null;
     readonly mobileCountryCode: null;
     readonly mobileNetworkCode: null;
-    getCellularGenerationAsync(): Promise<CellularGeneration | null>;
+    getCellularGenerationAsync(): Promise<CellularGeneration>;
 };
 export default _default;

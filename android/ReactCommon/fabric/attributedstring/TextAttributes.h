@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -71,6 +71,11 @@ class TextAttributes : public DebugStringConvertible {
 
   // Special
   folly::Optional<bool> isHighlighted{};
+
+  // TODO T59221129: document where this value comes from and how it is set.
+  // It's not clear if this is being used properly, or if it's being set at all.
+  // Currently, it is intentionally *not* being set as part of BaseTextProps
+  // construction.
   folly::Optional<LayoutDirection> layoutDirection{};
 
 #pragma mark - Operations
@@ -98,9 +103,8 @@ template <>
 struct hash<facebook::react::TextAttributes> {
   size_t operator()(
       const facebook::react::TextAttributes &textAttributes) const {
-    auto seed = size_t{0};
-    folly::hash::hash_combine(
-        seed,
+    return folly::hash::hash_combine(
+        0,
         textAttributes.foregroundColor,
         textAttributes.backgroundColor,
         textAttributes.opacity,
@@ -124,7 +128,6 @@ struct hash<facebook::react::TextAttributes> {
         textAttributes.textShadowColor,
         textAttributes.isHighlighted,
         textAttributes.layoutDirection);
-    return seed;
   }
 };
 } // namespace std

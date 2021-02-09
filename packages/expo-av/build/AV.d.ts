@@ -4,21 +4,21 @@ export declare enum PitchCorrectionQuality {
     Medium,
     High
 }
-export declare type PlaybackSource = number | {
+export declare type AVPlaybackSource = number | {
     uri: string;
     overrideFileExtensionAndroid?: string;
     headers?: {
         [fieldName: string]: string;
     };
 } | Asset;
-export declare type PlaybackNativeSource = {
+export declare type AVPlaybackNativeSource = {
     uri: string;
     overridingExtension?: string | null;
     headers?: {
         [fieldName: string]: string;
     };
 };
-export declare type PlaybackStatus = {
+export declare type AVPlaybackStatus = {
     isLoaded: false;
     androidImplementation?: string;
     error?: string;
@@ -42,7 +42,7 @@ export declare type PlaybackStatus = {
     isLooping: boolean;
     didJustFinish: boolean;
 };
-export declare type PlaybackStatusToSet = {
+export declare type AVPlaybackStatusToSet = {
     androidImplementation?: string;
     progressUpdateIntervalMillis?: number;
     positionMillis?: number;
@@ -57,54 +57,58 @@ export declare type PlaybackStatusToSet = {
     pitchCorrectionQuality?: PitchCorrectionQuality;
 };
 export declare const _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS: number;
-export declare const _DEFAULT_INITIAL_PLAYBACK_STATUS: PlaybackStatusToSet;
-export declare function getNativeSourceFromSource(source?: PlaybackSource | null): PlaybackNativeSource | null;
-export declare function assertStatusValuesInBounds(status: PlaybackStatusToSet): void;
-export declare function getNativeSourceAndFullInitialStatusForLoadAsync(source: PlaybackSource | null, initialStatus: PlaybackStatusToSet | null, downloadFirst: boolean): Promise<{
-    nativeSource: PlaybackNativeSource;
-    fullInitialStatus: PlaybackStatusToSet;
+export declare const _DEFAULT_INITIAL_PLAYBACK_STATUS: AVPlaybackStatusToSet;
+export declare function getNativeSourceFromSource(source?: AVPlaybackSource | null): AVPlaybackNativeSource | null;
+export declare function assertStatusValuesInBounds(status: AVPlaybackStatusToSet): void;
+export declare function getNativeSourceAndFullInitialStatusForLoadAsync(source: AVPlaybackSource | null, initialStatus: AVPlaybackStatusToSet | null, downloadFirst: boolean): Promise<{
+    nativeSource: AVPlaybackNativeSource;
+    fullInitialStatus: AVPlaybackStatusToSet;
 }>;
-export declare function getUnloadedStatus(error?: string | null): PlaybackStatus;
+export declare function getUnloadedStatus(error?: string | null): AVPlaybackStatus;
 export interface AV {
-    setStatusAsync(status: PlaybackStatusToSet): Promise<PlaybackStatus>;
+    setStatusAsync(status: AVPlaybackStatusToSet): Promise<AVPlaybackStatus>;
+    getStatusAsync(): Promise<AVPlaybackStatus>;
 }
 export interface Playback extends AV {
-    playAsync(): Promise<PlaybackStatus>;
+    playAsync(): Promise<AVPlaybackStatus>;
+    loadAsync(source: AVPlaybackSource, initialStatus: AVPlaybackStatusToSet, downloadAsync: boolean): Promise<AVPlaybackStatus>;
+    unloadAsync(): Promise<AVPlaybackStatus>;
     playFromPositionAsync(positionMillis: number, tolerances?: {
         toleranceMillisBefore?: number;
         toleranceMillisAfter?: number;
-    }): Promise<PlaybackStatus>;
-    pauseAsync(): Promise<PlaybackStatus>;
-    stopAsync(): Promise<PlaybackStatus>;
+    }): Promise<AVPlaybackStatus>;
+    pauseAsync(): Promise<AVPlaybackStatus>;
+    stopAsync(): Promise<AVPlaybackStatus>;
+    replayAsync(status: AVPlaybackStatusToSet): Promise<AVPlaybackStatus>;
     setPositionAsync(positionMillis: number, tolerances?: {
         toleranceMillisBefore?: number;
         toleranceMillisAfter?: number;
-    }): Promise<PlaybackStatus>;
-    setRateAsync(rate: number, shouldCorrectPitch: boolean, pitchCorrectionQuality?: PitchCorrectionQuality): Promise<PlaybackStatus>;
-    setVolumeAsync(volume: number): Promise<PlaybackStatus>;
-    setIsMutedAsync(isMuted: boolean): Promise<PlaybackStatus>;
-    setIsLoopingAsync(isLooping: boolean): Promise<PlaybackStatus>;
-    setProgressUpdateIntervalAsync(progressUpdateIntervalMillis: number): Promise<PlaybackStatus>;
+    }): Promise<AVPlaybackStatus>;
+    setRateAsync(rate: number, shouldCorrectPitch: boolean, pitchCorrectionQuality?: PitchCorrectionQuality): Promise<AVPlaybackStatus>;
+    setVolumeAsync(volume: number): Promise<AVPlaybackStatus>;
+    setIsMutedAsync(isMuted: boolean): Promise<AVPlaybackStatus>;
+    setIsLoopingAsync(isLooping: boolean): Promise<AVPlaybackStatus>;
+    setProgressUpdateIntervalAsync(progressUpdateIntervalMillis: number): Promise<AVPlaybackStatus>;
 }
 /**
  * A mixin that defines common playback methods for A/V classes so they implement the `Playback`
  * interface
  */
 export declare const PlaybackMixin: {
-    playAsync(): Promise<PlaybackStatus>;
+    playAsync(): Promise<AVPlaybackStatus>;
     playFromPositionAsync(positionMillis: number, tolerances?: {
-        toleranceMillisBefore?: number | undefined;
-        toleranceMillisAfter?: number | undefined;
-    }): Promise<PlaybackStatus>;
-    pauseAsync(): Promise<PlaybackStatus>;
-    stopAsync(): Promise<PlaybackStatus>;
+        toleranceMillisBefore?: number;
+        toleranceMillisAfter?: number;
+    }): Promise<AVPlaybackStatus>;
+    pauseAsync(): Promise<AVPlaybackStatus>;
+    stopAsync(): Promise<AVPlaybackStatus>;
     setPositionAsync(positionMillis: number, tolerances?: {
-        toleranceMillisBefore?: number | undefined;
-        toleranceMillisAfter?: number | undefined;
-    }): Promise<PlaybackStatus>;
-    setRateAsync(rate: number, shouldCorrectPitch?: boolean, pitchCorrectionQuality?: PitchCorrectionQuality): Promise<PlaybackStatus>;
-    setVolumeAsync(volume: number): Promise<PlaybackStatus>;
-    setIsMutedAsync(isMuted: boolean): Promise<PlaybackStatus>;
-    setIsLoopingAsync(isLooping: boolean): Promise<PlaybackStatus>;
-    setProgressUpdateIntervalAsync(progressUpdateIntervalMillis: number): Promise<PlaybackStatus>;
+        toleranceMillisBefore?: number;
+        toleranceMillisAfter?: number;
+    }): Promise<AVPlaybackStatus>;
+    setRateAsync(rate: number, shouldCorrectPitch?: boolean, pitchCorrectionQuality?: PitchCorrectionQuality): Promise<AVPlaybackStatus>;
+    setVolumeAsync(volume: number): Promise<AVPlaybackStatus>;
+    setIsMutedAsync(isMuted: boolean): Promise<AVPlaybackStatus>;
+    setIsLoopingAsync(isLooping: boolean): Promise<AVPlaybackStatus>;
+    setProgressUpdateIntervalAsync(progressUpdateIntervalMillis: number): Promise<AVPlaybackStatus>;
 };

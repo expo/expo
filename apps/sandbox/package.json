@@ -10,13 +10,13 @@
     "postinstall": "expo-yarn-workspaces postinstall"
   },
   "dependencies": {
-    "expo": "~34.0.4",
-    "react": "16.8.3",
-    "react-native": "0.59.8"
+    "expo": "~40.0.0-beta.4",
+    "react": "16.13.1",
+    "react-native": "0.63.2"
   },
   "devDependencies": {
-    "babel-preset-expo": "^6.0.0",
-    "expo-yarn-workspaces": "^1.0.0"
+    "babel-preset-expo": "~8.3.0",
+    "expo-yarn-workspaces": "^1.3.1"
   },
   "private": true
 }

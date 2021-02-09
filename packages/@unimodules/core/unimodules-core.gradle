@@ -1,17 +1,11 @@
 class UnimodulesPlugin implements Plugin<Project> {
     void apply(Project project) {
-        // Exclude '*/flutter/*' files if not compiling for Flutter
-        if (!(new File(project.rootProject.projectDir.parentFile, 'pubspec.yaml').exists())) {
-            project.android.sourceSets {
-                main {
-                    java {
-                        srcDir 'src'
-                        exclude '**/flutter/**'
-                    }
-                }
+        project.configurations.configureEach {
+            if (it.getName().startsWith('test') && project.file('./src/test').exists()) {
+                project.dependencies.add(it.getName(), project.project(':unimodules-test-core'))
             }
         }
-        
+
         project.ext.unimodule = {
             String dep, Closure closure = null ->
                 Object dependency = null;
@@ -20,9 +14,8 @@ class UnimodulesPlugin implements Plugin<Project> {
                     // Parent directory of the android project has package.json -- probably React Native
                     dependency = project.project(":$dep")
                 } else {
-                    // There's no package.json and no pubspec.yaml
                     throw new GradleException(
-                        "'unimodules-core.gradle' used in a project that seems to be neither a Flutter nor a React Native project."
+                        "'unimodules-core.gradle' used in a project that seems not to be React Native project."
                     )
                 }
 

@@ -1,15 +1,18 @@
-import { createStackNavigator, createAppContainer } from 'react-navigation';
-import SelectScreen from './screens/SelectScreen';
-import TestScreen from './screens/TestScreen';
+import { NavigationContainer } from '@react-navigation/native';
+import * as Linking from 'expo-linking';
+import * as React from 'react';
 
-const MainNavigator = createStackNavigator(
-  {
-    Select: SelectScreen,
-    RunTests: TestScreen,
+import AppNavigator from './AppNavigator';
+
+const linking = {
+  prefixes: [Linking.makeUrl('/')],
+  config: {
+    select: '',
+    run: '/run',
   },
-  { headerMode: 'screen' }
+};
+export default () => (
+  <NavigationContainer linking={linking}>
+    <AppNavigator />
+  </NavigationContainer>
 );
-
-const App = createAppContainer(MainNavigator);
-
-export default App;

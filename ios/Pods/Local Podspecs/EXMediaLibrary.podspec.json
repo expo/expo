@@ -1,26 +1,34 @@
 {
   "name": "EXMediaLibrary",
-  "version": "6.1.0-rc.1",
+  "version": "11.0.0",
   "summary": "Provides access to user's media library.",
   "description": "Provides access to user's media library.",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
   "homepage": "https://docs.expo.io/versions/latest/sdk/media-library/",
   "platforms": {
-    "ios": "10.0"
+    "ios": "11.0"
   },
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXMediaLibrary/**/*.{h,m}",
-  "preserve_paths": "EXMediaLibrary/**/*.{h,m}",
-  "requires_arc": true,
+  "frameworks": [
+    "Photos",
+    "PhotosUI"
+  ],
   "dependencies": {
     "UMCore": [
 
     ],
     "UMPermissionsInterface": [
 
+    ],
+    "UMFileSystemInterface": [
+
+    ],
+    "React-Core": [
+
     ]
-  }
+  },
+  "source_files": "EXMediaLibrary/**/*.{h,m}"
 }

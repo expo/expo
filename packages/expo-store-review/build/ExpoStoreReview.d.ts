@@ -1,6 +1,6 @@
 declare const _default: {
-    [propertyName: string]: any;
-    addListener: (eventName: string) => void;
-    removeListeners: (count: number) => void;
+    readonly name: string;
+    isAvailableAsync(): Promise<boolean>;
+    requestReview: (() => Promise<void>) | null;
 };
 export default _default;

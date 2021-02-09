@@ -1,21 +1,30 @@
 ---
 title: TaskManager
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-task-manager'
 ---
 
-An API that allows to manage tasks, especially these running while your app is in the background.
-Some features of this module are used by other modules under the hood. Here is a list of modules using TaskManager:
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-- [Location](../location)
-- [BackgroundFetch](../background-fetch)
+**`expo-task-manager`** provides an API that allows you to manage long-running tasks, in particular those tasks that can run while your app is in the background.
+Some features of this module are used by other modules under the hood. Here is a list of Expo modules that use TaskManager:
+
+- [Location](location.md)
+- [BackgroundFetch](background-fetch.md)
+
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-task-manager`. It is not yet available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps. If you're using the bare workflow, React Native's [Headless JS](https://facebook.github.io/react-native/docs/headless-js-android) might suit your needs.
+For [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps, you'll need to run `expo install expo-task-manager`. To use it in [bare](../../../introduction/managed-vs-bare.md#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-task-manager);
 
 ## Configuration for standalone apps
 
-`TaskManager` works out of the box in the Expo client, but some extra configuration is needed for standalone apps. On iOS, each background feature requires a special key in `UIBackgroundModes` array in your `Info.plist` file. In standalone apps this array is empty by default, so in order to use background features you will need to add appropriate keys to your `app.json` configuration.
-Example of `app.json` that enables background location and background fetch:
+### Background modes on iOS
+
+`TaskManager` works out of the box in the Expo Go app on Android, but on iOS you'll need to test using [a custom Expo Go build](../../../guides/adhoc-builds.md).
+
+Standalone apps need some extra configuration: on iOS, each background feature requires a special key in `UIBackgroundModes` array in your `Info.plist` file. In standalone apps this array is empty by default, so in order to use background features you will need to add appropriate keys to your `app.json` configuration.
+Here is an example of an `app.json` configuration that enables background location and background fetch:
 
 ```json
 {
@@ -35,6 +44,18 @@ Example of `app.json` that enables background location and background fetch:
 }
 ```
 
+For bare React Native apps, you need to add those keys manually. You can do it by clicking on your project in Xcode, then `Signing & Capabilities`, adding the `BackgroundMode` capability (if absent), and checking either `Location updates` or `Background fetch`, depending on your needs.
+
+### AppDelegate.h
+
+Make sure that in your `AppDelegate.h`, `AppDelegate` subclasses the `UMAppDelegateWrapper` class from `@unimodules/core`, like so:
+
+```objc
+#import <UMCore/UMAppDelegateWrapper.h>
+
+@interface AppDelegate : UMAppDelegateWrapper <RCTBridgeDelegate>
+```
+
 ## API
 
 ```js
@@ -51,6 +72,16 @@ This limitation is due to the fact that when the application is launched in the 
 
 - **taskName (_string_)** -- Name of the task.
 - **task (_function_)** -- A function that will be invoked when the task with given **taskName** is executed.
+
+### `TaskManager.isAvailableAsync()`
+
+Determine if the `TaskManager` API can be used in this app.
+
+#### Returns
+
+A promise resolves to `true` if the API can be used, and `false` otherwise.
+
+- Always returns `false` in the browser.
 
 ### `TaskManager.isTaskRegisteredAsync(taskName)`
 
@@ -108,7 +139,7 @@ Example:
 ### `TaskManager.unregisterTaskAsync(taskName)`
 
 Unregisters task from the app, so the app will not be receiving updates for that task anymore.
-_It is recommended to use methods specialized by modules that registered the task, eg. [Location.stopLocationUpdatesAsync](../location#expolocationstoplocationupdatesasynctaskname)._
+_It is recommended to use methods specialized by modules that registered the task, eg. [Location.stopLocationUpdatesAsync](location.md#expolocationstoplocationupdatesasynctaskname)._
 
 #### Arguments
 
@@ -126,7 +157,7 @@ Unregisters all tasks registered for the running app.
 
 Returns a promise that resolves as soon as all tasks are completely unregistered.
 
-## Examples
+## Example
 
 ```javascript
 import React from 'react';
@@ -138,9 +169,12 @@ const LOCATION_TASK_NAME = 'background-location-task';
 
 export default class Component extends React.Component {
   onPress = async () => {
-    await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-      accuracy: Location.Accuracy.Balanced,
-    });
+    const { status } = await Location.requestPermissionsAsync();
+    if (status === 'granted') {
+      await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+        accuracy: Location.Accuracy.Balanced,
+      });
+    }
   };
 
   render() {

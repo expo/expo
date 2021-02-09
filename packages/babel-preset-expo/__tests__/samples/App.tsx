@@ -1,15 +1,15 @@
-import { AppLoading } from 'expo';
+import { Ionicons } from '@expo/vector-icons';
+import AppLoading from 'expo-app-loading';
 import { Asset } from 'expo-asset';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 
 export default function App() {
   const [assetsAreLoaded, setAssetsAreLoaded] = useState(false);
 
   useEffect(() => {
     loadAssetsAsync(setAssetsAreLoaded);
-  });
+  }, []);
 
   if (!assetsAreLoaded) {
     return <AppLoading />;

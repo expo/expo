@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 /*
  * Author: Eric Niebler <eniebler@fb.com>
  */
@@ -52,7 +53,7 @@ FOLLY_GCC_DISABLE_NEW_SHADOW_WARNINGS
 namespace folly {
 
 #define FOLLY_REQUIRES_DEF(...) \
-  _t<std::enable_if<static_cast<bool>(__VA_ARGS__), long>>
+  std::enable_if_t<static_cast<bool>(__VA_ARGS__), long>
 
 #define FOLLY_REQUIRES(...) FOLLY_REQUIRES_DEF(__VA_ARGS__) = __LINE__
 
@@ -62,16 +63,15 @@ template <template <class> class T, class... As>
 using AllOf = StrictConjunction<T<As>...>;
 
 template <bool If, class T>
-using AddConstIf = _t<std::conditional<If, const T, T>>;
+using AddConstIf = std::conditional_t<If, const T, T>;
 
 template <class Fn, class A>
-FOLLY_ALWAYS_INLINE FOLLY_ATTR_VISIBILITY_HIDDEN auto fold(Fn&&, A&& a) {
+FOLLY_ERASE auto fold(Fn&&, A&& a) {
   return static_cast<A&&>(a);
 }
 
 template <class Fn, class A, class B, class... Bs>
-FOLLY_ALWAYS_INLINE FOLLY_ATTR_VISIBILITY_HIDDEN auto
-fold(Fn&& fn, A&& a, B&& b, Bs&&... bs) {
+FOLLY_ERASE auto fold(Fn&& fn, A&& a, B&& b, Bs&&... bs) {
   return fold(
       // This looks like a use of fn after a move of fn, but in reality, this is
       // just a cast and not a move. That's because regardless of which fold
@@ -206,12 +206,12 @@ class exception_wrapper final {
   static VTable const uninit_;
 
   template <class Ex>
-  using IsStdException = std::is_base_of<std::exception, _t<std::decay<Ex>>>;
+  using IsStdException = std::is_base_of<std::exception, std::decay_t<Ex>>;
   template <bool B, class T>
   using AddConstIf = exception_wrapper_detail::AddConstIf<B, T>;
   template <class CatchFn>
   using IsCatchAll =
-      std::is_same<arg_type<_t<std::decay<CatchFn>>>, AnyException>;
+      std::is_same<arg_type<std::decay_t<CatchFn>>, AnyException>;
 
   struct Unknown {};
 
@@ -221,7 +221,7 @@ class exception_wrapper final {
   // and runtime_error can be safely stored internally.
   struct Buffer {
     using Storage =
-        _t<std::aligned_storage<2 * sizeof(void*), alignof(std::exception)>>;
+        std::aligned_storage_t<2 * sizeof(void*), alignof(std::exception)>;
     Storage buff_;
 
     Buffer() : buff_{} {}
@@ -239,16 +239,16 @@ class exception_wrapper final {
   struct OnHeapTag {};
 
   template <class T>
-  using PlacementOf = _t<std::conditional<
+  using PlacementOf = std::conditional_t<
       !IsStdException<T>::value,
       ThrownTag,
-      _t<std::conditional<
+      std::conditional_t<
           sizeof(T) <= sizeof(Buffer::Storage) &&
               alignof(T) <= alignof(Buffer::Storage) &&
               noexcept(T(std::declval<T&&>())) &&
               noexcept(T(std::declval<T const&>())),
           InSituTag,
-          OnHeapTag>>>>;
+          OnHeapTag>>;
 
   static std::exception const* as_exception_or_null_(std::exception const& ex);
   static std::exception const* as_exception_or_null_(AnyException);
@@ -429,7 +429,7 @@ class exception_wrapper final {
   //!     converted to an `exception_wrapper`.
   template <
       class Ex,
-      class Ex_ = _t<std::decay<Ex>>,
+      class Ex_ = std::decay_t<Ex>,
       FOLLY_REQUIRES(
           Conjunction<IsStdException<Ex_>, IsRegularExceptionType<Ex_>>::value)>
   /* implicit */ exception_wrapper(Ex&& ex);
@@ -443,7 +443,7 @@ class exception_wrapper final {
   //!     `folly::in_place` as the first parameter.
   template <
       class Ex,
-      class Ex_ = _t<std::decay<Ex>>,
+      class Ex_ = std::decay_t<Ex>,
       FOLLY_REQUIRES(IsRegularExceptionType<Ex_>::value)>
   exception_wrapper(in_place_t, Ex&& ex);
 

@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders a complex gradient with angles and locations 1`] = `"linear-gradient(135deg, rgba(255,0,0,1.00) 50%,rgba(0,255,255,0.00) 100%)"`;
+
+exports[`renders a multi-color gradient background with alpha 1`] = `"linear-gradient(180deg, rgba(0,255,255,1.00),rgba(255,0,255,1.00),rgba(0,0,0,0.00),rgba(0,255,255,0.50))"`;

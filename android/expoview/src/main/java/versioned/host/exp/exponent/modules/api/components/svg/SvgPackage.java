@@ -47,13 +47,18 @@ public class SvgPackage implements ReactPackage {
                 new RadialGradientManager(),
                 new PatternManager(),
                 new MaskManager(),
+                new ForeignObjectManager(),
+                new MarkerManager(),
                 new SvgViewManager());
     }
 
     @Nonnull
     @Override
     public List<NativeModule> createNativeModules(@Nonnull ReactApplicationContext reactContext) {
-        return Collections.<NativeModule>singletonList(new SvgViewModule(reactContext));
+        return Arrays.<NativeModule>asList(
+                new SvgViewModule(reactContext),
+                new RNSVGRenderableManager(reactContext)
+        );
     }
 
     @SuppressWarnings("unused")

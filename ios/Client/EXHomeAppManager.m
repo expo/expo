@@ -14,6 +14,8 @@
 #import "EXVersionManager.h"
 #import "EXVersions.h"
 
+#import <EXConstants/EXConstantsService.h>
+
 #import <React/RCTUtils.h>
 #import <React/RCTBridge.h>
 
@@ -24,6 +26,38 @@ NSString *kEXHomeBundleResourceName = @"kernel.ios";
 NSString *kEXHomeManifestResourceName = @"kernel-manifest";
 
 @implementation EXHomeAppManager
+
+- (NSDictionary *)extraParams
+{
+  NSMutableDictionary *params = [@{
+    @"browserModuleClass": [EXHomeModule class],
+    @"constants": @{
+        @"expoRuntimeVersion": [EXBuildConstants sharedInstance].expoRuntimeVersion,
+        @"linkingUri": @"exp://",
+        @"experienceUrl": [@"exp://" stringByAppendingString:self.appRecord.appLoader.manifest[@"hostUri"]],
+        @"manifest": self.appRecord.appLoader.manifest,
+        @"executionEnvironment": EXConstantsExecutionEnvironmentStoreClient,
+        @"appOwnership": @"expo",
+        @"supportedExpoSdks": [EXVersions sharedInstance].versions[@"sdkVersions"],
+    },
+    @"exceptionsManagerDelegate": self.exceptionHandler,
+    @"isDeveloper": @([EXBuildConstants sharedInstance].isDevKernel),
+    @"isStandardDevMenuAllowed": @(YES), // kernel enables traditional RN dev menu
+    @"manifest": self.appRecord.appLoader.manifest,
+    @"services": [EXKernel sharedInstance].serviceRegistry.allServices,
+    @"singletonModules": [UMModuleRegistryProvider singletonModules],
+    @"fileSystemDirectories": @{
+        @"documentDirectory": [self scopedDocumentDirectory],
+        @"cachesDirectory": [self scopedCachesDirectory]
+    }
+  } mutableCopy];
+  
+  NSURL *initialHomeUrl = [self _initialHomeUrl];
+  if (initialHomeUrl) {
+    params[@"initialUri"] = initialHomeUrl;
+  }
+  return params;
+}
 
 #pragma mark - interfacing with home JS
 
@@ -61,35 +95,8 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
 - (NSArray *)extraModulesForBridge:(RCTBridge *)bridge
 {
   NSMutableArray *modules = [NSMutableArray array];
-  self.exceptionHandler = [[EXReactAppExceptionHandler alloc] initWithAppRecord:self.appRecord];
 
-  NSMutableDictionary *params = [@{
-                                   @"bridge": bridge,
-                                   @"browserModuleClass": [EXHomeModule class],
-                                   @"constants": @{
-                                       @"installationId": [EXKernel deviceInstallUUID],
-                                       @"expoRuntimeVersion": [EXBuildConstants sharedInstance].expoRuntimeVersion,
-                                       @"linkingUri": @"exp://",
-                                       @"experienceUrl": [@"exp://" stringByAppendingString:self.appRecord.appLoader.manifest[@"hostUri"]],
-                                       @"manifest": self.appRecord.appLoader.manifest,
-                                       @"appOwnership": @"expo",
-                                       @"supportedExpoSdks": [EXVersions sharedInstance].versions[@"sdkVersions"],
-                                     },
-                                   @"exceptionsManagerDelegate": self.exceptionHandler,
-                                   @"isDeveloper": @([EXBuildConstants sharedInstance].isDevKernel),
-                                   @"isStandardDevMenuAllowed": @(YES), // kernel enables traditional RN dev menu
-                                   @"manifest": self.appRecord.appLoader.manifest,
-                                   @"services": [EXKernel sharedInstance].serviceRegistry.allServices,
-                                   @"singletonModules": [UMModuleRegistryProvider singletonModules],
-                                   } mutableCopy];
-  
-
-  NSURL *initialHomeUrl = [self _initialHomeUrl];
-  if (initialHomeUrl) {
-    params[@"initialUri"] = initialHomeUrl;
-  }
-  
-  [modules addObjectsFromArray:[self.versionManager extraModulesWithParams:params]];
+  [modules addObjectsFromArray:[self.versionManager extraModulesForBridge:bridge]];
   
   return modules;
 }
@@ -123,17 +130,6 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
 - (NSString *)bundleResourceNameForAppFetcher:(__unused EXAppFetcher *)appFetcher withManifest:(nonnull __unused NSDictionary *)manifest
 {
   return kEXHomeBundleResourceName;
-}
-
-- (BOOL)appFetcherShouldInvalidateBundleCache:(__unused EXAppFetcher *)appFetcher
-{
-  // if crashlytics shows that we're recovering from a native crash, invalidate any downloaded home cache.
-  BOOL shouldClearKernelCache = [[NSUserDefaults standardUserDefaults] boolForKey:kEXKernelClearJSCacheUserDefaultsKey];
-  if (shouldClearKernelCache) {
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kEXKernelClearJSCacheUserDefaultsKey];
-    return YES;
-  }
-  return NO;
 }
 
 #pragma mark - util

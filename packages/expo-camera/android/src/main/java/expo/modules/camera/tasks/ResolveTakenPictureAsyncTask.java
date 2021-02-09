@@ -5,7 +5,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.os.Bundle;
-import android.support.media.ExifInterface;
+
+import androidx.exifinterface.media.ExifInterface;
+
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Base64;
@@ -18,6 +20,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.unimodules.core.Promise;
+
 import expo.modules.camera.CameraViewHelper;
 import expo.modules.camera.utils.FileSystemUtils;
 
@@ -70,7 +73,7 @@ public class ResolveTakenPictureAsyncTask extends AsyncTask<Void, Void, Bundle> 
   private int getQuality() {
     if (mOptions.get(QUALITY_KEY) instanceof Number) {
       double requestedQuality = ((Number) mOptions.get(QUALITY_KEY)).doubleValue();
-      return (int)(requestedQuality * 100);
+      return (int) (requestedQuality * 100);
     }
 
     return DEFAULT_QUALITY * 100;
@@ -84,33 +87,30 @@ public class ResolveTakenPictureAsyncTask extends AsyncTask<Void, Void, Bundle> 
     }
 
     Bundle response = new Bundle();
-    ByteArrayInputStream inputStream = null;
 
-    // we need the stream only for photos from a device
     if (mBitmap == null) {
       mBitmap = BitmapFactory.decodeByteArray(mImageData, 0, mImageData.length);
-      inputStream = new ByteArrayInputStream(mImageData);
     }
 
+    ByteArrayInputStream inputStream = new ByteArrayInputStream(mImageData);
+
     try {
-      if (inputStream != null) {
-        ExifInterface exifInterface = new ExifInterface(inputStream);
-        // Get orientation of the image from mImageData via inputStream
-        int orientation = exifInterface.getAttributeInt(
-            ExifInterface.TAG_ORIENTATION,
-            ExifInterface.ORIENTATION_UNDEFINED
-        );
+      ExifInterface exifInterface = new ExifInterface(inputStream);
+      // Get orientation of the image from mImageData via inputStream
+      int orientation = exifInterface.getAttributeInt(
+          ExifInterface.TAG_ORIENTATION,
+          ExifInterface.ORIENTATION_UNDEFINED
+      );
 
-        // Rotate the bitmap to the proper orientation if needed
-        if (orientation != ExifInterface.ORIENTATION_UNDEFINED) {
-          mBitmap = rotateBitmap(mBitmap, getImageRotation(orientation));
-        }
+      // Rotate the bitmap to the proper orientation if needed
+      if (orientation != ExifInterface.ORIENTATION_UNDEFINED) {
+        mBitmap = rotateBitmap(mBitmap, getImageRotation(orientation));
+      }
 
-        // Write Exif data to the response if requested
-        if (isOptionEnabled(EXIF_KEY)) {
-          Bundle exifData = CameraViewHelper.getExifData(exifInterface);
-          response.putBundle(EXIF_KEY, exifData);
-        }
+      // Write Exif data to the response if requested
+      if (isOptionEnabled(EXIF_KEY)) {
+        Bundle exifData = CameraViewHelper.getExifData(exifInterface);
+        response.putBundle(EXIF_KEY, exifData);
       }
 
       // Upon rotating, write the image's dimensions to the response
@@ -120,24 +120,28 @@ public class ResolveTakenPictureAsyncTask extends AsyncTask<Void, Void, Bundle> 
       // Cache compressed image in imageStream
       ByteArrayOutputStream imageStream = new ByteArrayOutputStream();
       mBitmap.compress(Bitmap.CompressFormat.JPEG, getQuality(), imageStream);
-
       // Write compressed image to file in cache directory
       String filePath = writeStreamToFile(imageStream);
+
+      // Save Exif data to the image if requested
+      if (isOptionEnabled(EXIF_KEY)) {
+        ExifInterface exifFromFile = new ExifInterface(filePath);
+        CameraViewHelper.addExifData(exifFromFile, exifInterface);
+      }
+
       File imageFile = new File(filePath);
       String fileUri = Uri.fromFile(imageFile).toString();
       response.putString(URI_KEY, fileUri);
 
       // Write base64-encoded image to the response if requested
       if (isOptionEnabled(BASE64_KEY)) {
-        response.putString(BASE64_KEY, Base64.encodeToString(imageStream.toByteArray(), Base64.DEFAULT));
+        response.putString(BASE64_KEY, Base64.encodeToString(imageStream.toByteArray(), Base64.NO_WRAP));
       }
 
       // Cleanup
       imageStream.close();
-      if (inputStream != null) {
-        inputStream.close();
-        inputStream = null;
-      }
+      inputStream.close();
+      inputStream = null;
 
       return response;
     } catch (Resources.NotFoundException e) {
@@ -193,7 +197,7 @@ public class ResolveTakenPictureAsyncTask extends AsyncTask<Void, Void, Bundle> 
 
       // handle base64
       if (isOptionEnabled(BASE64_KEY)) {
-        response.putString(BASE64_KEY, Base64.encodeToString(mImageData, Base64.DEFAULT));
+        response.putString(BASE64_KEY, Base64.encodeToString(mImageData, Base64.NO_WRAP));
       }
 
       return response;
@@ -232,7 +236,7 @@ public class ResolveTakenPictureAsyncTask extends AsyncTask<Void, Void, Bundle> 
     FileOutputStream outputStream = null;
 
     try {
-      outputPath = FileSystemUtils.generateOutputPath(mDirectory, DIRECTORY_NAME,EXTENSION);
+      outputPath = FileSystemUtils.generateOutputPath(mDirectory, DIRECTORY_NAME, EXTENSION);
       outputStream = new FileOutputStream(outputPath);
       inputStream.writeTo(outputStream);
     } catch (IOException e) {

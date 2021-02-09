@@ -1,19 +1,20 @@
 import * as React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
+import createElement from 'react-native-web/dist/exports/createElement';
+
+import { AVPlaybackNativeSource, AVPlaybackStatus, AVPlaybackStatusToSet } from './AV';
 import ExponentAV from './ExponentAV';
 
-import { PlaybackNativeSource, PlaybackStatus, PlaybackStatusToSet } from './AV';
-
 type ExponentVideoProps = {
-  source: PlaybackNativeSource | null;
-  resizeMode?: Object;
-  status?: PlaybackStatusToSet;
+  source: AVPlaybackNativeSource | null;
+  resizeMode?: object;
+  status?: AVPlaybackStatusToSet;
   useNativeControls?: boolean;
-  onStatusUpdate?: (event: { nativeEvent: PlaybackStatus }) => void;
-  onReadyForDisplay?: (event: { nativeEvent: Object }) => void;
-  onFullscreenUpdate?: (event: { nativeEvent: Object }) => void;
+  onStatusUpdate?: (event: { nativeEvent: AVPlaybackStatus }) => void;
+  onReadyForDisplay?: (event: { nativeEvent: object }) => void;
+  onFullscreenUpdate?: (event: { nativeEvent: object }) => void;
   onLoadStart: () => void;
-  onLoad: (event: { nativeEvent: PlaybackStatus }) => void;
+  onLoad: (event: { nativeEvent: AVPlaybackStatus }) => void;
   onError: (event: { nativeEvent: { error: string } }) => void;
   // Required by react-native
   scaleX?: number;
@@ -39,8 +40,42 @@ export const IOS_FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = FULLSCREEN_UPDATE_PLAYER
 export const IOS_FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS;
 export const IOS_FULLSCREEN_UPDATE_PLAYER_DID_DISMISS = FULLSCREEN_UPDATE_PLAYER_DID_DISMISS;
 
+const Video: any = React.forwardRef((props, ref) => createElement('video', { ...props, ref }));
+
 export default class ExponentVideo extends React.Component<ExponentVideoProps> {
   _video?: HTMLVideoElement;
+
+  componentDidMount() {
+    const isIE11 = !!window['MSStream'];
+    document.addEventListener(
+      isIE11 ? 'MSFullscreenChange' : 'fullscreenchange',
+      this.onFullscreenChange
+    );
+  }
+
+  componentWillUnmount() {
+    const isIE11 = !!window['MSStream'];
+    document.addEventListener(
+      isIE11 ? 'MSFullscreenChange' : 'fullscreenchange',
+      this.onFullscreenChange
+    );
+  }
+
+  onFullscreenChange = event => {
+    if (!this.props.onFullscreenUpdate) return;
+
+    if (event.target === this._video) {
+      if (document.fullscreenElement) {
+        this.props.onFullscreenUpdate({
+          nativeEvent: { fullscreenUpdate: FULLSCREEN_UPDATE_PLAYER_DID_PRESENT },
+        });
+      } else {
+        this.props.onFullscreenUpdate({
+          nativeEvent: { fullscreenUpdate: FULLSCREEN_UPDATE_PLAYER_DID_DISMISS },
+        });
+      }
+    }
+  };
 
   onStatusUpdate = async () => {
     if (!this.props.onStatusUpdate) {
@@ -114,10 +149,9 @@ export default class ExponentVideo extends React.Component<ExponentVideoProps> {
       position: undefined,
       objectFit,
       overflow: 'hidden',
-    } as any;
-    const finalStyle = StyleSheet.flatten([style, customStyle]) as React.CSSProperties;
+    };
     return (
-      <video
+      <Video
         ref={this.onRef}
         onLoadStart={this.onLoadStart}
         onLoadedData={this.onLoadedData}
@@ -133,7 +167,7 @@ export default class ExponentVideo extends React.Component<ExponentVideoProps> {
         loop={status.isLooping}
         autoPlay={status.shouldPlay}
         controls={useNativeControls}
-        style={finalStyle}
+        style={[style, customStyle]}
       />
     );
   }

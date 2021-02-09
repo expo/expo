@@ -1,20 +1,93 @@
 ---
 title: ImageManipulator
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-image-manipulator'
 ---
 
-An API to modify images stored on the local file system.
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+import SnackInline from '~/components/plugins/SnackInline';
+
+**`expo-image-manipulator`** provides an API to modify images stored on the local file system.
+
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-image-manipulator`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-image-manipulator).
+<InstallSection packageName="expo-image-manipulator" />
 
-> **Note**: Not compatible with web.
+## Usage
+
+This will first rotate the image 90 degrees clockwise, then flip the rotated image vertically and save it as a PNG.
+
+<SnackInline
+label='Basic ImageManipulator usage'
+files={{
+    'assets/snack-icon.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/2f7d32b1787708aba49b3586082d327b'
+  }}
+dependencies={['expo-asset', 'expo-image-manipulator']}>
+
+```js
+import React, { useState, useEffect } from 'react';
+import { Button, View, Image } from 'react-native';
+import { Asset } from 'expo-asset';
+import * as ImageManipulator from 'expo-image-manipulator';
+
+export default function App() {
+  const [ready, setReady] = useState(false);
+  const [image, setImage] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      const image = Asset.fromModule(require('./assets/snack-icon.png'));
+      await image.downloadAsync();
+      setImage(image);
+      setReady(true);
+    })();
+  }, []);
+
+  const _rotate90andFlip = async () => {
+    const manipResult = await ImageManipulator.manipulateAsync(
+      image.localUri || image.uri,
+      [{ rotate: 90 }, { flip: ImageManipulator.FlipType.Vertical }],
+      { compress: 1, format: ImageManipulator.SaveFormat.PNG }
+    );
+    setImage(manipResult);
+  };
+
+  const _renderImage = () => {
+    return (
+      <View
+        style={{
+          marginVertical: 20,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+        <Image
+          source={{ uri: image.localUri || image.uri }}
+          style={{ width: 300, height: 300, resizeMode: 'contain' }}
+        />
+      </View>
+    );
+  };
+
+  return (
+    <View style={{ flex: 1, justifyContent: 'center' }}>
+      {ready && image && _renderImage()}
+      <Button title="Rotate and Flip" onPress={_rotate90andFlip} />
+    </View>
+  );
+}
+```
+
+</SnackInline>
 
 ## API
 
 ```js
 import * as ImageManipulator from 'expo-image-manipulator';
 ```
+
+## Methods
 
 ### `ImageManipulator.manipulateAsync(uri, actions, saveOptions)`
 
@@ -40,61 +113,3 @@ Manipulate the image provided via `uri`. Available modifications are rotating, f
 #### Returns
 
 Returns `{ uri, width, height }` where `uri` is a URI to the modified image (useable as the source for an `Image`/`Video` element), `width, height` specify the dimensions of the image. It can contain also `base64` - it is included if the `base64` saveOption was truthy, and is a string containing the JPEG/PNG (depending on `format`) data of the image in Base64--prepend that with `'data:image/xxx;base64,'` to get a data URI, which you can use as the source for an `Image` element for example (where `xxx` is 'jpeg' or 'png').
-
-### Basic Example
-
-This will first rotate the image 90 degrees clockwise, then flip the rotated image vertically and save it as a PNG.
-
-```javascript
-import React from 'react';
-import { Button, TouchableOpacity, Text, View, Image } from 'react-native';
-import { Asset } from 'expo-asset';
-import * as ImageManipulator from 'expo-image-manipulator';
-
-export default class ImageManipulatorSample extends React.Component {
-  state = {
-    ready: false,
-    image: null,
-  };
-
-  componentDidMount() {
-    (async () => {
-      const image = Asset.fromModule(require('./assets/snack-icon.png'));
-      await image.downloadAsync();
-      this.setState({
-        ready: true,
-        image,
-      });
-    })();
-  }
-
-  render() {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center' }}>
-        {this.state.ready && this._renderImage()}
-        <Button title="Rotate and Flip" onPress={this._rotate90andFlip} />
-      </View>
-    );
-  }
-
-  _rotate90andFlip = async () => {
-    const manipResult = await ImageManipulator.manipulateAsync(
-      this.state.image.localUri || this.state.image.uri,
-      [{ rotate: 90 }, { flip: ImageManipulator.FlipType.Vertical }],
-      { compress: 1, format: ImageManipulator.SaveFormat.PNG }
-    );
-    this.setState({ image: manipResult });
-  };
-
-  _renderImage = () => {
-    return (
-      <View style={{ marginVertical: 20, alignItems: 'center', justifyContent: 'center' }}>
-        <Image
-          source={{ uri: this.state.image.localUri || this.state.image.uri }}
-          style={{ width: 300, height: 300, resizeMode: 'contain' }}
-        />
-      </View>
-    );
-  };
-}
-```

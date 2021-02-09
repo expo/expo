@@ -4,11 +4,14 @@ export default function getBackgroundColor(intensity: number, tint: BlurTint): s
   const opacity = intensity / 100;
   switch (tint) {
     case 'dark':
-      return `rgba(0,0,0,${opacity * 0.5})`;
+      // From apple.com
+      return `rgba(28,28,28,${opacity * 0.65})`;
     case 'light':
+      // From https://www.apple.com/newsroom
       return `rgba(255,255,255,${opacity * 0.7})`;
     case 'default':
-      return `rgba(255,255,255,${opacity * 0.4})`;
+      // From xcode composition
+      return `rgba(255,255,255,${opacity * 0.3})`;
   }
   throw new Error(`Unsupported tint provided: ${tint}`);
 }

@@ -29,13 +29,21 @@ UM_EXPORT_MODULE(ExpoMailComposer);
   return dispatch_get_main_queue();
 }
 
+UM_EXPORT_METHOD_AS(isAvailableAsync,
+                    isAvailable:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  resolve(@([MFMailComposeViewController canSendMail]));
+}
+
+
 UM_EXPORT_METHOD_AS(composeAsync,
                     composeAsync:(NSDictionary *)options
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   if (![MFMailComposeViewController canSendMail]) {
-    reject(@"E_COMPOSE_UNAVAILABLE", @"Mail services are not available.", nil);
+    reject(@"E_COMPOSE_UNAVAILABLE", @"Mail services are not available. Make sure you're signed into the Mail app", nil);
     return;
   }
 
@@ -96,8 +104,10 @@ UM_EXPORT_METHOD_AS(composeAsync,
         CFStringRef identifier = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[path pathExtension], NULL);
         CFStringRef typeRef = UTTypeCopyPreferredTagWithClass (identifier, kUTTagClassMIMEType);
         CFRelease(identifier);
-        mimeType = [NSString stringWithString:(__bridge NSString *)(typeRef)];
-        CFRelease(typeRef);
+        if (typeRef != NULL) {
+          mimeType = [NSString stringWithString:(__bridge NSString *)(typeRef)];
+          CFRelease(typeRef);
+        }
       }
 
       NSData *fileData = [NSData dataWithContentsOfFile:path];

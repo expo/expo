@@ -1,11 +1,11 @@
 /*
- * Copyright 2011-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,6 @@
 #include <folly/Conv.h>
 #include <folly/ExceptionString.h>
 #include <folly/FBString.h>
-#include <folly/FBVector.h>
 #include <folly/Portability.h>
 #include <folly/Range.h>
 #include <folly/ScopeGuard.h>
@@ -172,7 +171,7 @@ std::string stringPrintf(FOLLY_PRINTF_FORMAT const char* format, ...)
     FOLLY_PRINTF_FORMAT_ATTR(1, 2);
 
 /* Similar to stringPrintf, with different signature. */
-void stringPrintf(std::string* out, FOLLY_PRINTF_FORMAT const char* fmt, ...)
+void stringPrintf(std::string* out, FOLLY_PRINTF_FORMAT const char* format, ...)
     FOLLY_PRINTF_FORMAT_ATTR(2, 3);
 
 std::string& stringAppendf(
@@ -261,7 +260,7 @@ OutputString hexlify(ByteRange input) {
   OutputString output;
   if (!hexlify(input, output)) {
     // hexlify() currently always returns true, so this can't really happen
-    throw std::runtime_error("hexlify failed");
+    throw_exception<std::runtime_error>("hexlify failed");
   }
   return output;
 }
@@ -284,7 +283,7 @@ OutputString unhexlify(StringPiece input) {
   if (!unhexlify(input, output)) {
     // unhexlify() fails if the input has non-hexidecimal characters,
     // or if it doesn't consist of a whole number of bytes
-    throw std::domain_error("unhexlify() called with non-hex input");
+    throw_exception<std::domain_error>("unhexlify() called with non-hex input");
   }
   return output;
 }
@@ -423,11 +422,14 @@ void split(
     std::vector<OutputType>& out,
     const bool ignoreEmpty = false);
 
+template <class T, class Allocator>
+class fbvector;
+
 template <class Delim, class String, class OutputType>
 void split(
     const Delim& delimiter,
     const String& input,
-    folly::fbvector<OutputType>& out,
+    folly::fbvector<OutputType, std::allocator<OutputType>>& out,
     const bool ignoreEmpty = false);
 
 template <
@@ -576,6 +578,41 @@ inline StringPiece trimWhitespace(StringPiece sp) {
  */
 inline StringPiece skipWhitespace(StringPiece sp) {
   return ltrimWhitespace(sp);
+}
+
+/**
+ * Returns a subpiece with all characters the provided @toTrim returns true
+ * for removed from the front of @sp.
+ */
+template <typename ToTrim>
+StringPiece ltrim(StringPiece sp, ToTrim toTrim) {
+  while (!sp.empty() && toTrim(sp.front())) {
+    sp.pop_front();
+  }
+
+  return sp;
+}
+
+/**
+ * Returns a subpiece with all characters the provided @toTrim returns true
+ * for removed from the back of @sp.
+ */
+template <typename ToTrim>
+StringPiece rtrim(StringPiece sp, ToTrim toTrim) {
+  while (!sp.empty() && toTrim(sp.back())) {
+    sp.pop_back();
+  }
+
+  return sp;
+}
+
+/**
+ * Returns a subpiece with all characters the provided @toTrim returns true
+ * for removed from the back and front of @sp.
+ */
+template <typename ToTrim>
+StringPiece trim(StringPiece sp, ToTrim toTrim) {
+  return ltrim(rtrim(sp, std::ref(toTrim)), std::ref(toTrim));
 }
 
 /**

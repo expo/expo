@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -6,19 +6,18 @@
  */
 package com.facebook.react.modules.storage;
 
-import java.util.ArrayDeque;
-import java.util.HashSet;
-import java.util.concurrent.Executor;
+import static com.facebook.react.modules.storage.ReactDatabaseSupplier.KEY_COLUMN;
+import static com.facebook.react.modules.storage.ReactDatabaseSupplier.TABLE_CATALYST;
+import static com.facebook.react.modules.storage.ReactDatabaseSupplier.VALUE_COLUMN;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 import android.os.AsyncTask;
 import com.facebook.common.logging.FLog;
+import com.facebook.fbreact.specs.NativeAsyncStorageSpec;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
@@ -26,12 +25,12 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.common.ModuleDataCleaner;
-import static com.facebook.react.modules.storage.ReactDatabaseSupplier.KEY_COLUMN;
-import static com.facebook.react.modules.storage.ReactDatabaseSupplier.TABLE_CATALYST;
-import static com.facebook.react.modules.storage.ReactDatabaseSupplier.VALUE_COLUMN;
+import java.util.ArrayDeque;
+import java.util.HashSet;
+import java.util.concurrent.Executor;
 
 @ReactModule(name = AsyncStorageModule.NAME)
-public class AsyncStorageModule extends ReactContextBaseJavaModule implements ModuleDataCleaner.Cleanable {
+public class AsyncStorageModule extends NativeAsyncStorageSpec implements ModuleDataCleaner.Cleanable {
 
     public static final String NAME = "AsyncSQLiteDBStorage";
 
@@ -43,7 +42,7 @@ public class AsyncStorageModule extends ReactContextBaseJavaModule implements Mo
 
     public boolean mShuttingDown = false;
 
-    // Adapted from https://android.googlesource.com/platform/frameworks/base.git/+/1488a3a19d4681a41fb45570c15e14d99db1cb66/core/java/android/os/AsyncTask.java#237
+    // https://android.googlesource.com/platform/frameworks/base.git/+/1488a3a19d4681a41fb45570c15e14d99db1cb66/core/java/android/os/AsyncTask.java#237
     private class SerialExecutor implements Executor {
 
         public final ArrayDeque<Runnable> mTasks = new ArrayDeque<Runnable>();
@@ -117,10 +116,10 @@ public class AsyncStorageModule extends ReactContextBaseJavaModule implements Mo
     }
 
     /**
-   * Given an array of keys, this returns a map of (key, value) pairs for the keys found, and
-   * (key, null) for the keys that haven't been found.
+   * Given an array of keys, this returns a map of (key, value) pairs for the keys found, and (key,
+   * null) for the keys that haven't been found.
    */
-    @ReactMethod
+    @Override
     public void multiGet(final ReadableArray keys, final Callback callback) {
         if (keys == null) {
             callback.invoke(AsyncStorageErrorUtil.getInvalidKeyError(null), null);
@@ -179,10 +178,10 @@ public class AsyncStorageModule extends ReactContextBaseJavaModule implements Mo
 
     /**
    * Inserts multiple (key, value) pairs. If one or more of the pairs cannot be inserted, this will
-   * return AsyncLocalStorageFailure, but all other pairs will have been inserted.
-   * The insertion will replace conflicting (key, value) pairs.
+   * return AsyncLocalStorageFailure, but all other pairs will have been inserted. The insertion
+   * will replace conflicting (key, value) pairs.
    */
-    @ReactMethod
+    @Override
     public void multiSet(final ReadableArray keyValueArray, final Callback callback) {
         if (keyValueArray.size() == 0) {
             callback.invoke(AsyncStorageErrorUtil.getInvalidKeyError(null));
@@ -242,10 +241,8 @@ public class AsyncStorageModule extends ReactContextBaseJavaModule implements Mo
         }.executeOnExecutor(executor);
     }
 
-    /**
-   * Removes all rows of the keys given.
-   */
-    @ReactMethod
+    /** Removes all rows of the keys given. */
+    @Override
     public void multiRemove(final ReadableArray keys, final Callback callback) {
         if (keys.size() == 0) {
             callback.invoke(AsyncStorageErrorUtil.getInvalidKeyError(null));
@@ -293,7 +290,7 @@ public class AsyncStorageModule extends ReactContextBaseJavaModule implements Mo
    * Given an array of (key, value) pairs, this will merge the given values with the stored values
    * of the given keys, if they exist.
    */
-    @ReactMethod
+    @Override
     public void multiMerge(final ReadableArray keyValueArray, final Callback callback) {
         new GuardedAsyncTask<Void, Void>(getReactApplicationContext()) {
 
@@ -347,10 +344,8 @@ public class AsyncStorageModule extends ReactContextBaseJavaModule implements Mo
         }.executeOnExecutor(executor);
     }
 
-    /**
-   * Clears the database.
-   */
-    @ReactMethod
+    /** Clears the database. */
+    @Override
     public void clear(final Callback callback) {
         new GuardedAsyncTask<Void, Void>(getReactApplicationContext()) {
 
@@ -371,10 +366,8 @@ public class AsyncStorageModule extends ReactContextBaseJavaModule implements Mo
         }.executeOnExecutor(executor);
     }
 
-    /**
-   * Returns an array with all keys from the database.
-   */
-    @ReactMethod
+    /** Returns an array with all keys from the database. */
+    @Override
     public void getAllKeys(final Callback callback) {
         new GuardedAsyncTask<Void, Void>(getReactApplicationContext()) {
 
@@ -405,9 +398,7 @@ public class AsyncStorageModule extends ReactContextBaseJavaModule implements Mo
         }.executeOnExecutor(executor);
     }
 
-    /**
-   * Verify the database is open for reads and writes.
-   */
+    /** Verify the database is open for reads and writes. */
     private boolean ensureDatabase() {
         return !mShuttingDown && mReactDatabaseSupplier.ensureDatabase();
     }

@@ -1,10 +1,12 @@
 {
   "name": "babel-preset-expo",
-  "version": "6.0.1",
+  "version": "8.3.0",
   "description": "The Babel preset for Expo projects",
   "main": "index.js",
   "files": [
-    "index.js"
+    "index.js",
+    "lazy-imports-blacklist.js",
+    "plugins"
   ],
   "scripts": {
     "jest": "jest",
@@ -13,13 +15,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/expo/expo.git"
+    "url": "git+https://github.com/expo/expo.git",
+    "directory": "packages/babel-preset-expo"
   },
   "keywords": [
     "babel",
     "babel-preset",
     "expo",
-    "react-native"
+    "expo-web",
+    "react-native",
+    "react-native-web",
+    "metro",
+    "webpack"
   ],
   "author": "Expo <support@expo.io>",
   "license": "MIT",
@@ -38,16 +45,15 @@
     ]
   },
   "dependencies": {
-    "@babel/core": "^7.1.0",
-    "@babel/plugin-proposal-decorators": "^7.1.0",
-    "@babel/plugin-transform-modules-commonjs": "^7.4.4",
-    "@babel/preset-env": "^7.3.1",
-    "babel-plugin-module-resolver": "^3.1.1",
-    "babel-plugin-react-native-web": "^0.11.2",
+    "@babel/plugin-proposal-decorators": "^7.6.0",
+    "@babel/preset-env": "^7.6.3",
     "babel-plugin-universal-platforms": "^1.0.0",
-    "metro-react-native-babel-preset": "^0.54.1"
+    "babel-plugin-module-resolver": "^3.2.0",
+    "babel-plugin-react-native-web": "~0.13.6",
+    "metro-react-native-babel-preset": "~0.59.0"
   },
   "devDependencies": {
-    "jest": "^24.7.1"
+    "@babel/core": "^7.6.4",
+    "jest": "^25.2.0"
   }
 }

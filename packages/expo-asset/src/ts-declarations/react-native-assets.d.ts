@@ -32,7 +32,7 @@ declare module 'react-native/Libraries/Image/AssetSourceResolver' {
     drawableFolderInBundle(): ResolvedAssetSource;
     fromSource(source: string): ResolvedAssetSource;
 
-    static pickScale(scales: Array<number>, deviceScale: number): number;
+    static pickScale(scales: number[], deviceScale: number): number;
   }
 }
 
@@ -41,9 +41,7 @@ declare module 'react-native/Libraries/Image/resolveAssetSource' {
     ResolvedAssetSource,
   } from 'react-native/Libraries/Image/AssetSourceResolver';
 
-  export default function resolveAssetSource(
-    source: any
-  ): ResolvedAssetSource;
+  export default function resolveAssetSource(source: any): ResolvedAssetSource;
 
   export function setCustomSourceTransformer(
     transformer: (resolver: AssetSourceResolver) => ResolvedAssetSource

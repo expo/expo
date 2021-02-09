@@ -1,6 +1,6 @@
 // Software License Agreement (BSD License)
 //
-// Copyright (c) 2010-2016, Deusty, LLC
+// Copyright (c) 2010-2019, Deusty, LLC
 // All rights reserved.
 //
 // Redistribution and use of this software in source and binary forms,
@@ -14,14 +14,13 @@
 //   prior written permission of Deusty, LLC.
 
 #import <Foundation/Foundation.h>
-#import <libkern/OSAtomic.h>
 
 // Disable legacy macros
 #ifndef DD_LEGACY_MACROS
     #define DD_LEGACY_MACROS 0
 #endif
 
-#import "DDLog.h"
+#import <CocoaLumberjack/DDLog.h>
 
 /**
  *  Log formatter mode
@@ -175,4 +174,18 @@ typedef NS_ENUM(NSUInteger, DDDispatchQueueLogFormatterMode){
  */
 - (NSString *)formatLogMessage:(DDLogMessage *)logMessage;
 
+@end
+
+#pragma mark - DDAtomicCounter
+
+@protocol DDAtomicCountable <NSObject>
+
+- (instancetype)initWithDefaultValue:(int32_t)defaultValue;
+- (int32_t)increment;
+- (int32_t)decrement;
+- (int32_t)value;
+
+@end
+
+@interface DDAtomicCounter: NSObject<DDAtomicCountable>
 @end

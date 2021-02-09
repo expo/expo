@@ -1,6 +1,8 @@
-# Expo Yarn Workspaces (private package)
+# Expo Yarn Workspaces
 
-This is a private package that provides support for Yarn workspaces within the Expo repository. It finesses Yarn workspaces, Metro, and the Expo repository to work together.
+This is a package that provides support for Yarn workspaces within monorepos like the Expo repository. It finesses Yarn workspaces, Metro, and the Expo repository to work together.
+
+**Note:** This package runs only on macOS and Linux.
 
 ## How apps work with workspaces
 
@@ -24,7 +26,7 @@ The postinstall script determines the location of the generated entry module by 
 
 You can specify other paths too. The `.expo` directory is convenient since it already contains auto-generated files and is .gitignore'd.
 
-### Create a file named `metro.config.js` and reference it from app.json
+### Create a file named `metro.config.js`
 
 **Create a file named `metro.config.js` in the app's base directory with these contents:**
 
@@ -36,12 +38,20 @@ module.exports = createMetroConfiguration(__dirname);
 
 The `expo-yarn-workspaces` package defines a Metro configuration object that makes Metro work with Yarn workspaces in the Expo repo. It configures Metro to include packages from the workspace root, resolves symlinked packages, excludes modules from Haste's module system, and exclude modules in the native Android and Xcode projects. You can further customize this configuration object before exporting it, if needed.
 
-**Add this JSON fragment to app.json under the `"expo"` object to tell Metro about the custom configuration:**
+**Aside:** when starting the project, run `expo start --clear` so Metro uses the latest configuration instead of working with cached values.
+
+### Configuration
+
+You can configure workspaces using the `expo-yarn-workspaces` field in each workspace package's `package.json` file.
+
+#### symlinks
+
+Sometimes an npm package must be located in the project's `node_modules` folder for things to work properly. Using the `expo-yarn-workspaces.symlinks` string array you can define a list of packages to symlink under the project's `node_modules` folder after installing the workspaces' dependencies.
 
 ```json
-"packagerOpts": {
-  "config": "metro.config.js"
+{
+  "expo-yarn-workspaces": {
+    "symlinks": ["react-native-unimodules"]
+  }
 }
 ```
-
-**Aside:** when starting the project, run `expo start --clear` so Metro uses the latest configuration instead of working with cached values.

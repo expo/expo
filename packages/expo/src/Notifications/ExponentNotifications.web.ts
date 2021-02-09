@@ -1,27 +1,17 @@
-import UUID from 'uuid-js';
+import * as badgin from 'badgin';
+import { v4 as uuidv4 } from 'uuid';
 
+import {
+  guardPermission,
+  getExponentPushTokenAsync,
+  getDevicePushTokenAsync,
+} from './ExponentNotificationsHelper.web';
 import { LocalNotification, LocalNotificationId } from './Notifications.types';
 
-function guardPermission() {
-  if (!('Notification' in window)) {
-    throw new Error('The Notification API is not available on this device.');
-  }
-  if (!navigator.serviceWorker) {
-    throw new Error(
-      'Notifications cannot be sent because the service worker API is not supported on this device.'
-    );
-  }
-  if (!navigator.serviceWorker.controller) {
-    throw new Error(
-      'Notifications cannot be sent because there is no service worker controller registered. Ensure you have SSL certificates enabled.'
-    );
-  }
-  if (Notification.permission !== 'granted') {
-    throw new Error(
-      'Cannot use Notifications without permissions. Please request permissions with `expo-permissions`'
-    );
-  }
-}
+// Register `message`'s event listener (side-effect)
+import './ExponentNotifications.fx.web';
+
+let currentBadgeNumber = 0;
 
 function transformLocalNotification(
   notification: LocalNotification,
@@ -33,12 +23,10 @@ function transformLocalNotification(
     ...abstractNotification,
     tag,
     ...web,
+    // Show that this notification is a local notification
+    _isLocal: true,
   };
   return [nativeNotification.title, nativeNotification];
-}
-
-function generateID(): string {
-  return UUID.create().toString();
 }
 
 async function getRegistrationAsync(): Promise<ServiceWorkerRegistration> {
@@ -59,7 +47,7 @@ async function getNotificationsAsync(tag?: string): Promise<Notification[]> {
 export default {
   async presentLocalNotification(notification: LocalNotification): Promise<LocalNotificationId> {
     const registration = await getRegistrationAsync();
-    const tag = generateID();
+    const tag = uuidv4();
     registration.showNotification(...transformLocalNotification(notification, tag));
     return tag;
   },
@@ -73,7 +61,7 @@ export default {
   ): Promise<string> {
     if (options.intervalMs) {
       const registration = await getRegistrationAsync();
-      const tag = generateID();
+      const tag = uuidv4();
       setTimeout(() => {
         registration.showNotification(...transformLocalNotification(notification, tag));
       }, options.intervalMs);
@@ -112,5 +100,22 @@ export default {
   },
   async cancelAllScheduledNotificationsAsync(): Promise<void> {
     this.dismissNotification();
+  },
+
+  async getExponentPushTokenAsync(): Promise<string> {
+    return await getExponentPushTokenAsync();
+  },
+
+  async getDevicePushTokenAsync(): Promise<{ type: string; data: object }> {
+    return await getDevicePushTokenAsync();
+  },
+
+  async getBadgeNumberAsync(): Promise<number> {
+    return currentBadgeNumber;
+  },
+
+  async setBadgeNumberAsync(badgeNumber: number): Promise<void> {
+    currentBadgeNumber = badgeNumber;
+    badgin.set(badgeNumber);
   },
 };

@@ -1,0 +1,1 @@
+../../../GoogleDataTransport/GoogleDataTransport/GDTCORLibrary/Public/GDTCORRegistrar.h

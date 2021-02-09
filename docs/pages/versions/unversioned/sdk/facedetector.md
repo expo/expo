@@ -1,12 +1,18 @@
 ---
 title: FaceDetector
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-face-detector'
 ---
 
-`FaceDetector` lets you use the power of [Google Mobile Vision](https://developers.google.com/vision/face-detection-concepts) framework to detect faces on images.
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
+**`expo-face-detector`** lets you use the power of the [Google Mobile Vision](https://developers.google.com/vision/face-detection-concepts) framework to detect faces on images.
+
+<PlatformsSection android ios web={{ pending: 'https://github.com/expo/expo/issues/6888' }} />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-face-detector`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-face-detector).
+<InstallSection packageName="expo-face-detector" />
 
 ## Usage
 
@@ -22,7 +28,7 @@ Check out a full example at [expo/camerja](https://github.com/expo/camerja). You
 
 ### Intermodule interface
 
-Other modules, like eg. [Camera](../camera/) are able to use this `FaceDetector`.
+Other modules, like eg. [Camera](camera.md) are able to use this `FaceDetector`.
 
 ## API
 
@@ -89,7 +95,7 @@ Positions of face landmarks are returned only if `faceDetectionLandmarks` proper
 
 ## Methods
 
-To use methods that `FaceDetector` exposes one just has to import the module. (In ejected apps on iOS face detection will be supported only if you add the `FaceDetector` subspec to your project. Refer to [Adding the Payments Module on iOS](../payments/#adding-the-payments-module-on-ios) for an example of adding a subspec to your ejected project.)
+To use methods that `FaceDetector` exposes one just has to import the module. (In ejected apps on iOS face detection will be supported only if you add the `FaceDetector` subspec to your project. Refer to [Adding the Payments Module on iOS](payments.md#adding-the-payments-module-on-ios) for an example of adding a subspec to your ejected project.)
 
 ```javascript
 import * as FaceDetector from 'expo-face-detector';
@@ -102,7 +108,7 @@ detectFaces = async imageUri => {
 // ...
 ```
 
-### `detectFacesAsync`
+### `FaceDetector.detectFacesAsync(uri, options)`
 
 Detect faces on a picture.
 

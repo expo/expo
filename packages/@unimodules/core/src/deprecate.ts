@@ -1,5 +1,5 @@
-import compareVersions from 'compare-versions';
 import { CodedError } from '@unimodules/react-native-adapter';
+import compareVersions from 'compare-versions';
 
 const postedWarnings: { [key: string]: boolean } = {};
 
@@ -58,6 +58,6 @@ function prependLibrary(library: string, message: string): string {
  * expo-ar -> EXPO_AR
  */
 function codeFromLibrary(library: string): string {
-  const code = library.replace(/[-\.]/g, '_').toUpperCase();
+  const code = library.replace(/[-.]/g, '_').toUpperCase();
   return code;
 }

@@ -1,33 +1,37 @@
-import React from 'react';
-import { StyleSheet, ScrollView, Text, View } from 'react-native';
-import { NavigationScreenProps, NavigationScreenConfig } from 'react-navigation';
+import { StackScreenProps } from '@react-navigation/stack';
+import * as React from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import examples from './examples';
 
-export default class SVGExampleScreen extends React.Component<NavigationScreenProps> {
-  static navigationOptions: NavigationScreenConfig<{}> = ({ navigation }) => {
+type Links = { SVGExample: { title?: string; key: string } };
+
+type Props = StackScreenProps<Links, 'SVGExample'>;
+
+export default class SVGExampleScreen extends React.Component<Props> {
+  static navigationOptions = ({ route }: Props) => {
     return {
-      title: navigation.getParam('title', 'An SVG Example'),
+      title: route.params.title ?? 'An SVG Example',
     };
-  }
+  };
 
   renderSample = (Sample: React.ComponentType & { title: string }, index: number) => (
     <View style={styles.example} key={`sample-${index}`}>
       <Text style={styles.sampleTitle}>{Sample.title}</Text>
       <Sample />
     </View>
-  )
+  );
 
   renderNoExample = () => <Text>No example found.</Text>;
 
   renderContent = () => {
-    const example = examples[this.props.navigation.getParam('key')];
+    const example = examples[this.props.route.params.key];
     if (!example) {
       return this.renderNoExample();
     }
     const { samples } = example;
     return samples.map(this.renderSample);
-  }
+  };
 
   render() {
     return (

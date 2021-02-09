@@ -1,0 +1,1 @@
+../../../../FlipperKit/iOS/Plugins/FlipperKitNetworkPlugin/FlipperKitNetworkPlugin/SKNetworkReporter.h

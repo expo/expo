@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoScreenOrientation.js","sourceRoot":"","sources":["../src/ExpoScreenOrientation.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,kBAAkB,CAAC;AAEtD,eAAe,kBAAkB,CAAC,qBAAqB,IAAI,EAAE,CAAC","sourcesContent":["import { NativeModulesProxy } from '@unimodules/core';\n\nexport default NativeModulesProxy.ExpoScreenOrientation || {};\n"]}

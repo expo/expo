@@ -1,57 +1,46 @@
 package versioned.host.exp.exponent.modules.universal;
 
 import android.content.Intent;
-import android.content.pm.PackageManager;
 
 import com.facebook.react.bridge.ReactContext;
 
 import org.unimodules.adapters.react.services.UIManagerModuleWrapper;
 import org.unimodules.core.interfaces.ActivityEventListener;
-import org.unimodules.interfaces.permissions.PermissionsListener;
+
+import java.util.concurrent.CopyOnWriteArraySet;
+
 import host.exp.exponent.ActivityResultListener;
-import host.exp.exponent.kernel.ExperienceId;
 import host.exp.expoview.Exponent;
 
-public class ScopedUIManagerModuleWrapper extends UIManagerModuleWrapper {
-  private final String mExperienceName;
-  private final ExperienceId mExperienceId;
+public class ScopedUIManagerModuleWrapper extends UIManagerModuleWrapper implements ActivityResultListener {
+  // We use `CopyOnWriteArraySet` to make this container thread-safe,
+  // cause `onActivityResult` can be trigger on a different thread during the listener unregistering.
+  private CopyOnWriteArraySet<ActivityEventListener> mActivityEventListeners = new CopyOnWriteArraySet<>();
 
-  public ScopedUIManagerModuleWrapper(ReactContext reactContext, ExperienceId experienceId, String experienceName) {
+  public ScopedUIManagerModuleWrapper(ReactContext reactContext) {
     super(reactContext);
-    mExperienceId = experienceId;
-    mExperienceName = experienceName;
-  }
-
-  @Override
-  public boolean requestPermissions(final String[] permissions, final int requestCode, final PermissionsListener listener) {
-    return Exponent.getInstance().requestPermissions(new Exponent.PermissionsListener() {
-      @Override
-      public void permissionsGranted() {
-        listener.onPermissionResult(permissions, arrayFilled(PackageManager.PERMISSION_GRANTED, permissions.length));
-      }
-
-      @Override
-      public void permissionsDenied() {
-        listener.onPermissionResult(permissions, arrayFilled(PackageManager.PERMISSION_DENIED, permissions.length));
-      }
-    }, permissions, mExperienceId, mExperienceName);
   }
 
   @Override
   public void registerActivityEventListener(final ActivityEventListener activityEventListener) {
-    Exponent.getInstance().addActivityResultListener(new ActivityResultListener() {
-      @Override
-      public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        activityEventListener.onActivityResult(Exponent.getInstance().getCurrentActivity(), requestCode, resultCode, data);
-      }
-    });
+    if (mActivityEventListeners.isEmpty()) {
+      Exponent.getInstance().addActivityResultListener(this);
+    }
+    mActivityEventListeners.add(activityEventListener);
   }
 
-  private static int[] arrayFilled(int with, int length) {
-    int[] array = new int[length];
-    for (int i = 0; i < length; i++) {
-      array[i] = with;
+  @Override
+  public void unregisterActivityEventListener(ActivityEventListener activityEventListener) {
+    mActivityEventListeners.remove(activityEventListener);
+    if (mActivityEventListeners.isEmpty()) {
+      Exponent.getInstance().removeActivityResultListener(this);
     }
-    return array;
+  }
+
+  @Override
+  public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    for (ActivityEventListener listener : mActivityEventListeners) {
+      listener.onActivityResult(Exponent.getInstance().getCurrentActivity(), requestCode, resultCode, data);
+    }
   }
 }

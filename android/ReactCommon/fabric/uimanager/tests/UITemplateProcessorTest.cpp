@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,50 +7,37 @@
 
 #include <exception>
 
+#include <glog/logging.h>
 #include <gtest/gtest.h>
 #include <react/uimanager/ComponentDescriptorFactory.h>
 #include <react/uimanager/UITemplateProcessor.h>
 
 using namespace facebook::react;
 
-#include <react/components/activityindicator/ActivityIndicatorViewComponentDescriptor.h>
-#include <react/components/image/ImageComponentDescriptor.h>
+#include <react/components/rncore/ComponentDescriptors.h>
 #include <react/components/scrollview/ScrollViewComponentDescriptor.h>
-#include <react/components/text/ParagraphComponentDescriptor.h>
-#include <react/components/text/RawTextComponentDescriptor.h>
-#include <react/components/text/TextComponentDescriptor.h>
 #include <react/components/view/ViewComponentDescriptor.h>
 #include <react/config/ReactNativeConfig.h>
 #include <react/uimanager/ComponentDescriptorFactory.h>
+#include <react/uimanager/ComponentDescriptorProviderRegistry.h>
 #include <react/uimanager/ComponentDescriptorRegistry.h>
-#include <react/uimanager/ContextContainer.h>
+#include <react/utils/ContextContainer.h>
 
 namespace facebook {
 namespace react {
 
-// TODO (T29441913): Codegen this app-specific implementation.
-ComponentRegistryFactory getDefaultComponentRegistryFactory() {
-  return [](const SharedEventDispatcher &eventDispatcher,
-            const SharedContextContainer &contextContainer) {
-    auto registry = std::make_shared<ComponentDescriptorRegistry>();
-    registry->registerComponentDescriptor(
-        std::make_shared<ViewComponentDescriptor>(eventDispatcher));
-    registry->registerComponentDescriptor(
-        std::make_shared<ImageComponentDescriptor>(
-            eventDispatcher, contextContainer));
-    registry->registerComponentDescriptor(
-        std::make_shared<ScrollViewComponentDescriptor>(eventDispatcher));
-    registry->registerComponentDescriptor(
-        std::make_shared<ParagraphComponentDescriptor>(
-            eventDispatcher, contextContainer));
-    registry->registerComponentDescriptor(
-        std::make_shared<TextComponentDescriptor>(eventDispatcher));
-    registry->registerComponentDescriptor(
-        std::make_shared<RawTextComponentDescriptor>(eventDispatcher));
-    registry->registerComponentDescriptor(
-        std::make_shared<ActivityIndicatorViewComponentDescriptor>(
-            eventDispatcher));
-    return registry;
+static ComponentRegistryFactory getComponentRegistryFactory() {
+  return [](const EventDispatcher::Weak &eventDispatcher,
+            const ContextContainer::Shared &contextContainer) {
+    ComponentDescriptorProviderRegistry providerRegistry{};
+    providerRegistry.add(
+        concreteComponentDescriptorProvider<ViewComponentDescriptor>());
+    providerRegistry.add(
+        concreteComponentDescriptorProvider<ScrollViewComponentDescriptor>());
+    providerRegistry.add(concreteComponentDescriptorProvider<
+                         ActivityIndicatorViewComponentDescriptor>());
+    return providerRegistry.createComponentDescriptorRegistry(
+        {eventDispatcher, contextContainer});
   };
 }
 
@@ -96,8 +83,9 @@ std::shared_ptr<const ReactNativeConfig> mockReactNativeConfig_ =
 
 TEST(UITemplateProcessorTest, testSimpleBytecode) {
   auto surfaceId = 11;
+  auto eventDispatcher = std::shared_ptr<EventDispatcher const>();
   auto componentDescriptorRegistry =
-      getDefaultComponentRegistryFactory()(nullptr, nullptr);
+      getComponentRegistryFactory()(eventDispatcher, nullptr);
   auto nativeModuleRegistry = buildNativeModuleRegistry();
 
   auto bytecode = R"delim({"version":0.1,"commands":[
@@ -119,10 +107,10 @@ TEST(UITemplateProcessorTest, testSimpleBytecode) {
   LOG(INFO) << std::endl << root1->getDebugDescription();
 #endif
   auto props1 = std::dynamic_pointer_cast<const ViewProps>(root1->getProps());
-  ASSERT_NEAR(props1->opacity, 0.5, 0.001);
+  EXPECT_NEAR(props1->opacity, 0.5, 0.001);
   ASSERT_STREQ(props1->testId.c_str(), "root");
   auto children1 = root1->getChildren();
-  ASSERT_EQ(children1.size(), 1);
+  EXPECT_EQ(children1.size(), 1);
   auto child_props1 =
       std::dynamic_pointer_cast<const ViewProps>(children1.at(0)->getProps());
   ASSERT_STREQ(child_props1->testId.c_str(), "child");
@@ -130,8 +118,9 @@ TEST(UITemplateProcessorTest, testSimpleBytecode) {
 
 TEST(UITemplateProcessorTest, testConditionalBytecode) {
   auto surfaceId = 11;
+  auto eventDispatcher = std::shared_ptr<EventDispatcher const>();
   auto componentDescriptorRegistry =
-      getDefaultComponentRegistryFactory()(nullptr, nullptr);
+      getComponentRegistryFactory()(eventDispatcher, nullptr);
   auto nativeModuleRegistry = buildNativeModuleRegistry();
 
   auto bytecode = R"delim({"version":0.1,"commands":[
@@ -159,7 +148,7 @@ TEST(UITemplateProcessorTest, testConditionalBytecode) {
   auto props1 = std::dynamic_pointer_cast<const ViewProps>(root1->getProps());
   ASSERT_STREQ(props1->testId.c_str(), "root");
   auto children1 = root1->getChildren();
-  ASSERT_EQ(children1.size(), 1);
+  EXPECT_EQ(children1.size(), 1);
   auto child_props1 =
       std::dynamic_pointer_cast<const ViewProps>(children1.at(0)->getProps());
   ASSERT_STREQ(child_props1->testId.c_str(), "cond_true");

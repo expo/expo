@@ -3,9 +3,13 @@
 #import <EXContacts/EXContacts.h>
 #import <EXContacts/EXContactsViewController.h>
 #import <EXContacts/EXContacts+Serialization.h>
+#import <EXContacts/EXContactsPermissionRequester.h>
 
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
+
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
+#import <UMPermissionsInterface/UMPermissionsMethodsDelegate.h>
+
 #import <UMCore/UMUtilitiesInterface.h>
 #import <UMCore/UMUtilities.h>
 
@@ -86,6 +90,7 @@ UM_EXPORT_MODULE(ExpoContacts);
   _moduleRegistry = moduleRegistry;
   _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
+  [UMPermissionsMethodsDelegate registerRequesters:@[[EXContactsPermissionRequester new]] withPermissionsManager:_permissionsManager];
   _utilities = [moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
 }
 
@@ -309,8 +314,9 @@ UM_EXPORT_METHOD_AS(updateContactAsync,
     if (!contact) return;
     [self _mutateContact:contact withData:updates resolver:resolve rejecter:reject];
     [saveRequest updateContact:contact];
-    [EXContacts executeSaveRequest:saveRequest contactStore:contactStore resolver:resolve rejecter:reject];
-}
+    if ([EXContacts executeSaveRequest:saveRequest contactStore:contactStore resolver:nil rejecter:reject]) {
+        resolve(contact.identifier);
+    }}
 
 UM_EXPORT_METHOD_AS(removeContactAsync,
                     removeContactAsync:(NSString *)identifier
@@ -431,7 +437,7 @@ UM_EXPORT_METHOD_AS(getContainersAsync,
     if(!contactStore) return;
     NSError *error;
     
-    NSPredicate *predicate;
+    NSPredicate *predicate = nil;
     if (options[EXContactsOptionContactId]) {
         predicate = [CNContainer predicateForContainerOfContactWithIdentifier:options[EXContactsOptionContactId]];
     } else if (options[EXContactsOptionGroupId]) {
@@ -500,6 +506,26 @@ UM_EXPORT_METHOD_AS(getContactsAsync,
                           resolver:resolve
                           rejecter:reject
      ];
+}
+
+UM_EXPORT_METHOD_AS(getPermissionsAsync,
+                    getPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+                                                      withRequester:[EXContactsPermissionRequester class]
+                                                            resolve:resolve
+                                                             reject:reject];
+}
+
+UM_EXPORT_METHOD_AS(requestPermissionsAsync,
+                    requestPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+                                                         withRequester:[EXContactsPermissionRequester class]
+                                                               resolve:resolve
+                                                                reject:reject];
 }
 
 - (void)_serializeContactPayload:(NSDictionary *)payload
@@ -811,9 +837,8 @@ UM_EXPORT_METHOD_AS(getContactsAsync,
         
         if(!store.defaultContainerIdentifier) {
             //APPL says: If the caller lacks Contacts authorization or an error occurs, nil is returned.
-            
-            NSDictionary *cameraPermissions = [_permissionsManager getPermissionsForResource:@"contacts"];
-            if (![cameraPermissions[@"status"] isEqualToString:@"granted"]) {
+          
+            if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXContactsPermissionRequester class]]) {
                 reject(@"E_MISSING_PERMISSION", @"Missing contacts permission.", nil);
                 return nil;
             } else {
@@ -903,7 +928,14 @@ UM_EXPORT_METHOD_AS(getContactsAsync,
     
     if (fields == nil) {
         // If no fields are defined, get all fields.
-        fields = [mapping allKeys];
+      NSMutableArray *mutableFields = [[mapping allKeys] mutableCopy];
+
+      // On iOS 13 and above, to request contact's note your app must have the `com.apple.developer.contacts.notes` entitlement.
+      // You must contact Apple and receive approval for this entitlement. Read the Apple docs to learn more:
+      // https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes
+      [mutableFields removeObject:@"note"];
+
+      fields = mutableFields;
     } else {
         // Add default fields to our user defined fields.
         fields = [fields arrayByAddingObjectsFromArray:@[

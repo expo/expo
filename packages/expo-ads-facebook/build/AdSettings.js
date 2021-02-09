@@ -42,7 +42,7 @@ export default {
      * Sets URL prefix
      */
     setUrlPrefix(urlPrefix) {
-        CTKAdSettingsManager.setUrlPrefix(urlPrefix);
+        CTKAdSettingsManager.setUrlPrefix(urlPrefix || null);
     },
 };
 //# sourceMappingURL=AdSettings.js.map

@@ -1,6 +1,6 @@
 {
   "name": "expo-branch",
-  "version": "1.0.0",
+  "version": "4.0.0",
   "description": "A unimodule wrapping react-native-branch, enabling its use in Expo managed workflow",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -8,6 +8,7 @@
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
+    "lint": "expo-module lint",
     "test": "expo-module test",
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
@@ -21,23 +22,24 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/expo/expo.git"
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-branch"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-branch",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/branch/",
   "peerDependencies": {
-    "@unimodules/core": "~3.0.0",
-    "@unimodules/react-native-adapter": "~3.0.0"
+    "@unimodules/core": "*",
+    "@unimodules/react-native-adapter": "*"
   },
   "dependencies": {
-    "react-native-branch": "~3.1.1"
+    "@expo/config-plugins": "^1.0.13",
+    "react-native-branch": "5.0.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "^1.0.0"
-  },
-  "gitHead": "c1dc64e6ff18071dee2e03d4712e972231cd2642"
+    "expo-module-scripts": "~1.2.0"
+  }
 }

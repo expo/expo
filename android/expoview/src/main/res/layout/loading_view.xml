@@ -1,62 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
 
   <ProgressBar
-    android:id="@+id/progress_bar"
+    android:id="@+id/progressBar"
     style="?android:attr/progressBarStyleLarge"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_centerHorizontal="true"
     android:layout_centerVertical="true"
     android:visibility="gone" />
-
-  <ImageView
-    android:id="@+id/background_image_view"
-    android:src="@drawable/shell_launch_background_image"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:layout_centerInParent="true"
-    android:adjustViewBounds="true"
-    android:scaleType="fitCenter"
-    android:visibility="gone"
-   />
-
-  <ImageView
-    android:id="@+id/image_view"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_centerHorizontal="true"
-    android:layout_centerVertical="true"
-    android:adjustViewBounds="true"
-    android:maxHeight="200dp"
-    android:maxWidth="200dp"
-    android:scaleType="fitCenter"
-    android:src="@drawable/big_logo_new_filled"
-    android:visibility="gone"/>
-
-  <LinearLayout
-    android:id="@+id/status_bar"
-    android:visibility="gone"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="10dp"
-    android:background="@drawable/loading_status_bar_background"
-    android:layout_alignParentBottom="true">
-    <TextView
-      android:id="@+id/status_text_view"
-      android:textSize="12sp"
-      android:textColor="#a7a7a7"
-      android:layout_weight="1"
-      android:layout_width="0dp"
-      android:layout_height="wrap_content"/>
-
-    <TextView
-      android:id="@+id/percentage_text_view"
-      android:textSize="12sp"
-      android:textColor="#a7a7a7"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"/>
-  </LinearLayout>
 </RelativeLayout>

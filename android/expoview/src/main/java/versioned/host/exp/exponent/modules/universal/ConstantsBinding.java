@@ -4,21 +4,20 @@ package versioned.host.exp.exponent.modules.universal;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.unimodules.interfaces.constants.ConstantsInterface;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.unimodules.interfaces.constants.ConstantsInterface;
+import androidx.annotation.Nullable;
 import expo.modules.constants.ConstantsService;
 import host.exp.exponent.Constants;
-import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExpoViewKernel;
 import host.exp.exponent.kernel.KernelConstants;
@@ -46,16 +45,8 @@ public class ConstantsBinding extends ConstantsService implements ConstantsInter
     mManifest = manifest;
     mExperienceProperties = experienceProperties;
 
-    if (!manifest.has(ExponentManifest.MANIFEST_STATUS_BAR_COLOR)) {
-      int resourceId = mContext.getResources().getIdentifier("status_bar_height", "dimen", "android");
-      if (resourceId > 0) {
-        int statusBarHeightPixels = mContext.getResources().getDimensionPixelSize(resourceId);
-        // Convert from pixels to dip
-        mStatusBarHeight = convertPixelsToDp(statusBarHeightPixels, mContext);
-      }
-    } else {
-      mStatusBarHeight = 0;
-    }
+    int resourceId = mContext.getResources().getIdentifier("status_bar_height", "dimen", "android");
+    mStatusBarHeight = resourceId > 0 ? convertPixelsToDp(mContext.getResources().getDimensionPixelSize(resourceId), mContext) : 0;
   }
 
   @Nullable
@@ -64,7 +55,6 @@ public class ConstantsBinding extends ConstantsService implements ConstantsInter
     Map<String, Object> constants = super.getConstants();
 
     constants.put("expoVersion", ExpoViewKernel.getInstance().getVersionName());
-    constants.put("installationId", mExponentSharedPreferences.getOrCreateUUID());
     constants.put("manifest", mManifest.toString());
     constants.put("nativeAppVersion", ExpoViewKernel.getInstance().getVersionName());
     constants.put("nativeBuildVersion", Constants.ANDROID_VERSION_CODE);
@@ -73,6 +63,7 @@ public class ConstantsBinding extends ConstantsService implements ConstantsInter
     String appOwnership = getAppOwnership();
 
     constants.put("appOwnership", appOwnership);
+    constants.put("executionEnvironment", getExecutionEnvironment().getString());
     constants.putAll(mExperienceProperties);
 
     Map<String, Object> platform = new HashMap<>();
@@ -110,5 +101,19 @@ public class ConstantsBinding extends ConstantsService implements ConstantsInter
     } else {
       return "expo";
     }
+  }
+
+  private ExecutionEnvironment getExecutionEnvironment() {
+    if (Constants.isStandaloneApp()) {
+      return ExecutionEnvironment.STANDALONE;
+    } else {
+      return ExecutionEnvironment.STORE_CLIENT;
+    }
+  }
+
+  @Override
+  public String getOrCreateInstallationId() {
+    // Override scoped installationId from ConstantsService with unscoped
+    return mExponentSharedPreferences.getOrCreateUUID();
   }
 }

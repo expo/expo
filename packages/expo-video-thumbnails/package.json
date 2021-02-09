@@ -1,10 +1,18 @@
 {
   "name": "expo-video-thumbnails",
-  "version": "2.0.0",
+  "version": "5.0.0",
   "description": "ExpoVideoThumbnails standalone module",
   "main": "build/VideoThumbnails.js",
   "types": "build/VideoThumbnails.d.ts",
-  "scripts": {},
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
   "keywords": [
     "react-native",
     "expo",
@@ -12,16 +20,19 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/expo/expo.git"
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-video-thumbnails"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-video-thumbnails",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/video-thumbnails/",
   "peerDependencies": {
-    "@unimodules/core": "~1.0.0"
+    "@unimodules/core": "*"
   },
-  "gitHead": "9518929d6f2ba9cf8e0aae81d34cc1eb52f7093a"
+  "devDependencies": {
+    "expo-module-scripts": "~1.2.0"
+  }
 }

@@ -1,12 +1,127 @@
 ---
 title: Accelerometer
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-sensors'
 ---
 
-Access the device accelerometer sensor(s) to respond to changes in acceleration in 3d space.
+import InstallSection from '~/components/plugins/InstallSection';
+import SnackInline from '~/components/plugins/SnackInline';
+
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
+`Accelerometer` from **`expo-sensors`** provides access to the device accelerometer sensor(s) and associated listeners to respond to changes in acceleration in 3d space, meaning any movement or vibration.
+
+<PlatformsSection android emulator ios web />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-sensors`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sensors).
+<InstallSection packageName="expo-sensors" />
+
+## Usage
+
+<SnackInline label="Basic Accelerometer usage" dependencies={['expo-sensors']}>
+
+```jsx
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Accelerometer } from 'expo-sensors';
+
+export default function App() {
+  const [data, setData] = useState({
+    x: 0,
+    y: 0,
+    z: 0,
+  });
+  const [subscription, setSubscription] = useState(null);
+
+  const _slow = () => {
+    Accelerometer.setUpdateInterval(1000);
+  };
+
+  const _fast = () => {
+    Accelerometer.setUpdateInterval(16);
+  };
+
+  const _subscribe = () => {
+    setSubscription(
+      Accelerometer.addListener(accelerometerData => {
+        setData(accelerometerData);
+      })
+    );
+  };
+
+  const _unsubscribe = () => {
+    subscription && subscription.remove();
+    setSubscription(null);
+  };
+
+  useEffect(() => {
+    _subscribe();
+    return () => _unsubscribe();
+  }, []);
+
+  const { x, y, z } = data;
+  return (
+    <View style={styles.container}>
+      <Text style={styles.text}>Accelerometer: (in Gs where 1 G = 9.81 m s^-2)</Text>
+      <Text style={styles.text}>
+        x: {round(x)} y: {round(y)} z: {round(z)}
+      </Text>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity onPress={subscription ? _unsubscribe : _subscribe} style={styles.button}>
+          <Text>{subscription ? 'On' : 'Off'}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={_slow} style={[styles.button, styles.middleButton]}>
+          <Text>Slow</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={_fast} style={styles.button}>
+          <Text>Fast</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+/* @hide function round() { ... } */
+function round(n) {
+  if (!n) {
+    return 0;
+  }
+  return Math.floor(n * 100) / 100;
+}
+/* @end */
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 10,
+  },
+  text: {
+    textAlign: 'center',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    marginTop: 15,
+  },
+  button: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#eee',
+    padding: 10,
+  },
+  middleButton: {
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
+    borderColor: '#ccc',
+  },
+});
+/* @end */
+```
+
+</SnackInline>
 
 ## API
 
@@ -14,11 +129,15 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 import { Accelerometer } from 'expo-sensors';
 ```
 
+## Methods
+
 ### `Accelerometer.isAvailableAsync()`
 
 > You should always check the sensor availability before attempting to use it.
 
 Returns whether the accelerometer is enabled on the device.
+
+On mobile web, you must first invoke `Permissions.askAsync(Permissions.MOTION)` in a user interaction (i.e. touch event) before you can use this module. If the `status` is not equal to `granted` then you should inform the end user that they may have to open settings.
 
 On **web** this starts a timer and waits to see if an event is fired. This should predict if the iOS device has the **device orientation** API disabled in `Settings > Safari > Motion & Orientation Access`. Some devices will also not fire if the site isn't hosted with **HTTPS** as `DeviceMotion` is now considered a secure API. There is no formal API for detecting the status of `DeviceMotion` so this API can sometimes be unreliable on web.
 
@@ -35,7 +154,7 @@ Subscribe for updates to the accelerometer.
 - **listener (_function_)** -- A callback that is invoked when an
   accelerometer update is available. When invoked, the listener is
   provided a single argument that is an object containing keys x, y,
-  z.
+  z. Each of these keys represents the acceleration along that particular axis in Gs (A G is a unit of gravitational force equal to that exerted by the earth’s gravitational field (9.81 m s<sup>-2</sup>).
 
 #### Returns
 
@@ -54,109 +173,5 @@ Subscribe for updates to the accelerometer.
 
 - **intervalMs (_number_)** Desired interval in milliseconds between
   accelerometer updates.
-
-## Example: basic subscription
-
-```javascript
-import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Accelerometer } from 'expo-sensors';
-
-export default class AccelerometerSensor extends React.Component {
-  state = {
-    accelerometerData: {},
-  };
-
-  componentDidMount() {
-    this._toggle();
-  }
-
-  componentWillUnmount() {
-    this._unsubscribe();
-  }
-
-  _toggle = () => {
-    if (this._subscription) {
-      this._unsubscribe();
-    } else {
-      this._subscribe();
-    }
-  };
-
-  _slow = () => {
-    Accelerometer.setUpdateInterval(1000);
-  };
-
-  _fast = () => {
-    Accelerometer.setUpdateInterval(16);
-  };
-
-  _subscribe = () => {
-    this._subscription = Accelerometer.addListener(accelerometerData => {
-      this.setState({ accelerometerData });
-    });
-  };
-
-  _unsubscribe = () => {
-    this._subscription && this._subscription.remove();
-    this._subscription = null;
-  };
-
-  render() {
-    let { x, y, z } = this.state.accelerometerData;
-    return (
-      <View style={styles.sensor}>
-        <Text>Accelerometer:</Text>
-        <Text>
-          x: {round(x)} y: {round(y)} z: {round(z)}
-        </Text>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity onPress={this._toggle} style={styles.button}>
-            <Text>Toggle</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={this._slow} style={[styles.button, styles.middleButton]}>
-            <Text>Slow</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={this._fast} style={styles.button}>
-            <Text>Fast</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  }
-}
-
-function round(n) {
-  if (!n) {
-    return 0;
-  }
-
-  return Math.floor(n * 100) / 100;
-}
-
-const styles = StyleSheet.create({
-  buttonContainer: {
-    flexDirection: 'row',
-    alignItems: 'stretch',
-    marginTop: 15,
-  },
-  button: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#eee',
-    padding: 10,
-  },
-  middleButton: {
-    borderLeftWidth: 1,
-    borderRightWidth: 1,
-    borderColor: '#ccc',
-  },
-  sensor: {
-    marginTop: 45,
-    paddingHorizontal: 10,
-  },
-});
-```
 
 #

@@ -2,6 +2,9 @@ import { EventEmitter } from '@unimodules/core';
 import { BatteryState, } from './Battery.types';
 import ExpoBattery from './ExpoBattery';
 const BatteryEventEmitter = new EventEmitter(ExpoBattery);
+export async function isAvailableAsync() {
+    return Promise.resolve((ExpoBattery && ExpoBattery.isSupported) || false);
+}
 export async function getBatteryLevelAsync() {
     if (!ExpoBattery.getBatteryLevelAsync) {
         return -1;
@@ -21,14 +24,16 @@ export async function isLowPowerModeEnabledAsync() {
     return await ExpoBattery.isLowPowerModeEnabledAsync();
 }
 export async function getPowerStateAsync() {
-    if (!ExpoBattery.getPowerStateAsync) {
-        return {
-            batteryLevel: -1,
-            batteryState: BatteryState.UNKNOWN,
-            lowPowerMode: false,
-        };
-    }
-    return await ExpoBattery.getPowerStateAsync();
+    const [batteryLevel, batteryState, lowPowerMode] = await Promise.all([
+        getBatteryLevelAsync(),
+        getBatteryStateAsync(),
+        isLowPowerModeEnabledAsync(),
+    ]);
+    return {
+        batteryLevel,
+        batteryState,
+        lowPowerMode,
+    };
 }
 export function addBatteryLevelListener(listener) {
     return BatteryEventEmitter.addListener('Expo.batteryLevelDidChange', listener);

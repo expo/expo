@@ -4,13 +4,17 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.content.SharedPreferences;
 import android.os.Build;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
 import com.facebook.device.yearclass.YearClass;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.commons.io.IOUtils;
 import org.unimodules.core.interfaces.InternalModule;
 import org.unimodules.interfaces.constants.ConstantsInterface;
 
@@ -27,6 +32,24 @@ public class ConstantsService implements InternalModule, ConstantsInterface {
   protected Context mContext;
   protected int mStatusBarHeight = 0;
   private String mSessionId = UUID.randomUUID().toString();
+  private ExponentInstallationId mExponentInstallationId;
+  private static final String CONFIG_FILE_NAME = "app.config";
+
+  public enum ExecutionEnvironment {
+    BARE("bare"),
+    STANDALONE("standalone"),
+    STORE_CLIENT("storeClient");
+
+    private final String mString;
+
+    ExecutionEnvironment(String string) {
+      mString = string;
+    }
+
+    public String getString() {
+      return mString;
+    }
+  }
 
   private static int convertPixelsToDp(float px, Context context) {
     Resources resources = context.getResources();
@@ -38,6 +61,7 @@ public class ConstantsService implements InternalModule, ConstantsInterface {
   public ConstantsService(Context context) {
     super();
     mContext = context;
+    mExponentInstallationId = new ExponentInstallationId(mContext);
 
     int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
 
@@ -58,12 +82,15 @@ public class ConstantsService implements InternalModule, ConstantsInterface {
     Map<String, Object> constants = new HashMap<>();
 
     constants.put("sessionId", mSessionId);
+    constants.put("executionEnvironment", ExecutionEnvironment.BARE.getString());
     constants.put("statusBarHeight", getStatusBarHeight());
     constants.put("deviceYearClass", getDeviceYearClass());
     constants.put("deviceName", getDeviceName());
     constants.put("isDevice", getIsDevice());
     constants.put("systemFonts", getSystemFonts());
     constants.put("systemVersion", getSystemVersion());
+    constants.put("installationId", getOrCreateInstallationId());
+    constants.put("manifest", getAppConfig());
 
     PackageManager packageManager = mContext.getPackageManager();
     try {
@@ -113,6 +140,10 @@ public class ConstantsService implements InternalModule, ConstantsInterface {
     return Build.VERSION.RELEASE;
   }
 
+  public String getOrCreateInstallationId() {
+    return mExponentInstallationId.getOrCreateUUID();
+  }
+  
   public List<String> getSystemFonts() {
     // From https://github.com/dabit3/react-native-fonts
     List<String> result = new ArrayList<>();
@@ -142,5 +173,16 @@ public class ConstantsService implements InternalModule, ConstantsInterface {
       return info.getLongVersionCode();
     }
     return info.versionCode;
+  }
+
+  private @Nullable String getAppConfig() {
+    try (InputStream stream = mContext.getAssets().open(CONFIG_FILE_NAME)) {
+      return IOUtils.toString(stream, StandardCharsets.UTF_8);
+    } catch (FileNotFoundException e) {
+      // do nothing, expected in managed apps
+    } catch (Exception e) {
+      Log.e(TAG, "Error reading embedded app config", e);
+    }
+    return null;
   }
 }

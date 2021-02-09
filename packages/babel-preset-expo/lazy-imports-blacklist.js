@@ -1,5 +1,5 @@
 /**
- * These expo packages may have side-effects and should not be lazy-initialized.
+ * These Expo packages may have side-effects and should not be lazily initialized.
  */
 'use strict';
 

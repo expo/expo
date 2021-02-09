@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BNCDeepLinkViewControllerInstance.h
+../../../Branch/Branch-SDK/BNCDeepLinkViewControllerInstance.h

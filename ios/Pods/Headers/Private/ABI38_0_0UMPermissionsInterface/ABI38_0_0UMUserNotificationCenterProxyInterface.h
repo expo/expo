@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI38_0_0/Expo/UMPermissionsInterface/ABI38_0_0UMPermissionsInterface/ABI38_0_0UMUserNotificationCenterProxyInterface.h

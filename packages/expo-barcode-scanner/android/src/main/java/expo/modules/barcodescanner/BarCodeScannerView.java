@@ -46,6 +46,12 @@ public class BarCodeScannerView extends ViewGroup {
       mOrientationListener.disable();
     }
   }
+  
+  @Override
+  protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    if (mOrientationListener != null) mOrientationListener.disable();
+  }
 
   @Override
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
@@ -68,7 +74,7 @@ public class BarCodeScannerView extends ViewGroup {
     emitter.emit(this.getId(), event);
   }
 
-  public float getDisplayDensity() {
+  private float getDisplayDensity() {
     return this.getResources().getDisplayMetrics().density;
   }
 

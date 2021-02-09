@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI38_0_0/Expo/ExpoKit/Core/UniversalModules/EXNotifications/ABI38_0_0EXScopedNotificationsEmitter.h

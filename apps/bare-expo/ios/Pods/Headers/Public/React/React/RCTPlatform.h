@@ -1,1 +1,0 @@
-../../../../../../../../react-native-lab/react-native/React/Base/RCTPlatform.h

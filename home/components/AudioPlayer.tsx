@@ -1,11 +1,11 @@
+import { Ionicons } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
 import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View, StyleProp, ViewStyle } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
-import { Ionicons } from '@expo/vector-icons';
 
-import Colors from '../constants/Colors';
 import { StyledText } from '../components/Text';
+import Colors from '../constants/Colors';
 
 interface Props {
   isAudioEnabled: boolean;
@@ -32,7 +32,7 @@ type PlaybackState =
 const initialErrorState: ErrorState = null;
 const initialPlaybackState: PlaybackState = { isLoaded: false };
 
-export default function AudioPlayer(props: Props) {
+export default function AudioPlayer({ isAudioEnabled, source, style }: Props) {
   const [error, setError] = useState(initialErrorState);
   const [playback, setPlayback] = useState(initialPlaybackState);
 
@@ -62,19 +62,19 @@ export default function AudioPlayer(props: Props) {
       handlePlaybackStatusUpdate(sound, status);
     });
 
-    sound.loadAsync(props.source, { progressUpdateIntervalMillis: 150 }).catch(setError);
+    sound.loadAsync(source, { progressUpdateIntervalMillis: 150 }).catch(setError);
 
     return () => {
       setPlayback({ isLoaded: false });
       sound.setOnPlaybackStatusUpdate(null);
       sound.unloadAsync();
     };
-  }, [props.source.uri]);
+  }, [source]);
 
-  const isPlayable = props.isAudioEnabled && playback.isLoaded;
+  const isPlayable = isAudioEnabled && playback.isLoaded;
 
   return (
-    <View style={props.style}>
+    <View style={style}>
       <View style={[styles.container, { paddingHorizontal: 12 }]}>
         <AudioPlayButton
           disabled={!isPlayable}

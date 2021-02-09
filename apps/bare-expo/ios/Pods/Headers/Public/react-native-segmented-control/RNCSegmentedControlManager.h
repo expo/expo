@@ -1,0 +1,1 @@
+../../../../../../../node_modules/@react-native-community/segmented-control/ios/RNCSegmentedControlManager.h

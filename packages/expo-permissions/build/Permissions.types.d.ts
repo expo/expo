@@ -1,27 +1,21 @@
-export declare type PermissionType = 'camera' | 'cameraRoll' | 'audioRecording' | 'location' | 'userFacingNotifications' | 'notifications' | 'contacts' | 'calendar' | 'reminders' | 'systemBrightness';
-export declare type PermissionResponse = {
-    status: PermissionStatus;
-    expires: PermissionExpiration;
+import { PermissionResponse as UMPermissionResponse, PermissionStatus, PermissionExpiration } from 'unimodules-permissions-interface';
+export declare type PermissionType = 'camera' | 'cameraRoll' | 'mediaLibrary' | 'mediaLibraryWriteOnly' | 'audioRecording' | 'location' | 'userFacingNotifications' | 'notifications' | 'contacts' | 'calendar' | 'reminders' | 'motion' | 'systemBrightness';
+export interface PermissionResponse extends UMPermissionResponse {
     permissions: PermissionMap;
-};
-export declare type PermissionMap = {
-    [permissionType: string]: PermissionInfo;
-};
-export declare type PermissionInfo = {
-    status: PermissionStatus;
-    expires: PermissionExpiration;
-    ios?: PermissionDetailsLocationIOS;
-    android?: PermissionDetailsLocationAndroid;
-};
-export declare enum PermissionStatus {
-    UNDETERMINED = "undetermined",
-    GRANTED = "granted",
-    DENIED = "denied"
 }
-export declare type PermissionExpiration = 'never' | number;
-export declare type PermissionDetailsLocationIOS = {
-    scope: 'whenInUse' | 'always';
-};
+export interface PermissionMap {
+    [permissionType: string]: PermissionInfo;
+}
+export interface PermissionInfo extends UMPermissionResponse {
+    /**
+     * iOS only - Permission.MEDIA_LIBRARY/MEDIA_LIBRARY_WRITE_ONLY
+     */
+    accessPrivileges?: 'all' | 'limited' | 'none';
+    scope?: 'whenInUse' | 'always' | 'none';
+    android?: PermissionDetailsLocationAndroid;
+}
+export { PermissionStatus };
+export { PermissionExpiration };
 export declare type PermissionDetailsLocationAndroid = {
-    scope: 'fine' | 'coarse' | 'none';
+    accuracy: 'fine' | 'coarse' | 'none';
 };

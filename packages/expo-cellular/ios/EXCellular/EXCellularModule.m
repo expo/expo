@@ -21,11 +21,6 @@ UM_EXPORT_MODULE(ExpoCellular);
   _moduleRegistry = moduleRegistry;
 }
 
-- (dispatch_queue_t)methodQueue
-{
-  return dispatch_get_main_queue();
-}
-
 - (NSDictionary *)constantsToExport
 {
   CTCarrier *carrier = [self carrier];

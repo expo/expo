@@ -1,6 +1,7 @@
-import { ComposeOptions, ComposeResult } from './MailComposer.types';
+import { MailComposerOptions, MailComposerResult } from './MailComposer.types';
 declare const _default: {
     readonly name: string;
-    composeAsync(options: ComposeOptions): Promise<ComposeResult>;
+    composeAsync(options: MailComposerOptions): Promise<MailComposerResult>;
+    isAvailableAsync(): Promise<boolean>;
 };
 export default _default;

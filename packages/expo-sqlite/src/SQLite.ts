@@ -1,24 +1,13 @@
 import './polyfillNextTick';
 
+import customOpenDatabase from '@expo/websql/custom';
+import { NativeModulesProxy } from '@unimodules/core';
 import zipObject from 'lodash/zipObject';
 import { Platform } from 'react-native';
-import { NativeModulesProxy } from '@unimodules/core';
-import customOpenDatabase from '@expo/websql/custom';
+
+import { Query, SQLiteCallback, ResultSet, ResultSetError, WebSQLDatabase } from './SQLite.types';
 
 const { ExponentSQLite } = NativeModulesProxy;
-
-export type Query = { sql: string; args: unknown[] };
-
-export interface ResultSetError {
-  error: Error;
-};
-export interface ResultSet {
-  insertId?: number;
-  rowsAffected: number;
-  rows: Array<{ [column: string]: any }>;
-};
-
-export type SQLiteCallback = (error?: Error | null, resultSet?: Array<ResultSetError | ResultSet>) => void;
 
 class SQLiteDatabase {
   _name: string;
@@ -55,7 +44,7 @@ function _serializeQuery(query: Query): [string, unknown[]] {
 }
 
 function _deserializeResultSet(nativeResult): ResultSet | ResultSetError {
-  let [errorMessage, insertId, rowsAffected, columns, rows] = nativeResult;
+  const [errorMessage, insertId, rowsAffected, columns, rows] = nativeResult;
   // TODO: send more structured error information from the native module so we can better construct
   // a SQLException object
   if (errorMessage !== null) {
@@ -87,7 +76,7 @@ const _openExpoSQLiteDatabase = customOpenDatabase(SQLiteDatabase);
 function addExecMethod(db: any): WebSQLDatabase {
   db.exec = (queries: Query[], readOnly: boolean, callback: SQLiteCallback): void => {
     db._db.exec(queries, readOnly, callback);
-  }
+  };
   return db;
 }
 
@@ -105,11 +94,3 @@ export function openDatabase(
   const dbWithExec = addExecMethod(db);
   return dbWithExec;
 }
-
-export interface WebSQLDatabase {
-  exec(queries: Query[], readOnly: boolean, callback: SQLiteCallback): void;
-}
-
-export default {
-  openDatabase,
-};

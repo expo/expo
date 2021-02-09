@@ -1,12 +1,18 @@
 ---
 title: Constants
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-constants'
 ---
 
-System information that remains constant throughout the lifetime of your app.
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
+**`expo-constants`** provides system information that remains constant throughout the lifetime of your app's install.
+
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-constants`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-constants).
+<InstallSection packageName="expo-constants" />
 
 ## API
 
@@ -14,17 +20,15 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 import Constants from 'expo-constants';
 ```
 
+## Properties
+
 ### `Constants.appOwnership`
 
-Returns `expo`, `standalone`, or `guest`. If `expo`, the experience is running inside of the Expo client. If `standalone`, it is a [standalone app](../../distribution/building-standalone-apps/#building-standalone-apps). If `guest`, it has been opened through a link from a standalone app.
+Returns `expo`, `standalone`, or `guest`. This property only applies to the managed workflow; in bare, the result is always `null`.
 
-### `Constants.expoVersion`
-
-The version string of the Expo client currently running.
-
-### `Constants.installationId`
-
-An identifier that is unique to this particular device and installation of the Expo client.
+- `expo`: The experience is running inside of the Expo Go app.
+- `standalone`: It is a [standalone app](../../../distribution/building-standalone-apps.md#building-standalone-apps).
+- `guest`: It has been opened through a link from a standalone app.
 
 ### `Constants.deviceName`
 
@@ -34,13 +38,27 @@ A human-readable name for the device type.
 
 The [device year class](https://github.com/facebook/device-year-class) of this device.
 
+### `Constants.expoVersion`
+
+The version string of the Expo Go app currently running.
+
 ### `Constants.getWebViewUserAgentAsync()`
 
 Gets the user agent string which would be included in requests sent by a web view running on this device. This is probably not the same user agent you might be providing in your JS `fetch` requests.
 
+### `Constants.installationId`
+
+> ⚠️ **This property is deprecated and will be removed in SDK 43. Please implement it on your own using `expo-application`'s [`androidId`](application.md#applicationandroidid) on Android and a storage API such as [`expo-secure-store`](securestore.md) on iOS and `localStorage` on Web.**
+
+An identifier that is unique to this particular device and installation of the Expo Go app.
+
 ### `Constants.isDevice`
 
 `true` if the app is running on a device, `false` if running in a simulator or emulator.
+
+### `Constants.manifest`
+
+The [manifest](../../../workflow/how-expo-works.md#expo-manifest) object for the app.
 
 ### `Constants.nativeAppVersion`
 
@@ -60,7 +78,7 @@ The `Info.plist` value for `CFBundleVersion` on iOS (set with `ios.buildNumber` 
     In a standalone app, you can set this with the `ios.buildNumber` value in `app.json`. This
     may differ from the value in `Constants.manifest.ios.buildNumber` because the manifest
     can be updated over the air, whereas this value will never change for a given native binary.
-    The value is set to `null` in case you run your app in Expo client.
+    The value is set to `null` in case you run your app in Expo Go.
 
   - `platform`
 
@@ -68,7 +86,7 @@ The `Info.plist` value for `CFBundleVersion` on iOS (set with `ios.buildNumber` 
 
   - `model`
 
-  The human-readable model name of this device, e.g. `iPhone 7 Plus`.
+  The human-readable model name of this device, e.g. `"iPhone 7 Plus"` if it can be determined, otherwise will be `null`.
 
   - `userInterfaceIdiom`
 
@@ -83,7 +101,7 @@ The `Info.plist` value for `CFBundleVersion` on iOS (set with `ios.buildNumber` 
   - `versionCode`
 
     The version code set by `android.versionCode` in app.json.
-    The value is set to `null` in case you run your app in Expo client.
+    The value is set to `null` in case you run your app in Expo Go.
 
 ### `Constants.sessionId`
 
@@ -96,7 +114,3 @@ The default status bar height for the device. Does not factor in changes when lo
 ### `Constants.systemFonts`
 
 A list of the system font names available on the current device.
-
-### `Constants.manifest`
-
-The [manifest](../../workflow/how-expo-works/#expo-manifest) object for the app.

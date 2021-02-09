@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BranchEvent.h
+../../../Branch/Branch-SDK/BranchEvent.h

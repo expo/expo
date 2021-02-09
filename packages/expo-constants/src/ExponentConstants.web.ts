@@ -1,34 +1,55 @@
-import UAParser from 'ua-parser-js';
-import uuidv4 from 'uuid/v4';
-import { PlatformManifest, WebManifest, NativeConstants } from './Constants.types';
-import { CodedError } from '@unimodules/core';
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+import { Platform } from '@unimodules/core';
+import { v4 as uuidv4 } from 'uuid';
 
-function getExpoPackage() {
-  try {
-    return require('expo/package.json');
-  } catch (error) {
-    throw new CodedError('ERR_CONSTANTS', 'expoVersion & expoRuntimeVersion require the expo package to be installed.')
-  }
-}
+import {
+  ExecutionEnvironment,
+  NativeConstants,
+  PlatformManifest,
+  WebManifest,
+} from './Constants.types';
 
-const parser = new UAParser();
 const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
 
-declare var __DEV__: boolean;
-declare var process: { env: any };
-declare var navigator: Navigator;
-declare var location: Location;
-declare var localStorage: Storage;
+declare let __DEV__: boolean;
+declare let process: { env: any };
+declare let navigator: Navigator;
+declare let location: Location;
+declare let localStorage: Storage;
 
 const _sessionId = uuidv4();
+
+function getBrowserName(): string | undefined {
+  if (Platform.isDOMAvailable) {
+    const agent = navigator.userAgent.toLowerCase();
+    if (agent.includes('edge')) {
+      return 'Edge';
+    } else if (agent.includes('edg')) {
+      return 'Chromium Edge';
+    } else if (agent.includes('opr') && !!window['opr']) {
+      return 'Opera';
+    } else if (agent.includes('chrome') && !!window['chrome']) {
+      return 'Chrome';
+    } else if (agent.includes('trident')) {
+      return 'IE';
+    } else if (agent.includes('firefox')) {
+      return 'Firefox';
+    } else if (agent.includes('safari')) {
+      return 'Safari';
+    }
+  }
+
+  return undefined;
+}
 
 export default {
   get name(): string {
     return 'ExponentConstants';
   },
-  get appOwnership(): 'expo' {
-    return 'expo';
+  get appOwnership() {
+    return null;
+  },
+  get executionEnvironment() {
+    return ExecutionEnvironment.Bare;
   },
   get installationId(): string {
     let installationId;
@@ -48,36 +69,34 @@ export default {
     return _sessionId;
   },
   get platform(): PlatformManifest {
-    return { web: canUseDOM ? UAParser(navigator.userAgent) : undefined };
+    return { web: Platform.isDOMAvailable ? { ua: navigator.userAgent } : undefined };
   },
-  get isHeadless(): false {
-    return false;
+  get isHeadless(): boolean {
+    if (!Platform.isDOMAvailable) return true;
+
+    return /\bHeadlessChrome\//.test(navigator.userAgent);
   },
   get isDevice(): true {
     // TODO: Bacon: Possibly want to add information regarding simulators
     return true;
   },
-  get isDetached(): false {
-    return false;
-  },
-  get expoVersion(): string {
-    return getExpoPackage().version;
+  get expoVersion(): string | null {
+    return this.manifest.sdkVersion || null;
   },
   get linkingUri(): string {
-    if (canUseDOM) {
+    if (Platform.isDOMAvailable) {
       // On native this is `exp://`
-      return location.origin + location.pathname;
+      // On web we should use the protocol and hostname (location.origin)
+      return location.origin;
     } else {
       return '';
     }
   },
-  get expoRuntimeVersion(): string {
-    return getExpoPackage().version;
+  get expoRuntimeVersion(): string | null {
+    return this.expoVersion;
   },
   get deviceName(): string | undefined {
-    const { browser, engine, os: OS } = parser.getResult();
-
-    return browser.name || engine.name || OS.name || undefined;
+    return getBrowserName();
   },
   get nativeAppVersion(): null {
     return null;
@@ -102,8 +121,8 @@ export default {
     return process.env.APP_MANIFEST || {};
   },
   get experienceUrl(): string {
-    if (canUseDOM) {
-      return location.origin + location.pathname;
+    if (Platform.isDOMAvailable) {
+      return location.origin;
     } else {
       return '';
     }
@@ -112,7 +131,7 @@ export default {
     return __DEV__;
   },
   async getWebViewUserAgentAsync(): Promise<string | null> {
-    if (canUseDOM) {
+    if (Platform.isDOMAvailable) {
       return navigator.userAgent;
     } else {
       return null;

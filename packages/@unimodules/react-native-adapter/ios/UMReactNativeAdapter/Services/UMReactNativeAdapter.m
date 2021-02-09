@@ -6,12 +6,10 @@
 #import <React/RCTBridge+Private.h>
 #import <React/RCTAppState.h>
 #import <React/RCTImageLoader.h>
-#import <UMImageLoaderInterface/UMImageLoaderInterface.h>
 
 @interface UMReactNativeAdapter ()
 
 @property (nonatomic, weak) RCTBridge *bridge;
-@property (nonatomic, weak) UMNativeModulesProxy *modulesProxy;
 @property (nonatomic, assign) BOOL isForegrounded;
 @property (nonatomic, strong) NSPointerArray *lifecycleListeners;
 
@@ -36,7 +34,7 @@ UM_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@protocol(UMAppLifecycleService), @protocol(UMUIManager), @protocol(UMJavaScriptContextProvider), @protocol(UMImageLoaderInterface)];
+  return @[@protocol(UMAppLifecycleService), @protocol(UMUIManager), @protocol(UMJavaScriptContextProvider)];
 }
 
 # pragma mark - Lifecycle methods
@@ -170,24 +168,23 @@ UM_REGISTER_MODULE();
 {
   if ([_bridge respondsToSelector:@selector(jsContextRef)]) {
     return _bridge.jsContextRef;
-  } else { 
+  } else if (_bridge.runtime) {
     // In react-native 0.59 vm is abstracted by JSI and all JSC specific references are removed
     // To access jsc context we are extracting specific offset in jsi::Runtime, JSGlobalContextRef
     // is first field inside Runtime class and in memory it's preceded only by pointer to virtual method table.
     // WARNING: This is temporary solution that may break with new react-native releases.
     return *(((JSGlobalContextRef *)(_bridge.runtime)) + 1);
   }
+  return nil;
 }
 
-# pragma mark - UMImageLoader
-
-- (void)loadImageForURL:(NSURL *)imageURL
-      completionHandler:(UMImageLoaderCompletionBlock)completionHandler
+- (void *)javaScriptRuntimePointer
 {
-   [_bridge.imageLoader loadImageWithURLRequest:[NSURLRequest requestWithURL:imageURL]
-                                       callback:^(NSError *error, UIImage *loadedImage) {
-                                         completionHandler(error, loadedImage);
-                                       }];
+  if ([_bridge respondsToSelector:@selector(runtime)]) {
+    return _bridge.runtime;
+  } else {
+    return nil;
+  }
 }
 
 # pragma mark - App state observing
@@ -198,8 +195,10 @@ UM_REGISTER_MODULE();
                            UIApplicationDidEnterBackgroundNotification,
                            UIApplicationDidFinishLaunchingNotification,
                            UIApplicationWillResignActiveNotification,
-                           UIApplicationWillEnterForegroundNotification]) {
-    
+                           UIApplicationWillEnterForegroundNotification,
+                           RCTContentDidAppearNotification,
+                           RCTBridgeWillReloadNotification]) {
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleAppStateDidChange:)
                                                  name:name
@@ -209,7 +208,11 @@ UM_REGISTER_MODULE();
 
 - (void)handleAppStateDidChange:(NSNotification *)notification
 {
-  if (
+  if ([notification.name isEqualToString:RCTContentDidAppearNotification]) {
+    [self notifyAboutContentDidAppear];
+  } else if ([notification.name isEqualToString:RCTBridgeWillReloadNotification]) {
+    [self notifyAboutContentWillReload];
+  } else if (
       _isForegrounded && (
        [notification.name isEqualToString:UIApplicationWillResignActiveNotification] ||
        [notification.name isEqualToString:UIApplicationWillEnterForegroundNotification] ||
@@ -240,6 +243,24 @@ UM_REGISTER_MODULE();
     }];
     _isForegrounded = true;
   }
+}
+
+- (void)notifyAboutContentDidAppear
+{
+  [[_lifecycleListeners allObjects] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    if ([obj respondsToSelector:@selector(onAppContentDidAppear)]) {
+      [obj performSelector:@selector(onAppContentDidAppear)];
+    }
+  }];
+}
+
+- (void)notifyAboutContentWillReload
+{
+  [[_lifecycleListeners allObjects] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    if ([obj respondsToSelector:@selector(onAppContentWillReload)]) {
+      [obj performSelector:@selector(onAppContentWillReload)];
+    }
+  }];
 }
 
 - (void)stopObserving

@@ -1,0 +1,1 @@
+../../../ZXingObjC/ZXingObjC/client/result/ZXEmailAddressParsedResult.h

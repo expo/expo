@@ -13,10 +13,6 @@
  * permissions and limitations under the License.
  */
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #import "GoogleMapsDemos/DemoAppDelegate.h"
 
 #import <GoogleMaps/GoogleMaps.h>
@@ -31,7 +27,7 @@
 
 - (BOOL)application:(UIApplication *)application
     didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-  NSLog(@"Build version: %d", __apple_build_version__);
+  NSLog(@"Build version: %s", __VERSION__);
 
   if (kAPIKey.length == 0) {
     // Blow up if APIKey has not yet been set.

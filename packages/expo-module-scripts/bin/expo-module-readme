@@ -58,7 +58,7 @@ function generateREADME() {
   readme = replaceAll('description', description, readme);
 
   if (isIOS) {
-    let podspecs = glob.sync('ios/**/*.podspec');
+    let podspecs = glob.sync('./**/*.podspec');
     let podspecPath = podspecs[0];
     let podName = (() => {
       let parts = podspecPath.split('/');

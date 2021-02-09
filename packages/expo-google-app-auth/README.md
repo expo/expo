@@ -12,7 +12,7 @@ Provides a wrapper around expo-app-auth for Google sign in.
 ### Add the package to your npm dependencies
 
 ```
-npm install expo-google-app-auth
+expo install expo-google-app-auth
 ```
 
 # Contributing

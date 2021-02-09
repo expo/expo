@@ -1,16 +1,22 @@
 ---
 title: AV
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-av'
 ---
 
-The [`Audio.Sound`](../audio/) objects and [`Video`](../video/) components share a unified imperative API for media playback.
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
+The [`Audio.Sound`](audio.md) objects and [`Video`](video.md) components share a unified imperative API for media playback.
 
 Note that for `Video`, all of these operations are also available via props on the component, but we recommend using this imperative playback API for most applications where finer control over the state of the video playback is needed.
 
 Try the [playlist example app](http://expo.io/@community/playlist) (source code is [on GitHub](https://github.com/expo/playlist-example)) to see an example usage of the playback API for both `Audio.Sound` and `Video`.
 
+<PlatformsSection android emulator ios simulator web />
+
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-av`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-av).
+<InstallSection packageName="expo-av" />
 
 ## API
 
@@ -29,14 +35,14 @@ In this page, we reference operations on `playbackObject`s. Here is an example o
 ```javascript
 const playbackObject = new Audio.Sound();
 // OR
-const playbackObject = await Audio.Sound.createAsync(
+const { sound: playbackObject } = await Audio.Sound.createAsync(
   { uri: 'http://foo/bar.mp3' },
   { shouldPlay: true }
 );
 ...
 ```
 
-See the [audio documentation](../audio/) for further information on `Audio.Sound.createAsync()`.
+See the [audio documentation](audio.md) for further information on `Audio.Sound.createAsync()`.
 
 #### Example: `Video`
 
@@ -79,19 +85,19 @@ On the `playbackObject` reference, the following API is provided:
       The `overrideFileExtensionAndroid` property may come in handy if the player receives an URL like `example.com/play` which redirects to `example.com/player.m3u8`. Setting this property to `m3u8` would allow the Android player to properly infer the content type of the media and use proper media file reader.
 
     - `require('path/to/file')` for a media file asset in the source code directory.
-    - An [`Asset`](../asset/) object for a media file asset.
+    - An [`Asset`](asset.md) object for a media file asset.
 
     The [iOS developer documentation](https://developer.apple.com/library/ios/documentation/Miscellaneous/Conceptual/iPhoneOSTechOverview/MediaLayer/MediaLayer.html) lists the audio and video formats supported on iOS.
 
     There are two sets of audio and video formats supported on Android: [formats supported by ExoPlayer](https://google.github.io/ExoPlayer/supported-formats.html) and [formats supported by Android's MediaPlayer](https://developer.android.com/guide/appendix/media-formats.html#formats-table). Expo uses ExoPlayer implementation by default; to use `MediaPlayer`, add `androidImplementation: 'MediaPlayer'` to the initial status of the AV object.
 
-  - **initialStatus (_PlaybackStatusToSet_)** -- The initial intended `PlaybackStatusToSet` of the `playbackObject`, whose values will override the default initial playback status. This value defaults to `{}` if no parameter is passed. See below for details on `PlaybackStatusToSet` and the default initial playback status.
+  - **initialStatus (_AVPlaybackStatusToSet_)** -- The initial intended `AVPlaybackStatusToSet` of the `playbackObject`, whose values will override the default initial playback status. This value defaults to `{}` if no parameter is passed. See below for details on `AVPlaybackStatusToSet` and the default initial playback status.
 
   - **downloadFirst (_boolean_)** -- If set to true, the system will attempt to download the resource to the device before loading. This value defaults to `true`. Note that at the moment, this will only work for `source`s of the form `require('path/to/file')` or `Asset` objects.
 
   #### Returns
 
-  A `Promise` that is fulfilled with the `PlaybackStatus` of the `playbackObject` once it is loaded, or rejects if loading failed. The `Promise` will also reject if the `playbackObject` was already loaded. See below for details on `PlaybackStatus`.
+  A `Promise` that is fulfilled with the `AVPlaybackStatus` of the `playbackObject` once it is loaded, or rejects if loading failed. The `Promise` will also reject if the `playbackObject` was already loaded. See below for details on `AVPlaybackStatus`.
 
 - `playbackObject.unloadAsync()`
 
@@ -99,25 +105,25 @@ On the `playbackObject` reference, the following API is provided:
 
   #### Returns
 
-  A `Promise` that is fulfilled with the `PlaybackStatus` of the `playbackObject` once it is unloaded, or rejects if unloading failed. See below for details on `PlaybackStatus`.
+  A `Promise` that is fulfilled with the `AVPlaybackStatus` of the `playbackObject` once it is unloaded, or rejects if unloading failed. See below for details on `AVPlaybackStatus`.
 
 - `playbackObject.getStatusAsync()`
 
-  Gets the `PlaybackStatus` of the `playbackObject`.
+  Gets the `AVPlaybackStatus` of the `playbackObject`.
 
   #### Returns
 
-  A `Promise` that is fulfilled with the `PlaybackStatus` of the `playbackObject`. See below for details on `PlaybackStatus`.
+  A `Promise` that is fulfilled with the `AVPlaybackStatus` of the `playbackObject`. See below for details on `AVPlaybackStatus`.
 
 - `playbackObject.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate)`
 
-  Sets a function to be called regularly with the `PlaybackStatus` of the `playbackObject`. See below for details on `PlaybackStatus` and an example use case of this function.
+  Sets a function to be called regularly with the `AVPlaybackStatus` of the `playbackObject`. See below for details on `AVPlaybackStatus` and an example use case of this function.
 
   `onPlaybackStatusUpdate` will be called whenever a call to the API for this `playbackObject` completes (such as `setStatusAsync()`, `getStatusAsync()`, or `unloadAsync()`), and will also be called at regular intervals while the media is in the loaded state. Set `progressUpdateIntervalMillis` via `setStatusAsync()` or `setProgressUpdateIntervalAsync()` to modify the interval with which `onPlaybackStatusUpdate` is called while loaded.
 
   #### Parameters
 
-  - **onPlaybackStatusUpdate (_function_)** -- A function taking a single parameter `PlaybackStatus` (a dictionary, described below).
+  - **onPlaybackStatusUpdate (_function_)** -- A function taking a single parameter `AVPlaybackStatus` (a dictionary, described below).
 
 - `playbackObject.replayAsync(statusToSet)`
 
@@ -125,23 +131,23 @@ On the `playbackObject` reference, the following API is provided:
 
   #### Parameters
 
-  - **statusToSet (_PlaybackStatusToSet_)** -- The new `PlaybackStatusToSet` of the `playbackObject`, whose values will override the current playback status. See below for details on `PlaybackStatusToSet`. `positionMillis` and `shouldPlay` properties will be overriden with respectively `0` and `true`.
+  - **statusToSet (_AVPlaybackStatusToSet_)** -- The new `AVPlaybackStatusToSet` of the `playbackObject`, whose values will override the current playback status. See below for details on `AVPlaybackStatusToSet`. `positionMillis` and `shouldPlay` properties will be overriden with respectively `0` and `true`.
 
   #### Returns
 
-  A `Promise` that is fulfilled with the `PlaybackStatus` of the `playbackObject` once the new status has been set successfully, or rejects if setting the new status failed. See below for details on `PlaybackStatus`.
+  A `Promise` that is fulfilled with the `AVPlaybackStatus` of the `playbackObject` once the new status has been set successfully, or rejects if setting the new status failed. See below for details on `AVPlaybackStatus`.
 
 - `playbackObject.setStatusAsync(statusToSet)`
 
-  Sets a new `PlaybackStatusToSet` on the `playbackObject`. This method can only be called if the media has been loaded.
+  Sets a new `AVPlaybackStatusToSet` on the `playbackObject`. This method can only be called if the media has been loaded.
 
   #### Parameters
 
-  - **statusToSet (_PlaybackStatusToSet_)** -- The new `PlaybackStatusToSet` of the `playbackObject`, whose values will override the current playback status. See below for details on `PlaybackStatusToSet`.
+  - **statusToSet (_AVPlaybackStatusToSet_)** -- The new `AVPlaybackStatusToSet` of the `playbackObject`, whose values will override the current playback status. See below for details on `AVPlaybackStatusToSet`.
 
   #### Returns
 
-  A `Promise` that is fulfilled with the `PlaybackStatus` of the `playbackObject` once the new status has been set successfully, or rejects if setting the new status failed. See below for details on `PlaybackStatus`.
+  A `Promise` that is fulfilled with the `AVPlaybackStatus` of the `playbackObject` once the new status has been set successfully, or rejects if setting the new status failed. See below for details on `AVPlaybackStatus`.
 
 The following convenience methods built on top of `setStatusAsync()` are also provided. Each has the same return value as `setStatusAsync()`.
 
@@ -149,19 +155,19 @@ The following convenience methods built on top of `setStatusAsync()` are also pr
 
   This is equivalent to `playbackObject.setStatusAsync({ shouldPlay: true })`.
 
-  Playback may not start immediately after calling this function for reasons such as buffering. Make sure to update your UI based on the `isPlaying` and `isBuffering` properties of the `PlaybackStatus` (described below).
+  Playback may not start immediately after calling this function for reasons such as buffering. Make sure to update your UI based on the `isPlaying` and `isBuffering` properties of the `AVPlaybackStatus` (described below).
 
 - `playbackObject.playFromPositionAsync(millis)`
 
   This is equivalent to `playbackObject.setStatusAsync({ shouldPlay: true, positionMillis: millis })`.
 
-  Playback may not start immediately after calling this function for reasons such as buffering. Make sure to update your UI based on the `isPlaying` and `isBuffering` properties of the `PlaybackStatus` (described below).
+  Playback may not start immediately after calling this function for reasons such as buffering. Make sure to update your UI based on the `isPlaying` and `isBuffering` properties of the `AVPlaybackStatus` (described below).
 
 - `playbackObject.playFromPositionAsync(millis, { toleranceMillisBefore, toleranceMillisAfter })`
 
   This is equivalent to `playbackObject.setStatusAsync({ shouldPlay: true, positionMillis: millis, seekMillisToleranceBefore: toleranceMillisBefore, seekMillisToleranceAfter: toleranceMillisAfter })`. The tolerances are used only on iOS ([more details](#what-is-seek-tolerance-and-why-would-i-want-to-use-it-ios-only)).
 
-  Playback may not start immediately after calling this function for reasons such as buffering. Make sure to update your UI based on the `isPlaying` and `isBuffering` properties of the `PlaybackStatus` (described below).
+  Playback may not start immediately after calling this function for reasons such as buffering. Make sure to update your UI based on the `isPlaying` and `isBuffering` properties of the `AVPlaybackStatus` (described below).
 
   #### Parameters
 
@@ -243,7 +249,7 @@ The following convenience methods built on top of `setStatusAsync()` are also pr
 
 Most of the preceding API calls revolve around passing or returning the _status_ of the `playbackObject`.
 
-- `PlaybackStatus`
+- `AVPlaybackStatus`
 
   This is the structure returned from all playback API calls and describes the state of the `playbackObject` at that point in time. It is a dictionary with the following key-value pairs.
 
@@ -271,7 +277,7 @@ Most of the preceding API calls revolve around passing or returning the _status_
   - `isLooping` : a boolean describing if the media is currently looping.
   - `didJustFinish` : a boolean describing if the media just played to completion at the time that this status was received. When the media plays to completion, the function passed in `setOnPlaybackStatusUpdate()` is called exactly once with `didJustFinish` set to `true`. `didJustFinish` is never `true` in any other case.
 
-- `PlaybackStatusToSet`
+- `AVPlaybackStatusToSet`
 
   This is the structure passed to `setStatusAsync()` to modify the state of the `playbackObject`. It is a dictionary with the following key-value pairs, all of which are optional.
 
@@ -279,7 +285,7 @@ Most of the preceding API calls revolve around passing or returning the _status_
   - `positionMillis` : the desired position of playback in milliseconds.
   - `seekMillisToleranceBefore` : the tolerance in milliseconds with which seek will be applied to the player. _[iOS only, [details](#what-is-seek-tolerance-and-why-would-i-want-to-use-it-ios-only)]_
   - `seekMillisToleranceAfter` : the tolerance in milliseconds with which seek will be applied to the player. _[iOS only, [details](#what-is-seek-tolerance-and-why-would-i-want-to-use-it-ios-only)]_
-  - `shouldPlay` : a boolean describing if the media is supposed to play. Playback may not start immediately after setting this value for reasons such as buffering. Make sure to update your UI based on the `isPlaying` and `isBuffering` properties of the `PlaybackStatus`.
+  - `shouldPlay` : a boolean describing if the media is supposed to play. Playback may not start immediately after setting this value for reasons such as buffering. Make sure to update your UI based on the `isPlaying` and `isBuffering` properties of the `AVPlaybackStatus`.
   - `rate` : the desired playback rate of the media. This value must be between `0.0` and `32.0`. Only available on Android API version 23 and later and iOS.
   - `shouldCorrectPitch` : a boolean describing if we should correct the pitch for a changed rate. If set to `true`, the pitch of the audio will be corrected (so a rate different than `1.0` will timestretch the audio).
   - `pitchCorrectionQuality` : iOS time pitch algorithm setting. Values: `Audio.PitchCorrectionQuality.Low`, `Audio.PitchCorrectionQuality.Medium`, or `Audio.PitchCorrectionQuality.High`.
@@ -292,9 +298,9 @@ Most of the preceding API calls revolve around passing or returning the _status_
 
   Note that `volume` and `isMuted` only affect the audio of this `playbackObject` and do NOT affect the system volume.
 
-### Default initial `PlaybackStatusToSet`
+### Default initial `AVPlaybackStatusToSet`
 
-The default initial `PlaybackStatusToSet` of all `Audio.Sound` objects and `Video` components is as follows:
+The default initial `AVPlaybackStatusToSet` of all `Audio.Sound` objects and `Video` components is as follows:
 
 ```javascript
 {
@@ -315,7 +321,7 @@ This default initial status can be overwritten by setting the optional `initialS
 
 When asked to seek an A/V item, native player in iOS sometimes may seek to a slightly different time. This technique, mentioned in [Apple documentation](https://developer.apple.com/documentation/avfoundation/avplayer/1387741-seek#discussion), is used to shorten the time of the `seekTo` call (the player may decide to play immediately from a different time than requested, instead of decoding the exact requested part and playing it with the decoding delay).
 
-If you matter about the precision more than about the delay, you can specify the tolerance with which the player will seek according to your needs.
+If precision is important, you can specify the tolerance with which the player will seek. However, this will result in an increased delay.
 
 ## Example usage
 

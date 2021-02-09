@@ -1,13 +1,14 @@
 import React from 'react';
 import {
+  ActivityIndicator,
   StyleSheet,
   Text,
   TouchableHighlight,
-  View,
-  ActivityIndicator,
   TouchableHighlightProps,
+  View,
   ViewStyle,
 } from 'react-native';
+
 import Colors from '../constants/Colors';
 
 interface Props extends TouchableHighlightProps {
@@ -33,11 +34,13 @@ const Button: React.FunctionComponent<Props> = ({
       disabled={disabled || loading}
       onPressIn={onPressIn}
       onPress={onPress}
-      underlayColor={Colors.highlightColor}
-    >
-      {children || (
-        loading ? <ActivityIndicator size="small" color="white" /> : <Text style={styles.label}>{title}</Text>
-      )}
+      underlayColor={Colors.highlightColor}>
+      {children ||
+        (loading ? (
+          <ActivityIndicator size="small" color="white" />
+        ) : (
+          <Text style={styles.label}>{title}</Text>
+        ))}
     </TouchableHighlight>
   </View>
 );

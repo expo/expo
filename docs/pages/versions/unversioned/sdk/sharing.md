@@ -1,18 +1,57 @@
 ---
 title: Sharing
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-sharing'
 ---
 
-This module allows sharing files.
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+import Video from '~/components/plugins/Video'
+
+**`expo-sharing`** allows you to share files directly with other compatible applications.
+
+<Video file={"sdk/sharing.mp4"} loop={false} />
+
+<PlatformsSection android emulator ios simulator web />
+
+#### Sharing limitations on web
+
+- `expo-sharing` for web is built on top of the Web Share API, which still has [very limited browser support](https://caniuse.com/#feat=web-share). Be sure to check that the API can be used before calling it by using `Sharing.isAvailableAsync()`.
+- **HTTPS required on web**: The Web Share API is only available on web when the page is served over https. Run your app with `expo start --https` to enable it.
+- **No local file sharing on web**: Sharing local files by URI works on iOS and Android, but not on web. You cannot share local files on web by URI &mdash; you will need to upload them somewhere and share that URI.
+
+#### Sharing to your app from other apps
+
+Currently `expo-sharing` only supports sharing *from your app to other apps* and you cannot register to your app to have content shared to it through the native share dialog on native platforms. You can read more [in the related feature request](https://expo.canny.io/feature-requests/p/share-extension-ios-share-intent-android). If you are using the bare workflow you can build this functionality on your own, but it is not available in the managed workflow.
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-sharing`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sharing).
+<InstallSection packageName="expo-sharing" />
 
 ## API
 
 ```js
 import * as Sharing from 'expo-sharing';
 ```
+
+**[Methods](#methods)**
+
+- [Installation](#installation)
+- [API](#api)
+- [Methods](#methods)
+  - [`Sharing.isAvailableAsync()`](#sharingisavailableasync)
+    - [Returns](#returns)
+  - [`Sharing.shareAsync(url, options)`](#sharingshareasyncurl-options)
+    - [Arguments](#arguments)
+
+## Methods
+
+### `Sharing.isAvailableAsync()`
+
+Determine if the sharing API can be used in this app.
+
+#### Returns
+
+A promise that resolves to `true` if the sharing API can be used, and `false` otherwise.
 
 ### `Sharing.shareAsync(url, options)`
 

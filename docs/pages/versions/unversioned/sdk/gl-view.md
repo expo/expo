@@ -1,12 +1,82 @@
 ---
 title: GLView
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-gl'
 ---
 
-A `View` that acts as an OpenGL ES render target. On mounting, an OpenGL ES context is created. Its drawing buffer is presented as the contents of the `View` every frame.
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+import SnackInline from '~/components/plugins/SnackInline';
+
+**`expo-gl`** provides a `View` that acts as an OpenGL ES render target, useful for rendering 2D and 3D graphics. On mounting, an OpenGL ES context is created. Its drawing buffer is presented as the contents of the `View` every frame.
+
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-gl`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-gl).
+<InstallSection packageName="expo-gl" />
+
+## Usage
+
+<SnackInline label='Basic GL usage' dependencies={['expo-gl']}>
+
+```js
+import React from 'react';
+import { View } from 'react-native';
+import { GLView } from 'expo-gl';
+
+export default function App() {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <GLView style={{ width: 300, height: 300 }} onContextCreate={onContextCreate} />
+    </View>
+  );
+}
+
+function onContextCreate(gl) {
+  gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+  gl.clearColor(0, 1, 1, 1);
+
+  // Create vertex shader (shape & position)
+  const vert = gl.createShader(gl.VERTEX_SHADER);
+  gl.shaderSource(
+    vert,
+    `
+    void main(void) {
+      gl_Position = vec4(0.0, 0.0, 0.0, 1.0);
+      gl_PointSize = 150.0;
+    }
+  `
+  );
+  gl.compileShader(vert);
+
+  // Create fragment shader (color)
+  const frag = gl.createShader(gl.FRAGMENT_SHADER);
+  gl.shaderSource(
+    frag,
+    `
+    void main(void) {
+      gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+    }
+  `
+  );
+  gl.compileShader(frag);
+
+  // Link together into a program
+  const program = gl.createProgram();
+  gl.attachShader(program, vert);
+  gl.attachShader(program, frag);
+  gl.linkProgram(program);
+  gl.useProgram(program);
+
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.drawArrays(gl.POINTS, 0, 1);
+
+  gl.flush();
+  gl.endFrameEXP();
+}
+```
+
+</SnackInline>
 
 ## API
 
@@ -14,23 +84,23 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 import { GLView } from 'expo-gl';
 ```
 
-### props
+## Props
 
 Other than the regular `View` props for layout and touch handling, the following props are available:
 
-- **onContextCreate**
+### `onContextCreate`
 
-  A function that will be called when the OpenGL ES context is created. The function is passed a single argument `gl` that has a [WebGLRenderingContext](https://www.khronos.org/registry/webgl/specs/latest/1.0/#5.14) interface.
+A function that will be called when the OpenGL ES context is created. The function is passed a single argument `gl` that has a [WebGLRenderingContext](https://www.khronos.org/registry/webgl/specs/latest/1.0/#5.14) interface.
 
-- **msaaSamples**
+### `msaaSamples`
 
-  `GLView` can enable iOS's built-in [multisampling](https://www.khronos.org/registry/OpenGL/extensions/APPLE/APPLE_framebuffer_multisample.txt). This prop specifies the number of samples to use. By default this is 4. Setting this to 0 turns off multisampling. On Android this is ignored.
+`GLView` can enable iOS's built-in [multisampling](https://www.khronos.org/registry/OpenGL/extensions/APPLE/APPLE_framebuffer_multisample.txt). This prop specifies the number of samples to use. By default this is 4. Setting this to 0 turns off multisampling. On Android this is ignored.
 
 ## Methods
 
 ### `takeSnapshotAsync(options)`
 
-Same as [GLView.takeSnapshotAsync](#expoglviewtakesnapshotasyncgl-options) but uses WebGL context that is associated with the view on which the method is called.
+Same as [GLView.takeSnapshotAsync](#glviewtakesnapshotasyncgl-options) but uses WebGL context that is associated with the view on which the method is called.
 
 ## Static methods
 
@@ -67,8 +137,10 @@ Takes a snapshot of the framebuffer and saves it as a file to app's cache direct
   - **framebuffer (_WebGLFramebuffer_)** -- Specify the framebuffer that we will be reading from. Defaults to underlying framebuffer that is presented in the view or the current framebuffer if context is headless.
   - **rect (`{ x: number, y: number, width: number, height: number }`)** -- Rect to crop the snapshot. It's passed directly to `glReadPixels`.
   - **flip (_boolean_)** -- Whether to flip the snapshot vertically. Defaults to `false`.
-  - **format (_string_)** -- Either `'jpeg'` or `'png'`. Specifies what type of compression should be used and what is the result file extension. PNG compression is lossless but slower, JPEG is faster but the image has visible artifacts. Defaults to `'jpeg'`.
+  - **format (_string_)** -- Either `'jpeg'`, `'png'` or `'webp'` (_Android only_ for the latter). Specifies what type of compression should be used and what is the result file extension. PNG compression is lossless but slower, JPEG is faster but the image has visible artifacts. Defaults to `'jpeg'`.
   - **compress (_number_)** -- A value in range 0 - 1 specifying compression level of the result image. 1 means no compression and 0 the highest compression. Defaults to `1.0`.
+
+> **Note:** When using WebP format, the iOS version will print a warning, and generate a `'png'` file instead. It is recommendable to use platform dependant code in this case. You can refer to the [documentation on platform specifi code](https://docs.expo.io/versions/latest/react-native/platform-specific-code/).
 
 #### Returns
 

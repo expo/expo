@@ -31,54 +31,8 @@ export async function openURLAsync(url: string): Promise<void> {
   }
 }
 
-export type KernelDevMenuItem = {
-  label: string;
-  isEnabled: boolean;
-  detail?: string;
-};
-
-export async function doesCurrentTaskEnableDevtoolsAsync(): Promise<boolean> {
-  return await NativeKernel.doesCurrentTaskEnableDevtools();
-}
-
-export function addDevMenu(): void {
-  NativeKernel.addDevMenu();
-}
-
-export async function getDevMenuItemsToShowAsync(): Promise<{ [key: string]: KernelDevMenuItem }> {
-  return await NativeKernel.getDevMenuItemsToShow();
-}
-
-export function selectDevMenuItemWithKey(key: string): void {
-  NativeKernel.selectDevMenuItemWithKey(key);
-}
-
-export function selectRefresh(): void {
-  NativeKernel.selectRefresh();
-}
-
-export function selectCloseMenu(): void {
-  NativeKernel.selectCloseMenu();
-}
-
-export function selectGoToHome(): void {
-  NativeKernel.selectGoToHome();
-}
-
 export function selectQRReader(): void {
   NativeKernel.selectQRReader();
-}
-
-export async function setLegacyMenuBehaviorEnabledAsync(enabled: boolean): Promise<void> {
-  await NativeKernel.setIsLegacyMenuBehaviorEnabledAsync(enabled);
-}
-
-export async function isNuxFinishedAsync(): Promise<boolean> {
-  return await NativeKernel.getIsNuxFinishedAsync();
-}
-
-export async function setNuxFinishedAsync(finished: boolean): Promise<void> {
-  await NativeKernel.setIsNuxFinishedAsync(finished);
 }
 
 export type KernelSession = {

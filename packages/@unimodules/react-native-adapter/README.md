@@ -22,7 +22,7 @@ If you're using Cocoapods, add the dependency to your `Podfile`:
 
 `pod 'UMReactNativeAdapter', path: '../node_modules/@unimodules/react-native-adapter/ios', inhibit_warnings: true`
 
-and run `pod install`.
+and run `npx pod-install`.
 
 ### Android
 
@@ -63,7 +63,7 @@ and run `pod install`.
    ```objc
    - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
    {
-       NSArray<id<RCTBridgeModule>> *extraModules = [_moduleRegistryAdapter extraModulesForBridge:bridge andExperience:nil];
+       NSArray<id<RCTBridgeModule>> *extraModules = [_moduleRegistryAdapter extraModulesForBridge:bridge];
        // If you'd like to export some custom RCTBridgeModules that are not Expo modules, add them here!
        return extraModules;
    }
@@ -76,6 +76,12 @@ and run `pod install`.
 7. When initializing `RCTBridge`, make the `AppDelegate` a delegate of the bridge:
    ```objc
    RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
+   ```
+
+   or, if you use `react-native-navigation`, add the `bridgeManagerDelegate` parameter of `self`, like:
+   ```diff
+   -[ReactNativeNavigation bootstrap:jsCodeLocation launchOptions:launchOptions];
+   +[ReactNativeNavigation bootstrap:jsCodeLocation launchOptions:launchOptions bridgeManagerDelegate:self];
    ```
 8. That's it! All in all, your `AppDelegate.m` should look similar to:
 
@@ -118,7 +124,7 @@ and run `pod install`.
 
    - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
    {
-       NSArray<id<RCTBridgeModule>> *extraModules = [_moduleRegistryAdapter extraModulesForBridge:bridge andExperience:nil];
+       NSArray<id<RCTBridgeModule>> *extraModules = [_moduleRegistryAdapter extraModulesForBridge:bridge];
        // If you'd like to export some custom RCTBridgeModules that are not universal modules, add them here!
        return extraModules;
    }

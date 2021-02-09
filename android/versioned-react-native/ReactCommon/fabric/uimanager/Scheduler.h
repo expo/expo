@@ -1,26 +1,27 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #pragma once
 
 #include <memory>
 #include <mutex>
 
+#include <react/components/root/RootComponentDescriptor.h>
 #include <react/config/ReactNativeConfig.h>
 #include <react/core/ComponentDescriptor.h>
 #include <react/core/LayoutConstraints.h>
 #include <react/uimanager/ComponentDescriptorFactory.h>
 #include <react/uimanager/ComponentDescriptorRegistry.h>
-#include <react/uimanager/ContextContainer.h>
 #include <react/uimanager/SchedulerDelegate.h>
-#include <react/uimanager/ShadowTree.h>
-#include <react/uimanager/ShadowTreeDelegate.h>
-#include <react/uimanager/ShadowTreeRegistry.h>
+#include <react/uimanager/SchedulerToolbox.h>
 #include <react/uimanager/UIManagerBinding.h>
 #include <react/uimanager/UIManagerDelegate.h>
-#include <react/uimanager/primitives.h>
+#include <react/utils/ContextContainer.h>
+#include <react/utils/RuntimeExecutor.h>
 
 namespace facebook {
 namespace react {
@@ -28,11 +29,9 @@ namespace react {
 /*
  * Scheduler coordinates Shadow Tree updates and event flows.
  */
-class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
+class Scheduler final : public UIManagerDelegate {
  public:
-  Scheduler(
-      const SharedContextContainer &contextContainer,
-      ComponentRegistryFactory buildRegistryFunction);
+  Scheduler(SchedulerToolbox schedulerToolbox, SchedulerDelegate *delegate);
   ~Scheduler();
 
 #pragma mark - Surface Management
@@ -67,12 +66,24 @@ class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
       const LayoutConstraints &layoutConstraints,
       const LayoutContext &layoutContext) const;
 
+  /*
+   * This is broken. Please do not use.
+   * `ComponentDescriptor`s are not designed to be used outside of `UIManager`,
+   * there is no any garantees about their lifetime.
+   */
+  ComponentDescriptor const *
+  findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(
+      ComponentHandle handle) const;
+
+  MountingCoordinator::Shared findMountingCoordinator(
+      SurfaceId surfaceId) const;
+
 #pragma mark - Delegate
 
   /*
    * Sets and gets the Scheduler's delegate.
-   * The delegate is stored as a raw pointer, so the owner must null
-   * the pointer before being destroyed.
+   * If you requesting a ComponentDescriptor and unsure that it's there, you are
+   * doing something wrong.
    */
   void setDelegate(SchedulerDelegate *delegate);
   SchedulerDelegate *getDelegate() const;
@@ -80,27 +91,27 @@ class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
 #pragma mark - UIManagerDelegate
 
   void uiManagerDidFinishTransaction(
-      SurfaceId surfaceId,
-      const SharedShadowNodeUnsharedList &rootChildNodes,
-      long startCommitTime) override;
+      MountingCoordinator::Shared const &mountingCoordinator) override;
   void uiManagerDidCreateShadowNode(
-      const SharedShadowNode &shadowNode) override;
-
-#pragma mark - ShadowTreeDelegate
-
-  void shadowTreeDidCommit(
-      const ShadowTree &shadowTree,
-      const ShadowViewMutationList &mutations,
-      long commitStartTime,
-      long layoutTime) const override;
+      const ShadowNode::Shared &shadowNode) override;
+  void uiManagerDidDispatchCommand(
+      const ShadowNode::Shared &shadowNode,
+      std::string const &commandName,
+      folly::dynamic const args) override;
+  void uiManagerDidSetJSResponder(
+      SurfaceId surfaceId,
+      const ShadowNode::Shared &shadowView,
+      bool blockNativeResponder) override;
+  void uiManagerDidClearJSResponder() override;
 
  private:
   SchedulerDelegate *delegate_;
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
-  ShadowTreeRegistry shadowTreeRegistry_;
+  std::unique_ptr<const RootComponentDescriptor> rootComponentDescriptor_;
   RuntimeExecutor runtimeExecutor_;
-  std::shared_ptr<UIManagerBinding> uiManagerBinding_;
+  std::shared_ptr<UIManager> uiManager_;
   std::shared_ptr<const ReactNativeConfig> reactNativeConfig_;
+  EventDispatcher::Shared eventDispatcher_;
 };
 
 } // namespace react

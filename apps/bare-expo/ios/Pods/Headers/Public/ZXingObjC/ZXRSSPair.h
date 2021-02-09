@@ -1,0 +1,1 @@
+../../../ZXingObjC/ZXingObjC/oned/rss/ZXRSSPair.h

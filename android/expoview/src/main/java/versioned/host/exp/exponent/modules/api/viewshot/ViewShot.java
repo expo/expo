@@ -8,9 +8,9 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.net.Uri;
-import android.support.annotation.IntDef;
-import android.support.annotation.NonNull;
-import android.support.annotation.StringDef;
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.StringDef;
 import android.util.Base64;
 import android.util.Log;
 import android.view.TextureView;
@@ -478,7 +478,7 @@ public class ViewShot implements UIBlock {
     private static Bitmap getBitmapForScreenshot(final int width, final int height) {
         synchronized (guardBitmaps) {
             for (final Bitmap bmp : weakBitmaps) {
-                if (bmp.getWidth() >= width && bmp.getHeight() >= height) {
+                if (bmp.getWidth() == width && bmp.getHeight() == height) {
                     weakBitmaps.remove(bmp);
                     bmp.eraseColor(Color.TRANSPARENT);
                     return bmp;

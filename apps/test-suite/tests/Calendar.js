@@ -31,19 +31,22 @@ async function getCalendarByIdAsync(calendarId) {
 async function pickCalendarSourceIdAsync() {
   if (Platform.OS === 'ios') {
     const sources = await Calendar.getSourcesAsync();
-    return sources && sources[0] && sources[0].id;
+    const mainSource = sources.find(source => source.name === 'iCloud') || sources[0];
+    return mainSource && mainSource.id;
   }
 }
 
-async function createTestEventAsync(calendarId) {
+async function createTestEventAsync(calendarId, customArgs = {}) {
   return await Calendar.createEventAsync(calendarId, {
     title: 'App.js Conference',
     startDate: +new Date(2019, 3, 4), // 4th April 2019, months are counted from 0
     endDate: +new Date(2019, 3, 5), // 5th April 2019
+    timeZone: 'Europe/Warsaw',
     allDay: true,
     location: 'Qubus Hotel, Nadwiślańska 6, 30-527 Kraków, Poland',
     notes: 'The very first Expo & React Native conference in Europe',
     availability: Calendar.Availability.BUSY,
+    ...customArgs,
   });
 }
 
@@ -60,14 +63,6 @@ async function createTestAttendeeAsync(eventId) {
 async function getAttendeeByIdAsync(eventId, attendeeId) {
   const attendees = await Calendar.getAttendeesForEventAsync(eventId);
   return attendees.find(attendee => attendee.id === attendeeId);
-}
-
-async function createTestReminderAsync(calendarId) {
-  return await Calendar.createReminderAsync(calendarId, {
-    title: 'Reminder to buy a ticket',
-    startDate: new Date(2019, 3, 3, 9, 0, 0),
-    dueDate: new Date(2019, 3, 3, 23, 59, 59),
-  });
 }
 
 export async function test(t) {
@@ -97,7 +92,7 @@ export async function test(t) {
     }
     if (Platform.OS === 'android') {
       t.expect(typeof calendar.isPrimary).toBe('boolean');
-      t.expect(typeof calendar.name).toBe('string');
+      calendar.name && t.expect(typeof calendar.name).toBe('string');
       t.expect(typeof calendar.ownerAccount).toBe('string');
       calendar.timeZone && t.expect(typeof calendar.timeZone).toBe('string');
 
@@ -159,8 +154,12 @@ export async function test(t) {
 
   function testCalendarSourceShape(source) {
     t.expect(source).toBeDefined();
-    t.expect(typeof source.name).toBe('string');
     t.expect(typeof source.type).toBe('string');
+
+    if (source.name !== null) {
+      // source.name can be null if it refers to the local (unnamed) calendar.
+      t.expect(typeof source.name).toBe('string');
+    }
 
     if (Platform.OS === 'ios') {
       t.expect(typeof source.id).toBe('string');
@@ -190,16 +189,6 @@ export async function test(t) {
     }
   }
 
-  function testReminderShape(reminder) {
-    t.expect(reminder).toBeDefined();
-    t.expect(typeof reminder.id).toBe('string');
-    t.expect(typeof reminder.calendarId).toBe('string');
-    t.expect(typeof reminder.title).toBe('string');
-    // t.expect(typeof reminder.startDate).toBe('string');
-    // t.expect(typeof reminder.dueDate).toBe('string');
-    t.expect(typeof reminder.completed).toBe('boolean');
-  }
-
   function expectMethodsToReject(methods) {
     for (const methodName of methods) {
       t.describe(`${methodName}()`, () => {
@@ -218,9 +207,9 @@ export async function test(t) {
   }
 
   describeWithPermissions('Calendar', () => {
-    t.describe('requestPermissionsAsync()', () => {
+    t.describe('requestCalendarPermissionsAsync()', () => {
       t.it('requests for Calendar permissions', async () => {
-        const results = await Calendar.requestPermissionsAsync();
+        const results = await Calendar.requestCalendarPermissionsAsync();
 
         t.expect(results.granted).toBe(true);
         t.expect(results.status).toBe('granted');
@@ -260,6 +249,18 @@ export async function test(t) {
           testCalendarShape(calendar);
         }
       });
+
+      if (Platform.OS === 'ios') {
+        t.it('returns an array of calendars for reminders', async () => {
+          const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.REMINDER);
+
+          t.expect(Array.isArray(calendars)).toBeTruthy();
+
+          for (const calendar of calendars) {
+            t.expect(calendar.entityType).toBe(Calendar.EntityTypes.REMINDER);
+          }
+        });
+      }
 
       t.afterAll(async () => {
         await Calendar.deleteCalendarAsync(calendarId);
@@ -312,6 +313,32 @@ export async function test(t) {
         t.expect(eventId).toBeDefined();
         t.expect(typeof eventId).toBe('string');
       });
+
+      t.it('creates an event with the recurrence rule', async () => {
+        const eventId = await createTestEventAsync(calendarId, {
+          recurrenceRule: {
+            endDate: new Date(2019, 3, 5),
+            frequency: 'daily',
+            interval: 1,
+          },
+        });
+
+        t.expect(eventId).toBeDefined();
+        t.expect(typeof eventId).toBe('string');
+      });
+
+      if (Platform.OS === 'ios') {
+        t.it('rejects when time zone is invalid', async () => {
+          let error;
+          try {
+            await createTestEventAsync(calendarId, { timeZone: '' });
+          } catch (e) {
+            error = e;
+          }
+          t.expect(error).toBeDefined();
+          t.expect(error.code).toBe('E_EVENT_INVALID_TIMEZONE');
+        });
+      }
 
       t.afterAll(async () => {
         await Calendar.deleteCalendarAsync(calendarId);
@@ -491,148 +518,15 @@ export async function test(t) {
         });
       });
     } else {
-      expectMethodsToReject([
-        'createAttendeeAsync',
-        'updateAttendeeAsync',
-        'deleteAttendeeAsync',
-      ]);
+      expectMethodsToReject(['createAttendeeAsync', 'updateAttendeeAsync', 'deleteAttendeeAsync']);
     }
 
     if (Platform.OS === 'ios') {
-      t.describe('requestRemindersPermissionsAsync()', () => {
-        t.it('requests for Reminders permissions', async () => {
-          const results = await Calendar.requestRemindersPermissionsAsync();
+      t.describe('getDefaultCalendarAsync()', () => {
+        t.it('get default calendar', async () => {
+          const calendar = await Calendar.getDefaultCalendarAsync();
 
-          t.expect(results.granted).toBe(true);
-          t.expect(results.status).toBe('granted');
-        });
-      });
-
-      t.describe('createReminderAsync()', () => {
-        let calendarId;
-
-        t.beforeAll(async () => {
-          calendarId = await createTestCalendarAsync({
-            entityType: Calendar.EntityTypes.REMINDER,
-          });
-        });
-
-        t.it('creates a reminder', async () => {
-          const reminderId = await createTestReminderAsync(calendarId);
-
-          t.expect(reminderId).toBeDefined();
-          t.expect(typeof reminderId).toBe('string');
-        });
-
-        t.afterAll(async () => {
-          await Calendar.deleteCalendarAsync(calendarId);
-        });
-      });
-
-      t.describe('getRemindersAsync()', () => {
-        let calendarId, reminderId;
-
-        t.beforeAll(async () => {
-          calendarId = await createTestCalendarAsync({
-            entityType: Calendar.EntityTypes.REMINDER,
-          });
-          reminderId = await createTestReminderAsync(calendarId);
-        });
-
-        t.it('returns an array of reminders', async () => {
-          const reminders = await Calendar.getRemindersAsync(
-            [calendarId],
-            Calendar.ReminderStatus.INCOMPLETE,
-            new Date(2019, 3, 2),
-            new Date(2019, 3, 5)
-          );
-
-          t.expect(Array.isArray(reminders)).toBe(true);
-          t.expect(reminders.length).toBe(1);
-          t.expect(reminders[0].id).toBe(reminderId);
-          testReminderShape(reminders[0]);
-        });
-
-        t.afterAll(async () => {
-          await Calendar.deleteCalendarAsync(calendarId);
-        });
-      });
-
-      t.describe('getReminderAsync()', () => {
-        let calendarId, reminderId;
-
-        t.beforeAll(async () => {
-          calendarId = await createTestCalendarAsync({
-            entityType: Calendar.EntityTypes.REMINDER,
-          });
-          reminderId = await createTestReminderAsync(calendarId);
-        });
-
-        t.it('returns an array of reminders', async () => {
-          const reminder = await Calendar.getReminderAsync(reminderId);
-
-          t.expect(reminder).toBeDefined();
-          t.expect(reminder.id).toBe(reminderId);
-          testReminderShape(reminder);
-        });
-
-        t.afterAll(async () => {
-          await Calendar.deleteCalendarAsync(calendarId);
-        });
-      });
-
-      t.describe('updateReminderAsync()', () => {
-        let calendarId, reminderId;
-
-        t.beforeAll(async () => {
-          calendarId = await createTestCalendarAsync({
-            entityType: Calendar.EntityTypes.REMINDER,
-          });
-          reminderId = await createTestReminderAsync(calendarId);
-        });
-
-        t.it('updates a reminder', async () => {
-          const newUrl = 'https://appjs.co';
-          const updatedReminderId = await Calendar.updateReminderAsync(reminderId, {
-            url: newUrl,
-          });
-          const reminder = await Calendar.getReminderAsync(updatedReminderId);
-
-          t.expect(updatedReminderId).toBe(reminderId);
-          t.expect(reminder.url).toBe(newUrl);
-        });
-
-        t.afterAll(async () => {
-          await Calendar.deleteCalendarAsync(calendarId);
-        });
-      });
-
-      t.describe('deleteReminderAsync()', () => {
-        let calendarId, reminderId;
-
-        t.beforeAll(async () => {
-          calendarId = await createTestCalendarAsync({
-            entityType: Calendar.EntityTypes.REMINDER,
-          });
-          reminderId = await createTestReminderAsync(calendarId);
-        });
-
-        t.it('deletes a reminder', async () => {
-          await Calendar.deleteReminderAsync(reminderId);
-          let error;
-
-          try {
-            await Calendar.getReminderAsync(reminderId);
-          } catch (e) {
-            error = e;
-          }
-          t.expect(error).toBeDefined();
-          t.expect(error instanceof Error).toBe(true);
-          t.expect(error.code).toBe('E_REMINDER_NOT_FOUND');
-        });
-
-        t.afterAll(async () => {
-          await Calendar.deleteCalendarAsync(calendarId);
+          testCalendarShape(calendar);
         });
       });
 
@@ -645,12 +539,6 @@ export async function test(t) {
       });
     } else {
       expectMethodsToReject([
-        'requestRemindersPermissionsAsync',
-        'getRemindersAsync',
-        'getReminderAsync',
-        'createReminderAsync',
-        'updateReminderAsync',
-        'deleteReminderAsync',
         'getSourcesAsync',
       ]);
     }

@@ -2,23 +2,25 @@
 
 package host.exp.exponent.experience;
 
-import android.content.DialogInterface;
+import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.Settings;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
+import android.os.Process;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.internal.BundleJSONConverter;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
+import com.facebook.react.modules.core.PermissionAwareActivity;
+import com.facebook.react.modules.core.PermissionListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,10 +35,15 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
-import host.exp.exponent.LoadingView;
+import host.exp.exponent.experience.splashscreen.LoadingView;
 import host.exp.exponent.RNObject;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
@@ -48,10 +55,10 @@ import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.kernel.KernelProvider;
 import host.exp.exponent.kernel.services.ErrorRecoveryManager;
 import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry;
-import host.exp.exponent.kernel.services.SplashScreenKernelService;
 import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.exponent.storage.ExponentSharedPreferences;
-import host.exp.exponent.utils.JSONBundleConverter;
+import host.exp.exponent.utils.ExperienceActivityUtils;
+import host.exp.exponent.utils.ScopedPermissionsRequester;
 import host.exp.expoview.Exponent;
 import host.exp.expoview.R;
 import versioned.host.exp.exponent.ExponentPackage;
@@ -60,10 +67,21 @@ import static host.exp.exponent.kernel.KernelConstants.INTENT_URI_KEY;
 import static host.exp.exponent.kernel.KernelConstants.IS_HEADLESS_KEY;
 import static host.exp.exponent.kernel.KernelConstants.LINKING_URI_KEY;
 import static host.exp.exponent.kernel.KernelConstants.MANIFEST_URL_KEY;
+import static host.exp.exponent.utils.ScopedPermissionsRequester.EXPONENT_PERMISSIONS_REQUEST;
 
-public abstract class ReactNativeActivity extends FragmentActivity implements com.facebook.react.modules.core.DefaultHardwareBackBtnHandler {
+public abstract class ReactNativeActivity extends AppCompatActivity implements com.facebook.react.modules.core.DefaultHardwareBackBtnHandler, PermissionAwareActivity {
 
   public static class ExperienceDoneLoadingEvent {
+    private Activity mActivity;
+
+    ExperienceDoneLoadingEvent(Activity activity) {
+      super();
+      mActivity = activity;
+    }
+
+    public Activity getActivity() {
+      return mActivity;
+    }
   }
 
   // Override
@@ -88,7 +106,6 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
 
   protected RNObject mReactInstanceManager = new RNObject("com.facebook.react.ReactInstanceManager");
   protected boolean mIsCrashed = false;
-  protected boolean mShouldDestroyRNInstanceOnExit = true;
 
   protected String mManifestUrl;
   protected String mExperienceIdString;
@@ -101,24 +118,33 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   protected String mDetachSdkVersion;
 
   protected RNObject mReactRootView;
-  private FrameLayout mLayout;
-  private FrameLayout mContainer;
-  private LoadingView mLoadingView;
-  private Handler mHandler = new Handler();
-  private Handler mLoadingHandler = new Handler();
   private DoubleTapReloadRecognizer mDoubleTapReloadRecognizer;
-  private SplashScreenKernelService mSplashScreenKernelService;
   protected boolean mIsLoading = true;
   protected String mJSBundlePath;
   protected JSONObject mManifest;
   protected boolean mIsInForeground = false;
   protected static Queue<ExponentError> sErrorQueue = new LinkedList<>();
 
+  private ScopedPermissionsRequester mScopedPermissionsRequester;
+
   @Inject
   protected ExponentSharedPreferences mExponentSharedPreferences;
 
   @Inject
   ExpoKernelServiceRegistry mExpoKernelServiceRegistry;
+
+  private FrameLayout mContainerView;
+  /**
+   * This view is optional and available only when the app runs in Expo Go.
+   */
+  @Nullable private LoadingView mLoadingView;
+  private FrameLayout mReactContainerView;
+
+  private Handler mHandler = new Handler();
+
+  protected boolean shouldCreateLoadingView() {
+    return !Constants.isStandaloneApp() || Constants.SHOW_LOADING_VIEW_IN_SHELL_APP;
+  }
 
   public boolean isLoading() {
     return mIsLoading;
@@ -140,150 +166,145 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(null);
 
-    mLayout = new FrameLayout(this);
-    setContentView(mLayout);
+    mContainerView = new FrameLayout(this);
+    setContentView(mContainerView);
 
-    mContainer = new FrameLayout(this);
-    mLayout.addView(mContainer);
-    mLoadingView = new LoadingView(this);
-    if (!Constants.isStandaloneApp() || Constants.SHOW_LOADING_VIEW_IN_SHELL_APP) {
-      mContainer.setBackgroundColor(ContextCompat.getColor(this, R.color.splashBackground));
-      mLayout.addView(mLoadingView);
+    mReactContainerView = new FrameLayout(this);
+    mContainerView.addView(mReactContainerView);
+
+    if (this.shouldCreateLoadingView()) {
+      mContainerView.setBackgroundColor(ContextCompat.getColor(this, R.color.splashscreen_background));
+      mLoadingView = new LoadingView(this);
+      mLoadingView.show();
+      mContainerView.addView(mLoadingView);
     }
 
     mDoubleTapReloadRecognizer = new DoubleTapReloadRecognizer();
     Exponent.initialize(this, getApplication());
     NativeModuleDepsProvider.getInstance().inject(ReactNativeActivity.class, this);
-    mSplashScreenKernelService = mExpoKernelServiceRegistry.getSplashScreenKernelService();
 
     // Can't call this here because subclasses need to do other initialization
     // before their listener methods are called.
     // EventBus.getDefault().registerSticky(this);
   }
 
-  protected void setView(final View view) {
-    mContainer.removeAllViews();
-    if (Constants.isStandaloneApp() && Constants.SHOW_LOADING_VIEW_IN_SHELL_APP) {
-      ViewGroup.LayoutParams layoutParams = mContainer.getLayoutParams();
-      layoutParams.height = 0;
-      mContainer.setLayoutParams(layoutParams);
-    }
-    addView(view);
+  protected void setReactRootView(final View reactRootView) {
+    mReactContainerView.removeAllViews();
+    addReactViewToContentContainer(reactRootView);
   }
 
-  protected void addView(final View view) {
-    removeViewFromParent(view);
-    mContainer.addView(view);
+  public void addReactViewToContentContainer(final View reactView) {
+    if (reactView.getParent() != null) {
+      ((ViewGroup) reactView.getParent()).removeView(reactView);
+    }
+    mReactContainerView.addView(reactView);
   }
 
-  protected void removeViewFromParent(final View view) {
-    if (view.getParent() != null) {
-      ((FrameLayout) view.getParent()).removeView(view);
+  public boolean hasReactView(final View reactView) {
+    return reactView.getParent() == mReactContainerView;
+  }
+
+  protected void hideLoadingView() {
+    if (mLoadingView != null) {
+      ViewGroup viewGroup = (ViewGroup) mLoadingView.getParent();
+      if (viewGroup != null) {
+        viewGroup.removeView(mLoadingView);
+      }
+      mLoadingView.hide();
+      mLoadingView = null;
     }
   }
 
-  protected void stopLoading() {
-    if (!mIsLoading || !canHideLoadingScreen()) {
-      return;
-    }
+  protected void removeAllViewsFromContainer() {
+    mContainerView.removeAllViews();
+  }
+
+  // region Loading
+
+  /**
+   * Successfully finished loading
+   */
+  @UiThread
+  protected void finishLoading() {
+    waitForReactAndFinishLoading();
+  }
+
+  /**
+   * There was an error during loading phase
+   */
+  protected void interruptLoading() {
     mHandler.removeCallbacksAndMessages(null);
-    hideLoadingScreen();
   }
 
-  protected void updateLoadingProgress(String status, Integer done, Integer total) {
-    if (!mIsLoading) {
-      showLoadingScreen(mManifest);
-    }
-    mLoadingView.updateProgress(status, done, total);
-  }
-
-  protected void removeViews() {
-    mContainer.removeAllViews();
-  }
-
-  // Loop until a view is added to the React root view.
-  protected void checkForReactViews() {
+  // Loop until a view is added to the ReactRootView and once it happens run callback
+  private void waitForReactRootViewToHaveChildrenAndRunCallback(Runnable callback) {
     if (mReactRootView.isNull()) {
       return;
     }
-
     if ((int) mReactRootView.call("getChildCount") > 0) {
-      if (canHideLoadingScreen()) {
-        fadeLoadingScreen();
-      }
-      onDoneLoading();
-      ErrorRecoveryManager.getInstance(mExperienceId).markExperienceLoaded();
-
-      pollForEventsToSendToRN();
+      callback.run();
     } else {
-      mHandler.postDelayed(new Runnable() {
-        @Override
-        public void run() {
-          checkForReactViews();
-        }
-      }, VIEW_TEST_INTERVAL_MS);
+      mHandler.postDelayed(() -> waitForReactRootViewToHaveChildrenAndRunCallback(callback), VIEW_TEST_INTERVAL_MS);
     }
   }
 
-  public void showLoadingScreen(JSONObject manifest) {
-    mLoadingView.setManifest(manifest);
-    mLoadingView.setShowIcon(true);
-    mLoadingView.clearAnimation();
-    mLoadingView.setAlpha(1.0f);
-    mIsLoading = true;
-  }
-
-  private void fadeLoadingScreen() {
-    if (!mIsLoading) {
-      return;
+  /**
+   * Waits for JS side of React to be launched and then performs final launching actions.
+   */
+  protected void waitForReactAndFinishLoading() {
+    if (Constants.isStandaloneApp() && Constants.SHOW_LOADING_VIEW_IN_SHELL_APP) {
+      ViewGroup.LayoutParams layoutParams = mContainerView.getLayoutParams();
+      layoutParams.height = FrameLayout.LayoutParams.MATCH_PARENT;
+      mContainerView.setLayoutParams(layoutParams);
     }
-    runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        hideLoadingScreen();
-        EventBus.getDefault().post(new ExperienceDoneLoadingEvent());
+    this.waitForReactRootViewToHaveChildrenAndRunCallback(() -> {
+      onDoneLoading();
+
+      try {
+        ExperienceActivityUtils.setRootViewBackgroundColor(mManifest, getRootView());
+      } catch (Exception e) {
+        EXL.e(TAG, e);
       }
+
+      ErrorRecoveryManager.getInstance(mExperienceId).markExperienceLoaded();
+      pollForEventsToSendToRN();
+      EventBus.getDefault().post(new ExperienceDoneLoadingEvent(this));
+      mIsLoading = false;
     });
   }
 
-  private void hideLoadingScreen() {
-    if (Constants.isStandaloneApp() && Constants.SHOW_LOADING_VIEW_IN_SHELL_APP) {
-      ViewGroup.LayoutParams layoutParams = mContainer.getLayoutParams();
-      layoutParams.height = mLayout.getHeight();
-      mContainer.setLayoutParams(layoutParams);
+  // endregion
+
+  // region SplashScreen
+
+  /**
+   * Get what version (among versioned classes) of ReactRootView.class SplashScreen module should be looking for.
+   */
+  protected Class<? extends ViewGroup> getRootViewClass(final JSONObject manifest) {
+    if (mReactRootView.rnClass() != null) {
+      return mReactRootView.rnClass();
     }
 
-    if (mLoadingView != null && mLoadingView.getParent() == mLayout) {
-      mLoadingView.setAlpha(0.0f);
-      mLoadingView.setShowIcon(false);
-      mLoadingView.setDoneLoading();
+    String sdkVersion = manifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
+    if (Constants.TEMPORARY_ABI_VERSION != null && Constants.TEMPORARY_ABI_VERSION.equals(mSDKVersion)) {
+      sdkVersion = RNObject.UNVERSIONED;
     }
-
-    mSplashScreenKernelService.reset();
-    mIsLoading = false;
-    mLoadingHandler.removeCallbacksAndMessages(null);
+    sdkVersion = Constants.isStandaloneApp() ? RNObject.UNVERSIONED : sdkVersion;
+    return new RNObject("com.facebook.react.ReactRootView").loadVersion(sdkVersion).rnClass();
   }
 
-  private boolean canHideLoadingScreen() {
-    return (!mSplashScreenKernelService.isAppLoadingStarted() || mSplashScreenKernelService.isAppLoadingFinished()) && mSplashScreenKernelService.shouldAutoHide();
-  }
+  // endregion
 
   @Override
   public boolean onKeyUp(int keyCode, KeyEvent event) {
     if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed) {
-      if (keyCode == KeyEvent.KEYCODE_MENU) {
-        mReactInstanceManager.call("showDevOptionsDialog");
-        return true;
-      }
-      RNObject devSupportManager = mReactInstanceManager.callRecursive("getDevSupportManager");
+      RNObject devSupportManager = getDevSupportManager();
       if (devSupportManager != null && (boolean) devSupportManager.call("getDevSupportEnabled")) {
         boolean didDoubleTapR = Assertions.assertNotNull(mDoubleTapReloadRecognizer)
-            .didDoubleTapR(keyCode, getCurrentFocus());
+          .didDoubleTapR(keyCode, getCurrentFocus());
+
         if (didDoubleTapR) {
-          // The loading screen is hidden by versioned code when reloading JS so we can't show it
-          // on older sdks.
-          showLoadingScreen(mManifest);
-          devSupportManager.call("handleReloadJS");
+          devSupportManager.call("reloadExpoApp");
           return true;
         }
       }
@@ -328,12 +349,9 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   protected void onDestroy() {
     super.onDestroy();
 
-    if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed && mShouldDestroyRNInstanceOnExit) {
-      mReactInstanceManager.call("destroy");
-    }
+    destroyReactInstanceManager();
 
     mHandler.removeCallbacksAndMessages(null);
-    mLoadingHandler.removeCallbacksAndMessages(null);
     EventBus.getDefault().unregister(this);
   }
 
@@ -355,27 +373,10 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     return ExponentManifest.isDebugModeEnabled(mManifest);
   }
 
-  protected void waitForDrawOverOtherAppPermission(String jsBundlePath) {
-    mJSBundlePath = jsBundlePath;
-
-    if (isDebugModeEnabled() && Exponent.getInstance().shouldRequestDrawOverOtherAppsPermission()) {
-      new AlertDialog.Builder(this)
-          .setTitle("Please enable \"Permit drawing over other apps\"")
-          .setMessage("Click \"ok\" to open settings. Press the back button once you've enabled the setting.")
-          .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-              Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                  Uri.parse("package:" + getPackageName()));
-              startActivityForResult(intent, KernelConstants.OVERLAY_PERMISSION_REQUEST_CODE);
-            }
-          })
-          .setCancelable(false)
-          .show();
-
-      return;
+  protected void destroyReactInstanceManager() {
+    if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed) {
+      mReactInstanceManager.call("destroy");
     }
-
-    startReactInstance();
   }
 
   @Override
@@ -409,10 +410,10 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
 
     String linkingUri = getLinkingUri();
     Map<String, Object> experienceProperties = MapBuilder.<String, Object>of(
-        MANIFEST_URL_KEY, mManifestUrl,
-        LINKING_URI_KEY, linkingUri,
-        INTENT_URI_KEY, mIntentUri,
-        IS_HEADLESS_KEY, false
+      MANIFEST_URL_KEY, mManifestUrl,
+      LINKING_URI_KEY, linkingUri,
+      INTENT_URI_KEY, mIntentUri,
+      IS_HEADLESS_KEY, false
     );
 
     Exponent.InstanceManagerBuilderProperties instanceManagerBuilderProperties = new Exponent.InstanceManagerBuilderProperties();
@@ -426,6 +427,12 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
 
     RNObject versionedUtils = new RNObject("host.exp.exponent.VersionedUtils").loadVersion(mSDKVersion);
     RNObject builder = versionedUtils.callRecursive("getReactInstanceManagerBuilder", instanceManagerBuilderProperties);
+
+    // This used to not be called prior to SDK 36
+    builder.call("setCurrentActivity", this);
+
+    // ReactNativeInstance is considered to be resumed when it has its activity attached, which is expected to be the case here
+    builder.call("setInitialLifecycleState", RNObject.versionedEnum(mSDKVersion, "com.facebook.react.common.LifecycleState", "RESUMED"));
 
     if (extraNativeModules != null) {
       for (Object nativeModule : extraNativeModules) {
@@ -442,11 +449,11 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
       devLoadingView.callRecursive("setDevLoadingEnabled", false);
 
       RNObject devBundleDownloadListener = new RNObject("host.exp.exponent.ExponentDevBundleDownloadListener")
-          .loadVersion(mSDKVersion)
-          .construct(progressListener);
+        .loadVersion(mSDKVersion)
+        .construct(progressListener);
       builder.callRecursive("setDevBundleDownloadListener", devBundleDownloadListener.get());
     } else {
-      checkForReactViews();
+      waitForReactAndFinishLoading();
     }
 
     Bundle bundle = new Bundle();
@@ -461,10 +468,9 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     }
 
     try {
-      exponentProps.put("manifest", mManifest);
+      exponentProps.put("manifestString", mManifest.toString());
       exponentProps.put("shell", mIsShellApp);
       exponentProps.put("initialUri", mIntentUri == null ? null : mIntentUri.toString());
-      exponentProps.put("errorRecovery", ErrorRecoveryManager.getInstance(mExperienceId).popRecoveryProps());
     } catch (JSONException e) {
       EXL.e(TAG, e);
     }
@@ -474,7 +480,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
       if (metadata.has(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS)) {
         try {
           exponentProps.put(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS,
-              metadata.getJSONArray(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS));
+            metadata.getJSONArray(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS));
         } catch (JSONException e) {
           e.printStackTrace();
         }
@@ -501,7 +507,11 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
       mExponentSharedPreferences.updateExperienceMetadata(mExperienceIdString, metadata);
     }
 
-    bundle.putBundle("exp", JSONBundleConverter.JSONToBundle(exponentProps));
+    try {
+      bundle.putBundle("exp", BundleJSONConverter.convertToBundle(exponentProps));
+    } catch (JSONException e) {
+      throw new Error("JSONObject failed to be converted to Bundle", e);
+    }
 
     if (!delegate.isInForeground()) {
       return new RNObject("com.facebook.react.ReactInstanceManager");
@@ -513,15 +523,15 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     if (devSettings != null) {
       devSettings.setField("exponentActivityId", mActivityId);
       if ((boolean) devSettings.call("isRemoteJSDebugEnabled")) {
-        checkForReactViews();
+        waitForReactAndFinishLoading();
       }
     }
 
     mReactInstanceManager.onHostResume(this, this);
     mReactRootView.call("startReactApplication",
-        mReactInstanceManager.get(),
-        mManifest.optString(ExponentManifest.MANIFEST_APP_KEY_KEY, KernelConstants.DEFAULT_APPLICATION_KEY),
-        initialProps(bundle));
+      mReactInstanceManager.get(),
+      mManifest.optString(ExponentManifest.MANIFEST_APP_KEY_KEY, KernelConstants.DEFAULT_APPLICATION_KEY),
+      initialProps(bundle));
 
     return mReactInstanceManager;
   }
@@ -567,7 +577,6 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   }
 
   public void onEvent(BaseExperienceActivity.ExperienceContentLoaded event) {
-    fadeLoadingScreen();
   }
 
   private void pollForEventsToSendToRN() {
@@ -579,7 +588,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
       RNObject rctDeviceEventEmitter = new RNObject("com.facebook.react.modules.core.DeviceEventManagerModule$RCTDeviceEventEmitter");
       rctDeviceEventEmitter.loadVersion(mDetachSdkVersion);
       RNObject existingEmitter = mReactInstanceManager.callRecursive("getCurrentReactContext")
-          .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass());
+        .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass());
 
       if (existingEmitter != null) {
         Set<KernelConstants.ExperienceEvent> events = KernelProvider.getInstance().consumeExperienceEvents(mManifestUrl);
@@ -593,6 +602,55 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     }
   }
 
+  // for getting global permission
+  @Override
+  public int checkSelfPermission(String permission) {
+    return super.checkPermission(permission, Process.myPid(), Process.myUid());
+  }
+
+  @Override
+  public boolean shouldShowRequestPermissionRationale(@NonNull String permission) {
+    // in scoped application we don't have `don't ask again` button
+    if (!Constants.isStandaloneApp() && checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED) {
+      return true;
+    }
+    return super.shouldShowRequestPermissionRationale(permission);
+  }
+
+  @Override
+  public void requestPermissions(final String[] permissions, final int requestCode, final PermissionListener listener) {
+    if (requestCode == EXPONENT_PERMISSIONS_REQUEST) {
+      mScopedPermissionsRequester = new ScopedPermissionsRequester(mExperienceId);
+      mScopedPermissionsRequester.requestPermissions(this, mManifest.optString(ExponentManifest.MANIFEST_NAME_KEY), permissions, listener);
+    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      super.requestPermissions(permissions, requestCode);
+    }
+  }
+
+
+  @Override
+  public void onRequestPermissionsResult(final int requestCode, final String[] permissions, @NonNull final int[] grantResults) {
+    if (requestCode == EXPONENT_PERMISSIONS_REQUEST) {
+      if (permissions.length > 0 && grantResults.length == permissions.length && mScopedPermissionsRequester != null) {
+        mScopedPermissionsRequester.onRequestPermissionsResult(permissions, grantResults);
+        mScopedPermissionsRequester = null;
+      }
+    } else {
+      super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+  }
+
+  // for getting scoped permission
+  @Override
+  public int checkPermission(final String permission, final int pid, final int uid) {
+    int globalResult = super.checkPermission(permission, pid, uid);
+    return mExpoKernelServiceRegistry.getPermissionsKernelService().getPermissions(globalResult, getPackageManager(), permission, mExperienceId);
+  }
+
+  public RNObject getDevSupportManager() {
+    return mReactInstanceManager.callRecursive("getDevSupportManager");
+  }
+
   // deprecated in favor of Expo.Linking.makeUrl
   // TODO: remove this
   private String getLinkingUri() {
@@ -602,7 +660,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
       Uri uri = Uri.parse(mManifestUrl);
       String host = uri.getHost();
       if (host != null && (host.equals("exp.host") || host.equals("expo.io") || host.equals("exp.direct") || host.equals("expo.test") ||
-          host.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(".exp.direct") || host.endsWith(".expo.test"))) {
+        host.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(".exp.direct") || host.endsWith(".expo.test"))) {
         List<String> pathSegments = uri.getPathSegments();
         Uri.Builder builder = uri.buildUpon();
         builder.path(null);

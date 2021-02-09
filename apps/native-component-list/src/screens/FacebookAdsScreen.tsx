@@ -1,12 +1,11 @@
 import * as FacebookAds from 'expo-ads-facebook';
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Switch } from 'react-native';
+import { ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 
 import Colors from '../constants/Colors';
 
 const {
   NativeAdsManager,
-  AdSettings,
   InterstitialAdManager,
   BannerAd,
   withNativeAd,
@@ -16,16 +15,14 @@ const {
   AdOptionsView,
 } = FacebookAds;
 
+const DEMO_NATIVE_AD_ID = 'VID_HD_16_9_15S_APP_INSTALL#YOUR_PLACEMENT_ID';
+const DEMO_INTERSTITIAL_AD_ID = 'VID_HD_16_9_15S_APP_INSTALL#YOUR_PLACEMENT_ID';
+const DEMO_BANNER_AD_ID = 'IMG_16_9_APP_INSTALL#YOUR_PLACEMENT_ID';
+
 let adsManager: FacebookAds.NativeAdsManager | null = null;
 
 try {
-  AdSettings.addTestDevice(AdSettings.currentDeviceHash);
-} catch (e) {
-  // AdSettings may not be available, shrug
-}
-
-try {
-  adsManager = new NativeAdsManager('629712900716487_629713604049750');
+  adsManager = new NativeAdsManager(DEMO_NATIVE_AD_ID);
 } catch (e) {
   // CTKNativeAdManager may be undefined too
 }
@@ -62,12 +59,16 @@ class ChangingFullAd extends React.Component<
           </Text>
           <Switch
             value={this.state.expanded}
-            onValueChange={() => this.setState({ expanded: !this.state.expanded })}
+            onValueChange={() => this.setState(state => ({ expanded: !state.expanded }))}
           />
         </View>
-        <AdOptionsView iconSize={40} iconColor="#ff0000" style={{
-          backgroundColor: 'white',
-        }} />
+        <AdOptionsView
+          iconSize={40}
+          iconColor="#ff0000"
+          style={{
+            backgroundColor: 'white',
+          }}
+        />
         <View style={styles.nativeRow}>
           <AdIconView style={styles.iconView} />
           <View style={styles.nativeColumn}>
@@ -116,14 +117,14 @@ export default class App extends React.Component {
   };
 
   showFullScreenAd = () => {
-    InterstitialAdManager.showAd('629712900716487_662948944059549')
+    InterstitialAdManager.showAd(DEMO_INTERSTITIAL_AD_ID)
       .then(didClick => {
         console.log(didClick);
       })
       .catch(err => {
         console.log(err);
       });
-  }
+  };
 
   onBannerAdPress = () => console.log('Ad clicked!');
 
@@ -137,7 +138,7 @@ export default class App extends React.Component {
         <Text style={styles.header}>Banner Ad</Text>
         <BannerAd
           type="large"
-          placementId="629712900716487_662949307392846"
+          placementId={DEMO_BANNER_AD_ID}
           onPress={this.onBannerAdPress}
           onError={this.onBannerAdError}
         />

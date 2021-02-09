@@ -1,18 +1,20 @@
+import { CodedError, RCTDeviceEventEmitter, UnavailabilityError } from '@unimodules/core';
 import Constants from 'expo-constants';
 import { EventEmitter } from 'fbemitter';
 import invariant from 'invariant';
-import { AsyncStorage, Platform } from 'react-native';
-import { CodedError, RCTDeviceEventEmitter, UnavailabilityError } from '@unimodules/core';
+import { Platform } from 'react-native';
 import ExponentNotifications from './ExponentNotifications';
+import Storage from './Storage';
 let _emitter;
 let _initialNotification;
-function _maybeInitEmitter() {
+function _getEventEmitter() {
     if (!_emitter) {
         _emitter = new EventEmitter();
-        RCTDeviceEventEmitter.addListener('Exponent.notification', _emitNotification);
+        RCTDeviceEventEmitter.addListener('Exponent.notification', emitNotification);
     }
+    return _emitter;
 }
-function _emitNotification(notification) {
+export function emitNotification(notification) {
     if (typeof notification === 'string') {
         notification = JSON.parse(notification);
     }
@@ -26,7 +28,8 @@ function _emitNotification(notification) {
             // It's actually just a string, that's fine
         }
     }
-    _emitter.emit('notification', notification);
+    const emitter = _getEventEmitter();
+    emitter.emit('notification', notification);
 }
 function _processNotification(notification) {
     notification = Object.assign({}, notification);
@@ -68,13 +71,13 @@ function _validateNotification(notification) {
         invariant(!!notification.title, 'Local notifications on Android require a title');
     }
 }
-let ASYNC_STORAGE_PREFIX = '__expo_internal_channel_';
+const ASYNC_STORAGE_PREFIX = '__expo_internal_channel_';
 // TODO: remove this before releasing
 // this will always be `true` for SDK 28+
-let IS_USING_NEW_BINARY = typeof ExponentNotifications.createChannel === 'function';
+const IS_USING_NEW_BINARY = ExponentNotifications && typeof ExponentNotifications.createChannel === 'function';
 async function _legacyReadChannel(id) {
     try {
-        let channelString = await AsyncStorage.getItem(`${ASYNC_STORAGE_PREFIX}${id}`);
+        const channelString = await Storage.getItem(`${ASYNC_STORAGE_PREFIX}${id}`);
         if (channelString) {
             return JSON.parse(channelString);
         }
@@ -83,15 +86,15 @@ async function _legacyReadChannel(id) {
     return null;
 }
 function _legacyDeleteChannel(id) {
-    return AsyncStorage.removeItem(`${ASYNC_STORAGE_PREFIX}${id}`);
+    return Storage.removeItem(`${ASYNC_STORAGE_PREFIX}${id}`);
 }
 if (Platform.OS === 'android') {
-    AsyncStorage.clear = async function (callback) {
+    Storage.clear = async function (callback) {
         try {
-            let keys = await AsyncStorage.getAllKeys();
+            const keys = await Storage.getAllKeys();
             if (keys && keys.length) {
-                let filteredKeys = keys.filter(key => !key.startsWith(ASYNC_STORAGE_PREFIX));
-                await AsyncStorage.multiRemove(filteredKeys);
+                const filteredKeys = keys.filter(key => !key.startsWith(ASYNC_STORAGE_PREFIX));
+                await Storage.multiRemove(filteredKeys);
             }
             callback && callback();
         }
@@ -104,7 +107,7 @@ if (Platform.OS === 'android') {
 // This codepath will never be triggered in SDK 28 and above
 // TODO: remove before releasing
 function _legacySaveChannel(id, channel) {
-    return AsyncStorage.setItem(`${ASYNC_STORAGE_PREFIX}${id}`, JSON.stringify(channel));
+    return Storage.setItem(`${ASYNC_STORAGE_PREFIX}${id}`, JSON.stringify(channel));
 }
 export default {
     /* Only used internally to initialize the notification from top level props */
@@ -112,8 +115,10 @@ export default {
         _initialNotification = notification;
     },
     // User passes set of actions titles.
-    createCategoryAsync(categoryId, actions) {
-        return ExponentNotifications.createCategoryAsync(categoryId, actions);
+    createCategoryAsync(categoryId, actions, previewPlaceholder) {
+        return Platform.OS === 'ios'
+            ? ExponentNotifications.createCategoryAsync(categoryId, actions, previewPlaceholder)
+            : ExponentNotifications.createCategoryAsync(categoryId, actions);
     },
     deleteCategoryAsync(categoryId) {
         return ExponentNotifications.deleteCategoryAsync(categoryId);
@@ -161,7 +166,7 @@ export default {
     /* Shows a notification instantly */
     async presentLocalNotificationAsync(notification) {
         _validateNotification(notification);
-        let nativeNotification = _processNotification(notification);
+        const nativeNotification = _processNotification(notification);
         if (Platform.OS !== 'android') {
             return await ExponentNotifications.presentLocalNotification(nativeNotification);
         }
@@ -194,7 +199,7 @@ export default {
         const now = Date.now();
         // Validate and process the notification data
         _validateNotification(notification);
-        let nativeNotification = _processNotification(notification);
+        const nativeNotification = _processNotification(notification);
         // Validate `options.time`
         if (options.time) {
             let timeAsDateObj = null;
@@ -295,15 +300,15 @@ export default {
     },
     /* Primary public api */
     addListener(listener) {
-        _maybeInitEmitter();
+        const emitter = _getEventEmitter();
         if (_initialNotification) {
             const initialNotification = _initialNotification;
             _initialNotification = null;
             setTimeout(() => {
-                _emitNotification(initialNotification);
+                emitNotification(initialNotification);
             }, 0);
         }
-        return _emitter.addListener('notification', listener);
+        return emitter.addListener('notification', listener);
     },
     async getBadgeNumberAsync() {
         if (!ExponentNotifications.getBadgeNumberAsync) {
@@ -328,13 +333,17 @@ export default {
         if (!areOptionsValid) {
             throw new CodedError('WRONG_OPTIONS', 'Options in scheduleNotificationWithCalendarAsync call were incorrect!');
         }
-        return ExponentNotifications.scheduleNotificationWithCalendar(notification, options);
+        _validateNotification(notification);
+        const nativeNotification = _processNotification(notification);
+        return ExponentNotifications.scheduleNotificationWithCalendar(nativeNotification, options);
     },
     async scheduleNotificationWithTimerAsync(notification, options) {
         if (options.interval < 1) {
             throw new CodedError('WRONG_OPTIONS', 'Interval must be not less then 1');
         }
-        return ExponentNotifications.scheduleNotificationWithTimer(notification, options);
+        _validateNotification(notification);
+        const nativeNotification = _processNotification(notification);
+        return ExponentNotifications.scheduleNotificationWithTimer(nativeNotification, options);
     },
 };
 function isInRangeInclusive(variable, min, max) {

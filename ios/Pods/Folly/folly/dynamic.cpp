@@ -1,11 +1,11 @@
 /*
- * Copyright 2011-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-#include <numeric>
-
 #include <folly/dynamic.h>
 
+#include <numeric>
+
+#include <glog/logging.h>
+
 #include <folly/Format.h>
+#include <folly/container/Enumerate.h>
 #include <folly/hash/Hash.h>
 #include <folly/lang/Assume.h>
 #include <folly/lang/Exception.h>
@@ -61,16 +64,6 @@ TypeError::TypeError(
           expected,
           dynamic::typeName(actual1),
           dynamic::typeName(actual2))) {}
-
-TypeError::TypeError(const TypeError&) noexcept(
-    std::is_nothrow_copy_constructible<std::runtime_error>::value) = default;
-TypeError& TypeError::operator=(const TypeError&) noexcept(
-    std::is_nothrow_copy_assignable<std::runtime_error>::value) = default;
-TypeError::TypeError(TypeError&&) noexcept(
-    std::is_nothrow_move_constructible<std::runtime_error>::value) = default;
-TypeError& TypeError::operator=(TypeError&&) noexcept(
-    std::is_nothrow_move_assignable<std::runtime_error>::value) = default;
-TypeError::~TypeError() = default;
 
 // This is a higher-order preprocessor macro to aid going from runtime
 // types to the compile time type system.
@@ -299,12 +292,12 @@ std::size_t dynamic::hash() const {
       // Accumulate using addition instead of using hash_range (as in the ARRAY
       // case), as we need a commutative hash operation since unordered_map's
       // iteration order is unspecified.
-      auto h = std::hash<std::pair<dynamic, dynamic>>{};
+      auto h = std::hash<std::pair<dynamic const, dynamic>>{};
       return std::accumulate(
           items().begin(),
           items().end(),
           size_t{0x0B1EC7},
-          [&](auto acc, auto item) { return acc + h(item); });
+          [&](auto acc, auto const& item) { return acc + h(item); });
     }
     case ARRAY:
       return folly::hash::hash_range(begin(), end());
@@ -368,46 +361,112 @@ dynamic dynamic::merge_diff(const dynamic& source, const dynamic& target) {
   return diff;
 }
 
-const dynamic* dynamic::get_ptr(json_pointer const& jsonPtr) const& {
+// clang-format off
+dynamic::resolved_json_pointer<dynamic const>
+// clang-format on
+dynamic::try_get_ptr(json_pointer const& jsonPtr) const& {
+  using err_code = json_pointer_resolution_error_code;
+  using error = json_pointer_resolution_error<dynamic const>;
+
   auto const& tokens = jsonPtr.tokens();
   if (tokens.empty()) {
-    return this;
+    return json_pointer_resolved_value<dynamic const>{
+        nullptr, this, {nullptr, nullptr}, 0};
   }
-  dynamic const* dyn = this;
-  for (auto const& token : tokens) {
-    if (!dyn) {
+
+  dynamic const* curr = this;
+  dynamic const* prev = nullptr;
+
+  size_t curr_idx{0};
+  StringPiece curr_key{};
+
+  for (auto it : enumerate(tokens)) {
+    // hit bottom but pointer not exhausted yet
+    if (!curr) {
+      return makeUnexpected(
+          error{err_code::json_pointer_out_of_bounds, it.index, prev});
+    }
+    prev = curr;
+    // handle lookup in array
+    if (auto const* parray = curr->get_nothrow<dynamic::Array>()) {
+      if (it->size() > 1 && it->at(0) == '0') {
+        return makeUnexpected(
+            error{err_code::index_has_leading_zero, it.index, prev});
+      }
+      // if last element of pointer is '-', this is an append operation
+      if (it->size() == 1 && it->at(0) == '-') {
+        // was '-' the last token in pointer?
+        if (it.index == tokens.size() - 1) {
+          return makeUnexpected(
+              error{err_code::append_requested, it.index, prev});
+        }
+        // Cannot resolve past '-' in an array
+        curr = nullptr;
+        continue;
+      }
+      auto const idx = tryTo<size_t>(*it);
+      if (!idx.hasValue()) {
+        return makeUnexpected(
+            error{err_code::index_not_numeric, it.index, prev});
+      }
+      if (idx.value() < parray->size()) {
+        curr = &(*parray)[idx.value()];
+        curr_idx = idx.value();
+      } else {
+        return makeUnexpected(
+            error{err_code::index_out_of_bounds, it.index, prev});
+      }
+      continue;
+    }
+    // handle lookup in object
+    if (auto const* pobject = curr->get_nothrow<dynamic::ObjectImpl>()) {
+      auto const sub_it = pobject->find(*it);
+      if (sub_it == pobject->end()) {
+        return makeUnexpected(error{err_code::key_not_found, it.index, prev});
+      }
+      curr = &sub_it->second;
+      curr_key = *it;
+      continue;
+    }
+    return makeUnexpected(
+        error{err_code::element_not_object_or_array, it.index, prev});
+  }
+  return json_pointer_resolved_value<dynamic const>{
+      prev, curr, curr_key, curr_idx};
+}
+
+const dynamic* dynamic::get_ptr(json_pointer const& jsonPtr) const& {
+  using err_code = json_pointer_resolution_error_code;
+
+  auto ret = try_get_ptr(jsonPtr);
+  if (ret.hasValue()) {
+    return ret.value().value;
+  }
+
+  auto const ctx = ret.error().context;
+  auto const objType = ctx ? ctx->type() : Type::NULLT;
+
+  switch (ret.error().error_code) {
+    case err_code::key_not_found:
       return nullptr;
-    }
-    // special case of parsing "/": lookup key with empty name
-    if (token.empty()) {
-      if (dyn->isObject()) {
-        dyn = dyn->get_ptr("");
-        continue;
-      }
-      throw_exception<TypeError>("object", dyn->type());
-    }
-    if (auto* parray = dyn->get_nothrow<dynamic::Array>()) {
-      if (token.size() > 1 && token.at(0) == '0') {
-        throw std::invalid_argument(
-            "Leading zero not allowed when indexing arrays");
-      }
-      // special case, always return non-existent
-      if (token.size() == 1 && token.at(0) == '-') {
-        dyn = nullptr;
-        continue;
-      }
-      auto const idx = folly::to<size_t>(token);
-      dyn = idx < parray->size() ? &(*parray)[idx] : nullptr;
-      continue;
-    }
-    if (auto* pobject = dyn->get_nothrow<dynamic::ObjectImpl>()) {
-      auto const it = pobject->find(token);
-      dyn = it != pobject->end() ? &it->second : nullptr;
-      continue;
-    }
-    throw_exception<TypeError>("object/array", dyn->type());
+    case err_code::index_out_of_bounds:
+      return nullptr;
+    case err_code::append_requested:
+      return nullptr;
+    case err_code::index_not_numeric:
+      throw std::invalid_argument("array index is not numeric");
+    case err_code::index_has_leading_zero:
+      throw std::invalid_argument(
+          "leading zero not allowed when indexing arrays");
+    case err_code::element_not_object_or_array:
+      throw_exception<TypeError>("object/array", objType);
+    case err_code::json_pointer_out_of_bounds:
+      return nullptr;
+    case err_code::other:
+    default:
+      return nullptr;
   }
-  return dyn;
+  assume_unreachable();
 }
 
 //////////////////////////////////////////////////////////////////////

@@ -1,0 +1,71 @@
+// Gradle script for downloading assets that make up an OTA update and bundling them into the APK
+
+import org.apache.tools.ant.taskdefs.condition.Os
+import org.gradle.util.GradleVersion
+
+void runBefore(String dependentTaskName, Task task) {
+  Task dependentTask = tasks.findByPath(dependentTaskName);
+  if (dependentTask != null) {
+    dependentTask.dependsOn task
+  }
+}
+
+def expoUpdatesDir = ["node", "-e", "console.log(require('path').dirname(require.resolve('expo-updates/package.json')));"].execute([], projectDir).text.trim()
+
+def config = project.hasProperty("react") ? project.react : [];
+def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]
+def entryFile = config.entryFile ?: "index.js"
+def assetsFile = entryFile.take(entryFile.lastIndexOf('.')) + ".assets"
+
+afterEvaluate {
+  def projectRoot = file("../../")
+  def inputExcludes = ["android/**", "ios/**"]
+
+  android.applicationVariants.each { variant ->
+    def folderName = variant.name
+    def targetName = folderName.capitalize()
+
+    def assetsDir = file("$buildDir/intermediates/merged_assets/${folderName}/out")
+
+    GradleVersion gradleVersion = GradleVersion.current()
+    if (gradleVersion < GradleVersion.version('5.0')) {
+      assetsDir = file("$buildDir/intermediates/merged_assets/${folderName}/merge${targetName}Assets/out")
+    }
+
+    // Bundle task name for variant
+    def bundleExpoAssetsTaskName = "create${targetName}ExpoManifest"
+
+    def currentBundleTask = tasks.create(
+        name: bundleExpoAssetsTaskName,
+        type: Exec) {
+      description = "expo-updates: Create manifest for ${targetName}."
+
+      // Create dirs if they are not there (e.g. the "clean" task just ran)
+      doFirst {
+        assetsDir.mkdirs()
+      }
+
+      // Set up inputs and outputs so gradle can cache the result
+      inputs.files fileTree(dir: projectRoot, excludes: inputExcludes)
+      outputs.dir assetsDir
+
+      // Set up the call to exp
+      workingDir projectRoot
+
+      if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        // in cmd, & must be escaped with ^
+        assetsFile = assetsFile.replace('&', '^&');
+        commandLine("cmd", "/c", *nodeExecutableAndArgs, "$expoUpdatesDir/scripts/createManifest.js", "android", projectRoot, assetsDir)
+      } else {
+        commandLine(*nodeExecutableAndArgs, "$expoUpdatesDir/scripts/createManifest.js", "android", projectRoot, assetsDir)
+      }
+
+      enabled config."bundleIn${targetName}" || targetName.toLowerCase().contains("release")
+    }
+
+    currentBundleTask.dependsOn("merge${targetName}Resources")
+    currentBundleTask.dependsOn("merge${targetName}Assets")
+
+    runBefore("process${targetName}Resources", currentBundleTask)
+  }
+}

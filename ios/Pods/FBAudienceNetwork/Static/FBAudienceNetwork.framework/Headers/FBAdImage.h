@@ -20,6 +20,8 @@
 
 #import <FBAudienceNetwork/FBAdDefines.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  Represents an image creative.
  */
@@ -46,15 +48,15 @@ FB_CLASS_EXPORT
  @param width the image width.
  @param height the image height.
  */
-- (instancetype)initWithURL:(NSURL *)url
-                      width:(NSInteger)width
-                     height:(NSInteger)height NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithURL:(NSURL *)url width:(NSInteger)width height:(NSInteger)height NS_DESIGNATED_INITIALIZER;
 
 /**
  Loads an image from self.url over the network, or returns the cached image immediately.
 
  @param block Block to handle the loaded image.
  */
-- (void)loadImageAsyncWithBlock:(nullable void (^)(UIImage * __nullable image))block;
+- (void)loadImageAsyncWithBlock:(nullable void (^)(UIImage *__nullable image))block;
 
 @end
+
+NS_ASSUME_NONNULL_END

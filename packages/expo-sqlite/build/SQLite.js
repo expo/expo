@@ -1,11 +1,9 @@
 import './polyfillNextTick';
+import customOpenDatabase from '@expo/websql/custom';
+import { NativeModulesProxy } from '@unimodules/core';
 import zipObject from 'lodash/zipObject';
 import { Platform } from 'react-native';
-import { NativeModulesProxy } from '@unimodules/core';
-import customOpenDatabase from '@expo/websql/custom';
 const { ExponentSQLite } = NativeModulesProxy;
-;
-;
 class SQLiteDatabase {
     constructor(name) {
         this._closed = false;
@@ -31,7 +29,7 @@ function _serializeQuery(query) {
     return [query.sql, Platform.OS === 'android' ? query.args.map(_escapeBlob) : query.args];
 }
 function _deserializeResultSet(nativeResult) {
-    let [errorMessage, insertId, rowsAffected, columns, rows] = nativeResult;
+    const [errorMessage, insertId, rowsAffected, columns, rows] = nativeResult;
     // TODO: send more structured error information from the native module so we can better construct
     // a SQLException object
     if (errorMessage !== null) {
@@ -71,7 +69,4 @@ export function openDatabase(name, version = '1.0', description = name, size = 1
     const dbWithExec = addExecMethod(db);
     return dbWithExec;
 }
-export default {
-    openDatabase,
-};
 //# sourceMappingURL=SQLite.js.map

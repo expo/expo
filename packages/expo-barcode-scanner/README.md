@@ -7,26 +7,42 @@ Allows scanning variety of supported barcodes both as standalone module and as e
 - [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/bar-code-scanner.md)
 - [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/bar-code-scanner/)
 
-# Installation
+# Installation in managed Expo projects
 
-This package is pre-installed in [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects. You may skip the rest of the installation guide if this applies to you.
+For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/bar-code-scanner/).
 
-For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
+# Installation in bare React Native projects
+
+For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/expo/expo/tree/master/packages/react-native-unimodules) before continuing.
 
 ### Add the package to your npm dependencies
 
 ```
-npm install expo-barcode-scanner
+expo install expo-barcode-scanner
 ```
 
 ### Configure for iOS
 
-Run `pod install` in the ios directory after installing the npm package.
+Add `NSCameraUsageDescription` and `NSMicrophoneUsageDescription` key to your `Info.plist`:
+
+```xml
+<key>NSCameraUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to use the camera</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to use the microphone</string>
+```
+
+Run `npx pod-install` after installing the npm package.
 
 ### Configure for Android
 
-No additional set up necessary.
+This package automatically adds the `CAMERA` permission to your app.
+
+```xml
+<!-- Added permissions -->
+<uses-permission android:name="android.permission.CAMERA" />
+```
 
 # Contributing
 
-Contributions are very welcome! Please refer to guidelines described in the [contributing guide]( https://github.com/expo/expo#contributing).
+Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).

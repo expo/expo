@@ -1,5 +1,5 @@
 import { Platform } from 'react-native';
-import { AdMobRewarded } from 'expo-ads-admob';
+import { AdMobRewarded, setTestDeviceIDAsync } from 'expo-ads-admob';
 import { waitFor } from './helpers';
 
 export const name = 'AdMobRewarded';
@@ -12,9 +12,9 @@ const invalidAdUnitID = 'ad';
 
 export function test(t) {
   t.describe('AdMobRewarded', () => {
-    t.describe('setTestDeviceID', () => {
-      t.it('successfully sets Test Device ID for rewarded ads', () => {
-        t.expect(AdMobRewarded.setTestDeviceID('EMULATOR')).not.toBeNull();
+    t.describe('setTestDeviceIDAsync', () => {
+      t.it('successfully sets Test Device ID for rewarded ads', async () => {
+        await setTestDeviceIDAsync('EMULATOR');
       });
     });
 

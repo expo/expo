@@ -1,0 +1,73 @@
+{
+  "name": "ReactCommon",
+  "module_name": "ReactCommon",
+  "version": "0.63.2",
+  "summary": "-",
+  "homepage": "https://reactnative.dev/",
+  "license": "MIT",
+  "authors": "Facebook, Inc. and its affiliates",
+  "platforms": {
+    "ios": "10.0",
+    "tvos": "10.0"
+  },
+  "source": {
+    "git": "https://github.com/facebook/react-native.git",
+    "tag": "v0.63.2"
+  },
+  "header_dir": "ReactCommon",
+  "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation",
+  "pod_target_xcconfig": {
+    "HEADER_SEARCH_PATHS": "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/Headers/Private/React-Core\"",
+    "USE_HEADERMAP": "YES",
+    "CLANG_CXX_LANGUAGE_STANDARD": "c++14"
+  },
+  "subspecs": [
+    {
+      "name": "turbomodule",
+      "dependencies": {
+        "React-callinvoker": [
+          "0.63.2"
+        ],
+        "React-Core": [
+          "0.63.2"
+        ],
+        "React-cxxreact": [
+          "0.63.2"
+        ],
+        "React-jsi": [
+          "0.63.2"
+        ],
+        "Folly": [
+          "2020.01.13.00"
+        ],
+        "DoubleConversion": [
+
+        ],
+        "glog": [
+
+        ]
+      },
+      "subspecs": [
+        {
+          "name": "core",
+          "source_files": [
+            "turbomodule/core/*.{cpp,h}",
+            "turbomodule/core/platform/ios/*.{mm,cpp,h}"
+          ]
+        },
+        {
+          "name": "samples",
+          "source_files": [
+            "turbomodule/samples/*.{cpp,h}",
+            "turbomodule/samples/platform/ios/*.{mm,cpp,h}"
+          ],
+          "dependencies": {
+            "ReactCommon/turbomodule/core": [
+              "0.63.2"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

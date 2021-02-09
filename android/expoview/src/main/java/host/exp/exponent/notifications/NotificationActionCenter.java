@@ -5,8 +5,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Looper;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.RemoteInput;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.RemoteInput;
 
 import com.raizlabs.android.dbflow.sql.language.SQLite;
 import com.raizlabs.android.dbflow.sql.language.Select;
@@ -42,7 +42,7 @@ public class NotificationActionCenter {
   public synchronized static void setCategory(String categoryId, NotificationCompat.Builder builder, Context context, IntentProvider intentProvider) {
     throwExceptionIfOnMainThread();
 
-    // Expo Client has a permanent notification, so we have to set max priority in order to show up buttons
+    // Expo Go has a permanent notification, so we have to set max priority in order to show up buttons
     builder.setPriority(Notification.PRIORITY_MAX);
 
     List<ActionObject> actions = new Select().from(ActionObject.class)

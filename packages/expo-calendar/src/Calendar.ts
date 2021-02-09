@@ -1,5 +1,6 @@
 import { UnavailabilityError } from '@unimodules/core';
 import { Platform, processColor } from 'react-native';
+import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 
 import ExpoCalendar from './ExpoCalendar';
 
@@ -19,7 +20,7 @@ export interface Calendar {
   allowsModifications: boolean;
   allowedAvailabilities: string[];
   isPrimary?: boolean; // Android
-  name?: string; // Android
+  name?: string | null; // Android
   ownerAccount?: string; // Android
   timeZone?: string; // Android
   allowedReminders?: string[]; // Android
@@ -27,7 +28,7 @@ export interface Calendar {
   isVisible?: boolean; // Android
   isSynced?: boolean; // Android
   accessLevel?: string; // Android
-};
+}
 
 export type Source = {
   id?: string; // iOS only ??
@@ -111,17 +112,59 @@ export type Alarm = {
   method?: string; // Method, Android
 };
 
+export enum DayOfTheWeek {
+  Sunday = 1,
+  Monday = 2,
+  Tuesday = 3,
+  Wednesday = 4,
+  Thursday = 5,
+  Friday = 6,
+  Saturday = 7,
+}
+
+export enum MonthOfTheYear {
+  January = 1,
+  February = 2,
+  March = 3,
+  April = 4,
+  May = 5,
+  June = 6,
+  July = 7,
+  August = 8,
+  September = 9,
+  October = 10,
+  November = 11,
+  December = 12,
+}
+
 export type RecurrenceRule = {
   frequency: string; // Frequency
   interval?: number;
-  endDate?: string;
+  endDate?: string | Date;
   occurrence?: number;
+
+  daysOfTheWeek?: { dayOfTheWeek: DayOfTheWeek; weekNumber?: number }[];
+  daysOfTheMonth?: number[];
+  monthsOfTheYear?: MonthOfTheYear[];
+  weeksOfTheYear?: number[];
+  daysOfTheYear?: number[];
+  setPositions?: number[];
 };
+
+export { PermissionResponse, PermissionStatus };
 
 type OptionalKeys<T> = {
-  [P in keyof T]?: T[P];
+  [P in keyof T]?: T[P] | null;
 };
 
+/**
+ * Returns whether the Calendar API is enabled on the current device. This does not check the app permissions.
+ *
+ * @returns Async `boolean`, indicating whether the Calendar API is available on the current device. Currently this resolves `true` on iOS and Android only.
+ */
+export async function isAvailableAsync(): Promise<boolean> {
+  return !!ExpoCalendar.getCalendarsAsync;
+}
 
 export async function getCalendarsAsync(entityType?: string): Promise<Calendar[]> {
   if (!ExpoCalendar.getCalendarsAsync) {
@@ -137,12 +180,15 @@ export async function createCalendarAsync(details: OptionalKeys<Calendar> = {}):
   if (!ExpoCalendar.saveCalendarAsync) {
     throw new UnavailabilityError('Calendar', 'createCalendarAsync');
   }
-  let color = details.color ? processColor(details.color) : undefined;
+  const color = details.color ? processColor(details.color) : undefined;
   const newDetails = { ...details, id: undefined, color };
   return ExpoCalendar.saveCalendarAsync(newDetails);
 }
 
-export async function updateCalendarAsync(id: string, details: OptionalKeys<Calendar> = {}): Promise<string> {
+export async function updateCalendarAsync(
+  id: string,
+  details: OptionalKeys<Calendar> = {}
+): Promise<string> {
   if (!ExpoCalendar.saveCalendarAsync) {
     throw new UnavailabilityError('Calendar', 'updateCalendarAsync');
   }
@@ -151,7 +197,7 @@ export async function updateCalendarAsync(id: string, details: OptionalKeys<Cale
       'updateCalendarAsync must be called with an id (string) of the target calendar'
     );
   }
-  let color = details.color ? processColor(details.color) : undefined;
+  const color = details.color ? processColor(details.color) : undefined;
 
   if (Platform.OS === 'android') {
     if (
@@ -243,7 +289,10 @@ export async function getEventAsync(
   }
 }
 
-export async function createEventAsync(calendarId: string, { id, ...details }: OptionalKeys<Event> = {}): Promise<string> {
+export async function createEventAsync(
+  calendarId: string,
+  { id, ...details }: OptionalKeys<Event> = {}
+): Promise<string> {
   if (!ExpoCalendar.saveEventAsync) {
     throw new UnavailabilityError('Calendar', 'createEventAsync');
   }
@@ -262,9 +311,9 @@ export async function createEventAsync(calendarId: string, { id, ...details }: O
 
   const newDetails = {
     ...details,
-    calendarId
+    calendarId,
   };
-  
+
   return ExpoCalendar.saveEventAsync(stringifyDateValues(newDetails), {});
 }
 
@@ -355,7 +404,10 @@ export async function createAttendeeAsync(
   return ExpoCalendar.saveAttendeeForEventAsync(newDetails, eventId);
 } // Android
 
-export async function updateAttendeeAsync(id: string, details: OptionalKeys<Attendee> = {}): Promise<string> {
+export async function updateAttendeeAsync(
+  id: string,
+  details: OptionalKeys<Attendee> = {}
+): Promise<string> {
   if (!ExpoCalendar.saveAttendeeForEventAsync) {
     throw new UnavailabilityError('Calendar', 'updateAttendeeAsync');
   }
@@ -365,6 +417,13 @@ export async function updateAttendeeAsync(id: string, details: OptionalKeys<Atte
   const newDetails = { ...details, id };
   return ExpoCalendar.saveAttendeeForEventAsync(newDetails, null);
 } // Android
+
+export async function getDefaultCalendarAsync(): Promise<Calendar> {
+  if (!ExpoCalendar.getDefaultCalendarAsync) {
+    throw new UnavailabilityError('Calendar', 'getDefaultCalendarAsync');
+  }
+  return ExpoCalendar.getDefaultCalendarAsync();
+} // iOS
 
 export async function deleteAttendeeAsync(id: string): Promise<void> {
   if (!ExpoCalendar.deleteAttendeeAsync) {
@@ -377,7 +436,7 @@ export async function deleteAttendeeAsync(id: string): Promise<void> {
 } // Android
 
 export async function getRemindersAsync(
-  calendarIds: Array<string | null>[],
+  calendarIds: (string | null)[],
   status: string | null,
   startDate: Date,
   endDate: Date
@@ -428,7 +487,7 @@ export async function createReminderAsync(
 
   const newDetails = {
     ...details,
-    calendarId: calendarId === null ? undefined : calendarId
+    calendarId: calendarId === null ? undefined : calendarId,
   };
   return ExpoCalendar.saveReminderAsync(stringifyDateValues(newDetails));
 } // iOS
@@ -493,14 +552,38 @@ export function openEventInCalendar(id: string): void {
   return ExpoCalendar.openEventInCalendar(parseInt(id, 10));
 } // Android
 
-export async function requestPermissionsAsync(): Promise<void> {
-  if (!ExpoCalendar.requestPermissionsAsync) {
-    throw new UnavailabilityError('Calendar', 'requestPermissionsAsync');
-  }
-  return await ExpoCalendar.requestPermissionsAsync();
+/**
+ * @deprecated Use `requestCalendarPermissionsAsync()` instead
+ */
+export async function requestPermissionsAsync(): Promise<PermissionResponse> {
+  console.warn(
+    'requestPermissionsAsync is deprecated. Use requestCalendarPermissionsAsync instead.'
+  );
+  return requestCalendarPermissionsAsync();
 }
 
-export async function requestRemindersPermissionsAsync(): Promise<void> {
+export async function getCalendarPermissionsAsync(): Promise<PermissionResponse> {
+  if (!ExpoCalendar.getCalendarPermissionsAsync) {
+    throw new UnavailabilityError('Calendar', 'getCalendarPermissionsAsync');
+  }
+  return ExpoCalendar.getCalendarPermissionsAsync();
+}
+
+export async function getRemindersPermissionsAsync(): Promise<PermissionResponse> {
+  if (!ExpoCalendar.getRemindersPermissionsAsync) {
+    throw new UnavailabilityError('Calendar', 'getRemindersPermissionsAsync');
+  }
+  return ExpoCalendar.getRemindersPermissionsAsync();
+}
+
+export async function requestCalendarPermissionsAsync(): Promise<PermissionResponse> {
+  if (!ExpoCalendar.requestCalendarPermissionsAsync) {
+    throw new UnavailabilityError('Calendar', 'requestCalendarPermissionsAsync');
+  }
+  return await ExpoCalendar.requestCalendarPermissionsAsync();
+}
+
+export async function requestRemindersPermissionsAsync(): Promise<PermissionResponse> {
   if (!ExpoCalendar.requestRemindersPermissionsAsync) {
     throw new UnavailabilityError('Calendar', 'requestRemindersPermissionsAsync');
   }
@@ -621,14 +704,20 @@ export const ReminderStatus = {
   INCOMPLETE: 'incomplete',
 };
 
-
 function stringifyIfDate(date: any): any {
   return date instanceof Date ? date.toISOString() : date;
 }
 
 function stringifyDateValues(obj: object): object {
   return Object.keys(obj).reduce((acc, key) => {
-    acc[key] = stringifyIfDate(obj[key]);
+    const value = obj[key];
+    if (value != null && typeof value === 'object' && !(value instanceof Date)) {
+      if (Array.isArray(value)) {
+        return { ...acc, [key]: value.map(stringifyDateValues) };
+      }
+      return { ...acc, [key]: stringifyDateValues(value) };
+    }
+    acc[key] = stringifyIfDate(value);
     return acc;
   }, {});
 }

@@ -6,12 +6,13 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.media.CamcorderProfile;
 import android.os.Bundle;
-import android.support.media.ExifInterface;
+import androidx.exifinterface.media.ExifInterface;
 import android.os.Build;
 import android.view.ViewGroup;
 
 import com.google.android.cameraview.CameraView;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
@@ -129,6 +130,17 @@ public class CameraViewHelper {
     }
 
     return exifMap;
+  }
+
+  public static void addExifData(ExifInterface baseExif, ExifInterface additionalExif) throws IOException {
+    for (String[] tagInfo : CameraViewHelper.exifTags) {
+      String name = tagInfo[1];
+      String value = additionalExif.getAttribute(name);
+      if (value != null) {
+        baseExif.setAttribute(name, value);
+      }
+    }
+    baseExif.saveAttributes();
   }
 
   public static Bitmap generateSimulatorPhoto(int width, int height) {

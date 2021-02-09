@@ -5,8 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.util.Base64;
 
 import java.io.ByteArrayOutputStream;
@@ -113,7 +113,7 @@ public class ImageManipulatorModule extends ExportedModule {
 
   private Bitmap cropBitmap(Bitmap bitmap, ActionCrop crop) throws IllegalArgumentException {
     if (crop.getOriginX() > bitmap.getWidth()
-        || crop.getOriginX() > bitmap.getHeight()
+        || crop.getOriginY() > bitmap.getHeight()
         || crop.getOriginX() + crop.getWidth() > bitmap.getWidth()
         || crop.getOriginY() + crop.getHeight() > bitmap.getHeight()
     ) {
@@ -154,7 +154,7 @@ public class ImageManipulatorModule extends ExportedModule {
       if (saveOptions.hasBase64()) {
         byteOut = new ByteArrayOutputStream();
         bitmap.compress(saveOptions.getFormat().getCompressFormat(), compression, byteOut);
-        base64String = Base64.encodeToString(byteOut.toByteArray(), Base64.DEFAULT);
+        base64String = Base64.encodeToString(byteOut.toByteArray(), Base64.NO_WRAP);
       }
     } catch (Exception e) {
       e.printStackTrace();

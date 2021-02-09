@@ -1,3 +1,4 @@
+import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 export declare type RecurringEventOptions = {
     futureEvents?: boolean;
     instanceStartDate?: string | Date;
@@ -13,7 +14,7 @@ export interface Calendar {
     allowsModifications: boolean;
     allowedAvailabilities: string[];
     isPrimary?: boolean;
-    name?: string;
+    name?: string | null;
     ownerAccount?: string;
     timeZone?: string;
     allowedReminders?: string[];
@@ -98,15 +99,54 @@ export declare type Alarm = {
     };
     method?: string;
 };
+export declare enum DayOfTheWeek {
+    Sunday = 1,
+    Monday = 2,
+    Tuesday = 3,
+    Wednesday = 4,
+    Thursday = 5,
+    Friday = 6,
+    Saturday = 7
+}
+export declare enum MonthOfTheYear {
+    January = 1,
+    February = 2,
+    March = 3,
+    April = 4,
+    May = 5,
+    June = 6,
+    July = 7,
+    August = 8,
+    September = 9,
+    October = 10,
+    November = 11,
+    December = 12
+}
 export declare type RecurrenceRule = {
     frequency: string;
     interval?: number;
-    endDate?: string;
+    endDate?: string | Date;
     occurrence?: number;
+    daysOfTheWeek?: {
+        dayOfTheWeek: DayOfTheWeek;
+        weekNumber?: number;
+    }[];
+    daysOfTheMonth?: number[];
+    monthsOfTheYear?: MonthOfTheYear[];
+    weeksOfTheYear?: number[];
+    daysOfTheYear?: number[];
+    setPositions?: number[];
 };
+export { PermissionResponse, PermissionStatus };
 declare type OptionalKeys<T> = {
-    [P in keyof T]?: T[P];
+    [P in keyof T]?: T[P] | null;
 };
+/**
+ * Returns whether the Calendar API is enabled on the current device. This does not check the app permissions.
+ *
+ * @returns Async `boolean`, indicating whether the Calendar API is available on the current device. Currently this resolves `true` on iOS and Android only.
+ */
+export declare function isAvailableAsync(): Promise<boolean>;
 export declare function getCalendarsAsync(entityType?: string): Promise<Calendar[]>;
 export declare function createCalendarAsync(details?: OptionalKeys<Calendar>): Promise<string>;
 export declare function updateCalendarAsync(id: string, details?: OptionalKeys<Calendar>): Promise<string>;
@@ -119,8 +159,9 @@ export declare function deleteEventAsync(id: string, { futureEvents, instanceSta
 export declare function getAttendeesForEventAsync(id: string, { futureEvents, instanceStartDate }?: RecurringEventOptions): Promise<Attendee[]>;
 export declare function createAttendeeAsync(eventId: string, details?: OptionalKeys<Attendee>): Promise<string>;
 export declare function updateAttendeeAsync(id: string, details?: OptionalKeys<Attendee>): Promise<string>;
+export declare function getDefaultCalendarAsync(): Promise<Calendar>;
 export declare function deleteAttendeeAsync(id: string): Promise<void>;
-export declare function getRemindersAsync(calendarIds: Array<string | null>[], status: string | null, startDate: Date, endDate: Date): Promise<Reminder[]>;
+export declare function getRemindersAsync(calendarIds: (string | null)[], status: string | null, startDate: Date, endDate: Date): Promise<Reminder[]>;
 export declare function getReminderAsync(id: string): Promise<Reminder>;
 export declare function createReminderAsync(calendarId: string | null, { id, ...details }?: Reminder): Promise<string>;
 export declare function updateReminderAsync(id: string, details?: Reminder): Promise<string>;
@@ -128,8 +169,14 @@ export declare function deleteReminderAsync(id: string): Promise<void>;
 export declare function getSourcesAsync(): Promise<Source[]>;
 export declare function getSourceAsync(id: string): Promise<Source>;
 export declare function openEventInCalendar(id: string): void;
-export declare function requestPermissionsAsync(): Promise<void>;
-export declare function requestRemindersPermissionsAsync(): Promise<void>;
+/**
+ * @deprecated Use `requestCalendarPermissionsAsync()` instead
+ */
+export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
+export declare function getCalendarPermissionsAsync(): Promise<PermissionResponse>;
+export declare function getRemindersPermissionsAsync(): Promise<PermissionResponse>;
+export declare function requestCalendarPermissionsAsync(): Promise<PermissionResponse>;
+export declare function requestRemindersPermissionsAsync(): Promise<PermissionResponse>;
 export declare const EntityTypes: {
     EVENT: string;
     REMINDER: string;
@@ -231,4 +278,3 @@ export declare const ReminderStatus: {
     COMPLETED: string;
     INCOMPLETE: string;
 };
-export {};

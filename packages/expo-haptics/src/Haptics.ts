@@ -3,6 +3,7 @@ import { UnavailabilityError } from '@unimodules/core';
 import ExpoHaptics from './ExpoHaptics';
 import { NotificationFeedbackType, ImpactFeedbackStyle } from './Haptics.types';
 
+/** @deprecated Use `Haptics.notificationAsync` instead. */
 export async function notification(
   type: NotificationFeedbackType = NotificationFeedbackType.Success
 ): Promise<void> {
@@ -10,6 +11,7 @@ export async function notification(
   await notificationAsync(type);
 }
 
+/** @deprecated Use `Haptics.impactAsync` instead */
 export async function impact(
   style: ImpactFeedbackStyle = ImpactFeedbackStyle.Medium
 ): Promise<void> {
@@ -17,6 +19,7 @@ export async function impact(
   await impactAsync(style);
 }
 
+/** @deprecated Use `Haptics.selectionAsync` instead */
 export async function selection(): Promise<void> {
   console.warn('`Haptics.selection` is deprecated. Use `Haptics.selectionAsync` instead.');
   await selectionAsync();

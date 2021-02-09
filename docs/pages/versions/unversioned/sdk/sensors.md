@@ -1,12 +1,18 @@
 ---
 title: Sensors
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-sensors'
 ---
 
-Various APIs for accessing device sensors are included under this umbrella package called `expo-sensors`.
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
+**`expo-sensors`** provides various APIs for accessing device sensors to measure motion, orientation, pressure, magnetic fields, and step count.
+
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-sensors`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sensors).
+<InstallSection packageName="expo-sensors" />
 
 ## API
 
@@ -23,4 +29,10 @@ import {
 } from 'expo-sensors';
 ```
 
-See documentation for the sensors you are interested in using for more information.
+For more information, please see the documentation for the sensor you are interested in:
+
+- [Accelerometer](accelerometer.md)
+- [Barometer](barometer.md)
+- [Gyroscope](gyroscope.md)
+- [Magnetometer](magnetometer.md)
+- [Pedometer](pedometer.md)

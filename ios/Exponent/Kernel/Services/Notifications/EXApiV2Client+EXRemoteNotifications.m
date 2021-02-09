@@ -1,23 +1,34 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXApiV2Client+EXRemoteNotifications.h"
-#import "EXKernel.h"
-#import "EXProvisioningProfile.h"
+#import "EXKernel+DeviceInstallationUUID.h"
 #import "NSData+EXRemoteNotifications.h"
+#if __has_include(<EXApplication/EXProvisioningProfile.h>)
+#import <EXApplication/EXProvisioningProfile.h>
+#endif
 
 @implementation EXApiV2Client (EXRemoteNotifications)
 
 - (NSURLSessionTask *)updateDeviceToken:(NSData *)deviceToken completionHandler:(void (^)(NSError * _Nullable))handler
 {
   NSMutableDictionary *arguments = [NSMutableDictionary dictionaryWithDictionary:@{
-    @"deviceId": [EXKernel deviceInstallUUID],
+    @"deviceId": [EXKernel deviceInstallationUUID],
     @"appId": NSBundle.mainBundle.bundleIdentifier,
     @"deviceToken": deviceToken.apnsTokenString,
     @"type": @"apns",
   }];
-  if ([EXProvisioningProfile mainProvisioningProfile].development) {
+  // Presence of this file is assured in Expo Go
+  // and in ejected projects Expo Push Notifications don't work anyway
+  // so this codepath shouldn't be executed at all.
+#if __has_include(<EXApplication/EXProvisioningProfile.h>)
+  NSString *environment = [[EXProvisioningProfile mainProvisioningProfile] notificationServiceEnvironment];
+  if (!environment) {
+    DDLogWarn(@"aps-environment is missing from the entitlements; ensure that the provisioning profile enables push notifications");
+  } else if ([environment isEqualToString:@"development"]) {
     arguments[@"development"] = @YES;
   }
+#endif
+
   
   return [self callRemoteMethod:@"push/updateDeviceToken"
                       arguments:arguments
@@ -33,15 +44,23 @@
                                   completionHandler:(void (^)(NSString * _Nullable, NSError * _Nullable))handler
 {
   NSMutableDictionary *arguments = [NSMutableDictionary dictionaryWithDictionary:@{
-    @"deviceId": [EXKernel deviceInstallUUID],
+    @"deviceId": [EXKernel deviceInstallationUUID],
     @"experienceId": experienceId,
     @"appId": NSBundle.mainBundle.bundleIdentifier,
     @"deviceToken": deviceToken.apnsTokenString,
     @"type": @"apns",
   }];
-  if ([EXProvisioningProfile mainProvisioningProfile].development) {
+  // Presence of this file is assured in Expo Go
+  // and in ejected projects Expo Push Notifications don't work anyway
+  // so this codepath shouldn't be executed at all.
+#if __has_include(<EXApplication/EXProvisioningProfile.h>)
+  NSString *environment = [[EXProvisioningProfile mainProvisioningProfile] notificationServiceEnvironment];
+  if (!environment) {
+    DDLogWarn(@"aps-environment is missing from the entitlements; ensure that the provisioning profile enables push notifications");
+  } else if ([environment isEqualToString:@"development"]) {
     arguments[@"development"] = @YES;
   }
+#endif
   
   return [self callRemoteMethod:@"push/getExpoPushToken"
                       arguments:arguments

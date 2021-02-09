@@ -1,0 +1,1 @@
+../../../ZXingObjC/ZXingObjC/oned/rss/expanded/ZXRSSExpandedReader.h

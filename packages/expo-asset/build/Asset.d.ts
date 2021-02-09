@@ -26,10 +26,10 @@ export declare class Asset {
     downloaded: boolean;
     _downloadCallbacks: DownloadPromiseCallbacks[];
     constructor({ name, type, hash, uri, width, height }: AssetDescriptor);
-    static loadAsync(moduleId: number | number[]): Promise<void[]>;
+    static loadAsync(moduleId: number | number[] | string | string[]): Promise<Asset[]>;
     static fromModule(virtualAssetModule: number | string): Asset;
     static fromMetadata(meta: AssetMetadata): Asset;
     static fromURI(uri: string): Asset;
-    downloadAsync(): Promise<void>;
+    downloadAsync(): Promise<this>;
 }
 export {};

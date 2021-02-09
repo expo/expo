@@ -1,10 +1,12 @@
 package expo.modules.barcodescanner;
 
+import android.Manifest;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import expo.modules.barcodescanner.utils.BarCodeScannerResultSerializer;
 
 import com.google.android.gms.vision.barcode.Barcode;
 
@@ -22,6 +24,7 @@ import org.unimodules.interfaces.barcodescanner.BarCodeScanner;
 import org.unimodules.interfaces.barcodescanner.BarCodeScannerResult;
 import org.unimodules.interfaces.barcodescanner.BarCodeScannerSettings;
 import org.unimodules.interfaces.imageloader.ImageLoader;
+import org.unimodules.interfaces.permissions.Permissions;
 
 import static expo.modules.barcodescanner.ExpoBarCodeScanner.CAMERA_TYPE_BACK;
 import static expo.modules.barcodescanner.ExpoBarCodeScanner.CAMERA_TYPE_FRONT;
@@ -90,6 +93,16 @@ public class BarCodeScannerModule extends ExportedModule {
   }
 
   @ExpoMethod
+  public void requestPermissionsAsync(final Promise promise) {
+    Permissions.askForPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, Manifest.permission.CAMERA);
+  }
+
+  @ExpoMethod
+  public void getPermissionsAsync(final Promise promise) {
+    Permissions.getPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, Manifest.permission.CAMERA);
+  }
+
+  @ExpoMethod
   public void scanFromURLAsync(final String url, final List<Double> barCodeTypes, final Promise promise) {
     final List<Integer> types = new ArrayList<>();
     if (barCodeTypes != null) {
@@ -99,7 +112,7 @@ public class BarCodeScannerModule extends ExportedModule {
     }
 
     final ImageLoader imageLoader = mModuleRegistry.getModule(ImageLoader.class);
-    imageLoader.loadImageForDisplayFromURL(url, new ImageLoader.ResultListener() {
+    imageLoader.loadImageForManipulationFromURL(url, new ImageLoader.ResultListener() {
       @Override
       public void onSuccess(@NonNull Bitmap bitmap) {
         BarCodeScanner scanner = mBarCodeScannerProvider.createBarCodeDetectorWithContext(getContext());
@@ -110,10 +123,9 @@ public class BarCodeScannerModule extends ExportedModule {
 
         List<Bundle> resultList = new ArrayList<>();
         for (BarCodeScannerResult result : results) {
-          Bundle bundle = new Bundle();
-          bundle.putString("data", result.getValue());
-          bundle.putInt("type", result.getType());
-          resultList.add(bundle);
+          if (types.contains(result.getType())) {
+            resultList.add(BarCodeScannerResultSerializer.toBundle(result, 1.0f));
+          }
         }
         promise.resolve(resultList);
       }

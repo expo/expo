@@ -2,22 +2,16 @@
 
 @import UIKit;
 
-#import "EXAppDelegate.h"
 #import "EXAppViewController.h"
-#import "EXButtonView.h"
 #import "EXHomeAppManager.h"
-#import "EXHomeDiagnosticsViewController.h"
 #import "EXKernel.h"
 #import "EXAppLoader.h"
 #import "EXKernelAppRecord.h"
 #import "EXKernelAppRegistry.h"
-#import "EXKernelDevKeyCommands.h"
 #import "EXKernelLinkingManager.h"
 #import "EXKernelServiceRegistry.h"
-#import "EXMenuGestureRecognizer.h"
-#import "EXMenuViewController.h"
 #import "EXRootViewController.h"
-#import "EXMenuWindow.h"
+#import "EXDevMenuManager.h"
 
 NSString * const kEXHomeDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey";
 NSString * const kEXHomeIsNuxFinishedDefaultsKey = @"EXHomeIsNuxFinishedDefaultsKey";
@@ -26,12 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXRootViewController () <EXAppBrowserController>
 
-@property (nonatomic, strong) EXMenuViewController *menuViewController;
-@property (nonatomic, assign) BOOL isMenuVisible;
-@property (nonatomic, assign) BOOL isAnimatingMenu;
 @property (nonatomic, assign) BOOL isAnimatingAppTransition;
-@property (nonatomic, strong) EXButtonView *btnMenu;
-@property (nonatomic, strong, nullable) EXMenuWindow *menuWindow;
 
 @end
 
@@ -41,31 +30,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
   if (self = [super init]) {
     [EXKernel sharedInstance].browserController = self;
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(_updateMenuButtonBehavior)
-                                                 name:kEXKernelDidChangeMenuBehaviorNotification
-                                               object:nil];
     [self _maybeResetNuxState];
   }
   return self;
-}
-
-- (void)viewDidLoad
-{
-  [super viewDidLoad];
-  _btnMenu = [[EXButtonView alloc] init];
-  _btnMenu.hidden = YES;
-  [self.view addSubview:_btnMenu];
-  EXMenuGestureRecognizer *menuGestureRecognizer = [[EXMenuGestureRecognizer alloc] initWithTarget:self action:@selector(_onMenuGestureRecognized:)];
-  [((EXAppDelegate *)[UIApplication sharedApplication].delegate).window addGestureRecognizer:menuGestureRecognizer];
-}
-
-- (void)viewWillLayoutSubviews
-{
-  [super viewWillLayoutSubviews];
-  _btnMenu.frame = CGRectMake(0, 0, 48.0f, 48.0f);
-  _btnMenu.center = CGPointMake(self.view.frame.size.width - 36.0f, self.view.frame.size.height - 72.0f);
-  [self.view bringSubviewToFront:_btnMenu];
 }
 
 #pragma mark - EXViewController
@@ -84,38 +51,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)moveAppToVisible:(EXKernelAppRecord *)appRecord
 {
   [self _foregroundAppRecord:appRecord];
-}
 
-- (void)toggleMenuWithCompletion:(void (^ _Nullable)(void))completion
-{
-  [self setIsMenuVisible:!_isMenuVisible completion:completion];
-}
+  // When foregrounding the app record we want to add it to the history to handle the edge case
+  // where a user opened a project, then went to home and cleared history, then went back to a
+  // the already open project.
+  [self addHistoryItemWithUrl:appRecord.appLoader.manifestUrl manifest:appRecord.appLoader.manifest];
 
-- (void)setIsMenuVisible:(BOOL)isMenuVisible completion:(void (^ _Nullable)(void))completion
-{
-  if (!_menuViewController) {
-    _menuViewController = [[EXMenuViewController alloc] init];
-  }
-  if (isMenuVisible != _isMenuVisible) {
-    if (!_isAnimatingMenu) {
-      _isMenuVisible = isMenuVisible;
-      [self _animateMenuToVisible:_isMenuVisible completion:completion];
-    }
-  } else {
-    completion();
-  }
-}
-
-- (void)showDiagnostics
-{
-  __weak typeof(self) weakSelf = self;
-  [self setIsMenuVisible:NO completion:^{
-    __strong typeof(weakSelf) strongSelf = weakSelf;
-    if (strongSelf) {
-      EXHomeDiagnosticsViewController *vcDiagnostics = [[EXHomeDiagnosticsViewController alloc] init];
-      [strongSelf presentViewController:vcDiagnostics animated:NO completion:nil];
-    }
-  }];
 }
 
 - (void)showQRReader
@@ -126,24 +67,27 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)moveHomeToVisible
 {
-  __weak typeof(self) weakSelf = self;
-  [self setIsMenuVisible:NO completion:^{
-    __strong typeof(weakSelf) strongSelf = weakSelf;
-    if (strongSelf) {
-      [strongSelf moveAppToVisible:[EXKernel sharedInstance].appRegistry.homeAppRecord];
-      
-      if (strongSelf.isMenuVisible) {
-        [strongSelf setIsMenuVisible:NO completion:nil];
-      }
-    }
-  }];
+  [[EXDevMenuManager sharedInstance] close];
+  [self moveAppToVisible:[EXKernel sharedInstance].appRegistry.homeAppRecord];
 }
 
-- (void)refreshVisibleApp
+- (BOOL)_isHomeVisible {
+  return [EXKernel sharedInstance].appRegistry.homeAppRecord == [EXKernel sharedInstance].visibleApp;
+}
+
+// this is different from Util.reload()
+// because it can work even on an errored app record (e.g. with no manifest, or with no running bridge).
+- (void)reloadVisibleApp
 {
-  // this is different from Util.reload()
-  // because it can work even on an errored app record (e.g. with no manifest, or with no running bridge).
-  [self setIsMenuVisible:NO completion:nil];
+  if ([self _isHomeVisible]) {
+    EXReactAppManager *homeAppManager = [EXKernel sharedInstance].appRegistry.homeAppRecord.appManager;
+    // reloadBridge will only reload the app if developer tools are enabled for the app
+    [homeAppManager reloadBridge];
+    return;
+  }
+
+  [[EXDevMenuManager sharedInstance] close];
+
   EXKernelAppRecord *visibleApp = [EXKernel sharedInstance].visibleApp;
   [[EXKernel sharedInstance] logAnalyticsEvent:@"RELOAD_EXPERIENCE" forAppRecord:visibleApp];
   NSURL *urlToRefresh = visibleApp.appLoader.manifestUrl;
@@ -181,13 +125,9 @@ NS_ASSUME_NONNULL_BEGIN
   // show nux if needed
   if (!self.isNuxFinished
       && appRecord == [EXKernel sharedInstance].visibleApp
-      && appRecord != [EXKernel sharedInstance].appRegistry.homeAppRecord
-      && !self.isMenuVisible) {
-    [self setIsMenuVisible:YES completion:nil];
+      && appRecord != [EXKernel sharedInstance].appRegistry.homeAppRecord) {
+    [[EXDevMenuManager sharedInstance] open];
   }
-  
-  // check button availability when any new app loads
-  [self _updateMenuButtonBehavior];
 }
 
 #pragma mark - internal
@@ -262,56 +202,6 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
-- (void)_animateMenuToVisible:(BOOL)visible completion:(void (^ _Nullable)(void))completion
-{
-  _isAnimatingMenu = YES;
-  __weak typeof(self) weakSelf = self;
-  if (visible) {
-    [_menuViewController willMoveToParentViewController:self];
-    
-    if (_menuWindow == nil) {
-      _menuWindow = [[EXMenuWindow alloc] init];
-    }
-    
-    [_menuWindow setFrame:self.view.frame];
-    [_menuWindow addSubview:_menuViewController.view];
-    [_menuWindow makeKeyAndVisible];
-    
-    _menuViewController.view.alpha = 0.0f;
-    _menuViewController.view.transform = CGAffineTransformMakeScale(1.1f, 1.1f);
-    [UIView animateWithDuration:0.1f animations:^{
-      self.menuViewController.view.alpha = 1.0f;
-      self.menuViewController.view.transform = CGAffineTransformIdentity;
-    } completion:^(BOOL finished) {
-      __strong typeof(weakSelf) strongSelf = weakSelf;
-      if (strongSelf) {
-        strongSelf.isAnimatingMenu = NO;
-        [strongSelf.menuViewController didMoveToParentViewController:self];
-        if (completion) {
-          completion();
-        }
-      }
-    }];
-  } else {
-    _menuViewController.view.alpha = 1.0f;
-    [UIView animateWithDuration:0.1f animations:^{
-      self.menuViewController.view.alpha = 0.0f;
-    } completion:^(BOOL finished) {
-      __strong typeof(weakSelf) strongSelf = weakSelf;
-      if (strongSelf) {
-        strongSelf.isAnimatingMenu = NO;
-        [strongSelf.menuViewController willMoveToParentViewController:nil];
-        [strongSelf.menuViewController.view removeFromSuperview];
-        [strongSelf.menuViewController didMoveToParentViewController:nil];
-        strongSelf.menuWindow = nil;
-        if (completion) {
-          completion();
-        }
-      }
-    }];
-  }
-}
-
 - (EXHomeAppManager *)_getHomeAppManager
 {
   return (EXHomeAppManager *)[EXKernel sharedInstance].appRegistry.homeAppRecord.appManager;
@@ -324,21 +214,6 @@ NS_ASSUME_NONNULL_BEGIN
   if (disableNuxDefaultsValue) {
     [self setIsNuxFinished:YES];
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:kEXHomeDisableNuxDefaultsKey];
-  }
-}
-
-- (void)_updateMenuButtonBehavior
-{
-  BOOL shouldShowButton = [[EXKernelDevKeyCommands sharedInstance] isLegacyMenuButtonAvailable];
-  dispatch_async(dispatch_get_main_queue(), ^{
-    self.btnMenu.hidden = !shouldShowButton;
-  });
-}
-
-- (void)_onMenuGestureRecognized:(EXMenuGestureRecognizer *)sender
-{
-  if (sender.state == UIGestureRecognizerStateEnded) {
-    [[EXKernel sharedInstance] switchTasks];
   }
 }
 

@@ -1,3 +1,0 @@
-expo.modules.gl.cpp
-org.unimodules.interfaces.taskManager
-org.unimodules.core.interfaces.SingletonModule

@@ -1,8 +1,7 @@
 import { UnavailabilityError } from '@unimodules/core';
 import invariant from 'invariant';
-import { Platform } from 'react-native';
 import ExpoLocalAuthentication from './ExpoLocalAuthentication';
-import { AuthenticationType } from './LocalAuthentication.types';
+import { AuthenticationType, } from './LocalAuthentication.types';
 export { AuthenticationType };
 export async function hasHardwareAsync() {
     if (!ExpoLocalAuthentication.hasHardwareAsync) {
@@ -22,7 +21,7 @@ export async function isEnrolledAsync() {
     }
     return await ExpoLocalAuthentication.isEnrolledAsync();
 }
-export async function authenticateAsync(options = { promptMessage: 'Authenticate' }) {
+export async function authenticateAsync(options = {}) {
     if (!ExpoLocalAuthentication.authenticateAsync) {
         throw new UnavailabilityError('expo-local-authentication', 'authenticateAsync');
     }
@@ -31,17 +30,15 @@ export async function authenticateAsync(options = { promptMessage: 'Authenticate
         console.warn('String argument in LocalAuthentication.authenticateAsync has been deprecated. Please use options object with `promptMessage` key instead.');
         options = { promptMessage: options };
     }
-    if (Platform.OS === 'ios') {
-        invariant(typeof options.promptMessage === 'string' && options.promptMessage.length, 'LocalAuthentication.authenticateAsync must be called with a non-empty `options.promptMessage` string on iOS');
-        const result = await ExpoLocalAuthentication.authenticateAsync(options);
-        if (result.warning) {
-            console.warn(result.warning);
-        }
-        return result;
+    if (options.hasOwnProperty('promptMessage')) {
+        invariant(typeof options.promptMessage === 'string' && options.promptMessage.length, 'LocalAuthentication.authenticateAsync : `options.promptMessage` must be a non-empty string.');
     }
-    else {
-        return await ExpoLocalAuthentication.authenticateAsync();
+    const promptMessage = options.promptMessage || 'Authenticate';
+    const result = await ExpoLocalAuthentication.authenticateAsync({ ...options, promptMessage });
+    if (result.warning) {
+        console.warn(result.warning);
     }
+    return result;
 }
 export async function cancelAuthenticate() {
     if (!ExpoLocalAuthentication.cancelAuthenticate) {

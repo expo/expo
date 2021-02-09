@@ -1,5 +1,4 @@
 import { UnavailabilityError } from '@unimodules/core';
-import invariant from 'invariant';
 
 import ExpoGoogleSignIn from './ExpoGoogleSignIn';
 import GoogleAuthentication from './GoogleAuthentication';

@@ -44,9 +44,12 @@ RCT_EXPORT_MODULE();
   return dispatch_get_main_queue();
 }
 
-RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSDictionary *, getPreferences)
+- (NSDictionary *)constantsToExport
 {
-  return @{ @"colorScheme": RNCColorSchemePreference(nil)};
+    return @{
+        @"initialPreferences":
+            @{ @"colorScheme": RNCColorSchemePreference(nil) }
+    };
 }
 
 - (void)appearanceChanged:(NSNotification *)notification
@@ -72,14 +75,16 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSDictionary *, getPreferences)
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(appearanceChanged:)
                                                  name:RNCUserInterfaceStyleDidChangeNotification
-                                               object:nil];
+                                               object:self.bridge];
   }
 }
 
 - (void)stopObserving
 {
   if (@available(iOS 13.0, *)) {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:RNCUserInterfaceStyleDidChangeNotification
+                                                  object:self.bridge];
   }
 }
 

@@ -44,9 +44,9 @@ class AddAssetsToAlbum extends AsyncTask<Void, Void, Void> {
 
   private File getAlbum() {
     final String[] path = {MediaStore.Images.Media.DATA};
-    final String selection = MediaStore.Images.Media.BUCKET_ID + "=?) /*";
+    final String selection = MediaStore.Images.Media.BUCKET_ID + "=?";
     final String[] id = {mAlbumId};
-    final String limit = "*/ LIMIT 1";
+    final String limit = "1 LIMIT 1";
 
     try (Cursor album = mContext.getContentResolver().query(
         EXTERNAL_CONTENT,

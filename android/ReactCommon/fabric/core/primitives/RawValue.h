@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <better/map.h>
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
@@ -14,7 +15,7 @@
 namespace facebook {
 namespace react {
 
-class RawProps;
+class RawPropsParser;
 
 /*
  * `RawValue` abstracts some arbitrary complex data structure similar to JSON.
@@ -61,7 +62,8 @@ class RawValue {
   }
 
  private:
-  friend RawProps;
+  friend class RawProps;
+  friend class RawPropsParser;
 
   /*
    * Arbitrary constructors are private only for RawProps and internal usage.
@@ -93,7 +95,7 @@ class RawValue {
     return castValue(dynamic_, (T *)nullptr);
   }
 
-  inline explicit operator folly::dynamic() const {
+  inline explicit operator folly::dynamic() const noexcept {
     return dynamic_;
   }
 
@@ -180,7 +182,7 @@ class RawValue {
   template <typename T>
   static bool checkValueType(
       const folly::dynamic &dynamic,
-      std::unordered_map<std::string, T> *type) noexcept {
+      better::map<std::string, T> *type) noexcept {
     if (!dynamic.isObject()) {
       return false;
     }
@@ -249,11 +251,24 @@ class RawValue {
   }
 
   template <typename T>
-  static std::unordered_map<std::string, T> castValue(
+  static std::vector<std::vector<T>> castValue(
       const folly::dynamic &dynamic,
-      std::unordered_map<std::string, T> *type) noexcept {
+      std::vector<std::vector<T>> *type) noexcept {
+    assert(dynamic.isArray());
+    auto result = std::vector<std::vector<T>>{};
+    result.reserve(dynamic.size());
+    for (const auto &item : dynamic) {
+      result.push_back(castValue(item, (std::vector<T> *)nullptr));
+    }
+    return result;
+  }
+
+  template <typename T>
+  static better::map<std::string, T> castValue(
+      const folly::dynamic &dynamic,
+      better::map<std::string, T> *type) noexcept {
     assert(dynamic.isObject());
-    auto result = std::unordered_map<std::string, T>{};
+    auto result = better::map<std::string, T>{};
     for (const auto &item : dynamic.items()) {
       assert(item.first.isString());
       result[item.first.getString()] = castValue(item.second, (T *)nullptr);

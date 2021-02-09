@@ -15,34 +15,22 @@ Object.defineProperty(exports, "registerRootComponent", {
     return _registerRootComponent.default;
   }
 });
+Object.defineProperty(exports, "DangerZone", {
+  enumerable: true,
+  get: function () {
+    return _DangerZone.default;
+  }
+});
 Object.defineProperty(exports, "Linking", {
   enumerable: true,
   get: function () {
-    return _Linking.default;
+    return _deprecated.Linking;
   }
 });
 Object.defineProperty(exports, "Notifications", {
   enumerable: true,
   get: function () {
-    return _Notifications.default;
-  }
-});
-Object.defineProperty(exports, "AppLoading", {
-  enumerable: true,
-  get: function () {
-    return _AppLoading.default;
-  }
-});
-Object.defineProperty(exports, "AuthSession", {
-  enumerable: true,
-  get: function () {
-    return _AuthSession.default;
-  }
-});
-Object.defineProperty(exports, "DangerZone", {
-  enumerable: true,
-  get: function () {
-    return _DangerZone.default;
+    return _deprecated.Notifications;
   }
 });
 Object.defineProperty(exports, "Accelerometer", {
@@ -85,6 +73,18 @@ Object.defineProperty(exports, "AppAuth", {
   enumerable: true,
   get: function () {
     return _removed.AppAuth;
+  }
+});
+Object.defineProperty(exports, "AppLoading", {
+  enumerable: true,
+  get: function () {
+    return _removed.AppLoading;
+  }
+});
+Object.defineProperty(exports, "AR", {
+  enumerable: true,
+  get: function () {
+    return _removed.AR;
   }
 });
 Object.defineProperty(exports, "Asset", {
@@ -369,6 +369,12 @@ Object.defineProperty(exports, "Random", {
     return _removed.Random;
   }
 });
+Object.defineProperty(exports, "ScreenOrientation", {
+  enumerable: true,
+  get: function () {
+    return _removed.ScreenOrientation;
+  }
+});
 Object.defineProperty(exports, "SecureStore", {
   enumerable: true,
   get: function () {
@@ -403,6 +409,12 @@ Object.defineProperty(exports, "Speech", {
   enumerable: true,
   get: function () {
     return _removed.Speech;
+  }
+});
+Object.defineProperty(exports, "SplashScreen", {
+  enumerable: true,
+  get: function () {
+    return _removed.SplashScreen;
   }
 });
 Object.defineProperty(exports, "SQLite", {
@@ -441,6 +453,12 @@ Object.defineProperty(exports, "Transitioning", {
     return _removed.Transitioning;
   }
 });
+Object.defineProperty(exports, "Updates", {
+  enumerable: true,
+  get: function () {
+    return _removed.Updates;
+  }
+});
 Object.defineProperty(exports, "Video", {
   enumerable: true,
   get: function () {
@@ -459,67 +477,28 @@ Object.defineProperty(exports, "WebView", {
     return _removed.WebView;
   }
 });
-exports.SplashScreen = exports.Updates = exports.ScreenOrientation = exports.Logs = exports.ErrorRecovery = exports.AR = void 0;
+exports.Logs = void 0;
 
 require("./Expo.fx");
-
-var AR = _interopRequireWildcard(require("./AR"));
-
-exports.AR = AR;
-
-var ErrorRecovery = _interopRequireWildcard(require("./ErrorRecovery/ErrorRecovery"));
-
-exports.ErrorRecovery = ErrorRecovery;
 
 var Logs = _interopRequireWildcard(require("./logs/Logs"));
 
 exports.Logs = Logs;
 
-var ScreenOrientation = _interopRequireWildcard(require("./ScreenOrientation/ScreenOrientation"));
-
-exports.ScreenOrientation = ScreenOrientation;
-
-var Updates = _interopRequireWildcard(require("./Updates/Updates"));
-
-exports.Updates = Updates;
-
-var SplashScreen = _interopRequireWildcard(require("./launch/SplashScreen"));
-
-exports.SplashScreen = SplashScreen;
-
 var _apisAreAvailable = _interopRequireDefault(require("./apisAreAvailable"));
 
 var _registerRootComponent = _interopRequireDefault(require("./launch/registerRootComponent"));
 
-var _Linking = _interopRequireDefault(require("./Linking/Linking"));
-
-var _Notifications = _interopRequireDefault(require("./Notifications/Notifications"));
-
-var _AppLoading = _interopRequireDefault(require("./launch/AppLoading"));
-
-var _AuthSession = _interopRequireDefault(require("./AuthSession"));
-
 var _DangerZone = _interopRequireDefault(require("./DangerZone"));
+
+var _deprecated = require("./deprecated");
 
 var _removed = require("./removed");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
 
-// The following should all be extracted from this package
-// @ts-ignore
-if (module && module.exports) {
-  if (global) {
-    const globals = require('./globals'); // @ts-ignore
-
-
-    global.__exponent = globals; // @ts-ignore
-
-    global.__expo = globals; // @ts-ignore
-
-    global.Expo = globals;
-  }
-}
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 //# sourceMappingURL=ExpoLazy.js.map

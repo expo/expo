@@ -7,6 +7,10 @@
 
 #import "REAValueNode.h"
 
+extern RCTBridge *_bridge_reanimated;
+
 @interface REAModule : RCTEventEmitter <RCTBridgeModule, RCTEventDispatcherObserver, RCTUIManagerObserver>
+
+@property (nonatomic, readonly) REANodesManager *nodesManager;
 
 @end

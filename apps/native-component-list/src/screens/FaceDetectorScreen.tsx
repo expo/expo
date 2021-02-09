@@ -1,13 +1,13 @@
-import React from 'react';
-import { Image, Platform, View, ScrollView, StyleSheet, Alert, PixelRatio } from 'react-native';
-import * as Permissions from 'expo-permissions';
-import * as ImagePicker from 'expo-image-picker';
 import * as FaceDetector from 'expo-face-detector';
+import * as ImagePicker from 'expo-image-picker';
+import { ImageInfo } from 'expo-image-picker/build/ImagePicker.types';
+import * as Permissions from 'expo-permissions';
+import React from 'react';
+import { Alert, Image, PixelRatio, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
+import { scaledFace, scaledLandmarks } from '../components/Face';
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
-import { scaledFace, scaledLandmarks } from '../components/Face';
-import { ImageInfo } from 'expo-image-picker/build/ImagePicker.types';
 
 async function requestPermissionAsync(permission: Permissions.PermissionType) {
   // Image Picker doesn't need permissions in the web
@@ -29,6 +29,8 @@ interface State {
 }
 
 const imageViewSize = 300;
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
 export default class FeceDetectorScreen extends React.Component<{}, State> {
   static navigationOptions = {
     title: 'FaceDetector',
@@ -69,7 +71,7 @@ export default class FeceDetectorScreen extends React.Component<{}, State> {
   };
 
   showPicker = async (mediaTypes: ImagePicker.MediaTypeOptions, allowsEditing = false) => {
-    const permission = await requestPermissionAsync(Permissions.CAMERA_ROLL);
+    const permission = await requestPermissionAsync(Permissions.MEDIA_LIBRARY);
     if (permission) {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes,
@@ -112,7 +114,7 @@ export default class FeceDetectorScreen extends React.Component<{}, State> {
       <View style={styles.sectionContainer}>
         {!selection || selection.type === 'video' ? null : (
           <View style={styles.imageContainer}>
-            <Image source={{ uri: selection.uri }} resizeMode={'contain'} style={styles.image} />
+            <Image source={{ uri: selection.uri }} resizeMode="contain" style={styles.image} />
             {this._maybeRenderDetectedFacesAndLandmarks()}
           </View>
         )}
@@ -191,10 +193,10 @@ const imageOvefrlowSizeAndPosition = (image: ImageInfo) => {
 };
 
 const calculateImageScale = (image: ImageInfo) => {
-  var scale = 1;
+  let scale = 1;
   const screenMultiplier = PixelRatio.getPixelSizeForLayoutSize(1);
   const imageHeight = image.height / screenMultiplier;
-  var imageWidth = image.width / screenMultiplier;
+  const imageWidth = image.width / screenMultiplier;
   if (imageWidth > imageHeight) {
     scale = imageViewSize / imageWidth;
   } else {

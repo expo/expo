@@ -1,6 +1,6 @@
+import * as ErrorRecovery from 'expo-error-recovery';
 import * as React from 'react';
 
-import RootErrorBoundary from './RootErrorBoundary';
 import { InitialProps } from './withExpoRoot.types';
 
 export default function withExpoRoot<P extends InitialProps>(
@@ -8,15 +8,12 @@ export default function withExpoRoot<P extends InitialProps>(
 ): React.ComponentClass<P> {
   return class ExpoRootComponent extends React.Component<P> {
     render() {
-      if (__DEV__) {
-        return (
-          <RootErrorBoundary>
-            <AppRootComponent {...this.props} />
-          </RootErrorBoundary>
-        );
-      } else {
-        return <AppRootComponent {...this.props} />;
-      }
+      const props = {
+        ...this.props,
+        exp: { ...this.props.exp, errorRecovery: ErrorRecovery.recoveredProps },
+      };
+
+      return <AppRootComponent {...props} />;
     }
   };
 }

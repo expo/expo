@@ -1,0 +1,1 @@
+../../../ZXingObjC/ZXingObjC/oned/rss/expanded/decoders/ZXRSSExpandedFieldParser.h

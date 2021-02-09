@@ -6,31 +6,12 @@
 #import "EXHomeModuleManager.h"
 #import "EXManifestResource.h"
 #import "EXKernel.h"
-#import "EXKernelDevKeyCommands.h"
-#import "EXKernelDevMotionHandler.h"
 #import "EXKernelLinkingManager.h"
 #import "EXReactAppManager.h"
 
 @implementation EXHomeModuleManager
 
-- (instancetype)init
-{
-  if (self = [super init]) {
-    [EXKernelDevMotionHandler sharedInstance];
-    [EXKernelDevKeyCommands sharedInstance];
-  }
-  return self;
-}
-
-- (BOOL)homeModuleShouldEnableLegacyMenuBehavior:(EXHomeModule *)module
-{
-  return [EXKernelDevKeyCommands sharedInstance].isLegacyMenuBehaviorEnabled;
-}
-
-- (void)homeModule:(EXHomeModule *)module didSelectEnableLegacyMenuBehavior:(BOOL)isEnabled
-{
-  [EXKernelDevKeyCommands sharedInstance].isLegacyMenuBehaviorEnabled = isEnabled;
-}
+// TODO: (@tsapeta) Move all of those dev menu methods out of here and make them independent of the kernel.
 
 - (BOOL)homeModuleShouldEnableDevtools:(__unused EXHomeModule *)module
 {
@@ -50,29 +31,13 @@
 - (void)homeModule:(EXHomeModule *)module didSelectDevMenuItemWithKey:(NSString *)key
 {
   [[EXKernel sharedInstance].visibleApp.appManager selectDevMenuItemWithKey:key];
-  if ([EXKernel sharedInstance].browserController) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [[EXKernel sharedInstance].browserController toggleMenuWithCompletion:^{}];
-    });
-  }
+  [module requestToCloseDevMenu];
 }
 
 - (void)homeModuleDidSelectRefresh:(EXHomeModule *)module
 {
-  if ([EXKernel sharedInstance].browserController) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [[EXKernel sharedInstance].browserController refreshVisibleApp];
-    });
-  }
-}
-
-- (void)homeModuleDidSelectCloseMenu:(EXHomeModule *)module
-{
-  if ([EXKernel sharedInstance].browserController) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [[EXKernel sharedInstance].browserController setIsMenuVisible:NO completion:^{}];
-    });
-  }
+  [[EXKernel sharedInstance] reloadVisibleApp];
+  [module requestToCloseDevMenu];
 }
 
 - (void)homeModuleDidSelectGoToHome:(EXHomeModule *)module
@@ -82,15 +47,7 @@
       [[EXKernel sharedInstance].browserController moveHomeToVisible];
     });
   }
-}
-
-- (void)homeModuleDidSelectHomeDiagnostics:(__unused EXHomeModule *)module
-{
-  if ([EXKernel sharedInstance].browserController) {
-    [EXUtil performSynchronouslyOnMainThread:^{
-      [[EXKernel sharedInstance].browserController showDiagnostics];
-    }];
-  }
+  [module requestToCloseDevMenu];
 }
 
 - (void)homeModuleDidSelectQRReader:(EXHomeModule *)module

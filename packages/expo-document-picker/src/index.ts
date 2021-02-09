@@ -1,5 +1,4 @@
 import ExpoDocumentPicker from './ExpoDocumentPicker';
-
 import { DocumentPickerOptions, DocumentResult } from './types';
 export { DocumentPickerOptions, DocumentResult };
 

@@ -1,10 +1,10 @@
+import { Platform } from '@unimodules/core';
 import UAParser from 'ua-parser-js';
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 
 import { DeviceType } from './Device.types';
 
 let result: any = null;
-if (canUseDOM) {
+if (Platform.isDOMAvailable) {
   const parser = new UAParser(window.navigator.userAgent);
   result = parser.getResult();
 }
@@ -29,7 +29,7 @@ export default {
     return null;
   },
   get supportedCpuArchitectures(): string[] | null {
-    return (result && result.cpu.architecture) ? [result.cpu.architecture] : null;
+    return result && result.cpu.architecture ? [result.cpu.architecture] : null;
   },
   get osName(): string {
     return (result && result.os.name) || '';

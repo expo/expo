@@ -13,6 +13,7 @@
 #import "AIRGoogleMapPolygon.h"
 #import "AIRGoogleMapPolyline.h"
 #import "AIRGoogleMapCircle.h"
+#import "AIRGoogleMapHeatmap.h"
 #import "AIRGoogleMapUrlTile.h"
 #import "AIRGoogleMapWMSTile.h"
 #import "AIRGoogleMapOverlay.h"
@@ -75,6 +76,7 @@ id regionAsJSON(MKCoordinateRegion region) {
     _polygons = [NSMutableArray array];
     _polylines = [NSMutableArray array];
     _circles = [NSMutableArray array];
+    _heatmaps = [NSMutableArray array];
     _tiles = [NSMutableArray array];
     _overlays = [NSMutableArray array];
     _initialCamera = nil;
@@ -152,6 +154,10 @@ id regionAsJSON(MKCoordinateRegion region) {
     AIRGoogleMapOverlay *overlay = (AIRGoogleMapOverlay*)subview;
     overlay.overlay.map = self;
     [self.overlays addObject:overlay];
+  } else if ([subview isKindOfClass:[AIRGoogleMapHeatmap class]]){
+    AIRGoogleMapHeatmap *heatmap = (AIRGoogleMapHeatmap*)subview;
+    heatmap.heatmap.map = self;
+    [self.heatmaps addObject:heatmap];
   } else {
     NSArray<id<RCTComponent>> *childSubviews = [subview reactSubviews];
     for (int i = 0; i < childSubviews.count; i++) {
@@ -196,6 +202,10 @@ id regionAsJSON(MKCoordinateRegion region) {
     AIRGoogleMapOverlay *overlay = (AIRGoogleMapOverlay*)subview;
     overlay.overlay.map = nil;
     [self.overlays removeObject:overlay];
+  } else if ([subview isKindOfClass:[AIRGoogleMapHeatmap class]]){
+    AIRGoogleMapHeatmap *heatmap = (AIRGoogleMapHeatmap*)subview;
+    heatmap.heatmap.map = nil;
+    [self.heatmaps removeObject:heatmap];
   } else {
     NSArray<id<RCTComponent>> *childSubviews = [subview reactSubviews];
     for (int i = 0; i < childSubviews.count; i++) {
@@ -284,6 +294,10 @@ id regionAsJSON(MKCoordinateRegion region) {
   if (_didCallOnMapReady) return;
   _didCallOnMapReady = true;
   if (self.onMapReady) self.onMapReady(@{});
+}
+
+- (void)mapViewDidFinishTileRendering {
+  if (self.onMapLoaded) self.onMapLoaded(@{});
 }
 
 - (BOOL)didTapMarker:(GMSMarker *)marker {
@@ -775,6 +789,7 @@ id regionAsJSON(MKCoordinateRegion region) {
                     @"accuracy": @(location.horizontalAccuracy),
                     @"altitudeAccuracy": @(location.verticalAccuracy),
                     @"speed": @(location.speed),
+                    @"heading": @(location.course),
                     }
                 };
 

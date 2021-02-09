@@ -13,6 +13,8 @@ import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 
+import com.facebook.react.bridge.SoftAssertions;
+import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewProps;
@@ -29,10 +31,13 @@ public class RNGestureHandlerButtonViewManager extends
     int mBackgroundColor = Color.TRANSPARENT;
     // Using object because of handling null representing no value set.
     Integer mRippleColor;
+    Integer mRippleRadius;
     boolean mUseForeground = false;
     boolean mUseBorderless = false;
     float mBorderRadius = 0;
     boolean mNeedBackgroundUpdate = false;
+    public static final String SELECTABLE_ITEM_BACKGROUND = "selectableItemBackground";
+    public static final String SELECTABLE_ITEM_BACKGROUND_BORDERLESS = "selectableItemBackgroundBorderless";
 
 
     public ButtonViewGroup(Context context) {
@@ -55,20 +60,30 @@ public class RNGestureHandlerButtonViewManager extends
       mNeedBackgroundUpdate = true;
     }
 
+    public void setRippleRadius(Integer radius) {
+      mRippleRadius = radius;
+      mNeedBackgroundUpdate = true;
+    }
+
     public void setBorderRadius(float borderRadius) {
-      mBorderRadius = borderRadius * (float)getResources().getDisplayMetrics().density;
+      mBorderRadius = borderRadius * getResources().getDisplayMetrics().density;
       mNeedBackgroundUpdate = true;
     }
 
     private Drawable applyRippleEffectWhenNeeded(Drawable selectable) {
       if (mRippleColor != null
-              && selectable != null
               && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
               && selectable instanceof RippleDrawable) {
         int[][] states = new int[][]{ new int[]{ android.R.attr.state_enabled } };
         int[] colors = new int[]{ mRippleColor };
         ColorStateList colorStateList = new ColorStateList(states, colors);
         ((RippleDrawable) selectable).setColor(colorStateList);
+      }
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+              && mRippleRadius != null
+              && selectable instanceof RippleDrawable) {
+        RippleDrawable rippleDrawable = (RippleDrawable) selectable;
+        rippleDrawable.setRadius((int) PixelUtil.toPixelFromDIP(mRippleRadius));
       }
       return selectable;
     }
@@ -81,10 +96,7 @@ public class RNGestureHandlerButtonViewManager extends
       // We call `onTouchEvent` to and wait until button changes state to `pressed`, if it's pressed
       // we return true so that the gesture handler can activate
       onTouchEvent(ev);
-      if (isPressed()) {
-        return true;
-      }
-      return false;
+      return isPressed();
     }
 
     private void updateBackground() {
@@ -144,14 +156,26 @@ public class RNGestureHandlerButtonViewManager extends
 
     private Drawable createSelectableDrawable() {
       final int version = Build.VERSION.SDK_INT;
-      String identifier = mUseBorderless && version >= 21 ? "selectableItemBackgroundBorderless"
-              : "selectableItemBackground";
-      int attrID = getResources().getIdentifier(identifier, "attr", "android");
+      String identifier = mUseBorderless && version >= 21 ? SELECTABLE_ITEM_BACKGROUND_BORDERLESS
+              : SELECTABLE_ITEM_BACKGROUND;
+      int attrID = getAttrId(getContext(), identifier);
       getContext().getTheme().resolveAttribute(attrID, sResolveOutValue, true);
       if (version >= 21) {
         return getResources().getDrawable(sResolveOutValue.resourceId, getContext().getTheme());
       } else {
         return getResources().getDrawable(sResolveOutValue.resourceId);
+      }
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private static int getAttrId(Context context, String attr) {
+      SoftAssertions.assertNotNull(attr);
+      if (SELECTABLE_ITEM_BACKGROUND.equals(attr)) {
+        return android.R.attr.selectableItemBackground;
+      } else if (SELECTABLE_ITEM_BACKGROUND_BORDERLESS.equals(attr)) {
+        return android.R.attr.selectableItemBackgroundBorderless;
+      } else {
+        return context.getResources().getIdentifier(attr, "attr", "android");
       }
     }
 
@@ -223,6 +247,11 @@ public class RNGestureHandlerButtonViewManager extends
   @ReactProp(name = "rippleColor")
   public void setRippleColor(ButtonViewGroup view, Integer rippleColor) {
     view.setRippleColor(rippleColor);
+  }
+
+  @ReactProp(name = "rippleRadius")
+  public void setRippleRadius(ButtonViewGroup view, Integer rippleRadius) {
+    view.setRippleRadius(rippleRadius);
   }
 
   @Override

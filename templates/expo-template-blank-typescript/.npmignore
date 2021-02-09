@@ -3,8 +3,12 @@
 *.mobileprovision
 *.p12
 *.p8
+.DS_Store
 .expo
 .npmignore
 .vscode
 package-lock.json
 yarn.lock
+yarn-error.log
+yarn-debug.log*
+npm-debug.log*

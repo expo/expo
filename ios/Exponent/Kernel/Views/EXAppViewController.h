@@ -15,6 +15,12 @@
 - (void)maybeShowError:(NSError *)error;
 
 /**
+ * TODO: temporary solution, see https://github.com/expo/expo/pull/10450
+ * Hides the LoadingProgressWindow.
+ */
+- (void)hideLoadingProgressWindow;
+
+/**
  *  Settable by the app's screen orientation API via the orientation kernel service.
  */
 - (void)setSupportedInterfaceOrientations:(UIInterfaceOrientationMask)supportedInterfaceOrientations;

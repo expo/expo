@@ -1,2 +1,2 @@
-declare const CameraManager: Object;
+declare const CameraManager: Record<string, any>;
 export default CameraManager;

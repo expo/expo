@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI34_0_0/EXSensors/ABI34_0_0EXSensors/ABI34_0_0EXSensorsManager.h

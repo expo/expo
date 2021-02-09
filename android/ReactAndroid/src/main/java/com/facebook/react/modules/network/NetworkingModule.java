@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,12 +7,14 @@
 package com.facebook.react.modules.network;
 
 import android.net.Uri;
+import android.os.Bundle;
 import android.util.Base64;
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.fbreact.specs.NativeNetworkingAndroidSpec;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -29,7 +31,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nullable;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.CookieJar;
@@ -47,58 +48,40 @@ import okio.ByteString;
 import okio.GzipSource;
 import okio.Okio;
 
-/**
- * Implements the XMLHttpRequest JavaScript interface.
- */
+/** Implements the XMLHttpRequest JavaScript interface. */
 @ReactModule(name = NetworkingModule.NAME)
-public class NetworkingModule extends ReactContextBaseJavaModule {
+public class NetworkingModule extends NativeNetworkingAndroidSpec {
 
     /**
-   * Allows to implement a custom fetching process for specific URIs. It is the handler's job
-   * to fetch the URI and return the JS body payload.
+   * Allows to implement a custom fetching process for specific URIs. It is the handler's job to
+   * fetch the URI and return the JS body payload.
    */
     public interface UriHandler {
 
-        /**
-     * Returns if the handler should be used for an URI.
-     */
+        /** Returns if the handler should be used for an URI. */
         boolean supports(Uri uri, String responseType);
 
-        /**
-     * Fetch the URI and return the JS body payload.
-     */
+        /** Fetch the URI and return the JS body payload. */
         WritableMap fetch(Uri uri) throws IOException;
     }
 
-    /**
-   * Allows adding custom handling to build the {@link RequestBody} from the JS body payload.
-   */
+    /** Allows adding custom handling to build the {@link RequestBody} from the JS body payload. */
     public interface RequestBodyHandler {
 
-        /**
-     * Returns if the handler should be used for a JS body payload.
-     */
+        /** Returns if the handler should be used for a JS body payload. */
         boolean supports(ReadableMap map);
 
-        /**
-     * Returns the {@link RequestBody} for the JS body payload.
-     */
+        /** Returns the {@link RequestBody} for the JS body payload. */
         RequestBody toRequestBody(ReadableMap map, String contentType);
     }
 
-    /**
-   * Allows adding custom handling to build the JS body payload from the {@link ResponseBody}.
-   */
+    /** Allows adding custom handling to build the JS body payload from the {@link ResponseBody}. */
     public interface ResponseHandler {
 
-        /**
-     * Returns if the handler should be used for a response type.
-     */
+        /** Returns if the handler should be used for a response type. */
         boolean supports(String responseType);
 
-        /**
-     * Returns the JS body payload for the {@link ResponseBody}.
-     */
+        /** Returns the JS body payload for the {@link ResponseBody}. */
         WritableMap toResponseData(ResponseBody body) throws IOException;
     }
 
@@ -125,6 +108,9 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
 
     // 8K
     public static int MAX_CHUNK_SIZE_BETWEEN_FLUSHES = 8 * 1024;
+
+    @Nullable
+    public static CustomClientBuilder customClientBuilder = null;
 
     public final OkHttpClient mClient;
 
@@ -168,9 +154,7 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
         this(context, defaultUserAgent, client, null);
     }
 
-    /**
-   * @param context the ReactContext of the application
-   */
+    /** @param context the ReactContext of the application */
     public NetworkingModule(final ReactApplicationContext context) {
         this(context, null, OkHttpClientProvider.createClient(context), null);
     }
@@ -178,7 +162,7 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
     /**
    * @param context the ReactContext of the application
    * @param networkInterceptorCreators list of {@link NetworkInterceptorCreator}'s whose create()
-   * methods would be called to attach the interceptors to the client.
+   *     methods would be called to attach the interceptors to the client.
    */
     public NetworkingModule(ReactApplicationContext context, List<NetworkInterceptorCreator> networkInterceptorCreators) {
         this(context, null, OkHttpClientProvider.createClient(context), networkInterceptorCreators);
@@ -187,10 +171,25 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
     /**
    * @param context the ReactContext of the application
    * @param defaultUserAgent the User-Agent header that will be set for all requests where the
-   * caller does not provide one explicitly
+   *     caller does not provide one explicitly
    */
     public NetworkingModule(ReactApplicationContext context, String defaultUserAgent) {
         this(context, defaultUserAgent, OkHttpClientProvider.createClient(context), null);
+    }
+
+    public static void setCustomClientBuilder(CustomClientBuilder ccb) {
+        customClientBuilder = ccb;
+    }
+
+    public static interface CustomClientBuilder {
+
+        public void apply(OkHttpClient.Builder builder);
+    }
+
+    private static void applyCustomBuilder(OkHttpClient.Builder builder) {
+        if (customClientBuilder != null) {
+            customClientBuilder.apply(builder);
+        }
     }
 
     @Override
@@ -238,21 +237,24 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
         mResponseHandlers.remove(handler);
     }
 
-    @ReactMethod
-    public void sendRequest(String method, String url, final int requestId, ReadableArray headers, ReadableMap data, final String responseType, final boolean useIncrementalUpdates, int timeout, boolean withCredentials) {
+    @Override
+    public void sendRequest(String method, String url, double requestIdAsDouble, ReadableArray headers, ReadableMap data, String responseType, boolean useIncrementalUpdates, double timeoutAsDouble, boolean withCredentials) {
+        int requestId = (int) requestIdAsDouble;
+        int timeout = (int) timeoutAsDouble;
         try {
             sendRequestInternal(method, url, requestId, headers, data, responseType, useIncrementalUpdates, timeout, withCredentials);
         } catch (Throwable th) {
             FLog.e(TAG, "Failed to send url request: " + url, th);
-            ResponseUtil.onRequestError(getEventEmitter(), requestId, th.getMessage(), th);
+            final RCTDeviceEventEmitter eventEmitter = getEventEmitter("sendRequest error");
+            if (eventEmitter != null) {
+                ResponseUtil.onRequestError(eventEmitter, requestId, th.getMessage(), th);
+            }
         }
     }
 
-    /**
-   * @param timeout value of 0 results in no timeout
-   */
+    /** @param timeout value of 0 results in no timeout */
     public void sendRequestInternal(String method, String url, final int requestId, ReadableArray headers, ReadableMap data, final String responseType, final boolean useIncrementalUpdates, int timeout, boolean withCredentials) {
-        final RCTDeviceEventEmitter eventEmitter = getEventEmitter();
+        final RCTDeviceEventEmitter eventEmitter = getEventEmitter("sendRequestInternal");
         try {
             Uri uri = Uri.parse(url);
             // Check if a handler is registered
@@ -279,6 +281,7 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
             requestBuilder.tag(requestId);
         }
         OkHttpClient.Builder clientBuilder = mClient.newBuilder();
+        applyCustomBuilder(clientBuilder);
         if (!withCredentials) {
             clientBuilder.cookieJar(CookieJar.NO_COOKIES);
         }
@@ -417,13 +420,19 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
                 ResponseUtil.onResponseReceived(eventEmitter, requestId, response.code(), translateHeaders(response.headers()), response.request().url().toString());
                 try {
                     // OkHttp implements something called transparent gzip, which mean that it will
-                    // automatically add the Accept-Encoding gzip header and handle decoding internally.
-                    // The issue is that it won't handle decoding if the user provides a Accept-Encoding
-                    // header. This is also undesirable considering that iOS does handle the decoding even
-                    // when the header is provided. To make sure this works in all cases, handle gzip body
-                    // here also. This works fine since OKHttp will remove the Content-Encoding header if
+                    // automatically add the Accept-Encoding gzip header and handle decoding
+                    // internally.
+                    // The issue is that it won't handle decoding if the user provides a
+                    // Accept-Encoding
+                    // header. This is also undesirable considering that iOS does handle the decoding
+                    // even
+                    // when the header is provided. To make sure this works in all cases, handle gzip
+                    // body
+                    // here also. This works fine since OKHttp will remove the Content-Encoding header
+                    // if
                     // it used transparent gzip.
-                    // See https://github.com/square/okhttp/blob/5b37cda9e00626f43acf354df145fd452c3031f1/okhttp/src/main/java/okhttp3/internal/http/BridgeInterceptor.java#L76-L111
+                    // See
+                    // https://github.com/square/okhttp/blob/5b37cda9e00626f43acf354df145fd452c3031f1/okhttp/src/main/java/okhttp3/internal/http/BridgeInterceptor.java#L76-L111
                     ResponseBody responseBody = response.body();
                     if ("gzip".equalsIgnoreCase(response.header("Content-Encoding")) && responseBody != null) {
                         GzipSource gzipSource = new GzipSource(responseBody.source());
@@ -536,21 +545,22 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
     }
 
     private static WritableMap translateHeaders(Headers headers) {
-        WritableMap responseHeaders = Arguments.createMap();
+        Bundle responseHeaders = new Bundle();
         for (int i = 0; i < headers.size(); i++) {
             String headerName = headers.name(i);
             // multiple values for the same header
-            if (responseHeaders.hasKey(headerName)) {
+            if (responseHeaders.containsKey(headerName)) {
                 responseHeaders.putString(headerName, responseHeaders.getString(headerName) + ", " + headers.value(i));
             } else {
                 responseHeaders.putString(headerName, headers.value(i));
             }
         }
-        return responseHeaders;
+        return Arguments.fromBundle(responseHeaders);
     }
 
-    @ReactMethod
-    public void abortRequest(final int requestId) {
+    @Override
+    public void abortRequest(double requestIdAsDouble) {
+        int requestId = (int) requestIdAsDouble;
         cancelRequest(requestId);
         removeRequest(requestId);
     }
@@ -572,9 +582,17 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
         mCookieHandler.clearCookies(callback);
     }
 
+    @Override
+    public void addListener(String eventName) {
+    }
+
+    @Override
+    public void removeListeners(double count) {
+    }
+
     @Nullable
     private MultipartBody.Builder constructMultipartBody(ReadableArray body, String contentType, int requestId) {
-        RCTDeviceEventEmitter eventEmitter = getEventEmitter();
+        RCTDeviceEventEmitter eventEmitter = getEventEmitter("constructMultipartBody");
         MultipartBody.Builder multipartBuilder = new MultipartBody.Builder();
         multipartBuilder.setType(MediaType.parse(contentType));
         for (int i = 0, size = body.size(); i < size; i++) {
@@ -648,7 +666,11 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
         return headersBuilder.build();
     }
 
-    private RCTDeviceEventEmitter getEventEmitter() {
-        return getReactApplicationContext().getJSModule(RCTDeviceEventEmitter.class);
+    private RCTDeviceEventEmitter getEventEmitter(String reason) {
+        ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
+        if (reactApplicationContext != null) {
+            return getReactApplicationContext().getJSModule(RCTDeviceEventEmitter.class);
+        }
+        return null;
     }
 }

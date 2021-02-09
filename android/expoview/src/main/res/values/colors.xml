@@ -15,6 +15,5 @@
   <color name="buttonText">#EEEEEE</color>
   <color name="headerText">#EEEEEE</color>
   <color name="white_background">#FFFFFF</color>    
-  <color name="splashBackground">#FFFFFF</color>
   <color name="iconBackground">#FFFFFF</color>
 </resources>

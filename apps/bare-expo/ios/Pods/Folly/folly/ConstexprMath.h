@@ -1,11 +1,11 @@
 /*
- * Copyright 2017-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,49 +17,11 @@
 #pragma once
 
 #include <cstdint>
+#include <functional>
 #include <limits>
 #include <type_traits>
 
 namespace folly {
-
-// TODO: Replace with std::equal_to, etc., after upgrading to C++14.
-template <typename T>
-struct constexpr_equal_to {
-  constexpr bool operator()(T const& a, T const& b) const {
-    return a == b;
-  }
-};
-template <typename T>
-struct constexpr_not_equal_to {
-  constexpr bool operator()(T const& a, T const& b) const {
-    return a != b;
-  }
-};
-template <typename T>
-struct constexpr_less {
-  constexpr bool operator()(T const& a, T const& b) const {
-    return a < b;
-  }
-};
-template <typename T>
-struct constexpr_less_equal {
-  constexpr bool operator()(T const& a, T const& b) const {
-    return a <= b;
-  }
-};
-template <typename T>
-struct constexpr_greater {
-  constexpr bool operator()(T const& a, T const& b) const {
-    return a > b;
-  }
-};
-template <typename T>
-struct constexpr_greater_equal {
-  constexpr bool operator()(T const& a, T const& b) const {
-    return a >= b;
-  }
-};
-
 // TLDR: Prefer using operator< for ordering. And when
 // a and b are equivalent objects, we return b to make
 // sorting stable.
@@ -91,7 +53,7 @@ constexpr_clamp(T const& v, T const& lo, T const& hi, Less less) {
 }
 template <typename T>
 constexpr T const& constexpr_clamp(T const& v, T const& lo, T const& hi) {
-  return constexpr_clamp(v, lo, hi, constexpr_less<T>{});
+  return constexpr_clamp(v, lo, hi, std::less<T>{});
 }
 
 namespace detail {

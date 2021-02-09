@@ -1,11 +1,11 @@
 /*
- * Copyright 2013-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,23 +18,20 @@
 
 #include <exception>
 
-#if !defined(FOLLY_FORCE_EXCEPTION_COUNT_USE_STD) && \
-    (defined(__GNUG__) || defined(__clang__))
+#if !defined(FOLLY_FORCE_EXCEPTION_COUNT_USE_STD) && defined(__GNUG__)
 #define FOLLY_EXCEPTION_COUNT_USE_CXA_GET_GLOBALS
 namespace __cxxabiv1 {
 // forward declaration (originally defined in unwind-cxx.h from from libstdc++)
 struct __cxa_eh_globals;
 // declared in cxxabi.h from libstdc++-v3
+#if !defined(__FreeBSD__)
 extern "C" __cxa_eh_globals* __cxa_get_globals() noexcept;
+#else
+// Signature mismatch with FreeBSD case
+extern "C" __cxa_eh_globals* __cxa_get_globals(void);
+#endif
 } // namespace __cxxabiv1
-#elif defined(_MSC_VER) && (_MSC_VER >= 1400) && \
-    (_MSC_VER < 1900) // MSVC++ 8.0 or greater
-#define FOLLY_EXCEPTION_COUNT_USE_GETPTD
-// forward declaration (originally defined in mtdll.h from MSVCRT)
-struct _tiddata;
-extern "C" _tiddata* _getptd(); // declared in mtdll.h from MSVCRT
-#elif defined(FOLLY_FORCE_EXCEPTION_COUNT_USE_STD) || \
-    (defined(_MSC_VER) && (_MSC_VER >= 1900)) // MSVC++ 2015
+#elif defined(FOLLY_FORCE_EXCEPTION_COUNT_USE_STD) || defined(_MSC_VER)
 #define FOLLY_EXCEPTION_COUNT_USE_STD
 #else
 // Raise an error when trying to use this on unsupported platforms.

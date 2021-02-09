@@ -72,14 +72,19 @@
     CGFloat y = [self relativeOnHeight:self.y];
     CGFloat width = [self relativeOnWidth:self.rectwidth];
     CGFloat height = [self relativeOnHeight:self.rectheight];
-    CGFloat rx = [self relativeOnWidth:self.rx];
-    CGFloat ry = [self relativeOnHeight:self.ry];
 
-    if (rx != 0 || ry != 0) {
-        if (rx == 0) {
+    if (self.rx != nil || self.ry != nil) {
+        CGFloat rx = 0;
+        CGFloat ry = 0;
+        if (self.rx == nil) {
+            ry = [self relativeOnHeight:self.ry];
             rx = ry;
-        } else if (ry == 0) {
+        } else if (self.ry == nil) {
+            rx = [self relativeOnWidth:self.rx];
             ry = rx;
+        } else {
+            rx = [self relativeOnWidth:self.rx];
+            ry = [self relativeOnHeight:self.ry];
         }
 
         if (rx > width / 2) {

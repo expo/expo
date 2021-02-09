@@ -1,35 +1,27 @@
-import * as Font from 'expo-font';
+import * as ErrorRecovery from 'expo-error-recovery';
 import * as React from 'react';
-import { StyleSheet } from 'react-native';
 
 import Notifications from '../Notifications/Notifications';
-import RootErrorBoundary from './RootErrorBoundary';
 import { InitialProps } from './withExpoRoot.types';
 
 export default function withExpoRoot<P extends InitialProps>(
   AppRootComponent: React.ComponentType<P>
 ): React.ComponentType<P> {
-  return class ExpoRootComponent extends React.Component<P> {
-    componentWillMount() {
-      if (StyleSheet.setStyleAttributePreprocessor) {
-        StyleSheet.setStyleAttributePreprocessor('fontFamily', Font.processFontFamily);
+  return function ExpoRoot(props: P) {
+    const didInitialize = React.useRef(false);
+    if (!didInitialize.current) {
+      if (props.exp?.notification) {
+        Notifications._setInitialNotification(props.exp.notification);
       }
-      const { exp } = this.props;
-      if (exp.notification) {
-        Notifications._setInitialNotification(exp.notification);
-      }
+
+      didInitialize.current = true;
     }
 
-    render() {
-      if (__DEV__) {
-        return (
-          <RootErrorBoundary>
-            <AppRootComponent {...this.props} />
-          </RootErrorBoundary>
-        );
-      } else {
-        return <AppRootComponent {...this.props} />;
-      }
-    }
+    const combinedProps = {
+      ...props,
+      exp: { ...props.exp, errorRecovery: ErrorRecovery.recoveredProps },
+    };
+
+    return <AppRootComponent {...combinedProps} />;
   };
 }

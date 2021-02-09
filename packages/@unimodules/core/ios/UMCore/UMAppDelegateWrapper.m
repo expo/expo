@@ -10,13 +10,13 @@ static dispatch_once_t onceToken;
 
 @implementation UMAppDelegateWrapper
 
-- (void)forwardInvocation:(NSInvocation *)invocation {
-  
-  SEL selector = [invocation selector];
-  NSString *selectorName = NSStringFromSelector(selector);
+@synthesize window = _window;
 
-  NSArray<id<UIApplicationDelegate>> *delegatesToBeCalled = [self getSubcontractorsImplementingSelector:selector];
+- (void)forwardInvocation:(NSInvocation *)invocation {
 #if DEBUG
+  SEL selector = [invocation selector];
+  NSArray<id<UIApplicationDelegate>> *delegatesToBeCalled = [self getSubcontractorsImplementingSelector:selector];
+  NSString *selectorName = NSStringFromSelector(selector);
   if ([delegatesToBeCalled count] > 0) {
     [NSException raise:@"Method not implemented in UIApplicationDelegate" format:@"Some universal modules: %@ have registered for `%@` UIApplicationDelegate's callback, however, neither your AppDelegate nor %@ can handle this method. You'll need to either implement this method in your AppDelegate or submit a pull request to handle it in %@.", delegatesToBeCalled, selectorName, NSStringFromClass([self class]), NSStringFromClass([self class])];
   }
@@ -34,7 +34,7 @@ static dispatch_once_t onceToken;
   
   for (id<UIApplicationDelegate> subcontractor in subcontractorsArray) {
     BOOL subcontractorAnswer = NO;
-      subcontractorAnswer = [subcontractor application:application didFinishLaunchingWithOptions:launchOptions];
+    subcontractorAnswer = [subcontractor application:application didFinishLaunchingWithOptions:launchOptions];
     answer |= subcontractorAnswer;
   }
   
@@ -124,6 +124,37 @@ static dispatch_once_t onceToken;
   return result;
 }
 
+#pragma mark - BackgroundSession
+
+- (void)application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void (^)(void))completionHandler
+{
+  SEL selector = @selector(application:handleEventsForBackgroundURLSession:completionHandler:);
+  NSArray<id<UIApplicationDelegate>> *subcontractorsArray = [self getSubcontractorsImplementingSelector:selector];
+ 
+  __block BOOL delegatingCompleted = NO;
+  __block int delegatesCompleted = 0;
+  __block unsigned long allDelegates = subcontractorsArray.count;
+  __block void (^completionHandlerCaller)(void) = ^ {
+    if (delegatesCompleted && delegatingCompleted == allDelegates) {
+      completionHandler();
+    }
+  };
+  
+  for (id<UIApplicationDelegate> subcontractor in subcontractorsArray) {
+    [subcontractor application:application handleEventsForBackgroundURLSession:identifier completionHandler:^(){
+      @synchronized (self) {
+        delegatesCompleted += 1;
+        completionHandlerCaller();
+      }
+    }];
+  }
+  
+  @synchronized (self) {
+    delegatingCompleted = YES;
+    completionHandlerCaller();
+  }
+}
+
 #pragma mark - Notifications
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)token
@@ -178,7 +209,7 @@ static dispatch_once_t onceToken;
 
 #pragma mark - Subcontractors
 
-- (void)ensureSubcontractorsAreInitialized {
+- (void)ensureSubcontractorsAreInitializedAndSorted {
   dispatch_once(&onceToken, ^{
     subcontractors = [[NSMutableArray alloc] init];
     subcontractorsForSelector = [NSMutableDictionary new];
@@ -190,12 +221,16 @@ static dispatch_once_t onceToken;
         [subcontractors addObject:(id<UIApplicationDelegate>)singletonModule];
       }
     }
+
+    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"priority"
+                                                                   ascending:NO];
+    [subcontractors sortUsingDescriptors:[NSArray arrayWithObject:sortDescriptor]];
   });
 }
 
 - (NSArray<id<UIApplicationDelegate>> *)getSubcontractorsImplementingSelector:(SEL)selector {
   
-  [self ensureSubcontractorsAreInitialized];
+  [self ensureSubcontractorsAreInitializedAndSorted];
   
   NSString *selectorKey = NSStringFromSelector(selector);
   

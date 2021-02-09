@@ -1,6 +1,6 @@
+import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import { Platform, ScrollView, Text, View } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
 
 export default class FontScreen extends React.Component {
   static navigationOptions = {
@@ -17,8 +17,7 @@ export default class FontScreen extends React.Component {
             flexDirection: 'row',
             justifyContent: 'space-between',
             flex: 1,
-          }}
-        >
+          }}>
           <MaterialIcons name="airplay" size={25} />
           <MaterialIcons name="airport-shuttle" size={25} />
           <MaterialIcons name="alarm" size={25} />
@@ -42,8 +41,7 @@ export default class FontScreen extends React.Component {
                 height: 32,
                 fontFamily: 'space-mono',
                 fontSize: 420,
-              }}
-            >
+              }}>
               Custom font with `adjustsFontSizeToFit` on iOS
             </Text>
           )}
@@ -55,8 +53,7 @@ export default class FontScreen extends React.Component {
                 height: 32,
                 fontFamily: 'Roboto',
                 fontSize: 420,
-              }}
-            >
+              }}>
               Custom remote uri font with `adjustsFontSizeToFit` on iOS
             </Text>
           )}

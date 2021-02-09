@@ -1,0 +1,28 @@
+{
+  "name": "EXStructuredHeaders",
+  "version": "1.0.0",
+  "summary": "Expo module implementation of a parser based on https://httpwg.org/http-extensions/draft-ietf-httpbis-header-structure.html",
+  "description": "Expo module implementation of a parser based on https://httpwg.org/http-extensions/draft-ietf-httpbis-header-structure.html",
+  "license": "MIT",
+  "authors": "650 Industries, Inc.",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-structured-headers",
+  "platforms": {
+    "ios": "11.0"
+  },
+  "source": {
+    "git": "https://github.com/expo/expo.git"
+  },
+  "dependencies": {
+    "UMCore": [
+
+    ]
+  },
+  "source_files": "EXStructuredHeaders/**/*.{h,m}",
+  "testspecs": [
+    {
+      "name": "Tests",
+      "test_type": "unit",
+      "source_files": "Tests/*.{h,m}"
+    }
+  ]
+}

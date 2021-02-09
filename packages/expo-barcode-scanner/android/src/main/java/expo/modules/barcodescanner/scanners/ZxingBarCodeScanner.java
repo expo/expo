@@ -54,7 +54,11 @@ public class ZxingBarCodeScanner extends ExpoBarCodeScanner {
       byte[] rotated = new byte[data.length];
       for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
-          rotated[x * height + height - y - 1] = data[x + y * width];
+          int sourceIx = x + y * width;
+          int destIx = x * height + height - y - 1;
+          if (sourceIx >= 0 && sourceIx < data.length && destIx >= 0 && destIx < data.length) {
+            rotated[destIx] = data[sourceIx];
+          }
         }
       }
       width = width + height;
@@ -81,9 +85,14 @@ public class ZxingBarCodeScanner extends ExpoBarCodeScanner {
     if (bitmap == null || barcode == null){
       return null;
     }
-    ArrayList<Integer> cornerPoints = new ArrayList(); // empty list
+    ArrayList<Integer> cornerPoints = new ArrayList<>(); // empty list
 
-    return new BarCodeScannerResult(GMV_FROM_ZXING.get(barcode.getBarcodeFormat()), barcode.getText(), cornerPoints, bitmap.getHeight(), bitmap.getWidth());
+    Integer type = GMV_FROM_ZXING.get(barcode.getBarcodeFormat());
+    if (type == null) {
+      return null;
+    }
+
+    return new BarCodeScannerResult(type, barcode.getText(), cornerPoints, bitmap.getHeight(), bitmap.getWidth());
   }
 
   @Override

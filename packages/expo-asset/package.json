@@ -1,6 +1,6 @@
 {
   "name": "expo-asset",
-  "version": "6.0.0",
+  "version": "8.2.2",
   "description": "An Expo universal module to download assets and pass them into other APIs",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -11,6 +11,7 @@
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
+    "lint": "expo-module lint",
     "test": "expo-module test",
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
@@ -23,7 +24,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/expo/expo.git"
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-asset"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
@@ -32,21 +34,28 @@
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/asset/",
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "expo-module-scripts/ios"
   },
   "unimodulePeerDependencies": {
-    "expo-constants": "*",
     "@unimodules/core": "*",
-    "expo-file-system": "*"
+    "expo-constants": "*",
+    "expo-file-system": "*",
+    "expo-updates": "*"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
   },
   "dependencies": {
     "blueimp-md5": "^2.10.0",
+    "invariant": "^2.2.4",
+    "md5-file": "^3.2.3",
     "path-browserify": "^1.0.0",
     "url-parse": "^1.4.4"
   },
   "devDependencies": {
+    "@testing-library/react-hooks": "^3.3.0",
     "@types/url-parse": "^1.4.1",
-    "expo-module-scripts": "^1.0.0"
-  },
-  "gitHead": "9518929d6f2ba9cf8e0aae81d34cc1eb52f7093a"
+    "expo-module-scripts": "~1.2.0"
+  }
 }

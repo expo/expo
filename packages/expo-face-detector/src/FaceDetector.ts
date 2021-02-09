@@ -55,7 +55,7 @@ export type DetectionOptions = {
 export async function detectFacesAsync(
   uri: string,
   options: DetectionOptions = {}
-): Promise<{ faces: FaceFeature[], image: Image }> {
+): Promise<{ faces: FaceFeature[]; image: Image }> {
   if (!ExpoFaceDetector.detectFaces) {
     throw new UnavailabilityError('expo-face-detector', 'detectFaces');
   }

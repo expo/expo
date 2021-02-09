@@ -1,6 +1,2 @@
-declare const _default: {
-    [propertyName: string]: any;
-    addListener: (eventName: string) => void;
-    removeListeners: (count: number) => void;
-};
+declare const _default: import("@unimodules/core").ProxyNativeModule;
 export default _default;

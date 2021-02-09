@@ -1,1 +1,1 @@
-let data = new Buffer(16);
+const data = new Buffer(16);

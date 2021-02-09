@@ -94,6 +94,21 @@ RCT_EXPORT_METHOD(canOpenURL:(NSURL *)URL
   resolve(@(canOpen));
 }
 
+RCT_EXPORT_METHOD(openSettings:(RCTPromiseResolveBlock)resolve
+                        reject:(RCTPromiseRejectBlock)reject)
+{
+  [EXUtil performSynchronouslyOnMainThread:^{
+    NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+    [RCTSharedApplication() openURL:url options:@{} completionHandler:^(BOOL success) {
+      if (success) {
+        resolve(nil);
+      } else {
+        reject(RCTErrorUnspecified, @"Unable to open app settings", nil);
+      }
+    }];
+  }];
+}
+
 RCT_EXPORT_METHOD(getInitialURL:(RCTPromiseResolveBlock)resolve
                   reject:(__unused RCTPromiseRejectBlock)reject)
 {

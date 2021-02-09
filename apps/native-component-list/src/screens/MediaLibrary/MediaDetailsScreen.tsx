@@ -1,21 +1,21 @@
-import React from 'react';
+import { StackScreenProps } from '@react-navigation/stack';
 import * as MediaLibrary from 'expo-media-library';
-import { Image, ScrollView, StyleSheet, View } from 'react-native';
-import { NavigationScreenProps } from 'react-navigation';
+import React from 'react';
+import { Image, ScrollView, StyleSheet, View, Alert } from 'react-native';
 
 import Button from '../../components/Button';
-import MonoText from '../../components/MonoText';
 import HeadingText from '../../components/HeadingText';
+import MonoText from '../../components/MonoText';
 
 const EXPO_ALBUM_NAME = 'Expo';
 
-export default class MediaDetailsScreen extends React.Component<
-  NavigationScreenProps<{
-    onGoBack?: () => void;
-    asset: MediaLibrary.Asset;
-    album: MediaLibrary.Album;
-  }>
-> {
+type Links = {
+  MediaDetails: { asset: MediaLibrary.Asset; onGoBack: () => void; album: MediaLibrary.Album };
+};
+
+type Props = StackScreenProps<Links, 'MediaDetails'>;
+
+export default class MediaDetailsScreen extends React.Component<Props> {
   static navigationOptions = {
     title: 'MediaLibrary Asset',
   };
@@ -24,15 +24,16 @@ export default class MediaDetailsScreen extends React.Component<
     details: null,
   };
 
-  async componentWillMount() {
-    const { asset } = this.props.navigation.state.params!;
-    const details = await MediaLibrary.getAssetInfoAsync(asset);
-    this.setState({ details });
+  componentDidMount() {
+    const { asset } = this.props.route.params;
+    MediaLibrary.getAssetInfoAsync(asset).then(details => {
+      this.setState({ details });
+    });
   }
 
   goBack() {
-    const { navigation } = this.props;
-    const { onGoBack } = navigation.state.params!;
+    const { navigation, route } = this.props;
+    const { onGoBack } = route.params;
 
     if (onGoBack) {
       onGoBack();
@@ -41,14 +42,20 @@ export default class MediaDetailsScreen extends React.Component<
   }
 
   deleteAsset = async () => {
-    const { asset } = this.props.navigation.state.params!;
+    const { asset } = this.props.route.params!;
 
     await MediaLibrary.deleteAssetsAsync([asset]);
     this.goBack();
-  }
+  };
 
   addToAlbum = async () => {
-    const { asset } = this.props.navigation.state.params!;
+    const permissions = await MediaLibrary.getPermissionsAsync();
+    if (permissions?.accessPrivileges && permissions.accessPrivileges !== 'all') {
+      Alert.alert('Access to all photos is required to do this operation');
+      return;
+    }
+
+    const { asset } = this.props.route.params!;
     const expoAlbum = await MediaLibrary.getAlbumAsync(EXPO_ALBUM_NAME);
 
     if (expoAlbum) {
@@ -58,16 +65,16 @@ export default class MediaDetailsScreen extends React.Component<
     }
 
     alert('Successfully added asset to Expo album!');
-  }
+  };
 
   removeFromAlbum = async () => {
-    const { asset, album } = this.props.navigation.state.params!;
+    const { asset, album } = this.props.route.params!;
 
     if (album) {
       await MediaLibrary.removeAssetsFromAlbumAsync(asset.id, album.id);
       this.goBack();
     }
-  }
+  };
 
   renderAsset(asset: MediaLibrary.Asset) {
     const aspectRatio = asset.height ? asset.width / asset.height : 1;
@@ -89,7 +96,7 @@ export default class MediaDetailsScreen extends React.Component<
 
   render() {
     const { details } = this.state;
-    const { asset, album } = this.props.navigation.state.params!;
+    const { asset, album } = this.props.route.params!;
 
     return (
       <ScrollView style={styles.container}>

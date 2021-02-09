@@ -27,11 +27,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.UserHandle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.view.Display;
 
 import com.facebook.react.bridge.Arguments;
 
+import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -52,6 +53,7 @@ public class ScopedContext extends ContextWrapper {
   
   private String mScope;
   private File mFilesDir;
+  private File mNoBackupDir;
   private File mCacheDir;
   private ScopedApplicationContext mScopedApplicationContext;
 
@@ -59,12 +61,53 @@ public class ScopedContext extends ContextWrapper {
     super(context);
     mScope = scope + '-';
 
-    mFilesDir = new File(getBaseContext().getFilesDir() + "/ExperienceData/" + scope);
+    File scopedFilesDir = new File(getBaseContext().getFilesDir() + "/ExperienceData/" + scope);
+    mFilesDir = scopedFilesDir;
     mCacheDir = new File(getBaseContext().getCacheDir() + "/ExperienceData/" + scope);
+    mNoBackupDir = new File(getBaseContext().getNoBackupFilesDir() + "/ExperienceData/" + scope);
 
     if (Constants.isStandaloneApp()) {
+      File scopedFilesMigrationMarker = new File(scopedFilesDir, ".expo-migration");
+      if (scopedFilesDir.exists() && !scopedFilesMigrationMarker.exists()) {
+        migrateAllFiles(scopedFilesDir, getBaseContext().getFilesDir());
+      }
       mFilesDir = getBaseContext().getFilesDir();
       mCacheDir = getBaseContext().getCacheDir();
+      mNoBackupDir = getBaseContext().getNoBackupFilesDir();
+    }
+  }
+
+  private void migrateAllFiles(File legacyDir, File newDir) {
+    try {
+      migrateFilesRecursively(legacyDir, newDir);
+      File scopedFilesMigrationMarker = new File(legacyDir, ".expo-migration");
+      scopedFilesMigrationMarker.createNewFile();
+    } catch (Exception e) {
+      EXL.e(TAG, e);
+    }
+  }
+
+  private void migrateFilesRecursively(File legacyDir, File newDir) {
+    File[] files = legacyDir.listFiles();
+
+    for (File file : files) {
+      String fileName = file.getName();
+      File newLocation = new File(newDir, fileName);
+
+      if (file.isDirectory()) {
+        if (!newLocation.exists()) {
+          newLocation.mkdirs();
+        }
+        migrateFilesRecursively(file, newLocation);
+      } else if (!newLocation.exists()) {
+        // if a file with the same name already exists in the new location, ignore
+        // we don't want to overwrite potentially newer files
+        try {
+          FileUtils.copyFile(file, newLocation);
+        } catch (Exception e) {
+          EXL.e(TAG, e);
+        }
+      }
     }
   }
 
@@ -127,6 +170,16 @@ public class ScopedContext extends ContextWrapper {
   @Override
   public File getCacheDir() {
     return mCacheDir;
+  }
+
+  @Override
+  public File getNoBackupFilesDir() {
+    // We only need to create the directory if someone
+    // asks for it - that's why .mkdirs() is not
+    // in the constructor.
+    //noinspection ResultOfMethodCallIgnored
+    mNoBackupDir.mkdirs();
+    return mNoBackupDir;
   }
 
   @Override

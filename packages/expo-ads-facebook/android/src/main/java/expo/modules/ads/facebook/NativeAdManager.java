@@ -9,19 +9,19 @@ import com.facebook.ads.AdIconView;
 import com.facebook.ads.MediaView;
 import com.facebook.ads.NativeAdsManager;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.InternalModule;
 import org.unimodules.core.interfaces.services.EventEmitter;
 import org.unimodules.core.interfaces.services.UIManager;
 
-public class NativeAdManager implements InternalModule, NativeAdsManager.Listener {
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class NativeAdManager implements InternalModule {
   /**
    * @{Map} with all registered fb ads managers
    **/
@@ -56,7 +56,41 @@ public class NativeAdManager implements InternalModule, NativeAdsManager.Listene
       public void run() {
         final NativeAdsManager adsManager = new NativeAdsManager(mContext, placementId, adsToRequest);
 
-        adsManager.setListener(NativeAdManager.this);
+        adsManager.setListener(new NativeAdsManager.Listener() {
+          /**
+           * Called when one of the registered ads managers loads ads. Sends state of all
+           * managers back to JS
+           */
+          @Override
+          public void onAdsLoaded() {
+            Bundle adsManagersState = new Bundle();
+
+            for (String key : mAdsManagers.keySet()) {
+              NativeAdsManager adsManager = mAdsManagers.get(key);
+              adsManagersState.putBoolean(key, adsManager != null && adsManager.isLoaded());
+            }
+
+            sendAppEvent("CTKNativeAdsManagersChanged", adsManagersState);
+          }
+
+          /**
+           * Called when one of the registered ads managers encounters an error. Sends the error
+           * and the specific placementId for which manager errored to JS.
+           */
+          @Override
+          public void onAdError(AdError adError) {
+            // @todo handle errors here
+            Bundle error = new Bundle();
+            error.putInt("code", adError.getErrorCode());
+            error.putString("message", adError.getErrorMessage());
+
+            Bundle state = new Bundle();
+            state.putString("placementId", placementId);
+            state.putBundle("error", error);
+
+            sendAppEvent("CTKNativeAdManagerErrored", state);
+          }
+        });
 
         mAdsManagers.put(placementId, adsManager);
 
@@ -74,27 +108,6 @@ public class NativeAdManager implements InternalModule, NativeAdsManager.Listene
   public void disableAutoRefresh(String placementId, Promise promise) {
     mAdsManagers.get(placementId).disableAutoRefresh();
     promise.resolve(null);
-  }
-
-  /**
-   * Called when one of the registered ads managers loads ads. Sends state of all
-   * managers back to JS
-   */
-  @Override
-  public void onAdsLoaded() {
-    Bundle adsManagersState = new Bundle();
-
-    for (String key : mAdsManagers.keySet()) {
-      NativeAdsManager adsManager = mAdsManagers.get(key);
-      adsManagersState.putBoolean(key, adsManager.isLoaded());
-    }
-
-    sendAppEvent("CTKNativeAdsManagersChanged", adsManagersState);
-  }
-
-  @Override
-  public void onAdError(AdError adError) {
-    // @todo handle errors here
   }
 
   /**

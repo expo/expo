@@ -4,17 +4,17 @@ import android.os.Bundle;
 
 import com.facebook.react.bridge.Arguments;
 
+import org.unimodules.core.Promise;
+
 import java.util.List;
 
 import javax.annotation.Nullable;
-
-import org.unimodules.core.Promise;
 
 /**
  * Decorator for {@link com.facebook.react.bridge.Promise},
  * so we don't have to implement these inline in {@link NativeModulesProxy}.
  */
-/* package */ class PromiseWrapper extends Promise {
+/* package */ class PromiseWrapper implements Promise {
   private com.facebook.react.bridge.Promise mPromise;
 
   /* package */ PromiseWrapper(com.facebook.react.bridge.Promise promise) {

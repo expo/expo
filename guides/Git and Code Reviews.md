@@ -1,8 +1,25 @@
 # Git and Code Reviews at Expo
 
+- [Git](#git)
+  - [“master” is green](#-master--is-green)
+  - [Develop on feature branches](#develop-on-feature-branches)
+  - [One idea = one commit](#one-idea---one-commit)
+  - [Rebasing: a linear history](#rebasing--a-linear-history)
+  - [Pull and rebase often](#pull-and-rebase-often)
+  - [Commit often](#commit-often)
+  - [Squash before pushing](#squash-before-pushing)
+  - [Code behind feature flags](#code-behind-feature-flags)
+  - [Communicate with test plans](#communicate-with-test-plans)
+- [Code Reviews](#code-reviews)
+  - [Code reviews for the Expo team](#code-reviews-for-the-expo-team)
+    - [Communicate with code reviews](#communicate-with-code-reviews)
+    - [Choose one or two reviewers to clarify responsibility](#choose-one-or-two-reviewers-to-clarify-responsibility)
+    - [Merge if you are the person responsible for the commit](#merge-if-you-are-the-person-responsible-for-the-commit)
+  - [Code reviews for external contributions](#code-reviews-for-external-contributions)
+
 # Git
 
-Expo’s code is stored in Git repositories, including the Expo client repository. We generally develop on feature branches and then rebase those commits on top of the “master” branch. All of the Git repositories keep a linear history, which makes it easier to read the history, bisect issues, and revert commits.
+Expo’s code is stored in Git repositories, including the Expo platform repository. We generally develop on feature branches and then rebase those commits on top of the “master” branch. All of the Git repositories keep a linear history, which makes it easier to read the history, bisect issues, and revert commits.
 
 ## “master” is green
 
@@ -47,6 +64,8 @@ On larger projects, send PRs and land them on master often. This makes each PR e
 
 If you have more than one commit, squash them together before pushing if they are all part of the same idea. For example, commits that fix small bugs or address code review feedback usually should be squashed in the same commit. This makes it easier to read our commit log and revert commits. If some groups of your commits make more sense in isolation, then keep them separate.
 
+**However, GitHub doesn't gracefully handle squashed commits when updating PRs.** Specifically, GitHub doesn't show the diff between old and new squashed commits; it expects you to add new commits to a PR instead of squashing them back into the original commit. So after the first round of code review, it often helps reviewability to squash just the new commits together and to keep them separate from the original squashed commit. Finally, after your PR has been approved, squash all of your commits before merging your PR so that the commit history stays clean.
+
 ## Code behind feature flags
 
 Use simple flags — even a Boolean variable at the top of your file — to gate code that isn’t ready for production but that you still are committing to master. This way you can commit often without necessarily putting your code into action. It also lends itself to code that is easier to enable or disable experimentally without a lot of commitment.
@@ -57,7 +76,7 @@ Test plans are often effective at communicating the effects of your change. Writ
 
 Test plans communicate the scope of your change and what to look for when reviewing your code or modifying your code in the future. Someone who is working on the same code may look through the commit history to understand your code better, and test plans help them understand what to look out for when they make their own changes. Similarly, a test plan helps calibrate your code reviewer’s confidence.
 
-----------
+---
 
 # Code Reviews
 

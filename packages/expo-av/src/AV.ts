@@ -1,5 +1,5 @@
-import { Asset } from 'expo-asset';
 import { Platform } from '@unimodules/core';
+import { Asset } from 'expo-asset';
 
 import ExponentAV from './ExponentAV';
 // TODO add:
@@ -17,7 +17,7 @@ export enum PitchCorrectionQuality {
   High = ExponentAV && ExponentAV.Qualities && ExponentAV.Qualities.High,
 }
 
-export type PlaybackSource =
+export type AVPlaybackSource =
   | number
   | {
       uri: string;
@@ -26,13 +26,13 @@ export type PlaybackSource =
     }
   | Asset;
 
-export type PlaybackNativeSource = {
+export type AVPlaybackNativeSource = {
   uri: string;
   overridingExtension?: string | null;
   headers?: { [fieldName: string]: string };
 };
 
-export type PlaybackStatus =
+export type AVPlaybackStatus =
   | {
       isLoaded: false;
       androidImplementation?: string;
@@ -64,7 +64,7 @@ export type PlaybackStatus =
       didJustFinish: boolean; // true exactly once when the track plays to finish
     };
 
-export type PlaybackStatusToSet = {
+export type AVPlaybackStatusToSet = {
   androidImplementation?: string;
   progressUpdateIntervalMillis?: number;
   positionMillis?: number;
@@ -80,7 +80,7 @@ export type PlaybackStatusToSet = {
 };
 
 export const _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS: number = 500;
-export const _DEFAULT_INITIAL_PLAYBACK_STATUS: PlaybackStatusToSet = {
+export const _DEFAULT_INITIAL_PLAYBACK_STATUS: AVPlaybackStatusToSet = {
   positionMillis: 0,
   progressUpdateIntervalMillis: _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS,
   shouldPlay: false,
@@ -92,8 +92,8 @@ export const _DEFAULT_INITIAL_PLAYBACK_STATUS: PlaybackStatusToSet = {
 };
 
 export function getNativeSourceFromSource(
-  source?: PlaybackSource | null
-): PlaybackNativeSource | null {
+  source?: AVPlaybackSource | null
+): AVPlaybackNativeSource | null {
   let uri: string | null = null;
   let overridingExtension: string | null = null;
   let headers: { [fieldName: string]: string } | undefined;
@@ -106,7 +106,7 @@ export function getNativeSourceFromSource(
     };
   }
 
-  let asset: Asset | null = _getAssetFromPlaybackSource(source);
+  const asset: Asset | null = _getAssetFromPlaybackSource(source);
   if (asset != null) {
     uri = asset.localUri || asset.uri;
   } else if (
@@ -142,7 +142,7 @@ export function getNativeSourceFromSource(
   return { uri, overridingExtension, headers };
 }
 
-function _getAssetFromPlaybackSource(source?: PlaybackSource | null): Asset | null {
+function _getAssetFromPlaybackSource(source?: AVPlaybackSource | null): Asset | null {
   if (source == null) {
     return null;
   }
@@ -156,7 +156,7 @@ function _getAssetFromPlaybackSource(source?: PlaybackSource | null): Asset | nu
   return asset;
 }
 
-export function assertStatusValuesInBounds(status: PlaybackStatusToSet): void {
+export function assertStatusValuesInBounds(status: AVPlaybackStatusToSet): void {
   if (typeof status.rate === 'number' && (status.rate < 0 || status.rate > 32)) {
     throw new RangeError('Rate value must be between 0.0 and 32.0');
   }
@@ -166,15 +166,15 @@ export function assertStatusValuesInBounds(status: PlaybackStatusToSet): void {
 }
 
 export async function getNativeSourceAndFullInitialStatusForLoadAsync(
-  source: PlaybackSource | null,
-  initialStatus: PlaybackStatusToSet | null,
+  source: AVPlaybackSource | null,
+  initialStatus: AVPlaybackStatusToSet | null,
   downloadFirst: boolean
 ): Promise<{
-  nativeSource: PlaybackNativeSource;
-  fullInitialStatus: PlaybackStatusToSet;
+  nativeSource: AVPlaybackNativeSource;
+  fullInitialStatus: AVPlaybackStatusToSet;
 }> {
   // Get the full initial status
-  const fullInitialStatus: PlaybackStatusToSet =
+  const fullInitialStatus: AVPlaybackStatusToSet =
     initialStatus == null
       ? _DEFAULT_INITIAL_PLAYBACK_STATUS
       : {
@@ -194,14 +194,14 @@ export async function getNativeSourceAndFullInitialStatusForLoadAsync(
   }
 
   // Download first if necessary.
-  let asset = _getAssetFromPlaybackSource(source);
+  const asset = _getAssetFromPlaybackSource(source);
   if (downloadFirst && asset) {
     // TODO we can download remote uri too once @nikki93 has integrated this into Asset
     await asset.downloadAsync();
   }
 
   // Get the native source
-  const nativeSource: PlaybackNativeSource | null = getNativeSourceFromSource(source);
+  const nativeSource: AVPlaybackNativeSource | null = getNativeSourceFromSource(source);
 
   if (nativeSource === null) {
     throw new Error(`Cannot load an AV asset from a null playback source`);
@@ -210,7 +210,7 @@ export async function getNativeSourceAndFullInitialStatusForLoadAsync(
   return { nativeSource, fullInitialStatus };
 }
 
-export function getUnloadedStatus(error: string | null = null): PlaybackStatus {
+export function getUnloadedStatus(error: string | null = null): AVPlaybackStatus {
   return {
     isLoaded: false,
     ...(error ? { error } : null),
@@ -218,30 +218,38 @@ export function getUnloadedStatus(error: string | null = null): PlaybackStatus {
 }
 
 export interface AV {
-  setStatusAsync(status: PlaybackStatusToSet): Promise<PlaybackStatus>;
+  setStatusAsync(status: AVPlaybackStatusToSet): Promise<AVPlaybackStatus>;
+  getStatusAsync(): Promise<AVPlaybackStatus>;
 }
 
 export interface Playback extends AV {
-  playAsync(): Promise<PlaybackStatus>;
+  playAsync(): Promise<AVPlaybackStatus>;
+  loadAsync(
+    source: AVPlaybackSource,
+    initialStatus: AVPlaybackStatusToSet,
+    downloadAsync: boolean
+  ): Promise<AVPlaybackStatus>;
+  unloadAsync(): Promise<AVPlaybackStatus>;
   playFromPositionAsync(
     positionMillis: number,
     tolerances?: { toleranceMillisBefore?: number; toleranceMillisAfter?: number }
-  ): Promise<PlaybackStatus>;
-  pauseAsync(): Promise<PlaybackStatus>;
-  stopAsync(): Promise<PlaybackStatus>;
+  ): Promise<AVPlaybackStatus>;
+  pauseAsync(): Promise<AVPlaybackStatus>;
+  stopAsync(): Promise<AVPlaybackStatus>;
+  replayAsync(status: AVPlaybackStatusToSet): Promise<AVPlaybackStatus>;
   setPositionAsync(
     positionMillis: number,
     tolerances?: { toleranceMillisBefore?: number; toleranceMillisAfter?: number }
-  ): Promise<PlaybackStatus>;
+  ): Promise<AVPlaybackStatus>;
   setRateAsync(
     rate: number,
     shouldCorrectPitch: boolean,
     pitchCorrectionQuality?: PitchCorrectionQuality
-  ): Promise<PlaybackStatus>;
-  setVolumeAsync(volume: number): Promise<PlaybackStatus>;
-  setIsMutedAsync(isMuted: boolean): Promise<PlaybackStatus>;
-  setIsLoopingAsync(isLooping: boolean): Promise<PlaybackStatus>;
-  setProgressUpdateIntervalAsync(progressUpdateIntervalMillis: number): Promise<PlaybackStatus>;
+  ): Promise<AVPlaybackStatus>;
+  setVolumeAsync(volume: number): Promise<AVPlaybackStatus>;
+  setIsMutedAsync(isMuted: boolean): Promise<AVPlaybackStatus>;
+  setIsLoopingAsync(isLooping: boolean): Promise<AVPlaybackStatus>;
+  setProgressUpdateIntervalAsync(progressUpdateIntervalMillis: number): Promise<AVPlaybackStatus>;
 }
 
 /**
@@ -249,15 +257,15 @@ export interface Playback extends AV {
  * interface
  */
 export const PlaybackMixin = {
-  async playAsync(): Promise<PlaybackStatus> {
-    return ((this as any) as AV).setStatusAsync({ shouldPlay: true });
+  async playAsync(): Promise<AVPlaybackStatus> {
+    return ((this as any) as Playback).setStatusAsync({ shouldPlay: true });
   },
 
   async playFromPositionAsync(
     positionMillis: number,
     tolerances: { toleranceMillisBefore?: number; toleranceMillisAfter?: number } = {}
-  ): Promise<PlaybackStatus> {
-    return ((this as any) as AV).setStatusAsync({
+  ): Promise<AVPlaybackStatus> {
+    return ((this as any) as Playback).setStatusAsync({
       positionMillis,
       shouldPlay: true,
       seekMillisToleranceAfter: tolerances.toleranceMillisAfter,
@@ -265,19 +273,19 @@ export const PlaybackMixin = {
     });
   },
 
-  async pauseAsync(): Promise<PlaybackStatus> {
-    return ((this as any) as AV).setStatusAsync({ shouldPlay: false });
+  async pauseAsync(): Promise<AVPlaybackStatus> {
+    return ((this as any) as Playback).setStatusAsync({ shouldPlay: false });
   },
 
-  async stopAsync(): Promise<PlaybackStatus> {
-    return ((this as any) as AV).setStatusAsync({ positionMillis: 0, shouldPlay: false });
+  async stopAsync(): Promise<AVPlaybackStatus> {
+    return ((this as any) as Playback).setStatusAsync({ positionMillis: 0, shouldPlay: false });
   },
 
   async setPositionAsync(
     positionMillis: number,
     tolerances: { toleranceMillisBefore?: number; toleranceMillisAfter?: number } = {}
-  ): Promise<PlaybackStatus> {
-    return ((this as any) as AV).setStatusAsync({
+  ): Promise<AVPlaybackStatus> {
+    return ((this as any) as Playback).setStatusAsync({
       positionMillis,
       seekMillisToleranceAfter: tolerances.toleranceMillisAfter,
       seekMillisToleranceBefore: tolerances.toleranceMillisBefore,
@@ -288,29 +296,29 @@ export const PlaybackMixin = {
     rate: number,
     shouldCorrectPitch: boolean = false,
     pitchCorrectionQuality: PitchCorrectionQuality = PitchCorrectionQuality.Low
-  ): Promise<PlaybackStatus> {
-    return ((this as any) as AV).setStatusAsync({
+  ): Promise<AVPlaybackStatus> {
+    return ((this as any) as Playback).setStatusAsync({
       rate,
       shouldCorrectPitch,
       pitchCorrectionQuality,
     });
   },
 
-  async setVolumeAsync(volume: number): Promise<PlaybackStatus> {
-    return ((this as any) as AV).setStatusAsync({ volume });
+  async setVolumeAsync(volume: number): Promise<AVPlaybackStatus> {
+    return ((this as any) as Playback).setStatusAsync({ volume });
   },
 
-  async setIsMutedAsync(isMuted: boolean): Promise<PlaybackStatus> {
-    return ((this as any) as AV).setStatusAsync({ isMuted });
+  async setIsMutedAsync(isMuted: boolean): Promise<AVPlaybackStatus> {
+    return ((this as any) as Playback).setStatusAsync({ isMuted });
   },
 
-  async setIsLoopingAsync(isLooping: boolean): Promise<PlaybackStatus> {
-    return ((this as any) as AV).setStatusAsync({ isLooping });
+  async setIsLoopingAsync(isLooping: boolean): Promise<AVPlaybackStatus> {
+    return ((this as any) as Playback).setStatusAsync({ isLooping });
   },
 
   async setProgressUpdateIntervalAsync(
     progressUpdateIntervalMillis: number
-  ): Promise<PlaybackStatus> {
-    return ((this as any) as AV).setStatusAsync({ progressUpdateIntervalMillis });
+  ): Promise<AVPlaybackStatus> {
+    return ((this as any) as Playback).setStatusAsync({ progressUpdateIntervalMillis });
   },
 };

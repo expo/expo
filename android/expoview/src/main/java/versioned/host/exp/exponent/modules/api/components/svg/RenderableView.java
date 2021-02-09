@@ -27,6 +27,7 @@ import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableType;
+import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
 import java.lang.reflect.Field;
@@ -41,8 +42,11 @@ abstract public class RenderableView extends VirtualView {
 
     RenderableView(ReactContext reactContext) {
         super(reactContext);
+        setPivotX(0);
+        setPivotY(0);
     }
 
+    static RenderableView contextElement;
     // strokeLinecap
     private static final int CAP_BUTT = 0;
     static final int CAP_ROUND = 1;
@@ -76,8 +80,8 @@ abstract public class RenderableView extends VirtualView {
     public float strokeMiterlimit = 4;
     public float strokeDashoffset = 0;
 
-    public Paint.Cap strokeLinecap = Paint.Cap.ROUND;
-    public Paint.Join strokeLinejoin = Paint.Join.ROUND;
+    public Paint.Cap strokeLinecap = Paint.Cap.BUTT;
+    public Paint.Join strokeLinejoin = Paint.Join.MITER;
 
     public @Nullable ReadableArray fill;
     public float fillOpacity = 1;
@@ -93,6 +97,12 @@ abstract public class RenderableView extends VirtualView {
 
     private static final Pattern regex = Pattern.compile("[0-9.-]+");
 
+    @Override
+    public void setId(int id) {
+        super.setId(id);
+        RenderableViewManager.setRenderableView(id, this);
+    }
+
     @ReactProp(name = "vectorEffect")
     public void setVectorEffect(int vectorEffect) {
         this.vectorEffect = vectorEffect;
@@ -107,7 +117,9 @@ abstract public class RenderableView extends VirtualView {
             return;
         }
         ReadableType type = fill.getType();
-        if (type.equals(ReadableType.Array)) {
+        if (type.equals(ReadableType.Number)) {
+            this.fill = JavaOnlyArray.of(0, fill.asInt());
+        } else if (type.equals(ReadableType.Array)) {
             this.fill = fill.asArray();
         } else {
             JavaOnlyArray arr = new JavaOnlyArray();
@@ -139,7 +151,7 @@ abstract public class RenderableView extends VirtualView {
                 break;
             default:
                 throw new JSApplicationIllegalArgumentException(
-                        "fillRule " + this.fillRule + " unrecognized");
+                        "fillRule " + fillRule + " unrecognized");
         }
 
         invalidate();
@@ -153,15 +165,18 @@ abstract public class RenderableView extends VirtualView {
             return;
         }
         ReadableType type = strokeColors.getType();
-        if (type.equals(ReadableType.Array)) {
+        if (type.equals(ReadableType.Number)) {
+            stroke = JavaOnlyArray.of(0, strokeColors.asInt());
+        } else if (type.equals(ReadableType.Array)) {
             stroke = strokeColors.asArray();
         } else {
             JavaOnlyArray arr = new JavaOnlyArray();
             arr.pushInt(0);
             Matcher m = regex.matcher(strokeColors.asString());
+            int i = 0;
             while (m.find()) {
                 double parsed = Double.parseDouble(m.group());
-                arr.pushDouble(parsed);
+                arr.pushDouble(i++ < 3 ? parsed / 255 : parsed);
             }
             stroke = arr;
         }
@@ -220,7 +235,7 @@ abstract public class RenderableView extends VirtualView {
                 break;
             default:
                 throw new JSApplicationIllegalArgumentException(
-                        "strokeLinecap " + this.strokeLinecap + " unrecognized");
+                        "strokeLinecap " + strokeLinecap + " unrecognized");
         }
         invalidate();
     }
@@ -239,7 +254,7 @@ abstract public class RenderableView extends VirtualView {
                 break;
             default:
                 throw new JSApplicationIllegalArgumentException(
-                        "strokeLinejoin " + this.strokeLinejoin + " unrecognized");
+                        "strokeLinejoin " + strokeLinejoin + " unrecognized");
         }
         invalidate();
     }
@@ -281,9 +296,9 @@ abstract public class RenderableView extends VirtualView {
 
             // Clip to mask bounds and render the mask
             float maskX = (float) relativeOnWidth(mask.mX);
-            float maskY = (float) relativeOnWidth(mask.mY);
+            float maskY = (float) relativeOnHeight(mask.mY);
             float maskWidth = (float) relativeOnWidth(mask.mW);
-            float maskHeight = (float) relativeOnWidth(mask.mH);
+            float maskHeight = (float) relativeOnHeight(mask.mH);
             maskCanvas.clipRect(maskX, maskY, maskWidth, maskHeight);
 
             Paint maskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -329,48 +344,82 @@ abstract public class RenderableView extends VirtualView {
     void draw(Canvas canvas, Paint paint, float opacity) {
         opacity *= mOpacity;
 
-        if (opacity > MIN_OPACITY_FOR_DRAW) {
-            boolean computePaths = mPath == null;
+        boolean computePaths = mPath == null;
+        if (computePaths) {
+            mPath = getPath(canvas, paint);
+            mPath.setFillType(fillRule);
+        }
+        boolean nonScalingStroke = vectorEffect == VECTOR_EFFECT_NON_SCALING_STROKE;
+        Path path = mPath;
+        if (nonScalingStroke) {
+            Path scaled = new Path();
+            //noinspection deprecation
+            mPath.transform(mCTM, scaled);
+            canvas.setMatrix(null);
+            path = scaled;
+        }
+
+        if (computePaths || path != mPath) {
+            mBox = new RectF();
+            path.computeBounds(mBox, true);
+        }
+
+        RectF clientRect = new RectF(mBox);
+        mCTM.mapRect(clientRect);
+        this.setClientRect(clientRect);
+
+        clip(canvas, paint);
+
+        if (setupFillPaint(paint, opacity * fillOpacity)) {
             if (computePaths) {
-                mPath = getPath(canvas, paint);
-                mPath.setFillType(fillRule);
+                mFillPath = new Path();
+                paint.getFillPath(path, mFillPath);
             }
-            boolean nonScalingStroke = vectorEffect == VECTOR_EFFECT_NON_SCALING_STROKE;
-            Path path = mPath;
-            if (nonScalingStroke) {
-                Path scaled = new Path();
-                //noinspection deprecation
-                mPath.transform(canvas.getMatrix(), scaled);
-                canvas.setMatrix(null);
-                path = scaled;
+            canvas.drawPath(path, paint);
+        }
+        if (setupStrokePaint(paint, opacity * strokeOpacity)) {
+            if (computePaths) {
+                mStrokePath = new Path();
+                paint.getFillPath(path, mStrokePath);
             }
+            canvas.drawPath(path, paint);
+        }
+        renderMarkers(canvas, paint, opacity);
+    }
 
-            RectF clientRect = new RectF();
-            path.computeBounds(clientRect, true);
-            mBox = new RectF(clientRect);
+    void renderMarkers(Canvas canvas, Paint paint, float opacity) {
+        MarkerView markerStart = (MarkerView)getSvgView().getDefinedMarker(mMarkerStart);
+        MarkerView markerMid = (MarkerView)getSvgView().getDefinedMarker(mMarkerMid);
+        MarkerView markerEnd = (MarkerView)getSvgView().getDefinedMarker(mMarkerEnd);
+        if (elements != null && (markerStart != null || markerMid != null  || markerEnd != null)) {
+            contextElement = this;
+            ArrayList<RNSVGMarkerPosition> positions = RNSVGMarkerPosition.fromPath(elements);
+            float width = (float)(this.strokeWidth != null ? relativeOnOther(this.strokeWidth) : 1);
+            mMarkerPath = new Path();
+            for (RNSVGMarkerPosition position : positions) {
+                RNSVGMarkerType type = position.type;
+                MarkerView marker = null;
+                switch (type) {
+                    case kStartMarker:
+                        marker = markerStart;
+                        break;
 
-            // We create the canvas ourselves, thus we can depend on getMatrix
-            @SuppressWarnings("deprecation")
-            Matrix svgToViewMatrix = new Matrix(canvas.getMatrix());
-            svgToViewMatrix.mapRect(clientRect);
-            this.setClientRect(clientRect);
+                    case kMidMarker:
+                        marker = markerMid;
+                        break;
 
-            clip(canvas, paint);
-
-            if (setupFillPaint(paint, opacity * fillOpacity)) {
-                if (computePaths) {
-                    mFillPath = new Path();
-                    paint.getFillPath(path, mFillPath);
+                    case kEndMarker:
+                        marker = markerEnd;
+                        break;
                 }
-                canvas.drawPath(path, paint);
-            }
-            if (setupStrokePaint(paint, opacity * strokeOpacity)) {
-                if (computePaths) {
-                    mStrokePath = new Path();
-                    paint.getFillPath(path, mStrokePath);
+                if (marker == null) {
+                    continue;
                 }
-                canvas.drawPath(path, paint);
+                marker.renderMarker(canvas, paint, opacity, position, width);
+                Matrix transform = marker.markerTransform;
+                mMarkerPath.addPath(marker.getPath(canvas, paint), transform);
             }
+            contextElement = null;
         }
     }
 
@@ -378,7 +427,7 @@ abstract public class RenderableView extends VirtualView {
      * Sets up paint according to the props set on a view. Returns {@code true}
      * if the fill should be drawn, {@code false} if not.
      */
-    private boolean setupFillPaint(Paint paint, float opacity) {
+    boolean setupFillPaint(Paint paint, float opacity) {
         if (fill != null && fill.size() > 0) {
             paint.reset();
             paint.setFlags(Paint.ANTI_ALIAS_FLAG | Paint.DEV_KERN_TEXT_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
@@ -393,7 +442,7 @@ abstract public class RenderableView extends VirtualView {
      * Sets up paint according to the props set on a view. Returns {@code true}
      * if the stroke should be drawn, {@code false} if not.
      */
-    private boolean setupStrokePaint(Paint paint, float opacity) {
+    boolean setupStrokePaint(Paint paint, float opacity) {
         paint.reset();
         double strokeWidth = relativeOnOther(this.strokeWidth);
         if (strokeWidth == 0 || stroke == null || stroke.size() == 0) {
@@ -450,6 +499,18 @@ abstract public class RenderableView extends VirtualView {
                 paint.setColor(brush);
                 break;
             }
+            case 3: {
+                if (contextElement != null && contextElement.fill != null) {
+                    setupPaint(paint, opacity, contextElement.fill);
+                }
+                break;
+            }
+            case 4: {
+                if (contextElement != null && contextElement.stroke != null) {
+                    setupPaint(paint, opacity, contextElement.stroke);
+                }
+                break;
+            }
         }
 
     }
@@ -462,34 +523,28 @@ abstract public class RenderableView extends VirtualView {
             return -1;
         }
 
+        if (mPointerEvents == PointerEvents.NONE) {
+            return -1;
+        }
+
         float[] dst = new float[2];
         mInvMatrix.mapPoints(dst, src);
         mInvTransform.mapPoints(dst);
         int x = Math.round(dst[0]);
         int y = Math.round(dst[1]);
 
-        if (mRegion == null && mFillPath != null) {
-            mRegion = getRegion(mFillPath);
-        }
-        if (mRegion == null && mPath != null) {
-            mRegion = getRegion(mPath);
-        }
-        if (mStrokeRegion == null && mStrokePath != null) {
-            mStrokeRegion = getRegion(mStrokePath);
-        }
+        initBounds();
+
         if (
             (mRegion == null || !mRegion.contains(x, y)) &&
-            (mStrokeRegion == null || !mStrokeRegion.contains(x, y))
+            (mStrokeRegion == null || !mStrokeRegion.contains(x, y) &&
+            (mMarkerRegion == null || !mMarkerRegion.contains(x, y)))
         ) {
             return -1;
         }
 
         Path clipPath = getClipPath();
         if (clipPath != null) {
-            if (mClipRegionPath != clipPath) {
-                mClipRegionPath = clipPath;
-                mClipRegion = getRegion(clipPath);
-            }
             if (!mClipRegion.contains(x, y)) {
                 return -1;
             }
@@ -498,10 +553,39 @@ abstract public class RenderableView extends VirtualView {
         return getId();
     }
 
-    Region getRegion(Path path) {
-        RectF rectF = new RectF();
-        path.computeBounds(rectF, true);
+    void initBounds() {
+        if (mRegion == null && mFillPath != null) {
+            mFillBounds = new RectF();
+            mFillPath.computeBounds(mFillBounds, true);
+            mRegion = getRegion(mFillPath, mFillBounds);
+        }
+        if (mRegion == null && mPath != null) {
+            mFillBounds = new RectF();
+            mPath.computeBounds(mFillBounds, true);
+            mRegion = getRegion(mPath, mFillBounds);
+        }
+        if (mStrokeRegion == null && mStrokePath != null) {
+            mStrokeBounds = new RectF();
+            mStrokePath.computeBounds(mStrokeBounds, true);
+            mStrokeRegion = getRegion(mStrokePath, mStrokeBounds);
+        }
+        if (mMarkerRegion == null && mMarkerPath != null) {
+            mMarkerBounds = new RectF();
+            mMarkerPath.computeBounds(mMarkerBounds, true);
+            mMarkerRegion = getRegion(mMarkerPath, mMarkerBounds);
+        }
+        Path clipPath = getClipPath();
+        if (clipPath != null) {
+            if (mClipRegionPath != clipPath) {
+                mClipRegionPath = clipPath;
+                mClipBounds = new RectF();
+                clipPath.computeBounds(mClipBounds, true);
+                mClipRegion = getRegion(clipPath, mClipBounds);
+            }
+        }
+    }
 
+    Region getRegion(Path path, RectF rectF) {
         Region region = new Region();
         region.setPath(path,
                 new Region(

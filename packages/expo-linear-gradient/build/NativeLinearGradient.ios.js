@@ -1,9 +1,4 @@
-import React from 'react';
 import { requireNativeViewManager } from '@unimodules/core';
-export default class NativeLinearGradient extends React.PureComponent {
-    render() {
-        return <BaseNativeLinearGradient {...this.props}/>;
-    }
-}
-const BaseNativeLinearGradient = requireNativeViewManager('ExpoLinearGradient');
+const NativeLinearGradient = requireNativeViewManager('ExpoLinearGradient');
+export default NativeLinearGradient;
 //# sourceMappingURL=NativeLinearGradient.ios.js.map

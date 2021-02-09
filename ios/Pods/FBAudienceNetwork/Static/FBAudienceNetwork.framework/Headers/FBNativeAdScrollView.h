@@ -30,13 +30,16 @@ NS_ASSUME_NONNULL_BEGIN
   Contains multiple ads in a scroll view.
 
 
- If adding this view to a XIB or Storyboard, you may recieve the error "Unknown class FBNativeAdScrollView in Interface Builder file" in some cases. This error is caused by the linker failing to include FBNativeAdScrollView in your build. To resolve this, call [FBNativeAdScrollView class] in your project, or add "-all_load -ObjC" to "Other Linker Flags" in your project settings.
+ If adding this view to a XIB or Storyboard, you may recieve the error "Unknown class FBNativeAdScrollView in Interface
+ Builder file" in some cases. This error is caused by the linker failing to include FBNativeAdScrollView in your build.
+ To resolve this, call [FBNativeAdScrollView class] in your project, or add "-all_load -ObjC" to "Other Linker Flags" in
+ your project settings.
  */
-FB_CLASS_EXPORT FB_SUBCLASSING_RESTRICTED
-@interface FBNativeAdScrollView : UIView
+FB_CLASS_EXPORT FB_SUBCLASSING_RESTRICTED @interface FBNativeAdScrollView : UIView
 
 /**
-  Maximum native ads that this scroll view will load. Defaults to 10. If changed after calling loadAds, all current ads will be discarded and loadAds must be called again.
+  Maximum native ads that this scroll view will load. Defaults to 10. If changed after calling loadAds, all current ads
+  will be discarded and loadAds must be called again.
  */
 @property (nonatomic, assign, readonly) NSUInteger maximumNativeAdCount;
 
@@ -66,16 +69,18 @@ FB_CLASS_EXPORT FB_SUBCLASSING_RESTRICTED
 @property (nonatomic, weak, nullable) id<FBNativeAdDelegate> delegate;
 
 /**
-  Creates a native ad horizontal scroll view for a given native ads manager and native ad template. The manager can be preloaded with ads, and loadAds will use the preloaded ads from the manager. Otherwise, the scroll view uses the manager to load ads normally.
+  Creates a native ad horizontal scroll view for a given native ads manager and native ad template. The manager can be
+ preloaded with ads, and loadAds will use the preloaded ads from the manager. Otherwise, the scroll view uses the
+ manager to load ads normally.
  @param manager An instance of FBNativeAdManager. Can be preloaded with ads.
  @param type The type of this native ad template. For more information, consult FBNativeAdViewType.
  */
-- (instancetype)initWithNativeAdsManager:(FBNativeAdsManager *)manager
-                                withType:(FBNativeAdViewType)type;
-
+- (instancetype)initWithNativeAdsManager:(FBNativeAdsManager *)manager withType:(FBNativeAdViewType)type;
 
 /**
-  Creates a native ad horizontal scroll view for a given native ads manager and native ad template. The manager can be preloaded with ads, and loadAds will use the preloaded ads from the manager. Otherwise, the scroll view uses the manager to load ads normally.
+  Creates a native ad horizontal scroll view for a given native ads manager and native ad template. The manager can be
+ preloaded with ads, and loadAds will use the preloaded ads from the manager. Otherwise, the scroll view uses the
+ manager to load ads normally.
  @param manager An instance of FBNativeAdManager. Can be preloaded with ads.
  @param type The type of this native ad template. For more information, consult FBNativeAdViewType.
  @param attributes The layout of this native ad template. For more information, consult FBNativeAdViewLayout.
@@ -85,7 +90,9 @@ FB_CLASS_EXPORT FB_SUBCLASSING_RESTRICTED
                           withAttributes:(FBNativeAdViewAttributes *)attributes;
 
 /**
-  Creates a native ad horizontal scroll view for a given native ads manager and native ad template. The manager can be preloaded with ads, and loadAds will use the preloaded ads from the manager. Otherwise, the scroll view uses the manager to load ads normally.
+  Creates a native ad horizontal scroll view for a given native ads manager and native ad template. The manager can be
+ preloaded with ads, and loadAds will use the preloaded ads from the manager. Otherwise, the scroll view uses the
+ manager to load ads normally.
  @param manager An instance of FBNativeAdManager. Can be preloaded with ads.
  @param type The type of this native ad template. For more information, consult FBNativeAdViewType.
  @param attributes The layout of this native ad template. For more information, consult FBNativeAdViewLayout.
@@ -96,23 +103,26 @@ FB_CLASS_EXPORT FB_SUBCLASSING_RESTRICTED
                           withAttributes:(FBNativeAdViewAttributes *)attributes
                              withMaximum:(NSUInteger)maximumNativeAdCount;
 
-
 /**
   This is a method to create a native ad horizontal scroll view from a user provided view.
  @param manager An instance of FBNativeAdManager. Can be preloaded with ads.
- @param childViewProvider Block that creates new views for each loaded native ad. Must not reuse the same instance, but return a new view for each call. Views may be arbitrarily resized and should support resizing their content through Auto Layout constraints, autoresizing masks, or manual resizing.
+ @param childViewProvider Block that creates new views for each loaded native ad. Must not reuse the same instance, but
+ return a new view for each call. Views may be arbitrarily resized and should support resizing their content through
+ Auto Layout constraints, autoresizing masks, or manual resizing.
  */
 - (instancetype)initWithNativeAdsManager:(FBNativeAdsManager *)manager
-                        withViewProvider:(UIView *(^)( FBNativeAd *nativeAd, NSUInteger position))childViewProvider;
+                        withViewProvider:(UIView * (^)(FBNativeAd *nativeAd, NSUInteger position))childViewProvider;
 
 /**
   This is a method to create a native ad horizontal scroll view from a user provided view.
  @param manager An instance of FBNativeAdManager. Can be preloaded with ads.
- @param childViewProvider Block that creates new views for each loaded native ad. Must not reuse the same instance, but return a new view for each call. Views may be arbitrarily resized and should support resizing their content through Auto Layout constraints, autoresizing masks, or manual resizing.
+ @param childViewProvider Block that creates new views for each loaded native ad. Must not reuse the same instance, but
+ return a new view for each call. Views may be arbitrarily resized and should support resizing their content through
+ Auto Layout constraints, autoresizing masks, or manual resizing.
  @param maximumNativeAdCount Maximum native ads to show at once.
  */
 - (instancetype)initWithNativeAdsManager:(FBNativeAdsManager *)manager
-                        withViewProvider:(UIView *(^)(FBNativeAd *nativeAd, NSUInteger position))childViewProvider
+                        withViewProvider:(UIView * (^)(FBNativeAd *nativeAd, NSUInteger position))childViewProvider
                              withMaximum:(NSUInteger)maximumNativeAdCount NS_DESIGNATED_INITIALIZER;
 
 @end

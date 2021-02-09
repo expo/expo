@@ -77,13 +77,23 @@ extern FBAdExtraHintKeyword const FBAdExtraHintKeywordVideoComputerGames;
 FB_CLASS_EXPORT
 @interface FBAdExtraHint : NSObject
 
-@property (nonatomic, copy, nullable) NSString *contentURL;
-@property (nonatomic, copy, nullable) NSString *extraData;
+@property (nonatomic, copy, nullable)
+    NSString *contentURL FB_DEPRECATED_WITH_MESSAGE("Extra hints are no longer used in Audience Network");
 
-- (instancetype)initWithKeywords:(NSArray<FBAdExtraHintKeyword> *)keywords;
+@property (nonatomic, copy, nullable)
+    NSString *extraData FB_DEPRECATED_WITH_MESSAGE("Extra hints are no longer used in Audience Network");
 
-- (void)addKeyword:(FBAdExtraHintKeyword)keyword;
-- (void)removeKeyword:(FBAdExtraHintKeyword)keyword;
+@property (nonatomic, copy, nullable)
+    NSString *mediationData FB_DEPRECATED_WITH_MESSAGE("Extra hints are no longer used in Audience Network");
+
+- (instancetype)initWithKeywords:(NSArray<FBAdExtraHintKeyword> *)keywords
+    FB_DEPRECATED_WITH_MESSAGE("Keywords are no longer used in Audience Network");
+
+- (void)addKeyword:(FBAdExtraHintKeyword)keyword
+    FB_DEPRECATED_WITH_MESSAGE("Keywords are no longer used in Audience Network");
+
+- (void)removeKeyword:(FBAdExtraHintKeyword)keyword
+    FB_DEPRECATED_WITH_MESSAGE("Keywords are no longer used in Audience Network");
 
 @end
 

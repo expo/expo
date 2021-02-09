@@ -1,0 +1,64 @@
+// Gradle script for downloading assets that make up an OTA update and bundling them into the APK
+
+import org.apache.tools.ant.taskdefs.condition.Os
+import org.gradle.util.GradleVersion
+
+void runBefore(String dependentTaskName, Task task) {
+  Task dependentTask = tasks.findByPath(dependentTaskName);
+  if (dependentTask != null) {
+    dependentTask.dependsOn task
+  }
+}
+
+def config = project.hasProperty("react") ? project.react : [];
+
+afterEvaluate {
+  def projectRoot = file("../../")
+  def inputExcludes = ["android/**", "ios/**"]
+
+  android.applicationVariants.each { variant ->
+    def folderName = variant.name
+    def targetName = folderName.capitalize()
+
+    def assetsDir = file("$buildDir/intermediates/merged_assets/${folderName}/out")
+
+    GradleVersion gradleVersion = GradleVersion.current()
+    if (gradleVersion < GradleVersion.version('5.0')) {
+      assetsDir = file("$buildDir/intermediates/merged_assets/${folderName}/merge${targetName}Assets/out")
+    }
+
+    // Bundle task name for variant
+    def bundleExpoAssetsTaskName = "bundle${targetName}ExpoUpdatesAssets"
+
+    def currentBundleTask = tasks.create(
+        name: bundleExpoAssetsTaskName,
+        type: Exec) {
+      description = "expo-updates: Bundle assets for ${targetName}."
+
+      // Create dirs if they are not there (e.g. the "clean" task just ran)
+      doFirst {
+        assetsDir.mkdirs()
+      }
+
+      // Set up inputs and outputs so gradle can cache the result
+      inputs.files fileTree(dir: projectRoot, excludes: inputExcludes)
+      outputs.dir assetsDir
+
+      // Set up the call to exp
+      workingDir projectRoot
+
+      if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        commandLine("cmd", "/c", ".\\node_modules\\expo-updates\\run-expo.bat", "bundle-assets", projectRoot, "--platform", "android", "--dest", assetsDir)
+      } else {
+        commandLine("./node_modules/expo-updates/run-expo.sh", "bundle-assets", projectRoot, "--platform", "android", "--dest", assetsDir)
+      }
+
+      enabled config."bundleIn${targetName}" || targetName.toLowerCase().contains("release")
+    }
+
+    currentBundleTask.dependsOn("merge${targetName}Resources")
+    currentBundleTask.dependsOn("merge${targetName}Assets")
+
+    runBefore("process${targetName}Resources", currentBundleTask)
+  }
+}

@@ -1,1 +1,0 @@
-{"version":3,"file":"NativeModulesProxy.web.js","sourceRoot":"","sources":["../src/NativeModulesProxy.web.ts"],"names":[],"mappings":"AAAA,eAAe,EAAE,CAAA","sourcesContent":["export default {}"]}

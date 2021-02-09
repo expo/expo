@@ -14,6 +14,7 @@ public class KernelConstants {
   public static final String MANIFEST_URL_KEY = "experienceUrl";
   public static final String NOTIFICATION_MANIFEST_URL_KEY = "notificationExperienceUrl";
   public static final String NOTIFICATION_ACTION_TYPE_KEY = "actionType";
+  // TODO: Remove once we decide to stop supporting shortcuts to experiences.
   public static final String SHORTCUT_MANIFEST_URL_KEY = "shortcutExperienceUrl";
   public static final String HOME_MANIFEST_URL = "";
   public static final String LINKING_URI_KEY = "linkingUri";
@@ -21,7 +22,6 @@ public class KernelConstants {
   public static final String IS_HEADLESS_KEY = "isHeadless";
   public static final String IS_OPTIMISTIC_KEY = "isOptimistic";
   public static final String LOAD_FROM_CACHE_KEY = "loadFromCache";
-  public static final String OPTION_LOAD_NUX_KEY = "loadNux";
   public static final String BUNDLE_TAG = "BUNDLE";
   public static final String HOME_MODULE_NAME = "main";
   public static final String BUNDLE_FILE_PREFIX = "cached-bundle-";
@@ -38,7 +38,6 @@ public class KernelConstants {
   public static final String NOTIFICATION_KEY = "notification";
   public static final String NOTIFICATION_ID_KEY = "notification_id";
   public static final String NOTIFICATION_OBJECT_KEY = "notification_object";
-  public static final String DEV_FLAG = "dev_flag";
 
   public static Class MAIN_ACTIVITY_CLASS = DetachActivity.class;
 

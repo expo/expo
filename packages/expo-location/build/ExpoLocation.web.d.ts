@@ -1,31 +1,26 @@
-interface Coordinates {
-    latitude: number;
-    longitude: number;
-    altitude?: number;
-    accuracy?: number;
-    altitudeAccuracy?: number;
-    heading?: number;
-    speed?: number;
-}
-interface Position {
-    coords: Coordinates;
-    timestamp: number;
-}
-interface PermissionResult {
-    status: string;
-}
+import { PermissionResponse } from 'unimodules-permissions-interface';
+import { LocationLastKnownOptions, LocationObject, LocationOptions } from './Location.types';
+/**
+ * Gets the permission details. The implementation is not very good as it actually requests
+ * for the current location, but there is no better way on web so far :(
+ */
+declare function getPermissionsAsync(): Promise<PermissionResponse>;
 declare const _default: {
     readonly name: string;
     getProviderStatusAsync(): Promise<{
         locationServicesEnabled: boolean;
     }>;
-    getCurrentPositionAsync(options: Object): Promise<Position | null>;
+    getLastKnownPositionAsync(options?: LocationLastKnownOptions): Promise<LocationObject | null>;
+    getCurrentPositionAsync(options: LocationOptions): Promise<LocationObject>;
     removeWatchAsync(watchId: any): Promise<void>;
     watchDeviceHeading(headingId: any): Promise<void>;
     hasServicesEnabledAsync(): Promise<boolean>;
     geocodeAsync(): Promise<any[]>;
     reverseGeocodeAsync(): Promise<any[]>;
-    watchPositionImplAsync(watchId: string, options: Object): Promise<string>;
-    requestPermissionsAsync(): Promise<PermissionResult>;
+    watchPositionImplAsync(watchId: string, options: LocationOptions): Promise<string>;
+    getPermissionsAsync: typeof getPermissionsAsync;
+    requestPermissionsAsync(): Promise<PermissionResponse>;
+    startObserving(): void;
+    stopObserving(): void;
 };
 export default _default;

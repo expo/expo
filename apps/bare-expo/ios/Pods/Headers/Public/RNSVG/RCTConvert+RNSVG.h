@@ -1,0 +1,1 @@
+../../../../../../../node_modules/react-native-svg/ios/Utils/RCTConvert+RNSVG.h

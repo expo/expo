@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <react/components/slider/SliderMeasurementsManager.h>
 #include <react/components/slider/SliderShadowNode.h>
 #include <react/core/ConcreteComponentDescriptor.h>
 
@@ -19,14 +20,12 @@ namespace react {
 class SliderComponentDescriptor final
     : public ConcreteComponentDescriptor<SliderShadowNode> {
  public:
-  SliderComponentDescriptor(
-      SharedEventDispatcher eventDispatcher,
-      const SharedContextContainer &contextContainer)
-      : ConcreteComponentDescriptor(eventDispatcher),
-        imageManager_(
-            contextContainer
-                ? contextContainer->getInstance<SharedImageManager>(
-                      "ImageManager")
+  SliderComponentDescriptor(ComponentDescriptorParameters const &parameters)
+      : ConcreteComponentDescriptor(parameters),
+        imageManager_(std::make_shared<ImageManager>(contextContainer_)),
+        measurementsManager_(
+            SliderMeasurementsManager::shouldMeasureSlider()
+                ? std::make_shared<SliderMeasurementsManager>(contextContainer_)
                 : nullptr) {}
 
   void adopt(UnsharedShadowNode shadowNode) const override {
@@ -39,10 +38,21 @@ class SliderComponentDescriptor final
     // `SliderShadowNode` uses `ImageManager` to initiate image loading and
     // communicate the loading state and results to mounting layer.
     sliderShadowNode->setImageManager(imageManager_);
+
+    if (measurementsManager_) {
+      // `SliderShadowNode` uses `SliderMeasurementsManager` to
+      // provide measurements to Yoga.
+      sliderShadowNode->setSliderMeasurementsManager(measurementsManager_);
+
+      // All `SliderShadowNode`s must have leaf Yoga nodes with properly
+      // setup measure function.
+      sliderShadowNode->enableMeasurement();
+    }
   }
 
  private:
   const SharedImageManager imageManager_;
+  const std::shared_ptr<SliderMeasurementsManager> measurementsManager_;
 };
 
 } // namespace react

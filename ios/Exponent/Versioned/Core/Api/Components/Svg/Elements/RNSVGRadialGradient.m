@@ -9,12 +9,20 @@
 
 @implementation RNSVGRadialGradient
 
+- (instancetype)init
+{
+    if (self = [super init]) {
+        _gradientTransform = CGAffineTransformIdentity;
+    }
+    return self;
+}
+
 - (void)setFx:(RNSVGLength *)fx
 {
     if ([fx isEqualTo:_fx]) {
         return;
     }
-    
+
     _fx = fx;
     [self invalidate];
 }
@@ -24,7 +32,7 @@
     if ([fy isEqualTo:_fy]) {
         return;
     }
-    
+
     _fy = fy;
     [self invalidate];
 }
@@ -34,7 +42,7 @@
     if ([rx isEqualTo:_rx]) {
         return;
     }
-    
+
     _rx = rx;
     [self invalidate];
 }
@@ -44,7 +52,7 @@
     if ([ry isEqualTo:_ry]) {
         return;
     }
-    
+
     _ry = ry;
     [self invalidate];
 }
@@ -54,7 +62,7 @@
     if ([cx isEqualTo:_cx]) {
         return;
     }
-    
+
     _cx = cx;
     [self invalidate];
 }
@@ -64,7 +72,7 @@
     if ([cy isEqualTo:_cy]) {
         return;
     }
-    
+
     _cy = cy;
     [self invalidate];
 }
@@ -74,7 +82,7 @@
     if (gradient == _gradient) {
         return;
     }
-    
+
     _gradient = gradient;
     [self invalidate];
 }
@@ -84,7 +92,7 @@
     if (gradientUnits == _gradientUnits) {
         return;
     }
-    
+
     _gradientUnits = gradientUnits;
     [self invalidate];
 }
@@ -108,11 +116,11 @@
     [painter setUnits:self.gradientUnits];
     [painter setTransform:self.gradientTransform];
     [painter setRadialGradientColors:self.gradient];
-    
+
     if (self.gradientUnits == kRNSVGUnitsUserSpaceOnUse) {
         [painter setUserSpaceBoundingBox:[self.svgView getContextBounds]];
     }
-    
+
     [self.svgView definePainter:painter painterName:self.name];
 }
 

@@ -1,6 +1,11 @@
+import { Localization } from './Localization.types';
 declare const _default: {
-    [propertyName: string]: any;
-    addListener: (eventName: string) => void;
-    removeListeners: (count: number) => void;
+    readonly isRTL: boolean;
+    readonly locale: string;
+    readonly locales: string[];
+    readonly timezone: string;
+    readonly isoCurrencyCodes: string[];
+    readonly region: string | null;
+    getLocalizationAsync(): Promise<Localization>;
 };
 export default _default;

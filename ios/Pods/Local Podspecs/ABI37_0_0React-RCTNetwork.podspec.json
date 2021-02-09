@@ -1,0 +1,27 @@
+{
+  "name": "ABI37_0_0React-RCTNetwork",
+  "version": "0.61.4",
+  "summary": "The networking library of React Native.",
+  "homepage": "http://facebook.github.io/react-native/",
+  "license": "MIT",
+  "authors": "Facebook, Inc. and its affiliates",
+  "platforms": {
+    "ios": "9.0",
+    "tvos": "9.2"
+  },
+  "source": {
+    "path": "."
+  },
+  "source_files": "*.{m,mm}",
+  "preserve_paths": [
+    "package.json",
+    "LICENSE",
+    "LICENSE-docs"
+  ],
+  "header_dir": "ABI37_0_0RCTNetwork",
+  "dependencies": {
+    "ABI37_0_0React-Core/RCTNetworkHeaders": [
+      "0.61.4"
+    ]
+  }
+}

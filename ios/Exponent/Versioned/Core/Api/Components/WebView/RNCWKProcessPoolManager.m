@@ -9,8 +9,8 @@
 #import "RNCWKProcessPoolManager.h"
 
 @interface RNCWKProcessPoolManager() {
-  WKProcessPool *_sharedProcessPool;
-  NSMutableDictionary<NSString *, WKProcessPool *> *_pools;
+    WKProcessPool *_sharedProcessPool;
+    NSMutableDictionary<NSString *, WKProcessPool *> *_pools;
 }
 @end
 
@@ -33,6 +33,7 @@
   }
   return self;
 }
+
 
 - (WKProcessPool *)sharedProcessPool {
     if (!_sharedProcessPool) {

@@ -2,14 +2,19 @@ package expo.modules.camera;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Build;
 
 import com.google.android.cameraview.AspectRatio;
 import com.google.android.cameraview.Constants;
 import com.google.android.cameraview.Size;
-import com.google.android.gms.vision.barcode.Barcode;
+
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.core.interfaces.services.UIManager;
+import org.unimodules.interfaces.permissions.Permissions;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -20,12 +25,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
-import org.unimodules.core.interfaces.services.UIManager;
-import org.unimodules.interfaces.permissions.Permissions;
 import expo.modules.camera.tasks.ResolveTakenPictureAsyncTask;
 
 public class CameraModule extends ExportedModule {
@@ -38,25 +37,6 @@ public class CameraModule extends ExportedModule {
   static final int VIDEO_720P = 2;
   static final int VIDEO_480P = 3;
   static final int VIDEO_4x3 = 4;
-
-  static final Map<String, Object> VALID_BARCODE_TYPES =
-      Collections.unmodifiableMap(new HashMap<String, Object>() {
-        {
-          put("aztec", Barcode.AZTEC);
-          put("ean13", Barcode.EAN_13);
-          put("ean8", Barcode.EAN_8);
-          put("qr", Barcode.QR_CODE);
-          put("pdf417", Barcode.PDF417);
-          put("upc_e", Barcode.UPC_E);
-          put("datamatrix", Barcode.DATA_MATRIX);
-          put("code39", Barcode.CODE_39);
-          put("code93", Barcode.CODE_93);
-          put("itf14", Barcode.ITF);
-          put("codabar", Barcode.CODABAR);
-          put("code128", Barcode.CODE_128);
-          put("upc_a", Barcode.UPC_A);
-        }
-      });
 
   public CameraModule(Context context) {
     super(context);
@@ -81,7 +61,6 @@ public class CameraModule extends ExportedModule {
         put("AutoFocus", getAutoFocusConstants());
         put("WhiteBalance", getWhiteBalanceConstants());
         put("VideoQuality", getVideoQualityConstants());
-        put("BarCodeType", getBarCodeConstants());
         put("FaceDetection", Collections.unmodifiableMap(new HashMap<>()));
       }
 
@@ -137,10 +116,6 @@ public class CameraModule extends ExportedModule {
             put("4:3", VIDEO_4x3);
           }
         });
-      }
-
-      private Map<String, Object> getBarCodeConstants() {
-        return VALID_BARCODE_TYPES;
       }
     });
   }
@@ -219,8 +194,7 @@ public class CameraModule extends ExportedModule {
       promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
       return;
     }
-    int[] grantResults = permissionsManager.getPermissions(new String[] { Manifest.permission.RECORD_AUDIO });
-    if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+    if (permissionsManager.hasGrantedPermissions(Manifest.permission.RECORD_AUDIO)) {
       final File cacheDirectory = getContext().getCacheDir();
       addUIBlock(viewTag, new UIManager.UIBlock<ExpoCameraView>() {
         @Override
@@ -321,5 +295,25 @@ public class CameraModule extends ExportedModule {
     } else {
       manager.addUIBlock(viewTag, block, ExpoCameraView.class);
     }
+  }
+
+  @ExpoMethod
+  public void requestPermissionsAsync(final Promise promise) {
+    Permissions permissionsManager = mModuleRegistry.getModule(Permissions.class);
+    if (permissionsManager == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
+      return;
+    }
+    permissionsManager.askForPermissionsWithPromise(promise, Manifest.permission.CAMERA);
+  }
+
+  @ExpoMethod
+  public void getPermissionsAsync(final Promise promise) {
+    Permissions permissionsManager = mModuleRegistry.getModule(Permissions.class);
+    if (permissionsManager == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
+      return;
+    }
+    permissionsManager.getPermissionsWithPromise(promise, Manifest.permission.CAMERA);
   }
 }

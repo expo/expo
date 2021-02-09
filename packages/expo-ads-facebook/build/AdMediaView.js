@@ -1,16 +1,15 @@
+import { requireNativeViewManager } from '@unimodules/core';
 import nullthrows from 'nullthrows';
 import React from 'react';
-import { requireNativeViewManager } from '@unimodules/core';
 import { AdMediaViewContext } from './withNativeAd';
 export default class AdMediaView extends React.Component {
     render() {
-        return (<AdMediaViewContext.Consumer>
-        {(contextValue) => {
-            let context = nullthrows(contextValue);
-            return <NativeAdMediaView {...this.props} ref={context.nativeRef}/>;
-        }}
-      </AdMediaViewContext.Consumer>);
+        return (React.createElement(AdMediaViewContext.Consumer, null, (contextValue) => {
+            const context = nullthrows(contextValue);
+            return React.createElement(NativeAdMediaView, Object.assign({}, this.props, { ref: context.nativeRef }));
+        }));
     }
 }
+// eslint-disable-next-line @typescript-eslint/no-redeclare -- the type and variable share a name
 export const NativeAdMediaView = requireNativeViewManager('MediaView');
 //# sourceMappingURL=AdMediaView.js.map

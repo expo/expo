@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/NSMutableDictionary+Branch.h
+../../../Branch/Branch-SDK/NSMutableDictionary+Branch.h

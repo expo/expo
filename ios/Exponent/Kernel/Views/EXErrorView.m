@@ -94,9 +94,13 @@
       } else if (_appRecord.appLoader.manifestUrl) {
         NSString *url = _appRecord.appLoader.manifestUrl.absoluteString;
         if ([self _urlLooksLikeLAN:url]) {
+          NSString *extraLANPermissionText = @"";
+          if (@available(iOS 14, *)) {
+            extraLANPermissionText = @", and that you have granted Expo Go the Local Network permission in the Settings app,";
+          }
           _lblError.text = [NSString stringWithFormat:
-                            @"%@ It looks like you may be using a LAN URL. "
-                            "Make sure your device is on the same network as the server or try using a tunnel.", _lblError.text];
+                            @"%@\n\nIt looks like you may be using a LAN URL. "
+                            "Make sure your device is on the same network as the server%@ or try using the tunnel connection type.", _lblError.text, extraLANPermissionText];
         }
       }
       break;

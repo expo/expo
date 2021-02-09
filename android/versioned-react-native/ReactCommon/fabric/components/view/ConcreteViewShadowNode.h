@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <react/components/view/AccessibleShadowNode.h>
 #include <react/components/view/ViewEventEmitter.h>
 #include <react/components/view/ViewProps.h>
 #include <react/components/view/YogaLayoutableShadowNode.h>
@@ -28,13 +27,14 @@ namespace react {
 template <
     const char *concreteComponentName,
     typename ViewPropsT = ViewProps,
-    typename ViewEventEmitterT = ViewEventEmitter>
+    typename ViewEventEmitterT = ViewEventEmitter,
+    typename... Ts>
 class ConcreteViewShadowNode : public ConcreteShadowNode<
                                    concreteComponentName,
+                                   YogaLayoutableShadowNode,
                                    ViewPropsT,
-                                   ViewEventEmitterT>,
-                               public AccessibleShadowNode,
-                               public YogaLayoutableShadowNode {
+                                   ViewEventEmitterT,
+                                   Ts...> {
   static_assert(
       std::is_base_of<ViewProps, ViewPropsT>::value,
       "ViewPropsT must be a descendant of ViewProps");
@@ -46,70 +46,42 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
       "ViewPropsT must be a descendant of AccessibilityProps");
 
  public:
-  using BaseShadowNode =
-      ConcreteShadowNode<concreteComponentName, ViewPropsT, ViewEventEmitterT>;
-  using ConcreteViewProps = ViewPropsT;
+  using BaseShadowNode = ConcreteShadowNode<
+      concreteComponentName,
+      YogaLayoutableShadowNode,
+      ViewPropsT,
+      ViewEventEmitterT,
+      Ts...>;
 
   ConcreteViewShadowNode(
-      const ShadowNodeFragment &fragment,
-      const ShadowNodeCloneFunction &cloneFunction)
-      : BaseShadowNode(fragment, cloneFunction),
-        AccessibleShadowNode(
-            std::static_pointer_cast<const ConcreteViewProps>(fragment.props)),
-        YogaLayoutableShadowNode() {
-    YogaLayoutableShadowNode::setProps(
-        *std::static_pointer_cast<const ConcreteViewProps>(fragment.props));
-    YogaLayoutableShadowNode::setChildren(
-        BaseShadowNode::template getChildrenSlice<YogaLayoutableShadowNode>());
-  };
-
-  ConcreteViewShadowNode(
-      const ShadowNode &sourceShadowNode,
-      const ShadowNodeFragment &fragment)
-      : BaseShadowNode(sourceShadowNode, fragment),
-        AccessibleShadowNode(
-            static_cast<const ConcreteViewShadowNode &>(sourceShadowNode),
-            std::static_pointer_cast<const ConcreteViewProps>(fragment.props)),
-        YogaLayoutableShadowNode(
-            static_cast<const ConcreteViewShadowNode &>(sourceShadowNode)) {
-    if (fragment.props) {
-      YogaLayoutableShadowNode::setProps(
-          *std::static_pointer_cast<const ConcreteViewProps>(fragment.props));
-    }
-
-    if (fragment.children) {
-      YogaLayoutableShadowNode::setChildren(
-          BaseShadowNode::template getChildrenSlice<
-              YogaLayoutableShadowNode>());
-    }
-  };
-
-  void appendChild(const SharedShadowNode &child) {
-    ensureUnsealed();
-
-    ShadowNode::appendChild(child);
-
-    auto nonConstChild = const_cast<ShadowNode *>(child.get());
-    auto yogaLayoutableChild =
-        dynamic_cast<YogaLayoutableShadowNode *>(nonConstChild);
-    if (yogaLayoutableChild) {
-      YogaLayoutableShadowNode::appendChild(yogaLayoutableChild);
-    }
+      ShadowNodeFragment const &fragment,
+      ShadowNodeFamily::Shared const &family,
+      ShadowNodeTraits traits)
+      : BaseShadowNode(fragment, family, traits) {
+    initialize();
   }
 
-  LayoutableShadowNode *cloneAndReplaceChild(
-      LayoutableShadowNode *child,
-      int suggestedIndex = -1) override {
-    ensureUnsealed();
-    auto childShadowNode = static_cast<const ConcreteViewShadowNode *>(child);
-    auto clonedChildShadowNode =
-        std::static_pointer_cast<ConcreteViewShadowNode>(
-            childShadowNode->clone({}));
-    ShadowNode::replaceChild(
-        childShadowNode->shared_from_this(),
-        clonedChildShadowNode,
-        suggestedIndex);
-    return clonedChildShadowNode.get();
+  ConcreteViewShadowNode(
+      ShadowNode const &sourceShadowNode,
+      ShadowNodeFragment const &fragment)
+      : BaseShadowNode(sourceShadowNode, fragment) {
+    initialize();
+  }
+
+  using ConcreteViewProps = ViewPropsT;
+
+  using BaseShadowNode::BaseShadowNode;
+
+  static ShadowNodeTraits BaseTraits() {
+    auto traits = BaseShadowNode::BaseTraits();
+    traits.set(ShadowNodeTraits::Trait::ViewKind);
+    traits.set(ShadowNodeTraits::Trait::FormsStackingContext);
+    traits.set(ShadowNodeTraits::Trait::FormsView);
+    return traits;
+  }
+
+  Transform getTransform() const override {
+    return BaseShadowNode::getConcreteProps().transform;
   }
 
 #pragma mark - DebugStringConvertible
@@ -128,6 +100,11 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
     return list;
   }
 #endif
+
+ private:
+  void initialize() noexcept {
+    BaseShadowNode::orderIndex_ = BaseShadowNode::getConcreteProps().zIndex;
+  }
 };
 
 } // namespace react

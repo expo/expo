@@ -1,11 +1,12 @@
-import { RCTDeviceEventEmitter, RCTEventEmitter } from './nativeEmitters';
+import { DeviceEventEmitter } from 'react-native';
+import { RCTEventEmitter } from './nativeEmitters';
 /**
  * This emitter is used for sending synthetic native events to listeners
  * registered in the API layer with `NativeEventEmitter`.
  */
 class SyntheticPlatformEmitter {
     constructor() {
-        this._emitter = new RCTEventEmitter(RCTDeviceEventEmitter.sharedSubscriber);
+        this._emitter = new RCTEventEmitter(DeviceEventEmitter.sharedSubscriber);
     }
     emit(eventName, props) {
         this._emitter.emit(eventName, props);

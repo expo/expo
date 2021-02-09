@@ -1,6 +1,5 @@
-import { Platform as PlatformExpo } from '@unimodules/core';
-import { Linking, Platform } from 'react-native';
 import { EventEmitter } from 'fbemitter';
+import { Linking } from 'react-native';
 
 const allOriginalPropertyDescriptors = new Map();
 
@@ -14,7 +13,7 @@ export function mockProperty(object, property, mockValue) {
 
   // Select fields to inherit from the original descriptor
   if (descriptor) {
-    let { configurable, enumerable, writable } = descriptor;
+    const { configurable, enumerable, writable } = descriptor;
     descriptor = { configurable, enumerable, writable };
   }
 
@@ -28,12 +27,12 @@ export function mockProperty(object, property, mockValue) {
 }
 
 export function unmockProperty(object, property) {
-  let descriptors = allOriginalPropertyDescriptors.get(object);
+  const descriptors = allOriginalPropertyDescriptors.get(object);
   if (!descriptors || !descriptors.has(property)) {
     return;
   }
 
-  let descriptor = descriptors.get(property);
+  const descriptor = descriptors.get(property);
   if (descriptor) {
     Object.defineProperty(object, property, descriptor);
   } else {
@@ -48,8 +47,8 @@ export function unmockProperty(object, property) {
 }
 
 export function unmockAllProperties() {
-  for (let [object, descriptors] of allOriginalPropertyDescriptors) {
-    for (let [property, descriptor] of descriptors) {
+  for (const [object, descriptors] of allOriginalPropertyDescriptors) {
+    for (const [property, descriptor] of descriptors) {
       if (descriptor) {
         Object.defineProperty(object, property, descriptor);
       } else {
@@ -60,49 +59,15 @@ export function unmockAllProperties() {
   allOriginalPropertyDescriptors.clear();
 }
 
-export function mockPlatformIOS() {
-  mockProperty(Platform, 'OS', 'ios');
-  mockProperty(PlatformExpo, 'OS', 'ios');
-}
-
-export function mockPlatformAndroid() {
-  mockProperty(Platform, 'OS', 'android');
-  mockProperty(PlatformExpo, 'OS', 'android');
-}
-
-export function mockPlatformWeb() {
-  mockProperty(Platform, 'OS', 'web');
-  mockProperty(PlatformExpo, 'OS', 'web');
-}
-
-export function describeCrossPlatform(message, tests) {
-  describe(`  ${message}`, () => {
-    beforeEach(mockPlatformIOS);
-    tests();
-    afterAll(() => {
-      unmockProperty(Platform, 'OS');
-      unmockProperty(PlatformExpo, 'OS');
-    });
-  });
-  describe(`🤖  ${message}`, () => {
-    beforeEach(mockPlatformAndroid);
-    tests();
-    afterAll(() => {
-      unmockProperty(Platform, 'OS');
-      unmockProperty(PlatformExpo, 'OS');
-    });
-  });
-}
-
 export function mockLinking() {
-  let emitter = new EventEmitter();
-  let subscriptions = {};
+  const emitter = new EventEmitter();
+  const subscriptions = {};
 
   mockProperty(
     Linking,
     'addEventListener',
     jest.fn((type, cb) => {
-      let subscription = emitter.addListener(type, cb);
+      const subscription = emitter.addListener(type, cb);
       subscriptions[type] = subscriptions[type] || new Map();
       subscriptions[type].set(cb, subscription);
     })

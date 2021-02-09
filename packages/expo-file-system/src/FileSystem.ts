@@ -1,20 +1,25 @@
-import { UnavailabilityError } from '@unimodules/core';
-import { EventEmitter, Subscription } from '@unimodules/core';
-import UUID from 'uuid-js';
-import ExponentFileSystem from './ExponentFileSystem';
+import { EventEmitter, Subscription, UnavailabilityError } from '@unimodules/core';
 import { Platform } from 'react-native';
+import uuidv4 from 'uuid/v4';
 
+import ExponentFileSystem from './ExponentFileSystem';
 import {
   DownloadOptions,
-  DownloadResult,
+  DownloadPauseState,
   DownloadProgressCallback,
   DownloadProgressData,
-  DownloadPauseState,
-  FileInfo,
+  DownloadResult,
   EncodingType,
+  FileInfo,
+  FileSystemAcceptedUploadHttpMethod,
+  FileSystemDownloadResult,
+  FileSystemSessionType,
+  FileSystemUploadOptions,
+  FileSystemUploadResult,
+  FileSystemUploadType,
+  ProgressEvent,
   ReadingOptions,
   WritingOptions,
-  ProgressEvent,
 } from './FileSystem.types';
 
 if (!ExponentFileSystem) {
@@ -23,19 +28,25 @@ if (!ExponentFileSystem) {
   );
 }
 // Prevent webpack from pruning this.
-const _unused = new EventEmitter(ExponentFileSystem);
+const _unused = new EventEmitter(ExponentFileSystem); // eslint-disable-line
 
 export {
   DownloadOptions,
-  DownloadResult,
+  DownloadPauseState,
   DownloadProgressCallback,
   DownloadProgressData,
-  DownloadPauseState,
-  FileInfo,
+  DownloadResult,
   EncodingType,
+  FileInfo,
+  FileSystemDownloadResult,
+  FileSystemAcceptedUploadHttpMethod,
+  FileSystemSessionType,
+  FileSystemUploadOptions,
+  FileSystemUploadResult,
+  FileSystemUploadType,
+  ProgressEvent,
   ReadingOptions,
   WritingOptions,
-  ProgressEvent,
 };
 
 function normalizeEndingSlash(p: string | null): string | null {
@@ -104,6 +115,14 @@ export async function deleteAsync(
   return await ExponentFileSystem.deleteAsync(fileUri, options);
 }
 
+export async function deleteLegacyDocumentDirectoryAndroid(): Promise<void> {
+  if (Platform.OS !== 'android' || documentDirectory == null) {
+    return;
+  }
+  const legacyDocumentDirectory = `${documentDirectory}ExperienceData/`;
+  return await deleteAsync(legacyDocumentDirectory, { idempotent: true });
+}
+
 export async function moveAsync(options: { from: string; to: string }): Promise<void> {
   if (!ExponentFileSystem.moveAsync) {
     throw new UnavailabilityError('expo-file-system', 'moveAsync');
@@ -153,11 +172,32 @@ export async function downloadAsync(
   uri: string,
   fileUri: string,
   options: DownloadOptions = {}
-): Promise<DownloadResult> {
+): Promise<FileSystemDownloadResult> {
   if (!ExponentFileSystem.downloadAsync) {
     throw new UnavailabilityError('expo-file-system', 'downloadAsync');
   }
-  return await ExponentFileSystem.downloadAsync(uri, fileUri, options);
+
+  return await ExponentFileSystem.downloadAsync(uri, fileUri, {
+    sessionType: FileSystemSessionType.BACKGROUND,
+    ...options,
+  });
+}
+
+export async function uploadAsync(
+  url: string,
+  fileUri: string,
+  options: FileSystemUploadOptions = {}
+): Promise<FileSystemUploadResult> {
+  if (!ExponentFileSystem.uploadAsync) {
+    throw new UnavailabilityError('expo-file-system', 'uploadAsync');
+  }
+
+  return await ExponentFileSystem.uploadAsync(url, fileUri, {
+    sessionType: FileSystemSessionType.BACKGROUND,
+    uploadType: FileSystemUploadType.BINARY_CONTENT,
+    ...options,
+    httpMethod: (options.httpMethod || 'POST').toUpperCase(),
+  });
 }
 
 export function createDownloadResumable(
@@ -187,7 +227,7 @@ export class DownloadResumable {
     callback?: DownloadProgressCallback,
     resumeData?: string
   ) {
-    this._uuid = UUID.create(4).toString();
+    this._uuid = uuidv4();
     this._url = url;
     this._fileUri = fileUri;
     this._options = options;
@@ -197,7 +237,7 @@ export class DownloadResumable {
     this._emitter = new EventEmitter(ExponentFileSystem);
   }
 
-  async downloadAsync(): Promise<DownloadResult | undefined> {
+  async downloadAsync(): Promise<FileSystemDownloadResult | undefined> {
     if (!ExponentFileSystem.downloadResumableStartAsync) {
       throw new UnavailabilityError('expo-file-system', 'downloadResumableStartAsync');
     }
@@ -225,7 +265,7 @@ export class DownloadResumable {
     }
   }
 
-  async resumeAsync(): Promise<DownloadResult | undefined> {
+  async resumeAsync(): Promise<FileSystemDownloadResult | undefined> {
     if (!ExponentFileSystem.downloadResumableStartAsync) {
       throw new UnavailabilityError('expo-file-system', 'downloadResumableStartAsync');
     }
@@ -253,7 +293,7 @@ export class DownloadResumable {
       return;
     }
     this._subscription = this._emitter.addListener(
-      'Exponent.downloadProgress',
+      'expo-file-system.downloadProgress',
       (event: ProgressEvent) => {
         if (event.uuid === this._uuid) {
           const callback = this._callback;

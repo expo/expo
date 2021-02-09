@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <react/imagemanager/ImageInstrumentation.h>
 #include <react/imagemanager/ImageResponse.h>
 #include <react/imagemanager/ImageResponseObserver.h>
 #include <react/imagemanager/ImageResponseObserverCoordinator.h>
@@ -25,15 +26,11 @@ namespace react {
 class ImageRequest final {
  public:
   /*
-   * The exception which is thrown when `ImageRequest` is being deallocated
-   * if the future is not ready yet.
-   */
-  class ImageNoLongerNeededException;
-
-  /*
    * The default constructor
    */
-  ImageRequest(const ImageSource &imageSource);
+  ImageRequest(
+      const ImageSource &imageSource,
+      std::shared_ptr<const ImageInstrumentation> instrumentation);
 
   /*
    * The move constructor.
@@ -53,13 +50,36 @@ class ImageRequest final {
   void setCancelationFunction(std::function<void(void)> cancelationFunction);
 
   /*
-   * Get observer coordinator.
+   * Returns stored observer coordinator as a shared pointer.
+   * Retain this *or* `ImageRequest` to ensure a correct lifetime of the object.
    */
-  const ImageResponseObserverCoordinator *getObserverCoordinator() const;
+  const std::shared_ptr<const ImageResponseObserverCoordinator>
+      &getSharedObserverCoordinator() const;
+
+  /*
+   * Returns stored observer coordinator as a reference.
+   * Use this if a correct lifetime of the object is ensured in some other way
+   * (e.g. by retaining an `ImageRequest`).
+   */
+  const ImageResponseObserverCoordinator &getObserverCoordinator() const;
+
+  /*
+   * Returns stored image instrumentation object as a shared pointer.
+   * Retain this *or* `ImageRequest` to ensure a correct lifetime of the object.
+   */
+  const std::shared_ptr<const ImageInstrumentation>
+      &getSharedImageInstrumentation() const;
+
+  /*
+   * Returns the image instrumentation object specific to this request.
+   * Use this if a correct lifetime of the object is ensured in some other way
+   * (e.g. by retaining an `ImageRequest`).
+   */
+  const ImageInstrumentation &getImageInstrumentation() const;
 
  private:
   /*
-   * Image source assosiated with the request.
+   * Image source associated with the request.
    */
   ImageSource imageSource_;
 
@@ -67,6 +87,11 @@ class ImageRequest final {
    * Event coordinator associated with the reqest.
    */
   std::shared_ptr<const ImageResponseObserverCoordinator> coordinator_{};
+
+  /*
+   * Image instrumentation specific to the request.
+   */
+  std::shared_ptr<const ImageInstrumentation> instrumentation_;
 
   /*
    * Function we can call to cancel image request (see destructor).

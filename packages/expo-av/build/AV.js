@@ -1,5 +1,5 @@
-import { Asset } from 'expo-asset';
 import { Platform } from '@unimodules/core';
+import { Asset } from 'expo-asset';
 import ExponentAV from './ExponentAV';
 // TODO add:
 //  disableFocusOnAndroid
@@ -37,7 +37,7 @@ export function getNativeSourceFromSource(source) {
             headers,
         };
     }
-    let asset = _getAssetFromPlaybackSource(source);
+    const asset = _getAssetFromPlaybackSource(source);
     if (asset != null) {
         uri = asset.localUri || asset.uri;
     }
@@ -104,7 +104,7 @@ export async function getNativeSourceAndFullInitialStatusForLoadAsync(source, in
         };
     }
     // Download first if necessary.
-    let asset = _getAssetFromPlaybackSource(source);
+    const asset = _getAssetFromPlaybackSource(source);
     if (downloadFirst && asset) {
         // TODO we can download remote uri too once @nikki93 has integrated this into Asset
         await asset.downloadAsync();

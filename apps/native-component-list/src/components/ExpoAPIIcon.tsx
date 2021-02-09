@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, StyleProp, ImageStyle } from 'react-native';
+import { Image, ImageStyle, StyleProp } from 'react-native';
 
 import Icons from '../constants/Icons';
 

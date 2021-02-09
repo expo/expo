@@ -1,11 +1,10 @@
-import Constants from 'expo-constants';
 import { UnavailabilityError } from '@unimodules/core';
+import Constants from 'expo-constants';
 import invariant from 'invariant';
 
 import ExpoGoogleSignIn from './ExpoGoogleSignIn';
-import GoogleUser from './GoogleUser';
-
 import { GoogleSignInOptions, GoogleSignInAuthResult } from './GoogleSignIn.types';
+import GoogleUser from './GoogleUser';
 
 export const { ERRORS, SCOPES, TYPES } = ExpoGoogleSignIn;
 
@@ -60,7 +59,7 @@ async function invokeAuthMethod(method: string): Promise<GoogleUser | null> {
   }
   await ensureGoogleIsInitializedAsync();
   const payload = await ExpoGoogleSignIn[method]();
-  let account = payload != null ? new GoogleUser(payload) : null;
+  const account = payload != null ? new GoogleUser(payload) : null;
   return setCurrentUser(account);
 }
 

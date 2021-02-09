@@ -35,6 +35,11 @@ public class ScreenContainerViewManager extends ViewGroupManager<ScreenContainer
   }
 
   @Override
+  public void removeAllViews(ScreenContainer parent) {
+    parent.removeAllScreens();
+  }
+
+  @Override
   public int getChildCount(ScreenContainer parent) {
     return parent.getScreenCount();
   }
@@ -42,5 +47,10 @@ public class ScreenContainerViewManager extends ViewGroupManager<ScreenContainer
   @Override
   public View getChildAt(ScreenContainer parent, int index) {
     return parent.getScreenAt(index);
+  }
+
+  @Override
+  public boolean needsCustomLayoutForChildren() {
+    return true;
   }
 }

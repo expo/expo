@@ -1,7 +1,6 @@
 import React from 'react';
-
-import { View, StyleSheet, Button } from 'react-native';
-import { Transitioning, Transition } from 'react-native-reanimated';
+import { Button, StyleSheet, View } from 'react-native';
+import { Transition, Transitioning } from 'react-native-reanimated';
 
 interface State {
   perc: number;
@@ -18,7 +17,7 @@ export default class Example extends React.Component {
   ref?: any = React.createRef();
 
   render() {
-    const transition = <Transition.Change interpolation="easeInOut" />;
+    const transition = <Transition.Change interpolation="easeInOut" durationMs={400} />;
 
     const { perc } = this.state;
 

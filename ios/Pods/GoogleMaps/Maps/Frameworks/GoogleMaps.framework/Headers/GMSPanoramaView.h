@@ -13,6 +13,7 @@
 
 #import "GMSOrientation.h"
 #import "GMSPanoramaLayer.h"
+#import "GMSPanoramaSource.h"
 
 @class GMSMarker;
 @class GMSPanorama;
@@ -20,7 +21,7 @@
 @class GMSPanoramaCameraUpdate;
 @class GMSPanoramaView;
 
-NS_ASSUME_NONNULL_BEGIN;
+NS_ASSUME_NONNULL_BEGIN
 
 /** Delegate for events on GMSPanoramaView. */
 @protocol GMSPanoramaViewDelegate<NSObject>
@@ -117,7 +118,7 @@ NS_ASSUME_NONNULL_BEGIN;
  *
  * Can be set to nil to clear the view.
  */
-@property(nonatomic, strong, nullable) GMSPanorama *panorama;
+@property(nonatomic, nullable) GMSPanorama *panorama;
 
 /** GMSPanoramaView delegate. */
 @property(nonatomic, weak, nullable) IBOutlet id<GMSPanoramaViewDelegate> delegate;
@@ -135,7 +136,7 @@ NS_ASSUME_NONNULL_BEGIN;
  *
  * This does not limit programmatic movement of the camera.
  */
-@property(nonatomic, assign) BOOL orientationGestures;
+@property(nonatomic) BOOL orientationGestures;
 
 /**
  * Controls whether zoom gestures are enabled (default) or disabled. If enabled, users may pinch to
@@ -143,7 +144,7 @@ NS_ASSUME_NONNULL_BEGIN;
  *
  * This does not limit programmatic movement of the camera.
  */
-@property(nonatomic, assign) BOOL zoomGestures;
+@property(nonatomic) BOOL zoomGestures;
 
 /**
  * Controls whether navigation gestures are enabled (default) or disabled. If enabled, users may use
@@ -151,24 +152,24 @@ NS_ASSUME_NONNULL_BEGIN;
  *
  * This does not limit programmatic control of the panorama.
  */
-@property(nonatomic, assign) BOOL navigationGestures;
+@property(nonatomic) BOOL navigationGestures;
 
 /**
  * Controls whether the tappable navigation links are hidden or visible (default). Hidden navigation
  * links cannot be tapped.
  */
-@property(nonatomic, assign) BOOL navigationLinksHidden;
+@property(nonatomic) BOOL navigationLinksHidden;
 
 /**
  * Controls whether the street name overlays are hidden or visible (default).
  */
-@property(nonatomic, assign) BOOL streetNamesHidden;
+@property(nonatomic) BOOL streetNamesHidden;
 
 /**
  * Controls the panorama's camera. Setting a new camera here jumps to the new camera value, with no
  * animation.
  */
-@property(nonatomic, strong) GMSPanoramaCamera *camera;
+@property(nonatomic) GMSPanoramaCamera *camera;
 
 /**
  * Accessor for the custom CALayer type used for the layer.
@@ -205,6 +206,23 @@ NS_ASSUME_NONNULL_BEGIN;
  * |coordinate|.
  */
 - (void)moveNearCoordinate:(CLLocationCoordinate2D)coordinate radius:(NSUInteger)radius;
+
+/**
+ * Similar to moveNearCoordinate: but allows specifying a source near |coordinate|.
+ *
+ * This API is experimental and may not always filter by source.
+ */
+- (void)moveNearCoordinate:(CLLocationCoordinate2D)coordinate source:(GMSPanoramaSource)source;
+
+/**
+ * Similar to moveNearCoordinate: but allows specifying a search radius (meters) around
+ * |coordinate| and a source.
+ *
+ * This API is experimental and may not always filter by source.
+ */
+- (void)moveNearCoordinate:(CLLocationCoordinate2D)coordinate
+                    radius:(NSUInteger)radius
+                    source:(GMSPanoramaSource)source;
 
 /**
  * Requests a panorama with |panoramaID|.
@@ -255,6 +273,28 @@ NS_ASSUME_NONNULL_BEGIN;
                    nearCoordinate:(CLLocationCoordinate2D)coordinate
                            radius:(NSUInteger)radius;
 
+/**
+ * Convenience constructor for GMSPanoramaView, which searches for and displays a GMSPanorama near
+ * |coordinate|. This performs a similar action to that of moveNearCoordinate:source, and will call
+ * the same delegate methods.
+ *
+ * This API is experimental and may not always filter by source.
+ */
++ (instancetype)panoramaWithFrame:(CGRect)frame
+                   nearCoordinate:(CLLocationCoordinate2D)coordinate
+                           source:(GMSPanoramaSource)source;
+/**
+ * Convenience constructor for GMSPanoramaView, which searches for and displays a GMSPanorama near
+ * |coordinate|. This performs a similar action to that of moveNearCoordinate:radius:source, and
+ * will call the same delegate methods.
+ *
+ * This API is experimental and may not always filter by source.
+ */
++ (instancetype)panoramaWithFrame:(CGRect)frame
+                   nearCoordinate:(CLLocationCoordinate2D)coordinate
+                           radius:(NSUInteger)radius
+                           source:(GMSPanoramaSource)source;
+
 @end
 
-NS_ASSUME_NONNULL_END;
+NS_ASSUME_NONNULL_END

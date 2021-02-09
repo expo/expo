@@ -1,11 +1,10 @@
-import { AppLoading } from 'expo';
+import { Ionicons } from '@expo/vector-icons';
+import AppLoading from 'expo-app-loading';
 import { Asset } from 'expo-asset';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { connect } from 'react-redux';
-import { Ionicons } from '@expo/vector-icons';
 
-@connect()
 class App extends React.Component {
   state = { assetsAreLoaded: false };
 
@@ -35,13 +34,13 @@ class App extends React.Component {
 
   _handleEventAsync = async ({ nativeEvent, type = 'Event' }) => {
     console.log(type);
-    for (let item of nativeEvent.collection) {
+    for (const item of nativeEvent.collection) {
       console.log(item);
     }
   };
 }
 
-export default App;
+export default connect()(App);
 
 const styles = StyleSheet.create({
   container: {

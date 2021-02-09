@@ -2,7 +2,7 @@ import { UnavailabilityError } from '@unimodules/core';
 
 import Sharing from './ExpoSharing';
 
-type ShareOptions = {
+export type SharingOptions = {
   mimeType?: string;
   UTI?: string;
   dialogTitle?: string;
@@ -19,7 +19,7 @@ export async function isAvailableAsync(): Promise<boolean> {
   return false;
 }
 
-export async function shareAsync(url: string, options: ShareOptions = {}): Promise<{}> {
+export async function shareAsync(url: string, options: SharingOptions = {}): Promise<object> {
   if (!Sharing || !Sharing.shareAsync) {
     throw new UnavailabilityError('Sharing', 'shareAsync');
   }

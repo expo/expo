@@ -75,7 +75,7 @@ function createRemoteConsole(originalConsole) {
      */
     function _defineConsoleLogMethod(name, level) {
         enhancedConsole[name] = function __expoConsoleLog(...data) {
-            let originalMethod = originalConsole[name];
+            const originalMethod = originalConsole[name];
             if (typeof originalMethod === 'function') {
                 originalMethod.apply(originalConsole, data);
             }

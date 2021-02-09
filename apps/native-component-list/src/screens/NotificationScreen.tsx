@@ -1,21 +1,89 @@
+import { Subscription } from '@unimodules/core';
+import Constants from 'expo-constants';
+import * as Notifications from 'expo-notifications';
+import * as Permissions from 'expo-permissions';
 import React from 'react';
 import { Alert, Platform, ScrollView } from 'react-native';
-import { Notifications } from 'expo';
-import * as Permissions from 'expo-permissions';
-import HeadingText from '../components/HeadingText';
-import ListButton from '../components/ListButton';
 
 import registerForPushNotificationsAsync from '../api/registerForPushNotificationsAsync';
+import HeadingText from '../components/HeadingText';
+import ListButton from '../components/ListButton';
+import MonoText from '../components/MonoText';
 
-export default class NotificationScreen extends React.Component {
+export default class NotificationScreen extends React.Component<
+  // See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  {},
+  {
+    lastNotifications?: Notifications.Notification;
+  }
+> {
   static navigationOptions = {
     title: 'Notifications',
   };
 
+  private _onReceivedListener: Subscription | undefined;
+  private _onResponseReceivedListener: Subscription | undefined;
+
+  // See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  constructor(props: {}) {
+    super(props);
+    this.state = {};
+  }
+
+  componentDidMount() {
+    if (Platform.OS !== 'web') {
+      this._onReceivedListener = Notifications.addNotificationReceivedListener(
+        this._handelReceivedNotification
+      );
+      this._onResponseReceivedListener = Notifications.addNotificationResponseReceivedListener(
+        this._handelNotificationResponseReceived
+      );
+      // Using the same category as in `registerForPushNotificationsAsync`
+      Notifications.setNotificationCategoryAsync(`${Constants.manifest.id}:welcome`, [
+        {
+          buttonTitle: `Don't open app`,
+          identifier: 'first-button',
+          options: {
+            opensAppToForeground: false,
+          },
+        },
+        {
+          buttonTitle: 'Respond with text',
+          identifier: 'second-button-with-text',
+          textInput: {
+            submitButtonTitle: 'Submit button',
+            placeholder: 'Placeholder text',
+          },
+        },
+        {
+          buttonTitle: 'Open app',
+          identifier: 'third-button',
+          options: {
+            opensAppToForeground: true,
+          },
+        },
+      ])
+        .then(category => console.log('Notification category set', category))
+        .catch(error => console.warn('Could not have set notification category', error));
+    }
+  }
+
+  componentWillUnmount() {
+    this._onReceivedListener?.remove();
+    this._onResponseReceivedListener?.remove();
+  }
+
   render() {
+    console.log(this.state);
     return (
       <ScrollView style={{ padding: 10 }}>
         <HeadingText>Local Notifications</HeadingText>
+        <ListButton
+          onPress={this._LEGACY_presentLocalNotificationAsync}
+          title="[Legacy] Present a notification immediately"
+        />
         <ListButton
           onPress={this._presentLocalNotificationAsync}
           title="Present a notification immediately"
@@ -32,239 +100,219 @@ export default class NotificationScreen extends React.Component {
           onPress={Notifications.cancelAllScheduledNotificationsAsync}
           title="Cancel all scheduled notifications"
         />
-        <ListButton
-          onPress={this._scheduleLegacyNotificationAsync}
-          title="Schedule a notification with both `time` and `repeat` (deprecated on iOS)"
-        />
-        <ListButton
-          onPress={this._scheduleAndCancelLegacyNotificationAsync}
-          title="Schedule and immediately cancel notification with both `time` and `repeat` (deprecated on iOS)"
-        />
 
         <HeadingText>Push Notifications</HeadingText>
-        <ListButton
-          onPress={() => this._sendNotificationAsync('simple')}
-          title="Send me a push notification"
-        />
-        <ListButton
-          onPress={() => this._sendNotificationAsync('image')}
-          title="Send me a push notification with an image"
-        />
-        <ListButton
-          onPress={() => this._sendNotificationAsync('audio')}
-          title="Send me a push notification with an audio"
-        />
-        <ListButton
-          onPress={() => this._sendNotificationAsync('gif')}
-          title="Send me a push notification with an animated image"
-        />
-        <ListButton
-          onPress={() => this._sendNotificationAsync('video')}
-          title="Send me a push notification with a video"
-        />
-        <ListButton
-          onPress={() => this._sendNotificationAsync('imageWithCustomIcon')}
-          title="Send me a push notification with a image and a custom icon"
-        />
-
-        <HeadingText>Custom notification categories</HeadingText>
-        <ListButton
-          onPress={this._createCategoryAsync}
-          title="Create a custom 'message' category"
-        />
-        <ListButton
-          onPress={this._scheduleLocalNotificationWithCategoryAsync}
-          title="Schedule notification for 10 seconds from now with a 'message' category"
-        />
-        <ListButton
-          onPress={this._deleteCategoryAsync}
-          title="Delete the custom 'message' category"
-        />
+        <ListButton onPress={this._sendNotificationAsync} title="Send me a push notification" />
 
         <HeadingText>Badge Number</HeadingText>
         <ListButton
           onPress={this._incrementIconBadgeNumberAsync}
           title="Increment the app icon's badge number"
         />
+        <ListButton onPress={this._clearIconBadgeAsync} title="Clear the app icon's badge number" />
+
+        <HeadingText>Dismissing notifications</HeadingText>
         <ListButton
-          onPress={this._clearIconBadgeAsync}
-          title="Clear the app icon's badge number"
+          onPress={this._countPresentedNotifications}
+          title="Count presented notifications"
+        />
+        <ListButton onPress={this._dismissSingle} title="Dismiss a single notification" />
+
+        <ListButton onPress={this._dismissAll} title="Dismiss all notifications" />
+
+        {this.state.lastNotifications && (
+          <MonoText containerStyle={{ marginBottom: 20 }}>
+            {JSON.stringify(this.state.lastNotifications, null, 2)}
+          </MonoText>
+        )}
+
+        <HeadingText>Notification Permissions</HeadingText>
+        <ListButton onPress={this.getPermissionsAsync} title="Get permissions" />
+        <ListButton onPress={this.requestPermissionsAsync} title="Request permissions" />
+
+        <HeadingText>Notification triggers debugging</HeadingText>
+        <ListButton
+          onPress={() =>
+            Notifications.getNextTriggerDateAsync({ seconds: 10 }).then(timestamp =>
+              alert(new Date(timestamp!))
+            )
+          }
+          title="Get next date for time interval + 10 seconds"
+        />
+        <ListButton
+          onPress={() =>
+            Notifications.getNextTriggerDateAsync({
+              hour: 9,
+              minute: 0,
+              repeats: true,
+            }).then(timestamp => alert(new Date(timestamp!)))
+          }
+          title="Get next date for 9 AM"
+        />
+        <ListButton
+          onPress={() =>
+            Notifications.getNextTriggerDateAsync({
+              hour: 9,
+              minute: 0,
+              weekday: 1,
+              repeats: true,
+            }).then(timestamp => alert(new Date(timestamp!)))
+          }
+          title="Get next date for Sunday, 9 AM"
         />
       </ScrollView>
     );
   }
 
+  _handelReceivedNotification = (notification: Notifications.Notification) => {
+    this.setState({
+      lastNotifications: notification,
+    });
+  };
+
+  _handelNotificationResponseReceived = (
+    notificationResponse: Notifications.NotificationResponse
+  ) => {
+    console.log({ notificationResponse });
+
+    // Calling alert(message) immediately fails to show the alert on Android
+    // if after backgrounding the app and then clicking on a notification
+    // to foreground the app
+    setTimeout(() => Alert.alert('You clicked on the notification 🥇'), 1000);
+  };
+
+  private getPermissionsAsync = async () => {
+    const permission = await Notifications.getPermissionsAsync();
+    console.log('Get permission: ', permission);
+    alert(`Status: ${permission.status}`);
+  };
+
+  private requestPermissionsAsync = async () => {
+    const permission = await Notifications.requestPermissionsAsync();
+    alert(`Status: ${permission.status}`);
+  };
+
   _obtainUserFacingNotifPermissionsAsync = async () => {
-    let permission = await Permissions.getAsync(
-      Permissions.USER_FACING_NOTIFICATIONS
-    );
+    let permission = await Permissions.getAsync(Permissions.USER_FACING_NOTIFICATIONS);
     if (permission.status !== 'granted') {
-      permission = await Permissions.askAsync(
-        Permissions.USER_FACING_NOTIFICATIONS
-      );
+      permission = await Permissions.askAsync(Permissions.USER_FACING_NOTIFICATIONS);
       if (permission.status !== 'granted') {
         Alert.alert(`We don't have permission to present notifications.`);
       }
     }
     return permission;
-  }
+  };
 
   _obtainRemoteNotifPermissionsAsync = async () => {
     let permission = await Permissions.getAsync(Permissions.NOTIFICATIONS);
     if (permission.status !== 'granted') {
       permission = await Permissions.askAsync(Permissions.NOTIFICATIONS);
       if (permission.status !== 'granted') {
-        Alert.alert(
-          `We don't have permission to receive remote notifications.`
-        );
+        Alert.alert(`We don't have permission to receive remote notifications.`);
       }
     }
     return permission;
-  }
+  };
 
   _presentLocalNotificationAsync = async () => {
     await this._obtainUserFacingNotifPermissionsAsync();
-    Notifications.presentLocalNotificationAsync({
-      title: 'Here is a local notification!',
-      body: 'This is the body',
-      data: {
-        hello: 'there',
-      },
-      ios: {
-        sound: true,
-      },
-    });
-  }
-
-  _scheduleLocalNotificationAsync = async () => {
-    await this._obtainUserFacingNotifPermissionsAsync();
-    Notifications.scheduleLocalNotificationAsync(
-      {
-        title: 'Here is a scheduled notifiation!',
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: 'Here is a scheduled notification!',
         body: 'This is the body',
         data: {
           hello: 'there',
           future: 'self',
         },
-        ios: {
-          sound: true,
-        },
+        sound: true,
       },
-      {
-        time: new Date().getTime() + 10000,
-      }
-    );
-  }
+      trigger: null,
+    });
+  };
 
-  _createCategoryAsync = () =>
-    Notifications.createCategoryAsync('message', [
-      {
-        actionId: 'dismiss',
-        buttonTitle: 'Dismiss notification',
-        isDestructive: true,
-        isAuthenticationRequired: false,
-      },
-      {
-        actionId: 'respond',
-        buttonTitle: 'Respond',
-        isDestructive: false,
-        isAuthenticationRequired: true,
-        textInput: {
-          submitButtonTitle: 'Send',
-          placeholder: 'Response',
-        },
-      },
-    ])
-
-  _deleteCategoryAsync = () => Notifications.deleteCategoryAsync('message');
-
-  _scheduleLocalNotificationWithCategoryAsync = async () => {
+  _LEGACY_presentLocalNotificationAsync = async () => {
     await this._obtainUserFacingNotifPermissionsAsync();
-
-    await Notifications.scheduleLocalNotificationAsync(
-      {
-        title: 'Expo sent you a message!',
-        body: 'Howdy, fella!',
-        ios: {
-          sound: true,
-        },
-        categoryId: 'message',
+    await Notifications.presentNotificationAsync({
+      title: 'Here is a local notification!',
+      body: 'This is the body',
+      data: {
+        hello: 'there',
       },
-      {
-        time: new Date().getTime() + 10000,
-      }
-    );
-  }
+      sound: true,
+    });
+  };
+
+  _scheduleLocalNotificationAsync = async () => {
+    await this._obtainUserFacingNotifPermissionsAsync();
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: 'Here is a local notification!',
+        body: 'This is the body',
+        data: {
+          hello: 'there',
+          future: 'self',
+        },
+        sound: true,
+      },
+      trigger: {
+        seconds: 10,
+      },
+    });
+  };
 
   _scheduleLocalNotificationAndCancelAsync = async () => {
     await this._obtainUserFacingNotifPermissionsAsync();
-    const notificationId = await Notifications.scheduleLocalNotificationAsync(
-      {
+    const notificationId = await Notifications.scheduleNotificationAsync({
+      content: {
         title: 'This notification should not appear',
         body: 'It should have been cancelled. :(',
-        ios: {
-          sound: true,
-        },
+        sound: true,
       },
-      {
-        time: new Date().getTime() + 10000,
-      }
-    );
-    await Notifications.cancelScheduledNotificationAsync(notificationId);
-  }
-
-  _scheduleLegacyNotificationAsync = async () => {
-    await this._obtainUserFacingNotifPermissionsAsync();
-    return Notifications.scheduleLocalNotificationAsync(
-      {
-        title: 'Repeating notification',
-        body: `I repeat every minute starting from ${new Date().toLocaleTimeString()}`,
-        data: {
-          repeatingEvery: 'minute',
-          scheduledAt: new Date().toLocaleTimeString(),
-        },
-        ios: {
-          sound: true,
-        },
+      trigger: {
+        seconds: 10,
       },
-      {
-        time: new Date().getTime() + 2000,
-        repeat: 'minute',
-      }
-    );
-  }
-
-  _scheduleAndCancelLegacyNotificationAsync = async () => {
-    const notificationId = await this._scheduleLegacyNotificationAsync();
+    });
     await Notifications.cancelScheduledNotificationAsync(notificationId);
-  }
+  };
 
   _incrementIconBadgeNumberAsync = async () => {
-    const currentNumber = await Notifications.getBadgeNumberAsync();
-    await Notifications.setBadgeNumberAsync(currentNumber + 1);
-    const actualNumber = await Notifications.getBadgeNumberAsync();
+    const currentNumber = await Notifications.getBadgeCountAsync();
+    await Notifications.setBadgeCountAsync(currentNumber + 1);
+    const actualNumber = await Notifications.getBadgeCountAsync();
     Alert.alert(`Set the badge number to ${actualNumber}`);
-  }
+  };
 
   _clearIconBadgeAsync = async () => {
-    await Notifications.setBadgeNumberAsync(0);
+    await Notifications.setBadgeCountAsync(0);
     Alert.alert(`Cleared the badge`);
-  }
+  };
 
-  _sendNotificationAsync = async (type: string) => {
-    if (type !== 'simple' && type !== 'image' && Platform.OS !== 'ios') {
-      alert(
-        'While you will still receive the notification, you will not see any rich content since rich content other than images are only supported on iOS.'
-      );
-    }
-    if (type === 'imageWithCustomIcon' && Platform.OS === 'ios') {
-      alert(
-        'While you will still receive the notification, you will not see any custom icon since custom icons are not supported on iOS.'
-      );
-    }
+  _sendNotificationAsync = async () => {
     const permission = await this._obtainRemoteNotifPermissionsAsync();
     if (permission.status === 'granted') {
-      registerForPushNotificationsAsync(type);
+      registerForPushNotificationsAsync();
     }
-  }
+  };
+
+  _countPresentedNotifications = async () => {
+    const presentedNotifications = await Notifications.getPresentedNotificationsAsync();
+    Alert.alert(`You currently have ${presentedNotifications.length} notifications presented`);
+  };
+
+  _dismissAll = async () => {
+    await Notifications.dismissAllNotificationsAsync();
+    Alert.alert(`Notifications dismissed`);
+  };
+
+  _dismissSingle = async () => {
+    const presentedNotifications = await Notifications.getPresentedNotificationsAsync();
+    if (!presentedNotifications.length) {
+      Alert.alert(`No notifications to be dismissed`);
+      return;
+    }
+
+    const identifier = presentedNotifications[0].request.identifier;
+    await Notifications.dismissNotificationAsync(identifier);
+    Alert.alert(`Notification dismissed`);
+  };
 }

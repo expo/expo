@@ -329,8 +329,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
   }
 
   private boolean hasCameraPermissions() {
-    int[] permissions = mModuleRegistry.getModule(Permissions.class).getPermissions(new String[]{Manifest.permission.CAMERA});
-    return permissions.length == 1 && permissions[0] == PackageManager.PERMISSION_GRANTED;
+    return mModuleRegistry.getModule(Permissions.class).hasGrantedPermissions(Manifest.permission.CAMERA);
   }
 
   public void setShouldDetectFaces(boolean shouldDetectFaces) {

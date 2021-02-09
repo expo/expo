@@ -1,12 +1,78 @@
 ---
 title: Battery
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-battery'
 ---
 
-Provides battery information for the physical device, as well as corresponding event listeners.
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+import SnackInline from '~/components/plugins/SnackInline';
+
+**`expo-battery`** provides battery information for the physical device (such as battery level, whether or not the device is charging, and more) as well as corresponding event listeners.
+
+<PlatformsSection android emulator ios web />
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-battery).
+<InstallSection packageName="expo-battery" />
+
+## Usage
+
+<SnackInline label='Basic Battery Usage' dependencies={['expo-battery']}>
+
+```jsx
+import * as React from 'react';
+import * as Battery from 'expo-battery';
+import { StyleSheet, Text, View } from 'react-native';
+
+export default class App extends React.Component {
+  state = {
+    batteryLevel: null,
+  };
+
+  componentDidMount() {
+    this._subscribe();
+  }
+
+  componentWillUnmount() {
+    this._unsubscribe();
+  }
+
+  async _subscribe() {
+    const batteryLevel = await Battery.getBatteryLevelAsync();
+    this.setState({ batteryLevel });
+    this._subscription = Battery.addBatteryLevelListener(({ batteryLevel }) => {
+      this.setState({ batteryLevel });
+      console.log('batteryLevel changed!', batteryLevel);
+    });
+  }
+
+  _unsubscribe() {
+    this._subscription && this._subscription.remove();
+    this._subscription = null;
+  }
+
+  render() {
+    return (
+      <View style={styles.container}>
+        <Text>Current Battery Level: {this.state.batteryLevel}</Text>
+      </View>
+    );
+  }
+}
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+/* @end */
+```
+
+</SnackInline>
 
 ## API
 
@@ -14,30 +80,11 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 import * as Battery from 'expo-battery';
 ```
 
-Note: On iOS simulators, battery monitoring is not possible.
-
-### Methods
-
-- [`Battery.getBatteryLevelAsync()`](#batterygetbatterylevelasync)
-- [`Battery.getBatteryStateAsync()`](#batterygetbatterystateasync)
-- [`Battery.isLowPowerModeEnabledAsync()`](#batteryislowpowermodeenabledasync)
-- [`Battery.getPowerStateAsync()`](#batterygetpowerstateasync)
-
-### Event Subscriptions
-
-- [`Battery.addBatteryLevelListener(callback)`](#batteryaddbatterylevellistenercallback)
-- [`Battery.addBatteryStateListener(callback)`](#batteryaddbatterystatelistenercallback)
-- [`Battery.addLowPowerModeListener(callback)`](#batteryaddlowpowermodelistenercallback)
-
-### Enum Types
-
-- [`Battery.BatteryState`](#batterybatterystate)
-
-### Errors
-
-- [Error Codes](#error-codes)
-
 ## Methods
+
+### `Battery.isAvailableAsync()`
+
+Resolves with whether this battery API is available on the current device. The value of this property is `true` on Android and physical iOS devices and `false` on iOS simulators. On web, it depends on whether the browser supports the web battery API.
 
 ### `Battery.getBatteryLevelAsync()`
 
@@ -71,7 +118,7 @@ await Battery.getBatteryStateAsync();
 
 ### `Battery.isLowPowerModeEnabledAsync()`
 
-Gets the current status of Low Power mode on iOS and Power Saver mode on Android. This method throws an error with the code [`ERR_BATTERY_LOW_POWER_UNREADABLE`](#error-codes) if the low-power state cannot be read. On web, the reported low-power state is always `false`, even if the device is actually in low-power mode.
+Gets the current status of Low Power mode on iOS and Power Saver mode on Android. If a platform doesn't support Low Power mode reporting (like web, older Android devices), the reported low-power state is always `false`, even if the device is actually in low-power mode.
 
 #### Returns
 
@@ -163,62 +210,3 @@ Subscribe to Low Power Mode (iOS) or Power Saver Mode (Android) updates. The eve
 - **`BatteryState.UNPLUGGED`** - if battery is not charging or discharging
 - **`BatteryState.CHARGING`** - if battery is charging
 - **`BatteryState.FULL`** - if the battery level is full
-
-## Error Codes
-
-| Code                                     | Description                                                                                                                       |
-| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| ERR_BATTERY_LOW_POWER_UNREADABLE         | Unable to access Low Power Mode (iOS) or Power Saver (Android).                                                                   |
-
-**Examples**
-
-```js
-import React from 'react';
-import * as Battery from 'expo-battery';
-import { StyleSheet, Text, View } from 'react-native';
-
-export default class App extends React.Component {
-  state = {
-    batteryLevel: null,
-  };
-
-  componentDidMount() {
-    let batteryLevel = await Battery.getBatteryLevelAsync();
-    this.setState({ batteryLevel });
-    this._subscribe();
-  }
-
-  componentWillUnmount() {
-    this._unsubscribe();
-  }
-
-  _subscribe = () => {
-    this._subscription = Battery.addBatteryLevelListener(({ batteryLevel }) => {
-      this.setState({ batteryLevel });
-      console.log('batteryLevel changed!', batteryLevel);
-    });
-  };
-
-  _unsubscribe = () => {
-    this._subscription && this._subscription.remove();
-    this._subscription = null;
-  };
-
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text>Current Battery Level: {this.state.batteryLevel}</Text>
-      </View>
-    );
-  }
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginTop: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
-```

@@ -1,1 +1,1 @@
-../../../AppAuth/Source/OIDRegistrationRequest.h
+../../../AppAuth/Source/AppAuthCore/OIDRegistrationRequest.h

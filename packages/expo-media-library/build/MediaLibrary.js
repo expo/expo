@@ -1,15 +1,9 @@
-import { EventEmitter } from '@unimodules/core';
-import { UnavailabilityError } from '@unimodules/core';
+import { EventEmitter, UnavailabilityError } from '@unimodules/core';
 import { Platform } from 'react-native';
+import { PermissionStatus, } from 'unimodules-permissions-interface';
 import MediaLibrary from './ExponentMediaLibrary';
 const eventEmitter = new EventEmitter(MediaLibrary);
-export var PermissionStatus;
-(function (PermissionStatus) {
-    PermissionStatus["UNDETERMINED"] = "undetermined";
-    PermissionStatus["GRANTED"] = "granted";
-    PermissionStatus["DENIED"] = "denied";
-})(PermissionStatus || (PermissionStatus = {}));
-;
+export { PermissionStatus };
 function arrayize(item) {
     if (Array.isArray(item)) {
         return item;
@@ -59,17 +53,27 @@ function dateToNumber(value) {
 // export constants
 export const MediaType = MediaLibrary.MediaType;
 export const SortBy = MediaLibrary.SortBy;
-export async function requestPermissionsAsync() {
+export async function requestPermissionsAsync(writeOnly = false) {
     if (!MediaLibrary.requestPermissionsAsync) {
         throw new UnavailabilityError('MediaLibrary', 'requestPermissionsAsync');
     }
-    return await MediaLibrary.requestPermissionsAsync();
+    return await MediaLibrary.requestPermissionsAsync(writeOnly);
 }
-export async function getPermissionsAsync() {
+export async function getPermissionsAsync(writeOnly = false) {
     if (!MediaLibrary.getPermissionsAsync) {
         throw new UnavailabilityError('MediaLibrary', 'getPermissionsAsync');
     }
-    return await MediaLibrary.getPermissionsAsync();
+    return await MediaLibrary.getPermissionsAsync(writeOnly);
+}
+/**
+ * @iOS-only
+ * @throws Will throw an error if called on platform that doesn't support this functionality (eg. iOS < 14, Android, etc.).
+ */
+export async function presentPermissionsPickerAsync() {
+    if (!MediaLibrary.presentPermissionsPickerAsync) {
+        throw new UnavailabilityError('MediaLibrary', 'presentPermissionsPickerAsync');
+    }
+    return await MediaLibrary.presentPermissionsPickerAsync();
 }
 export async function createAssetAsync(localUri) {
     if (!MediaLibrary.createAssetAsync) {
@@ -84,6 +88,12 @@ export async function createAssetAsync(localUri) {
         return asset[0];
     }
     return asset;
+}
+export async function saveToLibraryAsync(localUri) {
+    if (!MediaLibrary.saveToLibraryAsync) {
+        throw new UnavailabilityError('MediaLibrary', 'saveToLibraryAsync');
+    }
+    return await MediaLibrary.saveToLibraryAsync(localUri);
 }
 export async function addAssetsToAlbumAsync(assets, album, copy = true) {
     if (!MediaLibrary.addAssetsToAlbumAsync) {
@@ -117,13 +127,13 @@ export async function deleteAssetsAsync(assets) {
     checkAssetIds(assetIds);
     return await MediaLibrary.deleteAssetsAsync(assetIds);
 }
-export async function getAssetInfoAsync(asset) {
+export async function getAssetInfoAsync(asset, options = { shouldDownloadFromNetwork: true }) {
     if (!MediaLibrary.getAssetInfoAsync) {
         throw new UnavailabilityError('MediaLibrary', 'getAssetInfoAsync');
     }
     const assetId = getId(asset);
     checkAssetIds([assetId]);
-    const assetInfo = await MediaLibrary.getAssetInfoAsync(assetId);
+    const assetInfo = await MediaLibrary.getAssetInfoAsync(assetId, options);
     if (Array.isArray(assetInfo)) {
         // Android returns an array with asset info, we need to pick the first item
         return assetInfo[0];
@@ -198,6 +208,12 @@ export async function getAssetsAsync(assetsOptions = {}) {
     }
     if (album != null && typeof options.album !== 'string') {
         throw new Error('Option "album" must be a string!');
+    }
+    if (after != null && Platform.OS === 'android' && isNaN(parseInt(getId(after), 10))) {
+        throw new Error('Option "after" must be a valid ID!');
+    }
+    if (first != null && first < 0) {
+        throw new Error('Option "first" must be a positive integer!');
     }
     options.sortBy.forEach(checkSortBy);
     options.mediaType.forEach(checkMediaType);

@@ -28,7 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 @class FBNativeAd;
 
 /**
-  The FBMediaView loads media content from a given FBNativeAd. This view takes the place of manually loading a cover image.
+  The FBMediaView loads media content from a given FBNativeAd. This view takes the place of manually loading a cover
+  image.
  */
 FB_CLASS_EXPORT
 @interface FBMediaView : UIView
@@ -77,7 +78,8 @@ FB_CLASS_EXPORT
 @end
 
 /**
-  The methods declared by the FBMediaViewDelegate protocol allow the adopting delegate to respond to messages from the FBMediaView class and thus respond to operations such as whether the media content has been loaded.
+  The methods declared by the FBMediaViewDelegate protocol allow the adopting delegate to respond to messages from the
+  FBMediaView class and thus respond to operations such as whether the media content has been loaded.
  */
 @protocol FBMediaViewDelegate <NSObject>
 

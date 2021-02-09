@@ -1,17 +1,20 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #pragma once
 
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
+#include <react/core/EventHandler.h>
 #include <react/core/ShadowNode.h>
 
 namespace facebook {
 namespace react {
-
-using RuntimeExecutor = std::function<void(
-    std::function<void(facebook::jsi::Runtime &runtime)> &&callback)>;
 
 struct EventHandlerWrapper : public EventHandler {
   EventHandlerWrapper(jsi::Function eventHandler)
@@ -24,7 +27,7 @@ struct ShadowNodeWrapper : public jsi::HostObject {
   ShadowNodeWrapper(SharedShadowNode shadowNode)
       : shadowNode(std::move(shadowNode)) {}
 
-  SharedShadowNode shadowNode;
+  ShadowNode::Shared shadowNode;
 };
 
 struct ShadowNodeListWrapper : public jsi::HostObject {
@@ -34,7 +37,7 @@ struct ShadowNodeListWrapper : public jsi::HostObject {
   SharedShadowNodeUnsharedList shadowNodeList;
 };
 
-inline static SharedShadowNode shadowNodeFromValue(
+inline static ShadowNode::Shared shadowNodeFromValue(
     jsi::Runtime &runtime,
     const jsi::Value &value) {
   return value.getObject(runtime)
@@ -44,7 +47,7 @@ inline static SharedShadowNode shadowNodeFromValue(
 
 inline static jsi::Value valueFromShadowNode(
     jsi::Runtime &runtime,
-    const SharedShadowNode &shadowNode) {
+    const ShadowNode::Shared &shadowNode) {
   return jsi::Object::createFromHostObject(
       runtime, std::make_shared<ShadowNodeWrapper>(shadowNode));
 }
@@ -82,10 +85,16 @@ inline static SurfaceId surfaceIdFromValue(
   return (SurfaceId)value.getNumber();
 }
 
-inline static ComponentName componentNameFromValue(
+inline static std::string stringFromValue(
     jsi::Runtime &runtime,
     const jsi::Value &value) {
   return value.getString(runtime).utf8(runtime);
+}
+
+inline static folly::dynamic commandArgsFromValue(
+    jsi::Runtime &runtime,
+    const jsi::Value &value) {
+  return jsi::dynamicFromValue(runtime, value);
 }
 
 } // namespace react

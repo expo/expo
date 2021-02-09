@@ -12,7 +12,7 @@
 
 #import "GMSOrientation.h"
 
-NS_ASSUME_NONNULL_BEGIN;
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  * GMSPanoramaCamera is used to control the viewing direction of a GMSPanoramaView. It does not
@@ -61,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN;
  * Note: This is not the displayed FOV if zoom is anything other than 1.  User zoom gestures
  * control the zoom property, not this property.
  */
-@property(nonatomic, assign, readonly) double FOV;
+@property(nonatomic, readonly) double FOV;
 
 /**
  * Adjusts the visible region of the screen.  A zoom of N will show the same area as the central
@@ -69,13 +69,13 @@ NS_ASSUME_NONNULL_BEGIN;
  *
  * Zoom is clamped to the implementation defined range [1, 5].
  */
-@property(nonatomic, assign, readonly) float zoom;
+@property(nonatomic, readonly) float zoom;
 
 /**
  * The camera orientation, which groups together heading and pitch.
  */
-@property(nonatomic, assign, readonly) GMSOrientation orientation;
+@property(nonatomic, readonly) GMSOrientation orientation;
 
 @end
 
-NS_ASSUME_NONNULL_END;
+NS_ASSUME_NONNULL_END

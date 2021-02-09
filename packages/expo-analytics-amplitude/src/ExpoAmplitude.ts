@@ -1,2 +1,2 @@
 import { NativeModulesProxy } from '@unimodules/core';
-export default NativeModulesProxy.ExpoAmplitude || {};
+export default NativeModulesProxy.ExpoAmplitude || {};

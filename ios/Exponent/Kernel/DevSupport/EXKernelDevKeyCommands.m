@@ -11,8 +11,6 @@
 
 #import <UIKit/UIKit.h>
 
-NSNotificationName kEXKernelDidChangeMenuBehaviorNotification = @"EXKernelDidChangeMenuBehaviorNotification";
-
 @interface EXKeyCommand : NSObject <NSCopying>
 
 @property (nonatomic, strong) UIKeyCommand *keyCommand;
@@ -130,34 +128,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   if ((self = [super init])) {
     _commands = [NSMutableSet set];
-    _isLegacyMenuBehaviorEnabled = NO;
-    [self _addDevCommands];
   }
   return self;
 }
 
-- (void)setIsLegacyMenuBehaviorEnabled:(BOOL)isLegacyMenuBehaviorEnabled
-{
-  _isLegacyMenuBehaviorEnabled = isLegacyMenuBehaviorEnabled;
-  [[NSNotificationCenter defaultCenter] postNotificationName:kEXKernelDidChangeMenuBehaviorNotification object:nil];
-}
-
-- (BOOL)isLegacyMenuButtonAvailable
-{
-    BOOL isSimulator = NO;
-#if TARGET_OS_SIMULATOR
-    isSimulator = YES;
-#endif
-  return (
-    isSimulator
-    && _isLegacyMenuBehaviorEnabled
-    && [EXKernel sharedInstance].appRegistry.appEnumerator.allObjects.count > 0
-  );
-}
-
 #pragma mark - expo dev commands
 
-- (void)_addDevCommands
+- (void)registerDevCommands
 {
   __weak typeof(self) weakSelf = self;
   [self registerKeyCommandWithInput:@"d"
@@ -189,7 +166,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)_handleMenuCommand
 {
-  if ([EXEnvironment sharedEnvironment].isDetached || _isLegacyMenuBehaviorEnabled) {
+  if ([EXEnvironment sharedEnvironment].isDetached) {
     [[EXKernel sharedInstance].visibleApp.appManager showDevMenu];
   } else {
     [[EXKernel sharedInstance] switchTasks];
@@ -198,7 +175,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)_handleRefreshCommand
 {
-  [[EXKernel sharedInstance].visibleApp.appManager reloadBridge];
+  // This reloads only JS
+  //  [[EXKernel sharedInstance].visibleApp.appManager reloadBridge];
+
+  // This reloads manifest and JS
+  [[EXKernel sharedInstance] reloadVisibleApp];
 }
 
 - (void)_handleDisableDebuggingCommand

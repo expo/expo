@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BNCDeviceInfo.h
+../../../Branch/Branch-SDK/BNCDeviceInfo.h

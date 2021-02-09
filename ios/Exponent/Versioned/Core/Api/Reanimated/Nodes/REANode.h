@@ -12,6 +12,7 @@ typedef NSNumber* REANodeID;
 @end
 
 @interface REAUpdateContext : NSObject
+@property (nonatomic) NSString* callID;
 @end
 
 @interface REANode : NSObject
@@ -34,5 +35,7 @@ typedef NSNumber* REANodeID;
 
 - (void)dangerouslyRescheduleEvaluate;
 - (void)forceUpdateMemoizedValue:(id)value;
+
+- (void)onDrop;
 
 @end

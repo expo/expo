@@ -1,0 +1,53 @@
+{
+  "name": "React-RCTImage",
+  "version": "0.63.2",
+  "summary": "A React component for displaying different types of images.",
+  "homepage": "https://reactnative.dev/",
+  "documentation_url": "https://reactnative.dev/docs/image",
+  "license": "MIT",
+  "authors": "Facebook, Inc. and its affiliates",
+  "platforms": {
+    "ios": "10.0",
+    "tvos": "10.0"
+  },
+  "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness",
+  "source": {
+    "git": "https://github.com/facebook/react-native.git",
+    "tag": "v0.63.2"
+  },
+  "source_files": "*.{m,mm}",
+  "preserve_paths": [
+    "package.json",
+    "LICENSE",
+    "LICENSE-docs"
+  ],
+  "header_dir": "RCTImage",
+  "pod_target_xcconfig": {
+    "USE_HEADERMAP": "YES",
+    "CLANG_CXX_LANGUAGE_STANDARD": "c++14",
+    "HEADER_SEARCH_PATHS": "\"$(PODS_ROOT)/Folly\""
+  },
+  "dependencies": {
+    "Folly": [
+      "2020.01.13.00"
+    ],
+    "FBReactNativeSpec": [
+      "0.63.2"
+    ],
+    "RCTTypeSafety": [
+      "0.63.2"
+    ],
+    "ReactCommon/turbomodule/core": [
+      "0.63.2"
+    ],
+    "React-jsi": [
+      "0.63.2"
+    ],
+    "React-Core/RCTImageHeaders": [
+      "0.63.2"
+    ],
+    "React-RCTNetwork": [
+      "0.63.2"
+    ]
+  }
+}

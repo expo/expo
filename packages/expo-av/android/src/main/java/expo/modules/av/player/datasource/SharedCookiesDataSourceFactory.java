@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.upstream.TransferListener;
 
 import java.net.CookieHandler;
 import java.util.Map;
@@ -15,14 +16,14 @@ import okhttp3.OkHttpClient;
 public class SharedCookiesDataSourceFactory implements DataSource.Factory {
   private final DataSource.Factory mDataSourceFactory;
 
-  public SharedCookiesDataSourceFactory(Context reactApplicationContext, ModuleRegistry moduleRegistry, String userAgent, Map<String, Object> requestHeaders) {
+  public SharedCookiesDataSourceFactory(Context reactApplicationContext, ModuleRegistry moduleRegistry, String userAgent, Map<String, Object> requestHeaders, TransferListener transferListener) {
     CookieHandler cookieHandler = moduleRegistry.getModule(CookieHandler.class);
     OkHttpClient.Builder builder = new OkHttpClient.Builder();
     if (cookieHandler != null) {
       builder.cookieJar(new JavaNetCookieJar(cookieHandler));
     }
     OkHttpClient client = builder.build();
-    mDataSourceFactory = new DefaultDataSourceFactory(reactApplicationContext, null, new CustomHeadersOkHttpDataSourceFactory(client, userAgent, requestHeaders));
+    mDataSourceFactory = new DefaultDataSourceFactory(reactApplicationContext, transferListener, new CustomHeadersOkHttpDataSourceFactory(client, userAgent, requestHeaders));
   }
 
   @Override

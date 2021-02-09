@@ -113,34 +113,88 @@
 
 - (CTFontRef)getGlyphFont
 {
+    CGFloat size = topFont_->fontSize;
     NSString *fontFamily = topFont_->fontFamily;
-    NSNumber * fontSize = [NSNumber numberWithDouble:topFont_->fontSize];
+    NSString *fontStyle = RNSVGFontStyleStrings[topFont_->fontStyle];
+    NSString *fontWeight = RNSVGFontWeightStrings[topFont_->fontWeight];
+    UIFont *font = [RCTFont updateFont:nil
+                            withFamily:[fontFamily isEqualToString:@""] ? nil : fontFamily
+                                  size:@(isnan(size) ? 0 : size)
+                                weight:fontWeight
+                                 style:fontStyle
+                               variant:nil
+                       scaleMultiplier:1.0];
+    CTFontRef ref = (__bridge CTFontRef)font;
 
-    NSString * fontWeight = [RNSVGFontWeightToString(topFont_->fontWeight) lowercaseString];
-    NSString * fontStyle = RNSVGFontStyleStrings[topFont_->fontStyle];
+    double weight = topFont_->absoluteFontWeight;
+    if (weight == 400) {
+        return ref;
+    }
 
-    BOOL fontFamilyFound = NO;
-    NSArray *supportedFontFamilyNames = [UIFont familyNames];
+    CFArrayRef cgAxes = CTFontCopyVariationAxes(ref);
+    if (cgAxes == 0) {
+        return ref;
+    }
+    CFIndex cgAxisCount = CFArrayGetCount(cgAxes);
+    CFNumberRef wght_id = 0;
 
-    if ([supportedFontFamilyNames containsObject:fontFamily]) {
-        fontFamilyFound = YES;
-    } else {
-        for (NSString *fontFamilyName in supportedFontFamilyNames) {
-            if ([[UIFont fontNamesForFamilyName: fontFamilyName] containsObject:fontFamily]) {
-                fontFamilyFound = YES;
-                break;
+    for (CFIndex i = 0; i < cgAxisCount; ++i) {
+        CFTypeRef cgAxis = CFArrayGetValueAtIndex(cgAxes, i);
+        if (CFGetTypeID(cgAxis) != CFDictionaryGetTypeID()) {
+            continue;
+        }
+
+        CFDictionaryRef cgAxisDict = (CFDictionaryRef)cgAxis;
+        CFTypeRef axisName = CFDictionaryGetValue(cgAxisDict, kCTFontVariationAxisNameKey);
+
+        if (!axisName || CFGetTypeID(axisName) != CFStringGetTypeID()) {
+            continue;
+        }
+        CFStringRef axisNameString = (CFStringRef)axisName;
+        NSString *axisNameNSString = (__bridge NSString *)(axisNameString);
+        if (![@"Weight" isEqualToString:axisNameNSString] && ![@"Size" isEqualToString:axisNameNSString]) {
+            continue;
+        }
+
+        CFTypeRef axisMinValue = CFDictionaryGetValue(cgAxisDict, kCTFontVariationAxisMinimumValueKey);
+        if (axisMinValue && CFGetTypeID(axisMinValue) == CFNumberGetTypeID()) {
+            CFNumberRef axisMinValueNumber = (CFNumberRef)axisMinValue;
+            double axisMinValueDouble;
+            if (CFNumberGetValue(axisMinValueNumber, kCFNumberDoubleType, &axisMinValueDouble))
+            {
+                weight = fmax(axisMinValueDouble, weight);
             }
         }
-    }
-    fontFamily = fontFamilyFound ? fontFamily : nil;
 
-    return (__bridge CTFontRef)[RCTFont updateFont:nil
-                                        withFamily:fontFamily
-                                              size:fontSize
-                                            weight:fontWeight
-                                             style:fontStyle
-                                           variant:nil
-                                   scaleMultiplier:1.0];
+        CFTypeRef axisMaxValue = CFDictionaryGetValue(cgAxisDict, kCTFontVariationAxisMaximumValueKey);
+        if (axisMaxValue && CFGetTypeID(axisMaxValue) == CFNumberGetTypeID()) {
+            CFNumberRef axisMaxValueNumber = (CFNumberRef)axisMaxValue;
+            double axisMaxValueDouble;
+            if (CFNumberGetValue(axisMaxValueNumber, kCFNumberDoubleType, &axisMaxValueDouble))
+            {
+                weight = fmin(axisMaxValueDouble, weight);
+            }
+        }
+
+        CFTypeRef axisId = CFDictionaryGetValue(cgAxisDict, kCTFontVariationAxisIdentifierKey);
+        if (!axisId || CFGetTypeID(axisId) != CFNumberGetTypeID()) {
+            continue;
+        }
+        wght_id = (CFNumberRef)axisId;
+        break;
+    }
+
+    if (wght_id == 0) {
+        return ref;
+    }
+    UIFontDescriptor *uifd = font.fontDescriptor;
+    CTFontDescriptorRef ctfd = (__bridge CTFontDescriptorRef)(uifd);
+    CTFontDescriptorRef newfd = CTFontDescriptorCreateCopyWithVariation(ctfd, wght_id, (CGFloat)weight);
+    CTFontRef newfont = CTFontCreateCopyWithAttributes(ref, size, nil, newfd);
+
+    CFRelease(newfd);
+
+    return (CTFontRef)CFAutorelease(newfont);
 }
 
 - (void)pushIndices
@@ -218,8 +272,8 @@
     if (self->mTop_ > 0) {
         return self->topFont_;
     } else {
-        RNSVGGroup* parentRoot = [child getParentTextRoot];
-        RNSVGFontData* Defaults = [RNSVGFontData Defaults];
+        RNSVGGroup *parentRoot = [child getParentTextRoot];
+        RNSVGFontData *Defaults = [RNSVGFontData Defaults];
         while (parentRoot != nil) {
             RNSVGFontData *map = [[parentRoot getGlyphContext] getFont];
             if (map != Defaults) {

@@ -12,23 +12,32 @@ export const INTERRUPTION_MODE_ANDROID_DUCK_OTHERS = 2;
 const _isValueValid = (value, validValues) => {
     return validValues.filter(validValue => validValue === value).length > 0;
 };
-// Returns array of missing keys in object. Returns an empty array if no missing keys are found.
-const _findMissingKeys = (object, requiredKeys) => {
-    return requiredKeys.filter(requiredKey => !(requiredKey in object));
-};
-export async function setAudioModeAsync(mode) {
-    const missingKeys = _findMissingKeys(mode, [
-        'allowsRecordingIOS',
-        'interruptionModeIOS',
-        'playsInSilentModeIOS',
-        'staysActiveInBackground',
-        'interruptionModeAndroid',
-        'shouldDuckAndroid',
-        'playThroughEarpieceAndroid',
-    ]);
-    if (missingKeys.length > 0) {
-        throw new Error(`Audio mode attempted to be set without the required keys: ${JSON.stringify(missingKeys)}`);
+const _populateMissingKeys = (userAudioMode, defaultAudioMode) => {
+    for (const key in defaultAudioMode) {
+        if (!userAudioMode.hasOwnProperty(key)) {
+            userAudioMode[key] = defaultAudioMode[key];
+        }
     }
+    return userAudioMode;
+};
+const defaultMode = {
+    allowsRecordingIOS: false,
+    interruptionModeIOS: INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS,
+    playsInSilentModeIOS: false,
+    staysActiveInBackground: false,
+    interruptionModeAndroid: INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
+    shouldDuckAndroid: true,
+    playThroughEarpieceAndroid: false,
+};
+let currentAudioMode = null;
+function getCurrentAudioMode() {
+    if (!currentAudioMode) {
+        return defaultMode;
+    }
+    return currentAudioMode;
+}
+export async function setAudioModeAsync(partialMode) {
+    const mode = _populateMissingKeys(partialMode, getCurrentAudioMode());
     if (!_isValueValid(mode.interruptionModeIOS, [
         INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS,
         INTERRUPTION_MODE_IOS_DO_NOT_MIX,
@@ -49,6 +58,7 @@ export async function setAudioModeAsync(mode) {
         typeof mode.playThroughEarpieceAndroid !== 'boolean') {
         throw new Error('"allowsRecordingIOS", "playsInSilentModeIOS", "playThroughEarpieceAndroid", "staysActiveInBackground" and "shouldDuckAndroid" must be booleans.');
     }
+    currentAudioMode = mode;
     return await ExponentAV.setAudioMode(mode);
 }
 //# sourceMappingURL=Audio.js.map

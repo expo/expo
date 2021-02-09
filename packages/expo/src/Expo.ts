@@ -1,27 +1,16 @@
 import './Expo.fx';
 
-import * as AR from './AR';
-import * as ErrorRecovery from './ErrorRecovery/ErrorRecovery';
 import * as Logs from './logs/Logs';
-import * as ScreenOrientation from './ScreenOrientation/ScreenOrientation';
-import * as Updates from './Updates/Updates';
-import * as SplashScreen from './launch/SplashScreen';
 
-export { ErrorRecovery };
 export { Logs };
 export { default as apisAreAvailable } from './apisAreAvailable';
 export { default as registerRootComponent } from './launch/registerRootComponent';
-export { default as Linking } from './Linking/Linking';
-export { default as Notifications } from './Notifications/Notifications';
 
 // The following should all be extracted from this package
-export { AR };
-export { ScreenOrientation };
-export { SplashScreen };
-export { Updates };
-export { default as AppLoading } from './launch/AppLoading';
-export { default as AuthSession } from './AuthSession';
 export { default as DangerZone } from './DangerZone';
+
+// @ts-ignore
+export { Linking, Notifications } from './deprecated';
 
 // @ts-ignore
 export {
@@ -39,6 +28,10 @@ export {
   Amplitude,
   // @ts-ignore
   AppAuth,
+  // @ts-ignore
+  AppLoading,
+  // @ts-ignore
+  AR,
   // @ts-ignore
   Asset,
   // @ts-ignore
@@ -134,6 +127,8 @@ export {
   // @ts-ignore
   Random,
   // @ts-ignore
+  ScreenOrientation,
+  // @ts-ignore
   SecureStore,
   // @ts-ignore
   Segment,
@@ -145,6 +140,8 @@ export {
   SMS,
   // @ts-ignore
   Speech,
+  // @ts-ignore
+  SplashScreen,
   // @ts-ignore
   SQLite,
   // @ts-ignore
@@ -158,24 +155,11 @@ export {
   // @ts-ignore
   Transitioning,
   // @ts-ignore
+  Updates,
+  // @ts-ignore
   Video,
   // @ts-ignore
   WebBrowser,
   // @ts-ignore
   WebView,
 } from './removed';
-
-declare var module: any;
-
-if (module && module.exports) {
-  if (global) {
-    const globals = require('./globals');
-
-    // @ts-ignore
-    global.__exponent = globals;
-    // @ts-ignore
-    global.__expo = globals;
-    // @ts-ignore
-    global.Expo = globals;
-  }
-}

@@ -1,16 +1,17 @@
+import Constants from 'expo-constants';
 import React from 'react';
 import { ScrollView, View } from 'react-native';
-import Constants from 'expo-constants';
-import Colors from '../constants/Colors';
+
 import HeadingText from '../components/HeadingText';
 import MonoText from '../components/MonoText';
+import Colors from '../constants/Colors';
 
 interface State {
   value?: string | (() => void);
   error?: Error;
 }
 
-class ExpoConstant extends React.Component<{ value?: any, name: string }, State> {
+class ExpoConstant extends React.Component<{ value?: any; name: string }, State> {
   readonly state: State = {};
 
   componentDidMount() {
@@ -57,10 +58,6 @@ class ExpoConstant extends React.Component<{ value?: any, name: string }, State>
 }
 
 export default class ConstantsScreen extends React.PureComponent {
-  static navigationOptions = {
-    title: 'Constants',
-  };
-
   render() {
     return (
       <ScrollView style={{ padding: 10, flex: 1, backgroundColor: Colors.greyBackground }}>

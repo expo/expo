@@ -1,11 +1,11 @@
 /*
- * Copyright 2015-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,13 +20,17 @@ namespace detail {
 
 template <typename T>
 template <typename Tag, typename VaultTag>
-SingletonHolder<T>& SingletonHolder<T>::singleton() {
-  /* library-local */ static auto entry =
-      createGlobal<SingletonHolder<T>, std::pair<Tag, VaultTag>>([]() {
-        return new SingletonHolder<T>(
-            {typeid(T), typeid(Tag)}, *SingletonVault::singleton<VaultTag>());
-      });
-  return *entry;
+struct SingletonHolder<T>::Impl : SingletonHolder<T> {
+  Impl()
+      : SingletonHolder<T>(
+            {typeid(T), typeid(Tag)},
+            *SingletonVault::singleton<VaultTag>()) {}
+};
+
+template <typename T>
+template <typename Tag, typename VaultTag>
+inline SingletonHolder<T>& SingletonHolder<T>::singleton() {
+  return detail::createGlobal<Impl<Tag, VaultTag>, void>();
 }
 
 [[noreturn]] void singletonWarnDoubleRegistrationAndAbort(
@@ -52,6 +56,8 @@ void SingletonHolder<T>::registerSingleton(CreateFunc c, TeardownFunc t) {
      *
      * Singleton<int> a([] { return new int(3); });
      * Singleton<int> b([] { return new int(4); });
+     *
+     * Adding tags should fix this (see documentation in the header).
      *
      */
     singletonWarnDoubleRegistrationAndAbort(type());
@@ -137,6 +143,12 @@ folly::ReadMostlySharedPtr<T> SingletonHolder<T>::try_get_fast() {
 }
 
 template <typename T>
+template <typename Func>
+invoke_result_t<Func, T*> detail::SingletonHolder<T>::apply(Func f) {
+  return f(try_get().get());
+}
+
+template <typename T>
 void SingletonHolder<T>::vivify() {
   if (UNLIKELY(
           state_.load(std::memory_order_relaxed) !=
@@ -178,7 +190,7 @@ void SingletonHolder<T>::destroyInstance() {
 template <typename T>
 SingletonHolder<T>::SingletonHolder(
     TypeDescriptor typeDesc,
-    SingletonVault& vault)
+    SingletonVault& vault) noexcept
     : SingletonHolderBase(typeDesc), vault_(vault) {}
 
 template <typename T>

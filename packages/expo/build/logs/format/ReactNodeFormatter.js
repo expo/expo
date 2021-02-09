@@ -16,11 +16,11 @@ export default {
 };
 function _printProperties(object, keys, config, indentation, depth, refs, printer) {
     let result = config.spacingOuter;
-    let propertyIndentation = indentation + config.indent;
+    const propertyIndentation = indentation + config.indent;
     for (let ii = 0; ii < keys.length; ii++) {
-        let key = keys[ii];
-        let name = printer(key, config, propertyIndentation, depth, refs);
-        let value = printer(object[key], config, propertyIndentation, depth, refs);
+        const key = keys[ii];
+        const name = printer(key, config, propertyIndentation, depth, refs);
+        const value = printer(object[key], config, propertyIndentation, depth, refs);
         result += `${propertyIndentation}${name}: ${value}`;
         if (ii < keys.length - 1) {
             result += ',' + config.spacingInner;

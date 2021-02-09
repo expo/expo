@@ -1,9 +1,7 @@
 # Expo Test Suite
 
 Hi! This is what will make Expo never break ever. 🙏
-
-If you have problems with the code in this repository, please file issues & bug reports
-at https://github.com/expo/expo. Thanks!
+Learn more about this project in [CONTRIBUTING.md](https://github.com/expo/expo/blob/master/CONTRIBUTING.md).
 
 ## Running in the browser
 

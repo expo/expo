@@ -1,1 +1,0 @@
-{"version":3,"file":"LinkingModule.js","sourceRoot":"","sources":["../../src/Linking/LinkingModule.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,OAAO,EAAE,MAAM,cAAc,CAAC;AACvC,eAAe,OAAO,CAAC","sourcesContent":["import { Linking } from 'react-native';\nexport default Linking;\n"]}

@@ -1,55 +1,151 @@
 package versioned.host.exp.exponent.modules.api.screens;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Paint;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
+import android.os.Parcelable;
+import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
-import com.facebook.react.uimanager.PointerEvents;
-import com.facebook.react.uimanager.ReactPointerEventsView;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.webkit.WebView;
+import android.widget.TextView;
 
-public class Screen extends ViewGroup implements ReactPointerEventsView {
+import androidx.annotation.Nullable;
 
-  public static class ScreenFragment extends Fragment {
+import com.facebook.react.bridge.GuardedRunnable;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.uimanager.UIManagerModule;
 
-    private Screen mScreenView;
+public class Screen extends ViewGroup {
 
-    public ScreenFragment() {
-      throw new IllegalStateException("Screen fragments should never be restored");
-    }
+  public enum StackPresentation {
+    PUSH,
+    MODAL,
+    TRANSPARENT_MODAL
+  }
 
-    @SuppressLint("ValidFragment")
-    public ScreenFragment(Screen screenView) {
-      super();
-      mScreenView = screenView;
+  public enum StackAnimation {
+    DEFAULT,
+    NONE,
+    FADE
+  }
+
+  public enum ReplaceAnimation {
+    PUSH,
+    POP
+  }
+
+  public enum ActivityState {
+    INACTIVE,
+    TRANSITIONING_OR_BELOW_TOP,
+    ON_TOP
+  }
+
+  private static OnAttachStateChangeListener sShowSoftKeyboardOnAttach = new OnAttachStateChangeListener() {
+
+    @Override
+    public void onViewAttachedToWindow(View view) {
+      InputMethodManager inputMethodManager =
+              (InputMethodManager) view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+      inputMethodManager.showSoftInput(view, 0);
+      view.removeOnAttachStateChangeListener(sShowSoftKeyboardOnAttach);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater,
-                             @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-      return mScreenView;
+    public void onViewDetachedFromWindow(View view) {
+
+    }
+  };
+
+  private @Nullable ScreenFragment mFragment;
+  private @Nullable ScreenContainer mContainer;
+  private ActivityState mActivityState;
+  private boolean mTransitioning;
+  private StackPresentation mStackPresentation = StackPresentation.PUSH;
+  private ReplaceAnimation mReplaceAnimation = ReplaceAnimation.POP;
+  private StackAnimation mStackAnimation = StackAnimation.DEFAULT;
+  private boolean mGestureEnabled = true;
+
+  @Override
+  protected void onAnimationStart() {
+    super.onAnimationStart();
+    if (mFragment != null) {
+      mFragment.onViewAnimationStart();
     }
   }
 
-  private final Fragment mFragment;
-  private @Nullable ScreenContainer mContainer;
-  private boolean mActive;
-  private boolean mTransitioning;
+  @Override
+  protected void onAnimationEnd() {
+    super.onAnimationEnd();
+    if (mFragment != null) {
+      mFragment.onViewAnimationEnd();
+    }
+  }
 
-  public Screen(Context context) {
+  public Screen(ReactContext context) {
     super(context);
-    mFragment = new ScreenFragment(this);
+    // we set layout params as WindowManager.LayoutParams to workaround the issue with TextInputs
+    // not displaying modal menus (e.g., copy/paste or selection). The missing menus are due to the
+    // fact that TextView implementation is expected to be attached to window when layout happens.
+    // Then, at the moment of layout it checks whether window type is in a reasonable range to tell
+    // whether it should enable selection controlls (see Editor.java#prepareCursorControllers).
+    // With screens, however, the text input component can be laid out before it is attached, in that
+    // case TextView tries to get window type property from the oldest existing parent, which in this
+    // case is a Screen class, as it is the root of the screen that is about to be attached. Setting
+    // params this way is not the most elegant way to solve this problem but workarounds it for the
+    // time being
+    setLayoutParams(new WindowManager.LayoutParams(WindowManager.LayoutParams.TYPE_APPLICATION));
   }
 
   @Override
-  protected void onLayout(boolean b, int i, int i1, int i2, int i3) {
-    // no-op
+  protected void dispatchSaveInstanceState(SparseArray<Parcelable> container) {
+    // do nothing, react native will keep the view hierarchy so no need to serialize/deserialize
+    // view's states. The side effect of restoring is that TextInput components would trigger set-text
+    // events which may confuse text input handling.
+  }
+
+  @Override
+  protected void dispatchRestoreInstanceState(SparseArray<Parcelable> container) {
+    // ignore restoring instance state too as we are not saving anything anyways.
+  }
+
+  @Override
+  protected void onLayout(boolean changed, int l, int t, int r, int b) {
+    if (changed) {
+      final int width = r - l;
+      final int height = b - t;
+      final ReactContext reactContext = (ReactContext) getContext();
+      reactContext.runOnNativeModulesQueueThread(
+              new GuardedRunnable(reactContext) {
+                @Override
+                public void runGuarded() {
+                  reactContext.getNativeModule(UIManagerModule.class)
+                          .updateNodeSize(getId(), width, height);
+                }
+              });
+    }
+  }
+
+  @Override
+  protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    // This method implements a workaround for RN's autoFocus functionality. Because of the way
+    // autoFocus is implemented it sometimes gets triggered before native text view is mounted. As
+    // a result Android ignores calls for opening soft keyboard and here we trigger it manually
+    // again after the screen is attached.
+    View view = getFocusedChild();
+    if (view != null) {
+      while (view instanceof ViewGroup) {
+        view = ((ViewGroup) view).getFocusedChild();
+      }
+      if (view instanceof TextView) {
+        TextView textView = (TextView) view;
+        if (textView.getShowSoftInputOnFocus()) {
+          textView.addOnAttachStateChangeListener(sShowSoftKeyboardOnAttach);
+        }
+      }
+    }
   }
 
   /**
@@ -62,51 +158,91 @@ public class Screen extends ViewGroup implements ReactPointerEventsView {
       return;
     }
     mTransitioning = transitioning;
-    super.setLayerType(transitioning ? View.LAYER_TYPE_HARDWARE : View.LAYER_TYPE_NONE, null);
+    boolean isWebViewInScreen = hasWebView(this);
+    if (isWebViewInScreen && getLayerType() != View.LAYER_TYPE_HARDWARE) {
+      return;
+    }
+    super.setLayerType(transitioning && !isWebViewInScreen ? View.LAYER_TYPE_HARDWARE : View.LAYER_TYPE_NONE, null);
   }
 
-  @Override
-  public boolean hasOverlappingRendering() {
-    return mTransitioning;
+  private boolean hasWebView(ViewGroup viewGroup) {
+    for(int i = 0; i < viewGroup.getChildCount(); i++) {
+      View child = viewGroup.getChildAt(i);
+      if (child instanceof WebView) {
+        return true;
+      } else if (child instanceof ViewGroup) {
+         if (hasWebView((ViewGroup) child)) {
+           return true;
+         }
+      }
+    }
+    return false;
   }
 
-  @Override
-  public PointerEvents getPointerEvents() {
-    return mTransitioning ? PointerEvents.NONE : PointerEvents.AUTO;
+  public void setStackPresentation(StackPresentation stackPresentation) {
+    mStackPresentation = stackPresentation;
+  }
+
+  public void setStackAnimation(StackAnimation stackAnimation) {
+    mStackAnimation = stackAnimation;
+  }
+
+  public void setReplaceAnimation(ReplaceAnimation replaceAnimation) {
+    mReplaceAnimation = replaceAnimation;
+  }
+
+  public void setGestureEnabled(boolean gestureEnabled) {
+    mGestureEnabled = gestureEnabled;
+  }
+
+  public StackAnimation getStackAnimation() {
+    return mStackAnimation;
+  }
+
+  public ReplaceAnimation getReplaceAnimation() {
+    return mReplaceAnimation;
+  }
+
+  public StackPresentation getStackPresentation() {
+    return mStackPresentation;
   }
 
   @Override
   public void setLayerType(int layerType, @Nullable Paint paint) {
-    // ignore – layer type is controlled by `transitioning` prop
+    // ignore - layer type is controlled by `transitioning` prop
   }
 
-  public void setNeedsOffscreenAlphaCompositing(boolean needsOffscreenAlphaCompositing) {
-    // ignore - offscreen alpha is controlled by `transitioning` prop
+  protected void setContainer(@Nullable ScreenContainer container) {
+    mContainer = container;
   }
 
-  protected void setContainer(@Nullable ScreenContainer mContainer) {
-    this.mContainer = mContainer;
+  protected void setFragment(ScreenFragment fragment) {
+    mFragment = fragment;
+  }
+
+  protected @Nullable ScreenFragment getFragment() {
+    return mFragment;
   }
 
   protected @Nullable ScreenContainer getContainer() {
     return mContainer;
   }
 
-  protected Fragment getFragment() {
-    return mFragment;
-  }
-
-  public void setActive(boolean active) {
-    if (active == mActive) {
+  public void setActivityState(ActivityState activityState) {
+    if (activityState == mActivityState) {
       return;
     }
-    mActive = active;
+    mActivityState = activityState;
     if (mContainer != null) {
       mContainer.notifyChildUpdate();
     }
   }
 
-  public boolean isActive() {
-    return mActive;
+  public ActivityState getActivityState() {
+    return mActivityState;
+  }
+
+  public boolean isGestureEnabled() {
+    return mGestureEnabled;
   }
 }

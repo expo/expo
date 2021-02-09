@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -140,7 +140,7 @@ class IPAddressV6 {
   // Create an IPAddressV6 from a string
   // @throws IPAddressFormatException
   //
-  explicit IPAddressV6(StringPiece ip);
+  explicit IPAddressV6(StringPiece addr);
 
   // ByteArray16 constructor
   explicit IPAddressV6(const ByteArray16& src) noexcept;
@@ -338,7 +338,7 @@ class IPAddressV6 {
    * @throws abort if numBits == 0 or numBits > bitCount()
    * @return mask associated with numBits
    */
-  static const ByteArray16 fetchMask(size_t numBits);
+  static ByteArray16 fetchMask(size_t numBits);
   // Given 2 IPAddressV6,mask pairs extract the longest common IPAddress,
   // mask pair
   static CIDRNetworkV6 longestCommonPrefix(

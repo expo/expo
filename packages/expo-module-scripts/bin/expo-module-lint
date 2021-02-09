@@ -4,5 +4,22 @@ set -eo pipefail
 
 script_dir="$(dirname "$0")"
 
-"$script_dir/expo-module-eslint" --ext .js,.jsx.,.ts,.tsx.,.d.ts "$@" src
+args=()
 
+# If the command is used like `yarn lint plugin` then set the target to `plugin/src`
+if [ "$1" == "plugin" ]; then
+  args+=("plugin/src")
+  # Push the rest of the arguments minus the `plugin` arg
+  args+=("${@:2}")
+  if ! [[ -d "$(pwd)/plugin" ]]; then
+    # Good DX cuz Expo
+    printf "\n\033[1;33mThe \`plugin/src\` folder does not exist in this project; please create it and try again.\033[0m\n\n"
+    exit 0
+  fi
+else
+  args+=("src") 
+  args+=("$@") 
+fi
+
+
+"$script_dir/expo-module-eslint" "${args[@]}" 

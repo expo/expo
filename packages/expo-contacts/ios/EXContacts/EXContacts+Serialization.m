@@ -431,7 +431,7 @@
       val.month = [item[@"month"] integerValue] + 1;
     }
     if (item[@"year"]) {
-      val.day = [item[@"year"] integerValue];
+      val.year = [item[@"year"] integerValue];
     }
     [output addObject:[[CNLabeledValue alloc]
                        initWithLabel:label

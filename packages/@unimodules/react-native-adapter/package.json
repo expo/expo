@@ -1,6 +1,6 @@
 {
   "name": "@unimodules/react-native-adapter",
-  "version": "3.0.0",
+  "version": "6.1.0",
   "description": "The adapter to use universal modules with the React Native bridge",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -8,6 +8,7 @@
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
+    "lint": "expo-module lint",
     "test": "expo-module test",
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
@@ -20,7 +21,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/expo/expo.git"
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@unimodules/react-native-adapter"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
@@ -32,24 +34,23 @@
     "preset": "expo-module-scripts"
   },
   "peerDependencies": {
-    "react-native": "*"
+    "react-native": "*",
+    "react-native-web": "~0.13.7"
   },
   "unimodulePeerDependencies": {
-    "@unimodules/core": "^2.0.0-alpha.0",
+    "@unimodules/core": "*",
+    "unimodules-app-loader": "*",
     "unimodules-font-interface": "*",
     "unimodules-image-loader-interface": "*",
     "unimodules-permissions-interface": "*"
   },
   "dependencies": {
     "invariant": "^2.2.4",
-    "lodash": "^4.5.0",
-    "prop-types": "^15.6.1"
+    "lodash": "^4.5.0"
   },
   "devDependencies": {
     "@types/lodash": "^4.5.4",
-    "babel-preset-expo": "^6.0.0",
-    "@unimodules/core": "~3.0.2",
-    "expo-module-scripts": "^1.0.0"
-  },
-  "gitHead": "9518929d6f2ba9cf8e0aae81d34cc1eb52f7093a"
+    "@unimodules/core": "~7.0.0",
+    "expo-module-scripts": "~1.2.0"
+  }
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,65 +7,102 @@
 
 #import "RCTImageManager.h"
 
-#import <React/RCTImageLoader.h>
+#import <react/debug/SystraceSection.h>
+#import <react/utils/ManagedObjectWrapper.h>
+#import <react/utils/SharedFunction.h>
+
+#import <React/RCTImageLoaderWithAttributionProtocol.h>
+
 #import <react/imagemanager/ImageResponse.h>
 #import <react/imagemanager/ImageResponseObserver.h>
 
+#import "RCTImageInstrumentationProxy.h"
 #import "RCTImagePrimitivesConversions.h"
 
 using namespace facebook::react;
 
 @implementation RCTImageManager {
-  RCTImageLoader *_imageLoader;
+  id<RCTImageLoaderWithAttributionProtocol> _imageLoader;
+  dispatch_queue_t _backgroundSerialQueue;
 }
 
-- (instancetype)initWithImageLoader:(RCTImageLoader *)imageLoader {
+- (instancetype)initWithImageLoader:(id<RCTImageLoaderWithAttributionProtocol>)imageLoader
+{
   if (self = [super init]) {
     _imageLoader = imageLoader;
+    _backgroundSerialQueue =
+        dispatch_queue_create("com.facebook.react-native.image-manager-queue", DISPATCH_QUEUE_SERIAL);
   }
 
   return self;
 }
 
-- (ImageRequest)requestImage:(const ImageSource &)imageSource {
-  auto imageRequest = ImageRequest(imageSource);
+- (ImageRequest)requestImage:(ImageSource)imageSource surfaceId:(SurfaceId)surfaceId
+{
+  SystraceSection s("RCTImageManager::requestImage");
 
-  auto observerCoordinator = imageRequest.getObserverCoordinator();
+  auto imageInstrumentation = std::make_shared<RCTImageInstrumentationProxy>(_imageLoader);
+  auto imageRequest = ImageRequest(imageSource, imageInstrumentation);
+  auto weakObserverCoordinator =
+      (std::weak_ptr<const ImageResponseObserverCoordinator>)imageRequest.getSharedObserverCoordinator();
 
-  NSURLRequest *request = NSURLRequestFromImageSource(imageSource);
+  auto sharedCancelationFunction = SharedFunction<>();
+  imageRequest.setCancelationFunction(sharedCancelationFunction);
 
-  auto completionBlock = ^(NSError *error, UIImage *image) {
-    if (image && !error) {
-      auto imageResponse = ImageResponse(
-          std::shared_ptr<void>((__bridge_retained void *)image, CFRelease));
-      observerCoordinator->nativeImageResponseComplete(
-          std::move(imageResponse));
-    } else {
-      observerCoordinator->nativeImageResponseFailed();
+  /*
+   * Even if an image is being loaded asynchronously on some other background thread, some other preparation
+   * work (such as creating an `NSURLRequest` object and some obscure logic inside `RCTImageLoader`) can take a couple
+   * of milliseconds, so we have to offload this to a separate thread. `ImageRequest` can be created as part of the
+   * layout process, so it must be highly performant.
+   *
+   * Technically, we don't need to dispatch this to *serial* queue. The interface of `RCTImageLoader` promises to be
+   * fully thread-safe. However, in reality, it crashes when we request images on concurrently on different threads. See
+   * T46024425 for more details.
+   */
+  dispatch_async(_backgroundSerialQueue, ^{
+    NSURLRequest *request = NSURLRequestFromImageSource(imageSource);
+
+    auto completionBlock = ^(NSError *error, UIImage *image) {
+      auto observerCoordinator = weakObserverCoordinator.lock();
+      if (!observerCoordinator) {
+        return;
+      }
+
+      if (image && !error) {
+        observerCoordinator->nativeImageResponseComplete(ImageResponse(wrapManagedObject(image)));
+      } else {
+        observerCoordinator->nativeImageResponseFailed();
+      }
+    };
+
+    auto progressBlock = ^(int64_t progress, int64_t total) {
+      auto observerCoordinator = weakObserverCoordinator.lock();
+      if (!observerCoordinator) {
+        return;
+      }
+
+      observerCoordinator->nativeImageResponseProgress(progress / (float)total);
+    };
+
+    RCTImageURLLoaderRequest *loaderRequest =
+        [self->_imageLoader loadImageWithURLRequest:request
+                                               size:CGSizeMake(imageSource.size.width, imageSource.size.height)
+                                              scale:imageSource.scale
+                                            clipped:YES
+                                         resizeMode:RCTResizeModeStretch
+                                        attribution:{
+                                                        .surfaceId = surfaceId,
+                                                    }
+                                      progressBlock:progressBlock
+                                   partialLoadBlock:nil
+                                    completionBlock:completionBlock];
+    RCTImageLoaderCancellationBlock cancelationBlock = loaderRequest.cancellationBlock;
+    sharedCancelationFunction.assign([cancelationBlock]() { cancelationBlock(); });
+
+    if (imageInstrumentation) {
+      imageInstrumentation->setImageURLLoaderRequest(loaderRequest);
     }
-  };
-
-  auto progressBlock = ^(int64_t progress, int64_t total) {
-    observerCoordinator->nativeImageResponseProgress(progress / (float)total);
-  };
-
-  RCTImageLoaderCancellationBlock cancelationBlock =
-      [_imageLoader loadImageWithURLRequest:request
-                                       size:CGSizeMake(
-                                                imageSource.size.width,
-                                                imageSource.size.height)
-                                      scale:imageSource.scale
-                                    clipped:YES
-                                 resizeMode:RCTResizeModeStretch
-                              progressBlock:progressBlock
-                           partialLoadBlock:nil
-                            completionBlock:completionBlock];
-
-  std::function<void(void)> cancelationFunction = [cancelationBlock](void) {
-    cancelationBlock();
-  };
-
-  imageRequest.setCancelationFunction(cancelationFunction);
+  });
 
   return imageRequest;
 }

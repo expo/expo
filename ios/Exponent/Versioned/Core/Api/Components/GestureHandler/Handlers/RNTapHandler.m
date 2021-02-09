@@ -166,7 +166,9 @@
 
 @end
 
-@implementation RNTapGestureHandler
+@implementation RNTapGestureHandler {
+    RNGestureHandlerEventExtraData * _lastData;
+}
 
 - (instancetype)initWithTag:(NSNumber *)tag
 {
@@ -201,6 +203,15 @@
     CGFloat dist = [RCTConvert CGFloat:prop];
     recognizer.maxDistSq = dist * dist;
   }
+}
+
+- (RNGestureHandlerEventExtraData *)eventExtraData:(UIGestureRecognizer *)recognizer{
+    if (recognizer.state == UIGestureRecognizerStateEnded) {
+        return _lastData;
+    }
+    
+    _lastData = [super eventExtraData:recognizer];
+    return _lastData;
 }
 
 @end

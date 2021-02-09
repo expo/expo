@@ -3,6 +3,8 @@ package versioned.host.exp.exponent.modules.api.components.gesturehandler;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.facebook.react.bridge.UiThreadUtil;
+
 import java.util.Arrays;
 
 public class GestureHandler<T extends GestureHandler> {
@@ -28,7 +30,7 @@ public class GestureHandler<T extends GestureHandler> {
   public static final int DIRECTION_UP = 4;
   public static final int DIRECTION_DOWN = 8;
 
-  private static int MAX_POINTERS_COUNT = 11;
+  private static int MAX_POINTERS_COUNT = 12;
   private static MotionEvent.PointerProperties[] sPointerProps;
   private static MotionEvent.PointerCoords[] sPointerCoords;
 
@@ -53,6 +55,9 @@ public class GestureHandler<T extends GestureHandler> {
   private boolean mWithinBounds;
   private boolean mEnabled = true;
   private float mHitSlop[];
+
+  private static short sNextEventCoalescingKey = 0;
+  private short mEventCoalescingKey;
 
   private float mLastX, mLastY;
   private float mLastEventOffsetX, mLastEventOffsetY;
@@ -101,7 +106,12 @@ public class GestureHandler<T extends GestureHandler> {
     if (mView != null) {
       // If view is set then handler is in "active" state. In that case we want to "cancel" handler
       // when it changes enabled state so that it gets cleared from the orchestrator
-      cancel();
+      UiThreadUtil.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          cancel();
+        }
+      });
     }
     mEnabled = enabled;
     return (T) this;
@@ -171,6 +181,10 @@ public class GestureHandler<T extends GestureHandler> {
 
   public boolean isWithinBounds() {
     return mWithinBounds;
+  }
+
+  public short getEventCoalescingKey() {
+    return mEventCoalescingKey;
   }
 
   public final void prepare(View view, GestureHandlerOrchestrator orchestrator) {
@@ -319,11 +333,19 @@ public class GestureHandler<T extends GestureHandler> {
   }
 
   private void moveToState(int newState) {
+    UiThreadUtil.assertOnUiThread();
     if (mState == newState) {
       return;
     }
     int oldState = mState;
     mState = newState;
+
+    if (mState == STATE_ACTIVE) {
+      // Generate a unique coalescing-key each time the gesture-handler becomes active. All events will have
+      // the same coalescing-key allowing EventDispatcher to coalesce RNGestureHandlerEvents when events are
+      // generated faster than they can be treated by JS thread
+      mEventCoalescingKey = sNextEventCoalescingKey++;
+    }
 
     mOrchestrator.onHandlerStateChange(this, newState, oldState);
 
@@ -387,7 +409,7 @@ public class GestureHandler<T extends GestureHandler> {
         left -= padLeft;
       }
       if (hitSlopSet(padTop)) {
-        top -= padBottom;
+        top -= padTop;
       }
       if (hitSlopSet(padRight)) {
         right += padRight;
@@ -406,9 +428,9 @@ public class GestureHandler<T extends GestureHandler> {
         }
       }
       if (hitSlopSet(height)) {
-        if (!hitSlopSet(top)) {
+        if (!hitSlopSet(padTop)) {
           top = bottom - height;
-        } else if (!hitSlopSet(bottom)) {
+        } else if (!hitSlopSet(padBottom)) {
           bottom = top + height;
         }
       }

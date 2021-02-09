@@ -2,39 +2,13 @@ package org.unimodules.adapters.react.services;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.transition.Transition;
-
-import com.facebook.common.references.CloseableReference;
-import com.facebook.datasource.DataSource;
-import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.imagepipeline.core.ImagePipeline;
-import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
-import com.facebook.imagepipeline.image.CloseableImage;
-import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.modules.core.PermissionAwareActivity;
-import com.facebook.react.modules.core.PermissionListener;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.UIManagerModule;
-
-import java.lang.ref.WeakReference;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
-
-import javax.annotation.Nullable;
 
 import org.unimodules.core.interfaces.ActivityEventListener;
 import org.unimodules.core.interfaces.ActivityProvider;
@@ -42,16 +16,17 @@ import org.unimodules.core.interfaces.InternalModule;
 import org.unimodules.core.interfaces.JavaScriptContextProvider;
 import org.unimodules.core.interfaces.LifecycleEventListener;
 import org.unimodules.core.interfaces.services.UIManager;
-import org.unimodules.interfaces.imageloader.ImageLoader;
-import org.unimodules.interfaces.permissions.PermissionsListener;
-import org.unimodules.interfaces.permissions.PermissionsManager;
+
+import java.lang.ref.WeakReference;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 public class UIManagerModuleWrapper implements
     ActivityProvider,
-    ImageLoader,
     InternalModule,
     JavaScriptContextProvider,
-    PermissionsManager,
     UIManager {
   private ReactContext mReactContext;
   private Map<LifecycleEventListener, com.facebook.react.bridge.LifecycleEventListener> mLifecycleListenersMap = new WeakHashMap<>();
@@ -69,9 +44,7 @@ public class UIManagerModuleWrapper implements
   public List<Class> getExportedInterfaces() {
     return Arrays.<Class>asList(
         ActivityProvider.class,
-        ImageLoader.class,
         JavaScriptContextProvider.class,
-        PermissionsManager.class,
         UIManager.class
     );
   }
@@ -211,77 +184,8 @@ public class UIManagerModuleWrapper implements
     mActivityEventListenersMap.remove(activityEventListener);
   }
 
-  @Override
-  public boolean requestPermissions(String[] permissions, final int requestCode, final PermissionsListener listener) {
-    Activity currentActivity = getContext().getCurrentActivity();
-    if (currentActivity instanceof PermissionAwareActivity) {
-      PermissionAwareActivity activity = (PermissionAwareActivity) currentActivity;
-      activity.requestPermissions(permissions, requestCode, new PermissionListener() {
-        @Override
-        public boolean onRequestPermissionsResult(int realRequestCode, String[] permissions, int[] grantResults) {
-          if (requestCode == realRequestCode) {
-            listener.onPermissionResult(permissions, grantResults);
-            return true;
-          } else {
-            return false;
-          }
-        }
-      });
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   public long getJavaScriptContextRef() {
     return mReactContext.getJavaScriptContextHolder().get();
-  }
-
-  @Override
-  public void loadImageForDisplayFromURL(@NonNull String url, final ResultListener resultListener) {
-    ImageRequest imageRequest = ImageRequest.fromUri(url);
-
-    ImagePipeline imagePipeline = Fresco.getImagePipeline();
-    DataSource<CloseableReference<CloseableImage>> dataSource =
-        imagePipeline.fetchDecodedImage(imageRequest, mReactContext);
-
-    dataSource.subscribe(
-        new BaseBitmapDataSubscriber() {
-          @Override
-          public void onNewResultImpl(@Nullable Bitmap bitmap) {
-            if (bitmap == null) {
-              resultListener.onFailure(new Exception("Loaded bitmap is null"));
-              return;
-            }
-            resultListener.onSuccess(bitmap);
-          }
-
-          @Override
-          public void onFailureImpl(DataSource dataSource) {
-            resultListener.onFailure(dataSource.getFailureCause());
-          }
-        },
-        AsyncTask.THREAD_POOL_EXECUTOR);
-  }
-
-  @Override
-  public void loadImageForManipulationFromURL(@NonNull String url, final ResultListener resultListener) {
-    Glide.with(getContext())
-        .asBitmap()
-        .diskCacheStrategy(DiskCacheStrategy.NONE)
-        .skipMemoryCache(true)
-        .load(url)
-        .into(new SimpleTarget<Bitmap>() {
-          @Override
-          public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-            resultListener.onSuccess(resource);
-          }
-
-          @Override
-          public void onLoadFailed(@Nullable Drawable errorDrawable) {
-            resultListener.onFailure(new Exception("Loading bitmap failed"));
-          }
-        });
   }
 
   @Override

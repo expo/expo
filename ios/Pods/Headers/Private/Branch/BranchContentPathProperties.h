@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BranchContentPathProperties.h
+../../../Branch/Branch-SDK/BranchContentPathProperties.h

@@ -93,7 +93,7 @@ public class BillingManager implements PurchasesUpdatedListener {
         .build();
   }
 
-  public void startConnectionAndQueryHistory(final Promise promise) {
+  public void startConnection(final Promise promise) {
     // Start setup. This is asynchronous and the specified listener will be called
     // once setup completes.
     // It also starts to report all the new purchases through onPurchasesUpdated() callback.
@@ -102,8 +102,7 @@ public class BillingManager implements PurchasesUpdatedListener {
       public void run() {
         // Notifying the listener that billing client is ready
         mBillingUpdatesListener.onBillingClientSetupFinished();
-        // IAB is fully set up. Now, let's get an inventory of stuff we own.
-        queryPurchases(promise);
+        promise.resolve(null);
       }
     });
   }
@@ -162,7 +161,7 @@ public class BillingManager implements PurchasesUpdatedListener {
    */
   @Override
   public void onPurchasesUpdated(BillingResult result, List<Purchase> purchases) {
-    if (result.getResponseCode() == BillingResponseCode.OK) {
+    if (result.getResponseCode() == BillingResponseCode.OK && purchases != null) {
       for (Purchase purchase : purchases) {
         handlePurchase(purchase);
       }
@@ -264,11 +263,11 @@ public class BillingManager implements PurchasesUpdatedListener {
         PurchasesResult purchasesResult = mBillingClient.queryPurchases(SkuType.INAPP);
 
         // If there are subscriptions supported, we add subscription rows as well
-        if (areSubscriptionsSupported()) {
+        if (purchasesResult != null && areSubscriptionsSupported()) {
           PurchasesResult subscriptionResult
             = mBillingClient.queryPurchases(SkuType.SUBS);
 
-          if (subscriptionResult.getResponseCode() == BillingResponseCode.OK) {
+          if (subscriptionResult != null && subscriptionResult.getResponseCode() == BillingResponseCode.OK) {
             purchasesResult.getPurchasesList().addAll(
               subscriptionResult.getPurchasesList());
           }
@@ -442,7 +441,7 @@ public class BillingManager implements PurchasesUpdatedListener {
    */
   private void onQueryPurchasesFinished(PurchasesResult result, final Promise promise) {
     // Have we been disposed of in the meantime? If so, or bad result code, then quit
-    if (mBillingClient == null || result.getResponseCode() != BillingResponseCode.OK) {
+    if (mBillingClient == null || result == null || result.getResponseCode() != BillingResponseCode.OK) {
       promise.reject("E_QUERY_FAILED", "Billing client was null or query was unsuccessful");
       return;
     }
@@ -482,7 +481,7 @@ public class BillingManager implements PurchasesUpdatedListener {
               mBillingClient.querySkuDetailsAsync(subs.build(), new SkuDetailsResponseListener() {
                 @Override
                 public void onSkuDetailsResponse(BillingResult billingResult, List<SkuDetails> subscriptionDetails) {
-                  if (skuDetails != null) {
+                  if (skuDetails != null && subscriptionDetails != null) {
                     skuDetails.addAll(subscriptionDetails);
                   }
                   listener.onSkuDetailsResponse(billingResult, skuDetails);
@@ -502,9 +501,11 @@ public class BillingManager implements PurchasesUpdatedListener {
         @Override
         public void onSkuDetailsResponse(BillingResult billingResult, List<SkuDetails> skuDetailsList) {
           ArrayList<Bundle> results = new ArrayList<>();
-          for (SkuDetails skuDetails : skuDetailsList) {
-            mSkuDetailsMap.put(skuDetails.getSku(), skuDetails);
-            results.add(skuToBundle(skuDetails));
+          if (skuDetailsList != null) {
+            for (SkuDetails skuDetails : skuDetailsList) {
+              mSkuDetailsMap.put(skuDetails.getSku(), skuDetails);
+              results.add(skuToBundle(skuDetails));
+            }
           }
           Bundle response = formatResponse(billingResult, results);
           promise.resolve(response);

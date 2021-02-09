@@ -74,7 +74,7 @@ class CreateAlbum extends AsyncTask<Void, Void, Void> {
                 mPromise.reject(ERROR_UNABLE_TO_SAVE, "Could not add image to album.");
                 return;
               }
-              final String selection = MediaStore.Images.Media.DATA + "=?) /*";
+              final String selection = MediaStore.Images.Media.DATA + "=?";
               final String[] args = {path};
               queryAlbum(mContext, selection, args, mPromise);
             }

@@ -1,10 +1,19 @@
-import { EventEmitter, Subscription } from '@unimodules/core';
-import { UnavailabilityError } from '@unimodules/core';
+import { EventEmitter, Subscription, UnavailabilityError } from '@unimodules/core';
 import { Platform } from 'react-native';
+import {
+  PermissionResponse as UMPermissionResponse,
+  PermissionStatus,
+  PermissionExpiration,
+} from 'unimodules-permissions-interface';
 
 import MediaLibrary from './ExponentMediaLibrary';
 
 const eventEmitter = new EventEmitter(MediaLibrary);
+
+export type PermissionResponse = UMPermissionResponse & {
+  // iOS only
+  accessPrivileges?: 'all' | 'limited' | 'none';
+};
 
 export type MediaTypeValue = 'audio' | 'photo' | 'video' | 'unknown';
 export type SortByKey =
@@ -39,7 +48,7 @@ export type Asset = {
   filename: string;
   uri: string;
   mediaType: MediaTypeValue;
-  mediaSubtypes?: Array<string>; // iOS only
+  mediaSubtypes?: string[]; // iOS only
   width: number;
   height: number;
   creationTime: number;
@@ -51,9 +60,25 @@ export type Asset = {
 export type AssetInfo = Asset & {
   localUri?: string;
   location?: Location;
-  exif?: Object;
+  exif?: object;
   isFavorite?: boolean; //iOS only
+  isNetworkAsset?: boolean; //iOS only
 };
+
+export type MediaLibraryAssetInfoQueryOptions = {
+  shouldDownloadFromNetwork?: boolean;
+};
+
+export type MediaLibraryAssetsChangeEvent =
+  | {
+      hasIncrementalChanges: false;
+    }
+  | {
+      hasIncrementalChanges: true;
+      insertedAssets: Asset[];
+      deletedAssets: Asset[];
+      updatedAssets: Asset[];
+    };
 
 export type Location = {
   latitude: number;
@@ -70,7 +95,7 @@ export type Album = {
   startTime: number;
   endTime: number;
   approximateLocation?: Location;
-  locationNames?: Array<string>;
+  locationNames?: string[];
 };
 
 export type AlbumsOptions = {
@@ -82,34 +107,25 @@ export type AssetsOptions = {
   first?: number;
   after?: AssetRef;
   album?: AlbumRef;
-  sortBy?: Array<SortByValue> | SortByValue;
-  mediaType?: Array<MediaTypeValue> | MediaTypeValue;
+  sortBy?: SortByValue[] | SortByValue;
+  mediaType?: MediaTypeValue[] | MediaTypeValue;
   createdAfter?: Date | number;
   createdBefore?: Date | number;
 };
 
 export type PagedInfo<T> = {
-  assets: Array<T>;
+  assets: T[];
   endCursor: string;
   hasNextPage: boolean;
   totalCount: number;
 };
 
-export enum PermissionStatus {
-  UNDETERMINED = 'undetermined',
-  GRANTED = 'granted',
-  DENIED = 'denied',
-};
-
-export type PermissionInfo = {
-  status: 'granted' | 'denied' | 'undetermined';
-  granted: boolean;
-};
-
 export type AssetRef = Asset | string;
 export type AlbumRef = Album | string;
 
-function arrayize(item: any): Array<any> {
+export { PermissionStatus, PermissionExpiration };
+
+function arrayize(item: any): any[] {
   if (Array.isArray(item)) {
     return item;
   }
@@ -167,18 +183,31 @@ function dateToNumber(value?: Date | number): number | undefined {
 export const MediaType: MediaTypeObject = MediaLibrary.MediaType;
 export const SortBy: SortByObject = MediaLibrary.SortBy;
 
-export async function requestPermissionsAsync(): Promise<PermissionInfo> {
+export async function requestPermissionsAsync(
+  writeOnly: boolean = false
+): Promise<PermissionResponse> {
   if (!MediaLibrary.requestPermissionsAsync) {
     throw new UnavailabilityError('MediaLibrary', 'requestPermissionsAsync');
   }
-  return await MediaLibrary.requestPermissionsAsync();
+  return await MediaLibrary.requestPermissionsAsync(writeOnly);
 }
 
-export async function getPermissionsAsync(): Promise<PermissionInfo> {
+export async function getPermissionsAsync(writeOnly: boolean = false): Promise<PermissionResponse> {
   if (!MediaLibrary.getPermissionsAsync) {
     throw new UnavailabilityError('MediaLibrary', 'getPermissionsAsync');
   }
-  return await MediaLibrary.getPermissionsAsync();
+  return await MediaLibrary.getPermissionsAsync(writeOnly);
+}
+
+/**
+ * @iOS-only
+ * @throws Will throw an error if called on platform that doesn't support this functionality (eg. iOS < 14, Android, etc.).
+ */
+export async function presentPermissionsPickerAsync(): Promise<void> {
+  if (!MediaLibrary.presentPermissionsPickerAsync) {
+    throw new UnavailabilityError('MediaLibrary', 'presentPermissionsPickerAsync');
+  }
+  return await MediaLibrary.presentPermissionsPickerAsync();
 }
 
 export async function createAssetAsync(localUri: string): Promise<Asset> {
@@ -198,8 +227,15 @@ export async function createAssetAsync(localUri: string): Promise<Asset> {
   return asset;
 }
 
+export async function saveToLibraryAsync(localUri: string): Promise<void> {
+  if (!MediaLibrary.saveToLibraryAsync) {
+    throw new UnavailabilityError('MediaLibrary', 'saveToLibraryAsync');
+  }
+  return await MediaLibrary.saveToLibraryAsync(localUri);
+}
+
 export async function addAssetsToAlbumAsync(
-  assets: Array<AssetRef> | AssetRef,
+  assets: AssetRef[] | AssetRef,
   album: AlbumRef,
   copy: boolean = true
 ) {
@@ -222,10 +258,7 @@ export async function addAssetsToAlbumAsync(
   return await MediaLibrary.addAssetsToAlbumAsync(assetIds, albumId, !!copy);
 }
 
-export async function removeAssetsFromAlbumAsync(
-  assets: Array<AssetRef> | AssetRef,
-  album: AlbumRef
-) {
+export async function removeAssetsFromAlbumAsync(assets: AssetRef[] | AssetRef, album: AlbumRef) {
   if (!MediaLibrary.removeAssetsFromAlbumAsync) {
     throw new UnavailabilityError('MediaLibrary', 'removeAssetsFromAlbumAsync');
   }
@@ -237,7 +270,7 @@ export async function removeAssetsFromAlbumAsync(
   return await MediaLibrary.removeAssetsFromAlbumAsync(assetIds, albumId);
 }
 
-export async function deleteAssetsAsync(assets: Array<AssetRef> | AssetRef) {
+export async function deleteAssetsAsync(assets: AssetRef[] | AssetRef) {
   if (!MediaLibrary.deleteAssetsAsync) {
     throw new UnavailabilityError('MediaLibrary', 'deleteAssetsAsync');
   }
@@ -248,7 +281,10 @@ export async function deleteAssetsAsync(assets: Array<AssetRef> | AssetRef) {
   return await MediaLibrary.deleteAssetsAsync(assetIds);
 }
 
-export async function getAssetInfoAsync(asset: AssetRef): Promise<AssetInfo> {
+export async function getAssetInfoAsync(
+  asset: AssetRef,
+  options: MediaLibraryAssetInfoQueryOptions = { shouldDownloadFromNetwork: true }
+): Promise<AssetInfo> {
   if (!MediaLibrary.getAssetInfoAsync) {
     throw new UnavailabilityError('MediaLibrary', 'getAssetInfoAsync');
   }
@@ -257,7 +293,7 @@ export async function getAssetInfoAsync(asset: AssetRef): Promise<AssetInfo> {
 
   checkAssetIds([assetId]);
 
-  const assetInfo = await MediaLibrary.getAssetInfoAsync(assetId);
+  const assetInfo = await MediaLibrary.getAssetInfoAsync(assetId, options);
 
   if (Array.isArray(assetInfo)) {
     // Android returns an array with asset info, we need to pick the first item
@@ -267,7 +303,7 @@ export async function getAssetInfoAsync(asset: AssetRef): Promise<AssetInfo> {
 }
 
 export async function getAlbumsAsync({ includeSmartAlbums = false }: AlbumsOptions = {}): Promise<
-  Array<Album>
+  Album[]
 > {
   if (!MediaLibrary.getAlbumsAsync) {
     throw new UnavailabilityError('MediaLibrary', 'getAlbumsAsync');
@@ -314,7 +350,7 @@ export async function createAlbumAsync(
 }
 
 export async function deleteAlbumsAsync(
-  albums: Array<AlbumRef> | AlbumRef,
+  albums: AlbumRef[] | AlbumRef,
   assetRemove: boolean = false
 ) {
   if (!MediaLibrary.deleteAlbumsAsync) {
@@ -357,13 +393,23 @@ export async function getAssetsAsync(assetsOptions: AssetsOptions = {}): Promise
     throw new Error('Option "album" must be a string!');
   }
 
+  if (after != null && Platform.OS === 'android' && isNaN(parseInt(getId(after) as string, 10))) {
+    throw new Error('Option "after" must be a valid ID!');
+  }
+
+  if (first != null && first < 0) {
+    throw new Error('Option "first" must be a positive integer!');
+  }
+
   options.sortBy.forEach(checkSortBy);
   options.mediaType.forEach(checkMediaType);
 
   return await MediaLibrary.getAssetsAsync(options);
 }
 
-export function addListener(listener: () => void): Subscription {
+export function addListener(
+  listener: (event: MediaLibraryAssetsChangeEvent) => void
+): Subscription {
   const subscription = eventEmitter.addListener(MediaLibrary.CHANGE_LISTENER_NAME, listener);
   return subscription;
 }

@@ -39,7 +39,7 @@
   if (_window) {
     return;
   }
-  [[ExpoKit sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
+  [[ExpoKit sharedInstance] prepareWithLaunchOptions:launchOptions];
 
   _window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   _window.backgroundColor = [UIColor whiteColor];

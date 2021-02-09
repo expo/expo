@@ -15,11 +15,11 @@ else
 end
 
 Pod::Spec.new do |spec|
-  spec.name = 'yoga'
-  spec.version = "#{version}.React"
+  spec.name = 'Yoga'
+  spec.version = '1.14.0'
   spec.license =  { :type => 'MIT' }
-  spec.homepage = 'https://facebook.github.io/yoga/'
-  spec.documentation_url = 'https://facebook.github.io/yoga/docs/api/c/'
+  spec.homepage = 'https://yogalayout.com'
+  spec.documentation_url = 'https://yogalayout.com/docs/'
 
   spec.summary = 'Yoga is a cross-platform layout engine which implements Flexbox.'
   spec.description = 'Yoga is a cross-platform layout engine enabling maximum collaboration within your team by implementing an API many designers are familiar with, and opening it up to developers across different platforms.'
@@ -28,7 +28,11 @@ Pod::Spec.new do |spec|
   spec.source = source
 
   spec.module_name = 'yoga'
+  spec.header_dir = 'yoga'
   spec.requires_arc = false
+  spec.pod_target_xcconfig = {
+      'DEFINES_MODULE' => 'YES'
+  }
   spec.compiler_flags = [
       '-fno-omit-frame-pointer',
       '-fexceptions',
@@ -39,7 +43,7 @@ Pod::Spec.new do |spec|
   ]
 
   # Pinning to the same version as React.podspec.
-  spec.platforms = { :ios => "9.0", :tvos => "9.2" }
+  spec.platforms = { :ios => "10.0", :tvos => "10.0" }
 
   # Set this environment variable when *not* using the `:path` option to install the pod.
   # E.g. when publishing this spec to a spec repo.

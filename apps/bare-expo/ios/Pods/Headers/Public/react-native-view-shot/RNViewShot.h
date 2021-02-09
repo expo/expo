@@ -1,0 +1,1 @@
+../../../../../../../node_modules/react-native-view-shot/ios/RNViewShot.h

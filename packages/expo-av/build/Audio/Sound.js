@@ -1,7 +1,7 @@
 import { EventEmitter } from '@unimodules/core';
-import { throwIfAudioIsDisabled } from './AudioAvailability';
 import { PlaybackMixin, assertStatusValuesInBounds, getNativeSourceAndFullInitialStatusForLoadAsync, getUnloadedStatus, } from '../AV';
 import ExponentAV from '../ExponentAV';
+import { throwIfAudioIsDisabled } from './AudioAvailability';
 export class Sound {
     constructor() {
         this._loaded = false;
@@ -141,6 +141,7 @@ export class Sound {
         }));
     }
 }
+/** @deprecated Use `Sound.createAsync()` instead */
 Sound.create = async (source, initialStatus = {}, onPlaybackStatusUpdate = null, downloadFirst = true) => {
     console.warn(`Sound.create is deprecated in favor of Sound.createAsync with the same API except for the new method name`);
     return Sound.createAsync(source, initialStatus, onPlaybackStatusUpdate, downloadFirst);

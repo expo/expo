@@ -1,3 +1,4 @@
+import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 export declare type CalendarFormatType = typeof CalendarFormats.Gregorian | typeof CalendarFormats.Buddhist | typeof CalendarFormats.Chinese | typeof CalendarFormats.Coptic | typeof CalendarFormats.EthiopicAmeteMihret | typeof CalendarFormats.EthiopicAmeteAlem | typeof CalendarFormats.Hebrew | typeof CalendarFormats.ISO8601 | typeof CalendarFormats.Indian | typeof CalendarFormats.Islamic | typeof CalendarFormats.IslamicCivil | typeof CalendarFormats.Japanese | typeof CalendarFormats.Persian | typeof CalendarFormats.RepublicOfChina | typeof CalendarFormats.IslamicTabular | typeof CalendarFormats.IslamicUmmAlQura;
 export declare type ContainerType = typeof ContainerTypes.Local | typeof ContainerTypes.Exchange | typeof ContainerTypes.CardDAV | typeof ContainerTypes.Unassigned;
 export declare type ContactType = typeof ContactTypes.Person | typeof ContactTypes.Company;
@@ -148,11 +149,18 @@ export declare type Container = {
     id: string;
     type: ContainerType;
 };
-export declare function shareContactAsync(contactId: string, message: string, shareOptions?: Object): Promise<any>;
+export { PermissionStatus, PermissionResponse };
+/**
+ * Returns whether the Contacts API is enabled on the current device. This does not check the app permissions.
+ *
+ * @returns Async `boolean`, indicating whether the Contacts API is available on the current device. Currently this resolves to `true` on iOS and Android only.
+ */
+export declare function isAvailableAsync(): Promise<boolean>;
+export declare function shareContactAsync(contactId: string, message: string, shareOptions?: object): Promise<any>;
 export declare function getContactsAsync(contactQuery?: ContactQuery): Promise<ContactResponse>;
 export declare function getPagedContactsAsync(contactQuery?: ContactQuery): Promise<ContactResponse>;
-export declare function getContactByIdAsync(id: string, fields?: FieldType): Promise<Contact | undefined>;
-export declare function addContactAsync(contact: Contact, containerId: string): Promise<string>;
+export declare function getContactByIdAsync(id: string, fields?: FieldType[]): Promise<Contact | undefined>;
+export declare function addContactAsync(contact: Contact, containerId?: string): Promise<string>;
 export declare function updateContactAsync(contact: Contact): Promise<string>;
 export declare function removeContactAsync(contactId: string): Promise<any>;
 export declare function writeContactToFileAsync(contactQuery?: ContactQuery): Promise<string | undefined>;
@@ -166,6 +174,8 @@ export declare function removeContactFromGroupAsync(contactId: string, groupId: 
 export declare function getGroupsAsync(groupQuery: GroupQuery): Promise<Group[]>;
 export declare function getDefaultContainerIdAsync(): Promise<string>;
 export declare function getContainersAsync(containerQuery: ContainerQuery): Promise<Container[]>;
+export declare function getPermissionsAsync(): Promise<PermissionResponse>;
+export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
 export declare const PHONE_NUMBERS = "phoneNumbers";
 export declare const EMAILS = "emails";
 export declare const ADDRESSES = "addresses";
@@ -183,6 +193,7 @@ export declare const SOCIAL_PROFILES = "socialProfiles";
 export declare const IM_ADDRESSES = "instantMessageAddresses";
 export declare const URLS = "urlAddresses";
 export declare const DATES = "dates";
+export declare const RAW_DATES = "rawDates";
 export declare const RELATIONSHIPS = "relationships";
 export declare const Fields: {
     ID: string;

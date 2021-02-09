@@ -1,7 +1,7 @@
 package expo.modules.camera.events;
 
 import android.os.Bundle;
-import android.support.v4.util.Pools;
+import androidx.core.util.Pools;
 
 import org.unimodules.core.interfaces.services.EventEmitter;
 import org.unimodules.interfaces.facedetector.FaceDetector;

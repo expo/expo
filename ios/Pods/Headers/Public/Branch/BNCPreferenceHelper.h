@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BNCPreferenceHelper.h
+../../../Branch/Branch-SDK/BNCPreferenceHelper.h

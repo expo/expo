@@ -4,6 +4,7 @@
 #import <EXLocation/EXLocationDelegate.h>
 #import <EXLocation/EXLocationTaskConsumer.h>
 #import <EXLocation/EXGeofencingTaskConsumer.h>
+#import <EXLocation/EXLocationPermissionRequester.h>
 
 #import <CoreLocation/CLLocationManager.h>
 #import <CoreLocation/CLLocationManagerDelegate.h>
@@ -14,8 +15,10 @@
 #import <CoreLocation/CLCircularRegion.h>
 
 #import <UMCore/UMEventEmitterService.h>
-#import <UMCore/UMAppLifecycleService.h>
+
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
+#import <UMPermissionsInterface/UMPermissionsMethodsDelegate.h>
+
 #import <UMTaskManagerInterface/UMTaskManagerInterface.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -27,10 +30,8 @@ NSString * const EXHeadingChangedEventName = @"Expo.headingChanged";
 
 @property (nonatomic, strong) NSMutableDictionary<NSNumber *, EXLocationDelegate*> *delegates;
 @property (nonatomic, strong) NSMutableSet<EXLocationDelegate *> *retainedDelegates;
-@property (nonatomic, assign, getter=isPaused) BOOL paused;
 @property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
-@property (nonatomic, weak) id<UMPermissionsInterface> permissions;
-@property (nonatomic, weak) id<UMAppLifecycleService> lifecycleService;
+@property (nonatomic, weak) id<UMPermissionsInterface> permissionsManager;
 @property (nonatomic, weak) id<UMTaskManagerInterface> tasksManager;
 
 @end
@@ -50,18 +51,10 @@ UM_EXPORT_MODULE(ExpoLocation);
 
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
-  if (_lifecycleService) {
-    [_lifecycleService unregisterAppLifecycleListener:self];
-  }
-
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
-  _permissions = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
-  _lifecycleService = [moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)];
+  _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
+  [UMPermissionsMethodsDelegate registerRequesters:@[[EXLocationPermissionRequester new]] withPermissionsManager:_permissionsManager];
   _tasksManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMTaskManagerInterface)];
-
-  if (_lifecycleService) {
-    [_lifecycleService registerAppLifecycleListener:self];
-  }
 }
 
 - (dispatch_queue_t)methodQueue
@@ -167,12 +160,29 @@ UM_EXPORT_METHOD_AS(watchPositionImplAsync,
   resolve([NSNull null]);
 }
 
+UM_EXPORT_METHOD_AS(getLastKnownPositionAsync,
+                    getLastKnownPositionWithOptions:(NSDictionary *)options
+                    resolve:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  if (![self checkPermissions:reject]) {
+    return;
+  }
+  CLLocation *location = [[self locationManagerWithOptions:nil] location];
+
+  if ([self.class isLocation:location validWithOptions:options]) {
+    resolve([EXLocation exportLocation:location]);
+  } else {
+    resolve([NSNull null]);
+  }
+}
+
 // Watch method for getting compass updates
 UM_EXPORT_METHOD_AS(watchDeviceHeading,
                     watchHeadingWithWatchId:(nonnull NSNumber *)watchId
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject) {
-  if (![_permissions hasGrantedPermission:@"location"]) {
+  if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXLocationPermissionRequester class]]) {
     reject(@"E_LOCATION_UNAUTHORIZED", @"Not authorized to use location services", nil);
     return;
   }
@@ -241,10 +251,6 @@ UM_EXPORT_METHOD_AS(geocodeAsync,
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  if ([self isPaused]) {
-    return;
-  }
-
   CLGeocoder *geocoder = [[CLGeocoder alloc] init];
 
   [geocoder geocodeAddressString:address completionHandler:^(NSArray* placemarks, NSError* error){
@@ -275,10 +281,6 @@ UM_EXPORT_METHOD_AS(reverseGeocodeAsync,
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  if ([self isPaused]) {
-    return;
-  }
-
   CLGeocoder *geocoder = [[CLGeocoder alloc] init];
   CLLocation *location = [[CLLocation alloc] initWithLatitude:[locationMap[@"latitude"] floatValue] longitude:[locationMap[@"longitude"] floatValue]];
 
@@ -287,13 +289,16 @@ UM_EXPORT_METHOD_AS(reverseGeocodeAsync,
       NSMutableArray *results = [NSMutableArray arrayWithCapacity:placemarks.count];
       for (CLPlacemark* placemark in placemarks) {
         NSDictionary *address = @{
-                                  @"city": placemark.locality ?: [NSNull null],
-                                  @"street": placemark.thoroughfare ?: [NSNull null],
-                                  @"region": placemark.administrativeArea ?: [NSNull null],
-                                  @"country": placemark.country ?: [NSNull null],
-                                  @"postalCode": placemark.postalCode ?: [NSNull null],
-                                  @"name": placemark.name ?: [NSNull null],
-                                  @"isoCountryCode": placemark.ISOcountryCode ?: [NSNull null],
+                                  @"city": UMNullIfNil(placemark.locality),
+                                  @"district": UMNullIfNil(placemark.subLocality),
+                                  @"street": UMNullIfNil(placemark.thoroughfare),
+                                  @"region": UMNullIfNil(placemark.administrativeArea),
+                                  @"subregion": UMNullIfNil(placemark.subAdministrativeArea),
+                                  @"country": UMNullIfNil(placemark.country),
+                                  @"postalCode": UMNullIfNil(placemark.postalCode),
+                                  @"name": UMNullIfNil(placemark.name),
+                                  @"isoCountryCode": UMNullIfNil(placemark.ISOcountryCode),
+                                  @"timezone": UMNullIfNil(placemark.timeZone.name),
                                   };
         [results addObject:address];
       }
@@ -308,14 +313,24 @@ UM_EXPORT_METHOD_AS(reverseGeocodeAsync,
   }];
 }
 
-UM_EXPORT_METHOD_AS(requestPermissionsAsync,
-                    requestPermissionsResolver:(UMPromiseResolveBlock)resolve
-                                      rejecter:(UMPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(getPermissionsAsync,
+                    getPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
-  if (!_permissions) {
-    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
-  }
-  [_permissions askForPermission:@"location" withResult:resolve withRejecter:reject];
+  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+                                                      withRequester:[EXLocationPermissionRequester class]
+                                                            resolve:resolve
+                                                             reject:reject];
+}
+
+UM_EXPORT_METHOD_AS(requestPermissionsAsync,
+                    requestPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+                                                         withRequester:[EXLocationPermissionRequester class]
+                                                               resolve:resolve
+                                                                reject:reject];
 }
 
 UM_EXPORT_METHOD_AS(hasServicesEnabledAsync,
@@ -433,17 +448,18 @@ UM_EXPORT_METHOD_AS(hasStartedGeofencingAsync,
 
 # pragma mark - helpers
 
-- (CLLocationManager *)locationManagerWithOptions:(NSDictionary *)options
+- (CLLocationManager *)locationManagerWithOptions:(nullable NSDictionary *)options
 {
   CLLocationManager *locMgr = [[CLLocationManager alloc] init];
-
-  locMgr.distanceFilter = options[@"distanceInterval"] ? [options[@"distanceInterval"] doubleValue] ?: kCLDistanceFilterNone : kCLLocationAccuracyHundredMeters;
-  locMgr.desiredAccuracy = [options[@"enableHighAccuracy"] boolValue] ? kCLLocationAccuracyBest : kCLLocationAccuracyHundredMeters;
   locMgr.allowsBackgroundLocationUpdates = NO;
 
-  if (options[@"accuracy"]) {
-    EXLocationAccuracy accuracy = [options[@"accuracy"] unsignedIntegerValue] ?: EXLocationAccuracyBalanced;
-    locMgr.desiredAccuracy = [self.class CLLocationAccuracyFromOption:accuracy];
+  if (options) {
+    locMgr.distanceFilter = options[@"distanceInterval"] ? [options[@"distanceInterval"] doubleValue] ?: kCLDistanceFilterNone : kCLLocationAccuracyHundredMeters;
+
+    if (options[@"accuracy"]) {
+      EXLocationAccuracy accuracy = [options[@"accuracy"] unsignedIntegerValue] ?: EXLocationAccuracyBalanced;
+      locMgr.desiredAccuracy = [self.class CLLocationAccuracyFromOption:accuracy];
+    }
   }
   return locMgr;
 }
@@ -454,7 +470,7 @@ UM_EXPORT_METHOD_AS(hasStartedGeofencingAsync,
     reject(@"E_LOCATION_SERVICES_DISABLED", @"Location services are disabled", nil);
     return NO;
   }
-  if (![_permissions hasGrantedPermission:@"location"]) {
+  if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXLocationPermissionRequester class]]) {
     reject(@"E_NO_PERMISSIONS", @"LOCATION permission is required to do this operation.", nil);
     return NO;
   }
@@ -530,20 +546,16 @@ UM_EXPORT_METHOD_AS(hasStartedGeofencingAsync,
   return CLActivityTypeOther;
 }
 
-# pragma mark - UMAppLifecycleListener
-
-- (void)onAppForegrounded
++ (BOOL)isLocation:(nullable CLLocation *)location validWithOptions:(nullable NSDictionary *)options
 {
-  if ([self isPaused]) {
-    [self setPaused:NO];
+  if (location == nil) {
+    return NO;
   }
-}
+  NSTimeInterval maxAge = options[@"maxAge"] ? [options[@"maxAge"] doubleValue] : DBL_MAX;
+  CLLocationAccuracy requiredAccuracy = options[@"requiredAccuracy"] ? [options[@"requiredAccuracy"] doubleValue] : DBL_MAX;
+  NSTimeInterval timeDiff = -location.timestamp.timeIntervalSinceNow;
 
-- (void)onAppBackgrounded
-{
-  if (![self isPaused]) {
-    [self setPaused:YES];
-  }
+  return location != nil && timeDiff * 1000 <= maxAge && location.horizontalAccuracy <= requiredAccuracy;
 }
 
 @end

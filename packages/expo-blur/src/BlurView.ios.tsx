@@ -1,17 +1,10 @@
 import { NativeModulesProxy, requireNativeViewManager } from '@unimodules/core';
-import PropTypes from 'prop-types';
 import * as React from 'react';
-import { findNodeHandle, ViewPropTypes } from 'react-native';
+import { findNodeHandle, View, StyleSheet } from 'react-native';
 
-import { BlurTint, ComponentOrHandle, Props } from './BlurView.types';
+import { BlurProps, BlurTint, ComponentOrHandle } from './BlurView.types';
 
-export default class BlurView extends React.Component<Props> {
-  static propTypes = {
-    ...ViewPropTypes,
-    tint: PropTypes.oneOf(['light', 'default', 'dark'] as BlurTint[]).isRequired,
-    intensity: PropTypes.number.isRequired,
-  };
-
+export default class BlurView extends React.Component<BlurProps> {
   static defaultProps = {
     tint: 'default' as BlurTint,
     intensity: 50,
@@ -30,13 +23,17 @@ export default class BlurView extends React.Component<Props> {
   };
 
   render() {
-    let { style, ...props } = this.props;
+    const { tint, intensity, style, children, ...props } = this.props;
     return (
-      <NativeBlurView
-        {...props}
-        ref={this._setNativeRef}
-        style={[style, { backgroundColor: 'transparent' }]}
-      />
+      <View {...props} style={[style, { backgroundColor: 'transparent' }]}>
+        <NativeBlurView
+          tint={tint}
+          intensity={intensity}
+          ref={this._setNativeRef}
+          style={StyleSheet.absoluteFill}
+        />
+        {children}
+      </View>
     );
   }
 }

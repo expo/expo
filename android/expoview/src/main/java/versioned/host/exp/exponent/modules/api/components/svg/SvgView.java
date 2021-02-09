@@ -21,6 +21,8 @@ import android.util.Base64;
 import android.view.View;
 import android.view.ViewParent;
 
+import androidx.annotation.NonNull;
+
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
@@ -133,6 +135,7 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
 
     private final Map<String, VirtualView> mDefinedClipPaths = new HashMap<>();
     private final Map<String, VirtualView> mDefinedTemplates = new HashMap<>();
+    private final Map<String, VirtualView> mDefinedMarkers = new HashMap<>();
     private final Map<String, VirtualView> mDefinedMasks = new HashMap<>();
     private final Map<String, Brush> mDefinedBrushes = new HashMap<>();
     private Canvas mCanvas;
@@ -146,7 +149,7 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
     private SVGLength mbbHeight;
     private String mAlign;
     private int mMeetOrSlice;
-    private final Matrix mInvViewBoxMatrix = new Matrix();
+    final Matrix mInvViewBoxMatrix = new Matrix();
     private boolean mInvertible = true;
     private boolean mRendered = false;
     int mTintColor = 0;
@@ -169,13 +172,15 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
         }
     }
 
-    @ReactProp(name = "tintColor", customType = "Color")
+    @ReactProp(name = "tintColor")
     public void setTintColor(@Nullable Integer tintColor) {
         if (tintColor == null) {
             mTintColor = 0;
         } else {
             mTintColor = tintColor;
         }
+        invalidate();
+        clearChildCache();
     }
 
     @ReactProp(name = "minX")
@@ -258,6 +263,7 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
     synchronized void drawChildren(final Canvas canvas) {
         mRendered = true;
         mCanvas = canvas;
+        Matrix mViewBoxMatrix = new Matrix();
         if (mAlign != null) {
             RectF vbRect = getViewBox();
             float width = canvas.getWidth();
@@ -271,7 +277,7 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
             if (nested) {
                 canvas.clipRect(eRect);
             }
-            Matrix mViewBoxMatrix = ViewBox.getTransform(vbRect, eRect, mAlign, mMeetOrSlice);
+            mViewBoxMatrix = ViewBox.getTransform(vbRect, eRect, mAlign, mMeetOrSlice);
             mInvertible = mViewBoxMatrix.invert(mInvViewBoxMatrix);
             canvas.concat(mViewBoxMatrix);
         }
@@ -294,7 +300,7 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
             View lNode = getChildAt(i);
             if (lNode instanceof VirtualView) {
                 VirtualView node = (VirtualView)lNode;
-                int count = node.saveAndSetupCanvas(canvas);
+                int count = node.saveAndSetupCanvas(canvas, mViewBoxMatrix);
                 node.render(canvas, paint, 1f);
                 node.restoreCanvas(canvas, count);
 
@@ -408,5 +414,13 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
 
     VirtualView getDefinedMask(String maskRef) {
         return mDefinedMasks.get(maskRef);
+    }
+
+    void defineMarker(VirtualView marker, String markerRef) {
+        mDefinedMarkers.put(markerRef, marker);
+    }
+
+    VirtualView getDefinedMarker(String markerRef) {
+        return mDefinedMarkers.get(markerRef);
     }
 }

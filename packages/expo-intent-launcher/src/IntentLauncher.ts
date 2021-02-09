@@ -1,4 +1,5 @@
 import { UnavailabilityError } from '@unimodules/core';
+
 import ExpoIntentLauncher from './ExpoIntentLauncher';
 
 /**
@@ -101,7 +102,7 @@ export const ACTION_ZEN_MODE_SCHEDULE_RULE_SETTINGS =
   'android.settings.ZEN_MODE_SCHEDULE_RULE_SETTINGS';
 export const ACTION_ZEN_MODE_SETTINGS = 'android.settings.ZEN_MODE_SETTINGS';
 
-interface IntentParams {
+export interface IntentLauncherParams {
   type?: string;
   category?: string;
   extra?: object;
@@ -111,7 +112,7 @@ interface IntentParams {
   className?: string;
 }
 
-interface IntentResult {
+export interface IntentLauncherResult {
   resultCode: number;
   data?: string;
   extra?: object;
@@ -123,7 +124,10 @@ export enum ResultCode {
   FirstUser = 1,
 }
 
-export async function startActivityAsync(activityAction: string, params: IntentParams = {}): Promise<IntentResult> {
+export async function startActivityAsync(
+  activityAction: string,
+  params: IntentLauncherParams = {}
+): Promise<IntentLauncherResult> {
   if (!ExpoIntentLauncher.startActivity) {
     throw new UnavailabilityError('IntentLauncher', 'startActivityAsync');
   }

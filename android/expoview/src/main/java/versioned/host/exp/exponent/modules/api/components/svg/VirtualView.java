@@ -17,10 +17,13 @@ import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.OnLayoutEvent;
+import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.view.ReactViewGroup;
+
+import java.util.ArrayList;
 
 import javax.annotation.Nullable;
 
@@ -43,31 +46,37 @@ abstract public class VirtualView extends ReactViewGroup {
     */
     private static final double M_SQRT1_2l = 0.707106781186547524400844362104849039;
 
-    static final float MIN_OPACITY_FOR_DRAW = 0.01f;
-
     private static final float[] sRawMatrix = new float[]{
         1, 0, 0,
         0, 1, 0,
         0, 0, 1
     };
     float mOpacity = 1f;
+    Matrix mCTM = new Matrix();
     Matrix mMatrix = new Matrix();
     Matrix mTransform = new Matrix();
+    Matrix mInvCTM = new Matrix();
     Matrix mInvMatrix = new Matrix();
     final Matrix mInvTransform = new Matrix();
     boolean mInvertible = true;
+    boolean mCTMInvertible = true;
     boolean mTransformInvertible = true;
     private RectF mClientRect;
 
     int mClipRule;
     private @Nullable String mClipPath;
     @Nullable String mMask;
+    @Nullable String mMarkerStart;
+    @Nullable String mMarkerMid;
+    @Nullable String mMarkerEnd;
 
     private static final int CLIP_RULE_EVENODD = 0;
     static final int CLIP_RULE_NONZERO = 1;
 
     final float mScale;
     private boolean mResponsible;
+    private boolean mOnLayout;
+    String mDisplay;
     String mName;
 
     private SvgView svgView;
@@ -82,11 +91,23 @@ abstract public class VirtualView extends ReactViewGroup {
     Path mPath;
     Path mFillPath;
     Path mStrokePath;
+    Path mMarkerPath;
+    Path mClipRegionPath;
     RectF mBox;
+    RectF mFillBounds;
+    RectF mStrokeBounds;
+    RectF mMarkerBounds;
+    RectF mClipBounds;
     Region mRegion;
+    Region mMarkerRegion;
     Region mStrokeRegion;
     Region mClipRegion;
-    Path mClipRegionPath;
+    ArrayList<PathElement> elements;
+    PointerEvents mPointerEvents;
+
+    void setPointerEvents(PointerEvents pointerEvents) {
+        mPointerEvents = pointerEvents;
+    }
 
     @Override
     public void invalidate() {
@@ -104,6 +125,7 @@ abstract public class VirtualView extends ReactViewGroup {
         canvasWidth = -1;
         fontSize = -1;
         mStrokeRegion = null;
+        mMarkerRegion = null;
         mRegion = null;
         mPath = null;
     }
@@ -198,11 +220,14 @@ abstract public class VirtualView extends ReactViewGroup {
      * drawing code should apply opacity recursively.
      *
      * @param canvas the canvas to set up
+     * @param ctm current transformation matrix
      */
-    int saveAndSetupCanvas(Canvas canvas) {
+    int saveAndSetupCanvas(Canvas canvas, Matrix ctm) {
         int count = canvas.save();
-        canvas.concat(mMatrix);
-        canvas.concat(mTransform);
+        mCTM.setConcat(mMatrix, mTransform);
+        canvas.concat(mCTM);
+        mCTM.preConcat(ctm);
+        mCTMInvertible = mCTM.invert(mInvCTM);
         return count;
     }
 
@@ -222,10 +247,39 @@ abstract public class VirtualView extends ReactViewGroup {
         invalidate();
     }
 
+    @ReactProp(name = "display")
+    public void setDisplay(String display) {
+        mDisplay = display;
+        invalidate();
+    }
+
+    @ReactProp(name = "onLayout")
+    public void setOnLayout(boolean onLayout) {
+        mOnLayout = onLayout;
+        invalidate();
+    }
 
     @ReactProp(name = "mask")
     public void setMask(String mask) {
         mMask = mask;
+        invalidate();
+    }
+
+    @ReactProp(name = "markerStart")
+    public void setMarkerStart(String markerStart) {
+        mMarkerStart = markerStart;
+        invalidate();
+    }
+
+    @ReactProp(name = "markerMid")
+    public void setMarkerMid(String markerMid) {
+        mMarkerMid = markerMid;
+        invalidate();
+    }
+
+    @ReactProp(name = "markerEnd")
+    public void setMarkerEnd(String markerEnd) {
+        mMarkerEnd = markerEnd;
         invalidate();
     }
 
@@ -264,9 +318,9 @@ abstract public class VirtualView extends ReactViewGroup {
                 FLog.w(ReactConstants.TAG, "RNSVG: Transform matrices must be of size 6");
             }
         } else {
-            mMatrix = null;
-            mInvMatrix = null;
-            mInvertible = false;
+            mMatrix.reset();
+            mInvMatrix.reset();
+            mInvertible = true;
         }
 
         super.invalidate();
@@ -290,6 +344,8 @@ abstract public class VirtualView extends ReactViewGroup {
             if (mClipNode != null) {
                 Path clipPath = mClipNode.mClipRule == CLIP_RULE_EVENODD ? mClipNode.getPath(canvas, paint) :
                         mClipNode.getPath(canvas, paint, Region.Op.UNION);
+                clipPath.transform(mClipNode.mMatrix);
+                clipPath.transform(mClipNode.mTransform);
                 switch (mClipNode.mClipRule) {
                     case CLIP_RULE_EVENODD:
                         clipPath.setFillType(Path.FillType.EVEN_ODD);
@@ -345,30 +401,30 @@ abstract public class VirtualView extends ReactViewGroup {
     }
 
     double relativeOnWidth(SVGLength length) {
-        SVGLengthUnitType unit = length.unit;
-        if (unit == SVGLengthUnitType.SVG_LENGTHTYPE_NUMBER){
+        SVGLength.UnitType unit = length.unit;
+        if (unit == SVGLength.UnitType.NUMBER){
             return length.value * mScale;
-        } else if (unit == SVGLengthUnitType.SVG_LENGTHTYPE_PERCENTAGE){
+        } else if (unit == SVGLength.UnitType.PERCENTAGE){
             return length.value / 100 * getCanvasWidth();
         }
         return fromRelativeFast(length);
     }
 
     double relativeOnHeight(SVGLength length) {
-        SVGLengthUnitType unit = length.unit;
-        if (unit == SVGLengthUnitType.SVG_LENGTHTYPE_NUMBER){
+        SVGLength.UnitType unit = length.unit;
+        if (unit == SVGLength.UnitType.NUMBER){
             return length.value * mScale;
-        } else if (unit == SVGLengthUnitType.SVG_LENGTHTYPE_PERCENTAGE){
+        } else if (unit == SVGLength.UnitType.PERCENTAGE){
             return length.value / 100 * getCanvasHeight();
         }
         return fromRelativeFast(length);
     }
 
     double relativeOnOther(SVGLength length) {
-        SVGLengthUnitType unit = length.unit;
-        if (unit == SVGLengthUnitType.SVG_LENGTHTYPE_NUMBER){
+        SVGLength.UnitType unit = length.unit;
+        if (unit == SVGLength.UnitType.NUMBER){
             return length.value * mScale;
-        } else if (unit == SVGLengthUnitType.SVG_LENGTHTYPE_PERCENTAGE){
+        } else if (unit == SVGLength.UnitType.PERCENTAGE){
             return length.value / 100 * getCanvasDiagonal();
         }
         return fromRelativeFast(length);
@@ -384,26 +440,26 @@ abstract public class VirtualView extends ReactViewGroup {
     private double fromRelativeFast(SVGLength length) {
         double unit;
         switch (length.unit) {
-            case SVG_LENGTHTYPE_EMS:
+            case EMS:
                 unit = getFontSizeFromContext();
                 break;
-            case SVG_LENGTHTYPE_EXS:
+            case EXS:
                 unit = getFontSizeFromContext() / 2;
                 break;
 
-            case SVG_LENGTHTYPE_CM:
+            case CM:
                 unit = 35.43307;
                 break;
-            case SVG_LENGTHTYPE_MM:
+            case MM:
                 unit = 3.543307;
                 break;
-            case SVG_LENGTHTYPE_IN:
+            case IN:
                 unit = 90;
                 break;
-            case SVG_LENGTHTYPE_PT:
+            case PT:
                 unit = 1.25;
                 break;
-            case SVG_LENGTHTYPE_PC:
+            case PC:
                 unit = 15;
                 break;
 
@@ -510,21 +566,22 @@ abstract public class VirtualView extends ReactViewGroup {
         if (mClientRect == null) {
             return;
         }
+        int width = (int) Math.ceil(mClientRect.width());
+        int height = (int) Math.ceil(mClientRect.height());
         int left = (int) Math.floor(mClientRect.left);
         int top = (int) Math.floor(mClientRect.top);
         int right = (int) Math.ceil(mClientRect.right);
         int bottom = (int) Math.ceil(mClientRect.bottom);
-        int width = (int) Math.ceil(mClientRect.width());
-        int height = (int) Math.ceil(mClientRect.height());
-
+        setMeasuredDimension(width, height);
         if (!(this instanceof GroupView)) {
             setLeft(left);
             setTop(top);
             setRight(right);
             setBottom(bottom);
         }
-        setMeasuredDimension(width, height);
-
+        if (!mOnLayout) {
+            return;
+        }
         EventDispatcher eventDispatcher = mContext
                 .getNativeModule(UIManagerModule.class)
                 .getEventDispatcher();

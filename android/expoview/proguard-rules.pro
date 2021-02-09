@@ -145,8 +145,3 @@
 
 ##### DBFlow #####
 -keep class * extends com.raizlabs.android.dbflow.config.DatabaseHolder { *; }
-
-##### SpongyCastle #####
--keep class org.spongycastle.**
--dontwarn org.spongycastle.jce.provider.X509LDAPCertStoreSpi
--dontwarn org.spongycastle.x509.util.LDAPStoreHelper

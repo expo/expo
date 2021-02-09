@@ -1,20 +1,15 @@
-import { UnavailabilityError } from '@unimodules/core';
+import { Platform, UnavailabilityError } from '@unimodules/core';
 import mapValues from 'lodash/mapValues';
-import PropTypes from 'prop-types';
-import React from 'react';
-import { findNodeHandle, Platform, ViewPropTypes } from 'react-native';
+import * as React from 'react';
+import { findNodeHandle } from 'react-native';
+import { PermissionStatus, } from './Camera.types';
 import ExponentCamera from './ExponentCamera';
-import _CameraManager from './ExponentCameraManager';
-// TODO: Bacon: Fix multiplatform
-const CameraManager = _CameraManager;
+import CameraManager from './ExponentCameraManager';
 const EventThrottleMs = 500;
 const _PICTURE_SAVED_CALLBACKS = {};
 let _GLOBAL_PICTURE_ID = 1;
 function ensurePictureOptions(options) {
-    let pictureOptions = options || {};
-    if (!pictureOptions || typeof pictureOptions !== 'object') {
-        pictureOptions = {};
-    }
+    const pictureOptions = !options || typeof options !== 'object' ? {} : options;
     if (!pictureOptions.quality) {
         pictureOptions.quality = 1;
     }
@@ -45,7 +40,9 @@ function ensureNativeProps(options) {
     const propsKeys = Object.keys(newProps);
     // barCodeTypes is deprecated
     if (!propsKeys.includes('barCodeScannerSettings') && propsKeys.includes('barCodeTypes')) {
-        console.warn(`The "barCodeTypes" prop for Camera is deprecated and will be removed in SDK 34. Use "barCodeScannerSettings" instead.`);
+        if (__DEV__) {
+            console.warn(`The "barCodeTypes" prop for Camera is deprecated and will be removed in SDK 34. Use "barCodeScannerSettings" instead.`);
+        }
         newProps.barCodeScannerSettings = {
             // @ts-ignore
             barCodeTypes: newProps.barCodeTypes,
@@ -61,6 +58,9 @@ function ensureNativeProps(options) {
         delete newProps.ratio;
         delete newProps.useCamera2Api;
     }
+    if (Platform.OS !== 'web') {
+        delete newProps.poster;
+    }
     return newProps;
 }
 function convertProp(value, key) {
@@ -69,7 +69,7 @@ function convertProp(value, key) {
     }
     return value;
 }
-function _onPictureSaved({ nativeEvent }) {
+function _onPictureSaved({ nativeEvent, }) {
     const { id, data } = nativeEvent;
     const callback = _PICTURE_SAVED_CALLBACKS[id];
     if (callback) {
@@ -109,7 +109,7 @@ export default class Camera extends React.Component {
         this._setReference = (ref) => {
             if (ref) {
                 this._cameraRef = ref;
-                // TODO: Bacon: Make this one...
+                // TODO(Bacon): Unify these - perhaps with hooks?
                 if (Platform.OS === 'web') {
                     this._cameraHandle = ref;
                 }
@@ -122,6 +122,24 @@ export default class Camera extends React.Component {
                 this._cameraHandle = null;
             }
         };
+    }
+    static async isAvailableAsync() {
+        if (!CameraManager.isAvailableAsync) {
+            throw new UnavailabilityError('expo-camera', 'isAvailableAsync');
+        }
+        return await CameraManager.isAvailableAsync();
+    }
+    static async getAvailableCameraTypesAsync() {
+        if (!CameraManager.getAvailableCameraTypesAsync) {
+            throw new UnavailabilityError('expo-camera', 'getAvailableCameraTypesAsync');
+        }
+        return await CameraManager.getAvailableCameraTypesAsync();
+    }
+    static async getPermissionsAsync() {
+        return CameraManager.getPermissionsAsync();
+    }
+    static async requestPermissionsAsync() {
+        return CameraManager.requestPermissionsAsync();
     }
     async takePictureAsync(options) {
         const pictureOptions = ensurePictureOptions(options);
@@ -166,9 +184,11 @@ export default class Camera extends React.Component {
     }
     render() {
         const nativeProps = ensureNativeProps(this.props);
-        const onBarCodeScanned = this._onObjectDetected(this.props.onBarCodeScanned);
+        const onBarCodeScanned = this.props.onBarCodeScanned
+            ? this._onObjectDetected(this.props.onBarCodeScanned)
+            : undefined;
         const onFacesDetected = this._onObjectDetected(this.props.onFacesDetected);
-        return (<ExponentCamera {...nativeProps} ref={this._setReference} onCameraReady={this._onCameraReady} onMountError={this._onMountError} onBarCodeScanned={onBarCodeScanned} onFacesDetected={onFacesDetected} onPictureSaved={_onPictureSaved}/>);
+        return (React.createElement(ExponentCamera, Object.assign({}, nativeProps, { ref: this._setReference, onCameraReady: this._onCameraReady, onMountError: this._onMountError, onBarCodeScanned: onBarCodeScanned, onFacesDetected: onFacesDetected, onPictureSaved: _onPictureSaved })));
     }
 }
 Camera.Constants = {
@@ -186,25 +206,6 @@ Camera.ConversionTables = {
     autoFocus: CameraManager.AutoFocus,
     whiteBalance: CameraManager.WhiteBalance,
 };
-Camera.propTypes = {
-    ...ViewPropTypes,
-    zoom: PropTypes.number,
-    ratio: PropTypes.string,
-    focusDepth: PropTypes.number,
-    onMountError: PropTypes.func,
-    pictureSize: PropTypes.string,
-    onCameraReady: PropTypes.func,
-    useCamera2Api: PropTypes.bool,
-    onBarCodeScanned: PropTypes.func,
-    barCodeScannerSettings: PropTypes.object,
-    onFacesDetected: PropTypes.func,
-    faceDetectorSettings: PropTypes.object,
-    type: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    flashMode: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    videoStabilizationMode: PropTypes.number,
-    whiteBalance: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    autoFocus: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool]),
-};
 Camera.defaultProps = {
     zoom: 0,
     ratio: '4:3',
@@ -215,5 +216,6 @@ Camera.defaultProps = {
     flashMode: CameraManager.FlashMode.off,
     whiteBalance: CameraManager.WhiteBalance.auto,
 };
-export const Constants = Camera.Constants;
+export const { Constants, getPermissionsAsync, requestPermissionsAsync } = Camera;
+export { PermissionStatus, };
 //# sourceMappingURL=Camera.js.map

@@ -4,23 +4,47 @@
 
 @implementation EXRandom
 
-UM_EXPORT_MODULE(ExpoRandom);
+static NSString * const EXRandomError = @"ERR_RANDOM";
+static NSString * const EXRandomRandomBytesFailedError = @"Failed to create secure random number";
 
-UM_EXPORT_METHOD_AS(getRandomBase64StringAsync,
-                    getRandomBase64StringAsync:(NSNumber *)count
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
-{
-  NSUInteger _length = [count unsignedIntegerValue];
-  NSMutableData *bytes = [NSMutableData dataWithLength:_length];
-  
-  OSStatus result = SecRandomCopyBytes(kSecRandomDefault, _length, [bytes mutableBytes]);
-  if (result == errSecSuccess) {
-    resolve([bytes base64EncodedStringWithOptions:0]);
-  } else {
-    reject(@"ERR_RANDOM", @"Failed to create a secure random number", [NSError errorWithDomain:@"expo-random" code:result userInfo:nil]);
-  }
+RCT_EXPORT_MODULE(ExpoRandom);
+
+RCT_EXPORT_METHOD(getRandomBase64StringAsync:(NSUInteger)length
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
+    NSError *error;
+    NSString *value = [self _getRandomBase64String:length error:&error];
+    if (value != nil) {
+        resolve(value);
+    } else {
+        reject(EXRandomError, EXRandomRandomBytesFailedError, error);
+    }
 }
 
+RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString*, getRandomBase64String:(NSUInteger)length) {
+    NSError *error;
+    NSString *value = [self _getRandomBase64String:length error:&error];
+
+    if (value != nil) {
+        return value;
+    } else {
+        @throw [NSException exceptionWithName:EXRandomError reason:EXRandomRandomBytesFailedError userInfo:@{@"errorCode": @(error.code)}];
+    }
+}
+
+#pragma mark - Internal methods
+
+- (NSString *)_getRandomBase64String:(NSUInteger)length
+                              error:(NSError **)error {
+    NSMutableData *bytes = [NSMutableData dataWithLength:length];
+
+    OSStatus result = SecRandomCopyBytes(kSecRandomDefault, length, [bytes mutableBytes]);
+    if (result == errSecSuccess) {
+        return [bytes base64EncodedStringWithOptions:0];
+    } else if (error) {
+        *error = [NSError errorWithDomain:@"expo-random" code:result userInfo:nil];
+    }
+    return nil;
+}
 
 @end

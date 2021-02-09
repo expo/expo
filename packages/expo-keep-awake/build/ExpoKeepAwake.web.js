@@ -1,5 +1,2 @@
-export default {
-    activate() { },
-    deactivate() { },
-};
+export default {};
 //# sourceMappingURL=ExpoKeepAwake.web.js.map

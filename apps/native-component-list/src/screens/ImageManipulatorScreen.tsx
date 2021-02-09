@@ -1,18 +1,18 @@
-import React from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  Text,
-  View,
-  Image,
-  TouchableOpacityProps,
-} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { Asset } from 'expo-asset';
+import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
-import * as ImageManipulator from 'expo-image-manipulator';
-import { Asset } from 'expo-asset';
-import { Ionicons } from '@expo/vector-icons';
+import React from 'react';
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableOpacityProps,
+  View,
+} from 'react-native';
 
 import Colors from '../constants/Colors';
 
@@ -22,6 +22,8 @@ interface State {
   original?: Asset;
 }
 
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
 export default class ImageManipulatorScreen extends React.Component<{}, State> {
   static navigationOptions = {
     title: 'ImageManipulator',
@@ -31,18 +33,15 @@ export default class ImageManipulatorScreen extends React.Component<{}, State> {
     ready: false,
   };
 
-  componentWillMount() {
-    (async () => {
-      const image = Asset.fromModule(
-        require('../../assets/images/example2.jpg')
-      );
-      await image.downloadAsync();
+  componentDidMount() {
+    const image = Asset.fromModule(require('../../assets/images/example2.jpg'));
+    image.downloadAsync().then(() => {
       this.setState({
         ready: true,
         image,
         original: image,
       });
-    })();
+    });
   }
 
   render() {
@@ -61,26 +60,18 @@ export default class ImageManipulatorScreen extends React.Component<{}, State> {
             </Button>
             <Button
               style={styles.button}
-              onPress={() => this._flip(ImageManipulator.FlipType.Horizontal)}
-            >
+              onPress={() => this._flip(ImageManipulator.FlipType.Horizontal)}>
               Flip horizontal
             </Button>
             <Button
               style={styles.button}
-              onPress={() => this._flip(ImageManipulator.FlipType.Vertical)}
-            >
+              onPress={() => this._flip(ImageManipulator.FlipType.Vertical)}>
               Flip vertical
             </Button>
-            <Button
-              style={styles.button}
-              onPress={() => this._resize({ width: 250 })}
-            >
+            <Button style={styles.button} onPress={() => this._resize({ width: 250 })}>
               Resize width
             </Button>
-            <Button
-              style={styles.button}
-              onPress={() => this._resize({ width: 300, height: 300 })}
-            >
+            <Button style={styles.button} onPress={() => this._resize({ width: 300, height: 300 })}>
               Resize both to square
             </Button>
             <Button style={styles.button} onPress={() => this._compress(0.1)}>
@@ -117,12 +108,12 @@ export default class ImageManipulatorScreen extends React.Component<{}, State> {
         />
       </View>
     );
-  }
+  };
 
   _pickPhoto = async () => {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+    const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
     if (status !== 'granted') {
-      alert('Permission to CAMERA_ROLL not granted!');
+      alert('Permission to MEDIA_LIBRARY not granted!');
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -133,25 +124,25 @@ export default class ImageManipulatorScreen extends React.Component<{}, State> {
       return;
     }
     this.setState({ image: result });
-  }
+  };
 
   _rotate = async (deg: number) => {
     await this._manipulate([{ rotate: deg }], {
       format: ImageManipulator.SaveFormat.PNG,
     });
-  }
+  };
 
   _resize = async (size: { width?: number; height?: number }) => {
     await this._manipulate([{ resize: size }]);
-  }
+  };
 
   _flip = async (flip: ImageManipulator.FlipType) => {
     await this._manipulate([{ flip }]);
-  }
+  };
 
   _compress = async (compress: number) => {
     await this._manipulate([], { compress });
-  }
+  };
 
   _crop = async () => {
     await this._manipulate([
@@ -164,7 +155,7 @@ export default class ImageManipulatorScreen extends React.Component<{}, State> {
         },
       },
     ]);
-  }
+  };
 
   _combo = async () => {
     await this._manipulate([
@@ -179,27 +170,28 @@ export default class ImageManipulatorScreen extends React.Component<{}, State> {
         },
       },
     ]);
-  }
+  };
 
   _reset = () => {
-    this.setState({ image: this.state.original });
-  }
+    this.setState(state => ({ image: state.original }));
+  };
 
-  _manipulate = async (actions: ImageManipulator.Action[], saveOptions?: ImageManipulator.SaveOptions) => {
+  _manipulate = async (
+    actions: ImageManipulator.Action[],
+    saveOptions?: ImageManipulator.SaveOptions
+  ) => {
+    const { image } = this.state;
     const manipResult = await ImageManipulator.manipulateAsync(
-      (this.state.image! as Asset).localUri || this.state.image!.uri,
+      (image! as Asset).localUri || image!.uri,
       actions,
       saveOptions
     );
     this.setState({ image: manipResult });
-  }
+  };
 }
 
 const Button: React.FunctionComponent<TouchableOpacityProps> = ({ onPress, style, children }) => (
-  <TouchableOpacity
-    onPress={onPress}
-    style={[styles.button, style]}
-  >
+  <TouchableOpacity onPress={onPress} style={[styles.button, style]}>
     <Text style={styles.buttonText}>{children}</Text>
   </TouchableOpacity>
 );

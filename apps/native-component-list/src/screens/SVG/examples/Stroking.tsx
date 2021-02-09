@@ -1,6 +1,7 @@
 // tslint:disable max-classes-per-file
 import React from 'react';
 import * as Svg from 'react-native-svg';
+
 import Example from './Example';
 
 const { Path, Rect, G, Defs, Stop, RadialGradient, Polyline, ClipPath, Circle, Text } = Svg;
@@ -78,8 +79,7 @@ class StrokeDashoffset extends React.Component {
           y="40"
           textAnchor="middle"
           strokeDasharray="100"
-          strokeDashoffset="60"
-        >
+          strokeDashoffset="60">
           STROKE
         </Text>
       </Svg.Svg>

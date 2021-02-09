@@ -1,0 +1,1 @@
+../../../ZXingObjC/ZXingObjC/client/result/ZXTextParsedResult.h

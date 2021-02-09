@@ -1,6 +1,6 @@
 package expo.modules.av.video;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public abstract class FullscreenVideoPlayerPresentationChangeProgressListener implements FullscreenVideoPlayerPresentationChangeListener {
   @Override

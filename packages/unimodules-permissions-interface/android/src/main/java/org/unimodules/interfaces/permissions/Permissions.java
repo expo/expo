@@ -1,51 +1,38 @@
 package org.unimodules.interfaces.permissions;
 
+import org.unimodules.core.Promise;
+
 public interface Permissions {
-  /**
-   * @param permissions {String[]} of {@link android.Manifest.permission}
-   * @return {int[]} of either {@link android.content.pm.PackageManager#PERMISSION_GRANTED} if you have the
-   * permission, or {@link android.content.pm.PackageManager#PERMISSION_DENIED} if not.
-   */
-  int[] getPermissions(String[] permissions);
 
-  /**
-   * @param permission {@link android.Manifest.permission}
-   * @return {@link android.content.pm.PackageManager#PERMISSION_GRANTED} if you have the
-   * permission, or {@link android.content.pm.PackageManager#PERMISSION_DENIED} if not.
-   */
-  int getPermission(String permission);
-
-  /**
-   * @param permissions {String[]} of {@link android.Manifest.permission}
-   * @param listener {@link PermissionsRequestListener} that would be called when permissions action ends
-   */
-  void askForPermissions(String[] permissions, PermissionsRequestListener listener);
-
-  /**
-   * @param permission {String[]} of {@link android.Manifest.permission}
-   * @param listener {@link PermissionRequestListener}
-   */
-  void askForPermission(String permission, PermissionRequestListener listener);
-
-  /**
-   * @param permissions {String[]} of {@link android.Manifest.permission}
-   * @return {boolean} whether all given permissions are granted.
-   */
-  boolean hasPermissions(String[] permissions);
-
-  interface PermissionRequestListener {
-    /**
-     * @param result {@link android.content.pm.PackageManager#PERMISSION_GRANTED} if you have the
-     * permission, or {@link android.content.pm.PackageManager#PERMISSION_DENIED} if not.
-     */
-    void onPermissionResult(int result);
+  static void getPermissionsWithPermissionsManager(Permissions permissionsManager, final Promise promise, String... permissions) {
+    if (permissionsManager == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
+      return;
+    }
+    permissionsManager.getPermissionsWithPromise(promise, permissions);
   }
 
-  interface PermissionsRequestListener {
-    /**
-     * @param results {int[]} of either {@link android.content.pm.PackageManager#PERMISSION_GRANTED} if you have the
-     * permission, or {@link android.content.pm.PackageManager#PERMISSION_DENIED} if not.
-     */
-    void onPermissionsResult(int[] results);
+  static void askForPermissionsWithPermissionsManager(Permissions permissionsManager, final Promise promise, String... permissions) {
+    if (permissionsManager == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
+      return;
+    }
+    permissionsManager.askForPermissionsWithPromise(promise, permissions);
   }
+
+  void getPermissionsWithPromise(final Promise promise, String... permissions);
+
+  void getPermissions(final PermissionsResponseListener response, String... permissions);
+
+  void askForPermissionsWithPromise(final Promise promise, String... permissions);
+
+  void askForPermissions(final PermissionsResponseListener response, String... permissions);
+
+  boolean hasGrantedPermissions(String... permissions);
+
+  /**
+   * Checks whether given permission is present in AndroidManifest or not.
+   */
+  boolean isPermissionPresentInManifest(String permission);
+
 }

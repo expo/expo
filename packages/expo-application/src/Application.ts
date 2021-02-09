@@ -1,4 +1,4 @@
-import { Platform, UnavailabilityError } from '@unimodules/core';
+import { UnavailabilityError } from '@unimodules/core';
 
 import ExpoApplication from './ExpoApplication';
 
@@ -23,18 +23,41 @@ export async function getInstallReferrerAsync(): Promise<string> {
   return await ExpoApplication.getInstallReferrerAsync();
 }
 
-export async function getIosIdForVendorAsync(): Promise<string> {
+export async function getIosIdForVendorAsync(): Promise<string | null> {
   if (!ExpoApplication.getIosIdForVendorAsync) {
     throw new UnavailabilityError('expo-application', 'getIosIdForVendorAsync');
   }
-  return await ExpoApplication.getIosIdForVendorAsync();
+  return (await ExpoApplication.getIosIdForVendorAsync()) ?? null;
+}
+
+export enum ApplicationReleaseType {
+  UNKNOWN = 0,
+  SIMULATOR = 1,
+  ENTERPRISE = 2,
+  DEVELOPMENT = 3,
+  AD_HOC = 4,
+  APP_STORE = 5,
+}
+
+export async function getIosApplicationReleaseTypeAsync(): Promise<ApplicationReleaseType> {
+  if (!ExpoApplication.getApplicationReleaseTypeAsync) {
+    throw new UnavailabilityError('expo-application', 'getApplicationReleaseTypeAsync');
+  }
+  return await ExpoApplication.getApplicationReleaseTypeAsync();
+}
+
+export async function getIosPushNotificationServiceEnvironmentAsync(): Promise<string> {
+  if (!ExpoApplication.getPushNotificationServiceEnvironmentAsync) {
+    throw new UnavailabilityError('expo-application', 'getPushNotificationServiceEnvironmentAsync');
+  }
+  return await ExpoApplication.getPushNotificationServiceEnvironmentAsync();
 }
 
 export async function getInstallationTimeAsync(): Promise<Date> {
   if (!ExpoApplication.getInstallationTimeAsync) {
     throw new UnavailabilityError('expo-application', 'getInstallationTimeAsync');
   }
-  let installationTime = await ExpoApplication.getInstallationTimeAsync();
+  const installationTime = await ExpoApplication.getInstallationTimeAsync();
   return new Date(installationTime);
 }
 
@@ -42,6 +65,6 @@ export async function getLastUpdateTimeAsync(): Promise<Date> {
   if (!ExpoApplication.getLastUpdateTimeAsync) {
     throw new UnavailabilityError('expo-application', 'getLastUpdateTimeAsync');
   }
-  let lastUpdateTime = await ExpoApplication.getLastUpdateTimeAsync();
+  const lastUpdateTime = await ExpoApplication.getLastUpdateTimeAsync();
   return new Date(lastUpdateTime);
 }

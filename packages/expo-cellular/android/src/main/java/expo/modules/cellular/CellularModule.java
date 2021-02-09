@@ -109,7 +109,7 @@ public class CellularModule extends ExportedModule implements RegistryLifecycleL
           promise.resolve(CellularGeneration.UNKNOWN.getValue());
       }
     } catch (Exception e) {
-      promise.reject("ERR_CELLULAR_GENERATION_UNKNOWN_NETWORKTYPE", "Unable to access network type or not connected to a cellular network", e);
+      promise.reject("ERR_CELLULAR_GENERATION_UNKNOWN_NETWORK_TYPE", "Unable to access network type or not connected to a cellular network", e);
     }
   }
 }

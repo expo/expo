@@ -8,6 +8,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (const NSString *)name;
 
+- (const NSInteger)priority;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.unimodules.core.interfaces.Package;
+
 import expo.modules.ads.admob.AdMobPackage;
 import expo.modules.ads.facebook.AdsFacebookPackage;
 import expo.modules.analytics.amplitude.AmplitudePackage;
@@ -20,6 +21,10 @@ import expo.modules.brightness.BrightnessPackage;
 import expo.modules.calendar.CalendarPackage;
 import expo.modules.camera.CameraPackage;
 import expo.modules.cellular.CellularPackage;
+import expo.modules.errorrecovery.ErrorRecoveryPackage;
+import expo.modules.notifications.NotificationsPackage;
+import expo.modules.screenorientation.ScreenOrientationPackage;
+import expo.modules.imageloader.ImageLoaderPackage;
 import expo.modules.sharing.SharingPackage;
 import expo.modules.constants.ConstantsPackage;
 import expo.modules.contacts.ContactsPackage;
@@ -28,6 +33,8 @@ import expo.modules.documentpicker.DocumentPickerPackage;
 import expo.modules.facebook.FacebookPackage;
 import expo.modules.facedetector.FaceDetectorPackage;
 import expo.modules.filesystem.FileSystemPackage;
+import expo.modules.firebase.core.FirebaseCorePackage;
+import expo.modules.firebase.analytics.FirebaseAnalyticsPackage;
 import expo.modules.font.FontLoaderPackage;
 import expo.modules.gl.GLPackage;
 import expo.modules.google.signin.GoogleSignInPackage;
@@ -46,13 +53,16 @@ import expo.modules.network.NetworkPackage;
 import expo.modules.payments.stripe.StripePackage;
 import expo.modules.permissions.PermissionsPackage;
 import expo.modules.print.PrintPackage;
-import expo.modules.random.RandomPackage;
+import expo.modules.screencapture.ScreenCapturePackage;
 import expo.modules.securestore.SecureStorePackage;
 import expo.modules.sensors.SensorsPackage;
 import expo.modules.sms.SMSPackage;
 import expo.modules.speech.SpeechPackage;
+import expo.modules.splashscreen.SplashScreenPackage;
 import expo.modules.sqlite.SQLitePackage;
+import expo.modules.storereview.StoreReviewPackage;
 import expo.modules.taskManager.TaskManagerPackage;
+import expo.modules.updates.UpdatesPackage;
 import expo.modules.videothumbnails.VideoThumbnailsPackage;
 import expo.modules.webbrowser.WebBrowserPackage;
 import expo.modules.device.DevicePackage;
@@ -77,13 +87,17 @@ public class ExperiencePackagePicker {
       new CryptoPackage(),
       new DevicePackage(),
       new DocumentPickerPackage(),
+      new ErrorRecoveryPackage(),
       new FacebookPackage(),
       new FaceDetectorPackage(),
       new FileSystemPackage(),
+      new FirebaseCorePackage(),
+      new FirebaseAnalyticsPackage(),
       new FontLoaderPackage(),
       new GLPackage(),
       new GoogleSignInPackage(),
       new HapticsPackage(),
+      new ImageLoaderPackage(),
       new ImageManipulatorPackage(),
       new ImagePickerPackage(),
       new IntentLauncherPackage(),
@@ -95,18 +109,23 @@ public class ExperiencePackagePicker {
       new MailComposerPackage(),
       new MediaLibraryPackage(),
       new NetworkPackage(),
+      new NotificationsPackage(),
       new PermissionsPackage(),
       new PrintPackage(),
-      new RandomPackage(),
       new SMSPackage(),
+      new StoreReviewPackage(),
       new SQLitePackage(),
+      new ScreenCapturePackage(),
+      new ScreenOrientationPackage(),
       new SecureStorePackage(),
       new SegmentPackage(),
       new SensorsPackage(),
       new SharingPackage(),
       new SpeechPackage(),
+      new SplashScreenPackage(),
       new StripePackage(),
       new TaskManagerPackage(),
+      new UpdatesPackage(),
       new VideoThumbnailsPackage(),
       new WebBrowserPackage()
   );

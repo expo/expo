@@ -55,7 +55,10 @@ exports.createMetroConfiguration = function createMetroConfiguration(projectPath
       providesModuleNodeModules: [],
 
       // Ignore JS files in the native Android and Xcode projects
-      blacklistRE: blacklist([/.*\/android\/ReactAndroid\/.*/, /.*\/versioned-react-native\/.*/]),
+      blacklistRE: blacklist([
+        /.*\/android\/React(Android|Common)\/.*/,
+        /.*\/versioned-react-native\/.*/,
+      ]),
     },
 
     transformer: {

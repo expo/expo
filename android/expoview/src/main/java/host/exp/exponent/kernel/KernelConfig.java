@@ -13,6 +13,6 @@ public class KernelConfig {
   public static boolean FORCE_UNVERSIONED_PUBLISHED_EXPERIENCES = false;
 
   // Used for testing.
-  public static boolean HIDE_NUX = false;
+  public static boolean HIDE_ONBOARDING = false;
 
 }

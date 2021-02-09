@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_id": "${GOOGLE_PROJECT_ID}",
+    "firebase_url": "${FIREBASE_DATABASE_URL}",
     "project_number": "${GOOGLE_PROJECT_NUMBER}",
     "name": "${GOOGLE_PROJECT_INFO}"
   },
@@ -8,8 +9,6 @@
     {
       "client_info": {
         "mobilesdk_app_id": "${GOOGLE_MOBILE_SDK_APP_ID}",
-        "client_id": "android:host.exp.exponent",
-        "client_type": 1,
         "android_client_info": {
           "package_name": "host.exp.exponent",
           "certificate_hash": "${CERTIFICATE_HASH}"
@@ -27,24 +26,9 @@
           "analytics_property": {
             "tracking_id": "${GOOGLE_TRACKING_ID}"
           }
-        },
-        "cloud_messaging_service": {
-          "status": 2,
-          "apns_config": []
-        },
-        "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "google_signin_service": {
-          "status": 1
-        },
-        "ads_service": {
-          "status": 1
         }
       }
     }
   ],
-  "client_info": [],
-  "ARTIFACT_VERSION": "1"
+  "configuration_version": "1"
 }

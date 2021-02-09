@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,9 +33,6 @@
 #define FOLLY_ATOMICHASHARRAY_H_
 
 #include <atomic>
-
-#include <boost/iterator/iterator_facade.hpp>
-#include <boost/noncopyable.hpp>
 
 #include <folly/ThreadCachedInt.h>
 #include <folly/Utility.h>
@@ -102,7 +99,7 @@ template <
     class Allocator = std::allocator<char>,
     class ProbeFcn = AtomicHashArrayLinearProbeFcn,
     class KeyConvertFcn = Identity>
-class AtomicHashArray : boost::noncopyable {
+class AtomicHashArray {
   static_assert(
       (std::is_convertible<KeyT, int32_t>::value ||
        std::is_convertible<KeyT, int64_t>::value ||
@@ -421,6 +418,9 @@ class AtomicHashArray : boost::noncopyable {
       KeyT erasedKey,
       double maxLoadFactor,
       uint32_t cacheSize);
+
+  AtomicHashArray(const AtomicHashArray&) = delete;
+  AtomicHashArray& operator=(const AtomicHashArray&) = delete;
 
   ~AtomicHashArray() = default;
 

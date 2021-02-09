@@ -1,19 +1,19 @@
-import { AppLoading } from 'expo';
+import { Ionicons } from '@expo/vector-icons';
+import * as Boo from 'Boo';
+import AppLoading from 'expo-app-loading';
 import { Asset } from 'expo-asset';
+import FooView from 'foo-view';
+import InlineFuncFromPackage from 'inline-comp';
 import React from 'react';
 import { View } from 'react-native';
 import { connect } from 'react-redux';
-import { Ionicons } from '@expo/vector-icons';
 import 'Foo';
-import * as Boo from 'Boo';
-import FooView from 'foo-view';
-import InlineFuncFromPackage from 'inline-comp';
+
 import './local-file/i-have-side-effects.fx.js';
 import '../i-also-have-side-effects.fx';
-import InlineFuncFromFile from './inline-func';
 import InlineFuncFromFileWithSideEffects from '../inline-func-with-side-effects.fx.ts';
+import InlineFuncFromFile from './inline-func';
 
-@connect()
 class Lazy extends React.Component {
   componentDidMount() {
     console.log('Calling InlineFuncFromPackage()');
@@ -43,4 +43,4 @@ class Lazy extends React.Component {
   }
 }
 
-export default Lazy;
+export default connect()(Lazy);

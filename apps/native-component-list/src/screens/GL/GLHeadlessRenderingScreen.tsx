@@ -1,9 +1,10 @@
-import React from 'react';
+import Slider from '@react-native-community/slider';
+import { Asset } from 'expo-asset';
+import * as FileSystem from 'expo-file-system';
 import * as GL from 'expo-gl';
 import { GLView } from 'expo-gl';
-import * as FileSystem from 'expo-file-system';
-import { Asset } from 'expo-asset';
-import { Image, Slider, StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { Image, StyleSheet, Text, View } from 'react-native';
 
 import exampleImage from '../../../assets/images/example3.jpg';
 
@@ -130,6 +131,8 @@ interface State {
   snapshot?: GL.GLSnapshot;
 }
 
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
 export default class GLHeadlessRenderingScreen extends React.PureComponent<{}, State> {
   static title = 'Headless rendering';
 
@@ -175,7 +178,7 @@ export default class GLHeadlessRenderingScreen extends React.PureComponent<{}, S
     this.setState({ contrast }, () => {
       this.draw();
     });
-  }
+  };
 
   render() {
     const { contrast, snapshot } = this.state;
@@ -197,7 +200,10 @@ export default class GLHeadlessRenderingScreen extends React.PureComponent<{}, S
             />
           )}
         </View>
-        <Text style={styles.sliderHeader}>{`Contrast: ${parseInt(String(contrast * 100), 10)}%`}</Text>
+        <Text style={styles.sliderHeader}>{`Contrast: ${parseInt(
+          String(contrast * 100),
+          10
+        )}%`}</Text>
         <Slider
           value={contrast}
           step={0.01}

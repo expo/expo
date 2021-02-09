@@ -1,6 +1,7 @@
 import Circle from './Circle';
 import Clipping from './Clipping';
 import Ellipse from './Ellipse';
+import Example from './Example';
 import G from './G';
 import Gradients from './Gradients';
 import Image from './Image';
@@ -16,7 +17,6 @@ import Svg from './Svg';
 import Text from './Text';
 import TouchEvents from './TouchEvents';
 import VictoryNative from './VictoryNative';
-import Example from './Example';
 
 const examples: { [key: string]: Example } = {
   Svg,

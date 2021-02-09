@@ -1,15 +1,5 @@
 <resources>
   <string name="app_name">Exponent</string>
-  <string name="dev_activity_name">Exponent Dev</string>
-  <string name="info_activity_name">Info</string>
-  <string name="info_app_name_placeholder">App Name</string>
-  <string name="info_sdk_version">SDK Version: %s</string>
-  <string name="info_id">ID: %s</string>
-  <string name="info_published_time">Published Time: %s</string>
-  <string name="info_is_verified">Is Verified: %s</string>
-  <string name="info_clear_data">Clear Data</string>
-  <string name="info_show_manifest">Show Manifest</string>
-  <string name="info_hide_manifest">Hide Manifest</string>
   <string name="preference_file_key">host.exp.exponent.SharedPreferences</string>
   <string name="error_header">Something went wrong.</string>
   <string name="error_default_client">Sorry about that. You can go back to Expo home or try to reload the Experience.</string>
@@ -22,7 +12,7 @@
   <string name="cvc">CVC</string>
   <string name="android_pay_unavaliable">Android Pay unavailable on your device.</string>
   <string name="user_cancel_dialog">User cancel dialog. No card added!</string>
-  <string name="experience_needs_permissions">%1$s needs permissions for %2$s. You\'ve already granted permission to another Expo experience. Allow %1$s to use it also?</string>
+  <string name="experience_needs_permissions">%1$s needs permissions for %2$s. You\'ve already granted permission to another Expo experience. Allow %1$s to also use it?</string>
   <string name="allow_experience_permissions">Allow</string>
   <string name="deny_experience_permissions">Deny</string>
   <string name="perm_audio_recording">audio recording</string>
@@ -31,14 +21,29 @@
   <string name="perm_camera">accessing camera</string>
   <string name="perm_camera_roll_read">reading camera roll</string>
   <string name="perm_camera_roll_write">modifying camera roll</string>
-  <string name="perm_contacts">reading contacts</string>
+  <string name="perm_contacts_read">reading contacts</string>
+  <string name="perm_contacts_write">modifying contacts</string>
   <string name="perm_fine_location">fine location</string>
   <string name="perm_coarse_location">coarse location</string>
+  <string name="perm_background_location">background location</string>
   <string name="perm_system_brightness">system brightness</string>
   <string name="default_notification_channel_group">Default</string>
   <string name="persistent_notification_channel_group">Expo</string>
   <string name="persistent_notification_channel_name">Experience notifications</string>
   <string name="persistent_notification_channel_desc">Persistent notifications that provide debug info about open experiences</string>
+  <string name="devmenu_hide_element_inspector">Hide Element Inspector</string>
+  <string name="devmenu_show_element_inspector">Show Element Inspector</string>
+  <string name="devmenu_element_inspector_unavailable">Element Inspector Unavailable</string>
+  <string name="devmenu_stop_remote_debugging">Stop Remote Debugging</string>
+  <string name="devmenu_start_remote_debugging">Debug Remote JS</string>
+  <string name="devmenu_remote_debugger_unavailable">Remote Debugger Unavailable</string>
+  <string name="devmenu_disable_fast_refresh">Disable Fast Refresh</string>
+  <string name="devmenu_enable_fast_refresh">Enable Fast Refresh</string>
+  <string name="devmenu_fast_refresh_unavailable">Fast Refresh Unavailable</string>
+  <string name="devmenu_fast_refresh_unavailable_details">Use the Reload button above to reload when in production mode. Switch back to development mode to use Fast Refresh.</string>
+  <string name="devmenu_hide_performance_monitor">Hide Performance Monitor</string>
+  <string name="devmenu_show_performance_monitor">Show Performance Monitor</string>
+  <string name="devmenu_performance_monitor_unavailable">Performance Monitor Unavailable</string>
 
   <string-array name="currency_array">
       <item>Currency (optional)</item>

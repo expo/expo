@@ -1,7 +1,7 @@
+import { requireNativeViewManager } from '@unimodules/core';
 import nullthrows from 'nullthrows';
 import React from 'react';
 import { View } from 'react-native';
-import { requireNativeViewManager } from '@unimodules/core';
 
 import { AdIconViewContext, AdIconViewContextValue } from './withNativeAd';
 
@@ -12,7 +12,7 @@ export default class AdIconView extends React.Component<Props> {
     return (
       <AdIconViewContext.Consumer>
         {(contextValue: AdIconViewContextValue | null) => {
-          let context = nullthrows(contextValue);
+          const context = nullthrows(contextValue);
           return <NativeAdIconView {...this.props} ref={context.nativeRef} />;
         }}
       </AdIconViewContext.Consumer>
@@ -22,4 +22,5 @@ export default class AdIconView extends React.Component<Props> {
 
 // The native AdIconView has the same props as regular View
 export type NativeAdIconView = React.Component<Props>;
+// eslint-disable-next-line @typescript-eslint/no-redeclare -- the type and variable share a name
 export const NativeAdIconView = requireNativeViewManager('AdIconView');

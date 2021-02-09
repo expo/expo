@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -6,6 +6,8 @@
  */
 
 #pragma once
+
+#include <limits>
 
 #include <folly/Hash.h>
 #include <react/core/LayoutPrimitives.h>
@@ -19,8 +21,15 @@ namespace react {
  */
 struct LayoutConstraints {
   Size minimumSize{0, 0};
-  Size maximumSize{kFloatUndefined, kFloatUndefined};
+  Size maximumSize{std::numeric_limits<Float>::infinity(),
+                   std::numeric_limits<Float>::infinity()};
   LayoutDirection layoutDirection{LayoutDirection::Undefined};
+
+  /*
+   * Clamps the provided `Size` between the `minimumSize` and `maximumSize`
+   * bounds of this `LayoutConstraints`.
+   */
+  Size clamp(const Size &size) const;
 };
 
 inline bool operator==(
@@ -38,13 +47,11 @@ template <>
 struct hash<facebook::react::LayoutConstraints> {
   size_t operator()(
       const facebook::react::LayoutConstraints &constraints) const {
-    auto seed = size_t{0};
-    folly::hash::hash_combine(
-        seed,
+    return folly::hash::hash_combine(
+        0,
         constraints.minimumSize,
         constraints.maximumSize,
         constraints.layoutDirection);
-    return seed;
   }
 };
 } // namespace std

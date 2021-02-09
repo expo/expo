@@ -1,7 +1,7 @@
+import { requireNativeViewManager } from '@unimodules/core';
 import nullthrows from 'nullthrows';
 import React from 'react';
 import { findNodeHandle } from 'react-native';
-import { requireNativeViewManager } from '@unimodules/core';
 import { AdOptionsViewContext } from './withNativeAd';
 var NativeOrientation;
 (function (NativeOrientation) {
@@ -23,19 +23,18 @@ export default class AdOptionsView extends React.Component {
                 width: this.props.iconSize,
                 height: this.props.iconSize * 2,
             };
-        return (<AdOptionsViewContext.Consumer>
-        {(contextValue) => {
-            let adViewRef = nullthrows(contextValue && contextValue.nativeAdViewRef);
-            return (<NativeAdOptionsView {...this.props} style={[this.props.style, style]} nativeAdViewTag={findNodeHandle(adViewRef.current)} orientation={this.shouldAlignHorizontal()
-                ? NativeOrientation.Horizontal
-                : NativeOrientation.Vertical}/>);
-        }}
-      </AdOptionsViewContext.Consumer>);
+        return (React.createElement(AdOptionsViewContext.Consumer, null, (contextValue) => {
+            const adViewRef = nullthrows(contextValue && contextValue.nativeAdViewRef);
+            return (React.createElement(NativeAdOptionsView, Object.assign({}, this.props, { style: [this.props.style, style], nativeAdViewTag: findNodeHandle(adViewRef.current), orientation: this.shouldAlignHorizontal()
+                    ? NativeOrientation.Horizontal
+                    : NativeOrientation.Vertical })));
+        }));
     }
 }
 AdOptionsView.defaultProps = {
     iconSize: 23,
     orientation: 'horizontal',
 };
+// eslint-disable-next-line @typescript-eslint/no-redeclare -- the type and variable share a name
 export const NativeAdOptionsView = requireNativeViewManager('AdOptionsView');
 //# sourceMappingURL=AdOptionsView.js.map

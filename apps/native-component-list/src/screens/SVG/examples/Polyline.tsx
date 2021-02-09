@@ -1,6 +1,7 @@
 // tslint:disable max-classes-per-file
 import React from 'react';
 import * as Svg from 'react-native-svg';
+
 import Example from './Example';
 
 class PolylineExample extends React.Component {
@@ -72,7 +73,12 @@ class PolylineFillStroke extends React.Component {
 
 const icon = (
   <Svg.Svg height="20" width="20">
-    <Svg.Polyline points="2,2 4,2.5 6,4 8,12 12,14 20,18" fill="none" stroke="black" strokeWidth="1" />
+    <Svg.Polyline
+      points="2,2 4,2.5 6,4 8,12 12,14 20,18"
+      fill="none"
+      stroke="black"
+      strokeWidth="1"
+    />
   </Svg.Svg>
 );
 

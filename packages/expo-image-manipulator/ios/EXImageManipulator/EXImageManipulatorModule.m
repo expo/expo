@@ -41,6 +41,10 @@ UM_EXPORT_METHOD_AS(manipulateAsync,
                     reject:(UMPromiseRejectBlock)reject)
 {
   NSURL *url = [NSURL URLWithString:uri];
+  // no scheme provided in uri, handle as a local path and add 'file://' scheme
+  if (!url.scheme) {
+    url = [NSURL fileURLWithPath:uri isDirectory:false];
+  }
   NSString *path = [url.path stringByStandardizingPath];
 
   if (!_fileSystem) {
@@ -49,12 +53,12 @@ UM_EXPORT_METHOD_AS(manipulateAsync,
   if (!([_fileSystem permissionsForURI:url] & UMFileSystemPermissionRead)) {
     return reject(@"E_FILESYSTEM_PERMISSIONS", [NSString stringWithFormat:@"File '%@' isn't readable.", uri], nil);
   }
-  
+
   NSString *errorMessage;
   if (![self areActionsValid:actions errorMessage:&errorMessage] || ![self areSaveOptionsValid:saveOptions errorMessage:&errorMessage]) {
     return reject(@"E_IMAGE_MANIPULATOR_INVALID_ARG", errorMessage, nil);
   }
-  
+
   if ([[url scheme] isEqualToString:@"assets-library"]) {
     PHFetchResult<PHAsset *> *fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil];
     if (fetchResult.count > 0) {
@@ -65,7 +69,7 @@ UM_EXPORT_METHOD_AS(manipulateAsync,
       [options setNetworkAccessAllowed:YES];
       [options setSynchronous:NO];
       [options setDeliveryMode:PHImageRequestOptionsDeliveryModeHighQualityFormat];
-      
+
       [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:size contentMode:PHImageContentModeAspectFit options:options resultHandler:^(UIImage * _Nullable image, NSDictionary * _Nullable info) {
         if (!image) {
           reject(@"E_IMAGE_MANIPULATION_FAILED", [NSString stringWithFormat:@"The file isn't convertable to image. Given path: `%@`.", path], nil);
@@ -83,7 +87,7 @@ UM_EXPORT_METHOD_AS(manipulateAsync,
       if (error != nil) {
         return reject(@"E_IMAGE_MANIPULATION_FAILED", @"Could not get the image", error);
       }
-      
+
       UIImage *image = [self fixOrientation:loadedImage];
       [self manipulateImage:image actions:actions saveOptions:saveOptions resolver:resolve rejecter:reject];
     }];
@@ -97,18 +101,18 @@ UM_EXPORT_METHOD_AS(manipulateAsync,
     if (action[ACTION_KEY_RESIZE]) {
       actionsCounter += 1;
     }
-    
+
     if (action[ACTION_KEY_ROTATE]) {
       actionsCounter += 1;
     }
-    
+
     if (action[ACTION_KEY_FLIP]) {
       actionsCounter += 1;
     }
-    
+
     if (action[ACTION_KEY_CROP]) {
       actionsCounter += 1;
-      
+
       if (action[ACTION_KEY_CROP][@"originX"] == nil
           || action[ACTION_KEY_CROP][@"originY"] == nil
           || action[ACTION_KEY_CROP][@"width"] == nil
@@ -117,9 +121,9 @@ UM_EXPORT_METHOD_AS(manipulateAsync,
         *errorMessage = @"Invalid crop options has been passed. Please make sure the object contains originX, originY, width and height.";
         return NO;
       }
-      
+
     }
-    
+
     if (actionsCounter != 1) {
       *errorMessage = [NSString stringWithFormat:@"Single action must contain exactly one transformation from list: ['%@', '%@', '%@', '%@']",
                        ACTION_KEY_RESIZE,
@@ -147,7 +151,7 @@ UM_EXPORT_METHOD_AS(manipulateAsync,
   if (image.imageOrientation == UIImageOrientationUp) {
     return image;
   }
-  
+
   CGAffineTransform transform = CGAffineTransformIdentity;
   switch (image.imageOrientation) {
     case UIImageOrientationDown:
@@ -155,40 +159,40 @@ UM_EXPORT_METHOD_AS(manipulateAsync,
       transform = CGAffineTransformTranslate(transform, image.size.width, image.size.height);
       transform = CGAffineTransformRotate(transform, M_PI);
       break;
-      
+
     case UIImageOrientationLeft:
     case UIImageOrientationLeftMirrored:
       transform = CGAffineTransformTranslate(transform, image.size.width, 0);
       transform = CGAffineTransformRotate(transform, M_PI_2);
       break;
-      
+
     case UIImageOrientationRight:
     case UIImageOrientationRightMirrored:
       transform = CGAffineTransformTranslate(transform, 0, image.size.height);
       transform = CGAffineTransformRotate(transform, -M_PI_2);
       break;
-      
+
     default:
       break;
   }
-  
+
   switch (image.imageOrientation) {
     case UIImageOrientationUpMirrored:
     case UIImageOrientationDownMirrored:
       transform = CGAffineTransformTranslate(transform, image.size.width, 0);
       transform = CGAffineTransformScale(transform, -1, 1);
       break;
-      
+
     case UIImageOrientationLeftMirrored:
     case UIImageOrientationRightMirrored:
       transform = CGAffineTransformTranslate(transform, image.size.height, 0);
       transform = CGAffineTransformScale(transform, -1, 1);
       break;
-      
+
     default:
       break;
   }
-  
+
   CGContextRef ctx = CGBitmapContextCreate(NULL, image.size.width, image.size.height, CGImageGetBitsPerComponent(image.CGImage), 0, CGImageGetColorSpace(image.CGImage), CGImageGetBitmapInfo(image.CGImage));
   CGContextConcatCTM(ctx, transform);
   switch (image.imageOrientation) {
@@ -198,12 +202,12 @@ UM_EXPORT_METHOD_AS(manipulateAsync,
     case UIImageOrientationRightMirrored:
       CGContextDrawImage(ctx, CGRectMake(0, 0, image.size.height, image.size.width), image.CGImage);
       break;
-      
+
     default:
       CGContextDrawImage(ctx, CGRectMake(0, 0, image.size.width, image.size.height), image.CGImage);
       break;
   }
-  
+
   CGImageRef cgimg = CGBitmapContextCreateImage(ctx);
   UIImage *img = [UIImage imageWithCGImage:cgimg];
   CGContextRelease(ctx);
@@ -232,9 +236,9 @@ UM_EXPORT_METHOD_AS(manipulateAsync,
       }
     }
   }
-  
+
   float compressionValue = saveOptions[SAVE_OPTIONS_KEY_COMPRESS] != nil ? [(NSNumber *)saveOptions[SAVE_OPTIONS_KEY_COMPRESS] floatValue] : 1.0;
-  
+
   NSString *format = saveOptions[SAVE_OPTIONS_KEY_FORMAT];
   NSData *imageData = nil;
   NSString *extension;
@@ -245,7 +249,7 @@ UM_EXPORT_METHOD_AS(manipulateAsync,
     imageData = UIImagePNGRepresentation(image);
     extension = @".png";
   }
-  
+
   NSString *directory = [_fileSystem.cachesDirectory stringByAppendingPathComponent:@"ImageManipulator"];
   [_fileSystem ensureDirExistsWithPath:directory];
   NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingString:extension];
@@ -253,7 +257,7 @@ UM_EXPORT_METHOD_AS(manipulateAsync,
   [imageData writeToFile:newPath atomically:YES];
   NSURL *fileURL = [NSURL fileURLWithPath:newPath];
   NSString *filePath = [fileURL absoluteString];
-  
+
   NSMutableDictionary *response = [NSMutableDictionary new];
   response[@"uri"] = filePath;
   response[@"width"] = @(CGImageGetWidth(image.CGImage));
@@ -269,10 +273,10 @@ UM_EXPORT_METHOD_AS(manipulateAsync,
   float imageWidth = image.size.width;
   float imageHeight = image.size.height;
   float imageRatio = imageWidth / imageHeight;
-  
+
   NSInteger requestedWidth = 0;
   NSInteger requestedHeight = 0;
-  
+
   if (resize[@"width"]) {
     requestedWidth = [(NSNumber *)resize[@"width"] integerValue];
     requestedHeight = requestedWidth / imageRatio;
@@ -281,7 +285,7 @@ UM_EXPORT_METHOD_AS(manipulateAsync,
     requestedHeight = [(NSNumber *)resize[@"height"] integerValue];
     requestedWidth = requestedWidth == 0 ? imageRatio * requestedHeight : requestedWidth;
   }
-  
+
   CGSize requestedSize = CGSizeMake(requestedWidth, requestedHeight);
   UIGraphicsBeginImageContextWithOptions(requestedSize, NO, 1.0);
   [image drawInRect:CGRectMake(0, 0, requestedWidth, requestedHeight)];
@@ -299,14 +303,14 @@ UM_EXPORT_METHOD_AS(manipulateAsync,
   CGAffineTransform t = CGAffineTransformMakeRotation(rads);
   rotatedViewBox.transform = t;
   CGSize rotatedSize = rotatedViewBox.frame.size;
-  
+
   UIGraphicsBeginImageContext(rotatedSize);
   CGContextRef bitmap = UIGraphicsGetCurrentContext();
   CGContextTranslateCTM(bitmap, rotatedSize.width/2, rotatedSize.height/2);
   CGContextRotateCTM(bitmap, rads);
   CGContextScaleCTM(bitmap, 1.0, -1.0);
   CGContextDrawImage(bitmap, CGRectMake(-size.width / 2, -size.height / 2, size.width, size.height), image.CGImage);
-  
+
   image = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();
   return image;
@@ -326,7 +330,7 @@ UM_EXPORT_METHOD_AS(manipulateAsync,
     transform = CGAffineTransformMake(-1, 0, 0, 1, tempImageView.frame.size.width, 0);
     CGContextConcatCTM(context, transform);
   }
-  
+
   [tempImageView.layer renderInContext:context];
   image = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();
@@ -339,7 +343,7 @@ UM_EXPORT_METHOD_AS(manipulateAsync,
   float originY = [(NSNumber *)cropData[@"originY"] floatValue];
   float requestedWidth = [(NSNumber *)cropData[@"width"] floatValue];
   float requestedHeight = [(NSNumber *)cropData[@"height"] floatValue];
-  
+
   if (originX > image.size.width
       || originY > image.size.height
       || requestedWidth > image.size.width

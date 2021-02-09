@@ -10,18 +10,29 @@
 #import "EXKernelLinkingManager.h"
 #import "EXLinkingManager.h"
 #import "EXVersions.h"
+#import "EXHomeModule.h"
 
+#import <EXConstants/EXConstantsService.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTUtils.h>
 
+#ifndef EX_DETACHED
+// Kernel is DevMenu's delegate only in non-detached builds.
+#import "EXDevMenuManager.h"
+#import "EXDevMenuDelegateProtocol.h"
+
+@interface EXKernel () <EXDevMenuDelegateProtocol>
+@end
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 
 NSString *kEXKernelErrorDomain = @"EXKernelErrorDomain";
 NSString *kEXKernelShouldForegroundTaskEvent = @"foregroundTask";
-NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
 NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUserDefaultsKey";
+NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 
 @interface EXKernel () <EXKernelAppRegistryDelegate>
 
@@ -60,6 +71,17 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
     // init service registry: classes which manage shared resources among all bridges
     _serviceRegistry = [[EXKernelServiceRegistry alloc] init];
 
+#ifndef EX_DETACHED
+    // Set the delegate of dev menu manager. Maybe it should be a separate class? Will see later once the delegate protocol gets too big.
+    [[EXDevMenuManager sharedInstance] setDelegate:self];
+#endif
+
+    // register for notifications to request reloading the visible app
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(_handleRequestReloadVisibleApp:)
+                                                 name:kEXReloadActiveAppRequest
+                                               object:nil];
+
     for (NSString *name in @[UIApplicationDidBecomeActiveNotification,
                              UIApplicationDidEnterBackgroundNotification,
                              UIApplicationDidFinishLaunchingNotification,
@@ -82,17 +104,6 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
 }
 
 #pragma mark - Misc
-
-+ (NSString *)deviceInstallUUID
-{
-  NSString *uuid = [[NSUserDefaults standardUserDefaults] stringForKey:kEXDeviceInstallUUIDKey];
-  if (!uuid) {
-    uuid = [[NSUUID UUID] UUIDString];
-    [[NSUserDefaults standardUserDefaults] setObject:uuid forKey:kEXDeviceInstallUUIDKey];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-  }
-  return uuid;
-}
 
 - (void)logAnalyticsEvent:(NSString *)eventId forAppRecord:(EXKernelAppRecord *)appRecord
 {
@@ -178,7 +189,7 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
     return success;
   } else {
     // no app is currently running for this experience id.
-    // if we're Expo Client, we can query Home for a past experience in the user's history, and route the notification there.
+    // if we're Expo Go, we can query Home for a past experience in the user's history, and route the notification there.
     if (_browserController) {
       __weak typeof(self) weakSelf = self;
       [_browserController getHistoryUrlForExperienceId:notification.experienceId completion:^(NSString *urlString) {
@@ -190,7 +201,7 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
         }
       }];
       // If we're here, there's no active app in appRegistry matching notification.experienceId
-      // and we are in Expo Client, since _browserController is not nil.
+      // and we are in Expo Go, since _browserController is not nil.
       // If so, we can return YES (meaning "notification has been successfully dispatched")
       // because we pass the notification as initialProps in completion handler
       // of getHistoryUrlForExperienceId:. If urlString passed to completion handler is empty,
@@ -242,6 +253,16 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
   return record;
 }
 
+
+- (void)reloadVisibleApp
+{
+  if (_browserController) {
+    [EXUtil performSynchronouslyOnMainThread:^{
+      [self->_browserController reloadVisibleApp];
+    }];
+  }
+}
+
 - (void)switchTasks
 {
   if (!_browserController) {
@@ -249,9 +270,11 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
   }
   
   if (_visibleApp != _appRegistry.homeAppRecord) {
+#ifndef EX_DETACHED // Just to compile without access to EXDevMenuManager, we wouldn't get here either way because browser controller is unset in this case.
     [EXUtil performSynchronouslyOnMainThread:^{
-      [self->_browserController toggleMenuWithCompletion:nil];
+      [[EXDevMenuManager sharedInstance] toggle];
     }];
+#endif
   } else {
     EXKernelAppRegistry *appRegistry = [EXKernel sharedInstance].appRegistry;
     for (NSString *recordId in appRegistry.appEnumerator) {
@@ -364,6 +387,12 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
   }
 }
 
+
+- (void)_handleRequestReloadVisibleApp:(NSNotification *)notification
+{
+  [self reloadVisibleApp];
+}
+
 - (void)_moveAppToVisible:(EXKernelAppRecord *)appRecord
 {
   if (_browserController) {
@@ -372,6 +401,29 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
     }];
   }
 }
+
+#ifndef EX_DETACHED
+#pragma mark - EXDevMenuDelegateProtocol
+
+- (RCTBridge *)mainBridgeForDevMenuManager:(EXDevMenuManager *)manager
+{
+  return _appRegistry.homeAppRecord.appManager.reactBridge;
+}
+
+- (nullable RCTBridge *)appBridgeForDevMenuManager:(EXDevMenuManager *)manager
+{
+  if (_visibleApp == _appRegistry.homeAppRecord) {
+    return nil;
+  }
+  return _visibleApp.appManager.reactBridge;
+}
+
+- (BOOL)devMenuManager:(EXDevMenuManager *)manager canChangeVisibility:(BOOL)visibility
+{
+  return !visibility || _visibleApp != _appRegistry.homeAppRecord;
+}
+
+#endif
 
 @end
 

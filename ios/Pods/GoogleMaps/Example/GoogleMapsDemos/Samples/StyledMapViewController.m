@@ -13,10 +13,6 @@
  * permissions and limitations under the License.
  */
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #import "GoogleMapsDemos/Samples/StyledMapViewController.h"
 
 #import <GoogleMaps/GoogleMaps.h>
@@ -26,9 +22,6 @@ static NSString *const kRetroType = @"Retro";
 static NSString *const kGrayscaleType = @"Grayscale";
 static NSString *const kNightType = @"Night";
 static NSString *const kNoPOIsType = @"No business points of interest, no transit";
-
-@interface StyledMapViewController ()<UIActionSheetDelegate>
-@end
 
 @implementation StyledMapViewController {
   UIBarButtonItem *_barButtonItem;
@@ -96,43 +89,35 @@ static NSString *const kNoPOIsType = @"No business points of interest, no transi
   self.navigationItem.title = kRetroType;
 }
 
-- (void)changeMapStyle:(UIBarButtonItem *)sender {
-  UIActionSheet *actionSheet = [[UIActionSheet alloc]
-               initWithTitle:@"Select map style"
-                    delegate:self
-           cancelButtonTitle:nil
-      destructiveButtonTitle:nil
-           otherButtonTitles:kRetroType, kGrayscaleType, kNightType, kNormalType, kNoPOIsType, nil];
-  [actionSheet showFromBarButtonItem:sender animated:YES];
+- (UIAlertAction *_Nonnull)actionWithTitle:(nonnull NSString *)title
+                                     style:(nullable GMSMapStyle *)style {
+  __weak __typeof__(self) weakSelf = self;
+  return [UIAlertAction actionWithTitle:title
+                                  style:UIAlertActionStyleDefault
+                                handler:^(UIAlertAction *_Nonnull action) {
+                                  __strong __typeof__(self) strongSelf = weakSelf;
+                                  if (strongSelf) {
+                                    strongSelf->_mapView.mapStyle = style;
+                                    strongSelf.navigationItem.title = title;
+                                  }
+                                }];
 }
 
-#pragma mark - UIActionSheetDelegate
-
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-  switch (buttonIndex) {
-    case 0:
-      _mapView.mapStyle = _retroStyle;
-      self.navigationItem.title = kRetroType;
-      break;
-    case 1:
-      _mapView.mapStyle = _grayscaleStyle;
-      self.navigationItem.title = kGrayscaleType;
-      break;
-    case 2:
-      _mapView.mapStyle = _nightStyle;
-      self.navigationItem.title = kNightType;
-      break;
-    case 3:
-      _mapView.mapStyle = nil;
-      self.navigationItem.title = kNormalType;
-      break;
-    case 4:
-      _mapView.mapStyle = _noPOIsStyle;
-      self.navigationItem.title = kNoPOIsType;
-      break;
-    default:
-      break;
-  }
+- (void)changeMapStyle:(UIBarButtonItem *)sender {
+  UIAlertController *alert =
+      [UIAlertController alertControllerWithTitle:@"Select map style"
+                                          message:nil
+                                   preferredStyle:UIAlertControllerStyleActionSheet];
+  [alert addAction:[self actionWithTitle:kRetroType style:_retroStyle]];
+  [alert addAction:[self actionWithTitle:kGrayscaleType style:_grayscaleStyle]];
+  [alert addAction:[self actionWithTitle:kNightType style:_nightStyle]];
+  [alert addAction:[self actionWithTitle:kNormalType style:nil]];
+  [alert addAction:[self actionWithTitle:kNoPOIsType style:_noPOIsStyle]];
+  [alert addAction:[UIAlertAction actionWithTitle:@"Cancel"
+                                            style:UIAlertActionStyleCancel
+                                          handler:nil]];
+  alert.popoverPresentationController.barButtonItem = sender;
+  [self presentViewController:alert animated:YES completion:nil];
 }
 
 @end

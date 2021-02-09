@@ -11,10 +11,10 @@ afterEach(() => {
 });
 
 it(`emits events to listeners`, () => {
-  let mockNativeModule = _createMockNativeModule();
-  let emitter = new EventEmitter(mockNativeModule);
+  const mockNativeModule = _createMockNativeModule();
+  const emitter = new EventEmitter(mockNativeModule);
 
-  let mockListener = jest.fn();
+  const mockListener = jest.fn();
   emitter.addListener('test', mockListener);
 
   emitter.emit('test');
@@ -27,10 +27,10 @@ it(`emits events to listeners`, () => {
 });
 
 it(`removes all listeners of an event`, () => {
-  let mockNativeModule = _createMockNativeModule();
-  let emitter = new EventEmitter(mockNativeModule);
+  const mockNativeModule = _createMockNativeModule();
+  const emitter = new EventEmitter(mockNativeModule);
 
-  let mockListener = jest.fn();
+  const mockListener = jest.fn();
   emitter.addListener('test', mockListener);
   emitter.removeAllListeners('test');
 
@@ -39,11 +39,11 @@ it(`removes all listeners of an event`, () => {
 });
 
 it(`removes a single event subscription`, () => {
-  let mockNativeModule = _createMockNativeModule();
-  let emitter = new EventEmitter(mockNativeModule);
+  const mockNativeModule = _createMockNativeModule();
+  const emitter = new EventEmitter(mockNativeModule);
 
-  let mockListener = jest.fn();
-  let subscription = emitter.addListener('test', mockListener);
+  const mockListener = jest.fn();
+  const subscription = emitter.addListener('test', mockListener);
   emitter.removeSubscription(subscription);
 
   emitter.emit('test');
@@ -52,13 +52,13 @@ it(`removes a single event subscription`, () => {
 
 // NOTE: this test currently fails because of NativeEventEmitter's design
 it.skip(`doesn't emit events to other emitters' listeners`, () => {
-  let mockNativeModule1 = _createMockNativeModule();
-  let emitter1 = new EventEmitter(mockNativeModule1);
+  const mockNativeModule1 = _createMockNativeModule();
+  const emitter1 = new EventEmitter(mockNativeModule1);
 
-  let mockNativeModule2 = _createMockNativeModule();
-  let emitter2 = new EventEmitter(mockNativeModule2);
+  const mockNativeModule2 = _createMockNativeModule();
+  const emitter2 = new EventEmitter(mockNativeModule2);
 
-  let mockListener1 = jest.fn();
+  const mockListener1 = jest.fn();
   emitter1.addListener('test', mockListener1);
   emitter2.emit('test');
 
@@ -67,13 +67,13 @@ it.skip(`doesn't emit events to other emitters' listeners`, () => {
 
 // NOTE: this test currently fails because of NativeEventEmitter's design
 it.skip(`doesn't remove other emitters' listeners`, () => {
-  let mockNativeModule1 = _createMockNativeModule();
-  let emitter1 = new EventEmitter(mockNativeModule1);
+  const mockNativeModule1 = _createMockNativeModule();
+  const emitter1 = new EventEmitter(mockNativeModule1);
 
-  let mockNativeModule2 = _createMockNativeModule();
-  let emitter2 = new EventEmitter(mockNativeModule2);
+  const mockNativeModule2 = _createMockNativeModule();
+  const emitter2 = new EventEmitter(mockNativeModule2);
 
-  let mockListener1 = jest.fn();
+  const mockListener1 = jest.fn();
   emitter1.addListener('test', mockListener1);
   emitter2.removeAllListeners('test');
 
@@ -83,11 +83,11 @@ it.skip(`doesn't remove other emitters' listeners`, () => {
 
 describe('subscriptions', () => {
   it(`removes itself`, () => {
-    let mockNativeModule = _createMockNativeModule();
-    let emitter = new EventEmitter(mockNativeModule);
+    const mockNativeModule = _createMockNativeModule();
+    const emitter = new EventEmitter(mockNativeModule);
 
-    let mockListener = jest.fn();
-    let subscription = emitter.addListener('test', mockListener);
+    const mockListener = jest.fn();
+    const subscription = emitter.addListener('test', mockListener);
     subscription.remove();
 
     emitter.emit('test');
@@ -111,15 +111,15 @@ describe('Android', () => {
   });
 
   it(`notifies the native module to start and stop observing events`, () => {
-    let mockNativeModule = _createMockNativeModule();
-    let emitter = new EventEmitter(mockNativeModule);
+    const mockNativeModule = _createMockNativeModule();
+    const emitter = new EventEmitter(mockNativeModule);
 
     // Start observing only when we add the first listener
-    let subscription1 = emitter.addListener('test', () => {});
+    const subscription1 = emitter.addListener('test', () => {});
     expect(mockNativeModule.startObserving).toHaveBeenCalledTimes(1);
-    let subscription2 = emitter.addListener('test', () => {});
+    const subscription2 = emitter.addListener('test', () => {});
     expect(mockNativeModule.startObserving).toHaveBeenCalledTimes(1);
-    let subscription3 = emitter.addListener('other', () => {});
+    const subscription3 = emitter.addListener('other', () => {});
     expect(mockNativeModule.startObserving).toHaveBeenCalledTimes(1);
 
     // Stop observing only when we remove the last listener
@@ -132,8 +132,8 @@ describe('Android', () => {
   });
 
   it(`notifies the native module to stop observing when removing all listeners`, () => {
-    let mockNativeModule = _createMockNativeModule();
-    let emitter = new EventEmitter(mockNativeModule);
+    const mockNativeModule = _createMockNativeModule();
+    const emitter = new EventEmitter(mockNativeModule);
 
     emitter.addListener('test', () => {});
     emitter.addListener('test', () => {});
@@ -142,11 +142,11 @@ describe('Android', () => {
   });
 
   it(`notifies the native module to stop observing when a subscription removes itself`, () => {
-    let mockNativeModule = _createMockNativeModule();
-    let emitter = new EventEmitter(mockNativeModule);
+    const mockNativeModule = _createMockNativeModule();
+    const emitter = new EventEmitter(mockNativeModule);
 
-    let mockListener = jest.fn();
-    let subscription = emitter.addListener('test', mockListener);
+    const mockListener = jest.fn();
+    const subscription = emitter.addListener('test', mockListener);
     expect(mockNativeModule.startObserving).toHaveBeenCalledTimes(1);
 
     subscription.remove();
@@ -154,12 +154,12 @@ describe('Android', () => {
   });
 
   it(`removes subscriptions idempotently`, () => {
-    let mockNativeModule = _createMockNativeModule();
-    let emitter = new EventEmitter(mockNativeModule);
+    const mockNativeModule = _createMockNativeModule();
+    const emitter = new EventEmitter(mockNativeModule);
 
-    let mockListener = jest.fn();
-    let subscription1 = emitter.addListener('test', mockListener);
-    let subscription2 = emitter.addListener('test', mockListener);
+    const mockListener = jest.fn();
+    const subscription1 = emitter.addListener('test', mockListener);
+    const subscription2 = emitter.addListener('test', mockListener);
     expect(mockNativeModule.startObserving).toHaveBeenCalledTimes(1);
 
     emitter.removeSubscription(subscription1);

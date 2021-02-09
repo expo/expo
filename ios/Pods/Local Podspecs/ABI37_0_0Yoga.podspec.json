@@ -1,0 +1,32 @@
+{
+  "name": "ABI37_0_0Yoga",
+  "version": "1.14.0",
+  "license": {
+    "type": "MIT"
+  },
+  "homepage": "https://yogalayout.com",
+  "documentation_url": "https://yogalayout.com/docs/",
+  "summary": "Yoga is a cross-platform layout engine which implements Flexbox.",
+  "description": "Yoga is a cross-platform layout engine enabling maximum collaboration within your team by implementing an API many designers are familiar with, and opening it up to developers across different platforms.",
+  "authors": "Facebook",
+  "source": {
+    "path": "."
+  },
+  "module_name": "ABI37_0_0yoga",
+  "header_dir": "ABI37_0_0yoga",
+  "requires_arc": false,
+  "compiler_flags": [
+    "-fno-omit-frame-pointer",
+    "-fexceptions",
+    "-Wall",
+    "-Werror",
+    "-std=c++1y",
+    "-fPIC"
+  ],
+  "platforms": {
+    "ios": "9.0",
+    "tvos": "9.2"
+  },
+  "source_files": "yoga/**/*.{cpp,h}",
+  "public_header_files": "yoga/{ABI37_0_0Yoga,ABI37_0_0YGEnums,ABI37_0_0YGMacros,ABI37_0_0YGValue}.h"
+}

@@ -1,7 +1,26 @@
-import { Platform } from 'react-native';
 import { CodedError, EventEmitter, Subscription } from '@unimodules/core';
-import { IAPQueryResponse, InAppPurchase, InAppPurchaseState, IAPItemType, IAPResponseCode, IAPErrorCode } from './InAppPurchases.types';
+import { Platform } from 'react-native';
+
 import ExpoInAppPurchases from './ExpoInAppPurchases';
+import {
+  IAPErrorCode,
+  IAPItemType,
+  IAPQueryResponse,
+  IAPResponseCode,
+  InAppPurchase,
+  InAppPurchaseState,
+  IAPItemDetails,
+} from './InAppPurchases.types';
+
+export {
+  InAppPurchase,
+  InAppPurchaseState,
+  IAPResponseCode,
+  IAPErrorCode,
+  IAPItemType,
+  IAPQueryResponse,
+  IAPItemDetails,
+};
 
 const errors = {
   ALREADY_CONNECTED: 'Already connected to App Store',
@@ -15,21 +34,13 @@ const eventEmitter = new EventEmitter(ExpoInAppPurchases);
 let connected = false;
 let purchaseUpdatedSubscription: Subscription;
 
-export {
-  InAppPurchaseState,
-  IAPResponseCode,
-  IAPErrorCode,
-  IAPItemType,
-}
-
-export async function connectAsync(): Promise<IAPQueryResponse> {
+export async function connectAsync(): Promise<void> {
   if (connected) {
     throw new ConnectionError(errors.ALREADY_CONNECTED);
   }
 
-  const result = await ExpoInAppPurchases.connectAsync();
+  await ExpoInAppPurchases.connectAsync();
   connected = true;
-  return result;
 }
 
 export async function getProductsAsync(itemList: string[]): Promise<IAPQueryResponse> {
@@ -61,12 +72,18 @@ export async function setPurchaseListener(callback: (result) => void): Promise<v
     purchaseUpdatedSubscription.remove();
   }
 
-  purchaseUpdatedSubscription = eventEmitter.addListener<IAPQueryResponse>(PURCHASES_UPDATED_EVENT, result => {
-    callback(result);
-  });
+  purchaseUpdatedSubscription = eventEmitter.addListener<IAPQueryResponse>(
+    PURCHASES_UPDATED_EVENT,
+    result => {
+      callback(result);
+    }
+  );
 }
 
-export async function finishTransactionAsync(purchase: InAppPurchase, consumeItem: boolean): Promise<void> {
+export async function finishTransactionAsync(
+  purchase: InAppPurchase,
+  consumeItem: boolean
+): Promise<void> {
   if (!connected) {
     throw new ConnectionError(errors.NOT_CONNECTED);
   }

@@ -1,1 +1,1 @@
-../../../Branch/Branch-SDK/Branch-SDK/BNCSystemObserver.h
+../../../Branch/Branch-SDK/BNCSystemObserver.h

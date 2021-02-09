@@ -14,7 +14,7 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.Log;
 
 public class LocationTaskService extends Service {
@@ -48,7 +48,7 @@ public class LocationTaskService extends Service {
       mChannelId = extras.getString("appId") + ":" + extras.getString("taskName");
     }
 
-    return START_STICKY;
+    return START_REDELIVER_INTENT;
   }
 
   public void setParentContext(Context context) {

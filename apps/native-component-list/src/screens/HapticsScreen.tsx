@@ -1,12 +1,21 @@
-import React from 'react';
-import { SectionList, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import * as Haptics from 'expo-haptics';
+import React from 'react';
+import { SectionList, SectionListData, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
 import Button from '../components/Button';
-import Colors from '../constants/Colors';
 import MonoText from '../components/MonoText';
+import Colors from '../constants/Colors';
 
-const sections = [
+type SectionData =
+  // See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  | {}
+  | {
+      accessor: string;
+      value: any;
+    };
+
+const sections: SectionListData<SectionData>[] = [
   {
     methodName: 'notificationAsync',
     method: Haptics.notificationAsync,
@@ -61,18 +70,23 @@ export default class HapticsScreen extends React.Component {
   }: {
     item: { accessor: string; value: any };
     section: { method: (type: string) => void };
-  }) => <Item method={method} type={item} />
+  }) => <Item method={method} type={item} />;
 
   renderSectionHeader = ({ section: { methodName } }: { section: { methodName: string } }) => (
     <Header title={methodName} />
-  )
+  );
 
-  keyExtractor = ({ accessor, value }: { accessor: string; value: any }) => `key-${accessor}-${value}`;
+  keyExtractor = (data: SectionData) => {
+    if ('accessor' in data && 'value' in data) {
+      return `key-${data.accessor}-${data.value}`;
+    }
+    return 'key-undefined';
+  };
 
   render() {
     return (
       <View style={styles.container}>
-        <SectionList
+        <SectionList<SectionData>
           style={styles.list}
           sections={sections}
           renderItem={this.renderItem as any}
@@ -86,7 +100,7 @@ export default class HapticsScreen extends React.Component {
 
 class Item extends React.Component<{
   method: (type: string) => void;
-  type: { accessor: string; value: any }
+  type: { accessor: string; value: any };
 }> {
   get code() {
     const {
@@ -124,7 +138,7 @@ class HapticButton extends React.Component<{
   onPress = () => {
     const { method, type } = this.props;
     method(type);
-  }
+  };
   render() {
     return <Button onPress={this.onPress} style={this.props.style} title="Run" />;
   }

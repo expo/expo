@@ -1,4 +1,5 @@
 import { CodedError } from '@unimodules/core';
+
 import { CryptoDigestAlgorithm, CryptoEncoding, CryptoDigestOptions } from './Crypto.types';
 
 export default {
@@ -11,7 +12,10 @@ export default {
     options: CryptoDigestOptions
   ): Promise<string> {
     if (!crypto.subtle) {
-      throw new CodedError('ERR_CRYPTO_UNAVAILABLE', 'Access to the WebCrypto API is restricted to secure origins (https).');
+      throw new CodedError(
+        'ERR_CRYPTO_UNAVAILABLE',
+        'Access to the WebCrypto API is restricted to secure origins (https).'
+      );
     }
     const encoder = new TextEncoder();
     const buffer = encoder.encode(data);

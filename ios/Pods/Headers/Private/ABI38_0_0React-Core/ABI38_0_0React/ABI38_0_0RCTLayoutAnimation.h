@@ -1,0 +1,1 @@
+../../../../../versioned-react-native/ABI38_0_0/ReactNative/React/Modules/ABI38_0_0RCTLayoutAnimation.h

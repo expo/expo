@@ -1,26 +1,40 @@
 ---
 title: SecureStore
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-secure-store'
 ---
 
-Provides a way to encrypt and securely store key–value pairs locally on the device. Each Expo project has a separate storage system and has no access to the storage of other Expo projects.
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
+**`expo-secure-store`** provides a way to encrypt and securely store key–value pairs locally on the device. Each Expo project has a separate storage system and has no access to the storage of other Expo projects. **Please note** that for iOS standalone apps, data stored with `expo-secure-store` can persist across app installs.
 
 iOS: Values are stored using the [keychain services](https://developer.apple.com/documentation/security/keychain_services) as `kSecClassGenericPassword`. iOS has the additional option of being able to set the value's `kSecAttrAccessible` attribute, which controls when the value is available to be fetched.
 
 Android: Values are stored in [`SharedPreferences`](https://developer.android.com/training/basics/data-storage/shared-preferences.html), encrypted with [Android's Keystore system](https://developer.android.com/training/articles/keystore.html).
 
-**Size limit for a value is 2048 bytes. An attempt to store larger values may fail. Currently, we print a warning when the limit is reached, but we will throw an error starting from SDK 35.**
+**Size limit for a value is 2048 bytes. An attempt to store larger values may fail. Currently, we print a warning when the limit is reached, but in a future SDK version, we may throw an error.**
+
+<PlatformsSection android emulator ios simulator />
+
+- This API is not compatible on devices running Android 5 or older.
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-secure-store`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-secure-store).
-
-> **Note**: This API is not compatible on web or on devices running Android 5 or older.
+<InstallSection packageName="expo-secure-store" />
 
 ## API
 
 ```js
 import * as SecureStore from 'expo-secure-store';
 ```
+
+### `SecureStore.isAvailableAsync()`
+
+Returns whether the SecureStore API is enabled on the current device.
+
+#### Returns
+
+Async `boolean`, indicating whether the SecureStore API is available on the current device. Currently this resolves `true` on iOS and Android only.
 
 ### `SecureStore.setItemAsync(key, value, options)`
 

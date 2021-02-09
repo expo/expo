@@ -1,12 +1,13 @@
 module.exports = {
   parserOptions: { ecmaFeatures: { jsx: true } },
-  plugins: ['react'],
+  plugins: ['react', 'react-hooks'],
   rules: {
     'react/jsx-boolean-value': ['warn', 'never'],
     'react/jsx-closing-bracket-location': [
       'warn',
       { nonEmpty: 'after-props', selfClosing: 'tag-aligned' },
     ],
+    'react/jsx-curly-brace-presence': ['warn', 'never'],
     'react/jsx-curly-spacing': ['warn', { when: 'never' }],
     'react/jsx-equals-spacing': ['warn', 'never'],
     'react/jsx-first-prop-new-line': ['warn', 'multiline'],
@@ -35,7 +36,9 @@ module.exports = {
     'react/react-in-jsx-scope': 'error',
     'react/require-render-return': 'warn',
     'react/self-closing-comp': 'warn',
-    'react/style-prop-object': 'warn',
+
+    'react-hooks/rules-of-hooks': 'error',
+    'react-hooks/exhaustive-deps': 'off',
   },
   settings: {
     react: { version: 'detect' },

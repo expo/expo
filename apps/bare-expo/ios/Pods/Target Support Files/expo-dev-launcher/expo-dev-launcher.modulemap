@@ -1,0 +1,6 @@
+module EXDevLauncher {
+  umbrella header "expo-dev-launcher-umbrella.h"
+
+  export *
+  module * { export * }
+}

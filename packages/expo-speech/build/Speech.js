@@ -1,6 +1,6 @@
+import { UnavailabilityError } from '@unimodules/core';
 import { NativeEventEmitter } from 'react-native';
 import ExponentSpeech from './ExponentSpeech';
-import { UnavailabilityError } from '@unimodules/core';
 import { VoiceQuality } from './Speech.types';
 const SpeechEventEmitter = ExponentSpeech && new NativeEventEmitter(ExponentSpeech);
 export { VoiceQuality };
@@ -90,4 +90,5 @@ function setSpeakingListener(eventName, callback) {
 function removeSpeakingListener(eventName) {
     SpeechEventEmitter.removeAllListeners(eventName);
 }
+export const maxSpeechInputLength = ExponentSpeech.maxSpeechInputLength || Number.MAX_VALUE;
 //# sourceMappingURL=Speech.js.map

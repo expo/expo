@@ -1,7 +1,12 @@
 import { PermissionResponse, PermissionType, PermissionMap, PermissionStatus, PermissionExpiration, PermissionInfo } from './Permissions.types';
 export { PermissionStatus, PermissionResponse, PermissionExpiration, PermissionMap, PermissionInfo, PermissionType, };
 export declare const CAMERA = "camera";
-export declare const CAMERA_ROLL = "cameraRoll";
+export declare const MEDIA_LIBRARY = "mediaLibrary";
+export declare const MEDIA_LIBRARY_WRITE_ONLY = "mediaLibraryWriteOnly";
+/**
+ * @deprecated Use `MEDIA_LIBRARY` or `MEDIA_LIBRARY_WRITE_ONLY`
+ */
+export declare const CAMERA_ROLL = "mediaLibrary";
 export declare const AUDIO_RECORDING = "audioRecording";
 export declare const LOCATION = "location";
 export declare const USER_FACING_NOTIFICATIONS = "userFacingNotifications";
@@ -10,5 +15,6 @@ export declare const CONTACTS = "contacts";
 export declare const CALENDAR = "calendar";
 export declare const REMINDERS = "reminders";
 export declare const SYSTEM_BRIGHTNESS = "systemBrightness";
+export declare const MOTION = "motion";
 export declare function getAsync(...types: PermissionType[]): Promise<PermissionResponse>;
 export declare function askAsync(...types: PermissionType[]): Promise<PermissionResponse>;

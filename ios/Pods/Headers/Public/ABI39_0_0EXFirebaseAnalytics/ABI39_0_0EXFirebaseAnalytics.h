@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI39_0_0/Expo/EXFirebaseAnalytics/ABI39_0_0EXFirebaseAnalytics/ABI39_0_0EXFirebaseAnalytics.h

@@ -2,6 +2,9 @@ package org.unimodules.core;
 
 import android.content.Context;
 
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.core.interfaces.RegistryLifecycleListener;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -11,9 +14,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import org.unimodules.core.interfaces.RegistryLifecycleListener;
-import org.unimodules.core.interfaces.ExpoMethod;
 
 /**
  * Abstract class for exported modules, i. e. modules which export some methods to client code.
@@ -33,6 +33,7 @@ public abstract class ExportedModule implements RegistryLifecycleListener {
       return mParameterTypes;
     }
   }
+
   private Context mContext;
   private Map<String, Method> mExportedMethods;
   private Map<String, MethodInfo> mExportedMethodInfos;
@@ -61,7 +62,7 @@ public abstract class ExportedModule implements RegistryLifecycleListener {
     }
 
     Map<String, MethodInfo> exportedMethodInfos = new HashMap<>();
-    for(Map.Entry<String, Method> entry : getExportedMethods().entrySet()) {
+    for (Map.Entry<String, Method> entry : getExportedMethods().entrySet()) {
       exportedMethodInfos.put(entry.getKey(), new MethodInfo(entry.getValue()));
     }
     mExportedMethodInfos = exportedMethodInfos;
@@ -74,15 +75,15 @@ public abstract class ExportedModule implements RegistryLifecycleListener {
   public Object invokeExportedMethod(String methodName, Collection<Object> arguments) throws NoSuchMethodException, RuntimeException {
     Method method = mExportedMethods.get(methodName);
 
-    if (method  == null) {
+    if (method == null) {
       throw new NoSuchMethodException("Module " + getName() + "does not export method " + methodName + ".");
     }
 
     int expectedArgumentsCount = method.getParameterTypes().length;
     if (arguments.size() != expectedArgumentsCount) {
       throw new IllegalArgumentException(
-              "Method " + methodName + " on class " + getName() + " expects " + expectedArgumentsCount + " arguments, "
-                      + "whereas " + arguments.size() + " arguments have been provided.");
+          "Method " + methodName + " on class " + getName() + " expects " + expectedArgumentsCount + " arguments, "
+              + "whereas " + arguments.size() + " arguments have been provided.");
     }
 
     Class<?>[] expectedArgumentClasses = method.getParameterTypes();
@@ -95,10 +96,14 @@ public abstract class ExportedModule implements RegistryLifecycleListener {
 
     try {
       return method.invoke(this, transformedArguments.toArray());
-    } catch (IllegalAccessException | InvocationTargetException e) {
+    } catch (IllegalAccessException e) {
       e.printStackTrace();
       throw new RuntimeException("Exception occurred while executing exported method " + methodName
-              + " on module " + getName() + ": " + e.getMessage(), e);
+          + " on module " + getName() + ": " + e.getMessage(), e);
+    } catch (InvocationTargetException e) {
+      e.printStackTrace();
+      throw new RuntimeException("Exception occurred while executing exported method " + methodName
+          + " on module " + getName() + ": " + e.getCause().getMessage(), e.getCause());
     }
   }
 

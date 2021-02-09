@@ -2,8 +2,8 @@ import { Platform } from '@unimodules/core';
 import path from 'path-browserify';
 import { PixelRatio } from 'react-native';
 import URL from 'url-parse';
-import AssetSourceResolver from './AssetSourceResolver';
 
+import AssetSourceResolver from './AssetSourceResolver';
 import { manifestBaseUrl, getManifest } from './PlatformUtils';
 
 export type AssetMetadata = {

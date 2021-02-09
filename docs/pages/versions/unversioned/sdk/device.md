@@ -1,12 +1,18 @@
 ---
 title: Device
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-device'
 ---
 
-Provides access to system information about the physical device, such as its manufacturer and model.
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
+**`expo-device`** provides access to system information about the physical device, such as its manufacturer and model.
+
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-device).
+<InstallSection packageName="expo-device" />
 
 ## API
 
@@ -291,7 +297,9 @@ await Device.isRootedExperimentalAsync();
 
 ### `Device.isSideLoadingEnabledAsync()`
 
-**Android only.** Returns whether applications can be installed for this user via the system's [Intent#ACTION_INSTALL_PACKAGE](https://developer.android.com/reference/android/content/Intent.html#ACTION_INSTALL_PACKAGE) mechanism rather than through the OS's default app store, like Google Play.
+**Android only. Using this method requires you to [add the `REQUEST_INSTALL_PACKAGES` permission](../config/app.md#permissions).**
+
+Returns whether applications can be installed for this user via the system's [Intent#ACTION_INSTALL_PACKAGE](https://developer.android.com/reference/android/content/Intent.html#ACTION_INSTALL_PACKAGE) mechanism rather than through the OS's default app store, like Google Play.
 
 #### Returns
 
@@ -300,7 +308,7 @@ Returns a promise that resolves to a `boolean` that represents whether the calli
 **Examples**
 
 ```js
-await Device.isSideLoadingEnabled();
+await Device.isSideLoadingEnabledAsync();
 // true or false
 ```
 
@@ -357,6 +365,6 @@ An enum of the different types of devices supported by Expo, with these values:
 
 ## Error Codes
 
-| Code                           | Description                                                                                                               |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| Code                      | Description                                                                                                              |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | ERR_DEVICE_ROOT_DETECTION | Error code thrown for `isRootedExperimentalAsync`. This may be thrown if there's no read access to certain system files. |

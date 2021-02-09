@@ -23,7 +23,6 @@ import org.unimodules.core.interfaces.services.EventEmitter;
 public class AdMobRewardedVideoAdModule extends ExportedModule implements RewardedVideoAdListener {
   private RewardedVideoAd mRewardedVideoAd;
   private String mAdUnitID;
-  private String mTestDeviceID;
   private Promise mRequestAdPromise;
   private Promise mShowAdPromise;
   private EventEmitter mEventEmitter;
@@ -129,12 +128,6 @@ public class AdMobRewardedVideoAdModule extends ExportedModule implements Reward
   }
 
   @ExpoMethod
-  public void setTestDeviceID(String testDeviceID, final Promise promise) {
-    mTestDeviceID = testDeviceID;
-    promise.resolve(null);
-  }
-
-  @ExpoMethod
   public void requestAd(final ReadableArguments additionalRequestParams, final Promise promise) {
     new Handler(Looper.getMainLooper()).post(new Runnable() {
       @Override
@@ -153,12 +146,10 @@ public class AdMobRewardedVideoAdModule extends ExportedModule implements Reward
               new AdRequest.Builder()
                   .addNetworkExtrasBundle(AdMobAdapter.class, additionalRequestParams.toBundle());
 
-          if (mTestDeviceID != null) {
-            if (mTestDeviceID.equals("EMULATOR")) {
-              adRequestBuilder = adRequestBuilder.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
-            } else {
-              adRequestBuilder = adRequestBuilder.addTestDevice(mTestDeviceID);
-            }
+
+          String testDeviceID = AdMobModule.getTestDeviceID();
+          if (testDeviceID != null) {
+            adRequestBuilder = adRequestBuilder.addTestDevice(testDeviceID);
           }
 
           AdRequest adRequest = adRequestBuilder.build();

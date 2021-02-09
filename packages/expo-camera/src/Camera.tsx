@@ -1,20 +1,23 @@
-import { UnavailabilityError } from '@unimodules/core';
+import { Platform, UnavailabilityError } from '@unimodules/core';
 import mapValues from 'lodash/mapValues';
-import PropTypes from 'prop-types';
-import React from 'react';
-import { findNodeHandle, Platform, ViewPropTypes } from 'react-native';
+import * as React from 'react';
+import { findNodeHandle } from 'react-native';
+
 import {
-  CapturedPicture,
-  NativeProps,
-  PictureOptions,
-  Props,
-  RecordingOptions,
+  BarCodeScanningResult,
+  CameraCapturedPicture,
+  CameraMountError,
+  CameraNativeProps,
+  CameraPictureOptions,
+  CameraProps,
+  CameraRecordingOptions,
+  FaceDetectionResult,
+  PermissionExpiration,
+  PermissionResponse,
+  PermissionStatus,
 } from './Camera.types';
 import ExponentCamera from './ExponentCamera';
-import _CameraManager from './ExponentCameraManager';
-
-// TODO: Bacon: Fix multiplatform
-const CameraManager = _CameraManager as any;
+import CameraManager from './ExponentCameraManager';
 
 const EventThrottleMs = 500;
 
@@ -22,12 +25,9 @@ const _PICTURE_SAVED_CALLBACKS = {};
 
 let _GLOBAL_PICTURE_ID = 1;
 
-function ensurePictureOptions(options?: PictureOptions): PictureOptions {
-  let pictureOptions = options || {};
-
-  if (!pictureOptions || typeof pictureOptions !== 'object') {
-    pictureOptions = {};
-  }
+function ensurePictureOptions(options?: CameraPictureOptions): CameraPictureOptions {
+  const pictureOptions: CameraPictureOptions =
+    !options || typeof options !== 'object' ? {} : options;
 
   if (!pictureOptions.quality) {
     pictureOptions.quality = 1;
@@ -41,7 +41,7 @@ function ensurePictureOptions(options?: PictureOptions): PictureOptions {
   return pictureOptions;
 }
 
-function ensureRecordingOptions(options?: RecordingOptions): RecordingOptions {
+function ensureRecordingOptions(options?: CameraRecordingOptions): CameraRecordingOptions {
   let recordingOptions = options || {};
 
   if (!recordingOptions || typeof recordingOptions !== 'object') {
@@ -53,21 +53,23 @@ function ensureRecordingOptions(options?: RecordingOptions): RecordingOptions {
   return recordingOptions;
 }
 
-function ensureNativeProps(options?: Props): NativeProps {
+function ensureNativeProps(options?: CameraProps): CameraNativeProps {
   let props = options || {};
 
   if (!props || typeof props !== 'object') {
     props = {};
   }
 
-  const newProps: NativeProps = mapValues(props, convertProp);
+  const newProps: CameraNativeProps = mapValues(props, convertProp);
 
   const propsKeys = Object.keys(newProps);
   // barCodeTypes is deprecated
   if (!propsKeys.includes('barCodeScannerSettings') && propsKeys.includes('barCodeTypes')) {
-    console.warn(
-      `The "barCodeTypes" prop for Camera is deprecated and will be removed in SDK 34. Use "barCodeScannerSettings" instead.`
-    );
+    if (__DEV__) {
+      console.warn(
+        `The "barCodeTypes" prop for Camera is deprecated and will be removed in SDK 34. Use "barCodeScannerSettings" instead.`
+      );
+    }
     newProps.barCodeScannerSettings = {
       // @ts-ignore
       barCodeTypes: newProps.barCodeTypes,
@@ -87,6 +89,10 @@ function ensureNativeProps(options?: Props): NativeProps {
     delete newProps.useCamera2Api;
   }
 
+  if (Platform.OS !== 'web') {
+    delete newProps.poster;
+  }
+
   return newProps;
 }
 
@@ -98,7 +104,11 @@ function convertProp(value: any, key: string): any {
   return value;
 }
 
-function _onPictureSaved({ nativeEvent }: { nativeEvent: { data: CapturedPicture; id: number } }) {
+function _onPictureSaved({
+  nativeEvent,
+}: {
+  nativeEvent: { data: CameraCapturedPicture; id: number };
+}) {
   const { id, data } = nativeEvent;
   const callback = _PICTURE_SAVED_CALLBACKS[id];
   if (callback) {
@@ -107,7 +117,23 @@ function _onPictureSaved({ nativeEvent }: { nativeEvent: { data: CapturedPicture
   }
 }
 
-export default class Camera extends React.Component<Props> {
+export default class Camera extends React.Component<CameraProps> {
+  static async isAvailableAsync(): Promise<boolean> {
+    if (!CameraManager.isAvailableAsync) {
+      throw new UnavailabilityError('expo-camera', 'isAvailableAsync');
+    }
+
+    return await CameraManager.isAvailableAsync();
+  }
+
+  static async getAvailableCameraTypesAsync(): Promise<('front' | 'back')[]> {
+    if (!CameraManager.getAvailableCameraTypesAsync) {
+      throw new UnavailabilityError('expo-camera', 'getAvailableCameraTypesAsync');
+    }
+
+    return await CameraManager.getAvailableCameraTypesAsync();
+  }
+
   static Constants = {
     Type: CameraManager.Type,
     FlashMode: CameraManager.FlashMode,
@@ -125,27 +151,7 @@ export default class Camera extends React.Component<Props> {
     whiteBalance: CameraManager.WhiteBalance,
   };
 
-  static propTypes = {
-    ...ViewPropTypes,
-    zoom: PropTypes.number,
-    ratio: PropTypes.string,
-    focusDepth: PropTypes.number,
-    onMountError: PropTypes.func,
-    pictureSize: PropTypes.string,
-    onCameraReady: PropTypes.func,
-    useCamera2Api: PropTypes.bool,
-    onBarCodeScanned: PropTypes.func,
-    barCodeScannerSettings: PropTypes.object,
-    onFacesDetected: PropTypes.func,
-    faceDetectorSettings: PropTypes.object,
-    type: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    flashMode: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    videoStabilizationMode: PropTypes.number,
-    whiteBalance: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    autoFocus: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool]),
-  };
-
-  static defaultProps: Props = {
+  static defaultProps: CameraProps = {
     zoom: 0,
     ratio: '4:3',
     focusDepth: 0,
@@ -156,18 +162,26 @@ export default class Camera extends React.Component<Props> {
     whiteBalance: CameraManager.WhiteBalance.auto,
   };
 
+  static async getPermissionsAsync(): Promise<PermissionResponse> {
+    return CameraManager.getPermissionsAsync();
+  }
+
+  static async requestPermissionsAsync(): Promise<PermissionResponse> {
+    return CameraManager.requestPermissionsAsync();
+  }
+
   _cameraHandle?: number | null;
   _cameraRef?: React.Component | null;
   _lastEvents: { [eventName: string]: string } = {};
   _lastEventsTimes: { [eventName: string]: Date } = {};
 
-  async takePictureAsync(options?: PictureOptions): Promise<CapturedPicture> {
+  async takePictureAsync(options?: CameraPictureOptions): Promise<CameraCapturedPicture> {
     const pictureOptions = ensurePictureOptions(options);
 
     return await CameraManager.takePicture(pictureOptions, this._cameraHandle);
   }
 
-  async getSupportedRatiosAsync(): Promise<Array<string>> {
+  async getSupportedRatiosAsync(): Promise<string[]> {
     if (!CameraManager.getSupportedRatios) {
       throw new UnavailabilityError('Camera', 'getSupportedRatiosAsync');
     }
@@ -175,14 +189,14 @@ export default class Camera extends React.Component<Props> {
     return await CameraManager.getSupportedRatios(this._cameraHandle);
   }
 
-  async getAvailablePictureSizesAsync(ratio?: string): Promise<Array<string>> {
+  async getAvailablePictureSizesAsync(ratio?: string): Promise<string[]> {
     if (!CameraManager.getAvailablePictureSizes) {
       throw new UnavailabilityError('Camera', 'getAvailablePictureSizesAsync');
     }
     return await CameraManager.getAvailablePictureSizes(ratio, this._cameraHandle);
   }
 
-  async recordAsync(options?: RecordingOptions): Promise<{ uri: string }> {
+  async recordAsync(options?: CameraRecordingOptions): Promise<{ uri: string }> {
     if (!CameraManager.record) {
       throw new UnavailabilityError('Camera', 'recordAsync');
     }
@@ -249,7 +263,7 @@ export default class Camera extends React.Component<Props> {
   _setReference = (ref?: React.Component) => {
     if (ref) {
       this._cameraRef = ref;
-      // TODO: Bacon: Make this one...
+      // TODO(Bacon): Unify these - perhaps with hooks?
       if (Platform.OS === 'web') {
         this._cameraHandle = ref as any;
       } else {
@@ -264,7 +278,9 @@ export default class Camera extends React.Component<Props> {
   render() {
     const nativeProps = ensureNativeProps(this.props);
 
-    const onBarCodeScanned = this._onObjectDetected(this.props.onBarCodeScanned);
+    const onBarCodeScanned = this.props.onBarCodeScanned
+      ? this._onObjectDetected(this.props.onBarCodeScanned)
+      : undefined;
     const onFacesDetected = this._onObjectDetected(this.props.onFacesDetected);
 
     return (
@@ -281,4 +297,18 @@ export default class Camera extends React.Component<Props> {
   }
 }
 
-export const Constants = Camera.Constants;
+export const { Constants, getPermissionsAsync, requestPermissionsAsync } = Camera;
+
+export {
+  CameraCapturedPicture,
+  CameraNativeProps,
+  CameraPictureOptions,
+  CameraProps,
+  CameraRecordingOptions,
+  PermissionResponse,
+  PermissionStatus,
+  PermissionExpiration,
+  BarCodeScanningResult,
+  FaceDetectionResult,
+  CameraMountError,
+};

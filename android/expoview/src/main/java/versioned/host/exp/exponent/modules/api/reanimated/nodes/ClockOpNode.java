@@ -1,6 +1,7 @@
 package versioned.host.exp.exponent.modules.api.reanimated.nodes;
 
 import com.facebook.react.bridge.ReadableMap;
+import versioned.host.exp.exponent.modules.api.reanimated.MapUtils;
 import versioned.host.exp.exponent.modules.api.reanimated.NodesManager;
 
 public abstract class ClockOpNode extends Node {
@@ -11,8 +12,12 @@ public abstract class ClockOpNode extends Node {
     }
 
     @Override
-    protected Double eval(ClockNode clock) {
-      clock.start();
+    protected Double eval(Node clock) {
+      if (clock instanceof ParamNode) {
+        ((ParamNode) clock).start();
+      } else {
+        ((ClockNode) clock).start();
+      }
       return ZERO;
     }
   }
@@ -23,8 +28,12 @@ public abstract class ClockOpNode extends Node {
     }
 
     @Override
-    protected Double eval(ClockNode clock) {
-      clock.stop();
+    protected Double eval(Node clock) {
+      if (clock instanceof ParamNode) {
+        ((ParamNode) clock).stop();
+      } else {
+        ((ClockNode) clock).stop();
+      }
       return ZERO;
     }
   }
@@ -35,8 +44,11 @@ public abstract class ClockOpNode extends Node {
     }
 
     @Override
-    protected Double eval(ClockNode clock) {
-      return clock.isRunning ? 1. : 0.;
+    protected Double eval(Node clock) {
+      if (clock instanceof ParamNode) {
+        return ((ParamNode) clock).isRunning() ? 1. : 0.;
+      }
+      return ((ClockNode) clock).isRunning ? 1. : 0.;
     }
   }
 
@@ -44,14 +56,14 @@ public abstract class ClockOpNode extends Node {
 
   public ClockOpNode(int nodeID, ReadableMap config, NodesManager nodesManager) {
     super(nodeID, config, nodesManager);
-    clockID = config.getInt("clock");
+    clockID = MapUtils.getInt(config, "clock", "Reanimated: Argument passed to clock node is either of wrong type or is missing.");
   }
 
   @Override
   protected Double evaluate() {
-    ClockNode clock = mNodesManager.findNodeById(clockID, ClockNode.class);
+    Node clock = mNodesManager.findNodeById(clockID, Node.class);
     return eval(clock);
   }
 
-  protected abstract Double eval(ClockNode clock);
+  protected abstract Double eval(Node clock);
 }

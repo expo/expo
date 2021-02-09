@@ -1,7 +1,13 @@
+import { ExpoConfig } from '@expo/config-types';
 export declare enum AppOwnership {
     Standalone = "standalone",
     Expo = "expo",
     Guest = "guest"
+}
+export declare enum ExecutionEnvironment {
+    Bare = "bare",
+    Standalone = "standalone",
+    StoreClient = "storeClient"
 }
 export declare enum UserInterfaceIdiom {
     Handset = "handset",
@@ -11,7 +17,7 @@ export declare enum UserInterfaceIdiom {
 export interface IOSManifest {
     buildNumber: string;
     platform: string;
-    model: string;
+    model: string | null;
     userInterfaceIdiom: UserInterfaceIdiom;
     systemVersion: string;
     [key: string]: any;
@@ -23,27 +29,11 @@ export interface AndroidManifest {
 export interface WebManifest {
     [key: string]: any;
 }
-export interface AppManifest {
-    name?: string;
-    description?: string;
-    slug?: string;
-    sdkVersion?: string;
-    version?: string;
+export interface AppManifest extends ExpoConfig {
     /** Published Apps Only */
+    releaseId?: string;
     revisionId?: string;
-    orientation?: string;
-    primaryColor?: string;
-    icon?: string;
-    notification?: {
-        icon?: string;
-        color?: string;
-        [key: string]: any;
-    };
-    loading?: {
-        icon?: string;
-        [key: string]: any;
-    };
-    entryPoint?: string;
+    releaseChannel?: string;
     packagerOpts?: {
         hostType?: string;
         dev?: boolean;
@@ -81,13 +71,18 @@ export interface PlatformManifest {
 }
 export interface NativeConstants {
     name: 'ExponentConstants';
-    appOwnership: AppOwnership;
+    appOwnership: AppOwnership | null;
     debugMode: boolean;
     deviceName?: string;
     deviceYearClass: number | null;
+    executionEnvironment: ExecutionEnvironment;
     experienceUrl: string;
-    expoRuntimeVersion: string;
-    expoVersion: string;
+    expoRuntimeVersion: string | null;
+    /**
+     * The version string of the Expo client currently running.
+     * Returns `null` on and bare workflow and web.
+     */
+    expoVersion: string | null;
     isDetached?: boolean;
     intentUri?: string;
     installationId: string;
@@ -104,4 +99,8 @@ export interface NativeConstants {
     platform?: PlatformManifest;
     [key: string]: any;
     getWebViewUserAgentAsync: () => Promise<string | null>;
+}
+export interface Constants extends NativeConstants {
+    deviceId?: string;
+    linkingUrl?: string;
 }

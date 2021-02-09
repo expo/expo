@@ -1,7 +1,8 @@
 {
   "name": "unimodules-task-manager-interface",
-  "version": "3.0.0",
+  "version": "6.0.0",
   "description": "Universal module interface package for TaskManager",
+  "main": "index.js",
   "keywords": [
     "unimodules",
     "task-manager",
@@ -10,7 +11,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/expo/expo.git"
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/unimodules-task-manager-interface"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
@@ -20,6 +22,5 @@
   "homepage": "https://github.com/expo/expo/tree/master/packages/unimodules-task-manager-interface",
   "unimodulePeerDependencies": {
     "@unimodules/core": "*"
-  },
-  "gitHead": "9518929d6f2ba9cf8e0aae81d34cc1eb52f7093a"
+  }
 }

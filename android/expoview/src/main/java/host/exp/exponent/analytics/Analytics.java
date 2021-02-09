@@ -6,6 +6,7 @@ import android.app.Application;
 import android.content.Context;
 
 import com.amplitude.api.Amplitude;
+import com.amplitude.api.AmplitudeClient;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,12 +24,7 @@ public class Analytics {
   public static final String ERROR_APPEARED = "ERROR_APPEARED";
   public static final String EXPERIENCE_APPEARED = "EXPERIENCE_APPEARED";
   public static final String LOAD_EXPERIENCE = "LOAD_EXPERIENCE";
-  public static final String INFO_SCREEN = "INFO_SCREEN";
   public static final String RELOAD_EXPERIENCE = "RELOAD_EXPERIENCE";
-  public static final String SAVE_EXPERIENCE = "SAVE_EXPERIENCE";
-  public static final String SAVE_EXPERIENCE_ALERT = "SAVE_EXPERIENCE_ALERT";
-  public static final String SAVE_EXPERIENCE_OPTION_YES = "SAVE_EXPERIENCE_OPTION_YES";
-  public static final String SAVE_EXPERIENCE_OPTION_NO = "SAVE_EXPERIENCE_OPTION_NO";
   public static final String ERROR_SCREEN = "ERROR_SCREEN";
   public static final String ERROR_RELOADED = "ERROR_RELOADED";
   public static final String HTTP_USED_CACHE_RESPONSE = "HTTP_USED_CACHE_RESPONSE";
@@ -60,28 +56,33 @@ public class Analytics {
 
   private static final Map<TimedEvent, Long> sShellTimedEvents = new HashMap<>();
 
+  private static AmplitudeClient getAmplitudeInstance() {
+    // This is a special instance only for the purpose of this class
+    // It won't interfere with other AmplitudeClient instances fetched from
+    // expo-analytics-amplitude or its versioned equivalents.
+    return Amplitude.getInstance(Analytics.class.getCanonicalName());
+  }
+
   public static void initializeAmplitude(Context context, Application application) {
     if (!Constants.ANALYTICS_ENABLED) {
       return;
     }
 
-    resetAmplitudeDatabaseHelper();
-
     try {
-      Amplitude.getInstance().initialize(context, ExpoViewBuildConfig.DEBUG ? ExponentKeys.AMPLITUDE_DEV_KEY : ExponentKeys.AMPLITUDE_KEY);
+      getAmplitudeInstance().initialize(context, ExpoViewBuildConfig.DEBUG ? ExponentKeys.AMPLITUDE_DEV_KEY : ExponentKeys.AMPLITUDE_KEY);
     } catch (RuntimeException e) {
       EXL.testError(e);
     }
 
     if (application != null) {
-      Amplitude.getInstance().enableForegroundTracking(application);
+      getAmplitudeInstance().enableForegroundTracking(application);
     }
     try {
       JSONObject amplitudeUserProperties = new JSONObject();
       amplitudeUserProperties.put("INITIAL_URL", Constants.INITIAL_URL);
       amplitudeUserProperties.put("ABI_VERSIONS", Constants.ABI_VERSIONS);
       amplitudeUserProperties.put("TEMPORARY_ABI_VERSION", Constants.TEMPORARY_ABI_VERSION);
-      Amplitude.getInstance().setUserProperties(amplitudeUserProperties);
+      getAmplitudeInstance().setUserProperties(amplitudeUserProperties);
     } catch (JSONException e) {
       EXL.e(TAG, e);
     }
@@ -91,14 +92,14 @@ public class Analytics {
     if (!Constants.ANALYTICS_ENABLED) {
       return;
     }
-    Amplitude.getInstance().logEvent(eventType);
+    getAmplitudeInstance().logEvent(eventType);
   }
 
   public static void logEvent(String eventType, JSONObject eventProperties) {
     if (!Constants.ANALYTICS_ENABLED) {
       return;
     }
-    Amplitude.getInstance().logEvent(eventType, eventProperties);
+    getAmplitudeInstance().logEvent(eventType, eventProperties);
   }
 
   public static void logEventWithManifestUrl(String eventType, String manifestUrl) {
@@ -174,16 +175,6 @@ public class Analytics {
   private static void addDuration(JSONObject eventProperties, String eventName, TimedEvent end, TimedEvent start) throws JSONException {
     if (getDuration(end, start) != null) {
       eventProperties.put(eventName, getDuration(end, start));
-    }
-  }
-
-  public static void resetAmplitudeDatabaseHelper() {
-    try {
-      Field field = Class.forName("com.amplitude.api.DatabaseHelper").getDeclaredField("instance");
-      field.setAccessible(true);
-      field.set(null, null);
-    } catch (Throwable e) {
-      EXL.e(TAG, e.toString());
     }
   }
 }

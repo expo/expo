@@ -14,11 +14,11 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.UIBlock;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -33,8 +33,10 @@ import java.util.HashMap;
 
 import javax.annotation.Nullable;
 
+@ReactModule(name = AirMapModule.NAME)
 public class AirMapModule extends ReactContextBaseJavaModule {
 
+  public static final String NAME = "AirMapModule";
   private static final String SNAPSHOT_RESULT_FILE = "file";
   private static final String SNAPSHOT_RESULT_BASE64 = "base64";
   private static final String SNAPSHOT_FORMAT_PNG = "png";
@@ -46,7 +48,7 @@ public class AirMapModule extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "AirMapModule";
+    return NAME;
   }
 
   @Override

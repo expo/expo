@@ -1,38 +1,46 @@
+import {
+  NativeModulesProxy,
+  UnavailabilityError,
+  requireNativeViewManager,
+  CodedError,
+} from '@unimodules/core';
 import * as React from 'react';
-import PropTypes from 'prop-types';
-import { NativeModulesProxy, requireNativeViewManager } from '@unimodules/core';
-import { Platform, View, ViewPropTypes, findNodeHandle } from 'react-native';
+import { Platform, View, findNodeHandle } from 'react-native';
+
+import { configureLogging } from './GLUtils';
+import {
+  ComponentOrHandle,
+  SurfaceCreateEvent,
+  GLSnapshot,
+  ExpoWebGLRenderingContext,
+  SnapshotOptions,
+  BaseGLViewProps,
+} from './GLView.types';
 
 const packageJSON = require('../package.json');
-
-import { SurfaceCreateEvent, GLSnapshot, ExpoWebGLRenderingContext, SnapshotOptions, BaseGLViewProps } from './GLView.types';
-import { UnavailabilityError } from '@unimodules/core';
 
 declare let global: any;
 
 const { ExponentGLObjectManager, ExponentGLViewManager } = NativeModulesProxy;
 
-
-type GLViewProps = {
+export type GLViewProps = {
+  /**
+   * Called when the OpenGL context is created, with the context object as a parameter. The context
+   * object has an API mirroring WebGL's WebGLRenderingContext.
+   */
+  onContextCreate(gl: ExpoWebGLRenderingContext): void;
 
   /**
-  * Called when the OpenGL context is created, with the context object as a parameter. The context
-  * object has an API mirroring WebGL's WebGLRenderingContext.
-  */
- onContextCreate(gl: ExpoWebGLRenderingContext): void;
+   * [iOS only] Number of samples for Apple's built-in multisampling.
+   */
+  msaaSamples: number;
 
- /**
-  * [iOS only] Number of samples for Apple's built-in multisampling.
-  */
- msaaSamples: number;
-
- /**
-  * A ref callback for the native GLView
-  */
- nativeRef_EXPERIMENTAL?(callback: ComponentOrHandle | null);
+  /**
+   * A ref callback for the native GLView
+   */
+  nativeRef_EXPERIMENTAL?(callback: ComponentOrHandle | null);
 } & BaseGLViewProps;
 
-type ComponentOrHandle = null | number | React.Component<any, any> | React.ComponentClass<any>;
 const NativeView = requireNativeViewManager('ExponentGLView');
 
 /**
@@ -40,12 +48,6 @@ const NativeView = requireNativeViewManager('ExponentGLView');
  */
 export class GLView extends React.Component<GLViewProps> {
   static NativeView: any;
-  static propTypes = {
-    onContextCreate: PropTypes.func,
-    msaaSamples: PropTypes.number,
-    nativeRef_EXPERIMENTAL: PropTypes.func,
-    ...ViewPropTypes,
-  };
 
   static defaultProps = {
     msaaSamples: 4,
@@ -117,14 +119,14 @@ export class GLView extends React.Component<GLViewProps> {
 
   async startARSessionAsync(): Promise<any> {
     if (!ExponentGLViewManager.startARSessionAsync) {
-      throw new UnavailabilityError('expo-gl', 'startARSessionAsync')
+      throw new UnavailabilityError('expo-gl', 'startARSessionAsync');
     }
     return await ExponentGLViewManager.startARSessionAsync(findNodeHandle(this.nativeRef));
   }
 
   async createCameraTextureAsync(cameraRefOrHandle: ComponentOrHandle): Promise<WebGLTexture> {
     if (!ExponentGLObjectManager.createCameraTextureAsync) {
-      throw new UnavailabilityError('expo-gl', 'createCameraTextureAsync')
+      throw new UnavailabilityError('expo-gl', 'createCameraTextureAsync');
     }
 
     const { exglCtxId } = this;
@@ -143,14 +145,14 @@ export class GLView extends React.Component<GLViewProps> {
 
   async destroyObjectAsync(glObject: WebGLObject): Promise<boolean> {
     if (!ExponentGLObjectManager.destroyObjectAsync) {
-      throw new UnavailabilityError('expo-gl', 'destroyObjectAsync')
+      throw new UnavailabilityError('expo-gl', 'destroyObjectAsync');
     }
     return await ExponentGLObjectManager.destroyObjectAsync(glObject.id);
   }
 
   async takeSnapshotAsync(options: SnapshotOptions = {}): Promise<GLSnapshot> {
     if (!GLView.takeSnapshotAsync) {
-      throw new UnavailabilityError('expo-gl', 'takeSnapshotAsync')
+      throw new UnavailabilityError('expo-gl', 'takeSnapshotAsync');
     }
     const { exglCtxId } = this;
     return await GLView.takeSnapshotAsync(exglCtxId, options);
@@ -171,7 +173,7 @@ type WebGLObjectId = any;
 
 const idToObject = {};
 
-class WebGLObject {
+export class WebGLObject {
   id: WebGLObjectId;
 
   constructor(id: WebGLObjectId) {
@@ -181,7 +183,7 @@ class WebGLObject {
     this.id = id; // Native GL object id
   }
   toString() {
-    return `[WebGLObject ${this.id}]`;
+    return `[${this.constructor.name} ${this.id}]`;
   }
 }
 
@@ -213,17 +215,37 @@ class WebGLUniformLocation {
   constructor(id: WebGLObjectId) {
     this.id = id; // Native GL object id
   }
+
+  toString() {
+    return `[${this.constructor.name} ${this.id}]`;
+  }
 }
 
 class WebGLActiveInfo {
+  name?: string;
+  size?: number;
+  type?: number;
+
   constructor(obj) {
     Object.assign(this, obj);
+  }
+
+  toString() {
+    return `[${this.constructor.name} ${JSON.stringify(this)}]`;
   }
 }
 
 class WebGLShaderPrecisionFormat {
+  rangeMin?: number;
+  rangeMax?: number;
+  precision?: number;
+
   constructor(obj) {
     Object.assign(this, obj);
+  }
+
+  toString() {
+    return `[${this.constructor.name} ${JSON.stringify(this)}]`;
   }
 }
 
@@ -491,6 +513,12 @@ const wrapMethods = gl => {
 
 // Get the GL interface from an EXGLContextID and do JS-side setup
 const getGl = (exglCtxId: number): ExpoWebGLRenderingContext => {
+  if (!global.__EXGLContexts) {
+    throw new CodedError(
+      'ERR_GL_NOT_AVAILABLE',
+      'GL is currently not available. (Have you enabled remote debugging? GL is not available while debugging remotely.)'
+    );
+  }
   const gl = global.__EXGLContexts[exglCtxId];
   gl.__exglCtxId = exglCtxId;
   delete global.__EXGLContexts[exglCtxId];
@@ -521,42 +549,7 @@ const getGl = (exglCtxId: number): ExpoWebGLRenderingContext => {
   gl.drawingBufferWidth = viewport[2];
   gl.drawingBufferHeight = viewport[3];
 
-  // Enable/disable logging of all GL function calls
-  let enableLogging = false;
-
-  // $FlowIssue: Flow wants a "value" field
-  Object.defineProperty(gl, 'enableLogging', {
-    configurable: true,
-    get(): boolean {
-      return enableLogging;
-    },
-    set(enable: boolean): void {
-      if (enable === enableLogging) {
-        return;
-      }
-      if (enable) {
-        Object.keys(gl).forEach(key => {
-          if (typeof gl[key] === 'function') {
-            const original = gl[key];
-            gl[key] = (...args) => {
-              console.log(`EXGL: ${key}(${args.join(', ')})`);
-              const r = original.apply(gl, args);
-              console.log(`EXGL:    = ${r}`);
-              return r;
-            };
-            gl[key].original = original;
-          }
-        });
-      } else {
-        Object.keys(gl).forEach(key => {
-          if (typeof gl[key] === 'function' && gl[key].original) {
-            gl[key] = gl[key].original;
-          }
-        });
-      }
-      enableLogging = enable;
-    },
-  });
+  configureLogging(gl);
 
   return gl;
 };

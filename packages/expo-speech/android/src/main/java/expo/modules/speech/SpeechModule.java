@@ -4,14 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
-
-
-import java.util.ArrayDeque;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Queue;
+import android.speech.tts.Voice;
 
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
@@ -20,6 +13,14 @@ import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.LifecycleEventListener;
 import org.unimodules.core.interfaces.services.EventEmitter;
 import org.unimodules.core.interfaces.services.UIManager;
+
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Queue;
 
 public class SpeechModule extends ExportedModule implements LifecycleEventListener {
 
@@ -41,6 +42,12 @@ public class SpeechModule extends ExportedModule implements LifecycleEventListen
 
   @ExpoMethod
   public void speak(final String id, final String text, final Map<String, Object> options, final Promise promise) {
+    if(text.length() > TextToSpeech.getMaxSpeechInputLength()) {
+      promise.reject("ERR_SPEECH_INPUT_LENGTH",
+        "Speech input text is too long! Limit of input length is: " + TextToSpeech.getMaxSpeechInputLength());
+      return;
+    }
+
     if (mTtsReady) {
       speakOut(id, text, options);
     } else {
@@ -77,6 +84,15 @@ public class SpeechModule extends ExportedModule implements LifecycleEventListen
     if (options.containsKey("rate")) {
       textToSpeech.setSpeechRate(((Number) options.get("rate")).floatValue());
     }
+    if (options.containsKey("voice")) {
+      for (Voice voice : textToSpeech.getVoices()) {
+        if (voice.getName().equals(options.get("voice"))) {
+          textToSpeech.setVoice(voice);
+
+          break;
+        }
+      }
+    }
 
     textToSpeech.speak(
         text,
@@ -89,6 +105,36 @@ public class SpeechModule extends ExportedModule implements LifecycleEventListen
   @ExpoMethod
   public void isSpeaking(Promise promise) {
     promise.resolve(getTextToSpeech().isSpeaking());
+  }
+
+  @ExpoMethod
+  public void getVoices(Promise promise) {
+    TextToSpeech textToSpeech = getTextToSpeech();
+    ArrayList<Voice> nativeVoices = new ArrayList();
+    ArrayList<Bundle> voices = new ArrayList();
+
+    try {
+      nativeVoices = new ArrayList<>(textToSpeech.getVoices());
+    } catch (Exception e) {}
+
+    for (Voice voice : nativeVoices) {
+        Bundle voiceMap = new Bundle();
+
+        String quality = "Default";
+
+        if (voice.getQuality() > Voice.QUALITY_NORMAL) {
+          quality = "Enhanced";
+        }
+
+        voiceMap.putString("identifier", voice.getName());
+        voiceMap.putString("name", voice.getName());
+        voiceMap.putString("quality", quality);
+        voiceMap.putString("language", LanguageUtils.getISOCode(voice.getLocale()));
+
+        voices.add(voiceMap);
+    }
+
+    promise.resolve(voices);
   }
 
   @ExpoMethod
@@ -145,6 +191,13 @@ public class SpeechModule extends ExportedModule implements LifecycleEventListen
       });
     }
     return mTextToSpeech;
+  }
+
+  @Override
+  public Map<String, Object> getConstants() {
+    final Map<String, Object> constants = new HashMap<>();
+    constants.put("maxSpeechInputLength", TextToSpeech.getMaxSpeechInputLength());
+    return constants;
   }
 
   @Override

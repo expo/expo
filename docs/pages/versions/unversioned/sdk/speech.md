@@ -1,20 +1,55 @@
 ---
 title: Speech
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-speech'
 ---
 
-import SnackEmbed from '~/components/plugins/SnackEmbed';
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+import SnackInline from '~/components/plugins/SnackInline';
 
-This module allows using Text-to-speech utility.
+**`expo-speech`** provides an API that allows you to utilize Text-to-speech functionality in your app.
+
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-speech`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-speech).
-
-> **Note**: Not compatible with web.
+<InstallSection packageName="expo-speech" />
 
 ## Usage
 
-<SnackEmbed snackId="@charliecruzan/speechexample" />
+<SnackInline label='Speech' dependencies={['expo-speech']}>
+
+```jsx
+import * as React from 'react';
+import { View, StyleSheet, Button } from 'react-native';
+import * as Speech from 'expo-speech';
+
+export default function App() {
+  const speak = () => {
+    const thingToSay = '1';
+    Speech.speak(thingToSay);
+  };
+
+  return (
+    <View style={styles.container}>
+      <Button title="Press to hear some words" onPress={speak} />
+    </View>
+  );
+}
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: '#ecf0f1',
+    padding: 8,
+  },
+});
+/* @end */
+```
+
+</SnackInline>
 
 ## API
 
@@ -22,18 +57,26 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 import * as Speech from 'expo-speech';
 ```
 
+## Constants
+
+### `Speech.maxSpeechInputLength`
+
+Maximum possible text length acceptable by `Speech.speak()` method. It is platform-dependent. On iOS, this returns `Number.MAX_VALUE`.
+
+## Methods
+
 ### `Speech.speak(text, options)`
 
 Speak out loud the `text` given `options`. Calling this when another text is being spoken adds an utterance to queue.
 
 #### Arguments
 
-- **text (_string_)** -- The text to be spoken.
+- **text (_string_)** -- The text to be spoken. Cannot be longer than [`Speech.maxSpeechInputLength`](#speechmaxspeechinputlength).
 - **options (_object_)** --
 
   A map of options:
 
-  - **voice (_string_)** -- Voice identifier (**iOS only**)
+  - **voice (_string_)** -- Voice identifier
   - **language (_string_)** -- The code of a language that should be used to read the `text`, check out IETF BCP 47 to see valid codes.
   - **pitch (_number_)** -- Pitch of the voice to speak `text`. 1.0 is the normal pitch.
   - **rate (_number_)** -- Rate of the voice to speak `text`. 1.0 is the normal rate.
@@ -41,6 +84,10 @@ Speak out loud the `text` given `options`. Calling this when another text is bei
   - **onDone (_function_)** -- A callback that is invoked when speaking finishes.
   - **onStopped (_function_)** -- A callback that is invoked when speaking is stopped by calling `Speech.stop()`.
   - **onError (_function_)** -- (Android only). A callback that is invoked when an error occurred while speaking.
+
+#### Error Codes
+
+- [`ERR_SPEECH_INPUT_LENGTH`](#err_speech_input_length)
 
 ### `Speech.stop()`
 
@@ -62,7 +109,7 @@ Determine whether the Text-to-speech utility is currently speaking. Will return 
 
 Returns a Promise that resolves to a boolean, `true` if speaking, `false` if not.
 
-### `Speech.getAvailableVoicesAsync()` (iOS only)
+### `Speech.getAvailableVoicesAsync()`
 
 Returns list of all available voices.
 
@@ -79,6 +126,15 @@ List of `Voice` objects.
 |  quality   | enum Speech.VoiceQuality |
 |  language  |          string          |
 
-##### enum `Speech.VoiceQuality`
+## Enum Types
 
-possible values: `Default` or `Enhanced`.
+### `Speech.VoiceQuality`
+
+- **`VoiceQuality.Default`**
+- **`VoiceQuality.Enhanced`**
+
+## Error Codes
+
+### `ERR_SPEECH_INPUT_LENGTH`
+
+An error occurred when length of `text` parameter provided to `Speech.speak()` exceeds its limit. To see the limit, use `Speech.maxSpeechInputLength`.

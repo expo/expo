@@ -113,7 +113,12 @@ export default {
         const status = setStatusForMedia(media, fullInitialStatus);
         return [media, status];
     },
-    async unloadForSound(element) { },
+    async unloadForSound(element) {
+        element.pause();
+        element.removeAttribute('src');
+        element.load();
+        return getStatusFromMedia(element);
+    },
     async setStatusForSound(element, status) {
         return setStatusForMedia(element, status);
     },

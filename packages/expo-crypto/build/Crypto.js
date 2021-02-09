@@ -1,6 +1,6 @@
 import { UnavailabilityError } from '@unimodules/core';
-import ExpoCrypto from './ExpoCrypto';
 import { CryptoDigestAlgorithm, CryptoEncoding } from './Crypto.types';
+import ExpoCrypto from './ExpoCrypto';
 export * from './Crypto.types';
 class CryptoError extends TypeError {
     constructor(message) {

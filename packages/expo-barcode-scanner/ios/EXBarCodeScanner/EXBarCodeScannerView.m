@@ -3,6 +3,7 @@
 #import <EXBarCodeScanner/EXBarCodeScannerView.h>
 #import <EXBarCodeScanner/EXBarCodeScanner.h>
 #import <EXBarCodeScanner/EXBarCodeScannerUtils.h>
+#import <EXBarCodeScanner/EXBarCodeCameraRequester.h>
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
 #import <UMCore/UMAppLifecycleService.h>
 #import <UMCore/UMUtilities.h>
@@ -46,6 +47,7 @@
     _previewLayer = [AVCaptureVideoPreviewLayer layerWithSession:_session];
     _previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
     _previewLayer.needsDisplayOnBoundsChange = YES;
+    [_barCodeScanner setPreviewLayer:_previewLayer];
 #endif
     _paused = NO;
     
@@ -175,8 +177,7 @@
 
 - (BOOL)ensurePermissionsGranted
 {
-  NSDictionary *cameraPermissions = [_permissionsManager getPermissionsForResource:@"camera"];
-  if (![cameraPermissions[@"status"] isEqualToString:@"granted"]) {
+  if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXBareCodeCameraRequester class]]) {
     [self onMountingError:@{@"message": @"Camera permissions not granted - component could not be rendered."}];
     return FALSE;
   }

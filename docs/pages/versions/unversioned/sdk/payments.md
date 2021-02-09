@@ -1,112 +1,38 @@
 ---
 title: Payments
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-payments-stripe'
 ---
 
-Expo includes support for payments through [Stripe](https://stripe.com/) and [Apple Pay](https://www.apple.com/apple-pay/) on iOS via ExpoKit, and Stripe on Android (plus Android Pay via ExpoKit).
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
+> 🚨 On iOS, the Payments module is currently only supported the [bare workflow](https://docs.expo.io/bare/customizing/).
+
+Payments uses [Stripe](https://stripe.com/) and [Apple Pay](https://www.apple.com/apple-pay/) on iOS, but the module is only available in bare workflow apps.
+
+Stripe is supported in the managed workflow for Android, and Android Pay is supported in the bare workflow.
 
 Need more help than what's on the page? The Payments module is largely based off [tipsi-stripe](https://github.com/tipsi/tipsi-stripe). The documentation and questions there may prove helpful.
 
-We encourage you to look at our [examples](https://github.com/expo/expo/tree/master/packages/expo-payments-stripe/examples) of ExpoKit apps.
+<PlatformsSection android ios simulator web={{ pending: 'https://github.com/expo/expo/issues/4046' }} />
 
-_Note_: (Android only) If you are using Expo client then the setup has already been done for you.
-Also, the way you should use payments is slightly different. Instead of importing
-from `'expo-payments-stripe'` use the following code:
+## Installation
 
-```js
-import { DangerZone } from 'expo';
-const { Stripe } = DangerZone;
-```
+<InstallSection packageName="expo-payments-stripe" />
 
 ## Setup
 
 If you haven't done payments with Stripe before, create an account with [Stripe](https://dashboard.stripe.com/register). After getting the account set up, navigate to the [Stripe API dashboard](https://dashboard.stripe.com/account/apikeys). Here, you'll need to make a note of the Publishable key and Secret key listed.
 
-## Adding the Payments Module on iOS
-
-The Payments module is currently only supported through `EXPaymentsStripe` pod on iOS.
-
-First, eject your Expo project using ExpoKit (refer to [Eject to ExpoKit](../../expokit/eject/) for more information). Then, add `expo-payments-stripe` to the list of dependencies of your project and install the dependencies. Then, navigate to and open `your-project-name/ios/Podfile`. Add `EXPaymentsStripe` to your Podfile's subspecs. Example:
-
-```ruby
-...
-target 'your-project-name' do
-  ...
-
-  pod 'EXPaymentsStripe',
-    :path => "../node_modules/expo-payments-stripe/ios",
-    :inhibit_warnings => true
-
-  ...
-  pod 'React',
-  ...
-```
-
-Finally, make sure [CocoaPods](https://cocoapods.org/) is installed and run `pod install` in `your-project-name/ios`. This will add the Payments module files to your project and the corresponding dependencies.
-
 ### Register hook in order to let Stripe process source authorization
 
 > You don't need to make this step if you're not going to use [sources](https://stripe.com/docs/mobile/ios/sources).
 
-Follow [Stripe instructions](https://stripe.com/docs/mobile/ios/sources#redirecting-your-customer).
-If you have problems with this step just look at files: `Info.plist` and `AppDelegate.m` in one of our [examples](https://github.com/expo/expo/tree/master/packages/expo-payments-stripe/examples).
+For iOS, follow [Stripe instructions](https://stripe.com/docs/mobile/ios/sources#redirecting-your-customer).
 
-## Adding the Payments Module on Android
+For Android, add the following code to your `AndroidManifest.xml`, replacing `your_scheme` with the URI scheme you're going to use when specifying return URL for payment process.
 
-_Note_: These steps are required only if you have ejected your app with SDK < 30. If at the moment of ejecting you had `sdkVersion` set to 30 or higher in your `app.json`, the following setup should have been performed automatically.
-
-1.  Add these lines into your settings.gradle file.
-
-```groovy
-include ':expo-payments-stripe'
-project(':expo-payments-stripe').projectDir = new File(rootProject.projectDir, '../node_modules/expo-payments-stripe/android')
-```
-
-2.  Add dependencies in your build.gradle file.
-
-```groovy
-implementation project(':expo-payments-stripe')
-```
-
-3.  Force specific `com.android.support:design` version in your `build.gradle` file.
-
-```groovy
-  android {
-    ...
-    configurations.all {
-      resolutionStrategy.force 'com.android.support:design:27.1.0'
-    }
-    ...
-  }
-```
-
-4.  Exclude old version of `CreditCardEntry` in `your-project/android/app/build.gradle` file.
-
-```groovy
-    implementation('host.exp.exponent:expoview:29.0.0@aar') {
-      transitive = true
-      exclude group: 'com.squareup.okhttp3', module: 'okhttp'
-      exclude group: 'com.github.thefuntasty', module: 'CreditCardEntry' // add this line
-      exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
-    }
-```
-
-5.  Make sure your list of repositories in `build.gradle` contains `jitpack`.
-
-```groovy
-    allprojects {
-      repositories {
-        ...
-        maven { url "https://jitpack.io" }
-        ...
-      }
-    }
-```
-
-### Register hook in order to let Stripe process source authorization
-
-> You don't need to make this step if you're not going to use [sources](https://stripe.com/docs/mobile/ios/sources).
-
-Add the following code to your `AndroidManifest.xml`, replacing `your_scheme` with the URI scheme you're going to use when specifying return URL for payment process.
+> 💡 If you are using Expo Go then the setup has already been done for you.
 
 ```xml
       ...
@@ -126,7 +52,7 @@ Add the following code to your `AndroidManifest.xml`, replacing `your_scheme` wi
       ...
 ```
 
-If you have problems with this step just look at `AndroidManifest.xml` in one of our [examples](https://github.com/expo/expo/tree/master/packages/expo-payments-stripe/examples). Remember to use the same scheme as the one which was set in `Info.plist` file (only if you are also developing app for iOS).
+Remember to use the same scheme as the one which was set in `Info.plist` file (only if you are also developing app for iOS).
 
 ## Importing Payments
 
@@ -144,7 +70,7 @@ Stripe.setOptionsAsync({
 
 First, initialize the Payments module with your credentials:
 
-This `setOptionsAsync` method must put under the componentWillMount in android's production mode, unlike iOS that it works outside any component.
+This `setOptionsAsync` method must put under the componentDidMount in android's production mode, unlike iOS that it works outside any component.
 
 ```javascript
 Stripe.setOptionsAsync({
@@ -198,7 +124,7 @@ const params = {
   addressZip: '55555',
 };
 
-const token = await stripe.createTokenWithCardAsync(params);
+const token = await Stripe.createTokenWithCardAsync(params);
 
 // Client specific code
 // api.sendTokenToBackend(token)
@@ -208,7 +134,7 @@ const token = await stripe.createTokenWithCardAsync(params);
 
 ## Payment request with card form [Android, iOS]
 
-Launch `Add Card` view to to accept payment.
+Launch `Add Card` view to accept payment.
 
 **options (iOS only)** — An object with the following keys:
 
@@ -222,9 +148,9 @@ Launch `Add Card` view to to accept payment.
 **options.prefilledInformation** — An object with the following keys:
 
 |       Key       |  Type  | Description                                                                                                                                                                             |
-|:---------------:|:------:|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| :-------------: | :----: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | shippingAddress | Object | The user’s shipping address. When set, the shipping address form will be filled with this address. The user will also have the option to fill their billing address using this address. |
-|  billingAddress | Object | The user’s billing address. When set, the "add card" form will be filled with this address. The user will also have the option to fill their shipping address using this address.          |
+| billingAddress  | Object | The user’s billing address. When set, the "add card" form will be filled with this address. The user will also have the option to fill their shipping address using this address.       |
 
 **options.prefilledInformation.billingAddress** — An object with the following keys:
 
@@ -281,7 +207,7 @@ Creates source object based on params. Sources are used to create payments for a
 
 _NOTE_: For sources that require redirecting your customer to authorize the payment, you need to specify a return URL when you create the source. This allows your customer to be redirected back to your app after they authorize the payment. The prefix before ':' in your return URL should be the same as the scheme in your `info.plist` and `AndroidManifest.xml`. If You are not sure about this step look at above sections "Register hook in order to Stripe could process source authorization".
 
-_NOTE_: If you are using Expo client or an ejected Expo application, do not specify `returnURL`.
+_NOTE_: If you are using Expo Go or an ejected Expo application, do not specify `returnURL`.
 
 `params` — An object with the following keys:
 
@@ -322,7 +248,7 @@ const source = await stripe.createSourceWithParamsAsync(params);
 
 ## ApplePay [iOS]
 
-Remember: to use Apple Pay on a real device, you need to [set up apple pay first](#enabling-apple-pay-in-expokit).
+Remember: to use Apple Pay on a real device, you need to [set up apple pay first](#enabling-apple-pay-in-bare).
 
 ### `openApplePaySetupAsync()`
 
@@ -376,7 +302,7 @@ Launch the  Pay view to accept payment.
 | amount | _String_ | The summary item’s amount.                                                  |
 | type   | _String_ | The summary item’s type. Must be "pending" or "final". Defaults to "final". |
 
-**NOTE**: The final item should represent your company; it'll be prepended with the word "Pay" (i.e. "Pay Tipsi, Inc $50")
+**NOTE**: The final item should represent your company; it'll be prepended with the word "Pay" (i.e. "Pay Tipsi, Inc \$50")
 
 ##### `options` — An object with the following keys:
 
@@ -503,7 +429,7 @@ try {
 
 ## AndroidPay
 
-Android Pay (also known as Google Pay) is currently only supported on ExpoKit apps. To add it to your app, add the following lines to your `AndroidManifest.xml` file, inside of the `<application>....</applicaton>` tags:
+Android Pay (also known as Google Pay) is currently only supported in the bare workflow. To add it to your app, add the following lines to your `AndroidManifest.xml` file, inside of the `<application>....</applicaton>` tags:
 
 ```xml
 <meta-data
@@ -834,7 +760,7 @@ A source object returned from creating a source (via `createSourceWithParamsAsyn
 }
 ```
 
-## Enabling Apple Pay in ExpoKit
+## Enabling Apple Pay in bare
 
 If you want to use Apple Pay for payments, you'll need to set up your merchant ID in XCode first. Note that you do not need to go through this process to use the Payments module - you can still process payments with Stripe without going through the steps in this section.
 

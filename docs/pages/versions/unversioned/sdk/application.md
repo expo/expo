@@ -1,33 +1,24 @@
 ---
 title: Application
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-application'
 ---
 
-This module provides useful information about the native application, such as the its ID, app name, and build version.
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
+**`expo-application`** provides useful information about the native application, itself, such as the ID, app name, and build version.
+
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-application).
+<InstallSection packageName="expo-application" />
 
 ## API
 
 ```js
 import * as Application from 'expo-application';
 ```
-
-### Constants
-
-- [`Application.applicationName`](#applicationapplicationname)
-- [`Application.applicationId`](#applicationapplicationid)
-- [`Application.nativeApplicationVersion`](#applicationnativeapplicationversion)
-- [`Application.nativeBuildVersion`](#applicationnativebuildversion)
-- [`Application.androidId`](#applicationandroidid) (Android only)
-
-### Methods
-
-- [`Application.getIosIdForVendorAsync()`](#applicationgetiosidforvendorasync) (iOS only)
-- [`Application.getInstallReferrerAsync()`](#applicationgetinstallreferrerasync) (Android only)
-- [`Application.getInstallationTimeAsync()`](#applicationgetinstallationtimeasync)
-- [`Application.getLastUpdateTimeAsync()`](#applicationgetlastupdatetimeasync) (Android only)
 
 ## Constants
 
@@ -131,11 +122,11 @@ await Application.getLastUpdateTimeAsync();
 
 ## Error Codes
 
-| Code                                              | Description                                                                                                                                                                                                                                                                                                                                                                                   |
-| ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ERR_APPLICATION_PACKAGE_NAME_NOT_FOUND            | Error code thrown by `getInstallationTimeAsync` and `getLastUpdateTimeAsync`. This may be thrown if the package information or package name could not be retrieved.                                                                                                                                                                                                                                |
-| ERR_APPLICATION_INSTALL_REFERRER_UNAVAILABLE      | The current Play Store app doesn't provide the installation referrer API, or the Play Store may not be installed. This error code may come up when testing on an AVD that doesn't come with the Play Store pre-installed, such as the Google Pixel 3 and Nexus 6.                                                                                                                             |
-| ERR_APPLICATION_INSTALL_REFERRER_CONNECTION       | A connection could not be established to the Google Play Store.                                                                                                                                                                                 |
-| ERR_APPLICATION_INSTALL_REFERRER_REMOTE_EXCEPTION | A `RemoteException` was thrown after a connection was established to the Play Store. This may happen if the process hosting the remote object is no longer available, which usually means the process crashed. See https://stackoverflow.com/questions/3156389/android-remoteexceptions-and-services.                                                                                         |
-| ERR_APPLICATION_INSTALL_REFERRER                  | General default case error code for the `getInstallReferrerAsync` method. This error code will be thrown if an exception occurred when getting the install referrer, but the exception was none of the more precise errors. The [`responseCode`](https://developer.android.com/reference/com/android/installreferrer/api/InstallReferrerClient.InstallReferrerResponse.html) is provided along with the error. |
-| ERR_APPLICATION_INSTALL_REFERRER_SERVICE_DISCONNECTED | Connection to the install referrer service was lost. This error is thrown when an attempt was made to connect and set up the install referrer service, but the connection was lost. See the [Android documentation](https://developer.android.com/reference/com/android/installreferrer/api/InstallReferrerStateListener) for more information. |
+| Code                                                  | Description                                                                                                                                                                                                                                                                                                                                                                                                    |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ERR_APPLICATION_PACKAGE_NAME_NOT_FOUND                | Error code thrown by `getInstallationTimeAsync` and `getLastUpdateTimeAsync`. This may be thrown if the package information or package name could not be retrieved.                                                                                                                                                                                                                                            |
+| ERR_APPLICATION_INSTALL_REFERRER_UNAVAILABLE          | The current Play Store app doesn't provide the installation referrer API, or the Play Store may not be installed. This error code may come up when testing on an AVD that doesn't come with the Play Store pre-installed, such as the Google Pixel 3 and Nexus 6.                                                                                                                                              |
+| ERR_APPLICATION_INSTALL_REFERRER_CONNECTION           | A connection could not be established to the Google Play Store.                                                                                                                                                                                                                                                                                                                                                |
+| ERR_APPLICATION_INSTALL_REFERRER_REMOTE_EXCEPTION     | A `RemoteException` was thrown after a connection was established to the Play Store. This may happen if the process hosting the remote object is no longer available, which usually means the process crashed. See https://stackoverflow.com/questions/3156389/android-remoteexceptions-and-services.                                                                                                          |
+| ERR_APPLICATION_INSTALL_REFERRER                      | General default case error code for the `getInstallReferrerAsync` method. This error code will be thrown if an exception occurred when getting the install referrer, but the exception was none of the more precise errors. The [`responseCode`](https://developer.android.com/reference/com/android/installreferrer/api/InstallReferrerClient.InstallReferrerResponse.html) is provided along with the error. |
+| ERR_APPLICATION_INSTALL_REFERRER_SERVICE_DISCONNECTED | Connection to the install referrer service was lost. This error is thrown when an attempt was made to connect and set up the install referrer service, but the connection was lost. See the [Android documentation](https://developer.android.com/reference/com/android/installreferrer/api/InstallReferrerStateListener) for more information.                                                                |

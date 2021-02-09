@@ -6,11 +6,8 @@ import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.content.Context;
 import android.content.Intent;
-import android.os.PersistableBundle;
 import android.os.SystemClock;
 import android.util.Log;
-
-import java.util.Map;
 
 import org.unimodules.core.interfaces.LifecycleEventListener;
 import org.unimodules.interfaces.taskManager.TaskConsumer;
@@ -18,6 +15,8 @@ import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
 import org.unimodules.interfaces.taskManager.TaskExecutionCallback;
 import org.unimodules.interfaces.taskManager.TaskInterface;
 import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
+
+import java.util.Map;
 
 public class BackgroundFetchTaskConsumer extends TaskConsumer implements TaskConsumerInterface, LifecycleEventListener {
   private static final String TAG = BackgroundFetchTaskConsumer.class.getSimpleName();
@@ -40,8 +39,8 @@ public class BackgroundFetchTaskConsumer extends TaskConsumer implements TaskCon
   @Override
   public boolean canReceiveCustomBroadcast(String action) {
     // Let the TaskService know that we want to receive custom broadcasts
-    // having "android.intent.action.BOOT_COMPLETED" action.
-    return Intent.ACTION_BOOT_COMPLETED.equals(action);
+    // having "android.intent.action.BOOT_COMPLETED" or "Intent.ACTION_MY_PACKAGE_REPLACED" action.
+    return Intent.ACTION_BOOT_COMPLETED.equals(action) || Intent.ACTION_MY_PACKAGE_REPLACED.equals(action);
   }
 
   @Override
@@ -66,13 +65,16 @@ public class BackgroundFetchTaskConsumer extends TaskConsumer implements TaskCon
     String action = intent.getAction();
 
     if (Intent.ACTION_BOOT_COMPLETED.equals(action)) {
-      // Device has just been booted up - restore an alarm if "startOnBoot" option is enabled.
+      // Device has just been booted up, so we need restore an alarm if "startOnBoot" option is enabled.
       Map<String, Object> options = mTask.getOptions();
       boolean startOnBoot = options.containsKey("startOnBoot") && (boolean) options.get("startOnBoot");
 
       if (startOnBoot) {
         startAlarm();
       }
+    } else if (Intent.ACTION_MY_PACKAGE_REPLACED.equals(action)) {
+      // App has just been reinstalled, so we need restore an alarm.
+      startAlarm();
     } else {
       Context context = getContext();
       TaskManagerUtilsInterface taskManagerUtils = getTaskManagerUtils();
@@ -135,10 +137,10 @@ public class BackgroundFetchTaskConsumer extends TaskConsumer implements TaskCon
     Log.i(TAG, "Starting an alarm for task '" + mTask.getName() + "'.");
 
     alarmManager.setInexactRepeating(
-        AlarmManager.ELAPSED_REALTIME_WAKEUP,
-        SystemClock.elapsedRealtime() + interval,
-        interval,
-        mPendingIntent
+      AlarmManager.ELAPSED_REALTIME_WAKEUP,
+      SystemClock.elapsedRealtime() + interval,
+      interval,
+      mPendingIntent
     );
   }
 

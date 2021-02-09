@@ -1,6 +1,7 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <EXGL-CPP/UEXGL.h>
+#import <Foundation/Foundation.h>
+#import <EXGL_CPP/UEXGL.h>
 
 @interface EXGLObject : NSObject
 

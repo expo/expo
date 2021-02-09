@@ -10,9 +10,9 @@
 
 #import <CoreLocation/CoreLocation.h>
 
-NS_ASSUME_NONNULL_BEGIN;
-
 @class GMSMapView;
+
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  * GMSOverlay is an abstract class that represents some overlay that may be attached to a specific
@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN;
  * If this overlay should cause tap notifications. Some overlays, such as markers, will default to
  * being tappable.
  */
-@property(nonatomic, assign, getter=isTappable) BOOL tappable;
+@property(nonatomic, getter=isTappable) BOOL tappable;
 
 /**
  * Higher |zIndex| value overlays will be drawn on top of lower |zIndex| value tile layers and
@@ -50,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN;
  * overlays; they are effectively considered to be in a separate z-index group compared to other
  * overlays.
  */
-@property(nonatomic, assign) int zIndex;
+@property(nonatomic) int zIndex;
 
 /**
  * Overlay data. You can use this property to associate an arbitrary object with this overlay.
@@ -59,8 +59,8 @@ NS_ASSUME_NONNULL_BEGIN;
  * Note that userData should not hold any strong references to any Maps objects, otherwise a retain
  * cycle may be created (preventing objects from being released).
  */
-@property(nonatomic, strong, nullable) id userData;
+@property(nonatomic, nullable) id userData;
 
 @end
 
-NS_ASSUME_NONNULL_END;
+NS_ASSUME_NONNULL_END

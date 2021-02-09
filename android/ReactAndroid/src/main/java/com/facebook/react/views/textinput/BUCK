@@ -3,9 +3,7 @@ load("//tools/build_defs/oss:rn_defs.bzl", "YOGA_TARGET", "react_native_dep", "r
 rn_android_library(
     name = "textinput",
     srcs = glob(["*.java"]),
-    provided_deps = [
-        react_native_dep("third-party/android/support/v4:lib-support-v4"),
-    ],
+    is_androidx = True,
     required_for_source_only_abi = True,
     visibility = [
         "PUBLIC",
@@ -25,5 +23,8 @@ rn_android_library(
         react_native_target("java/com/facebook/react/views/scroll:scroll"),
         react_native_target("java/com/facebook/react/views/text:text"),
         react_native_target("java/com/facebook/react/views/view:view"),
+    ],
+    exported_deps = [
+        react_native_dep("third-party/android/androidx:appcompat"),
     ],
 )

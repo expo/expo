@@ -1,21 +1,21 @@
-//  Copyright (c) Facebook, Inc. and its affiliates.
-//
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 package com.facebook.react.testing.rule;
 
 import android.app.Activity;
-import android.os.Build;
-import android.support.test.rule.ActivityTestRule;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import androidx.test.rule.ActivityTestRule;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.shell.MainReactPackage;
-import com.facebook.react.testing.ReactInstanceSpecForTest;
 import com.facebook.react.testing.ReactTestHelper;
 import com.facebook.react.testing.idledetection.ReactBridgeIdleSignaler;
 import com.facebook.react.testing.idledetection.ReactIdleDetectionUtil;
@@ -164,13 +164,15 @@ public class ReactNativeTestRule implements TestRule {
 
   public void waitForIdleSync() {
     ReactIdleDetectionUtil.waitForBridgeAndUIIdle(
-      mBridgeIdleSignaler,
-      mReactInstanceManager.getCurrentReactContext(),
-      IDLE_TIMEOUT_MS);
+        mBridgeIdleSignaler, mReactInstanceManager.getCurrentReactContext(), IDLE_TIMEOUT_MS);
   }
 
   /** Returns the react view */
   public ReactRootView getView() {
     return mView;
+  }
+
+  public ReactContext getContext() {
+    return mReactInstanceManager.getCurrentReactContext();
   }
 }

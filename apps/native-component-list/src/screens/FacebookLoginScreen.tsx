@@ -1,11 +1,19 @@
-import React from 'react';
-import { Alert, ScrollView } from 'react-native';
 import * as Facebook from 'expo-facebook';
+import React from 'react';
+import { Alert, Platform, ScrollView } from 'react-native';
+
 import ListButton from '../components/ListButton';
+import MonoText from '../components/MonoText';
+
+const appId = '629712900716487';
 
 export default class FacebookLoginScreen extends React.Component {
   static navigationOptions = {
     title: 'FacebookLogin',
+  };
+
+  state = {
+    user: null,
   };
 
   render() {
@@ -14,44 +22,47 @@ export default class FacebookLoginScreen extends React.Component {
     return (
       <ScrollView style={{ padding: 10 }}>
         <ListButton
-          onPress={() => this._testFacebookLogin('1201211719949057', permissions, 'web')}
-          title="Authenticate with Facebook (web)"
+          onPress={async () =>
+            await Facebook.initializeAsync({ appId, version: Platform.select({ web: 'v5.0' }) })
+          }
+          title="Initialize Facebook SDK"
         />
         <ListButton
-          onPress={() => this._testFacebookLogin('1201211719949057', permissions, 'browser')}
-          title="Authenticate with Facebook (browser)"
+          onPress={async () => await Facebook.setAutoInitEnabledAsync(true)}
+          title="Set autoinit to true"
         />
         <ListButton
-          onPress={() => this._testFacebookLogin('1201211719949057', permissions, 'native')}
-          title="Authenticate with Facebook (native)"
+          onPress={async () => await Facebook.setAutoInitEnabledAsync(false)}
+          title="Set autoinit to false"
         />
         <ListButton
-          onPress={() => this._testFacebookLogin('1201211719949057', permissions, 'system')}
-          title="Authenticate with Facebook (system)"
+          onPress={() => this._testFacebookLogin(permissions)}
+          title="Authenticate with Facebook"
         />
+        <ListButton onPress={() => Facebook.logOutAsync()} title="Log out of Facebook" />
+        <ListButton
+          onPress={async () =>
+            this.setState({ user: await Facebook.getAuthenticationCredentialAsync() })
+          }
+          title="Get Access Token"
+        />
+        {this.state.user && <MonoText>{JSON.stringify(this.state.user, null, 2)}</MonoText>}
       </ScrollView>
     );
   }
 
-  _testFacebookLogin = async (
-    id: string,
-    perms: string[],
-    behavior: 'web' | 'native' | 'browser' | 'system' = 'web'
-  ) => {
+  _testFacebookLogin = async (perms: string[]) => {
     try {
-      const result = await Facebook.logInWithReadPermissionsAsync(id, {
+      const result = await Facebook.logInWithReadPermissionsAsync({
         permissions: perms,
-        behavior,
       });
 
-      const { type, token } = result;
-
-      if (type === 'success') {
+      if (result.type === 'success') {
         Alert.alert('Logged in!', JSON.stringify(result), [
           {
             text: 'OK!',
             onPress: () => {
-              console.log({ type, token });
+              console.log({ type: result.type, token: result.token });
             },
           },
         ]);
@@ -59,5 +70,5 @@ export default class FacebookLoginScreen extends React.Component {
     } catch (e) {
       Alert.alert('Error!', e.message, [{ text: 'OK', onPress: () => {} }]);
     }
-  }
+  };
 }

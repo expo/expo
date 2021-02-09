@@ -1,5 +1,5 @@
-let unused1 = 0;
+const unused1 = 0;
 
 function unused2() {
-  let unused3 = 'hi';
+  const unused3 = 'hi';
 }

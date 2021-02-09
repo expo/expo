@@ -1,3 +1,25 @@
+# 2019-11-7 -- v5.0.2
+- Fixes the wrong error code being sent to `signIn:didSignInForUser:withError:` when the user
+  cancels iOS's consent dialog during the sign-in flow.
+
+# 2019-10-9 -- v5.0.1
+- Fixes an issue that the sign in flow cannot be correctly started on iOS 13.
+- The zip distribution requires Xcode 11 or above.
+
+# 2019-8-14 -- v5.0.0
+- Changes to GIDSignIn
+    - `uiDelegate` has been replaced with `presentingViewController`.
+    - `hasAuthInKeychain` has been replaced with `hasPreviousSignIn`.
+    - `signInSilently` has been replaced with `restorePreviousSignIn`.
+    - Removed deprecated `kGIDSignInErrorCodeNoSignInHandlersInstalled` error code.
+- Changes to GIDAuthentication
+    - Removed deprecated methods `getAccessTokenWithHandler:` and `refreshAccessTokenWithHandler:`.
+- Changes to GIDGoogleUser
+    - Removed deprecated property `accessibleScopes`, use `grantedScopes` instead.
+- Adds dependencies on AppAuth and GTMAppAuth.
+- Removes the dependency on GoogleToolboxForMac.
+- Drops support for iOS 7.
+
 # 2018-11-26 -- v4.4.0
 - Removes the dependency on GTM OAuth 2.
 
