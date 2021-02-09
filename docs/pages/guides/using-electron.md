@@ -1,5 +1,6 @@
 ---
 title: Using Electron with Expo for Web
+sidebar_title: Using Electron
 ---
 
 > 🚨 Electron support is experimental, so the workflow is suboptimal and subject to breaking changes. If you find bugs please report them on [expo/expo-cli](https://github.com/expo/expo-cli/issues) with the `[electron]` tag in the title.
@@ -9,13 +10,13 @@ title: Using Electron with Expo for Web
 To simplify this we created the package `@expo/electron-adapter` which wraps [`electron-webpack`][electron-webpack] and adds support for Expo web and other universal React packages.
 
 - [🏁 Setup](#-setup)
-- [⚽️ Usage](#-usage)
+- [⚽️ Usage](#️-usage)
   - [Starting a project](#starting-a-project)
   - [Customizing the main process](#customizing-the-main-process)
   - [Building your project](#building-your-project)
 - [🧸 Behavior](#-behavior)
 - [Contributing](#contributing)
-- [Learn More](#learn-more-about-electron)
+- [Learn more about Electron](#learn-more-about-electron)
 
 ## 🏁 Setup
 

@@ -48,6 +48,7 @@ export async function getDevicePushTokenAsync() {
     return { type: Platform.OS, data };
 }
 async function _subscribeUserToPushAsync() {
+    // @ts-ignore: TODO: not on the schema
     if (!Constants.manifest.notification || !Constants.manifest.notification.vapidPublicKey) {
         throw new CodedError('E_NOTIFICATIONS_PUSH_WEB_MISSING_CONFIG', 'You must provide `notification.vapidPublicKey` in `app.json` to use push notifications on web. Learn more: https://docs.expo.io/versions/latest/guides/using-vapid/.');
     }
@@ -59,6 +60,7 @@ async function _subscribeUserToPushAsync() {
     }
     const subscribeOptions = {
         userVisibleOnly: true,
+        // @ts-ignore: TODO: not on the schema
         applicationServerKey: _urlBase64ToUint8Array(Constants.manifest.notification.vapidPublicKey),
     };
     const pushSubscription = await registration.pushManager

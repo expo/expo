@@ -5,6 +5,7 @@ import Animated from 'react-native-reanimated';
 import DevMenuContext from '../DevMenuContext';
 import * as DevMenuInternal from '../DevMenuInternal';
 import NavigationHeaderButton from '../components/NavigationHeaderButton';
+import DevMenuScreen from '../components/items/DevMenuScreen';
 import DevMenuMainScreen from '../screens/DevMenuMainScreen';
 import DevMenuSettingsScreen from '../screens/DevMenuSettingsScreen';
 import DevMenuTestScreen from '../screens/DevMenuTestScreen';
@@ -122,6 +123,18 @@ export default class DevMenuContainer extends React.PureComponent<Props, any> {
       ...this.providedContext,
     };
 
+    const devMenuScreens = (this.props.devMenuScreens as {
+      screenName: string;
+      items: any;
+    }[]).map(screenInfo => {
+      return {
+        name: screenInfo.screenName,
+        component: DevMenuScreen,
+        options: applyNavigationSettings(DevMenuScreen.navigationOptions),
+        props: { items: screenInfo.items },
+      };
+    });
+
     return (
       <DevMenuContext.Provider value={providedContext}>
         <View style={styles.bottomSheetContainer}>
@@ -135,7 +148,7 @@ export default class DevMenuContainer extends React.PureComponent<Props, any> {
             initialSnap={0}
             snapPoints={this.snapPoints}
             callbackNode={this.callbackNode}
-            screens={this.screens}>
+            screens={[...this.screens, ...devMenuScreens]}>
             <DevMenuOnboarding show={this.props.showOnboardingView} />
           </DevMenuBottomSheet>
         </View>

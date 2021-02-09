@@ -1,6 +1,8 @@
 ---
-title: Installing a Custom iOS Expo Go
+title: Custom Expo Go builds
 ---
+
+> This is an experimental feature, and the exact approach taken here will be deprecated in the near future in favor of a more flexible and portable development client library.
 
 Build and install a custom version of [Expo Go](../get-started/installation.md#2-mobile-app-expo-client-for-ios) with your own Apple Credentials using our build service. This custom version of the Expo Go app contains features that were previously only available on the Android versions. Our build service will prepare your custom Expo Go app, and you can install it to your iOS device directly from our website.
 

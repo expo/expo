@@ -1,5 +1,5 @@
 ---
-title: Viewing Logs
+title: Viewing logs
 ---
 
 Writing to the logs in an Expo app works just like in the browser: use `console.log`, `console.warn` and `console.error`. Note: we don't currently support `console.table` outside of remote debugging mode.

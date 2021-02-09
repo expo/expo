@@ -66,6 +66,7 @@ export async function getDevicePushTokenAsync(): Promise<{ type: string; data: o
 }
 
 async function _subscribeUserToPushAsync(): Promise<object> {
+  // @ts-ignore: TODO: not on the schema
   if (!Constants.manifest.notification || !Constants.manifest.notification.vapidPublicKey) {
     throw new CodedError(
       'E_NOTIFICATIONS_PUSH_WEB_MISSING_CONFIG',
@@ -85,6 +86,7 @@ async function _subscribeUserToPushAsync(): Promise<object> {
 
   const subscribeOptions = {
     userVisibleOnly: true,
+    // @ts-ignore: TODO: not on the schema
     applicationServerKey: _urlBase64ToUint8Array(Constants.manifest.notification.vapidPublicKey),
   };
   const pushSubscription = await registration.pushManager

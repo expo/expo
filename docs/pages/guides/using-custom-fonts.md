@@ -1,5 +1,5 @@
 ---
-title: Using Custom Fonts
+title: Custom Fonts
 ---
 
 import SnackInline from '~/components/plugins/SnackInline';

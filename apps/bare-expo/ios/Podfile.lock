@@ -121,7 +121,7 @@ PODS:
     - UMCore
     - UMFileSystemInterface
     - UMPermissionsInterface
-  - EXInAppPurchases (10.0.0):
+  - EXInAppPurchases (10.1.0):
     - UMCore
   - EXKeepAwake (9.0.0):
     - UMCore
@@ -155,7 +155,7 @@ PODS:
   - expo-dev-launcher (0.2.0):
     - expo-dev-menu-interface
     - React
-  - expo-dev-menu (0.3.0):
+  - expo-dev-menu (0.3.1):
     - expo-dev-menu-interface
     - React
   - expo-dev-menu-interface (0.1.2):
@@ -197,6 +197,8 @@ PODS:
     - UMCore
     - UMFileSystemInterface
   - EXStoreReview (3.0.0):
+    - UMCore
+  - EXStructuredHeaders (1.0.0):
     - UMCore
   - EXTaskManager (9.0.0):
     - UMAppLoader
@@ -755,6 +757,7 @@ DEPENDENCIES:
   - EXSplashScreen (from `../../../packages/expo-splash-screen/ios`)
   - EXSQLite (from `../../../packages/expo-sqlite/ios`)
   - EXStoreReview (from `../../../packages/expo-store-review/ios`)
+  - EXStructuredHeaders (from `../../../packages/expo-structured-headers/ios`)
   - EXTaskManager (from `../../../packages/expo-task-manager/ios`)
   - EXVideoThumbnails (from `../../../packages/expo-video-thumbnails/ios`)
   - EXWebBrowser (from `../../../packages/expo-web-browser/ios`)
@@ -1055,6 +1058,9 @@ EXTERNAL SOURCES:
   EXStoreReview:
     inhibit_warnings: false
     :path: "../../../packages/expo-store-review/ios"
+  EXStructuredHeaders:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-structured-headers/ios"
   EXTaskManager:
     inhibit_warnings: false
     :path: "../../../packages/expo-task-manager/ios"
@@ -1228,7 +1234,7 @@ SPEC CHECKSUMS:
   EXImageLoader: ec038ed0e3653c4c914f68e92b3153cfd3752d4e
   EXImageManipulator: f1c9cddaf6aa42dbfe9d2485d29eca374f45d454
   EXImagePicker: 50e8688af1278af72d3235753a825a49465b4a84
-  EXInAppPurchases: 51a31eaf75728768ce0f7cf28cc09f078932f71b
+  EXInAppPurchases: d6de21ee4097c092afe41a64b844fa67976cd688
   EXKeepAwake: 77180c8bdb7187c2bbd59170d2878d8b301b19e2
   EXLinearGradient: ffc008d7ddcce356534cfdf9bd7fbcdedec4c438
   EXLocalAuthentication: fee862d288cefd30480d2c0e8fa50a5721ce0dfd
@@ -1240,7 +1246,7 @@ SPEC CHECKSUMS:
   EXNotifications: 39b642b1ded0f26e614fd5ce313decfb93401b6d
   EXPermissions: 015f1129f80266f6c38e3691102546232b641614
   expo-dev-launcher: 0351bdeef423c28146573adbdeb822ed42b941b8
-  expo-dev-menu: 23458ea380b3d67685db766bde78925be00627ed
+  expo-dev-menu: bbce00e72ede1b7308c469f288b365a9a917a173
   expo-dev-menu-interface: 3c93377ecf505dc4aba68e61685d30353c39b335
   expo-image: 07527eb7a57f5ac939c5ded392bcf64c975b9c87
   EXPrint: 32f0f7745534b710cfd5ed67fc3bd7416b6353c6
@@ -1256,6 +1262,7 @@ SPEC CHECKSUMS:
   EXSplashScreen: 29c266c9f15e70805a540894f74bd9fa9cd48358
   EXSQLite: 379304a143cb33855a61ef66844c75af9ef67a58
   EXStoreReview: b552c0d512e1b5c2c7371041a033a2827dc01d46
+  EXStructuredHeaders: 59b675aa92ef51781cc7f513d25f99c2a3f51de5
   EXTaskManager: e1956fd45bc301cbe852ebffccb9fd0b4ab78494
   EXVideoThumbnails: 0be939563a5d46ce0d1fa9baea7d454b99475763
   EXWebBrowser: 2e708935a91ae0f51f5f8ffc85ba673950f34833
