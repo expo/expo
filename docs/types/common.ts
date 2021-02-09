@@ -2,6 +2,8 @@ export type PageMetadata = {
   title: string;
   sourceCodeUrl?: string;
   maxHeadingDepth?: number;
+  /* If the page should show up in the search results, only hide when `false` */
+  searchable?: boolean;
   hideTOC?: boolean;
   headings?: {
     title?: string;

@@ -20,7 +20,8 @@ const withDocumentationElements = (meta: PageMetadata) => {
           url={router}
           asPath={router.asPath}
           sourceCodeUrl={meta.sourceCodeUrl}
-          tocVisible={!meta.hideTOC}>
+          tocVisible={!meta.hideTOC}
+          searchable={meta.searchable}>
           <MDXProvider components={components}>{props.children}</MDXProvider>
         </DocumentationPage>
       </HeadingsContext.Provider>
