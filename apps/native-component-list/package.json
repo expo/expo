@@ -83,6 +83,8 @@
     "expo-constants": "~10.0.1",
     "expo-contacts": "~9.0.0",
     "expo-device": "~3.1.1",
+    "expo-dev-menu": "~0.3.1",
+    "expo-dev-menu-interface": "~0.1.2",
     "expo-document-picker": "~9.0.1",
     "expo-face-detector": "~9.0.1",
     "expo-facebook": "~10.0.0",

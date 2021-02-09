@@ -1,12 +1,17 @@
 export default ({ config }) => {
   config.version = '40.0.0';
   config.sdkVersion = '40.0.0';
-  config.plugins = [
+
+  if (!Array.isArray(config.plugins)) {
+    config.plugins = [];
+  }
+  config.plugins.push('expo-dev-menu', 'expo-dev-launcher');
+  config.plugins.push(
     // iOS plugins
     // Add a plugin to modify the AppDelegate.
     './plugins/withNotFoundModule',
     // Add the React DevMenu back to the client.
-    './plugins/withDevMenu',
+    // './plugins/withDevMenu',
     // Set the minimum version to 11 for Google Sign-In support -- TODO: Maybe this belongs in expo-google-sign-in?
     ['./plugins/withPodfileMinVersion', '11.0'],
 
@@ -29,8 +34,8 @@ export default ({ config }) => {
         packageName: 'unimodules-test-core',
         packagePath: '../../../packages/unimodules-test-core/android',
       },
-    ],
-  ];
+    ]
+  );
 
   config.plugins.push([
     'expo-payments-stripe',
