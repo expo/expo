@@ -165,7 +165,7 @@ const withDevLauncherPodfile = config => {
         async (config) => {
             await editPodfile(config, podfile => {
                 podfile = podfile.replace("platform :ios, '10.0'", "platform :ios, '11.0'");
-                podfile = addLines(podfile, 'use_react_native', 0, [`  ${DEV_LAUNCHER_POD_IMPORT}`]);
+                // podfile = addLines(podfile, 'use_react_native', 0, [`  ${DEV_LAUNCHER_POD_IMPORT}`]);
                 return podfile;
             });
             return config;
