@@ -38,7 +38,6 @@ const withExpoAsyncStorage = config => {
   return extraModules;`
           );
         }
-
       } else {
         throw new Error(
           `Cannot append DevMenu module to AppDelegate of language "${fileInfo.language}"`
