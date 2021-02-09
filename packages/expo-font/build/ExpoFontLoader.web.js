@@ -1,5 +1,6 @@
 import { CodedError, Platform } from '@unimodules/core';
 import FontObserver from 'fontfaceobserver';
+import Constants from 'expo-constants';
 import { FontDisplay } from './Font.types';
 function getFontFaceStyleSheet() {
     if (!Platform.isDOMAvailable) {
@@ -65,7 +66,9 @@ export default {
         if (!isFontLoadingListenerSupported()) {
             return;
         }
-        return new FontObserver(fontFamilyName, { display: resource.display }).load();
+        // Change default value in app.json extra. "extra": {"expoFontTimeout": 60000}
+        const timeout = Constants.manifest.extra.expoFontTimeout || 3000;
+        return new FontObserver(fontFamilyName, { display: resource.display }).load(null, timeout);
     },
 };
 const ID = 'expo-generated-fonts';
