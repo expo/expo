@@ -12,6 +12,7 @@
 
 @property (nonatomic, strong) EXUpdatesUpdate *updateDefault1;
 @property (nonatomic, strong) EXUpdatesUpdate *updateDefault2;
+@property (nonatomic, strong) EXUpdatesUpdate *updateRollout0;
 @property (nonatomic, strong) EXUpdatesUpdate *updateRollout1;
 @property (nonatomic, strong) EXUpdatesUpdate *updateRollout2;
 @property (nonatomic, strong) EXUpdatesUpdate *updateMultipleFilters;
@@ -42,6 +43,15 @@
   NSString *scopeKey = @"dummyScope";
   EXUpdatesConfig *config = [EXUpdatesConfig new];
   EXUpdatesDatabase *database = [EXUpdatesDatabase new];
+  
+  _updateRollout0 = [EXUpdatesNewUpdate updateWithNewManifest:@{
+    @"id": @"079cde35-8433-4c17-81c8-7117c1513e71",
+    @"createdAt": @"2021-01-10T19:39:22.480Z",
+    @"runtimeVersion": @"1.0",
+    @"launchAsset": launchAsset,
+    @"assets": @[imageAsset],
+    @"updateMetadata": @{@"releaseName": @"rollout"}
+  } config:config database:database];
 
   _updateDefault1 = [EXUpdatesNewUpdate updateWithNewManifest:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e72",
@@ -103,12 +113,13 @@
   XCTAssertEqual(_updateRollout1, actual, @"should pick the newest update that matches the manifest filters");
 }
 
-- (void)testUpdatesToDelete_OlderMatching
+- (void)testUpdatesToDelete_SecondNewestMatching
 {
-  NSArray<EXUpdatesUpdate *> *actual = [_selectionPolicy updatesToDeleteWithLaunchedUpdate:_updateRollout2 updates:@[_updateDefault1, _updateRollout1, _updateDefault2, _updateRollout2] filters:_manifestFilters];
-  XCTAssertEqual(2, actual.count, @"if there is an older update that matches the manifest filters, keep that one over any newer ones that don't match");
+  NSArray<EXUpdatesUpdate *> *actual = [_selectionPolicy updatesToDeleteWithLaunchedUpdate:_updateRollout2 updates:@[_updateRollout0, _updateDefault1, _updateRollout1, _updateDefault2, _updateRollout2] filters:_manifestFilters];
+  XCTAssertEqual(3, actual.count, @"if there is an older update that matches the manifest filters, keep that one over any newer ones that don't match");
   XCTAssertTrue([actual containsObject:_updateDefault1]);
   XCTAssertTrue([actual containsObject:_updateDefault2]);
+  XCTAssertTrue([actual containsObject:_updateRollout0]);
   XCTAssertFalse([actual containsObject:_updateRollout1]);
   XCTAssertFalse([actual containsObject:_updateRollout2]);
 }

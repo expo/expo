@@ -25,6 +25,7 @@ public class SelectionPolicyFilterAwareTest {
 
   UpdateEntity updateDefault1;
   UpdateEntity updateDefault2;
+  UpdateEntity updateRollout0;
   UpdateEntity updateRollout1;
   UpdateEntity updateRollout2;
   UpdateEntity updateMultipleFilters;
@@ -37,6 +38,9 @@ public class SelectionPolicyFilterAwareTest {
     HashMap<String, Object> configMap = new HashMap<>();
     configMap.put("updateUrl", Uri.parse("https://exp.host/@test/test"));
     UpdatesConfiguration config = new UpdatesConfiguration().loadValuesFromMap(configMap);
+
+    JSONObject manifestJsonRollout0 = new JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e71\",\"createdAt\":\"2021-01-10T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"updateMetadata\":{\"releaseName\":\"rollout\"}}");
+    updateRollout0 = NewManifest.fromManifestJson(manifestJsonRollout0, config).getUpdateEntity();
 
     JSONObject manifestJsonDefault1 = new JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e72\",\"createdAt\":\"2021-01-11T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"updateMetadata\":{\"releaseName\":\"default\"}}");
     updateDefault1 = NewManifest.fromManifestJson(manifestJsonDefault1, config).getUpdateEntity();
@@ -63,11 +67,12 @@ public class SelectionPolicyFilterAwareTest {
   }
 
   @Test
-  public void testSelectUpdatesToDelete_OlderMatching() {
+  public void testSelectUpdatesToDelete_SecondNewestMatching() {
     // if there is an older update that matches the manifest filters, keep that one over any newer ones that don't match
-    List<UpdateEntity> updatesToDelete = selectionPolicy.selectUpdatesToDelete(Arrays.asList(updateDefault1, updateRollout1, updateDefault2, updateRollout2), updateRollout2, manifestFilters);
+    List<UpdateEntity> updatesToDelete = selectionPolicy.selectUpdatesToDelete(Arrays.asList(updateRollout0, updateDefault1, updateRollout1, updateDefault2, updateRollout2), updateRollout2, manifestFilters);
 
-    Assert.assertEquals(2, updatesToDelete.size());
+    Assert.assertEquals(3, updatesToDelete.size());
+    Assert.assertTrue(updatesToDelete.contains(updateRollout0));
     Assert.assertTrue(updatesToDelete.contains(updateDefault1));
     Assert.assertFalse(updatesToDelete.contains(updateRollout1));
     Assert.assertTrue(updatesToDelete.contains(updateDefault2));
