@@ -169,7 +169,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
   NSURLSessionDataTask *task = [_session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
     if (!error && [response isKindOfClass:[NSHTTPURLResponse class]]) {
       NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-      if (httpResponse.statusCode != 200) {
+      if (httpResponse.statusCode < 200 || httpResponse.statusCode >= 300) {
         NSStringEncoding encoding = [self _encodingFromResponse:response];
         NSString *body = [[NSString alloc] initWithData:data encoding:encoding];
         error = [self _errorFromResponse:httpResponse body:body];
