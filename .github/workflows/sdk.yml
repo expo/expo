@@ -28,24 +28,28 @@ jobs:
   check-packages:
     runs-on: ubuntu-18.04
     steps:
-      - name: Checkout a ref for the event
+      - name: 👀 Checkout a ref for the event
         uses: actions/checkout@v2
         with:
           fetch-depth: 100
-      - name: Fetch commits from base branch
+      - name: ⬇️ Fetch commits from base branch
         run: git fetch origin ${{ github.event.before || github.base_ref || 'master' }}:${{ github.event.before || github.base_ref || 'master' }} --depth 100
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v1
+      - name: 🧶 Restore node modules in root dir
+        uses: actions/cache@v2
+        id: node-modules-cache
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn install --frozen-lockfile
-      - name: Check packages
+          path: node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
+      - name: 🧶 Install node modules in root dir
+        if: steps.node-modules-cache.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile
+      - name: 🧶 Restore node modules in tools
+        uses: actions/cache@v2
+        with:
+          path: tools/node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('tools/yarn.lock') }}
+      - name: 🧐 Check packages
         run: |
           echo "Checking packages according to the event name: ${{ github.event_name }}"
           if [[ "${{ github.event_name }}" == "schedule" || "${{ github.event.inputs.checkAll }}" == "check-all" ]]; then
@@ -56,7 +60,8 @@ jobs:
             # In pull requests and workflow_dispatch events check all packages changed in the entire PR.
             bin/expotools check-packages --since ${{ github.event.before || github.base_ref || 'master' }}
           fi
-      - uses: 8398a7/action-slack@v3
+      - name: 🔔 Notify on Slack
+        uses: 8398a7/action-slack@v3
         if: failure() && (github.event.ref == 'refs/heads/master' || startsWith(github.event.ref, 'refs/heads/sdk-'))
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
