@@ -142,19 +142,9 @@
   XCTAssertFalse([_selectionPolicy shouldLoadNewUpdate:_updateRollout1 withLaunchedUpdate:_updateRollout2 filters:_manifestFilters]);
 }
 
-- (void)testShouldLoadNewUpdate_OlderExistsMatchingFilters
+- (void)testShouldLoadNewUpdate_DoesntMatch
 {
-  XCTAssertFalse([_selectionPolicy shouldLoadNewUpdate:_updateDefault2 withLaunchedUpdate:_updateRollout1 filters:_manifestFilters], @"should not choose to load a new update that doesn't match the manifest filters if there is an existing older update that matches the filters");
-}
-
-- (void)testShouldLoadNewUpdate_NoneExistsMatchingCurrentFilters
-{
-  XCTAssertTrue([_selectionPolicy shouldLoadNewUpdate:_updateDefault2 withLaunchedUpdate:nil filters:_manifestFilters], @"should choose to load a new update that doesn't match the manifest filters if no existing updates match the manifest filters");
-}
-
-- (void)testShouldLoadNewUpdate_NoneExistsMatchingNewFilters
-{
-  XCTAssertTrue([_selectionPolicy shouldLoadNewUpdate:_updateDefault2 withLaunchedUpdate:_updateDefault1 filters:_manifestFilters], @"should choose to load a new update that doesn't match the manifest filters if no existing updates match the manifest filters");
+  XCTAssertFalse([_selectionPolicy shouldLoadNewUpdate:_updateDefault2 withLaunchedUpdate:nil filters:_manifestFilters], @"should never load an update that doesn't match its own filters");
 }
 
 - (void)testDoesUpdateMatchFilters_MultipleFilters

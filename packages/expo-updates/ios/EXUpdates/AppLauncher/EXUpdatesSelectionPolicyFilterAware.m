@@ -81,6 +81,11 @@ NS_ASSUME_NONNULL_BEGIN
   if (!newUpdate) {
     return NO;
   }
+  // if the new update doesn't match its own filters, we shouldn't load it
+  if (![self doesUpdate:newUpdate matchFilters:filters]) {
+    return NO;
+  }
+
   if (!launchedUpdate) {
     return YES;
   }
@@ -88,12 +93,6 @@ NS_ASSUME_NONNULL_BEGIN
   // we should load the new update no matter the commitTime
   if (![self doesUpdate:launchedUpdate matchFilters:filters]) {
     return YES;
-  } else {
-    // if the new update doesn't pass the manifest filters AND the launched update does
-    // (i.e. we're sure we have an update that passes), we should not load the new update
-    if (![self doesUpdate:newUpdate matchFilters:filters]) {
-      return NO;
-    }
   }
   return [launchedUpdate.commitTime compare:newUpdate.commitTime] == NSOrderedAscending;
 }

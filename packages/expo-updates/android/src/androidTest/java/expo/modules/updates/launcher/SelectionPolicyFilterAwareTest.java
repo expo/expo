@@ -111,27 +111,10 @@ public class SelectionPolicyFilterAwareTest {
   }
 
   @Test
-  public void testShouldLoadNewUpdate_OlderExistsMatchingFilters() {
-    // should not choose to load a new update that doesn't match the manifest filters
-    // if there is an existing older update that matches the filters
-    boolean actual = selectionPolicy.shouldLoadNewUpdate(updateDefault2, updateRollout1, manifestFilters);
-    Assert.assertFalse(actual);
-  }
-
-  @Test
-  public void testShouldLoadNewUpdate_NoneExistsMatchingCurrentFilters() {
-    // should choose to load a new update that doesn't match the manifest filters
-    // if no existing updates match the manifest filters
+  public void testShouldLoadNewUpdate_DoesntMatch() {
+    // should never choose to load an update that doesn't match its own filters
     boolean actual = selectionPolicy.shouldLoadNewUpdate(updateDefault2, null, manifestFilters);
-    Assert.assertTrue(actual);
-  }
-
-  @Test
-  public void testShouldLoadNewUpdate_NoneExistsMatchingNewFilters() {
-    // should choose to load a new update that doesn't match the manifest filters
-    // if no existing updates match the manifest filters
-    boolean actual = selectionPolicy.shouldLoadNewUpdate(updateDefault2, updateDefault1, manifestFilters);
-    Assert.assertTrue(actual);
+    Assert.assertFalse(actual);
   }
 
   @Test

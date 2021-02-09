@@ -83,6 +83,11 @@ public class SelectionPolicyFilterAware implements SelectionPolicy {
     if (newUpdate == null) {
       return false;
     }
+    // if the new update doesn't pass its own manifest filters, we shouldn't load it
+    if (!matchesFilters(newUpdate, filters)) {
+      return false;
+    }
+
     if (launchedUpdate == null) {
       return true;
     }
@@ -90,12 +95,6 @@ public class SelectionPolicyFilterAware implements SelectionPolicy {
     // we should load the new update no matter the commitTime
     if (!matchesFilters(launchedUpdate, filters)) {
       return true;
-    } else {
-      // if the new update doesn't pass the manifest filters AND the launched update does
-      // (i.e. we're sure we have an update that passes), we should not load the new update
-      if (!matchesFilters(newUpdate, filters)) {
-        return false;
-      }
     }
     return newUpdate.commitTime.after(launchedUpdate.commitTime);
   }
