@@ -24,6 +24,7 @@ import expo.modules.updates.launcher.NoDatabaseLauncher;
 import expo.modules.updates.manifest.Manifest;
 import expo.modules.updates.manifest.ManifestFactory;
 import expo.modules.updates.manifest.ManifestResponse;
+import okhttp3.Cache;
 import okhttp3.CacheControl;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -35,7 +36,7 @@ public class FileDownloader {
 
   private static final String TAG = FileDownloader.class.getSimpleName();
 
-  private static OkHttpClient sClient = new OkHttpClient.Builder().build();
+  private static OkHttpClient sClient;
 
   public interface FileDownloadCallback {
     void onFailure(Exception e);
@@ -52,8 +53,21 @@ public class FileDownloader {
     void onSuccess(AssetEntity assetEntity, boolean isNew);
   }
 
-  public static void downloadFileToPath(Request request, final File destination, final FileDownloadCallback callback) {
-    downloadData(request, new Callback() {
+  private static OkHttpClient getClient(Context context) {
+    if (sClient == null) {
+      sClient = new OkHttpClient.Builder().cache(getCache(context)).build();
+    }
+    return sClient;
+  }
+
+  private static Cache getCache(Context context) {
+    int cacheSize = 50 * 1024 * 1024; // 50 MiB
+    final File directory = new File(context.getCacheDir(), "okhttp");
+    return new Cache(directory, cacheSize);
+  }
+
+  public static void downloadFileToPath(Request request, final File destination, final Context context, final FileDownloadCallback callback) {
+    downloadData(request, context, new Callback() {
       @Override
       public void onFailure(Call call, IOException e) {
         callback.onFailure(e);
@@ -81,7 +95,7 @@ public class FileDownloader {
 
   public static void downloadManifest(final UpdatesConfiguration configuration, final Context context, final ManifestDownloadCallback callback) {
     try {
-      downloadData(setHeadersForManifestUrl(configuration, context), new Callback() {
+      downloadData(setHeadersForManifestUrl(configuration, context), context, new Callback() {
         @Override
         public void onFailure(Call call, IOException e) {
           callback.onFailure("Failed to download manifest from URL: " + configuration.getUpdateUrl(), e);
@@ -120,6 +134,7 @@ public class FileDownloader {
               Crypto.verifyPublicRSASignature(
                   manifestString,
                   signature,
+                  context,
                   new Crypto.RSASignatureListener() {
                     @Override
                     public void onError(Exception e, boolean isNetworkError) {
@@ -157,7 +172,7 @@ public class FileDownloader {
     }
   }
 
-  public static void downloadAsset(final AssetEntity asset, File destinationDirectory, UpdatesConfiguration configuration, final AssetDownloadCallback callback) {
+  public static void downloadAsset(final AssetEntity asset, File destinationDirectory, UpdatesConfiguration configuration, Context context, final AssetDownloadCallback callback) {
     if (asset.url == null) {
       callback.onFailure(new Exception("Could not download asset " + asset.key + " with no URL"), asset);
       return;
@@ -171,7 +186,7 @@ public class FileDownloader {
       callback.onSuccess(asset, false);
     } else {
       try {
-        downloadFileToPath(setHeadersForUrl(asset.url, configuration), path, new FileDownloadCallback() {
+        downloadFileToPath(setHeadersForUrl(asset.url, configuration), path, context, new FileDownloadCallback() {
           @Override
           public void onFailure(Exception e) {
             callback.onFailure(e, asset);
@@ -191,18 +206,18 @@ public class FileDownloader {
     }
   }
 
-  public static void downloadData(Request request, Callback callback) {
-    downloadData(request, callback, false);
+  public static void downloadData(Request request, Context context, Callback callback) {
+    downloadData(request, callback, context, false);
   }
 
-  private static void downloadData(final Request request, final Callback callback, final boolean isRetry) {
-    sClient.newCall(request).enqueue(new Callback() {
+  private static void downloadData(final Request request, final Callback callback, Context context, final boolean isRetry) {
+    getClient(context).newCall(request).enqueue(new Callback() {
       @Override
       public void onFailure(Call call, IOException e) {
         if (isRetry) {
           callback.onFailure(call, e);
         } else {
-          downloadData(request, callback, true);
+          downloadData(request, callback, context, true);
         }
       }
 
