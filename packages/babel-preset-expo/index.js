@@ -53,7 +53,7 @@ module.exports = function(api, options = {}) {
       [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
       // If the platform is defined then babel will
       // remove all of the dead Platform.OS and Platforn.select code.
-      platform && ['babel-plugin-universal-platforms', { platform, mode }],
+      platform && ['babel-plugin-react-native-platform', { platform, mode }],
       platform === 'web' && [require.resolve('babel-plugin-react-native-web')],
       isWebpack && platform !== 'web' && [require.resolve('./plugins/disable-ambiguous-requires')],
     ].filter(Boolean),

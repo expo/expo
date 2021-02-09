@@ -1,4 +1,4 @@
-# babel-plugin-universal-platforms
+# babel-plugin-react-native-platform
 
 Removes unused platform and development code from Expo projects.
 
@@ -28,7 +28,7 @@ if (true || 'development' === 'production') {
 
 # Examples
 
-The following examples show what the output of a lexical block looks like after it's been optimized with `expo build:web` (`babel-plugin-universal-platforms` & Webpack's Terser).
+The following examples show what the output of a lexical block looks like after it's been optimized with `expo build:web` (`babel-plugin-react-native-platform` & Webpack's Terser).
 
 ## If Statements
 

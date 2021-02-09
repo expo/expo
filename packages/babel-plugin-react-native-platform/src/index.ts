@@ -20,7 +20,7 @@ export default function(api: any, options: UniversalPlatformPluginOptions) {
   const { platform, mode } = options;
   const isDevelopment = mode !== 'production';
   if (!platform) {
-    throw new Error('babel-plugin-universal-platforms: "platform" option must be defined');
+    throw new Error('babel-plugin-react-native-platform: "platform" option must be defined');
   }
 
   const collapseTestVisitor = {
@@ -53,7 +53,7 @@ export default function(api: any, options: UniversalPlatformPluginOptions) {
           p.replaceWith(t.stringLiteral(mode));
         }
       }
-    }
+    },
   };
 
   function destroyBranch(p: NodePath<t.IfStatement | t.ConditionalExpression>) {
@@ -78,7 +78,7 @@ export default function(api: any, options: UniversalPlatformPluginOptions) {
   }
 
   return {
-    name: 'Remove unused platforms from the Platform module of unimodules/core',
+    name: 'Remove unused platforms from the Platform module of react-native',
     visitor: {
       IfStatement: destroyBranch,
       ConditionalExpression: destroyBranch,

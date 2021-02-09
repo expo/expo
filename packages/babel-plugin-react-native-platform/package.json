@@ -1,7 +1,7 @@
 {
-  "name": "babel-plugin-universal-platforms",
+  "name": "babel-plugin-react-native-platform",
   "version": "1.0.0",
-  "description": "Removes unused platforms from the Platform module of unimodules/core",
+  "description": "Removes unused platforms from the Platform module of react-native",
   "main": "build/index.js",
   "files": [
     "build/*"
@@ -16,7 +16,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/expo/expo.git",
-    "directory": "packages/babel-plugin-universal-platforms"
+    "directory": "packages/babel-plugin-react-native-platform"
   },
   "keywords": [
     "babel",
@@ -33,7 +33,7 @@
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
-  "homepage": "https://github.com/expo/expo/tree/master/packages/babel-plugin-universal-platforms#readme",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/babel-plugin-react-native-platform#readme",
   "jest": {
     "preset": "expo-module-scripts/node"
   },
