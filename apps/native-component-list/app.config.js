@@ -7,6 +7,8 @@ export default ({ config }) => {
     './plugins/withNotFoundModule',
     // Add the React DevMenu back to the client.
     './plugins/withDevMenu',
+    // Add AsyncStorage
+    './plugins/withExpoAsyncStorage',
     // Set the minimum version to 11 for Google Sign-In support -- TODO: Maybe this belongs in expo-google-sign-in?
     ['./plugins/withPodfileMinVersion', '11.0'],
 
