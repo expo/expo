@@ -8,9 +8,12 @@ export default function DevLoadingView() {
   const translateY = useRef(new Animated.Value(0)).current;
   const emitter = useMemo<NativeEventEmitter>(() => {
     try {
-      return new NativeEventEmitter(NativeModules.DevLoadingView)
+      return new NativeEventEmitter(NativeModules.DevLoadingView);
     } catch (error) {
-      throw new Error('Failed to instantiate native emitter in `DevLoadingView` because the native module `DevLoadingView` is undefined: ' + error.message)
+      throw new Error(
+        'Failed to instantiate native emitter in `DevLoadingView` because the native module `DevLoadingView` is undefined: ' +
+          error.message
+      );
     }
   }, []);
 
@@ -55,10 +58,7 @@ export default function DevLoadingView() {
     emitter.addListener('devLoadingView:hide', handleHide);
 
     return function cleanup() {
-      emitter.removeListener(
-        'devLoadingView:showMessage',
-        handleShowMessage
-      );
+      emitter.removeListener('devLoadingView:showMessage', handleShowMessage);
       emitter.removeListener('devLoadingView:hide', handleHide);
     };
   }, [translateY, emitter]);

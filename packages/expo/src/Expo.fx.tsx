@@ -82,22 +82,22 @@ if (__DEV__) {
     // add the dev app container wrapper component on ios
     // @ts-ignore
     AppRegistry.setWrapperComponentProvider(() => DevAppContainer);
-  
+
     // @ts-ignore
     const originalSetWrapperComponentProvider = AppRegistry.setWrapperComponentProvider;
-  
+
     // @ts-ignore
     AppRegistry.setWrapperComponentProvider = provider => {
       function PatchedProviderComponent(props: any) {
         const ProviderComponent = provider();
-  
+
         return (
           <DevAppContainer>
             <ProviderComponent {...props} />
           </DevAppContainer>
         );
       }
-  
+
       originalSetWrapperComponentProvider(() => PatchedProviderComponent);
     };
   }
