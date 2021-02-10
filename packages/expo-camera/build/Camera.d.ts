@@ -12,10 +12,10 @@ export default class Camera extends React.Component<CameraProps> {
         VideoStabilization: any;
     };
     static ConversionTables: {
-        type: any;
-        flashMode: any;
-        autoFocus: any;
-        whiteBalance: any;
+        type: Record<"front" | "back", string | number | undefined>;
+        flashMode: Record<"on" | "off" | "auto" | "torch", string | number | undefined>;
+        autoFocus: Record<"on" | "off" | "auto" | "singleShot", string | number | boolean | undefined>;
+        whiteBalance: Record<"auto" | "sunny" | "cloudy" | "shadow" | "incandescent" | "fluorescent" | "continuous" | "manual", string | number | undefined>;
     };
     static defaultProps: CameraProps;
     static getPermissionsAsync(): Promise<PermissionResponse>;
