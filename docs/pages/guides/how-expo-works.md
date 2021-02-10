@@ -15,7 +15,7 @@ You can also browse the source, fork, hack on and contribute to the Expo tooling
 
 There are two pieces here: the Expo app and Expo CLI. When you start an app with Expo CLI, it spawns and manages two server processes in the background: the Expo Development Server and the React Native Packager Server.
 
-![](/static/images/fetch-app-from-xde.png)
+![](/static/images/fetch-app-development.png)
 
 > **Note:** Expo CLI also spawns a tunnel process, which allows devices outside of your LAN to access the above servers without you needing to change your firewall settings. If you want to learn more, see [ngrok](https://ngrok.com/).
 
