@@ -39,7 +39,9 @@ jobs:
         uses: actions/cache@v2
         id: node-modules-cache
         with:
-          path: node_modules
+          path: |
+            **/node_modules
+            !tools
           key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
       - name: 🧶 Install node modules in root dir
         if: steps.node-modules-cache.outputs.cache-hit != 'true'
