@@ -57,15 +57,16 @@ export class BarCodeScanner extends React.Component {
         return (React.createElement(ExpoBarCodeScannerView, Object.assign({}, nativeProps, { onBarCodeScanned: this.onObjectDetected(onBarCodeScanned) })));
     }
     convertNativeProps(props) {
-        return Object.entries(props).reduce((prev, [key, value]) => {
+        const nativeProps = {};
+        for (const [key, value] of Object.entries(props)) {
             if (typeof value === 'string' && BarCodeScanner.ConversionTables[key]) {
-                value = BarCodeScanner.ConversionTables[key][value];
+                nativeProps[key] = BarCodeScanner.ConversionTables[key][value];
             }
-            return {
-                ...prev,
-                [key]: value,
-            };
-        }, {});
+            else {
+                nativeProps[key] = value;
+            }
+        }
+        return nativeProps;
     }
 }
 BarCodeScanner.Constants = {
