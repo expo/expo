@@ -26,7 +26,7 @@ public class SelectionPolicyNewestTest {
 
   @Test
   public void testSelectUpdatesToDelete_onlyOneUpdate() {
-    List<UpdateEntity> updatesToDelete = selectionPolicy.selectUpdatesToDelete(Collections.singletonList(update1), update1);
+    List<UpdateEntity> updatesToDelete = selectionPolicy.selectUpdatesToDelete(Collections.singletonList(update1), update1, null);
 
     Assert.assertEquals(0, updatesToDelete.size());
   }
@@ -35,8 +35,8 @@ public class SelectionPolicyNewestTest {
   public void testSelectUpdatesToDelete_olderUpdates() {
     List<UpdateEntity> updatesToDelete = selectionPolicy.selectUpdatesToDelete(
       Arrays.asList(update1, update2, update3),
-      update3
-    );
+      update3,
+      null);
 
     Assert.assertEquals(1, updatesToDelete.size());
     Assert.assertTrue(updatesToDelete.contains(update1));
@@ -48,8 +48,8 @@ public class SelectionPolicyNewestTest {
   public void testSelectUpdatesToDelete_newerUpdates() {
     List<UpdateEntity> updatesToDelete = selectionPolicy.selectUpdatesToDelete(
       Arrays.asList(update1, update2),
-      update1
-    );
+      update1,
+      null);
 
     Assert.assertEquals(0, updatesToDelete.size());
   }
@@ -58,8 +58,8 @@ public class SelectionPolicyNewestTest {
   public void testSelectUpdatesToDelete_olderAndNewerUpdates() {
     List<UpdateEntity> updatesToDelete = selectionPolicy.selectUpdatesToDelete(
       Arrays.asList(update1, update2, update3, update4, update5),
-      update4
-    );
+      update4,
+      null);
 
     Assert.assertEquals(2, updatesToDelete.size());
     Assert.assertTrue(updatesToDelete.contains(update1));

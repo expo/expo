@@ -1,17 +1,17 @@
-//  Copyright © 2019 650 Industries. All rights reserved.
+//  Copyright © 2021 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesConfig.h>
-#import <EXUpdates/EXUpdatesSelectionPolicyNewest.h>
+#import <EXUpdates/EXUpdatesSelectionPolicyFilterAware.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXUpdatesSelectionPolicyNewest ()
+@interface EXUpdatesSelectionPolicyFilterAware ()
 
 @property (nonatomic, strong) NSArray<NSString *> *runtimeVersions;
 
 @end
 
-@implementation EXUpdatesSelectionPolicyNewest
+@implementation EXUpdatesSelectionPolicyFilterAware
 
 - (instancetype)initWithRuntimeVersions:(NSArray<NSString *> *)runtimeVersions
 {
@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
   EXUpdatesUpdate *runnableUpdate;
   NSDate *runnableUpdateCommitTime;
   for (EXUpdatesUpdate *update in updates) {
-    if (![_runtimeVersions containsObject:update.runtimeVersion]) {
+    if (![_runtimeVersions containsObject:update.runtimeVersion] || ![self doesUpdate:update matchFilters:filters]) {
       continue;
     }
     NSDate *commitTime = update.commitTime;
@@ -51,17 +51,26 @@ NS_ASSUME_NONNULL_BEGIN
 
   NSMutableArray<EXUpdatesUpdate *> *updatesToDelete = [NSMutableArray new];
   // keep the launched update and one other, the next newest, to be safe and make rollbacks faster
+  // keep the next newest update that matches all the manifest filters, unless no other updates do
+  // in which case, keep the next newest across all updates
   EXUpdatesUpdate *nextNewestUpdate;
+  EXUpdatesUpdate *nextNewestUpdateMatchingFilters;
   for (EXUpdatesUpdate *update in updates) {
     if ([launchedUpdate.commitTime compare:update.commitTime] == NSOrderedDescending) {
       [updatesToDelete addObject:update];
       if (!nextNewestUpdate || [update.commitTime compare:nextNewestUpdate.commitTime] == NSOrderedDescending) {
         nextNewestUpdate = update;
       }
+      if ([self doesUpdate:update matchFilters:filters] &&
+          (!nextNewestUpdateMatchingFilters || [update.commitTime compare:nextNewestUpdateMatchingFilters.commitTime] == NSOrderedDescending)) {
+        nextNewestUpdateMatchingFilters = update;
+      }
     }
   }
 
-  if (nextNewestUpdate) {
+  if (nextNewestUpdateMatchingFilters) {
+    [updatesToDelete removeObject:nextNewestUpdateMatchingFilters];
+  } else if (nextNewestUpdate) {
     [updatesToDelete removeObject:nextNewestUpdate];
   }
   return updatesToDelete;
@@ -70,12 +79,49 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)shouldLoadNewUpdate:(nullable EXUpdatesUpdate *)newUpdate withLaunchedUpdate:(nullable EXUpdatesUpdate *)launchedUpdate filters:(nullable NSDictionary *)filters
 {
   if (!newUpdate) {
-    return false;
+    return NO;
   }
+  // if the new update doesn't match its own filters, we shouldn't load it
+  if (![self doesUpdate:newUpdate matchFilters:filters]) {
+    return NO;
+  }
+
   if (!launchedUpdate) {
-    return true;
+    return YES;
+  }
+  // if the current update doesn't pass the manifest filters
+  // we should load the new update no matter the commitTime
+  if (![self doesUpdate:launchedUpdate matchFilters:filters]) {
+    return YES;
   }
   return [launchedUpdate.commitTime compare:newUpdate.commitTime] == NSOrderedAscending;
+}
+
+- (BOOL)doesUpdate:(EXUpdatesUpdate *)update matchFilters:(nullable NSDictionary *)filters
+{
+  if (!filters || !update.metadata) {
+    return NO;
+  }
+
+  NSDictionary *updateMetadata = update.metadata[@"updateMetadata"];
+  if (!updateMetadata || ![updateMetadata isKindOfClass:[NSDictionary class]]) {
+    return NO;
+  }
+
+  __block BOOL passes = YES;
+  [filters enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+    id valueFromManifest = updateMetadata[key];
+    if (valueFromManifest) {
+      passes = [obj isEqual:valueFromManifest];
+    }
+
+    // once an update fails one filter, break early; we don't need to check the rest
+    if (!passes) {
+      *stop = YES;
+    }
+  }];
+
+  return passes;
 }
 
 @end
