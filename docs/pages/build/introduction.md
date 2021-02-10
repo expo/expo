@@ -9,6 +9,8 @@ It makes building your apps for distribution super easy by providing defaults th
 
 It's the next generation of the [`expo build:[ios/android]`](/distribution/building-standalone-apps.md) command &mdash; designed to work for any native project, whether or not you also use the Managed workflow.
 
+> Managed workflow support on EAS Build is currently experimental and we recommend that you do not depend on it for production. You can keep using `expo build` for managed projects and use EAS Build for your bare workflow projects. Better support for managed projects on EAS Build is coming at the end of Q1 2021.
+
 ### Get started
 
 - [Creating your first build](setup.md): it should only take a few minutes in total to get up and running for iOS and/or Android.
