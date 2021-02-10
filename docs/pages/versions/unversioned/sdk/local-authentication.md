@@ -56,7 +56,7 @@ Determine what kind of authentication is enrolled on the device.
 
 #### Returns
 
-Returns a promise resolving to value `LocalAuthentication.SecurityLevel.{NONE, SECRET, BIOMETRIC}`. A value of `0` indicates no enrolled authentication, `1` indicates non-biometric authentication (e.g. PIN, Pattern), `2` indicates biometric authentication.
+Returns a promise resolving to value `LocalAuthentication.SecurityLevel.{NONE, SECRET, BIOMETRIC}`. A value of `NONE` indicates no enrolled authentication, `SECRET` indicates non-biometric authentication (e.g. PIN, Pattern), `BIOMETRIC` indicates biometric authentication.
 Note that on Android devices prior to M, `SECRET` can be returned if only the SIM lock has been enrolled, which is not the method that `LocalAuthentication.authenticateAsync` prompts.
 
 ### `LocalAuthentication.authenticateAsync(options)`
