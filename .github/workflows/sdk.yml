@@ -35,18 +35,20 @@ jobs:
       - name: ⬇️ Fetch commits from base branch
         run: git fetch origin ${{ github.event.before || github.base_ref || 'master' }}:${{ github.event.before || github.base_ref || 'master' }} --depth 100
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
-      - name: 🧶 Restore node modules in root dir
+      - name: ♻️ Restore workspace node modules
         uses: actions/cache@v2
         id: node-modules-cache
         with:
           path: |
+            # See "workspaces" → "packages" in the root package.json for the source of truth of
+            # which node_modules are affected by the root yarn.lock
             **/node_modules
             !tools
           key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
       - name: 🧶 Install node modules in root dir
         if: steps.node-modules-cache.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
-      - name: 🧶 Restore node modules in tools
+      - name: ♻️ Restore node modules in tools
         uses: actions/cache@v2
         with:
           path: tools/node_modules
