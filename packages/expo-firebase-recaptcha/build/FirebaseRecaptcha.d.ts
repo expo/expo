@@ -16,7 +16,17 @@ interface Props extends React.ComponentProps<typeof WebView> {
 declare function FirebaseRecaptcha(props: Props): JSX.Element | null;
 declare namespace FirebaseRecaptcha {
     var defaultProps: {
-        firebaseConfig: void | IFirebaseOptions;
+        firebaseConfig: void | Partial<{
+            appId: string;
+            apiKey: string;
+            databaseURL: string;
+            trackingId: string;
+            messagingSenderId: string;
+            storageBucket: string;
+            projectId: string;
+            authDomain: string;
+            measurementId: string;
+        }>;
     };
 }
 export default FirebaseRecaptcha;

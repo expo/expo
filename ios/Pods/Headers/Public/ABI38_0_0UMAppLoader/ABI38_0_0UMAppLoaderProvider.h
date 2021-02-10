@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI38_0_0/Expo/UMAppLoader/ABI38_0_0UMAppLoader/ABI38_0_0UMAppLoaderProvider.h

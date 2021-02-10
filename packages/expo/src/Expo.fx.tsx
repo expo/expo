@@ -75,27 +75,30 @@ if (NativeModulesProxy.ExpoUpdates?.isMissingRuntimeVersion) {
   }
 }
 
-// Only enable the fast refresh indicator for managed iOS apps in dev mode.
-if (isManagedEnvironment && __DEV__ && Platform.OS === 'ios') {
-  // add the dev app container wrapper component on ios
-  // @ts-ignore
-  AppRegistry.setWrapperComponentProvider(() => DevAppContainer);
+// Having two if statements will enable terser to remove the entire block.
+if (__DEV__) {
+  // Only enable the fast refresh indicator for managed iOS apps in dev mode.
+  if (isManagedEnvironment && Platform.OS === 'ios') {
+    // add the dev app container wrapper component on ios
+    // @ts-ignore
+    AppRegistry.setWrapperComponentProvider(() => DevAppContainer);
 
-  // @ts-ignore
-  const originalSetWrapperComponentProvider = AppRegistry.setWrapperComponentProvider;
+    // @ts-ignore
+    const originalSetWrapperComponentProvider = AppRegistry.setWrapperComponentProvider;
 
-  // @ts-ignore
-  AppRegistry.setWrapperComponentProvider = provider => {
-    function PatchedProviderComponent(props: any) {
-      const ProviderComponent = provider();
+    // @ts-ignore
+    AppRegistry.setWrapperComponentProvider = provider => {
+      function PatchedProviderComponent(props: any) {
+        const ProviderComponent = provider();
 
-      return (
-        <DevAppContainer>
-          <ProviderComponent {...props} />
-        </DevAppContainer>
-      );
-    }
+        return (
+          <DevAppContainer>
+            <ProviderComponent {...props} />
+          </DevAppContainer>
+        );
+      }
 
-    originalSetWrapperComponentProvider(() => PatchedProviderComponent);
-  };
+      originalSetWrapperComponentProvider(() => PatchedProviderComponent);
+    };
+  }
 }

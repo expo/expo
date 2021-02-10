@@ -1,1 +1,0 @@
-../../../../../versioned-react-native/ABI38_0_0/ReactNative/Libraries/Text/BaseText/ABI38_0_0RCTBaseTextViewManager.h

@@ -143,7 +143,7 @@ public class DatabaseLauncher implements Launcher {
       filteredLaunchableUpdates.add(update);
     }
 
-    return mSelectionPolicy.selectUpdateToLaunch(filteredLaunchableUpdates);
+    return mSelectionPolicy.selectUpdateToLaunch(filteredLaunchableUpdates, null);
   }
 
   private File ensureAssetExists(AssetEntity asset, UpdatesDatabase database, Context context) {

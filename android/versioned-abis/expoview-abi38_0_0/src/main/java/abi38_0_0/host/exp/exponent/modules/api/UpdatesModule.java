@@ -96,7 +96,7 @@ public class UpdatesModule extends ReactContextBaseJavaModule {
             return;
           }
 
-          if (appLoader.getSelectionPolicy().shouldLoadNewUpdate(manifest.getUpdateEntity(), launchedUpdate)) {
+          if (appLoader.getSelectionPolicy().shouldLoadNewUpdate(manifest.getUpdateEntity(), launchedUpdate, null)) {
             promise.resolve(manifest.getRawManifestJson().toString());
           } else {
             promise.resolve(false);
@@ -135,8 +135,8 @@ public class UpdatesModule extends ReactContextBaseJavaModule {
             public boolean onManifestLoaded(Manifest manifest) {
               boolean isNew = appLoader.getSelectionPolicy().shouldLoadNewUpdate(
                 manifest.getUpdateEntity(),
-                appLoader.getLauncher().getLaunchedUpdate()
-              );
+                appLoader.getLauncher().getLaunchedUpdate(),
+                null);
               if (isNew) {
                 sendEventToJS(AppLoader.UPDATE_DOWNLOAD_START_EVENT, null);
               }

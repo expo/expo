@@ -224,7 +224,7 @@ public class LoaderTask {
       // so we can launch it
       UpdateEntity embeddedUpdate = EmbeddedLoader.readEmbeddedManifest(context, mConfiguration).getUpdateEntity();
       UpdateEntity launchableUpdate = launcher.getLaunchableUpdate(database, context);
-      if (mSelectionPolicy.shouldLoadNewUpdate(embeddedUpdate, launchableUpdate)) {
+      if (mSelectionPolicy.shouldLoadNewUpdate(embeddedUpdate, launchableUpdate, null)) {
         new EmbeddedLoader(context, mConfiguration, database, mDirectory).loadEmbeddedUpdate();
       }
     }
@@ -261,7 +261,7 @@ public class LoaderTask {
           public boolean onManifestLoaded(Manifest manifest) {
             if (mSelectionPolicy.shouldLoadNewUpdate(
                   manifest.getUpdateEntity(),
-                  mCandidateLauncher == null ? null : mCandidateLauncher.getLaunchedUpdate())) {
+                  mCandidateLauncher == null ? null : mCandidateLauncher.getLaunchedUpdate(), null)) {
               mIsUpToDate = false;
               mCallback.onRemoteManifestLoaded(manifest);
               return true;

@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI40_0_0/Expo/EXUpdates/ABI40_0_0EXUpdates/AppLauncher/ABI40_0_0EXUpdatesSelectionPolicyNewest.h
