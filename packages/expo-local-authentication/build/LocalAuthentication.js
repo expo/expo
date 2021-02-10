@@ -1,8 +1,8 @@
 import { UnavailabilityError } from '@unimodules/core';
 import invariant from 'invariant';
 import ExpoLocalAuthentication from './ExpoLocalAuthentication';
-import { AuthenticationType, } from './LocalAuthentication.types';
-export { AuthenticationType };
+import { AuthenticationType, SecurityLevel, } from './LocalAuthentication.types';
+export { AuthenticationType, SecurityLevel };
 export async function hasHardwareAsync() {
     if (!ExpoLocalAuthentication.hasHardwareAsync) {
         throw new UnavailabilityError('expo-local-authentication', 'hasHardwareAsync');
@@ -20,6 +20,12 @@ export async function isEnrolledAsync() {
         throw new UnavailabilityError('expo-local-authentication', 'isEnrolledAsync');
     }
     return await ExpoLocalAuthentication.isEnrolledAsync();
+}
+export async function getEnrolledLevelAsync() {
+    if (!ExpoLocalAuthentication.getEnrolledLevelAsync) {
+        throw new UnavailabilityError('expo-local-authentication', 'getEnrolledLevelAsync');
+    }
+    return await ExpoLocalAuthentication.getEnrolledLevelAsync();
 }
 export async function authenticateAsync(options = {}) {
     if (!ExpoLocalAuthentication.authenticateAsync) {
