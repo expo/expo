@@ -1,5 +1,4 @@
 import { UnavailabilityError } from '@unimodules/core';
-import mapValues from 'lodash/mapValues';
 import * as React from 'react';
 import { Platform, ViewProps } from 'react-native';
 import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
@@ -133,15 +132,16 @@ export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
   };
 
   convertNativeProps(props: BarCodeScannerProps) {
-    const newProps = mapValues(props, this.convertProp);
-    return newProps;
-  }
+    return Object.entries(props).reduce<BarCodeScannerProps>((prev, [key, value]) => {
+      if (typeof value === 'string' && BarCodeScanner.ConversionTables[key]) {
+        value = BarCodeScanner.ConversionTables[key][value];
+      }
 
-  convertProp(value: any, key: string): any {
-    if (typeof value === 'string' && BarCodeScanner.ConversionTables[key]) {
-      return BarCodeScanner.ConversionTables[key][value];
-    }
-    return value;
+      return {
+        ...prev,
+        [key]: value,
+      };
+    }, {});
   }
 }
 

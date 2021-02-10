@@ -1,5 +1,4 @@
 import { Platform, UnavailabilityError } from '@unimodules/core';
-import mapValues from 'lodash/mapValues';
 import * as React from 'react';
 import { findNodeHandle } from 'react-native';
 import { PermissionStatus, } from './Camera.types';
@@ -31,12 +30,23 @@ function ensureRecordingOptions(options) {
     }
     return recordingOptions;
 }
+function convertNativeProps(props) {
+    return Object.entries(props).reduce((prev, [key, value]) => {
+        if (typeof value === 'string' && Camera.ConversionTables[key]) {
+            value = Camera.ConversionTables[key][value];
+        }
+        return {
+            ...prev,
+            [key]: value,
+        };
+    }, {});
+}
 function ensureNativeProps(options) {
     let props = options || {};
     if (!props || typeof props !== 'object') {
         props = {};
     }
-    const newProps = mapValues(props, convertProp);
+    const newProps = convertNativeProps(props);
     const propsKeys = Object.keys(newProps);
     // barCodeTypes is deprecated
     if (!propsKeys.includes('barCodeScannerSettings') && propsKeys.includes('barCodeTypes')) {
@@ -62,12 +72,6 @@ function ensureNativeProps(options) {
         delete newProps.poster;
     }
     return newProps;
-}
-function convertProp(value, key) {
-    if (typeof value === 'string' && Camera.ConversionTables[key]) {
-        return Camera.ConversionTables[key][value];
-    }
-    return value;
 }
 function _onPictureSaved({ nativeEvent, }) {
     const { id, data } = nativeEvent;
