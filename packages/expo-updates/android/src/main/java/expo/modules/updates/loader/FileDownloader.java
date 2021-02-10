@@ -94,23 +94,32 @@ public class FileDownloader {
           }
 
           try {
-            String manifestString = response.body().string();
-            JSONObject manifestJson = extractManifest(manifestString, configuration);
+            String updateResponseBody = response.body().string();
+            JSONObject updateResponseJson = extractUpdateResponseJson(updateResponseBody, configuration);
 
-            boolean isSigned = manifestJson.has("manifestString") && manifestJson.has("signature");
+            final boolean isSignatureInBody = updateResponseJson.has("manifestString") && updateResponseJson.has("signature");
+            final String bodySignature = isSignatureInBody ? updateResponseJson.getString("signature") : null;
+            final String signature = isSignatureInBody ? bodySignature : response.header("expo-manifest-signature");
+            
+            /**
+             * The updateResponseJson is just the manifest when it is unsigned, or the signature is sent as a header.
+             * If the signature is in the body, the updateResponseJson looks like:
+             *  {
+             *    manifestString: string;
+             *    signature: string;
+             *  }
+             */
+            final String manifestString = isSignatureInBody ? updateResponseJson.getString("manifestString") : updateResponseBody;
+            JSONObject preManifest = new JSONObject(manifestString);
+
             // XDL serves unsigned manifests with the `signature` key set to "UNSIGNED".
             // We should treat these manifests as unsigned rather than signed with an invalid signature.
-            if (isSigned && "UNSIGNED".equals(manifestJson.getString("signature"))) {
-              isSigned = false;
-              manifestJson = new JSONObject(manifestJson.getString("manifestString"));
-              manifestJson.put("isVerified", false);
-            }
+            boolean isUnsignedFromXDL = "UNSIGNED".equals(signature);
 
-            if (isSigned) {
-              final String innerManifestString = manifestJson.getString("manifestString");
+            if (signature != null && !isUnsignedFromXDL) {
               Crypto.verifyPublicRSASignature(
-                  innerManifestString,
-                  manifestJson.getString("signature"),
+                  manifestString,
+                  signature,
                   new Crypto.RSASignatureListener() {
                     @Override
                     public void onError(Exception e, boolean isNetworkError) {
@@ -121,9 +130,8 @@ public class FileDownloader {
                     public void onCompleted(boolean isValid) {
                       if (isValid) {
                         try {
-                          JSONObject manifestJson = new JSONObject(innerManifestString);
-                          manifestJson.put("isVerified", true);
-                          Manifest manifest = ManifestFactory.getManifest(manifestJson, configuration);
+                          preManifest.put("isVerified", true);
+                          Manifest manifest = ManifestFactory.getManifest(preManifest, configuration);
                           callback.onSuccess(manifest);
                         } catch (JSONException e) {
                           callback.onFailure("Failed to parse manifest data", e);
@@ -135,7 +143,8 @@ public class FileDownloader {
                   }
               );
             } else {
-              Manifest manifest = ManifestFactory.getManifest(manifestJson, configuration);
+              preManifest.put("isVerified", false);
+              Manifest manifest = ManifestFactory.getManifest(preManifest, configuration);
               callback.onSuccess(manifest);
             }
           } catch (Exception e) {
@@ -204,7 +213,7 @@ public class FileDownloader {
     });
   }
 
-  private static JSONObject extractManifest(String manifestString, UpdatesConfiguration configuration) throws IOException {
+  private static JSONObject extractUpdateResponseJson(String manifestString, UpdatesConfiguration configuration) throws IOException {
     try {
       return new JSONObject(manifestString);
     } catch (JSONException e) {
