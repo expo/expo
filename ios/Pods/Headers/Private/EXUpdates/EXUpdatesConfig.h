@@ -1,1 +1,0 @@
-../../../../../packages/expo-updates/ios/EXUpdates/EXUpdatesConfig.h

@@ -1,8 +1,84 @@
 import { ViewProps } from 'react-native';
 import { PermissionResponse, PermissionStatus, PermissionExpiration } from 'unimodules-permissions-interface';
 export declare enum CameraType {
+    /**
+     * @platforms ios, android, web
+     */
     front = "front",
+    /**
+     * @platforms ios, android, web
+     */
     back = "back"
+}
+export declare enum FlashMode {
+    /**
+     * @platforms ios, android, web
+     */
+    on = "on",
+    /**
+     * @platforms ios, android, web
+     */
+    off = "off",
+    /**
+     * @platforms ios, android, web
+     */
+    auto = "auto",
+    /**
+     * @platforms ios, android, web
+     */
+    torch = "torch"
+}
+export declare enum AutoFocus {
+    /**
+     * @platforms ios, android, web
+     */
+    on = "on",
+    /**
+     * @platforms ios, android, web
+     */
+    off = "off",
+    /**
+     * @platforms web
+     */
+    auto = "auto",
+    /**
+     * @platforms web
+     */
+    singleShot = "singleShot"
+}
+export declare enum WhiteBalance {
+    /**
+     * @platforms ios, android, web
+     */
+    auto = "auto",
+    /**
+     * @platforms ios, android
+     */
+    sunny = "sunny",
+    /**
+     * @platforms ios, android
+     */
+    cloudy = "cloudy",
+    /**
+     * @platforms ios, android
+     */
+    shadow = "shadow",
+    /**
+     * @platforms ios, android
+     */
+    incandescent = "incandescent",
+    /**
+     * @platforms ios, android
+     */
+    fluorescent = "fluorescent",
+    /**
+     * @platforms web
+     */
+    continuous = "continuous",
+    /**
+     * @platforms web
+     */
+    manual = "manual"
 }
 export declare enum ImageType {
     png = "png",
@@ -90,15 +166,15 @@ export declare type FaceDetectionResult = {
     faces: any[];
 };
 export declare type CameraProps = ViewProps & {
+    type?: number | keyof typeof CameraType;
+    flashMode?: number | keyof typeof FlashMode;
+    whiteBalance?: number | keyof typeof WhiteBalance;
+    autoFocus?: boolean | number | keyof typeof AutoFocus;
     zoom?: number;
     ratio?: string;
     focusDepth?: number;
-    type?: number | string;
     onCameraReady?: Function;
     useCamera2Api?: boolean;
-    flashMode?: number | string;
-    whiteBalance?: number | string;
-    autoFocus?: string | boolean | number;
     pictureSize?: string;
     videoStabilizationMode?: number;
     onMountError?: (event: CameraMountError) => void;

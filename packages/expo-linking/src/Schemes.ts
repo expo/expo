@@ -14,7 +14,11 @@ export function hasCustomScheme(): boolean {
   return false;
 }
 
-function getSchemes(config: { scheme?: string | string[] }): string[] {
+type SchemeConfig = {
+  scheme?: string | string[];
+};
+
+function getSchemes(config: SchemeConfig): string[] {
   if (config) {
     if (Array.isArray(config.scheme)) {
       const validate = (value: any): value is string => {
@@ -57,11 +61,11 @@ export function collectManifestSchemes(): string[] {
   // They'll be added when we drop support for `expo build` or decide
   // to have them only work with `eas build`.
   const platformManifest =
-    Platform.select({
+    (Platform.select<any>({
       ios: Constants.manifest?.ios,
       android: Constants.manifest?.android,
       web: {},
-    }) ?? {};
+    }) as SchemeConfig) ?? {};
 
   const schemes = getSchemes(Constants.manifest as any);
 
