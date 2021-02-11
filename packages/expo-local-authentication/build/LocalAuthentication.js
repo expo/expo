@@ -31,11 +31,6 @@ export async function authenticateAsync(options = {}) {
     if (!ExpoLocalAuthentication.authenticateAsync) {
         throw new UnavailabilityError('expo-local-authentication', 'authenticateAsync');
     }
-    // Warn if using an old API - to be removed in SDK35.
-    if (typeof options === 'string') {
-        console.warn('String argument in LocalAuthentication.authenticateAsync has been deprecated. Please use options object with `promptMessage` key instead.');
-        options = { promptMessage: options };
-    }
     if (options.hasOwnProperty('promptMessage')) {
         invariant(typeof options.promptMessage === 'string' && options.promptMessage.length, 'LocalAuthentication.authenticateAsync : `options.promptMessage` must be a non-empty string.');
     }
