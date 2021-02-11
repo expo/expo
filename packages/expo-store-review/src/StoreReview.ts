@@ -1,4 +1,4 @@
-import { Platform, deprecate } from '@unimodules/core';
+import { Platform } from '@unimodules/core';
 import Constants from 'expo-constants';
 import * as Linking from 'expo-linking';
 
@@ -12,15 +12,6 @@ import StoreReview from './ExpoStoreReview';
  */
 export async function isAvailableAsync(): Promise<boolean> {
   return StoreReview.isAvailableAsync();
-}
-
-/**
- * @deprecated use `isAvailableAsync()` instead
- */
-export function isSupported(): void {
-  deprecate('expo-store-review', 'StoreReview.isSupported', {
-    replacement: 'StoreReview.isAvailableAsync',
-  });
 }
 
 /**
