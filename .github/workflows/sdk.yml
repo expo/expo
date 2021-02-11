@@ -42,8 +42,12 @@ jobs:
           path: |
             # See "workspaces" → "packages" in the root package.json for the source of truth of
             # which node_modules are affected by the root yarn.lock
-            **/node_modules
-            !tools
+            node_modules
+            apps/*/node_modules
+            home/*/node_modules
+            packages/*/node_modules
+            packages/@unimodules/*/node_modules
+            react-native-lab/react-native/*/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
       - name: 🧶 Install node modules in root dir
         if: steps.node-modules-cache.outputs.cache-hit != 'true'
