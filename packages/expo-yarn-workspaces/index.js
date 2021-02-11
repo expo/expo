@@ -20,7 +20,11 @@ const path = require('path');
 exports.createMetroConfiguration = function createMetroConfiguration(projectPath) {
   projectPath = path.resolve(projectPath);
   debug(`Creating a Metro configuration for the project at %s`, projectPath);
-  const defaultConfig = getDefaultConfig(projectPath);
+  const {
+    // Remove the React Native reporter.
+    reporter,
+    ...defaultConfig
+  } = getDefaultConfig(projectPath);
 
   let watchFolders;
   let extraNodeModules;
@@ -46,7 +50,6 @@ exports.createMetroConfiguration = function createMetroConfiguration(projectPath
 
     // Include npm packages from the workspace root, where packages are hoisted
     watchFolders,
-
     resolver: {
       ...defaultConfig.resolver,
       // test-suite includes a db asset
