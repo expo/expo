@@ -6,13 +6,13 @@ In this guide, you'll learn how to build a ready-to-submit binary for the Apple 
 
 ## Prerequisites
 
-
 EAS Build is a brand new and rapidly evolving service. It can't do everything yet, so before you set out to create a build for your project we recommend consulting the [limitations](/build-reference/limitations.md) page and the other prequisites below.
 
 <details><summary><h4>📦 A React Native iOS and/or Android project that you want to build.</h4></summary>
 <p>
 
 Don't have a project yet? No problem: it's quick and easy to create a "Hello world" app that you can use with this guide.
+
 <div style={{marginTop: -10}} />
 
 - Install Expo CLI by running `npm install -g expo-cli` (or `yarn global add expo-cli`).
@@ -24,7 +24,7 @@ Don't have a project yet? No problem: it's quick and easy to create a "Hello wor
 </p>
 </details>
 
-> EAS Build has early and rapidly improving support for managed workflow projects, but we recommend using it with bare React Native projects for best results right now.
+> Support for managed workflow projects is rapidly improving, but not yet ready for production, so we recommend using it with bare React Native projects for best results right now.
 
 <details><summary><h4>💡 An Expo account with an EAS Priority Plan subscription.</h4></summary>
 <p>
@@ -40,7 +40,7 @@ Don't have a project yet? No problem: it's quick and easy to create a "Hello wor
 <details><summary><h4>🍎 If you want to build for iOS: Apple Developer Program membership.</h4></summary>
 <p>
 
-- If you are going to use EAS Build to create release builds for the Apple App Store, this requires access to an account with a $99 USD [Apple Developer Program](https://developer.apple.com/programs) membership.
+- If you are going to use EAS Build to create release builds for the Apple App Store, this requires access to an account with a \$99 USD [Apple Developer Program](https://developer.apple.com/programs) membership.
 
 </p>
 </details>
