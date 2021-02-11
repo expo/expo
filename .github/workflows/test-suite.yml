@@ -72,6 +72,18 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: yarn install --frozen-lockfile
+      - name: ♻️ Restore apps/bare-expo/ios/Pods from cache
+        uses: actions/cache@v2
+        id: pods-cache
+        with:
+          path: 'apps/bare-expo/ios/Pods'
+          key: ${{ runner.os }}-bare-expo-pods-${{ hashFiles('apps/bare-expo/ios/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bare-expo-pods-
+      - name: 🥥 Install pods in apps/bare-expo/ios
+        run: pod install
+        if: steps.pods-cache.outputs.cache-hit != 'true'
+        working-directory: apps/bare-expo/ios
       - name: Clean Detox
         run: yarn detox:clean
         working-directory: apps/bare-expo
