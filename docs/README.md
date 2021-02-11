@@ -92,6 +92,20 @@ You can add images and assets to the `public/static` directory. They'll be serve
 
 Always try to use the existing components and features in markdown. Create a new component or use a component from NPM, unless there is no other option.
 
+### Algolia Docsearch
+
+We use Algolia Docsearch as the search engine for our docs. Right now, it's searching for any keywords with the proper `version` tag based on the current location. This is set in the `components/DocumentationPage` header.
+
+In `components/plugins/AlgoliaSearch`, you can see the `facetFilters` set to `[['version:none', 'version:{currentVersion}']]`. Translated to English, this means "Search on all pages where `version` is `none`, or the currently selected version.".
+
+- All unversioned pages use the version tag `none`.
+- All versioned pages use the SDK version (e.g. `v40.0.0` or `v39.0.0`).
+- All `hideFromSearch: true` pages don't have the version tag.
+
+#### Excluding pages from Docsearch
+
+To ignore a page from the search result, use `hideFromSearch: true` on that page. This removes the `<meta name="docsearch:version">` tag from that page and filters it from our facet-based search.
+
 ### Quirks
 
 - You can't have curly brace without quotes: \`{}\` -> `{}`
