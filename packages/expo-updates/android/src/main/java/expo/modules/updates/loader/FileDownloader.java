@@ -98,7 +98,7 @@ public class FileDownloader {
             JSONObject updateResponseJson = extractUpdateResponseJson(updateResponseBody, configuration);
 
             final boolean isSignatureInBody = updateResponseJson.has("manifestString") && updateResponseJson.has("signature");
-            final String bodySignature = isSignatureInBody ? updateResponseJson.getString("signature") : null;
+            final String bodySignature = updateResponseJson.optString("signature");
             final String signature = isSignatureInBody ? bodySignature : response.header("expo-manifest-signature");
             
             /**
