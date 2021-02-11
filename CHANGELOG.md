@@ -9,6 +9,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🛠 Breaking changes
 
+- Dropped support for importing undocumented method `apisAreAvailable` from `expo`. ([#11903](https://github.com/expo/expo/pull/11903) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

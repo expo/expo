@@ -1,7 +1,6 @@
 import './Expo.fx';
 import * as Logs from './logs/Logs';
 export { Logs };
-export { default as apisAreAvailable } from './apisAreAvailable';
 export { default as registerRootComponent } from './launch/registerRootComponent';
 // The following should all be extracted from this package
 export { default as DangerZone } from './DangerZone';
