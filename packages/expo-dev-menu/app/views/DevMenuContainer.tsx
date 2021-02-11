@@ -110,7 +110,7 @@ export default class DevMenuContainer extends React.PureComponent<Props, any> {
     setApolloSession(session);
     await LocalStorage.saveSessionAsync(session);
 
-    this.setState({ isAuthenticated: !session });
+    this.setState({ isAuthenticated: session !== null });
     if (!session) {
       ApolloClient.resetStore();
     }
