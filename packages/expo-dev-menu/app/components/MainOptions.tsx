@@ -6,6 +6,7 @@ import ListLink from './ListLink';
 function MainOptions() {
   return (
     <View style={styles.group}>
+      <ListLink route="Profile" label="Profile" glyphName="account" />
       <ListLink route="Settings" label="Settings" glyphName="settings-outline" />
       <ListLink route="Test" label="Navigation and scroll test" glyphName="test-tube" />
     </View>
