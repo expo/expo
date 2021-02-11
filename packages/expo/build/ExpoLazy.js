@@ -3,12 +3,6 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-Object.defineProperty(exports, "apisAreAvailable", {
-  enumerable: true,
-  get: function () {
-    return _apisAreAvailable.default;
-  }
-});
 Object.defineProperty(exports, "registerRootComponent", {
   enumerable: true,
   get: function () {
@@ -34,8 +28,6 @@ require("./Expo.fx");
 var Logs = _interopRequireWildcard(require("./logs/Logs"));
 
 exports.Logs = Logs;
-
-var _apisAreAvailable = _interopRequireDefault(require("./apisAreAvailable"));
 
 var _registerRootComponent = _interopRequireDefault(require("./launch/registerRootComponent"));
 
