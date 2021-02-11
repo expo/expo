@@ -1,14 +1,18 @@
+import { ApolloProvider } from '@apollo/client';
 import React from 'react';
 import { EventSubscription, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 
 import DevMenuContext from '../DevMenuContext';
 import * as DevMenuInternal from '../DevMenuInternal';
+import ApolloClient, { setApolloSession } from '../api/ApolloClient';
 import NavigationHeaderButton from '../components/NavigationHeaderButton';
 import DevMenuScreen from '../components/items/DevMenuScreen';
 import DevMenuMainScreen from '../screens/DevMenuMainScreen';
+import DevMenuProfile from '../screens/DevMenuProfileScreen';
 import DevMenuSettingsScreen from '../screens/DevMenuSettingsScreen';
 import DevMenuTestScreen from '../screens/DevMenuTestScreen';
+import * as LocalStorage from '../storage/LocalStorage';
 import DevMenuBottomSheet from './DevMenuBottomSheet';
 import DevMenuOnboarding from './DevMenuOnboarding';
 
@@ -41,6 +45,10 @@ function applyNavigationSettings(navigationOptions) {
 
 // @refresh
 export default class DevMenuContainer extends React.PureComponent<Props, any> {
+  state = {
+    isAuthenticated: false,
+  };
+
   ref = React.createRef<DevMenuBottomSheet>();
 
   snapPoints = [0, '60%', '75%', '90%'];
@@ -63,6 +71,15 @@ export default class DevMenuContainer extends React.PureComponent<Props, any> {
       // Collapse the bottom sheet. `onCloseEnd` will be called once it ends.
       this.collapse();
     });
+
+    const tryRestoreSession = async () => {
+      const session = await LocalStorage.getSessionAsync();
+      if (session) {
+        await this.setSession(session);
+      }
+    };
+
+    tryRestoreSession();
   }
 
   componentDidUpdate(prevProps) {
@@ -89,9 +106,20 @@ export default class DevMenuContainer extends React.PureComponent<Props, any> {
     DevMenuInternal.hideMenu();
   };
 
+  setSession = async session => {
+    setApolloSession(session);
+    await LocalStorage.saveSessionAsync(session);
+
+    this.setState({ isAuthenticated: !session });
+    if (!session) {
+      ApolloClient.resetStore();
+    }
+  };
+
   providedContext = {
     expand: this.expand,
     collapse: this.collapse,
+    setSession: this.setSession,
   };
 
   trackCallbackNode = onChange(
@@ -115,12 +143,18 @@ export default class DevMenuContainer extends React.PureComponent<Props, any> {
       component: DevMenuTestScreen,
       options: applyNavigationSettings(DevMenuTestScreen.navigationOptions),
     },
+    {
+      name: 'Profile',
+      component: DevMenuProfile,
+      options: applyNavigationSettings(DevMenuProfile.navigationOptions),
+    },
   ];
 
   render() {
     const providedContext = {
       ...this.props,
       ...this.providedContext,
+      ...this.state,
     };
 
     const devMenuScreens = (this.props.devMenuScreens as {
@@ -137,22 +171,24 @@ export default class DevMenuContainer extends React.PureComponent<Props, any> {
 
     return (
       <DevMenuContext.Provider value={providedContext}>
-        <View style={styles.bottomSheetContainer}>
-          <TouchableWithoutFeedback onPress={this.collapse}>
-            <Animated.View
-              style={[styles.bottomSheetBackground, { opacity: this.backgroundOpacity }]}
-            />
-          </TouchableWithoutFeedback>
-          <DevMenuBottomSheet
-            ref={this.ref}
-            initialSnap={0}
-            snapPoints={this.snapPoints}
-            callbackNode={this.callbackNode}
-            screens={[...this.screens, ...devMenuScreens]}>
-            <DevMenuOnboarding show={this.props.showOnboardingView} />
-          </DevMenuBottomSheet>
-        </View>
-        <Animated.Code exec={this.trackCallbackNode} />
+        <ApolloProvider client={ApolloClient}>
+          <View style={styles.bottomSheetContainer}>
+            <TouchableWithoutFeedback onPress={this.collapse}>
+              <Animated.View
+                style={[styles.bottomSheetBackground, { opacity: this.backgroundOpacity }]}
+              />
+            </TouchableWithoutFeedback>
+            <DevMenuBottomSheet
+              ref={this.ref}
+              initialSnap={0}
+              snapPoints={this.snapPoints}
+              callbackNode={this.callbackNode}
+              screens={[...this.screens, ...devMenuScreens]}>
+              <DevMenuOnboarding show={this.props.showOnboardingView} />
+            </DevMenuBottomSheet>
+          </View>
+          <Animated.Code exec={this.trackCallbackNode} />
+        </ApolloProvider>
       </DevMenuContext.Provider>
     );
   }
