@@ -136,7 +136,10 @@ export default class CameraScreen extends React.Component<{}, State> {
 
   toggleMoreOptions = () => this.setState(state => ({ showMoreOptions: !state.showMoreOptions }));
 
-  toggleFacing = () => this.setState(state => ({ type: state.type === CameraType.back ? CameraType.front : CameraType.back }));
+  toggleFacing = () =>
+    this.setState(state => ({
+      type: state.type === CameraType.back ? CameraType.front : CameraType.back,
+    }));
 
   toggleFlash = () => this.setState(state => ({ flash: flashModeOrder[state.flash] }));
 
