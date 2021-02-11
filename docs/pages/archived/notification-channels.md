@@ -1,5 +1,6 @@
 ---
 title: Notification Channels
+hideFromSearch: true
 ---
 
 > 🚨 This page is archived. Please refer to the [Push Notifications guide](../../push-notifications/overview.md) for up-to-date information.
