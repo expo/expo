@@ -42,9 +42,9 @@
   return _isStandaloneApp ? key : [NSString stringWithFormat:@"%@-%@", _experienceId, key];
 }
 
-// We must override this method so that items saved in standalone apps on SDK 39 and below,
+// We must override this method so that items saved in standalone apps on SDK 40 and below,
 // which were scoped by prefixing the validated key with the experienceId, can still be
-// found in SDK 40 and up. This override can be removed in SDK TO BE DETERMINED.
+// found in SDK 41 and up. This override can be removed in SDK 45.
 - (NSString *)_getValueWithKey:(NSString *)key withOptions:(NSDictionary *)options error:(NSError **)error
 {
   NSError *searchError;

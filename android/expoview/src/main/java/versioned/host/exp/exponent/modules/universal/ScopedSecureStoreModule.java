@@ -24,7 +24,7 @@ public class ScopedSecureStoreModule extends SecureStoreModule {
     maybeMigrateSharedPreferences();
   }
 
-  // In standalone apps on SDK 40 and below, SecureStore was initiated with scoped context, 
+  // In standalone apps on SDK 41 and below, SecureStore was initiated with scoped context, 
   // so SharedPreferences was scoped to that particular experienceId. This meant you
   // would lose data upon ejecting to bare. With this method, we can migrate apps' SecureStore
   // data from the scoped SharedPreferences SecureStore file, to unscoped, so data will persist
