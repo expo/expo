@@ -104,7 +104,7 @@ In `components/plugins/AlgoliaSearch`, you can see the `facetFilters` set to `[[
 
 #### Excluding pages from Docsearch
 
-To ignore a page from the search result, use `hideFromSearch: true` on that page. This removes the `<meta name="docsearch:version">` tag from that page, causing it to be excluded from our tag-based search.
+To ignore a page from the search result, use `hideFromSearch: true` on that page. This removes the `<meta name="docsearch:version">` tag from that page and filters it from our facet-based search.
 
 ### Quirks
 
