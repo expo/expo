@@ -24,18 +24,6 @@ export function convertNativeProps(props) {
 }
 export function ensureNativeProps(props) {
     const newProps = convertNativeProps(props);
-    const propsKeys = Object.keys(newProps);
-    // barCodeTypes is deprecated
-    if (!propsKeys.includes('barCodeScannerSettings') && propsKeys.includes('barCodeTypes')) {
-        if (__DEV__) {
-            // TODO: Remove
-            console.warn(`The "barCodeTypes" prop for Camera is deprecated and will be removed in SDK 34. Use "barCodeScannerSettings" instead.`);
-        }
-        newProps.barCodeScannerSettings = {
-            // @ts-ignore
-            barCodeTypes: newProps.barCodeTypes,
-        };
-    }
     if (newProps.onBarCodeScanned) {
         newProps.barCodeScannerEnabled = true;
     }

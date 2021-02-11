@@ -68,7 +68,6 @@
     "expo-linking": "~2.1.1",
     "expo-location": "~11.0.0",
     "expo-permissions": "~11.0.0",
-    "expo-secure-store": "~10.0.0",
     "expo-sqlite": "~9.0.0",
     "fbemitter": "^2.1.1",
     "invariant": "^2.2.2",
