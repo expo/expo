@@ -42,13 +42,13 @@
 
 - (void)testUpdatesToDelete_onlyOneUpdate
 {
-  NSArray<EXUpdatesUpdate *>* updatesToDelete = [_selectionPolicy updatesToDeleteWithLaunchedUpdate:_update1 updates:@[_update1]];
+  NSArray<EXUpdatesUpdate *>* updatesToDelete = [_selectionPolicy updatesToDeleteWithLaunchedUpdate:_update1 updates:@[_update1] filters:nil];
   XCTAssert(0 == updatesToDelete.count);
 }
 
 - (void)testUpdatesToDelete_olderUpdates
 {
-  NSArray<EXUpdatesUpdate *>* updatesToDelete = [_selectionPolicy updatesToDeleteWithLaunchedUpdate:_update3 updates:@[_update1, _update2, _update3]];
+  NSArray<EXUpdatesUpdate *>* updatesToDelete = [_selectionPolicy updatesToDeleteWithLaunchedUpdate:_update3 updates:@[_update1, _update2, _update3] filters:nil];
   XCTAssert(1 == updatesToDelete.count);
   XCTAssert([updatesToDelete containsObject:_update1]);
   XCTAssert(![updatesToDelete containsObject:_update2]);
@@ -57,13 +57,13 @@
 
 - (void)testUpdatesToDelete_newerUpdates
 {
-  NSArray<EXUpdatesUpdate *>* updatesToDelete = [_selectionPolicy updatesToDeleteWithLaunchedUpdate:_update1 updates:@[_update1, _update2]];
+  NSArray<EXUpdatesUpdate *>* updatesToDelete = [_selectionPolicy updatesToDeleteWithLaunchedUpdate:_update1 updates:@[_update1, _update2] filters:nil];
   XCTAssert(0 == updatesToDelete.count);
 }
 
 - (void)testUpdatesToDelete_olderAndNewerUpdates
 {
-  NSArray<EXUpdatesUpdate *>* updatesToDelete = [_selectionPolicy updatesToDeleteWithLaunchedUpdate:_update4 updates:@[_update1, _update2, _update3, _update4, _update5]];
+  NSArray<EXUpdatesUpdate *>* updatesToDelete = [_selectionPolicy updatesToDeleteWithLaunchedUpdate:_update4 updates:@[_update1, _update2, _update3, _update4, _update5] filters:nil];
   XCTAssert(2 == updatesToDelete.count);
   XCTAssert([updatesToDelete containsObject:_update1]);
   XCTAssert([updatesToDelete containsObject:_update2]);

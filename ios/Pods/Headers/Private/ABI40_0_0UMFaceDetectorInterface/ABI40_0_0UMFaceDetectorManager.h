@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI40_0_0/Expo/UMFaceDetectorInterface/ABI40_0_0UMFaceDetectorInterface/ABI40_0_0UMFaceDetectorManager.h

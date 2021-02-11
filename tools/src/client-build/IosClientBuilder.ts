@@ -1,6 +1,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 
+import { podInstallAsync } from '../CocoaPods';
 import { EXPO_DIR, IOS_DIR } from '../Constants';
 import { iosAppVersionAsync } from '../ProjectVersions';
 import { spawnAsync } from '../Utils';
@@ -29,6 +30,9 @@ export default class IosClientBuilder implements ClientBuilder {
   }
 
   async buildAsync() {
+    await podInstallAsync(IOS_DIR, {
+      stdio: 'inherit',
+    });
     await spawnAsync('fastlane', ['ios', 'create_simulator_build'], { stdio: 'inherit' });
   }
 

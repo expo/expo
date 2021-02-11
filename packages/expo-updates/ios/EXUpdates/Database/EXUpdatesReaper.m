@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
       NSLog(@"Error reaping updates: %@", error.localizedDescription);
       return;
     }
-    NSArray<EXUpdatesUpdate *> *updatesToDelete = [selectionPolicy updatesToDeleteWithLaunchedUpdate:launchedUpdate updates:allUpdates];
+    NSArray<EXUpdatesUpdate *> *updatesToDelete = [selectionPolicy updatesToDeleteWithLaunchedUpdate:launchedUpdate updates:allUpdates filters:nil];
     [database deleteUpdates:updatesToDelete error:&error];
     if (error) {
       NSLog(@"Error reaping updates: %@", error.localizedDescription);

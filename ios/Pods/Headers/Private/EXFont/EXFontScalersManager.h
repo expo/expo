@@ -1,1 +1,0 @@
-../../../../../packages/expo-font/ios/EXFont/Singletons/EXFontScalersManager.h

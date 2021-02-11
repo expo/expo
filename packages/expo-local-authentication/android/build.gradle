@@ -59,6 +59,5 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 dependencies {
   unimodule "unimodules-core"
 
-  api "androidx.biometric:biometric:1.0.1"
-  api "androidx.core:core:1.0.0"
+  api "androidx.biometric:biometric:1.1.0"
 }
