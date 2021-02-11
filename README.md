@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://expo.io/">
-    <img alt="expo sdk" height="128" src="./.gh-assets/banner.png">
+    <img alt="expo sdk" height="128" src="./style/banner.png">
     <h1 align="center">Expo</h1>
   </a>
 </p>
