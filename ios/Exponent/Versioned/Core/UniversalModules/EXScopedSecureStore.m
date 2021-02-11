@@ -23,13 +23,11 @@
 @implementation EXScopedSecureStore
 
 - (instancetype)initWithExperienceId:(NSString *)experienceId
+                 andConstantsBinding:(EXConstantsBinding *)constantsBinding
 {
   if (self = [super init]) {
     _experienceId = experienceId;
-    _isStandaloneApp = NO;
-  #ifdef EX_DETACHED
-    _isStandaloneApp = YES;
-  #endif
+    _isStandaloneApp = ![@"expo" isEqualToString:constantsBinding.appOwnership];
   }
   return self;
 }
