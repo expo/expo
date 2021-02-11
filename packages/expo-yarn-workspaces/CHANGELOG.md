@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Remove `activateKeepAwake` from AppEntry template. ([#11911](https://github.com/expo/expo/pull/11911) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 - Use junction symlinks on Windows to avoid admin privileges ([#11739](https://github.com/expo/expo/pull/11739) by [@byCedric](https://github.com/byCedric))
