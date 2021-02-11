@@ -348,8 +348,8 @@ CACHE_KEYS:
   EXFacebook:
     BUILD_SETTINGS_CHECKSUM:
       EXFacebook:
-        :debug: bf61fa1cbfd0da11c3e1d7e6bfe41c53
-        :release: bf61fa1cbfd0da11c3e1d7e6bfe41c53
+        :debug: fe9fd7d1fe403cc4b9c08cf8155326e7
+        :release: fe9fd7d1fe403cc4b9c08cf8155326e7
     CHECKSUM: 004a91b08a7cf2870b8522f3089d7b1178634470
     FILES:
       - "../../../../packages/expo-facebook/ios/EXFacebook/EXFacebook.h"
@@ -843,11 +843,7 @@ CACHE_KEYS:
       expo-dev-menu:
         :debug: 9aef77ac703efa43ebffa65d122b2160
         :release: 9aef77ac703efa43ebffa65d122b2160
-<<<<<<< HEAD
-    CHECKSUM: 23458ea380b3d67685db766bde78925be00627ed
-=======
     CHECKSUM: bbce00e72ede1b7308c469f288b365a9a917a173
->>>>>>> 986257b3a6d4b60c9e9befab71b7332ac6aa68a5
     FILES:
       - "../../../../packages/expo-dev-menu/assets/dev-menu-packager-host"
       - "../../../../packages/expo-dev-menu/assets/EXDevMenuApp.ios.js"
@@ -973,11 +969,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-dev-menu/vendored/react-native-reanimated/ios/Transitioning/RCTConvert+DevMenuREATransition.m"
     PROJECT_NAME: expo-dev-menu
     SPECS:
-<<<<<<< HEAD
-      - expo-dev-menu (0.3.0)
-=======
       - expo-dev-menu (0.3.1)
->>>>>>> 986257b3a6d4b60c9e9befab71b7332ac6aa68a5
   expo-dev-menu-interface:
     BUILD_SETTINGS_CHECKSUM:
       expo-dev-menu-interface:
@@ -1273,9 +1265,9 @@ CACHE_KEYS:
   FacebookSDK:
     BUILD_SETTINGS_CHECKSUM:
       FacebookSDK:
-        :debug: 43de8b7256ac0c80abaa27e9cd0ec7b3
-        :release: 43de8b7256ac0c80abaa27e9cd0ec7b3
-    CHECKSUM: bf72fd600a9e58703fe1ab21ee35c961b416e4f6
+        :debug: 1672ffbccae4b8af4146d80e44011502
+        :release: 1672ffbccae4b8af4146d80e44011502
+    CHECKSUM: b2a78314964a43f3775c700968750d45eac0d065
     PROJECT_NAME: FacebookSDK
     SPECS:
       - FacebookSDK/CoreKit (9.0.0)
@@ -1304,6 +1296,17 @@ CACHE_KEYS:
     PROJECT_NAME: FBReactNativeSpec
     SPECS:
       - FBReactNativeSpec (0.63.2)
+  FBSDKCoreKit:
+    BUILD_SETTINGS_CHECKSUM:
+      FBSDKCoreKit:
+        :debug: c644016cd62c72433158e3041a246fc0
+        :release: c644016cd62c72433158e3041a246fc0
+    CHECKSUM: fada1a6a0076724678993ff05a633848765ff18c
+    PROJECT_NAME: FBSDKCoreKit
+    SPECS:
+      - FBSDKCoreKit (9.0.1)
+      - FBSDKCoreKit/Basics (9.0.1)
+      - FBSDKCoreKit/Core (9.0.1)
   Firebase:
     BUILD_SETTINGS_CHECKSUM:
       Firebase:
@@ -1601,28 +1604,30 @@ CACHE_KEYS:
       - OpenSSL-Universal/Static (1.0.2.20)
   Pods-BareExpoMain-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 9ef5f68b0ad53364c1bafbc4182f1d33
-      Release: f7b22c19b66056321ced316e8a220531
+      Debug: 91ed8bac233ab86bfac360996646c66c
+      Release: 38af17a57df748cdfa763debd13c3f78
     FILES:
       - "${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-menu/EXDevMenu.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/FirebaseMLVisionFaceModel/GoogleMVFaceDetectorResources.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle"
       - "${PODS_ROOT}/Amplitude/Sources/Amplitude/ComodoRsaDomainValidationCA.der"
+      - "${PODS_ROOT}/FBSDKCoreKit/FacebookSDKStrings.bundle"
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoMain-BareExpoDetox:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: d07810e9a1fdf8ac4bd5ca327b7428c6
-      Release: ca844fe6af589babfde7208f4a7bc00f
+      Debug: d0e7bb6f49624a2f0e030045e3c46c99
+      Release: 3d453be6c1447e64c6c218ca4b86c6b3
     FILES:
       - "${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-menu/EXDevMenu.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/FirebaseMLVisionFaceModel/GoogleMVFaceDetectorResources.bundle"
       - "${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle"
       - "${PODS_ROOT}/Amplitude/Sources/Amplitude/ComodoRsaDomainValidationCA.der"
+      - "${PODS_ROOT}/FBSDKCoreKit/FacebookSDKStrings.bundle"
       - "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: a7acd1356654357cc3fc2344c4085523
-      Release: a7acd1356654357cc3fc2344c4085523
+      Debug: e9529d7933ca741bf0c8b67508bb55ba
+      Release: e9529d7933ca741bf0c8b67508bb55ba
   PromisesObjC:
     BUILD_SETTINGS_CHECKSUM:
       PromisesObjC:

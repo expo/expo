@@ -15,26 +15,26 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		037721C89AFBC024DF89DF3C08531E06 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 5F5F9A627211656398E7FFB439132900 /* UMConstantsInterface.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 46F82E84687582F366B907E2BD5F1EA2;
-			remoteInfo = UMConstantsInterface;
-		};
-		C4AE7ECFD6F59E8B248E8670E1904EF6 /* PBXContainerItemProxy */ = {
+		259A085E4380EFC9D8FEDFC12A6F24D2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1E3CDE91C052023A13723D262BE9E7C3 /* UMCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
 		};
-		DCE3651249FEA74B3920F4AF4A19FDD9 /* PBXContainerItemProxy */ = {
+		67DFE508622AB820374E4DC048D27F74 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 57A14934B17A047B677FEE04411040D7 /* FacebookSDK.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 5E4E18D34A90F67EF015BC6C80458877;
 			remoteInfo = FacebookSDK;
+		};
+		D7B54EEF61AC65284FF5A14D378B18B6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5F5F9A627211656398E7FFB439132900 /* UMConstantsInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 46F82E84687582F366B907E2BD5F1EA2;
+			remoteInfo = UMConstantsInterface;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -160,9 +160,9 @@
 			buildRules = (
 			);
 			dependencies = (
-				FFA9CAC7CD728FB672E66F4933FEC940 /* PBXTargetDependency */,
-				DBE5585E561C2960C894328037D6AB94 /* PBXTargetDependency */,
-				22351382E9FFE7B303CB4CD2C5B8EB7B /* PBXTargetDependency */,
+				BD5FEB0DE7BE16CFF7108FD13E370E4D /* PBXTargetDependency */,
+				14768F035217B669EF5999DA88B6FC57 /* PBXTargetDependency */,
+				29EE18671B5321312FCD611860473510 /* PBXTargetDependency */,
 			);
 			name = EXFacebook;
 			productName = EXFacebook;
@@ -221,20 +221,20 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		22351382E9FFE7B303CB4CD2C5B8EB7B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMCore;
-			targetProxy = C4AE7ECFD6F59E8B248E8670E1904EF6 /* PBXContainerItemProxy */;
-		};
-		DBE5585E561C2960C894328037D6AB94 /* PBXTargetDependency */ = {
+		14768F035217B669EF5999DA88B6FC57 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMConstantsInterface;
-			targetProxy = 037721C89AFBC024DF89DF3C08531E06 /* PBXContainerItemProxy */;
+			targetProxy = D7B54EEF61AC65284FF5A14D378B18B6 /* PBXContainerItemProxy */;
 		};
-		FFA9CAC7CD728FB672E66F4933FEC940 /* PBXTargetDependency */ = {
+		29EE18671B5321312FCD611860473510 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = 259A085E4380EFC9D8FEDFC12A6F24D2 /* PBXContainerItemProxy */;
+		};
+		BD5FEB0DE7BE16CFF7108FD13E370E4D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = FacebookSDK;
-			targetProxy = DCE3651249FEA74B3920F4AF4A19FDD9 /* PBXContainerItemProxy */;
+			targetProxy = 67DFE508622AB820374E4DC048D27F74 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

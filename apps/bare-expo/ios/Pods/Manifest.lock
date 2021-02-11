@@ -155,11 +155,7 @@ PODS:
   - expo-dev-launcher (0.2.0):
     - expo-dev-menu-interface
     - React
-<<<<<<< HEAD
-  - expo-dev-menu (0.3.0):
-=======
   - expo-dev-menu (0.3.1):
->>>>>>> 986257b3a6d4b60c9e9befab71b7332ac6aa68a5
     - expo-dev-menu-interface
     - React
   - expo-dev-menu-interface (0.1.2):
@@ -214,7 +210,8 @@ PODS:
     - UMFileSystemInterface
   - EXWebBrowser (9.0.0):
     - UMCore
-  - FacebookSDK/CoreKit (9.0.0)
+  - FacebookSDK/CoreKit (9.0.0):
+    - FBSDKCoreKit (~> 9.0.0)
   - FacebookSDK/LoginKit (9.0.0):
     - FacebookSDK/CoreKit
   - FBLazyVector (0.63.2)
@@ -225,6 +222,12 @@ PODS:
     - React-Core (= 0.63.2)
     - React-jsi (= 0.63.2)
     - ReactCommon/turbomodule/core (= 0.63.2)
+  - FBSDKCoreKit (9.0.1):
+    - FBSDKCoreKit/Basics (= 9.0.1)
+    - FBSDKCoreKit/Core (= 9.0.1)
+  - FBSDKCoreKit/Basics (9.0.1)
+  - FBSDKCoreKit/Core (9.0.1):
+    - FBSDKCoreKit/Basics
   - Firebase/Core (6.14.0):
     - Firebase/CoreOnly
     - FirebaseAnalytics (= 6.1.7)
@@ -851,6 +854,7 @@ SPEC REPOS:
     - CocoaAsyncSocket
     - CocoaLibEvent
     - FacebookSDK
+    - FBSDKCoreKit
     - Firebase
     - FirebaseAnalytics
     - FirebaseCore
@@ -1250,11 +1254,7 @@ SPEC CHECKSUMS:
   EXNotifications: 39b642b1ded0f26e614fd5ce313decfb93401b6d
   EXPermissions: 015f1129f80266f6c38e3691102546232b641614
   expo-dev-launcher: 0351bdeef423c28146573adbdeb822ed42b941b8
-<<<<<<< HEAD
-  expo-dev-menu: 23458ea380b3d67685db766bde78925be00627ed
-=======
   expo-dev-menu: bbce00e72ede1b7308c469f288b365a9a917a173
->>>>>>> 986257b3a6d4b60c9e9befab71b7332ac6aa68a5
   expo-dev-menu-interface: 3c93377ecf505dc4aba68e61685d30353c39b335
   expo-image: 07527eb7a57f5ac939c5ded392bcf64c975b9c87
   EXPrint: 32f0f7745534b710cfd5ed67fc3bd7416b6353c6
@@ -1274,9 +1274,10 @@ SPEC CHECKSUMS:
   EXTaskManager: e1956fd45bc301cbe852ebffccb9fd0b4ab78494
   EXVideoThumbnails: 0be939563a5d46ce0d1fa9baea7d454b99475763
   EXWebBrowser: 2e708935a91ae0f51f5f8ffc85ba673950f34833
-  FacebookSDK: bf72fd600a9e58703fe1ab21ee35c961b416e4f6
+  FacebookSDK: b2a78314964a43f3775c700968750d45eac0d065
   FBLazyVector: 3ef4a7f62e7db01092f9d517d2ebc0d0677c4a37
   FBReactNativeSpec: dc7fa9088f0f2a998503a352b0554d69a4391c5a
+  FBSDKCoreKit: fada1a6a0076724678993ff05a633848765ff18c
   Firebase: 0219bb4782eb1406f1b9b0628a2e625484ce910d
   FirebaseAnalytics: f68b9f3f1241385129ae0a83b63627fc420c05e5
   FirebaseCore: 632e05cc5e1199d9147122c16d92305eb04c34bd

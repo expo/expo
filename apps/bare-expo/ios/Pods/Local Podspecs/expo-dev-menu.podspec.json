@@ -1,10 +1,6 @@
 {
   "name": "expo-dev-menu",
-<<<<<<< HEAD
-  "version": "0.3.0",
-=======
   "version": "0.3.1",
->>>>>>> 986257b3a6d4b60c9e9befab71b7332ac6aa68a5
   "summary": "Expo/React Native module with the developer menu.",
   "description": "Expo/React Native module with the developer menu.",
   "license": "MIT",

@@ -345,7 +345,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>Facebook Platform License</string>
 			<key>Title</key>
-			<string>FacebookSDK</string>
+			<string>FBSDKCoreKit</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>

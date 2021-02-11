@@ -1,0 +1,77 @@
+/* The format string for device login instructions */
+"DeviceLogin.LogInPrompt" = "ನಿಮ್ಮ ಸ್ಮಾರ್ಟ್‌ ಫೋನ್‌ ಅಥವಾ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿ %@ ಗೆ ಭೇಟಿ ನೀಡಿ ಮತ್ತು ಈ ಕೋಡ್‌ ಅನ್ನು ನಮೂದಿಸಿ:";
+
+/* The title of the label to dismiss the alert when presenting user facing error messages */
+"ErrorRecovery.Alert.OK" = "ಸರಿ";
+
+/* The title of the label to decline attempting error recovery */
+"ErrorRecovery.Cancel" = "ರದ್ದುಮಾಡು";
+
+/* The fallback message to display to recover invalidated tokens */
+"ErrorRecovery.Login.Suggestion" = "ನಿಮ್ಮ Facebook ಖಾತೆಯನ್ನು ಮರುಸಂಪರ್ಕಗೊಳಿಸಲು ಈ ಅಪ್ಲಿಕೇಶನ್‌ನಲ್ಲಿ ಮತ್ತೊಮ್ಮೆ ಲಾಗಿನ್‌ ಮಾಡಿ.";
+
+/* The title of the label to start attempting error recovery */
+"ErrorRecovery.OK" = "ಸರಿ";
+
+/* The fallback message to display to retry transient errors */
+"ErrorRecovery.Transient.Suggestion" = "ಸರ್ವರ್ ತಾತ್ಕಾಲಿಕವಾಗಿ ಕಾರ್ಯನಿರತವಾಗಿದೆ, ದಯವಿಟ್ಟು ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.";
+
+/* The label for the FBSDKLikeButton when the object is not currently liked. */
+"LikeButton.Like" = "ಇಷ್ಟವಾಗಿದೆ";
+
+/* The label for the FBSDKLikeButton when the object is currently liked. */
+"LikeButton.Liked" = "ಇಷ್ಟಪಟ್ಟಿದ್ದಾರೆ";
+
+/* The label for the FBSDKLoginButton action sheet to cancel logging out */
+"LoginButton.CancelLogout" = "ರದ್ದುಮಾಡು";
+
+/* The label for the FBSDKLoginButton action sheet to confirm logging out */
+"LoginButton.ConfirmLogOut" = "ಲಾಗ್‌ ಔಟ್‌";
+
+/* The fallback string for the FBSDKLoginButton label when the user name is not available yet */
+"LoginButton.LoggedIn" = "Facebook ಬಳಸಿಕೊಂಡು ಲಾಗಿನ್‌ ಮಾಡಲಾಗಿದೆ";
+
+/* The format string for the FBSDKLoginButton label when the user is logged in */
+"LoginButton.LoggedInAs" = "%@ ರಂತೆ ಲಾಗಿನ್‌ ಮಾಡಲಾಗಿದೆ";
+
+/* The short label for the FBSDKLoginButton when the user is currently logged out */
+"LoginButton.LogIn" = "ಲಾಗ್‌ ಇನ್‌";
+
+/* The long label for the FBSDKLoginButton when the user is currently logged out */
+"LoginButton.LogInContinue" = "Facebook ಅನ್ನು ಮುಂದುವರಿಸಿ";
+
+/* The long label for the FBSDKLoginButton when the user is currently logged out */
+"LoginButton.LogInLong" = "Facebook ಮೂಲಕ ಲಾಗ್‌ ಇನ್‌ ಮಾಡಿ";
+
+/* The label for the FBSDKLoginButton when the user is currently logged in */
+"LoginButton.LogOut" = "ಲಾಗ್‌ ಔಟ್‌";
+
+/* The user facing error message when the app slider has been disabled and login fails. */
+"LoginError.SystemAccount.Disabled" = "Facebook ಖಾತೆಗೆ ಪ್ರವೇಶವನ್ನು ಅನುಮತಿಸಲಾಗಿಲ್ಲ. ಸಾಧನದ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ.";
+
+/* The user facing error message when the Accounts framework encounters a network error. */
+"LoginError.SystemAccount.Network" = "Facebook ಗೆ ಸಂಪರ್ಕಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್‌ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ ಹಾಗೂ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.";
+
+/* The user facing error message when the device Facebook account password is incorrect and login fails. */
+"LoginError.SystemAccount.PasswordChange" = "ನಿಮ್ಮ Facebook ಪಾಸ್‌ವರ್ಡ್‌ ಬದಲಿಸಲಾಗಿದೆ. ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ ಖಚಿತಪಡಿಸಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳು &gt; Facebook ತೆರೆಯಿರಿ ಮತ್ತು ನಿಮ್ಮ ಹೆಸರನ್ನು ಟ್ಯಾಪ್‌ ಮಾಡಿ.";
+
+/* The user facing error message when the device Facebook account is unavailable and login fails. */
+"LoginError.SystemAccount.Unavailable" = "Facebook ಖಾತೆಯನ್ನು ಸಾಧನದಲ್ಲಿ ಕಾನ್ಫಿಗರ್ ಮಾಡಲಾಗಿಲ್ಲ.";
+
+/* The user facing error message when the Facebook account signed in to the Accounts framework becomes unconfirmed. */
+"LoginError.SystemAccount.UnconfirmedUser" = "ನಿಮ್ಮ ಖಾತೆಯನ್ನು ದೃಢೀಕರಿಸಿಲ್ಲ. ದಯವಿಟ್ಟು www.facebook.com ಗೆ ಲಾಗಿನ್‌ ಮಾಡಿ ಮತ್ತು ಕೆಳಗೆ ನೀಡಿದ ಸೂಚನೆಗಳನ್ನು ಅನುಸರಿಸಿ.";
+
+/* The user facing error message when the Facebook account signed in to the Accounts framework has been checkpointed. */
+"LoginError.SystemAccount.UserCheckpointed" = "ನೀವು ಈ ಸಮಯದಲ್ಲಿ ಅಪ್ಲಿಕೇಶನ್‌ಗಳಿಗೆ ಲಾಗಿನ್‌ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ದಯವಿಟ್ಟು www.facebook.com ಗೆ ಲಾಗಿನ್‌ ಮಾಡಿ ಮತ್ತು ಕೆಳಗೆ ನೀಡಿದ ಸೂಚನೆಗಳನ್ನು ಅನುಸರಿಸಿ.";
+
+/* The message of the FBSDKLoginTooltipView */
+"LoginTooltip.Message" = "ನೀವು ನಿಯಂತ್ರಣದಲ್ಲಿರುವಿರಿ - ನೀವು ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ಬಳಸಿಕೊಂಡು ಹಂಚಿಕೊಳ್ಳಲು ಬಯಸುವ ವಿಷಯವನ್ನು ಆರಿಸಿ.";
+
+/* Title of the web dialog that prompts the user to log in to Facebook. */
+"LoginWeb.LogInTitle" = "ಲಾಗ್‌ ಇನ್‌";
+
+/* The label for FBSDKSendButton */
+"SendButton.Send" = "ಕಳುಹಿಸಿ";
+
+/* The label for FBSDKShareButton */
+"ShareButton.Share" = "ಹಂಚಿಕೊಳ್ಳಿ";
