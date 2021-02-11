@@ -129,13 +129,17 @@
       android:theme="@style/Theme.Exponent.HomeActivity">
       <!-- START HOME INTENT FILTERS -->
       <intent-filter>
-        <data android:scheme="expauth"/>
-
         <action android:name="android.intent.action.MAIN"/>
-        <action android:name="android.intent.action.VIEW"/>
 
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.LAUNCHER"/>
+      </intent-filter>
+      <intent-filter>
+        <data android:scheme="expauth"/>
+
+        <action android:name="android.intent.action.VIEW"/>
+
+        <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
       </intent-filter>
       <!-- END HOME INTENT FILTERS -->
