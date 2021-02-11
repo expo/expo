@@ -53,8 +53,8 @@ type Props = {
   asPath: string;
   sourceCodeUrl?: string;
   tocVisible: boolean;
-  /* If the page should show up in the search results, only hide when `false` */
-  searchable?: boolean;
+  /* If the page should not show up in the Algolia Docsearch results */
+  hideFromSearch?: boolean;
 };
 
 type State = {
@@ -176,7 +176,7 @@ export default class DocumentationPage extends React.Component<Props, State> {
   };
 
   private getAlgoliaTag = () => {
-    if (this.props.searchable === false) {
+    if (this.props.hideFromSearch === true) {
       return null;
     }
 

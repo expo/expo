@@ -21,7 +21,7 @@ const withDocumentationElements = (meta: PageMetadata) => {
           asPath={router.asPath}
           sourceCodeUrl={meta.sourceCodeUrl}
           tocVisible={!meta.hideTOC}
-          searchable={meta.searchable}>
+          hideFromSearch={meta.hideFromSearch}>
           <MDXProvider components={components}>{props.children}</MDXProvider>
         </DocumentationPage>
       </HeadingsContext.Provider>

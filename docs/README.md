@@ -99,12 +99,12 @@ We use Algolia Docsearch as the search engine for our docs. Right now, it's sear
 In `components/plugins/AlgoliaSearch`, you can see the `facetFilters` set to `[['version:none', 'version:{currentVersion}']]`. Translated to English, this means "Search on all pages where `version` is `none`, or the currently selected version.".
 
 - All unversioned pages use the version tag `none`.
-- All versioned pages use the SDK version (e.g. `40.0.0` or `39.0.0`).
-- All `searchable: false` don't have the version tag.
+- All versioned pages use the SDK version (e.g. `v40.0.0` or `v39.0.0`).
+- All `hideFromSearch: true` pages don't have the version tag.
 
 #### Excluding pages from Docsearch
 
-To ignore a page from the search result, use `searchable: false` on that page. This removes the `<meta name="docsearch:version">` tag from that page, causing it to be excluded from our tag-based search.
+To ignore a page from the search result, use `hideFromSearch: true` on that page. This removes the `<meta name="docsearch:version">` tag from that page, causing it to be excluded from our tag-based search.
 
 ### Quirks
 

@@ -1,7 +1,7 @@
 ---
 id: clipboard
 title: Clipboard
-searchable: false
+hideFromSearch: true
 ---
 
 > This API is deprecated and will be removed from react-native in the next release. Use [expo-clipboard](../sdk/clipboard.md) instead.
