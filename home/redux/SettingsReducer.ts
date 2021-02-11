@@ -9,7 +9,7 @@ export type SettingsObject = {
   };
 };
 
-export type SettingsType = Record<SettingsObject>;
+export type SettingsType = Record<SettingsObject> & Readonly<SettingsObject>;
 
 type SettingsActions =
   | {

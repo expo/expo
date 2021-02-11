@@ -8,6 +8,16 @@ A splash screen, also known as a launch screen, is the first screen that a user 
 
 The default splash screen is a blank white screen. This might work for you, if it does, you're in luck! If not, you're also in luck because it's quite easy to customize using `app.json` and the `splash` key. Let's walk through it.
 
+### Video walkthrough
+
+Create an app icon and splash image with the [Figma template](https://www.figma.com/file/ddc0glVeILssZl0Dcn1lSS/App-Icon-and-Splash?node-id=0%3A1) and video below:
+
+<object width="100%" height="400">
+   <param name="movie" value="https://youtube.com/embed/mVOFvLSiJ_s" />
+   <param name="wmode" value="transparent" />
+   <embed src="https://youtube.com/embed/mVOFvLSiJ_s" type="application/x-shockwave-flash" wmode="transparent" width="100%" height="400" />
+ </object>
+
 ### Make a splash image
 
 The [iOS Human Interface Guidelines](https://developer.apple.com/ios/human-interface-guidelines/icons-and-images/launch-screen/) list the static launch image sizes. I'll go with `1242` pixels wide and `2436` pixels tall -- this is the width of the iPhone 8 Plus (the widest iPhone) and the height of the iPhone X (the tallest iPhone). Expo will resize the image for you depending on the size of the device, and we can specify the strategy used to resize the image with `splash.resizeMode`.
@@ -30,9 +40,9 @@ Open your `app.json` and add the following inside of the `"expo"` field:
 }
 ```
 
-Now re-open the Expo client and open your app, and you should see your beautiful splash screen. There may be a delay before it shows up, see ["Differences between environments" below](#differences-between-environments) for more information on that.
+Now re-open the Expo Go app and open your app, and you should see your beautiful splash screen. There may be a delay before it shows up, see ["Differences between environments" below](#differences-between-environments) for more information on that.
 
-> **Note**: It's required to close and re-open the Expo client app on iOS in order to see changes to the splash screen in the manifest. This is a known issue that we are working to resolve. On Android, you need to press the refresh button from the notification drawer.
+> **Note**: It's required to close and re-open the Expo Go app on iOS in order to see changes to the splash screen in the manifest. This is a known issue that we are working to resolve. On Android, you need to press the refresh button from the notification drawer.
 
 ### `splash.backgroundColor`
 
@@ -81,19 +91,19 @@ Read more about [AppLoading](../versions/latest/sdk/app-loading.md) and [SplashS
 
 ### Differences between environments - iOS
 
-Your app can be opened from the Expo client or in a standalone app, and it can be either published or in development. There are slighty differences in the splash screen behavior between these environments.
+Your app can be opened from the Expo Go app or in a standalone app, and it can be either published or in development. There are slighty differences in the splash screen behavior between these environments.
 
 ![](https://media.giphy.com/media/l378l98EI0VQdwRzy/giphy.gif)
 
-- **On the left**, we are in the Expo client and loading an app that is currently in development. Notice that on the bottom of the splash screen you see an information bar that shows information relevant to preparing the JavaScript and downloading it to the device. We see an orange screen before the splash image appears, because the background color is set immediately but the image needs to be downloaded.
-- **In the middle**, we are in the Expo client and we are loading a published app. Notice that again the splash image does not appear immediately.
+- **On the left**, we are in the Expo Go app and loading an app that is currently in development. Notice that on the bottom of the splash screen you see an information bar that shows information relevant to preparing the JavaScript and downloading it to the device. We see an orange screen before the splash image appears, because the background color is set immediately but the image needs to be downloaded.
+- **In the middle**, we are in the Expo Go app and we are loading a published app. Notice that again the splash image does not appear immediately.
 - **On the right**, we are in a standalone app. Notice that the splash image appears immediately.
 
 ### Using a `.xib` file as the launch screen for the standalone iOS app
 
 For iOS, you can also choose to use a `.xib` interface builder document as the splash screen of the standalone iOS app. Simply set `ios.splash.xib` in `app.json` to the path to your `.xib` file.
 
-> **Note**: `.xib` file will only be used in the standalone app. The splash image will continue to be used in the Expo client.
+> **Note**: `.xib` file will only be used in the standalone app. The splash image will continue to be used in the Expo Go app.
 
 ### Splash screen API limitations on Android
 
@@ -116,7 +126,7 @@ To setup and customize your splash screen in a bare app, refer to [this guide](h
 
 The following exists are known to us and will be resolved shortly.
 
-- iOS splash screen status bar is white in standalone apps but dark in Expo client. It should be dark in standalone apps by default too, and also it should be customizable.
+- iOS splash screen status bar is white in standalone apps but dark in Expo Go. It should be dark in standalone apps by default too, and also it should be customizable.
 
 ### iOS Caching
 

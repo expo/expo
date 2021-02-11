@@ -76,12 +76,11 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
 
 - (void)downloadManifestFromURL:(NSURL *)url
                    withDatabase:(EXUpdatesDatabase *)database
-                 cacheDirectory:(NSURL *)cacheDirectory
                    successBlock:(EXUpdatesFileDownloaderManifestSuccessBlock)successBlock
                      errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock
 {
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
-                                                         cachePolicy:NSURLRequestReloadIgnoringCacheData
+                                                         cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
                                                      timeoutInterval:EXUpdatesDefaultTimeoutInterval];
   [self _setManifestHTTPHeaderFields:request];
   [self _downloadDataWithRequest:request successBlock:^(NSData *data, NSURLResponse *response) {
@@ -121,7 +120,6 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
       [EXUpdatesCrypto verifySignatureWithData:(NSString *)innerManifestString
                                      signature:(NSString *)signature
                                         config:self->_config
-                                cacheDirectory:cacheDirectory
                                   successBlock:^(BOOL isValid) {
                                                   if (isValid) {
                                                     NSError *err;
@@ -225,7 +223,8 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
 {
   [request setValue:@"application/expo+json,application/json" forHTTPHeaderField:@"Accept"];
   [request setValue:@"true" forHTTPHeaderField:@"Expo-JSON-Error"];
-  [request setValue:@"true" forHTTPHeaderField:@"Expo-Accept-Signature"];
+  // as of 2020-11-25, the EAS Update alpha returns an error if Expo-Accept-Signature: true is included in the request
+  [request setValue:(_config.usesLegacyManifest ? @"true" : @"false") forHTTPHeaderField:@"Expo-Accept-Signature"];
   [request setValue:_config.releaseChannel forHTTPHeaderField:@"Expo-Release-Channel"];
 
   NSString *runtimeVersion = _config.runtimeVersion;

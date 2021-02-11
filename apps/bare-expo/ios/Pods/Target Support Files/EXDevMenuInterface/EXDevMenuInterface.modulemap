@@ -1,6 +1,0 @@
-module EXDevMenuInterface {
-  umbrella header "EXDevMenuInterface-umbrella.h"
-
-  export *
-  module * { export * }
-}

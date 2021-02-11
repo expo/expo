@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '0.4.1'
+version = '0.5.0-rc.1'
 
 // Simple helper that allows the root project to override versions declared by this library.
 def safeExtGet(prop, fallback) {
@@ -35,13 +35,13 @@ uploadArchives {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 28)
+  compileSdkVersion safeExtGet("compileSdkVersion", 30)
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 29)
-    versionCode 29
-    versionName '0.4.1'
+    targetSdkVersion safeExtGet("targetSdkVersion", 30)
+    versionCode 31
+    versionName '0.5.0-rc.1'
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
   lintOptions {
@@ -66,6 +66,7 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 
 dependencies {
   unimodule 'unimodules-core'
+  //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"
 
   def room_version = "2.1.0"

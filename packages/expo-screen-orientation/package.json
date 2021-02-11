@@ -1,6 +1,6 @@
 {
   "name": "expo-screen-orientation",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "description": "Expo universal module for managing device's screen orientation",
   "main": "build/ScreenOrientation.js",
   "types": "build/ScreenOrientation.d.ts",
@@ -42,6 +42,6 @@
     "expo-module-scripts": "~1.2.0"
   },
   "dependencies": {
-    "fbjs": "1.0.0"
+    "@expo/config-plugins": "~1.0.13"
   }
 }

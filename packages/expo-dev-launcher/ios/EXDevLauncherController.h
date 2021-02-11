@@ -4,8 +4,8 @@
 #import <UIKit/UIKit.h>
 
 @class EXDevLauncherPendingDeepLinkRegistry;
-
 @class EXDevLauncherController;
+@class EXDevLauncherManifest;
 
 @protocol EXDevLauncherControllerDelegate <NSObject>
 
@@ -29,10 +29,12 @@
 
 - (BOOL)onDeepLink:(NSURL *)url options:(NSDictionary *)options;
 
-- (void)loadApp:(NSString *)url onSuccess:(void (^)())onSuccess onError:(void (^)(NSError *error))onError;
+- (void)loadApp:(NSURL *)url onSuccess:(void (^)())onSuccess onError:(void (^)(NSError *error))onError;
 
 - (NSDictionary *)recentlyOpenedApps;
 
 - (NSDictionary<UIApplicationLaunchOptionsKey, NSObject*> *)getLaunchOptions;
+
+- (EXDevLauncherManifest *)appManifest;
 
 @end

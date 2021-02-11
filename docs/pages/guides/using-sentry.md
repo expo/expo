@@ -161,21 +161,28 @@ Sentry.init({
   enableInExpoDevelopment: true,
   integrations: [
     new RewriteFrames({
-      iteratee: (frame) => {
+      iteratee: frame => {
         if (frame.filename) {
           // the values depend on what names you give the bundle files you are uploading to Sentry
-          frame.filename =  Platform.OS === 'android' ? 'app:///index.android.bundle' : 'app:///main.jsbundle';
+          frame.filename =
+            Platform.OS === 'android' ? 'app:///index.android.bundle' : 'app:///main.jsbundle';
         }
-        return frame
+        return frame;
       },
     }),
   ],
-})
+});
 ```
 
 ### Testing Sentry
 
-If you're using `Jest`, make sure to add `@sentry/.*` and `sentry-expo` to your `transformIgnorePatterns`.
+When building tests for your application, you want to assert that the right flow-tracking or error is being sent to Sentry, but without really sending it to Sentry servers. This way you won't swamp Sentry with false reports during test running and other CI operations.
+
+[`sentry-testkit`](https://wix.github.io/sentry-testkit) enables Sentry to work natively in your application, and by overriding the default Sentry transport mechanism, the report is not really sent but rather logged locally into memory. In this way, the logged reports can be fetched later for your own usage, verification, or any other use you may have in your local developing/testing environment.
+
+See how to get started with `sentry-testkit` in their [documentation site here](https://wix.github.io/sentry-testkit/)
+
+> If you're using `Jest`, make sure to add `@sentry/.*` and `sentry-expo` to your `transformIgnorePatterns`.
 
 ## Error reporting semantics
 

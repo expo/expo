@@ -2,7 +2,7 @@ require 'json'
 
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 
-segment_analytics_version = '~> 4.0'
+segment_analytics_version = '4.0.4'
 using_custom_segment_analytics_version = defined? $AnalyticsVersion
 if using_custom_segment_analytics_version
   segment_analytics_version = $AnalyticsVersion
@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platform       = :ios, '10.0'
+  s.platform       = :ios, '11.0'
   s.source         = { git: 'https://github.com/expo/expo.git' }
 
   s.dependency 'UMCore'

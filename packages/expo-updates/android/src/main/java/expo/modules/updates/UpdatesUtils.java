@@ -2,7 +2,6 @@ package expo.modules.updates;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -24,6 +23,12 @@ import java.lang.ref.WeakReference;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import androidx.annotation.Nullable;
 import expo.modules.updates.db.entity.AssetEntity;
@@ -166,7 +171,10 @@ public class UpdatesUtils {
     } else if (sdkVersion != null && sdkVersion.length() > 0) {
       return sdkVersion;
     } else {
-      throw new AssertionError("One of expo_runtime_version or expo_sdk_version must be defined in the Android app manifest");
+      // various places in the code assume that we have a nonnull runtimeVersion, so if the developer
+      // hasn't configured either runtimeVersion or sdkVersion, we'll use a dummy value of "1" but warn
+      // the developer in JS that they need to configure one of these values
+      return "1";
     }
   }
 
@@ -180,5 +188,19 @@ public class UpdatesUtils {
       hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
     }
     return new String(hexChars);
+  }
+
+  public static Date parseDateString(String dateString) throws ParseException {
+    try {
+      DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.US);
+      return formatter.parse(dateString);
+    } catch (ParseException e) {
+      Log.e(TAG, "Failed to parse date string on first try: " + dateString, e);
+      // some old Android versions don't support the 'X' character in SimpleDateFormat, so try without this
+      DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
+      formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+      // throw if this fails too
+      return formatter.parse(dateString);
+    }
   }
 }

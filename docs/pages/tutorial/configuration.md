@@ -28,13 +28,17 @@ Save this image to the `assets` directory inside of your project and call it `sp
 
 <p>
 
-We can make the splash screen stick around for longer by manually controlling when it is hidden, rather than the default of automatically hiding it as soon as the app is ready. In the following code, we delay hiding the splash screen for five seconds.
+We can make the splash screen stick around for longer by manually controlling when it is hidden, rather than the default of automatically hiding it as soon as the app is ready.
+
+First, run `expo install expo-splash-screen`.
+
+Next, add the following code to delay hiding the splash screen for five seconds.
 
 ```js
-import { SplashScreen } from 'expo';
+import * as SplashScreen from 'expo-splash-screen';
 
-SplashScreen.preventAutoHide();
-setTimeout(SplashScreen.hide, 5000);
+SplashScreen.preventAutoHideAsync();
+setTimeout(SplashScreen.hideAsync, 5000);
 ```
 
 🚨 _Don't forget to remove this code when you are done testing your splash screen!_
@@ -76,7 +80,7 @@ Our designer provided us with this 1024px width x 1024px height app icon:
 <br />
 <br />
 
-Save this image to the `assets` directory inside of your project and call it `icon.png` &mdash; replace the existing file. Reload the app. That's all you need to do! You will see the icon in various places in the Expo client, and when you do a standalone app build for submission to the stores it will be used as the icon on the users' home screens.
+Save this image to the `assets` directory inside of your project and call it `icon.png` &mdash; replace the existing file. Reload the app. That's all you need to do! You will see the icon in various places in Expo Go, and when you do a standalone app build for submission to the stores it will be used as the icon on the users' home screens.
 
 ## We have completed our app!
 

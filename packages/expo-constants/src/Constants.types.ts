@@ -1,3 +1,5 @@
+import { ExpoConfig } from '@expo/config-types';
+
 export enum AppOwnership {
   Standalone = 'standalone',
   Expo = 'expo',
@@ -19,7 +21,7 @@ export enum UserInterfaceIdiom {
 export interface IOSManifest {
   buildNumber: string;
   platform: string;
-  model: string;
+  model: string | null;
   userInterfaceIdiom: UserInterfaceIdiom;
   systemVersion: string;
   [key: string]: any;
@@ -34,29 +36,11 @@ export interface WebManifest {
   [key: string]: any;
 }
 
-export interface AppManifest {
-  name?: string;
-  description?: string;
-  slug?: string;
-  sdkVersion?: string;
-  version?: string;
+export interface AppManifest extends ExpoConfig {
   /** Published Apps Only */
   releaseId?: string;
   revisionId?: string;
   releaseChannel?: string;
-  orientation?: string;
-  primaryColor?: string;
-  icon?: string;
-  notification?: {
-    icon?: string;
-    color?: string;
-    [key: string]: any;
-  };
-  loading?: {
-    icon?: string;
-    [key: string]: any;
-  };
-  entryPoint?: string;
   packagerOpts?: {
     hostType?: string;
     dev?: boolean;

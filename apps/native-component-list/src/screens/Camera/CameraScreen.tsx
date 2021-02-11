@@ -7,6 +7,7 @@ import {
 } from '@expo/vector-icons';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { Camera, BarCodeScanningResult } from 'expo-camera';
+import { AutoFocus, CameraType, FlashMode, WhiteBalance } from 'expo-camera/build/Camera.types';
 import Constants from 'expo-constants';
 import * as FileSystem from 'expo-file-system';
 import * as Permissions from 'expo-permissions';
@@ -25,7 +26,11 @@ interface Picture {
   exif?: any;
 }
 
-const flashModeOrder: { [key: string]: string } = {
+type FlashModeString = keyof typeof FlashMode;
+type AutoFocusString = keyof typeof AutoFocus;
+type WhiteBalanceString = keyof typeof WhiteBalance;
+
+const flashModeOrder: { [key: string]: FlashModeString } = {
   off: 'on',
   on: 'auto',
   auto: 'torch',
@@ -39,7 +44,7 @@ const flashIcons: { [key: string]: string } = {
   torch: 'highlight',
 };
 
-const wbOrder: { [key: string]: string } = {
+const wbOrder: { [key: string]: WhiteBalanceString } = {
   auto: 'sunny',
   sunny: 'cloudy',
   cloudy: 'shadow',
@@ -60,12 +65,12 @@ const wbIcons: { [key: string]: string } = {
 const photos: Picture[] = [];
 
 interface State {
-  flash: string;
+  flash: FlashModeString;
   zoom: number;
-  autoFocus: string;
-  type: string;
+  autoFocus: AutoFocusString;
+  type: CameraType;
   depth: number;
-  whiteBalance: string;
+  whiteBalance: WhiteBalanceString;
   ratio: string;
   ratios: any[];
   barcodeScanning: boolean;
@@ -88,7 +93,7 @@ export default class CameraScreen extends React.Component<{}, State> {
     flash: 'off',
     zoom: 0,
     autoFocus: 'on',
-    type: 'back',
+    type: CameraType.back,
     depth: 0,
     whiteBalance: 'auto',
     ratio: '16:9',
@@ -131,7 +136,10 @@ export default class CameraScreen extends React.Component<{}, State> {
 
   toggleMoreOptions = () => this.setState(state => ({ showMoreOptions: !state.showMoreOptions }));
 
-  toggleFacing = () => this.setState(state => ({ type: state.type === 'back' ? 'front' : 'back' }));
+  toggleFacing = () =>
+    this.setState(state => ({
+      type: state.type === CameraType.back ? CameraType.front : CameraType.back,
+    }));
 
   toggleFlash = () => this.setState(state => ({ flash: flashModeOrder[state.flash] }));
 
@@ -253,7 +261,7 @@ export default class CameraScreen extends React.Component<{}, State> {
   renderTopBar = () => (
     <View style={styles.topBar}>
       <TouchableOpacity style={styles.toggleButton} onPress={this.toggleFacing}>
-        <Ionicons name="ios-reverse-camera" size={32} color="white" />
+        <Ionicons name="camera-reverse" size={32} color="white" />
       </TouchableOpacity>
       <TouchableOpacity style={styles.toggleButton} onPress={this.toggleFlash}>
         <MaterialIcons name={flashIcons[this.state.flash]} size={32} color="white" />

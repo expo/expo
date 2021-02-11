@@ -1,4 +1,4 @@
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+import { Platform } from '@unimodules/core';
 import { v4 as uuidv4 } from 'uuid';
 
 import {
@@ -10,16 +10,16 @@ import {
 
 const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
 
-declare var __DEV__: boolean;
-declare var process: { env: any };
-declare var navigator: Navigator;
-declare var location: Location;
-declare var localStorage: Storage;
+declare let __DEV__: boolean;
+declare let process: { env: any };
+declare let navigator: Navigator;
+declare let location: Location;
+declare let localStorage: Storage;
 
 const _sessionId = uuidv4();
 
 function getBrowserName(): string | undefined {
-  if (canUseDOM) {
+  if (Platform.isDOMAvailable) {
     const agent = navigator.userAgent.toLowerCase();
     if (agent.includes('edge')) {
       return 'Edge';
@@ -69,10 +69,10 @@ export default {
     return _sessionId;
   },
   get platform(): PlatformManifest {
-    return { web: canUseDOM ? { ua: navigator.userAgent } : undefined };
+    return { web: Platform.isDOMAvailable ? { ua: navigator.userAgent } : undefined };
   },
   get isHeadless(): boolean {
-    if (!canUseDOM) return true;
+    if (!Platform.isDOMAvailable) return true;
 
     return /\bHeadlessChrome\//.test(navigator.userAgent);
   },
@@ -84,7 +84,7 @@ export default {
     return this.manifest.sdkVersion || null;
   },
   get linkingUri(): string {
-    if (canUseDOM) {
+    if (Platform.isDOMAvailable) {
       // On native this is `exp://`
       // On web we should use the protocol and hostname (location.origin)
       return location.origin;
@@ -121,7 +121,7 @@ export default {
     return process.env.APP_MANIFEST || {};
   },
   get experienceUrl(): string {
-    if (canUseDOM) {
+    if (Platform.isDOMAvailable) {
       return location.origin;
     } else {
       return '';
@@ -131,7 +131,7 @@ export default {
     return __DEV__;
   },
   async getWebViewUserAgentAsync(): Promise<string | null> {
-    if (canUseDOM) {
+    if (Platform.isDOMAvailable) {
       return navigator.userAgent;
     } else {
       return null;

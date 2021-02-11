@@ -9,6 +9,8 @@ pod 'ABI38_0_0ExpoKit',
   :project_name => 'ABI38_0_0',
   :subspecs => ['Expo', 'ExpoOptional']
 
+use_pods! 'vendored/sdk38/*/*.podspec.json', 'ABI38_0_0'
+
 pod 'ABI38_0_0UMCore',
   :path => './versioned-react-native/ABI38_0_0/Expo/UMCore',
   :project_name => 'ABI38_0_0'

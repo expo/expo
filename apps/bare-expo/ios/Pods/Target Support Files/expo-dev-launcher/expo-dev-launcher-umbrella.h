@@ -10,17 +10,18 @@
 #endif
 #endif
 
-#import "EXDevLauncher.h"
-#import "EXDevLauncherBundle.h"
-#import "EXDevLauncherBundleSource.h"
-#import "EXDevLauncherController+Private.h"
-#import "EXDevLauncherController.h"
-#import "expo-dev-launcher-Bridging-Header.h"
-#import "EXDevLauncherPendingDeepLinkListener.h"
-#import "EXDevLauncherManifestParser.h"
-#import "EXDevLauncherLoadingView.h"
-#import "EXDevLauncherRCTBridge.h"
+#import "EXDevLauncher/EXDevLauncher.h"
+#import "EXDevLauncher/EXDevLauncherBundle.h"
+#import "EXDevLauncher/EXDevLauncherBundleSource.h"
+#import "EXDevLauncher/EXDevLauncherController+Private.h"
+#import "EXDevLauncher/EXDevLauncherController.h"
+#import "EXDevLauncher/EXDevLauncherInternal.h"
+#import "EXDevLauncher/expo-dev-launcher-Bridging-Header.h"
+#import "EXDevLauncher/EXDevLauncherPendingDeepLinkListener.h"
+#import "EXDevLauncher/EXDevLauncherManifestParser.h"
+#import "EXDevLauncher/EXDevLauncherLoadingView.h"
+#import "EXDevLauncher/EXDevLauncherRCTBridge.h"
 
-FOUNDATION_EXPORT double expo_dev_launcherVersionNumber;
-FOUNDATION_EXPORT const unsigned char expo_dev_launcherVersionString[];
+FOUNDATION_EXPORT double EXDevLauncherVersionNumber;
+FOUNDATION_EXPORT const unsigned char EXDevLauncherVersionString[];
 

@@ -70,7 +70,7 @@ UM_REGISTER_MODULE();
                @"ios": @{
                    @"buildNumber": [self buildVersion],
                    @"platform": [[self class] devicePlatform],
-                   @"model": [[self class] deviceModel],
+                   @"model": UMNullIfNil([[self class] deviceModel]),
                    @"userInterfaceIdiom": [self userInterfaceIdiom],
                    @"systemVersion": [self iosVersion],
                    },
@@ -151,7 +151,7 @@ UM_REGISTER_MODULE();
   return platform;
 }
 
-+ (NSString *)deviceModel
++ (nullable NSString *)deviceModel
 {
   NSString *platform = [self devicePlatform];
   NSDictionary *mapping = @{
@@ -177,6 +177,14 @@ UM_REGISTER_MODULE();
                             @"Watch4,2": @"Apple Watch Series 4",
                             @"Watch4,3": @"Apple Watch Series 4",
                             @"Watch4,4": @"Apple Watch Series 4",
+                            @"Watch5,1": @"Apple Watch Series 5",
+                            @"Watch5,2": @"Apple Watch Series 5",
+                            @"Watch5,3": @"Apple Watch Series 5",
+                            @"Watch5,4": @"Apple Watch Series 5",
+                            @"Watch6,1": @"Apple Watch Series 6",
+                            @"Watch6,2": @"Apple Watch Series 6",
+                            @"Watch6,3": @"Apple Watch Series 6",
+                            @"Watch6,4": @"Apple Watch Series 6",
 
                             // iPhone
                             @"iPhone1,1": @"iPhone",
@@ -214,6 +222,11 @@ UM_REGISTER_MODULE();
                             @"iPhone12,1": @"iPhone 11",
                             @"iPhone12,3": @"iPhone 11 Pro",
                             @"iPhone12,5": @"iPhone 11 Pro Max",
+                            @"iPhone12,8": @"iPhone SE",
+                            @"iPhone13,1": @"iPhone 12 mini",
+                            @"iPhone13,2": @"iPhone 12",
+                            @"iPhone13,3": @"iPhone 12 Pro",
+                            @"iPhone13,4": @"iPhone 12 Pro Max",
 
                             // iPod
                             @"iPod1,1": @"iPod Touch",
@@ -222,6 +235,7 @@ UM_REGISTER_MODULE();
                             @"iPod4,1": @"iPod Touch 4G",
                             @"iPod5,1": @"iPod Touch 5G",
                             @"iPod7,1": @"iPod Touch 6G",
+                            @"iPod9,1": @"iPod Touch 7G",
 
                             // iPad
                             @"iPad1,1": @"iPad",
@@ -263,9 +277,24 @@ UM_REGISTER_MODULE();
                             @"iPad7,4": @"iPad Pro 10.5 inch (Cellular)",
                             @"iPad7,5": @"iPad 9.7 inch (WiFi)",
                             @"iPad7,6": @"iPad 9.7 inch (Cellular)",
+                            @"iPad7,11": @"iPad (7th generation)",
+                            @"iPad7,12": @"iPad (7th generation)",
+                            @"iPad8,1": @"iPad Pro 11-inch (3rd generation)",
+                            @"iPad8,2": @"iPad Pro 11-inch (3rd generation)",
+                            @"iPad8,3": @"iPad Pro 11-inch (3rd generation)",
+                            @"iPad8,4": @"iPad Pro 11-inch (3rd generation)",
+                            @"iPad8,5": @"iPad Pro 12.9-inch (3rd generation)",
+                            @"iPad8,6": @"iPad Pro 12.9-inch (3rd generation)",
+                            @"iPad8,7": @"iPad Pro 12.9-inch (3rd generation)",
+                            @"iPad8,8": @"iPad Pro 12.9-inch (3rd generation)",
+                            @"iPad11,1": @"iPad Mini 5",
+                            @"iPad11,2": @"iPad Mini 5",
+                            @"iPad11,3": @"iPad Air (3rd generation)",
+                            @"iPad11,4": @"iPad Air (3rd generation)",
 
                             // Simulator
                             @"i386": @"Simulator",
+                            @"arm64": @"Simulator",
                             @"x86_64": @"Simulator",
                             };
 

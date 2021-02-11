@@ -8,8 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		300A3E67ED3E21A24ED110AE2DBDC83A /* EXMailComposer.h in Headers */ = {isa = PBXBuildFile; fileRef = 822824618F5FB9C88EF4E04808A02DFB /* EXMailComposer.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		60BB218B88DE87AE2C0E0C3A033B30EB /* EXMailComposer-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F84D9F75A7B2D8C1086E851FB49AC3D /* EXMailComposer-dummy.m */; };
-		9C0BF0FA66E83E9EAC8D2BB360C5DF08 /* EXMailComposer.m in Sources */ = {isa = PBXBuildFile; fileRef = 969BF0423CD1819821D8C126DBA0DB36 /* EXMailComposer.m */; };
+		607DAC9404B9B09991E2F9BF1237FFCB /* EXMailComposer-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F84D9F75A7B2D8C1086E851FB49AC3D /* EXMailComposer-dummy.m */; };
+		D82B2A7372D7A557D3CD06C8071A3F3C /* EXMailComposer.m in Sources */ = {isa = PBXBuildFile; fileRef = 969BF0423CD1819821D8C126DBA0DB36 /* EXMailComposer.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -20,7 +20,7 @@
 			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
 			remoteInfo = UMFileSystemInterface;
 		};
-		984CDA4F226301336AA4B490896AA906 /* PBXContainerItemProxy */ = {
+		3170CD4AD5351A7F212DF783F0B4D5B3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0C730C301ED2FFBAF8027878DCB8A9F3 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -138,13 +138,13 @@
 			buildConfigurationList = 5D803575930FBEA921865AE155836E01 /* Build configuration list for PBXNativeTarget "EXMailComposer" */;
 			buildPhases = (
 				7EEB545B99F224E1ED6DAACAF3DC85B1 /* Headers */,
-				ABCCC0A3D6C7C9B8AEB52D42EDDD36DD /* Sources */,
+				58841F551E3225C2492E031CE30A2E57 /* Sources */,
 				720AB02A4CA8234D81363AFDF6B7A353 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				5497E4DE65EA1E6D2D56A9FE11802885 /* PBXTargetDependency */,
+				91ADFA3AF1393763D6F0BA95ABE81A86 /* PBXTargetDependency */,
 				25686DD3AD0AB4609E3015F9FFA0432E /* PBXTargetDependency */,
 			);
 			name = EXMailComposer;
@@ -188,12 +188,12 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		ABCCC0A3D6C7C9B8AEB52D42EDDD36DD /* Sources */ = {
+		58841F551E3225C2492E031CE30A2E57 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				60BB218B88DE87AE2C0E0C3A033B30EB /* EXMailComposer-dummy.m in Sources */,
-				9C0BF0FA66E83E9EAC8D2BB360C5DF08 /* EXMailComposer.m in Sources */,
+				607DAC9404B9B09991E2F9BF1237FFCB /* EXMailComposer-dummy.m in Sources */,
+				D82B2A7372D7A557D3CD06C8071A3F3C /* EXMailComposer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -205,25 +205,26 @@
 			name = UMFileSystemInterface;
 			targetProxy = 1579F808A7F7781458304799D53E03CE /* PBXContainerItemProxy */;
 		};
-		5497E4DE65EA1E6D2D56A9FE11802885 /* PBXTargetDependency */ = {
+		91ADFA3AF1393763D6F0BA95ABE81A86 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 984CDA4F226301336AA4B490896AA906 /* PBXContainerItemProxy */;
+			targetProxy = 3170CD4AD5351A7F212DF783F0B4D5B3 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		34731E77224A976B740B2820680BB528 /* Debug */ = {
+		380E4D5F268CC3BB631833B184A48E5F /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D207EC23B5299B2C778C3E57FCF3EBA0 /* EXMailComposer.debug.xcconfig */;
+			baseConfigurationReference = 59E1B7917A822DF4201297DE477CA1C6 /* EXMailComposer.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/EXMailComposer/EXMailComposer-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -235,10 +236,11 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
-		38BE57EFB91E56B32DBB216323EACFFD /* Release */ = {
+		951149CDE7A4AF19663F9083F2F30BE4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -288,7 +290,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -300,7 +302,33 @@
 			};
 			name = Release;
 		};
-		72D528084D60DBA11753F8551E04DA39 /* Debug */ = {
+		ACAA88172D065F439DEB6C5968D2E07D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D207EC23B5299B2C778C3E57FCF3EBA0 /* EXMailComposer.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/EXMailComposer/EXMailComposer-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXMailComposer;
+				PRODUCT_NAME = EXMailComposer;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		F9F601FC072ECBAB4CAC9DF0CDE4E1E5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -353,7 +381,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -366,40 +394,14 @@
 			};
 			name = Debug;
 		};
-		976BA247629138BF22AD861C2998C20D /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 59E1B7917A822DF4201297DE477CA1C6 /* EXMailComposer.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/EXMailComposer/EXMailComposer-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXMailComposer;
-				PRODUCT_NAME = EXMailComposer;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		24618B347D0F22AF25988072BEC2A9D9 /* Build configuration list for PBXProject "EXMailComposer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				72D528084D60DBA11753F8551E04DA39 /* Debug */,
-				38BE57EFB91E56B32DBB216323EACFFD /* Release */,
+				F9F601FC072ECBAB4CAC9DF0CDE4E1E5 /* Debug */,
+				951149CDE7A4AF19663F9083F2F30BE4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -407,8 +409,8 @@
 		5D803575930FBEA921865AE155836E01 /* Build configuration list for PBXNativeTarget "EXMailComposer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				34731E77224A976B740B2820680BB528 /* Debug */,
-				976BA247629138BF22AD861C2998C20D /* Release */,
+				ACAA88172D065F439DEB6C5968D2E07D /* Debug */,
+				380E4D5F268CC3BB631833B184A48E5F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -38,11 +38,14 @@ On Android, This module requires the permissions for approximate and exact devic
 
 If you're using the iOS or Android Emulators, ensure that [Location is enabled](#enabling-emulator-location).
 
-<SnackInline label='Location' templateId='location' dependencies={['expo-location', 'expo-constants']}>
+<SnackInline label='Location' dependencies={['expo-location', 'expo-constants']}>
 
-```js
+```jsx
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import { Platform, Text, View, StyleSheet } from 'react-native';
+/* @hide */
+import Constants from 'expo-constants';
+/* @end */
 import * as Location from 'expo-location';
 
 export default function App() {
@@ -51,9 +54,18 @@ export default function App() {
 
   useEffect(() => {
     (async () => {
+      /* @hide */
+      if (Platform.OS === 'android' && !Constants.isDevice) {
+        setErrorMsg(
+          'Oops, this will not work on Snack in an Android emulator. Try it on your device!'
+        );
+        return;
+      }
+      /* @end */
       let { status } = await Location.requestPermissionsAsync();
       if (status !== 'granted') {
         setErrorMsg('Permission to access location was denied');
+        return;
       }
 
       let location = await Location.getCurrentPositionAsync({});
@@ -70,16 +82,25 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Text>{text}</Text>
+      <Text style={styles.paragraph}>{text}</Text>
     </View>
   );
 }
 
+/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  paragraph: {
+    fontSize: 18,
+    textAlign: 'center',
   },
 });
+/* @end */
 ```
 
 </SnackInline>

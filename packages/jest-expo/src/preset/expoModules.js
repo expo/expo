@@ -508,12 +508,12 @@ module.exports = {
           { key: 1, argumentsCount: 1, name: 'setUpdateInterval' },
         ],
         ExponentImagePicker: [
-          { key: 0, argumentsCount: 1, name: 'getMediaLibaryPermissionsAsync' },
+          { key: 0, argumentsCount: 1, name: 'getMediaLibraryPermissionsAsync' },
           { key: 1, argumentsCount: 0, name: 'requestCameraPermissionsAsync' },
           { key: 2, argumentsCount: 1, name: 'launchCameraAsync' },
           { key: 3, argumentsCount: 1, name: 'launchImageLibraryAsync' },
           { key: 4, argumentsCount: 0, name: 'getCameraPermissionsAsync' },
-          { key: 5, argumentsCount: 1, name: 'requestMediaLibaryPermissionsAsync' },
+          { key: 5, argumentsCount: 1, name: 'requestMediaLibraryPermissionsAsync' },
         ],
         ExponentMagnetometer: [
           { key: 0, argumentsCount: 0, name: 'isAvailableAsync' },

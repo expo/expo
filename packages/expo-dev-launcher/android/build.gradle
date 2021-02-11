@@ -1,15 +1,3 @@
-// android/build.gradle
-
-// based on:
-//
-// * https://github.com/facebook/react-native/blob/0.60-stable/template/android/build.gradle
-//   original location:
-//   - https://github.com/facebook/react-native/blob/0.58-stable/local-cli/templates/HelloWorld/android/build.gradle
-//
-// * https://github.com/facebook/react-native/blob/0.60-stable/template/android/app/build.gradle
-//   original location:
-//   - https://github.com/facebook/react-native/blob/0.58-stable/local-cli/templates/HelloWorld/android/app/build.gradle
-
 def safeExtGet(prop, fallback) {
   rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
 }
@@ -29,17 +17,17 @@ buildscript {
   }
 
   dependencies {
-    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet("kotlinVersion", "1.3.50")}")
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet("kotlinVersion", "1.4.21")}")
   }
 }
 
 android {
-  compileSdkVersion safeExtGet('compileSdkVersion', 29)
+  compileSdkVersion safeExtGet('compileSdkVersion', 30)
   defaultConfig {
     minSdkVersion safeExtGet('minSdkVersion', 21)
-    targetSdkVersion safeExtGet('targetSdkVersion', 29)
-    versionCode 5
-    versionName "0.0.11"
+    targetSdkVersion safeExtGet('targetSdkVersion', 30)
+    versionCode 9
+    versionName "0.2.0"
   }
   lintOptions {
     abortOnError false
@@ -47,6 +35,19 @@ android {
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
     targetCompatibility JavaVersion.VERSION_1_8
+  }
+
+  buildTypes {
+    releaseWithDevLauncher {
+      initWith release
+      matchingFallbacks = ['release', 'debug']
+    }
+  }
+
+  sourceSets {
+    releaseWithDevLauncher {
+      setRoot 'src/debug'
+    }
   }
 }
 
@@ -81,7 +82,7 @@ dependencies {
 
   implementation 'commons-io:commons-io:2.6'
 
-  implementation("com.squareup.okhttp3:okhttp:4.9.0")
+  implementation("com.squareup.okhttp3:okhttp:3.14.9")
   implementation 'com.google.code.gson:gson:2.8.5'
 
   // Fixes
@@ -90,9 +91,9 @@ dependencies {
   api "androidx.appcompat:appcompat:1.1.0"
   api "androidx.lifecycle:lifecycle-extensions:2.2.0"
 
-  api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.3.50')}"
+  api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.5")
-  implementation "org.jetbrains.kotlin:kotlin-reflect:${safeExtGet('kotlinVersion', '1.3.50')}"
+  implementation "org.jetbrains.kotlin:kotlin-reflect:${safeExtGet('kotlinVersion', '1.4.21')}"
 }
 

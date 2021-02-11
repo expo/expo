@@ -8,26 +8,26 @@
 
 /* Begin PBXBuildFile section */
 		0A23D210652BD0D21B6C7D3746A54F38 /* EXPermissions.h in Headers */ = {isa = PBXBuildFile; fileRef = 1374349D0E836C64B65F183EA2080CB5 /* EXPermissions.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		27724F2234DB72177EB23F9E321E5AF5 /* EXReactNativeUserNotificationCenterProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = B9275AF056D3B083B50F751C9E31CC29 /* EXReactNativeUserNotificationCenterProxy.m */; };
+		157D9A67E1C2016E213AA6B8044E11DB /* EXPermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = C8124CFADB3D70F262EAF763C67CEFAE /* EXPermissions.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		4017BF8294202561C08DC7E18F3D3E53 /* EXReactNativeUserNotificationCenterProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = F4EFA564918D632948268C87BC3F9B8F /* EXReactNativeUserNotificationCenterProxy.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		5085245D9107E45A7CC8889A35504EF4 /* EXPermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = C8124CFADB3D70F262EAF763C67CEFAE /* EXPermissions.m */; };
-		D5B1DC98572EFC142934E4D63860D8E1 /* EXPermissions-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 9000553D3806EBCA262535E20286238C /* EXPermissions-dummy.m */; };
+		8B7A3581EB57F14E8901AA8332EFD4C1 /* EXPermissions-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 9000553D3806EBCA262535E20286238C /* EXPermissions-dummy.m */; };
+		C7A7F4EF381DCD7EC1FB27A277D827E3 /* EXReactNativeUserNotificationCenterProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = B9275AF056D3B083B50F751C9E31CC29 /* EXReactNativeUserNotificationCenterProxy.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		26CDE36A7B88CDC94F2D49BA2206DE6A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D2058653576C4016C65A58703057E384 /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
 		33BA94C64DA81952E385E73BB27CB76C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 23684C993EACFABBCCFEB21EC4740D24 /* UMPermissionsInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 12FF61416C5E794E9DEAC78D381D9726;
 			remoteInfo = UMPermissionsInterface;
-		};
-		540C8B570BC905347B09A373784A0A15 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D2058653576C4016C65A58703057E384 /* UMCore.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
-			remoteInfo = UMCore;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -145,13 +145,13 @@
 			buildConfigurationList = 049C0B70B5B379EE9D98867307A48E8C /* Build configuration list for PBXNativeTarget "EXPermissions" */;
 			buildPhases = (
 				BAA60E0A9FFEF2C453C8852914E30EAB /* Headers */,
-				FF5BC9F31FB5B1491FCAB4BA948272E0 /* Sources */,
+				3D5AB3D43DF87B514DE08796A001E9FB /* Sources */,
 				3C704873D4D77A6511D2D0EDB8A801F6 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				79CCB521EE6E01D7C4AD4623624B7F9E /* PBXTargetDependency */,
+				68644A183966980A6FB6677551A71E50 /* PBXTargetDependency */,
 				84A7B3099C3450467A0E24A09CC09643 /* PBXTargetDependency */,
 			);
 			name = EXPermissions;
@@ -195,23 +195,23 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		FF5BC9F31FB5B1491FCAB4BA948272E0 /* Sources */ = {
+		3D5AB3D43DF87B514DE08796A001E9FB /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D5B1DC98572EFC142934E4D63860D8E1 /* EXPermissions-dummy.m in Sources */,
-				5085245D9107E45A7CC8889A35504EF4 /* EXPermissions.m in Sources */,
-				27724F2234DB72177EB23F9E321E5AF5 /* EXReactNativeUserNotificationCenterProxy.m in Sources */,
+				8B7A3581EB57F14E8901AA8332EFD4C1 /* EXPermissions-dummy.m in Sources */,
+				157D9A67E1C2016E213AA6B8044E11DB /* EXPermissions.m in Sources */,
+				C7A7F4EF381DCD7EC1FB27A277D827E3 /* EXReactNativeUserNotificationCenterProxy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		79CCB521EE6E01D7C4AD4623624B7F9E /* PBXTargetDependency */ = {
+		68644A183966980A6FB6677551A71E50 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 540C8B570BC905347B09A373784A0A15 /* PBXContainerItemProxy */;
+			targetProxy = 26CDE36A7B88CDC94F2D49BA2206DE6A /* PBXContainerItemProxy */;
 		};
 		84A7B3099C3450467A0E24A09CC09643 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -221,17 +221,18 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		3581078ED73D9E1B7F9B567B7DA3C5D2 /* Release */ = {
+		0CFCFF941E4AAE864D92ED50FF8EF40E /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 00CF12D302F66063727E104C0DDA01B6 /* EXPermissions.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/EXPermissions/EXPermissions-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -247,7 +248,33 @@
 			};
 			name = Release;
 		};
-		4EA740D55B8228D3074B12810EA4478A /* Debug */ = {
+		0D72E3F94783CFD61CECBCBA73C371A4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C95C3BA62CB59B207646A5BE4D48154B /* EXPermissions.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/EXPermissions/EXPermissions-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXPermissions;
+				PRODUCT_NAME = EXPermissions;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		4B737AF4CD69DBCE98C4D6B3B69131C8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -300,7 +327,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -313,7 +340,7 @@
 			};
 			name = Debug;
 		};
-		86021C554C1C70A11A62BAE784C36654 /* Release */ = {
+		832723BD3DFDEACEFE8FF586280CB116 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -363,7 +390,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -375,39 +402,14 @@
 			};
 			name = Release;
 		};
-		F1F179232AB3025138B2E486B89CB4B4 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = C95C3BA62CB59B207646A5BE4D48154B /* EXPermissions.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/EXPermissions/EXPermissions-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXPermissions;
-				PRODUCT_NAME = EXPermissions;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		049C0B70B5B379EE9D98867307A48E8C /* Build configuration list for PBXNativeTarget "EXPermissions" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				F1F179232AB3025138B2E486B89CB4B4 /* Debug */,
-				3581078ED73D9E1B7F9B567B7DA3C5D2 /* Release */,
+				0D72E3F94783CFD61CECBCBA73C371A4 /* Debug */,
+				0CFCFF941E4AAE864D92ED50FF8EF40E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -415,8 +417,8 @@
 		7B2535EC613DE02F6025CB7A18B916B3 /* Build configuration list for PBXProject "EXPermissions" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				4EA740D55B8228D3074B12810EA4478A /* Debug */,
-				86021C554C1C70A11A62BAE784C36654 /* Release */,
+				4B737AF4CD69DBCE98C4D6B3B69131C8 /* Debug */,
+				832723BD3DFDEACEFE8FF586280CB116 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -47,7 +47,7 @@ export default class AppLoading extends React.Component<Props> {
     this._isMounted = true;
 
     this.startLoadingAppResourcesAsync().catch(error => {
-      console.error(`AppLoading threw an unexpected error when loading:\n${error.stack}`);
+      console.error(`AppLoading threw an unexpected error when loading:\n${error}`);
     });
   }
 

@@ -13,14 +13,14 @@
 			buildPhases = (
 			);
 			dependencies = (
-				B8071BA1991836C19F0764AFCE1CFD33 /* PBXTargetDependency */,
+				97E63CFC2911B4E720B10BCFA92C7D40 /* PBXTargetDependency */,
 			);
 			name = UMSensorsInterface;
 		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXContainerItemProxy section */
-		95B3C45E56233AB21C7956976DE34A0E /* PBXContainerItemProxy */ = {
+		4461D81B74889C433C9DDDB25A9CA770 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B21904055EB3DEEA4DD2E9F075D43A70 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -142,15 +142,15 @@
 /* End PBXProject section */
 
 /* Begin PBXTargetDependency section */
-		B8071BA1991836C19F0764AFCE1CFD33 /* PBXTargetDependency */ = {
+		97E63CFC2911B4E720B10BCFA92C7D40 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 95B3C45E56233AB21C7956976DE34A0E /* PBXContainerItemProxy */;
+			targetProxy = 4461D81B74889C433C9DDDB25A9CA770 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		012030C138D2E7C09D4D408746FE04EB /* Debug */ = {
+		2FEE1C06EDB02D235AE3429DC21F019E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -203,7 +203,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -216,7 +216,40 @@
 			};
 			name = Debug;
 		};
-		1C76C88E18E9CC40CA3529803F2D51D9 /* Release */ = {
+		66A123A363D718546D90D9934464934D /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 14F3DB93B3EF3AFAB0876C75C8D8ECA0 /* UMSensorsInterface.release.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		7987D5B20099BB7D849E7820FF106937 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 476CDA3F5324691D42D045A29270995F /* UMSensorsInterface.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		9792476195DFA0B202CE4E471E48C44F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -266,7 +299,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -278,45 +311,14 @@
 			};
 			name = Release;
 		};
-		2884D93836E59D0025E0C9904E7CF03A /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 14F3DB93B3EF3AFAB0876C75C8D8ECA0 /* UMSensorsInterface.release.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		73C9913AFCD622FDFFD73486311AF8E7 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 476CDA3F5324691D42D045A29270995F /* UMSensorsInterface.debug.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		0B4EA880714FD2072B6CF42C7B1CB82A /* Build configuration list for PBXProject "UMSensorsInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				012030C138D2E7C09D4D408746FE04EB /* Debug */,
-				1C76C88E18E9CC40CA3529803F2D51D9 /* Release */,
+				2FEE1C06EDB02D235AE3429DC21F019E /* Debug */,
+				9792476195DFA0B202CE4E471E48C44F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -324,8 +326,8 @@
 		702E23262755DF2062CF19F2A8BE6F37 /* Build configuration list for PBXAggregateTarget "UMSensorsInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				73C9913AFCD622FDFFD73486311AF8E7 /* Debug */,
-				2884D93836E59D0025E0C9904E7CF03A /* Release */,
+				7987D5B20099BB7D849E7820FF106937 /* Debug */,
+				66A123A363D718546D90D9934464934D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

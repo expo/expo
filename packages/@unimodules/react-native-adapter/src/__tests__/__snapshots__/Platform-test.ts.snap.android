@@ -3,6 +3,8 @@
 exports[`matches snapshots 1`] = `
 Object {
   "OS": "android",
+  "canUseEventListeners": false,
+  "canUseViewport": false,
   "isDOMAvailable": false,
   "isNative": true,
   "isWeb": false,

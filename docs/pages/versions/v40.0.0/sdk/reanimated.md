@@ -16,11 +16,11 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 <InstallSection packageName="react-native-reanimated" href="https://docs.swmansion.com/react-native-reanimated/docs/installation" />
 
-### Experimental support for v2-alpha
+### Experimental support for v2
 
-The second major version of this library offers a much easier API, along with significantly improved performance characteristics. It also requires that [TurboModules](https://github.com/react-native-community/discussions-and-proposals/issues/40) are enabled in your app, and [TurboModules are not compatible with JavaScript debugging in Chrome](https://docs.swmansion.com/react-native-reanimated/docs/next/#known-problems-and-limitations). Because of this limitation, you need to opt in to using the alpha version of this library.
+The second major version of this library offers a much easier API, along with significantly improved performance characteristics. It uses React Native APIs that are incompatible with Remote Debugging JS.
 
-> ⏩ If you want to play with v2-alpha in a new project before adding it to an existing project, run `npx crna --template with-reanimated2` to create a project with it configured and ready to use.
+> ⏩ If you want to play with v2-rc in a new project before adding it to an existing project, run `npx crna --template with-reanimated2` to create a project with it configured and ready to use.
 
 You also need to install the library directly with npm or yarn rather than using `expo install` because we still default to installing the stable react-native-reanimated v1.
 

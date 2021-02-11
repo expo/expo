@@ -7,25 +7,25 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		425D77BEF99D0BC75E694E2F866F308F /* EXSMSModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 608A830E24500DA2D0F8DC93C2D60973 /* EXSMSModule.m */; };
-		D11FAC7A02B01515111B767BF3F883FF /* EXSMS-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BE63D7C426DE83561EF3C9313E1C933 /* EXSMS-dummy.m */; };
+		395E2E082D04FD9DD0C54CC76C6754E4 /* EXSMS-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BE63D7C426DE83561EF3C9313E1C933 /* EXSMS-dummy.m */; };
+		AEA0780900C4F1DEA751968DED43EC10 /* EXSMSModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 608A830E24500DA2D0F8DC93C2D60973 /* EXSMSModule.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		DF1595DA71264C51947DAC5AAA134A74 /* EXSMSModule.h in Headers */ = {isa = PBXBuildFile; fileRef = D48967022BFFE89F1EF73ED5481916B8 /* EXSMSModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		4D162FA96288B7B29198071697F1C810 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DEB77771074A194109C3322039DD4352 /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
 		697338AA312E695CC85B1BFDC7B4AC40 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EB8462556B744FB9EA0688BBB0843531 /* UMPermissionsInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 12FF61416C5E794E9DEAC78D381D9726;
 			remoteInfo = UMPermissionsInterface;
-		};
-		76A71CCBE172505E0BD37413B2E14534 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DEB77771074A194109C3322039DD4352 /* UMCore.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
-			remoteInfo = UMCore;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -138,13 +138,13 @@
 			buildConfigurationList = F540D372C203E40BD3C167063E6DD56D /* Build configuration list for PBXNativeTarget "EXSMS" */;
 			buildPhases = (
 				A5C1D692A0B238B8CD5980A1A9570354 /* Headers */,
-				E55C4872173A12E57C39ED47BBBA5733 /* Sources */,
+				D610F30061E6DB3DC7FE1A63A8D11B98 /* Sources */,
 				FFFB92E66A6AB5AB9697D8B24BF66DF2 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				1D2D8AB02AFC54DEAD04C70F229331CA /* PBXTargetDependency */,
+				DCFA71F0773B6B11C91A4B3C3F3491B0 /* PBXTargetDependency */,
 				2B40F59D864C6688F0E73192F5F12D5F /* PBXTargetDependency */,
 			);
 			name = EXSMS;
@@ -188,68 +188,43 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		E55C4872173A12E57C39ED47BBBA5733 /* Sources */ = {
+		D610F30061E6DB3DC7FE1A63A8D11B98 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D11FAC7A02B01515111B767BF3F883FF /* EXSMS-dummy.m in Sources */,
-				425D77BEF99D0BC75E694E2F866F308F /* EXSMSModule.m in Sources */,
+				395E2E082D04FD9DD0C54CC76C6754E4 /* EXSMS-dummy.m in Sources */,
+				AEA0780900C4F1DEA751968DED43EC10 /* EXSMSModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		1D2D8AB02AFC54DEAD04C70F229331CA /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMCore;
-			targetProxy = 76A71CCBE172505E0BD37413B2E14534 /* PBXContainerItemProxy */;
-		};
 		2B40F59D864C6688F0E73192F5F12D5F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMPermissionsInterface;
 			targetProxy = 697338AA312E695CC85B1BFDC7B4AC40 /* PBXContainerItemProxy */;
 		};
+		DCFA71F0773B6B11C91A4B3C3F3491B0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = 4D162FA96288B7B29198071697F1C810 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		0CF97263384354282AB49EBBCE04018E /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 51F1E85D378336C0482F771EEA2524C5 /* EXSMS.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/EXSMS/EXSMS-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXSMS;
-				PRODUCT_NAME = EXSMS;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		49BD3BD3F02AC8A4B269A1D839F4C1F2 /* Debug */ = {
+		09905229F7B093964DFD6B2554028B1D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5BEDBBC74BB1E3E83B3B1DFFE9074764 /* EXSMS.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/EXSMS/EXSMS-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -264,7 +239,7 @@
 			};
 			name = Debug;
 		};
-		B01A8A9905BF212660773B506A96FAD1 /* Debug */ = {
+		420AA5DBB3E53B3CFBB3359267FEA3B7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -317,7 +292,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -330,7 +305,7 @@
 			};
 			name = Debug;
 		};
-		DC114BD4CA6150C832B7E44273EB2D53 /* Release */ = {
+		4F192A2081A6F0C1C7480557BDB1183B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -380,7 +355,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -392,14 +367,41 @@
 			};
 			name = Release;
 		};
+		70DCF0F7A30450D3A90D2FEEA49DCFD9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 51F1E85D378336C0482F771EEA2524C5 /* EXSMS.release.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/EXSMS/EXSMS-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXSMS;
+				PRODUCT_NAME = EXSMS;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		2450E29123D35448D1A078B88168313D /* Build configuration list for PBXProject "EXSMS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B01A8A9905BF212660773B506A96FAD1 /* Debug */,
-				DC114BD4CA6150C832B7E44273EB2D53 /* Release */,
+				420AA5DBB3E53B3CFBB3359267FEA3B7 /* Debug */,
+				4F192A2081A6F0C1C7480557BDB1183B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -407,8 +409,8 @@
 		F540D372C203E40BD3C167063E6DD56D /* Build configuration list for PBXNativeTarget "EXSMS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				49BD3BD3F02AC8A4B269A1D839F4C1F2 /* Debug */,
-				0CF97263384354282AB49EBBCE04018E /* Release */,
+				09905229F7B093964DFD6B2554028B1D /* Debug */,
+				70DCF0F7A30450D3A90D2FEEA49DCFD9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

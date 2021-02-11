@@ -8,10 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		0759C8391583331C61D153272765BCCE /* EXBlurView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D1B01A2B2B8A401BA0C335E6C22F7DE /* EXBlurView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		466054D443869B157FC73C0531EDD8DC /* EXBlurViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 34E48874DA986489828BF2079F85F149 /* EXBlurViewManager.m */; };
+		152645931A7C70999DC5C8350D02A969 /* EXBlur-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CD26DA8F4F7CAD150FDFDF6068F1E07 /* EXBlur-dummy.m */; };
 		75B441AD13BA3A64E53E518A90F56003 /* EXBlurViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D44A010C0AB689C47A60F6D4E45BCF9 /* EXBlurViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		7693EF8D97284025FFE1DD431393BE0A /* EXBlur-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CD26DA8F4F7CAD150FDFDF6068F1E07 /* EXBlur-dummy.m */; };
-		793A3FD4C38155AD5A7F24E079D1E645 /* EXBlurView.m in Sources */ = {isa = PBXBuildFile; fileRef = A7399DA1DE9ADBCBFAE88A6EB7CF2B55 /* EXBlurView.m */; };
+		A1F52A0C49A31FA130760E619935ED00 /* EXBlurView.m in Sources */ = {isa = PBXBuildFile; fileRef = A7399DA1DE9ADBCBFAE88A6EB7CF2B55 /* EXBlurView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		B24DEA792C266195F2CA72D424959ED2 /* EXBlurViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 34E48874DA986489828BF2079F85F149 /* EXBlurViewManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -136,7 +136,7 @@
 			buildConfigurationList = 40A4C9354F2035825E4A00D6B2DD3ABA /* Build configuration list for PBXNativeTarget "EXBlur" */;
 			buildPhases = (
 				9A4D2BBC26A15A0568E0298291C807C4 /* Headers */,
-				1536B4BCE2DE25D6FAD19261C9CF7906 /* Sources */,
+				A626D58B627674728195317B6CB7E74E /* Sources */,
 				C3079A29EC70AE13DBF4A45ED50C8824 /* Frameworks */,
 			);
 			buildRules = (
@@ -182,13 +182,13 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		1536B4BCE2DE25D6FAD19261C9CF7906 /* Sources */ = {
+		A626D58B627674728195317B6CB7E74E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7693EF8D97284025FFE1DD431393BE0A /* EXBlur-dummy.m in Sources */,
-				793A3FD4C38155AD5A7F24E079D1E645 /* EXBlurView.m in Sources */,
-				466054D443869B157FC73C0531EDD8DC /* EXBlurViewManager.m in Sources */,
+				152645931A7C70999DC5C8350D02A969 /* EXBlur-dummy.m in Sources */,
+				A1F52A0C49A31FA130760E619935ED00 /* EXBlurView.m in Sources */,
+				B24DEA792C266195F2CA72D424959ED2 /* EXBlurViewManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -203,32 +203,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		28F729B205423678CBA0A0105A9BAE01 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = F447AF7A20AA718F297433F379985A2C /* EXBlur.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/EXBlur/EXBlur-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXBlur;
-				PRODUCT_NAME = EXBlur;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		29E3C56ABA3E56CDBE11737956C05558 /* Release */ = {
+		067BC93D9EAAEA3A7A648486A4D11E4D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -278,7 +253,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -290,7 +265,7 @@
 			};
 			name = Release;
 		};
-		A4BD69312C4637DBBB30E27D02255E90 /* Debug */ = {
+		0717E64C3B6FBB09FEDBAD273D3F1AE8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -343,7 +318,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -356,17 +331,18 @@
 			};
 			name = Debug;
 		};
-		B7B211C0FCE26959655475E2F1A467F1 /* Release */ = {
+		38A7D87A959AC6743B4BDF9A44984B16 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4603C5F5990612C25F0325A2B0D1C8C4 /* EXBlur.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/EXBlur/EXBlur-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -382,14 +358,40 @@
 			};
 			name = Release;
 		};
+		D5FC3C3BB253094E6D998BEF6314120F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F447AF7A20AA718F297433F379985A2C /* EXBlur.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/EXBlur/EXBlur-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXBlur;
+				PRODUCT_NAME = EXBlur;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		40A4C9354F2035825E4A00D6B2DD3ABA /* Build configuration list for PBXNativeTarget "EXBlur" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				28F729B205423678CBA0A0105A9BAE01 /* Debug */,
-				B7B211C0FCE26959655475E2F1A467F1 /* Release */,
+				D5FC3C3BB253094E6D998BEF6314120F /* Debug */,
+				38A7D87A959AC6743B4BDF9A44984B16 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -397,8 +399,8 @@
 		B95B1C09917F2F522A96EE522D1FF1DF /* Build configuration list for PBXProject "EXBlur" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				A4BD69312C4637DBBB30E27D02255E90 /* Debug */,
-				29E3C56ABA3E56CDBE11737956C05558 /* Release */,
+				0717E64C3B6FBB09FEDBAD273D3F1AE8 /* Debug */,
+				067BC93D9EAAEA3A7A648486A4D11E4D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -36,6 +36,7 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
   <SocialGridItem title="Firebase Phone" protocol={['Recaptcha']} href="/versions/latest/sdk/firebase-recaptcha" image="/static/images/sdk/auth-session/firebase-phone.png" />
   <SocialGridItem title="Github" protocol={['OAuth 2']} href="#github" image="/static/images/sdk/auth-session/github.png" />
   <SocialGridItem title="Google" protocol={['OAuth 2', 'OpenID']} href="#google" image="/static/images/sdk/auth-session/google.png" />
+  <SocialGridItem title="Imgur" protocol={['OAuth 2']} href="#imgur" image="/static/images/sdk/auth-session/imgur.png" />
   <SocialGridItem title="Okta" protocol={['OAuth 2', 'OpenID']} href="#okta" image="/static/images/sdk/auth-session/okta.png" />
   <SocialGridItem title="Reddit" protocol={['OAuth 2']} href="#reddit" image="/static/images/sdk/auth-session/reddit.png" />
   <SocialGridItem title="Slack" protocol={['OAuth 2']} href="#slack" image="/static/images/sdk/auth-session/slack.png" />
@@ -90,7 +91,7 @@ export default function App() {
   const [request, result, promptAsync] = AuthSession.useAuthRequest(
     {
       clientId: 'native.code',
-      /* @info After a user finishes authenticating, the server will redirect them to this URI. Learn more about <a href="../../workflow/linking/">linking here</a>. */
+      /* @info After a user finishes authenticating, the server will redirect them to this URI. Learn more about <a href="../../guides/linking/">linking here</a>. */
       redirectUri,
       /* @end */
       scopes: ['openid', 'profile', 'email', 'offline_access'],
@@ -633,8 +634,8 @@ export default function App() {
 [c-fitbit]: https://dev.fitbit.com/apps/new
 
 - Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
-  - Expo client: `exp://localhost:19000/--/*`
-  - Expo client + Proxy: `https://auth.expo.io/@you/your-app`
+  - Expo Go: `exp://localhost:19000/--/*`
+  - Expo Go + Proxy: `https://auth.expo.io/@you/your-app`
   - Standalone or Bare: `com.your.app://*`
   - Web: `https://yourwebsite.com/*`
 - The `redirectUri` requires 2 slashes (`://`).
@@ -789,8 +790,8 @@ export default function App() {
 [c-github]: https://github.com/settings/developers
 
 - Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
-  - Expo client: `exp://localhost:19000/--/*`
-  - Expo client + Proxy: `https://auth.expo.io/@you/your-app`
+  - Expo Go: `exp://localhost:19000/--/*`
+  - Expo Go + Proxy: `https://auth.expo.io/@you/your-app`
   - Standalone or Bare: `com.your.app://*`
   - Web: `https://yourwebsite.com/*`
 - The `redirectUri` requires 2 slashes (`://`).
@@ -885,7 +886,7 @@ export default function App() {
 
 There are 4 different types of client IDs you can provide:
 
-- `expoClientId`: Proxy client ID for use in the **Expo client** on iOS and Android.
+- `expoClientId`: Proxy client ID for use in the **Expo Go** on iOS and Android.
 - `iosClientId`: iOS native client ID for use in standalone, bare-workflow, and custom clients.
 - `androidClientId`: Android native client ID for use in standalone, bare-workflow, and custom clients.
 - `webClientId`: Expo web client ID for use in the browser.
@@ -895,22 +896,22 @@ To create a client ID, go to the [Credentials Page][c-google]:
 - Create an app for your project if you haven't already.
 - Once that's done, click "Create Credentials" and then "OAuth client ID." You will be prompted to set the product name on the consent screen, go ahead and do that.
 
-#### Development in the Expo client
+#### Development in the Expo Go app
 
-While developing in the Expo client, you cannot use proper native authentication. Instead you must use web login during development. Be sure to follow the **standalone** guide below for setting up production apps.
+While developing in Expo Go, you cannot use proper native authentication. Instead you must use web login during development. Be sure to follow the **standalone** guide below for setting up production apps.
 
 First, be sure to login to your Expo account `expo login`. This will be part of the redirect URL.
 
 [Create a new Google Client ID][c-google] that will be used with `expoClientId`.
 
 - **Application Type**: Web Application
-- Give it a name (e.g. "Expo client Proxy").
+- Give it a name (e.g. "Expo Go Proxy").
 - **URIs** (Authorized JavaScript origins): https://auth.expo.io
 - **Authorized redirect URIs**: https://auth.expo.io/@your-username/your-project-slug
 
 #### iOS Native
 
-This can only be used in Standalone, custom clients, and bare workflow apps. This method cannot be used in the Expo client.
+This can only be used in Standalone, custom clients, and bare workflow apps. This method cannot be used in the Expo Go app.
 
 [Create a new Google Client ID][c-google] that will be used with `iosClientId`.
 
@@ -928,7 +929,7 @@ This can only be used in Standalone, custom clients, and bare workflow apps. Thi
 
 #### Android Native
 
-This can only be used in Standalone, and bare workflow apps. This method cannot be used in the Expo client.
+This can only be used in Standalone, and bare workflow apps. This method cannot be used in the Expo Go app.
 
 [Create a new Google Client ID][c-google] that will be used with `androidClientId`.
 
@@ -1021,10 +1022,10 @@ export default function App() {
   - https://console.developers.google.com/apis/credentials/oauthclient/YOUR_GUID.apps.googleusercontent.com
 - Under "URIs" add your hosts URLs
   - Web dev: https://localhost:19006
-  - Expo client Proxy: https://auth.expo.io
+  - Expo Go Proxy: https://auth.expo.io
 - Under "Authorized redirect URIs"
   - Web dev: https://localhost:19006 -- this is assuming you want to invoke `WebBrowser.maybeCompleteAuthSession();` from the root URL of your app.
-  - Expo client Proxy: https://auth.expo.io/@yourname/your-app
+  - Expo Go Proxy: https://auth.expo.io/@yourname/your-app
 
 <img alt="Google Firebase Console for URIs" src="/static/images/sdk/auth-session/guide/google-firebase-auth-console.png" />
 
@@ -1096,6 +1097,151 @@ export default function App() {
 </Tabs>
 
 <!-- End Google -->
+
+### Imgur
+
+<CreateAppButton name="Imgur" href="https://api.imgur.com/oauth2/addclient" />
+
+| Website                    | Provider  | PKCE      | Auto Discovery |
+| -------------------------- | --------- | --------- | -------------- |
+| [Get Your Config][c-imgur] | OAuth 2.0 | Supported | Not Available  |
+
+[c-imgur]: https://api.imgur.com/oauth2/addclient
+
+- You will need to create a different provider app for each platform (dynamically choosing your `clientId`).
+- Learn more here: [imgur.com/oauth2](https://api.imgur.com/oauth2)
+
+<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
+<AuthCodeTab>
+
+<SnackInline label='Imgur Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
+
+```tsx
+import * as React from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+import { Button, Platform } from 'react-native';
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+const discovery = {
+  authorizationEndpoint: 'https://api.imgur.com/oauth2/authorize',
+  tokenEndpoint: 'https://api.imgur.com/oauth2/token',
+};
+
+export default function App() {
+  // Request
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: 'CLIENT_ID',
+      clientSecret: 'CLIENT_SECRET',
+      redirectUri: makeRedirectUri({
+        // For usage in bare and standalone
+        native: 'com.myname.myapp://redirect',
+      }),
+      // imgur requires an empty array
+      scopes: [],
+    },
+    discovery
+  );
+
+  React.useEffect(() => {
+    if (response?.type === 'success') {
+      /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
+      const { code } = response.params;
+      /* @end */
+    }
+  }, [response]);
+
+  return (
+    <Button
+      /* @info Disable the button until the request is loaded asynchronously. */
+      disabled={!request}
+      /* @end */
+      title="Login"
+      onPress={() => {
+        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
+        promptAsync();
+        /* @end */
+      }}
+    />
+  );
+}
+```
+
+</SnackInline>
+
+</AuthCodeTab>
+
+<ImplicitTab>
+
+<SnackInline label='Imgur Implicit' dependencies={['expo-auth-session', 'expo-web-browser']}>
+
+```tsx
+import * as React from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, ResponseType, useAuthRequest } from 'expo-auth-session';
+import { Button, Platform } from 'react-native';
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+const discovery = {
+  authorizationEndpoint: 'https://api.imgur.com/oauth2/authorize',
+  tokenEndpoint: 'https://api.imgur.com/oauth2/token',
+};
+
+export default function App() {
+  // Request
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
+      responseType: ResponseType.Token,
+      /* @end */
+      clientId: 'CLIENT_ID',
+      redirectUri: makeRedirectUri({
+        // For usage in bare and standalone
+        native: 'com.myname.myapp://redirect',
+      }),
+      scopes: [],
+    },
+    discovery
+  );
+
+  React.useEffect(() => {
+    if (response?.type === 'success') {
+      /* @info Use this access token to interact with user data on the provider's server. */
+      const { access_token } = response.params;
+      /* @end */
+    }
+  }, [response]);
+
+  return (
+    <Button
+      /* @info Disable the button until the request is loaded asynchronously. */
+      disabled={!request}
+      /* @end */
+      title="Login"
+      onPress={() => {
+        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
+        promptAsync();
+        /* @end */
+      }}
+    />
+  );
+}
+```
+
+</SnackInline>
+
+</ImplicitTab>
+
+</AuthMethodTabSwitcher>
+
+<!-- End Imgur -->
 
 ### Okta
 
@@ -1195,8 +1341,8 @@ export default function App() {
 [c-reddit]: https://www.reddit.com/prefs/apps
 
 - Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
-  - Expo client: `exp://localhost:19000/--/*`
-  - Expo client + Proxy: `https://auth.expo.io/@you/your-app`
+  - Expo Go: `exp://localhost:19000/--/*`
+  - Expo Go + Proxy: `https://auth.expo.io/@you/your-app`
   - Standalone or Bare: `com.your.app://*`
   - Web: `https://yourwebsite.com/*`
 - The `redirectUri` requires 2 slashes (`://`).
@@ -1994,26 +2140,26 @@ Here are a few examples of some common redirect URI patterns you may end up usin
 
 > `https://auth.expo.io/@yourname/your-app`
 
-- **Environment:** Development or production projects in the Expo client, or in a standalone build.
+- **Environment:** Development or production projects in Expo Go, or in a standalone build.
 - **Create:** Use `AuthSession.makeRedirectUri({ useProxy: true })` to create this URI.
   - The link is constructed from your Expo username and the Expo app name, which are appended to the proxy website.
 - **Usage:** `promptAsync({ useProxy: true, redirectUri })`
 
-#### Published project in the Expo client
+#### Published project in the Expo Go app
 
 > `exp://exp.host/@yourname/your-app`
 
-- **Environment:** Production projects that you `expo publish`'d and opened in the Expo client.
+- **Environment:** Production projects that you `expo publish`'d and opened in the Expo Go app.
 - **Create:** Use `AuthSession.makeRedirectUri({ useProxy: false })` to create this URI.
-  - The link is constructed from your Expo username and the Expo app name, which are appended to the Expo client URI scheme.
+  - The link is constructed from your Expo username and the Expo app name, which are appended to the Expo Go app URI scheme.
   - You could also create this link with using `Linking.makeUrl()` from `expo-linking`.
 - **Usage:** `promptAsync({ redirectUri })`
 
-#### Development project in the Expo client
+#### Development project in the Expo Go app
 
 > `exp://localhost:19000`
 
-- **Environment:** Development projects in the Expo client when you run `expo start`.
+- **Environment:** Development projects in the Expo Go app when you run `expo start`.
 - **Create:** Use `AuthSession.makeRedirectUri({ useProxy: false })` to create this URI.
   - This link is built from your Expo server's `port` + `host`.
   - You could also create this link with using `Linking.makeUrl()` from `expo-linking`.
@@ -2030,8 +2176,8 @@ In some cases there will be anywhere between 1 to 3 slashes (`/`).
     - `npx create-react-native-app` or `expo eject`
   - Standalone builds in the App or Play Store
     - `expo build:ios` or `expo build:android`
-  - Custom Expo client builds
-    - `expo client:ios`
+  - Custom Expo Go builds
+    - `Expo Go:ios`
 - **Create:** Use `AuthSession.makeRedirectUri({ native: '<YOUR_URI>' })` to select native when running in the correct environment.
   - This link must be hard coded because it cannot be inferred from the config reliably, with exception for Standalone builds using `scheme` from `app.config.js` or `app.json`. Often this will be used for providers like Google or Okta which require you to use a custom native URI redirect. You can add, list, and open URI schemes using `npx uri-scheme`.
   - If you change the `expo.scheme` after ejecting then you'll need to use the `expo apply` command to apply the changes to your native project, then rebuild them (`yarn ios`, `yarn android`).

@@ -47,7 +47,7 @@ to launch Ubuntu at least once. After that, use an Admin powershell to run:
 - The iOS `bundleIdentifier` and Android `package` fields use reverse DNS notation, but don't have to be related to a domain. Replace `"com.yourcompany.yourappname"` with whatever makes sense for your app.
 - You're probably not surprised that `name`, `icon` and `version` are required.
 - `slug` is the url name that your app's JavaScript is published to. For example: `expo.io/@community/native-component-list`, where `community` is my username and `native-component-list` is the slug.
-- The `ios.buildNumber` and `android.versionCode` distinguish different binaries of your app. Make sure to increment these for each build you upload to the App Store or Google Play store.
+- The `ios.buildNumber` and `android.versionCode` distinguish different binaries of your app. Make sure to increment these for each build you upload to the App Store or Google Play Store.
 
 There are other options you might want to add to `app.json`. We have only covered what is
 required. For example, some people like to configure their own build number, linking scheme, and

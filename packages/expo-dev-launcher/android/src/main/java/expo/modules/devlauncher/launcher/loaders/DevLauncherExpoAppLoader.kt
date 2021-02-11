@@ -2,28 +2,32 @@ package expo.modules.devlauncher.launcher.loaders
 
 import android.content.Context
 import android.graphics.Color
+import android.net.Uri
+import android.util.Log
 import android.view.View
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.ReactContext
+import com.facebook.react.modules.appearance.AppearanceModule
 import expo.modules.devlauncher.helpers.isValidColor
+import expo.modules.devlauncher.helpers.setProtectedDeclaredField
 import expo.modules.devlauncher.launcher.configurators.DevLauncherExpoActivityConfigurator
-import expo.modules.devlauncher.launcher.manifest.DevelopmentClientManifest
+import expo.modules.devlauncher.launcher.manifest.DevLauncherUserInterface
+import expo.modules.devlauncher.launcher.manifest.DevLauncherManifest
 
 class DevLauncherExpoAppLoader(
-  private val manifest: DevelopmentClientManifest,
+  private val manifest: DevLauncherManifest,
   appHost: ReactNativeHost,
   context: Context,
   private val activityConfigurator: DevLauncherExpoActivityConfigurator =
     DevLauncherExpoActivityConfigurator(manifest, context)
 ) : DevLauncherAppLoader(appHost, context) {
-  override fun getBundleUrl(): String {
-    return manifest.bundleUrl
+  override fun getBundleUrl(): Uri {
+    return Uri.parse(manifest.bundleUrl)
   }
 
   override fun onCreate(activity: ReactActivity) = with(activityConfigurator) {
     applyOrientation(activity)
-    applyUiMode(activity)
     applyStatusBarConfiguration(activity)
     applyTaskDescription(activity)
   }
@@ -32,6 +36,39 @@ class DevLauncherExpoAppLoader(
     context.currentActivity?.run {
       val rootView = findViewById<View>(android.R.id.content).rootView
       applyBackgroundColor(rootView)
+    }
+
+    applyUserInterfaceStyle(context)
+  }
+
+  private fun applyUserInterfaceStyle(context: ReactContext) {
+    val userInterfaceStyle = when (manifest.userInterfaceStyle) {
+      DevLauncherUserInterface.DARK -> "dark"
+      DevLauncherUserInterface.LIGHT -> "light"
+      else -> return
+    }
+
+    context.getNativeModule(AppearanceModule::class.java)?.let { appearanceModule ->
+      try {
+        appearanceModule::class.java.setProtectedDeclaredField(
+          obj = appearanceModule,
+          filedName = "mOverrideColorScheme",
+          newValue = object : AppearanceModule.OverrideColorScheme {
+            override fun getScheme(): String {
+              return userInterfaceStyle
+            }
+          },
+          predicate = { currentValue -> currentValue == null }
+        )
+
+        appearanceModule::class.java.setProtectedDeclaredField(
+          obj = appearanceModule,
+          filedName = "mColorScheme",
+          newValue = userInterfaceStyle
+        )
+      } catch (e: Exception) {
+        Log.w("DevLauncher", e)
+      }
     }
   }
 

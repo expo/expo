@@ -1,1 +1,1 @@
-../../../../../../../../react-native-lab/react-native/Libraries/Image/RCTImageDataDecoder.h
+../../../../../../node_modules/react-native/Libraries/Image/RCTImageDataDecoder.h

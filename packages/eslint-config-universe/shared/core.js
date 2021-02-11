@@ -121,6 +121,7 @@ module.exports = {
     'no-useless-escape': 'warn',
     'no-useless-rename': 'warn',
     'no-useless-return': 'warn',
+    'no-var': 'warn',
     'no-void': 'warn',
     'no-whitespace-before-property': 'warn',
     'no-with': 'warn',

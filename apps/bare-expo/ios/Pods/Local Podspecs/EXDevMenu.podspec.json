@@ -1,13 +1,13 @@
 {
   "name": "EXDevMenu",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "summary": "Expo/React Native module with the developer menu.",
   "description": "Expo/React Native module with the developer menu.",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
   "homepage": "https://docs.expo.io",
   "platforms": {
-    "ios": "10.0"
+    "ios": "11.0"
   },
   "swift_versions": "5.2",
   "source": {

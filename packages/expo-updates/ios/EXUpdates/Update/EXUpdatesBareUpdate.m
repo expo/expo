@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
   NSAssert([updateId isKindOfClass:[NSString class]], @"update ID should be a string");
   NSAssert([commitTime isKindOfClass:[NSNumber class]], @"commitTime should be a number");
   NSAssert(!metadata || [metadata isKindOfClass:[NSDictionary class]], @"metadata should be null or an object");
-  NSAssert(assets && [assets isKindOfClass:[NSArray class]], @"assets should be a nonnull array");
+  NSAssert(!assets || [assets isKindOfClass:[NSArray class]], @"assets should be null or an array");
 
   NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:(NSString *)updateId];
   NSAssert(uuid, @"update ID should be a valid UUID");
@@ -38,25 +38,27 @@ NS_ASSUME_NONNULL_BEGIN
   jsBundleAsset.mainBundleFilename = EXUpdatesBareEmbeddedBundleFilename;
   [processedAssets addObject:jsBundleAsset];
 
-  for (NSDictionary *assetDict in (NSArray *)assets) {
-    NSAssert([assetDict isKindOfClass:[NSDictionary class]], @"assets must be objects");
-    id packagerHash = assetDict[@"packagerHash"];
-    id type = assetDict[@"type"];
-    id mainBundleDir = assetDict[@"nsBundleDir"];
-    id mainBundleFilename = assetDict[@"nsBundleFilename"];
-    NSAssert(packagerHash && [packagerHash isKindOfClass:[NSString class]], @"asset key should be a nonnull string");
-    NSAssert(type && [type isKindOfClass:[NSString class]], @"asset type should be a nonnull string");
-    NSAssert(mainBundleFilename && [mainBundleFilename isKindOfClass:[NSString class]], @"asset nsBundleFilename should be a nonnull string");
-    if (mainBundleDir) {
-      NSAssert([mainBundleDir isKindOfClass:[NSString class]], @"asset nsBundleDir should be a string");
+  if (assets) {
+    for (NSDictionary *assetDict in (NSArray *)assets) {
+      NSAssert([assetDict isKindOfClass:[NSDictionary class]], @"assets must be objects");
+      id packagerHash = assetDict[@"packagerHash"];
+      id type = assetDict[@"type"];
+      id mainBundleDir = assetDict[@"nsBundleDir"];
+      id mainBundleFilename = assetDict[@"nsBundleFilename"];
+      NSAssert(packagerHash && [packagerHash isKindOfClass:[NSString class]], @"asset key should be a nonnull string");
+      NSAssert(type && [type isKindOfClass:[NSString class]], @"asset type should be a nonnull string");
+      NSAssert(mainBundleFilename && [mainBundleFilename isKindOfClass:[NSString class]], @"asset nsBundleFilename should be a nonnull string");
+      if (mainBundleDir) {
+        NSAssert([mainBundleDir isKindOfClass:[NSString class]], @"asset nsBundleDir should be a string");
+      }
+
+      NSString *key = [NSString stringWithFormat:@"%@.%@", packagerHash, type];
+      EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithKey:key type:(NSString *)type];
+      asset.mainBundleDir = mainBundleDir;
+      asset.mainBundleFilename = mainBundleFilename;
+
+      [processedAssets addObject:asset];
     }
-
-    NSString *key = [NSString stringWithFormat:@"%@.%@", packagerHash, type];
-    EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithKey:key type:(NSString *)type];
-    asset.mainBundleDir = mainBundleDir;
-    asset.mainBundleFilename = mainBundleFilename;
-
-    [processedAssets addObject:asset];
   }
 
   update.updateId = uuid;

@@ -47,9 +47,9 @@ The process for doing this is the same as any other React Native app. Here we ar
 
 <Video file="exploring-bare/custom.mp4" spaceAfter />
 
-## Open the project with the Expo client app on iOS or Android
+## Open the project with the Expo Go app on iOS or Android
 
-You can continue using the Expo client _even after you’ve added native code that the client doesn’t support_, you just need to add guards to prevent the native APIs from being invoked when they aren’t available. In this block of code, we're going to prevent the `AttractionList` component from being imported when we were in the Expo client, because `AttractionList` uses `react-native-mapbox-gl`, which is not included in the Expo SDK.
+You can continue using the Expo Go app _even after you’ve added native code that the client doesn’t support_, you just need to add guards to prevent the native APIs from being invoked when they aren’t available. In this block of code, we're going to prevent the `AttractionList` component from being imported when we were in Expo Go, because `AttractionList` uses `react-native-mapbox-gl`, which is not included in the Expo SDK.
 
 <Video file="exploring-bare/guard.mp4" />
 

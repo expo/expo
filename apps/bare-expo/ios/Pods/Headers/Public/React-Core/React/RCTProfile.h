@@ -1,1 +1,1 @@
-../../../../../../../../react-native-lab/react-native/React/Profiler/RCTProfile.h
+../../../../../../node_modules/react-native/React/Profiler/RCTProfile.h

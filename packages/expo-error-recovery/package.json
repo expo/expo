@@ -1,6 +1,6 @@
 {
   "name": "expo-error-recovery",
-  "version": "1.4.0",
+  "version": "2.0.1",
   "description": "Utilities for helping you gracefully handle crashes due to fatal JavaScript errors.",
   "main": "build/ErrorRecovery.js",
   "types": "build/ErrorRecovery.d.ts",
@@ -41,7 +41,5 @@
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"
   },
-  "dependencies": {
-    "fbjs": "1.0.0"
-  }
+  "dependencies": {}
 }

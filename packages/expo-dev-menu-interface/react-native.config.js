@@ -4,7 +4,7 @@ module.exports = {
       ios: {
         /**
          * We need this property to trick `react-native-cli`. Normally, this tool looks for the XCode project.
-         * However, this package is a library so we don't have a project file.
+         * We can generate it using `XcodeGen` but we don't want to add the project file to this library.
          */
         project: 'ios/EXDevMenuInterface.xcodeproj/project.pbxproj',
       },

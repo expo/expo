@@ -8,6 +8,12 @@ enum EXDevLauncherOrientation: String, Decodable {
   case landscape = "landscape"
 }
 
+enum EXDevLauncherUserInterfaceStyle: String, Decodable {
+  case automatic = "automatic"
+  case light = "light"
+  case dark = "dark"
+}
+
 @propertyWrapper
 public class CanHavePlatformSpecificValue<T> : Decodable where T : Decodable {
   public var wrappedValue: T
@@ -30,6 +36,14 @@ public class iOSSection: NSObject, Decodable {}
 @objc
 public class EXDevLauncherManifest: NSObject, Decodable {
   @objc
+  var _rawData: String? = nil
+  
+  @objc
+  public var rawData: String? {
+    return _rawData
+  }
+  
+  @objc
   public var name: String
   
   @objc
@@ -42,7 +56,16 @@ public class EXDevLauncherManifest: NSObject, Decodable {
   public var bundleUrl: String
   
   @CanHavePlatformSpecificValue
-  public var _backgroundColor: String?
+  var _userInterfaceStyle: EXDevLauncherUserInterfaceStyle?
+  
+  @objc
+  @available(iOS 12.0, *)
+  public var userInterfaceStyle: UIUserInterfaceStyle {
+    return EXDevLauncherManifestHelper.exportManifestUserInterfaceStyle(_userInterfaceStyle);
+  }
+  
+  @CanHavePlatformSpecificValue
+  var _backgroundColor: String?
   
   @objc
   public var backgroundColor: UIColor? {
@@ -63,13 +86,17 @@ public class EXDevLauncherManifest: NSObject, Decodable {
     case name, slug, version, ios, bundleUrl
     case _backgroundColor = "backgroundColor"
     case _orientation = "orientation"
+    case _userInterfaceStyle = "userInterfaceStyle"
   }
 
   @objc
   public static func fromJsonData(_ jsonData: Data) -> EXDevLauncherManifest? {
     let decoder = JSONDecoder()
     do {
-        return try decoder.decode(EXDevLauncherManifest.self, from: jsonData)
+      let rawManifest = String(decoding: jsonData, as: UTF8.self)
+      let decodedManifest = try decoder.decode(EXDevLauncherManifest.self, from: jsonData)
+      decodedManifest._rawData = rawManifest
+      return decodedManifest
     } catch {
       return nil
     }

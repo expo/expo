@@ -30,7 +30,7 @@ Check out the source if you would like to implement it in another language.
 
 > **Note:**
 >
-> If you're **not** testing in the Expo client app, make sure you've [generated the proper push credentials](push-notifications-setup.md#credentials) before proceeding! If you haven't, push notifications will not work.
+> If you're **not** testing in the Expo Go app, make sure you've [generated the proper push credentials](push-notifications-setup.md#credentials) before proceeding! If you haven't, push notifications will not work.
 
 ## HTTP/2 API
 
@@ -193,6 +193,16 @@ If there's an error with the entire request for either push tickets or push rece
 - `PUSH_TOO_MANY_NOTIFICATIONS`: you are trying to send more than 100 push notifications in one request. Make sure you are only sending 100 (or less) notifications in each request.
 
 - `PUSH_TOO_MANY_RECEIPTS`: you are trying to get more than 1000 push receipts in one request. Make sure you are only sending an array of 1000 (or less) ticket ID strings to get your push receipts.
+
+## Additional Security
+
+You can require any push requests to be sent with a valid [access token](/accounts/programmatic-access.md) before we will deliver them to your users. You can enable this enhanced push security from your [Expo Dashboard](https://expo.io/settings/access-tokens).
+
+By default, you can send a notification to your users by sending their Expo Push Token and any text or additional data needed for the message. This is easy to set up, but **if the tokens are leaked, a malicious user would be able to impersonate your app and send their own message to your users.** We have never had an instance of this reported; however, to follow best security practices, we offer the use of an access token alongside the push token as an additional layer of security.
+
+If you're using the [`expo-server-sdk-node`](https://github.com/expo/expo-server-sdk-node#usage), upgrade to at least v3.6.0 and pass your `accessToken` as an option in the constructor. Otherwise, pass in the header `'Authorization': 'Bearer ${accessToken}'` with any requests to our push API.
+
+Any requests sent _without_ a valid access token _after_ you enable push security will result in an error with code: `UNAUTHORIZED`.
 
 ## Formats
 

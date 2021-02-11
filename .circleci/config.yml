@@ -309,7 +309,7 @@ jobs:
       - setup
       - skip_unless_changed:
           workflow_name: client
-          paths: tools/expotools secrets ios fastlane Gemfile .ruby-version
+          paths: tools secrets ios fastlane Gemfile .ruby-version
       - update_submodules
       - git_lfs_pull
       - decrypt_secrets_if_possible
@@ -339,7 +339,7 @@ jobs:
       - git_lfs_pull
       - decrypt_secrets_if_possible
       - yarn_restore_and_install:
-          working_directory: ~/project/tools/expotools
+          working_directory: ~/project/tools
       - attach_workspace:
           at: ios/simulator-build
       - run: expotools client-build --platform ios --release
@@ -425,7 +425,7 @@ jobs:
       - run: echo 'export S3_URI=s3://exp-artifacts/android-shell-builder-$CIRCLE_SHA1.tar.gz' >> $BASH_ENV
       - install_yarn
       - yarn_restore_and_install:
-          working_directory: ~/project/tools/expotools
+          working_directory: ~/project/tools
       - run:
           name: Check that Android packages are up-to-date
           command: expotools check-android-packages
@@ -504,7 +504,7 @@ jobs:
       - update_submodules
       - decrypt_secrets_if_possible
       - yarn_restore_and_install:
-          working_directory: ~/expo/tools/expotools
+          working_directory: ~/expo/tools
       - attach_workspace:
           at: android/app/build/outputs/apk
       - run: expotools client-build --platform android --release
@@ -523,7 +523,6 @@ jobs:
           name: Upload APK to Google Play and release to production
           working_directory: ~/project
           command: fastlane android prod_release
-
 # Disabled until further notice
 # See https://exponent-internal.slack.com/archives/C1QNF5L3C/p1576852692010900
 #   test_suite_publish:

@@ -1,1 +1,1 @@
-../../../../../../../../react-native-lab/react-native/ReactCommon/callinvoker/ReactCommon/CallInvoker.h
+../../../../../../node_modules/react-native/ReactCommon/callinvoker/ReactCommon/CallInvoker.h

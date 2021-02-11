@@ -2,7 +2,7 @@
 title: Working Together
 ---
 
-You can grant other users access to the projects belonging to your Personal Account with Expo Teams. The type of access depends on the granted role. You can [sign up for Teams](https://expo.io/settings/services) on any of your accounts.
+You can grant other users access to the projects belonging to your Personal Account or Organizations. The type of access depends on the granted role.
 
 ## Adding Members
 
@@ -12,13 +12,14 @@ You can invite new members to your Personal Account, or any account you administ
 
 ## Managing Access
 
-Access for members is managed through a role-based system. Users can have the _admin_, _developer_, or _viewer_ role within Personal Accounts.
+Access for members is managed through a role-based system. Users can have the _owner_, _admin_, _developer_, or _viewer_ role within Personal Accounts.
 
 | Role          | Description                                                                                                                                           |
 | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Owner**     | Can take any action on an account or any projects, including deleting them. (Note: the Owner role is not available on your Personal Account)          |
 | **Admin**     | Can control most settings on your account, including signing up for paid services, change permissions of other users, and manage programmatic access. |
 | **Developer** | Can create new projects, make new builds, release updates, and manage credentials.                                                                    |
-| **Viewer**    | Can only view your projects through the Expo client, but can't modify your projects in any way.                                                       |
+| **Viewer**    | Can only view your projects through Expo Go, but can't modify your projects in any way.                                                       |
 
 ## Removing members
 

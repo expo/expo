@@ -1,25 +1,20 @@
-import { UnavailabilityError } from '@unimodules/core';
-import Constants, { ExecutionEnvironment } from 'expo-constants';
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
-import invariant from 'fbjs/lib/invariant';
+import { Platform, UnavailabilityError } from '@unimodules/core';
+import Constants from 'expo-constants';
+import invariant from 'invariant';
 import qs from 'qs';
 import { useEffect, useState } from 'react';
-import { Platform } from 'react-native';
 import URL from 'url-parse';
 import NativeLinking from './ExpoLinking';
-const manifest = Constants.manifest ?? {};
+import { hasCustomScheme, resolveScheme } from './Schemes';
 function validateURL(url) {
     invariant(typeof url === 'string', 'Invalid URL: should be a string. Was: ' + url);
     invariant(url, 'Invalid URL: cannot be empty');
 }
-function usesCustomScheme() {
-    return Constants.appOwnership === 'standalone' && manifest.scheme;
-}
 function getHostUri() {
-    if (manifest.hostUri) {
-        return manifest.hostUri;
+    if (Constants.manifest?.hostUri) {
+        return Constants.manifest.hostUri;
     }
-    else if (!manifest.hostUri && !usesCustomScheme()) {
+    else if (!Constants.manifest?.hostUri && !hasCustomScheme()) {
         // we're probably not using up-to-date xdl, so just fake it for now
         // we have to remove the /--/ on the end since this will be inserted again later
         return removeScheme(Constants.linkingUri).replace(/\/--($|\/.*$)/, '');
@@ -32,7 +27,7 @@ function isExpoHosted() {
     const hostUri = getHostUri();
     return !!(hostUri &&
         (/^(.*\.)?(expo\.io|exp\.host|exp\.direct|expo\.test)(:.*)?(\/.*)?$/.test(hostUri) ||
-            manifest.developer));
+            Constants.manifest?.developer));
 }
 function removeScheme(url) {
     return url.replace(/^[a-zA-Z0-9+.-]+:\/\//, '');
@@ -82,9 +77,29 @@ function ensureTrailingSlash(input, shouldAppend) {
  * @param path addition path components to append to the base URL.
  * @param queryParams An object of parameters that will be converted into a query string.
  */
-export function makeUrl(path = '', queryParams = {}) {
+export function makeUrl(path = '', queryParams, scheme) {
+    return createURL(path, { queryParams, scheme, isTripleSlashed: true });
+}
+/**
+ * Create a URL that works for the environment the app is currently running in.
+ * The scheme in bare and standalone must be defined in the Expo config (app.config.js or app.json) under `expo.scheme`.
+ *
+ * **Examples**
+ *
+ * - Bare: `<scheme>://path` -- uses provided scheme or scheme from Expo config `scheme`.
+ * - Standalone, Custom: `yourscheme://path`
+ * - Web (dev): `https://localhost:19006/path`
+ * - Web (prod): `https://myapp.com/path`
+ * - Expo Client (dev): `exp://128.0.0.1:19000/--/path`
+ * - Expo Client (prod): `exp://exp.host/@yourname/your-app/--/path`
+ *
+ * @param path addition path components to append to the base URL.
+ * @param scheme URI protocol `<scheme>://` that must be built into your native app.
+ * @param queryParams An object of parameters that will be converted into a query string.
+ */
+export function createURL(path, { scheme, queryParams = {}, isTripleSlashed = false, } = {}) {
     if (Platform.OS === 'web') {
-        if (!canUseDOM)
+        if (!Platform.isDOMAvailable)
             return '';
         const origin = ensureLeadingSlash(window.location.origin, false);
         let queryString = qs.stringify(queryParams);
@@ -96,31 +111,16 @@ export function makeUrl(path = '', queryParams = {}) {
             outputPath = ensureTrailingSlash(path, true);
         return encodeURI(`${origin}${outputPath}${queryString}`);
     }
-    // We don't have a manifest in bare workflow except after publishing, so warn people in development.
-    if (Constants.executionEnvironment === ExecutionEnvironment.Bare) {
-        console.warn('Linking.makeUrl is not supported in bare workflow. Switch to using your scheme string directly.');
-        return '';
-    }
-    let scheme = 'exp';
-    const manifestScheme = manifest.scheme ?? manifest?.detach?.scheme;
-    if (Constants.appOwnership === 'standalone' && manifestScheme) {
-        scheme = manifestScheme;
-    }
-    else if (Constants.appOwnership === 'standalone' && !manifestScheme) {
-        throw new Error('Cannot make a deep link into a standalone app with no custom scheme defined');
-    }
-    else if (Constants.appOwnership === 'expo' && !manifestScheme) {
-        console.warn('Linking requires that you provide a `scheme` in app.json for standalone apps - if it is left blank, your app may crash. The scheme does not apply to development in the Expo client but you should add it as soon as you start working with Linking to avoid creating a broken build. Add a `scheme` to silence this warning. Learn more about Linking at https://docs.expo.io/versions/latest/workflow/linking/');
-    }
+    const resolvedScheme = resolveScheme({ scheme });
     let hostUri = getHostUri() || '';
-    if (usesCustomScheme() && isExpoHosted()) {
+    if (hasCustomScheme() && isExpoHosted()) {
         hostUri = '';
     }
     if (path) {
         if (isExpoHosted() && hostUri) {
             path = `/--/${removeLeadingSlash(path)}`;
         }
-        if (!path.startsWith('/')) {
+        if (isTripleSlashed && !path.startsWith('/')) {
             path = `/${path}`;
         }
     }
@@ -151,8 +151,8 @@ export function makeUrl(path = '', queryParams = {}) {
     if (queryString) {
         queryString = `?${queryString}`;
     }
-    hostUri = ensureTrailingSlash(hostUri, false);
-    return encodeURI(`${scheme}://${hostUri}${path}${queryString}`);
+    hostUri = ensureTrailingSlash(hostUri, !isTripleSlashed);
+    return encodeURI(`${resolvedScheme}:${isTripleSlashed ? '/' : ''}/${hostUri}${path}${queryString}`);
 }
 /**
  * Returns the components and query parameters for a given URL.
@@ -185,7 +185,7 @@ export function parse(url) {
                 .concat(['--/'])
                 .join('/');
         }
-        if (isExpoHosted() && !usesCustomScheme() && expoPrefix && path.startsWith(expoPrefix)) {
+        if (isExpoHosted() && !hasCustomScheme() && expoPrefix && path.startsWith(expoPrefix)) {
             path = path.substring(expoPrefix.length);
             hostname = null;
         }

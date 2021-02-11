@@ -17,7 +17,6 @@
 #import "EXKernel.h"
 #import "EXKernelUtil.h"
 #import "EXReactAppManager.h"
-#import "EXScreenOrientationManager.h"
 #import "EXVersions.h"
 #import "EXUpdatesManager.h"
 #import "EXUtil.h"
@@ -37,8 +36,6 @@
 #if __has_include(<ABI39_0_0React/ABI39_0_0RCTAppearance.h>)
 #import <ABI39_0_0React/ABI39_0_0RCTAppearance.h>
 #endif
-
-#define EX_INTERFACE_ORIENTATION_USE_MANIFEST 0
 
 // when we encounter an error and auto-refresh, we may actually see a series of errors.
 // we only want to trigger refresh once, so we debounce refresh on a timer.
@@ -82,7 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) EXManagedAppSplashScreenViewProvider *managedAppSplashScreenViewProvider;
 
 /*
- * This view is available in managed apps run in Expo Client only.
+ * This view is available in managed apps run in Expo Go only.
  * It is shown only before any managed app manifest is delivered by the app loader.
  */
 @property (nonatomic, strong, nullable) EXAppLoadingCancelView *appLoadingCancelView;
@@ -91,15 +88,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXAppViewController
 
-@synthesize supportedInterfaceOrientations = _supportedInterfaceOrientations;
-
 #pragma mark - Lifecycle
 
 - (instancetype)initWithAppRecord:(EXKernelAppRecord *)record
 {
   if (self = [super init]) {
     _appRecord = record;
-    _supportedInterfaceOrientations = EX_INTERFACE_ORIENTATION_USE_MANIFEST;
     _isStandalone = [EXEnvironment sharedEnvironment].isDetached;
   }
   return self;
@@ -259,8 +253,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)appStateDidBecomeActive
 {
   dispatch_async(dispatch_get_main_queue(), ^{
-    [self _enforceDesiredDeviceOrientation];
-
     // Reset the root view background color and window color if we switch between Expo home and project
     [self _setBackgroundColor:self.view];
   });
@@ -279,7 +271,6 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_async(dispatch_get_main_queue(), ^{
       [self _overrideUserInterfaceStyleOf:self];
       [self _overrideAppearanceModuleBehaviour];
-      [self _enforceDesiredDeviceOrientation];
       [self _invalidateRecoveryTimer];
       [[EXKernel sharedInstance] logAnalyticsEvent:@"LOAD_EXPERIENCE" forAppRecord:self.appRecord];
       [self.appRecord.appManager rebuildBridge];
@@ -378,7 +369,7 @@ NS_ASSUME_NONNULL_BEGIN
   // 2. hide the splash screen of root view controller
   // Disclaimer:
   //  there's only one root view controller, but possibly many EXAppViewControllers
-  //  (in Expo Client: one Experience -> one EXAppViewController)
+  //  (in Expo Go: one project -> one EXAppViewController)
   //  and we want to hide SplashScreen only once for the root view controller, hence the "once"
   static dispatch_once_t once;
   void (^hideRootViewControllerSplashScreen)(void) = ^void() {
@@ -528,12 +519,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [screenOrientationRegistry requiredOrientationMask];
   }
 #endif
-
-  // TODO: Remove once sdk 37 is phased out
-  if (_supportedInterfaceOrientations != EX_INTERFACE_ORIENTATION_USE_MANIFEST) {
-    return _supportedInterfaceOrientations;
-  }
-
   return [self orientationMaskFromManifestOrDefault];
 }
 
@@ -552,13 +537,6 @@ NS_ASSUME_NONNULL_BEGIN
   return UIInterfaceOrientationMaskAllButUpsideDown;
 }
 
-// TODO: Remove once sdk 37 is phased out
-- (void)setSupportedInterfaceOrientations:(UIInterfaceOrientationMask)supportedInterfaceOrientations
-{
-  _supportedInterfaceOrientations = supportedInterfaceOrientations;
-  [self _enforceDesiredDeviceOrientation];
-}
-
 - (void)traitCollectionDidChange:(nullable UITraitCollection *)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
   if ((self.traitCollection.verticalSizeClass != previousTraitCollection.verticalSizeClass)
@@ -568,54 +546,7 @@ NS_ASSUME_NONNULL_BEGIN
       EXScreenOrientationRegistry *screenOrientationRegistryController = (EXScreenOrientationRegistry *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
       [screenOrientationRegistryController traitCollectionDidChangeTo:self.traitCollection];
     #endif
-
-    // TODO: Remove once sdk 37 is phased out
-    [[EXKernel sharedInstance].serviceRegistry.screenOrientationManager handleScreenOrientationChange:self.traitCollection];
   }
-}
-
-// TODO: Remove once sdk 37 is phased out
-- (void)_enforceDesiredDeviceOrientation
-{
-  RCTAssertMainQueue();
-  UIInterfaceOrientationMask mask = [self supportedInterfaceOrientations];
-  UIDeviceOrientation currentOrientation = [[UIDevice currentDevice] orientation];
-  UIInterfaceOrientation newOrientation = UIInterfaceOrientationUnknown;
-  switch (mask) {
-    case UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown:
-      if (!UIDeviceOrientationIsPortrait(currentOrientation)) {
-        newOrientation = UIInterfaceOrientationPortrait;
-      }
-      break;
-    case UIInterfaceOrientationMaskPortrait:
-      newOrientation = UIInterfaceOrientationPortrait;
-      break;
-    case UIInterfaceOrientationMaskPortraitUpsideDown:
-      newOrientation = UIInterfaceOrientationPortraitUpsideDown;
-      break;
-    case UIInterfaceOrientationMaskLandscape:
-      if (!UIDeviceOrientationIsLandscape(currentOrientation)) {
-        newOrientation = UIInterfaceOrientationLandscapeLeft;
-      }
-      break;
-    case UIInterfaceOrientationMaskLandscapeLeft:
-      newOrientation = UIInterfaceOrientationLandscapeLeft;
-      break;
-    case UIInterfaceOrientationMaskLandscapeRight:
-      newOrientation = UIInterfaceOrientationLandscapeRight;
-      break;
-    case UIInterfaceOrientationMaskAllButUpsideDown:
-      if (currentOrientation == UIDeviceOrientationFaceDown) {
-        newOrientation = UIInterfaceOrientationPortrait;
-      }
-      break;
-    default:
-      break;
-  }
-  if (newOrientation != UIInterfaceOrientationUnknown) {
-    [[UIDevice currentDevice] setValue:@(newOrientation) forKey:@"orientation"];
-  }
-  [UIViewController attemptRotationToDeviceOrientation];
 }
 
 #pragma mark - RCTAppearanceModule

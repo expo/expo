@@ -30,7 +30,7 @@ export default {
           preferredAppearance,
         });
 
-        return dispatch({
+        dispatch({
           type: 'setPreferredAppearance',
           payload: { preferredAppearance },
         });
@@ -45,7 +45,7 @@ export default {
       try {
         await DevMenu.setSettingAsync(key, value);
 
-        return dispatch({
+        dispatch({
           type: 'setDevMenuSettings',
           payload: { [key]: value },
         });

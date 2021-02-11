@@ -17,7 +17,9 @@ import { InlineCode } from '~/components/base/code';
 
 ## Installation
 
-<InstallSection packageName="expo-auth-session" />
+> `expo-random` is a peer dependency and must be installed alongside `expo-auth-session`.
+
+<InstallSection packageName="expo-auth-session expo-random" />
 
 In **bare-workflow** you can use the [`uri-scheme` package][n-uri-scheme] to easily add, remove, list, and open your URIs.
 
@@ -153,7 +155,7 @@ Create a redirect url for the current platform and environment. You need to manu
 
 - **Web:** Generates a path based on the current `window.location`. For production web apps, you should hard code the URL as well.
 - **Managed, and Custom workflow:** Uses the `scheme` property of your `app.config.js` or `app.json`.
-  - **Proxy:** Uses auth.expo.io as the base URL for the path. This only works in Expo client and standalone environments.
+  - **Proxy:** Uses auth.expo.io as the base URL for the path. This only works in Expo Go and standalone environments.
 - **Bare workflow:** Will fallback to using the `native` option for bare workflow React Native apps.
 
 #### Arguments
@@ -511,7 +513,7 @@ An extension of the [`AuthRequestConfig`][#authrequestconfig] for use with the b
 | language               | `?string`  | Language code ISO 3166-1 alpha-2 region code, such as 'it' or 'pt-PT'                 |
 | loginHint              | `?string`  | User email to use as the default option                                               |
 | selectAccount          | `?boolean` | Used in favor of `prompt: Prompt.SelectAccount` to switch accounts                    |
-| expoClientId           | `?string`  | Proxy client ID for use in the Expo client on iOS and Android.                        |
+| expoClientId           | `?string`  | Proxy client ID for use in Expo Go on iOS and Android.                                |
 | webClientId            | `?string`  | Web client ID for use in the browser (web apps).                                      |
 | iosClientId            | `?string`  | iOS native client ID for use in standalone, bare-workflow, and custom clients.        |
 | androidClientId        | `?string`  | Android native client ID for use in standalone, bare-workflow, and custom clients.    |
@@ -531,7 +533,7 @@ import * as Google from 'expo-auth-session/providers/google';
 - Provides an extra `loginHint` parameter. If the user's email address is known ahead of time, it can be supplied to be the default option.
 - Enforces minimum scopes to `['openid', 'https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email']` for optimal usage with services like Firebase and Auth0.
 - By default, the authorization `code` will be automatically exchanged for an access token. This can be overridden with `shouldAutoExchangeCode`.
-- Automatically uses the proxy in Expo client because native auth is not supported due to custom build time configuration. This can be overridden with `redirectUriOptions.useProxy`.
+- Automatically uses the proxy in Expo Go because native auth is not supported due to custom build time configuration. This can be overridden with `redirectUriOptions.useProxy`.
 - Defaults to using the bundle ID and package name for the native URI redirect instead of the reverse client ID.
 - Disables PKCE for implicit and id-token based auth responses.
 - On web, the popup is presented with the dimensions that are optimized for the Google login UI (`{ width: 515, height: 680 }`).
@@ -565,7 +567,7 @@ import * as Facebook from 'expo-auth-session/providers/facebook';
 - See the guide for more info on usage: [Facebook Authentication](../../../guides/authentication.md#facebook).
 - Enforces minimum scopes to `['public_profile', 'email']` for optimal usage with services like Firebase and Auth0.
 - Uses `display=popup` for better UI results.
-- Automatically uses the proxy in Expo client because native auth is not supported due to custom build time configuration.
+- Automatically uses the proxy in Expo Go because native auth is not supported due to custom build time configuration.
 - The URI redirect must be added to your `app.config.js` or `app.json` as `facebookScheme: 'fb<YOUR FBID>'`.
 - Disables PKCE for implicit auth response.
 - On web, the popup is presented with the dimensions `{ width: 700, height: 600 }`

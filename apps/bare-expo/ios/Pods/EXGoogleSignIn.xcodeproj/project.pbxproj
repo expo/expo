@@ -7,15 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		17C9B7A37F648EDDFCD707A36A962EDF /* EXGoogleSignInAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 187AE26C9354867ECCA8D89AE75C1434 /* EXGoogleSignInAppDelegate.m */; };
-		39B11D47D935481F4AB93D89ABCCD75B /* EXGoogleSignIn.m in Sources */ = {isa = PBXBuildFile; fileRef = 5ED83549B2E4B37513FC2F759BA1668F /* EXGoogleSignIn.m */; };
-		4B43AA2ADEA1D572B9C695878993BB53 /* EXGoogleSignIn-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F04D3CF04FEDE138C5AF0AA536F32D2 /* EXGoogleSignIn-dummy.m */; };
-		6EBCDE4E768B0791993DA3CFA2C9C829 /* EXAuthTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 96C7E894978FBCCD23DA2FC7A3804D22 /* EXAuthTask.m */; };
+		0614DBAF85C34C50B0AD8A7337E08281 /* EXGoogleSignInAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 187AE26C9354867ECCA8D89AE75C1434 /* EXGoogleSignInAppDelegate.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		8BA8F077C56754376B4E0F6D9340B520 /* EXAuthTask.h in Headers */ = {isa = PBXBuildFile; fileRef = C5EF6D29CDFFAB1F1E81EFC1E855D99B /* EXAuthTask.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		AA6B81DA8EB93516D4664E83FBC18302 /* EXGoogleSignIn.h in Headers */ = {isa = PBXBuildFile; fileRef = DFC41F693B05C862AAA0EDDF4E9777E0 /* EXGoogleSignIn.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D5F09FC44FA06D2DC82346F8BA0C756D /* EXGoogleSignIn.m in Sources */ = {isa = PBXBuildFile; fileRef = 5ED83549B2E4B37513FC2F759BA1668F /* EXGoogleSignIn.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		D74DA4287D1C1876F6DD73683B3D07BD /* EXGoogleSignInAppDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 775161BA4C7F2736C4199E6595D85AB2 /* EXGoogleSignInAppDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		E540F2E8F27703445185B3B5EBE1D55F /* EXGoogleSignIn+Serialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 44293237D8812F9BB10D9B59BBB2E07D /* EXGoogleSignIn+Serialization.m */; };
 		E99FF1CF03E844715C5DEEA07C7E915E /* EXGoogleSignIn+Serialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 9E69B16EABE3D3636BC85F66EA237EBE /* EXGoogleSignIn+Serialization.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		EC249B191F4283599B6785278EADA8A4 /* EXGoogleSignIn+Serialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 44293237D8812F9BB10D9B59BBB2E07D /* EXGoogleSignIn+Serialization.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		F0667F765CF058234B614BB309E59082 /* EXAuthTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 96C7E894978FBCCD23DA2FC7A3804D22 /* EXAuthTask.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		F2EB76D837B7DFD3051B7BAFEA16F21B /* EXGoogleSignIn-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F04D3CF04FEDE138C5AF0AA536F32D2 /* EXGoogleSignIn-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -26,7 +26,7 @@
 			remoteGlobalIDString = 70D52585A9FA4EEA343010638ADABC11;
 			remoteInfo = GoogleSignIn;
 		};
-		736EAED9FE72C26C64E8BF9FD0D63AA2 /* PBXContainerItemProxy */ = {
+		56B147101AC289D2A295940EC3755CA2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 877123A470C772B0261DC3C2D6B29AB9 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -159,14 +159,14 @@
 			buildConfigurationList = 6DE1CFB0256C5D0F84C19CDB23F33632 /* Build configuration list for PBXNativeTarget "EXGoogleSignIn" */;
 			buildPhases = (
 				72643FCF84B33F43972005D4463EF1AA /* Headers */,
-				062E7B5DBF1351B2C8F54AAB5E2ABBB0 /* Sources */,
+				D9C972316166526D2D64EC5527C637DA /* Sources */,
 				00CCED861C11D0EFC4A3AB42B39071BE /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				40E56470F180CA8C3D2D98E6DA31C56C /* PBXTargetDependency */,
-				DBB4DBF206219514150D67DD325FE2D0 /* PBXTargetDependency */,
+				DE4AA5187FCCF228116A8F6B959EE1CB /* PBXTargetDependency */,
 			);
 			name = EXGoogleSignIn;
 			productName = EXGoogleSignIn;
@@ -209,15 +209,15 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		062E7B5DBF1351B2C8F54AAB5E2ABBB0 /* Sources */ = {
+		D9C972316166526D2D64EC5527C637DA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6EBCDE4E768B0791993DA3CFA2C9C829 /* EXAuthTask.m in Sources */,
-				E540F2E8F27703445185B3B5EBE1D55F /* EXGoogleSignIn+Serialization.m in Sources */,
-				4B43AA2ADEA1D572B9C695878993BB53 /* EXGoogleSignIn-dummy.m in Sources */,
-				39B11D47D935481F4AB93D89ABCCD75B /* EXGoogleSignIn.m in Sources */,
-				17C9B7A37F648EDDFCD707A36A962EDF /* EXGoogleSignInAppDelegate.m in Sources */,
+				F0667F765CF058234B614BB309E59082 /* EXAuthTask.m in Sources */,
+				EC249B191F4283599B6785278EADA8A4 /* EXGoogleSignIn+Serialization.m in Sources */,
+				F2EB76D837B7DFD3051B7BAFEA16F21B /* EXGoogleSignIn-dummy.m in Sources */,
+				D5F09FC44FA06D2DC82346F8BA0C756D /* EXGoogleSignIn.m in Sources */,
+				0614DBAF85C34C50B0AD8A7337E08281 /* EXGoogleSignInAppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -229,15 +229,68 @@
 			name = GoogleSignIn;
 			targetProxy = 530669DB0AF6A47507444B7BAB1A1BE0 /* PBXContainerItemProxy */;
 		};
-		DBB4DBF206219514150D67DD325FE2D0 /* PBXTargetDependency */ = {
+		DE4AA5187FCCF228116A8F6B959EE1CB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 736EAED9FE72C26C64E8BF9FD0D63AA2 /* PBXContainerItemProxy */;
+			targetProxy = 56B147101AC289D2A295940EC3755CA2 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		305339A238AE19D793181C4AB038E49B /* Debug */ = {
+		0038769B995FC527E7117ADC6FBDE5A9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7D97808B8E1EC81CCFDDABCFD15B6ABB /* EXGoogleSignIn.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/EXGoogleSignIn/EXGoogleSignIn-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXGoogleSignIn;
+				PRODUCT_NAME = EXGoogleSignIn;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		43DE7CE0A2F3C8BC6977ECD157DE928E /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9DEAF3355B610E85B83CA6B9C48699F9 /* EXGoogleSignIn.release.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/EXGoogleSignIn/EXGoogleSignIn-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXGoogleSignIn;
+				PRODUCT_NAME = EXGoogleSignIn;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		760B67F83084A5E2685CA822E3D50268 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -290,7 +343,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -303,58 +356,7 @@
 			};
 			name = Debug;
 		};
-		37A0F56A42F01A9D956AC28C7FF870DB /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9DEAF3355B610E85B83CA6B9C48699F9 /* EXGoogleSignIn.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/EXGoogleSignIn/EXGoogleSignIn-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXGoogleSignIn;
-				PRODUCT_NAME = EXGoogleSignIn;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		B41C1EBA48BF8B37F410695D76481F56 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7D97808B8E1EC81CCFDDABCFD15B6ABB /* EXGoogleSignIn.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/EXGoogleSignIn/EXGoogleSignIn-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXGoogleSignIn;
-				PRODUCT_NAME = EXGoogleSignIn;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		D1B6A076F34D1C02AAC1F9C572E595EF /* Release */ = {
+		E7A8444034318D27382F23E2FA5AB7AE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -404,7 +406,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -422,8 +424,8 @@
 		6DE1CFB0256C5D0F84C19CDB23F33632 /* Build configuration list for PBXNativeTarget "EXGoogleSignIn" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B41C1EBA48BF8B37F410695D76481F56 /* Debug */,
-				37A0F56A42F01A9D956AC28C7FF870DB /* Release */,
+				0038769B995FC527E7117ADC6FBDE5A9 /* Debug */,
+				43DE7CE0A2F3C8BC6977ECD157DE928E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -431,8 +433,8 @@
 		D00648401FB820365D3053CD3C9F87DA /* Build configuration list for PBXProject "EXGoogleSignIn" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				305339A238AE19D793181C4AB038E49B /* Debug */,
-				D1B6A076F34D1C02AAC1F9C572E595EF /* Release */,
+				760B67F83084A5E2685CA822E3D50268 /* Debug */,
+				E7A8444034318D27382F23E2FA5AB7AE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

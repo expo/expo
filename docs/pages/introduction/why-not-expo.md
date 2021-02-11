@@ -31,6 +31,8 @@ Background execution is the ability to run code when the app is not foregrounded
 
 The size for a managed Expo app on iOS is approximately 20mb (download), and Android is about 15mb. This is because "managed" includes a bunch of APIs regardless of whether or not you are using them &mdash; this lets you push over-the-air updates to use new APIs, but comes at the cost of binary size. Some of the APIs that are included are tied to services that you may not be using, for example the Facebook Mobile SDK is included to support Facebook Login and Facebook Ads, along with the Google Mobile SDK for similar reasons. We will make this customizable in the future, so you can trim down the size of your binaries. [Read more about managing your app size here](https://expo.fyi/managed-app-size).
 
+> 💡 Work is progress on resolving this! In the near future, you will be able to build managed apps with [EAS Build](/build/introduction.md) without adding any additional size to your binary ([in some cases, more than 10x reduction in binary size](https://twitter.com/Baconbrix/status/1338910158399782912)).
+
 </p>
 </details>
 
@@ -42,10 +44,12 @@ Related to the previous point, we typically avoid adding native modules to the S
 </p>
 </details>
 
-<details><summary><h4>The only supported push notification service is the Expo notification service</h4></summary>
+<details><summary><h4>The only supported third-party push notification service is the Expo notification service</h4></summary>
 <p>
 
-If you want to use another push notification service, such as OneSignal, instead of the [Expo Push Notification service/API](../push-notifications/overview.md), you will need to use the bare workflow.
+If you want to use another third-party push notification service, such as OneSignal, instead of the [Expo Push Notification service/API](../push-notifications/overview.md), you will need to use the bare workflow.
+
+Note that you can use the first-party push APIs (APNs and FCM) directly if you like. [Read "Sending Notifications with APNs & FCM"](/push-notifications/sending-notifications-custom.md)
 
 </p>
 </details>
@@ -96,10 +100,12 @@ In the bare workflow we have full access to the underlying native projects and a
 
 The following list is therefore specifically oriented towards to the limitations that exist around using Expo tools and services in the bare workflow.
 
-<details><summary><h4>Build service only works in the managed workflow</h4></summary>
+<details><summary><h4><span className="strike">Build service only works in the managed workflow</span> (✅ Resolved in December 2020)</h4></summary>
 <p>
 
-To build your app binaries for distribution on the Apple App Store and Google Play Store you will need to follow the same steps that you would in any native project, the Expo build service can't handle it for you. We are working on bringing bare workflow support to the build service in the near future.
+<span className="strike">To build your app binaries for distribution on the Apple App Store and Google Play Store you will need to follow the same steps that you would in any native project, the Expo build service can't handle it for you. We are working on bringing bare workflow support to the build service in the near future.</span>
+
+You can now use [EAS Build](/build/introduction.md) to build and sign your apps just as easily as in the managed workflow! [Read the announcement blog post](https://blog.expo.io/expo-application-services-eas-build-and-submit-fc1d1476aa2e).
 
 </p>
 </details>

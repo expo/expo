@@ -21,13 +21,13 @@ Now we just run `yarn start` (or `npm start` if you prefer that package manager)
 
 <Video file="exploring-managed/start.mp4" spaceAfter />
 
-## Open the project with the Expo client app on iOS or Android, or in your web browser
+## Open the project with the Expo Go app on iOS or Android, or in your web browser
 
-To run the app we don’t need to build any native code because it runs in the [Expo client](https://expo.io/tools#client), and the CLI will automatically install it for us in the [iOS simulator](../workflow/ios-simulator.md) or on any connected [Android emulator](../workflow/android-studio-emulator.md) or device. You can also download it from the App Store and Play Store.
+To run the app we don’t need to build any native code because it runs in the [Expo Go](https://expo.io/tools#client), and the CLI will automatically install it for us in the [iOS simulator](../workflow/ios-simulator.md) or on any connected [Android emulator](../workflow/android-studio-emulator.md) or device. You can also download it from the App Store and Play Store.
 
 <Video file="exploring-managed/open.mp4" />
 
-<!-- The Expo client asks the server you started with `expo start` for a copy of your project (via localhost, LAN, or a tunnel), downloads it, and runs it. You can take advantage of various development tools such as [debugging](../../workflow/debugging/), [streaming device logs](../../workflow/logging/), and inspecting elements. -->
+<!-- the Expo Go app asks the server you started with `expo start` for a copy of your project (via localhost, LAN, or a tunnel), downloads it, and runs it. You can take advantage of various development tools such as [debugging](../../workflow/debugging/), [streaming device logs](../../workflow/logging/), and inspecting elements. -->
 
 If you close the `expo-cli` or turn off your computer, you won't be able to access the app from your device anymore. We'll see how you can make it always available later on.
 
@@ -79,7 +79,7 @@ You may have noticed that when we ran `expo publish` the CLI warned us about opt
 
 Upon publishing you are given a persistent URL that you can share with colleagues, in this case it was [https://expo.io/@notbrent/blearexp](https://expo.io/@notbrent/blearexp). This is determined by your Expo account username and the `slug` field in your project `app.json`.
 
-On iOS, only you can open projects that you have built unless you have a [priority plan](https://expo.io/developer-services), in which case your teammates can open your projects as well. Another option to open any published managed app from within the Expo client is to do a custom build of the Expo iOS client. [Read more about that here](../guides/adhoc-builds.md).
+On iOS, only you can open projects that you have built unless you have a [priority plan](https://expo.io/developer-services), in which case your teammates can open your projects as well. Another option to open any published managed app is to do a custom build of an Expo iOS client. [Read more about that here](../guides/adhoc-builds.md).
 
 ## Building and deploying
 

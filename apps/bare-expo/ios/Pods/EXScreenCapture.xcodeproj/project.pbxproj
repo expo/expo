@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1DB000B7007290B009A8F0A4ED3DE9F4 /* EXScreenCapture-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = B5B56FBDE232945ACBCA6F5D0131B78B /* EXScreenCapture-dummy.m */; };
 		241B6E7EEACE71E6598C1DFDC6F05BE6 /* EXScreenCaptureModule.h in Headers */ = {isa = PBXBuildFile; fileRef = ED35A9D6299D3054010E4E5D74BECE57 /* EXScreenCaptureModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		CCA64D5C37C13EAB56189136C952A5A0 /* EXScreenCaptureModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 61673E5B6ECA3A285E0844630767C1B3 /* EXScreenCaptureModule.m */; };
+		8743C13934294EA26FA4D1B8EDB34324 /* EXScreenCapture-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = B5B56FBDE232945ACBCA6F5D0131B78B /* EXScreenCapture-dummy.m */; };
+		C37F53C11A0AB1F1D632C71E0C6812ED /* EXScreenCaptureModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 61673E5B6ECA3A285E0844630767C1B3 /* EXScreenCaptureModule.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		AEB087EBE3164A74134CAE2AB1EE5873 /* PBXContainerItemProxy */ = {
+		D49CF385E394DA43F20279B5B12D3515 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 366BC1FED57CB9DA5667253219D52344 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -129,13 +129,13 @@
 			buildConfigurationList = DCD3F4891766FF69F8079C33B03CF3E8 /* Build configuration list for PBXNativeTarget "EXScreenCapture" */;
 			buildPhases = (
 				A25FEAB4C628F2D2448B4404A8FBEDC5 /* Headers */,
-				14F1FCD424ADA34A0F2EB587AFF07176 /* Sources */,
+				5FF138070C16392FC98D1D8D9F53C467 /* Sources */,
 				D6E7E826B51A5F90AD799414502990C3 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				D9FC83B0CB914DB6272D280C4B1D5142 /* PBXTargetDependency */,
+				33794537D2A06BA03E9F6FE3697C3B88 /* PBXTargetDependency */,
 			);
 			name = EXScreenCapture;
 			productName = EXScreenCapture;
@@ -175,27 +175,27 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		14F1FCD424ADA34A0F2EB587AFF07176 /* Sources */ = {
+		5FF138070C16392FC98D1D8D9F53C467 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1DB000B7007290B009A8F0A4ED3DE9F4 /* EXScreenCapture-dummy.m in Sources */,
-				CCA64D5C37C13EAB56189136C952A5A0 /* EXScreenCaptureModule.m in Sources */,
+				8743C13934294EA26FA4D1B8EDB34324 /* EXScreenCapture-dummy.m in Sources */,
+				C37F53C11A0AB1F1D632C71E0C6812ED /* EXScreenCaptureModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		D9FC83B0CB914DB6272D280C4B1D5142 /* PBXTargetDependency */ = {
+		33794537D2A06BA03E9F6FE3697C3B88 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = AEB087EBE3164A74134CAE2AB1EE5873 /* PBXContainerItemProxy */;
+			targetProxy = D49CF385E394DA43F20279B5B12D3515 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		20D60F6BE228DEE290E1EE4980318A2F /* Debug */ = {
+		28A22D0C5BD03A98CEF711D786F33A2B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -248,7 +248,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -261,7 +261,7 @@
 			};
 			name = Debug;
 		};
-		9041404710734202C0A818CFB3E1FA91 /* Release */ = {
+		590F51BD155B64B3074F9F1AA8038F25 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -311,7 +311,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -323,42 +323,18 @@
 			};
 			name = Release;
 		};
-		96F6AC78D8A29B3C258D8F7A350E1244 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3638A28E49D2268DC35FF8784403E105 /* EXScreenCapture.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/EXScreenCapture/EXScreenCapture-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXScreenCapture;
-				PRODUCT_NAME = EXScreenCapture;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		CA539C8F5F5BAD7C44FF452113F64ADF /* Release */ = {
+		A04E76CC2DC3A857204C9F9466FE4623 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7B214199DA1D7F0D6CB70C5CC280D3DD /* EXScreenCapture.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/EXScreenCapture/EXScreenCapture-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -374,14 +350,40 @@
 			};
 			name = Release;
 		};
+		B0F14588F149E9A86B5457359C0658C2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3638A28E49D2268DC35FF8784403E105 /* EXScreenCapture.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/EXScreenCapture/EXScreenCapture-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXScreenCapture;
+				PRODUCT_NAME = EXScreenCapture;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		1B101987503504736FA9C53B79FC837A /* Build configuration list for PBXProject "EXScreenCapture" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				20D60F6BE228DEE290E1EE4980318A2F /* Debug */,
-				9041404710734202C0A818CFB3E1FA91 /* Release */,
+				28A22D0C5BD03A98CEF711D786F33A2B /* Debug */,
+				590F51BD155B64B3074F9F1AA8038F25 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -389,8 +391,8 @@
 		DCD3F4891766FF69F8079C33B03CF3E8 /* Build configuration list for PBXNativeTarget "EXScreenCapture" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				96F6AC78D8A29B3C258D8F7A350E1244 /* Debug */,
-				CA539C8F5F5BAD7C44FF452113F64ADF /* Release */,
+				B0F14588F149E9A86B5457359C0658C2 /* Debug */,
+				A04E76CC2DC3A857204C9F9466FE4623 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

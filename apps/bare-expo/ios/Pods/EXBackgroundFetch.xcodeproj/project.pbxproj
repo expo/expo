@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A511A1AA29FFE1F75ED5578254C9459E /* EXBackgroundFetch.m in Sources */ = {isa = PBXBuildFile; fileRef = 36FBA310A317953574E864C77C599621 /* EXBackgroundFetch.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		AAD962F8BB43764BD2BC7BD91F65165E /* EXBackgroundFetch-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = FC17D7420D59402389A3C95143D4E236 /* EXBackgroundFetch-dummy.m */; };
 		AF0AA0A9B3A3678E94AD955BFCACBD9B /* EXBackgroundFetchTaskConsumer.h in Headers */ = {isa = PBXBuildFile; fileRef = 3065A3071C3BE89317A7E8C1DC5870F3 /* EXBackgroundFetchTaskConsumer.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		C30908882DD651AE40BFCD81483B1215 /* EXBackgroundFetch.h in Headers */ = {isa = PBXBuildFile; fileRef = E02F298BAEEACA30D8EBAE26601AAB3E /* EXBackgroundFetch.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		DA549EFB557A4DFC3B1AB38D7B2B4F5D /* EXBackgroundFetch-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = FC17D7420D59402389A3C95143D4E236 /* EXBackgroundFetch-dummy.m */; };
-		DA8727B95342346CD9184122D067DD25 /* EXBackgroundFetchTaskConsumer.m in Sources */ = {isa = PBXBuildFile; fileRef = 395B7113CDC7AA3A8370ED71D074397F /* EXBackgroundFetchTaskConsumer.m */; };
-		FDDFB38DEB1575839E51B4D102B4C6D3 /* EXBackgroundFetch.m in Sources */ = {isa = PBXBuildFile; fileRef = 36FBA310A317953574E864C77C599621 /* EXBackgroundFetch.m */; };
+		FB2872AFA16D8B34BFCEF976E4F3DA41 /* EXBackgroundFetchTaskConsumer.m in Sources */ = {isa = PBXBuildFile; fileRef = 395B7113CDC7AA3A8370ED71D074397F /* EXBackgroundFetchTaskConsumer.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -22,7 +22,7 @@
 			remoteGlobalIDString = A565C99DEFBAFA44A1B5C3B49ADD8A84;
 			remoteInfo = UMTaskManagerInterface;
 		};
-		631534814053A768199D79B6BE369153 /* PBXContainerItemProxy */ = {
+		AE30E5196B0BC81005EDF48B46DDB171 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 72BD1A624439F4690EC30BAFFE717CFF /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -145,13 +145,13 @@
 			buildConfigurationList = C7932945C72B70AC242E150629CAD5B4 /* Build configuration list for PBXNativeTarget "EXBackgroundFetch" */;
 			buildPhases = (
 				9F059537FAB1F98E6D4815B4F099E615 /* Headers */,
-				CDC2E948251123C9AC3EA707FBA90131 /* Sources */,
+				527EB06C56B6ACF5CFAA0A21D396556E /* Sources */,
 				B4139FADF9E1E095BDCCA6F11F769CCE /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				0873C864D4ACF278E3D829E32F9EA48F /* PBXTargetDependency */,
+				DD3243F1EA61350DFC7931F73D173071 /* PBXTargetDependency */,
 				5D2F609889D320ABF7023D74731ECE9C /* PBXTargetDependency */,
 			);
 			name = EXBackgroundFetch;
@@ -195,84 +195,33 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		CDC2E948251123C9AC3EA707FBA90131 /* Sources */ = {
+		527EB06C56B6ACF5CFAA0A21D396556E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DA549EFB557A4DFC3B1AB38D7B2B4F5D /* EXBackgroundFetch-dummy.m in Sources */,
-				FDDFB38DEB1575839E51B4D102B4C6D3 /* EXBackgroundFetch.m in Sources */,
-				DA8727B95342346CD9184122D067DD25 /* EXBackgroundFetchTaskConsumer.m in Sources */,
+				AAD962F8BB43764BD2BC7BD91F65165E /* EXBackgroundFetch-dummy.m in Sources */,
+				A511A1AA29FFE1F75ED5578254C9459E /* EXBackgroundFetch.m in Sources */,
+				FB2872AFA16D8B34BFCEF976E4F3DA41 /* EXBackgroundFetchTaskConsumer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		0873C864D4ACF278E3D829E32F9EA48F /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMCore;
-			targetProxy = 631534814053A768199D79B6BE369153 /* PBXContainerItemProxy */;
-		};
 		5D2F609889D320ABF7023D74731ECE9C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMTaskManagerInterface;
 			targetProxy = 239C5B267D18A411984069990D8E7DAB /* PBXContainerItemProxy */;
 		};
+		DD3243F1EA61350DFC7931F73D173071 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = AE30E5196B0BC81005EDF48B46DDB171 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		20889A6CD1D77DA9108EC4E2A8F3EA1E /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 039EBA03978F6F52E9290C7C2F07D8DE /* EXBackgroundFetch.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/EXBackgroundFetch/EXBackgroundFetch-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXBackgroundFetch;
-				PRODUCT_NAME = EXBackgroundFetch;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		4A35BED92A85DDA67078220060448E70 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 41E4C06E2E5D3A717905E4DF03CA3C91 /* EXBackgroundFetch.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/EXBackgroundFetch/EXBackgroundFetch-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXBackgroundFetch;
-				PRODUCT_NAME = EXBackgroundFetch;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		D27CAD877F95D6957CD0C6F5770A89C7 /* Release */ = {
+		7C6E8975398E29A18AF5FDAB746B9928 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -322,7 +271,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -334,7 +283,34 @@
 			};
 			name = Release;
 		};
-		DAC82F85C1054F07107122A1D58EF8D1 /* Debug */ = {
+		B11E18B39BE9EBF014758CF3127E200B /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 41E4C06E2E5D3A717905E4DF03CA3C91 /* EXBackgroundFetch.release.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/EXBackgroundFetch/EXBackgroundFetch-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXBackgroundFetch;
+				PRODUCT_NAME = EXBackgroundFetch;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		DA0A989A9E0900FD1AE7881B5EC70F0E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -387,7 +363,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -400,14 +376,40 @@
 			};
 			name = Debug;
 		};
+		F8B87A22E603265D28F2249223443772 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 039EBA03978F6F52E9290C7C2F07D8DE /* EXBackgroundFetch.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/EXBackgroundFetch/EXBackgroundFetch-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXBackgroundFetch;
+				PRODUCT_NAME = EXBackgroundFetch;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		1299C83AD861366B0E06F259E430137D /* Build configuration list for PBXProject "EXBackgroundFetch" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				DAC82F85C1054F07107122A1D58EF8D1 /* Debug */,
-				D27CAD877F95D6957CD0C6F5770A89C7 /* Release */,
+				DA0A989A9E0900FD1AE7881B5EC70F0E /* Debug */,
+				7C6E8975398E29A18AF5FDAB746B9928 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -415,8 +417,8 @@
 		C7932945C72B70AC242E150629CAD5B4 /* Build configuration list for PBXNativeTarget "EXBackgroundFetch" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				20889A6CD1D77DA9108EC4E2A8F3EA1E /* Debug */,
-				4A35BED92A85DDA67078220060448E70 /* Release */,
+				F8B87A22E603265D28F2249223443772 /* Debug */,
+				B11E18B39BE9EBF014758CF3127E200B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

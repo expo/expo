@@ -7,19 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0C9BF483EA0FE859250ADCDD93DB6729 /* EXImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 213F4BA8CF40E50DF7D97B35CCFC88F2 /* EXImagePicker.m */; };
+		0196A97141B557995FD396741A8A51A2 /* EXImagePickerCameraPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AC3FF73A09B1C989D74B2316EF67320 /* EXImagePickerCameraPermissionRequester.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		0D4B7EC8D65FE6F8D15839ECF00D182F /* EXImagePickerMediaLibraryWriteOnlyPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D5DD635A90FA2FC64F1DEB0901BB4F2 /* EXImagePickerMediaLibraryWriteOnlyPermissionRequester.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		1A56294FB8D757E553A628C6748FD2D3 /* EXImagePickerMediaLibraryWriteOnlyPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = A6CAB9BB9EE83FE4B826DE8C5586DE46 /* EXImagePickerMediaLibraryWriteOnlyPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		2C8D4C94FFF610F5BA3D7477578ED16A /* EXImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 213F4BA8CF40E50DF7D97B35CCFC88F2 /* EXImagePicker.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		2FBAAFA0939F3A190DEECF3A4CA30F6C /* EXImagePickerMediaLibraryPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 27CC2920E00DD548413D6D57643C5E09 /* EXImagePickerMediaLibraryPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		39B85170924E2F3F87E0CCCD6C27ED32 /* EXImagePickerCameraPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AC3FF73A09B1C989D74B2316EF67320 /* EXImagePickerCameraPermissionRequester.m */; };
-		863ADCFF26D8377F3CA531D1F522EFB5 /* EXImagePickerMediaLibraryWriteOnlyPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D5DD635A90FA2FC64F1DEB0901BB4F2 /* EXImagePickerMediaLibraryWriteOnlyPermissionRequester.m */; };
+		825375F29C006B3629B3A906A29C68A2 /* EXImagePicker-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = A4EB887C8BA314FC9A8480666777BBBC /* EXImagePicker-dummy.m */; };
+		AF7E57667B6D6B8369E909406F6599F0 /* EXImagePickerMediaLibraryPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BFD8ECF7F4F7D81C82D7A44F4E4D665 /* EXImagePickerMediaLibraryPermissionRequester.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		B74DDBF8503A839A6D6257C11493DE5B /* EXImagePicker.h in Headers */ = {isa = PBXBuildFile; fileRef = C6F015E7ECA8420FC96714C63E30BD40 /* EXImagePicker.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		B7700DF93E1D4053AB3A6E9525FA09B8 /* EXImagePicker-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = A4EB887C8BA314FC9A8480666777BBBC /* EXImagePicker-dummy.m */; };
 		B8E9CD8A7C8DD9BFFBA540C6CCE7743F /* EXImagePickerCameraPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 7E5CE16D5DFD22F396C1235A47F6B725 /* EXImagePickerCameraPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		F0F887CEC46BBB20222C81A84F3E9712 /* EXImagePickerMediaLibraryPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BFD8ECF7F4F7D81C82D7A44F4E4D665 /* EXImagePickerMediaLibraryPermissionRequester.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		504ECB4719C6BF512A61DC35D808F728 /* PBXContainerItemProxy */ = {
+		36ECD0FB20BEA7C5BFA8100212159B4B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3711B7B53CB96BE7381459CCDAA5FDCA /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -177,13 +177,13 @@
 			buildConfigurationList = 754EC06F624405951136D9248AC07742 /* Build configuration list for PBXNativeTarget "EXImagePicker" */;
 			buildPhases = (
 				8D53A953D680E4E53641B45CE5ED77B8 /* Headers */,
-				D40215F2B578F45FC790A0A95A6894ED /* Sources */,
+				E331144F504A59D3A58EC9C734322FBA /* Sources */,
 				FC1B7E76C8F73D6333FF192C6CB9BC77 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				0311750CCFE4636B9697378BB6F1CAB9 /* PBXTargetDependency */,
+				47500AB1A36832385D7946A376C27C37 /* PBXTargetDependency */,
 				FDC352C6A5A843F53EDD1885E1283A47 /* PBXTargetDependency */,
 				CB5C152C9DEF86FBE74C0BD594A8BA10 /* PBXTargetDependency */,
 			);
@@ -231,25 +231,25 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		D40215F2B578F45FC790A0A95A6894ED /* Sources */ = {
+		E331144F504A59D3A58EC9C734322FBA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B7700DF93E1D4053AB3A6E9525FA09B8 /* EXImagePicker-dummy.m in Sources */,
-				0C9BF483EA0FE859250ADCDD93DB6729 /* EXImagePicker.m in Sources */,
-				39B85170924E2F3F87E0CCCD6C27ED32 /* EXImagePickerCameraPermissionRequester.m in Sources */,
-				F0F887CEC46BBB20222C81A84F3E9712 /* EXImagePickerMediaLibraryPermissionRequester.m in Sources */,
-				863ADCFF26D8377F3CA531D1F522EFB5 /* EXImagePickerMediaLibraryWriteOnlyPermissionRequester.m in Sources */,
+				825375F29C006B3629B3A906A29C68A2 /* EXImagePicker-dummy.m in Sources */,
+				2C8D4C94FFF610F5BA3D7477578ED16A /* EXImagePicker.m in Sources */,
+				0196A97141B557995FD396741A8A51A2 /* EXImagePickerCameraPermissionRequester.m in Sources */,
+				AF7E57667B6D6B8369E909406F6599F0 /* EXImagePickerMediaLibraryPermissionRequester.m in Sources */,
+				0D4B7EC8D65FE6F8D15839ECF00D182F /* EXImagePickerMediaLibraryWriteOnlyPermissionRequester.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		0311750CCFE4636B9697378BB6F1CAB9 /* PBXTargetDependency */ = {
+		47500AB1A36832385D7946A376C27C37 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 504ECB4719C6BF512A61DC35D808F728 /* PBXContainerItemProxy */;
+			targetProxy = 36ECD0FB20BEA7C5BFA8100212159B4B /* PBXContainerItemProxy */;
 		};
 		CB5C152C9DEF86FBE74C0BD594A8BA10 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -264,32 +264,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		2E3A6ED71FA4311080957E2310D2115E /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = B319B68FAF44055433BC85CC7CEB8824 /* EXImagePicker.debug.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/EXImagePicker/EXImagePicker-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXImagePicker;
-				PRODUCT_NAME = EXImagePicker;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		374598B4906BD1AD12EDF7C6FE2FC53D /* Release */ = {
+		1E7F1AAA176D8185F79CEDF75E156387 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -339,7 +314,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -351,17 +326,18 @@
 			};
 			name = Release;
 		};
-		76B6F77E5B7A8B2A637CE10C65DE5951 /* Release */ = {
+		6C565E0A83C8D20ACBEB5930484EB809 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 36F8E54576A0A33ED88DD5049CCF8FA7 /* EXImagePicker.release.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/EXImagePicker/EXImagePicker-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -377,7 +353,7 @@
 			};
 			name = Release;
 		};
-		F511C211109BB90EDB063E09FFCE81E5 /* Debug */ = {
+		825BA963E960F5AEC1F4C7BDDBEB2121 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -430,7 +406,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -443,14 +419,40 @@
 			};
 			name = Debug;
 		};
+		ED28703CEEACF389AFAC6E034870359F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B319B68FAF44055433BC85CC7CEB8824 /* EXImagePicker.debug.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/EXImagePicker/EXImagePicker-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXImagePicker;
+				PRODUCT_NAME = EXImagePicker;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		338E2CABE472E4AB88F37FAB4B039586 /* Build configuration list for PBXProject "EXImagePicker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				F511C211109BB90EDB063E09FFCE81E5 /* Debug */,
-				374598B4906BD1AD12EDF7C6FE2FC53D /* Release */,
+				825BA963E960F5AEC1F4C7BDDBEB2121 /* Debug */,
+				1E7F1AAA176D8185F79CEDF75E156387 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -458,8 +460,8 @@
 		754EC06F624405951136D9248AC07742 /* Build configuration list for PBXNativeTarget "EXImagePicker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				2E3A6ED71FA4311080957E2310D2115E /* Debug */,
-				76B6F77E5B7A8B2A637CE10C65DE5951 /* Release */,
+				ED28703CEEACF389AFAC6E034870359F /* Debug */,
+				6C565E0A83C8D20ACBEB5930484EB809 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

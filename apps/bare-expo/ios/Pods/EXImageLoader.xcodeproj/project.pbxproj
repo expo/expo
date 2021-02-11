@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5B0110C227C8207EECD51518340FDB88 /* EXImageLoader-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 986401066B3130F15B6000F270FADED7 /* EXImageLoader-dummy.m */; };
+		50E889096D3D4E33A1D07E12D8A4D30B /* EXImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E506C015E37E773881E6C807C3DC6AE /* EXImageLoader.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		916DEC8BBEF4DFE32843C0BAD8985429 /* EXImageLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = DC006B2D56E51CB806E4B53936B86CD1 /* EXImageLoader.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		A409D3794931759E4673BCA91D00DDEB /* EXImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E506C015E37E773881E6C807C3DC6AE /* EXImageLoader.m */; };
+		FE9F34D234C61BACC8BFD65738419310 /* EXImageLoader-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 986401066B3130F15B6000F270FADED7 /* EXImageLoader-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -20,19 +20,19 @@
 			remoteGlobalIDString = A734124238F83C1FEE81C0FEDC5CDC5C;
 			remoteInfo = UMImageLoaderInterface;
 		};
-		63A831BD4B4882E2D33D702091B08C4D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 94E9A140D8BF40A34C7617D262635874 /* UMCore.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
-			remoteInfo = UMCore;
-		};
 		A9F137FFE19E200662F9AB2A00C1044B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 32B62E17B3CFA1FDA8D2A03C77FB8409 /* React-Core.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 5DA1A74647F652AE8E4DE074AFC4C6B7;
 			remoteInfo = "React-Core";
+		};
+		AE94418A685584D5C59E6B152C8BDFF1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 94E9A140D8BF40A34C7617D262635874 /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -147,14 +147,14 @@
 			buildConfigurationList = 1BA43AC1C248146DE539869C7DE02BCC /* Build configuration list for PBXNativeTarget "EXImageLoader" */;
 			buildPhases = (
 				72623F1D0DDFB24CA17C19350EC6C03F /* Headers */,
-				BD08A112EAE0DE41AD604985430E3CE7 /* Sources */,
+				81B95CA888DA72DA2FC219BC6F80BD00 /* Sources */,
 				9A9F84869EE69AB4BD91CF992660202E /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				306AB8E18E4BD8CB5655004228555FA9 /* PBXTargetDependency */,
-				81BDEB0017C81EB8ED250269D94FD6DE /* PBXTargetDependency */,
+				C732D57FC6934357992C7DE7C893AD3C /* PBXTargetDependency */,
 				32431CF1C3B8773D7374D58717B60136 /* PBXTargetDependency */,
 			);
 			name = EXImageLoader;
@@ -201,12 +201,12 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		BD08A112EAE0DE41AD604985430E3CE7 /* Sources */ = {
+		81B95CA888DA72DA2FC219BC6F80BD00 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5B0110C227C8207EECD51518340FDB88 /* EXImageLoader-dummy.m in Sources */,
-				A409D3794931759E4673BCA91D00DDEB /* EXImageLoader.m in Sources */,
+				FE9F34D234C61BACC8BFD65738419310 /* EXImageLoader-dummy.m in Sources */,
+				50E889096D3D4E33A1D07E12D8A4D30B /* EXImageLoader.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -223,15 +223,42 @@
 			name = UMImageLoaderInterface;
 			targetProxy = 06BFD33D9753FE51ABAAFE94077325E3 /* PBXContainerItemProxy */;
 		};
-		81BDEB0017C81EB8ED250269D94FD6DE /* PBXTargetDependency */ = {
+		C732D57FC6934357992C7DE7C893AD3C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 63A831BD4B4882E2D33D702091B08C4D /* PBXContainerItemProxy */;
+			targetProxy = AE94418A685584D5C59E6B152C8BDFF1 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		18C0180DE7BA49DC34FCD352212E5B81 /* Debug */ = {
+		36CA11563A25890F2C81257956709F77 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E77D87BD18EDB65572278700B143595E /* EXImageLoader.release.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
+				GCC_PREFIX_HEADER = "Target Support Files/EXImageLoader/EXImageLoader-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXImageLoader;
+				PRODUCT_NAME = EXImageLoader;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		391AA401E9DED3E4B015C510007BB6E3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -284,7 +311,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -297,17 +324,18 @@
 			};
 			name = Debug;
 		};
-		2A0F61D27CFC500C5B50EDE9E0992FB0 /* Debug */ = {
+		88788B715E2D3A7EE0C966B51813C26E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4CA03F2A225E874437FFB956B2884BA9 /* EXImageLoader.debug.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PREFIX_HEADER = "Target Support Files/EXImageLoader/EXImageLoader-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -322,7 +350,7 @@
 			};
 			name = Debug;
 		};
-		882B6B64296E60E704299123A2175786 /* Release */ = {
+		964E8F763ADD7A416F786EF4DDFE7045 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -372,7 +400,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -384,40 +412,14 @@
 			};
 			name = Release;
 		};
-		D4F0AACA2620D22B00DCB85CC29FEA12 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = E77D87BD18EDB65572278700B143595E /* EXImageLoader.release.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
-				GCC_PREFIX_HEADER = "Target Support Files/EXImageLoader/EXImageLoader-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXImageLoader;
-				PRODUCT_NAME = EXImageLoader;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		1BA43AC1C248146DE539869C7DE02BCC /* Build configuration list for PBXNativeTarget "EXImageLoader" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				2A0F61D27CFC500C5B50EDE9E0992FB0 /* Debug */,
-				D4F0AACA2620D22B00DCB85CC29FEA12 /* Release */,
+				88788B715E2D3A7EE0C966B51813C26E /* Debug */,
+				36CA11563A25890F2C81257956709F77 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -425,8 +427,8 @@
 		E294CC39C5DB6C937E79CD56FE4A37A5 /* Build configuration list for PBXProject "EXImageLoader" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				18C0180DE7BA49DC34FCD352212E5B81 /* Debug */,
-				882B6B64296E60E704299123A2175786 /* Release */,
+				391AA401E9DED3E4B015C510007BB6E3 /* Debug */,
+				964E8F763ADD7A416F786EF4DDFE7045 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

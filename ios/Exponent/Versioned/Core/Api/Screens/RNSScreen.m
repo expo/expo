@@ -15,6 +15,7 @@
   __weak RCTBridge *_bridge;
   RNSScreen *_controller;
   RCTTouchHandler *_touchHandler;
+  CGRect _reactFrame;
 }
 
 @synthesize controller = _controller;
@@ -36,15 +37,16 @@
 
 - (void)reactSetFrame:(CGRect)frame
 {
-  if (![self.reactViewController.parentViewController
-        isKindOfClass:[UINavigationController class]]) {
+  _reactFrame = frame;
+  UIViewController *parentVC = self.reactViewController.parentViewController;
+  if (parentVC != nil && ![parentVC isKindOfClass:[UINavigationController class]]) {
     [super reactSetFrame:frame];
   }
   // when screen is mounted under UINavigationController it's size is controller
   // by the navigation controller itself. That is, it is set to fill space of
   // the controller. In that case we ignore react layout system from managing
-  // the screen dimentions and we wait for the screen VC to update and then we
-  // pass the dimentions to ui view manager to take into account when laying out
+  // the screen dimensions and we wait for the screen VC to update and then we
+  // pass the dimensions to ui view manager to take into account when laying out
   // subviews
 }
 
@@ -58,9 +60,14 @@
   [_bridge.uiManager setSize:self.bounds.size forView:self];
 }
 
-- (void)setActivityState:(int)activityState
+// Nil will be provided when activityState is set as an animated value and we change
+// it from JS to be a plain value (non animated).
+// In case when nil is received, we want to ignore such value and not make
+// any updates as the actual non-nil value will follow immediately.
+- (void)setActivityStateOrNil:(NSNumber *)activityStateOrNil
 {
-  if (activityState != _activityState) {
+  int activityState = [activityStateOrNil intValue];
+  if (activityStateOrNil != nil && activityState != _activityState) {
     _activityState = activityState;
     [_reactSuperview markChildUpdated];
   }
@@ -194,6 +201,9 @@
   if (self.onWillAppear) {
     self.onWillAppear(nil);
   }
+  // we do it here too because at this moment the `parentViewController` is already not nil,
+  // so if the parent is not UINavCtr, the frame will be updated to the correct one.
+  [self reactSetFrame:_reactFrame];
 }
 
 - (void)notifyWillDisappear
@@ -325,7 +335,7 @@
   if (vc != self && vc != nil) {
     return vc.preferredStatusBarUpdateAnimation;
   }
-  
+
   RNSScreenStackHeaderConfig *config = [self findScreenConfig];
   return config && config.statusBarAnimation ? config.statusBarAnimation : UIStatusBarAnimationFade;
 }
@@ -345,7 +355,7 @@
     lastViewController.modalPresentationCapturesStatusBarAppearance = YES;
     return nil;
   }
-  
+
   UIViewController *selfOrNil = [self findScreenConfig] != nil ? self : nil;
   if (lastViewController == nil) {
     return selfOrNil;
@@ -382,7 +392,14 @@
 {
   [super viewDidLayoutSubviews];
 
-  if (!CGRectEqualToRect(_lastViewFrame, self.view.frame)) {
+  // The below code makes the screen view adapt dimensions provided by the system. We take these
+  // into account only when the view is mounted under UINavigationController in which case system
+  // provides additional padding to account for possible header, and in the case when screen is
+  // shown as a native modal, as the final dimensions of the modal on iOS 12+ are shorter than the
+  // screen size
+  BOOL isDisplayedWithinUINavController = [self.parentViewController isKindOfClass:[UINavigationController class]];
+  BOOL isPresentedAsNativeModal = self.parentViewController == nil && self.presentingViewController != nil;
+  if ((isDisplayedWithinUINavController || isPresentedAsNativeModal) && !CGRectEqualToRect(_lastViewFrame, self.view.frame)) {
     _lastViewFrame = self.view.frame;
     [((RNSScreenView *)self.viewIfLoaded) updateBounds];
   }
@@ -469,7 +486,8 @@
 
 RCT_EXPORT_MODULE()
 
-RCT_EXPORT_VIEW_PROPERTY(activityState, int)
+// we want to handle the case when activityState is nil
+RCT_REMAP_VIEW_PROPERTY(activityState, activityStateOrNil, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(gestureEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(replaceAnimation, RNSScreenReplaceAnimation)
 RCT_EXPORT_VIEW_PROPERTY(stackPresentation, RNSScreenStackPresentation)

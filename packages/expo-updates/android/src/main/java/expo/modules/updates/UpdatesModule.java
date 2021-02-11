@@ -15,7 +15,6 @@ import org.unimodules.core.interfaces.ExpoMethod;
 
 import androidx.annotation.Nullable;
 import expo.modules.updates.db.DatabaseHolder;
-import expo.modules.updates.db.UpdatesDatabase;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.Launcher;
@@ -55,6 +54,7 @@ public class UpdatesModule extends ExportedModule {
       UpdatesInterface updatesService = getUpdatesService();
       if (updatesService != null) {
         constants.put("isEmergencyLaunch", updatesService.isEmergencyLaunch());
+        constants.put("isMissingRuntimeVersion", updatesService.getConfiguration().isMissingRuntimeVersion());
 
         UpdateEntity launchedUpdate = updatesService.getLaunchedUpdate();
         if (launchedUpdate != null) {
@@ -78,6 +78,14 @@ public class UpdatesModule extends ExportedModule {
     } catch (Exception e) {
       // do nothing; this is expected in a development client
       constants.put("isEnabled", false);
+
+      // In a development client, we normally don't have access to the updates configuration, but
+      // we should attempt to see if the runtime/sdk versions are defined in AndroidManifest.xml
+      // and warn the developer if not. This does not take into account any extra configuration
+      // provided at runtime in MainApplication.java, because we don't have access to that in a
+      // debug build.
+      UpdatesConfiguration configuration = new UpdatesConfiguration().loadValuesFromMetadata(getContext());
+      constants.put("isMissingRuntimeVersion", configuration.isMissingRuntimeVersion());
     }
 
     return constants;
@@ -141,7 +149,7 @@ public class UpdatesModule extends ExportedModule {
             return;
           }
 
-          if (updatesService.getSelectionPolicy().shouldLoadNewUpdate(manifest.getUpdateEntity(), launchedUpdate)) {
+          if (updatesService.getSelectionPolicy().shouldLoadNewUpdate(manifest.getUpdateEntity(), launchedUpdate, null)) {
             updateInfo.putBoolean("isAvailable", true);
             updateInfo.putString("manifestString", manifest.getRawManifestJson().toString());
             promise.resolve(updateInfo);
@@ -184,8 +192,8 @@ public class UpdatesModule extends ExportedModule {
               public boolean onManifestLoaded(Manifest manifest) {
                 return updatesService.getSelectionPolicy().shouldLoadNewUpdate(
                   manifest.getUpdateEntity(),
-                  updatesService.getLaunchedUpdate()
-                );
+                  updatesService.getLaunchedUpdate(),
+                  null);
               }
 
               @Override

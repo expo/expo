@@ -52,6 +52,7 @@ NSString *const kGTMSessionFetcherElapsedIntervalWithRetriesKey = @"kGTMSessionF
 static NSString *const kGTMSessionIdentifierPrefix = @"com.google.GTMSessionFetcher";
 static NSString *const kGTMSessionIdentifierDestinationFileURLMetadataKey = @"_destURL";
 static NSString *const kGTMSessionIdentifierBodyFileURLMetadataKey        = @"_bodyURL";
+static NSString *const kGTMSessionIdentifierClientReconnectMetadataKey    = @"_clientWillReconnect";
 
 // The default max retry interview is 10 minutes for uploads (POST/PUT/PATCH),
 // 1 minute for downloads.
@@ -191,6 +192,7 @@ static GTMSessionFetcherTestBlock GTM_NULLABLE_TYPE gGlobalTestBlock;
   NSURLResponse *_response;
   NSString *_sessionIdentifier;
   BOOL _wasCreatedFromBackgroundSession;
+  BOOL _clientWillReconnectBackgroundSession;
   BOOL _didCreateSessionIdentifier;
   NSString *_sessionIdentifierUUID;
   BOOL _userRequestedBackgroundSession;
@@ -573,7 +575,7 @@ static GTMSessionFetcherTestBlock GTM_NULLABLE_TYPE gGlobalTestBlock;
     //
     // file: and data: schemes are usually safe if they are hardcoded in the client or provided
     // by a trusted source, but since it's fairly rare to need them, it's safest to make clients
-    // explicitly whitelist them.
+    // explicitly allow them.
     BOOL isSecure =
         requestScheme != nil && [requestScheme caseInsensitiveCompare:@"https"] == NSOrderedSame;
     if (!isSecure) {
@@ -622,7 +624,7 @@ static GTMSessionFetcherTestBlock GTM_NULLABLE_TYPE gGlobalTestBlock;
 
   BOOL isRecreatingSession = (self.sessionIdentifier != nil) && (fetchRequest == nil);
 
-  self.canShareSession = !isRecreatingSession && !self.usingBackgroundSession;
+  self.canShareSession = (_service != nil) && !isRecreatingSession && !self.usingBackgroundSession;
 
   if (!self.session && self.canShareSession) {
     self.session = [_service sessionForFetcherCreation];
@@ -665,18 +667,7 @@ static GTMSessionFetcherTestBlock GTM_NULLABLE_TYPE gGlobalTestBlock;
       _configuration.TLSMinimumSupportedProtocolVersion = tls_protocol_version_TLSv12;
 #elif GTM_SDK_SUPPORTS_TLSMINIMUMSUPPORTEDPROTOCOLVERSION
       if (@available(iOS 13, tvOS 13, watchOS 6, macOS 10.15, *)) {
-#if TARGET_OS_IOS
-        // Early seeds of iOS 13 don't actually support the selector and several
-        // months later, those seeds are still in use, so validate if the selector
-        // is supported.
-        if ([_configuration respondsToSelector:@selector(setTLSMinimumSupportedProtocolVersion:)]) {
-          _configuration.TLSMinimumSupportedProtocolVersion = tls_protocol_version_TLSv12;
-        } else {
-          _configuration.TLSMinimumSupportedProtocol = kTLSProtocol12;
-        }
-#else
         _configuration.TLSMinimumSupportedProtocolVersion = tls_protocol_version_TLSv12;
-#endif  // TARGET_OS_IOS
       } else {
         _configuration.TLSMinimumSupportedProtocol = kTLSProtocol12;
       }
@@ -914,21 +905,31 @@ static GTMSessionFetcherTestBlock GTM_NULLABLE_TYPE gGlobalTestBlock;
 #else
     NSString *bgTaskName = @"GTMSessionFetcher";
 #endif
-    __block UIBackgroundTaskIdentifier bgTaskID = [app beginBackgroundTaskWithName:bgTaskName
-                                                                 expirationHandler:^{
+    // Since a request can be started from any thread, we also have to ensure the
+    // variable for accessing it is safe across the initial thread and the handler
+    // (incase it gets failed immediately from the app already heading into the
+    // background).
+    __block UIBackgroundTaskIdentifier guardedTaskID = UIBackgroundTaskInvalid;
+    UIBackgroundTaskIdentifier returnedTaskID =
+        [app beginBackgroundTaskWithName:bgTaskName expirationHandler:^{
       // Background task expiration callback - this block is always invoked by
       // UIApplication on the main thread.
-      if (bgTaskID != UIBackgroundTaskInvalid) {
+      UIBackgroundTaskIdentifier localTaskID;
+      @synchronized(self) {
+        localTaskID = guardedTaskID;
+      }
+      if (localTaskID != UIBackgroundTaskInvalid) {
         @synchronized(self) {
-          if (bgTaskID == self.backgroundTaskIdentifier) {
+          if (localTaskID == self.backgroundTaskIdentifier) {
             self.backgroundTaskIdentifier = UIBackgroundTaskInvalid;
           }
         }
-        [app endBackgroundTask:bgTaskID];
+        [app endBackgroundTask:localTaskID];
       }
     }];
     @synchronized(self) {
-      self.backgroundTaskIdentifier = bgTaskID;
+      guardedTaskID = returnedTaskID;
+      self.backgroundTaskIdentifier = returnedTaskID;
     }
   }
 #endif
@@ -1388,7 +1389,9 @@ NSData * GTM_NULLABLE_TYPE GTMDataFromInputStream(NSInputStream *inputStream, NS
       fetcher = [self fetcherWithSessionIdentifier:sessionIdentifier];
       GTMSESSION_ASSERT_DEBUG(fetcher != nil,
                               @"Unexpected invalid session identifier: %@", sessionIdentifier);
-      [fetcher beginFetchWithCompletionHandler:nil];
+      if (!fetcher.clientWillReconnectBackgroundSession) {
+        [fetcher beginFetchWithCompletionHandler:nil];
+      }
     }
     GTM_LOG_BACKGROUND_SESSION(@"%@ restoring session %@ by creating fetcher %@ %p",
                                [self class], sessionIdentifier, fetcher, fetcher);
@@ -1485,6 +1488,9 @@ NSData * GTM_NULLABLE_TYPE GTMDataFromInputStream(NSInputStream *inputStream, NS
   if (_bodyFileURL) {
     defaultUserInfo[kGTMSessionIdentifierBodyFileURLMetadataKey] = [_bodyFileURL absoluteString];
   }
+  if (_clientWillReconnectBackgroundSession) {
+    defaultUserInfo[kGTMSessionIdentifierClientReconnectMetadataKey] = @"YES";
+  }
   return (defaultUserInfo.count > 0) ? defaultUserInfo : nil;
 }
 
@@ -1501,6 +1507,12 @@ NSData * GTM_NULLABLE_TYPE GTMDataFromInputStream(NSInputStream *inputStream, NS
   if (bodyFileURLString) {
     _bodyFileURL = [NSURL URLWithString:bodyFileURLString];
     GTM_LOG_BACKGROUND_SESSION(@"Restoring body file URL: %@", _bodyFileURL);
+  }
+  NSString *clientReconnectString = metadata[kGTMSessionIdentifierClientReconnectMetadataKey];
+  if (clientReconnectString) {
+    _clientWillReconnectBackgroundSession = [clientReconnectString boolValue];
+    GTM_LOG_BACKGROUND_SESSION(@"Restoring clientWillReconnectBackgroundSession: %@",
+                               (_clientWillReconnectBackgroundSession ? @"YES" : @"NO"));
   }
 }
 
@@ -3458,6 +3470,7 @@ static NSMutableDictionary *gSystemCompletionHandlers = nil;
             configurationBlock = _configurationBlock,
             sessionTask = _sessionTask,
             wasCreatedFromBackgroundSession = _wasCreatedFromBackgroundSession,
+            clientWillReconnectBackgroundSession = _clientWillReconnectBackgroundSession,
             sessionUserInfo = _sessionUserInfo,
             taskDescription = _taskDescription,
             taskPriority = _taskPriority,
@@ -4656,7 +4669,7 @@ NSString *GTMFetcherApplicationIdentifier(NSBundle * GTM_NULLABLE_TYPE bundle) {
   }
 }
 
-+ (NSArray *)functionsHoldingSynchronizationOnObject:(id)object {
++ (NSArray * GTM_NULLABLE_TYPE)functionsHoldingSynchronizationOnObject:(id)object {
   Class threadKey = [GTMSessionSyncMonitorInternal class];
   NSValue *localObjectKey = [NSValue valueWithNonretainedObject:object];
 

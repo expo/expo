@@ -2,6 +2,8 @@
 title: Handling Assets
 ---
 
+import SnackInline from '~/components/plugins/SnackInline';
+
 This section covers all things related to handling assets with Expo here including bundling, caching, pre-loading and publishing.
 
 ### Bundling Assets
@@ -31,10 +33,15 @@ For web images, use `Image.prefetch(image)`. Continue referencing the image norm
 Fonts are pre-loaded using `Font.loadAsync(font)`. The `font`
 argument in this case is an object such as the following: `{OpenSans: require('./assets/fonts/OpenSans.ttf')}`. `@expo/vector-icons` provides a helpful shortcut for this object, which you see below as `FontAwesome.font`.
 
-```javascript
+<SnackInline
+label="Pre-loading and Caching Assets"
+dependencies={['expo-font', 'expo-asset', 'expo-app-loading', '@expo/vector-icons']}
+files={{'assets/images/circle.jpg': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/42f59672cb9eb70368b00921c0cc60b7'}}>
+
+```jsx
 import * as React from 'react';
 import { View, Text, Image } from 'react-native';
-import { AppLoading } from 'expo';
+import AppLoading from 'expo-app-loading';
 import * as Font from 'expo-font';
 import { Asset } from 'expo-asset';
 import { FontAwesome } from '@expo/vector-icons';
@@ -88,6 +95,8 @@ export default class AppContainer extends React.Component {
   }
 }
 ```
+
+</SnackInline>
 
 See a full working example in [this Expo template project](https://github.com/expo/expo/blob/sdk-36/templates/expo-template-tabs/App.js). You can also run `expo init --template tabs`, which will set you up locally with the same template.
 
