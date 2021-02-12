@@ -76,7 +76,7 @@ static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
         [filteredLaunchableUpdates addObject:update];
       }
 
-      completion(nil, [selectionPolicy launchableUpdateWithUpdates:filteredLaunchableUpdates]);
+      completion(nil, [selectionPolicy launchableUpdateWithUpdates:filteredLaunchableUpdates filters:nil]);
     });
   });
 }

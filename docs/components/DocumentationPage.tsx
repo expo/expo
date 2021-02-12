@@ -53,6 +53,8 @@ type Props = {
   asPath: string;
   sourceCodeUrl?: string;
   tocVisible: boolean;
+  /* If the page should not show up in the Algolia Docsearch results */
+  hideFromSearch?: boolean;
 };
 
 type State = {
@@ -173,6 +175,14 @@ export default class DocumentationPage extends React.Component<Props, State> {
     }
   };
 
+  private getAlgoliaTag = () => {
+    if (this.props.hideFromSearch === true) {
+      return null;
+    }
+
+    return this.isReferencePath() ? this.getVersion() : 'none';
+  };
+
   private getVersion = () => {
     let version = (this.props.asPath || this.props.url.pathname).split(`/`)[2];
     if (!version || !VERSIONS.includes(version)) {
@@ -248,6 +258,8 @@ export default class DocumentationPage extends React.Component<Props, State> {
 
     const sidebarRight = <DocumentationSidebarRight ref={this.sidebarRightRef} />;
 
+    const algoliaTag = this.getAlgoliaTag();
+
     return (
       <DocumentationNestedScrollLayout
         ref={this.layoutRef}
@@ -260,7 +272,7 @@ export default class DocumentationPage extends React.Component<Props, State> {
         onContentScroll={handleContentScroll}
         sidebarScrollPosition={sidebarScrollPosition}>
         <Head title={`${this.props.title} - Expo Documentation`}>
-          <meta name="docsearch:version" content={isReferencePath ? version : 'none'} />
+          {algoliaTag !== null && <meta name="docsearch:version" content={algoliaTag} />}
           <meta property="og:title" content={`${this.props.title} - Expo Documentation`} />
           <meta property="og:type" content="website" />
           <meta property="og:image" content="https://docs.expo.io/static/images/og.png" />

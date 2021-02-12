@@ -1,1 +1,0 @@
-../../../../../versioned-react-native/ABI40_0_0/ReactNative/ReactCommon/callinvoker/ReactCommon/ABI40_0_0CallInvoker.h

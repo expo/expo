@@ -1,12 +1,12 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { MaterialCommunityIcon } from '../components/Icon';
 
+import { DevMenuKeyCommand } from '../DevMenuInternal';
+import { MaterialCommunityIcon } from '../components/Icon';
+import Colors from '../constants/Colors';
+import DevMenuKeyCommandLabel from './DevMenuKeyCommandLabel';
 import ListItem from './ListItem';
 import { StyledText } from './Text';
-import { DevMenuKeyCommand } from '../DevMenuInternal';
-import DevMenuKeyCommandLabel from './DevMenuKeyCommandLabel';
-import Colors from '../constants/Colors';
 
 export type ListItemButtonProps = {
   name: string;
@@ -58,7 +58,7 @@ class ListItemButton extends React.PureComponent<ListItemButtonProps> {
     const { label, icon, keyCommand, ...other } = this.props;
 
     return (
-      <ListItem {...other} title="" onPress={this.onPress}>
+      <ListItem {...other} content="" onPress={this.onPress}>
         {this.renderButtonIcon(icon)}
         {this.renderLabel(label)}
         {this.renderKeyCommand(keyCommand)}

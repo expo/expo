@@ -82,7 +82,7 @@ dependencies {
 
   implementation 'commons-io:commons-io:2.6'
 
-  implementation("com.squareup.okhttp3:okhttp:3.12.1")
+  implementation("com.squareup.okhttp3:okhttp:3.14.9")
   implementation 'com.google.code.gson:gson:2.8.5'
 
   // Fixes

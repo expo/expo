@@ -8,12 +8,12 @@ EAS Build is currently in preview and is missing features that will be available
 
 ## Current limitations
 
-<details><summary><h4>Managed workflow support is early, not recommended for production.</h4></summary>
+<details><summary><h4>Managed workflow projects are not supported **yet**.</h4></summary>
 <p>
 
-EAS Build supports building iOS/Android native projects, so it works with any React Native app. It also supports [managed Expo projects](/introduction/managed-vs-bare.md), but work is in progress to achieve parity with builds produced through `expo build`.
+EAS Build supports building iOS/Android native projects, so it works with any React Native app. Support for [Managed Expo projects](/introduction/managed-vs-bare.md) is in progress and improves every day, although if you try it we expect you'll run into some issues.
 
-The goal for managed projects with EAS Build is to remove the limitations commonly encountered with the `expo build` service: it will produce smaller binaries by only including the dependencies you need, and you will be able to include custom native code. We encourage you to experiment with your Expo managed app on EAS Build and report issues, but we suggest holding off on using it for production managed app deployments for now.
+The goal for managed projects with EAS Build is to remove the limitations commonly encountered with the `expo build` service: it will produce smaller binaries by only including the dependencies you need, and you will be able to include custom native code.
 
 </p>
 </details>

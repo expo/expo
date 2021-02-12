@@ -40,15 +40,18 @@ describe(collectManifestSchemes, () => {
   it(`collects all`, () => {
     Constants.manifest = {
       ...manifest,
+      // @ts-ignore An array of strings is a secret feature until we drop turtle v1
       scheme: ['scheme.1', 'scheme.2'],
       detach: {
         scheme: 'detach.scheme.1',
       },
       ios: {
+        // @ts-ignore An array of strings is a secret feature until we drop turtle v1
         scheme: ['ios.scheme.1', null],
         bundleIdentifier: 'ios.bundleIdentifier',
       },
       android: {
+        // @ts-ignore An array of strings is a secret feature until we drop turtle v1
         scheme: ['android.scheme.1'],
         package: 'android.package',
       },
@@ -133,6 +136,7 @@ describe(resolveScheme, () => {
     Constants.executionEnvironment = ExecutionEnvironment.Bare;
     Constants.manifest = {
       ...Constants.manifest,
+      // @ts-ignore An array of strings is a secret feature until we drop turtle v1
       scheme: ['foobar', 'beta'],
     };
     expect(resolveScheme({})).toStrictEqual('foobar');

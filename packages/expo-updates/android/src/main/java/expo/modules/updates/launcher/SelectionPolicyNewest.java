@@ -1,5 +1,7 @@
 package expo.modules.updates.launcher;
 
+import org.json.JSONObject;
+
 import expo.modules.updates.db.entity.UpdateEntity;
 
 import java.util.ArrayList;
@@ -28,7 +30,7 @@ public class SelectionPolicyNewest implements SelectionPolicy {
   }
 
   @Override
-  public UpdateEntity selectUpdateToLaunch(List<UpdateEntity> updates) {
+  public UpdateEntity selectUpdateToLaunch(List<UpdateEntity> updates, JSONObject filters) {
     UpdateEntity updateToLaunch = null;
     for (UpdateEntity update : updates) {
       if (!mRuntimeVersions.contains(update.runtimeVersion)) {
@@ -42,7 +44,7 @@ public class SelectionPolicyNewest implements SelectionPolicy {
   }
 
   @Override
-  public List<UpdateEntity> selectUpdatesToDelete(List<UpdateEntity> updates, UpdateEntity launchedUpdate) {
+  public List<UpdateEntity> selectUpdatesToDelete(List<UpdateEntity> updates, UpdateEntity launchedUpdate, JSONObject filters) {
     if (launchedUpdate == null) {
       return new ArrayList<>();
     }
@@ -66,7 +68,7 @@ public class SelectionPolicyNewest implements SelectionPolicy {
   }
 
   @Override
-  public boolean shouldLoadNewUpdate(UpdateEntity newUpdate, UpdateEntity launchedUpdate) {
+  public boolean shouldLoadNewUpdate(UpdateEntity newUpdate, UpdateEntity launchedUpdate, JSONObject filters) {
     if (launchedUpdate == null) {
       return true;
     }

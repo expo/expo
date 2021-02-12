@@ -59,10 +59,10 @@ export function storeUrl(): string | null {
   const { manifest } = Constants;
   // eslint-disable-next-line no-undef
   if (Platform.OS === 'ios' && manifest?.ios) {
-    return manifest.ios.appStoreUrl;
+    return manifest.ios.appStoreUrl ?? null;
     // eslint-disable-next-line no-undef
   } else if (Platform.OS === 'android' && manifest?.android) {
-    return manifest.android.playStoreUrl;
+    return manifest.android.playStoreUrl ?? null;
   }
   return null;
 }

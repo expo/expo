@@ -1,1 +1,0 @@
-../../../Target Support Files/ABI38_0_0-lottie-react-native/ABI38_0_0-lottie-react-native-umbrella.h

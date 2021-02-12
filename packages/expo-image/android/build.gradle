@@ -3,7 +3,7 @@ def DEFAULT_BUILD_TOOLS_VERSION = '28.0.3'
 def DEFAULT_MIN_SDK_VERSION = 16
 def DEFAULT_TARGET_SDK_VERSION = 28
 
-def DEFAULT_OKHTTP_VERSION = '3.14.1'
+def DEFAULT_OKHTTP_VERSION = '3.14.9'
 
 def safeExtGet(prop, fallback) {
   rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
