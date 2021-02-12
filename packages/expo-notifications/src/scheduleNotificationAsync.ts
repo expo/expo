@@ -187,7 +187,7 @@ function isSecondsPropertyMisusedInCalendarTriggerInput(
   );
 }
 
-function validateDateComponents(
+function validateDateComponentsInTrigger(
   object: any,
   components: {
     day?: boolean;
