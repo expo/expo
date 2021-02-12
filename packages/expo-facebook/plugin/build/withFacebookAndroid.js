@@ -4,8 +4,8 @@ exports.setFacebookConfig = exports.setFacebookAppIdString = exports.getFacebook
 const config_plugins_1 = require("@expo/config-plugins");
 const Resources_1 = require("@expo/config-plugins/build/android/Resources");
 const Strings_1 = require("@expo/config-plugins/build/android/Strings");
-const XML_1 = require("@expo/config-plugins/build/android/XML");
 const android_plugins_1 = require("@expo/config-plugins/build/plugins/android-plugins");
+const XML_1 = require("@expo/config-plugins/build/utils/XML");
 const errors_1 = require("@expo/config-plugins/build/utils/errors");
 const { addMetaDataItemToMainApplication, getMainApplicationOrThrow, prefixAndroidKeys, removeMetaDataItemFromMainApplication, } = config_plugins_1.AndroidConfig.Manifest;
 const CUSTOM_TAB_ACTIVITY = 'com.facebook.CustomTabActivity';
