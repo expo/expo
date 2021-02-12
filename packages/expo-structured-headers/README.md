@@ -1,6 +1,6 @@
 # expo-structured-headers
 
-Java and Objective-C (partial) implementations of https://httpwg.org/http-extensions/draft-ietf-httpbis-header-structure.html.
+Java and Objective-C (partial) implementations of https://httpwg.org/specs/rfc8941.html.
 
 The Objective-C implementation only includes the parsing component and does not include serialization. It also ignores ordering of dictionaries.
 
