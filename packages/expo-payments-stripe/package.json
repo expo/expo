@@ -40,7 +40,7 @@
     "react-native": "*"
   },
   "dependencies": {
-    "@expo/config-plugins": "^1.0.12",
+    "@expo/config-plugins": "^1.0.18",
     "prop-types": "^15.6.0"
   },
   "devDependencies": {
