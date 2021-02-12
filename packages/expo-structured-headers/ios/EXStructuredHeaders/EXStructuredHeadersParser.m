@@ -40,7 +40,16 @@ typedef NS_ENUM(NSInteger, EXStructuredHeadersParserNumberType) {
 - (nullable id)parseStructuredFieldsWithError:(NSError ** _Nullable)error
 {
   // 4.2
-  // TODO: ASCII
+
+  // check for non-ASCII characters
+  for (int i = 0; i < _raw.length; i++) {
+    unichar ch = [_raw characterAtIndex:i];
+    if (ch < 0x00 || ch > 0x7F) {
+      if (error) *error = [self errorWithMessage:[NSString stringWithFormat:@"Invalid character at index %i", i]];
+      return nil;
+    }
+  }
+
   [self removeLeadingSP];
 
   id output;
