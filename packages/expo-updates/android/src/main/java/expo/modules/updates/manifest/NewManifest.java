@@ -3,10 +3,18 @@ package expo.modules.updates.manifest;
 import android.net.Uri;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+import expo.modules.structuredheaders.BooleanItem;
+import expo.modules.structuredheaders.Dictionary;
+import expo.modules.structuredheaders.ListElement;
+import expo.modules.structuredheaders.NumberItem;
+import expo.modules.structuredheaders.Parser;
+import expo.modules.structuredheaders.StringItem;
 import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.UpdatesUtils;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
+import okhttp3.Response;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,6 +23,7 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
 import java.util.UUID;
 
 import static expo.modules.updates.loader.EmbeddedLoader.BUNDLE_FILENAME;
@@ -31,6 +40,8 @@ public class NewManifest implements Manifest {
   private JSONArray mAssets;
 
   private JSONObject mManifestJson;
+  private String mServerDefinedHeaders;
+  private String mManifestFilters;
 
   private NewManifest(JSONObject manifestJson,
                       UUID id,
@@ -38,7 +49,9 @@ public class NewManifest implements Manifest {
                       Date commitTime,
                       String runtimeVersion,
                       JSONObject launchAsset,
-                      JSONArray assets) {
+                      JSONArray assets,
+                      String serverDefinedHeaders,
+                      String manifestFilters) {
     mManifestJson = manifestJson;
     mId = id;
     mScopeKey = scopeKey;
@@ -46,9 +59,11 @@ public class NewManifest implements Manifest {
     mRuntimeVersion = runtimeVersion;
     mLaunchAsset = launchAsset;
     mAssets = assets;
+    mServerDefinedHeaders = serverDefinedHeaders;
+    mManifestFilters = manifestFilters;
   }
 
-  public static NewManifest fromManifestJson(JSONObject rootManifestJson, UpdatesConfiguration configuration) throws JSONException {
+  public static NewManifest fromManifestJson(JSONObject rootManifestJson, UpdatesConfiguration configuration, Response httpResponse) throws JSONException {
     JSONObject manifestJson = rootManifestJson;
     if (manifestJson.has("manifest")) {
       manifestJson = manifestJson.getJSONObject("manifest");
@@ -67,7 +82,32 @@ public class NewManifest implements Manifest {
       commitTime = new Date();
     }
 
-    return new NewManifest(manifestJson, id, configuration.getScopeKey(), commitTime, runtimeVersion, launchAsset, assets);
+    String serverDefinedHeaders = httpResponse.header("expo-server-defined-headers");
+    String manifestFilters = httpResponse.header("expo-manifest-filters");
+
+    return new NewManifest(manifestJson, id, configuration.getScopeKey(), commitTime, runtimeVersion, launchAsset, assets, serverDefinedHeaders, manifestFilters);
+  }
+
+  public @Nullable JSONObject getServerDefinedHeaders() {
+    return null;
+  }
+
+  public @Nullable JSONObject getManifestFilters() {
+    JSONObject filtersJson = new JSONObject();
+    Parser parser = new Parser(mManifestFilters);
+    try {
+      Dictionary filtersDictionary = parser.parseDictionary();
+      Map<String, ListElement<? extends Object>> map = filtersDictionary.get();
+      for (String key : map.keySet()) {
+        ListElement<? extends Object> element = map.get(key);
+        if (element instanceof StringItem || element instanceof BooleanItem || element instanceof NumberItem) {
+          filtersJson.put(key, element.get());
+        }
+      }
+    } catch (expo.modules.structuredheaders.ParseException | JSONException e) {
+      Log.e(TAG, "Failed to parse expo-manifest-filters header content", e);
+    }
+    return filtersJson;
   }
 
   public JSONObject getRawManifestJson() {
