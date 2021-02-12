@@ -124,7 +124,7 @@ const sections = [
   },
   {
     name: 'Expo Accounts',
-    reference: ['Account Types', 'Programmatic Access', 'Working Together'],
+    reference: ['Account Types', 'Two-Factor Authentication', 'Programmatic Access', 'Working Together'],
   },
   {
     name: 'Regulatory Compliance',
