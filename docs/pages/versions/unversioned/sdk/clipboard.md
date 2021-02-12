@@ -90,6 +90,6 @@ Sets the content of the user's clipboard.
 
 - **value (_string_)** -- The string to save to the clipboard.
 
-## Returns
+#### Returns
 
 On web, this retuns a boolean value indicating whether or not the string was saved to the user's clipboard. On iOS and Android, nothing is returned.
