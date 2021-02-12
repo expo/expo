@@ -84,6 +84,11 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
                                                      timeoutInterval:EXUpdatesDefaultTimeoutInterval];
   [self _setManifestHTTPHeaderFields:request];
   [self _downloadDataWithRequest:request successBlock:^(NSData *data, NSURLResponse *response) {
+      
+    NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse *)response;
+    NSDictionary* headerDictionary = [httpResponse allHeaderFields];
+    NSString* headerSignature = [headerDictionary valueForKey:@"expo-manifest-signature"];
+      
     NSError *err;
     id parsedJson = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&err];
     if (err) {
@@ -91,43 +96,37 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
       return;
     }
 
-    NSDictionary *manifest = [self _extractManifest:parsedJson error:&err];
+    NSDictionary* updateResponseDictionary = [self _extractUpdateResponseDictionary:parsedJson error:&err];
     if (err) {
       errorBlock(err, response);
       return;
     }
 
-    id innerManifestString = manifest[@"manifestString"];
-    id signature = manifest[@"signature"];
-    BOOL isSigned = innerManifestString != nil && signature != nil;
+    id bodyManifestString = updateResponseDictionary[@"manifestString"];
+    id bodySignature = updateResponseDictionary[@"signature"];
+    BOOL isSignatureInBody = bodyManifestString != nil && bodySignature != nil;
 
+    NSString* signature = isSignatureInBody ? bodySignature : headerSignature;
+    NSString* manifestString = isSignatureInBody ? bodyManifestString : [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+      
     // XDL serves unsigned manifests with the `signature` key set to "UNSIGNED".
     // We should treat these manifests as unsigned rather than signed with an invalid signature.
-    if (isSigned && [signature isKindOfClass:[NSString class]] && [(NSString *)signature isEqualToString:@"UNSIGNED"]) {
-      isSigned = NO;
+    BOOL isUnsignedFromXDL = [(NSString *)signature isEqualToString:@"UNSIGNED"];
 
-      NSError *err;
-      manifest = [NSJSONSerialization JSONObjectWithData:[(NSString *)innerManifestString dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&err];
-      NSAssert(!err && manifest && [manifest isKindOfClass:[NSDictionary class]], @"manifest should be a valid JSON object");
-      NSMutableDictionary *mutableManifest = [manifest mutableCopy];
-      mutableManifest[@"isVerified"] = @(NO);
-      manifest = [mutableManifest copy];
-    }
-
-    if (isSigned) {
-      NSAssert([innerManifestString isKindOfClass:[NSString class]], @"manifestString should be a string");
+    NSDictionary* manifest = [NSJSONSerialization JSONObjectWithData:[(NSString*)manifestString dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&err];
+    NSAssert(!err && manifest && [manifest isKindOfClass:[NSDictionary class]], @"manifest should be a valid JSON object");
+    NSMutableDictionary* mutableManifest = [manifest mutableCopy];
+      
+    if (signature != nil && !isUnsignedFromXDL) {
+      NSAssert([manifestString isKindOfClass:[NSString class]], @"manifestString should be a string");
       NSAssert([signature isKindOfClass:[NSString class]], @"signature should be a string");
-      [EXUpdatesCrypto verifySignatureWithData:(NSString *)innerManifestString
+      [EXUpdatesCrypto verifySignatureWithData:(NSString *)manifestString
                                      signature:(NSString *)signature
                                         config:self->_config
                                   successBlock:^(BOOL isValid) {
                                                   if (isValid) {
-                                                    NSError *err;
-                                                    id innerManifest = [NSJSONSerialization JSONObjectWithData:[(NSString *)innerManifestString dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&err];
-                                                    NSAssert(!err && innerManifest && [innerManifest isKindOfClass:[NSDictionary class]], @"manifest should be a valid JSON object");
-                                                    NSMutableDictionary *mutableInnerManifest = [(NSDictionary *)innerManifest mutableCopy];
-                                                    mutableInnerManifest[@"isVerified"] = @(YES);
-                                                    EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:[mutableInnerManifest copy]
+                                                    mutableManifest[@"isVerified"] = @(YES);
+                                                    EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:[mutableManifest copy]
                                                                                                            config:self->_config
                                                                                                          database:database];
                                                     successBlock(update);
@@ -141,7 +140,8 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
                                                 }
       ];
     } else {
-      EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:(NSDictionary *)manifest
+      mutableManifest[@"isVerified"] = @(NO);
+      EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:[(NSDictionary *) mutableManifest copy]
                                                              config:self->_config
                                                            database:database];
       successBlock(update);
@@ -185,7 +185,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
   [task resume];
 }
 
-- (nullable NSDictionary *)_extractManifest:(id)parsedJson error:(NSError **)error
+- (nullable NSDictionary *)_extractUpdateResponseDictionary:(id)parsedJson error:(NSError **)error
 {
   if ([parsedJson isKindOfClass:[NSDictionary class]]) {
     return (NSDictionary *)parsedJson;
