@@ -224,7 +224,7 @@ function validateDateComponentsInTrigger(
     const daysInGivenMonth = daysInMonth(month);
     if (day < 1 || day > daysInGivenMonth) {
       throw new RangeError(
-        `The day parameter needs to be between 1 and the amount of days for the given month (${daysInGivenMonth} for month ${object.month}). Found: ${day}`
+        `The day parameter for month: ${object.month} must be between 1 and ${daysInGivenMonth}. Found: ${day}`
       );
     }
   }
