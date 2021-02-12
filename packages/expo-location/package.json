@@ -47,6 +47,6 @@
     "expo-module-scripts": "~1.2.0"
   },
   "dependencies": {
-    "@expo/config-plugins": "~1.0.13"
+    "@expo/config-plugins": "^1.0.18"
   }
 }

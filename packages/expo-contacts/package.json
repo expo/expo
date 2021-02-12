@@ -42,7 +42,7 @@
     "react-native": "*"
   },
   "dependencies": {
-    "@expo/config-plugins": "~1.0.13",
+    "@expo/config-plugins": "^1.0.18",
     "uuid": "^3.4.0"
   },
   "devDependencies": {
