@@ -17,7 +17,7 @@ export default class FacebookLoginScreen extends React.Component {
   };
 
   render() {
-    const permissions = ['public_profile', 'email', 'user_friends'];
+    const permissions = ['public_profile', 'email'];
 
     return (
       <ScrollView style={{ padding: 10 }}>

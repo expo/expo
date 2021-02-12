@@ -15,8 +15,11 @@ Pod::Spec.new do |s|
 
   s.dependency 'UMCore'
   s.dependency 'UMConstantsInterface'
-  s.dependency 'FacebookSDK/CoreKit', '~> 9.0'
-  s.dependency 'FacebookSDK/LoginKit', '~> 9.0'
+  s.dependency 'FacebookSDK/CoreKit', $FacebookSDKVersion || '9.0.1'
+  s.dependency 'FacebookSDK/LoginKit', $FacebookSDKVersion || '9.0.1'
+
+  # FacebookSDK is written in Swift, so must use this flag to import from it.
+  s.pod_target_xcconfig = { 'CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES' => 'YES' }
 
   if !$ExpoUseSources&.include?(package['name']) && ENV['EXPO_USE_SOURCE'].to_i == 0 && File.exist?("#{s.name}.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
     s.source_files = "#{s.name}/**/*.h"

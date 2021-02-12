@@ -34,7 +34,7 @@ ABI39_0_0UM_EXPORT_METHOD_AS(setAutoInitEnabledAsync,
   // and to mitigate this difference we will NOT add initializing
   // to the respective method on Android, but we will instruct users
   // to initialize the SDK manually on both platforms instead.
-  [FBSDKSettings setAutoInitEnabled:enabled];
+//  [FBSDKSettings setAutoInitEnabled:enabled];
   resolve(nil);
 }
 
