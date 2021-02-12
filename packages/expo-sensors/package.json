@@ -44,7 +44,7 @@
     "unimodules-sensors-interface": "*"
   },
   "dependencies": {
-    "@expo/config-plugins": "~1.0.13",
+    "@expo/config-plugins": "^1.0.18",
     "invariant": "^2.2.4"
   },
   "devDependencies": {
