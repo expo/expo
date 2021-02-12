@@ -30,7 +30,6 @@ afterEvaluate {
         type: Exec) {
       description = "expo-constants: Create config for ${targetName}."
 
-      // Create dirs if they are not there (e.g. the "clean" task just ran)
       doFirst {
         assetsDir.deleteDir()
         assetsDir.mkdirs()
