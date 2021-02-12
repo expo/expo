@@ -1615,7 +1615,7 @@ A trigger that will cause the notification to be delivered once every year.
 > **Note:** all properties are specified in JavaScript Date's ranges.
 
 ```ts
-export interface WeeklyTriggerInput {
+export interface YearlyTriggerInput {
   channelId?: string;
   day: number;
   month: number;
