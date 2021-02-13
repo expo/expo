@@ -4,12 +4,12 @@
 
 ### 🛠 Breaking changes
 
-- Upgraded Facebook iOS SDK to 9.0.0
+- Upgraded Facebook iOS SDK to `9.0.1`. ([#11921](https://github.com/expo/expo/pull/11921) by [@dreamolight](https://github.com/dreamolight) and [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
 
 - Updated Android build configuration to target Android 11 (added support for Android SDK 30). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
-- Exposed `setAdvertiserTrackingEnabled` function in iOS SDK
+- Exposed `setAdvertiserTrackingEnabled` function to be compliant with Apple's iOS 14 tracking policy. ([#11921](https://github.com/expo/expo/pull/11921) by [@dreamolight](https://github.com/dreamolight) and [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
