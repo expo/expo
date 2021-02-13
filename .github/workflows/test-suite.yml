@@ -23,22 +23,31 @@ jobs:
   web:
     runs-on: ubuntu-18.04
     steps:
-      - uses: actions/setup-node@v2-beta
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v2
         with:
           node-version: '14.4.0'
-      - uses: actions/checkout@v2
+      - name: 👀 Checkout
+        uses: actions/checkout@v2
         with:
           submodules: true
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v2
+      - name: ♻️ Restore workspace node modules
+        uses: actions/cache@v2
+        id: node-modules-cache
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn install --frozen-lockfile
+          path: |
+            # See "workspaces" → "packages" in the root package.json for the source of truth of
+            # which node_modules are affected by the root yarn.lock
+            node_modules
+            apps/*/node_modules
+            home/*/node_modules
+            packages/*/node_modules
+            packages/@unimodules/*/node_modules
+            react-native-lab/react-native/*/node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
+      - name: 🧶 Install node modules in root dir
+        if: steps.node-modules-cache.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile
       - run: yarn global add expo-cli
       - run: yarn test:web
         working-directory: apps/bare-expo
@@ -57,22 +66,37 @@ jobs:
   ios:
     runs-on: macos-10.15
     steps:
-      - uses: actions/checkout@v2
+      - name: 👀 Checkout
+        uses: actions/checkout@v2
         with:
           submodules: true
-      - run: brew tap wix/brew
-      - run: brew install applesimutils
-      - run: brew install watchman
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v2
+      - name: 🍺 Install required tools
+        run: |
+          brew tap wix/brew
+          brew install applesimutils
+          brew install watchman
+          echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 💎 Setup Ruby and install gems
+        uses: ruby/setup-ruby@v1
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn install --frozen-lockfile
+          bundler-cache: true
+      - name: ♻️ Restore workspace node modules
+        uses: actions/cache@v2
+        id: node-modules-cache
+        with:
+          path: |
+            # See "workspaces" → "packages" in the root package.json for the source of truth of
+            # which node_modules are affected by the root yarn.lock
+            node_modules
+            apps/*/node_modules
+            home/*/node_modules
+            packages/*/node_modules
+            packages/@unimodules/*/node_modules
+            react-native-lab/react-native/*/node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
+      - name: 🧶 Install node modules in root dir
+        if: steps.node-modules-cache.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile
       - name: ♻️ Restore apps/bare-expo/ios/Pods from cache
         uses: actions/cache@v2
         id: pods-cache
