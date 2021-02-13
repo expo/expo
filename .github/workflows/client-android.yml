@@ -10,7 +10,7 @@ on:
         description: 'type "release-google-play" to confirm release to Google Play'
         required: false
   pull_request:
-    branches: [ master ]
+    branches: [master]
     paths:
       - .github/workflows/client-android.yml
       - secrets/**
@@ -20,7 +20,7 @@ on:
       - .ruby-version
       - yarn.lock
   push:
-    branches: [ master, sdk-* ]
+    branches: [master, sdk-*]
     paths:
       - .github/workflows/client-android.yml
       - secrets/**
@@ -40,7 +40,7 @@ jobs:
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
@@ -60,7 +60,7 @@ jobs:
           else
             git crypt unlock <(echo $GIT_CRYPT_KEY_BASE64 | base64 --decode)
           fi
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('android/*.gradle*') }}
