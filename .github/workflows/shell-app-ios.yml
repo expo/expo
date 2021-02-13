@@ -9,7 +9,7 @@ on:
   schedule:
     - cron: '20 5 * * 2,4,6'
   pull_request:
-    branches: [ master ]
+    branches: [master]
     paths:
       - .github/workflows/shell-app-ios.yml
       - .ruby-version
@@ -37,7 +37,7 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         with:
           path: ios/Pods
           key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
