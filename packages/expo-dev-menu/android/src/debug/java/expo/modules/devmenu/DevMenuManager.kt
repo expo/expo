@@ -237,9 +237,14 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   //region DevMenuManagerProtocol
 
-  override fun openMenu(activity: Activity) {
+  override fun openMenu(activity: Activity, screen: String?) {
     setCurrentScreen(null)
-    session = DevMenuSession(delegate!!.reactInstanceManager(), delegate!!.appInfo())
+    session = DevMenuSession(
+      initReactInstanceManager = delegate!!.reactInstanceManager(),
+      initAppInfo = delegate!!.appInfo(),
+      screen = screen
+    )
+
     activity.startActivity(Intent(activity, DevMenuActivity::class.java))
   }
 

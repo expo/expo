@@ -7,16 +7,19 @@ public class DevMenuSession {
   /**
    The bridge that the dev menu is currently rendered for.
    */
-  public private(set) var bridge: RCTBridge
+  public let bridge: RCTBridge
 
   /**
    A dictionary of app info corresponding to the `bridge` or guessed based on app's metadata.
    */
-  public private(set) var appInfo: [String : Any]
+  public let appInfo: [String : Any]
+  
+  public let openScreen: String?
 
-  init(bridge: RCTBridge, appInfo: [String : Any]?) {
+  init(bridge: RCTBridge, appInfo: [String : Any]?, screen: String? = nil) {
     self.bridge = bridge
     self.appInfo = appInfo ?? guessAppInfo(forBridge: bridge)
+    self.openScreen = screen
   }
 }
 

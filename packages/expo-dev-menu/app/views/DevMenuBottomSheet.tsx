@@ -71,6 +71,10 @@ type Props = {
    * Refs for gesture handlers used for building bottomsheet
    */
   innerGestureHandlerRefs: [React.RefObject<PanGestureHandler>, React.RefObject<TapGestureHandler>];
+
+  openScreen?: string;
+
+  animationEnabled?: boolean;
 };
 
 type State = {
@@ -704,9 +708,10 @@ export default class BottomSheetBehavior extends React.Component<Props, State> {
                 <TapGestureHandler ref={this.tapRef} onHandlerStateChange={this.handleTap}>
                   <View style={styles.fullscreenView}>
                     <Stack.Navigator
-                      initialRouteName={this.props.screens[0].name}
+                      initialRouteName={this.props.openScreen ?? this.props.screens[0].name}
                       headerMode="screen"
                       screenOptions={{
+                        animationEnabled: this.props?.animationEnabled,
                         ...TransitionPresets.SlideFromRightIOS,
                       }}>
                       {this.props.screens.map(this.renderScreen)}

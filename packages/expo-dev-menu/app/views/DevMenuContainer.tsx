@@ -23,7 +23,7 @@ type Props = {
 
 const { call, cond, eq, onChange } = Animated;
 
-function applyNavigationSettings(navigationOptions) {
+function applyNavigationSettings(navigationOptions, collapse) {
   return ({ navigation }) => ({
     headerTitleAlign: 'center',
     headerStyle: {
@@ -38,7 +38,17 @@ function applyNavigationSettings(navigationOptions) {
       bottom: 0,
       left: 0,
     },
-    headerLeft: () => <NavigationHeaderButton onPress={() => navigation.pop()} />,
+    headerLeft: () => (
+      <NavigationHeaderButton
+        onPress={() => {
+          if (navigation.canGoBack()) {
+            navigation.pop();
+          } else {
+            collapse();
+          }
+        }}
+      />
+    ),
     ...navigationOptions,
   });
 }
@@ -47,6 +57,7 @@ function applyNavigationSettings(navigationOptions) {
 export default class DevMenuContainer extends React.PureComponent<Props, any> {
   state = {
     isAuthenticated: false,
+    animationEnabled: true,
   };
 
   ref = React.createRef<DevMenuBottomSheet>();
@@ -85,7 +96,26 @@ export default class DevMenuContainer extends React.PureComponent<Props, any> {
   componentDidUpdate(prevProps) {
     // Make sure it gets expanded once we receive new identifier.
     if (prevProps.uuid !== this.props.uuid) {
-      this.expand();
+      if (prevProps.openScreen !== this.props.openScreen) {
+        // eslint-disable-next-line react/no-did-update-set-state
+        this.setState({ animationEnabled: false });
+        const listener = () => {
+          this.expand();
+
+          this.setState({ animationEnabled: true });
+
+          this.props.navigation?.removeListener('state', listener);
+        };
+
+        this.props.navigation?.reset({
+          index: 0,
+          routes: [{ name: this.props.openScreen || 'Main' }],
+        });
+
+        this.props.navigation?.addListener('state', listener);
+      } else {
+        this.expand();
+      }
     }
   }
 
@@ -131,22 +161,34 @@ export default class DevMenuContainer extends React.PureComponent<Props, any> {
     {
       name: 'Main',
       component: DevMenuMainScreen,
-      options: applyNavigationSettings(DevMenuMainScreen.navigationOptions),
+      options: applyNavigationSettings(
+        DevMenuMainScreen.navigationOptions,
+        this.providedContext.collapse
+      ),
     },
     {
       name: 'Settings',
       component: DevMenuSettingsScreen,
-      options: applyNavigationSettings(DevMenuSettingsScreen.navigationOptions),
+      options: applyNavigationSettings(
+        DevMenuSettingsScreen.navigationOptions,
+        this.providedContext.collapse
+      ),
     },
     {
       name: 'Test',
       component: DevMenuTestScreen,
-      options: applyNavigationSettings(DevMenuTestScreen.navigationOptions),
+      options: applyNavigationSettings(
+        DevMenuTestScreen.navigationOptions,
+        this.providedContext.collapse
+      ),
     },
     {
       name: 'Profile',
       component: DevMenuProfile,
-      options: applyNavigationSettings(DevMenuProfile.navigationOptions),
+      options: applyNavigationSettings(
+        DevMenuProfile.navigationOptions,
+        this.providedContext.collapse
+      ),
     },
   ];
 
@@ -164,7 +206,10 @@ export default class DevMenuContainer extends React.PureComponent<Props, any> {
       return {
         name: screenInfo.screenName,
         component: DevMenuScreen,
-        options: applyNavigationSettings(DevMenuScreen.navigationOptions),
+        options: applyNavigationSettings(
+          DevMenuScreen.navigationOptions,
+          this.providedContext.collapse
+        ),
         props: { items: screenInfo.items },
       };
     });
@@ -179,11 +224,13 @@ export default class DevMenuContainer extends React.PureComponent<Props, any> {
               />
             </TouchableWithoutFeedback>
             <DevMenuBottomSheet
+              animationEnabled={this.state.animationEnabled}
               ref={this.ref}
               initialSnap={0}
               snapPoints={this.snapPoints}
               callbackNode={this.callbackNode}
-              screens={[...this.screens, ...devMenuScreens]}>
+              screens={[...this.screens, ...devMenuScreens]}
+              openScreen={this.props.openScreen}>
               <DevMenuOnboarding show={this.props.showOnboardingView} />
             </DevMenuBottomSheet>
           </View>

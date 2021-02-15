@@ -55,7 +55,7 @@ export default function Profile() {
 
   if (!loading && (error || !data.user)) {
     context.setSession(null);
-    return;
+    return <Loading />;
   }
 
   if (loading) {

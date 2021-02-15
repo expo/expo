@@ -133,8 +133,14 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
    */
   @objc
   @discardableResult
+  public func openMenu(_ screen: String? = nil) -> Bool {
+    return setVisibility(true, screen: screen)
+  }
+  
+  @objc
+  @discardableResult
   public func openMenu() -> Bool {
-    return setVisibility(true)
+    return openMenu(nil)
   }
 
   /**
@@ -308,7 +314,7 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
     return nil;
   }
 
-  private func setVisibility(_ visible: Bool) -> Bool {
+  private func setVisibility(_ visible: Bool, screen: String? = nil) -> Bool {
     if !canChangeVisibility(to: visible) {
       return false
     }
@@ -317,7 +323,7 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
         debugPrint("DevMenuManager: The delegate is unset or it didn't provide a bridge to render for.")
         return false
       }
-      session = DevMenuSession(bridge: bridge, appInfo: delegate?.appInfo?(forDevMenuManager: self))
+      session = DevMenuSession(bridge: bridge, appInfo: delegate?.appInfo?(forDevMenuManager: self), screen: screen)
       DispatchQueue.main.async { self.window?.makeKeyAndVisible() }
     } else {
       session = nil
