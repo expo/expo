@@ -1261,7 +1261,7 @@ export async function test(t) {
         4000
       );
 
-      t.fit(
+      t.it(
         'schedules a repeating yearly notification; only first scheduled event is verified.',
         async () => {
           const dateNow = new Date();
@@ -1292,6 +1292,8 @@ export async function test(t) {
               repeats: true,
               dateComponents: {
                 ...trigger,
+                // iOS uses 1-12 based months
+                month: trigger.month + 1,
                 timeZone: null,
                 isLeapMonth: false,
                 calendar: null,
