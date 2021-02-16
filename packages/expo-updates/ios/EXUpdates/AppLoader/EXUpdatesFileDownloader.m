@@ -84,10 +84,10 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
                                                      timeoutInterval:EXUpdatesDefaultTimeoutInterval];
   [self _setManifestHTTPHeaderFields:request];
   [self _downloadDataWithRequest:request successBlock:^(NSData *data, NSURLResponse *response) {
-      
-    NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse *)response;
-    NSDictionary* headerDictionary = [httpResponse allHeaderFields];
-    NSString* headerSignature = [headerDictionary valueForKey:@"expo-manifest-signature"];
+    NSAssert([response isKindOfClass:[NSHTTPURLResponse class]], @"response must be a NSHTTPURLResponse");
+    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+    NSDictionary *headerDictionary = [httpResponse allHeaderFields];
+    id headerSignature = headerDictionary[@"expo-manifest-signature"];
       
     NSError *err;
     id parsedJson = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&err];
@@ -96,7 +96,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
       return;
     }
 
-    NSDictionary* updateResponseDictionary = [self _extractUpdateResponseDictionary:parsedJson error:&err];
+    NSDictionary *updateResponseDictionary = [self _extractUpdateResponseDictionary:parsedJson error:&err];
     if (err) {
       errorBlock(err, response);
       return;
@@ -106,19 +106,19 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
     id bodySignature = updateResponseDictionary[@"signature"];
     BOOL isSignatureInBody = bodyManifestString != nil && bodySignature != nil;
 
-    NSString* signature = isSignatureInBody ? bodySignature : headerSignature;
-    NSString* manifestString = isSignatureInBody ? bodyManifestString : [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    id signature = isSignatureInBody ? bodySignature : headerSignature;
+    id manifestString = isSignatureInBody ? bodyManifestString : [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
       
     // XDL serves unsigned manifests with the `signature` key set to "UNSIGNED".
     // We should treat these manifests as unsigned rather than signed with an invalid signature.
     BOOL isUnsignedFromXDL = [(NSString *)signature isEqualToString:@"UNSIGNED"];
 
-    NSDictionary* manifest = [NSJSONSerialization JSONObjectWithData:[(NSString*)manifestString dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&err];
+    NSAssert([manifestString isKindOfClass:[NSString class]], @"manifestString should be a string");
+    NSDictionary *manifest = [NSJSONSerialization JSONObjectWithData:[(NSString *)manifestString dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&err];
     NSAssert(!err && manifest && [manifest isKindOfClass:[NSDictionary class]], @"manifest should be a valid JSON object");
-    NSMutableDictionary* mutableManifest = [manifest mutableCopy];
+    NSMutableDictionary *mutableManifest = [manifest mutableCopy];
       
     if (signature != nil && !isUnsignedFromXDL) {
-      NSAssert([manifestString isKindOfClass:[NSString class]], @"manifestString should be a string");
       NSAssert([signature isKindOfClass:[NSString class]], @"signature should be a string");
       [EXUpdatesCrypto verifySignatureWithData:(NSString *)manifestString
                                      signature:(NSString *)signature
@@ -141,7 +141,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
       ];
     } else {
       mutableManifest[@"isVerified"] = @(NO);
-      EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:[(NSDictionary *) mutableManifest copy]
+      EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:[(NSDictionary *)mutableManifest copy]
                                                              config:self->_config
                                                            database:database];
       successBlock(update);
