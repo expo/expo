@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed support for Android Gradle plugin 4.1+ ([#11926](https://github.com/expo/expo/pull/11926) by [@esamelson](https://github.com/esamelson))
+
 ## 9.3.3 — 2020-12-02
 
 _This version does not introduce any user-facing changes._

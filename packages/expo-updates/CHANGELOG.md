@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - Improved thread safety around reaping ([#11447](https://github.com/expo/expo/pull/11447) by [@esamelson](https://github.com/esamelson))
+- Fixed support for Android Gradle plugin 4.1+ ([#11926](https://github.com/expo/expo/pull/11926) by [@esamelson](https://github.com/esamelson))
 
 ## 0.4.1 — 2020-11-25
 
