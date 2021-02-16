@@ -1,4 +1,4 @@
-import { Platform, deprecate } from '@unimodules/core';
+import { Platform } from '@unimodules/core';
 import Constants from 'expo-constants';
 import * as Linking from 'expo-linking';
 import StoreReview from './ExpoStoreReview';
@@ -10,14 +10,6 @@ import StoreReview from './ExpoStoreReview';
  */
 export async function isAvailableAsync() {
     return StoreReview.isAvailableAsync();
-}
-/**
- * @deprecated use `isAvailableAsync()` instead
- */
-export function isSupported() {
-    deprecate('expo-store-review', 'StoreReview.isSupported', {
-        replacement: 'StoreReview.isAvailableAsync',
-    });
 }
 /**
  * Use the iOS `SKStoreReviewController` or Android `ReviewManager` API
