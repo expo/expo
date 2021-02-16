@@ -114,7 +114,7 @@
     "@react-native-community/segmented-control": "2.2.1",
     "@react-native-community/slider": "3.0.3",
     "@react-native-community/viewpager": "4.2.0",
-    "@react-native-picker/picker": "1.9.2",
+    "@react-native-picker/picker": "1.9.11",
     "expo": "~40.0.0-beta.4",
     "expo-camera": "~10.0.0",
     "expo-face-detector": "~9.0.1",
