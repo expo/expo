@@ -150,6 +150,8 @@ export type CameraRecordingOptions = {
   quality?: number | string;
   mute?: boolean;
   mirror?: boolean;
+  // Android
+  videoBitrate?: number;
 };
 
 export type CameraCapturedPicture = {
