@@ -137,6 +137,7 @@ tasks.whenTaskAdded {
   android.buildTypes.release {
     signingConfig android.signingConfigs.release
   } /* @end */
+
 }
 ```
 
