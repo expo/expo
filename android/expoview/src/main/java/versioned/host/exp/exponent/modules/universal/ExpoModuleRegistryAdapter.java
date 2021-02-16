@@ -87,6 +87,9 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     moduleRegistry.registerInternalModule(new ScopedNotificationsChannelsProvider(scopedContext, experienceId));
     moduleRegistry.registerInternalModule(new ScopedNotificationsCategoriesSerializer());
 
+    // Overriding expo-secure-stoore
+    moduleRegistry.registerExportedModule(new ScopedSecureStoreModule(scopedContext));
+
     // ReactAdapterPackage requires ReactContext
     ReactApplicationContext reactContext = (ReactApplicationContext) scopedContext.getContext();
     for (InternalModule internalModule : mReactAdapterPackage.createInternalModules(reactContext)) {

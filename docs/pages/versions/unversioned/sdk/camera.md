@@ -281,6 +281,7 @@ Starts recording a video that will be saved to cache directory. Videos are rotat
   - **maxFileSize (_number_)** -- Maximum video file size in bytes.
   - **mute (_boolean_)** -- If present, video will be recorded with no sound.
   - **mirror (_boolean_)** -- (iOS only; on Android, this is handled in the user's device settings) If `true`, the recorded video will be flipped along the vertical axis. iOS flips videos recorded with the front camera by default, but you can reverse that back by setting this to `true`.
+  - **videoBitrate (_number_)** -- Android only and works if `useCamera2Api` is set to `true`. (int greater than 0) This option specifies a desired video bitrate.  For example, 5\*1000\*1000 would be 5Mbps.
 
 #### Returns
 

@@ -9,7 +9,7 @@ on:
   schedule:
     - cron: '20 5 * * 2,4,6'
   pull_request:
-    branches: [ master ]
+    branches: [master]
     paths:
       - .github/workflows/shell-app-ios.yml
       - .ruby-version
@@ -37,7 +37,7 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         with:
           path: ios/Pods
           key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
@@ -72,21 +72,14 @@ jobs:
           echo "Release tarball uploaded to s3://exp-artifacts/${{ steps.tarball.outputs.filename }}"
           echo "You can deploy this by updating or creating a new file in https://github.com/expo/turtle/tree/master/shellTarballs/ios"
           echo "Then follow the deployment instructions: https://github.com/expo/turtle-deploy"
-      - uses: 8398a7/action-slack@v3
+      - name: 🔔 Notify on Slack
+        uses: 8398a7/action-slack@v3
         if: failure() && (github.event.ref == 'refs/heads/master' || startsWith(github.event.ref, 'refs/heads/sdk-'))
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_ios }}
         with:
           channel: '#platform-ios'
-          status: custom
-          fields: author,commit,ref,workflow
-          custom_payload: |
-            {
-              username: 'github-actions',
-              icon_emoji: ':octocat:',
-              attachments: [{
-                color: 'danger',
-                text: `${process.env.AS_WORKFLOW}@${process.env.AS_REF} failed: ${(process.env.AS_EVENT_NAME === 'schedule') ? 'scheduled build' : process.env.AS_COMMIT + ' by ' + process.env.AS_AUTHOR}`,
-              }]
-            }
+          status: ${{ job.status }}
+          fields: job,commit,ref,eventName,author,took
+          author_name: Shell App (iOS)

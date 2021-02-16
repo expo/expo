@@ -296,7 +296,7 @@ public class SecureStoreModule extends ExportedModule {
    * We use a shared preferences file that's scoped to both the experience and SecureStore. This
    * lets us easily list or remove all the entries for an experience.
    */
-  private SharedPreferences getSharedPreferences() {
+  protected SharedPreferences getSharedPreferences() {
     return getContext().getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
   }
 

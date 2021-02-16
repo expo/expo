@@ -9,11 +9,11 @@ import {
   removeStringItem,
   setStringItem,
 } from '@expo/config-plugins/build/android/Strings';
-import { writeXMLAsync } from '@expo/config-plugins/build/android/XML';
 import {
   createAndroidManifestPlugin,
   createStringsXmlPlugin,
 } from '@expo/config-plugins/build/plugins/android-plugins';
+import { writeXMLAsync } from '@expo/config-plugins/build/utils/XML';
 import { assert } from '@expo/config-plugins/build/utils/errors';
 import { ExpoConfig } from '@expo/config-types';
 

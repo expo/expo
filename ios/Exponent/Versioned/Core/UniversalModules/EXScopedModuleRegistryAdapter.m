@@ -96,7 +96,7 @@
 #endif
 
 #if __has_include(<EXSecureStore/EXSecureStore.h>)
-  EXScopedSecureStore *secureStoreModule = [[EXScopedSecureStore alloc] initWithExperienceId:experienceId];
+  EXScopedSecureStore *secureStoreModule = [[EXScopedSecureStore alloc] initWithExperienceId:experienceId andConstantsBinding:constantsBinding];
   [moduleRegistry registerExportedModule:secureStoreModule];
 #endif
 

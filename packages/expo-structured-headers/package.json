@@ -1,7 +1,7 @@
 {
   "name": "expo-structured-headers",
   "version": "1.0.0",
-  "description": "Expo module implementation of a parser based on https://httpwg.org/http-extensions/draft-ietf-httpbis-header-structure.html",
+  "description": "Expo module implementation of a parser based on https://httpwg.org/specs/rfc8941.html",
   "main": "index.js",
   "keywords": [
     "react-native",

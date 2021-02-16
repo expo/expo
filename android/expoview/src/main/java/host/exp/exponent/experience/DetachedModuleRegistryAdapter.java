@@ -20,6 +20,7 @@ import host.exp.exponent.utils.ScopedContext;
 import versioned.host.exp.exponent.modules.universal.ConstantsBinding;
 import versioned.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter;
 import versioned.host.exp.exponent.modules.universal.ScopedFileSystemModule;
+import versioned.host.exp.exponent.modules.universal.ScopedSecureStoreModule;
 import versioned.host.exp.exponent.modules.universal.ScopedUIManagerModuleWrapper;
 import versioned.host.exp.exponent.modules.universal.UpdatesBinding;
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedServerRegistrationModule;
@@ -52,6 +53,9 @@ public class DetachedModuleRegistryAdapter extends ExpoModuleRegistryAdapter {
 
     // Overriding expo-file-system FileSystemModule
     moduleRegistry.registerExportedModule(new ScopedFileSystemModule(scopedContext));
+  
+    // Overriding expo-secure-store
+    moduleRegistry.registerExportedModule(new ScopedSecureStoreModule(scopedContext));
 
     // Certain notifications classes should share `SharedPreferences` object with the notifications services, so we don't want to use scoped context.
     moduleRegistry.registerExportedModule(new NotificationScheduler(scopedContext.getBaseContext()));

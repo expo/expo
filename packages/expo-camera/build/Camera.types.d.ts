@@ -131,6 +131,7 @@ export declare type CameraRecordingOptions = {
     quality?: number | string;
     mute?: boolean;
     mirror?: boolean;
+    videoBitrate?: number;
 };
 export declare type CameraCapturedPicture = {
     width: number;
