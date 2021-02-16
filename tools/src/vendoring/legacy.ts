@@ -1,30 +1,12 @@
-import os from 'os';
 import path from 'path';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import xcode from 'xcode';
-import semver from 'semver';
-import inquirer from 'inquirer';
 import glob from 'glob-promise';
-import JsonFile from '@expo/json-file';
-import spawnAsync from '@expo/spawn-async';
 import ncp from 'ncp';
-import { Command } from '@expo/commander';
 
 import * as Directories from '../Directories';
-import * as Npm from '../Npm';
 import { EXPO_DIR } from '../Constants';
-import * as Workspace from '../Workspace';
-
-interface ActionOptions {
-  list: boolean;
-  listOutdated: boolean;
-  module: string;
-  platform: 'ios' | 'android' | 'all';
-  commit: string;
-  pbxproj: boolean;
-  semverPrefix: string;
-}
 
 interface VendoredModuleUpdateStep {
   iosPrefix?: string;
@@ -57,8 +39,6 @@ interface VendoredModuleConfig {
 
 const IOS_DIR = Directories.getIosDir();
 const ANDROID_DIR = Directories.getAndroidDir();
-const PACKAGES_DIR = Directories.getPackagesDir();
-const BUNDLED_NATIVE_MODULES_PATH = path.join(PACKAGES_DIR, 'expo', 'bundledNativeModules.json');
 
 const ReanimatedModifier: ModuleModifier = async function (
   moduleConfig: VendoredModuleConfig,
@@ -482,18 +462,6 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
   },
 };
 
-async function getBundledNativeModulesAsync(): Promise<{ [key: string]: string }> {
-  return (await JsonFile.readAsync(BUNDLED_NATIVE_MODULES_PATH)) as { [key: string]: string };
-}
-
-async function updateBundledNativeModulesAsync(updater) {
-  console.log(`\nUpdating ${chalk.magenta('bundledNativeModules.json')} ...`);
-
-  const jsonFile = new JsonFile(BUNDLED_NATIVE_MODULES_PATH);
-  const data = await jsonFile.readAsync();
-  await jsonFile.writeAsync(await updater(data));
-}
-
 async function renameIOSSymbolsAsync(file: string, iosPrefix: string) {
   const content = await fs.readFile(file, 'utf8');
 
@@ -617,60 +585,11 @@ async function copyFilesAsync(
   }
 }
 
-async function listAvailableVendoredModulesAsync(onlyOutdated: boolean = false) {
-  const bundledNativeModules = await getBundledNativeModulesAsync();
-  const vendoredPackageNames = Object.keys(vendoredModulesConfig);
-  const packageViews: Npm.PackageViewType[] = await Promise.all(
-    vendoredPackageNames.map((packageName: string) => Npm.getPackageViewAsync(packageName))
-  );
-
-  for (const packageName of vendoredPackageNames) {
-    const packageView = packageViews.shift();
-
-    if (!packageView) {
-      console.error(
-        chalk.red.bold(`Couldn't get package view for ${chalk.green.bold(packageName)}.\n`)
-      );
-      continue;
-    }
-
-    const moduleConfig = vendoredModulesConfig[packageName];
-    const bundledVersion = bundledNativeModules[packageName];
-    const latestVersion = packageView.versions[packageView.versions.length - 1];
-
-    if (!onlyOutdated || !bundledVersion || semver.gtr(latestVersion, bundledVersion)) {
-      console.log(chalk.bold.green(packageName));
-      console.log(`${chalk.yellow('>')} repository     : ${chalk.magenta(moduleConfig.repoUrl)}`);
-      console.log(
-        `${chalk.yellow('>')} bundled version: ${(bundledVersion ? chalk.cyan : chalk.gray)(
-          bundledVersion
-        )}`
-      );
-      console.log(`${chalk.yellow('>')} latest version : ${chalk.cyan(latestVersion)}`);
-      console.log();
-    }
-  }
-}
-
-async function askForModuleAsync(): Promise<string> {
-  const { moduleName } = await inquirer.prompt<{ moduleName: string }>([
-    {
-      type: 'list',
-      name: 'moduleName',
-      message: 'Which 3rd party module would you like to update?',
-      choices: Object.keys(vendoredModulesConfig),
-    },
-  ]);
-  return moduleName;
-}
-
-async function action(options: ActionOptions) {
-  if (options.list || options.listOutdated) {
-    await listAvailableVendoredModulesAsync(options.listOutdated);
-    return;
-  }
-
-  const moduleName = options.module || (await askForModuleAsync());
+export async function legacyVendorModuleAsync(
+  moduleName: string,
+  platform: string,
+  tmpDir: string
+) {
   const moduleConfig = vendoredModulesConfig[moduleName];
 
   if (!moduleConfig) {
@@ -684,23 +603,6 @@ async function action(options: ActionOptions) {
   moduleConfig.installableInManagedApps =
     moduleConfig.installableInManagedApps == null ? true : moduleConfig.installableInManagedApps;
 
-  const tmpDir = path.join(os.tmpdir(), moduleName);
-
-  // Cleanup tmp dir.
-  await fs.remove(tmpDir);
-
-  console.log(
-    `Cloning ${chalk.green(moduleName)}${chalk.red('#')}${chalk.cyan(
-      options.commit
-    )} from GitHub ...`
-  );
-
-  // Clone the repository.
-  await spawnAsync('git', ['clone', moduleConfig.repoUrl, tmpDir]);
-
-  // Checkout at given commit (defaults to master).
-  await spawnAsync('git', ['checkout', options.commit], { cwd: tmpDir });
-
   if (moduleConfig.warnings) {
     moduleConfig.warnings.forEach((warning) => console.warn(warning));
   }
@@ -710,8 +612,8 @@ async function action(options: ActionOptions) {
   }
 
   for (const step of moduleConfig.steps) {
-    const executeAndroid = ['all', 'android'].includes(options.platform);
-    const executeIOS = ['all', 'ios'].includes(options.platform);
+    const executeAndroid = ['all', 'android'].includes(platform);
+    const executeIOS = ['all', 'ios'].includes(platform);
 
     step.recursive = step.recursive === true;
     step.updatePbxproj = !(step.updatePbxproj === false);
@@ -736,7 +638,7 @@ async function action(options: ActionOptions) {
 
       await copyFilesAsync(objcFiles, sourceDir, targetDir);
 
-      if (options.pbxproj && step.updatePbxproj) {
+      if (step.updatePbxproj) {
         console.log(`\nUpdating pbxproj configuration ...`);
 
         for (const file of objcFiles) {
@@ -815,72 +717,4 @@ async function action(options: ActionOptions) {
       }
     }
   }
-  const { name, version } = await JsonFile.readAsync<{
-    name: string;
-    version: string;
-  }>(path.join(tmpDir, moduleConfig.packageJsonPath ?? '', 'package.json'));
-  const semverPrefix =
-    (options.semverPrefix != null ? options.semverPrefix : moduleConfig.semverPrefix) || '';
-  const versionRange = `${semverPrefix}${version}`;
-
-  await updateBundledNativeModulesAsync(async (bundledNativeModules) => {
-    if (moduleConfig.installableInManagedApps) {
-      bundledNativeModules[name] = versionRange;
-      console.log(
-        `Updated ${chalk.green(name)} in ${chalk.magenta(
-          'bundledNativeModules.json'
-        )} to version range ${chalk.cyan(versionRange)}`
-      );
-    } else if (bundledNativeModules[name]) {
-      delete bundledNativeModules[name];
-      console.log(
-        `Removed non-installable package ${chalk.green(name)} from ${chalk.magenta(
-          'bundledNativeModules.json'
-        )}`
-      );
-    }
-    return bundledNativeModules;
-  });
-
-  console.log(`\nUpdating ${chalk.green(name)} in workspace projects...`);
-
-  await Workspace.updateDependencyAsync(name, versionRange);
-
-  console.log(`\nRunning \`${chalk.cyan(`yarn`)}\`...`);
-
-  // We updated dependencies so we need to run yarn.
-  await Workspace.installAsync();
-
-  console.log(
-    `\nFinished updating ${chalk.green(
-      moduleName
-    )}, make sure to update files in the Xcode project (if you updated iOS, see logs above) and test that it still works. 🙂`
-  );
 }
-
-export default (program: Command) => {
-  program
-    .command('update-vendored-module')
-    .alias('update-module', 'uvm')
-    .description('Updates 3rd party modules.')
-    .option('-l, --list', 'Shows a list of available 3rd party modules.', false)
-    .option('-o, --list-outdated', 'Shows a list of outdated 3rd party modules.', false)
-    .option('-m, --module <string>', 'Name of the module to update.')
-    .option(
-      '-p, --platform <string>',
-      'A platform on which the vendored module will be updated.',
-      'all'
-    )
-    .option(
-      '-c, --commit <string>',
-      'Git reference on which to checkout when copying 3rd party module.',
-      'master'
-    )
-    .option(
-      '-s, --semver-prefix <string>',
-      'Setting this flag forces to use given semver prefix. Some modules may specify them by the config, but in case we want to update to alpha/beta versions we should use an empty prefix to be more strict.',
-      null
-    )
-    .option('--no-pbxproj', 'Whether to skip updating project.pbxproj file.', false)
-    .asyncAction(action);
-};
