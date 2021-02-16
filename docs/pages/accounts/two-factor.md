@@ -2,7 +2,7 @@
 title: Two-Factor Authentication
 ---
 
-Two factor authentication provides an extra layer of security when logging in to expo.io, the Expo Go app, and command line tools.  With 2FA enabled, you will need to provide a secure code in addition to your username and password to access your account.
+Two-factor authentication provides an extra layer of security when logging in to expo.io, the Expo Go app, and command line tools.  With two-factor authentication enabled, you will need to provide a short-lived code in addition to your username and password to access your account.
 
 ## Enabling Two-Factor Authentication (2FA)
 
@@ -10,29 +10,29 @@ You can enable two-factor authentication from your [personal account settings](h
 
 ## Two-Factor Authentication Methods
 
-You can receive 2FA codes through an authenticator app or via SMS message
+You can receive 2FA codes through an authenticator app or via SMS message.
 
 ### Authenticator Apps
 
-Expo accepts any authenticator app that supports Time-based One-time Passwords (TOTP), such as the following:
+Expo accepts any authenticator app that supports Time-based One-time Passwords (TOTP) including:
 
-- Last Pass Authenticator
-- Authy
-- 1Password
-- Google Authenticator
-- Microsoft Authenticator
+- [Last Pass Authenticator](https://lastpass.com/auth/)
+- [Authy](https://authy.com/)
+- [1Password](https://support.1password.com/one-time-passwords/)
+- [Google Authenticator](https://support.google.com/accounts/answer/1066447)
+- [Microsoft Authenticator](https://www.microsoft.com/en-us/account/authenticator)
 
-Expo will provide a QR code for scanning with your authenticator app. Open your app of choice, and scan the QR Code. The app will provide a confirmation code to enter on Expo. Enter the code to finish activating 2FA via your authenticator app. 
+Expo will provide a QR code to scan with your authenticator app during setup.  The app will provide a confirmation code to enter on Expo. Enter the code to finish activating 2FA via your authenticator app. 
 
 ### SMS Messages
 
-Provide a mobile phone number to receive a short-lived token from Expo. Once you enter the one-time password, your mobile phone number will be used for 2FA when logging into your account.  Codes received via SMS will be valid for at least 10 minutes, so you may receive the same code if you request a token more than once within this window.
+Provide a mobile phone number to receive a short-lived token via SMS. Codes received via SMS will be valid for at least 10 minutes, so you may receive the same code multiple times within this window.
 
 > **Note:** If you set an SMS device as your default 2FA method, you will be sent a verification code automatically whenever you take an action that requires a 2FA code.
 
 ### Recovery Codes
 
-As part of setting up your account to use two-factor authentication you will receive a list of recovery codes.  These codes can be entered anywhere you need to provide a one-time password if you lose access to the device(s) that have your authenticator app or that you use to receive SMS messages.  Once you use a recovery code, you will not be able to use it again.
+As part of setting up two-factor authentication on your account you will receive a list of recovery codes.  These codes may be used in place of a one-time password if you lose access to the device(s) that have your authenticator app or that you use to receive SMS messages.  Each recovery code may only be used once.
 
 If you chose to download your recovery codes when they were generated, they will be found in a file named `expo-recovery-codes.txt`
 
@@ -47,17 +47,17 @@ You can make changes to your two-factor settings from your [personal account set
 - regenerate your recovery codes
 - disable two-factor authentication for your account
 
-You will need to provide a verification code before any changes to your 2FA settings will be applied.
+You will need to provide a one-time password to make any changes to your 2FA settings.
 
 ## Recovering Your Account
 
 ### Recovery Codes
 
-While setting up 2FA, Expo provides you with recovery codes. In the event you lose your 2FA method, Expo will ask for these recovery codes to unlock 2FA. These codes are for one-time use and will no longer work after they are used to recover your account. To get new recovery codes, you'll need to reset your 2FA method.
+When you set up your account to use 2FA, Expo provides you with a list of recovery codes. In the event you lose your device(s), a recovery code may be used in place of a one-time password. Each of these codes may only be used once. You may regenerate your recovery codes, which will invalidate any existing codes, from your [personal account settings](https://expo.io/settings/).
 
 ### Secondary 2FA Methods
 
-By setting up multiple authentication methods associated with different physical devices, you can ensure you will not lose access to your account in the event you lose access to an individual device.
+By setting up multiple authentication methods associated with different physical devices, you can ensure you will not lose access to your account in the event a device is reset or lost.
 
 ### Manual Recovery
 
