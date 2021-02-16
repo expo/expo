@@ -38,7 +38,7 @@ UM_REGISTER_SINGLETON_MODULE(Permissions)
     return UMPermissionStatusUndetermined;
   }
 
-  if ([permissionData[@"status"] isEqualToString:[EXPermissions permissionStringForStatus:UMPermissionStatusGranted]]) {
+  if ([permissionData[@"status"] isEqualToString:[UMPermissions permissionStringForStatus:UMPermissionStatusGranted]]) {
     return UMPermissionStatusGranted;
   }
 

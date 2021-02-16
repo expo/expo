@@ -1,4 +1,4 @@
-package expo.modules.permissions
+package org.unimodules.adapters.react.permissions
 
 import android.Manifest
 import android.annotation.TargetApi
@@ -28,8 +28,6 @@ import org.unimodules.interfaces.permissions.PermissionsStatus
 
 private const val PERMISSIONS_REQUEST: Int = 13
 private const val PREFERENCE_FILENAME = "expo.modules.permissions.asked"
-
-internal const val ERROR_TAG = "E_PERMISSIONS"
 
 open class PermissionsService(val context: Context) : InternalModule, Permissions, LifecycleEventListener {
   private var mActivityProvider: ActivityProvider? = null

@@ -1,6 +1,6 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#if __has_include(<EXPermissions/EXPermissions.h>)
+#if __has_include(<UMReactNativeAdapter/UMPermissions.h>)
 #import "EXScopedPermissions.h"
 #import <UMCore/UMUtilities.h>
 #import <UMCore/UMDefines.h>
@@ -118,7 +118,7 @@
   
   if ([_constantsBinding.appOwnership isEqualToString:@"expo"]
       && [self shouldVerifyScopedPermission:permissionType]
-      && [EXPermissions statusForPermission:permission] == UMPermissionStatusGranted) {
+      && [UMPermissions statusForPermission:permission] == UMPermissionStatusGranted) {
     permission[@"status"] = [self getScopedPermissionStatus:permissionType];
     permission[@"granted"] = [permission[@"status"] isEqual:@"granted"] ? @YES : @NO;
   }

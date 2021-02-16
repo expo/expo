@@ -34,4 +34,6 @@ typedef enum UMPermissionStatus {
                                     resolve:(UMPromiseResolveBlock)resolve
                                      reject:(UMPromiseRejectBlock)reject;
 
+- (id<UMPermissionsRequester>)getPermissionRequesterForType:(NSString *)type;
+
 @end
