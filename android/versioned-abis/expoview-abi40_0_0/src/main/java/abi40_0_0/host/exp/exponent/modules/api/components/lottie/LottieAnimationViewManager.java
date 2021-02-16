@@ -11,6 +11,7 @@ import android.view.View.OnAttachStateChangeListener;
 import android.view.View;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.airbnb.lottie.RenderMode;
 import abi40_0_0.com.facebook.react.bridge.Arguments;
 import abi40_0_0.com.facebook.react.bridge.ReactContext;
 import abi40_0_0.com.facebook.react.bridge.ReadableArray;
@@ -31,13 +32,15 @@ class LottieAnimationViewManager extends SimpleViewManager<LottieAnimationView> 
   private static final int VERSION = 1;
   private static final int COMMAND_PLAY = 1;
   private static final int COMMAND_RESET = 2;
+  private static final int COMMAND_PAUSE = 3;
+  private static final int COMMAND_RESUME = 4;
 
   private Map<LottieAnimationView, LottieAnimationViewPropertyManager> propManagersMap = new WeakHashMap<>();
 
   @Override public Map<String, Object> getExportedViewConstants() {
     return MapBuilder.<String, Object>builder()
-        .put("VERSION", VERSION)
-        .build();
+      .put("VERSION", VERSION)
+      .build();
   }
 
   @Override public String getName() {
@@ -81,26 +84,28 @@ class LottieAnimationViewManager extends SimpleViewManager<LottieAnimationView> 
     }
     if (reactContext != null) {
       reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
-          view.getId(),
-          "animationFinish",
-          event);
+        view.getId(),
+        "animationFinish",
+        event);
     }
   }
 
   @Override public Map getExportedCustomBubblingEventTypeConstants() {
     return MapBuilder.builder()
-        .put(
-            "animationFinish",
-            MapBuilder.of(
-                "phasedRegistrationNames",
-                MapBuilder.of("bubbled", "onAnimationFinish")))
-        .build();
+      .put(
+        "animationFinish",
+        MapBuilder.of(
+          "phasedRegistrationNames",
+          MapBuilder.of("bubbled", "onAnimationFinish")))
+      .build();
   }
 
   @Override public Map<String, Integer> getCommandsMap() {
     return MapBuilder.of(
-        "play", COMMAND_PLAY,
-        "reset", COMMAND_RESET
+      "play", COMMAND_PLAY,
+      "reset", COMMAND_RESET,
+      "pause", COMMAND_PAUSE,
+      "resume", COMMAND_RESUME
     );
   }
 
@@ -113,26 +118,31 @@ class LottieAnimationViewManager extends SimpleViewManager<LottieAnimationView> 
             int startFrame = args.getInt(0);
             int endFrame = args.getInt(1);
             if (startFrame != -1 && endFrame != -1) {
-              view.setMinAndMaxFrame(args.getInt(0), args.getInt(1));
+              if(startFrame > endFrame){
+                view.setMinAndMaxFrame(endFrame, startFrame);
+                view.reverseAnimationSpeed();
+              } else {
+                view.setMinAndMaxFrame(startFrame, endFrame);
+              }
             }
             if (ViewCompat.isAttachedToWindow(view)) {
               view.setProgress(0f);
               view.playAnimation();
             } else {
               view.addOnAttachStateChangeListener(new OnAttachStateChangeListener() {
-                   @Override
-                   public void onViewAttachedToWindow(View v) {
-                      LottieAnimationView view = (LottieAnimationView)v;
-                      view.setProgress(0f);
-                      view.playAnimation();
-                      view.removeOnAttachStateChangeListener(this);
-                   }
+                @Override
+                public void onViewAttachedToWindow(View v) {
+                  LottieAnimationView view = (LottieAnimationView)v;
+                  view.setProgress(0f);
+                  view.playAnimation();
+                  view.removeOnAttachStateChangeListener(this);
+                }
 
-                   @Override
-                   public void onViewDetachedFromWindow(View v) {
-                      view.removeOnAttachStateChangeListener(this);
-                   }
-               });
+                @Override
+                public void onViewDetachedFromWindow(View v) {
+                  view.removeOnAttachStateChangeListener(this);
+                }
+              });
             }
           }
         });
@@ -149,41 +159,47 @@ class LottieAnimationViewManager extends SimpleViewManager<LottieAnimationView> 
         });
       }
       break;
+      case COMMAND_PAUSE: {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+          @Override
+          public void run() {
+            if (ViewCompat.isAttachedToWindow(view)) {
+              view.pauseAnimation();
+            }
+          }
+        });
+      }
+      break;
+      case COMMAND_RESUME: {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+          @Override
+          public void run() {
+            if (ViewCompat.isAttachedToWindow(view)) {
+              view.resumeAnimation();
+            }
+          }
+        });
+      }
+      break;
     }
   }
 
   @ReactProp(name = "sourceName")
   public void setSourceName(LottieAnimationView view, String name) {
+    // To match the behaviour on iOS we expect the source name to be
+    // extensionless. This means "myAnimation" corresponds to a file
+    // named `myAnimation.json` in `main/assets`. To maintain backwards
+    // compatibility we only add the .json extension if no extension is
+    // passed.
+    if (!name.contains(".")) {
+      name = name + ".json";
+    }
     getOrCreatePropertyManager(view).setAnimationName(name);
   }
 
   @ReactProp(name = "sourceJson")
   public void setSourceJson(LottieAnimationView view, String json) {
     getOrCreatePropertyManager(view).setAnimationJson(json);
-  }
-
-  /**
-   *
-   * @param view
-   * @param name
-   */
-  @ReactProp(name = "cacheStrategy")
-  public void setCacheStrategy(LottieAnimationView view, String name) {
-    if (name != null) {
-      LottieAnimationView.CacheStrategy strategy = LottieAnimationView.DEFAULT_CACHE_STRATEGY;
-      switch (name) {
-        case "none":
-          strategy = LottieAnimationView.CacheStrategy.None;
-          break;
-        case "weak":
-           strategy = LottieAnimationView.CacheStrategy.Weak;
-           break;
-        case "strong":
-          strategy = LottieAnimationView.CacheStrategy.Strong;
-          break;
-      }
-      getOrCreatePropertyManager(view).setCacheStrategy(strategy);
-    }
   }
 
   @ReactProp(name = "resizeMode")
@@ -197,6 +213,19 @@ class LottieAnimationViewManager extends SimpleViewManager<LottieAnimationView> 
       mode = ImageView.ScaleType.CENTER;
     }
     getOrCreatePropertyManager(view).setScaleType(mode);
+  }
+
+  @ReactProp(name = "renderMode")
+  public void setRenderMode(LottieAnimationView view, String renderMode) {
+    RenderMode mode = null;
+    if ("AUTOMATIC".equals(renderMode) ){
+      mode = RenderMode.AUTOMATIC;
+    }else if ("HARDWARE".equals(renderMode)){
+      mode = RenderMode.HARDWARE;
+    }else if ("SOFTWARE".equals(renderMode)){
+      mode = RenderMode.SOFTWARE;
+    }
+    getOrCreatePropertyManager(view).setRenderMode(mode);
   }
 
   @ReactProp(name = "progress")
@@ -214,11 +243,6 @@ class LottieAnimationViewManager extends SimpleViewManager<LottieAnimationView> 
     getOrCreatePropertyManager(view).setLoop(loop);
   }
 
-  @ReactProp(name = "hardwareAccelerationAndroid")
-  public void setHardwareAcceleration(LottieAnimationView view, boolean use) {
-    getOrCreatePropertyManager(view).setUseHardwareAcceleration(use);
-  }
-
   @ReactProp(name = "imageAssetsFolder")
   public void setImageAssetsFolder(LottieAnimationView view, String imageAssetsFolder) {
     getOrCreatePropertyManager(view).setImageAssetsFolder(imageAssetsFolder);
@@ -227,6 +251,11 @@ class LottieAnimationViewManager extends SimpleViewManager<LottieAnimationView> 
   @ReactProp(name = "enableMergePathsAndroidForKitKatAndAbove")
   public void setEnableMergePaths(LottieAnimationView view, boolean enableMergePaths) {
     getOrCreatePropertyManager(view).setEnableMergePaths(enableMergePaths);
+  }
+
+  @ReactProp(name = "colorFilters")
+  public void setColorFilters(LottieAnimationView view, ReadableArray colorFilters) {
+    getOrCreatePropertyManager(view).setColorFilters(colorFilters);
   }
 
   @Override
