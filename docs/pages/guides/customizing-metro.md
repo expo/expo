@@ -37,13 +37,9 @@ const { getDefaultConfig } = require('@expo/metro-config');
 
 const defaultConfig = getDefaultConfig(__dirname);
 
-module.exports = {
-  ...defaultConfig,
-  resolver: {
-    ...defaultConfig.resolver,
-    assetExts: [...defaultConfig.resolver.assetExts, 'db'],
-  },
-};
+defaultConfig.resolver.assetExts.push('db');
+
+module.exports = defaultConfig;
 ```
 
 (This example adds `.db`, the extension of SQLite database files to `assetExts`).
