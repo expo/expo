@@ -5,6 +5,7 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		0726F0592007E438004992E7 /* EXKernelAppRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F0582007E438004992E7 /* EXKernelAppRecord.m */; };
 		0726F05C2007E446004992E7 /* EXKernelAppRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F05B2007E446004992E7 /* EXKernelAppRegistry.m */; };
@@ -47,7 +48,6 @@
 		31571B2A2265DC9700358D65 /* EXScopedSegment.m in Sources */ = {isa = PBXBuildFile; fileRef = 31571B292265DC9700358D65 /* EXScopedSegment.m */; };
 		31571B2D2265DD5800358D65 /* EXScopedLocalAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = 31571B2C2265DD5800358D65 /* EXScopedLocalAuthentication.m */; };
 		317168FA213DA0E000766458 /* EXScopedReactNativeAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 317168F9213DA0E000766458 /* EXScopedReactNativeAdapter.m */; };
-		317306082242459A006D1BC0 /* RNCNetInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 317306072242459A006D1BC0 /* RNCNetInfo.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		3179683620B5B96A00243B6B /* EXScopedModuleRegistryAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3179683520B5B96A00243B6B /* EXScopedModuleRegistryAdapter.m */; };
 		318102BA20C15E460061726F /* EXLinkingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74121FF6DADB001C764B /* EXLinkingManager.m */; };
 		319AC474255E87FB0035332A /* EXKernel+DeviceInstallationUUID.m in Sources */ = {isa = PBXBuildFile; fileRef = 319AC473255E87FB0035332A /* EXKernel+DeviceInstallationUUID.m */; };
@@ -115,7 +115,6 @@
 		3792386F0DB44FB690751F16 /* REAIOSLogger.mm in Sources */ = {isa = PBXBuildFile; fileRef = CE32F209D83549EABA4AC64F /* REAIOSLogger.mm */; settings = {COMPILER_FLAGS = "-w"; }; };
 		45239F0699C942D3B533FF75 /* NativeReanimatedModule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B405557B9F0E4EF8B7BF58CA /* NativeReanimatedModule.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		45F1EB3DFB9040A382A8689D /* REAIOSScheduler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7711740A91C24BB68D6DBB1D /* REAIOSScheduler.mm */; settings = {COMPILER_FLAGS = "-w"; }; };
-		49B1BDE9E1424AADB8DBE3FC /* RNCConnectionStateWatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F5FE9D9529842FCA057BE5A /* RNCConnectionStateWatcher.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		4C1F2EE78AC34F53965716A1 /* EventHandlerRegistry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF0C4D9B7C2F41EA8D303F58 /* EventHandlerRegistry.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		4E3532555D7C4B0392A6AE9D /* RNSVGContextBrush.m in Sources */ = {isa = PBXBuildFile; fileRef = C349E74BFFF643C38858FD6F /* RNSVGContextBrush.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		4F0C654D34E74404BA5425F6 /* RNSScreenStack.m in Sources */ = {isa = PBXBuildFile; fileRef = E4C5DD7E869E4753BA6319FA /* RNSScreenStack.m */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -258,7 +257,6 @@
 		B2B492172462F5EF001576D8 /* EXScopedNotificationsEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = B2B492162462F5EF001576D8 /* EXScopedNotificationsEmitter.m */; };
 		B2F7C02B246B09890060EE06 /* EXScopedNotificationsHandlerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B2F7C02A246B09890060EE06 /* EXScopedNotificationsHandlerModule.m */; };
 		B2F7C02E246B09AE0060EE06 /* EXScopedNotificationsUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = B2F7C02D246B09AE0060EE06 /* EXScopedNotificationsUtils.m */; };
-		B4FF3D8631BB48D290E44742 /* RNCConnectionState.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FE9493F87604B4B8CBB87C8 /* RNCConnectionState.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		B505BA2020CAF80D0046ACFB /* EXEnvironmentMocks.m in Sources */ = {isa = PBXBuildFile; fileRef = B505BA1A20CAF80D0046ACFB /* EXEnvironmentMocks.m */; };
 		B505BA2120CAF80D0046ACFB /* EXEnvironmentTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B505BA1D20CAF80D0046ACFB /* EXEnvironmentTests.m */; };
 		B50C4C0B20EEBCE20090E5F9 /* EXApiV2Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = B50C4C0A20EEBCE20090E5F9 /* EXApiV2Tests.m */; };
@@ -452,7 +450,6 @@
 		0CC6F95D225F5B1B00322635 /* EXStandaloneAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXStandaloneAppDelegate.m; sourceTree = "<group>"; };
 		0CC6F95F225F5C7700322635 /* ExpoKitAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExpoKitAppDelegate.h; sourceTree = "<group>"; };
 		0CC6F960225F5C7700322635 /* ExpoKitAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ExpoKitAppDelegate.m; sourceTree = "<group>"; };
-		0F5FE9D9529842FCA057BE5A /* RNCConnectionStateWatcher.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCConnectionStateWatcher.m; sourceTree = "<group>"; };
 		10B9AA823F57466698858869 /* RNDateTimePicker.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNDateTimePicker.h; sourceTree = "<group>"; };
 		12869A47946248B094FFB1C0 /* RNDateTimePickerManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNDateTimePickerManager.h; sourceTree = "<group>"; };
 		141D4A19D11B4B209071945A /* ErrorHandler.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = ErrorHandler.h; sourceTree = "<group>"; };
@@ -510,8 +507,6 @@
 		31571B2C2265DD5800358D65 /* EXScopedLocalAuthentication.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedLocalAuthentication.m; sourceTree = "<group>"; };
 		317168F9213DA0E000766458 /* EXScopedReactNativeAdapter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedReactNativeAdapter.m; sourceTree = "<group>"; };
 		317168FB213DA0EF00766458 /* EXScopedReactNativeAdapter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedReactNativeAdapter.h; sourceTree = "<group>"; };
-		317306062242459A006D1BC0 /* RNCNetInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCNetInfo.h; sourceTree = "<group>"; };
-		317306072242459A006D1BC0 /* RNCNetInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCNetInfo.m; sourceTree = "<group>"; };
 		3179683420B5B95B00243B6B /* EXScopedModuleRegistryAdapter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedModuleRegistryAdapter.h; sourceTree = "<group>"; };
 		3179683520B5B96A00243B6B /* EXScopedModuleRegistryAdapter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedModuleRegistryAdapter.m; sourceTree = "<group>"; };
 		319AC472255E87FB0035332A /* EXKernel+DeviceInstallationUUID.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "EXKernel+DeviceInstallationUUID.h"; sourceTree = "<group>"; };
@@ -665,7 +660,6 @@
 		5A6A19B126BB4312B36E0274 /* RCTOnPageScrollStateChanged.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RCTOnPageScrollStateChanged.h; sourceTree = "<group>"; };
 		5DA1762EB8644F4CB2DF792F /* AIRGoogleMapHeatmapManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = AIRGoogleMapHeatmapManager.h; sourceTree = "<group>"; };
 		5E8A7DA8E798407CA5410CF6 /* RNSVGPathMeasure.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSVGPathMeasure.m; sourceTree = "<group>"; };
-		5FE9493F87604B4B8CBB87C8 /* RNCConnectionState.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCConnectionState.m; sourceTree = "<group>"; };
 		6261E3DAD1C3435E87DCF5DB /* RNSScreenStackHeaderConfig.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSScreenStackHeaderConfig.m; sourceTree = "<group>"; };
 		626540C9AA14409B8CD2A9F5 /* RNSharedElementNode.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementNode.h; sourceTree = "<group>"; };
 		65028F8B8C154DE59D8AC3E3 /* AIRGoogleMapHeatmap.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = AIRGoogleMapHeatmap.m; sourceTree = "<group>"; };
@@ -919,7 +913,6 @@
 		93C9E2950F474416B3F7A60E /* RNCPickerManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCPickerManager.m; sourceTree = "<group>"; };
 		96E24BD562304948A0AA3A77 /* UIViewController+CreateExtension.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+CreateExtension.m"; sourceTree = "<group>"; };
 		993696B522A54FE2B8DC27D4 /* RNSVGMarkerPosition.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSVGMarkerPosition.h; sourceTree = "<group>"; };
-		9A34C4ECEE0D49B6AD86972D /* RNCConnectionState.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCConnectionState.h; sourceTree = "<group>"; };
 		9AD0DBC830AF42E8BC6EAE6E /* WorkletsCache.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = WorkletsCache.h; sourceTree = "<group>"; };
 		9AF0BA136E2540D397345F34 /* Logger.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = Logger.h; sourceTree = "<group>"; };
 		9F02F7D4DDFF4D76804115FF /* RNCSegmentedControlManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCSegmentedControlManager.h; sourceTree = "<group>"; };
@@ -1174,7 +1167,6 @@
 		ECEB31A1DE40474593CD7AB8 /* NativeProxy.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = NativeProxy.h; sourceTree = "<group>"; };
 		EE5757442E5343FAAC728C45 /* RNCMaskedView.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCMaskedView.h; sourceTree = "<group>"; };
 		EEE60406590143F384331AD9 /* EventHandler.cpp */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; path = EventHandler.cpp; sourceTree = "<group>"; };
-		EF26CAC6602D46B3B6C94E66 /* RNCConnectionStateWatcher.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCConnectionStateWatcher.h; sourceTree = "<group>"; };
 		F00D28C949584726A2B48E1C /* EventHandlerRegistry.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = EventHandlerRegistry.h; sourceTree = "<group>"; };
 		F10869892448B11D00B7DC04 /* EXDevMenuMotionInterceptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXDevMenuMotionInterceptor.h; sourceTree = "<group>"; };
 		F108698A2448B11D00B7DC04 /* EXDevMenuMotionInterceptor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXDevMenuMotionInterceptor.m; sourceTree = "<group>"; };
@@ -1315,19 +1307,6 @@
 				E6E68AB99C5B4BA58B372F19 /* RNCWebViewManager.m */,
 			);
 			path = WebView;
-			sourceTree = "<group>";
-		};
-		317306052242459A006D1BC0 /* NetInfo */ = {
-			isa = PBXGroup;
-			children = (
-				317306062242459A006D1BC0 /* RNCNetInfo.h */,
-				317306072242459A006D1BC0 /* RNCNetInfo.m */,
-				9A34C4ECEE0D49B6AD86972D /* RNCConnectionState.h */,
-				5FE9493F87604B4B8CBB87C8 /* RNCConnectionState.m */,
-				EF26CAC6602D46B3B6C94E66 /* RNCConnectionStateWatcher.h */,
-				0F5FE9D9529842FCA057BE5A /* RNCConnectionStateWatcher.m */,
-			);
-			path = NetInfo;
 			sourceTree = "<group>";
 		};
 		31AD9A232285B53000F19090 /* Callout */ = {
@@ -2313,7 +2292,6 @@
 				31F25C9123717B08009AD55F /* ViewShot */,
 				BBE6036F2310CD8900971F79 /* Appearance */,
 				BBD0318A200011C9009F0434 /* Cognito */,
-				317306052242459A006D1BC0 /* NetInfo */,
 				78C8326A23545ECE00448582 /* Reanimated */,
 				BB36BC5C2135C98D00AFFD58 /* Screens */,
 				B5FB728D1FF6DADB001C764B /* Components */,
@@ -3225,7 +3203,6 @@
 				2519CCFC216B292600FA7C80 /* EXUserNotificationCenter.m in Sources */,
 				7043DF842283303800272D74 /* RNSVGDefsManager.m in Sources */,
 				B58F125C20B73455003E13F1 /* EXEnvironment.m in Sources */,
-				317306082242459A006D1BC0 /* RNCNetInfo.m in Sources */,
 				312D2ED2234DF2DC002F4049 /* EXScopedFacebook.m in Sources */,
 				B5AC39AF1E95A90B00540AA7 /* EXVersions.m in Sources */,
 				B5A72C2F20A0D1BF00974CCE /* EXAppFetcherDevelopmentMode.m in Sources */,
@@ -3295,8 +3272,6 @@
 				4FA89DFCDD9842F7AAFC1CAF /* RNSVGPathMeasure.m in Sources */,
 				B2F7C02B246B09890060EE06 /* EXScopedNotificationsHandlerModule.m in Sources */,
 				B7FE7D4B1CE74F38AAA8941D /* RNSVGMarkerManager.m in Sources */,
-				B4FF3D8631BB48D290E44742 /* RNCConnectionState.m in Sources */,
-				49B1BDE9E1424AADB8DBE3FC /* RNCConnectionStateWatcher.m in Sources */,
 				6A336FB8681B4FF2A16E754B /* RCTConvert+UIPageViewControllerNavigationOrientation.m in Sources */,
 				F21159F62C244F3BA8CDE98B /* RCTConvert+UIPageViewControllerTransitionStyle.m in Sources */,
 				E77A18FAA07E47EFBBDD7338 /* ReactNativePageView.m in Sources */,

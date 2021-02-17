@@ -49,6 +49,7 @@ const config: VendoringTargetConfig = {
     },
     '@react-native-community/netinfo': {
       source: 'https://github.com/react-native-community/react-native-netinfo.git',
+      ios: {},
     },
     'react-native-webview': {
       source: 'https://github.com/react-native-community/react-native-webview.git',
