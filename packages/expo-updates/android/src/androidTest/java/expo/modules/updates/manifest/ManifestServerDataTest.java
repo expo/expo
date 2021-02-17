@@ -49,7 +49,7 @@ public class ManifestServerDataTest {
   @Test
   public void testManifestFilters_OverwriteAllFields() throws JSONException {
     ManifestResponse response1 = mock(ManifestResponse.class);
-    when(response1.header("expo-manifest-filters")).thenReturn("branch=\"rollout-1\"");
+    when(response1.header("expo-manifest-filters")).thenReturn("branch=\"rollout-1\",test=\"value\"");
     Manifest manifest1 = NewManifest.fromManifestJson(manifestJson, response1, config);
     ManifestServerData.saveServerData(manifest1, db, config);
 
