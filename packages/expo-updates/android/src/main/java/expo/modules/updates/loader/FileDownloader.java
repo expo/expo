@@ -23,6 +23,7 @@ import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.launcher.NoDatabaseLauncher;
 import expo.modules.updates.manifest.Manifest;
 import expo.modules.updates.manifest.ManifestFactory;
+import expo.modules.updates.manifest.ManifestResponse;
 import okhttp3.CacheControl;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -130,7 +131,7 @@ public class FileDownloader {
                       if (isValid) {
                         try {
                           preManifest.put("isVerified", true);
-                          Manifest manifest = ManifestFactory.getManifest(preManifest, configuration);
+                          Manifest manifest = ManifestFactory.getManifest(preManifest, null, configuration);
                           callback.onSuccess(manifest);
                         } catch (JSONException e) {
                           callback.onFailure("Failed to parse manifest data", e);
@@ -143,7 +144,7 @@ public class FileDownloader {
               );
             } else {
               preManifest.put("isVerified", false);
-              Manifest manifest = ManifestFactory.getManifest(preManifest, configuration);
+              Manifest manifest = ManifestFactory.getManifest(preManifest, new ManifestResponse(response), configuration);
               callback.onSuccess(manifest);
             }
           } catch (Exception e) {

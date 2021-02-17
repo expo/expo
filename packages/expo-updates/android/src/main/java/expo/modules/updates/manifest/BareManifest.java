@@ -61,6 +61,10 @@ public class BareManifest implements Manifest {
     return new BareManifest(manifestJson, id, configuration.getScopeKey(), commitTime, runtimeVersion, metadata, assets);
   }
 
+  public @Nullable JSONObject getServerDefinedHeaders() {
+    return null;
+  }
+
   public @Nullable JSONObject getManifestFilters() {
     return null;
   }

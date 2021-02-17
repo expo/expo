@@ -14,7 +14,6 @@ import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.UpdatesUtils;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
-import okhttp3.Response;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -63,7 +62,7 @@ public class NewManifest implements Manifest {
     mManifestFilters = manifestFilters;
   }
 
-  public static NewManifest fromManifestJson(JSONObject rootManifestJson, UpdatesConfiguration configuration, Response httpResponse) throws JSONException {
+  public static NewManifest fromManifestJson(JSONObject rootManifestJson, ManifestResponse httpResponse, UpdatesConfiguration configuration) throws JSONException {
     JSONObject manifestJson = rootManifestJson;
     if (manifestJson.has("manifest")) {
       manifestJson = manifestJson.getJSONObject("manifest");
@@ -82,32 +81,24 @@ public class NewManifest implements Manifest {
       commitTime = new Date();
     }
 
-    String serverDefinedHeaders = httpResponse.header("expo-server-defined-headers");
-    String manifestFilters = httpResponse.header("expo-manifest-filters");
+    String serverDefinedHeaders = httpResponse != null ? httpResponse.header("expo-server-defined-headers") : null;
+    String manifestFilters = httpResponse != null ? httpResponse.header("expo-manifest-filters") : null;
 
     return new NewManifest(manifestJson, id, configuration.getScopeKey(), commitTime, runtimeVersion, launchAsset, assets, serverDefinedHeaders, manifestFilters);
   }
 
   public @Nullable JSONObject getServerDefinedHeaders() {
-    return null;
+    if (mServerDefinedHeaders == null) {
+      return null;
+    }
+    return headerDictionaryToJSONObject(mServerDefinedHeaders);
   }
 
   public @Nullable JSONObject getManifestFilters() {
-    JSONObject filtersJson = new JSONObject();
-    Parser parser = new Parser(mManifestFilters);
-    try {
-      Dictionary filtersDictionary = parser.parseDictionary();
-      Map<String, ListElement<? extends Object>> map = filtersDictionary.get();
-      for (String key : map.keySet()) {
-        ListElement<? extends Object> element = map.get(key);
-        if (element instanceof StringItem || element instanceof BooleanItem || element instanceof NumberItem) {
-          filtersJson.put(key, element.get());
-        }
-      }
-    } catch (expo.modules.structuredheaders.ParseException | JSONException e) {
-      Log.e(TAG, "Failed to parse expo-manifest-filters header content", e);
+    if (mManifestFilters == null) {
+      return null;
     }
-    return filtersJson;
+    return headerDictionaryToJSONObject(mManifestFilters);
   }
 
   public JSONObject getRawManifestJson() {
@@ -156,5 +147,25 @@ public class NewManifest implements Manifest {
 
   public boolean isDevelopmentMode() {
     return false;
+  }
+
+  /* package */ static @Nullable JSONObject headerDictionaryToJSONObject(String headerDictionary) {
+    JSONObject jsonObject = new JSONObject();
+    Parser parser = new Parser(headerDictionary);
+    try {
+      Dictionary filtersDictionary = parser.parseDictionary();
+      Map<String, ListElement<? extends Object>> map = filtersDictionary.get();
+      for (String key : map.keySet()) {
+        ListElement<? extends Object> element = map.get(key);
+        // ignore any dictionary entries whose type is not string, number, or boolean
+        if (element instanceof StringItem || element instanceof BooleanItem || element instanceof NumberItem) {
+          jsonObject.put(key, element.get());
+        }
+      }
+    } catch (expo.modules.structuredheaders.ParseException | JSONException e) {
+      Log.e(TAG, "Failed to parse manifest header content", e);
+      return null;
+    }
+    return jsonObject;
   }
 }

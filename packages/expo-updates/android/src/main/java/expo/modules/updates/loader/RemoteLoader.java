@@ -13,6 +13,7 @@ import expo.modules.updates.db.UpdatesDatabase;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.manifest.Manifest;
+import expo.modules.updates.manifest.ManifestServerData;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public class RemoteLoader {
   private UpdatesDatabase mDatabase;
   private File mUpdatesDirectory;
 
+  private Manifest mManifest;
   private UpdateEntity mUpdateEntity;
   private LoaderCallback mCallback;
   private int mAssetTotal = 0;
@@ -75,10 +77,12 @@ public class RemoteLoader {
 
       @Override
       public void onSuccess(Manifest manifest) {
+        mManifest = manifest;
         if (mCallback.onManifestLoaded(manifest)) {
           processManifest(manifest);
         } else {
-          mCallback.onSuccess(null);
+          mUpdateEntity = null;
+          finishWithSuccess();
         }
       }
     });
@@ -98,6 +102,8 @@ public class RemoteLoader {
       Log.e(TAG, "RemoteLoader tried to finish but it already finished or was never initialized.");
       return;
     }
+
+    ManifestServerData.saveServerData(mManifest, mDatabase, mConfiguration);
 
     mCallback.onSuccess(mUpdateEntity);
     reset();

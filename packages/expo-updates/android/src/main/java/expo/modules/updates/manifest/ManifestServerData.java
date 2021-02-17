@@ -33,7 +33,7 @@ public class ManifestServerData {
     return getJSONObject(MANIFEST_FILTERS_KEY, database, configuration);
   }
 
-  public static void saveServerData(NewManifest manifest, UpdatesDatabase database, UpdatesConfiguration configuration) {
+  public static void saveServerData(Manifest manifest, UpdatesDatabase database, UpdatesConfiguration configuration) {
     if (manifest.getServerDefinedHeaders() != null) {
       database.jsonDataDao().setJSONStringForKey(
         MANIFEST_SERVER_DEFINED_HEADERS_KEY,

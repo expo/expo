@@ -31,6 +31,7 @@ public class ManifestFactoryTest {
   public void testGetManifest_Legacy() throws JSONException {
     Manifest actual = ManifestFactory.getManifest(
       new JSONObject(legacyManifestJson),
+      null,
       createConfig(true)
     );
     Assert.assertTrue(actual instanceof LegacyManifest);
@@ -40,6 +41,7 @@ public class ManifestFactoryTest {
   public void testGetManifest_New() throws JSONException {
     Manifest actual = ManifestFactory.getManifest(
       new JSONObject(newManifestJson),
+      null,
       createConfig(false)
     );
     Assert.assertTrue(actual instanceof NewManifest);

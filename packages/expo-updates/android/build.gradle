@@ -87,4 +87,5 @@ dependencies {
 
   androidTestImplementation 'androidx.test:runner:1.1.0'
   androidTestImplementation 'androidx.test:rules:1.1.0'
+  androidTestImplementation 'org.mockito:mockito-android:3.7.7'
 }

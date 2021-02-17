@@ -12,6 +12,7 @@ public interface Manifest {
   UpdateEntity getUpdateEntity();
   ArrayList<AssetEntity> getAssetEntityList();
   JSONObject getRawManifestJson();
+  @Nullable JSONObject getServerDefinedHeaders();
   @Nullable JSONObject getManifestFilters();
   boolean isDevelopmentMode();
 }

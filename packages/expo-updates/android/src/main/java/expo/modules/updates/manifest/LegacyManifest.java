@@ -95,6 +95,10 @@ public class LegacyManifest implements Manifest {
     return new LegacyManifest(manifestJson,configuration.getUpdateUrl(), id, configuration.getScopeKey(), commitTime, runtimeVersion, manifestJson, bundleUrl, bundledAssets);
   }
 
+  public @Nullable JSONObject getServerDefinedHeaders() {
+    return null;
+  }
+
   public @Nullable JSONObject getManifestFilters() {
     return null;
   }
