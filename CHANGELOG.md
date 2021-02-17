@@ -8,6 +8,7 @@ Package-specific changes not released in any SDK will be added here just before 
 ### 📚 3rd party library updates
 
 - Updated `lottie-react-native` from `2.6.1` to `3.5.0`. ([#11586](https://github.com/expo/expo/pull/11586) and [#11950](https://github.com/expo/expo/pull/11950) by [@tsapeta](https://github.com/tsapeta))
+- Updated `@react-native-community/netinfo` from `5.9.7` to `5.9.10`. ([#11947](https://github.com/expo/expo/pull/11947) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🛠 Breaking changes
 
