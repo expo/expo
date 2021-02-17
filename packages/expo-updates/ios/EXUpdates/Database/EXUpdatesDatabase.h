@@ -38,6 +38,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesDatabaseHashType) {
 - (nullable NSDictionary *)manifestFiltersWithScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error;
 - (void)setServerDefinedHeaders:(NSDictionary *)serverDefinedHeaders withScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error;
 - (void)setManifestFilters:(NSDictionary *)manifestFilters withScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error;
+- (void)setServerDataWithManifest:(EXUpdatesUpdate *)updateManifest error:(NSError ** _Nullable)error;
 
 @end
 

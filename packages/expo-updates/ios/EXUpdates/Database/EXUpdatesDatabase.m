@@ -496,6 +496,26 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
   [self _setJsonData:manifestFilters withKey:EXUpdatesDatabaseManifestFiltersKey scopeKey:scopeKey error:error];
 }
 
+- (void)setServerDataWithManifest:(EXUpdatesUpdate *)updateManifest error:(NSError ** _Nullable)error
+{
+  sqlite3_exec(_db, "BEGIN;", NULL, NULL, NULL);
+  if (updateManifest.serverDefinedHeaders) {
+    [self setServerDefinedHeaders:updateManifest.serverDefinedHeaders withScopeKey:updateManifest.scopeKey error:error];
+    if (*error) {
+      sqlite3_exec(_db, "ROLLBACK;", NULL, NULL, NULL);
+      return;
+    }
+  }
+  if (updateManifest.manifestFilters) {
+    [self setManifestFilters:updateManifest.manifestFilters withScopeKey:updateManifest.scopeKey error:error];
+    if (*error) {
+      sqlite3_exec(_db, "ROLLBACK;", NULL, NULL, NULL);
+      return;
+    }
+  }
+  sqlite3_exec(_db, "COMMIT;", NULL, NULL, NULL);
+}
+
 # pragma mark - helper methods
 
 - (nullable NSArray<NSDictionary *> *)_executeSql:(NSString *)sql withArgs:(nullable NSArray *)args error:(NSError ** _Nullable)error
