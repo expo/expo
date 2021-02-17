@@ -63,6 +63,7 @@
     "axios": "^0.19.2",
     "babel-plugin-emotion": "^10.0.33",
     "danger": "^9.2.10",
+    "esbuild-loader": "^2.9.2",
     "eslint": "^7.9.0",
     "eslint-config-universe": "^4.0.0",
     "http-server": "^0.12.3",

@@ -3,6 +3,7 @@ const { copySync, removeSync } = require('fs-extra');
 const merge = require('lodash/merge');
 const { join } = require('path');
 const semver = require('semver');
+const { ESBuildPlugin } = require('esbuild-loader');
 
 const navigation = require('./constants/navigation-data');
 const versions = require('./constants/versions');
@@ -18,6 +19,15 @@ const latest = join('pages', 'versions', 'latest/');
 removeSync(latest);
 copySync(vLatest, latest);
 
+const ESBUILD_USE = true;
+const ESBUILD_LOADER = {
+  loader: 'esbuild-loader',
+  options: {
+    loader: 'tsx',
+    target: 'es2017',
+  },
+};
+
 module.exports = {
   trailingSlash: true,
   // Rather than use `@zeit/next-mdx`, we replicate it
@@ -25,7 +35,7 @@ module.exports = {
   webpack: (config, options) => {
     // Add preval support for `constants/*` only and move it to the `.next/preval` cache.
     // It's to prevent over-usage and separate the cache to allow manually invalidation.
-    // See: https://github.com/kentcdodds/babel-plugin-preval/issues/19
+    // See: https://github.com/kentcdodds/babel-plugin-preval/issues/19\
     config.module.rules.push({
       test: /.jsx?$/,
       include: [join(__dirname, 'constants')],
@@ -41,7 +51,7 @@ module.exports = {
     config.module.rules.push({
       test: /.mdx?$/, // load both .md and .mdx files
       use: [
-        options.defaultLoaders.babel,
+        ESBUILD_USE ? ESBUILD_LOADER : options.defaultLoaders.babel,
         {
           loader: '@mdx-js/loader',
           options: {
@@ -56,6 +66,33 @@ module.exports = {
     });
     // Fix inline or browser MDX usage: https://mdxjs.com/getting-started/webpack#running-mdx-in-the-browser
     config.node = { fs: 'empty' };
+
+    // ESBUILD
+    if (ESBUILD_USE) {
+      // const rule = config.module.rules[0];
+      // if (rule) {
+      //   const convertToESBuild = loader => {
+      //     if (loader.loader === 'next-babel-loader') {
+      //       return ESBUILD_LOADER;
+      //     }
+      //     return loader;
+      //   };
+
+      //   if (Array.isArray(rule.use)) {
+      //     rule.use = rule.use.map(loader => {
+      //       if (typeof e === 'object') {
+      //         return convertToESBuild(loader);
+      //       }
+      //       return loader;
+      //     });
+      //   } else {
+      //     rule.use = convertToESBuild(rule.use);
+      //   }
+      // }
+      config.plugins.push(new options.webpack.ProvidePlugin({ React: 'react' }));
+      config.plugins.push(new ESBuildPlugin());
+    }
+
     return config;
   },
   // Create a map of all pages to export
