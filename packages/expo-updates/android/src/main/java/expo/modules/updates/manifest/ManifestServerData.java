@@ -4,6 +4,8 @@ import android.util.Log;
 
 import org.json.JSONObject;
 
+import java.util.HashMap;
+
 import androidx.annotation.Nullable;
 import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.db.UpdatesDatabase;
@@ -34,17 +36,16 @@ public class ManifestServerData {
   }
 
   public static void saveServerData(Manifest manifest, UpdatesDatabase database, UpdatesConfiguration configuration) {
+    HashMap<String, String> fieldsToSet = new HashMap<>();
     if (manifest.getServerDefinedHeaders() != null) {
-      database.jsonDataDao().setJSONStringForKey(
-        MANIFEST_SERVER_DEFINED_HEADERS_KEY,
-        manifest.getServerDefinedHeaders().toString(),
-        configuration.getScopeKey());
+      fieldsToSet.put(MANIFEST_SERVER_DEFINED_HEADERS_KEY, manifest.getServerDefinedHeaders().toString());
     }
     if (manifest.getManifestFilters() != null) {
-      database.jsonDataDao().setJSONStringForKey(
-        MANIFEST_FILTERS_KEY,
-        manifest.getManifestFilters().toString(),
-        configuration.getScopeKey());
+      fieldsToSet.put(MANIFEST_FILTERS_KEY, manifest.getManifestFilters().toString());
+    }
+
+    if (fieldsToSet.size() > 0) {
+      database.jsonDataDao().setMultipleFields(fieldsToSet, configuration.getScopeKey());
     }
   }
 }
