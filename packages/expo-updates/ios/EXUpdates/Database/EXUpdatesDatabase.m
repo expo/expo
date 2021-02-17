@@ -461,9 +461,9 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
   if (rows && [rows count]) {
     id value = rows[0][@"value"];
     if (value && [value isKindOfClass:[NSString class]]) {
-      NSDictionary *serverDefinedHeaders = [NSJSONSerialization JSONObjectWithData:[(NSString *)value dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:error];
-      if (!error && serverDefinedHeaders && [serverDefinedHeaders isKindOfClass:[NSDictionary class]]) {
-        return serverDefinedHeaders;
+      NSDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:[(NSString *)value dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:error];
+      if (!error && jsonObject && [jsonObject isKindOfClass:[NSDictionary class]]) {
+        return jsonObject;
       }
     }
   }
