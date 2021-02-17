@@ -10,7 +10,6 @@
 #import <React/RCTUIManager.h>
 #import <React/RCTDefines.h>
 #import "RNCWebView.h"
-
 #import "EXScopedModuleRegistry.h"
 
 @interface RNCWebViewManager () <RNCWebViewDelegate>
@@ -28,9 +27,9 @@ RCT_ENUM_CONVERTER(WKContentMode, (@{
 
 @implementation RNCWebViewManager
 {
+  NSString *_experienceId;
   NSConditionLock *_shouldStartLoadLock;
   BOOL _shouldStartLoad;
-  NSString *_experienceId;
 }
 
 EX_EXPORT_SCOPED_MODULE(RNCWebViewManager, EXKernelServiceNone)
@@ -44,6 +43,8 @@ EX_EXPORT_SCOPED_MODULE(RNCWebViewManager, EXKernelServiceNone)
   }
   return self;
 }
+
+RCT_EXPORT_MODULE()
 
 #if !TARGET_OS_OSX
 - (UIView *)view
@@ -73,6 +74,7 @@ RCT_EXPORT_VIEW_PROPERTY(injectedJavaScriptBeforeContentLoadedForMainFrameOnly, 
 RCT_EXPORT_VIEW_PROPERTY(javaScriptEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(javaScriptCanOpenWindowsAutomatically, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(allowFileAccessFromFileURLs, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(allowUniversalAccessFromFileURLs, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(allowsInlineMediaPlayback, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(mediaPlaybackRequiresUserAction, BOOL)
 #if WEBKIT_IOS_10_APIS_AVAILABLE
@@ -93,6 +95,9 @@ RCT_EXPORT_VIEW_PROPERTY(allowingReadAccessToURL, NSString)
 
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
 RCT_EXPORT_VIEW_PROPERTY(contentInsetAdjustmentBehavior, UIScrollViewContentInsetAdjustmentBehavior)
+#endif
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 /* __IPHONE_13_0 */
+RCT_EXPORT_VIEW_PROPERTY(automaticallyAdjustsScrollIndicatorInsets, BOOL)
 #endif
 
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 /* iOS 13 */

@@ -146,7 +146,7 @@
     "react-native-safe-area-context": "~3.1.9",
     "react-native-safe-area-view": "^0.14.8",
     "react-native-svg": "~12.1.0",
-    "react-native-webview": "~10.10.2",
+    "react-native-webview": "11.2.3",
     "react-native-screens": "~2.15.2",
     "react-native-unimodules": "~0.12.0",
     "react-native-view-shot": "3.1.2",
