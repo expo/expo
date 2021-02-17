@@ -69,6 +69,7 @@ Run `eas build:configure` to configure your iOS and Android projects to run on E
 
 Additional configuration may be required for some scenarios:
 
+- Does your app code depend on environment variables? [Add them to your build configuration](/build-reference/variables.md).
 - Is your project inside of a monorepo? [Follow these instructions](/build-reference/how-tos.md#how-to-set-up-eas-build-with).
 - Do you use private npm packages? [Add your npm token](/build-reference/how-tos.md#how-to-use-private-package-repositories).
 
