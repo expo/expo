@@ -19,7 +19,7 @@ const latest = join('pages', 'versions', 'latest/');
 removeSync(latest);
 copySync(vLatest, latest);
 
-const ESBUILD_USE = true;
+const ESBUILD_USE = false;
 const ESBUILD_LOADER = {
   loader: 'esbuild-loader',
   options: {
