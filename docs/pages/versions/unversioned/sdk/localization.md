@@ -134,7 +134,7 @@ Returns if the system's language is written from Right-to-Left. This can be used
 
 ### `Localization.isMetric`
 
-Boolean value that indicates whether the system uses the metric system.
+Boolean value that indicates whether the system uses the metric system. On Android and web, this is inferred from the current region.
 
 ### `Localization.currency`
 
