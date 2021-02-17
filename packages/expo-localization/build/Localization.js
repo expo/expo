@@ -3,7 +3,7 @@ import ExpoLocalization from './ExpoLocalization';
 // https://github.com/expo/expo/blob/21ae94bae2e8369992050c433a00699d425b35bd/packages/expo/src/Localization.ts#L112-L114
 const parseLocale = (locale) => locale.replace('_', '-');
 /**
- * Three character ISO 4217 currency code. Returns `null` on web.
+ * Three-character ISO 4217 currency code. Returns `null` on web.
  *
  * @example `USD`, `EUR`, `CNY`, null
  */

@@ -1,7 +1,7 @@
 import { Localization } from './Localization.types';
 export { Localization };
 /**
- * Three character ISO 4217 currency code. Returns `null` on web.
+ * Three-character ISO 4217 currency code. Returns `null` on web.
  *
  * @example `USD`, `EUR`, `CNY`, null
  */
