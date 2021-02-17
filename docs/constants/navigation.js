@@ -128,7 +128,7 @@ const sections = [
       'Account Types',
       'Two-Factor Authentication',
       'Programmatic Access',
-      'Working Together'
+      'Working Together',
     ],
   },
   {
