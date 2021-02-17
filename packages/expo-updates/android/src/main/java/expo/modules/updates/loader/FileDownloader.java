@@ -131,7 +131,7 @@ public class FileDownloader {
                       if (isValid) {
                         try {
                           preManifest.put("isVerified", true);
-                          Manifest manifest = ManifestFactory.getManifest(preManifest, null, configuration);
+                          Manifest manifest = ManifestFactory.getManifest(preManifest, new ManifestResponse(response), configuration);
                           callback.onSuccess(manifest);
                         } catch (JSONException e) {
                           callback.onFailure("Failed to parse manifest data", e);
