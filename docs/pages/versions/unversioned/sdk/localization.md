@@ -138,7 +138,7 @@ Boolean value that indicates whether the system uses the metric system. On Andro
 
 ### `Localization.currency`
 
-Three character ISO 4217 currency code. Not available on web. Ex: `USD`, `EUR`, `CNY`, `null`.
+Three-character ISO 4217 currency code. Not available on web. Ex: `USD`, `EUR`, `CNY`, `null`.
 
 ### `Localization.decimalSeparator`
 
