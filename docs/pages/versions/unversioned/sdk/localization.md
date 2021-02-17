@@ -108,7 +108,7 @@ This API is mostly synchronous and driven by constants. On iOS the constants wil
 
 ### `Localization.locale`
 
-An [IETF BCP 47 language tag](https://en.wikipedia.org/wiki/IETF_language_tag), consisting of a 2 character language-code and optional script, region and variant codes. Ex: `en`, `en-US`, `zh-Hans`, `zh-Hans-CN`, `en-emodeng`.
+An [IETF BCP 47 language tag](https://en.wikipedia.org/wiki/IETF_language_tag), consisting of a two-character language code and optional script, region and variant codes. Ex: `en`, `en-US`, `zh-Hans`, `zh-Hans-CN`, `en-emodeng`.
 
 ### `Localization.locales`
 
