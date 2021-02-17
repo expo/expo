@@ -116,7 +116,7 @@ List of all the native languages provided by the user settings. These are return
 
 ### `Localization.region`
 
-Region code for your device which came from Region setting in Language & Region. This value is always available on iOS, but might return `null` on Android or web. Ex: `US`, `NZ`, `null`.
+The region code for your device that comes from the Region setting under Language & Region on iOS. This value is always available on iOS, but might return `null` on Android or web. Ex: `US`, `NZ`, `null`.
 
 ### `Localization.isoCurrencyCodes`
 
