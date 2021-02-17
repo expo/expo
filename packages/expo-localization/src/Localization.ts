@@ -8,7 +8,7 @@ export { Localization };
 const parseLocale = (locale: string): string => locale.replace('_', '-');
 
 /**
- * Three character ISO 4217 currency code. Returns `null` on web.
+ * Three-character ISO 4217 currency code. Returns `null` on web.
  *
  * @example `USD`, `EUR`, `CNY`, null
  */
