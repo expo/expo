@@ -1454,6 +1454,32 @@ export interface DailyNotificationTrigger {
 }
 ```
 
+### `WeeklyNotificationTrigger`
+
+A trigger related to a weekly notification. This is an Android-only type, the same functionality will be achieved on iOS with a `CalendarNotificationTrigger`.
+
+```ts
+export interface WeeklyNotificationTrigger {
+  type: 'weekly';
+  weekday: number;
+  hour: number;
+  minute: number;
+}
+```
+
+### `YearlyNotificationTrigger`
+
+A trigger related to a yearly notification. This is an Android-only type, the same functionality will be achieved on iOS with a `CalendarNotificationTrigger`.
+
+```ts
+export interface YearlyNotificationTrigger {
+  type: 'yearly';
+  day: number;
+  month: number;
+  hour: number;
+  minute: number;
+}
+```
 #### `CalendarNotificationTrigger`
 
 A trigger related to a [`UNCalendarNotificationTrigger`](https://developer.apple.com/documentation/usernotifications/uncalendarnotificationtrigger?language=objc), available only on iOS.

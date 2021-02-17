@@ -7,6 +7,21 @@ export default async function scheduleNotificationAsync(request) {
     }
     return await NotificationScheduler.scheduleNotificationAsync(request.identifier ?? uuidv4(), request.content, parseTrigger(request.trigger));
 }
+const DAILY_TRIGGER_EXPECTED_DATE_COMPONENTS = [
+    'hour',
+    'minute',
+];
+const WEEKLY_TRIGGER_EXPECTED_DATE_COMPONENTS = [
+    'weekday',
+    'hour',
+    'minute',
+];
+const YEARLY_TRIGGER_EXPECTED_DATE_COMPONENTS = [
+    'day',
+    'month',
+    'hour',
+    'minute',
+];
 export function parseTrigger(userFacingTrigger) {
     if (userFacingTrigger === null) {
         return null;
@@ -18,7 +33,7 @@ export function parseTrigger(userFacingTrigger) {
         return parseDateTrigger(userFacingTrigger);
     }
     else if (isDailyTriggerInput(userFacingTrigger)) {
-        validateDateComponentsInTrigger(userFacingTrigger, ['hour', 'minute']);
+        validateDateComponentsInTrigger(userFacingTrigger, DAILY_TRIGGER_EXPECTED_DATE_COMPONENTS);
         return {
             type: 'daily',
             channelId: userFacingTrigger.channelId,
@@ -27,7 +42,7 @@ export function parseTrigger(userFacingTrigger) {
         };
     }
     else if (isWeeklyTriggerInput(userFacingTrigger)) {
-        validateDateComponentsInTrigger(userFacingTrigger, ['weekday', 'hour', 'minute']);
+        validateDateComponentsInTrigger(userFacingTrigger, WEEKLY_TRIGGER_EXPECTED_DATE_COMPONENTS);
         return {
             type: 'weekly',
             channelId: userFacingTrigger.channelId,
@@ -37,7 +52,7 @@ export function parseTrigger(userFacingTrigger) {
         };
     }
     else if (isYearlyTriggerInput(userFacingTrigger)) {
-        validateDateComponentsInTrigger(userFacingTrigger, ['day', 'month', 'hour', 'minute']);
+        validateDateComponentsInTrigger(userFacingTrigger, YEARLY_TRIGGER_EXPECTED_DATE_COMPONENTS);
         return {
             type: 'yearly',
             channelId: userFacingTrigger.channelId,
@@ -94,9 +109,9 @@ function isDailyTriggerInput(trigger) {
     if (typeof trigger !== 'object')
         return false;
     const { channelId, ...triggerWithoutChannelId } = trigger;
-    return (Object.keys(triggerWithoutChannelId).length === 3 &&
-        'hour' in triggerWithoutChannelId &&
-        'minute' in triggerWithoutChannelId &&
+    return (Object.keys(triggerWithoutChannelId).length ===
+        DAILY_TRIGGER_EXPECTED_DATE_COMPONENTS.length + 1 &&
+        DAILY_TRIGGER_EXPECTED_DATE_COMPONENTS.every(component => component in triggerWithoutChannelId) &&
         'repeats' in triggerWithoutChannelId &&
         triggerWithoutChannelId.repeats === true);
 }
@@ -104,10 +119,9 @@ function isWeeklyTriggerInput(trigger) {
     if (typeof trigger !== 'object')
         return false;
     const { channelId, ...triggerWithoutChannelId } = trigger;
-    return (Object.keys(triggerWithoutChannelId).length === 4 &&
-        'weekday' in triggerWithoutChannelId &&
-        'hour' in triggerWithoutChannelId &&
-        'minute' in triggerWithoutChannelId &&
+    return (Object.keys(triggerWithoutChannelId).length ===
+        WEEKLY_TRIGGER_EXPECTED_DATE_COMPONENTS.length + 1 &&
+        WEEKLY_TRIGGER_EXPECTED_DATE_COMPONENTS.every(component => component in triggerWithoutChannelId) &&
         'repeats' in triggerWithoutChannelId &&
         triggerWithoutChannelId.repeats === true);
 }
@@ -115,11 +129,9 @@ function isYearlyTriggerInput(trigger) {
     if (typeof trigger !== 'object')
         return false;
     const { channelId, ...triggerWithoutChannelId } = trigger;
-    return (Object.keys(triggerWithoutChannelId).length === 5 &&
-        'day' in triggerWithoutChannelId &&
-        'month' in triggerWithoutChannelId &&
-        'hour' in triggerWithoutChannelId &&
-        'minute' in triggerWithoutChannelId &&
+    return (Object.keys(triggerWithoutChannelId).length ===
+        YEARLY_TRIGGER_EXPECTED_DATE_COMPONENTS.length + 1 &&
+        YEARLY_TRIGGER_EXPECTED_DATE_COMPONENTS.every(component => component in triggerWithoutChannelId) &&
         'repeats' in triggerWithoutChannelId &&
         triggerWithoutChannelId.repeats === true);
 }
@@ -138,8 +150,11 @@ function isSecondsPropertyMisusedInCalendarTriggerInput(trigger) {
 function validateDateComponentsInTrigger(trigger, components) {
     const anyTriggerType = trigger;
     components.forEach(component => {
-        if (!(component in anyTriggerType) || typeof anyTriggerType[component] !== 'number') {
-            throw new TypeError(`Parameter ${component} needs to be a number`);
+        if (!(component in anyTriggerType)) {
+            throw new TypeError(`The ${component} parameter needs to be present`);
+        }
+        if (typeof anyTriggerType[component] !== 'number') {
+            throw new TypeError(`The ${component} parameter should be a number`);
         }
         switch (component) {
             case 'month': {
