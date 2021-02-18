@@ -33,11 +33,6 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "unimodulePeerDependencies": {
-    "@unimodules/core": "*",
-    "expo-constants": "*",
-    "expo-file-system": "*"
-  },
   "dependencies": {
     "@expo/metro-config": "^0.1.16",
     "expo-structured-headers": "~1.0.0",
