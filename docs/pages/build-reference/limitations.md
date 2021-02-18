@@ -8,7 +8,7 @@ EAS Build is currently in preview and is missing features that will be available
 
 ## Current limitations
 
-<details><summary><h4>Managed workflow projects are not supported **yet**.</h4></summary>
+<details><summary><h4>Managed workflow projects are not supported <em>yet</em>.</h4></summary>
 <p>
 
 EAS Build supports building iOS/Android native projects, so it works with any React Native app. Support for [Managed Expo projects](/introduction/managed-vs-bare.md) is in progress and improves every day, although if you try it we expect you'll run into some issues.
@@ -41,20 +41,10 @@ Intermediate artifacts like `node_modules` directories are not cached and restor
 </p>
 </details>
 
-<details><summary><h4>Limited customizability of the software runtime environment.</h4></summary>
+<details id="environment-variables"><summary><h4>Providing secrets through environment variables is not yet supported.</h4></summary>
 <p>
 
-All build jobs run with the same version of Node, npm, Yarn, Xcode, Ruby, Fastlane, and so on (these versions are documented in the [build server infrastructure](./infrastructure.md) reference).
-
-Most of these will become customizable in the near future, but they are not yet.
-
-</p>
-</details>
-
-<details id="environment-variables"><summary><h4>Setting environment variables is not supported.</h4></summary>
-<p>
-
-In the future there will be support for securely storing secrets and other values that are usually made available through environment variables in CI environments. For the moment, please refer to the ["Environment variables and secrets"](variables.md) reference to learn how you can work around this.
+You can use the `env` key on build profiles in `eas.json` to provide plaintext environment variables to the build environment, you can read more in the [environment variables guide](variables.md). We are currently working on an encrypted secrets store that will allow you to selectively and securely make them secrets available to your build jobs, but it's not available for usage yet.
 
 </p>
 </details>

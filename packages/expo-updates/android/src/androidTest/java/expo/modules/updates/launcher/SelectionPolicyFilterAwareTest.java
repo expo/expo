@@ -40,22 +40,22 @@ public class SelectionPolicyFilterAwareTest {
     UpdatesConfiguration config = new UpdatesConfiguration().loadValuesFromMap(configMap);
 
     JSONObject manifestJsonRollout0 = new JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e71\",\"createdAt\":\"2021-01-10T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"updateMetadata\":{\"branchName\":\"rollout\"}}");
-    updateRollout0 = NewManifest.fromManifestJson(manifestJsonRollout0, config).getUpdateEntity();
+    updateRollout0 = NewManifest.fromManifestJson(manifestJsonRollout0, null, config).getUpdateEntity();
 
     JSONObject manifestJsonDefault1 = new JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e72\",\"createdAt\":\"2021-01-11T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"updateMetadata\":{\"branchName\":\"default\"}}");
-    updateDefault1 = NewManifest.fromManifestJson(manifestJsonDefault1, config).getUpdateEntity();
+    updateDefault1 = NewManifest.fromManifestJson(manifestJsonDefault1, null, config).getUpdateEntity();
 
     JSONObject manifestJsonRollout1 = new JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e73\",\"createdAt\":\"2021-01-12T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"updateMetadata\":{\"branchName\":\"rollout\"}}");
-    updateRollout1 = NewManifest.fromManifestJson(manifestJsonRollout1, config).getUpdateEntity();
+    updateRollout1 = NewManifest.fromManifestJson(manifestJsonRollout1, null, config).getUpdateEntity();
 
     JSONObject manifestJsonDefault2 = new JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e74\",\"createdAt\":\"2021-01-13T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"updateMetadata\":{\"branchName\":\"default\"}}");
-    updateDefault2 = NewManifest.fromManifestJson(manifestJsonDefault2, config).getUpdateEntity();
+    updateDefault2 = NewManifest.fromManifestJson(manifestJsonDefault2, null, config).getUpdateEntity();
 
     JSONObject manifestJsonRollout2 = new JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e75\",\"createdAt\":\"2021-01-14T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"updateMetadata\":{\"branchName\":\"rollout\"}}");
-    updateRollout2 = NewManifest.fromManifestJson(manifestJsonRollout2, config).getUpdateEntity();
+    updateRollout2 = NewManifest.fromManifestJson(manifestJsonRollout2, null, config).getUpdateEntity();
 
     JSONObject manifestJsonMultipleFilters = new JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e72\",\"createdAt\":\"2021-01-11T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"updateMetadata\":{\"key1\": \"value1\", \"key2\": \"value2\"}}");
-    updateMultipleFilters = NewManifest.fromManifestJson(manifestJsonMultipleFilters, config).getUpdateEntity();
+    updateMultipleFilters = NewManifest.fromManifestJson(manifestJsonMultipleFilters, null, config).getUpdateEntity();
   }
 
   @Test

@@ -49,6 +49,7 @@ const config: VendoringTargetConfig = {
     },
     '@react-native-community/netinfo': {
       source: 'https://github.com/react-native-community/react-native-netinfo.git',
+      ios: {},
     },
     'react-native-webview': {
       source: 'https://github.com/react-native-community/react-native-webview.git',
@@ -73,6 +74,7 @@ const config: VendoringTargetConfig = {
     },
     '@react-native-picker/picker': {
       source: 'https://github.com/react-native-picker/picker',
+      ios: {},
     },
     '@react-native-community/slider': {
       source: 'https://github.com/react-native-community/react-native-slider',

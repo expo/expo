@@ -1,5 +1,6 @@
 package expo.modules.updates.manifest;
 
+import androidx.annotation.Nullable;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 
@@ -11,5 +12,7 @@ public interface Manifest {
   UpdateEntity getUpdateEntity();
   ArrayList<AssetEntity> getAssetEntityList();
   JSONObject getRawManifestJson();
+  @Nullable JSONObject getServerDefinedHeaders();
+  @Nullable JSONObject getManifestFilters();
   boolean isDevelopmentMode();
 }

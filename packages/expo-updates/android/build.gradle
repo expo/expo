@@ -66,6 +66,7 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 
 dependencies {
   unimodule 'unimodules-core'
+  unimodule 'expo-structured-headers'
   //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"
 
@@ -86,4 +87,5 @@ dependencies {
 
   androidTestImplementation 'androidx.test:runner:1.1.0'
   androidTestImplementation 'androidx.test:rules:1.1.0'
+  androidTestImplementation 'org.mockito:mockito-android:3.7.7'
 }

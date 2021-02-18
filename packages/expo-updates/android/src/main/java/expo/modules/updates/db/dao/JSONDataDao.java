@@ -1,7 +1,9 @@
 package expo.modules.updates.db.dao;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -42,5 +44,15 @@ public abstract class JSONDataDao {
   public void setJSONStringForKey(String key, String value, String scopeKey) {
     _deleteJSONDataForKey(key, scopeKey);
     _insertJSONData(new JSONDataEntity(key, value, new Date(), scopeKey));
+  }
+
+  @Transaction
+  public void setMultipleFields(Map<String, String> fields, String scopeKey) {
+    Iterator<Map.Entry<String, String>> iterator = fields.entrySet().iterator();
+    while (iterator.hasNext()) {
+      Map.Entry<String, String> entry = iterator.next();
+      _deleteJSONDataForKey(entry.getKey(), scopeKey);
+      _insertJSONData(new JSONDataEntity(entry.getKey(), entry.getValue(), new Date(), scopeKey));
+    }
   }
 }

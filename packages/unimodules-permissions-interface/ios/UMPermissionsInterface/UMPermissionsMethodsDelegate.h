@@ -19,4 +19,3 @@
     withPermissionsManager:(id<UMPermissionsInterface>)permissionsManager;
 
 @end
-
