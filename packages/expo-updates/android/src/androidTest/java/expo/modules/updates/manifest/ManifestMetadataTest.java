@@ -22,7 +22,7 @@ import expo.modules.updates.db.UpdatesDatabase;
 import static org.mockito.Mockito.*;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
-public class ManifestServerDataTest {
+public class ManifestMetadataTest {
 
   private UpdatesDatabase db;
   private UpdatesConfiguration config;
@@ -51,14 +51,14 @@ public class ManifestServerDataTest {
     ManifestResponse response1 = mock(ManifestResponse.class);
     when(response1.header("expo-manifest-filters")).thenReturn("branch-name=\"rollout-1\",test=\"value\"");
     Manifest manifest1 = NewManifest.fromManifestJson(manifestJson, response1, config);
-    ManifestServerData.saveServerData(manifest1, db, config);
+    ManifestMetadata.saveMetadata(manifest1, db, config);
 
     ManifestResponse response2 = mock(ManifestResponse.class);
     when(response2.header("expo-manifest-filters")).thenReturn("branch-name=\"rollout-2\"");
     Manifest manifest2 = NewManifest.fromManifestJson(manifestJson, response2, config);
-    ManifestServerData.saveServerData(manifest2, db, config);
+    ManifestMetadata.saveMetadata(manifest2, db, config);
 
-    JSONObject actual = ManifestServerData.getManifestFilters(db, config);
+    JSONObject actual = ManifestMetadata.getManifestFilters(db, config);
     Assert.assertNotNull(actual);
     Assert.assertEquals(1, actual.length());
     Assert.assertEquals("rollout-2", actual.getString("branch-name"));
@@ -69,14 +69,14 @@ public class ManifestServerDataTest {
     ManifestResponse response1 = mock(ManifestResponse.class);
     when(response1.header("expo-manifest-filters")).thenReturn("branch-name=\"rollout-1\"");
     Manifest manifest1 = NewManifest.fromManifestJson(manifestJson, response1, config);
-    ManifestServerData.saveServerData(manifest1, db, config);
+    ManifestMetadata.saveMetadata(manifest1, db, config);
 
     ManifestResponse response2 = mock(ManifestResponse.class);
     when(response2.header("expo-manifest-filters")).thenReturn("");
     Manifest manifest2 = NewManifest.fromManifestJson(manifestJson, response2, config);
-    ManifestServerData.saveServerData(manifest2, db, config);
+    ManifestMetadata.saveMetadata(manifest2, db, config);
 
-    JSONObject actual = ManifestServerData.getManifestFilters(db, config);
+    JSONObject actual = ManifestMetadata.getManifestFilters(db, config);
     Assert.assertNotNull(actual);
     Assert.assertEquals(0, actual.length());
   }
@@ -86,14 +86,14 @@ public class ManifestServerDataTest {
     ManifestResponse response1 = mock(ManifestResponse.class);
     when(response1.header("expo-manifest-filters")).thenReturn("branch-name=\"rollout-1\"");
     Manifest manifest1 = NewManifest.fromManifestJson(manifestJson, response1, config);
-    ManifestServerData.saveServerData(manifest1, db, config);
+    ManifestMetadata.saveMetadata(manifest1, db, config);
 
     ManifestResponse response2 = mock(ManifestResponse.class);
     when(response2.header("expo-manifest-filters")).thenReturn(null);
     Manifest manifest2 = NewManifest.fromManifestJson(manifestJson, response2, config);
-    ManifestServerData.saveServerData(manifest2, db, config);
+    ManifestMetadata.saveMetadata(manifest2, db, config);
 
-    JSONObject actual = ManifestServerData.getManifestFilters(db, config);
+    JSONObject actual = ManifestMetadata.getManifestFilters(db, config);
     Assert.assertNotNull(actual);
     Assert.assertEquals(1, actual.length());
     Assert.assertEquals("rollout-1", actual.getString("branch-name"));

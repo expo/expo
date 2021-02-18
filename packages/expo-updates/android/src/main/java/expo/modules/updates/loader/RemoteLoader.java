@@ -6,14 +6,13 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 import expo.modules.updates.UpdatesConfiguration;
-import expo.modules.updates.UpdatesController;
 import expo.modules.updates.db.enums.UpdateStatus;
 import expo.modules.updates.UpdatesUtils;
 import expo.modules.updates.db.UpdatesDatabase;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.manifest.Manifest;
-import expo.modules.updates.manifest.ManifestServerData;
+import expo.modules.updates.manifest.ManifestMetadata;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -103,7 +102,7 @@ public class RemoteLoader {
       return;
     }
 
-    ManifestServerData.saveServerData(mManifest, mDatabase, mConfiguration);
+    ManifestMetadata.saveMetadata(mManifest, mDatabase, mConfiguration);
 
     mCallback.onSuccess(mUpdateEntity);
     reset();

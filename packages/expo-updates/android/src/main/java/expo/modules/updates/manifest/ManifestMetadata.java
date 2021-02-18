@@ -10,9 +10,9 @@ import androidx.annotation.Nullable;
 import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.db.UpdatesDatabase;
 
-public class ManifestServerData {
+public class ManifestMetadata {
 
-  private static final String TAG = ManifestServerData.class.getSimpleName();
+  private static final String TAG = ManifestMetadata.class.getSimpleName();
 
   public static final String MANIFEST_SERVER_DEFINED_HEADERS_KEY = "serverDefinedHeaders";
   public static final String MANIFEST_FILTERS_KEY = "manifestFilters";
@@ -35,7 +35,7 @@ public class ManifestServerData {
     return getJSONObject(MANIFEST_FILTERS_KEY, database, configuration);
   }
 
-  public static void saveServerData(Manifest manifest, UpdatesDatabase database, UpdatesConfiguration configuration) {
+  public static void saveMetadata(Manifest manifest, UpdatesDatabase database, UpdatesConfiguration configuration) {
     HashMap<String, String> fieldsToSet = new HashMap<>();
     if (manifest.getServerDefinedHeaders() != null) {
       fieldsToSet.put(MANIFEST_SERVER_DEFINED_HEADERS_KEY, manifest.getServerDefinedHeaders().toString());
