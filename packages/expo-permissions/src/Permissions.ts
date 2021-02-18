@@ -61,7 +61,7 @@ const PERMISSION_MODULE_MAPPING = {
 
 export async function getAsync(...types: PermissionType[]): Promise<PermissionResponse> {
   console.warn(
-    `"getAsync" from expo-permissions has been deprecated in favor of permissions getters from other packages that directly use permissions to access system functionalities and will be removed in SDK 42`
+    `expo-permissions is now deprecated — the functionality has been moved to other expo packages that directly use these permissions (e.g. expo-location, expo-camera). The package will be removed in the upcoming releases.`
   );
 
   if (Platform.OS === 'ios') {
@@ -72,7 +72,7 @@ export async function getAsync(...types: PermissionType[]): Promise<PermissionRe
 
 export async function askAsync(...types: PermissionType[]): Promise<PermissionResponse> {
   console.warn(
-    `"askAsync" from expo-permissions has been deprecated in favor of "requestPermissionsAsync" from other packages that directly use permissions to access system functionalities and will be removed in SDK 42`
+    `expo-permissions is now deprecated — the functionality has been moved to other expo packages that directly use these permissions (e.g. expo-location, expo-camera). The package will be removed in the upcoming releases.`
   );
 
   if (Platform.OS === 'ios') {

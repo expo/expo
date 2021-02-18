@@ -3,16 +3,16 @@
 #import <UMCore/UMUtilitiesInterface.h>
 #import <UMCore/UMUtilities.h>
 
-#import <UMReactNativeAdapter/UMPermissions.h>
+#import <UMReactNativeAdapter/EXPermissionsService.h>
 
-NSString * const UMStatusKey = @"status";
-NSString * const UMExpiresKey = @"expires";
-NSString * const UMGrantedKey = @"granted";
-NSString * const UMCanAskAgain = @"canAskAgain";
+NSString * const EXStatusKey = @"status";
+NSString * const EXExpiresKey = @"expires";
+NSString * const EXGrantedKey = @"granted";
+NSString * const EXCanAskAgain = @"canAskAgain";
 
-NSString * const UMPermissionExpiresNever = @"never";
+NSString * const EXPermissionExpiresNever = @"never";
 
-@interface UMPermissions ()
+@interface EXPermissionsService ()
 
 @property (nonatomic, strong) NSMutableDictionary<NSString *, id<UMPermissionsRequester>> *requesters;
 @property (nonatomic, strong) NSMapTable<Class, id<UMPermissionsRequester>> *requestersByClass;
@@ -20,7 +20,7 @@ NSString * const UMPermissionExpiresNever = @"never";
 
 @end
 
-@implementation UMPermissions
+@implementation EXPermissionsService
 
 UM_EXPORT_MODULE();
 
@@ -78,7 +78,7 @@ UM_EXPORT_MODULE();
 - (NSDictionary *)getPermissionUsingRequester:(id<UMPermissionsRequester>)requester
 {
   if (requester) {
-    return [UMPermissions parsePermissionFromRequester:[requester getPermissions]];
+    return [EXPermissionsService parsePermissionFromRequester:[requester getPermissions]];
   }
   return nil;
 }
@@ -92,7 +92,7 @@ UM_EXPORT_MODULE();
     return false;
   }
   
-  return [permissions[UMStatusKey] isEqualToString:@"granted"];
+  return [permissions[EXStatusKey] isEqualToString:@"granted"];
 }
 
 - (void)askForPermissionUsingRequesterClass:(Class)requesterClass
@@ -106,7 +106,7 @@ UM_EXPORT_MODULE();
     return reject(@"E_PERMISSIONS_UNKNOWN", [NSString stringWithFormat:@"Unrecognized requester: %@", NSStringFromClass(requesterClass)], nil);
   }
   
-  BOOL isGranted = [UMPermissions statusForPermission:permission] == UMPermissionStatusGranted;
+  BOOL isGranted = [EXPermissionsService statusForPermission:permission] == UMPermissionStatusGranted;
   permission[@"granted"] = @(isGranted);
   
   if (isGranted) {
@@ -126,7 +126,7 @@ UM_EXPORT_MODULE();
   }
   
   void (^permissionParser)(NSDictionary *) = ^(NSDictionary * permission){
-    resolver([UMPermissions parsePermissionFromRequester:permission]);
+    resolver([EXPermissionsService parsePermissionFromRequester:permission]);
   };
   
   [requester requestPermissionsWithResolver:permissionParser rejecter:reject];
@@ -138,14 +138,14 @@ UM_EXPORT_MODULE();
 + (NSDictionary *)parsePermissionFromRequester:(NSDictionary *)permission
 {
   NSMutableDictionary *parsedPermission = [permission mutableCopy];
-  UMPermissionStatus status = (UMPermissionStatus)[permission[UMStatusKey] intValue];
+  UMPermissionStatus status = (UMPermissionStatus)[permission[EXStatusKey] intValue];
   BOOL isGranted = status == UMPermissionStatusGranted;
   BOOL canAskAgain = status != UMPermissionStatusDenied;
   
-  [parsedPermission setValue:[[self class] permissionStringForStatus:status] forKey:UMStatusKey];
-  [parsedPermission setValue:UMPermissionExpiresNever forKey:UMExpiresKey];
-  [parsedPermission setValue:@(isGranted) forKey:UMGrantedKey];
-  [parsedPermission setValue:@(canAskAgain) forKey:UMCanAskAgain];
+  [parsedPermission setValue:[[self class] permissionStringForStatus:status] forKey:EXStatusKey];
+  [parsedPermission setValue:EXPermissionExpiresNever forKey:EXExpiresKey];
+  [parsedPermission setValue:@(isGranted) forKey:EXGrantedKey];
+  [parsedPermission setValue:@(canAskAgain) forKey:EXCanAskAgain];
   return parsedPermission;
 }
 
@@ -163,7 +163,7 @@ UM_EXPORT_MODULE();
 
 + (UMPermissionStatus)statusForPermission:(NSDictionary *)permission
 {
-  NSString *status = permission[UMStatusKey];
+  NSString *status = permission[EXStatusKey];
   if ([status isEqualToString:@"granted"]) {
     return UMPermissionStatusGranted;
   } else if ([status isEqualToString:@"denied"]) {

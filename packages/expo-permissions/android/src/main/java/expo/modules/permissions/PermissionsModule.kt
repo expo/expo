@@ -18,7 +18,7 @@ import org.unimodules.interfaces.permissions.Permissions
 import org.unimodules.interfaces.permissions.PermissionsResponse
 import org.unimodules.interfaces.permissions.PermissionsResponseListener
 
-internal const val ERROR_TAG = "E_PERMISSIONS"
+internal const val ERROR_TAG = "ERR_PERMISSIONS"
 
 class PermissionsModule(context: Context) : ExportedModule(context) {
   private lateinit var mPermissions: Permissions

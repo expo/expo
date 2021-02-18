@@ -2,9 +2,9 @@
 
 #import <UMCore/UMUtilities.h>
 
-#import <UMReactNativeAdapter/UMReactNativeUserNotificationCenterProxy.h>
+#import <UMReactNativeAdapter/EXReactNativeUserNotificationCenterProxy.h>
 
-@implementation UMReactNativeUserNotificationCenterProxy
+@implementation EXReactNativeUserNotificationCenterProxy
 
 UM_REGISTER_MODULE();
 

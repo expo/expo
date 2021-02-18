@@ -4,7 +4,7 @@
 #import <UMCore/UMModuleRegistryConsumer.h>
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
 
-@interface UMPermissions : UMExportedModule <UMPermissionsInterface, UMModuleRegistryConsumer>
+@interface EXPermissionsService : UMExportedModule <UMPermissionsInterface, UMModuleRegistryConsumer>
 
 + (UMPermissionStatus)statusForPermission:(NSDictionary *)permission;
 
