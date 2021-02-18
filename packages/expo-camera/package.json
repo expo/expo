@@ -33,16 +33,6 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "peerDependencies": {
-    "@unimodules/core": "*",
-    "react": "*",
-    "react-native": "*",
-    "unimodules-barcode-scanner-interface": "*",
-    "unimodules-camera-interface": "*",
-    "unimodules-face-detector-interface": "*",
-    "unimodules-file-system-interface": "*",
-    "unimodules-permissions-interface": "*"
-  },
   "dependencies": {
     "@expo/config-plugins": "^1.0.18",
     "@koale/useworker": "^3.2.1",

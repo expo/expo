@@ -38,11 +38,6 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "peerDependencies": {
-    "@unimodules/core": "*",
-    "unimodules-permissions-interface": "*",
-    "unimodules-task-manager-interface": "*"
-  },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"
   },

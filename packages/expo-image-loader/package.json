@@ -19,9 +19,6 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-image-loader",
-  "peerDependencies": {
-    "react-native": ">= 0.60.0"
-  },
   "unimodulePeerDependencies": {
     "@unimodules/core": "*",
     "unimodules-image-loader-interface": "^5.0.0"

@@ -33,12 +33,6 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "peerDependencies": {
-    "@unimodules/core": "*",
-    "expo-constants": "*",
-    "react": "*",
-    "react-native": "*"
-  },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"
   },

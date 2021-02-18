@@ -36,16 +36,6 @@
   "jest": {
     "preset": "expo-module-scripts/ios"
   },
-  "unimodulePeerDependencies": {
-    "@unimodules/core": "*",
-    "expo-constants": "*",
-    "expo-file-system": "*",
-    "expo-updates": "*"
-  },
-  "peerDependencies": {
-    "react": "*",
-    "react-native": "*"
-  },
   "dependencies": {
     "blueimp-md5": "^2.10.0",
     "invariant": "^2.2.4",

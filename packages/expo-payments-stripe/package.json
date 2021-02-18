@@ -32,13 +32,6 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/payments/",
-  "unimodulePeerDependencies": {
-    "@unimodules/core": "*"
-  },
-  "peerDependencies": {
-    "react": "*",
-    "react-native": "*"
-  },
   "dependencies": {
     "@expo/config-plugins": "^1.0.18",
     "prop-types": "^15.6.0"

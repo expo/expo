@@ -31,13 +31,6 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/av/",
-  "peerDependencies": {
-    "@unimodules/core": "*",
-    "expo-asset": "*",
-    "react": "*",
-    "react-native": "*",
-    "unimodules-permissions-interface": "*"
-  },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"
   },
