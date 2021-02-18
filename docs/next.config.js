@@ -35,7 +35,7 @@ module.exports = {
   webpack: (config, options) => {
     // Add preval support for `constants/*` only and move it to the `.next/preval` cache.
     // It's to prevent over-usage and separate the cache to allow manually invalidation.
-    // See: https://github.com/kentcdodds/babel-plugin-preval/issues/19\
+    // See: https://github.com/kentcdodds/babel-plugin-preval/issues/19
     config.module.rules.push({
       test: /.jsx?$/,
       include: [join(__dirname, 'constants')],
