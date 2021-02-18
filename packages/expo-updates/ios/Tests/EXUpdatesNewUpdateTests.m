@@ -117,9 +117,9 @@
 
 - (void)testDictionaryWithStructuredHeader_IgnoresOtherTypes
 {
-  NSString *header = @"branch=\"rollout-1\", data=:w4ZibGV0w6ZydGUK:, list=(1 2)";
+  NSString *header = @"branch-name=\"rollout-1\", data=:w4ZibGV0w6ZydGUK:, list=(1 2)";
   NSDictionary *expected = @{
-    @"branch": @"rollout-1"
+    @"branch-name": @"rollout-1"
   };
   NSDictionary *actual = [EXUpdatesNewUpdate dictionaryWithStructuredHeader:header];
   XCTAssertEqualObjects(expected, actual);

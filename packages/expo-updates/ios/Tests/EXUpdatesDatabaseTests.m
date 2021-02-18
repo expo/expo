@@ -59,7 +59,7 @@
 - (void)testSetServerData_OverwriteAllFields
 {
   NSHTTPURLResponse *response1 = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://exp.host/"] statusCode:200 HTTPVersion:@"HTTP/2" headerFields:@{
-    @"expo-manifest-filters": @"branch=\"rollout-1\",test=\"value\""
+    @"expo-manifest-filters": @"branch-name=\"rollout-1\",test=\"value\""
   }];
   EXUpdatesUpdate *update1 = [EXUpdatesNewUpdate updateWithNewManifest:_manifest response:response1 config:_config database:_db];
   __block NSError *error1;
@@ -69,7 +69,7 @@
   XCTAssertNil(error1);
 
   NSHTTPURLResponse *response2 = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://exp.host/"] statusCode:200 HTTPVersion:@"HTTP/2" headerFields:@{
-    @"expo-manifest-filters": @"branch=\"rollout-2\""
+    @"expo-manifest-filters": @"branch-name=\"rollout-2\""
   }];
   EXUpdatesUpdate *update2 = [EXUpdatesNewUpdate updateWithNewManifest:_manifest response:response2 config:_config database:_db];
   __block NSError *error2;
@@ -78,7 +78,7 @@
   });
   XCTAssertNil(error2);
 
-  NSDictionary *expected = @{@"branch": @"rollout-2"};
+  NSDictionary *expected = @{@"branch-name": @"rollout-2"};
   __block NSDictionary *actual;
   __block NSError *readError;
   dispatch_sync(_db.databaseQueue, ^{
@@ -92,7 +92,7 @@
 - (void)testSetServerData_OverwriteEmpty
 {
   NSHTTPURLResponse *response1 = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://exp.host/"] statusCode:200 HTTPVersion:@"HTTP/2" headerFields:@{
-    @"expo-manifest-filters": @"branch=\"rollout-1\""
+    @"expo-manifest-filters": @"branch-name=\"rollout-1\""
   }];
   EXUpdatesUpdate *update1 = [EXUpdatesNewUpdate updateWithNewManifest:_manifest response:response1 config:_config database:_db];
   __block NSError *error1;
@@ -125,7 +125,7 @@
 - (void)testSetServerData_OverwriteNull
 {
   NSHTTPURLResponse *response1 = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://exp.host/"] statusCode:200 HTTPVersion:@"HTTP/2" headerFields:@{
-    @"expo-manifest-filters": @"branch=\"rollout-1\""
+    @"expo-manifest-filters": @"branch-name=\"rollout-1\""
   }];
   EXUpdatesUpdate *update1 = [EXUpdatesNewUpdate updateWithNewManifest:_manifest response:response1 config:_config database:_db];
   __block NSError *error1;
@@ -142,7 +142,7 @@
   });
   XCTAssertNil(error2);
   
-  NSDictionary *expected = @{@"branch": @"rollout-1"};
+  NSDictionary *expected = @{@"branch-name": @"rollout-1"};
   __block NSDictionary *actual;
   __block NSError *readError;
   dispatch_sync(_db.databaseQueue, ^{
