@@ -15,6 +15,7 @@ export type Podspec = {
   pod_target_xcconfig: Record<string, string>;
   dependencies: Record<string, any>;
   info_plist: Record<string, string>;
+  ios?: Podspec;
 };
 
 /**

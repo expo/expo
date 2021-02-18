@@ -74,6 +74,7 @@ const config: VendoringTargetConfig = {
     },
     '@react-native-picker/picker': {
       source: 'https://github.com/react-native-picker/picker',
+      ios: {},
     },
     '@react-native-community/slider': {
       source: 'https://github.com/react-native-community/react-native-slider',
