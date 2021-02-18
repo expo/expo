@@ -84,7 +84,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
                                                      timeoutInterval:EXUpdatesDefaultTimeoutInterval];
   [self _setManifestHTTPHeaderFields:request];
   [self _downloadDataWithRequest:request successBlock:^(NSData *data, NSURLResponse *response) {
-    if(![response isKindOfClass:[NSHTTPURLResponse class]]){
+    if (![response isKindOfClass:[NSHTTPURLResponse class]]) {
       errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
                                      code:1040
                                  userInfo:@{
@@ -121,7 +121,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
     // We should treat these manifests as unsigned rather than signed with an invalid signature.
     BOOL isUnsignedFromXDL = [(NSString *)signature isEqualToString:@"UNSIGNED"];
 
-    if(![manifestString isKindOfClass:[NSString class]]){
+    if (![manifestString isKindOfClass:[NSString class]]) {
       errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
                                      code:1041
                                  userInfo:@{
@@ -131,7 +131,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
       return;
     }
     NSDictionary *manifest = [NSJSONSerialization JSONObjectWithData:[(NSString *)manifestString dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&err];
-    if(err || !manifest || ![manifest isKindOfClass:[NSDictionary class]]){
+    if (err || !manifest || ![manifest isKindOfClass:[NSDictionary class]]) {
       errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
                                      code:1042
                                  userInfo:@{
@@ -143,7 +143,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
     NSMutableDictionary *mutableManifest = [manifest mutableCopy];
       
     if (signature != nil && !isUnsignedFromXDL) {
-      if(![signature isKindOfClass:[NSString class]]){
+      if (![signature isKindOfClass:[NSString class]]) {
         errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
                                        code:1043
                                    userInfo:@{
