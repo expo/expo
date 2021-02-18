@@ -49,25 +49,25 @@ public class ManifestServerDataTest {
   @Test
   public void testManifestFilters_OverwriteAllFields() throws JSONException {
     ManifestResponse response1 = mock(ManifestResponse.class);
-    when(response1.header("expo-manifest-filters")).thenReturn("branch=\"rollout-1\",test=\"value\"");
+    when(response1.header("expo-manifest-filters")).thenReturn("branch-name=\"rollout-1\",test=\"value\"");
     Manifest manifest1 = NewManifest.fromManifestJson(manifestJson, response1, config);
     ManifestServerData.saveServerData(manifest1, db, config);
 
     ManifestResponse response2 = mock(ManifestResponse.class);
-    when(response2.header("expo-manifest-filters")).thenReturn("branch=\"rollout-2\"");
+    when(response2.header("expo-manifest-filters")).thenReturn("branch-name=\"rollout-2\"");
     Manifest manifest2 = NewManifest.fromManifestJson(manifestJson, response2, config);
     ManifestServerData.saveServerData(manifest2, db, config);
 
     JSONObject actual = ManifestServerData.getManifestFilters(db, config);
     Assert.assertNotNull(actual);
     Assert.assertEquals(1, actual.length());
-    Assert.assertEquals("rollout-2", actual.getString("branch"));
+    Assert.assertEquals("rollout-2", actual.getString("branch-name"));
   }
 
   @Test
   public void testManifestFilters_OverwriteEmpty() throws JSONException {
     ManifestResponse response1 = mock(ManifestResponse.class);
-    when(response1.header("expo-manifest-filters")).thenReturn("branch=\"rollout-1\"");
+    when(response1.header("expo-manifest-filters")).thenReturn("branch-name=\"rollout-1\"");
     Manifest manifest1 = NewManifest.fromManifestJson(manifestJson, response1, config);
     ManifestServerData.saveServerData(manifest1, db, config);
 
@@ -84,7 +84,7 @@ public class ManifestServerDataTest {
   @Test
   public void testManifestFilters_OverwriteNull() throws JSONException {
     ManifestResponse response1 = mock(ManifestResponse.class);
-    when(response1.header("expo-manifest-filters")).thenReturn("branch=\"rollout-1\"");
+    when(response1.header("expo-manifest-filters")).thenReturn("branch-name=\"rollout-1\"");
     Manifest manifest1 = NewManifest.fromManifestJson(manifestJson, response1, config);
     ManifestServerData.saveServerData(manifest1, db, config);
 
@@ -96,7 +96,7 @@ public class ManifestServerDataTest {
     JSONObject actual = ManifestServerData.getManifestFilters(db, config);
     Assert.assertNotNull(actual);
     Assert.assertEquals(1, actual.length());
-    Assert.assertEquals("rollout-1", actual.getString("branch"));
+    Assert.assertEquals("rollout-1", actual.getString("branch-name"));
   }
 
   private UpdatesConfiguration createConfig() {

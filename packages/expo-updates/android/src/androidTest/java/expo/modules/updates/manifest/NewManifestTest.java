@@ -82,10 +82,10 @@ public class NewManifestTest {
 
   @Test
   public void testHeaderDictionaryToJSONObject_IgnoresOtherTypes() throws JSONException {
-    JSONObject actual = NewManifest.headerDictionaryToJSONObject("branch=\"rollout-1\", data=:w4ZibGV0w6ZydGUK:, list=(1 2)");
+    JSONObject actual = NewManifest.headerDictionaryToJSONObject("branch-name=\"rollout-1\", data=:w4ZibGV0w6ZydGUK:, list=(1 2)");
     Assert.assertNotNull(actual);
     Assert.assertEquals(1, actual.length());
-    Assert.assertEquals("rollout-1", actual.getString("branch"));
+    Assert.assertEquals("rollout-1", actual.getString("branch-name"));
   }
 
   @Test
