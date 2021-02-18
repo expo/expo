@@ -2257,6 +2257,8 @@ PODS:
     - React-Core (= 0.63.2)
     - React-cxxreact (= 0.63.2)
     - React-jsi (= 0.63.2)
+  - RNCPicker (1.9.11):
+    - React-Core
   - UMAppLoader (2.0.0)
   - UMBarCodeScannerInterface (6.0.0):
     - UMCore
@@ -2693,6 +2695,7 @@ DEPENDENCIES:
   - React-RCTText (from `../react-native-lab/react-native/Libraries/Text`)
   - React-RCTVibration (from `../react-native-lab/react-native/Libraries/Vibration`)
   - ReactCommon/turbomodule/core (from `../react-native-lab/react-native/ReactCommon`)
+  - "RNCPicker (from `./vendored/unversioned/@react-native-picker/picker`)"
   - UMAppLoader (from `../packages/unimodules-app-loader/ios`)
   - UMBarCodeScannerInterface (from `../packages/unimodules-barcode-scanner-interface/ios`)
   - UMCameraInterface (from `../packages/unimodules-camera-interface/ios`)
@@ -3526,6 +3529,8 @@ EXTERNAL SOURCES:
     :path: "../react-native-lab/react-native/Libraries/Vibration"
   ReactCommon:
     :path: "../react-native-lab/react-native/ReactCommon"
+  RNCPicker:
+    :path: "./vendored/unversioned/@react-native-picker/picker"
   UMAppLoader:
     :path: "../packages/unimodules-app-loader/ios"
   UMBarCodeScannerInterface:
@@ -3980,6 +3985,7 @@ SPEC CHECKSUMS:
   React-RCTText: 1b6773e776e4b33f90468c20fe3b16ca3e224bb8
   React-RCTVibration: 4d2e726957f4087449739b595f107c0d4b6c2d2d
   ReactCommon: a0a1edbebcac5e91338371b72ffc66aa822792ce
+  RNCPicker: 6780c753e9e674065db90d9c965920516402579d
   UMAppLoader: 3b2e5d8abf487b01e27feb4fce5f34cb761cac39
   UMBarCodeScannerInterface: ca04ff28d8321f2d9e3894772bff82a3dbb83387
   UMCameraInterface: 9e750e49811340d8af927e411ee2e9687479b7b8
