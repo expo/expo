@@ -84,11 +84,19 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
                                                      timeoutInterval:EXUpdatesDefaultTimeoutInterval];
   [self _setManifestHTTPHeaderFields:request];
   [self _downloadDataWithRequest:request successBlock:^(NSData *data, NSURLResponse *response) {
-    NSAssert([response isKindOfClass:[NSHTTPURLResponse class]], @"response must be a NSHTTPURLResponse");
+    if(![response isKindOfClass:[NSHTTPURLResponse class]]){
+      errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
+                                     code:1040
+                                 userInfo:@{
+                                   NSLocalizedDescriptionKey: @"response must be a NSHTTPURLResponse",
+                                 }
+                  ], response);
+      return;
+    }
     NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
     NSDictionary *headerDictionary = [httpResponse allHeaderFields];
     id headerSignature = headerDictionary[@"expo-manifest-signature"];
-      
+    
     NSError *err;
     id parsedJson = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&err];
     if (err) {
@@ -113,13 +121,37 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
     // We should treat these manifests as unsigned rather than signed with an invalid signature.
     BOOL isUnsignedFromXDL = [(NSString *)signature isEqualToString:@"UNSIGNED"];
 
-    NSAssert([manifestString isKindOfClass:[NSString class]], @"manifestString should be a string");
+    if(![manifestString isKindOfClass:[NSString class]]){
+      errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
+                                     code:1041
+                                 userInfo:@{
+                                   NSLocalizedDescriptionKey: @"manifestString should be a string",
+                                 }
+                  ], response);
+      return;
+    }
     NSDictionary *manifest = [NSJSONSerialization JSONObjectWithData:[(NSString *)manifestString dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&err];
-    NSAssert(!err && manifest && [manifest isKindOfClass:[NSDictionary class]], @"manifest should be a valid JSON object");
+    if(err || !manifest || ![manifest isKindOfClass:[NSDictionary class]]){
+      errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
+                                     code:1042
+                                 userInfo:@{
+                                   NSLocalizedDescriptionKey: @"manifest should be a valid JSON object",
+                                 }
+                  ], response);
+      return;
+    }
     NSMutableDictionary *mutableManifest = [manifest mutableCopy];
       
     if (signature != nil && !isUnsignedFromXDL) {
-      NSAssert([signature isKindOfClass:[NSString class]], @"signature should be a string");
+      if(![signature isKindOfClass:[NSString class]]){
+        errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
+                                       code:1043
+                                   userInfo:@{
+                                     NSLocalizedDescriptionKey: @"signature should be a string",
+                                   }
+                    ], response);
+        return;
+      }
       [EXUpdatesCrypto verifySignatureWithData:(NSString *)manifestString
                                      signature:(NSString *)signature
                                         config:self->_config
