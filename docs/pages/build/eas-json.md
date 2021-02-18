@@ -186,7 +186,7 @@ The schema of a build profile for a generic iOS project looks like this:
   "schemeBuildConfiguration": "Release" | "Debug",
   "artifactPath": string, // default: "ios/build/App.ipa"
   "releaseChannel": string, // default: "default"
-  "distribution": "store", | "internal", // default: "store"
+  "distribution": "store", | "internal" | "simulator", // default: "store"
   "autoIncrement": boolean | "version" | "buildNumber", // default: false
   "image": string, // default: "default"
   "node": string,
@@ -204,7 +204,7 @@ The schema of a build profile for a generic iOS project looks like this:
 - `schemeBuildConfiguration` is the configuration to use when building the app. Defaults to the value set in the scheme. When set, overrides the native project configuration. Possible values: `Release`, `Debug`.
 - `artifactPath` is the path (or pattern) where EAS Build is going to look for the build artifacts. EAS Build uses the `fast-glob` npm package for pattern matching, ([see their README to learn more about the syntax you can use](https://github.com/mrmlnc/fast-glob#pattern-syntax)). You should modify that path only if you are using a custom `Gymfile`. The default is `ios/build/App.ipa`.
 - `releaseChannel` is the release channel for the `expo-updates` package ([Learn more about this](../distribution/release-channels.md)). If you do not specify a channel, your binary will pull releases from the `default` channel. If you do not use `expo-updates` in your project then this property will have no effect.
-- `distribution` is the flow of distributing your app. If you choose `internal` you'll be able to share your build URLs with anyone, and they will be able to install the builds to their devices straight from the Expo website. The default is `store` which means your build URLs won't be sharable. [Learn more about internal distribution](internal-distribution.md).
+- `distribution` is the flow of distributing your app. If you choose `internal` you'll be able to share your build URLs with anyone, and they will be able to install the builds to their devices straight from the Expo website. Choose `simulator` to run the app on an iOS simulator on your computer. The default is `store` which means your build URLs won't be sharable. [Learn more about internal distribution](internal-distribution.md).
 - `autoIncrement` controls how EAS CLI bumps your application build version. The App Store uses two values from `Info.plist` to identify the app build: `CFBundleShortVersionString` and `CFBundleVersion`. `CFBundleShortVersionString` is the version visible to users, whereas `CFBundleVersion` defines the build number. The combination of those needs to be unique, so you can bump either of them. When set to `version`, the patch of `CFBundleShortVersionString` is bumped (e.g. `1.2.3` -> `1.2.4`). When set to `buildNumber`, the last component of `CFBundleVersion` is bumped (e.g. `1.2.3.39` -> `1.2.3.40`). Versions will also be updated in app.json. `expo.version` corresponds to `CFBundleShortVersionString` and `expo.ios.buildNumber` to `CFBundleVersion`. Defaults to `false` - versions won't be bumped automatically.
 - `image` - image with build environment. [Learn more about it here](../build-reference/infrastructure).
 - `node` - version of Node.js
@@ -244,7 +244,7 @@ The schema of a build profile for a managed iOS project looks like this:
   "extends": string,
   "credentialsSource": "local" | "remote" | "auto", // default: "auto"
   "releaseChannel": string, // default: "default"
-  "distribution": "store" | "internal", // default: "store"
+  "distribution": "store" | "internal" | "simulator", // default: "store"
   "autoIncrement": boolean | "version" | "buildNumber", // default: false
   "image": string, // default: "default"
   "node": string,
@@ -259,7 +259,7 @@ The schema of a build profile for a managed iOS project looks like this:
 - `extends` specifies name of build profile that current profile inherits values from.
 - `credentialsSource` defines the source of credentials for this build profile. If you want to provide your own `credentials.json` file, set this to `local` ([learn more on this here](/app-signing/local-credentials.md)). If you want to use the credentials EAS already has stored for you, choose `remote`. If you're not sure what to do, choose `auto` (this is the default option).
 - `releaseChannel` is the release channel for the `expo-updates` package ([Learn more about this](../distribution/release-channels.md)). If you do not specify a channel, your binary will pull releases from the `default` channel. If you do not use `expo-updates` in your project then this property will have no effect.
-- `distribution` is the flow of distributing your app. If you choose `internal` you'll be able to share your build URLs with anyone, and they will be able to install the builds to their devices straight from the Expo website. The default is `store` which means your build URLs won't be sharable. [Learn more Internal Distribution](internal-distribution.md).
+- `distribution` is the flow of distributing your app. If you choose `internal` you'll be able to share your build URLs with anyone, and they will be able to install the builds to their devices straight from the Expo website. Choose `simulator` to run the app on an iOS simulator on your computer. The default is `store` which means your build URLs won't be sharable. [Learn more Internal Distribution](internal-distribution.md).
 - `autoIncrement` controls how EAS CLI bumps your application build version. When set to `version`, the patch component of `expo.version` is bumped (e.g. `1.2.3` -> `1.2.4`). When set to `buildNumber`, the last component of `expo.ios.buildNumber` is bumped (e.g. `1.2.3.39` -> `1.2.3.40`). Defaults to `false` - versions won't be bumped automatically.
 - `image` - image with build environment. [Learn more about it here](../build-reference/infrastructure).
 - `node` - version of Node.js
