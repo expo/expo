@@ -31,6 +31,11 @@ typedef void (^EXUpdatesFileDownloaderErrorBlock)(NSError *error, NSURLResponse 
 
 + (dispatch_queue_t)assetFilesQueue;
 
+/**
+ * For test purposes; shouldn't be needed in application code
+ */
+- (NSURLRequest *)createManifestRequestWithURL:(NSURL *)url;
+
 @end
 
 NS_ASSUME_NONNULL_END

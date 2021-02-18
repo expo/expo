@@ -74,15 +74,26 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
   } errorBlock:errorBlock];
 }
 
+- (NSURLRequest *)createManifestRequestWithURL:(NSURL *)url
+{
+  NSURLRequestCachePolicy cachePolicy = _sessionConfiguration ? _sessionConfiguration.requestCachePolicy : NSURLRequestUseProtocolCachePolicy;
+  if (_config.usesLegacyManifest) {
+    // legacy manifest loads should ignore cache-control headers from the server and always load remotely
+    cachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
+  }
+
+  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:cachePolicy timeoutInterval:EXUpdatesDefaultTimeoutInterval];
+  [self _setManifestHTTPHeaderFields:request];
+
+  return request;
+}
+
 - (void)downloadManifestFromURL:(NSURL *)url
                    withDatabase:(EXUpdatesDatabase *)database
                    successBlock:(EXUpdatesFileDownloaderManifestSuccessBlock)successBlock
                      errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock
 {
-  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
-                                                         cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
-                                                     timeoutInterval:EXUpdatesDefaultTimeoutInterval];
-  [self _setManifestHTTPHeaderFields:request];
+  NSURLRequest *request = [self createManifestRequestWithURL:url];
   [self _downloadDataWithRequest:request successBlock:^(NSData *data, NSURLResponse *response) {
     NSError *err;
     id parsedJson = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&err];
@@ -169,7 +180,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
   NSURLSessionDataTask *task = [_session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
     if (!error && [response isKindOfClass:[NSHTTPURLResponse class]]) {
       NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-      if (httpResponse.statusCode != 200) {
+      if (httpResponse.statusCode < 200 || httpResponse.statusCode >= 300) {
         NSStringEncoding encoding = [self _encodingFromResponse:response];
         NSString *body = [[NSString alloc] initWithData:data encoding:encoding];
         error = [self _errorFromResponse:httpResponse body:body];

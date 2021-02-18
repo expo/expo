@@ -180,7 +180,7 @@ public class DatabaseLauncher implements Launcher {
     if (!assetFileExists) {
       // we still don't have the asset locally, so try downloading it remotely
       mAssetsToDownload++;
-      FileDownloader.downloadAsset(asset, mUpdatesDirectory, mConfiguration, new FileDownloader.AssetDownloadCallback() {
+      FileDownloader.downloadAsset(asset, mUpdatesDirectory, mConfiguration, context, new FileDownloader.AssetDownloadCallback() {
         @Override
         public void onFailure(Exception e, AssetEntity assetEntity) {
           Log.e(TAG, "Failed to load asset from disk or network", e);
