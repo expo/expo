@@ -10,7 +10,6 @@
 #import <React/RCTUIManager.h>
 #import <React/RCTDefines.h>
 #import "RNCWebView.h"
-#import "EXScopedModuleRegistry.h"
 
 @interface RNCWebViewManager () <RNCWebViewDelegate>
 @end
@@ -32,8 +31,6 @@ RCT_ENUM_CONVERTER(WKContentMode, (@{
   BOOL _shouldStartLoad;
 }
 
-EX_EXPORT_SCOPED_MODULE(RNCWebViewManager, EXKernelServiceNone)
-
 - (instancetype)initWithExperienceId:(NSString *)experienceId
                kernelServiceDelegate:(id)kernelServiceInstance
                               params:(NSDictionary *)params
@@ -43,8 +40,6 @@ EX_EXPORT_SCOPED_MODULE(RNCWebViewManager, EXKernelServiceNone)
   }
   return self;
 }
-
-RCT_EXPORT_MODULE()
 
 #if !TARGET_OS_OSX
 - (UIView *)view

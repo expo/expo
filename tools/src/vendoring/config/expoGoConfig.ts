@@ -55,7 +55,7 @@ const config: VendoringTargetConfig = {
       source: 'https://github.com/react-native-webview/react-native-webview.git',
       ios: {
         transforms: {
-          // react-native-webview exposes `useSharedPool` property which has to be handled differently in Expo Go.
+          // react-native-webview exposes `useSharedProcessPool` property which has to be handled differently in Expo Go.
           // After upgrading this library, please ensure that proper patch is in place.
           // See commit https://github.com/expo/expo/commit/3aeb66e33dc391399ea1c90fd166425130d17a12
           content: [
@@ -108,11 +108,6 @@ const config: VendoringTargetConfig = {
             },
             {
               paths: 'RNCWebViewManager.m',
-              find: /#import "RNCWebView.h"/,
-              replaceWith: '$&\n#import "EXScopedModuleRegistry.h"',
-            },
-            {
-              paths: 'RNCWebViewManager.m',
               find: /@implementation RNCWebViewManager\s*{/,
               replaceWith: '$&\n  NSString *_experienceId;',
             },
@@ -124,9 +119,7 @@ const config: VendoringTargetConfig = {
             {
               paths: 'RNCWebViewManager.m',
               find: /RCT_EXPORT_MODULE\(\)/,
-              replaceWith: `EX_EXPORT_SCOPED_MODULE(RNCWebViewManager, EXKernelServiceNone)
-
-- (instancetype)initWithExperienceId:(NSString *)experienceId
+              replaceWith: `- (instancetype)initWithExperienceId:(NSString *)experienceId
                kernelServiceDelegate:(id)kernelServiceInstance
                               params:(NSDictionary *)params
 {
@@ -134,9 +127,7 @@ const config: VendoringTargetConfig = {
     _experienceId = experienceId;
   }
   return self;
-}
-
-$&`,
+}`,
             },
           ],
         },

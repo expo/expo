@@ -20,5 +20,25 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
         },
       ],
     },
+    'react-native-webview': {
+      content: [
+        {
+          paths: 'RNCWebView.m',
+          find: new RegExp(`#import "objc/${prefix}runtime\\.h"`, ''),
+          replaceWith: '#import "objc/runtime.h"',
+        },
+        {
+          paths: 'RNCWebView.m',
+          find: /\b(_SwizzleHelperWK)\b/g,
+          replaceWith: `${prefix}$1`,
+        },
+        {
+          // see issue: https://github.com/expo/expo/issues/4463
+          paths: 'RNCWebView.m',
+          find: /MessageHandlerName = @"ABI\d+_\d+_\d+ReactNativeWebView";/,
+          replaceWith: `MessageHandlerName = @"ReactNativeWebView";`,
+        },
+      ],
+    },
   };
 }
