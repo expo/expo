@@ -17,8 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readwrite) NSArray<EXUpdatesAsset *> *assets;
 @property (nonatomic, assign, readwrite) BOOL isDevelopmentMode;
 
-@property (nonatomic, assign, readwrite) NSDictionary *serverDefinedHeaders;
-@property (nonatomic, assign, readwrite) NSDictionary *manifestFilters;
+@property (nonatomic, strong, readwrite, nullable) NSDictionary *serverDefinedHeaders;
+@property (nonatomic, strong, readwrite, nullable) NSDictionary *manifestFilters;
 
 @property (nonatomic, strong) EXUpdatesConfig *config;
 @property (nonatomic, strong, nullable) EXUpdatesDatabase *database;

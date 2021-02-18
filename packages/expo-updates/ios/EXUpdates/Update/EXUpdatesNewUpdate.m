@@ -105,11 +105,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable NSDictionary *)dictionaryWithStructuredHeader:(NSString *)headerString
 {
+  if (!headerString) {
+    return nil;
+  }
+
   EXStructuredHeadersParser *parser = [[EXStructuredHeadersParser alloc] initWithRawInput:headerString fieldType:EXStructuredHeadersParserFieldTypeDictionary ignoringParameters:YES];
   NSError *error;
   NSDictionary *parserOutput = [parser parseStructuredFieldsWithError:&error];
   if (!parserOutput || error || ![parserOutput isKindOfClass:[NSDictionary class]]) {
-    NSLog(@"Error parsing header value: %@", error.localizedDescription ?: @"Header was not a structured fields dictionary");
+    NSLog(@"Error parsing header value: %@", error ? error.localizedDescription : @"Header was not a structured fields dictionary");
     return nil;
   }
 

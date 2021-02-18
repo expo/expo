@@ -11,6 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
                                     config:(EXUpdatesConfig *)config
                                   database:(EXUpdatesDatabase *)database;
 
++ (nullable NSDictionary *)dictionaryWithStructuredHeader:(NSString *)headerString;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -28,8 +28,8 @@ typedef NS_ENUM(NSInteger, EXUpdatesUpdateStatus) {
 @property (nonatomic, strong, readonly) NSArray<EXUpdatesAsset *> *assets;
 @property (nonatomic, assign, readonly) BOOL isDevelopmentMode;
 
-@property (nonatomic, assign, readonly) NSDictionary *serverDefinedHeaders;
-@property (nonatomic, assign, readonly) NSDictionary *manifestFilters;
+@property (nonatomic, strong, readonly, nullable) NSDictionary *serverDefinedHeaders;
+@property (nonatomic, strong, readonly, nullable) NSDictionary *manifestFilters;
 
 @property (nonatomic, strong, readonly) NSDictionary *rawManifest;
 
