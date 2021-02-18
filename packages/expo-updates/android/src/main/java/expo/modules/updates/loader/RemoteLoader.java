@@ -183,7 +183,7 @@ public class RemoteLoader {
         continue;
       }
 
-      FileDownloader.downloadAsset(assetEntity, mUpdatesDirectory, mConfiguration, new FileDownloader.AssetDownloadCallback() {
+      FileDownloader.downloadAsset(assetEntity, mUpdatesDirectory, mConfiguration, mContext, new FileDownloader.AssetDownloadCallback() {
         @Override
         public void onFailure(Exception e, AssetEntity assetEntity) {
           Log.e(TAG, "Failed to download asset from " + assetEntity.url, e);
