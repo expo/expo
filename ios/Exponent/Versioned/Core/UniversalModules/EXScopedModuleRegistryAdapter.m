@@ -105,7 +105,7 @@
   [moduleRegistry registerExportedModule:amplitudeModule];
 #endif
 
-#if __has_include(<EXPermissions/EXPermissions.h>)
+#if __has_include(<UMReactNativeAdapter/EXPermissionsService.h>)
   EXScopedPermissions *permissionsModule = [[EXScopedPermissions alloc] initWithExperienceId:experienceId andConstantsBinding:constantsBinding];
   [moduleRegistry registerExportedModule:permissionsModule];
   [moduleRegistry registerInternalModule:permissionsModule];
