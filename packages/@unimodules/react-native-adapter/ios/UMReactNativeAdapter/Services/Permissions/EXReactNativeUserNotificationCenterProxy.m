@@ -1,7 +1,8 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <EXPermissions/EXReactNativeUserNotificationCenterProxy.h>
 #import <UMCore/UMUtilities.h>
+
+#import <UMReactNativeAdapter/EXReactNativeUserNotificationCenterProxy.h>
 
 @implementation EXReactNativeUserNotificationCenterProxy
 

@@ -18,6 +18,8 @@ import org.unimodules.interfaces.permissions.Permissions
 import org.unimodules.interfaces.permissions.PermissionsResponse
 import org.unimodules.interfaces.permissions.PermissionsResponseListener
 
+internal const val ERROR_TAG = "ERR_PERMISSIONS"
+
 class PermissionsModule(context: Context) : ExportedModule(context) {
   private lateinit var mPermissions: Permissions
   private lateinit var mRequesters: Map<String, PermissionRequester>
@@ -34,7 +36,11 @@ class PermissionsModule(context: Context) : ExportedModule(context) {
       SimpleRequester(Manifest.permission.READ_CONTACTS)
     }
     mRequesters = mapOf(
-      PermissionsTypes.LOCATION.type to LocationRequester(mPermissions.isPermissionPresentInManifest(Manifest.permission.ACCESS_BACKGROUND_LOCATION)),
+      PermissionsTypes.LOCATION.type to LocationRequester(if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+        mPermissions.isPermissionPresentInManifest(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+      } else {
+        false
+      }),
       PermissionsTypes.CAMERA.type to SimpleRequester(Manifest.permission.CAMERA),
       PermissionsTypes.CONTACTS.type to contactsRequester,
       PermissionsTypes.AUDIO_RECORDING.type to SimpleRequester(Manifest.permission.RECORD_AUDIO),
@@ -87,7 +93,7 @@ class PermissionsModule(context: Context) : ExportedModule(context) {
     if (androidPermissions.isEmpty()) {
       // We pass an empty map here cause those permissions don't depend on the system result.
       promise.resolve(parsePermissionsResponse(permissionTypes, emptyMap()))
-      return;
+      return
     }
 
     permissionsServiceDelegate(createPermissionsResponseListener(permissionTypes, promise), androidPermissions)
