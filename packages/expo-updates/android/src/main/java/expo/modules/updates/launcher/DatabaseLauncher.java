@@ -3,6 +3,8 @@ package expo.modules.updates.launcher;
 import android.content.Context;
 import android.util.Log;
 
+import org.json.JSONObject;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,6 +21,7 @@ import expo.modules.updates.db.enums.UpdateStatus;
 import expo.modules.updates.loader.EmbeddedLoader;
 import expo.modules.updates.loader.FileDownloader;
 import expo.modules.updates.manifest.Manifest;
+import expo.modules.updates.manifest.ManifestMetadata;
 
 public class DatabaseLauncher implements Launcher {
 
@@ -143,7 +146,8 @@ public class DatabaseLauncher implements Launcher {
       filteredLaunchableUpdates.add(update);
     }
 
-    return mSelectionPolicy.selectUpdateToLaunch(filteredLaunchableUpdates, null);
+    JSONObject manifestFilters = ManifestMetadata.getManifestFilters(database, mConfiguration);
+    return mSelectionPolicy.selectUpdateToLaunch(filteredLaunchableUpdates, manifestFilters);
   }
 
   private File ensureAssetExists(AssetEntity asset, UpdatesDatabase database, Context context) {
