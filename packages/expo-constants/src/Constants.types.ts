@@ -95,6 +95,10 @@ export interface NativeConstants {
   expoVersion: string | null;
   isDetached?: boolean;
   intentUri?: string;
+  /**
+   * @deprecated Constants.installationId is deprecated in favor of generating your own ID and
+   * storing it. This API will be removed in SDK 44.
+   */
   installationId: string;
   isDevice: boolean;
   isHeadless: boolean;
@@ -113,6 +117,14 @@ export interface NativeConstants {
 }
 
 export interface Constants extends NativeConstants {
+  /**
+   * @deprecated Constants.deviceId is deprecated in favor of generating your own ID and storing it.
+   * This API will be removed in SDK 44.
+   */
   deviceId?: string;
+  /**
+   * @deprecated Constants.linkingUrl has been renamed to Constants.linkingUri. Consider using the
+   * Linking API directly. Constants.linkingUrl will be removed in SDK 44.
+   */
   linkingUrl?: string;
 }
