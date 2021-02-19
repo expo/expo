@@ -51,7 +51,7 @@
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
     @"updateMetadata": @{@"branchName": @"rollout"}
-  } config:config database:database];
+  } response:nil config:config database:database];
 
   _updateDefault1 = [EXUpdatesNewUpdate updateWithNewManifest:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e72",
@@ -60,7 +60,7 @@
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
     @"updateMetadata": @{@"branchName": @"default"}
-  } config:config database:database];
+  } response:nil config:config database:database];
   
   _updateRollout1 = [EXUpdatesNewUpdate updateWithNewManifest:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e73",
@@ -69,7 +69,7 @@
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
     @"updateMetadata": @{@"branchName": @"rollout"}
-  } config:config database:database];
+  } response:nil config:config database:database];
   
   _updateDefault2 = [EXUpdatesNewUpdate updateWithNewManifest:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e74",
@@ -78,7 +78,7 @@
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
     @"updateMetadata": @{@"branchName": @"default"}
-  } config:config database:database];
+  } response:nil config:config database:database];
   
   _updateRollout2 = [EXUpdatesNewUpdate updateWithNewManifest:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e75",
@@ -87,7 +87,7 @@
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
     @"updateMetadata": @{@"branchName": @"rollout"}
-  } config:config database:database];
+  } response:nil config:config database:database];
 
   _updateMultipleFilters = [EXUpdatesNewUpdate updateWithNewManifest:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e72",
@@ -96,7 +96,7 @@
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
     @"updateMetadata": @{@"key1": @"value1", @"key2": @"value2"}
-  } config:config database:database];
+  } response:nil config:config database:database];
 
   _selectionPolicy = [[EXUpdatesSelectionPolicyFilterAware alloc] initWithRuntimeVersion:runtimeVersion];
   _manifestFilters = @{@"branchName": @"rollout"};

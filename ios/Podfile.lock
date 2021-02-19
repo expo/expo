@@ -1843,6 +1843,7 @@ PODS:
     - UMCore
     - UMTaskManagerInterface
   - EXUpdates (0.5.0-rc.1):
+    - EXStructuredHeaders
     - React-Core
     - UMCore
   - EXVideoThumbnails (5.0.0):
@@ -3927,7 +3928,7 @@ SPEC CHECKSUMS:
   EXStoreReview: b552c0d512e1b5c2c7371041a033a2827dc01d46
   EXStructuredHeaders: 99b4a74850058a7eaeb7e4fe27f5cb605276c1f3
   EXTaskManager: e1956fd45bc301cbe852ebffccb9fd0b4ab78494
-  EXUpdates: b6fd75d347a9ca61b198a80a77164e33f71b0ee7
+  EXUpdates: 3ae108ae5771c177946017d209972a25c3649a89
   EXVideoThumbnails: 0be939563a5d46ce0d1fa9baea7d454b99475763
   EXWebBrowser: 2e708935a91ae0f51f5f8ffc85ba673950f34833
   FBAudienceNetwork: 648648b13d8ea3d39676542dece2b04dbe867497
