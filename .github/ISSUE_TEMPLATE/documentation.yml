@@ -3,19 +3,19 @@ about: 'You want to report something that is wrong or missing from the documenta
 issue_body: true
 title: '[docs] '
 labels: 'project: docs'
-inputs:
-  - type: description
+body:
+  - type: markdown
     attributes:
       value: Thanks for helping us make Expo even better! We want our docs to be an amazing resource, and that requires your feedback!
   - type: textarea
     attributes:
       label: Summary
-      required: true
       description: Clearly describe what is wrong or missing from the docs.
+    validations:
+      required: true
   - type: input
     attributes:
       label: Link to the related docs page
-      required: false
-  - type: description
+  - type: markdown
     attributes:
       value: If this is a typo, or something you feel up to fixing, please do so! You can edit any page in our docs by scrolling to the bottom and selecting `Edit this page`.
