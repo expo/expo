@@ -3,9 +3,8 @@ import { Platform } from '@unimodules/core';
 import * as Localization from '../Localization';
 
 function validateString(result) {
-  expect(result).toBeDefined();
   expect(typeof result).toBe('string');
-  if (result) expect(result.length > 0).toBe(true);
+  expect(result.length).toBeGreaterThan(0);
 }
 
 function validateStringArray(result) {
