@@ -49,7 +49,7 @@
   },
   "devDependencies": {
     "@types/invariant": "^2.2.33",
-    "expo-module-scripts": "~1.2.0",
+    "expo-module-scripts": "^2.0.0",
     "react-test-renderer": "~16.11.0"
   }
 }

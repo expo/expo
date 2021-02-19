@@ -49,6 +49,6 @@
     "invariant": "2.2.4"
   },
   "devDependencies": {
-    "expo-module-scripts": "~1.2.0"
+    "expo-module-scripts": "^2.0.0"
   }
 }
