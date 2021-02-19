@@ -21,7 +21,7 @@ UM_EXPORT_METHOD_AS(getLocalizationAsync,
 - (NSDictionary *)constantsToExport
 {
   NSLocale *locale = [NSLocale currentLocale];
-  NSString *languageCode = [locale objectForKey:NSLocaleLanguageCode];
+  NSString *languageCode = locale.languageCode;
   NSArray<NSString *> *languageIds = [NSLocale preferredLanguages];
   if (![languageIds count]) {
     languageIds = @[@"en-US"];
