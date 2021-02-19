@@ -60,8 +60,8 @@ export const locale = parseLocale(ExpoLocalization.locale);
 export const locales = ExpoLocalization.locales.map(parseLocale);
 
 /**
- * The current timezone in display format.
- * On Web timezone is calculated with Intl.DateTimeFormat().resolvedOptions().timeZone. For a better estimation you could use the moment-timezone package but it will add significant bloat to your website's bundle size.
+ * The current time zone in display format.
+ * On Web time zone is calculated with Intl.DateTimeFormat().resolvedOptions().timeZone. For a better estimation you could use the moment-timezone package but it will add significant bloat to your website's bundle size.
  *
  * @example `America/Los_Angeles`
  */
