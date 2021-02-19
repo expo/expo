@@ -35,6 +35,7 @@
     "preset": "expo-module-scripts/ios"
   },
   "dependencies": {
+    "@expo/config-plugins": "^1.0.18",
     "uuid": "^3.3.2"
   },
   "unimodulePeerDependencies": {
