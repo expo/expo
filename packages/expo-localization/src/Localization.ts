@@ -35,6 +35,7 @@ export const isoCurrencyCodes = ExpoLocalization.isoCurrencyCodes;
 
 /**
  * Boolean value that indicates whether the system uses the metric system.
+ * On Android and web, this is inferred from the current region.
  */
 export const isMetric = ExpoLocalization.isMetric;
 
@@ -47,7 +48,8 @@ export const isMetric = ExpoLocalization.isMetric;
 export const isRTL = ExpoLocalization.isRTL;
 
 /**
- * Device locale (Unicode BCP 47 identifier), consisting of a language-code and optional script, region and variant codes.
+ * An [IETF BCP 47 language tag](https://en.wikipedia.org/wiki/IETF_language_tag),
+ * consisting of a two-character language code and optional script, region and variant codes.
  *
  * @example `en`, `en-US`, `zh-Hans`, `zh-Hans-CN`, `en-emodeng`
  */
@@ -55,7 +57,7 @@ export const locale = parseLocale(ExpoLocalization.locale);
 
 /**
  * List of all the native languages provided by the user settings.
- * These are returned in the order the user defines in their native settings.
+ * These are returned in the order the user defines in their device settings.
  */
 export const locales = ExpoLocalization.locales.map(parseLocale);
 
@@ -68,7 +70,7 @@ export const locales = ExpoLocalization.locales.map(parseLocale);
 export const timezone = ExpoLocalization.timezone;
 
 /**
- * Region code for your device which came from Region setting in Language & Region.
+ * The region code for your device that comes from the Region setting under Language & Region on iOS.
  * This value is always available on iOS, but might return `null` on Android or web.
  *
  * @example `US`, `NZ`, null

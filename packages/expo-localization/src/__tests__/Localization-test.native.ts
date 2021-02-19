@@ -50,7 +50,7 @@ afterEach(() => {
 
 function validateString(result) {
   expect(typeof result).toBe('string');
-  if (result) expect(result.length > 0).toBe(true);
+  expect(result.length).toBeGreaterThan(0);
 }
 
 function validateStringArray(result) {

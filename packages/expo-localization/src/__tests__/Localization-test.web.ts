@@ -94,7 +94,7 @@ describe(`Localization defines constants`, () => {
   it('Gets ISO currency codes', async () => {
     const result = Localization.isoCurrencyCodes;
     validateStringArray(result);
-    result.map(validateString);
+    result.forEach(validateString);
   });
   it('Gets the timezone', async () => {
     validateString(Localization.timezone);
