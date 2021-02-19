@@ -39,7 +39,9 @@
     "react": "*",
     "react-native": "*"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@expo/config-plugins": "^1.0.18"
+  },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"
   }
