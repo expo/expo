@@ -517,7 +517,7 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
   [self _setJsonData:manifestFilters withKey:EXUpdatesDatabaseManifestFiltersKey scopeKey:scopeKey isInTransaction:NO error:error];
 }
 
-- (void)setServerDataWithManifest:(EXUpdatesUpdate *)updateManifest error:(NSError ** _Nullable)error
+- (void)setMetadataWithManifest:(EXUpdatesUpdate *)updateManifest error:(NSError ** _Nullable)error
 {
   sqlite3_exec(_db, "BEGIN;", NULL, NULL, NULL);
   if (updateManifest.serverDefinedHeaders) {
