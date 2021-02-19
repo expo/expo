@@ -112,7 +112,7 @@ describe(`Localization defines constants`, () => {
     validateString(Localization.decimalSeparator);
   });
   it('Gets the grouping separator', async () => {
-    const result = Localization.decimalSeparator;
+    const result = Localization.groupingSeparator;
     expect(result).toBeDefined();
     expect(typeof result).toBe('string');
   });
