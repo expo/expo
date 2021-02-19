@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- Remove sticky notification on service stop on Android. ([#11775](https://github.com/expo/expo/pull/11775) by [@zaguiini](https://github.com/zaguiini))
+
 ## 11.0.0 — 2021-01-15
 
 ### ⚠️ Notices
