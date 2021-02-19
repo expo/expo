@@ -170,6 +170,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
                                                   if (isValid) {
                                                     mutableManifest[@"isVerified"] = @(YES);
                                                     EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:[mutableManifest copy]
+                                                                                                         response:response
                                                                                                            config:self->_config
                                                                                                          database:database];
                                                     successBlock(update);
@@ -185,6 +186,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
     } else {
       mutableManifest[@"isVerified"] = @(NO);
       EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:[(NSDictionary *)mutableManifest copy]
+                                                           response:response
                                                              config:self->_config
                                                            database:database];
       successBlock(update);

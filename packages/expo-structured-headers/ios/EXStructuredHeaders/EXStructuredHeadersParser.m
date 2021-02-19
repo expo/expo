@@ -9,6 +9,8 @@ typedef NS_ENUM(NSInteger, EXStructuredHeadersParserNumberType) {
   EXStructuredHeadersParserNumberTypeDecimal
 };
 
+static NSString * const EXStructuredHeadersParserErrorDomain = @"EXStructuredHeadersParser";
+
 @interface EXStructuredHeadersParser ()
 
 @property (nonatomic, strong) NSString *raw;
@@ -534,8 +536,9 @@ typedef NS_ENUM(NSInteger, EXStructuredHeadersParserNumberType) {
 
 - (NSError *)errorWithMessage:(NSString *)message
 {
-  // TODO: implement this
-  return [NSError new];
+  return [NSError errorWithDomain:EXStructuredHeadersParserErrorDomain code:1 userInfo:@{
+    NSLocalizedDescriptionKey: message
+  }];
 }
 
 @end

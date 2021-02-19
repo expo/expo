@@ -66,13 +66,13 @@
 
 - (void)testUpdateWithManifest_Legacy
 {
-  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_legacyManifest config:_configUsesLegacyManifestTrue database:_database];
+  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_legacyManifest response:nil config:_configUsesLegacyManifestTrue database:_database];
   XCTAssert(update != nil);
 }
 
 - (void)testUpdateWithManifest_New
 {
-  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_easNewManifest config:_configUsesLegacyManifestFalse database:_database];
+  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_easNewManifest response:nil config:_configUsesLegacyManifestFalse database:_database];
   XCTAssert(update != nil);
 }
 

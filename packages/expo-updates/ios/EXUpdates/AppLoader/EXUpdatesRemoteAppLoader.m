@@ -3,12 +3,15 @@
 #import <EXUpdates/EXUpdatesRemoteAppLoader.h>
 #import <EXUpdates/EXUpdatesCrypto.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
+#import <UMCore/UMUtilities.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXUpdatesRemoteAppLoader ()
 
 @property (nonatomic, strong) EXUpdatesFileDownloader *downloader;
+
+@property (nonatomic, strong) EXUpdatesUpdate *remoteUpdate;
 
 @end
 static NSString * const EXUpdatesRemoteAppLoaderErrorDomain = @"EXUpdatesRemoteAppLoader";
@@ -32,9 +35,27 @@ static NSString * const EXUpdatesRemoteAppLoaderErrorDomain = @"EXUpdatesRemoteA
                     error:(EXUpdatesAppLoaderErrorBlock)error
 {
   self.manifestBlock = manifestBlock;
-  self.successBlock = success;
   self.errorBlock = error;
+
+  UM_WEAKIFY(self)
+  self.successBlock = ^(EXUpdatesUpdate * _Nullable update) {
+    UM_STRONGIFY(self)
+    // even if update is nil (meaning we didn't load a new update),
+    // we want to persist the header data from _remoteUpdate
+    if (self->_remoteUpdate) {
+      dispatch_async(self.database.databaseQueue, ^{
+        NSError *serverDataError;
+        [self.database setServerDataWithManifest:self->_remoteUpdate error:&serverDataError];
+        if (serverDataError) {
+          NSLog(@"Error persisting header data to disk: %@", serverDataError.localizedDescription);
+        }
+      });
+    }
+    success(update);
+  };
+
   [_downloader downloadManifestFromURL:url withDatabase:self.database successBlock:^(EXUpdatesUpdate *update) {
+    self->_remoteUpdate = update;
     [self startLoadingFromManifest:update];
   } errorBlock:^(NSError *error, NSURLResponse *response) {
     if (self.errorBlock) {

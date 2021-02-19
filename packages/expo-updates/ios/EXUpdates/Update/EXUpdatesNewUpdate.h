@@ -7,8 +7,11 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EXUpdatesNewUpdate : NSObject
 
 + (EXUpdatesUpdate *)updateWithNewManifest:(NSDictionary *)rootManifest
+                                  response:(nullable NSURLResponse *)response
                                     config:(EXUpdatesConfig *)config
                                   database:(EXUpdatesDatabase *)database;
+
++ (nullable NSDictionary *)dictionaryWithStructuredHeader:(NSString *)headerString;
 
 @end
 
