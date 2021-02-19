@@ -1,6 +1,6 @@
 export declare type Localization = {
     /**
-     * Three character ISO 4217 currency code. Returns `null` on web.
+     * Three-character ISO 4217 currency code. Returns `null` on web.
      *
      * @example `USD`, `EUR`, `CNY`, null
      */
@@ -23,6 +23,7 @@ export declare type Localization = {
     isoCurrencyCodes: string[];
     /**
      * Boolean value that indicates whether the system uses the metric system.
+     * On Android and web, this is inferred from the current region.
      */
     isMetric: boolean;
     /**
@@ -33,21 +34,22 @@ export declare type Localization = {
      */
     isRTL: boolean;
     /**
-     * Device locale (Unicode BCP 47 identifier), consisting of a language-code and optional script, region and variant codes.
+     * An [IETF BCP 47 language tag](https://en.wikipedia.org/wiki/IETF_language_tag),
+     * consisting of a two-character language code and optional script, region and variant codes.
      *
      * @example `en`, `en-US`, `zh-Hans`, `zh-Hans-CN`, `en-emodeng`
      */
     locale: string;
     /**
      * List of all the languages provided by the user settings.
-     * These are returned in the order the user defines in their native settings.
+     * These are returned in the order the user defines in their device settings.
      *
      * @example [`en`, `en-US`, `zh-Hans`, `zh-Hans-CN`, `en-emodeng`]
      */
     locales: string[];
     /**
-     * Region code for your device which came from Region setting in Language & Region.
-     * This value is always available on iOS, but might not be available on Android or web.
+     * The region code for your device that comes from the Region setting under Language & Region on iOS.
+     * This value is always available on iOS, but might return `null` on Android or web.
      *
      * @example `US`, `NZ`, null
      */
