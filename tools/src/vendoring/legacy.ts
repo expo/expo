@@ -325,18 +325,6 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.webview',
       },
     ],
-    warnings: [
-      chalk.bold.yellow(
-        `\n${chalk.green('react-native-webview')} exposes ${chalk.blue(
-          'useSharedPool'
-        )} property which has to be handled differently in Expo Client. After upgrading this library, please ensure that proper patch is in place.`
-      ),
-      chalk.bold.yellow(
-        `See commit ${chalk.cyan(
-          'https://github.com/expo/expo/commit/3aeb66e33dc391399ea1c90fd166425130d17a12'
-        )}.\n`
-      ),
-    ],
   },
   'react-native-safe-area-context': {
     repoUrl: 'https://github.com/th3rdwave/react-native-safe-area-context',
