@@ -55,7 +55,11 @@
 #import <React/JSCExecutorFactory.h>
 #import <strings.h>
 
+// Import 3rd party modules that need to be scoped.
+#import <react-native-webview/RNCWebViewManager.h>
+
 RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(void);
+RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 
 @interface RCTEventDispatcher (REAnimated)
 
@@ -114,6 +118,13 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
     [self configureABIWithFatalHandler:fatalHandler logFunction:logFunction logThreshold:threshold];
   }
   return self;
+}
+
++ (void)load
+{
+  // Register scoped 3rd party modules. Some of them are separate pods that
+  // don't have access to EXScopedModuleRegistry and so they can't register themselves.
+  EXRegisterScopedModule([RNCWebViewManager class], EX_KERNEL_SERVICE_NONE, nil);
 }
 
 - (void)bridgeWillStartLoading:(id)bridge
