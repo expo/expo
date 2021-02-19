@@ -56,14 +56,21 @@ public class FileDownloader {
   private static OkHttpClient getClient(Context context) {
     if (sClient == null) {
       sClient = new OkHttpClient.Builder().cache(getCache(context)).build();
+    } else {
+      if (sClient.cache() == null || !getCacheDirectory(context).getAbsolutePath().equals(sClient.cache().directory().getAbsolutePath())) {
+        throw new AssertionError("Error: trying to access static OkHttpClient that was created with a different context.");
+      }
     }
     return sClient;
   }
 
   private static Cache getCache(Context context) {
     int cacheSize = 50 * 1024 * 1024; // 50 MiB
-    final File directory = new File(context.getCacheDir(), "okhttp");
-    return new Cache(directory, cacheSize);
+    return new Cache(getCacheDirectory(context), cacheSize);
+  }
+
+  private static File getCacheDirectory(Context context) {
+    return new File(context.getCacheDir(), "okhttp");
   }
 
   public static void downloadFileToPath(Request request, final File destination, final Context context, final FileDownloadCallback callback) {
