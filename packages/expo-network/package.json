@@ -26,6 +26,9 @@
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
+  "devDependencies": {
+    "expo-module-scripts": "~1.2.0"
+  },
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/network/",
