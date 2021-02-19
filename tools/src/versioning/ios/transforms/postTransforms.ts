@@ -151,8 +151,8 @@ export function postTransforms(versionName: string): TransformPipeline {
       // react-native-webview
       {
         paths: 'EXVersionManager.mm',
-        replace: /#import <(react-native-webview)\//g,
-        with: `#import <${versionName}$1/`,
+        replace: /#import <react-native-(webview)\//g,
+        with: `#import <${versionName}react-native-$1/`,
       },
 
       // react-native-reanimated
