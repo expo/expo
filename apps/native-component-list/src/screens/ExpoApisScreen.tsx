@@ -51,6 +51,7 @@ const screens = [
   'FileSystem',
   'FirebaseRecaptcha',
   'Font',
+  'Errors',
   'Geocoding',
   'Google',
   'GoogleSignIn',

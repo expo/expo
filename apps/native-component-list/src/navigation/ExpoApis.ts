@@ -28,6 +28,7 @@ const ContactDetail = optionalRequire(() => require('../screens/Contacts/Contact
 const Contacts = optionalRequire(() => require('../screens/Contacts/ContactsScreen'));
 const Device = optionalRequire(() => require('../screens/DeviceScreen'));
 const DocumentPicker = optionalRequire(() => require('../screens/DocumentPickerScreen'));
+const Errors = optionalRequire(() => require('../screens/ErrorScreen'));
 const Events = optionalRequire(() => require('../screens/EventsScreen'));
 const FacebookLogin = optionalRequire(() => require('../screens/FacebookLoginScreen'));
 const FaceDetector = optionalRequire(() => require('../screens/FaceDetectorScreen'));
@@ -108,6 +109,7 @@ const optionalScreens: {
   Constants,
   Contacts,
   ContactDetail,
+  Errors,
   Events,
   ImageManipulator,
   ImagePicker,
