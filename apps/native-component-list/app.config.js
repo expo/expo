@@ -44,7 +44,7 @@ export default ({ config }) => {
   config.plugins.push([
     'expo-document-picker',
     {
-      appleTeamId: 'XXXXXX'
+      appleTeamId: 'XXXXXX',
     },
   ]);
 
