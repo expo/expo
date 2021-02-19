@@ -91,7 +91,7 @@ const constants = {
   get deviceId() {
     if (!warnedAboutDeviceId) {
       console.warn(
-        `Constants.deviceId has been deprecated in favor of generating and storing your own ID. This API will be removed in SDK 43.`
+        `Constants.deviceId has been deprecated in favor of generating and storing your own ID. This API will be removed in SDK 44.`
       );
       warnedAboutDeviceId = true;
     }
@@ -100,7 +100,7 @@ const constants = {
   get linkingUrl() {
     if (!warnedAboutLinkingUrl) {
       console.warn(
-        `Constants.linkingUrl has been renamed to Constants.linkingUri. Consider using the Linking API directly. Constants.linkingUrl will be removed in SDK 43.`
+        `Constants.linkingUrl has been renamed to Constants.linkingUri. Consider using the Linking API directly. Constants.linkingUrl will be removed in SDK 44.`
       );
       warnedAboutLinkingUrl = true;
     }

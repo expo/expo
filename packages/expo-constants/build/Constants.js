@@ -57,14 +57,14 @@ const constants = {
     // Legacy aliases
     get deviceId() {
         if (!warnedAboutDeviceId) {
-            console.warn(`Constants.deviceId has been deprecated in favor of generating and storing your own ID. This API will be removed in SDK 43.`);
+            console.warn(`Constants.deviceId has been deprecated in favor of generating and storing your own ID. This API will be removed in SDK 44.`);
             warnedAboutDeviceId = true;
         }
         return nativeConstants.installationId;
     },
     get linkingUrl() {
         if (!warnedAboutLinkingUrl) {
-            console.warn(`Constants.linkingUrl has been renamed to Constants.linkingUri. Consider using the Linking API directly. Constants.linkingUrl will be removed in SDK 43.`);
+            console.warn(`Constants.linkingUrl has been renamed to Constants.linkingUri. Consider using the Linking API directly. Constants.linkingUrl will be removed in SDK 44.`);
             warnedAboutLinkingUrl = true;
         }
         return nativeConstants.linkingUri;
