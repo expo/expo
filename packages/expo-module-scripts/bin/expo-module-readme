@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 'use strict';
 
-const path = require('path');
 const fs = require('fs');
 const glob = require('glob');
+const path = require('path');
 
 function replaceAll(current, replacement, content) {
-  let regexp = new RegExp(escapeRegExp('${' + current + '}'), 'g');
+  const regexp = new RegExp(escapeRegExp('${' + current + '}'), 'g');
   return content.replace(regexp, replacement);
 }
 
@@ -15,53 +15,53 @@ function escapeRegExp(string) {
 }
 
 function removeUnapplicableSections(name, content) {
-  let opener = `<!--- remove for ${name} --->`;
-  let closer = `<!--- end remove for ${name} --->`;
+  const opener = `<!--- remove for ${name} --->`;
+  const closer = `<!--- end remove for ${name} --->`;
   let nextContent = content;
 
   while (nextContent.includes(opener)) {
-    let openIndex = nextContent.indexOf(opener);
+    const openIndex = nextContent.indexOf(opener);
     let closeIndex = nextContent.indexOf(closer);
     if (!closeIndex) {
       console.warn(`Can't find section closer for ${name}`);
       closeIndex = openIndex + opener.length;
     }
-    let section = nextContent.substring(openIndex, closeIndex + closer.length);
+    const section = nextContent.substring(openIndex, closeIndex + closer.length);
     nextContent = nextContent.replace(section, '');
   }
   return nextContent;
 }
 
 function removeOptionals(content) {
-  let regexp = new RegExp(escapeRegExp('<!---') + '.*' + escapeRegExp('--->') + '\n', 'g');
+  const regexp = new RegExp(escapeRegExp('<!---') + '.*' + escapeRegExp('--->') + '\n', 'g');
   return content.replace(regexp, '');
 }
 
 const DEFAULT_HOMEPAGE = 'https://docs.expo.io/versions/latest/';
 
 function generateREADME() {
-  let template = path.join(__dirname, '..', 'templates', 'README.md');
+  const template = path.join(__dirname, '..', 'templates', 'README.md');
   let readme = fs.readFileSync(template, 'utf8');
-  let pkg = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'package.json'), 'utf8'));
-  let packageName = pkg.name;
-  let homepage = pkg.homepage || DEFAULT_HOMEPAGE;
-  let description = pkg.description || 'Put a description of your Unimodule here';
+  const pkg = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'package.json'), 'utf8'));
+  const packageName = pkg.name;
+  const homepage = pkg.homepage || DEFAULT_HOMEPAGE;
+  const description = pkg.description || 'Put a description of your Unimodule here';
 
   // This isn't really accurate, but these all behave the same as far as READMEs go
-  let isInterface = packageName.endsWith('-interface') || packageName.endsWith('-provider');
+  const isInterface = packageName.endsWith('-interface') || packageName.endsWith('-provider');
 
-  let isAndroid = fs.existsSync(path.join(process.cwd(), 'android'));
-  let isIOS = fs.existsSync(path.join(process.cwd(), 'ios'));
+  const isAndroid = fs.existsSync(path.join(process.cwd(), 'android'));
+  const isIOS = fs.existsSync(path.join(process.cwd(), 'ios'));
 
   // Search in docs/versions/unversioned/sdk/*.md - can't find it? Ask what it should be and initialize for them
   readme = replaceAll('packageName', packageName, readme);
   readme = replaceAll('description', description, readme);
 
   if (isIOS) {
-    let podspecs = glob.sync('./**/*.podspec');
-    let podspecPath = podspecs[0];
-    let podName = (() => {
-      let parts = podspecPath.split('/');
+    const podspecs = glob.sync('{ios/**/,}*.podspec');
+    const podspecPath = podspecs[0];
+    const podName = (() => {
+      const parts = podspecPath.split('/');
       return parts[parts.length - 1].replace('.podspec', '');
     })();
 
@@ -81,7 +81,7 @@ function generateREADME() {
       );
     } else {
       docName = (() => {
-        let parts = homepage.split('/');
+        const parts = homepage.split('/');
         // Handle both with and without trailing slash
         let name = parts[parts.length - 1];
         if (name === '') {
@@ -92,7 +92,7 @@ function generateREADME() {
     }
     readme = replaceAll('docName', docName, readme);
     if (isAndroid) {
-      let androidPackages = glob.sync('android/**/*Package.java');
+      const androidPackages = glob.sync('android/**/*Package.java');
       let androidPackage;
       let androidPackagePath = 'expo.modules.yourModule.YourPackage';
       let androidPackageName = 'YourPackage';
@@ -115,7 +115,7 @@ function generateREADME() {
             .replace(/\//g, '.')
             .replace('.java', '');
           androidPackageName = (() => {
-            let parts = androidPackagePath.split('.');
+            const parts = androidPackagePath.split('.');
             return parts[parts.length - 1];
           })();
 
@@ -133,8 +133,8 @@ function generateREADME() {
   return removeOptionals(readme);
 }
 
-let readme = generateREADME();
-let readmePath = path.join(process.cwd(), 'README.md');
+const readme = generateREADME();
+const readmePath = path.join(process.cwd(), 'README.md');
 if (fs.existsSync(readmePath)) {
   console.log('expo-module-scripts: README.md exists, not updating');
 } else {
