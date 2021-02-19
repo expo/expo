@@ -43,7 +43,7 @@ UM_EXPORT_METHOD_AS(getLocalizationAsync,
 
 + (NSString * _Nullable)countryCodeForLocale:(NSLocale * _Nonnull)locale
 {
-  NSString *countryCode = [locale objectForKey:NSLocaleCountryCode];
+  NSString *countryCode = locale.countryCode;
   if (countryCode == nil) {
     return nil;
   }
