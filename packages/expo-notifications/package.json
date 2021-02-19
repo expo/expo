@@ -58,7 +58,7 @@
     "@types/fs-extra": "^9.0.6",
     "@types/node-fetch": "^2.5.7",
     "@types/uuid": "^3.4.7",
-    "expo-module-scripts": "~1.2.0",
+    "expo-module-scripts": "^2.0.0",
     "memfs": "^2.15.5",
     "node-fetch": "^2.6.1"
   }
