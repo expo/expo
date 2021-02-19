@@ -138,6 +138,7 @@ public class LocalizationModule extends ExportedModule {
   private static String getCountryCode(Locale locale) {
     try {
       String country = locale.getCountry();
+      // overwrite Latin America and Caribbean region
       if (country.equals("419")) {
         return "UN";
       }

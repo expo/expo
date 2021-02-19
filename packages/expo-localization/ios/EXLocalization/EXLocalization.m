@@ -28,11 +28,11 @@ UM_EXPORT_METHOD_AS(getLocalizationAsync,
   }
   
   return @{
-    @"currency": [EXLocalization currencyCodeForLocale:locale] ?: @"USD",
-    @"decimalSeparator": [locale objectForKey:NSLocaleDecimalSeparator] ?: @".",
-    @"groupingSeparator": [locale objectForKey:NSLocaleGroupingSeparator] ?: @",",
+    @"currency": locale.currencyCode ?: @"USD",
+    @"decimalSeparator": locale.decimalSeparator ?: @".",
+    @"groupingSeparator": locale.groupingSeparator ?: @",",
     @"isoCurrencyCodes": [NSLocale ISOCurrencyCodes],
-    @"isMetric": @([[locale objectForKey:NSLocaleUsesMetricSystem] boolValue]),
+    @"isMetric": @(locale.usesMetricSystem),
     @"isRTL": @((BOOL)([NSLocale characterDirectionForLanguage:languageCode] == NSLocaleLanguageDirectionRightToLeft)),
     @"locale": [languageIds objectAtIndex:0],
     @"locales": languageIds,
@@ -47,16 +47,11 @@ UM_EXPORT_METHOD_AS(getLocalizationAsync,
   if (countryCode == nil) {
     return nil;
   }
+  // overwrite Latin America and Caribbean region
   if ([countryCode isEqualToString:@"419"]) {
     return @"UN";
   }
-  return [countryCode uppercaseString];
-}
-
-+ (NSString * _Nullable)currencyCodeForLocale:(NSLocale * _Nonnull)locale
-{
-  NSString *currencyCode = [locale objectForKey:NSLocaleCurrencyCode];
-  return currencyCode != nil ? [currencyCode uppercaseString] : nil;
+  return countryCode;
 }
 
 @end
