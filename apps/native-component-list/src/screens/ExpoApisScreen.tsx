@@ -34,6 +34,7 @@ const screens = [
   'Appearance',
   'AppleAuthentication',
   'Audio',
+  'AsyncStorage',
   'AuthSession',
   'BackgroundFetch',
   'Battery',
