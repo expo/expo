@@ -74,7 +74,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
   } errorBlock:errorBlock];
 }
 
-- (NSURLRequest *)createManifestRequestWithURL:(NSURL *)url
+- (NSURLRequest *)createManifestRequestWithURL:(NSURL *)url extraHeaders:(nullable NSDictionary *)extraHeaders
 {
   NSURLRequestCachePolicy cachePolicy = _sessionConfiguration ? _sessionConfiguration.requestCachePolicy : NSURLRequestUseProtocolCachePolicy;
   if (_config.usesLegacyManifest) {
@@ -83,17 +83,18 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
   }
 
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:cachePolicy timeoutInterval:EXUpdatesDefaultTimeoutInterval];
-  [self _setManifestHTTPHeaderFields:request];
+  [self _setManifestHTTPHeaderFields:request withExtraHeaders:extraHeaders];
 
   return request;
 }
 
 - (void)downloadManifestFromURL:(NSURL *)url
                    withDatabase:(EXUpdatesDatabase *)database
+                   extraHeaders:(nullable NSDictionary *)extraHeaders
                    successBlock:(EXUpdatesFileDownloaderManifestSuccessBlock)successBlock
                      errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock
 {
-  NSURLRequest *request = [self createManifestRequestWithURL:url];
+  NSURLRequest *request = [self createManifestRequestWithURL:url extraHeaders:extraHeaders];
   [self _downloadDataWithRequest:request successBlock:^(NSData *data, NSURLResponse *response) {
     if (![response isKindOfClass:[NSHTTPURLResponse class]]) {
       errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
@@ -264,7 +265,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
   }
 }
 
-- (void)_setManifestHTTPHeaderFields:(NSMutableURLRequest *)request
+- (void)_setManifestHTTPHeaderFields:(NSMutableURLRequest *)request withExtraHeaders:(nullable NSDictionary *)extraHeaders
 {
   [request setValue:@"application/expo+json,application/json" forHTTPHeaderField:@"Accept"];
   [request setValue:@"true" forHTTPHeaderField:@"Expo-JSON-Error"];
@@ -288,6 +289,17 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
       previousFatalError = [previousFatalError substringToIndex:1024];
     }
     [request setValue:previousFatalError forHTTPHeaderField:@"Expo-Fatal-Error"];
+  }
+
+  if (extraHeaders) {
+    for (NSString *key in extraHeaders) {
+      id value = extraHeaders[key];
+      if ([value isKindOfClass:[NSString class]]) {
+        [request setValue:value forHTTPHeaderField:key];
+      } else {
+        [request setValue:[(NSObject *)value description] forHTTPHeaderField:key];
+      }
+    }
   }
 
   [self _setHTTPHeaderFields:request];

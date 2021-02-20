@@ -30,7 +30,7 @@
   }];
   EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
 
-  NSURLRequest *actual = [downloader createManifestRequestWithURL:[NSURL URLWithString:@"https://exp.host/@test/test"]];
+  NSURLRequest *actual = [downloader createManifestRequestWithURL:[NSURL URLWithString:@"https://exp.host/@test/test"] extraHeaders:nil];
   XCTAssertEqual(NSURLRequestReloadIgnoringCacheData, actual.cachePolicy);
   // this fails, seems like this header isn't actually set on the object until later
   // XCTAssertEqualObjects(@"no-cache", [actual valueForHTTPHeaderField:@"Cache-Control"]);
@@ -45,9 +45,27 @@
   }];
   EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
 
-  NSURLRequest *actual = [downloader createManifestRequestWithURL:[NSURL URLWithString:@"https://exp.host/@test/test"]];
+  NSURLRequest *actual = [downloader createManifestRequestWithURL:[NSURL URLWithString:@"https://exp.host/@test/test"] extraHeaders:nil];
   XCTAssertEqual(NSURLRequestUseProtocolCachePolicy, actual.cachePolicy);
   XCTAssertNil([actual valueForHTTPHeaderField:@"Cache-Control"]);
+}
+
+- (void)testExtraHeaders_ObjectTypes
+{
+  EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
+    @"EXUpdatesURL": @"https://exp.host/@test/test",
+    @"EXUpdatesRuntimeVersion": @"1.0"
+  }];
+  EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
+
+  NSDictionary *extraHeaders = @{
+    @"expo-string": @"test",
+    @"expo-number": @(47.5)
+  };
+
+  NSURLRequest *actual = [downloader createManifestRequestWithURL:[NSURL URLWithString:@"https://exp.host/@test/test"] extraHeaders:extraHeaders];
+  XCTAssertEqualObjects(@"test", [actual valueForHTTPHeaderField:@"expo-string"]);
+  XCTAssertEqualObjects(@"47.5", [actual valueForHTTPHeaderField:@"expo-number"]);
 }
 
 @end

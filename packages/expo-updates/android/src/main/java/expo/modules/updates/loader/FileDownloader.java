@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Map;
 
 import expo.modules.updates.db.entity.AssetEntity;
@@ -100,9 +101,9 @@ public class FileDownloader {
     });
   }
 
-  public static void downloadManifest(final UpdatesConfiguration configuration, final Context context, final ManifestDownloadCallback callback) {
+  public static void downloadManifest(final UpdatesConfiguration configuration, JSONObject extraHeaders, final Context context, final ManifestDownloadCallback callback) {
     try {
-      downloadData(setHeadersForManifestUrl(configuration, context), context, new Callback() {
+      downloadData(setHeadersForManifestUrl(configuration, extraHeaders, context), context, new Callback() {
         @Override
         public void onFailure(Call call, IOException e) {
           callback.onFailure("Failed to download manifest from URL: " + configuration.getUpdateUrl(), e);
@@ -274,13 +275,10 @@ public class FileDownloader {
     return requestBuilder.build();
   }
 
-  /* package */ static Request setHeadersForManifestUrl(UpdatesConfiguration configuration, Context context) {
+  /* package */ static Request setHeadersForManifestUrl(UpdatesConfiguration configuration, JSONObject extraHeaders, Context context) {
     Request.Builder requestBuilder = new Request.Builder()
             .url(configuration.getUpdateUrl().toString())
             .header("Accept", "application/expo+json,application/json")
-            .header("Expo-Platform", "android")
-            .header("Expo-Api-Version", "1")
-            .header("Expo-Updates-Environment", "BARE")
             .header("Expo-JSON-Error", "true")
             // as of 2020-11-25, the EAS Update alpha returns an error if Expo-Accept-Signature: true is included in the request
             .header("Expo-Accept-Signature", String.valueOf(configuration.usesLegacyManifest()));
@@ -311,6 +309,19 @@ public class FileDownloader {
         previousFatalError.substring(0, Math.min(1024, previousFatalError.length()))
       );
     }
+
+    if (extraHeaders != null) {
+      Iterator<String> keySet = extraHeaders.keys();
+      while (keySet.hasNext()) {
+        String key = keySet.next();
+        requestBuilder.header(key, extraHeaders.optString(key, ""));
+      }
+    }
+
+    requestBuilder = requestBuilder
+      .header("Expo-Platform", "android")
+      .header("Expo-Api-Version", "1")
+      .header("Expo-Updates-Environment", "BARE");
 
     for (Map.Entry<String, String> entry : configuration.getRequestHeaders().entrySet()) {
       requestBuilder.header(entry.getKey(), entry.getValue());
