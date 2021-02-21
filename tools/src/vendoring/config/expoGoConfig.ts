@@ -148,8 +148,9 @@ const config: VendoringTargetConfig = {
     'react-native-shared-element': {
       source: 'https://github.com/IjzerenHein/react-native-shared-element',
     },
-    '@react-native-community/segmented-control': {
-      source: 'https://github.com/react-native-community/segmented-control',
+    '@react-native-segmented-control/segmented-control': {
+      source: 'https://github.com/react-native-segmented-control/segmented-control',
+      ios: {},
     },
     '@react-native-picker/picker': {
       source: 'https://github.com/react-native-picker/picker',

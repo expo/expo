@@ -2198,6 +2198,8 @@ PODS:
   - React-jsinspector (0.63.2)
   - react-native-netinfo (5.9.10):
     - React-Core
+  - react-native-segmented-control (2.3.0):
+    - React-Core
   - react-native-webview (11.2.3):
     - React-Core
   - React-RCTActionSheet (0.63.2):
@@ -2688,6 +2690,7 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../react-native-lab/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../react-native-lab/react-native/ReactCommon/jsinspector`)
   - "react-native-netinfo (from `./vendored/unversioned/@react-native-community/netinfo`)"
+  - "react-native-segmented-control (from `./vendored/unversioned/@react-native-segmented-control/segmented-control`)"
   - react-native-webview (from `./vendored/unversioned/react-native-webview`)
   - React-RCTActionSheet (from `../react-native-lab/react-native/Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../react-native-lab/react-native/Libraries/NativeAnimation`)
@@ -3513,6 +3516,8 @@ EXTERNAL SOURCES:
     :path: "../react-native-lab/react-native/ReactCommon/jsinspector"
   react-native-netinfo:
     :path: "./vendored/unversioned/@react-native-community/netinfo"
+  react-native-segmented-control:
+    :path: "./vendored/unversioned/@react-native-segmented-control/segmented-control"
   react-native-webview:
     :path: "./vendored/unversioned/react-native-webview"
   React-RCTActionSheet:
@@ -3981,6 +3986,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 8ca588cc921e70590820ce72b8789b02c67cce38
   React-jsinspector: b14e62ebe7a66e9231e9581279909f2fc3db6606
   react-native-netinfo: 30fb89fa913c342be82a887b56e96be6d71201dd
+  react-native-segmented-control: 83a05d42acd1234ad5e061d603c145973a61b5ee
   react-native-webview: 6520e3e7b4933de76b95ef542c8d7115cf45b68e
   React-RCTActionSheet: 910163b6b09685a35c4ebbc52b66d1bfbbe39fc5
   React-RCTAnimation: 9a883bbe1e9d2e158d4fb53765ed64c8dc2200c6
