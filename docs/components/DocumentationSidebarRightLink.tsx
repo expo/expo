@@ -1,4 +1,5 @@
 import { css } from '@emotion/core';
+import { theme } from '@expo/styleguide';
 import * as React from 'react';
 
 import { BASE_HEADING_LEVEL, Heading, HeadingType } from '../common/headingManager';
@@ -8,7 +9,7 @@ import * as Constants from '~/constants/theme';
 
 const STYLES_LINK = css`
   ${paragraph}
-  color: ${Constants.expoColors.gray[600]};
+  color: ${theme.text.secondary};
   transition: 200ms ease color;
   font-size: 14px;
   display: block;
@@ -20,7 +21,7 @@ const STYLES_LINK = css`
   cursor: pointer;
 
   :hover {
-    color: ${Constants.expoColors.primary[500]};
+    color: ${theme.link.default};
   }
 `;
 
@@ -34,7 +35,7 @@ const STYLES_LINK_CODE = css`
 `;
 
 const STYLES_LINK_ACTIVE = css`
-  color: ${Constants.expoColors.primary[500]};
+  color: ${theme.link.default};
 `;
 
 const STYLES_TOOLTIP = css`

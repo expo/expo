@@ -1,4 +1,5 @@
 import { css } from '@emotion/core';
+import { theme } from '@expo/styleguide';
 
 import * as Constants from '~/constants/theme';
 
@@ -25,19 +26,23 @@ export const globalExtras = css`
     outline: none;
     cursor: pointer;
     margin-bottom: 0.5rem;
+
+    ::-webkit-details-marker {
+      color: ${theme.icon.default};
+    }
   }
 
   details summary h3 {
     font-size: 1.2rem;
     font-weight: 500;
     font-family: ${Constants.fonts.demi};
-    color: ${Constants.colors.black90};
+    color: ${theme.text.default};
     display: inline-block;
   }
 
   details summary h4 {
     font-family: ${Constants.fonts.demi};
-    color: ${Constants.colors.black90};
+    color: ${theme.text.default};
     font-size: 1rem;
     font-weight: 500;
     display: inline-block;

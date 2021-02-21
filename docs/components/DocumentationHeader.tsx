@@ -1,4 +1,5 @@
 import { css } from '@emotion/core';
+import { theme, useTheme } from '@expo/styleguide';
 import Link from 'next/link';
 import * as React from 'react';
 
@@ -22,6 +23,7 @@ const STYLES_TITLE_TEXT = css`
   padding-left: 8px;
   font-size: 1.2rem;
   font-family: ${Constants.fonts.bold};
+  color: ${theme.text.default};
 `;
 
 const STYLES_LEFT = css`
@@ -52,26 +54,26 @@ const STYLES_NAV = css`
   align-items: center;
   justify-content: space-between;
   position: relative;
-  background-color: ${Constants.expoColors.white};
+  background-color: ${theme.background.default};
   z-index: 2;
   margin: 0 auto;
   padding: 0 16px;
   height: 60px;
   box-sizing: unset;
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-    border-bottom: 1px solid ${Constants.expoColors.semantic.border};
+    border-bottom: 1px solid ${theme.border.default};
   }
 `;
 
 const STYLES_MOBILE_NAV = css`
   padding: 0px;
   height: 56px;
-  background: ${Constants.expoColors.white};
+  background: ${theme.background.default};
   display: none;
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     display: flex;
-    border-bottom: 1px solid ${Constants.expoColors.semantic.border};
+    border-bottom: 1px solid ${theme.border.default};
   }
 `;
 
@@ -126,7 +128,7 @@ const STYLES_MENU_BUTTON = css`
   border-radius: 4px;
 
   :hover {
-    background-color: ${Constants.expoColors.gray[100]};
+    background-color: ${theme.background.tertiary};
   }
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
@@ -147,7 +149,7 @@ const SECTION_LINK = css`
   border-radius: 4px;
 
   :hover {
-    background-color: ${Constants.expoColors.gray[200]};
+    background-color: ${theme.background.tertiary};
   }
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
@@ -157,11 +159,11 @@ const SECTION_LINK = css`
 `;
 
 const SECTION_LINK_ACTIVE = css`
-  background-color: ${Constants.expoColors.gray[200]};
+  background-color: ${theme.background.tertiary};
 `;
 
 const SECTION_LINK_TEXT = css`
-  color: ${Constants.colors.black90} !important;
+  color: ${theme.text.default} !important;
   bottom: 0;
   left: 0;
   right: 0;
@@ -206,6 +208,20 @@ type Props = {
   onHideMenu: () => void;
 };
 
+function ThemeName() {
+  // TODO: REMOVE THIS JON
+  const { themeName, setDarkMode, setAutoMode, setLightMode } = useTheme();
+
+  return (
+    <div>
+      <button onClick={setLightMode}>light</button>
+      <button onClick={setDarkMode}>dark</button>
+      <button onClick={setAutoMode}>auto</button>
+      <p style={{ color: theme.text.default }}>Theme: {themeName}</p>
+    </div>
+  );
+}
+
 export default class DocumentationHeader extends React.PureComponent<Props> {
   render() {
     return (
@@ -226,6 +242,8 @@ export default class DocumentationHeader extends React.PureComponent<Props> {
                   <h1 css={STYLES_TITLE_TEXT}>Expo</h1>
                 </a>
               </Link>
+
+              <ThemeName />
 
               {this.renderSectionLinks(true)}
             </div>

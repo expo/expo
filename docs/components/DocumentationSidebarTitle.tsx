@@ -1,4 +1,5 @@
 import { css } from '@emotion/core';
+import { theme } from '@expo/styleguide';
 import NextLink from 'next/link';
 import * as React from 'react';
 
@@ -15,7 +16,7 @@ const STYLES_TITLE = css`
   text-decoration: none;
   border-bottom-color: #ccc;
   font-family: ${Constants.fontFamilies.demi};
-  border-bottom: 1px solid ${Constants.expoColors.semantic.border};
+  border-bottom: 1px solid ${theme.border.default};
   padding-bottom: 0.25rem;
 `;
 

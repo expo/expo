@@ -1,11 +1,11 @@
 import { css } from '@emotion/core';
+import { theme } from '@expo/styleguide';
 import * as React from 'react';
 
-import * as Constants from '~/constants/theme';
 import { Url } from '~/types/common';
 
 const STYLES_FOOTER = css`
-  border-top: 1px solid ${Constants.expoColors.semantic.border};
+  border-top: 1px solid ${theme.border.default};
   padding: 24px 0 24px 0;
 `;
 
@@ -14,6 +14,7 @@ const STYLES_FOOTER_LINK = css`
   display: block;
   text-decoration: none;
   margin-bottom: 12px;
+  color: ${theme.link.default};
 `;
 
 // Remove trailing slash and append .md

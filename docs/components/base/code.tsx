@@ -1,4 +1,5 @@
 import { css } from '@emotion/core';
+import { theme } from '@expo/styleguide';
 import { Language, Prism } from 'prism-react-renderer';
 import * as React from 'react';
 
@@ -13,7 +14,7 @@ const attributes = {
 };
 
 const STYLES_CODE_BLOCK = css`
-  color: ${Constants.colors.black90};
+  color: ${theme.text.default};
   font-family: ${Constants.fontFamilies.mono};
   font-size: 13px;
   line-height: 20px;
@@ -44,7 +45,7 @@ const STYLES_CODE_BLOCK = css`
 `;
 
 const STYLES_INLINE_CODE = css`
-  color: ${Constants.expoColors.gray[900]};
+  color: ${theme.text.default};
   font-family: ${Constants.fontFamilies.mono};
   font-size: 0.825em;
   white-space: pre-wrap;
@@ -54,26 +55,26 @@ const STYLES_INLINE_CODE = css`
   max-width: 100%;
 
   word-wrap: break-word;
-  background-color: ${Constants.expoColors.gray[100]};
-  border: 1px solid ${Constants.expoColors.semantic.border};
+  background-color: ${theme.background.secondary};
+  border: 1px solid ${theme.border.default};
   border-radius: 4px;
   vertical-align: middle;
   overflow-x: scroll;
 
   /* Disable Safari from adding border when used within a (perma)link */
   a & {
-    border-color: ${Constants.expoColors.semantic.border};
+    border-color: ${theme.border.default};
   }
 `;
 
 const STYLES_CODE_CONTAINER = css`
-  border: 1px solid ${Constants.expoColors.semantic.border};
+  border: 1px solid ${theme.border.default};
   padding: 16px;
   margin: 16px 0;
   white-space: pre;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
-  background-color: ${Constants.expoColors.gray[100]};
+  background-color: ${theme.background.secondary};
   line-height: 120%;
   border-radius: 4px;
 `;

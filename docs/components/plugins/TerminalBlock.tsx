@@ -1,10 +1,11 @@
 import { css } from '@emotion/core';
+import { colors } from '@expo/styleguide';
 import * as React from 'react';
 
 import * as Constants from '~/constants/theme';
 
 const STYLES_PROMPT = css`
-  background-color: ${Constants.colors.black};
+  background-color: ${colors.dark.black};
   border-radius: 4px;
   padding: 24px;
   display: flex;
@@ -17,11 +18,11 @@ const STYLES_LINE = css`
   white-space: nowrap;
   font-family: ${Constants.fontFamilies.mono};
   font-size: 13px;
-  color: ${Constants.colors.codeWhite};
+  color: ${colors.dark.gray[900]};
   line-height: 160%;
   ::before {
     content: '$ ';
-    color: ${Constants.colors.lila};
+    color: ${colors.dark.primary[700]};
   }
 `;
 
@@ -29,9 +30,8 @@ const STYLES_COMMENT = css`
   user-select: none;
   white-space: nowrap;
   font-family: ${Constants.fontFamilies.mono};
-  opacity: 0.6;
   font-size: 13px;
-  color: ${Constants.colors.codeWhite};
+  color: ${colors.dark.gray[600]};
   line-height: 150%;
 `;
 

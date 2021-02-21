@@ -1,4 +1,5 @@
 import { css } from '@emotion/core';
+import { theme } from '@expo/styleguide';
 import Router from 'next/router';
 import * as React from 'react';
 
@@ -32,7 +33,7 @@ const STYLES_INPUT = css`
     height: 40px;
     outline: 0;
     border: none;
-    background-color: ${Constants.expoColors.gray[200]};
+    background-color: ${theme.background.secondary};
   }
 
   .svg-icons {
