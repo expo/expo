@@ -1,7 +1,7 @@
 /* eslint-disable */
 // @ts-nocheck
 import DateTimePicker from '@react-native-community/datetimepicker';
-import SegmentedControl from '@react-native-community/segmented-control';
+import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import moment from 'moment';
 import React, { useState } from 'react';
 import {
