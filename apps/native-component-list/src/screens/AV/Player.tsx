@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import SegmentedControl from '@react-native-community/segmented-control';
 import Slider from '@react-native-community/slider';
+import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import React from 'react';
 import {
   GestureResponderEvent,

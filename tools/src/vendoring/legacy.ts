@@ -409,8 +409,8 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
-  '@react-native-community/segmented-control': {
-    repoUrl: 'https://github.com/react-native-community/segmented-control',
+  '@react-native-segmented-control/segmented-control': {
+    repoUrl: 'https://github.com/react-native-segmented-control/segmented-control',
     installableInManagedApps: true,
     steps: [
       {
