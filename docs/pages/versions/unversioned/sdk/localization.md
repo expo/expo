@@ -144,7 +144,7 @@ Three-character ISO 4217 currency code. Not available on web. Ex: `USD`, `EUR`, 
 
 Decimal separator used for formatting numbers. Ex: `,`, `.`.
 
-### `Localization.groupingSeparator`
+### `Localization.digitGroupingSeparator`
 
 Grouping separator used when formatting numbers larger than 1000. Ex: `.`, ` `, `,`.
 
@@ -158,7 +158,7 @@ Grouping separator used when formatting numbers larger than 1000. Ex: `.`, ` `, 
 type NativeEvent = {
   currency?: string;
   decimalSeparator: string;
-  groupingSeparator: string;
+  digitGroupingSeparator: string;
   isoCurrencyCodes: ?Array<string>,
   isMetric: boolean;
   isRTL: boolean,

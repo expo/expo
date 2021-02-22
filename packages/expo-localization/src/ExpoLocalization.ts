@@ -12,7 +12,7 @@ export default {
   get decimalSeparator(): string {
     return (1.1).toLocaleString().substring(1, 2);
   },
-  get groupingSeparator(): string {
+  get digitGroupingSeparator(): string {
     const value = (1000).toLocaleString();
     return value.length === 5 ? value.substring(1, 2) : '';
   },
@@ -75,7 +75,7 @@ export default {
     const {
       currency,
       decimalSeparator,
-      groupingSeparator,
+      digitGroupingSeparator,
       isoCurrencyCodes,
       isMetric,
       isRTL,
@@ -87,7 +87,7 @@ export default {
     return {
       currency,
       decimalSeparator,
-      groupingSeparator,
+      digitGroupingSeparator,
       isoCurrencyCodes,
       isMetric,
       isRTL,

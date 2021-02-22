@@ -18,7 +18,7 @@ if (Platform.isDOMAvailable) {
       const {
         currency,
         decimalSeparator,
-        groupingSeparator,
+        digitGroupingSeparator,
         isoCurrencyCodes,
         isMetric,
         isRTL,
@@ -37,7 +37,7 @@ if (Platform.isDOMAvailable) {
       expect(typeof isRTL).toBe('boolean');
       expect(typeof isMetric).toBe('boolean');
       validateString(decimalSeparator);
-      validateString(groupingSeparator);
+      validateString(digitGroupingSeparator);
       expect(currency).toBe(null);
     });
   });
@@ -111,8 +111,8 @@ describe(`Localization defines constants`, () => {
   it('Gets the decimal separator', async () => {
     validateString(Localization.decimalSeparator);
   });
-  it('Gets the grouping separator', async () => {
-    const result = Localization.groupingSeparator;
+  it('Gets the digit grouping separator', async () => {
+    const result = Localization.digitGroupingSeparator;
     expect(result).toBeDefined();
     expect(typeof result).toBe('string');
   });

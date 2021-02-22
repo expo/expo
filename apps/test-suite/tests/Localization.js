@@ -36,7 +36,7 @@ export function test(t) {
       const {
         currency,
         decimalSeparator,
-        groupingSeparator,
+        digitGroupingSeparator,
         isoCurrencyCodes,
         isMetric,
         isRTL,
@@ -57,7 +57,7 @@ export function test(t) {
       t.expect(typeof isRTL).toBe('boolean');
       t.expect(typeof isMetric).toBe('boolean');
       validateString(decimalSeparator);
-      validateString(groupingSeparator);
+      validateString(digitGroupingSeparator);
       if (Platform.OS !== 'web' || currency) {
         validateString(currency);
       }

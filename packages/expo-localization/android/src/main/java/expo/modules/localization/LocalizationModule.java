@@ -78,7 +78,7 @@ public class LocalizationModule extends ExportedModule {
 
     constants.putString("currency", getCurrencyCode(locale));
     constants.putString("decimalSeparator", String.valueOf(symbols.getDecimalSeparator()));
-    constants.putString("groupingSeparator", String.valueOf(symbols.getGroupingSeparator()));
+    constants.putString("digitGroupingSeparator", String.valueOf(symbols.getGroupingSeparator()));
     constants.putStringArrayList("isoCurrencyCodes", getISOCurrencyCodes());
     constants.putBoolean("isMetric", !USES_IMPERIAL.contains(region));
     constants.putBoolean("isRTL", isRTL);

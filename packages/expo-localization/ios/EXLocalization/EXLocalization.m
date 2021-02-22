@@ -30,7 +30,7 @@ UM_EXPORT_METHOD_AS(getLocalizationAsync,
   return @{
     @"currency": locale.currencyCode ?: @"USD",
     @"decimalSeparator": locale.decimalSeparator ?: @".",
-    @"groupingSeparator": locale.groupingSeparator ?: @",",
+    @"digitGroupingSeparator": locale.groupingSeparator ?: @",",
     @"isoCurrencyCodes": [NSLocale ISOCurrencyCodes],
     @"isMetric": @(locale.usesMetricSystem),
     @"isRTL": @((BOOL)([NSLocale characterDirectionForLanguage:languageCode] == NSLocaleLanguageDirectionRightToLeft)),

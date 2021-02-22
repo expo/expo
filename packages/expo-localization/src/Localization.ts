@@ -18,11 +18,11 @@ export const currency = ExpoLocalization.currency;
 export const decimalSeparator = ExpoLocalization.decimalSeparator;
 
 /**
- * Grouping separator used when formatting numbers larger than 1000.
+ * Digit grouping separator used when formatting numbers larger than 1000.
  *
  * @example `.`, '', ','
  */
-export const groupingSeparator = ExpoLocalization.groupingSeparator;
+export const digitGroupingSeparator = ExpoLocalization.digitGroupingSeparator;
 
 /**
  * A list of all the supported language ISO codes.
