@@ -8,6 +8,10 @@ import * as React from 'react';
 import * as Constants from '~/constants/theme';
 
 const STYLES_GLOBAL = css`
+  html {
+    background: ${theme.background.canvas};
+  }
+
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     html {
       /* width */
