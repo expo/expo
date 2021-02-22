@@ -18,6 +18,7 @@
 - Added `SelectionPolicyFilterAware` to support EAS Update's manifest filters feature ([#11748](https://github.com/expo/expo/pull/11748) by [@esamelson](https://github.com/esamelson))
 - Parse & persist data from EAS Update manifest headers ([#11961](https://github.com/expo/expo/pull/11961) and [#11967](https://github.com/expo/expo/pull/11967) by [@esamelson](https://github.com/esamelson))
 - Accept signature in header (iOS). ([#11930](https://github.com/expo/expo/pull/11930) by [@jkhales](https://github.com/jkhales))
+- Switch to SelectionPolicyFilterAware and use persisted manifest filters ([#11993](https://github.com/expo/expo/pull/11993) by [@esamelson](https://github.com/esamelson))
 
 ### 🐛 Bug fixes
 
