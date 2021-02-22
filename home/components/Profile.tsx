@@ -259,11 +259,11 @@ function ProfileProjectsSection({
         key={i}
         url={app.fullName}
         unlisted={app.privacy === 'unlisted'}
-        image={app.iconUrl || require('../assets/placeholder-app-icon.png')}
+        image={app.icon.url || require('../assets/placeholder-app-icon.png')}
         title={app.name}
         sdkVersion={app.sdkVersion}
         owner={extractUsernameFromExperience(app.fullName)}
-        experienceInfo={{ username: app.username || currentUsername, slug: app.packageName }}
+        experienceInfo={{ username: app.username || currentUsername, slug: app.slug }}
       />
     );
   };

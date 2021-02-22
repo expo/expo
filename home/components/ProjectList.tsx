@@ -13,6 +13,7 @@ import InfiniteScrollView from 'react-native-infinite-scroll-view';
 
 import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
+import extractUsernameForExperience from '../utils/extractUsernameForExperience';
 import PrimaryButton from './PrimaryButton';
 import ProjectCard from './ProjectCard';
 import ProjectListItem from './ProjectListItem';
@@ -29,17 +30,24 @@ const SERVER_ERROR_TEXT = dedent`
   Sorry about this. We will resolve the issue as soon as quickly as possible.
 `;
 
+export type AppIcon = {
+  url: string;
+  primaryColor?: string;
+  originalUrl: string;
+  colorPalette?: JSON;
+};
+
 export type Project = {
   id: string;
   description: string;
   fullName: string;
-  iconUrl: string;
-  lastPublishedTime: number;
+  icon: AppIcon;
+  updated: number;
   name: string;
-  packageName: string;
+  slug: string;
   privacy: string;
   sdkVersion: string;
-  packageUsername: string;
+  username: string;
 };
 
 type Props = {
@@ -144,15 +152,18 @@ function ProjectList({ data, loadMoreAsync, belongsToCurrentUser, listTitle }: P
   };
 
   const renderItem = ({ item: app, index }) => {
-    const experienceInfo = { username: app.username || app.packageUsername, slug: app.packageName };
+    const experienceInfo = {
+      username: app.username || extractUsernameForExperience(app.fullName),
+      slug: app.slug,
+    };
     if (belongsToCurrentUser) {
       return (
         <ProjectListItem
           key={index.toString()}
           url={app.fullName}
-          image={app.iconUrl || require('../assets/placeholder-app-icon.png')}
+          image={app.icon?.url || require('../assets/placeholder-app-icon.png')}
           title={app.name}
-          owner={app.packageUsername}
+          owner={experienceInfo.username}
           last={index === currentAppCount - 1}
           experienceInfo={experienceInfo}
           sdkVersion={app.sdkVersion}
@@ -164,10 +175,10 @@ function ProjectList({ data, loadMoreAsync, belongsToCurrentUser, listTitle }: P
           key={index}
           style={styles.largeProjectCard}
           id={app.id}
-          iconUrl={app.iconUrl}
+          iconUrl={app.icon?.url || require('../assets/placeholder-app-icon.png')}
           name={app.name}
           projectUrl={app.fullName}
-          username={app.packageUsername}
+          username={app.username}
           description={app.description}
           onPressUsername={handlePressUsername}
           experienceInfo={experienceInfo}

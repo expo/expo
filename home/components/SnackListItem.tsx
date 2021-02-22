@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { Linking, Share, View, StyleSheet } from 'react-native';
+import { Linking, Share, View, StyleSheet, Text } from 'react-native';
 
+import Colors from '../constants/Colors';
 import * as UrlUtils from '../utils/UrlUtils';
 import Badge from './Badge';
 import ListItem from './ListItem';
@@ -30,7 +31,11 @@ function SnackListItem({ url, subtitle, isDraft, ...props }: Props) {
 
   return (
     <ListItem
-      subtitle={normalizeDescription(subtitle)}
+      renderExtraText={() => {
+        <Text style={styles.extraText} ellipsizeMode="tail" numberOfLines={1}>
+          {normalizeDescription(subtitle)}
+        </Text>;
+      }}
       rightContent={
         isDraft && (
           <View style={styles.rightContentContainer}>
@@ -51,6 +56,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginEnd: 10,
     marginStart: 5,
+  },
+  extraText: {
+    color: Colors.light.greyText,
+    fontSize: 13,
   },
 });
 

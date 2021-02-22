@@ -39,13 +39,15 @@ const MyProjectsQuery = gql`
         id
         description
         fullName
-        iconUrl
-        lastPublishedTime
+        updated
         name
-        packageUsername
-        packageName
+        username
+        slug
         privacy
         sdkVersion
+        icon {
+          url
+        }
       }
     }
   }
@@ -137,12 +139,14 @@ const OtherProjectsQuery = gql`
           id
           fullName
           name
-          iconUrl
-          packageName
-          packageUsername
+          slug
+          username
           description
-          lastPublishedTime
+          updated
           sdkVersion
+          icon {
+            url
+          }
         }
       }
     }

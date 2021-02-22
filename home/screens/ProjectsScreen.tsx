@@ -6,7 +6,6 @@ import * as React from 'react';
 import { Alert, AppState, Platform, StyleSheet, View, Text } from 'react-native';
 
 import ApiV2HttpClient from '../api/ApiV2HttpClient';
-import Colors from '../constants/Colors';
 import Config from '../api/Config';
 import Connectivity from '../api/Connectivity';
 import DevIndicator from '../components/DevIndicator';
@@ -19,6 +18,7 @@ import RefreshControl from '../components/RefreshControl';
 import SectionHeader from '../components/SectionHeader';
 import { StyledText } from '../components/Text';
 import ThemedStatusBar from '../components/ThemedStatusBar';
+import Colors from '../constants/Colors';
 import HistoryActions from '../redux/HistoryActions';
 import { useDispatch, useSelector } from '../redux/Hooks';
 import { DevSession, HistoryList } from '../types';
@@ -274,11 +274,9 @@ class ProjectsView extends React.Component<Props, State> {
       <ListItem
         last
         renderExtraText={() => {
-          return (
-            <Text style={styles.noProjectsText} ellipsizeMode="tail" numberOfLines={1}>
-              You haven't opened any projects recently.
-            </Text>
-          );
+          <Text style={styles.noProjectsText} ellipsizeMode="tail" numberOfLines={1}>
+            You haven't opened any projects recently.
+          </Text>;
         }}
       />
     );

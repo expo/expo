@@ -22,12 +22,14 @@ const PublicAppsQuery = gql`
         id
         fullName
         name
-        iconUrl
-        packageName
-        packageUsername
+        slug
+        username
         description
-        lastPublishedTime
+        updated
         sdkVersion
+        icon {
+          url
+        }
       }
     }
   }

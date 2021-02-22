@@ -30,12 +30,14 @@ const MyProfileQuery = gql`
         id
         description
         fullName
-        iconUrl
-        lastPublishedTime
+        updated
         name
-        packageName
+        slug
         sdkVersion
         privacy
+        icon {
+          url
+        }
       }
       snacks(limit: ${SNACK_LIMIT}, offset: 0) {
         name
@@ -102,12 +104,14 @@ const OtherProfileQuery = gql`
           id
           fullName
           name
-          iconUrl
-          packageName
-          packageUsername
+          slug
+          username
           description
           sdkVersion
-          lastPublishedTime
+          updated
+          icon {
+            url
+          }
         }
         snacks(limit: ${SNACK_LIMIT}, offset: 0) {
           name

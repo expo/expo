@@ -105,12 +105,12 @@ export default function ExploreTab(props: QueryProps) {
       <ProjectCard
         key={index.toString()}
         id={app.id}
-        iconUrl={app.iconUrl}
+        iconUrl={app.icon.url}
         name={app.name}
         projectUrl={app.fullName}
-        username={app.packageUsername}
+        username={app.username}
         description={app.description}
-        experienceInfo={{ username: app.packageUsername, slug: app.packageName }}
+        experienceInfo={{ username: app.username, slug: app.slug }}
         sdkVersion={app.sdkVersion}
         onPressUsername={onPressUsername}
         style={{ marginBottom: 10 }}
