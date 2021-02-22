@@ -9,29 +9,36 @@ import androidx.annotation.Nullable;
 import expo.modules.notifications.notifications.interfaces.SchedulableNotificationTrigger;
 
 /**
- * A schedulable trigger representing a notification to be scheduled once per week.
+ * A schedulable trigger representing a notification to be scheduled once per year.
  */
-public class WeeklyTrigger extends ChannelAwareTrigger implements SchedulableNotificationTrigger {
-  private int mWeekday;
+public class YearlyTrigger extends ChannelAwareTrigger implements SchedulableNotificationTrigger {
+  private int mDay;
+  private int mMonth;
   private int mHour;
   private int mMinute;
 
-  public WeeklyTrigger(int weekday, int hour, int minute, @Nullable String channelId) {
+  public YearlyTrigger(int day, int month, int hour, int minute, @Nullable String channelId) {
     super(channelId);
-    mWeekday = weekday;
+    mDay = day;
+    mMonth = month;
     mHour = hour;
     mMinute = minute;
   }
 
-  private WeeklyTrigger(Parcel in) {
+  private YearlyTrigger(Parcel in) {
     super(in);
-    mWeekday = in.readInt();
+    mDay = in.readInt();
+    mMonth = in.readInt();
     mHour = in.readInt();
     mMinute = in.readInt();
   }
 
-  public int getWeekday() {
-    return mWeekday;
+  public int getDay() {
+    return mDay;
+  }
+
+  public int getMonth() {
+    return mMonth;
   }
 
   public int getHour() {
@@ -46,14 +53,15 @@ public class WeeklyTrigger extends ChannelAwareTrigger implements SchedulableNot
   @Override
   public Date nextTriggerDate() {
     Calendar nextTriggerDate = Calendar.getInstance();
-    nextTriggerDate.set(Calendar.DAY_OF_WEEK, mWeekday);
+    nextTriggerDate.set(Calendar.DATE, mDay);
+    nextTriggerDate.set(Calendar.MONTH, mMonth);
     nextTriggerDate.set(Calendar.HOUR_OF_DAY, mHour);
     nextTriggerDate.set(Calendar.MINUTE, mMinute);
     nextTriggerDate.set(Calendar.SECOND, 0);
     nextTriggerDate.set(Calendar.MILLISECOND, 0);
     Calendar rightNow = Calendar.getInstance();
     if (nextTriggerDate.before(rightNow)) {
-      nextTriggerDate.add(Calendar.DAY_OF_WEEK_IN_MONTH, 1);
+      nextTriggerDate.add(Calendar.YEAR, 1);
     }
     return nextTriggerDate.getTime();
   }
@@ -66,20 +74,21 @@ public class WeeklyTrigger extends ChannelAwareTrigger implements SchedulableNot
   @Override
   public void writeToParcel(Parcel dest, int flags) {
     super.writeToParcel(dest, flags);
-    dest.writeInt(mWeekday);
+    dest.writeInt(mDay);
+    dest.writeInt(mMonth);
     dest.writeInt(mHour);
     dest.writeInt(mMinute);
   }
 
-  public static final Creator<WeeklyTrigger> CREATOR = new Creator<WeeklyTrigger>() {
+  public static final Creator<YearlyTrigger> CREATOR = new Creator<YearlyTrigger>() {
     @Override
-    public WeeklyTrigger createFromParcel(Parcel in) {
-      return new WeeklyTrigger(in);
+    public YearlyTrigger createFromParcel(Parcel in) {
+      return new YearlyTrigger(in);
     }
 
     @Override
-    public WeeklyTrigger[] newArray(int size) {
-      return new WeeklyTrigger[size];
+    public YearlyTrigger[] newArray(int size) {
+      return new YearlyTrigger[size];
     }
   };
 }
