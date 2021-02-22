@@ -36,22 +36,9 @@ UM_EXPORT_METHOD_AS(getLocalizationAsync,
     @"isRTL": @((BOOL)([NSLocale characterDirectionForLanguage:languageCode] == NSLocaleLanguageDirectionRightToLeft)),
     @"locale": [languageIds objectAtIndex:0],
     @"locales": languageIds,
-    @"region": [EXLocalization countryCodeForLocale:locale] ?: @"US",
+    @"region": locale.countryCode ?: @"US",
     @"timezone": [NSTimeZone localTimeZone].name,
   };
-}
-
-+ (NSString * _Nullable)countryCodeForLocale:(NSLocale * _Nonnull)locale
-{
-  NSString *countryCode = locale.countryCode;
-  if (countryCode == nil) {
-    return nil;
-  }
-  // overwrite Latin America and Caribbean region
-  if ([countryCode isEqualToString:@"419"]) {
-    return @"UN";
-  }
-  return countryCode;
 }
 
 @end
