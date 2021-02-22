@@ -9,7 +9,7 @@ export default {
     get decimalSeparator() {
         return (1.1).toLocaleString().substring(1, 2);
     },
-    get groupingSeparator() {
+    get digitGroupingSeparator() {
         const value = (1000).toLocaleString();
         return value.length === 5 ? value.substring(1, 2) : '';
     },
@@ -68,11 +68,11 @@ export default {
         return null;
     },
     async getLocalizationAsync() {
-        const { currency, decimalSeparator, groupingSeparator, isoCurrencyCodes, isMetric, isRTL, locale, locales, region, timezone, } = this;
+        const { currency, decimalSeparator, digitGroupingSeparator, isoCurrencyCodes, isMetric, isRTL, locale, locales, region, timezone, } = this;
         return {
             currency,
             decimalSeparator,
-            groupingSeparator,
+            digitGroupingSeparator,
             isoCurrencyCodes,
             isMetric,
             isRTL,

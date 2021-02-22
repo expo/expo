@@ -2,7 +2,7 @@ import { Localization } from './Localization.types';
 declare const _default: {
     readonly currency: string | null;
     readonly decimalSeparator: string;
-    readonly groupingSeparator: string;
+    readonly digitGroupingSeparator: string;
     readonly isRTL: boolean;
     readonly isMetric: boolean;
     readonly locale: string;

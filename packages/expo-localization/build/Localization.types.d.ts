@@ -12,11 +12,11 @@ export declare type Localization = {
      */
     decimalSeparator: string;
     /**
-     * Grouping separator used when formatting numbers larger than 1000.
+     * Digit grouping separator used when formatting numbers larger than 1000.
      *
      * @example `.`, '', ','
      */
-    groupingSeparator: string;
+    digitGroupingSeparator: string;
     /**
      * List of all the supported language ISO codes.
      */

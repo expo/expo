@@ -13,11 +13,11 @@ export declare const currency: string | null;
  */
 export declare const decimalSeparator: string;
 /**
- * Grouping separator used when formatting numbers larger than 1000.
+ * Digit grouping separator used when formatting numbers larger than 1000.
  *
  * @example `.`, '', ','
  */
-export declare const groupingSeparator: string;
+export declare const digitGroupingSeparator: string;
 /**
  * A list of all the supported language ISO codes.
  */
