@@ -152,7 +152,7 @@ function ProjectList({ data, loadMoreAsync, belongsToCurrentUser, listTitle }: P
           url={app.fullName}
           image={app.iconUrl || require('../assets/placeholder-app-icon.png')}
           title={app.name}
-          subtitle={app.packageName || app.fullName}
+          owner={app.packageUsername}
           last={index === currentAppCount - 1}
           experienceInfo={experienceInfo}
           sdkVersion={app.sdkVersion}

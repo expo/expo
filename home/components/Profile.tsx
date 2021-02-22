@@ -17,6 +17,7 @@ import { StyledView } from '../components/Views';
 import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
 import { AllStackRoutes } from '../navigation/Navigation.types';
+import extractUsernameFromExperience from '../utils/extractUsernameForExperience';
 import EmptyProfileProjectsNotice from './EmptyProfileProjectsNotice';
 import EmptyProfileSnacksNotice from './EmptyProfileSnacksNotice';
 import PrimaryButton from './PrimaryButton';
@@ -261,7 +262,7 @@ function ProfileProjectsSection({
         image={app.iconUrl || require('../assets/placeholder-app-icon.png')}
         title={app.name}
         sdkVersion={app.sdkVersion}
-        subtitle={app.packageName || app.fullName}
+        owner={extractUsernameFromExperience(app.fullName)}
         experienceInfo={{ username: app.username || currentUsername, slug: app.packageName }}
       />
     );

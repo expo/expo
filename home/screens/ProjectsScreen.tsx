@@ -3,9 +3,10 @@ import Clipboard from 'expo-clipboard';
 import Constants from 'expo-constants';
 import { AllStackRoutes } from 'navigation/Navigation.types';
 import * as React from 'react';
-import { Alert, AppState, Platform, StyleSheet, View } from 'react-native';
+import { Alert, AppState, Platform, StyleSheet, View, Text } from 'react-native';
 
 import ApiV2HttpClient from '../api/ApiV2HttpClient';
+import Colors from '../constants/Colors';
 import Config from '../api/Config';
 import Connectivity from '../api/Connectivity';
 import DevIndicator from '../components/DevIndicator';
@@ -23,6 +24,7 @@ import { useDispatch, useSelector } from '../redux/Hooks';
 import { DevSession, HistoryList } from '../types';
 import Environment from '../utils/Environment';
 import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
+import extractUsernameFromExperience from '../utils/extractUsernameForExperience';
 import getSnackId from '../utils/getSnackId';
 
 const PROJECT_UPDATE_INTERVAL = 10000;
@@ -268,23 +270,25 @@ class ProjectsView extends React.Component<Props, State> {
   };
 
   private _renderEmptyRecentHistory = () => {
-    return <ListItem subtitle={`You haven't opened any projects recently.`} last />;
+    return (
+      <ListItem
+        last
+        renderExtraText={() => {
+          return (
+            <Text style={styles.noProjectsText} ellipsizeMode="tail" numberOfLines={1}>
+              You haven't opened any projects recently.
+            </Text>
+          );
+        }}
+      />
+    );
   };
 
   private _renderRecentHistoryItems = () => {
-    const extractUsername = manifestUrl => {
-      const username = manifestUrl.match(/@.*?\//)[0];
-      if (!username) {
-        return null;
-      } else {
-        return username.slice(0, username.length - 1);
-      }
-    };
-
     return this.props.recentHistory.map((project, i) => {
       if (!project) return null;
       const username = project.manifestUrl.includes(`exp://${Config.api.host}`)
-        ? extractUsername(project.manifestUrl)
+        ? extractUsernameFromExperience(project.manifestUrl)
         : undefined;
       let releaseChannel = project.manifest?.releaseChannel;
       releaseChannel = releaseChannel === 'default' ? undefined : releaseChannel;
@@ -294,7 +298,7 @@ class ProjectsView extends React.Component<Props, State> {
           url={project.manifestUrl}
           image={project.manifest?.iconUrl}
           title={project.manifest?.name}
-          subtitle={username || project.manifestUrl}
+          owner={username || project.manifestUrl}
           username={username}
           releaseChannel={releaseChannel}
           last={i === this.props.recentHistory.count() - 1}
@@ -365,7 +369,7 @@ class ProjectsView extends React.Component<Props, State> {
               imageStyle={styles.projectImageStyle}
               title={project.description}
               platform={project.platform}
-              subtitle={project.url}
+              owner={project.url}
               last={i === projects.length - 1}
             />
           ))}
@@ -408,5 +412,9 @@ const styles = StyleSheet.create({
   },
   supportSdksText: {
     fontSize: 11,
+  },
+  noProjectsText: {
+    color: Colors.light.greyText,
+    fontSize: 13,
   },
 });

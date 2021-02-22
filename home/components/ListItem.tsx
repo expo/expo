@@ -25,7 +25,7 @@ type Props = {
   onPress?: () => any;
   onLongPress?: () => any;
   title?: string;
-  subtitle?: string;
+  owner?: string;
   onPressSubtitle?: () => any;
   renderExtraText?: () => any;
   last?: boolean;
@@ -50,7 +50,7 @@ export default class ListItem extends React.PureComponent<Props> {
       last,
       margins,
       title,
-      subtitle,
+      owner,
     } = this.props;
     return (
       <View style={last && margins !== false ? styles.marginBottomLast : undefined}>
@@ -63,12 +63,9 @@ export default class ListItem extends React.PureComponent<Props> {
           {this.renderImage()}
           <StyledView style={[styles.contentContainer, !last && styles.contentContainerNotLast]}>
             <View
-              style={[
-                styles.textContainer,
-                title && subtitle ? styles.textContainerBoth : undefined,
-              ]}>
+              style={[styles.textContainer, title && owner ? styles.textContainerBoth : undefined]}>
               {this.renderTitle()}
-              {this.renderSubtitle()}
+              {this.renderOwner()}
               {renderExtraText?.()}
             </View>
             {this.renderRightContent()}
@@ -132,20 +129,20 @@ export default class ListItem extends React.PureComponent<Props> {
     );
   }
 
-  private renderSubtitle() {
-    const { title, subtitle, icon, image, onPressSubtitle } = this.props;
+  private renderOwner() {
+    const { title, owner, icon, image, onPressSubtitle } = this.props;
     const isCentered = !title && !icon && !image;
-    return subtitle ? (
+    return owner ? (
       <Text
         style={[
-          styles.subtitleText,
-          !title ? styles.subtitleMarginBottom : undefined,
-          isCentered ? styles.subtitleCentered : undefined,
+          styles.ownerText,
+          !title ? styles.ownerTextMarginBottom : undefined,
+          isCentered ? styles.ownerTextCentered : undefined,
         ]}
         onPress={onPressSubtitle}
         ellipsizeMode="tail"
         numberOfLines={title ? 1 : 2}>
-        {subtitle}
+        by @{owner}
       </Text>
     ) : (
       undefined
@@ -246,14 +243,14 @@ const styles = StyleSheet.create({
       },
     }),
   },
-  subtitleText: {
+  ownerText: {
     color: Colors.light.greyText,
     fontSize: 13,
   },
-  subtitleMarginBottom: {
+  ownerTextMarginBottom: {
     marginBottom: 2,
   },
-  subtitleCentered: {
+  ownerTextCentered: {
     textAlign: 'center',
     marginEnd: 10,
   },

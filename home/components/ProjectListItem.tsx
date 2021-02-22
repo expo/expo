@@ -22,7 +22,7 @@ type Props = React.ComponentProps<typeof ListItem> & {
 function ProjectListItem({
   unlisted,
   username,
-  subtitle,
+  owner,
   url,
   releaseChannel,
   sdkVersion,
@@ -89,7 +89,7 @@ function ProjectListItem({
       {...props}
       imageSize={sdkVersionNumber ? 56 : 40}
       renderExtraText={renderExtraText}
-      subtitle={username || subtitle}
+      owner={owner}
       onPressSubtitle={username ? handlePressUsername : undefined}
     />
   );
