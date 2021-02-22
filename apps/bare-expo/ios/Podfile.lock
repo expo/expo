@@ -586,7 +586,7 @@ PODS:
     - React
   - react-native-view-shot (3.1.2):
     - React
-  - react-native-viewpager (4.2.0):
+  - react-native-viewpager (4.2.3):
     - React-Core
   - react-native-webview (11.2.3):
     - React-Core
@@ -1325,7 +1325,7 @@ SPEC CHECKSUMS:
   react-native-segmented-control: 83a05d42acd1234ad5e061d603c145973a61b5ee
   react-native-slider: e99fc201cefe81270fc9d81714a7a0f5e566b168
   react-native-view-shot: 4475fde003fe8a210053d1f98fb9e06c1d834e1c
-  react-native-viewpager: c1a686e7b5e164a52387f1522358623c4f52070f
+  react-native-viewpager: 936c67cba6e9ca19793d04321427a44cb8e43395
   react-native-webview: 6520e3e7b4933de76b95ef542c8d7115cf45b68e
   React-RCTActionSheet: 910163b6b09685a35c4ebbc52b66d1bfbbe39fc5
   React-RCTAnimation: 9a883bbe1e9d2e158d4fb53765ed64c8dc2200c6

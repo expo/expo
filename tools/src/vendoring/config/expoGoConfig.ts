@@ -143,7 +143,8 @@ const config: VendoringTargetConfig = {
       source: 'https://github.com/react-native-community/react-native-masked-view',
     },
     '@react-native-community/viewpager': {
-      source: 'https://github.com/react-native-community/react-native-viewpager',
+      source: 'https://github.com/callstack/react-native-viewpager',
+      ios: {},
     },
     'react-native-shared-element': {
       source: 'https://github.com/IjzerenHein/react-native-shared-element',

@@ -3696,10 +3696,10 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/slider/-/slider-3.0.3.tgz#830167fd757ba70ac638747ba3169b2dbae60330"
   integrity sha512-8IeHfDwJ9/CTUwFs6x90VlobV3BfuPgNLjTgC6dRZovfCWigaZwVNIFFJnHBakK3pW2xErAPwhdvNR4JeNoYbw==
 
-"@react-native-community/viewpager@4.2.0":
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/@react-native-community/viewpager/-/viewpager-4.2.0.tgz#11a4453715eb45cb0f732c98666ce168b800dfa4"
-  integrity sha512-tptvkyStulE9Jv/LVYSldvydAq3DVOwsfqmy3mTh3NWl1LZwE4gZwZ455jiRmW5StsJ3Q/Od/GGsN0FI8gHAXQ==
+"@react-native-community/viewpager@4.2.3":
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/@react-native-community/viewpager/-/viewpager-4.2.3.tgz#ccff95a43f63f14c3b90edac00d1e05c99a79282"
+  integrity sha512-tb462+nvjlcjRoRUxManaabkRwqKi0fI2I0Ztub/zXzvS06JaVIyv7BHUqivkWRUKw4OGFkhQwkEc0spPHbV/A==
 
 "@react-native-picker/picker@1.9.11":
   version "1.9.11"
