@@ -10,7 +10,7 @@ import * as Constants from '~/constants/theme';
 const STYLES_LINK = css`
   ${paragraph}
   color: ${theme.text.secondary};
-  transition: 200ms ease color;
+  transition: 50ms ease color;
   font-size: 14px;
   display: block;
   text-decoration: none;

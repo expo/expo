@@ -65,7 +65,6 @@ const STYLES_CONTAINER = css`
 `;
 
 const STYLES_HEADER = css`
-  background: #fff;
   flex-shrink: 0;
   width: 100%;
 
@@ -157,7 +156,7 @@ const STYLES_SCROLL_CONTAINER = css`
 
   /* Track */
   ::-webkit-scrollbar-track {
-    background: ${theme.background.default};
+    background: transparent;
     cursor: pointer;
   }
 
