@@ -10,7 +10,7 @@ const STYLES_FOOTER = css`
 `;
 
 const STYLES_FOOTER_LINK = css`
-  font-size: 18px;
+  font-size: 16px;
   display: block;
   text-decoration: none;
   margin-bottom: 12px;
