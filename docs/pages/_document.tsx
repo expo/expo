@@ -51,7 +51,7 @@ export default class MyDocument extends Document<{ css?: string }> {
             ]}
           />
 
-          <link rel="stylesheet" href="/static/libs/algolia/algolia.min.css" />
+          <link rel="stylesheet" href="/static/libs/algolia/algolia.css" />
           <link rel="stylesheet" href="/static/libs/algolia/algolia-mobile.css" />
           <link
             rel="stylesheet"
