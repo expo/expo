@@ -294,8 +294,7 @@ public class FileDownloader {
             .header("Expo-API-Version", "1")
             .header("Expo-Updates-Environment", "BARE")
             .header("Expo-JSON-Error", "true")
-            // as of 2020-11-25, the EAS Update alpha returns an error if Expo-Accept-Signature: true is included in the request
-            .header("Expo-Accept-Signature", String.valueOf(configuration.usesLegacyManifest()));
+            .header("Expo-Accept-Signature", String.valueOf(configuration.isExpoGo()));
 
     // legacy manifest loads should ignore cache-control headers from the server and always load remotely
     if (configuration.usesLegacyManifest()) {
