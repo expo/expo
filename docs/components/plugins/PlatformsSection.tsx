@@ -41,7 +41,7 @@ function getInfo(isSupported: IsSupported, { title }: Platform) {
   } else if (typeof isSupported === 'object') {
     return {
       children: (
-        <a css={STYLES_LINK} target="_blank" href="#">
+        <a css={STYLES_LINK} target="_blank" href={isSupported.pending}>
           <PendingCircle size={20} /> Pending
         </a>
       ),
