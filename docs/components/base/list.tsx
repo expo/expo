@@ -1,9 +1,8 @@
 import { css } from '@emotion/core';
+import { theme } from '@expo/styleguide';
 import * as React from 'react';
 
 import { paragraph } from './typography';
-
-import * as Constants from '~/constants/theme';
 
 const attributes = {
   'data-text': true,
@@ -51,7 +50,7 @@ const STYLES_LIST_ITEM = css`
     line-height: 0;
     margin: 0 0.5rem 0 -1rem;
     position: relative;
-    color: ${Constants.colors.black80};
+    color: ${theme.text.default};
   }
 
   > div {

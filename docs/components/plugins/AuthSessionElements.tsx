@@ -1,4 +1,5 @@
 import { css } from '@emotion/core';
+import { theme } from '@expo/styleguide';
 import * as React from 'react';
 
 const STYLES_LINK = css`
@@ -62,6 +63,8 @@ export const SocialGridItem: React.FC<{
       padding: '1.65em 2em',
       gap: '1.35rem',
       textDecoration: 'none',
+      background: theme.background.secondary,
+      borderRadius: 4,
     }}>
     <img
       style={{
@@ -73,7 +76,7 @@ export const SocialGridItem: React.FC<{
     />
     <p
       style={{
-        color: '#020814',
+        color: theme.text.default,
         fontSize: '1.2em',
         fontWeight: 900,
         textAlign: 'center',
@@ -86,9 +89,8 @@ export const SocialGridItem: React.FC<{
         style={{
           transitionProperty: 'all',
           transitionDuration: '0.15s',
-
           marginTop: '0.4em',
-          color: '#020814',
+          color: theme.text.default,
           fontSize: '0.9em',
           fontWeight: 400,
           textAlign: 'center',

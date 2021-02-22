@@ -1,10 +1,9 @@
+import { colors } from '@expo/styleguide';
 import * as React from 'react';
-
-import * as Constants from '~/constants/theme';
 
 export const ExternalLink: React.FC<{ size?: number; stroke?: string }> = ({
   size = 24,
-  stroke = Constants.expoColors.white,
+  stroke = colors.dark.white,
 }) => (
   <svg
     aria-label="check"
