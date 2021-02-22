@@ -40,10 +40,10 @@ jobs:
             # which node_modules are affected by the root yarn.lock
             node_modules
             apps/*/node_modules
-            home/*/node_modules
+            home/node_modules
             packages/*/node_modules
             packages/@unimodules/*/node_modules
-            react-native-lab/react-native/*/node_modules
+            react-native-lab/react-native/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
       - name: 🧶 Install node modules in root dir
         if: steps.node-modules-cache.outputs.cache-hit != 'true'
@@ -89,10 +89,10 @@ jobs:
             # which node_modules are affected by the root yarn.lock
             node_modules
             apps/*/node_modules
-            home/*/node_modules
+            home/node_modules
             packages/*/node_modules
             packages/@unimodules/*/node_modules
-            react-native-lab/react-native/*/node_modules
+            react-native-lab/react-native/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
       - name: 🧶 Install node modules in root dir
         if: steps.node-modules-cache.outputs.cache-hit != 'true'
@@ -105,9 +105,12 @@ jobs:
           key: ${{ runner.os }}-bare-expo-pods-${{ hashFiles('apps/bare-expo/ios/Podfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-bare-expo-pods-
+      - name: 🕵️ Debug CocoaPods lockfiles
+        run: git diff Podfile.lock Pods/Manifest.lock
+        working-directory: apps/bare-expo/ios
       - name: 🥥 Install pods in apps/bare-expo/ios
         run: pod install
-        if: steps.pods-cache.outputs.cache-hit != 'true'
+        if: steps.pods-cache.outputs.cache-hit != 'true' || hashFiles('apps/bare-expo/ios/Podfile.lock') != hashFiles('apps/bare-expo/ios/Pods/Manifest.lock')
         working-directory: apps/bare-expo/ios
       - name: Clean Detox
         run: yarn detox:clean

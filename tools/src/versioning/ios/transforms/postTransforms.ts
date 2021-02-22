@@ -150,20 +150,9 @@ export function postTransforms(versionName: string): TransformPipeline {
 
       // react-native-webview
       {
-        paths: 'RNCWebView.m',
-        replace: new RegExp(`#import "objc/${versionName}runtime\\.h"`, ''),
-        with: '#import "objc/runtime.h"',
-      },
-      {
-        paths: 'RNCWebView.m',
-        replace: /\b(_SwizzleHelperWK)\b/g,
-        with: `${versionName}$1`,
-      },
-      {
-        // see issue: https://github.com/expo/expo/issues/4463
-        paths: 'RNCWebView.m',
-        replace: /MessageHandlerName = @"ABI\d+_\d+_\d+ReactNativeWebView";/,
-        with: `MessageHandlerName = @"ReactNativeWebView";`,
+        paths: 'EXVersionManager.mm',
+        replace: /#import <react-native-(webview)\//g,
+        with: `#import <${versionName}react-native-$1/`,
       },
 
       // react-native-reanimated

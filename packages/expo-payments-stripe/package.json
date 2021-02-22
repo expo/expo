@@ -44,6 +44,6 @@
     "prop-types": "^15.6.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "~1.2.0"
+    "expo-module-scripts": "^2.0.0"
   }
 }

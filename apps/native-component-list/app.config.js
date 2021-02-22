@@ -41,6 +41,12 @@ export default ({ config }) => {
       merchantId: 'merchant.com.example.development',
     },
   ]);
+  config.plugins.push([
+    'expo-document-picker',
+    {
+      appleTeamId: 'XXXXXX',
+    },
+  ]);
 
   return config;
 };

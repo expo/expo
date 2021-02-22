@@ -38,7 +38,7 @@
     "unimodules-constants-interface": "*"
   },
   "devDependencies": {
-    "expo-module-scripts": "~1.2.0"
+    "expo-module-scripts": "^2.0.0"
   },
   "dependencies": {
     "@expo/config": "^3.3.18",

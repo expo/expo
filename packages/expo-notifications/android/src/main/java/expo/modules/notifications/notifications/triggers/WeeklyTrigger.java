@@ -9,7 +9,7 @@ import androidx.annotation.Nullable;
 import expo.modules.notifications.notifications.interfaces.SchedulableNotificationTrigger;
 
 /**
- * A schedulable trigger representing a notification to be scheduled once per day.
+ * A schedulable trigger representing a notification to be scheduled once per week.
  */
 public class WeeklyTrigger extends ChannelAwareTrigger implements SchedulableNotificationTrigger {
   private int mWeekday;

@@ -16,6 +16,26 @@
 
 @implementation RNCWKProcessPoolManager
 
+- (instancetype)init
+{
+  if (self = [super init]) {
+    _pools = [NSMutableDictionary new];
+  }
+  return self;
+}
+
+- (WKProcessPool *)sharedProcessPoolForExperienceId:(NSString *)experienceId
+{
+  if (!experienceId) {
+    return [self sharedProcessPool];
+  }
+  if (!_pools[experienceId]) {
+    _pools[experienceId] = [[WKProcessPool alloc] init];
+  }
+  return _pools[experienceId];
+}
+
+
 + (id) sharedManager {
     static RNCWKProcessPoolManager *_sharedManager = nil;
     @synchronized(self) {
@@ -26,33 +46,11 @@
     }
 }
 
-- (instancetype)init
-{
-  if (self = [super init]) {
-    _pools = [NSMutableDictionary new];
-  }
-  return self;
-}
-
-
 - (WKProcessPool *)sharedProcessPool {
     if (!_sharedProcessPool) {
         _sharedProcessPool = [[WKProcessPool alloc] init];
     }
     return _sharedProcessPool;
-}
-
-- (WKProcessPool *)sharedProcessPoolForExperienceId:(NSString *)experienceId
-{
-  if (!experienceId) {
-    return [self sharedProcessPool];
-  }
-
-  if (!_pools[experienceId]) {
-    _pools[experienceId] = [[WKProcessPool alloc] init];
-  }
-
-  return _pools[experienceId];
 }
 
 @end

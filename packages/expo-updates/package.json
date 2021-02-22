@@ -47,7 +47,7 @@
     "resolve-from": "^5.0.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "~1.2.0",
+    "expo-module-scripts": "^2.0.0",
     "memfs": "^3.2.0",
     "fs-extra": "^9.1.0"
   }

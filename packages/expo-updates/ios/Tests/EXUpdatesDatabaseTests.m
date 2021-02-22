@@ -64,7 +64,7 @@
   EXUpdatesUpdate *update1 = [EXUpdatesNewUpdate updateWithNewManifest:_manifest response:response1 config:_config database:_db];
   __block NSError *error1;
   dispatch_sync(_db.databaseQueue, ^{
-    [_db setServerDataWithManifest:update1 error:&error1];
+    [_db setMetadataWithManifest:update1 error:&error1];
   });
   XCTAssertNil(error1);
 
@@ -74,7 +74,7 @@
   EXUpdatesUpdate *update2 = [EXUpdatesNewUpdate updateWithNewManifest:_manifest response:response2 config:_config database:_db];
   __block NSError *error2;
   dispatch_sync(_db.databaseQueue, ^{
-    [_db setServerDataWithManifest:update2 error:&error2];
+    [_db setMetadataWithManifest:update2 error:&error2];
   });
   XCTAssertNil(error2);
 
@@ -97,7 +97,7 @@
   EXUpdatesUpdate *update1 = [EXUpdatesNewUpdate updateWithNewManifest:_manifest response:response1 config:_config database:_db];
   __block NSError *error1;
   dispatch_sync(_db.databaseQueue, ^{
-    [_db setServerDataWithManifest:update1 error:&error1];
+    [_db setMetadataWithManifest:update1 error:&error1];
   });
   XCTAssertNil(error1);
   
@@ -107,7 +107,7 @@
   EXUpdatesUpdate *update2 = [EXUpdatesNewUpdate updateWithNewManifest:_manifest response:response2 config:_config database:_db];
   __block NSError *error2;
   dispatch_sync(_db.databaseQueue, ^{
-    [_db setServerDataWithManifest:update2 error:&error2];
+    [_db setMetadataWithManifest:update2 error:&error2];
   });
   XCTAssertNil(error2);
   
@@ -130,7 +130,7 @@
   EXUpdatesUpdate *update1 = [EXUpdatesNewUpdate updateWithNewManifest:_manifest response:response1 config:_config database:_db];
   __block NSError *error1;
   dispatch_sync(_db.databaseQueue, ^{
-    [_db setServerDataWithManifest:update1 error:&error1];
+    [_db setMetadataWithManifest:update1 error:&error1];
   });
   XCTAssertNil(error1);
   
@@ -138,7 +138,7 @@
   EXUpdatesUpdate *update2 = [EXUpdatesNewUpdate updateWithNewManifest:_manifest response:response2 config:_config database:_db];
   __block NSError *error2;
   dispatch_sync(_db.databaseQueue, ^{
-    [_db setServerDataWithManifest:update2 error:&error2];
+    [_db setMetadataWithManifest:update2 error:&error2];
   });
   XCTAssertNil(error2);
   

@@ -52,7 +52,86 @@ const config: VendoringTargetConfig = {
       ios: {},
     },
     'react-native-webview': {
-      source: 'https://github.com/react-native-community/react-native-webview.git',
+      source: 'https://github.com/react-native-webview/react-native-webview.git',
+      ios: {
+        transforms: {
+          // react-native-webview exposes `useSharedProcessPool` property which has to be handled differently in Expo Go.
+          // After upgrading this library, please ensure that proper patch is in place.
+          // See commit https://github.com/expo/expo/commit/3aeb66e33dc391399ea1c90fd166425130d17a12
+          content: [
+            {
+              paths: 'RNCWKProcessPoolManager.h',
+              find: '- (WKProcessPool *)sharedProcessPool;',
+              replaceWith:
+                '- (WKProcessPool *)sharedProcessPoolForExperienceId:(NSString *)experienceId;',
+            },
+            {
+              paths: 'RNCWKProcessPoolManager.m',
+              find: 'WKProcessPool *_sharedProcessPool;',
+              replaceWith:
+                'WKProcessPool *_sharedProcessPool;\n    NSMutableDictionary<NSString *, WKProcessPool *> *_pools;',
+            },
+            {
+              paths: 'RNCWKProcessPoolManager.m',
+              find: '@implementation RNCWKProcessPoolManager',
+              replaceWith: `@implementation RNCWKProcessPoolManager
+
+- (instancetype)init
+{
+  if (self = [super init]) {
+    _pools = [NSMutableDictionary new];
+  }
+  return self;
+}
+
+- (WKProcessPool *)sharedProcessPoolForExperienceId:(NSString *)experienceId
+{
+  if (!experienceId) {
+    return [self sharedProcessPool];
+  }
+  if (!_pools[experienceId]) {
+    _pools[experienceId] = [[WKProcessPool alloc] init];
+  }
+  return _pools[experienceId];
+}
+`,
+            },
+            {
+              paths: 'RNCWebView.h',
+              find: /@interface RNCWebView : RCTView/,
+              replaceWith: '$&\n@property (nonatomic, strong) NSString *experienceId;',
+            },
+            {
+              paths: 'RNCWebView.m',
+              find: /(\[\[RNCWKProcessPoolManager sharedManager\] sharedProcessPool)]/,
+              replaceWith: '$1ForExperienceId:self.experienceId]',
+            },
+            {
+              paths: 'RNCWebViewManager.m',
+              find: /@implementation RNCWebViewManager\s*{/,
+              replaceWith: '$&\n  NSString *_experienceId;',
+            },
+            {
+              paths: 'RNCWebViewManager.m',
+              find: '*webView = [RNCWebView new];',
+              replaceWith: '*webView = [RNCWebView new];\n  webView.experienceId = _experienceId;',
+            },
+            {
+              paths: 'RNCWebViewManager.m',
+              find: /RCT_EXPORT_MODULE\(\)/,
+              replaceWith: `- (instancetype)initWithExperienceId:(NSString *)experienceId
+               kernelServiceDelegate:(id)kernelServiceInstance
+                              params:(NSDictionary *)params
+{
+  if (self = [super init]) {
+    _experienceId = experienceId;
+  }
+  return self;
+}`,
+            },
+          ],
+        },
+      },
     },
     'react-native-safe-area-context': {
       source: 'https://github.com/th3rdwave/react-native-safe-area-context',
@@ -69,8 +148,9 @@ const config: VendoringTargetConfig = {
     'react-native-shared-element': {
       source: 'https://github.com/IjzerenHein/react-native-shared-element',
     },
-    '@react-native-community/segmented-control': {
-      source: 'https://github.com/react-native-community/segmented-control',
+    '@react-native-segmented-control/segmented-control': {
+      source: 'https://github.com/react-native-segmented-control/segmented-control',
+      ios: {},
     },
     '@react-native-picker/picker': {
       source: 'https://github.com/react-native-picker/picker',

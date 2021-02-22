@@ -10,8 +10,9 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EXUpdatesRemoteAppLoader ()
 
 @property (nonatomic, strong) EXUpdatesFileDownloader *downloader;
-
 @property (nonatomic, strong) EXUpdatesUpdate *remoteUpdate;
+
+@property (nonatomic, strong) dispatch_queue_t completionQueue;
 
 @end
 static NSString * const EXUpdatesRemoteAppLoaderErrorDomain = @"EXUpdatesRemoteAppLoader";
@@ -25,6 +26,7 @@ static NSString * const EXUpdatesRemoteAppLoaderErrorDomain = @"EXUpdatesRemoteA
 {
   if (self = [super initWithConfig:config database:database directory:directory completionQueue:completionQueue]) {
     _downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:self.config];
+    _completionQueue = completionQueue;
   }
   return self;
 }
@@ -44,14 +46,20 @@ static NSString * const EXUpdatesRemoteAppLoaderErrorDomain = @"EXUpdatesRemoteA
     // we want to persist the header data from _remoteUpdate
     if (self->_remoteUpdate) {
       dispatch_async(self.database.databaseQueue, ^{
-        NSError *serverDataError;
-        [self.database setServerDataWithManifest:self->_remoteUpdate error:&serverDataError];
-        if (serverDataError) {
-          NSLog(@"Error persisting header data to disk: %@", serverDataError.localizedDescription);
-        }
+        NSError *metadataError;
+        [self.database setMetadataWithManifest:self->_remoteUpdate error:&metadataError];
+        dispatch_async(self->_completionQueue, ^{
+          if (metadataError) {
+            NSLog(@"Error persisting header data to disk: %@", metadataError.localizedDescription);
+            error(metadataError);
+          } else {
+            success(update);
+          }
+        });
       });
+    } else {
+      success(update);
     }
-    success(update);
   };
 
   [_downloader downloadManifestFromURL:url withDatabase:self.database successBlock:^(EXUpdatesUpdate *update) {

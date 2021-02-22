@@ -67,7 +67,7 @@
   "react-native-screens": "~2.15.2",
   "react-native-svg": "12.1.0",
   "react-native-view-shot": "3.1.2",
-  "react-native-webview": "11.0.0",
+  "react-native-webview": "11.2.3",
   "unimodules-barcode-scanner-interface": "~6.0.0",
   "unimodules-camera-interface": "~6.0.0",
   "unimodules-constants-interface": "~6.0.0",
@@ -94,7 +94,6 @@
   "@react-native-community/datetimepicker": "3.0.4",
   "@react-native-community/masked-view": "0.1.10",
   "@react-native-community/viewpager": "4.2.0",
-  "@react-native-community/segmented-control": "2.2.1",
   "expo-error-recovery": "~2.0.1",
   "expo-module-template": "~9.0.0",
   "expo-image-loader": "~2.0.0",
@@ -105,5 +104,6 @@
   "firebase": "8.2.3",
   "@react-native-community/slider": "3.0.3",
   "expo-status-bar": "~1.0.3",
-  "@react-native-picker/picker": "1.9.11"
+  "@react-native-picker/picker": "1.9.11",
+  "@react-native-segmented-control/segmented-control": "2.3.0"
 }

@@ -62,6 +62,12 @@ public class LocationTaskService extends Service {
     stopSelf();
   }
 
+  @Override
+  public void onTaskRemoved(Intent rootIntent) {
+    super.onTaskRemoved(rootIntent);
+    stop();
+  }
+
   public void startForeground(Bundle serviceOptions) {
     Notification notification = buildServiceNotification(serviceOptions);
     startForeground(mServiceId, notification);
