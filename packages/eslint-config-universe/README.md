@@ -10,7 +10,7 @@ yarn add --dev eslint-config-universe
 You will also need to install `eslint`, `prettier`, `@typescript-eslint/eslint-plugin`, and `@typescript-eslint/parser`:
 
 ```sh
-yarn add --dev eslint prettier @typescript-eslint/eslint-plugin @typescript-eslint/parser
+yarn add --dev eslint prettier typescript @typescript-eslint/eslint-plugin @typescript-eslint/parser
 ```
 
 ## Usage
