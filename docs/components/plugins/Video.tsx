@@ -1,3 +1,4 @@
+import { colors } from '@expo/styleguide';
 import React from 'react';
 import FilePlayer from 'react-player/lib/players/FilePlayer';
 import VisibilitySensor from 'react-visibility-sensor';
@@ -87,7 +88,7 @@ export default class Video extends React.Component<Props, State> {
                 position: 'relative',
                 width: '100%',
                 height: 400,
-                backgroundColor: 'black',
+                backgroundColor: colors.dark.black,
                 marginBottom,
               }}>
               <FilePlayer
@@ -101,7 +102,7 @@ export default class Video extends React.Component<Props, State> {
                 height="400px"
                 style={{
                   outline: 'none',
-                  backgroundColor: '#000',
+                  backgroundColor: colors.dark.black,
                   borderRadius: 5,
                 }}
                 muted
@@ -123,7 +124,7 @@ export default class Video extends React.Component<Props, State> {
                     left: 0,
                     bottom: 0,
                     right: 0,
-                    backgroundColor: 'black',
+                    backgroundColor: colors.dark.black,
                     width: '100%',
                     height: 400,
                     opacity: isVisible ? 0 : 0.7,

@@ -14,7 +14,6 @@ const STYLES_TITLE = css`
   position: relative;
   margin-bottom: 12px;
   text-decoration: none;
-  border-bottom-color: #ccc;
   font-family: ${Constants.fontFamilies.demi};
   border-bottom: 1px solid ${theme.border.default};
   padding-bottom: 0.25rem;

@@ -2,6 +2,7 @@ import { css } from '@emotion/core';
 import { theme } from '@expo/styleguide';
 import * as React from 'react';
 
+import { UL, LI } from '~/components/base/list';
 import { Url } from '~/types/common';
 
 const STYLES_FOOTER = css`
@@ -55,12 +56,12 @@ export default class DocumentationFooter extends React.PureComponent<Props> {
   render() {
     return (
       <footer css={STYLES_FOOTER}>
-        <ul>
+        <UL>
           {this.renderForumsLink()}
           {this.maybeRenderIssuesLink()}
           {this.maybeRenderSourceCodeLink()}
           {this.maybeRenderGithubUrl()}
-        </ul>
+        </UL>
       </footer>
     );
   }
@@ -68,16 +69,16 @@ export default class DocumentationFooter extends React.PureComponent<Props> {
   private renderForumsLink() {
     if (!this.props.asPath.includes('/sdk/') || SDK_BLACKLIST.includes(this.props.title)) {
       return (
-        <li>
+        <LI>
           <a css={STYLES_FOOTER_LINK} target="_blank" rel="noopener" href="https://forums.expo.io/">
             Ask a question on the forums
           </a>
-        </li>
+        </LI>
       );
     }
 
     return (
-      <li>
+      <LI>
         <a
           css={STYLES_FOOTER_LINK}
           target="_blank"
@@ -85,14 +86,14 @@ export default class DocumentationFooter extends React.PureComponent<Props> {
           href={'https://forums.expo.io/tag/' + this.props.title}>
           Get help from the community and ask questions about {this.props.title}
         </a>
-      </li>
+      </LI>
     );
   }
 
   private maybeRenderGithubUrl() {
     if (this.props.url) {
       return (
-        <li>
+        <LI>
           <a
             css={STYLES_FOOTER_LINK}
             target="_blank"
@@ -100,7 +101,7 @@ export default class DocumentationFooter extends React.PureComponent<Props> {
             href={githubUrl(this.props.url.pathname)}>
             Edit this page
           </a>
-        </li>
+        </LI>
       );
     }
   }
@@ -111,14 +112,14 @@ export default class DocumentationFooter extends React.PureComponent<Props> {
     }
 
     return (
-      <li>
+      <LI>
         <a
           css={STYLES_FOOTER_LINK}
           target="_blank"
           href={`https://github.com/expo/expo/labels/${this.props.title}`}>
           View open bug reports for {this.props.title}
         </a>
-      </li>
+      </LI>
     );
   };
 
@@ -128,11 +129,11 @@ export default class DocumentationFooter extends React.PureComponent<Props> {
     }
 
     return (
-      <li>
+      <LI>
         <a css={STYLES_FOOTER_LINK} target="_blank" href={`${this.props.sourceCodeUrl}`}>
           View source code for {this.props.title}
         </a>
-      </li>
+      </LI>
     );
   };
 }
