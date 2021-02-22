@@ -1,4 +1,5 @@
 import { css } from '@emotion/core';
+import { theme } from '@expo/styleguide';
 import NextLink from 'next/link';
 import * as React from 'react';
 
@@ -13,34 +14,33 @@ const STYLES_TITLE = css`
   position: relative;
   margin-bottom: 12px;
   text-decoration: none;
-  border-bottom-color: #ccc;
   font-family: ${Constants.fontFamilies.demi};
-  border-bottom: 1px solid ${Constants.expoColors.semantic.border};
+  border-bottom: 1px solid ${theme.border.default};
   padding-bottom: 0.25rem;
 `;
 
 const STYLES_ACTIVE = css`
-  color: ${Constants.colors.expoLighter};
+  color: ${theme.link.default};
 
   :visited {
-    color: ${Constants.colors.expo};
+    color: ${theme.link.default};
   }
 
   :hover {
-    color: ${Constants.colors.expo};
+    color: ${theme.link.default};
   }
 `;
 
 const STYLES_DEFAULT = css`
-  color: ${Constants.colors.black40};
+  color: ${theme.text.secondary};
   transition: 200ms ease color;
 
   :visited {
-    color: ${Constants.colors.black40};
+    color: ${theme.text.secondary};
   }
 
   :hover {
-    color: ${Constants.colors.expo};
+    color: ${theme.link.default};
   }
 `;
 
@@ -93,9 +93,6 @@ export default class DocumentationSidebarTitle extends React.Component<Props, { 
     this.setState(({ isOpen }) => ({ isOpen: !isOpen }));
   };
 
-  //
-  // TODO: move rendering of child links here so we can make sections collapsable
-  //
   render() {
     if (!this.props.info.href) {
       return <div css={STYLES_TITLE}>{this.props.children}</div>;

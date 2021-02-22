@@ -1,4 +1,5 @@
 import { css } from '@emotion/core';
+import { theme } from '@expo/styleguide';
 import some from 'lodash/some';
 import Router from 'next/router';
 import * as React from 'react';
@@ -21,12 +22,12 @@ import { VERSIONS } from '~/constants/versions';
 import { NavigationRoute, Url } from '~/types/common';
 
 const STYLES_DOCUMENT = css`
-  background: #fff;
+  background: ${theme.background.default};
   margin: 0 auto;
   padding: 40px 56px;
 
   hr {
-    border-top: 1px solid ${Constants.expoColors.semantic.border};
+    border-top: 1px solid ${theme.border.default};
     border-bottom: 0px;
   }
 
