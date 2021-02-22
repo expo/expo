@@ -5,7 +5,7 @@ import * as React from 'react';
 import * as Constants from '~/constants/theme';
 
 const STYLES_PROMPT = css`
-  background-color: ${colors.dark.black};
+  background-color: ${colors.light.black};
   border-radius: 4px;
   padding: 24px;
   display: flex;

@@ -29,7 +29,7 @@ const STYLES_INPUT = css`
     ${paragraph}
     -webkit-appearance: none;
     box-sizing: border-box;
-    width: 38vw;
+    width: 24vw;
     max-width: ${Constants.breakpoints.mobileValue - 32}px;
     padding: 0 16px 0 40px;
     border-radius: 4px;
@@ -222,7 +222,7 @@ class AlgoliaSearch extends React.Component<Props> {
           onBlur={() => this.setState({ isFocused: false })}
           id={this.props.hiddenOnMobile ? 'algolia-search-box' : 'algolia-search-box-mobile'}
           type="text"
-          placeholder="Search the documentation"
+          placeholder="Search"
           autoComplete="off"
           spellCheck="false"
           dir="auto"

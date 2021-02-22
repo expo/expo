@@ -43,7 +43,6 @@ const STYLES_CONTAINER = css`
   height: 100vh;
   overflow: hidden;
   margin: 0 auto 0 auto;
-  border-left: 1px solid ${theme.border.default};
   border-right: 1px solid ${theme.border.default};
   background: ${theme.background.default};
 
@@ -104,7 +103,7 @@ const STYLES_SIDEBAR = css`
   height: 100%;
   overflow: hidden;
   transition: 200ms ease max-width;
-  background: ${theme.background.default};
+  background: ${theme.background.canvas};
 
   @media screen and (max-width: 1200px) {
     max-width: 280px;

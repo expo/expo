@@ -186,6 +186,7 @@ const SECTION_LINK_TEXT = css`
 
 const SELECT_THEME_CONTAINER = css`
   position: relative;
+  min-width: 120px;
 `;
 
 const SELECT_THEME = css`
@@ -207,6 +208,7 @@ const SELECT_THEME = css`
   -webkit-appearance: none;
   appearance: none;
   background-color: ${theme.background.default};
+  cursor: pointer;
 `;
 
 const SELECT_THEME_ICON = css`
@@ -268,13 +270,20 @@ type Props = {
 
 function SelectTheme() {
   const { themeName, setDarkMode, setAutoMode, setLightMode } = useTheme();
+  const [loaded, setLoaded] = React.useState(false);
+
+  React.useEffect(function didMount() {
+    setLoaded(true);
+    console.log({ themeName });
+  }, []);
+
+  if (!loaded) return null;
 
   return (
     <div css={SELECT_THEME_CONTAINER}>
       <select
         css={SELECT_THEME}
         value={themeName}
-        key={themeName}
         onChange={e => {
           const option = e.target.value;
 
