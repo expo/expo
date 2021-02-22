@@ -12,7 +12,7 @@ export const XCircle: React.FC<{ size?: number }> = ({ size = 24 }) => (
     <circle cx="12" cy="12" r="12" fill={theme.status.error} />
     <path
       d="M16.5 7.5l-9 9M7.5 7.5l9 9"
-      stroke={theme.background.canvas}
+      stroke={theme.background.default}
       strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"

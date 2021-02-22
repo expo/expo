@@ -12,7 +12,7 @@ export const CheckCircle: React.FC<{ size?: number }> = ({ size = 24 }) => (
     <circle cx="12" cy="12" r="12" fill={theme.status.success} />
     <path
       d="M18 7.5l-8.25 8.25L6 12"
-      stroke={theme.background.canvas}
+      stroke={theme.background.default}
       strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"

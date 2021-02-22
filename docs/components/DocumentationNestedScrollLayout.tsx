@@ -9,7 +9,7 @@ import * as Constants from '~/constants/theme';
 
 const STYLES_GLOBAL = css`
   html {
-    background: ${theme.background.canvas};
+    background: ${theme.background.default};
   }
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
@@ -45,7 +45,7 @@ const STYLES_CONTAINER = css`
   margin: 0 auto 0 auto;
   border-left: 1px solid ${theme.border.default};
   border-right: 1px solid ${theme.border.default};
-  background: ${theme.background.canvas};
+  background: ${theme.background.default};
 
   display: flex;
   align-items: center;
@@ -121,11 +121,11 @@ const STYLES_LEFT = css`
 
 const STYLES_RIGHT = css`
   border-left: 1px solid ${theme.border.default};
-  background-color: ${theme.background.canvas};
+  background-color: ${theme.background.default};
 `;
 
 const STYLES_CENTER = css`
-  background: ${theme.background.canvas};
+  background: ${theme.background.default};
   min-width: 5%;
   width: 100%;
   height: 100%;
