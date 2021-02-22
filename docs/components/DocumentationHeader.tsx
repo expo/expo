@@ -209,18 +209,21 @@ const SELECT_THEME = css`
   appearance: none;
   background-color: ${theme.background.default};
   cursor: pointer;
+  outline: none;
 `;
 
 const SELECT_THEME_ICON = css`
   position: absolute;
   left: 12px;
   top: 12px;
+  pointer-events: none;
 `;
 
 const SELECT_THEME_CHEVRON = css`
   position: absolute;
   right: 12px;
   top: 12px;
+  pointer-events: none;
 `;
 
 const HEADER_RIGHT = css`
