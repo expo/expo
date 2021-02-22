@@ -7,12 +7,7 @@ import * as React from 'react';
 
 import * as Constants from '~/constants/theme';
 
-// NOTE(jim): Global styles if and only if this component is used.
 const STYLES_GLOBAL = css`
-  body {
-    background: ${Constants.colors.white};
-  }
-
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     html {
       /* width */

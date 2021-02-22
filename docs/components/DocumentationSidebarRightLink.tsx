@@ -1,5 +1,5 @@
 import { css } from '@emotion/core';
-import { theme } from '@expo/styleguide';
+import { theme, colors } from '@expo/styleguide';
 import * as React from 'react';
 
 import { BASE_HEADING_LEVEL, Heading, HeadingType } from '../common/headingManager';
@@ -41,7 +41,7 @@ const STYLES_LINK_ACTIVE = css`
 const STYLES_TOOLTIP = css`
   border-radius: 3px;
   position: absolute;
-  background-color: ${Constants.expoColors.white};
+  background-color: ${colors.dark.white};
   font-family: ${Constants.fontFamilies.demi};
   max-width: 400px;
   border: 1px solid black;

@@ -1,5 +1,5 @@
 import { css } from '@emotion/core';
-import { theme } from '@expo/styleguide';
+import { theme, colors } from '@expo/styleguide';
 
 import * as Constants from '~/constants/theme';
 
@@ -76,8 +76,8 @@ export const globalExtras = css`
     margin: 0;
     margin-bottom: 0.5rem;
     text-decoration: none;
-    background: ${Constants.expoColors.primary[500]};
-    color: ${Constants.expoColors.white};
+    background: ${theme.button.primary};
+    color: ${colors.dark.white};
     font-family: ${Constants.fontFamilies.book};
     font-size: 1rem;
     cursor: pointer;

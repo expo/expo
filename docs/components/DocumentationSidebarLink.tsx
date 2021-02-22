@@ -18,7 +18,7 @@ const STYLES_ACTIVE = css`
   font-size: 15px;
   line-height: 140%;
   font-family: ${Constants.fontFamilies.demi};
-  color: ${Constants.colors.expoLighter};
+  color: ${theme.link.default};
   position: relative;
   left: -7px;
 

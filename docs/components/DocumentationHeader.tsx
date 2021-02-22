@@ -1,5 +1,5 @@
 import { css } from '@emotion/core';
-import { theme, useTheme } from '@expo/styleguide';
+import { theme, colors, useTheme } from '@expo/styleguide';
 import Link from 'next/link';
 import * as React from 'react';
 
@@ -99,7 +99,7 @@ const STYLES_SEARCH_OVERLAY = css`
     right: 0px;
     bottom: 0px;
     opacity: 0.5;
-    background-color: ${Constants.expoColors.black};
+    background-color: ${colors.dark.black};
   }
 `;
 
