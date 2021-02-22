@@ -3,8 +3,6 @@ import { theme } from '@expo/styleguide';
 import { Tab as ReachTab, TabList, TabPanel, TabPanels, Tabs as ReachTabs } from '@reach/tabs';
 import * as React from 'react';
 
-import * as Constants from '~/constants/theme';
-
 const STYLES_TAB_BUTTON = css`
   transition: all 0.05s ease 0s;
 
