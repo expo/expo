@@ -5,6 +5,9 @@ import * as React from 'react';
 
 import * as Utilities from '~/common/utilities';
 import { paragraph } from '~/components/base/typography';
+import { Search } from '~/components/icons/Search';
+import { SlashShortcut } from '~/components/icons/SlashShortcut';
+import { X } from '~/components/icons/X';
 import * as Constants from '~/constants/theme';
 import { LATEST_VERSION } from '~/constants/versions';
 
@@ -211,7 +214,7 @@ class AlgoliaSearch extends React.Component<Props> {
         css={[STYLES_INPUT, !this.props.hiddenOnMobile && STYLES_INPUT_MOBILE]}
         style={this.props.style}>
         <div className="search">
-          <img src="/static/images/header/search.svg" />
+          <Search />
         </div>
 
         <input
@@ -230,11 +233,11 @@ class AlgoliaSearch extends React.Component<Props> {
           <div
             className="shortcut-hint"
             style={{ display: this.state.isFocused ? 'none' : 'flex' }}>
-            <img src="/static/images/header/slash.svg" />
+            <SlashShortcut />
           </div>
         ) : (
           <span className="close-search" onClick={this.props.onToggleSearch}>
-            <img src="/static/images/header/x.svg" />
+            <X />
           </span>
         )}
       </div>

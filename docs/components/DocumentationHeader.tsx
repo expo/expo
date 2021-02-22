@@ -3,6 +3,11 @@ import { theme, useTheme } from '@expo/styleguide';
 import Link from 'next/link';
 import * as React from 'react';
 
+import { MoreHorizontal } from './icons/MoreHorizontal';
+import { SDK } from './icons/SDK';
+import { Search } from './icons/Search';
+import { X } from './icons/X';
+
 import AlgoliaSearch from '~/components/plugins/AlgoliaSearch';
 import { isEasReleased } from '~/constants/FeatureFlags';
 import * as Constants from '~/constants/theme';
@@ -232,7 +237,7 @@ export default class DocumentationHeader extends React.PureComponent<Props> {
               <Link href="/" passHref>
                 <a css={STYLES_UNSTYLED_ANCHOR}>
                   <span css={STYLES_LOGO}>
-                    <img src="/static/images/header/sdk.svg" />
+                    <SDK />
                   </span>
                 </a>
               </Link>
@@ -256,17 +261,17 @@ export default class DocumentationHeader extends React.PureComponent<Props> {
             {!this.props.isMenuActive && (
               <div css={STYLES_MENU_BUTTON_CONTAINER}>
                 <span css={STYLES_MENU_BUTTON} onClick={this.props.onToggleSearch}>
-                  <img src="/static/images/header/search.svg" />
+                  <Search />
                 </span>
                 <span css={STYLES_MENU_BUTTON} onClick={this.props.onShowMenu}>
-                  <img src="/static/images/header/more-horizontal.svg" />
+                  <MoreHorizontal />
                 </span>
               </div>
             )}
 
             {this.props.isMenuActive && (
               <span css={STYLES_MENU_BUTTON} onClick={this.props.onHideMenu}>
-                <img src="/static/images/header/x.svg" />
+                <X />
               </span>
             )}
           </div>
