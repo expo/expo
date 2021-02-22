@@ -1,5 +1,14 @@
 import { css } from '@emotion/core';
-import { theme, colors, useTheme } from '@expo/styleguide';
+import {
+  theme,
+  colors,
+  useTheme,
+  ThemeDarkIcon,
+  ThemeLightIcon,
+  ThemeAutoIcon,
+  ChevronDownIcon,
+  shadows,
+} from '@expo/styleguide';
 import Link from 'next/link';
 import * as React from 'react';
 
@@ -8,6 +17,7 @@ import { SDK } from './icons/SDK';
 import { Search } from './icons/Search';
 import { X } from './icons/X';
 
+import { paragraph } from '~/components/base/typography';
 import AlgoliaSearch from '~/components/plugins/AlgoliaSearch';
 import { isEasReleased } from '~/constants/FeatureFlags';
 import * as Constants from '~/constants/theme';
@@ -174,6 +184,49 @@ const SECTION_LINK_TEXT = css`
   right: 0;
 `;
 
+const SELECT_THEME_CONTAINER = css`
+  position: relative;
+`;
+
+const SELECT_THEME = css`
+  ${paragraph}
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  color: ${theme.text.default};
+  line-height: 1.3;
+  padding: 0px 36px 0px 36px;
+  width: 100%;
+  margin: 0;
+  border: 1px solid ${theme.border.default};
+  box-shadow: ${shadows.input};
+  border-radius: 4px;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: ${theme.background.default};
+`;
+
+const SELECT_THEME_ICON = css`
+  position: absolute;
+  left: 12px;
+  top: 12px;
+`;
+
+const SELECT_THEME_CHEVRON = css`
+  position: absolute;
+  right: 12px;
+  top: 12px;
+`;
+
+const HEADER_RIGHT = css`
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 12px;
+`;
+
 type SectionContainerProps = {
   children: JSX.Element[];
   spaceBetween?: number;
@@ -213,16 +266,34 @@ type Props = {
   onHideMenu: () => void;
 };
 
-function ThemeName() {
-  // TODO: REMOVE THIS JON
+function SelectTheme() {
   const { themeName, setDarkMode, setAutoMode, setLightMode } = useTheme();
 
   return (
-    <div>
-      <button onClick={setLightMode}>light</button>
-      <button onClick={setDarkMode}>dark</button>
-      <button onClick={setAutoMode}>auto</button>
-      <p style={{ color: theme.text.default }}>Theme: {themeName}</p>
+    <div css={SELECT_THEME_CONTAINER}>
+      <select
+        css={SELECT_THEME}
+        value={themeName}
+        key={themeName}
+        onChange={e => {
+          const option = e.target.value;
+
+          if (option === 'auto') setAutoMode();
+          if (option === 'dark') setDarkMode();
+          if (option === 'light') setLightMode();
+        }}>
+        <option value="auto">Auto</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+      </select>
+      <div css={SELECT_THEME_ICON}>
+        {themeName === 'auto' && <ThemeAutoIcon size={16} />}
+        {themeName === 'dark' && <ThemeDarkIcon size={16} />}
+        {themeName === 'light' && <ThemeLightIcon size={16} />}
+      </div>
+      <div css={SELECT_THEME_CHEVRON}>
+        <ChevronDownIcon size={16} />
+      </div>
     </div>
   );
 }
@@ -247,15 +318,15 @@ export default class DocumentationHeader extends React.PureComponent<Props> {
                   <h1 css={STYLES_TITLE_TEXT}>Expo</h1>
                 </a>
               </Link>
-
-              <ThemeName />
-
               {this.renderSectionLinks(true)}
             </div>
           </div>
           <div css={STYLES_RIGHT}>
             {!this.props.isAlgoliaSearchHidden && (
-              <AlgoliaSearch version={this.props.version} hiddenOnMobile />
+              <div css={HEADER_RIGHT}>
+                <AlgoliaSearch version={this.props.version} hiddenOnMobile />
+                <SelectTheme />
+              </div>
             )}
 
             {!this.props.isMenuActive && (
