@@ -3,10 +3,6 @@ import { Localization } from './Localization.types';
 
 export { Localization };
 
-// Web, Android, and some iOS values use `-`. This will convert the iOS values that use `_`
-// https://github.com/expo/expo/blob/21ae94bae2e8369992050c433a00699d425b35bd/packages/expo/src/Localization.ts#L112-L114
-const parseLocale = (locale: string): string => locale.replace('_', '-');
-
 /**
  * Three-character ISO 4217 currency code. Returns `null` on web.
  *
@@ -53,13 +49,13 @@ export const isRTL = ExpoLocalization.isRTL;
  *
  * @example `en`, `en-US`, `zh-Hans`, `zh-Hans-CN`, `en-emodeng`
  */
-export const locale = parseLocale(ExpoLocalization.locale);
+export const locale = ExpoLocalization.locale;
 
 /**
  * List of all the native languages provided by the user settings.
  * These are returned in the order the user defines in their device settings.
  */
-export const locales = ExpoLocalization.locales.map(parseLocale);
+export const locales = ExpoLocalization.locales;
 
 /**
  * The current time zone in display format.
@@ -83,10 +79,5 @@ export const region = ExpoLocalization.region;
  * On iOS, changing the locale will cause the device to reset meaning the constants will always be correct.
  */
 export async function getLocalizationAsync(): Promise<Localization> {
-  const { locale, locales, ...localization } = await ExpoLocalization.getLocalizationAsync();
-  return {
-    locale: parseLocale(locale),
-    locales: ExpoLocalization.locales.map(parseLocale),
-    ...localization,
-  };
+  return await ExpoLocalization.getLocalizationAsync();
 }
