@@ -12,6 +12,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `@react-native-community/netinfo` from `5.9.7` to `5.9.10`. ([#11947](https://github.com/expo/expo/pull/11947) by [@tsapeta](https://github.com/tsapeta))
 - Updated `react-native-webview` from `10.10.2` to `11.2.3`. ([#11964](https://github.com/expo/expo/pull/11964) by [@tsapeta](https://github.com/tsapeta))
 - Updated `@react-native-segmented-control/segmented-control` from `2.2.1` to `2.3.0`. Side note: the package has changed its NPM scope from `@react-native-community/segmented-control`. ([#11996](https://github.com/expo/expo/pull/11996) by [@tsapeta](https://github.com/tsapeta))
+- Updated `@react-native-community/viewpager` from `4.2.0` to `4.2.3`. ([#12003](https://github.com/expo/expo/pull/12003) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🛠 Breaking changes
 

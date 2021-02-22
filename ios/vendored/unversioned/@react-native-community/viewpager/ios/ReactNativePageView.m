@@ -55,11 +55,27 @@
 }
 
 - (void)didUpdateReactSubviews {
-    if (!self.reactPageViewController) {
+    if (!self.reactPageViewController && self.reactViewController != nil) {
         [self embed];
         [self setupInitialController];
     } else {
         [self updateDataSource];
+    }
+}
+
+- (void)didMoveToSuperview {
+    [super didMoveToSuperview];
+    if (!self.reactPageViewController && self.reactViewController != nil) {
+        [self embed];
+        [self setupInitialController];
+    }
+}
+
+- (void)didMoveToWindow {
+    [super didMoveToWindow];
+    if (!self.reactPageViewController && self.reactViewController != nil) {
+        [self embed];
+        [self setupInitialController];
     }
 }
 
@@ -139,6 +155,9 @@
                            with:(UIViewController *)controller
                       direction:(UIPageViewControllerNavigationDirection)direction
                        animated:(BOOL)animated {
+    if (self.reactPageViewController == nil) {
+        return;
+    }
     __weak ReactNativePageView *weakSelf = self;
     uint16_t coalescingKey = _coalescingKey++;
     

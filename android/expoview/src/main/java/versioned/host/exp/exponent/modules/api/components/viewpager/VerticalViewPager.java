@@ -81,6 +81,13 @@ public class VerticalViewPager extends ViewPager {
         return result;
     }
 
+    // Handle orientation change
+    // https://issuetracker.google.com/issues/36957831#comment7
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w - this.getPageMargin(), h, oldw - this.getPageMargin(), oldh);
+    }
+
     private MotionEvent flipXY(MotionEvent ev) {
         if (mVertical) {
             final float width = getWidth();
