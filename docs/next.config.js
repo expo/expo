@@ -19,14 +19,10 @@ const latest = join('pages', 'versions', 'latest/');
 removeSync(latest);
 copySync(vLatest, latest);
 
-const ESBUILD_USE = true;
-const ESBUILD_LOADER = {
-  loader: 'esbuild-loader',
-  options: {
-    loader: 'tsx',
-    target: 'es2017',
-  },
-};
+// Determine if we are using esbuild for MDX transpiling
+const enableEsbuild = !!process.env.USE_ESBUILD;
+
+console.log(enableEsbuild ? 'Using esbuild for MDX files' : 'Using babel for MDX files');
 
 module.exports = {
   trailingSlash: true,
@@ -47,11 +43,20 @@ module.exports = {
         },
       }),
     });
-    // Add support for MDX with our custom loader
+
+    // Add support for MDX with our custom loader and esbuild
     config.module.rules.push({
       test: /.mdx?$/, // load both .md and .mdx files
       use: [
-        ESBUILD_USE ? ESBUILD_LOADER : options.defaultLoaders.babel,
+        !enableEsbuild
+          ? options.defaultLoaders.babel
+          : {
+              loader: 'esbuild-loader',
+              options: {
+                loader: 'tsx',
+                target: 'es2017',
+              },
+            },
         {
           loader: '@mdx-js/loader',
           options: {
@@ -66,30 +71,8 @@ module.exports = {
     });
     // Fix inline or browser MDX usage: https://mdxjs.com/getting-started/webpack#running-mdx-in-the-browser
     config.node = { fs: 'empty' };
-
-    // ESBUILD
-    if (ESBUILD_USE) {
-      // const rule = config.module.rules[0];
-      // if (rule) {
-      //   const convertToESBuild = loader => {
-      //     if (loader.loader === 'next-babel-loader') {
-      //       return ESBUILD_LOADER;
-      //     }
-      //     return loader;
-      //   };
-
-      //   if (Array.isArray(rule.use)) {
-      //     rule.use = rule.use.map(loader => {
-      //       if (typeof e === 'object') {
-      //         return convertToESBuild(loader);
-      //       }
-      //       return loader;
-      //     });
-      //   } else {
-      //     rule.use = convertToESBuild(rule.use);
-      //   }
-      // }
-      config.plugins.push(new options.webpack.ProvidePlugin({ React: 'react' }));
+    // Add the esbuild plugin only when using esbuild
+    if (enableEsbuild) {
       config.plugins.push(new ESBuildPlugin());
     }
 
