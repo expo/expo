@@ -8,7 +8,7 @@ Using the techniques described in the environment variables document above, envi
 
 ## Using plaintext environment variables
 
-Plaintext environment variables are strings that you are comfortable with committing to your source control and using inside of your client app code. For example, you might use an `API_URL` variable to tell you app what backend to use.
+Plaintext environment variables are strings that you are comfortable with committing to your source control and using inside of your client app code. For example, you might use an `API_URL` variable to tell your app what backend to use.
 
 You can specify environment variables for specific build jobs using `eas.json`:
 
