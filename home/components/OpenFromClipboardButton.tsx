@@ -1,6 +1,7 @@
+import Clipboard from 'expo-clipboard';
 import Constants from 'expo-constants';
 import * as React from 'react';
-import { Clipboard, Keyboard, Linking, Platform } from 'react-native';
+import { Keyboard, Linking, Platform } from 'react-native';
 
 import * as UrlUtils from '../utils/UrlUtils';
 import ListItem from './ListItem';

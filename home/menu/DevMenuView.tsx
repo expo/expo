@@ -1,5 +1,6 @@
+import Clipboard from 'expo-clipboard';
 import React from 'react';
-import { Clipboard, PixelRatio, StyleSheet } from 'react-native';
+import { PixelRatio, StyleSheet } from 'react-native';
 
 import { StyledView } from '../components/Views';
 import DevMenuBottomSheetContext, { Context } from './DevMenuBottomSheetContext';

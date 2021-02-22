@@ -1,8 +1,9 @@
 import { StackScreenProps } from '@react-navigation/stack';
+import Clipboard from 'expo-clipboard';
 import Constants from 'expo-constants';
 import { AllStackRoutes } from 'navigation/Navigation.types';
 import * as React from 'react';
-import { Alert, AppState, Clipboard, Platform, StyleSheet, View } from 'react-native';
+import { Alert, AppState, Platform, StyleSheet, View } from 'react-native';
 
 import ApiV2HttpClient from '../api/ApiV2HttpClient';
 import Config from '../api/Config';

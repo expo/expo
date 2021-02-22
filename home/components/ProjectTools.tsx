@@ -1,5 +1,6 @@
+import Clipboard from 'expo-clipboard';
 import * as React from 'react';
-import { Clipboard, InteractionManager, Linking, View } from 'react-native';
+import { InteractionManager, Linking, View } from 'react-native';
 
 import FeatureFlags from '../FeatureFlags';
 import * as UrlUtils from '../utils/UrlUtils';
