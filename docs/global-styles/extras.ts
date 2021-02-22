@@ -103,7 +103,7 @@ export const globalExtras = css`
   }
 
   .diff-container {
-    border: 1px solid #e3e3e3;
+    border: 1px solid ${theme.border.default};
     border-radius: 2px;
     margin-bottom: 10px;
   }
@@ -118,6 +118,22 @@ export const globalExtras = css`
   .diff-container th {
     border-bottom: none;
     border-right: none;
+  }
+
+  .diff-container .diff-gutter-insert {
+    background: ${theme.background.success};
+  }
+
+  .diff-container .diff-gutter-delete {
+    background: ${theme.background.error};
+  }
+
+  .diff-container .diff-code-insert {
+    background: ${theme.background.success};
+  }
+
+  .diff-container .diff-code-delete {
+    background: ${theme.background.error};
   }
 
   .strike {
