@@ -1,4 +1,3 @@
-import { colors } from '@expo/styleguide';
 import React from 'react';
 import FilePlayer from 'react-player/lib/players/FilePlayer';
 import VisibilitySensor from 'react-visibility-sensor';
