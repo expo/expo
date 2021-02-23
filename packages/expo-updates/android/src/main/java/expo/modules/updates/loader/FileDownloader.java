@@ -277,7 +277,18 @@ public class FileDownloader {
 
   /* package */ static Request setHeadersForManifestUrl(UpdatesConfiguration configuration, JSONObject extraHeaders, Context context) {
     Request.Builder requestBuilder = new Request.Builder()
-            .url(configuration.getUpdateUrl().toString())
+            .url(configuration.getUpdateUrl().toString());
+
+    // apply extra headers before anything else, so they don't override preset headers
+    if (extraHeaders != null) {
+      Iterator<String> keySet = extraHeaders.keys();
+      while (keySet.hasNext()) {
+        String key = keySet.next();
+        requestBuilder.header(key, extraHeaders.optString(key, ""));
+      }
+    }
+
+    requestBuilder = requestBuilder
             .header("Accept", "application/expo+json,application/json")
             .header("Expo-Platform", "android")
             .header("Expo-API-Version", "1")
@@ -311,14 +322,6 @@ public class FileDownloader {
         "Expo-Fatal-Error",
         previousFatalError.substring(0, Math.min(1024, previousFatalError.length()))
       );
-    }
-
-    if (extraHeaders != null) {
-      Iterator<String> keySet = extraHeaders.keys();
-      while (keySet.hasNext()) {
-        String key = keySet.next();
-        requestBuilder.header(key, extraHeaders.optString(key, ""));
-      }
     }
 
     for (Map.Entry<String, String> entry : configuration.getRequestHeaders().entrySet()) {

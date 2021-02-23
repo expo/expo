@@ -68,4 +68,25 @@ public class FileDownloaderTest {
     Assert.assertEquals("47.5", actual.header("expo-number"));
     Assert.assertEquals("true", actual.header("expo-boolean"));
   }
+
+  @Test
+  public void testExtraHeaders_OverrideOrder() throws JSONException {
+    HashMap<String, Object> configMap = new HashMap<>();
+    configMap.put("updateUrl", Uri.parse("https://exp.host/manifest/00000000-0000-0000-0000-000000000000"));
+    configMap.put("runtimeVersion", "1.0");
+
+    // custom headers configured at build-time should be able to override preset headers
+    HashMap<String, String> headersMap = new HashMap<>();
+    headersMap.put("expo-updates-environment", "custom");
+    configMap.put("requestHeaders", headersMap);
+    UpdatesConfiguration config = new UpdatesConfiguration().loadValuesFromMap(configMap);
+
+    // serverDefinedHeaders should not be able to override preset headers
+    JSONObject extraHeaders = new JSONObject();
+    extraHeaders.put("expo-platform", "ios");
+
+    Request actual = FileDownloader.setHeadersForManifestUrl(config, extraHeaders, context);
+    Assert.assertEquals("android", actual.header("expo-platform"));
+    Assert.assertEquals("custom", actual.header("expo-updates-environment"));
+  }
 }
