@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.provider.MediaStore;
 
 import java.io.File;
@@ -37,8 +38,8 @@ class AddAssetsToAlbum extends AsyncTask<Void, Void, Void> {
     mContext = context;
     mAssetsId = assetsId;
     mAlbumId = albumId;
-    mStrategy = copyToAlbum ? copyStrategy : moveStrategy;
     mPromise = promise;
+    mStrategy = copyToAlbum ? copyStrategy : moveStrategy;
   }
 
 
@@ -46,14 +47,13 @@ class AddAssetsToAlbum extends AsyncTask<Void, Void, Void> {
     final String[] path = {MediaStore.Images.Media.DATA};
     final String selection = MediaStore.Images.Media.BUCKET_ID + "=?";
     final String[] id = {mAlbumId};
-    final String limit = "1 LIMIT 1";
 
     try (Cursor album = mContext.getContentResolver().query(
-        EXTERNAL_CONTENT,
-        path,
-        selection,
-        id,
-        limit)) {
+      EXTERNAL_CONTENT,
+      path,
+      selection,
+      id,
+      null)) {
 
       if (album == null) {
         mPromise.reject(ERROR_UNABLE_TO_LOAD, "Could not get album. Query returns null.");
@@ -82,23 +82,20 @@ class AddAssetsToAlbum extends AsyncTask<Void, Void, Void> {
       if (album == null) {
         return null;
       }
-      List<File> assets = getAssetsById(mContext, mPromise, mAssetsId);
+      List<MediaLibraryUtils.AssetFile> assets = getAssetsById(mContext, mPromise, mAssetsId);
       if (assets == null) {
         return null;
       }
       List<String> paths = new ArrayList<>();
-      for (File asset : assets) {
+      for (MediaLibraryUtils.AssetFile asset : assets) {
         File newAsset = mStrategy.apply(asset, album, mContext);
         paths.add(newAsset.getPath());
       }
 
       final AtomicInteger atomicInteger = new AtomicInteger(paths.size());
-      MediaScannerConnection.scanFile(mContext, paths.toArray(new String[0]), null, new MediaScannerConnection.OnScanCompletedListener() {
-        @Override
-        public void onScanCompleted(String path, Uri uri) {
-          if (atomicInteger.decrementAndGet() == 0) {
-            mPromise.resolve(true);
-          }
+      MediaScannerConnection.scanFile(mContext, paths.toArray(new String[0]), null, (path, uri) -> {
+        if (atomicInteger.decrementAndGet() == 0) {
+          mPromise.resolve(true);
         }
       });
     } catch (SecurityException e) {

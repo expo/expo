@@ -2,8 +2,8 @@ package expo.modules.medialibrary;
 
 import android.content.Context;
 import android.media.MediaScannerConnection;
-import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 
@@ -39,7 +39,10 @@ class CreateAlbum extends AsyncTask<Void, Void, Void> {
   }
 
   private File createAlbum() {
-    File album = new File(Environment.getExternalStorageDirectory().getPath(), mAlbumName);
+    File album = new File(
+      Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getPath(),
+      mAlbumName
+    );
 
     if (!album.exists() && !album.mkdirs()) {
       mPromise.reject(ERROR_NO_ALBUM, "Could not create album directory.");
@@ -55,7 +58,7 @@ class CreateAlbum extends AsyncTask<Void, Void, Void> {
       if (album == null) {
         return null;
       }
-      List<File> files = getAssetsById(mContext, mPromise, mAssetId);
+      List<MediaLibraryUtils.AssetFile> files = getAssetsById(mContext, mPromise, mAssetId);
       if (files == null) {
         return null;
       }
@@ -63,25 +66,21 @@ class CreateAlbum extends AsyncTask<Void, Void, Void> {
       File newFile = mStrategy.apply(albumCreator, album, mContext);
 
       MediaScannerConnection.scanFile(
-          mContext,
-          new String[]{newFile.getPath()},
-          null,
-
-          new MediaScannerConnection.OnScanCompletedListener() {
-            @Override
-            public void onScanCompleted(String path, Uri uri) {
-              if (uri == null) {
-                mPromise.reject(ERROR_UNABLE_TO_SAVE, "Could not add image to album.");
-                return;
-              }
-              final String selection = MediaStore.Images.Media.DATA + "=?";
-              final String[] args = {path};
-              queryAlbum(mContext, selection, args, mPromise);
-            }
-          });
+        mContext,
+        new String[]{newFile.getPath()},
+        null,
+        (path, uri) -> {
+          if (uri == null) {
+            mPromise.reject(ERROR_UNABLE_TO_SAVE, "Could not add image to album.");
+            return;
+          }
+          final String selection = MediaStore.Images.Media.DATA + "=?";
+          final String[] args = {path};
+          queryAlbum(mContext, selection, args, mPromise);
+        });
     } catch (SecurityException e) {
       mPromise.reject(ERROR_UNABLE_TO_LOAD_PERMISSION,
-          "Could not create album: need WRITE_EXTERNAL_STORAGE permission.", e);
+        "Could not create album: need WRITE_EXTERNAL_STORAGE permission.", e);
     } catch (IOException e) {
       mPromise.reject(ERROR_UNABLE_TO_LOAD, "Could not read file or parse EXIF tags", e);
     }

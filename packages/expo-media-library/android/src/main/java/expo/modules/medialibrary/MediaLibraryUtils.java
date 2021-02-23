@@ -1,13 +1,16 @@
 package expo.modules.medialibrary;
 
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Files;
 import android.provider.MediaStore.Images.Media;
@@ -21,11 +24,15 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.exifinterface.media.ExifInterface;
 
 import static expo.modules.medialibrary.MediaLibraryConstants.ASSET_PROJECTION;
@@ -46,23 +53,38 @@ import static expo.modules.medialibrary.MediaLibraryConstants.exifTags;
 
 final class MediaLibraryUtils {
 
-  static final FileStrategy copyStrategy = new FileStrategy() {
-    @Override
-    public File apply(File src, File dir, Context context) throws IOException {
-      return safeCopyFile(src, dir);
-    }
-  };
-  static final FileStrategy moveStrategy = new FileStrategy() {
-    @Override
-    public File apply(File src, File dir, Context context) throws IOException {
-      File newFile = safeMoveFile(src, dir);
-      context.getContentResolver().delete(
-        EXTERNAL_CONTENT,
-        Media.DATA + "=?",
-        new String[]{src.getPath()});
+  static final FileStrategy copyStrategy = (src, dir, context) -> safeCopyFile(src, dir);
+
+  static final FileStrategy moveStrategy = (src, dir, context) -> {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && src instanceof AssetFile) {
+      String assetId = ((AssetFile) src).getAssetId();
+      Uri assetUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, Long.parseLong(assetId));
+
+      File newFile = safeCopyFile(src, dir);
+      context.getContentResolver().delete(assetUri, null);
       return newFile;
     }
+
+    File newFile = safeMoveFile(src, dir);
+    context.getContentResolver().delete(
+      EXTERNAL_CONTENT,
+      Media.DATA + "=?",
+      new String[]{src.getPath()});
+    return newFile;
   };
+
+  static class AssetFile extends File {
+    private final String mAssetId;
+
+    public AssetFile(@NonNull String pathname, String assetId) {
+      super(pathname);
+      mAssetId = assetId;
+    }
+
+    public String getAssetId() {
+      return mAssetId;
+    }
+  }
 
   static String[] getFileNameAndExtension(String name) {
     int dot = name.lastIndexOf(".");
@@ -382,7 +404,7 @@ final class MediaLibraryUtils {
   }
 
   static void deleteAssets(Context context, String selection, String[] selectionArgs, Promise promise) {
-    final String[] projection = {Media.DATA};
+    final String[] projection = {Media._ID, Media.DATA};
     try (Cursor filesToDelete = context.getContentResolver().query(
       EXTERNAL_CONTENT,
       projection,
@@ -393,16 +415,22 @@ final class MediaLibraryUtils {
         promise.reject(ERROR_UNABLE_TO_LOAD, "Could not get album. Query returns null.");
       } else {
         while (filesToDelete.moveToNext()) {
-          String filePath = filesToDelete.getString(filesToDelete.getColumnIndex(Media.DATA));
-          File file = new File(filePath);
-          if (file.delete()) {
-            context.getContentResolver().delete(
-              EXTERNAL_CONTENT,
-              Media.DATA + "=?",
-              new String[]{filePath});
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            long id = filesToDelete.getLong(filesToDelete.getColumnIndex(Media._ID));
+            Uri assetUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+            context.getContentResolver().delete(assetUri, null);
           } else {
-            promise.reject(ERROR_UNABLE_TO_DELETE, "Could not delete file.");
-            return;
+            String filePath = filesToDelete.getString(filesToDelete.getColumnIndex(Media.DATA));
+            File file = new File(filePath);
+            if (file.delete()) {
+              context.getContentResolver().delete(
+                EXTERNAL_CONTENT,
+                Media.DATA + "=?",
+                new String[]{filePath});
+            } else {
+              promise.reject(ERROR_UNABLE_TO_DELETE, "Could not delete file.");
+              return;
+            }
           }
         }
         promise.resolve(true);
@@ -410,7 +438,7 @@ final class MediaLibraryUtils {
     } catch (SecurityException e) {
       promise.reject(ERROR_UNABLE_TO_SAVE_PERMISSION,
         "Could not delete asset: need WRITE_EXTERNAL_STORAGE permission.", e);
-    } catch (IllegalArgumentException e) {
+    } catch (Exception e) {
       e.printStackTrace();
       promise.reject(ERROR_UNABLE_TO_DELETE, "Could not delete file.", e);
     }
@@ -423,8 +451,8 @@ final class MediaLibraryUtils {
     return TextUtils.join(",", array);
   }
 
-  static List<File> getAssetsById(Context context, Promise promise, String... assetsId) {
-    final String[] path = {Media.DATA};
+  static List<AssetFile> getAssetsById(Context context, Promise promise, String... assetsId) {
+    final String[] path = {Media._ID, Media.DATA};
 
     final String selection = MediaStore.Images.Media._ID + " IN ( " + getInPart(assetsId) + " )";
 
@@ -435,7 +463,6 @@ final class MediaLibraryUtils {
       assetsId,
       null
     )) {
-
       if (assets == null) {
         promise.reject(ERROR_UNABLE_TO_LOAD, "Could not get assets. Query returns null.");
         return null;
@@ -443,11 +470,11 @@ final class MediaLibraryUtils {
         promise.reject(ERROR_NO_ASSET, "Could not get all of the requested assets");
         return null;
       }
-      List<File> assetFiles = new ArrayList<>();
+      List<AssetFile> assetFiles = new ArrayList<>();
 
       while (assets.moveToNext()) {
         final String assetPath = assets.getString(assets.getColumnIndex(MediaStore.Images.Media.DATA));
-        File asset = new File(assetPath);
+        AssetFile asset = new AssetFile(assetPath, assets.getString(assets.getColumnIndex(Media._ID)));
 
         if (!asset.exists() || !asset.isFile()) {
           promise.reject(ERROR_UNABLE_TO_LOAD, "Path " + assetPath + " does not exist or isn't file.");
@@ -457,12 +484,10 @@ final class MediaLibraryUtils {
       }
       return assetFiles;
     }
-
   }
 
   interface FileStrategy {
     File apply(final File src, final File dir, Context context) throws IOException;
   }
-
-
 }
+

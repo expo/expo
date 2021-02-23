@@ -1,34 +1,51 @@
 package expo.modules.medialibrary;
 
+import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentSender;
+import android.content.pm.PackageManager;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Binder;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Files;
 import android.provider.MediaStore.Images.Media;
+import android.text.TextUtils;
 
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.ActivityEventListener;
+import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.services.EventEmitter;
+import org.unimodules.core.interfaces.services.UIManager;
 import org.unimodules.interfaces.permissions.Permissions;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_PERMISSIONS;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_PERMISSIONS_MESSAGE;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_WRITE_PERMISSION_MESSAGE;
+import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_ASK_FOR_PERMISSIONS;
+import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_ASK_FOR_PERMISSIONS_MESSAGE;
+import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_USER_DID_NOT_GRANT_WRITE_PERMISSIONS_MESSAGE;
 import static expo.modules.medialibrary.MediaLibraryConstants.EXTERNAL_CONTENT;
 import static expo.modules.medialibrary.MediaLibraryConstants.LIBRARY_DID_CHANGE_EVENT;
 import static expo.modules.medialibrary.MediaLibraryConstants.MEDIA_TYPE_ALL;
@@ -43,14 +60,18 @@ import static expo.modules.medialibrary.MediaLibraryConstants.SORT_BY_HEIGHT;
 import static expo.modules.medialibrary.MediaLibraryConstants.SORT_BY_MEDIA_TYPE;
 import static expo.modules.medialibrary.MediaLibraryConstants.SORT_BY_MODIFICATION_TIME;
 import static expo.modules.medialibrary.MediaLibraryConstants.SORT_BY_WIDTH;
+import static expo.modules.medialibrary.MediaLibraryUtils.getInPart;
 
 
-public class MediaLibraryModule extends ExportedModule {
+public class MediaLibraryModule extends ExportedModule implements ActivityEventListener {
+
+  private static final int WRITE_REQUEST_CODE = 7463;
 
   private MediaStoreContentObserver mImagesObserver = null;
   private MediaStoreContentObserver mVideosObserver = null;
-  private Context mContext;
+  private final Context mContext;
   private ModuleRegistry mModuleRegistry;
+  private Action mAction;
 
   public MediaLibraryModule(Context context) {
     super(context);
@@ -135,10 +156,18 @@ public class MediaLibraryModule extends ExportedModule {
       return;
     }
 
-    new AddAssetsToAlbum(mContext,
-      assetsId.toArray(new String[0]), albumId, copyToAlbum, promise).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-  }
+    Action action = permissionsWereGranted -> {
+      if (!permissionsWereGranted) {
+        promise.reject(ERROR_NO_PERMISSIONS, ERROR_USER_DID_NOT_GRANT_WRITE_PERMISSIONS_MESSAGE);
+        return;
+      }
 
+      new AddAssetsToAlbum(mContext,
+        assetsId.toArray(new String[0]), albumId, copyToAlbum, promise).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    };
+
+    runActionWithPermissions(assetsId, action, promise);
+  }
 
   @ExpoMethod
   public void removeAssetsFromAlbumAsync(List<String> assetsId, String albumId, Promise promise) {
@@ -147,8 +176,17 @@ public class MediaLibraryModule extends ExportedModule {
       return;
     }
 
-    new RemoveAssetsFromAlbum(mContext,
-      assetsId.toArray(new String[0]), albumId, promise).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    Action action = permissionsWereGranted -> {
+      if (!permissionsWereGranted) {
+        promise.reject(ERROR_NO_PERMISSIONS, ERROR_USER_DID_NOT_GRANT_WRITE_PERMISSIONS_MESSAGE);
+        return;
+      }
+
+      new RemoveAssetsFromAlbum(mContext,
+        assetsId.toArray(new String[0]), albumId, promise).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    };
+
+    runActionWithPermissions(assetsId, action, promise);
   }
 
   @ExpoMethod
@@ -158,8 +196,17 @@ public class MediaLibraryModule extends ExportedModule {
       return;
     }
 
-    new DeleteAssets(mContext, assetsId.toArray(new String[0]), promise)
-      .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    Action action = permissionsWereGranted -> {
+      if (!permissionsWereGranted) {
+        promise.reject(ERROR_NO_PERMISSIONS, ERROR_USER_DID_NOT_GRANT_WRITE_PERMISSIONS_MESSAGE);
+        return;
+      }
+
+      new DeleteAssets(mContext, assetsId.toArray(new String[0]), promise)
+        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    };
+
+    runActionWithPermissions(assetsId, action, promise);
   }
 
   @ExpoMethod
@@ -203,8 +250,17 @@ public class MediaLibraryModule extends ExportedModule {
       return;
     }
 
-    new CreateAlbum(mContext, albumName, assetId, copyAsset, promise)
-      .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    Action action = permissionsWereGranted -> {
+      if (!permissionsWereGranted) {
+        promise.reject(ERROR_NO_PERMISSIONS, ERROR_USER_DID_NOT_GRANT_WRITE_PERMISSIONS_MESSAGE);
+        return;
+      }
+
+      new CreateAlbum(mContext, albumName, assetId, copyAsset, promise)
+        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    };
+
+    runActionWithPermissions(Collections.singletonList(assetId), action, promise);
   }
 
   @ExpoMethod
@@ -214,9 +270,17 @@ public class MediaLibraryModule extends ExportedModule {
       return;
     }
 
-    new DeleteAlbums(mContext, albumIds, promise)
-      .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    Action action = permissionsWereGranted -> {
+      if (!permissionsWereGranted) {
+        promise.reject(ERROR_NO_PERMISSIONS, ERROR_USER_DID_NOT_GRANT_WRITE_PERMISSIONS_MESSAGE);
+        return;
+      }
 
+      new DeleteAlbums(mContext, albumIds, promise)
+        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    };
+
+    runActionWithPermissions(getAssetsInAlbums(albumIds.toArray(new String[0])), action, promise);
   }
 
   @ExpoMethod
@@ -276,6 +340,19 @@ public class MediaLibraryModule extends ExportedModule {
     promise.resolve(null);
   }
 
+  @Override
+  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+    if (requestCode == WRITE_REQUEST_CODE && mAction != null) {
+      mAction.runWithPermissions(resultCode == Activity.RESULT_OK);
+      mAction = null;
+      mModuleRegistry.getModule(UIManager.class).unregisterActivityEventListener(this);
+    }
+  }
+
+  @Override
+  public void onNewIntent(Intent intent) {
+  }
+
   private boolean isMissingPermissions() {
     Permissions permissionsManager = mModuleRegistry.getModule(Permissions.class);
     if (permissionsManager == null) {
@@ -304,6 +381,102 @@ public class MediaLibraryModule extends ExportedModule {
       READ_EXTERNAL_STORAGE,
       WRITE_EXTERNAL_STORAGE
     };
+  }
+
+  private List<Uri> getAssetsUris(List<String> assetsId) {
+    List<Uri> result = new ArrayList<>();
+
+    final String selection = MediaStore.Images.Media._ID + " IN (" + TextUtils.join(",", assetsId) + " )";
+    final String[] selectionArgs = null;
+    final String[] projection = {MediaStore.Images.Media._ID};
+
+    try (Cursor cursor = mContext.getContentResolver().query(
+      EXTERNAL_CONTENT,
+      projection,
+      selection,
+      selectionArgs,
+      null)) {
+      if (cursor == null) {
+        return result;
+      }
+
+      while (cursor.moveToNext()) {
+        long id = cursor.getLong( cursor.getColumnIndex(MediaStore.Images.Media._ID));
+        Uri assetUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+        result.add(assetUri);
+      }
+    }
+    return result;
+  }
+
+  private List<String> getAssetsInAlbums(String[] albumIds) {
+    List<String> assetsId = new ArrayList<>();
+
+    final String selection = Media.BUCKET_ID + " IN (" + getInPart(albumIds) + " )";
+    final String[] projection = {Media._ID};
+
+    try (Cursor asset = mContext.getContentResolver().query(
+      EXTERNAL_CONTENT,
+      projection,
+      selection,
+      albumIds,
+      null)) {
+      if (asset == null) {
+        return assetsId;
+      }
+
+      while (asset.moveToNext()) {
+        String id = asset.getString(asset.getColumnIndex(MediaStore.Images.Media._ID));
+        assetsId.add(id);
+      }
+    }
+
+    return assetsId;
+  }
+
+  private void runActionWithPermissions(List<String> assetsId, Action action, Promise promise) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      List<Uri> pathsWithoutPermissions = getAssetsUris(assetsId)
+        .stream()
+        .filter(
+          uri -> mContext.checkUriPermission(
+            uri,
+            Binder.getCallingPid(),
+            Binder.getCallingUid(), Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+          ) != PackageManager.PERMISSION_GRANTED
+        )
+        .collect(Collectors.toList());
+
+      if (!pathsWithoutPermissions.isEmpty()) {
+        PendingIntent deleteRequest = MediaStore.createWriteRequest(mContext.getContentResolver(), pathsWithoutPermissions);
+        Activity activity = mModuleRegistry.getModule(ActivityProvider.class).getCurrentActivity();
+        try {
+          mModuleRegistry.getModule(UIManager.class).registerActivityEventListener(this);
+          mAction = action;
+
+          activity.startIntentSenderForResult(
+            deleteRequest.getIntentSender(),
+            WRITE_REQUEST_CODE,
+            null,
+            0,
+            0,
+            0
+          );
+        } catch (IntentSender.SendIntentException e) {
+          promise.reject(ERROR_UNABLE_TO_ASK_FOR_PERMISSIONS, ERROR_UNABLE_TO_ASK_FOR_PERMISSIONS_MESSAGE);
+          mAction = null;
+        }
+
+        return;
+      }
+    }
+
+    action.runWithPermissions(true);
+  }
+
+  @FunctionalInterface
+  interface Action {
+    void runWithPermissions(boolean permissionsWereGranted);
   }
 
   private class MediaStoreContentObserver extends ContentObserver {
