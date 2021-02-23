@@ -277,7 +277,6 @@ function SelectTheme() {
 
   React.useEffect(function didMount() {
     setLoaded(true);
-    console.log({ themeName });
   }, []);
 
   if (!loaded) return null;

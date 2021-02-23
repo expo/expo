@@ -1111,8 +1111,8 @@ export default function App() {
 - You will need to create a different provider app for each platform (dynamically choosing your `clientId`).
 - Learn more here: [imgur.com/oauth2](https://api.imgur.com/oauth2)
 
-<AuthMethodTabSwitcher tabs={["Auth Code", "Implicit Flow"]}>
-<AuthCodeTab>
+<Tabs tabs={["Auth Code", "Implicit Flow"]}>
+<Tab>
 
 <SnackInline label='Imgur Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -1173,9 +1173,9 @@ export default function App() {
 
 </SnackInline>
 
-</AuthCodeTab>
+</Tab>
 
-<ImplicitTab>
+<Tab>
 
 <SnackInline label='Imgur Implicit' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
@@ -1237,9 +1237,9 @@ export default function App() {
 
 </SnackInline>
 
-</ImplicitTab>
+</Tab>
 
-</AuthMethodTabSwitcher>
+</Tabs>
 
 <!-- End Imgur -->
 
