@@ -14,7 +14,6 @@ const STYLES_FOOTER_LINK = css`
   font-size: 16px;
   display: block;
   text-decoration: none;
-  margin-bottom: 12px;
   color: ${theme.link.default};
 `;
 
