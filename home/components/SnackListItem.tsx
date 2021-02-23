@@ -32,11 +32,7 @@ function SnackListItem({ url, subtitle, isDraft, ...props }: Props) {
 
   return (
     <ListItem
-      renderExtraText={() => {
-        <Text style={styles.extraText} ellipsizeMode="tail" numberOfLines={1}>
-          {normalizeDescription(subtitle)}
-        </Text>;
-      }}
+      subtitle={normalizeDescription(subtitle)}
       rightContent={
         isDraft && (
           <View style={styles.rightContentContainer}>
@@ -57,10 +53,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginEnd: 10,
     marginStart: 5,
-  },
-  extraText: {
-    color: Colors.light.greyText,
-    fontSize: 13,
   },
 });
 

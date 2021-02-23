@@ -26,7 +26,8 @@ type Props = {
   onLongPress?: () => any;
   title?: string;
   owner?: string;
-  onPressSubtitle?: () => any;
+  onPressOwner?: () => any;
+  subtitle?: string;
   renderExtraText?: () => any;
   last?: boolean;
   margins?: boolean;
@@ -45,6 +46,7 @@ export default class ListItem extends React.PureComponent<Props> {
     const {
       onPress,
       onLongPress,
+      subtitle,
       renderExtraText,
       style,
       last,
@@ -66,6 +68,7 @@ export default class ListItem extends React.PureComponent<Props> {
               style={[styles.textContainer, title && owner ? styles.textContainerBoth : undefined]}>
               {this.renderTitle()}
               {this.renderOwner()}
+              {this.renderSubtitle()}
               {renderExtraText?.()}
             </View>
             {this.renderRightContent()}
@@ -130,19 +133,38 @@ export default class ListItem extends React.PureComponent<Props> {
   }
 
   private renderOwner() {
-    const { title, owner, icon, image, onPressSubtitle } = this.props;
+    const { title, owner, icon, image, onPressOwner } = this.props;
     const isCentered = !title && !icon && !image;
     return owner ? (
       <Text
         style={[
-          styles.ownerText,
-          !title ? styles.ownerTextMarginBottom : undefined,
-          isCentered ? styles.ownerTextCentered : undefined,
+          styles.subtitleText,
+          !title ? styles.subtitleTextMarginBottom : undefined,
+          isCentered ? styles.subtitleTextCentered : undefined,
         ]}
-        onPress={onPressSubtitle}
+        onPress={onPressOwner}
         ellipsizeMode="tail"
         numberOfLines={title ? 1 : 2}>
         by @{owner}
+      </Text>
+    ) : (
+      undefined
+    );
+  }
+
+  private renderSubtitle() {
+    const { subtitle, title, icon, image, owner } = this.props;
+    const isCentered = !title && !icon && !image;
+    return subtitle ? (
+      <Text
+        style={[
+          styles.subtitleText,
+          !title && !owner ? styles.subtitleTextMarginBottom : undefined,
+          isCentered ? styles.subtitleTextCentered : undefined,
+        ]}
+        ellipsizeMode="tail"
+        numberOfLines={title ? 1 : 2}>
+        {subtitle}
       </Text>
     ) : (
       undefined
@@ -243,14 +265,14 @@ const styles = StyleSheet.create({
       },
     }),
   },
-  ownerText: {
+  subtitleText: {
     color: Colors.light.greyText,
     fontSize: 13,
   },
-  ownerTextMarginBottom: {
+  subtitleTextMarginBottom: {
     marginBottom: 2,
   },
-  ownerTextCentered: {
+  subtitleTextCentered: {
     textAlign: 'center',
     marginEnd: 10,
   },

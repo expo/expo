@@ -18,7 +18,6 @@ import RefreshControl from '../components/RefreshControl';
 import SectionHeader from '../components/SectionHeader';
 import { StyledText } from '../components/Text';
 import ThemedStatusBar from '../components/ThemedStatusBar';
-import Colors from '../constants/Colors';
 import HistoryActions from '../redux/HistoryActions';
 import { useDispatch, useSelector } from '../redux/Hooks';
 import { DevSession, HistoryList } from '../types';
@@ -270,16 +269,7 @@ class ProjectsView extends React.Component<Props, State> {
   };
 
   private _renderEmptyRecentHistory = () => {
-    return (
-      <ListItem
-        last
-        renderExtraText={() => {
-          <Text style={styles.noProjectsText} ellipsizeMode="tail" numberOfLines={1}>
-            You haven't opened any projects recently.
-          </Text>;
-        }}
-      />
-    );
+    return <ListItem subtitle={`You haven't opened any projects recently.`} last />;
   };
 
   private _renderRecentHistoryItems = () => {
@@ -410,9 +400,5 @@ const styles = StyleSheet.create({
   },
   supportSdksText: {
     fontSize: 11,
-  },
-  noProjectsText: {
-    color: Colors.light.greyText,
-    fontSize: 13,
   },
 });

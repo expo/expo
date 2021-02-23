@@ -26,7 +26,7 @@ if (Platform.OS === 'ios') {
 
 export default class OpenFromClipboardButton extends React.Component<Props> {
   onPress = async () => {
-    let contents = await Clipboard.getString();
+    let contents = await Clipboard.getStringAsync();
     // Maybe trim the string to remove extra whitespace around the URL.
     if (typeof contents === 'string') {
       contents = contents.trim();

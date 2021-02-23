@@ -90,7 +90,7 @@ function EnabledProjectTools({ pollForUpdates }: Props) {
   }, [clipboardUpdateInterval.current]);
 
   const fetchClipboardContentsAsync = async (): Promise<void> => {
-    let clipboardContents = await Clipboard.getString();
+    let clipboardContents = await Clipboard.getStringAsync();
 
     if (typeof clipboardContents === 'string') {
       clipboardContents = clipboardContents.trim();

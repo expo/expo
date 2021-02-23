@@ -90,7 +90,7 @@ function ProjectListItem({
       imageSize={sdkVersionNumber ? 56 : 40}
       renderExtraText={renderExtraText}
       owner={owner}
-      onPressSubtitle={username ? handlePressUsername : undefined}
+      onPressOwner={username ? handlePressUsername : undefined}
     />
   );
 }
