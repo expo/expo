@@ -34,7 +34,7 @@ UM_EXPORT_METHOD_AS(getLocalizationAsync,
     @"isoCurrencyCodes": [NSLocale ISOCurrencyCodes],
     @"isMetric": @(locale.usesMetricSystem),
     @"isRTL": @((BOOL)([NSLocale characterDirectionForLanguage:languageCode] == NSLocaleLanguageDirectionRightToLeft)),
-    @"locale": [languageIds objectAtIndex:0],
+    @"locale": languageIds[0];
     @"locales": languageIds,
     @"region": locale.countryCode ?: @"US",
     @"timezone": [NSTimeZone localTimeZone].name,
