@@ -2,6 +2,7 @@
 title: Configuring a splash screen and app icon
 ---
 
+import { theme } from '@expo/styleguide'
 import Video from '~/components/plugins/Video'
 
 Before we can consider our app truly complete we need to add a splash screen and app icon. A splash screen is what users see when the app is launched, before it has loaded. The icon will be visible on the users' home screen when the app is installed, or inside of the Expo app when in development.
@@ -10,7 +11,7 @@ Before we can consider our app truly complete we need to add a splash screen and
 
 After telling our designer that we need a 1242px width by 2436px height splash screen image (more about this in [the splash screen guide](../guides/splash-screens.md)), she gave us the following file:
 
-<div style={{textAlign: 'center', backgroundColor: '#f5f5f5', paddingTop: 10, paddingBottom: 10}}>
+<div style={{textAlign: 'center', backgroundColor: theme.background.secondary, paddingTop: 10, paddingBottom: 10}}>
 <img src="/static/images/tutorial/splash.png" style={{maxWidth: 150}} />
 </div>
 
@@ -73,7 +74,7 @@ This solves our problem!
 
 Our designer provided us with this 1024px width x 1024px height app icon:
 
-<div style={{textAlign: 'center', backgroundColor: '#f5f5f5', paddingTop: 10, paddingBottom: 10}}>
+<div style={{textAlign: 'center', backgroundColor: theme.background.secondary, paddingTop: 10, paddingBottom: 10}}>
 <img src="/static/images/tutorial/icon.png" style={{maxWidth: 150}} />
 </div>
 
