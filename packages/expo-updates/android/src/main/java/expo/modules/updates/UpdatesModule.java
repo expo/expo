@@ -8,6 +8,7 @@ import android.util.Log;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.JSONObject;
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
@@ -21,6 +22,7 @@ import expo.modules.updates.launcher.Launcher;
 import expo.modules.updates.loader.FileDownloader;
 import expo.modules.updates.manifest.Manifest;
 import expo.modules.updates.loader.RemoteLoader;
+import expo.modules.updates.manifest.ManifestMetadata;
 
 public class UpdatesModule extends ExportedModule {
   private static final String NAME = "ExpoUpdates";
@@ -129,7 +131,11 @@ public class UpdatesModule extends ExportedModule {
         return;
       }
 
-      FileDownloader.downloadManifest(updatesService.getConfiguration(), getContext(), new FileDownloader.ManifestDownloadCallback() {
+      DatabaseHolder databaseHolder = updatesService.getDatabaseHolder();
+      JSONObject extraHeaders = ManifestMetadata.getServerDefinedHeaders(databaseHolder.getDatabase(), updatesService.getConfiguration());
+      databaseHolder.releaseDatabase();
+
+      FileDownloader.downloadManifest(updatesService.getConfiguration(), extraHeaders, getContext(), new FileDownloader.ManifestDownloadCallback() {
         @Override
         public void onFailure(String message, Exception e) {
           promise.reject("ERR_UPDATES_CHECK", message, e);

@@ -79,9 +79,19 @@ UM_EXPORT_METHOD_AS(checkForUpdateAsync,
     return;
   }
 
+  __block NSDictionary *extraHeaders;
+  dispatch_sync(_updatesService.database.databaseQueue, ^{
+    NSError *error;
+    extraHeaders = [self->_updatesService.database serverDefinedHeadersWithScopeKey:self->_updatesService.config.scopeKey error:&error];
+    if (error) {
+      NSLog(@"Error selecting serverDefinedHeaders from database: %@", error.localizedDescription);
+    }
+  });
+
   EXUpdatesFileDownloader *fileDownloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:_updatesService.config];
   [fileDownloader downloadManifestFromURL:_updatesService.config.updateUrl
                              withDatabase:_updatesService.database
+                             extraHeaders:extraHeaders
                              successBlock:^(EXUpdatesUpdate *update) {
     EXUpdatesUpdate *launchedUpdate = self->_updatesService.launchedUpdate;
     id<EXUpdatesSelectionPolicy> selectionPolicy = self->_updatesService.selectionPolicy;

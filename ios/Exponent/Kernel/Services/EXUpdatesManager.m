@@ -161,6 +161,7 @@ didRequestManifestWithCacheBehavior:(EXManifestCacheBehavior)cacheBehavior
   EXUpdatesFileDownloader *fileDownloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:appLoader.config];
   [fileDownloader downloadManifestFromURL:appLoader.config.updateUrl
                              withDatabase:databaseKernelService.database
+                             extraHeaders:nil
                              successBlock:^(EXUpdatesUpdate *update) {
     success(update.rawManifest);
   } errorBlock:^(NSError *error, NSURLResponse *response) {
