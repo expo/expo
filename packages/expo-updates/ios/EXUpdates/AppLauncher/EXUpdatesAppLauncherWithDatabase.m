@@ -57,9 +57,16 @@ static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
   dispatch_async(database.databaseQueue, ^{
     NSError *error;
     NSArray<EXUpdatesUpdate *> *launchableUpdates = [database launchableUpdatesWithConfig:config error:&error];
+    NSError *manifestFiltersError;
+    NSDictionary *manifestFilters = [database manifestFiltersWithScopeKey:config.scopeKey error:&manifestFiltersError];
     dispatch_async(completionQueue, ^{
       if (!launchableUpdates) {
         completion(error, nil);
+        return;
+      }
+      if (manifestFiltersError) {
+        completion(manifestFiltersError, nil);
+        return;
       }
 
       // We can only run an update marked as embedded if it's actually the update embedded in the
@@ -76,7 +83,7 @@ static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
         [filteredLaunchableUpdates addObject:update];
       }
 
-      completion(nil, [selectionPolicy launchableUpdateWithUpdates:filteredLaunchableUpdates filters:nil]);
+      completion(nil, [selectionPolicy launchableUpdateWithUpdates:filteredLaunchableUpdates filters:manifestFilters]);
     });
   });
 }

@@ -28,7 +28,15 @@ NS_ASSUME_NONNULL_BEGIN
       NSLog(@"Error reaping updates: %@", error.localizedDescription);
       return;
     }
-    NSArray<EXUpdatesUpdate *> *updatesToDelete = [selectionPolicy updatesToDeleteWithLaunchedUpdate:launchedUpdate updates:allUpdates filters:nil];
+
+    NSError *manifestFiltersError;
+    NSDictionary *manifestFilters = [database manifestFiltersWithScopeKey:config.scopeKey error:&manifestFiltersError];
+    if (manifestFiltersError) {
+      NSLog(@"Error selecting manifest filters while reaping updates: %@", error.localizedDescription);
+      return;
+    }
+
+    NSArray<EXUpdatesUpdate *> *updatesToDelete = [selectionPolicy updatesToDeleteWithLaunchedUpdate:launchedUpdate updates:allUpdates filters:manifestFilters];
     [database deleteUpdates:updatesToDelete error:&error];
     if (error) {
       NSLog(@"Error reaping updates: %@", error.localizedDescription);
