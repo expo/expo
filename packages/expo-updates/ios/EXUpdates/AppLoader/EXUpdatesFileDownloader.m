@@ -74,7 +74,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
   } errorBlock:errorBlock];
 }
 
-- (NSURLRequest *)createManifestRequestWithURL:(NSURL *)url
+- (NSURLRequest *)createManifestRequestWithURL:(NSURL *)url extraHeaders:(nullable NSDictionary *)extraHeaders
 {
   NSURLRequestCachePolicy cachePolicy = _sessionConfiguration ? _sessionConfiguration.requestCachePolicy : NSURLRequestUseProtocolCachePolicy;
   if (_config.usesLegacyManifest) {
@@ -83,17 +83,18 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
   }
 
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:cachePolicy timeoutInterval:EXUpdatesDefaultTimeoutInterval];
-  [self _setManifestHTTPHeaderFields:request];
+  [self _setManifestHTTPHeaderFields:request withExtraHeaders:extraHeaders];
 
   return request;
 }
 
 - (void)downloadManifestFromURL:(NSURL *)url
                    withDatabase:(EXUpdatesDatabase *)database
+                   extraHeaders:(nullable NSDictionary *)extraHeaders
                    successBlock:(EXUpdatesFileDownloaderManifestSuccessBlock)successBlock
                      errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock
 {
-  NSURLRequest *request = [self createManifestRequestWithURL:url];
+  NSURLRequest *request = [self createManifestRequestWithURL:url extraHeaders:extraHeaders];
   [self _downloadDataWithRequest:request successBlock:^(NSData *data, NSURLResponse *response) {
     if (![response isKindOfClass:[NSHTTPURLResponse class]]) {
       errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
@@ -256,7 +257,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
 - (void)_setHTTPHeaderFields:(NSMutableURLRequest *)request
 {
   [request setValue:@"ios" forHTTPHeaderField:@"Expo-Platform"];
-  [request setValue:@"1" forHTTPHeaderField:@"Expo-Api-Version"];
+  [request setValue:@"1" forHTTPHeaderField:@"Expo-API-Version"];
   [request setValue:@"BARE" forHTTPHeaderField:@"Expo-Updates-Environment"];
 
   for (NSString *key in _config.requestHeaders) {
@@ -264,9 +265,30 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
   }
 }
 
-- (void)_setManifestHTTPHeaderFields:(NSMutableURLRequest *)request
+- (void)_setManifestHTTPHeaderFields:(NSMutableURLRequest *)request withExtraHeaders:(nullable NSDictionary *)extraHeaders
 {
+  // apply extra headers before anything else, so they don't override preset headers
+  if (extraHeaders) {
+    for (NSString *key in extraHeaders) {
+      id value = extraHeaders[key];
+      if ([value isKindOfClass:[NSString class]]) {
+        [request setValue:value forHTTPHeaderField:key];
+      } else if ([value isKindOfClass:[NSNumber class]]) {
+        if (CFGetTypeID((__bridge CFTypeRef)(value)) == CFBooleanGetTypeID()) {
+          [request setValue:((NSNumber *)value).boolValue ? @"true" : @"false" forHTTPHeaderField:key];
+        } else {
+          [request setValue:((NSNumber *)value).stringValue forHTTPHeaderField:key];
+        }
+      } else {
+        [request setValue:[(NSObject *)value description] forHTTPHeaderField:key];
+      }
+    }
+  }
+
   [request setValue:@"application/expo+json,application/json" forHTTPHeaderField:@"Accept"];
+  [request setValue:@"ios" forHTTPHeaderField:@"Expo-Platform"];
+  [request setValue:@"1" forHTTPHeaderField:@"Expo-API-Version"];
+  [request setValue:@"BARE" forHTTPHeaderField:@"Expo-Updates-Environment"];
   [request setValue:@"true" forHTTPHeaderField:@"Expo-JSON-Error"];
   // as of 2020-11-25, the EAS Update alpha returns an error if Expo-Accept-Signature: true is included in the request
   [request setValue:(_config.usesLegacyManifest ? @"true" : @"false") forHTTPHeaderField:@"Expo-Accept-Signature"];
@@ -290,7 +312,9 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
     [request setValue:previousFatalError forHTTPHeaderField:@"Expo-Fatal-Error"];
   }
 
-  [self _setHTTPHeaderFields:request];
+  for (NSString *key in _config.requestHeaders) {
+    [request setValue:_config.requestHeaders[key] forHTTPHeaderField:key];
+  }
 }
 
 #pragma mark - NSURLSessionTaskDelegate

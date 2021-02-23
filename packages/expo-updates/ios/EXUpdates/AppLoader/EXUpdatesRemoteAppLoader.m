@@ -62,14 +62,21 @@ static NSString * const EXUpdatesRemoteAppLoaderErrorDomain = @"EXUpdatesRemoteA
     }
   };
 
-  [_downloader downloadManifestFromURL:url withDatabase:self.database successBlock:^(EXUpdatesUpdate *update) {
-    self->_remoteUpdate = update;
-    [self startLoadingFromManifest:update];
-  } errorBlock:^(NSError *error, NSURLResponse *response) {
-    if (self.errorBlock) {
-      self.errorBlock(error);
+  dispatch_async(self.database.databaseQueue, ^{
+    NSError *headersError;
+    NSDictionary *extraHeaders = [self.database serverDefinedHeadersWithScopeKey:self.config.scopeKey error:&headersError];
+    if (headersError) {
+      NSLog(@"Error selecting serverDefinedHeaders from database: %@", headersError.localizedDescription);
     }
-  }];
+    [self->_downloader downloadManifestFromURL:url withDatabase:self.database extraHeaders:extraHeaders successBlock:^(EXUpdatesUpdate *update) {
+      self->_remoteUpdate = update;
+      [self startLoadingFromManifest:update];
+    } errorBlock:^(NSError *error, NSURLResponse *response) {
+      if (self.errorBlock) {
+        self.errorBlock(error);
+      }
+    }];
+  });
 }
 
 - (void)downloadAsset:(EXUpdatesAsset *)asset
