@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
 });
 
 function filterAppsAccordingToSearch(apps: Project[], searchValue: string) {
-  if (searchValue === '') {
+  if (searchValue === '' || !apps) {
     return apps;
   }
   return apps.filter(

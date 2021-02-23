@@ -23,7 +23,7 @@ import { useDispatch, useSelector } from '../redux/Hooks';
 import { DevSession, HistoryList } from '../types';
 import Environment from '../utils/Environment';
 import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
-import extractUsernameFromExperience from '../utils/extractUsernameForExperience';
+import extractUsernameForExperience from '../utils/extractUsernameForExperience';
 import getSnackId from '../utils/getSnackId';
 
 const PROJECT_UPDATE_INTERVAL = 10000;
@@ -276,7 +276,7 @@ class ProjectsView extends React.Component<Props, State> {
     return this.props.recentHistory.map((project, i) => {
       if (!project) return null;
       const username = project.manifestUrl.includes(`exp://${Config.api.host}`)
-        ? extractUsernameFromExperience(project.manifestUrl)
+        ? extractUsernameForExperience(project.manifestUrl)
         : undefined;
       let releaseChannel = project.manifest?.releaseChannel;
       releaseChannel = releaseChannel === 'default' ? undefined : releaseChannel;
