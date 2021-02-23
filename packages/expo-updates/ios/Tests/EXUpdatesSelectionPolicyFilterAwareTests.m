@@ -95,11 +95,11 @@
     @"runtimeVersion": @"1.0",
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
-    @"updateMetadata": @{@"key1": @"value1", @"key2": @"value2"}
+    @"updateMetadata": @{@"firstKey": @"value1", @"secondKey": @"value2"}
   } response:nil config:config database:database];
 
   _selectionPolicy = [[EXUpdatesSelectionPolicyFilterAware alloc] initWithRuntimeVersion:runtimeVersion];
-  _manifestFilters = @{@"branchName": @"rollout"};
+  _manifestFilters = @{@"branchname": @"rollout"};
 }
 
 - (void)tearDown
@@ -161,21 +161,21 @@
 - (void)testDoesUpdateMatchFilters_MultipleFilters
 {
   NSDictionary *filtersBadMatch = @{
-    @"key1": @"value1",
-    @"key2": @"wrong-value"
+    @"firstkey": @"value1",
+    @"secondkey": @"wrong-value"
   };
   XCTAssertFalse([_selectionPolicy doesUpdate:_updateMultipleFilters matchFilters:filtersBadMatch], @"should fail unless all filters pass");
 
   NSDictionary *filtersGoodMatch = @{
-    @"key1": @"value1",
-    @"key2": @"value2"
+    @"firstkey": @"value1",
+    @"secondkey": @"value2"
   };
   XCTAssertTrue([_selectionPolicy doesUpdate:_updateMultipleFilters matchFilters:filtersGoodMatch], @"should pass if all filters pass");
 }
 
 - (void)testDoesUpdateMatchFilters_EmptyMatchesAll
 {
-  XCTAssertTrue([_selectionPolicy doesUpdate:_updateDefault1 matchFilters:@{@"fieldThatUpdateDoesntHave": @"value"}], @"no field counts as a match");
+  XCTAssertTrue([_selectionPolicy doesUpdate:_updateDefault1 matchFilters:@{@"field-that-update-doesnt-have": @"value"}], @"no field counts as a match");
 }
 
 @end

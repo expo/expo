@@ -32,7 +32,7 @@ public class SelectionPolicyFilterAwareTest {
 
   @Before
   public void setup() throws JSONException {
-    manifestFilters = new JSONObject("{\"branchName\": \"rollout\"}");
+    manifestFilters = new JSONObject("{\"branchname\": \"rollout\"}");
     selectionPolicy = new SelectionPolicyFilterAware("1.0");
 
     HashMap<String, Object> configMap = new HashMap<>();
@@ -54,7 +54,7 @@ public class SelectionPolicyFilterAwareTest {
     JSONObject manifestJsonRollout2 = new JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e75\",\"createdAt\":\"2021-01-14T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"updateMetadata\":{\"branchName\":\"rollout\"}}");
     updateRollout2 = NewManifest.fromManifestJson(manifestJsonRollout2, null, config).getUpdateEntity();
 
-    JSONObject manifestJsonMultipleFilters = new JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e72\",\"createdAt\":\"2021-01-11T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"updateMetadata\":{\"key1\": \"value1\", \"key2\": \"value2\"}}");
+    JSONObject manifestJsonMultipleFilters = new JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e72\",\"createdAt\":\"2021-01-11T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"updateMetadata\":{\"firstKey\": \"value1\", \"secondKey\": \"value2\"}}");
     updateMultipleFilters = NewManifest.fromManifestJson(manifestJsonMultipleFilters, null, config).getUpdateEntity();
   }
 
@@ -125,13 +125,13 @@ public class SelectionPolicyFilterAwareTest {
   @Test
   public void testMatchesFilters_MultipleFilters() throws JSONException {
     // if there are multiple filters, a manifest must match them all to pass
-    Assert.assertFalse(selectionPolicy.matchesFilters(updateMultipleFilters, new JSONObject("{\"key1\": \"value1\", \"key2\": \"wrong-value\"}")));
-    Assert.assertTrue(selectionPolicy.matchesFilters(updateMultipleFilters, new JSONObject("{\"key1\": \"value1\", \"key2\": \"value2\"}")));
+    Assert.assertFalse(selectionPolicy.matchesFilters(updateMultipleFilters, new JSONObject("{\"firstkey\": \"value1\", \"secondkey\": \"wrong-value\"}")));
+    Assert.assertTrue(selectionPolicy.matchesFilters(updateMultipleFilters, new JSONObject("{\"firstkey\": \"value1\", \"secondkey\": \"value2\"}")));
   }
 
   @Test
   public void testMatchesFilters_EmptyMatchesAll() throws JSONException {
     // no field is counted as a match
-    Assert.assertTrue(selectionPolicy.matchesFilters(updateDefault1, new JSONObject("{\"fieldThatUpdateDoesntHave\": \"value\"}")));
+    Assert.assertTrue(selectionPolicy.matchesFilters(updateDefault1, new JSONObject("{\"field-that-update-doesnt-have\": \"value\"}")));
   }
 }

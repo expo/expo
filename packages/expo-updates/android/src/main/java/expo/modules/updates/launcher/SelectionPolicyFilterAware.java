@@ -106,11 +106,20 @@ public class SelectionPolicyFilterAware implements SelectionPolicy {
     }
     try {
       JSONObject updateMetadata = update.metadata.getJSONObject("updateMetadata");
-      Iterator<String> keySet = manifestFilters.keys();
-      while (keySet.hasNext()) {
-        String key = keySet.next();
+
+      // create lowercase copy for case-insensitive search
+      JSONObject metadataLCKeys = new JSONObject();
+      Iterator<String> metadataKeySet = updateMetadata.keys();
+      while (metadataKeySet.hasNext()) {
+        String key = metadataKeySet.next();
+        metadataLCKeys.put(key.toLowerCase(), updateMetadata.get(key));
+      }
+
+      Iterator<String> filterKeySet = manifestFilters.keys();
+      while (filterKeySet.hasNext()) {
+        String key = filterKeySet.next();
         // once an update fails one filter, break early; we don't need to check the rest
-        if (updateMetadata.has(key) && !manifestFilters.get(key).equals(updateMetadata.get(key))) {
+        if (metadataLCKeys.has(key) && !manifestFilters.get(key).equals(metadataLCKeys.get(key))) {
           return false;
         }
       }
