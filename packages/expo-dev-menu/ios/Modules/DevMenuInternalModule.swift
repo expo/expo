@@ -23,10 +23,10 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
 
   @objc
   func constantsToExport() -> [String : Any] {
-#if TARGET_IPHONE_SIMULATOR
-    let doesDeviceSupportKeyCommands = false
-#else
+#if targetEnvironment(simulator)
     let doesDeviceSupportKeyCommands = true
+#else
+    let doesDeviceSupportKeyCommands = false
 #endif
     return ["doesDeviceSupportKeyCommands": doesDeviceSupportKeyCommands]
   }
@@ -118,5 +118,11 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
     DispatchQueue.main.async {
       rctDevMenu.show()
     }
+  }
+  
+  @objc
+  func onScreenChangeAsync(_ currentScreen: String?, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    manager.setCurrentScreen(currentScreen)
+    resolve(nil)
   }
 }

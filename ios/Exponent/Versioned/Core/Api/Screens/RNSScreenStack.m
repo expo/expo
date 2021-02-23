@@ -17,6 +17,25 @@
 
 @end
 
+@implementation RNScreensNavigationController
+
+- (UIViewController *)childViewControllerForStatusBarStyle
+{
+  return [self topViewController];
+}
+
+- (UIStatusBarAnimation)preferredStatusBarUpdateAnimation
+{
+  return [self topViewController].preferredStatusBarUpdateAnimation;
+}
+
+- (UIViewController *)childViewControllerForStatusBarHidden
+{
+  return [self topViewController];
+}
+
+@end
+
 @interface RNSScreenStackAnimator : NSObject <UIViewControllerAnimatedTransitioning>
 - (instancetype)initWithOperation:(UINavigationControllerOperation)operation;
 @end
@@ -25,15 +44,19 @@
   UINavigationController *_controller;
   NSMutableArray<RNSScreenView *> *_reactSubviews;
   __weak RNSScreenStackManager *_manager;
+  BOOL _hasLayout;
+  BOOL _invalidated;
 }
 
 - (instancetype)initWithManager:(RNSScreenStackManager*)manager
 {
   if (self = [super init]) {
+    _hasLayout = NO;
+    _invalidated = NO;
     _manager = manager;
     _reactSubviews = [NSMutableArray new];
     _presentedModals = [NSMutableArray new];
-    _controller = [[UINavigationController alloc] init];
+    _controller = [[RNScreensNavigationController alloc] init];
     _controller.delegate = self;
 
     // we have to initialize viewControllers with a non empty array for
@@ -76,6 +99,9 @@
   // forward certain calls to the container (Stack).
   UIView *screenView = presentationController.presentedViewController.view;
   if ([screenView isKindOfClass:[RNSScreenView class]]) {
+    // we trigger the update of status bar's appearance here because there is no other lifecycle method
+    // that can handle it when dismissing a modal
+    [RNSScreenStackHeaderConfig updateStatusBarAppearance];
     [_presentedModals removeObject:presentationController.presentedViewController];
     if (self.onFinishTransitioning) {
       // instead of directly triggering onFinishTransitioning this time we enqueue the event on the
@@ -157,24 +183,48 @@
   // set yet, however the layout call is already enqueued on ui thread. Enqueuing update call on the
   // ui queue will guarantee that the update will run after layout.
   dispatch_async(dispatch_get_main_queue(), ^{
-    [self updateContainer];
+    self->_hasLayout = YES;
+    [self maybeAddToParentAndUpdateContainer];
   });
 }
 
 - (void)didMoveToWindow
 {
   [super didMoveToWindow];
-  if (self.window) {
-    // when stack is attached to a window we do two things:
-    // 1) we run updateContainer – we do this because we want push view controllers to be installed
-    // before the VC is mounted. If we do that after it is added to parent the push updates operations
-    // are going to be blocked by UIKit.
+  if (!_invalidated) {
+    // We check whether the view has been invalidated before running side-effects in didMoveToWindow
+    // This is needed because when LayoutAnimations are used it is possible for view to be re-attached
+    // to a window despite the fact it has been removed from the React Native view hierarchy.
+    [self maybeAddToParentAndUpdateContainer];
+  }
+}
+
+- (void)maybeAddToParentAndUpdateContainer
+{
+  BOOL wasScreenMounted = _controller.parentViewController != nil;
+  BOOL isScreenReadyForShowing = self.window && _hasLayout;
+  if (!isScreenReadyForShowing && !wasScreenMounted) {
+    // We wait with adding to parent controller until the stack is mounted and has its initial
+    // layout done.
+    // If we add it before layout, some of the items (specifically items from the navigation bar),
+    // won't be able to position properly. Also the position and size of such items, even if it
+    // happens to change, won't be properly updated (this is perhaps some internal issue of UIKit).
+    // If we add it when window is not attached, some of the view transitions will be bloced (i.e.
+    // modal transitions) and the internal view controler's state will get out of sync with what's
+    // on screen without us knowing.
+    return;
+  }
+  [self updateContainer];
+  if (!wasScreenMounted) {
+    // when stack hasn't been added to parent VC yet we do two things:
+    // 1) we run updateContainer (the one above) – we do this because we want push view controllers to
+    // be installed before the VC is mounted. If we do that after it is added to parent the push
+    // updates operations are going to be blocked by UIKit.
     // 2) we add navigation VS to parent – this is needed for the VC lifecycle events to be dispatched
     // properly
     // 3) we again call updateContainer – this time we do this to open modal controllers. Modals
     // won't open in (1) because they require navigator to be added to parent. We handle that case
     // gracefully in setModalViewControllers and can retry opening at any point.
-    [self updateContainer];
     [self reactAddControllerToClosestParent:_controller];
     [self updateContainer];
   }
@@ -188,7 +238,9 @@
       if (parentView.reactViewController) {
         [parentView.reactViewController addChildViewController:controller];
         [self addSubview:controller.view];
+#if (TARGET_OS_IOS)
         _controller.interactivePopGestureRecognizer.delegate = self;
+#endif
         [controller didMoveToParentViewController:parentView.reactViewController];
         // On iOS pre 12 we observed that `willShowViewController` delegate method does not always
         // get triggered when the navigation controller is instantiated. As the only thing we do in
@@ -428,6 +480,7 @@
 
 - (void)invalidate
 {
+  _invalidated = YES;
   for (UIViewController *controller in _presentedModals) {
     [controller dismissViewControllerAnimated:NO completion:nil];
   }

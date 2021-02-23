@@ -5,7 +5,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-local-aut
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-local-authentication`** allows you to use FaceID and TouchID (iOS) or the Fingerprint API (Android) to authenticate the user with a face or fingerprint scan.
 
@@ -20,8 +19,6 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 ```js
 import * as LocalAuthentication from 'expo-local-authentication';
 ```
-
-<TableOfContentSection title='Methods' contents={['LocalAuthentication.hasHardwareAsync()', 'LocalAuthentication.supportedAuthenticationTypesAsync()', 'LocalAuthentication.isEnrolledAsync()', 'LocalAuthentication.authenticateAsync(options)', 'LocalAuthentication.cancelAuthenticate()']} />
 
 ## Methods
 
@@ -53,7 +50,7 @@ Returns a promise resolving to boolean value indicating whether the device has s
 
 Attempts to authenticate via Fingerprint/TouchID (or FaceID if available on the device).
 
-> **Note:** Apple requires apps which use FaceID to provide a description of why they use this API. If you try to use FaceID on an iPhone with FaceID without providing `infoPlist.NSFaceIDUsageDescription` in `app.json`, the module will authenticate using device passcode. For more information about usage descriptions on iOS, see [Deploying to App Stores](../../distribution/app-stores#system-permissions-dialogs-on-ios).
+> **Note:** Apple requires apps which use FaceID to provide a description of why they use this API. If you try to use FaceID on an iPhone with FaceID without providing `infoPlist.NSFaceIDUsageDescription` in `app.json`, the module will authenticate using device passcode. For more information about usage descriptions on iOS, see [Deploying to App Stores](../../../distribution/app-stores.md#system-permissions-dialogs-on-ios).
 
 #### Arguments
 

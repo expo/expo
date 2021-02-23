@@ -6,6 +6,7 @@ import { Image, Platform, ScrollView, View, StyleSheet } from 'react-native';
 
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
+import SimpleActionDemo from '../components/SimpleActionDemo';
 import TitleSwitch from '../components/TitledSwitch';
 
 async function requestPermissionAsync(permission: Permissions.PermissionType) {
@@ -67,8 +68,25 @@ export default class ImagePickerScreen extends React.Component<{}, State> {
   render() {
     return (
       <ScrollView style={styles.mainContainer}>
+        <SimpleActionDemo
+          title="requestMediaLibraryPermissionsAsync"
+          action={() => ImagePicker.requestMediaLibraryPermissionsAsync()}
+        />
+        <SimpleActionDemo
+          title="getMediaLibraryPermissionsAsync"
+          action={() => ImagePicker.getMediaLibraryPermissionsAsync()}
+        />
+        <SimpleActionDemo
+          title="requestCameraPermissionsAsync"
+          action={() => ImagePicker.requestCameraPermissionsAsync()}
+        />
+        <SimpleActionDemo
+          title="getCameraPermissionsAsync"
+          action={() => ImagePicker.getCameraPermissionsAsync()}
+        />
+
         <TitleSwitch
-          style={{ marginVertical: 8 }}
+          style={{ marginVertical: 8, marginTop: 20 }}
           title="With base64"
           setValue={value => this.setState({ base64Enabled: value })}
           value={this.state.base64Enabled}

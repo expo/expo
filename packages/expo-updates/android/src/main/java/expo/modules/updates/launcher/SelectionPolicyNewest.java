@@ -1,5 +1,7 @@
 package expo.modules.updates.launcher;
 
+import org.json.JSONObject;
+
 import expo.modules.updates.db.entity.UpdateEntity;
 
 import java.util.ArrayList;
@@ -28,7 +30,7 @@ public class SelectionPolicyNewest implements SelectionPolicy {
   }
 
   @Override
-  public UpdateEntity selectUpdateToLaunch(List<UpdateEntity> updates) {
+  public UpdateEntity selectUpdateToLaunch(List<UpdateEntity> updates, JSONObject filters) {
     UpdateEntity updateToLaunch = null;
     for (UpdateEntity update : updates) {
       if (!mRuntimeVersions.contains(update.runtimeVersion)) {
@@ -42,22 +44,31 @@ public class SelectionPolicyNewest implements SelectionPolicy {
   }
 
   @Override
-  public List<UpdateEntity> selectUpdatesToDelete(List<UpdateEntity> updates, UpdateEntity launchedUpdate) {
+  public List<UpdateEntity> selectUpdatesToDelete(List<UpdateEntity> updates, UpdateEntity launchedUpdate, JSONObject filters) {
     if (launchedUpdate == null) {
       return new ArrayList<>();
     }
 
     List<UpdateEntity> updatesToDelete = new ArrayList<>();
+    // keep the launched update and one other, the next newest, to be safe and make rollbacks faster
+    UpdateEntity nextNewestUpdate = null;
     for (UpdateEntity update : updates) {
       if (update.commitTime.before(launchedUpdate.commitTime)) {
         updatesToDelete.add(update);
+        if (nextNewestUpdate == null || nextNewestUpdate.commitTime.before(update.commitTime)) {
+          nextNewestUpdate = update;
+        }
       }
+    }
+
+    if (nextNewestUpdate != null) {
+      updatesToDelete.remove(nextNewestUpdate);
     }
     return updatesToDelete;
   }
 
   @Override
-  public boolean shouldLoadNewUpdate(UpdateEntity newUpdate, UpdateEntity launchedUpdate) {
+  public boolean shouldLoadNewUpdate(UpdateEntity newUpdate, UpdateEntity launchedUpdate, JSONObject filters) {
     if (launchedUpdate == null) {
       return true;
     }

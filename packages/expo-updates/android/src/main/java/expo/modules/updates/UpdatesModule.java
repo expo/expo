@@ -8,6 +8,7 @@ import android.util.Log;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.JSONObject;
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
@@ -15,13 +16,13 @@ import org.unimodules.core.interfaces.ExpoMethod;
 
 import androidx.annotation.Nullable;
 import expo.modules.updates.db.DatabaseHolder;
-import expo.modules.updates.db.UpdatesDatabase;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.Launcher;
 import expo.modules.updates.loader.FileDownloader;
 import expo.modules.updates.manifest.Manifest;
 import expo.modules.updates.loader.RemoteLoader;
+import expo.modules.updates.manifest.ManifestMetadata;
 
 public class UpdatesModule extends ExportedModule {
   private static final String NAME = "ExpoUpdates";
@@ -55,6 +56,7 @@ public class UpdatesModule extends ExportedModule {
       UpdatesInterface updatesService = getUpdatesService();
       if (updatesService != null) {
         constants.put("isEmergencyLaunch", updatesService.isEmergencyLaunch());
+        constants.put("isMissingRuntimeVersion", updatesService.getConfiguration().isMissingRuntimeVersion());
 
         UpdateEntity launchedUpdate = updatesService.getLaunchedUpdate();
         if (launchedUpdate != null) {
@@ -78,6 +80,14 @@ public class UpdatesModule extends ExportedModule {
     } catch (Exception e) {
       // do nothing; this is expected in a development client
       constants.put("isEnabled", false);
+
+      // In a development client, we normally don't have access to the updates configuration, but
+      // we should attempt to see if the runtime/sdk versions are defined in AndroidManifest.xml
+      // and warn the developer if not. This does not take into account any extra configuration
+      // provided at runtime in MainApplication.java, because we don't have access to that in a
+      // debug build.
+      UpdatesConfiguration configuration = new UpdatesConfiguration().loadValuesFromMetadata(getContext());
+      constants.put("isMissingRuntimeVersion", configuration.isMissingRuntimeVersion());
     }
 
     return constants;
@@ -121,7 +131,11 @@ public class UpdatesModule extends ExportedModule {
         return;
       }
 
-      FileDownloader.downloadManifest(updatesService.getConfiguration(), getContext(), new FileDownloader.ManifestDownloadCallback() {
+      DatabaseHolder databaseHolder = updatesService.getDatabaseHolder();
+      JSONObject extraHeaders = ManifestMetadata.getServerDefinedHeaders(databaseHolder.getDatabase(), updatesService.getConfiguration());
+      databaseHolder.releaseDatabase();
+
+      FileDownloader.downloadManifest(updatesService.getConfiguration(), extraHeaders, getContext(), new FileDownloader.ManifestDownloadCallback() {
         @Override
         public void onFailure(String message, Exception e) {
           promise.reject("ERR_UPDATES_CHECK", message, e);
@@ -141,7 +155,7 @@ public class UpdatesModule extends ExportedModule {
             return;
           }
 
-          if (updatesService.getSelectionPolicy().shouldLoadNewUpdate(manifest.getUpdateEntity(), launchedUpdate)) {
+          if (updatesService.getSelectionPolicy().shouldLoadNewUpdate(manifest.getUpdateEntity(), launchedUpdate, manifest.getManifestFilters())) {
             updateInfo.putBoolean("isAvailable", true);
             updateInfo.putString("manifestString", manifest.getRawManifestJson().toString());
             promise.resolve(updateInfo);
@@ -184,8 +198,8 @@ public class UpdatesModule extends ExportedModule {
               public boolean onManifestLoaded(Manifest manifest) {
                 return updatesService.getSelectionPolicy().shouldLoadNewUpdate(
                   manifest.getUpdateEntity(),
-                  updatesService.getLaunchedUpdate()
-                );
+                  updatesService.getLaunchedUpdate(),
+                  manifest.getManifestFilters());
               }
 
               @Override

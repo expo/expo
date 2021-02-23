@@ -1,10 +1,10 @@
 import { Platform, UnavailabilityError } from '@unimodules/core';
-import mapValues from 'lodash/mapValues';
 import * as React from 'react';
 import { findNodeHandle } from 'react-native';
 import { PermissionStatus, } from './Camera.types';
 import ExponentCamera from './ExponentCamera';
 import CameraManager from './ExponentCameraManager';
+import { ConversionTables, ensureNativeProps } from './utils/props';
 const EventThrottleMs = 500;
 const _PICTURE_SAVED_CALLBACKS = {};
 let _GLOBAL_PICTURE_ID = 1;
@@ -30,44 +30,6 @@ function ensureRecordingOptions(options) {
         recordingOptions.quality = Camera.Constants.VideoQuality[recordingOptions.quality];
     }
     return recordingOptions;
-}
-function ensureNativeProps(options) {
-    let props = options || {};
-    if (!props || typeof props !== 'object') {
-        props = {};
-    }
-    const newProps = mapValues(props, convertProp);
-    const propsKeys = Object.keys(newProps);
-    // barCodeTypes is deprecated
-    if (!propsKeys.includes('barCodeScannerSettings') && propsKeys.includes('barCodeTypes')) {
-        if (__DEV__) {
-            console.warn(`The "barCodeTypes" prop for Camera is deprecated and will be removed in SDK 34. Use "barCodeScannerSettings" instead.`);
-        }
-        newProps.barCodeScannerSettings = {
-            // @ts-ignore
-            barCodeTypes: newProps.barCodeTypes,
-        };
-    }
-    if (props.onBarCodeScanned) {
-        newProps.barCodeScannerEnabled = true;
-    }
-    if (props.onFacesDetected) {
-        newProps.faceDetectorEnabled = true;
-    }
-    if (Platform.OS !== 'android') {
-        delete newProps.ratio;
-        delete newProps.useCamera2Api;
-    }
-    if (Platform.OS !== 'web') {
-        delete newProps.poster;
-    }
-    return newProps;
-}
-function convertProp(value, key) {
-    if (typeof value === 'string' && Camera.ConversionTables[key]) {
-        return Camera.ConversionTables[key][value];
-    }
-    return value;
 }
 function _onPictureSaved({ nativeEvent, }) {
     const { id, data } = nativeEvent;
@@ -200,12 +162,7 @@ Camera.Constants = {
     VideoStabilization: CameraManager.VideoStabilization || {},
 };
 // Values under keys from this object will be transformed to native options
-Camera.ConversionTables = {
-    type: CameraManager.Type,
-    flashMode: CameraManager.FlashMode,
-    autoFocus: CameraManager.AutoFocus,
-    whiteBalance: CameraManager.WhiteBalance,
-};
+Camera.ConversionTables = ConversionTables;
 Camera.defaultProps = {
     zoom: 0,
     ratio: '4:3',

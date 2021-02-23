@@ -1,12 +1,14 @@
 import { List, Record } from 'immutable';
 
-type HistoryItemType = Record<{
+type HistoryItemObject = {
   url: null | string;
   bundleUrl: null | string;
   manifestUrl: null | string;
   manifest: null | { [key: string]: any };
   time: null | number;
-}>;
+};
+
+type HistoryItemType = Record<HistoryItemObject> & Readonly<HistoryItemObject>;
 
 const HistoryItem = Record({
   url: null,
@@ -20,7 +22,7 @@ type HistoryObject = {
   history: List<HistoryItemType>;
 };
 
-export type HistoryType = Record<HistoryObject>;
+export type HistoryType = Record<HistoryObject> & Readonly<HistoryObject>;
 
 const HistoryState = Record<HistoryObject>({
   history: List(),

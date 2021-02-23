@@ -6,9 +6,10 @@ import {
   LocalAuthenticationOptions,
   AuthenticationType,
   LocalAuthenticationResult,
+  SecurityLevel,
 } from './LocalAuthentication.types';
 
-export { LocalAuthenticationOptions, AuthenticationType, LocalAuthenticationResult };
+export { LocalAuthenticationOptions, AuthenticationType, LocalAuthenticationResult, SecurityLevel };
 
 export async function hasHardwareAsync(): Promise<boolean> {
   if (!ExpoLocalAuthentication.hasHardwareAsync) {
@@ -31,19 +32,18 @@ export async function isEnrolledAsync(): Promise<boolean> {
   return await ExpoLocalAuthentication.isEnrolledAsync();
 }
 
+export async function getEnrolledLevelAsync(): Promise<SecurityLevel> {
+  if (!ExpoLocalAuthentication.getEnrolledLevelAsync) {
+    throw new UnavailabilityError('expo-local-authentication', 'getEnrolledLevelAsync');
+  }
+  return await ExpoLocalAuthentication.getEnrolledLevelAsync();
+}
+
 export async function authenticateAsync(
   options: LocalAuthenticationOptions = {}
 ): Promise<LocalAuthenticationResult> {
   if (!ExpoLocalAuthentication.authenticateAsync) {
     throw new UnavailabilityError('expo-local-authentication', 'authenticateAsync');
-  }
-
-  // Warn if using an old API - to be removed in SDK35.
-  if (typeof options === 'string') {
-    console.warn(
-      'String argument in LocalAuthentication.authenticateAsync has been deprecated. Please use options object with `promptMessage` key instead.'
-    );
-    options = { promptMessage: options };
   }
 
   if (options.hasOwnProperty('promptMessage')) {

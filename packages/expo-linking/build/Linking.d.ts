@@ -15,7 +15,29 @@ import { ParsedURL, QueryParams, URLListener } from './Linking.types';
  * @param path addition path components to append to the base URL.
  * @param queryParams An object of parameters that will be converted into a query string.
  */
-export declare function makeUrl(path?: string, queryParams?: QueryParams): string;
+export declare function makeUrl(path?: string, queryParams?: QueryParams, scheme?: string): string;
+/**
+ * Create a URL that works for the environment the app is currently running in.
+ * The scheme in bare and standalone must be defined in the Expo config (app.config.js or app.json) under `expo.scheme`.
+ *
+ * **Examples**
+ *
+ * - Bare: `<scheme>://path` -- uses provided scheme or scheme from Expo config `scheme`.
+ * - Standalone, Custom: `yourscheme://path`
+ * - Web (dev): `https://localhost:19006/path`
+ * - Web (prod): `https://myapp.com/path`
+ * - Expo Client (dev): `exp://128.0.0.1:19000/--/path`
+ * - Expo Client (prod): `exp://exp.host/@yourname/your-app/--/path`
+ *
+ * @param path addition path components to append to the base URL.
+ * @param scheme URI protocol `<scheme>://` that must be built into your native app.
+ * @param queryParams An object of parameters that will be converted into a query string.
+ */
+export declare function createURL(path: string, { scheme, queryParams, isTripleSlashed, }?: {
+    scheme?: string;
+    queryParams?: QueryParams;
+    isTripleSlashed?: boolean;
+}): string;
 /**
  * Returns the components and query parameters for a given URL.
  *

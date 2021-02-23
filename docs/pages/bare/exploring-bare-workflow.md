@@ -5,7 +5,7 @@ sidebar_title: Walkthrough
 
 import Video from '~/components/plugins/Video'
 
-If you're a top-down learner and you would like to get a high-level understanding of what it looks like to build an app with the bare workflow, this is the right place for you. **Feel free to skip this if you just want to write code as quickly as possible** &mdash; [Up and Running](../hello-world) is for you.
+If you're a top-down learner and you would like to get a high-level understanding of what it looks like to build an app with the bare workflow, this is the right place for you. **Feel free to skip this if you just want to write code as quickly as possible** &mdash; [Up and Running](hello-world.md) is for you.
 
 ## Initialize a project
 
@@ -22,7 +22,6 @@ If you already have a React Native project that has been created with `react-nat
 <Video file="exploring-bare/setup.mp4" />
 
 > _Note: We moved superhumanly fast in this video. You're not meant to follow along, we just want to give you a rough sense of what's involved in this process. Full instructions to get set up are available in the [react-native-unimodules README](https://github.com/expo/expo/tree/master/packages/react-native-unimodules)._
-
 
 ### Existing Expo managed workflow apps
 
@@ -48,9 +47,9 @@ The process for doing this is the same as any other React Native app. Here we ar
 
 <Video file="exploring-bare/custom.mp4" spaceAfter />
 
-## Open the project with the Expo client app on iOS or Android
+## Open the project with the Expo Go app on iOS or Android
 
-You can continue using the Expo client _even after you’ve added native code that the client doesn’t support_, you just need to add guards to prevent the native APIs from being invoked when they aren’t available. In this block of code, we're going to prevent the `AttractionList` component from being imported when we were in the Expo client, because `AttractionList` uses `react-native-mapbox-gl`, which is not included in the Expo SDK.
+You can continue using the Expo Go app _even after you’ve added native code that the client doesn’t support_, you just need to add guards to prevent the native APIs from being invoked when they aren’t available. In this block of code, we're going to prevent the `AttractionList` component from being imported when we were in Expo Go, because `AttractionList` uses `react-native-mapbox-gl`, which is not included in the Expo SDK.
 
 <Video file="exploring-bare/guard.mp4" />
 
@@ -70,6 +69,6 @@ This is entirely up to you! The Expo build service does not yet support builds f
 
 ## That's it!
 
-You are now, at a very high level, familiar with the steps you would go through to get started on building an app with the bare workflow. Continue on to [Up and Running](../hello-world/) to get started coding!
+You are now, at a very high level, familiar with the steps you would go through to get started on building an app with the bare workflow. Continue on to [Up and Running](hello-world.md) to get started coding!
 
-Are you feeling intimidated? It might be better for you to start out with the managed workflow if you're new to this. Check out the [managed workflow walkthrough](../../introduction/walkthrough/) for more information.
+Are you feeling intimidated? It might be better for you to start out with the managed workflow if you're new to this. Check out the [managed workflow walkthrough](../introduction/walkthrough.md) for more information.

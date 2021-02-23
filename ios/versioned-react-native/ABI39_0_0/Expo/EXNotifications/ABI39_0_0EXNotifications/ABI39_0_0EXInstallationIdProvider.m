@@ -2,7 +2,7 @@
 
 #import <ABI39_0_0EXNotifications/ABI39_0_0EXInstallationIdProvider.h>
 
-static NSString * const kEXDeviceInstallUUIDKey = @"ABI39_0_0EXDeviceInstallUUIDKey";
+static NSString * const kEXDeviceInstallationUUIDKey = @"ABI39_0_0EXDeviceInstallationUUIDKey";
 
 @implementation ABI39_0_0EXInstallationIdProvider
 
@@ -15,10 +15,10 @@ ABI39_0_0UM_EXPORT_METHOD_AS(getInstallationIdAsync, getInstallationIdAsyncWithR
 
 - (NSString *)getInstallationId
 {
-  NSString *uuid = [[NSUserDefaults standardUserDefaults] stringForKey:kEXDeviceInstallUUIDKey];
+  NSString *uuid = [[NSUserDefaults standardUserDefaults] stringForKey:kEXDeviceInstallationUUIDKey];
   if (!uuid) {
     uuid = [[NSUUID UUID] UUIDString];
-    [[NSUserDefaults standardUserDefaults] setObject:uuid forKey:kEXDeviceInstallUUIDKey];
+    [[NSUserDefaults standardUserDefaults] setObject:uuid forKey:kEXDeviceInstallationUUIDKey];
   }
   return uuid;
 }

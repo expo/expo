@@ -25,7 +25,7 @@ This guide will explain how to create a unimodule and integrate it into the nati
 
 #### Integrate with the native projects
 
-1. If you **don't want** your newly created unimodule to be available in the Expo client:
+1. If you **don't want** your newly created unimodule to be available in Expo Go:
   - **iOS:** Open `ios/Podfile`, add your unimodule's name to the array passed in as the `exclude` argument of the `use_unimodules!` function call, and run `pod install`.
   - **Android:** Open `android/expoview/build.gradle` and add your unimodule's name to the array passed in as the `exclude` option of the `addUnimodulesDependencies` function call *that is not commented out*. The one that is in the comment is used for standalone apps only.
 2. Otherwise, add your module's package to `ExperiencePackagePicker.java`. This file is planned to undergo some major changes at the time of writing this guide, so just wing it.

@@ -50,7 +50,7 @@ function useExploreTabQuery(props: { filter: string }) {
         limit: 10,
         offset: query.data?.app.all?.length,
       },
-      updateQuery(previousData, { fetchMoreResult }) {
+      updateQuery(previousData, { fetchMoreResult }: { fetchMoreResult?: ExploreData }) {
         if (!fetchMoreResult?.app?.all) {
           return previousData;
         }
@@ -75,7 +75,7 @@ function useExploreTabQuery(props: { filter: string }) {
     ...query,
     data: {
       ...query.data,
-      apps: query?.data?.app?.all ?? null,
+      apps: query?.data?.app?.all ?? undefined,
     },
     loadMoreAsync,
   };

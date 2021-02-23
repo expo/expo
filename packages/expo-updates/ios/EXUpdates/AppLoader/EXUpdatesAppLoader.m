@@ -77,7 +77,9 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
 {
   if (![self _shouldStartLoadingUpdate:updateManifest]) {
     if (_successBlock) {
-      _successBlock(nil);
+      dispatch_async(_completionQueue, ^{
+        self->_successBlock(nil);
+      });
     }
     return;
   }

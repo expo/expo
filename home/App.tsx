@@ -16,6 +16,7 @@ export default function App() {
   return (
     <AppearanceProvider>
       <ReduxProvider store={Store}>
+        {/* @ts-expect-error apollo-boost (deprecated) tsdefs are incompatible */}
         <ApolloProvider client={ApolloClient}>
           <HomeApp />
         </ApolloProvider>

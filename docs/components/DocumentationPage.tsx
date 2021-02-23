@@ -1,4 +1,5 @@
 import { css } from '@emotion/core';
+import { theme } from '@expo/styleguide';
 import some from 'lodash/some';
 import Router from 'next/router';
 import * as React from 'react';
@@ -21,12 +22,12 @@ import { VERSIONS } from '~/constants/versions';
 import { NavigationRoute, Url } from '~/types/common';
 
 const STYLES_DOCUMENT = css`
-  background: #fff;
+  background: ${theme.background.default};
   margin: 0 auto;
   padding: 40px 56px;
 
   hr {
-    border-top: 1px solid ${Constants.expoColors.gray[250]};
+    border-top: 1px solid ${theme.border.default};
     border-bottom: 0px;
   }
 
@@ -53,6 +54,8 @@ type Props = {
   asPath: string;
   sourceCodeUrl?: string;
   tocVisible: boolean;
+  /* If the page should not show up in the Algolia Docsearch results */
+  hideFromSearch?: boolean;
 };
 
 type State = {
@@ -152,6 +155,10 @@ export default class DocumentationPage extends React.Component<Props, State> {
     );
   };
 
+  private isEasPath = () => {
+    return some(navigation.easDirectories, name => this.props.url.pathname.startsWith(`/${name}`));
+  };
+
   private isPreviewPath = () => {
     return some(navigation.previewDirectories, name =>
       this.props.url.pathname.startsWith(`/${name}`)
@@ -169,15 +176,19 @@ export default class DocumentationPage extends React.Component<Props, State> {
     }
   };
 
-  private getVersion = () => {
-    let version = (this.props.asPath || this.props.url.pathname).split(`/`)[2];
-    if (!version || VERSIONS.indexOf(version) === -1) {
-      version = VERSIONS[0];
-    }
-    if (!version) {
-      version = 'latest';
+  private getAlgoliaTag = () => {
+    if (this.props.hideFromSearch === true) {
+      return null;
     }
 
+    return this.isReferencePath() ? this.getVersion() : 'none';
+  };
+
+  private getVersion = () => {
+    let version = (this.props.asPath || this.props.url.pathname).split(`/`)[2];
+    if (!version || !VERSIONS.includes(version)) {
+      version = 'latest';
+    }
     return version;
   };
 
@@ -197,6 +208,8 @@ export default class DocumentationPage extends React.Component<Props, State> {
       return 'general';
     } else if (this.isGettingStartedPath()) {
       return 'starting';
+    } else if (this.isEasPath()) {
+      return 'eas';
     } else if (this.isPreviewPath()) {
       return 'preview';
     }
@@ -246,6 +259,8 @@ export default class DocumentationPage extends React.Component<Props, State> {
 
     const sidebarRight = <DocumentationSidebarRight ref={this.sidebarRightRef} />;
 
+    const algoliaTag = this.getAlgoliaTag();
+
     return (
       <DocumentationNestedScrollLayout
         ref={this.layoutRef}
@@ -258,7 +273,30 @@ export default class DocumentationPage extends React.Component<Props, State> {
         onContentScroll={handleContentScroll}
         sidebarScrollPosition={sidebarScrollPosition}>
         <Head title={`${this.props.title} - Expo Documentation`}>
-          <meta name="docsearch:version" content={isReferencePath ? version : 'none'} />
+          {algoliaTag !== null && <meta name="docsearch:version" content={algoliaTag} />}
+          <meta property="og:title" content={`${this.props.title} - Expo Documentation`} />
+          <meta property="og:type" content="website" />
+          <meta property="og:image" content="https://docs.expo.io/static/images/og.png" />
+          <meta property="og:image:url" content="https://docs.expo.io/static/images/og.png" />
+          <meta
+            property="og:image:secure_url"
+            content="https://docs.expo.io/static/images/og.png"
+          />
+          <meta property="og:locale" content="en_US" />
+          <meta property="og:site_name" content="Expo Documentation" />
+          <meta
+            property="og:description"
+            content="Expo is an open-source platform for making universal native apps for Android, iOS, and the web with JavaScript and React."
+          />
+
+          <meta name="twitter:site" content="@expo" />
+          <meta name="twitter:card" content="summary" />
+          <meta property="twitter:title" content={`${this.props.title} - Expo Documentation`} />
+          <meta
+            name="twitter:description"
+            content="Expo is an open-source platform for making universal native apps for Android, iOS, and the web with JavaScript and React."
+          />
+          <meta property="twitter:image" content="https://docs.expo.io/static/images/twitter.png" />
 
           {(version === 'unversioned' || this.isPreviewPath()) && (
             <meta name="robots" content="noindex" />

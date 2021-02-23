@@ -27,13 +27,15 @@ UM_EXPORT_MODULE(ExpoUpdates);
 {
   if (!_updatesService.isStarted) {
     return @{
-      @"isEnabled": @(NO)
+      @"isEnabled": @(NO),
+      @"isMissingRuntimeVersion": @(_updatesService.config.isMissingRuntimeVersion)
     };
   }
   EXUpdatesUpdate *launchedUpdate = _updatesService.launchedUpdate;
   if (!launchedUpdate) {
     return @{
-      @"isEnabled": @(NO)
+      @"isEnabled": @(NO),
+      @"isMissingRuntimeVersion": @(_updatesService.config.isMissingRuntimeVersion)
     };
   } else {
     return @{
@@ -43,7 +45,8 @@ UM_EXPORT_MODULE(ExpoUpdates);
       @"manifest": launchedUpdate.rawManifest ?: @{},
       @"releaseChannel": _updatesService.config.releaseChannel,
       @"localAssets": _updatesService.assetFilesMap ?: @{},
-      @"isEmergencyLaunch": @(_updatesService.isEmergencyLaunch)
+      @"isEmergencyLaunch": @(_updatesService.isEmergencyLaunch),
+      @"isMissingRuntimeVersion": @(_updatesService.config.isMissingRuntimeVersion)
     };
   }
   
@@ -76,14 +79,23 @@ UM_EXPORT_METHOD_AS(checkForUpdateAsync,
     return;
   }
 
+  __block NSDictionary *extraHeaders;
+  dispatch_sync(_updatesService.database.databaseQueue, ^{
+    NSError *error;
+    extraHeaders = [self->_updatesService.database serverDefinedHeadersWithScopeKey:self->_updatesService.config.scopeKey error:&error];
+    if (error) {
+      NSLog(@"Error selecting serverDefinedHeaders from database: %@", error.localizedDescription);
+    }
+  });
+
   EXUpdatesFileDownloader *fileDownloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:_updatesService.config];
   [fileDownloader downloadManifestFromURL:_updatesService.config.updateUrl
                              withDatabase:_updatesService.database
-                           cacheDirectory:_updatesService.directory
+                             extraHeaders:extraHeaders
                              successBlock:^(EXUpdatesUpdate *update) {
     EXUpdatesUpdate *launchedUpdate = self->_updatesService.launchedUpdate;
     id<EXUpdatesSelectionPolicy> selectionPolicy = self->_updatesService.selectionPolicy;
-    if ([selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:launchedUpdate]) {
+    if ([selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:launchedUpdate filters:update.manifestFilters]) {
       resolve(@{
         @"isAvailable": @(YES),
         @"manifest": update.rawManifest
@@ -109,7 +121,7 @@ UM_EXPORT_METHOD_AS(fetchUpdateAsync,
 
   EXUpdatesRemoteAppLoader *remoteAppLoader = [[EXUpdatesRemoteAppLoader alloc] initWithConfig:_updatesService.config database:_updatesService.database directory:_updatesService.directory completionQueue:self.methodQueue];
   [remoteAppLoader loadUpdateFromUrl:_updatesService.config.updateUrl onManifest:^BOOL(EXUpdatesUpdate * _Nonnull update) {
-    return [self->_updatesService.selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self->_updatesService.launchedUpdate];
+    return [self->_updatesService.selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self->_updatesService.launchedUpdate filters:update.manifestFilters];
   } success:^(EXUpdatesUpdate * _Nullable update) {
     if (update) {
       resolve(@{

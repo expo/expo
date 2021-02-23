@@ -8,6 +8,22 @@
 
 ### 🐛 Bug fixes
 
+## 9.0.0 — 2021-01-15
+
+### 🛠 Breaking changes
+
+- Dropped support for iOS 10.0 ([#11344](https://github.com/expo/expo/pull/11344) by [@tsapeta](https://github.com/tsapeta))
+
+## 8.2.2 — 2020-12-04
+
+### 🐛 Bug fixes
+
+- Explicitly pass down only the expected props on iOS. ([#10648](https://github.com/expo/expo/pull/10648) by [@cruzach](https://github.com/cruzach))
+
+## 8.2.1 — 2020-11-17
+
+_This version does not introduce any user-facing changes._
+
 ## 8.2.0 — 2020-08-18
 
 ### 🎉 New features

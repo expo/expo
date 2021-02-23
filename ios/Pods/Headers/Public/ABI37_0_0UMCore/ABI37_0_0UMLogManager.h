@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI37_0_0/Expo/UMCore/ABI37_0_0UMCore/Services/ABI37_0_0UMLogManager.h

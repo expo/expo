@@ -14,7 +14,10 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 static NSString * const EXUpdatesDatabaseErrorDomain = @"EXUpdatesDatabase";
-static NSString * const EXUpdatesDatabaseFilename = @"expo-v3.db";
+static NSString * const EXUpdatesDatabaseFilename = @"expo-v4.db";
+
+static NSString * const EXUpdatesDatabaseManifestFiltersKey = @"manifestFilters";
+static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefinedHeaders";
 
 @implementation EXUpdatesDatabase
 
@@ -124,8 +127,16 @@ static NSString * const EXUpdatesDatabaseFilename = @"expo-v3.db";
    FOREIGN KEY(\"update_id\") REFERENCES \"updates\"(\"id\") ON DELETE CASCADE,\
    FOREIGN KEY(\"asset_id\") REFERENCES \"assets\"(\"id\") ON DELETE CASCADE\
    );\
+   CREATE TABLE \"json_data\" (\
+   \"id\" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\
+   \"key\" TEXT NOT NULL,\
+   \"value\" TEXT NOT NULL,\
+   \"last_updated\" INTEGER NOT NULL,\
+   \"scope_key\" TEXT NOT NULL\
+   );\
    CREATE UNIQUE INDEX \"index_updates_scope_key_commit_time\" ON \"updates\" (\"scope_key\", \"commit_time\");\
    CREATE INDEX \"index_updates_launch_asset_id\" ON \"updates\" (\"launch_asset_id\");\
+   CREATE INDEX \"index_json_data_scope_key\" ON \"json_data\" (\"scope_key\")\
    ";
 
   char *errMsg;
@@ -439,6 +450,97 @@ static NSString * const EXUpdatesDatabaseFilename = @"expo-v3.db";
   } else {
     return [self _assetWithRow:rows[0]];
   }
+}
+
+# pragma mark - json data
+
+- (nullable NSDictionary *)_jsonDataWithKey:(NSString *)key scopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error
+{
+  NSString * const sql = @"SELECT * FROM json_data WHERE \"key\" = ?1 AND \"scope_key\" = ?2";
+  NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:@[key, scopeKey] error:error];
+  if (rows && [rows count]) {
+    id value = rows[0][@"value"];
+    if (value && [value isKindOfClass:[NSString class]]) {
+      NSDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:[(NSString *)value dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:error];
+      if (!*error && jsonObject && [jsonObject isKindOfClass:[NSDictionary class]]) {
+        return jsonObject;
+      }
+    }
+  }
+  return nil;
+}
+
+- (BOOL)_setJsonData:(NSDictionary *)data withKey:(NSString *)key scopeKey:(NSString *)scopeKey isInTransaction:(BOOL)isInTransaction error:(NSError ** _Nullable)error
+{
+  if (!isInTransaction) {
+    sqlite3_exec(_db, "BEGIN;", NULL, NULL, NULL);
+  }
+  NSString * const deleteSql = @"DELETE FROM json_data WHERE \"key\" = ?1 AND \"scope_key\" = ?2";
+  if ([self _executeSql:deleteSql withArgs:@[key, scopeKey] error:error] == nil) {
+    if (!isInTransaction) {
+      sqlite3_exec(_db, "ROLLBACK;", NULL, NULL, NULL);
+    }
+    return NO;
+  }
+
+  NSString * const insertSql = @"INSERT INTO json_data (\"key\", \"value\", \"last_updated\", \"scope_key\") VALUES (?1, ?2, ?3, ?4);";
+  if ([self _executeSql:insertSql withArgs:@[key, data, @(NSDate.date.timeIntervalSince1970 * 1000), scopeKey] error:error] == nil) {
+    if (!isInTransaction) {
+      sqlite3_exec(_db, "ROLLBACK;", NULL, NULL, NULL);
+    }
+    return NO;
+  }
+  if (!isInTransaction) {
+    sqlite3_exec(_db, "COMMIT;", NULL, NULL, NULL);
+  }
+
+  return YES;
+}
+
+- (nullable NSDictionary *)serverDefinedHeadersWithScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error
+{
+  return [self _jsonDataWithKey:EXUpdatesDatabaseServerDefinedHeadersKey scopeKey:scopeKey error:error];
+}
+
+- (nullable NSDictionary *)manifestFiltersWithScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error
+{
+  return [self _jsonDataWithKey:EXUpdatesDatabaseManifestFiltersKey scopeKey:scopeKey error:error];
+}
+
+- (void)setServerDefinedHeaders:(NSDictionary *)serverDefinedHeaders withScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error
+{
+  [self _setJsonData:serverDefinedHeaders withKey:EXUpdatesDatabaseServerDefinedHeadersKey scopeKey:scopeKey isInTransaction:NO error:error];
+}
+
+- (void)setManifestFilters:(NSDictionary *)manifestFilters withScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error
+{
+  [self _setJsonData:manifestFilters withKey:EXUpdatesDatabaseManifestFiltersKey scopeKey:scopeKey isInTransaction:NO error:error];
+}
+
+- (void)setMetadataWithManifest:(EXUpdatesUpdate *)updateManifest error:(NSError ** _Nullable)error
+{
+  sqlite3_exec(_db, "BEGIN;", NULL, NULL, NULL);
+  if (updateManifest.serverDefinedHeaders) {
+    if ([self _setJsonData:updateManifest.serverDefinedHeaders
+                   withKey:EXUpdatesDatabaseServerDefinedHeadersKey
+                  scopeKey:updateManifest.scopeKey
+           isInTransaction:YES
+                     error:error] == nil) {
+      sqlite3_exec(_db, "ROLLBACK;", NULL, NULL, NULL);
+      return;
+    }
+  }
+  if (updateManifest.manifestFilters) {
+    if ([self _setJsonData:updateManifest.manifestFilters
+                   withKey:EXUpdatesDatabaseManifestFiltersKey
+                  scopeKey:updateManifest.scopeKey
+           isInTransaction:YES
+                     error:error] == nil) {
+      sqlite3_exec(_db, "ROLLBACK;", NULL, NULL, NULL);
+      return;
+    }
+  }
+  sqlite3_exec(_db, "COMMIT;", NULL, NULL, NULL);
 }
 
 # pragma mark - helper methods

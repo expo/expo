@@ -3,6 +3,7 @@ import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-int
 import { AVPlaybackStatus, AVPlaybackStatusToSet } from '../AV';
 import { Sound } from './Sound';
 export declare type RecordingOptions = {
+    isMeteringEnabled?: boolean;
     android: {
         extension: string;
         outputFormat: number;
@@ -92,6 +93,7 @@ export declare type RecordingStatus = {
     isRecording: boolean;
     isDoneRecording: boolean;
     durationMillis: number;
+    metering?: number;
 };
 export { PermissionResponse, PermissionStatus };
 export declare function getPermissionsAsync(): Promise<PermissionResponse>;

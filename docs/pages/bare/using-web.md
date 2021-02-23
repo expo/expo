@@ -13,6 +13,6 @@ Expo for web can work on any React Native project. When you initialize a new pro
 
 The same guides for web from the managed workflow apply here.
 
-- [Publishing Websites](../../distribution/publishing-websites/)
-- [Customizing Webpack](../../guides/customizing-webpack/)
-- [Web Performance](../../guides/web-performance/)
+- [Publishing Websites](../distribution/publishing-websites.md)
+- [Customizing Webpack](../guides/customizing-webpack.md)
+- [Web Performance](../guides/web-performance.md)

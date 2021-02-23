@@ -16,6 +16,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.facebook.internal.BundleJSONConverter;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactInstanceManagerBuilder;
@@ -70,7 +71,6 @@ import host.exp.exponent.exceptions.ExceptionUtils;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.AsyncCondition;
-import host.exp.exponent.utils.JSONBundleConverter;
 import okhttp3.OkHttpClient;
 import versioned.host.exp.exponent.ExpoTurboPackage;
 import versioned.host.exp.exponent.ExponentPackage;
@@ -165,7 +165,6 @@ public class Kernel extends KernelInterface {
       // clientBuilder.addNetworkInterceptor(new StethoInterceptor());
     }
 
-    mExponentNetwork.addInterceptors(client);
     ReactNativeStaticHelpers.setExponentNetwork(mExponentNetwork);
   }
 
@@ -359,7 +358,11 @@ public class Kernel extends KernelInterface {
     }
 
     Bundle bundle = new Bundle();
-    bundle.putBundle("exp", JSONBundleConverter.JSONToBundle(exponentProps));
+    try {
+      bundle.putBundle("exp", BundleJSONConverter.convertToBundle(exponentProps));
+    } catch (JSONException e) {
+      throw new Error("JSONObject failed to be converted to Bundle", e);
+    }
     return bundle;
   }
 
@@ -1005,13 +1008,8 @@ public class Kernel extends KernelInterface {
           break;
         }
 
-        if (weakActivity.isLoading()) {
-          // Already loading. Don't need to do anything.
-          return true;
-        } else {
-          Exponent.getInstance().runOnUiThread(weakActivity::startLoading);
-          break;
-        }
+        Exponent.getInstance().runOnUiThread(weakActivity::startLoading);
+        break;
       }
     }
 

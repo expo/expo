@@ -3,11 +3,11 @@ const { copySync, removeSync } = require('fs-extra');
 const merge = require('lodash/merge');
 const { join } = require('path');
 const semver = require('semver');
+const { ESBuildPlugin } = require('esbuild-loader');
 
-const headings = require('./common/headingsMdPlugin');
 const navigation = require('./constants/navigation-data');
 const versions = require('./constants/versions');
-const { version } = require('./package.json');
+const { version, betaVersion } = require('./package.json');
 
 // To generate a sitemap, we need context about the supported versions and navigational data
 const createSitemap = require('./scripts/create-sitemap');
@@ -18,6 +18,11 @@ const vLatest = join('pages', 'versions', `v${version}/`);
 const latest = join('pages', 'versions', 'latest/');
 removeSync(latest);
 copySync(vLatest, latest);
+
+// Determine if we are using esbuild for MDX transpiling
+const enableEsbuild = !!process.env.USE_ESBUILD;
+
+console.log(enableEsbuild ? 'Using esbuild for MDX files' : 'Using babel for MDX files');
 
 module.exports = {
   trailingSlash: true,
@@ -38,20 +43,39 @@ module.exports = {
         },
       }),
     });
-    // Add support for MDX with our custom loader
+
+    // Add support for MDX with our custom loader and esbuild
     config.module.rules.push({
       test: /.mdx?$/, // load both .md and .mdx files
       use: [
-        options.defaultLoaders.babel,
+        !enableEsbuild
+          ? options.defaultLoaders.babel
+          : {
+              loader: 'esbuild-loader',
+              options: {
+                loader: 'tsx',
+                target: 'es2017',
+              },
+            },
         {
           loader: '@mdx-js/loader',
-          options: { remarkPlugins: [headings] },
+          options: {
+            remarkPlugins: [
+              require('./mdx-plugins/remark-heading-meta'),
+              require('./mdx-plugins/remark-link-rewrite'),
+            ],
+          },
         },
         join(__dirname, './common/md-loader'),
       ],
     });
     // Fix inline or browser MDX usage: https://mdxjs.com/getting-started/webpack#running-mdx-in-the-browser
     config.node = { fs: 'empty' };
+    // Add the esbuild plugin only when using esbuild
+    if (enableEsbuild) {
+      config.plugins.push(new ESBuildPlugin());
+    }
+
     return config;
   },
   // Create a map of all pages to export
@@ -70,7 +94,11 @@ module.exports = {
         } else {
           // hide versions greater than the package.json version number
           const versionMatch = pathname.match(/\/v(\d\d\.\d\.\d)\//);
-          if (versionMatch && versionMatch[1] && semver.gt(versionMatch[1], version)) {
+          if (
+            versionMatch &&
+            versionMatch[1] &&
+            semver.gt(versionMatch[1], betaVersion || version)
+          ) {
             return {};
           }
           return { [pathname]: page };

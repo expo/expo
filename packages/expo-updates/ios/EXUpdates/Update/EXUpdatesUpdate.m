@@ -55,6 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (instancetype)updateWithManifest:(NSDictionary *)manifest
+                          response:(nullable NSURLResponse *)response
                             config:(EXUpdatesConfig *)config
                           database:(EXUpdatesDatabase *)database
 {
@@ -64,6 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                   database:database];
   } else {
     return [EXUpdatesNewUpdate updateWithNewManifest:manifest
+                                            response:response
                                               config:config
                                             database:database];
   }
@@ -84,8 +86,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                 database:database];
     }
   } else {
-    if (manifest[@"runtimeVersion"]) {
+    // bare (embedded) manifests should never have a runtimeVersion field
+    if (manifest[@"manifest"] || manifest[@"runtimeVersion"]) {
       return [EXUpdatesNewUpdate updateWithNewManifest:manifest
+                                              response:nil
                                                 config:config
                                               database:database];
     } else {

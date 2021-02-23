@@ -29,8 +29,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
-
 NSString *kEXKernelErrorDomain = @"EXKernelErrorDomain";
 NSString *kEXKernelShouldForegroundTaskEvent = @"foregroundTask";
 NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUserDefaultsKey";
@@ -106,17 +104,6 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 }
 
 #pragma mark - Misc
-
-+ (NSString *)deviceInstallUUID
-{
-  NSString *uuid = [[NSUserDefaults standardUserDefaults] stringForKey:kEXDeviceInstallUUIDKey];
-  if (!uuid) {
-    uuid = [[NSUUID UUID] UUIDString];
-    [[NSUserDefaults standardUserDefaults] setObject:uuid forKey:kEXDeviceInstallUUIDKey];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-  }
-  return uuid;
-}
 
 - (void)logAnalyticsEvent:(NSString *)eventId forAppRecord:(EXKernelAppRecord *)appRecord
 {
@@ -202,7 +189,7 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
     return success;
   } else {
     // no app is currently running for this experience id.
-    // if we're Expo Client, we can query Home for a past experience in the user's history, and route the notification there.
+    // if we're Expo Go, we can query Home for a past experience in the user's history, and route the notification there.
     if (_browserController) {
       __weak typeof(self) weakSelf = self;
       [_browserController getHistoryUrlForExperienceId:notification.experienceId completion:^(NSString *urlString) {
@@ -214,7 +201,7 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
         }
       }];
       // If we're here, there's no active app in appRegistry matching notification.experienceId
-      // and we are in Expo Client, since _browserController is not nil.
+      // and we are in Expo Go, since _browserController is not nil.
       // If so, we can return YES (meaning "notification has been successfully dispatched")
       // because we pass the notification as initialProps in completion handler
       // of getHistoryUrlForExperienceId:. If urlString passed to completion handler is empty,

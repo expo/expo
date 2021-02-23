@@ -36,12 +36,14 @@ const PERMISSION_MODULE_MAPPING = {
     [MOTION]: 'expo-sensors',
 };
 export async function getAsync(...types) {
+    console.warn(`expo-permissions is now deprecated — the functionality has been moved to other expo packages that directly use these permissions (e.g. expo-location, expo-camera). The package will be removed in the upcoming releases.`);
     if (Platform.OS === 'ios') {
         return await _handleMultiPermissionsRequestIOSAsync(types, Permissions.getAsync);
     }
     return await _handlePermissionsRequestAsync(types, Permissions.getAsync);
 }
 export async function askAsync(...types) {
+    console.warn(`expo-permissions is now deprecated — the functionality has been moved to other expo packages that directly use these permissions (e.g. expo-location, expo-camera). The package will be removed in the upcoming releases.`);
     if (Platform.OS === 'ios') {
         return await _handleMultiPermissionsRequestIOSAsync(types, Permissions.askAsync);
     }

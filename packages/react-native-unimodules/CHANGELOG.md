@@ -6,6 +6,12 @@
 
 ### 🎉 New features
 
+- Added support for statically configuring linking with `react-native-unimodules` object in the `package.json`. ([#11524](https://github.com/expo/expo/pull/11524) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+## 0.12.0 — 2020-11-17
+
 ### 🐛 Bug fixes
 
 - Fixed resolving Gradle module path when a symlink is provided. ([#10007](https://github.com/expo/expo/pull/10007) by [@barthap](https://github.com/barthap))
@@ -117,4 +123,4 @@
 ### 🎉 New features
 
 - Automatically generated list of Android packages ([#28](https://github.com/unimodules/react-native-unimodules/pull/28))
-As of this version, you no longer need to add new packages to your `MainApplication.java` file. Just use `new BasePackageList().getPackageList()` instead 🎉. `BasePackageList` is auto-generated with a list of installed unimodules found in your `node_modules` folder during Gradle's Sync operation.
+  As of this version, you no longer need to add new packages to your `MainApplication.java` file. Just use `new BasePackageList().getPackageList()` instead 🎉. `BasePackageList` is auto-generated with a list of installed unimodules found in your `node_modules` folder during Gradle's Sync operation.

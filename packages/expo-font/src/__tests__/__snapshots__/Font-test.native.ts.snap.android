@@ -23,11 +23,7 @@ Array [
 
 exports[`within Expo client processFontFamily defaults still-loading fonts to the system font 1`] = `
 Array [
-  "You started loading the font \\"loading\\", but used it before it finished loading.
-
-- You need to wait for Font.loadAsync to complete before using the font.
-
-- We recommend loading all fonts before rendering the app, and rendering only Expo.AppLoading while waiting for loading to complete.",
+  "You started loading the font \\"loading\\", but used it before it finished loading. You need to wait for Font.loadAsync to complete before using the font.",
 ]
 `;
 

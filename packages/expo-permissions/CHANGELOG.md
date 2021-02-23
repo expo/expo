@@ -6,7 +6,22 @@
 
 ### 🎉 New features
 
+- Updated Android build configuration to target Android 11 (added support for Android SDK 30). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
+
 ### 🐛 Bug fixes
+
+## 11.0.0 — 2021-01-15
+
+### 🛠 Breaking changes
+
+- Dropped support for iOS 10.0 ([#11344](https://github.com/expo/expo/pull/11344) by [@tsapeta](https://github.com/tsapeta))
+
+## 10.0.0 — 2020-11-17
+
+### 🛠 Breaking changes
+
+- Make background location an opt-in permission on Android. ([#10989](https://github.com/expo/expo/pull/10989) by [@bycedric](https://github.com/bycedric))
+- Upgrade `androidx.appcompat` to `1.2.0`. ([#11018](https://github.com/expo/expo/pull/11018) by [@bbarthec](https://github.com/bbarthec))
 
 ## 9.3.0 — 2020-08-18
 

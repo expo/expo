@@ -34,6 +34,12 @@ typedef NS_ENUM(NSInteger, EXUpdatesDatabaseHashType) {
 - (nullable NSArray<EXUpdatesAsset *> *)assetsWithUpdateId:(NSUUID *)updateId error:(NSError ** _Nullable)error;
 - (nullable EXUpdatesAsset *)assetWithKey:(NSString *)key error:(NSError ** _Nullable)error;
 
+- (nullable NSDictionary *)serverDefinedHeadersWithScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error;
+- (nullable NSDictionary *)manifestFiltersWithScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error;
+- (void)setServerDefinedHeaders:(NSDictionary *)serverDefinedHeaders withScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error;
+- (void)setManifestFilters:(NSDictionary *)manifestFilters withScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error;
+- (void)setMetadataWithManifest:(EXUpdatesUpdate *)updateManifest error:(NSError ** _Nullable)error;
+
 @end
 
 NS_ASSUME_NONNULL_END

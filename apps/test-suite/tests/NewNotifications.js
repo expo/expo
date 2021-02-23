@@ -1177,7 +1177,7 @@ export async function test(t) {
       );
 
       t.it(
-        'schedules a repeating daily notification. only first scheduled event is verified.',
+        'schedules a repeating daily notification; only first scheduled event is verified.',
         async () => {
           const dateNow = new Date();
           const trigger = {
@@ -1218,7 +1218,7 @@ export async function test(t) {
       );
 
       t.it(
-        'schedules a repeating weekly notification. only first scheduled event is verified.',
+        'schedules a repeating weekly notification; only first scheduled event is verified.',
         async () => {
           const dateNow = new Date();
           const trigger = {
@@ -1249,6 +1249,51 @@ export async function test(t) {
               repeats: true,
               dateComponents: {
                 ...trigger,
+                timeZone: null,
+                isLeapMonth: false,
+                calendar: null,
+              },
+            });
+          } else {
+            throw new Error('Test does not support platform');
+          }
+        },
+        4000
+      );
+
+      t.it(
+        'schedules a repeating yearly notification; only first scheduled event is verified.',
+        async () => {
+          const dateNow = new Date();
+          const trigger = {
+            day: dateNow.getDate(),
+            month: dateNow.getMonth(),
+            hour: dateNow.getHours(),
+            minute: (dateNow.getMinutes() + 2) % 60,
+            repeats: true,
+          };
+          await Notifications.scheduleNotificationAsync({
+            identifier,
+            content: notification,
+            trigger,
+          });
+          const result = await Notifications.getAllScheduledNotificationsAsync();
+          delete trigger.repeats;
+          if (Platform.OS === 'android') {
+            t.expect(result[0].trigger).toEqual({
+              type: 'yearly',
+              channelId: null,
+              ...trigger,
+            });
+          } else if (Platform.OS === 'ios') {
+            t.expect(result[0].trigger).toEqual({
+              type: 'calendar',
+              class: 'UNCalendarNotificationTrigger',
+              repeats: true,
+              dateComponents: {
+                ...trigger,
+                // iOS uses 1-12 based months
+                month: trigger.month + 1,
                 timeZone: null,
                 isLeapMonth: false,
                 calendar: null,
@@ -1339,6 +1384,37 @@ export async function test(t) {
         t.expect(nextDate).not.toBeNull();
         t.expect(new Date(nextDate).getHours()).toBe(9);
         t.expect(new Date(nextDate).getMinutes()).toBe(20);
+      });
+
+      t.it('generates trigger date for a weekly trigger', async () => {
+        const nextDateTimestamp = await Notifications.getNextTriggerDateAsync({
+          weekday: 2,
+          hour: 9,
+          minute: 20,
+          repeats: true,
+        });
+        t.expect(nextDateTimestamp).not.toBeNull();
+        const nextDate = new Date(nextDateTimestamp);
+        // JS has 0 (Sunday) - 6 (Saturday) based week days
+        t.expect(nextDate.getDay()).toBe(1);
+        t.expect(nextDate.getHours()).toBe(9);
+        t.expect(nextDate.getMinutes()).toBe(20);
+      });
+
+      t.it('generates trigger date for a yearly trigger', async () => {
+        const nextDateTimestamp = await Notifications.getNextTriggerDateAsync({
+          day: 2,
+          month: 6,
+          hour: 9,
+          minute: 20,
+          repeats: true,
+        });
+        t.expect(nextDateTimestamp).not.toBeNull();
+        const nextDate = new Date(nextDateTimestamp);
+        t.expect(nextDate.getDate()).toBe(2);
+        t.expect(nextDate.getMonth()).toBe(6);
+        t.expect(nextDate.getHours()).toBe(9);
+        t.expect(nextDate.getMinutes()).toBe(20);
       });
 
       t.it('fails to generate trigger date for the immediate trigger', async () => {
@@ -1667,6 +1743,67 @@ export async function test(t) {
                 // JS weekday range equals 0 to 6, Sunday equals 0
                 // Native weekday range equals 1 to 7, Sunday equals 1
                 weekday: triggerDate.getDay() + 1,
+                hour: triggerDate.getHours(),
+                minute: triggerDate.getMinutes(),
+                repeats: true,
+              },
+            });
+            const scheduledTime = new Date(triggerDate);
+            scheduledTime.setSeconds(0);
+            scheduledTime.setMilliseconds(0);
+            const milliSecondsToWait = scheduledTime - new Date().getTime() + 2000;
+            await waitFor(milliSecondsToWait);
+            t.expect(timesSpyHasBeenCalled).toBe(1);
+          },
+          140000
+        );
+      }
+    );
+
+    onlyInteractiveDescribe(
+      'triggers a repeating yearly notification. only first scheduled event is awaited and verified.',
+      () => {
+        let timesSpyHasBeenCalled = 0;
+        const identifier = 'test-scheduled-notification';
+        const notification = {
+          title: 'Scheduled notification',
+          data: { key: 'value' },
+          badge: 2,
+          vibrate: [100, 100, 100, 100, 100, 100],
+          color: '#FF0000',
+        };
+
+        t.beforeEach(async () => {
+          await Notifications.cancelAllScheduledNotificationsAsync();
+          Notifications.setNotificationHandler({
+            handleNotification: async () => {
+              timesSpyHasBeenCalled += 1;
+              return {
+                shouldShowAlert: false,
+              };
+            },
+          });
+        });
+
+        t.afterEach(async () => {
+          Notifications.setNotificationHandler(null);
+          await Notifications.cancelAllScheduledNotificationsAsync();
+        });
+
+        t.it(
+          'triggers a repeating yearly notification. only first event is verified.',
+          async () => {
+            // On iOS because we are using the calendar with repeat, it needs to be
+            // greater than 60 seconds
+            const triggerDate = new Date(
+              new Date().getTime() + (Platform.OS === 'ios' ? 120000 : 60000)
+            );
+            await Notifications.scheduleNotificationAsync({
+              identifier,
+              content: notification,
+              trigger: {
+                day: triggerDate.getDate(),
+                month: triggerDate.getMonth(),
                 hour: triggerDate.getHours(),
                 minute: triggerDate.getMinutes(),
                 repeats: true,

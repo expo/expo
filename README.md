@@ -1,6 +1,11 @@
 <!-- Banner Image -->
 
-[![Expo](/style/header.png)](https://expo.io)
+<p align="center">
+  <a href="https://expo.io/">
+    <img alt="expo sdk" height="128" src="./style/banner.png">
+    <h1 align="center">Expo</h1>
+  </a>
+</p>
 
 <p align="center">
  
@@ -69,7 +74,7 @@ Expo is an open-source platform for making universal native apps that run on And
 - [`home`](/home) contains the JavaScript source code of the app.
 - [`ios`](/ios) contains the iOS project.
 - [`ios/Exponent.xcworkspace`](/ios) is the Xcode workspace. Always open this instead of `Exponent.xcodeproj` because the workspace also loads the CocoaPods dependencies.
-- [`tools/expotools`](/tools/expotools) contains build and configuration tools.
+- [`tools`](/tools) contains build and configuration tools.
 - [`template-files`](/template-files) contains templates for files that require private keys. They are populated using the keys in `template-files/keys.json`.
 - [`template-files/ios/dependencies.json`](/template-files/ios/dependencies.json) specifies the CocoaPods dependencies of the app.
 

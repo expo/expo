@@ -63,7 +63,7 @@ function YourComponent() {
 
 ## Development and Testing
 
-You can test this library in development in the iOS Expo client without following any of the instructions above; however, you'll need to do this setup in order to use Apple Authentication in your standalone app. When you sign into the Expo client, the identifiers and values you receive will likely be different than what you'll receive in standalone apps.
+You can test this library in development in Expo Go on iOS without following any of the instructions above; however, you'll need to do this setup in order to use Apple Authentication in your standalone app. When you sign into Expo Go, the identifiers and values you receive will likely be different than what you'll receive in standalone apps.
 
 You can do limited testing of this library on the iOS simulator. However, not all methods will behave the same as on a device, so we highly recommend testing on a real device when possible while developing.
 
@@ -123,7 +123,7 @@ Sends a request to the operating system to initiate the Apple authentication flo
 
 You can request access to the user's full name and email address in this method, which allows you to personalize your UI for signed in users. However, users can deny access to either or both of these options at runtime.
 
-Additionally, you will only receive Apple Authentication Credentials the first time users sign into your app, so **you must store it for later use**. It's best to store this information either server-side, or using [SecureStore](../securestore/), so that the data persists across app installs. You can use [`AppleAuthenticationCredential.user`](#appleauthenticationappleauthenticationcredential) to identify the user, since this remains the same for apps released by the same developer.
+Additionally, you will only receive Apple Authentication Credentials the first time users sign into your app, so **you must store it for later use**. It's best to store this information either server-side, or using [SecureStore](securestore.md), so that the data persists across app installs. You can use [`AppleAuthenticationCredential.user`](#appleauthenticationappleauthenticationcredential) to identify the user, since this remains the same for apps released by the same developer.
 
 #### Arguments
 

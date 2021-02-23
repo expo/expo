@@ -4,15 +4,17 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
+import org.json.JSONObject;
+
 import androidx.annotation.Nullable;
 import expo.modules.updates.UpdatesConfiguration;
-import expo.modules.updates.UpdatesController;
 import expo.modules.updates.db.enums.UpdateStatus;
 import expo.modules.updates.UpdatesUtils;
 import expo.modules.updates.db.UpdatesDatabase;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.manifest.Manifest;
+import expo.modules.updates.manifest.ManifestMetadata;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -27,6 +29,7 @@ public class RemoteLoader {
   private UpdatesDatabase mDatabase;
   private File mUpdatesDirectory;
 
+  private Manifest mManifest;
   private UpdateEntity mUpdateEntity;
   private LoaderCallback mCallback;
   private int mAssetTotal = 0;
@@ -66,8 +69,9 @@ public class RemoteLoader {
     }
 
     mCallback = callback;
+    JSONObject extraHeaders = ManifestMetadata.getServerDefinedHeaders(mDatabase, mConfiguration);
 
-    FileDownloader.downloadManifest(mConfiguration, mContext, new FileDownloader.ManifestDownloadCallback() {
+    FileDownloader.downloadManifest(mConfiguration, extraHeaders, mContext, new FileDownloader.ManifestDownloadCallback() {
       @Override
       public void onFailure(String message, Exception e) {
         finishWithError(message, e);
@@ -75,10 +79,12 @@ public class RemoteLoader {
 
       @Override
       public void onSuccess(Manifest manifest) {
+        mManifest = manifest;
         if (mCallback.onManifestLoaded(manifest)) {
           processManifest(manifest);
         } else {
-          mCallback.onSuccess(null);
+          mUpdateEntity = null;
+          finishWithSuccess();
         }
       }
     });
@@ -98,6 +104,8 @@ public class RemoteLoader {
       Log.e(TAG, "RemoteLoader tried to finish but it already finished or was never initialized.");
       return;
     }
+
+    ManifestMetadata.saveMetadata(mManifest, mDatabase, mConfiguration);
 
     mCallback.onSuccess(mUpdateEntity);
     reset();
@@ -178,7 +186,7 @@ public class RemoteLoader {
         continue;
       }
 
-      FileDownloader.downloadAsset(assetEntity, mUpdatesDirectory, mConfiguration, new FileDownloader.AssetDownloadCallback() {
+      FileDownloader.downloadAsset(assetEntity, mUpdatesDirectory, mConfiguration, mContext, new FileDownloader.AssetDownloadCallback() {
         @Override
         public void onFailure(Exception e, AssetEntity assetEntity) {
           Log.e(TAG, "Failed to download asset from " + assetEntity.url, e);

@@ -4,22 +4,33 @@
 
 ### 🛠 Breaking changes
 
-- Renamed all methods to include the 'Async' suffix:
-  - `initialize` to `initializeAsync`
-  - `setUserId` to `setUserIdAsync`
-  - `setUserProperties` to `setUserPropertiesAsync`
-  - `clearUserProperties` to `clearUserPropertiesAsync`
-  - `logEvent` to `logEventAsync`
-  - `logEventWithProperties` to `logEventWithPropertiesAsync`
-  - `setGroup` to `setGroupAsync`
-  - `setTrackingOptions` to `setTrackingOptionsAsync`
-    ([#9212](https://github.com/expo/expo/pull/9212/) by [@cruzach](https://github.com/cruzach))
-- All methods now return a Promise. ([#9212](https://github.com/expo/expo/pull/9212/) by [@cruzach](https://github.com/cruzach))
-
-
 ### 🎉 New features
 
+- Updated Android build configuration to target Android 11 (added support for Android SDK 30). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
+
 ### 🐛 Bug fixes
+
+## 10.0.0 — 2021-01-15
+
+### 🛠 Breaking changes
+
+- Dropped support for iOS 10.0 ([#11344](https://github.com/expo/expo/pull/11344) by [@tsapeta](https://github.com/tsapeta))
+
+## 9.0.0 — 2020-11-17
+
+### 🛠 Breaking changes
+
+- Renamed all methods to include the 'Async' suffix:
+  -   `initialize` to `initializeAsync`
+  -   `setUserId` to `setUserIdAsync`
+  -   `setUserProperties` to `setUserPropertiesAsync`
+  -   `clearUserProperties` to `clearUserPropertiesAsync`
+  -   `logEvent` to `logEventAsync`
+  -   `logEventWithProperties` to `logEventWithPropertiesAsync`
+  -   `setGroup` to `setGroupAsync`
+  -   `setTrackingOptions` to `setTrackingOptionsAsync`
+([#9212](https://github.com/expo/expo/pull/9212/) by [@cruzach](https://github.com/cruzach))
+- All methods now return a Promise. ([#9212](https://github.com/expo/expo/pull/9212/) by [@cruzach](https://github.com/cruzach))
 
 ## 8.3.1 — 2020-08-24
 

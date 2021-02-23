@@ -93,7 +93,7 @@ class DevMenuManager {
         // Otherwise, touches and other gestures may not work correctly.
         kernel?.reactInstanceManager?.onHostResume(activity)
       } catch (exception: Exception) {
-        Log.e("ExpoDevMenu", exception.message)
+        Log.e("ExpoDevMenu", exception.message ?: "No error message.")
       }
     }
   }

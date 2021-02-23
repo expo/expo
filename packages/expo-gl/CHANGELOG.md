@@ -6,6 +6,29 @@
 
 ### 🎉 New features
 
+- Updated Android build configuration to target Android 11 (added support for Android SDK 30). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
+- Implemented support for `getInternalformatParameter` ([#11614](https://github.com/expo/expo/pull/11614) by [@zenios](https://github.com/zenios))
+
+### 🐛 Bug fixes
+
+## 10.1.0 — 2021-01-15
+
+### 🐛 Bug fixes
+
+- Removed `fbjs` dependency ([#11396](https://github.com/expo/expo/pull/11396) by [@cruzach](https://github.com/cruzach))
+
+## 10.0.0 — 2020-12-15
+
+### ⚠️ Notices
+
+- The package is now shipped with prebuilt binaries on iOS. You can read more about it on [expo.fyi/prebuilt-modules](https://expo.fyi/prebuilt-modules). ([#11224](https://github.com/expo/expo/pull/11224) by [@tsapeta](https://github.com/tsapeta))
+
+### 🛠 Breaking changes
+
+- Dropped support for iOS 10.0 ([#11344](https://github.com/expo/expo/pull/11344) by [@tsapeta](https://github.com/tsapeta))
+
+## 9.2.0 — 2020-11-17
+
 ### 🐛 Bug fixes
 
 - Fixed a bug causing an application crash when enabling remote debugging on Android. ([#10381](https://github.com/expo/expo/pull/10381) by [@sjchmiela](https://github.com/sjchmiela))

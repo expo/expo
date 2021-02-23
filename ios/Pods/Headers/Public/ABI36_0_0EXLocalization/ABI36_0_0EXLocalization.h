@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI36_0_0/Expo/EXLocalization/ABI36_0_0EXLocalization/ABI36_0_0EXLocalization.h

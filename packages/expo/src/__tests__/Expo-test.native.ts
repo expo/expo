@@ -2,8 +2,6 @@
 // when we add or change a native module and haven't yet updated the mocks in jest-expo. This list
 // is a temporary workaround, not a way to indefinitely avoid testing modules.
 const skippedExports: string[] = [
-  'IntentLauncherAndroid',
-  'Localization',
   'Accelerometer',
   'AdMobBanner',
   'AdMobInterstitial',
@@ -12,8 +10,10 @@ const skippedExports: string[] = [
   'Amplitude',
   'AppAuth',
   'AR',
+  'AppLoading',
   'Asset',
   'Audio',
+  'AuthSession',
   'BackgroundFetch',
   'BarCodeScanner',
   'Barometer',
@@ -26,6 +26,7 @@ const skippedExports: string[] = [
   'Crypto',
   'DocumentPicker',
   'Easing',
+  'ErrorRecovery',
   'Facebook',
   'FacebookAds',
   'FaceDetector',
@@ -68,6 +69,7 @@ const skippedExports: string[] = [
   'Speech',
   'SplashScreen',
   'SQLite',
+  'StoreReview',
   'Svg',
   'takeSnapshotAsync',
   'TaskManager',

@@ -5,6 +5,7 @@ import * as MediaLibrary from 'expo-media-library';
 import * as Permissions from 'expo-permissions';
 import React from 'react';
 import {
+  Alert,
   ActivityIndicator,
   Button as RNButton,
   Dimensions,
@@ -48,7 +49,9 @@ type Links = {
   MediaAlbums: undefined;
 };
 
-type Props = StackScreenProps<Links, 'MediaLibrary'>;
+type Props = StackScreenProps<Links, 'MediaLibrary'> & {
+  accessPrivileges?: MediaLibrary.PermissionResponse['accessPrivileges'];
+};
 
 type FetchState = {
   refreshing: boolean;
@@ -120,11 +123,20 @@ export default function MediaLibraryScreen({ navigation, route }: Props) {
     );
   }
 
-  return <MediaLibraryView navigation={navigation} route={route} />;
+  return (
+    <MediaLibraryView
+      navigation={navigation}
+      route={route}
+      accessPrivileges={
+        (permission.permissions[Permissions.CAMERA_ROLL] as MediaLibrary.PermissionResponse)
+          .accessPrivileges
+      }
+    />
+  );
 }
 
 // The fetching and sorting logic is split out from the navigation and permission logic for simplicity.
-function MediaLibraryView({ navigation, route }: Props) {
+function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
   const album = route.params?.album;
 
   const isLoadingAssets = React.useRef(false);
@@ -206,7 +218,11 @@ function MediaLibraryView({ navigation, route }: Props) {
   useFocusEffect(
     React.useCallback(() => {
       // When new media is added or removed, update the library
-      const subscription = MediaLibrary.addListener(() => {
+      const subscription = MediaLibrary.addListener(event => {
+        if (!event.hasIncrementalChanges) {
+          dispatch({ type: 'reset', refreshing: false });
+          return;
+        }
         dispatch({ type: 'update', fetching: true, endCursor: null, hasNextPage: true });
       });
       return () => {
@@ -254,6 +270,21 @@ function MediaLibraryView({ navigation, route }: Props) {
           />
           <Button style={styles.button} title={`Sort by key: ${sortBy}`} onPress={toggleSortBy} />
         </View>
+        {accessPrivileges === 'limited' && (
+          <View style={styles.headerButtons}>
+            <Button
+              style={styles.button}
+              title="Change permissions"
+              onPress={async () => {
+                try {
+                  await MediaLibrary.presentPermissionsPickerAsync();
+                } catch (e) {
+                  Alert.alert(JSON.stringify(e));
+                }
+              }}
+            />
+          </View>
+        )}
       </View>
     );
   }, [mediaType, album, sortBy, toggleMediaType, toggleSortBy]);

@@ -1,4 +1,5 @@
 import { css } from '@emotion/core';
+import { theme } from '@expo/styleguide';
 import { Language, Prism } from 'prism-react-renderer';
 import * as React from 'react';
 
@@ -13,7 +14,7 @@ const attributes = {
 };
 
 const STYLES_CODE_BLOCK = css`
-  color: ${Constants.colors.black90};
+  color: ${theme.text.default};
   font-family: ${Constants.fontFamilies.mono};
   font-size: 13px;
   line-height: 20px;
@@ -24,8 +25,8 @@ const STYLES_CODE_BLOCK = css`
   .code-annotation {
     transition: 200ms ease all;
     transition-property: text-shadow, opacity;
-    text-shadow: rgba(255, 255, 0, 1) 0px 0px 10px, rgba(255, 255, 0, 1) 0px 0px 10px,
-      rgba(255, 255, 0, 1) 0px 0px 10px, rgba(255, 255, 0, 1) 0px 0px 10px;
+    text-shadow: ${theme.highlight.emphasis} 0px 0px 10px, ${theme.highlight.emphasis} 0px 0px 10px,
+      ${theme.highlight.emphasis} 0px 0px 10px, ${theme.highlight.emphasis} 0px 0px 10px;
   }
 
   .code-annotation:hover {
@@ -33,10 +34,18 @@ const STYLES_CODE_BLOCK = css`
     animation: none;
     opacity: 0.8;
   }
+
+  .code-hidden {
+    display: none;
+  }
+
+  .code-placeholder {
+    opacity: 0.5;
+  }
 `;
 
 const STYLES_INLINE_CODE = css`
-  color: ${Constants.expoColors.gray[900]};
+  color: ${theme.text.default};
   font-family: ${Constants.fontFamilies.mono};
   font-size: 0.825em;
   white-space: pre-wrap;
@@ -46,26 +55,26 @@ const STYLES_INLINE_CODE = css`
   max-width: 100%;
 
   word-wrap: break-word;
-  background-color: ${Constants.expoColors.gray[100]};
-  border: 1px solid ${Constants.expoColors.gray[250]};
+  background-color: ${theme.background.secondary};
+  border: 1px solid ${theme.border.default};
   border-radius: 4px;
   vertical-align: middle;
   overflow-x: auto;
 
   /* Disable Safari from adding border when used within a (perma)link */
   a & {
-    border-color: ${Constants.expoColors.gray[250]};
+    border-color: ${theme.border.default};
   }
 `;
 
 const STYLES_CODE_CONTAINER = css`
-  border: 1px solid ${Constants.expoColors.gray[250]};
+  border: 1px solid ${theme.border.default};
   padding: 16px;
   margin: 16px 0;
   white-space: pre;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
-  background-color: ${Constants.expoColors.gray[100]};
+  background-color: ${theme.background.secondary};
   line-height: 120%;
   border-radius: 4px;
 `;
@@ -105,7 +114,12 @@ export class Code extends React.Component<Props> {
       .replace(/<span class="token comment">\/\* @info (.*?)\*\/<\/span>\s*/g, (match, content) => {
         return `<span class="code-annotation" title="${this.escapeHtml(content)}">`;
       })
-      .replace(/<span class="token comment">\/\* @end \*\/<\/span>(\n *)?/g, '</span>');
+      .replace(/<span class="token comment">\/\* @hide (.*?)\*\/<\/span>\s*/g, (match, content) => {
+        return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${this.escapeHtml(
+          content
+        )}</span><span class="code-hidden">%%placeholder-end%%</span><span class="code-hidden">`;
+      })
+      .replace(/<span class="token comment">\/\* @end \*\/<\/span>(\n *)?/g, '</span></span>');
   }
 
   render() {

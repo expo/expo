@@ -17,12 +17,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Map;
 
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.launcher.NoDatabaseLauncher;
 import expo.modules.updates.manifest.Manifest;
 import expo.modules.updates.manifest.ManifestFactory;
+import expo.modules.updates.manifest.ManifestResponse;
+import okhttp3.Cache;
 import okhttp3.CacheControl;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -34,7 +37,7 @@ public class FileDownloader {
 
   private static final String TAG = FileDownloader.class.getSimpleName();
 
-  private static OkHttpClient sClient = new OkHttpClient.Builder().build();
+  private static OkHttpClient sClient;
 
   public interface FileDownloadCallback {
     void onFailure(Exception e);
@@ -51,8 +54,28 @@ public class FileDownloader {
     void onSuccess(AssetEntity assetEntity, boolean isNew);
   }
 
-  public static void downloadFileToPath(Request request, final File destination, final FileDownloadCallback callback) {
-    downloadData(request, new Callback() {
+  private static OkHttpClient getClient(Context context) {
+    if (sClient == null) {
+      sClient = new OkHttpClient.Builder().cache(getCache(context)).build();
+    } else {
+      if (sClient.cache() == null || !getCacheDirectory(context).getAbsolutePath().equals(sClient.cache().directory().getAbsolutePath())) {
+        throw new AssertionError("Error: trying to access static OkHttpClient that was created with a different context.");
+      }
+    }
+    return sClient;
+  }
+
+  private static Cache getCache(Context context) {
+    int cacheSize = 50 * 1024 * 1024; // 50 MiB
+    return new Cache(getCacheDirectory(context), cacheSize);
+  }
+
+  private static File getCacheDirectory(Context context) {
+    return new File(context.getCacheDir(), "okhttp");
+  }
+
+  public static void downloadFileToPath(Request request, final File destination, final Context context, final FileDownloadCallback callback) {
+    downloadData(request, context, new Callback() {
       @Override
       public void onFailure(Call call, IOException e) {
         callback.onFailure(e);
@@ -78,9 +101,9 @@ public class FileDownloader {
     });
   }
 
-  public static void downloadManifest(final UpdatesConfiguration configuration, final Context context, final ManifestDownloadCallback callback) {
+  public static void downloadManifest(final UpdatesConfiguration configuration, JSONObject extraHeaders, final Context context, final ManifestDownloadCallback callback) {
     try {
-      downloadData(setHeadersForManifestUrl(configuration, context), new Callback() {
+      downloadData(setHeadersForManifestUrl(configuration, extraHeaders, context), context, new Callback() {
         @Override
         public void onFailure(Call call, IOException e) {
           callback.onFailure("Failed to download manifest from URL: " + configuration.getUpdateUrl(), e);
@@ -94,23 +117,32 @@ public class FileDownloader {
           }
 
           try {
-            String manifestString = response.body().string();
-            JSONObject manifestJson = extractManifest(manifestString, configuration);
+            String updateResponseBody = response.body().string();
+            JSONObject updateResponseJson = extractUpdateResponseJson(updateResponseBody, configuration);
 
-            boolean isSigned = manifestJson.has("manifestString") && manifestJson.has("signature");
+            final boolean isSignatureInBody = updateResponseJson.has("manifestString") && updateResponseJson.has("signature");
+            final String signature = isSignatureInBody ? updateResponseJson.optString("signature", null) : response.header("expo-manifest-signature", null);
+            
+            /**
+             * The updateResponseJson is just the manifest when it is unsigned, or the signature is sent as a header.
+             * If the signature is in the body, the updateResponseJson looks like:
+             *  {
+             *    manifestString: string;
+             *    signature: string;
+             *  }
+             */
+            final String manifestString = isSignatureInBody ? updateResponseJson.getString("manifestString") : updateResponseBody;
+            JSONObject preManifest = new JSONObject(manifestString);
+
             // XDL serves unsigned manifests with the `signature` key set to "UNSIGNED".
             // We should treat these manifests as unsigned rather than signed with an invalid signature.
-            if (isSigned && "UNSIGNED".equals(manifestJson.getString("signature"))) {
-              isSigned = false;
-              manifestJson = new JSONObject(manifestJson.getString("manifestString"));
-              manifestJson.put("isVerified", false);
-            }
+            boolean isUnsignedFromXDL = "UNSIGNED".equals(signature);
 
-            if (isSigned) {
-              final String innerManifestString = manifestJson.getString("manifestString");
+            if (signature != null && !isUnsignedFromXDL) {
               Crypto.verifyPublicRSASignature(
-                  innerManifestString,
-                  manifestJson.getString("signature"),
+                  manifestString,
+                  signature,
+                  context,
                   new Crypto.RSASignatureListener() {
                     @Override
                     public void onError(Exception e, boolean isNetworkError) {
@@ -121,9 +153,8 @@ public class FileDownloader {
                     public void onCompleted(boolean isValid) {
                       if (isValid) {
                         try {
-                          JSONObject manifestJson = new JSONObject(innerManifestString);
-                          manifestJson.put("isVerified", true);
-                          Manifest manifest = ManifestFactory.getManifest(manifestJson, configuration, context);
+                          preManifest.put("isVerified", true);
+                          Manifest manifest = ManifestFactory.getManifest(preManifest, new ManifestResponse(response), configuration);
                           callback.onSuccess(manifest);
                         } catch (JSONException e) {
                           callback.onFailure("Failed to parse manifest data", e);
@@ -135,7 +166,8 @@ public class FileDownloader {
                   }
               );
             } else {
-              Manifest manifest = ManifestFactory.getManifest(manifestJson, configuration, context);
+              preManifest.put("isVerified", false);
+              Manifest manifest = ManifestFactory.getManifest(preManifest, new ManifestResponse(response), configuration);
               callback.onSuccess(manifest);
             }
           } catch (Exception e) {
@@ -148,7 +180,7 @@ public class FileDownloader {
     }
   }
 
-  public static void downloadAsset(final AssetEntity asset, File destinationDirectory, UpdatesConfiguration configuration, final AssetDownloadCallback callback) {
+  public static void downloadAsset(final AssetEntity asset, File destinationDirectory, UpdatesConfiguration configuration, Context context, final AssetDownloadCallback callback) {
     if (asset.url == null) {
       callback.onFailure(new Exception("Could not download asset " + asset.key + " with no URL"), asset);
       return;
@@ -162,7 +194,7 @@ public class FileDownloader {
       callback.onSuccess(asset, false);
     } else {
       try {
-        downloadFileToPath(setHeadersForUrl(asset.url, configuration), path, new FileDownloadCallback() {
+        downloadFileToPath(setHeadersForUrl(asset.url, configuration), path, context, new FileDownloadCallback() {
           @Override
           public void onFailure(Exception e) {
             callback.onFailure(e, asset);
@@ -182,18 +214,18 @@ public class FileDownloader {
     }
   }
 
-  public static void downloadData(Request request, Callback callback) {
-    downloadData(request, callback, false);
+  public static void downloadData(Request request, Context context, Callback callback) {
+    downloadData(request, callback, context, false);
   }
 
-  private static void downloadData(final Request request, final Callback callback, final boolean isRetry) {
-    sClient.newCall(request).enqueue(new Callback() {
+  private static void downloadData(final Request request, final Callback callback, Context context, final boolean isRetry) {
+    getClient(context).newCall(request).enqueue(new Callback() {
       @Override
       public void onFailure(Call call, IOException e) {
         if (isRetry) {
           callback.onFailure(call, e);
         } else {
-          downloadData(request, callback, true);
+          downloadData(request, callback, context, true);
         }
       }
 
@@ -204,7 +236,7 @@ public class FileDownloader {
     });
   }
 
-  private static JSONObject extractManifest(String manifestString, UpdatesConfiguration configuration) throws IOException {
+  private static JSONObject extractUpdateResponseJson(String manifestString, UpdatesConfiguration configuration) throws IOException {
     try {
       return new JSONObject(manifestString);
     } catch (JSONException e) {
@@ -233,7 +265,7 @@ public class FileDownloader {
     Request.Builder requestBuilder = new Request.Builder()
             .url(url.toString())
             .header("Expo-Platform", "android")
-            .header("Expo-Api-Version", "1")
+            .header("Expo-API-Version", "1")
             .header("Expo-Updates-Environment", "BARE");
 
     for (Map.Entry<String, String> entry : configuration.getRequestHeaders().entrySet()) {
@@ -243,16 +275,32 @@ public class FileDownloader {
     return requestBuilder.build();
   }
 
-  private static Request setHeadersForManifestUrl(UpdatesConfiguration configuration, Context context) {
+  /* package */ static Request setHeadersForManifestUrl(UpdatesConfiguration configuration, JSONObject extraHeaders, Context context) {
     Request.Builder requestBuilder = new Request.Builder()
-            .url(configuration.getUpdateUrl().toString())
+            .url(configuration.getUpdateUrl().toString());
+
+    // apply extra headers before anything else, so they don't override preset headers
+    if (extraHeaders != null) {
+      Iterator<String> keySet = extraHeaders.keys();
+      while (keySet.hasNext()) {
+        String key = keySet.next();
+        requestBuilder.header(key, extraHeaders.optString(key, ""));
+      }
+    }
+
+    requestBuilder = requestBuilder
             .header("Accept", "application/expo+json,application/json")
             .header("Expo-Platform", "android")
-            .header("Expo-Api-Version", "1")
+            .header("Expo-API-Version", "1")
             .header("Expo-Updates-Environment", "BARE")
             .header("Expo-JSON-Error", "true")
-            .header("Expo-Accept-Signature", "true")
-            .cacheControl(CacheControl.FORCE_NETWORK);
+            // as of 2020-11-25, the EAS Update alpha returns an error if Expo-Accept-Signature: true is included in the request
+            .header("Expo-Accept-Signature", String.valueOf(configuration.usesLegacyManifest()));
+
+    // legacy manifest loads should ignore cache-control headers from the server and always load remotely
+    if (configuration.usesLegacyManifest()) {
+      requestBuilder = requestBuilder.cacheControl(CacheControl.FORCE_NETWORK);
+    }
 
     String runtimeVersion = configuration.getRuntimeVersion();
     String sdkVersion = configuration.getSdkVersion();

@@ -1,5 +1,4 @@
-import { CodedError, UnavailabilityError } from '@unimodules/core';
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+import { CodedError, Platform, UnavailabilityError } from '@unimodules/core';
 import invariant from 'invariant';
 import * as React from 'react';
 import { Dimensions } from 'react-native';
@@ -128,7 +127,7 @@ export class GLView extends React.Component<GLViewProps> {
   gl?: WebGLRenderingContext;
 
   static async createContextAsync(): Promise<WebGLRenderingContext | null> {
-    if (!canUseDOM) {
+    if (!Platform.isDOMAvailable) {
       return null;
     }
     const canvas = document.createElement('canvas');

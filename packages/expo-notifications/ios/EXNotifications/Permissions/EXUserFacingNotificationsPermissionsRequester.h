@@ -10,4 +10,6 @@
               withResolver:(UMPromiseResolveBlock)resolve
                   rejecter:(UMPromiseRejectBlock)reject;
 
++ (void)setRequestedPermissions:(NSDictionary *)permissions;
+
 @end

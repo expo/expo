@@ -1,5 +1,5 @@
 import { Platform } from '@unimodules/core';
-import Constants from 'expo-constants';
+import Constants, { ExecutionEnvironment } from 'expo-constants';
 import * as Linking from 'expo-linking';
 import { dismissAuthSession, openAuthSessionAsync } from 'expo-web-browser';
 
@@ -124,7 +124,7 @@ export function makeRedirectUri({
 }: AuthSessionRedirectUriOptions = {}): string {
   if (Platform.OS !== 'web') {
     // Bare workflow
-    if (!Constants.manifest) {
+    if (Constants.executionEnvironment === ExecutionEnvironment.Bare) {
       if (!native) {
         // TODO(Bacon): Link to docs or fyi
         console.warn(
@@ -136,7 +136,7 @@ export function makeRedirectUri({
       return native || '';
     }
     // Should use the user-defined native scheme in standalone builds
-    if (Constants.appOwnership === 'standalone' && native) {
+    if (Constants.executionEnvironment === ExecutionEnvironment.Standalone && native) {
       return native;
     }
   }

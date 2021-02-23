@@ -65,6 +65,16 @@ export async function getPermissionsAsync(writeOnly = false) {
     }
     return await MediaLibrary.getPermissionsAsync(writeOnly);
 }
+/**
+ * @iOS-only
+ * @throws Will throw an error if called on platform that doesn't support this functionality (eg. iOS < 14, Android, etc.).
+ */
+export async function presentPermissionsPickerAsync() {
+    if (!MediaLibrary.presentPermissionsPickerAsync) {
+        throw new UnavailabilityError('MediaLibrary', 'presentPermissionsPickerAsync');
+    }
+    return await MediaLibrary.presentPermissionsPickerAsync();
+}
 export async function createAssetAsync(localUri) {
     if (!MediaLibrary.createAssetAsync) {
         throw new UnavailabilityError('MediaLibrary', 'createAssetAsync');

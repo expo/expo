@@ -8,6 +8,20 @@
 
 ### 🐛 Bug fixes
 
+## 10.1.0 — 2021-02-02
+
+### 🎉 New features
+
+- Map more iOS error codes to JS/TS error codes ([#11773](https://github.com/expo/expo/pull/11773)) by @danmaas
+- Add defensive null checks so that bugs in the Android payments API do not cause crashes ([#11773](https://github.com/expo/expo/pull/11773)) by @danmaas
+- Updated Android build configuration to target Android 11 (added support for Android SDK 30). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
+
+## 10.0.0 — 2021-01-15
+
+### 🛠 Breaking changes
+
+- Dropped support for iOS 10.0 ([#11344](https://github.com/expo/expo/pull/11344) by [@tsapeta](https://github.com/tsapeta))
+
 ## 9.1.0 — 2020-09-21
 
 ### 🐛 Bug fixes
@@ -22,8 +36,8 @@
 
 ## 8.2.1 — 2020-05-29
 
-*This version does not introduce any user-facing changes.*
+_This version does not introduce any user-facing changes._
 
 ## 8.2.0 — 2020-05-27
 
-*This version does not introduce any user-facing changes.*
+_This version does not introduce any user-facing changes._

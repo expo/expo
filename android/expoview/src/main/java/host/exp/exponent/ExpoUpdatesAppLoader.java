@@ -27,7 +27,7 @@ import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.Launcher;
 import expo.modules.updates.launcher.NoDatabaseLauncher;
 import expo.modules.updates.launcher.SelectionPolicy;
-import expo.modules.updates.launcher.SelectionPolicyNewest;
+import expo.modules.updates.launcher.SelectionPolicyFilterAware;
 import expo.modules.updates.loader.EmbeddedLoader;
 import expo.modules.updates.loader.LoaderTask;
 import expo.modules.updates.manifest.Manifest;
@@ -164,7 +164,7 @@ public class ExpoUpdatesAppLoader {
     configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_SCOPE_KEY_KEY, httpManifestUrl.toString());
     configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_SDK_VERSION_KEY, Constants.SDK_VERSIONS);
     configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_RELEASE_CHANNEL_KEY, Constants.RELEASE_CHANNEL);
-    configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE, Constants.isStandaloneApp());
+    configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY, Constants.isStandaloneApp());
     configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_ENABLED_KEY, Constants.ARE_REMOTE_UPDATES_ENABLED);
     if (mUseCacheOnly) {
       configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY, "NEVER");
@@ -186,7 +186,7 @@ public class ExpoUpdatesAppLoader {
 
     List<String> sdkVersionsList = new ArrayList<>(Constants.SDK_VERSIONS_LIST);
     sdkVersionsList.add(RNObject.UNVERSIONED);
-    SelectionPolicy selectionPolicy = new SelectionPolicyNewest(sdkVersionsList);
+    SelectionPolicy selectionPolicy = new SelectionPolicyFilterAware(sdkVersionsList);
 
     File directory;
     try {
@@ -465,12 +465,16 @@ public class ExpoUpdatesAppLoader {
   private ManifestException formatExceptionForIncompatibleSdk(String sdkVersion) {
     JSONObject errorJson = new JSONObject();
     try {
-      errorJson.put("errorCode", "EXPERIENCE_SDK_VERSION_OUTDATED");
       errorJson.put("message", "Invalid SDK version");
-      errorJson.put("metadata", new JSONObject().put(
-        "availableSDKVersions",
-        new JSONArray().put(sdkVersion))
-      );
+      if (ABIVersion.toNumber(sdkVersion) > ABIVersion.toNumber(Constants.SDK_VERSIONS_LIST.get(0))) {
+        errorJson.put("errorCode", "EXPERIENCE_SDK_VERSION_TOO_NEW");
+      } else {
+        errorJson.put("errorCode", "EXPERIENCE_SDK_VERSION_OUTDATED");
+        errorJson.put("metadata", new JSONObject().put(
+          "availableSDKVersions",
+          new JSONArray().put(sdkVersion))
+        );
+      }
     } catch (Exception e) {
       Log.e(TAG, "Failed to format error message for incompatible SDK version", e);
     }

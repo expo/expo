@@ -1,6 +1,5 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
-import Animated from 'react-native-reanimated';
+import { StyleSheet, View } from 'react-native';
 
 import LayoutRuler from '../components/LayoutRuler';
 
@@ -11,27 +10,15 @@ type Props = {
 };
 
 export default class DevMenuScreen extends React.PureComponent<Props> {
-  containerHeightValue = new Animated.Value<number>(10000);
-  heightSet = false;
-
-  onHeightMeasure = (height: number) => {
-    console.log(this.props.ScreenComponent.name, height);
-
-    if (!this.heightSet && height > 0) {
-      this.containerHeightValue.setValue(height + BOTTOM_PADDING);
-      this.heightSet = true;
-    }
-  };
-
   render() {
     const { ScreenComponent, ...props } = this.props;
 
     return (
-      <Animated.View style={[styles.container, { height: this.containerHeightValue }]}>
-        <LayoutRuler property="height" onMeasure={this.onHeightMeasure}>
+      <View style={[styles.container]}>
+        <LayoutRuler property="height">
           <ScreenComponent {...props} />
         </LayoutRuler>
-      </Animated.View>
+      </View>
     );
   }
 }

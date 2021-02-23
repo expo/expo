@@ -19,7 +19,7 @@
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
 #import <EXUpdates/EXUpdatesReaper.h>
-#import <EXUpdates/EXUpdatesSelectionPolicyNewest.h>
+#import <EXUpdates/EXUpdatesSelectionPolicyFilterAware.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 #import <React/RCTUtils.h>
 #import <sys/utsname.h>
@@ -326,7 +326,7 @@ NS_ASSUME_NONNULL_BEGIN
 
   NSMutableArray *sdkVersions = [[EXVersions sharedInstance].versions[@"sdkVersions"] ?: @[[EXVersions sharedInstance].temporarySdkVersion] mutableCopy];
   [sdkVersions addObject:@"UNVERSIONED"];
-  _selectionPolicy = [[EXUpdatesSelectionPolicyNewest alloc] initWithRuntimeVersions:sdkVersions];
+  _selectionPolicy = [[EXUpdatesSelectionPolicyFilterAware alloc] initWithRuntimeVersions:sdkVersions];
 
   EXUpdatesAppLoaderTask *loaderTask = [[EXUpdatesAppLoaderTask alloc] initWithConfig:_config
                                                                              database:updatesDatabaseManager.database

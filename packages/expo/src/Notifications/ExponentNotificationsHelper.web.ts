@@ -2,6 +2,8 @@ import { CodedError } from '@unimodules/core';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 
+import getInstallationIdAsync from '../environment/getInstallationIdAsync';
+
 export function guardPermission() {
   if (!('Notification' in window)) {
     throw new Error('The Notification API is not available on this device.');
@@ -29,7 +31,7 @@ export async function getExponentPushTokenAsync(): Promise<string> {
   const data = await _subscribeUserToPushAsync();
   const experienceId = `@${Constants.manifest.owner}/${Constants.manifest.slug}`;
   const tokenArguments: { [key: string]: string } = {
-    deviceId: Constants.installationId,
+    deviceId: await getInstallationIdAsync(),
     experienceId,
     // Also uses `experienceId` for `appId` because there's no `appId` for web.
     appId: experienceId,
@@ -64,6 +66,7 @@ export async function getDevicePushTokenAsync(): Promise<{ type: string; data: o
 }
 
 async function _subscribeUserToPushAsync(): Promise<object> {
+  // @ts-ignore: TODO: not on the schema
   if (!Constants.manifest.notification || !Constants.manifest.notification.vapidPublicKey) {
     throw new CodedError(
       'E_NOTIFICATIONS_PUSH_WEB_MISSING_CONFIG',
@@ -83,6 +86,7 @@ async function _subscribeUserToPushAsync(): Promise<object> {
 
   const subscribeOptions = {
     userVisibleOnly: true,
+    // @ts-ignore: TODO: not on the schema
     applicationServerKey: _urlBase64ToUint8Array(Constants.manifest.notification.vapidPublicKey),
   };
   const pushSubscription = await registration.pushManager

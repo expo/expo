@@ -310,4 +310,19 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Redirect to expand Expo Accounts and permissions
   '/guides/account-permissions/': '/accounts/personal/',
+
+  // Redirects based on Sentry (11/26/2020)
+  '/guides/push-notifications/': '/push-notifications/overview/',
+  '/guides/using-fcm/': '/push-notifications/using-fcm/',
+
+  // Renaming a submit section
+  '/submit/submit-ios': '/submit/ios/',
+  '/submit/submit-android': '/submit/android/',
+
+  // Fundamentals had too many things
+  '/workflow/linking/': '/guides/linking/',
+  '/workflow/how-expo-works/': '/guides/how-expo-works/',
+
+  // Archive unused pages
+  '/guides/notification-channels/': '/archived/notification-channels/',
 };

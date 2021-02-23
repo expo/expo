@@ -5,7 +5,7 @@ import { Alert, Platform, ScrollView } from 'react-native';
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
 
-const appId = '1201211719949057';
+const appId = '629712900716487';
 
 export default class FacebookLoginScreen extends React.Component {
   static navigationOptions = {

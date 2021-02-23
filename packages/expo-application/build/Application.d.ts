@@ -4,7 +4,7 @@ export declare const applicationName: string | null;
 export declare const applicationId: string | null;
 export declare const androidId: string | null;
 export declare function getInstallReferrerAsync(): Promise<string>;
-export declare function getIosIdForVendorAsync(): Promise<string>;
+export declare function getIosIdForVendorAsync(): Promise<string | null>;
 export declare enum ApplicationReleaseType {
     UNKNOWN = 0,
     SIMULATOR = 1,

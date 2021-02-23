@@ -25,6 +25,13 @@ expo install expo-local-authentication
 
 Run `npx pod-install` after installing the npm package.
 
+Add `NSFaceIDUsageDescription` to your `Info.plist`:
+
+```xml
+<key>NSFaceIDUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to use FaceID</string>
+```
+
 ### Configure for Android
 
 No additional set up necessary.

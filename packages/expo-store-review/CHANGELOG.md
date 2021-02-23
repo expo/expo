@@ -4,7 +4,21 @@
 
 ### 🛠 Breaking changes
 
+- Removed `StoreReview.isSupported()` in favor of `StoreReview.isAvailableAsync()`. ([#11905](https://github.com/expo/expo/pull/11905) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
+
+- Updated Android build configuration to target Android 11 (added support for Android SDK 30). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
+
+### 🐛 Bug fixes
+
+## 3.0.0 — 2021-01-15
+
+### 🛠 Breaking changes
+
+- Dropped support for iOS 10.0 ([#11344](https://github.com/expo/expo/pull/11344) by [@tsapeta](https://github.com/tsapeta))
+
+## 2.3.0 — 2020-11-17
 
 ### 🐛 Bug fixes
 

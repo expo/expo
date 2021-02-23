@@ -1,5 +1,7 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
+#import <Foundation/Foundation.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, EXUpdatesCheckAutomaticallyConfig) {
@@ -20,6 +22,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesCheckAutomaticallyConfig) {
 
 @property (nullable, nonatomic, readonly) NSString *sdkVersion;
 @property (nullable, nonatomic, readonly) NSString *runtimeVersion;
+@property (nonatomic, readonly) BOOL isMissingRuntimeVersion;
 
 @property (nonatomic, readonly) BOOL usesLegacyManifest;
 @property (nonatomic, readonly) BOOL hasEmbeddedUpdate;

@@ -28,6 +28,7 @@ import expo.modules.notifications.notifications.triggers.DailyTrigger;
 import expo.modules.notifications.notifications.triggers.DateTrigger;
 import expo.modules.notifications.notifications.triggers.TimeIntervalTrigger;
 import expo.modules.notifications.notifications.triggers.WeeklyTrigger;
+import expo.modules.notifications.notifications.triggers.YearlyTrigger;
 import expo.modules.notifications.service.NotificationsService;
 
 public class NotificationScheduler extends ExportedModule {
@@ -185,6 +186,17 @@ public class NotificationScheduler extends ExportedModule {
         }
         return new WeeklyTrigger(
           ((Number) params.get("weekday")).intValue(),
+          ((Number) params.get("hour")).intValue(),
+          ((Number) params.get("minute")).intValue(),
+          channelId
+        );
+      case "yearly":
+        if (!(params.get("day") instanceof Number) || !(params.get("month") instanceof Number) || !(params.get("hour") instanceof Number) || !(params.get("minute") instanceof Number)) {
+          throw new InvalidArgumentException("Invalid value(s) provided for yearly trigger.");
+        }
+        return new YearlyTrigger(
+          ((Number) params.get("day")).intValue(),
+          ((Number) params.get("month")).intValue(),
           ((Number) params.get("hour")).intValue(),
           ((Number) params.get("minute")).intValue(),
           channelId

@@ -3,7 +3,15 @@ package expo.modules.updates.manifest;
 import android.net.Uri;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+import expo.modules.structuredheaders.BooleanItem;
+import expo.modules.structuredheaders.Dictionary;
+import expo.modules.structuredheaders.ListElement;
+import expo.modules.structuredheaders.NumberItem;
+import expo.modules.structuredheaders.Parser;
+import expo.modules.structuredheaders.StringItem;
 import expo.modules.updates.UpdatesConfiguration;
+import expo.modules.updates.UpdatesUtils;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 
@@ -11,8 +19,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
 import java.util.UUID;
 
 import static expo.modules.updates.loader.EmbeddedLoader.BUNDLE_FILENAME;
@@ -25,39 +35,70 @@ public class NewManifest implements Manifest {
   private String mScopeKey;
   private Date mCommitTime;
   private String mRuntimeVersion;
-  private JSONObject mMetadata;
-  private Uri mBundleUrl;
+  private JSONObject mLaunchAsset;
   private JSONArray mAssets;
 
   private JSONObject mManifestJson;
+  private String mServerDefinedHeaders;
+  private String mManifestFilters;
 
   private NewManifest(JSONObject manifestJson,
                       UUID id,
                       String scopeKey,
                       Date commitTime,
                       String runtimeVersion,
-                      JSONObject metadata,
-                      Uri bundleUrl,
-                      JSONArray assets) {
+                      JSONObject launchAsset,
+                      JSONArray assets,
+                      String serverDefinedHeaders,
+                      String manifestFilters) {
     mManifestJson = manifestJson;
     mId = id;
     mScopeKey = scopeKey;
     mCommitTime = commitTime;
     mRuntimeVersion = runtimeVersion;
-    mMetadata = metadata;
-    mBundleUrl = bundleUrl;
+    mLaunchAsset = launchAsset;
     mAssets = assets;
+    mServerDefinedHeaders = serverDefinedHeaders;
+    mManifestFilters = manifestFilters;
   }
 
-  public static NewManifest fromManifestJson(JSONObject manifestJson, UpdatesConfiguration configuration) throws JSONException {
+  public static NewManifest fromManifestJson(JSONObject rootManifestJson, ManifestResponse httpResponse, UpdatesConfiguration configuration) throws JSONException {
+    JSONObject manifestJson = rootManifestJson;
+    if (manifestJson.has("manifest")) {
+      manifestJson = manifestJson.getJSONObject("manifest");
+    }
+
     UUID id = UUID.fromString(manifestJson.getString("id"));
-    Date commitTime = new Date(manifestJson.getLong("commitTime"));
     String runtimeVersion = manifestJson.getString("runtimeVersion");
-    JSONObject metadata = manifestJson.optJSONObject("metadata");
-    Uri bundleUrl = Uri.parse(manifestJson.getString("bundleUrl"));
+    JSONObject launchAsset = manifestJson.getJSONObject("launchAsset");
     JSONArray assets = manifestJson.optJSONArray("assets");
 
-    return new NewManifest(manifestJson, id, configuration.getScopeKey(), commitTime, runtimeVersion, metadata, bundleUrl, assets);
+    Date commitTime;
+    try {
+      commitTime = UpdatesUtils.parseDateString(manifestJson.getString("createdAt"));
+    } catch (ParseException e) {
+      Log.e(TAG, "Could not parse manifest createdAt string; falling back to current time", e);
+      commitTime = new Date();
+    }
+
+    String serverDefinedHeaders = httpResponse != null ? httpResponse.header("expo-server-defined-headers") : null;
+    String manifestFilters = httpResponse != null ? httpResponse.header("expo-manifest-filters") : null;
+
+    return new NewManifest(manifestJson, id, configuration.getScopeKey(), commitTime, runtimeVersion, launchAsset, assets, serverDefinedHeaders, manifestFilters);
+  }
+
+  public @Nullable JSONObject getServerDefinedHeaders() {
+    if (mServerDefinedHeaders == null) {
+      return null;
+    }
+    return headerDictionaryToJSONObject(mServerDefinedHeaders);
+  }
+
+  public @Nullable JSONObject getManifestFilters() {
+    if (mManifestFilters == null) {
+      return null;
+    }
+    return headerDictionaryToJSONObject(mManifestFilters);
   }
 
   public JSONObject getRawManifestJson() {
@@ -66,9 +107,7 @@ public class NewManifest implements Manifest {
 
   public UpdateEntity getUpdateEntity() {
     UpdateEntity updateEntity = new UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey);
-    if (mMetadata != null) {
-      updateEntity.metadata = mMetadata;
-    }
+    updateEntity.metadata = mManifestJson;
 
     return updateEntity;
   }
@@ -76,11 +115,15 @@ public class NewManifest implements Manifest {
   public ArrayList<AssetEntity> getAssetEntityList() {
     ArrayList<AssetEntity> assetList = new ArrayList<>();
 
-    AssetEntity bundleAssetEntity = new AssetEntity("bundle-" + mCommitTime.getTime(), "js");
-    bundleAssetEntity.url = mBundleUrl;
-    bundleAssetEntity.isLaunchAsset = true;
-    bundleAssetEntity.embeddedAssetFilename = BUNDLE_FILENAME;
-    assetList.add(bundleAssetEntity);
+    try {
+      AssetEntity bundleAssetEntity = new AssetEntity("bundle-" + mCommitTime.getTime(), mLaunchAsset.getString("contentType"));
+      bundleAssetEntity.url = Uri.parse(mLaunchAsset.getString("url"));
+      bundleAssetEntity.isLaunchAsset = true;
+      bundleAssetEntity.embeddedAssetFilename = BUNDLE_FILENAME;
+      assetList.add(bundleAssetEntity);
+    } catch (JSONException e) {
+      Log.e(TAG, "Could not read launch asset from manifest", e);
+    }
 
     if (mAssets != null && mAssets.length() > 0) {
       for (int i = 0; i < mAssets.length(); i++) {
@@ -88,7 +131,7 @@ public class NewManifest implements Manifest {
           JSONObject assetObject = mAssets.getJSONObject(i);
           AssetEntity assetEntity = new AssetEntity(
             assetObject.getString("key"),
-            assetObject.getString("type")
+            assetObject.getString("contentType")
           );
           assetEntity.url = Uri.parse(assetObject.getString("url"));
           assetEntity.embeddedAssetFilename = assetObject.optString("embeddedAssetFilename");
@@ -104,5 +147,25 @@ public class NewManifest implements Manifest {
 
   public boolean isDevelopmentMode() {
     return false;
+  }
+
+  /* package */ static @Nullable JSONObject headerDictionaryToJSONObject(String headerDictionary) {
+    JSONObject jsonObject = new JSONObject();
+    Parser parser = new Parser(headerDictionary);
+    try {
+      Dictionary filtersDictionary = parser.parseDictionary();
+      Map<String, ListElement<? extends Object>> map = filtersDictionary.get();
+      for (String key : map.keySet()) {
+        ListElement<? extends Object> element = map.get(key);
+        // ignore any dictionary entries whose type is not string, number, or boolean
+        if (element instanceof StringItem || element instanceof BooleanItem || element instanceof NumberItem) {
+          jsonObject.put(key, element.get());
+        }
+      }
+    } catch (expo.modules.structuredheaders.ParseException | JSONException e) {
+      Log.e(TAG, "Failed to parse manifest header content", e);
+      return null;
+    }
+    return jsonObject;
   }
 }

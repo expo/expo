@@ -19,7 +19,3 @@ export function addPushTokenListener(listener: PushTokenListener): Subscription 
 export function removePushTokenSubscription(subscription: Subscription) {
   tokenEmitter.removeSubscription(subscription);
 }
-
-export function removeAllPushTokenListeners() {
-  tokenEmitter.removeAllListeners(newTokenEventName);
-}
