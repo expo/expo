@@ -149,7 +149,7 @@ public class UpdatesModule extends ExportedModule {
             return;
           }
 
-          if (updatesService.getSelectionPolicy().shouldLoadNewUpdate(manifest.getUpdateEntity(), launchedUpdate, null)) {
+          if (updatesService.getSelectionPolicy().shouldLoadNewUpdate(manifest.getUpdateEntity(), launchedUpdate, manifest.getManifestFilters())) {
             updateInfo.putBoolean("isAvailable", true);
             updateInfo.putString("manifestString", manifest.getRawManifestJson().toString());
             promise.resolve(updateInfo);
@@ -193,7 +193,7 @@ public class UpdatesModule extends ExportedModule {
                 return updatesService.getSelectionPolicy().shouldLoadNewUpdate(
                   manifest.getUpdateEntity(),
                   updatesService.getLaunchedUpdate(),
-                  null);
+                  manifest.getManifestFilters());
               }
 
               @Override
