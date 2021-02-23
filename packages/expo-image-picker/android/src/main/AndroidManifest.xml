@@ -23,4 +23,15 @@
                 android:resource="@xml/image_picker_provider_paths"/>
         </provider>
     </application>
+
+    <queries>
+        <intent>
+            <!-- Required for picking images from the camera roll if targeting API 30 -->
+            <action android:name="android.media.action.IMAGE_CAPTURE" />
+        </intent>
+        <intent>
+            <!-- Required for picking images from the camera if targeting API 30 -->
+            <action android:name="android.media.action.ACTION_VIDEO_CAPTURE" />
+        </intent>
+    </queries>
 </manifest>
