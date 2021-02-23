@@ -50,7 +50,7 @@ We covered the basic minimal configuration, but you learn more about customizing
 
 <br />
 
-# Topics that we didn't cover and you will soon care about
+# Topics that you will soon care about
 
 ## Standalone apps & deployment
 
