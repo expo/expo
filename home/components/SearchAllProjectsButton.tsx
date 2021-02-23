@@ -15,7 +15,7 @@ type Props = {
   maxIconCount: number;
 };
 
-export default class SeeAllProjectsButton extends React.Component<Props> {
+export default class SearchAllProjectsButton extends React.Component<Props> {
   static defaultProps = {
     apps: [],
     maxIconCount: MAX_ICON_COUNT,
@@ -32,7 +32,7 @@ export default class SeeAllProjectsButton extends React.Component<Props> {
 
     return (
       <ListItem
-        title="See all projects"
+        title="Search all projects"
         rightContent={
           <View style={styles.appIconContainer}>
             {take(apps, maxIconCount).map((app, i) => {

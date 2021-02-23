@@ -21,7 +21,7 @@ import extractUsernameFromExperience from '../utils/extractUsernameForExperience
 import EmptyProfileProjectsNotice from './EmptyProfileProjectsNotice';
 import EmptyProfileSnacksNotice from './EmptyProfileSnacksNotice';
 import PrimaryButton from './PrimaryButton';
-import SeeAllProjectsButton from './SeeAllProjectsButton';
+import SearchAllProjectsButton from './SearchAllProjectsButton';
 import SnackListItem from './SnackListItem';
 
 const MAX_APPS_TO_DISPLAY = 3;
@@ -276,7 +276,7 @@ function ProfileProjectsSection({
     return (
       <>
         {take(apps, MAX_APPS_TO_DISPLAY).map(renderApp)}
-        <SeeAllProjectsButton
+        <SearchAllProjectsButton
           apps={otherApps}
           appCount={appCount - MAX_APPS_TO_DISPLAY}
           onPress={onPressProjectList}
