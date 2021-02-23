@@ -3,6 +3,7 @@ title: Internal distribution
 ---
 
 import TerminalBlock from '~/components/plugins/TerminalBlock';
+import { theme } from '@expo/styleguide'
 
 Uploading your app to TestFlight and Google Play beta can be time consuming and limiting (e.g. TestFlight can only have one active build at a time). You can skip these services entirely by building binaries that can be downloaded and installed to physical devices directly from a web browser.
 
@@ -10,7 +11,7 @@ EAS Build can help you with this by providing sharable URLs for your builds with
 
 > 😅 Installing an app on iOS is a bit trickier than on Android, but it's possible thanks to ad hoc and enterprise provisioning profiles. We'll talk more about this later in this doc.
 
-<h1 style={{borderBottom: 'none', marginTop: 30, marginBottom: 15, fontFamily: 'expo-brand-bold'}}>Setting up internal distribution</h1>
+<h1 style={{borderBottom: 'none', marginTop: 30, marginBottom: 15, fontFamily: 'expo-brand-bold', color: theme.text.default}}>Setting up internal distribution</h1>
 
 The following three steps will guide you through adding internal distribution to a project that is [already set up to build with EAS Build](setup.md). It will only take a few minutes in total to: configure the project, add a couple of test iOS devices to a provisioning profile, and start builds for Android and iOS.
 
