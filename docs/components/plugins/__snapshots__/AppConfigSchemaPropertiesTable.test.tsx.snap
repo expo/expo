@@ -43,7 +43,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                     class="css-cd9zxx-STYLED_PERMALINK_CONTENT"
                   >
                     <code
-                      class="inline css-gei9wn-STYLES_INLINE_CODE-STYLES_INLINE_CODE"
+                      class="inline css-bfe0eu-STYLES_INLINE_CODE-STYLES_INLINE_CODE"
                     >
                       name
                     </code>
@@ -136,7 +136,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                     class="css-cd9zxx-STYLED_PERMALINK_CONTENT"
                   >
                     <code
-                      class="inline css-gei9wn-STYLES_INLINE_CODE-STYLES_INLINE_CODE"
+                      class="inline css-bfe0eu-STYLES_INLINE_CODE-STYLES_INLINE_CODE"
                     >
                       androidNavigationBar
                     </code>
@@ -243,7 +243,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                     class="css-cd9zxx-STYLED_PERMALINK_CONTENT"
                   >
                     <code
-                      class="inline css-gei9wn-STYLES_INLINE_CODE-STYLES_INLINE_CODE"
+                      class="inline css-bfe0eu-STYLES_INLINE_CODE-STYLES_INLINE_CODE"
                     >
                       visible
                     </code>
@@ -336,7 +336,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                     class="css-cd9zxx-STYLED_PERMALINK_CONTENT"
                   >
                     <code
-                      class="inline css-gei9wn-STYLES_INLINE_CODE-STYLES_INLINE_CODE"
+                      class="inline css-bfe0eu-STYLES_INLINE_CODE-STYLES_INLINE_CODE"
                     >
                       always
                     </code>
@@ -415,7 +415,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                     class="css-cd9zxx-STYLED_PERMALINK_CONTENT"
                   >
                     <code
-                      class="inline css-gei9wn-STYLES_INLINE_CODE-STYLES_INLINE_CODE"
+                      class="inline css-bfe0eu-STYLES_INLINE_CODE-STYLES_INLINE_CODE"
                     >
                       backgroundColor
                     </code>
@@ -473,7 +473,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           >
             6 character long hex color string, eg: 
             <code
-              class="inline css-gei9wn-STYLES_INLINE_CODE-STYLES_INLINE_CODE"
+              class="inline css-bfe0eu-STYLES_INLINE_CODE-STYLES_INLINE_CODE"
             >
               '#000000'
             </code>
@@ -505,7 +505,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                     class="css-cd9zxx-STYLED_PERMALINK_CONTENT"
                   >
                     <code
-                      class="inline css-gei9wn-STYLES_INLINE_CODE-STYLES_INLINE_CODE"
+                      class="inline css-bfe0eu-STYLES_INLINE_CODE-STYLES_INLINE_CODE"
                     >
                       intentFilters
                     </code>
@@ -635,7 +635,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                     class="css-cd9zxx-STYLED_PERMALINK_CONTENT"
                   >
                     <code
-                      class="inline css-gei9wn-STYLES_INLINE_CODE-STYLES_INLINE_CODE"
+                      class="inline css-bfe0eu-STYLES_INLINE_CODE-STYLES_INLINE_CODE"
                     >
                       autoVerify
                     </code>
@@ -714,7 +714,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                     class="css-cd9zxx-STYLED_PERMALINK_CONTENT"
                   >
                     <code
-                      class="inline css-gei9wn-STYLES_INLINE_CODE-STYLES_INLINE_CODE"
+                      class="inline css-bfe0eu-STYLES_INLINE_CODE-STYLES_INLINE_CODE"
                     >
                       data
                     </code>
@@ -792,7 +792,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                     class="css-cd9zxx-STYLED_PERMALINK_CONTENT"
                   >
                     <code
-                      class="inline css-gei9wn-STYLES_INLINE_CODE-STYLES_INLINE_CODE"
+                      class="inline css-bfe0eu-STYLES_INLINE_CODE-STYLES_INLINE_CODE"
                     >
                       host
                     </code>
