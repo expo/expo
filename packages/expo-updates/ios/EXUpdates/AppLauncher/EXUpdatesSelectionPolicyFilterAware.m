@@ -108,9 +108,17 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
   }
 
+  // create lowercase copy for case-insensitive search
+  NSMutableDictionary *metadataLCKeys = [NSMutableDictionary dictionaryWithCapacity:updateMetadata.count];
+  [updateMetadata enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+    if ([key isKindOfClass:[NSString class]]) {
+      metadataLCKeys[((NSString *)key).lowercaseString] = obj;
+    }
+  }];
+
   __block BOOL passes = YES;
   [filters enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-    id valueFromManifest = updateMetadata[key];
+    id valueFromManifest = metadataLCKeys[key];
     if (valueFromManifest) {
       passes = [obj isEqual:valueFromManifest];
     }
