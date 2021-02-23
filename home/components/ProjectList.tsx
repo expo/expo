@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
   },
 });
 
-function filterAppsAccordingToSearch(apps: Project[], searchValue: string) {
+function filterAppsAccordingToSearch(apps: Project[] | undefined, searchValue: string) {
   if (searchValue === '' || !apps) {
     return apps;
   }
