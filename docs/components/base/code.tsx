@@ -59,7 +59,7 @@ const STYLES_INLINE_CODE = css`
   border: 1px solid ${theme.border.default};
   border-radius: 4px;
   vertical-align: middle;
-  overflow-x: scroll;
+  overflow-x: auto;
 
   /* Disable Safari from adding border when used within a (perma)link */
   a & {
