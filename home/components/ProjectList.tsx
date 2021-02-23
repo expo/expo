@@ -11,13 +11,13 @@ import {
 } from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
 
+import SearchBar from '../components/SearchBar';
 import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
 import extractUsernameForExperience from '../utils/extractUsernameForExperience';
 import PrimaryButton from './PrimaryButton';
 import ProjectCard from './ProjectCard';
 import ProjectListItem from './ProjectListItem';
-import SectionHeader from './SectionHeader';
 import { StyledText } from './Text';
 
 const NETWORK_ERROR_TEXT = dedent`
@@ -127,6 +127,7 @@ function ProjectList({ data, loadMoreAsync, belongsToCurrentUser, listTitle }: P
   const theme = useTheme();
   const navigation = useNavigation();
   const isLoading = React.useRef<null | boolean>(false);
+  const [searchInput, setSearchInput] = React.useState('');
 
   const extractKey = React.useCallback(item => item.id, []);
 
@@ -188,10 +189,6 @@ function ProjectList({ data, loadMoreAsync, belongsToCurrentUser, listTitle }: P
     }
   };
 
-  const renderHeader = () => {
-    return listTitle ? <SectionHeader title={listTitle} /> : <View />;
-  };
-
   const style = React.useMemo(
     () => [
       { flex: 1 },
@@ -203,12 +200,16 @@ function ProjectList({ data, loadMoreAsync, belongsToCurrentUser, listTitle }: P
 
   return (
     <View style={{ flex: 1 }}>
+      <SearchBar
+        value={searchInput}
+        placeholder={'Search by project name or username...'}
+        updateSearchValue={text => setSearchInput(text)}
+      />
       <FlatList
-        data={data.apps}
+        data={filterAppsAccordingToSearch(data.apps, searchInput)}
         keyExtractor={extractKey}
         renderItem={renderItem}
         style={style}
-        ListHeaderComponent={renderHeader}
         renderScrollComponent={(props: React.ComponentProps<typeof InfiniteScrollView>) => {
           // note(brent): renderScrollComponent is passed on to
           // InfiniteScrollView so it renders itself again and the result is two
@@ -242,3 +243,15 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 });
+
+function filterAppsAccordingToSearch(apps: Project[], searchValue: string) {
+  if (searchValue === '') {
+    return apps;
+  }
+  return apps.filter(
+    app =>
+      // fullName includes both username & slug
+      app.fullName.includes(searchValue.toLowerCase()) ||
+      app.name.includes(searchValue.toLowerCase())
+  );
+}

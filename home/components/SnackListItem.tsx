@@ -9,6 +9,7 @@ import ListItem from './ListItem';
 type Props = React.ComponentProps<typeof ListItem> & {
   url: string;
   isDraft?: boolean;
+  subtitle?: string;
 };
 
 function normalizeDescription(description?: string): string | undefined {
