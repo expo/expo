@@ -265,7 +265,7 @@ public class FileDownloader {
     Request.Builder requestBuilder = new Request.Builder()
             .url(url.toString())
             .header("Expo-Platform", "android")
-            .header("Expo-Api-Version", "1")
+            .header("Expo-API-Version", "1")
             .header("Expo-Updates-Environment", "BARE");
 
     for (Map.Entry<String, String> entry : configuration.getRequestHeaders().entrySet()) {
@@ -279,6 +279,9 @@ public class FileDownloader {
     Request.Builder requestBuilder = new Request.Builder()
             .url(configuration.getUpdateUrl().toString())
             .header("Accept", "application/expo+json,application/json")
+            .header("Expo-Platform", "android")
+            .header("Expo-API-Version", "1")
+            .header("Expo-Updates-Environment", "BARE")
             .header("Expo-JSON-Error", "true")
             // as of 2020-11-25, the EAS Update alpha returns an error if Expo-Accept-Signature: true is included in the request
             .header("Expo-Accept-Signature", String.valueOf(configuration.usesLegacyManifest()));
@@ -317,11 +320,6 @@ public class FileDownloader {
         requestBuilder.header(key, extraHeaders.optString(key, ""));
       }
     }
-
-    requestBuilder = requestBuilder
-      .header("Expo-Platform", "android")
-      .header("Expo-Api-Version", "1")
-      .header("Expo-Updates-Environment", "BARE");
 
     for (Map.Entry<String, String> entry : configuration.getRequestHeaders().entrySet()) {
       requestBuilder.header(entry.getKey(), entry.getValue());

@@ -257,7 +257,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
 - (void)_setHTTPHeaderFields:(NSMutableURLRequest *)request
 {
   [request setValue:@"ios" forHTTPHeaderField:@"Expo-Platform"];
-  [request setValue:@"1" forHTTPHeaderField:@"Expo-Api-Version"];
+  [request setValue:@"1" forHTTPHeaderField:@"Expo-API-Version"];
   [request setValue:@"BARE" forHTTPHeaderField:@"Expo-Updates-Environment"];
 
   for (NSString *key in _config.requestHeaders) {
@@ -268,6 +268,9 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
 - (void)_setManifestHTTPHeaderFields:(NSMutableURLRequest *)request withExtraHeaders:(nullable NSDictionary *)extraHeaders
 {
   [request setValue:@"application/expo+json,application/json" forHTTPHeaderField:@"Accept"];
+  [request setValue:@"ios" forHTTPHeaderField:@"Expo-Platform"];
+  [request setValue:@"1" forHTTPHeaderField:@"Expo-API-Version"];
+  [request setValue:@"BARE" forHTTPHeaderField:@"Expo-Updates-Environment"];
   [request setValue:@"true" forHTTPHeaderField:@"Expo-JSON-Error"];
   // as of 2020-11-25, the EAS Update alpha returns an error if Expo-Accept-Signature: true is included in the request
   [request setValue:(_config.usesLegacyManifest ? @"true" : @"false") forHTTPHeaderField:@"Expo-Accept-Signature"];
@@ -296,13 +299,21 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
       id value = extraHeaders[key];
       if ([value isKindOfClass:[NSString class]]) {
         [request setValue:value forHTTPHeaderField:key];
+      } else if ([value isKindOfClass:[NSNumber class]]) {
+        if (CFGetTypeID((__bridge CFTypeRef)(value)) == CFBooleanGetTypeID()) {
+          [request setValue:((NSNumber *)value).boolValue ? @"true" : @"false" forHTTPHeaderField:key];
+        } else {
+          [request setValue:((NSNumber *)value).stringValue forHTTPHeaderField:key];
+        }
       } else {
         [request setValue:[(NSObject *)value description] forHTTPHeaderField:key];
       }
     }
   }
 
-  [self _setHTTPHeaderFields:request];
+  for (NSString *key in _config.requestHeaders) {
+    [request setValue:_config.requestHeaders[key] forHTTPHeaderField:key];
+  }
 }
 
 #pragma mark - NSURLSessionTaskDelegate

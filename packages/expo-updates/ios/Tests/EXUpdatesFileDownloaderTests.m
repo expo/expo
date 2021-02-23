@@ -39,13 +39,13 @@
 - (void)testCacheControl_NewManifest
 {
   EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
-    @"EXUpdatesURL": @"https://exp.host/@test/test",
+    @"EXUpdatesURL": @"https://exp.host/manifest/00000000-0000-0000-0000-000000000000",
     @"EXUpdatesRuntimeVersion": @"1.0",
     @"EXUpdatesUsesLegacyManifest": @(NO)
   }];
   EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
 
-  NSURLRequest *actual = [downloader createManifestRequestWithURL:[NSURL URLWithString:@"https://exp.host/@test/test"] extraHeaders:nil];
+  NSURLRequest *actual = [downloader createManifestRequestWithURL:[NSURL URLWithString:@"https://exp.host/manifest/00000000-0000-0000-0000-000000000000"] extraHeaders:nil];
   XCTAssertEqual(NSURLRequestUseProtocolCachePolicy, actual.cachePolicy);
   XCTAssertNil([actual valueForHTTPHeaderField:@"Cache-Control"]);
 }
@@ -53,19 +53,21 @@
 - (void)testExtraHeaders_ObjectTypes
 {
   EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
-    @"EXUpdatesURL": @"https://exp.host/@test/test",
+    @"EXUpdatesURL": @"https://exp.host/manifest/00000000-0000-0000-0000-000000000000",
     @"EXUpdatesRuntimeVersion": @"1.0"
   }];
   EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
 
   NSDictionary *extraHeaders = @{
     @"expo-string": @"test",
-    @"expo-number": @(47.5)
+    @"expo-number": @(47.5),
+    @"expo-boolean": @YES
   };
 
-  NSURLRequest *actual = [downloader createManifestRequestWithURL:[NSURL URLWithString:@"https://exp.host/@test/test"] extraHeaders:extraHeaders];
+  NSURLRequest *actual = [downloader createManifestRequestWithURL:[NSURL URLWithString:@"https://exp.host/manifest/00000000-0000-0000-0000-000000000000"] extraHeaders:extraHeaders];
   XCTAssertEqualObjects(@"test", [actual valueForHTTPHeaderField:@"expo-string"]);
   XCTAssertEqualObjects(@"47.5", [actual valueForHTTPHeaderField:@"expo-number"]);
+  XCTAssertEqualObjects(@"true", [actual valueForHTTPHeaderField:@"expo-boolean"]);
 }
 
 @end
