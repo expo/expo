@@ -46,7 +46,6 @@ export default class ListItem extends React.PureComponent<Props> {
     const {
       onPress,
       onLongPress,
-      subtitle,
       renderExtraText,
       style,
       last,

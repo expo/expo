@@ -202,7 +202,7 @@ function ProjectList({ data, loadMoreAsync, belongsToCurrentUser, listTitle }: P
     <View style={{ flex: 1 }}>
       <SearchBar
         value={searchInput}
-        placeholder={'Search by project name or username...'}
+        placeholder="Search by project name or username..."
         updateSearchValue={text => setSearchInput(text)}
       />
       <FlatList

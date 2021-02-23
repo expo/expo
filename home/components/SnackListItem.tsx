@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { Linking, Share, View, StyleSheet, Text } from 'react-native';
+import { Linking, Share, View, StyleSheet } from 'react-native';
 
-import Colors from '../constants/Colors';
 import * as UrlUtils from '../utils/UrlUtils';
 import Badge from './Badge';
 import ListItem from './ListItem';

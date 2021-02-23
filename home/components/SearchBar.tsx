@@ -31,7 +31,7 @@ const SearchBar = (props: {
         underlineColorAndroid={
           isFocused ? Colors.light.tintColor : !theme.dark ? 'rgba(46, 59, 76, 0.10)' : '#888'
         }
-        returnKeyType={'search'}
+        returnKeyType="search"
         placeholderTextColor={!theme.dark ? 'rgba(36, 44, 58, 0.4)' : '#ccc'}
         style={[styles.textInput, theme.dark && { color: '#fff' }]}
       />
