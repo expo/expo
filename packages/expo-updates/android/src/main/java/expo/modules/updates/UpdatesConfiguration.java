@@ -144,7 +144,12 @@ public class UpdatesConfiguration {
       mIsEnabled = isEnabledFromMap;
     }
 
-    mIsExpoGo = !!readValueCheckingType(map, "isExpoGo", Boolean.class);
+    Boolean isExpoGo = readValueCheckingType(map, "isExpoGo", Boolean.class);
+    if ( isExpoGo != null){
+      mIsExpoGo = isExpoGo;
+    } else {
+      mIsExpoGo = false;
+    }
 
     Uri updateUrlFromMap = readValueCheckingType(map, UPDATES_CONFIGURATION_UPDATE_URL_KEY, Uri.class);
     if (updateUrlFromMap != null) {
