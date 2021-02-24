@@ -2,9 +2,7 @@
 title: React vs React Native
 ---
 
-"What's the difference between React and React Native?"
-
-On the surface, there's very little difference between React and React Native- that's one of the great parts about React Native (RN for short). If you're a web developer and have used React, good news- you're (almost) a React Native pro! That being said, React and React Native are separate and distinct tools, and like all great tools, they've each been built for a specific purpose in mind. Let's go over some of their similarities, differences, and where each of them shines brightest.
+On the surface, there's very little difference between React and React Native- that's one of the great parts about React Native (RN for short). If you're a web developer and have used React, good news- you're (almost) a React Native pro! That being said, React and RN are separate and distinct tools, and like all great tools, they've each been built for a specific purpose in mind. Let's go over some of their similarities, differences, and where each of them shines brightest.
 
 ## Similarities
 
