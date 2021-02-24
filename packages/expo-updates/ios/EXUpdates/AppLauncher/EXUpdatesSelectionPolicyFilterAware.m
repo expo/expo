@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
   EXUpdatesUpdate *runnableUpdate;
   NSDate *runnableUpdateCommitTime;
   for (EXUpdatesUpdate *update in updates) {
-    if (![_runtimeVersions containsObject:update.runtimeVersion] || ![self doesUpdate:update matchFilters:filters]) {
+    if (![_runtimeVersions containsObject:update.runtimeVersion] || ![[self class] doesUpdate:update matchFilters:filters]) {
       continue;
     }
     NSDate *commitTime = update.commitTime;
@@ -61,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
       if (!nextNewestUpdate || [update.commitTime compare:nextNewestUpdate.commitTime] == NSOrderedDescending) {
         nextNewestUpdate = update;
       }
-      if ([self doesUpdate:update matchFilters:filters] &&
+      if ([[self class] doesUpdate:update matchFilters:filters] &&
           (!nextNewestUpdateMatchingFilters || [update.commitTime compare:nextNewestUpdateMatchingFilters.commitTime] == NSOrderedDescending)) {
         nextNewestUpdateMatchingFilters = update;
       }
@@ -82,7 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
   }
   // if the new update doesn't match its own filters, we shouldn't load it
-  if (![self doesUpdate:newUpdate matchFilters:filters]) {
+  if (![[self class] doesUpdate:newUpdate matchFilters:filters]) {
     return NO;
   }
 
@@ -91,13 +91,13 @@ NS_ASSUME_NONNULL_BEGIN
   }
   // if the current update doesn't pass the manifest filters
   // we should load the new update no matter the commitTime
-  if (![self doesUpdate:launchedUpdate matchFilters:filters]) {
+  if (![[self class] doesUpdate:launchedUpdate matchFilters:filters]) {
     return YES;
   }
   return [launchedUpdate.commitTime compare:newUpdate.commitTime] == NSOrderedAscending;
 }
 
-- (BOOL)doesUpdate:(EXUpdatesUpdate *)update matchFilters:(nullable NSDictionary *)filters
++ (BOOL)doesUpdate:(EXUpdatesUpdate *)update matchFilters:(nullable NSDictionary *)filters
 {
   if (!filters || !update.metadata) {
     return YES;

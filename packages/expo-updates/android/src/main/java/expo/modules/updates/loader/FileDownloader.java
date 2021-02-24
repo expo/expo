@@ -22,6 +22,7 @@ import java.util.Map;
 
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.launcher.NoDatabaseLauncher;
+import expo.modules.updates.launcher.SelectionPolicyFilterAware;
 import expo.modules.updates.manifest.Manifest;
 import expo.modules.updates.manifest.ManifestFactory;
 import expo.modules.updates.manifest.ManifestResponse;
@@ -153,9 +154,7 @@ public class FileDownloader {
                     public void onCompleted(boolean isValid) {
                       if (isValid) {
                         try {
-                          preManifest.put("isVerified", true);
-                          Manifest manifest = ManifestFactory.getManifest(preManifest, new ManifestResponse(response), configuration);
-                          callback.onSuccess(manifest);
+                          createManifest(preManifest, response, true, configuration, callback);
                         } catch (JSONException e) {
                           callback.onFailure("Failed to parse manifest data", e);
                         }
@@ -166,11 +165,7 @@ public class FileDownloader {
                   }
               );
             } else {
-              if (configuration.expectsSignedManifest()) {
-                preManifest.put("isVerified", false);
-              }
-              Manifest manifest = ManifestFactory.getManifest(preManifest, new ManifestResponse(response), configuration);
-              callback.onSuccess(manifest);
+              createManifest(preManifest, response, false, configuration, callback);
             }
           } catch (Exception e) {
             callback.onFailure("Failed to parse manifest data", e);
@@ -179,6 +174,25 @@ public class FileDownloader {
       });
     } catch (Exception e) {
       callback.onFailure("Failed to download manifest from URL " + configuration.getUpdateUrl().toString(), e);
+    }
+  }
+
+  private static void createManifest(
+    JSONObject preManifest,
+    Response response,
+    boolean isVerified,
+    UpdatesConfiguration configuration,
+    ManifestDownloadCallback callback
+  ) throws JSONException {
+    if (configuration.expectsSignedManifest()) {
+      preManifest.put("isVerified", isVerified);
+    }
+    Manifest manifest = ManifestFactory.getManifest(preManifest, new ManifestResponse(response), configuration);
+    if (!SelectionPolicyFilterAware.matchesFilters(manifest.getUpdateEntity(), manifest.getManifestFilters())) {
+      String message = "Downloaded manifest is invalid; provides filters that do not match its content";
+      callback.onFailure(message, new Exception(message));
+    } else {
+      callback.onSuccess(manifest);
     }
   }
 
