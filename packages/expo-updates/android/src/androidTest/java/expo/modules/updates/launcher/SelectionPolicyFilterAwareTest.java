@@ -29,6 +29,7 @@ public class SelectionPolicyFilterAwareTest {
   UpdateEntity updateRollout1;
   UpdateEntity updateRollout2;
   UpdateEntity updateMultipleFilters;
+  UpdateEntity updateNoMetadata;
 
   @Before
   public void setup() throws JSONException {
@@ -56,6 +57,9 @@ public class SelectionPolicyFilterAwareTest {
 
     JSONObject manifestJsonMultipleFilters = new JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e72\",\"createdAt\":\"2021-01-11T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"updateMetadata\":{\"firstKey\": \"value1\", \"secondKey\": \"value2\"}}");
     updateMultipleFilters = NewManifest.fromManifestJson(manifestJsonMultipleFilters, null, config).getUpdateEntity();
+
+    JSONObject manifestJsonNoMetadata = new JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e72\",\"createdAt\":\"2021-01-11T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}]}");
+    updateNoMetadata = NewManifest.fromManifestJson(manifestJsonNoMetadata, null, config).getUpdateEntity();
   }
 
   @Test
@@ -133,5 +137,12 @@ public class SelectionPolicyFilterAwareTest {
   public void testMatchesFilters_EmptyMatchesAll() throws JSONException {
     // no field is counted as a match
     Assert.assertTrue(selectionPolicy.matchesFilters(updateDefault1, new JSONObject("{\"field-that-update-doesnt-have\": \"value\"}")));
+  }
+
+  @Test
+  public void testMatchesFilters_Null() throws JSONException {
+    // null filters or null updateMetadata (i.e. bare or legacy manifests) is counted as a match
+    Assert.assertTrue(selectionPolicy.matchesFilters(updateDefault1, null));
+    Assert.assertTrue(selectionPolicy.matchesFilters(updateNoMetadata, manifestFilters));
   }
 }

@@ -16,6 +16,7 @@
 @property (nonatomic, strong) EXUpdatesUpdate *updateRollout1;
 @property (nonatomic, strong) EXUpdatesUpdate *updateRollout2;
 @property (nonatomic, strong) EXUpdatesUpdate *updateMultipleFilters;
+@property (nonatomic, strong) EXUpdatesUpdate *updateNoMetadata;
 @property (nonatomic, strong) EXUpdatesSelectionPolicyFilterAware *selectionPolicy;
 @property (nonatomic, strong) NSDictionary *manifestFilters;
 
@@ -98,6 +99,14 @@
     @"updateMetadata": @{@"firstKey": @"value1", @"secondKey": @"value2"}
   } response:nil config:config database:database];
 
+  _updateNoMetadata = [EXUpdatesNewUpdate updateWithNewManifest:@{
+    @"id": @"079cde35-8433-4c17-81c8-7117c1513e72",
+    @"createdAt": @"2021-01-11T19:39:22.480Z",
+    @"runtimeVersion": @"1.0",
+    @"launchAsset": launchAsset,
+    @"assets": @[imageAsset]
+  } response:nil config:config database:database];
+
   _selectionPolicy = [[EXUpdatesSelectionPolicyFilterAware alloc] initWithRuntimeVersion:runtimeVersion];
   _manifestFilters = @{@"branchname": @"rollout"};
 }
@@ -176,6 +185,13 @@
 - (void)testDoesUpdateMatchFilters_EmptyMatchesAll
 {
   XCTAssertTrue([_selectionPolicy doesUpdate:_updateDefault1 matchFilters:@{@"field-that-update-doesnt-have": @"value"}], @"no field counts as a match");
+}
+
+- (void)testDoesUpdateMatchFilters_Null
+{
+  // null filters or null updateMetadata (i.e. bare or legacy manifests) is counted as a match
+  XCTAssertTrue([_selectionPolicy doesUpdate:_updateDefault1 matchFilters:nil]);
+  XCTAssertTrue([_selectionPolicy doesUpdate:_updateNoMetadata matchFilters:_manifestFilters]);
 }
 
 @end

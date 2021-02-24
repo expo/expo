@@ -100,12 +100,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)doesUpdate:(EXUpdatesUpdate *)update matchFilters:(nullable NSDictionary *)filters
 {
   if (!filters || !update.metadata) {
-    return NO;
+    return YES;
   }
 
   NSDictionary *updateMetadata = update.metadata[@"updateMetadata"];
   if (!updateMetadata || ![updateMetadata isKindOfClass:[NSDictionary class]]) {
-    return NO;
+    return YES;
   }
 
   // create lowercase copy for case-insensitive search
