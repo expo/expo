@@ -10,12 +10,12 @@ import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.ParcelFileDescriptor;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Files;
-import android.provider.MediaStore.Images.Media;
 import android.text.TextUtils;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
 
 import org.unimodules.core.Promise;
 
@@ -24,15 +24,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URI;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.exifinterface.media.ExifInterface;
 
 import static expo.modules.medialibrary.MediaLibraryConstants.ASSET_PROJECTION;
@@ -68,21 +65,27 @@ final class MediaLibraryUtils {
     File newFile = safeMoveFile(src, dir);
     context.getContentResolver().delete(
       EXTERNAL_CONTENT,
-      Media.DATA + "=?",
+      MediaStore.MediaColumns.DATA + "=?",
       new String[]{src.getPath()});
     return newFile;
   };
 
   static class AssetFile extends File {
     private final String mAssetId;
+    private final String mMimeType;
 
-    public AssetFile(@NonNull String pathname, String assetId) {
+    public AssetFile(@NonNull String pathname, String assetId, String mimeType) {
       super(pathname);
       mAssetId = assetId;
+      mMimeType = mimeType;
     }
 
     public String getAssetId() {
       return mAssetId;
+    }
+
+    public String getMimeType() {
+      return mMimeType;
     }
   }
 
@@ -157,14 +160,14 @@ final class MediaLibraryUtils {
   }
 
   static void putAssetsInfo(ContentResolver contentResolver, Cursor cursor, ArrayList<Bundle> response, int limit, int offset, boolean fullInfo) throws IOException {
-    final int idIndex = cursor.getColumnIndex(Media._ID);
-    final int filenameIndex = cursor.getColumnIndex(Media.DISPLAY_NAME);
+    final int idIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
+    final int filenameIndex = cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME);
     final int mediaTypeIndex = cursor.getColumnIndex(Files.FileColumns.MEDIA_TYPE);
-    final int creationDateIndex = cursor.getColumnIndex(Media.DATE_TAKEN);
-    final int modificationDateIndex = cursor.getColumnIndex(Media.DATE_MODIFIED);
+    final int creationDateIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN);
+    final int modificationDateIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATE_MODIFIED);
     final int durationIndex = cursor.getColumnIndex(MediaStore.Video.VideoColumns.DURATION);
-    final int localUriIndex = cursor.getColumnIndex(Media.DATA);
-    final int albumIdIndex = cursor.getColumnIndex(Media.BUCKET_ID);
+    final int localUriIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
+    final int albumIdIndex = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_ID);
 
     if (!cursor.moveToPosition(offset)) {
       return;
@@ -270,7 +273,7 @@ final class MediaLibraryUtils {
 
     final int widthIndex = cursor.getColumnIndex(MediaStore.MediaColumns.WIDTH);
     final int heightIndex = cursor.getColumnIndex(MediaStore.MediaColumns.HEIGHT);
-    final int orientationIndex = cursor.getColumnIndex(Media.ORIENTATION);
+    final int orientationIndex = cursor.getColumnIndex(MediaStore.Images.Media.ORIENTATION);
     int width = cursor.getInt(widthIndex);
     int height = cursor.getInt(heightIndex);
     int orientation = cursor.getInt(orientationIndex);
@@ -370,8 +373,8 @@ final class MediaLibraryUtils {
 
   static void queryAlbum(Context context, final String selection, final String[] selectionArgs, Promise promise) {
     Bundle result = new Bundle();
-    final String[] projection = {Media.BUCKET_ID, Media.BUCKET_DISPLAY_NAME};
-    final String order = Media.BUCKET_DISPLAY_NAME;
+    final String[] projection = {MediaStore.MediaColumns.BUCKET_ID, MediaStore.MediaColumns.BUCKET_DISPLAY_NAME};
+    final String order = MediaStore.MediaColumns.BUCKET_DISPLAY_NAME;
 
     try (Cursor albums = context.getContentResolver().query(
       EXTERNAL_CONTENT,
@@ -388,8 +391,8 @@ final class MediaLibraryUtils {
         promise.resolve(null);
         return;
       }
-      final int bucketIdIndex = albums.getColumnIndex(Media.BUCKET_ID);
-      final int bucketDisplayNameIndex = albums.getColumnIndex(Media.BUCKET_DISPLAY_NAME);
+      final int bucketIdIndex = albums.getColumnIndex(MediaStore.MediaColumns.BUCKET_ID);
+      final int bucketDisplayNameIndex = albums.getColumnIndex(MediaStore.MediaColumns.BUCKET_DISPLAY_NAME);
 
       result.putString("id", albums.getString(bucketIdIndex));
       result.putString("title", albums.getString(bucketDisplayNameIndex));
@@ -404,7 +407,7 @@ final class MediaLibraryUtils {
   }
 
   static void deleteAssets(Context context, String selection, String[] selectionArgs, Promise promise) {
-    final String[] projection = {Media._ID, Media.DATA};
+    final String[] projection = {MediaStore.MediaColumns._ID, MediaStore.MediaColumns.DATA};
     try (Cursor filesToDelete = context.getContentResolver().query(
       EXTERNAL_CONTENT,
       projection,
@@ -416,16 +419,16 @@ final class MediaLibraryUtils {
       } else {
         while (filesToDelete.moveToNext()) {
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            long id = filesToDelete.getLong(filesToDelete.getColumnIndex(Media._ID));
-            Uri assetUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+            long id = filesToDelete.getLong(filesToDelete.getColumnIndex(MediaStore.MediaColumns._ID));
+            Uri assetUri = ContentUris.withAppendedId(EXTERNAL_CONTENT, id);
             context.getContentResolver().delete(assetUri, null);
           } else {
-            String filePath = filesToDelete.getString(filesToDelete.getColumnIndex(Media.DATA));
+            String filePath = filesToDelete.getString(filesToDelete.getColumnIndex(MediaStore.MediaColumns.DATA));
             File file = new File(filePath);
             if (file.delete()) {
               context.getContentResolver().delete(
                 EXTERNAL_CONTENT,
-                Media.DATA + "=?",
+                MediaStore.MediaColumns.DATA + "=?",
                 new String[]{filePath});
             } else {
               promise.reject(ERROR_UNABLE_TO_DELETE, "Could not delete file.");
@@ -452,8 +455,19 @@ final class MediaLibraryUtils {
   }
 
   static List<AssetFile> getAssetsById(Context context, Promise promise, String... assetsId) {
-    final String[] path = {Media._ID, Media.DATA};
+    if (promise == null) {
+      promise = new Promise() {
+        @Override
+        public void resolve(Object value) {
+        }
 
+        @Override
+        public void reject(String code, String message, Throwable e) {
+        }
+      };
+    }
+
+    final String[] path = {MediaStore.MediaColumns._ID, MediaStore.MediaColumns.DATA, MediaStore.MediaColumns.BUCKET_ID, MediaStore.MediaColumns.MIME_TYPE};
     final String selection = MediaStore.Images.Media._ID + " IN ( " + getInPart(assetsId) + " )";
 
     try (Cursor assets = context.getContentResolver().query(
@@ -474,7 +488,11 @@ final class MediaLibraryUtils {
 
       while (assets.moveToNext()) {
         final String assetPath = assets.getString(assets.getColumnIndex(MediaStore.Images.Media.DATA));
-        AssetFile asset = new AssetFile(assetPath, assets.getString(assets.getColumnIndex(Media._ID)));
+        AssetFile asset = new AssetFile(
+          assetPath,
+          assets.getString(assets.getColumnIndex(MediaStore.MediaColumns._ID)),
+          assets.getString(assets.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE))
+        );
 
         if (!asset.exists() || !asset.isFile()) {
           promise.reject(ERROR_UNABLE_TO_LOAD, "Path " + assetPath + " does not exist or isn't file.");
@@ -486,8 +504,129 @@ final class MediaLibraryUtils {
     }
   }
 
+  private static String getTypeFromFileUrl(String url) {
+    String extension = MimeTypeMap.getFileExtensionFromUrl(url);
+    if (extension == null) {
+      return null;
+    }
+
+    return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+  }
+
+  public static String getType(ContentResolver contentResolver, Uri uri) {
+    String type = contentResolver.getType(uri);
+
+    if (type == null) {
+      return getTypeFromFileUrl(uri.toString());
+    }
+    return type;
+  }
+
+  public static List<String> getAssetsInAlbums(Context context, String... albumIds) {
+    List<String> assetsId = new ArrayList<>();
+
+    final String selection = MediaStore.MediaColumns.BUCKET_ID + " IN (" + getInPart(albumIds) + " )";
+    final String[] projection = {MediaStore.MediaColumns._ID};
+
+    try (Cursor asset = context.getContentResolver().query(
+      EXTERNAL_CONTENT,
+      projection,
+      selection,
+      albumIds,
+      null)) {
+      if (asset == null) {
+        return assetsId;
+      }
+
+      while (asset.moveToNext()) {
+        String id = asset.getString(asset.getColumnIndex(MediaStore.Images.Media._ID));
+        assetsId.add(id);
+      }
+    }
+
+    return assetsId;
+  }
+
+  public static File getAlbumFile(Context context, String albumId) {
+    final String selection = MediaStore.Files.FileColumns.MEDIA_TYPE + " != " + MediaStore.Files.FileColumns.MEDIA_TYPE_NONE +
+      " AND " + MediaStore.MediaColumns.BUCKET_ID + "=?";
+    final String[] selectionArgs = new String[]{albumId};
+    final String[] projection = {MediaStore.MediaColumns.DATA};
+
+    try (Cursor album = context.getContentResolver().query(
+      EXTERNAL_CONTENT,
+      projection,
+      selection,
+      selectionArgs,
+      null)) {
+      if (album != null && album.moveToNext()) {
+        File fileInAlbum = new File(album.getString(album.getColumnIndex(MediaStore.Images.Media.DATA)));
+        if (fileInAlbum.isFile()) {
+          return new File(fileInAlbum.getParent());
+        }
+      }
+    }
+
+    return null;
+  }
+
+  public static List<Uri> getAssetsUris(Context context, List<String> assetsId) {
+    List<Uri> result = new ArrayList<>();
+
+    final String selection = MediaStore.MediaColumns._ID + " IN (" + TextUtils.join(",", assetsId) + " )";
+    final String[] selectionArgs = null;
+    final String[] projection = {MediaStore.MediaColumns._ID, MediaStore.MediaColumns.MIME_TYPE};
+
+    try (Cursor cursor = context.getContentResolver().query(
+      EXTERNAL_CONTENT,
+      projection,
+      selection,
+      selectionArgs,
+      null)) {
+      if (cursor == null) {
+        return result;
+      }
+
+      while (cursor.moveToNext()) {
+        long id = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns._ID));
+        String mineType = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE));
+
+        Uri assetUri = ContentUris.withAppendedId(mineTypeToExternalUri(mineType), id);
+        result.add(assetUri);
+      }
+    }
+    return result;
+  }
+
+  public static Uri mineTypeToExternalUri(String mineType) {
+    if (mineType == null || mineType.contains("image")) {
+      return MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+    } else if (mineType.contains("video")) {
+      return MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+    } else if (mineType.contains("audio")) {
+      return MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+    }
+
+    // For backward compatibility
+    return EXTERNAL_CONTENT;
+  }
+
+  public static String getRelativePathForAssetType(String mimeType, boolean useCameraDir) {
+    if (mimeType.contains("image") || mimeType.contains("video")) {
+      return useCameraDir ? Environment.DIRECTORY_DCIM : Environment.DIRECTORY_PICTURES;
+    } else if (mimeType.contains("audio")) {
+      return Environment.DIRECTORY_MUSIC;
+    }
+
+    // For backward compatibility
+    return useCameraDir ? Environment.DIRECTORY_DCIM : Environment.DIRECTORY_PICTURES;
+  }
+
+  public static File getEnvDirectoryForAssetType(String mimeType, boolean useCameraDir) {
+    return Environment.getExternalStoragePublicDirectory(getRelativePathForAssetType(mimeType, useCameraDir));
+  }
+
   interface FileStrategy {
     File apply(final File src, final File dir, Context context) throws IOException;
   }
 }
-

@@ -430,3 +430,20 @@ export async function getMomentsAsync() {
 
   return await MediaLibrary.getMomentsAsync();
 }
+
+// Android only
+export async function migrateAlbumAsync(album: AlbumRef): Promise<void> {
+  if (!MediaLibrary.migrateAlbumAsync) {
+    throw new UnavailabilityError('MediaLibrary', 'migrateAlbumAsync');
+  }
+
+  return await MediaLibrary.migrateAlbumAsync(getId(album));
+}
+
+export async function checkIfAlbumShouldBeMigratedAsync(album: AlbumRef): Promise<boolean> {
+  if (!MediaLibrary.checkIfAlbumShouldBeMigratedAsync) {
+    throw new UnavailabilityError('MediaLibrary', 'checkIfAlbumShouldBeMigratedAsync');
+  }
+
+  return await MediaLibrary.checkIfAlbumShouldBeMigratedAsync(getId(album));
+}

@@ -111,3 +111,5 @@ export declare function addListener(listener: (event: MediaLibraryAssetsChangeEv
 export declare function removeSubscription(subscription: Subscription): void;
 export declare function removeAllListeners(): void;
 export declare function getMomentsAsync(): Promise<any>;
+export declare function migrateAlbumAsync(album: AlbumRef): Promise<void>;
+export declare function checkIfAlbumShouldBeMigratedAsync(album: AlbumRef): Promise<boolean>;

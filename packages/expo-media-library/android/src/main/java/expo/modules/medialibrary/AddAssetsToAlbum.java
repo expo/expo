@@ -3,18 +3,16 @@ package expo.modules.medialibrary;
 import android.content.Context;
 import android.database.Cursor;
 import android.media.MediaScannerConnection;
-import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.provider.MediaStore;
+
+import org.unimodules.core.Promise;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import org.unimodules.core.Promise;
 
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_IO_EXCEPTION;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_MEDIA_LIBRARY_CORRUPTED;
@@ -42,10 +40,9 @@ class AddAssetsToAlbum extends AsyncTask<Void, Void, Void> {
     mStrategy = copyToAlbum ? copyStrategy : moveStrategy;
   }
 
-
   private File getAlbum() {
-    final String[] path = {MediaStore.Images.Media.DATA};
-    final String selection = MediaStore.Images.Media.BUCKET_ID + "=?";
+    final String[] path = {MediaStore.MediaColumns.DATA};
+    final String selection = MediaStore.MediaColumns.BUCKET_ID + "=?";
     final String[] id = {mAlbumId};
 
     try (Cursor album = mContext.getContentResolver().query(
@@ -78,14 +75,16 @@ class AddAssetsToAlbum extends AsyncTask<Void, Void, Void> {
   @Override
   protected Void doInBackground(Void... params) {
     try {
-      File album = getAlbum();
-      if (album == null) {
-        return null;
-      }
       List<MediaLibraryUtils.AssetFile> assets = getAssetsById(mContext, mPromise, mAssetsId);
       if (assets == null) {
         return null;
       }
+
+      File album = getAlbum();
+      if (album == null) {
+        return null;
+      }
+
       List<String> paths = new ArrayList<>();
       for (MediaLibraryUtils.AssetFile asset : assets) {
         File newAsset = mStrategy.apply(asset, album, mContext);
