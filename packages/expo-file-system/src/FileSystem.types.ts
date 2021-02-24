@@ -143,6 +143,7 @@ export interface ExponentFileSystemModule {
   readonly getContentUriAsync?: PlatformMethod;
   readonly getFreeDiskStorageAsync?: PlatformMethod;
   readonly getTotalDiskCapacityAsync?: PlatformMethod;
+  readonly askForDirectoryPermissions?: PlatformMethod;
   startObserving?: () => void;
   stopObserving?: () => void;
   addListener: (eventName: string) => void;

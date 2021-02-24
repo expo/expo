@@ -189,4 +189,11 @@ export class DownloadResumable {
         this._subscription = null;
     }
 }
+// Android only
+export async function askForDirectoryPermissions(initialFileUrl = null) {
+    if (!ExponentFileSystem.askForDirectoryPermissions) {
+        throw new UnavailabilityError('expo-file-system', 'askForDirectoryPermissions');
+    }
+    return await ExponentFileSystem.askForDirectoryPermissions(initialFileUrl);
+}
 //# sourceMappingURL=FileSystem.js.map

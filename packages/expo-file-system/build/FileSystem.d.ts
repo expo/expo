@@ -49,3 +49,4 @@ export declare class DownloadResumable {
     _addSubscription(): void;
     _removeSubscription(): void;
 }
+export declare function askForDirectoryPermissions(initialFileUrl?: string | null): Promise<boolean>;
