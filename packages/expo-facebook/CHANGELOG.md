@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 - Upgraded Facebook iOS SDK to `9.0.1`. ([#11921](https://github.com/expo/expo/pull/11921) by [@dreamolight](https://github.com/dreamolight) and [@tsapeta](https://github.com/tsapeta))
+- Removed `setAutoInitEnabledAsync` method — we recommend to explicitly use `initializeAsync` instead. ([#11921](https://github.com/expo/expo/pull/11921) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
 

@@ -40,19 +40,7 @@ export declare function setAdvertiserTrackingEnabledAsync(enabled: boolean): Pro
  */
 export declare function setAutoLogAppEventsEnabledAsync(enabled: boolean): Promise<void>;
 /**
- * Sets whether Facebook SDK should autoinitialize itself. SDK initialization involves eg.
- * fetching app settings from Facebook or a profile of the logged in user.
- * In some cases, you may want to disable or delay the SDK initialization,
- * such as to obtain user consent or fulfill legal obligations.
- *
- * This method corresponds to [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#disable-sdk-initialization)
- * and [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#disable-sdk-initialization) native SDK methods.
- *
- * Note: Even though calling this method with `enabled == true` initialized the Facebook SDK on iOS,
- * it does not on Android and we recommend always calling `initializeAsync` before performing
- * any actions with effects that should be visible to the user (like `loginWithPermissions`).
- *
- * @param enabled Whether autoinitialization of the Facebook SDK should be enabled
+ * @deprecated Explicitly call `initializeAsync` instead.
  */
 export declare function setAutoInitEnabledAsync(enabled: boolean): Promise<void>;
 /**
