@@ -324,9 +324,13 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   
   NSDecimalNumber *oneMillion = [[NSDecimalNumber alloc] initWithInt:1000000];
   NSDecimalNumber *priceAmountMicros = [product.price decimalNumberByMultiplyingBy:oneMillion];
-  NSString *price = [NSString stringWithFormat:@"%@%@", product.priceLocale.currencySymbol, product.price];
   NSString *description = product.localizedDescription ?: @"";
   NSString *title = product.localizedTitle ?: @"";
+  
+  NSNumberFormatter *priceFormatter = [[NSNumberFormatter alloc] init];
+  priceFormatter.numberStyle = NSNumberFormatterCurrencyStyle;
+  priceFormatter.locale = product.priceLocale;
+  NSString *price = [priceFormatter stringFromNumber:product.price];
   
   return @{
            @"description": description,
