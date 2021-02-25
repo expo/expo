@@ -145,7 +145,7 @@ public class UpdatesConfiguration {
     }
 
     Boolean isExpoGo = readValueCheckingType(map, "isExpoGo", Boolean.class);
-    if ( isExpoGo != null){
+    if (isExpoGo != null) {
       mIsExpoGo = isExpoGo;
     } else {
       mIsExpoGo = false;
