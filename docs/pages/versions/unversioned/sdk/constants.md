@@ -58,7 +58,7 @@ An identifier that is unique to this particular device and whose lifetime is at 
 
 ### `Constants.manifest`
 
-The [manifest](../../../workflow/how-expo-works.md#expo-manifest) object for the app.
+The [manifest](../../../guides/how-expo-works.md#expo-manifest) object for the app.
 
 ### `Constants.nativeAppVersion`
 
