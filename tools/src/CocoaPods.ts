@@ -13,6 +13,7 @@ export type Podspec = {
   compiler_flags: string;
   frameworks: string | string[];
   pod_target_xcconfig: Record<string, string>;
+  xcconfig: Record<string, string>;
   dependencies: Record<string, any>;
   info_plist: Record<string, string>;
   ios?: Podspec;
