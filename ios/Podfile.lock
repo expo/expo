@@ -2262,6 +2262,35 @@ PODS:
     - React-Core
   - RNGestureHandler (1.10.2):
     - React-Core
+  - RNReanimated (2.0.0-rc.3):
+    - DoubleConversion
+    - FBLazyVector
+    - FBReactNativeSpec
+    - Folly
+    - glog
+    - RCTRequired
+    - RCTTypeSafety
+    - React
+    - React-callinvoker
+    - React-Core
+    - React-Core/DevSupport
+    - React-Core/RCTWebSocket
+    - React-CoreModules
+    - React-cxxreact
+    - React-jsi
+    - React-jsiexecutor
+    - React-jsinspector
+    - React-RCTActionSheet
+    - React-RCTAnimation
+    - React-RCTBlob
+    - React-RCTImage
+    - React-RCTLinking
+    - React-RCTNetwork
+    - React-RCTSettings
+    - React-RCTText
+    - React-RCTVibration
+    - ReactCommon/turbomodule/core
+    - Yoga
   - RNScreens (2.18.1):
     - React-Core
   - UMAppLoader (2.0.0)
@@ -2705,6 +2734,7 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../react-native-lab/react-native/ReactCommon`)
   - "RNCPicker (from `./vendored/unversioned/@react-native-picker/picker`)"
   - RNGestureHandler (from `./vendored/unversioned/react-native-gesture-handler`)
+  - RNReanimated (from `./vendored/unversioned/react-native-reanimated`)
   - RNScreens (from `./vendored/unversioned/react-native-screens`)
   - UMAppLoader (from `../packages/unimodules-app-loader/ios`)
   - UMBarCodeScannerInterface (from `../packages/unimodules-barcode-scanner-interface/ios`)
@@ -3549,6 +3579,8 @@ EXTERNAL SOURCES:
     :path: "./vendored/unversioned/@react-native-picker/picker"
   RNGestureHandler:
     :path: "./vendored/unversioned/react-native-gesture-handler"
+  RNReanimated:
+    :path: "./vendored/unversioned/react-native-reanimated"
   RNScreens:
     :path: "./vendored/unversioned/react-native-screens"
   UMAppLoader:
@@ -4010,6 +4042,7 @@ SPEC CHECKSUMS:
   ReactCommon: a0a1edbebcac5e91338371b72ffc66aa822792ce
   RNCPicker: 6780c753e9e674065db90d9c965920516402579d
   RNGestureHandler: e66feb0fda7da74ea6a3094656b3c1efe05f5c07
+  RNReanimated: ca4f28c765329144d68bdad126bf6b0b1afc7a5a
   RNScreens: f7ad633b2e0190b77b6a7aab7f914fad6f198d8d
   UMAppLoader: 3b2e5d8abf487b01e27feb4fce5f34cb761cac39
   UMBarCodeScannerInterface: ca04ff28d8321f2d9e3894772bff82a3dbb83387
