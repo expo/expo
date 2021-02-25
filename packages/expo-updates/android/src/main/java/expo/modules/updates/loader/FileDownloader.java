@@ -166,7 +166,9 @@ public class FileDownloader {
                   }
               );
             } else {
-              preManifest.put("isVerified", false);
+              if (configuration.expectsSignedManifest()) {
+                preManifest.put("isVerified", false);
+              }
               Manifest manifest = ManifestFactory.getManifest(preManifest, new ManifestResponse(response), configuration);
               callback.onSuccess(manifest);
             }
