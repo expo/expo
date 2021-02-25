@@ -61,7 +61,7 @@
     "react-native-infinite-scroll-view": "^0.4.5",
     "react-native-maps": "0.27.1",
     "react-native-paper": "^4.0.1",
-    "react-native-reanimated": "~1.13.0",
+    "react-native-reanimated": "~2.0.0-rc.3",
     "react-native-safe-area-context": "3.1.9",
     "react-native-screens": "~2.18.1",
     "react-redux": "^7.2.0",

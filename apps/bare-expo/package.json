@@ -132,7 +132,7 @@
     "react-native": "0.63.2",
     "react-native-appearance": "~0.3.3",
     "react-native-gesture-handler": "~1.10.2",
-    "react-native-reanimated": "~1.13.0",
+    "react-native-reanimated": "~2.0.0-rc.3",
     "react-native-safe-area-context": "3.1.9",
     "react-native-screens": "~2.18.1",
     "react-native-shared-element": "0.7.0",
