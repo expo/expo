@@ -180,7 +180,7 @@ public class ExpoUpdatesAppLoader {
     }
 
     configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY, getRequestHeaders());
-    configMap.put("isExpoGo", true);
+    configMap.put("expectsSignedManifest", true);
 
     UpdatesConfiguration configuration = new UpdatesConfiguration();
     configuration.loadValuesFromMap(configMap);

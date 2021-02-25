@@ -37,7 +37,7 @@ public class UpdatesConfiguration {
   }
 
   private boolean mIsEnabled;
-  private boolean mIsExpoGo = false;
+  private boolean mExpectsSignedManifest = false;
   private String mScopeKey;
   private Uri mUpdateUrl;
   private Map<String, String> mRequestHeaders = new HashMap<>();
@@ -52,8 +52,8 @@ public class UpdatesConfiguration {
   public boolean isEnabled() {
     return mIsEnabled;
   }
-  public boolean isExpoGo() {
-    return mIsExpoGo;
+  public boolean expectsSignedManifest() {
+    return mExpectsSignedManifest;
   }
 
   public String getScopeKey() {
@@ -144,11 +144,11 @@ public class UpdatesConfiguration {
       mIsEnabled = isEnabledFromMap;
     }
 
-    Boolean isExpoGo = readValueCheckingType(map, "isExpoGo", Boolean.class);
-    if (isExpoGo != null) {
-      mIsExpoGo = isExpoGo;
+    Boolean expectsSignedManifest = readValueCheckingType(map, "expectsSignedManifest", Boolean.class);
+    if (expectsSignedManifest != null) {
+      mExpectsSignedManifest = expectsSignedManifest;
     } else {
-      mIsExpoGo = false;
+      mExpectsSignedManifest = false;
     }
 
     Uri updateUrlFromMap = readValueCheckingType(map, UPDATES_CONFIGURATION_UPDATE_URL_KEY, Uri.class);

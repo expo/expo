@@ -294,7 +294,7 @@ public class FileDownloader {
             .header("Expo-API-Version", "1")
             .header("Expo-Updates-Environment", "BARE")
             .header("Expo-JSON-Error", "true")
-            .header("Expo-Accept-Signature", String.valueOf(configuration.isExpoGo()));
+            .header("Expo-Accept-Signature", String.valueOf(configuration.expectsSignedManifest()));
 
     // legacy manifest loads should ignore cache-control headers from the server and always load remotely
     if (configuration.usesLegacyManifest()) {
