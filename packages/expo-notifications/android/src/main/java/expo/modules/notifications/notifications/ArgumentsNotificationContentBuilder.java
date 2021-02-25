@@ -48,7 +48,7 @@ public class ArgumentsNotificationContentBuilder extends NotificationContent.Bui
       .setAutoDismiss(getAutoDismiss(payload))
       .setCategoryId(getCategoryId(payload))
       .setSticky(getSticky(payload))
-      .setTag(payload.getString(TAG_KEY, null));
+      .setTag(payload.getString(TAG_KEY));
 
     if (shouldPlayDefaultSound(payload)) {
       useDefaultSound();
